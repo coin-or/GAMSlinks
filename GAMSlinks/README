@@ -1,0 +1,124 @@
+These directories contain links between the GAMS modeling system (http://www.gams.com) and some COIN-OR solvers.
+
+For requirements and installation instruction see the file INSTALL.
+For license information see the file LICENSE.
+
+=== Introduction ===
+
+Currently for the following solvers links are available:
+* CoinGlpk: Gnu Linear Programming Kit
+* CoinCbc:  Coin Branch and Cut code
+
+There are known to work under Linux (32 and 64 bit), Windows (32 bit), and Darwin.
+
+The GAMS/COIN-OR solvers implement a subset of all possible GAMS parameters.
+Not all bells and whistles of regular GAMS solvers are part of the COIN/OSI interface.
+Also, the solution passed back to GAMS can't be exactly qualified for MIP problems.
+It is not clear if a model solved to optimality (model status 1) or if we are within the user supplied tolerance (model status 8).
+The GAMS/COIN-OR solvers report for MIP problems model status 8 (INTEGER SOLUTION) whenever they find an integer solution.
+
+=== Tests ===
+
+The directory test contains a script that tests the Cbc and Glpk (if available) on the models
+* trnsport (small LP)
+* thai (small MIP)
+from the GAMS model library.
+The models are chosen such that they can also be run with a gams demo licence.
+A test is passed when the optimal value found by Cbc or Glpk coincides with the one from CPLEX (within a gap tolerance of 1%).
+Since there is no CPLEX on Darwin, these tests will not work on Darwin systems.
+
+If you have installed Cbc or Glpk in your GAMS system, then you can also use the GAMS test library to run a set of tests.
+For that, follow the following steps:
+1. Get the quality tests:
+	testlib quality  (where the program testlib is located in your GAMS system directory)
+2. Add the COIN-OR solvers to the set of "master solvers" by changing line 125 of quality.gms to
+	SET solver 'master set of solvers' / system.solverNames , Glpk , Cbc /;
+3. Let him skip the tests that check for the correct handling of SOS and semicontinuous variables (not supported by the Cbc or Glpk interfaces yet) by adding around line 412:
+	skip("cbc","sos1a")=yes;
+	skip("cbc","sl4sos1a")=yes;
+	skip("cbc","semicon1")=yes;
+	skip("cbc","sl4scon1")=yes;
+	skip("glpk","sos1a")=yes;
+	skip("glpk","sl4sos1a")=yes;
+	skip("glpk","semicon1")=yes;
+	skip("glpk","sl4scon1")=yes;
+4. Run the tests (for the solvers you have installed):
+	gams quality --suite lp --solver cbc
+	gams quality --suite lp --solver glpk
+	gams quality --suite mip --solver cbc
+	gams quality --suite mip --solver glpk
+	At the end of output you should see something like "Congratulations!  All ... tests passed.".
+	Otherwise it will report how many tests failed.	
+
+=== Passing parameters to the Coin solvers ===
+
+The GAMS/COIN-OR solvers do currently not read an option file.
+However, some parameters of Glpk and Cbc can still be influenced as described in the following.
+
+= Standard GAMS parameters =
+
+The following standard GAMS parameters are supported:
+- iterlim: Maximum number of solver iterations
+- reslim: Maximum time in seconds
+- nodlim (only Cbc): Maximum number of nodes.
+- optca (only Cbc): Absolute optimality criterion for a MIP.
+    This is translated into the Cbc option CbcAllowableGap.
+- optcr (only Glpk): Relative optimality criterion for a MIP.
+    This is translated into the Glpk option TOLOBJ.
+    
+You can set these parameters either as an argument to your gams call on the command line,
+or by writing model.parametername = ... in front of the solve statement in your gams model.
+
+= Writing an MPS file =
+
+For debugging and reproducing bugs of the GAMS/COIN interface, the user can write out the model in MPS format.
+You can do that by adding
+m.integer1 = 1;
+in front of the solve statement in your gams model.
+
+= Further influence on Cbc behaviour =
+
+For the CoinCbc solver the parameters integer2 and integer3 serves as a poor man's option file.
+You can use these values inside your model definition to pass some model attributes to the CoinCbc solver.
+By default (integer2 and integer3 is zero), the rounding heuristic, local search, and strong branching are used.
+Further, Probing, Gomory, Knapsack, Clique, Flow Cover, and Mixed Integer Rounding cuts are used.
+
+The following example switches the rounding heuristic and local search off, but keeps the cuts and strong branching.
+Further, Probing and RedSplit cuts are switched off, but Gomory, Knapsack, OddHole, Clique, Flow Cover, and Mixed Integer Rounding cuts are used.
+
+...
+model m /all/;
+$eolcom //
+
+parameter coincbcopt(*) /
+  nocuts            0   // cut generation     0 on - 1 off
+  norounding        1   // rounding heuristic 0 on - 1 off
+  nolocalsearch     1   // local search       0 on - 1 off
+  nostrongbranching 0   // strong branching   0 on - 1 off
+/;
+
+m.integer2 =    1*coincbcopt('nocuts')
+             +  2*coincbcopt('norounding')
+             +  4*coincbcopt('nolocalsearch')
+             +  8*coincbcopt('nostrongbranching');
+
+parameter coincbccuts(*) /
+  noProbing    1  // Probing cuts                 0 on - 1 off
+  noGomory     0  // Gomory cuts                  0 on - 1 off
+  noKnapsack   0  // Knapsack cuts                0 on - 1 off
+  OddHole      1  // Odd Hole cuts                0 off - 1 on
+  noClique     0  // Clique cuts                  0 on - 1 off
+  noFlowCover  0  // Flow Cover cuts              0 on - 1 off
+  noMIR        0  // Mixed Integer Rounding cuts  0 on - 1 off
+  RedSplit     0  // RedSplit cuts                0 off - 1 on
+/;
+
+m.integer3 =    1*coincbccuts('noProbing')
+             +  2*coincbccuts('noGomory')
+             +  4*coincbccuts('noKnapsack')
+             +  8*coincbccuts('OddHole')
+             + 16*coincbccuts('noClique')
+             + 32*coincbccuts('noFlowCover')
+             + 64*coincbccuts('noMIR');
+             +128*coincbccuts('RedSplit');
+             

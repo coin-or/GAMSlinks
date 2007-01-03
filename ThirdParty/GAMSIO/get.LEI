@@ -1,0 +1,36 @@
+#!/bin/sh
+
+wgetcount=`which wget 2>/dev/null | wc -w`
+if test ! $wgetcount = 1; then
+  echo "Utility wget not found in your PATH."
+  exit -1
+fi
+
+echo " "
+echo "Running script for downloading the GAMS I/O libraries for Linux 64-bit platform"
+echo " "
+
+FILES="LEIciolib_ver035LIB.zip LEIclicelib_ver014LIB.zip LEIgclib_ver015LIB.zip LEIg2ddll_ver016LIB.zip LEIg2dlib_ver016LIB.zip LEIgdxio_ver234LIB.zip"
+
+mkdir -p LEI
+cd LEI
+rm -f $FILES
+
+echo "Downloading the libraries from www.gams.com..."
+for file in $FILES
+do
+	wget http://www.gams.com/~svigerske/$file
+done
+
+echo "Unpacking the libraries..."
+for file in $FILES
+do
+	unzip -o $file
+done
+
+echo "Deleting the zip files..."
+rm -f $FILES
+
+echo " "
+echo "Done downloading the GAMS I/O libraries."
+echo " "

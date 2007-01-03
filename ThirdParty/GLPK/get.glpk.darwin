@@ -1,0 +1,37 @@
+#!/bin/sh
+
+wgetcount=`which wget 2>/dev/null | wc -w`
+if test ! $wgetcount = 1; then
+  echo "Utility wget not found in your PATH."
+  exit -1
+fi
+
+echo " "
+echo "Running script for downloading the GNU Linear Programming Toolkit"
+echo " "
+
+echo "Downloading the library from ftp.gnu.org..."
+wget ftp://ftp.gnu.org/gnu/glpk/glpk-4.9.tar.gz
+
+echo "Unpacking the library..."
+tar xzf glpk-4.9.tar.gz
+
+echo "Deleting the tar.gz file..."
+rm -f glpk-4.9.tar.gz
+
+echo "Applying patch file..."
+patch -p0 < glpk.patch
+
+echo "Configure and make glpk 4.9..."
+cd glpk-4.9
+make -f ../darwin.mak
+cd ..
+
+echo " "
+echo "Done downloading and compiling glpk 4.9."
+
+thepath=`pwd`
+echo "When configuring your COIN project, add the following arguments to you configure call:"
+echo "  --with-glpk-incdir=$thepath/glpk-4.9/include"
+echo "  --with-glpk-lib=\"-L<your path to libxl.a> -lxl $thepath/glpk-4.9/libglpk.a -lxl\""
+echo " "

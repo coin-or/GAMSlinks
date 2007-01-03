@@ -1,0 +1,36 @@
+#!/bin/sh
+
+wgetcount=`which wget 2>/dev/null | wc -w`
+if test ! $wgetcount = 1; then
+  echo "Utility wget not found in your PATH."
+  exit -1
+fi
+
+echo " "
+echo "Running script for downloading the GAMS I/O libraries for Linux 32-bit platform"
+echo " "
+
+FILES="LX3ciolib_ver035LIB.zip LX3clicelib_ver014LIB.zip LX3gclib_ver015LIB.zip LX3g2ddll_ver017LIB.zip LX3g2dlib_ver017LIB.zip LX3gdxio_ver234LIB.zip"
+
+mkdir -p LX3
+cd LX3
+rm -f $FILES
+
+echo "Downloading the libraries from www.gams.com..."
+for file in $FILES
+do
+	wget http://www.gams.com/~svigerske/$file
+done
+
+echo "Unpacking the libraries..."
+for file in $FILES
+do
+	unzip -o $file
+done
+
+echo "Deleting the zip files..."
+rm -f $FILES
+
+echo " "
+echo "Done downloading the GAMS I/O libraries."
+echo " "

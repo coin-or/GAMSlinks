@@ -1,0 +1,48 @@
+--- originalversion/OsiGlpkSolverInterface.cpp	2006-12-01 21:50:25.000000000 +0100
++++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	2006-12-26 19:08:12.000000000 +0100
+@@ -80,6 +80,13 @@
+ 	}
+ }
+ 
++int OsiGlpkprintme(void *info, char *msg) {
++	CoinMessageHandler *myout=(CoinMessageHandler*) info;
++	*myout << msg << CoinMessageEol;
++	return 1;
++}
++
++
+ //#############################################################################
+ // Solve methods
+ //#############################################################################
+@@ -90,7 +97,8 @@
+         LPX *model = getMutableModelPtr();
+ 	freeCachedData( OsiGlpkSolverInterface::FREECACHED_RESULTS );
+ 
+-	lpx_set_int_parm(model, LPX_K_MSGLEV, 1);  // suppress most output 
++	lib_set_print_hook(messageHandler(), OsiGlpkprintme); // tell glpk to use our message handler
++	lpx_set_int_parm(model, LPX_K_MSGLEV, messageHandler()->logLevel());  // set loglevel from message handler 
+ 	lpx_set_int_parm(model, LPX_K_PRESOL, 1);  // turn on presolver
+ 	int err = lpx_simplex( model );
+ 	iter_used_ = lpx_get_int_parm(model, LPX_K_ITCNT);
+@@ -140,7 +148,8 @@
+         LPX *model = getMutableModelPtr();
+ 	freeCachedData( OsiGlpkSolverInterface::FREECACHED_RESULTS );
+ 
+-	lpx_set_int_parm(model, LPX_K_MSGLEV, 1);  // suppress most output 
++	lib_set_print_hook(messageHandler(), OsiGlpkprintme); // tell glpk to use our message handler 
++	lpx_set_int_parm(model, LPX_K_MSGLEV, messageHandler()->logLevel());  // set loglevel from message handler 
+ 	lpx_set_int_parm(model, LPX_K_DUAL, 1); // Use dual simplex if dual feasible
+ 	lpx_set_int_parm(model, LPX_K_PRESOL, 0);  // turn off presolver
+ 
+@@ -193,6 +202,11 @@
+ 	        // Must have an LP solution before running lpx_integer
+  	        if (lpx_get_status(model) != LPX_OPT)
+ 	          initialSolve();
++	        else { // in case that the message handler of loglevel changed
++	        	lib_set_print_hook(messageHandler(), OsiGlpkprintme); // tell glpk to use our message handler
++		        lpx_set_int_parm(model, LPX_K_MSGLEV, messageHandler()->logLevel());  // set loglevel from message handler
++	        } 
++	          	
+ 		// What if there's an error there?
+ 		int err = lpx_integer( model );
+ 		iter_used_ = lpx_get_int_parm(model, LPX_K_ITCNT);

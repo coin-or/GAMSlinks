@@ -1,0 +1,80 @@
+#!/bin/sh
+# Copyright (C) GAMS Development 2006
+# All Rights Reserved.
+# This file is distributed under the Common Public License.
+#
+## $Id$
+#
+# Author: Stefan Vigerske
+
+srcdir="@srcdir@"
+gamspath="@GAMS_PATH@"
+cbc="../src/Cbc/GamsCoinCbc"
+glpk="../src/Glpk/GamsCoinGlpk"
+
+examples="trnsport thai"
+
+for model in $examples
+do
+
+	echo " "
+	echo Getting test problem $model from GAMS model library...
+	$gamspath/gamslib $model
+	echo " "
+	
+	echo Calling CPLEX with $model to get control file and optimal value.
+	rm -rf 225a
+	rm -f tmpfile
+	$gamspath/gamskeep $model.gms LP=CPLEX MIP=CPLEX OPTCR=0.01 LO=2 LOGFILE=tmpfile 1>/dev/null 2>&1
+	
+	bkov=`sed -n -e '/^Objective/s/Objective : *//p' -e '/^MIP Solution/s/.*: *\(.*\) (.*)/\1/p' tmpfile`
+	bkov_=`echo $bkov | sed -e 's/-/_/g'`
+	bkovn=`echo $bkov | sed -e 's/-//g'`
+	
+	echo "Optimal value of problem $model is $bkov."
+	
+	for solver in $cbc $glpk
+	do
+		if [ -e $solver ]; then
+			echo " "
+			echo Running $solver on model $model
+			rm -f tmpfile
+			$solver 225a/gamscntr.scr 1>/dev/null 2>&1
+		
+			grep "Writing solution. Objective" tmpfile 1>/dev/null 2>&1
+			if test $? = 0; then
+				opt_val=`sed -n -e '/Writing solution. Objective/s/.*Objective: \(.*\) Time.*/\1/p' tmpfile`
+				opt_val_=`echo $opt_val | sed -e 's/-/_/g'`
+
+				#compute relative error
+				rel_error=`dc -e "2 k $opt_val_ $bkov_ - $bkovn 1 + / p"`
+				rel_=`echo $rel_error | sed -e 's/-/_/g'`
+				rel100=`dc -e "$rel_ 100 * p" | sed -e 's/\..*//'`
+				if test $rel100 -le 1 -a $rel100 -ge 0; then
+					echo "   Optimal value is $opt_val. Test passed!"
+				else
+					echo " "
+					echo " ---- 8< ---- Start of test program output ---- 8< ----"
+					cat tmpfile
+					echo " ---- 8< ----  End of test program output  ---- 8< ----"
+					echo " "
+					echo "    ******** Test FAILED! ********"
+					echo "    Best known optimal value is $bkov, but $solver found $opt_val. Relative error is $rel100 percent."
+					echo "Output of the test program is above."
+				fi
+			else
+				echo " "
+				echo " ---- 8< ---- Start of test program output ---- 8< ----"
+				cat tmpfile
+				echo " ---- 8< ----  End of test program output  ---- 8< ----"
+				echo " "
+				echo "    ******** Test FAILED! ********"
+				echo "    $solver found no optimal solution."
+				echo "Output of the test program is above."
+			fi
+		fi
+	done
+done
+
+rm -f tmpfile
+rm -rf 225a
