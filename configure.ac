@@ -43,7 +43,7 @@ AC_COIN_INIT_AUTOMAKE
 #             Check which ThirdParty sources are available                  #
 #############################################################################
 
-AC_COIN_THIRDPARTY_SUBDIRS([GAMSIO],[ThirdParty/GAMSIO],[iolib.h])
+#AC_COIN_THIRDPARTY_SUBDIRS([GAMSIO],[ThirdParty/GAMSIO],[iolib.h])
 #AC_COIN_THIRDPARTY_SUBDIRS([GLPK],[ThirdParty/GLPK/glpk-4.9],[src/glpavl.c])
 
 #############################################################################

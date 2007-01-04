@@ -6399,7 +6399,7 @@ AC_MSG_RESULT([$SED])
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
-## $Id: coin.m4 187 2006-12-20 00:40:17Z andreasw $
+## $Id: coin.m4 146 2006-11-29 18:27:51Z andreasw $
 #
 # Author: Andreas Wachter    IBM      2006-04-14
 
@@ -6881,10 +6881,10 @@ if test x"$CXXFLAGS" = x; then
     case $build in
       *-cygwin* | *-mingw*)
         case "$CXX" in
-          cl* | */cl* | CL* | */CL*)
+          cl* | */cl*)
             coin_opt_cxxflags='-O2'
             coin_add_cxxflags='-nologo -EHsc -GR -MT'
-            coin_dbg_cxxflags='-MTd'
+            coin_dbg_cxxflags='-Yd'
             ;;
         esac
         ;;
@@ -6992,7 +6992,7 @@ if test x"$MPICXX" = x; then :; else
 fi
 
 case "$CXX" in
-  cl* | */cl* | CL* | */CL* )
+  cl*)
     AC_COIN_MINGW_LD_FIX
     ;;
 esac
@@ -7026,7 +7026,7 @@ if test -z "$CXXLIBS"; then
     case $build in
      *-mingw32 | *-cygwin-* )
       case "$CXX" in
-      cl* | */cl* | CL* | */CL*)
+      cl*)
         CXXLIBS=nothing;;
       esac;;
      *-linux-*)
@@ -7120,7 +7120,7 @@ AC_LANG_PUSH(C)
 # compiler, if the C++ is set, but the C compiler isn't (only for CXX=cl)
 if test x"$CXX" != x; then
   case "$CXX" in
-    cl* | */cl* | CL* | */CL*)
+    cl*)
       if test x"$CC" = x; then
         CC="$CXX"
         AC_MSG_WARN([C++ compiler name provided as $CXX, but CC is unset. Setting CC to $CXX])
@@ -7190,10 +7190,10 @@ if test x"$CFLAGS" = x; then
     case $build in
       *-cygwin* | *-mingw*)
         case "$CC" in
-          cl* | */cl* | CL* | */CL*)
+          cl* | */cl*)
             coin_opt_cflags='-O2'
             coin_add_cflags='-nologo'
-            coin_dbg_cflags='-MTd'
+            coin_dbg_cflags='-Yd'
             ;;
         esac
         ;;
@@ -7308,7 +7308,7 @@ fi
 
 # Correct ADDLIBS initialization if we are using the MS compiler
 case "$CC" in
-  cl* | */cl* | CL* | */CL*)
+  cl*)
     ADDLIBS=
     AC_COIN_MINGW_LD_FIX
     ;;
@@ -7519,7 +7519,7 @@ AC_F77_WRAPPERS
 if test x"$FLIBS" != x; then
   my_flibs=
   for flag in $FLIBS; do
-    case $flag in
+    case flag in
       -lcrt*.o) ;;
              *) my_flibs="$my_flibs $flag" ;;
     esac
@@ -7848,7 +7848,7 @@ esac
 case $build in
   *-cygwin* | *-mingw*)
   case "$CXX" in
-    cl* | */cl* | CL* | */CL*) 
+    cl* | */cl*) 
       AC_MSG_NOTICE(Applying patches to libtool for cl compiler)
       sed -e 's|fix_srcfile_path=\"`cygpath -w \"\$srcfile\"`\"|fix_srcfile_path=\"\\\`'"$CYGPATH_W"' \\\"\\$srcfile\\\"\\\`\"|' \
           -e 's|fix_srcfile_path=\"\"|fix_srcfile_path=\"\\\`'"$CYGPATH_W"' \\\"\\$srcfile\\\"\\\`\"|' \
@@ -7963,7 +7963,7 @@ fi
 # library extension
 AC_SUBST(LIBEXT)
 case "$CC" in
-  cl* | */cl* | CL* | */CL*) LIBEXT=lib ;;
+  cl*) LIBEXT=lib ;;
     *) LIBEXT=a ;;
 esac
 
@@ -7980,7 +7980,7 @@ if test x"$coin_vpath_link_files" = x; then : ; else
     lnkcmd=cp
   fi
   case "$CC" in
-    cl* | */cl* | CL* | */CL*)
+    cl* | */cl*)
       lnkcmd=cp ;;
   esac
   if test "$lnkcmd" = cp; then
@@ -8212,7 +8212,7 @@ if test $coin_vpath_config = yes; then
     lnkcmd=cp
   fi
   case "$CC" in
-    cl* | */cl* | CL* | */CL*)
+    cl* | */cl*)
       lnkcmd=cp ;;
   esac
   if test "$lnkcmd" = cp; then
@@ -8404,7 +8404,7 @@ coin_aslsrcdir=$srcdir/$coin_aslobjdir
 
 # Determine the name of the ASL library
 case "$CXX" in
-  cl* | */cl* | CL* | */CL*)
+  cl* | */cl*)
     ampllib=amplsolv.lib ;;
   *)
     ampllib=amplsolver.a ;;

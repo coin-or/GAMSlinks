@@ -201,7 +201,7 @@ case $build in
       GAMSIO_CODE=VIS
       gamsio_system=Windows
     ;;
-  darwin*)
+  *-darwin*)
       GAMSIO_CODE=DAR
       gamsio_system=Darwin
     ;;
@@ -282,8 +282,7 @@ AC_SUBST(GAMS_PATH)
 AC_SUBST(GAMSIO_CPPFLAGS)
 AC_SUBST(GAMSIO_LIBS)
 AC_SUBST(GAMSIO_CODE)
-AM_CONDITIONAL([GAMSIO_IS_DARWIN],[test x"$gamsio_system" = xDarwin])
-AM_CONDITIONAL([GAMSIO_IS_LINUX],[test x"$gamsio_system" = xLinux])
+AM_CONDITIONAL([GAMSIO_IS_UNIX],[test x"$gamsio_system" != xWindows])
 AM_CONDITIONAL([GAMSIO_IS_WINDOWS],[test x"$gamsio_system" = xWindows])
 
 ##############################################################################

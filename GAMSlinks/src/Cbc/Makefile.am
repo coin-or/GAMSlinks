@@ -75,7 +75,7 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
 DISTCLEANFILES =
 
-if GAMSIO_IS_LINUX
+if GAMSIO_IS_UNIX
 install-exec-local:
 	ln -sf $(DESTDIR)$(bindir)/GamsCoinCbc gmscc_ux.out
 	zip gmscc_.zip gmscc_ux.out gmscc_us.run install/gmscc_un.dat

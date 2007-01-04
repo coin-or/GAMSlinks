@@ -163,10 +163,8 @@ FFLAGS = @FFLAGS@
 FLIBS = @FLIBS@
 GAMSIO_CODE = @GAMSIO_CODE@
 GAMSIO_CPPFLAGS = @GAMSIO_CPPFLAGS@
-GAMSIO_IS_DARWIN_FALSE = @GAMSIO_IS_DARWIN_FALSE@
-GAMSIO_IS_DARWIN_TRUE = @GAMSIO_IS_DARWIN_TRUE@
-GAMSIO_IS_LINUX_FALSE = @GAMSIO_IS_LINUX_FALSE@
-GAMSIO_IS_LINUX_TRUE = @GAMSIO_IS_LINUX_TRUE@
+GAMSIO_IS_UNIX_FALSE = @GAMSIO_IS_UNIX_FALSE@
+GAMSIO_IS_UNIX_TRUE = @GAMSIO_IS_UNIX_TRUE@
 GAMSIO_IS_WINDOWS_FALSE = @GAMSIO_IS_WINDOWS_FALSE@
 GAMSIO_IS_WINDOWS_TRUE = @GAMSIO_IS_WINDOWS_TRUE@
 GAMSIO_LIBS = @GAMSIO_LIBS@
@@ -505,7 +503,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-@GAMSIO_IS_LINUX_FALSE@@GAMSIO_IS_WINDOWS_FALSE@install-exec-local:
+@GAMSIO_IS_UNIX_FALSE@@GAMSIO_IS_WINDOWS_FALSE@install-exec-local:
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
@@ -570,11 +568,11 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 	uninstall-info-am uninstall-local
 
 
-@GAMSIO_IS_LINUX_TRUE@install-exec-local:
-@GAMSIO_IS_LINUX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinGlpk gmscg_ux.out
-@GAMSIO_IS_LINUX_TRUE@	zip gmscg_.zip gmscg_ux.out gmscg_us.run install/gmscg_un.dat
-@GAMSIO_IS_LINUX_TRUE@	$(install_sh_DATA) gmscg_.zip $(DESTDIR)$(bindir)/gmscg_.zip
-@GAMSIO_IS_LINUX_TRUE@	rm -f gmscg_ux.out
+@GAMSIO_IS_UNIX_TRUE@install-exec-local:
+@GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinGlpk gmscg_ux.out
+@GAMSIO_IS_UNIX_TRUE@	zip gmscg_.zip gmscg_ux.out gmscg_us.run install/gmscg_un.dat
+@GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmscg_.zip $(DESTDIR)$(bindir)/gmscg_.zip
+@GAMSIO_IS_UNIX_TRUE@	rm -f gmscg_ux.out
 
 @GAMSIO_IS_WINDOWS_TRUE@install-exec-local:
 @GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinGlpk.exe gmscg_nx.exe
