@@ -90,17 +90,25 @@ get_starting_point (Index n, bool init_x, Number* x,
 		    Index m, bool init_lambda,
 		    Number* lambda)
 {
-	if (init_z || init_lambda) {
-		smagPrint(prob, SMAG_ALLMASK, "Error: Initialization of dual margins not implemented yet.");
-		init_z=false;
-		init_lambda=false;
-		return false;
+	if (init_lambda) {
+		for (Index j=0; j<m; ++j)
+			lambda[j] = -prob->rowPi[j];
 	}
-	if (!init_x) return true;
-
-  for (Index j = 0;  j < n;  ++j)
-    x[j] = prob->colLev[j];
-
+	if (init_z) {
+		for (Index j=0; j<n; ++j) {
+			if (prob->colRC[j]*isMin>0) {
+				z_L[j] = isMin*prob->colRC[j];
+				z_U[j] = 0;
+			} else {
+				z_U[j] = -isMin*prob->colRC[j];
+				z_L[j] = 0;
+			}				
+		}
+	}
+	if (init_x) {
+  	for (Index j = 0;  j < n;  ++j)
+	    x[j] = prob->colLev[j];
+	}
   return true;
 } // get_starting_point
 
