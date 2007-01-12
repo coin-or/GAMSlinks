@@ -4,3 +4,7 @@ Cgl           https://projects.coin-or.org/svn/Cgl/releases/0.5.1/Cgl
 Clp           https://projects.coin-or.org/svn/Clp/releases/1.3.3/Clp
 Osi           https://projects.coin-or.org/svn/Osi/releases/0.95.3/Osi
 Cbc           https://projects.coin-or.org/svn/Cbc/releases/1.1.0/Cbc
+Ipopt         https://projects.coin-or.org/svn/Ipopt/releases/3.2.3/Ipopt
+ThirdParty/HSL https://projects.coin-or.org/svn/BuildTools/ThirdParty/HSL/releases/1.0.1
+ThirdParty/Blas https://projects.coin-or.org/svn/BuildTools/ThirdParty/Blas/releases/1.0.1
+ThirdParty/Lapack https://projects.coin-or.org/svn/BuildTools/ThirdParty/Lapack/releases/1.0.3

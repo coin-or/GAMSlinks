@@ -16,6 +16,9 @@ endif
 if COIN_HAS_GLPK
   SUBDIRS += Glpk
 endif
+if COIN_HAS_IPOPT
+  SUBDIRS += Ipopt
+endif
 
 EXTRA_DIST =
 

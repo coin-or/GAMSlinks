@@ -23,25 +23,25 @@ SUBDIRS = $(subdirs)
 #                           Extra Targets                              #
 ########################################################################
 
-#test: all
-#	cd GAMSlinks; make test
+test: all
+	cd GAMSlinks; make test
 
-#unitTest: test
+unitTest: test
 
-#tests: all
-#	for dir in $(subdirs); do \
-#	  if test -r $$dir/test/Makefile; then \
-#	    (cd $$dir; make test) \
-#	  fi; \
-#	done
+tests: all
+	for dir in $(subdirs); do \
+	  if test -r $$dir/test/Makefile; then \
+	    (cd $$dir; make test) \
+	  fi; \
+	done
 
-#unitTests: tests
+unitTests: tests
 
 #doxydoc:
 #	cd $(srcdir); doxygen doxydoc/doxygen.conf
 
 #.PHONY: test unitTest tests unitTests doxydoc
-.PHONY:
+.PHONY: test unitTest tests unitTests
 
 ########################################################################
 #                         Maintainer Stuff                             #

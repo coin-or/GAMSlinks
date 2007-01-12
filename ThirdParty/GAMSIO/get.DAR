@@ -10,7 +10,7 @@ echo " "
 echo "Running script for downloading the GAMS I/O libraries for Darwin platform"
 echo " "
 
-FILES="DARciolib_ver035LIB.zip DARclicelib_ver014LIB.zip DARgclib_ver015LIB.zip DARg2ddll_ver016LIB.zip DARg2dlib_ver016LIB.zip DARgdxio_ver234LIB.zip"
+FILES="DARciolib_ver035LIB.zip DARclicelib_ver014LIB.zip DARgclib_ver015LIB.zip DARg2ddll_ver016LIB.zip DARg2dlib_ver016LIB.zip DARgdxio_ver234LIB.zip DARsmaglib_ver004LIB.zip"
 
 mkdir -p DAR
 cd DAR

@@ -10,7 +10,7 @@ echo " "
 echo "Running script for downloading the GAMS I/O libraries for Linux 32-bit platform"
 echo " "
 
-FILES="LX3ciolib_ver035LIB.zip LX3clicelib_ver014LIB.zip LX3gclib_ver015LIB.zip LX3g2ddll_ver017LIB.zip LX3g2dlib_ver017LIB.zip LX3gdxio_ver234LIB.zip"
+FILES="LX3ciolib_ver035LIB.zip LX3clicelib_ver014LIB.zip LX3gclib_ver015LIB.zip LX3g2ddll_ver017LIB.zip LX3g2dlib_ver017LIB.zip LX3gdxio_ver234LIB.zip LX3smaglib_ver004LIB.zip"
 
 mkdir -p LX3
 cd LX3

@@ -90,6 +90,7 @@ AC_COIN_HAS_PROJECT(CoinUtils)
 AC_COIN_HAS_PROJECT(Osi)
 AC_COIN_HAS_PROJECT(Clp)
 AC_COIN_HAS_PROJECT(Cbc)
+AC_COIN_HAS_PROJECT(Ipopt)
 
 ############################################################################
 ############################################################################
@@ -241,12 +242,16 @@ if test x"$use_gamsio" != x; then
 		AC_MSG_CHECKING([whether GAMS I/O libraries at $use_gamsio and $use_gamssys work])
 		if test x"$GAMSIO_CODE" = xLX3; then
 		  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -L$use_gamssys -lifcore -limf"
+		  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -L$use_gamssys -lifcore -limf"
 		elif test x"$GAMSIO_CODE" = xLEI; then
 		  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -L$use_gamssys -lifcore -limf -lirc"
+		  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -L$use_gamssys -lifcore -limf -lirc"
 		elif test x"$gamsio_system" = xWindows; then
 		  GAMSIO_LIBS="$use_gamsio/iolib.lib $use_gamsio/nliolib.lib $use_gamsio/clicelib.lib $use_gamsio/gclib.lib $use_gamsio/g2d.lib"
+		  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
 		elif test x"$GAMSIO_CODE" = xDAR; then
 		  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -lSystemStubs"
+		  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -lSystemStubs"
 		fi
 		GAMSIO_CPPFLAGS="-I$use_gamsio"
 		LIBS="$GAMSIO_LIBS $LIBS"
@@ -281,6 +286,7 @@ AC_SUBST(coin_has_gamsio)
 AC_SUBST(GAMS_PATH)
 AC_SUBST(GAMSIO_CPPFLAGS)
 AC_SUBST(GAMSIO_LIBS)
+AC_SUBST(SMAG_LIBS)
 AC_SUBST(GAMSIO_CODE)
 AM_CONDITIONAL([GAMSIO_IS_UNIX],[test x"$gamsio_system" != xWindows])
 AM_CONDITIONAL([GAMSIO_IS_WINDOWS],[test x"$gamsio_system" = xWindows])
@@ -300,6 +306,10 @@ AC_COIN_VPATH_LINK(src/Glpk/gmscg_us.run)
 AC_COIN_VPATH_LINK(src/Glpk/gmscg_nt.cmd)
 AC_COIN_VPATH_LINK(src/Glpk/install/gmscg_un.dat)
 AC_COIN_VPATH_LINK(src/Glpk/install/gmscg_nt.dat)
+AC_COIN_VPATH_LINK(src/Ipopt/gmsip_us.run)
+AC_COIN_VPATH_LINK(src/Ipopt/gmsip_nt.cmd)
+AC_COIN_VPATH_LINK(src/Ipopt/install/gmsip_un.dat)
+AC_COIN_VPATH_LINK(src/Ipopt/install/gmsip_nt.dat)
 
 ############
 # END PART #
@@ -312,6 +322,7 @@ AC_CONFIG_FILES([Makefile
                  src/GamsIO/Makefile
                  src/Cbc/Makefile
                  src/Glpk/Makefile
+                 src/Ipopt/Makefile
                  test/Makefile test/run_tests
                 ])
 

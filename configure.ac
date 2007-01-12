@@ -45,6 +45,9 @@ AC_COIN_INIT_AUTOMAKE
 
 #AC_COIN_THIRDPARTY_SUBDIRS([GAMSIO],[ThirdParty/GAMSIO],[iolib.h])
 #AC_COIN_THIRDPARTY_SUBDIRS([GLPK],[ThirdParty/GLPK/glpk-4.9],[src/glpavl.c])
+AC_COIN_THIRDPARTY_SUBDIRS([Blas],[ThirdParty/Blas],[daxpy.f])
+AC_COIN_THIRDPARTY_SUBDIRS([Lapack],[ThirdParty/Lapack],[LAPACK/SRC/dlarf.f])
+AC_COIN_THIRDPARTY_SUBDIRS([HSL],[ThirdParty/HSL],[configure.ac])
 
 #############################################################################
 #                  Check which subprojects are there                        #
@@ -55,6 +58,7 @@ AC_COIN_MAIN_SUBDIRS(Clp)
 AC_COIN_MAIN_SUBDIRS(Osi)
 AC_COIN_MAIN_SUBDIRS(Cgl)
 AC_COIN_MAIN_SUBDIRS(Cbc)
+AC_COIN_MAIN_SUBDIRS(Ipopt)
 AC_COIN_MAIN_SUBDIRS(GAMSlinks)
 
 ##############################################################################

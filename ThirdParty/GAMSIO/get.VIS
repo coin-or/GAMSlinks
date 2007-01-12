@@ -10,7 +10,7 @@ echo " "
 echo "Running script for downloading the GAMS I/O libraries for Windows platform"
 echo " "
 
-FILES="VISciolib_ver035LIB.zip VISclicelib_ver014LIB.zip VISgclib_ver015LIB.zip VISg2dlib_ver017LIB.zip VISgdxio_ver234LIB.zip"
+FILES="VISciolib_ver035LIB.zip VISclicelib_ver014LIB.zip VISgclib_ver015LIB.zip VISg2dlib_ver017LIB.zip VISgdxio_ver234LIB.zip VISsmaglib_ver004LIB.zip"
 
 mkdir -p VIS
 cd VIS
