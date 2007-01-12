@@ -1,28 +1,5 @@
 ## darwin.mak (Darwin single-threaded static library, IBM xlc) ##
 
-##----------------------------------------------------------------------
-## To build W32 single-threaded static library for GLPK with VC++ 6.0
-## enter the subdirectory where the file you are reading is placed and
-## type the command:
-##
-##    nmake.exe /f w32vc6.mak
-##
-## The following two files will be created in the same subdirectory:
-##
-##    glpk.lib,   GLPK static library, and
-##
-##    glpsol.exe, stand-alone LP/MIP solver.
-##
-## To check if GLPK has been successfully compiled type the command:
-##
-##    nmake.exe /f w32vc6.mak check
-##
-## Header files needed to use the GLPK static library are contained in
-## the subdirectory 'include'.
-##
-## Written by Andrew Makhorin, <mao@mai2.rcnet.ru>, <mao@gnu.org>.
-##----------------------------------------------------------------------
-
 CFLAGS = -O -DNDEBUG
 
 .c.o:
