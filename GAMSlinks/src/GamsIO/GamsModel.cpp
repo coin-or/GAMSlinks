@@ -261,8 +261,8 @@ int GamsModel::getSysOut() {
 double GamsModel::getCutOff() {
   if (iolib.icutof)
     return iolib.cutoff;
-  else // minus infinity for min. problem; maxium infinity for max. problem
-    return (ObjSense_>0)? iolib.usrminf:iolib.usrpinf;
+  else // plus infinity for min. problem; minus infinity for max. problem
+    return (ObjSense_>0)? iolib.usrpinf:iolib.usrminf;
 }
 
 void GamsModel::setStatus(const GamsModelSolverStatus SolverStatus, 

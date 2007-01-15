@@ -179,7 +179,7 @@ int main (int argc, const char *argv[]) {
 	model.setIntParam(CbcModel::CbcMaxNumNode, gm.getNodeLim());
 	model.setDblParam(CbcModel::CbcMaximumSeconds, gm.getResLim());
 	model.setDblParam(CbcModel::CbcAllowableGap, gm.getOptCA());
-	model.setCutoff(gm.getCutOff());
+	model.setCutoff(gm.ObjSense()*gm.getCutOff());
 
 	// Set up some cut generators and defaults
 	// Probing first as gets tight bounds on continuous
