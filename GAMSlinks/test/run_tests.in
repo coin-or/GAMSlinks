@@ -76,5 +76,81 @@ do
 	done
 done
 
+
+ipopt="../src/Ipopt/GamsIpopt"
+examples="abel"
+
+for model in $examples
+do
+
+	echo " "
+	echo Getting test problem $model from GAMS model library...
+	$gamspath/gamslib $model
+	echo " "
+	
+	echo Calling MSNLP with $model to get control file.
+	rm -rf 225a
+	rm -f tmpfile
+	#have to run some solver that also writes dual variables in the control file, otherwise an assertion is failing in smag
+	$gamspath/gamskeep $model.gms NLP=MSNLP LO=2 LOGFILE=tmpfile 1>/dev/null 2>&1
+	
+	bkov=225.19
+	bkov_=`echo $bkov | sed -e 's/-/_/g'`
+	bkovn=`echo $bkov | sed -e 's/-//g'`
+	
+	echo "Optimal value of problem $model is $bkov."
+	
+	for solver in $ipopt
+	do
+		if [ -e $solver ]; then
+			echo " "
+			echo Running $solver on model $model
+			rm -f tmpfile
+			$solver 225a/gamscntr.scr 1>/dev/null 2>&1
+		
+			grep "Objective...." tmpfile 1>/dev/null 2>&1
+			if test $? = 0; then
+				opt_val=`awk '/Objective...*/ { print $3 }' tmpfile`
+				opt_val_=`echo $opt_val | sed -e 's/-/_/g'`
+
+				#compute relative error, does not work here
+#				rel_error=`dc -e "2 k $opt_val_ $bkov_ - $bkovn 1 + / p"`
+#				rel_=`echo $rel_error | sed -e 's/-/_/g'`
+#				rel100=`dc -e "$rel_ 100 * p" | sed -e 's/\..*//'`
+				rel_error=1;
+				rel100=100;
+        case $opt_val in
+        	2.25*e+02)
+        		rel_error=0
+        		rel100=0
+        		;;
+        esac
+				if test $rel100 -le 1 -a $rel100 -ge 0; then
+					echo "   Optimal value is $opt_val. Test passed!"
+				else
+					echo " "
+					echo " ---- 8< ---- Start of test program output ---- 8< ----"
+					cat tmpfile
+					echo " ---- 8< ----  End of test program output  ---- 8< ----"
+					echo " "
+					echo "    ******** Test FAILED! ********"
+					echo "    Best known optimal value is $bkov, but $solver found $opt_val. Relative error is $rel100 percent."
+					echo "Output of the test program is above."
+				fi
+			else
+				echo " "
+				echo " ---- 8< ---- Start of test program output ---- 8< ----"
+				cat tmpfile
+				echo " ---- 8< ----  End of test program output  ---- 8< ----"
+				echo " "
+				echo "    ******** Test FAILED! ********"
+				echo "    $solver found no optimal solution."
+				echo "Output of the test program is above."
+			fi
+		fi
+	done
+done
+
+
 rm -f tmpfile
 rm -rf 225a

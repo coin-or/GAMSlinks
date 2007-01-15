@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) GAMS Development 2006
+# Copyright (C) GAMS Development 2007
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -274,8 +274,6 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = src $(am__append_1)
 EXTRA_DIST = README INSTALL LICENSE AUTHORS $(am__append_2)
-
-# tmpdir = tmpdir
 
 ########################################################################
 #                  Installation of the addlibs file                    #
@@ -725,7 +723,14 @@ uninstall-info: uninstall-info-recursive
 	tags tags-recursive uninstall uninstall-am uninstall-info-am
 
 
-.PHONY:
+# tmpdir = tmpdir
+
+test:
+	cd test; make test
+
+unitTest: test
+
+.PHONY: test unitTest
 
 # Make sure acinclude is using most recent coin.m4
 @MAINTAINER_MODE_TRUE@$(srcdir)/acinclude.m4: $(BUILDTOOLSDIR)/coin.m4

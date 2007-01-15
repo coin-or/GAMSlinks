@@ -5,7 +5,6 @@
 ## $Id$
 #
 # Author: Stefan Vigerske
-# Template from: Andreas Waechter
 
 #############################################################################
 #                       Names and other basic things                        #
@@ -15,8 +14,7 @@ AC_PREREQ(2.59)
 
 AC_INIT([GAMSlinks],[0.1],[https://projects.coin-or.org/GAMSlinks/newticket])
 
-AC_COPYRIGHT([
-Copyright 2006 GAMS Development 2006
+AC_COPYRIGHT([Copyright (C) GAMS Development 2006
 All Rights Reserved.
 This file is part of the open source package Coin which is distributed
 under the Common Public License.])

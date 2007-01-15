@@ -1,4 +1,4 @@
-# Copyright (C) GAMS Development 2006
+# Copyright (C) GAMS Development 2007
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -21,9 +21,14 @@ EXTRA_DIST = \
 	LICENSE \
 	AUTHORS
 
-.PHONY:
-
 # tmpdir = tmpdir
+
+test:
+	cd test; make test
+
+unitTest: test
+
+.PHONY: test unitTest
 
 ########################################################################
 #                  Installation of the addlibs file                    #

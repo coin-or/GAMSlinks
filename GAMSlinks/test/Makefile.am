@@ -1,4 +1,4 @@
-# Copyright (C) GAMS Development 2006
+# Copyright (C) GAMS Development 2007
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
