@@ -91,7 +91,7 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 			solver->getBasisStatus(colBasis, rowBasis);
 			// translate from OSI codes to GAMS codes
 			for (int j=0; j<gm->nCols(); j++)
-				if (discVar[j])
+				if (discVar[j] || gm->SOSIndicator()[j])
 					colBasis[j]=GamsModel::SuperBasic;
 				else switch (colBasis[j]) {
 					case 3: colBasis[j]=GamsModel::NonBasicLower; break;
@@ -113,7 +113,7 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 			CoinWarmStartBasis* wsb=dynamic_cast<CoinWarmStartBasis*>(ws);
 			if (wsb) {
 				for (int j=0; j<gm->nCols(); j++)
-					if (discVar[j])
+					if (discVar[j] || gm->SOSIndicator()[j])
 						colBasis[j]=GamsModel::SuperBasic;
 					else switch (wsb->getStructStatus(j)) {
 						case CoinWarmStartBasis::basic: colBasis[j]=GamsModel::Basic; break;
@@ -133,7 +133,7 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 				}
 			} else { // last alternative: trying to guess the basis... this will likely be wrong			
 				for (int j=0; j<gm->nCols(); j++) {
-					if (discVar[j])
+					if (discVar[j] || gm->SOSIndicator()[j])
 						colBasis[j] = GamsModel::SuperBasic; // (for discrete only)
 					else if (colMargin[j]) {
 						if (colLevel[j] - colLb[j] < 1e-4)

@@ -51,12 +51,18 @@ int main (int argc, const char *argv[]) {
 	// Pass in the GAMS status/log file print routines 
 	GamsMessageHandler myout, slvout;
 	myout.setGamsModel(&gm);
+	lib_set_print_hook(&myout, printme);
+
 	slvout.setGamsModel(&gm); slvout.setPrefix(0);
 	solver.passInMessageHandler(&slvout);
 
-	lib_set_print_hook(&myout, printme);
-
 	myout << "\nGAMS/CoinGlpk Lp/Mip Solver (Glpk Library 4.9)\nwritten by A. Makhorin\n " << CoinMessageEol;
+	
+	if (gm.nSOS1() || gm.nSOS2()) {
+		myout << "GLPK cannot handle special ordered sets (SOS)" << CoinMessageEol;
+		myout << "Exiting ..." << CoinMessageEol;
+		exit(EXIT_FAILURE);
+	}
 
 	gm.TimerStart();
 

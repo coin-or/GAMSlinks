@@ -115,12 +115,15 @@ public:
 
   inline int nCols() const  { return nCols_; }   // # columns
   inline int nDCols() const { return nDCols_; }  // # discrete columns
+  inline int nSOS1() const  { return nSOS1_; }   // # SOS of type 1
+  inline int nSOS2() const  { return nSOS2_; }   // # SOS of type 2
   inline int nRows() const  { return nRows_; }   // # rows
   inline int nNnz()  const  { return nNnz_; }    // # non zeros
 
   inline double *ColLb()    { return ColLb_; }   // lower bound for columns
   inline double *ColUb()    { return ColUb_; }   // upper bound for columns
   inline int    *ColDisc()  { return ColDisc_; } // discrete columns
+  inline int    *SOSIndicator() { return SOSIndicator_; } // indicator for SOS of type 1 and 2 
   inline int    *ColStat()  { return ColStat_; } // Column basis status
 
   inline char   *RowSense() { return RowSense_; } // sense of row
@@ -129,7 +132,7 @@ public:
 
   inline double *ObjCoef()  { return ObjCoef_; } // Dense objective function
   inline double ObjRhs()  { return ObjRhs_; }    // constant term in the objective
-  inline double ObjSense() const { return ObjSense_; } // # non zeros
+  inline double ObjSense() const { return ObjSense_; } // 1=min, -1=max
 
   inline int    *matStart()  { return matStart_; }  // matrix start of column
   inline int    *matRowIdx() { return matRowIdx_; } // matrix row index
@@ -167,6 +170,8 @@ public:
 private:
   int nCols_;  // # columns
   int nDCols_; // # discrete columns
+  int nSOS1_;  // # SOS type 1
+  int nSOS2_;  // # SOS type 2
   int nRows_;  // # rows
   int nNnz_;   // # non zeros
 
@@ -176,6 +181,7 @@ private:
   double *ColUb_;   // upper bound for columns
   int    *ColDisc_; // list 0..nDCols_-1 for column indicies of discrete columns
   int    *ColStat_; // Column basis status
+  int    *SOSIndicator_;  // indicator for SOS of type 1 and 2
 
   char   *RowSense_; // sense of row
   double *RowRhs_;   // rhs

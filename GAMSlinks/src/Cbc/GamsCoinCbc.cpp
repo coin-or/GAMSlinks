@@ -21,6 +21,7 @@
 
 // For Branch and bound
 #include "CbcModel.hpp"
+#include "CbcBranchActual.hpp"
 #include "CbcStrategy.hpp"
 #include "CbcBranchUser.hpp"
 #include "CbcCompareUser.hpp"
@@ -89,34 +90,34 @@ int main (int argc, const char *argv[]) {
 	cbcout.setGamsModel(&gm); cbcout.setPrefix(0);
 	solver.passInMessageHandler(&slvout);
 	solver.setHintParam(OsiDoReducePrint,true,OsiHintTry);
-
+	
 	myout << "\nGAMS/CoinCbc Lp/Mip Solver\nwritten by J.Forrest\n " << CoinMessageEol;
 	
-	char options[][32]={"cut generation", "rounding heuristic", "local search", "strong branching", "integer presolve"};
-	char cutnames[][32]={"Probing", "Gomory", "Knapsack", "OddHole", "Clique", "FlowCover", "MIR", "RedSplit"};
-
-	myout << "\nOptions:" << CoinMessageEol;
-	for (i=0; i<4; i++) { // We don't want to advertise integer presolve
-	  int onoff=gm.getGamsSwitch(1,i)? 0:1;
-    myout << "  " << options[i] << "\t";
-	  if (0==i && onoff) {
-	    for (j=0; j<8; j++) 
-	    	switch (j) {
-	    		case 3: case 7: 
-				    if (1==gm.getGamsSwitch(2,j)) myout << cutnames[j];
-				    break;
-				  default:
-	    			if (0==gm.getGamsSwitch(2,j)) myout << cutnames[j];
-	  		}
-	    myout << CoinMessageEol;
-	  } else
-	    myout << (onoff? "on":"off") << CoinMessageEol;      
-	}
+//	char options[][32]={"cut generation", "rounding heuristic", "local search", "strong branching", "integer presolve"};
+//	char cutnames[][32]={"Probing", "Gomory", "Knapsack", "OddHole", "Clique", "FlowCover", "MIR", "RedSplit"};
+//
+//	myout << "\nOptions:" << CoinMessageEol;
+//	for (i=0; i<4; i++) { // We don't want to advertise integer presolve
+//	  int onoff=gm.getGamsSwitch(1,i)? 0:1;
+//    myout << "  " << options[i] << "\t";
+//	  if (0==i && onoff) {
+//	    for (j=0; j<8; j++) 
+//	    	switch (j) {
+//	    		case 3: case 7: 
+//				    if (1==gm.getGamsSwitch(2,j)) myout << cutnames[j];
+//				    break;
+//				  default:
+//	    			if (0==gm.getGamsSwitch(2,j)) myout << cutnames[j];
+//	  		}
+//	    myout << CoinMessageEol;
+//	  } else
+//	    myout << (onoff? "on":"off") << CoinMessageEol;      
+//	}
 	gm.TimerStart();
 
 	// CLP needs rowrng for the loadProblem call
 	double *rowrng = new double[gm.nRows()];
-	for (i=0; i<gm.nRows(); i++) 
+	for (i=0; i<gm.nRows(); i++)
 	  rowrng[i] = 0.0;
 
 	solver.setObjSense(gm.ObjSense());
@@ -134,7 +135,7 @@ int main (int argc, const char *argv[]) {
 	int *discVar=gm.ColDisc();
 	for (j=0; j<gm.nCols(); j++) 
 	  if (discVar[j]) solver.setInteger(j);
-	  
+
 	// Write MPS file
 	if (gm.getGamsInteger(0))
 		write_mps(gm, solver, myout);
@@ -146,9 +147,35 @@ int main (int argc, const char *argv[]) {
 #endif
 
 	CbcModel model(solver);
+  // Switch off most output
 	model.solver()->setHintParam(OsiDoReducePrint,true,OsiHintTry);
-
 	model.passInMessageHandler(&cbcout);
+
+	// Tell solver which variables belong to SOS of type 1 or 2
+	if (gm.nSOS1() || gm.nSOS2()) {
+		CbcObject** objects = new CbcObject*[gm.nSOS1()+gm.nSOS2()];
+		
+		int* which = new int[gm.nCols()];
+		for (i=1; i<=gm.nSOS1(); ++i) {
+			int n=0;
+			for (j=0; j<gm.nCols(); ++j)
+				if (gm.SOSIndicator()[j]==i) which[n++]=j;
+			objects[i-1]=new CbcSOS(&model, n, which, NULL, i-1, 1);
+		}
+		for (i=1; i<=gm.nSOS2(); ++i) {
+			int n=0;
+			for (j=0; j<gm.nCols(); ++j)
+				if (gm.SOSIndicator()[j]==-i) which[n++]=j;
+			objects[gm.nSOS1()+i-1]=new CbcSOS(&model, n, which, NULL, gm.nSOS1()+i-1, 2);
+		}
+		delete[] which;
+		
+	  model.addObjects(gm.nSOS1()+gm.nSOS2(), objects);
+	  for (i=0; i<gm.nSOS1()+gm.nSOS2(); ++i)
+			delete objects[i];
+		delete[] objects;
+  }
+
 	model.setIntParam(CbcModel::CbcMaxNumNode, gm.getNodeLim());
 	model.setDblParam(CbcModel::CbcMaximumSeconds, gm.getResLim());
 	model.setDblParam(CbcModel::CbcAllowableGap, gm.getOptCA());
@@ -196,7 +223,7 @@ int main (int argc, const char *argv[]) {
 	  if (1==gm.getGamsSwitch(2,3)) model.addCutGenerator(&generator4,-1,"OddHole");
 	  if (0==gm.getGamsSwitch(2,4)) model.addCutGenerator(&generator5,-1,"Clique");
 	  if (0==gm.getGamsSwitch(2,5)) model.addCutGenerator(&flowGen,-1,"FlowCover");
-	  if (0==gm.getGamsSwitch(2,6)) model.addCutGenerator(&mixedGen,-1,"MixedIntegerRounding");
+	  if (0==gm.getGamsSwitch(2,6)) model.addCutGenerator(&mixedGen,-1,"MixedIntegerRounding2");
 	  if (1==gm.getGamsSwitch(2,7)) model.addCutGenerator(&generator6,-1,"RedSplit");
 	}
 
@@ -222,11 +249,11 @@ int main (int argc, const char *argv[]) {
 
 	// Do initial solve to continuous
 	model.solver()->messageHandler()->setLogLevel(2);
-	if (gm.nDCols())
+	if (gm.nDCols() || gm.nSOS1() || gm.nSOS2())
 	  myout << "\nSolving the root node..." << CoinMessageEol;
 	model.initialSolve();
 
-	if (0 == gm.nDCols()) {  // If this was an LP we are done
+	if (0==gm.nDCols() && 0==gm.nSOS1() && 0==gm.nSOS2()) {  // If this was an LP we are done
 	  // Get some statistics 
 	  gm.setIterUsed(model.solver()->getIterationCount());
 	  gm.setResUsed(gm.SecondsSinceStart());
@@ -235,7 +262,7 @@ int main (int argc, const char *argv[]) {
 	  GamsFinalizeOsi(&gm, &myout, model.solver(),0);
 	  return 0;
 	}
-
+	
 	// minimum drop to continue cuts
 	model.setMinimumDrop(min(1.0, fabs(model.getObjValue())*1.0e-3+1.0e-4));
 

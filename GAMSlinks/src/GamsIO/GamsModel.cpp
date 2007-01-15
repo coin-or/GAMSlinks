@@ -24,6 +24,8 @@ GamsModel::GamsModel(const char *cntrfile, const double SolverInf)
 
   // Sizes for memory allocation
   nCols_ = iolib.ncols;
+  nSOS1_ = iolib.nosos1;
+  nSOS2_ = iolib.nosos2;
   nRows_ = iolib.nrows;
   nNnz_  = iolib.nnz;
   Allocate();
@@ -68,8 +70,9 @@ void GamsModel::Allocate()
   ColLb_   = new double[nCols_];
   ColUb_   = new double[nCols_];
   ColStat_ = new int[nCols_];
-
   ColDisc_ = new int[nCols_];
+  SOSIndicator_ = new int[nCols_];
+  
   ObjCoef_ = new double[nCols_];
 
   RowSense_ = new char[nRows_];
@@ -89,7 +92,6 @@ void GamsModel::Allocate()
   ColMargin_    = new double[nCols_];
   ColBasis_     = new int[nCols_];
   ColIndicator_ = new int[nCols_];
-
 }
 
 #define EQ   0 // equalities
@@ -100,6 +102,8 @@ void GamsModel::Allocate()
 #define VARCON 0 // continuous
 #define VARBIN 1 // binary
 #define VARINT 2 // integer
+#define VARSOS1 3 // sos of type 1
+#define VARSOS2 4 // sos of type 2
 
 void GamsModel::ReadMatrix()
 {
@@ -107,7 +111,7 @@ void GamsModel::ReadMatrix()
   double val;
   rowRec_t rowRec;
   colRec_t colRec;
-
+  
   ObjRhs_=0.0;
   for (i=0, ip=0; i<nRows_; ++i) {
     cioReadRow (&rowRec);
@@ -154,15 +158,25 @@ void GamsModel::ReadMatrix()
       switch (colRec.idata[3]) {	/* variable type */
       case VARCON:
         ColDisc_[jp]=0;
+        SOSIndicator_[jp]=0;
         break;
       case VARINT:
       case VARBIN:
         ColDisc_[jp]=1;
+        SOSIndicator_[jp]=0;
         nDCols_++;
         break;
+      case VARSOS1:
+        ColDisc_[jp]=0;
+        SOSIndicator_[jp]=colRec.idata[4];
+      	break;
+      case VARSOS2:
+        ColDisc_[jp]=0;
+        SOSIndicator_[jp]=-colRec.idata[4];
+      	break;
       default:
-        PrintOut(ALLMASK, "\n*** Unhandled column type. Allowed column types: continuous, binary, integer\n");
-        exit(0); // We should throw an exception
+        PrintOut(ALLMASK, "\n*** Unhandled column type. Allowed column types: continuous, binary, integer, sos1, sos2\n");
+        exit(EXIT_FAILURE); // We should throw an exception
       }
       matStart_[jp] = kp;
       for (k=0;  k<nzcol;  k++) {
@@ -247,8 +261,8 @@ int GamsModel::getSysOut() {
 double GamsModel::getCutOff() {
   if (iolib.icutof)
     return iolib.cutoff;
-  else
-    return (ObjSense_>0)? iolib.usrpinf:iolib.usrminf;
+  else // minus infinity for min. problem; maxium infinity for max. problem
+    return (ObjSense_>0)? iolib.usrminf:iolib.usrpinf;
 }
 
 void GamsModel::setStatus(const GamsModelSolverStatus SolverStatus, 
@@ -410,8 +424,9 @@ GamsModel::~GamsModel()
   delete[] ColLb_;
   delete[] ColUb_;
   delete[] ColStat_;
-
   delete[] ColDisc_;
+  delete[] SOSIndicator_;
+  
   delete[] ObjCoef_;
 
   delete[] RowSense_;
