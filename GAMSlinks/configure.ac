@@ -72,7 +72,7 @@ esac
 #AC_COIN_PROG_F77
 
 # Find out how to call Fortran from C and determine Fortran runtime libraries
-AC_COIN_F77_WRAPPERS
+#AC_COIN_F77_WRAPPERS
 
 # Initialize automake and libtool
 AC_COIN_INIT_AUTO_TOOLS
