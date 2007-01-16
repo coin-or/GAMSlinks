@@ -240,9 +240,21 @@ if test x"$use_gamsio" != x; then
 	if test x"$use_gamssys" != x; then
 		AC_MSG_CHECKING([whether GAMS I/O libraries at $use_gamsio and $use_gamssys work])
 		if test x"$GAMSIO_CODE" = xLX3; then
-		  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -L$use_gamssys -lifcore -limf"
+		  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl"
+		  case "$CXX" in
+		    icpc* | */icpc*)
+		    ;;
+		    *)
+		      GAMSIO_LIBS="$GAMSIO_LIBS -L$use_gamssys -lifcore -limf"
+		  esac
 		elif test x"$GAMSIO_CODE" = xLEI; then
-		  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -L$use_gamssys -lifcore -limf -lirc"
+		  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl"
+		  case "$CXX" in
+		    icpc* | */icpc*)
+		    ;;
+		    *)
+		      GAMSIO_LIBS="$GAMSIO_LIBS -L$use_gamssys -lifcore -limf -lirc"
+		  esac
 		elif test x"$gamsio_system" = xWindows; then
 		  GAMSIO_LIBS="$use_gamsio/iolib.lib $use_gamsio/nliolib.lib $use_gamsio/clicelib.lib $use_gamsio/gclib.lib $use_gamsio/g2d.lib"
 		elif test x"$GAMSIO_CODE" = xDAR; then
