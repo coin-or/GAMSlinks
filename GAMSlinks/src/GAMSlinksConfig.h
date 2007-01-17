@@ -1,5 +1,5 @@
 /*
- * Include file for the configuration of Ipopt.
+ * Include file for the configuration of GAMSlinks.
  *
  * On systems where the code is configured with the configure script
  * (i.e., compilation is always done with HAVE_CONFIG_H defined), this
