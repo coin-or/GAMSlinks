@@ -13,10 +13,11 @@
 #include "GamsModel.hpp"
 #include "iolib.h"
 #include "dict.h"
+#include "optcc.h"
 
 static cntrec cntinfo;          /* control file information */
 
-GamsModel::GamsModel(const char *cntrfile, const double SolverInf)
+GamsModel::GamsModel(const char *cntrfile, const double SolverMInf, const double SolverPInf)
 {
   gfinit ();
   gfrcnt (1, 0, &cntinfo, cntrfile);  // no NLP's for the moment
@@ -31,8 +32,8 @@ GamsModel::GamsModel(const char *cntrfile, const double SolverInf)
   Allocate();
 
   // Solver infinity for infinity bounds
-  iolib.usrpinf = SolverInf;
-  iolib.usrminf = -SolverInf;
+	if (SolverMInf!=0) iolib.usrminf = SolverMInf;
+  if (SolverPInf!=0) iolib.usrpinf = SolverPInf;
 
   // Can we reformulate the objective function?
   isReform_ = 
@@ -63,6 +64,7 @@ GamsModel::GamsModel(const char *cntrfile, const double SolverInf)
 		}
 	}
 
+	optionshandle=NULL;
 }
 
 void GamsModel::Allocate()
@@ -222,6 +224,10 @@ double GamsModel::SecondsSinceStart() {
 
 const char* GamsModel::getOptionfile() {
 	return iolib.flnopt;	
+}
+
+const char* GamsModel::getSystemDir() {
+	return iolib.gsysdr;	
 }
 
 double GamsModel::getResLim() {
@@ -416,6 +422,61 @@ char* GamsModel::ConstructName(char* buffer, int bufLen, int lSym, int* uelIndic
 
   return buffer;
 }
+
+bool GamsModel::ReadOptionsDefinitions(const char* solvername) {
+	/* Get the Option File Handling set up */
+	if (NULL==optionshandle)
+		optCreate(&optionshandle);
+	if (NULL==optionshandle) {
+		PrintOut(ALLMASK, "\n*** Could not create optionfile handle."); 
+		return false;
+	}
+
+	char buffer[255];
+//	if (strlen(getSystemDir())>240) { // TODO: do something better here
+//		PrintOut(ALLMASK, "\n*** Path to GAMS system directory too long.\n");
+//		return false;
+//	}
+	sprintf(buffer, "%sopt%s.def", getSystemDir(), solvername);
+	if (optReadDefinition(optionshandle,buffer)) {
+		int itype; 
+		for (int i=1; i<=optMessageCount(optionshandle); ++i) {
+			optGetMessage(optionshandle, i, buffer, &itype);
+			PrintOut(ALLMASK, buffer);
+		}
+		optClearMessages(optionshandle);
+		return false;
+	}   
+	optEOLOnlySet(optionshandle,1);
+	
+	return true;
+}
+
+bool GamsModel::ReadOptionsFile() {
+	if (NULL==optionshandle) {
+		PrintOut(ALLMASK, "GamsModel::ReadOptionsFile: Optionfile handle not initialized.");
+		return false;
+	}
+	/* Read option file */
+	if (iolib.useopt) {
+	  optEchoSet(optionshandle, 1);
+	  optReadParameterFile(optionshandle, getOptionfile());
+	  if (optMessageCount(optionshandle)) {
+		  char buffer[255];
+		  int itype;
+		  for (int i=1; i<=optMessageCount(optionshandle); ++i) {
+	  	  optGetMessage(optionshandle, i, buffer, &itype);
+	    	if (itype<=optMsgFileLeave || itype==optMsgUserError)
+	    		PrintOut(ALLMASK, buffer);
+		  }
+		  optClearMessages(optionshandle);
+		}   
+		optEchoSet(optionshandle, 0);
+	}
+
+	return true;
+}
+
 
 // Destructor
 GamsModel::~GamsModel()

@@ -23,6 +23,7 @@
 #include <cstdlib>
 
 extern "C" struct dictRec;
+extern "C" struct optRec; 
 
 class GamsModel  {
 
@@ -78,11 +79,12 @@ public:
     LastModelStatus 
   };
 
-  /// Constructors
-  GamsModel(const char *cntrfile);
-  /// Constructor with solver infinity
-  GamsModel(const char *cntrfile, const double SolverInf);
-  GamsModel(const char *cntrfile, const double SolverMInf, const double SolverPInf);
+  /** Constructor.
+   * @param cntrfile Name of GAMS control file.
+   * @param SolverMInf If not zero, then the solver value for minus infinity. 
+   * @param SolverMInf If not zero, then the solver value for plus infinity. 
+   */
+  GamsModel(const char *cntrfile, const double SolverMInf=0, const double SolverPInf=0);
 
   /** Destructor */
   ~GamsModel();
@@ -92,6 +94,7 @@ public:
   double SecondsSinceStart();
 
 	const char* getOptionfile(); // Name of option file, or NULL if no optionfile
+	const char* getSystemDir(); // Name of GAMS System directory, or NULL if not available
   double getResLim();  // Time limit for model run
   int    getIterLim(); // Iteration limit for model run
   int    getNodeLim(); // Node limit for model run
@@ -161,6 +164,10 @@ public:
       @return buffer on success, NULL on failure
 	*/
 	char          *RowName(int rownr, char *buffer, int bufLen);
+	
+	bool ReadOptionsDefinitions(const char* solvername); 
+	bool ReadOptionsFile(); 
+	inline struct optRec* getOptionsHandle() { return optionshandle; }
 
   void setSolution(const double *ColLevel=0, const double *ColMargin=0, 
                    const int *ColBasis=0, const int *ColIndicator=0,
@@ -220,6 +227,8 @@ private:
 
   struct dictRec* dict; // handle for dictionary  
 	char* ConstructName(char* buffer, int bufLen, int lSym, int* uelIndices, int nIndices);
+
+	struct optRec* optionshandle; // handle for options
 };
 
 #endif // GamsModel_H

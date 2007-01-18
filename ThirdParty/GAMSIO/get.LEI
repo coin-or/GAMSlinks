@@ -10,7 +10,7 @@ echo " "
 echo "Running script for downloading the GAMS I/O libraries for Linux 64-bit platform"
 echo " "
 
-FILES="LEIciolib_ver035LIB.zip LEIclicelib_ver014LIB.zip LEIgclib_ver015LIB.zip LEIg2ddll_ver016LIB.zip LEIg2dlib_ver016LIB.zip LEIgdxio_ver234LIB.zip LEIsmaglib_ver004LIB.zip"
+FILES="LEIciolib_ver035LIB.zip LEIclicelib_ver014LIB.zip LEIgclib_ver015LIB.zip LEIg2ddll_ver016LIB.zip LEIg2dlib_ver016LIB.zip LEIgdxio_ver234LIB.zip LEIsmaglib_ver004LIB.zip LEIoptobj_ver006LIB.zip"
 
 mkdir -p LEI
 cd LEI

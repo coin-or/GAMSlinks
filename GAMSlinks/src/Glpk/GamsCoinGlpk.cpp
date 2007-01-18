@@ -21,6 +21,7 @@
 #include "GamsModel.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsFinalize.hpp"
+#include "optcoinglpk.h"
 
 int printme(void *info, char *msg) {
 	GamsMessageHandler *myout;
@@ -36,6 +37,11 @@ void write_mps(GamsModel& gm, OsiSolverInterface& solver, GamsMessageHandler& my
 //#############################################################################
 
 int main (int argc, const char *argv[]) {
+#if defined(_MSC_VER)
+  /* Prevents hanging "Application Error, Click OK" Windows in case something bad happens */
+  { UINT oldMode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX); }
+#endif
+
 	if (argc==1) {
 		std::cerr << "usage: " << argv[0] << " <gams-control-file>" << std::endl;
 		exit(EXIT_FAILURE);
@@ -46,7 +52,7 @@ int main (int argc, const char *argv[]) {
 
 	// Read in the model defined by the GAMS control file passed in as the first
 	// argument to this program
-	GamsModel gm(argv[1],solver.getInfinity());
+	GamsModel gm(argv[1],-solver.getInfinity(),solver.getInfinity());
 
 	// Pass in the GAMS status/log file print routines 
 	GamsMessageHandler myout, slvout;
@@ -63,6 +69,15 @@ int main (int argc, const char *argv[]) {
 		myout << "Exiting ..." << CoinMessageEol;
 		exit(EXIT_FAILURE);
 	}
+	
+	gm.ReadOptionsDefinitions("coinglpk");
+	gm.ReadOptionsFile();
+
+	/* Overwrite GAMS Options */
+	//TODO: maybe put this also into GamsModel?
+	if (!optDefined_reslim(gm.getOptionsHandle()))   optSetStrD_reslim(gm.getOptionsHandle(), gm.getResLim());
+	if (!optDefined_iterlim(gm.getOptionsHandle()))  optSetStrI_iterlim(gm.getOptionsHandle(), gm.getIterLim());
+	if (!optDefined_optcr(gm.getOptionsHandle()))    optSetStrD_optcr(gm.getOptionsHandle(), gm.getOptCR());
 
 	gm.TimerStart();
 

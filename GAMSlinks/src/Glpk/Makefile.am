@@ -5,14 +5,13 @@
 ## $Id$
 #
 # Author: Stefan Vigerske
-# Template from: Andreas Waechter
 
 AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST =
 
 bin_PROGRAMS = GamsCoinGlpk
-GamsCoinGlpk_SOURCES = GamsCoinGlpk.cpp
+GamsCoinGlpk_SOURCES = GamsCoinGlpk.cpp optcoinglpk.c
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \

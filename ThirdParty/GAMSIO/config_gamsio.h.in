@@ -1,10 +1,10 @@
 /* config_gamsio.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Define to the debug sanity check level (0 is no test) */
-#undef COIN_GAMSLINKS_CHECKLEVEL
+#undef COIN_GAMSIO_CHECKLEVEL
 
 /* Define to the debug verbosity level (0 is no output) */
-#undef COIN_GAMSLINKS_VERBOSITY
+#undef COIN_GAMSIO_VERBOSITY
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H

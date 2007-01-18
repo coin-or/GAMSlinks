@@ -71,6 +71,11 @@ strong branching on 5 variables closest to 0.5.
 A simple rounding heuristic is used.
 */
 int main (int argc, const char *argv[]) {
+#if defined(_MSC_VER)
+  /* Prevents hanging "Application Error, Click OK" Windows in case something bad happens */
+  { UINT oldMode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX); }
+#endif
+
 	if (argc==1) {
 		std::cerr << "usage: " << argv[0] << " <gams-control-file>" << std::endl;
 		exit(EXIT_FAILURE);
@@ -81,7 +86,7 @@ int main (int argc, const char *argv[]) {
 
 	// Read in the model defined by the GAMS control file passed in as the first
 	// argument to this program
-	GamsModel gm(argv[1],solver.getInfinity());
+	GamsModel gm(argv[1],-solver.getInfinity(),solver.getInfinity());
 
 	// Pass in the GAMS status/log file print routines 
 	GamsMessageHandler myout, cbcout, slvout;

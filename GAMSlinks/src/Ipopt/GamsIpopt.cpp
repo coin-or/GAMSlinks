@@ -13,9 +13,11 @@
 using namespace std;
 using namespace Ipopt;
 
-int
-main (int argc, char* argv[])
-{
+int main (int argc, char* argv[]) {
+#if defined(_MSC_VER)
+  /* Prevents hanging "Application Error, Click OK" Windows in case something bad happens */
+  { UINT oldMode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX); }
+#endif
   smagHandle_t prob;
 
   if (argc < 2) {

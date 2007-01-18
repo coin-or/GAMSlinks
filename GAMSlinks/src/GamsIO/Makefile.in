@@ -78,7 +78,8 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libGamsIO_la_LIBADD =
+libGamsIO_la_DEPENDENCIES =  \
+	$(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libgamsoptions.la
 am_libGamsIO_la_OBJECTS = GamsModel.lo GamsFinalize.lo \
 	GamsMessageHandler.lo
 libGamsIO_la_OBJECTS = $(am_libGamsIO_la_OBJECTS)
@@ -291,6 +292,7 @@ libGamsIO_la_SOURCES = GAMSlinksConfig.h \
   GamsMessageHandler.cpp GamsMessageHandler.hpp
 
 #libGamsModel_la_LDFLAGS
+libGamsIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libgamsoptions.la
 include_HEADERS = ../../inc/config_gamslinks.h GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
