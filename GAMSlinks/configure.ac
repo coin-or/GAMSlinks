@@ -47,7 +47,7 @@ AC_COIN_DEBUG_COMPILE(GAMSlinks)
 
 # We need egrep and ln -s somewhere
 #AC_PROG_EGREP
-#AC_PROG_LN_S
+AC_PROG_LN_S
 
 # Get the name of the C compiler and appropriate compiler options
 AC_COIN_PROG_CC
@@ -64,7 +64,7 @@ esac
 
 # Get the C++ runtime libraries in case we want to link with a C or
 # Fortran compiler
-# AC_COIN_CXXLIBS
+AC_COIN_CXXLIBS
 
 # Get the name of the Fortran compiler and appropriate compiler options
 #AC_COIN_PROG_F77
