@@ -38,6 +38,8 @@ main (int argc, char* argv[])
   smagReadModel (prob);
   smagHessInit (prob);
 
+	smagPrint(prob, SMAG_LOGMASK, "\nGAMS/IPOPT NLP Solver (IPOPT Library 3.2.3)\nwritten by A. Waechter\n");
+
   // Create a new instance of your nlp (use a SmartPtr, not raw)
   SmartPtr<TNLP> smagnlp = new SMAG_NLP (prob);
   // Create a new instance of IpoptApplication (use a SmartPtr, not raw)
