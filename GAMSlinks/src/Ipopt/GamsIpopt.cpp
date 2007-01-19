@@ -120,6 +120,9 @@ int main (int argc, char* argv[]) {
 			smagReportSolBrief(prob, 13, 13);
 			break;
 	}
+	
+	smagCloseLog(prob);
+	smagClose(prob);
 
   return EXIT_SUCCESS;
 } // main

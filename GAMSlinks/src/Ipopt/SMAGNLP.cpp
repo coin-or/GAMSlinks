@@ -293,7 +293,10 @@ finalize_solution (SolverReturn status, Index n, const Number *x,
 		for (Index i=0; i<n; ++i) {
 			colBasStat[i]=SMAG_BASSTAT_SUPERBASIC;
 			colIndic[i]=SMAG_RCINDIC_OK;
-			colMarg[i]=isMin*(z_L[i]-z_U[i]);
+			// if, e.g., x_i has no lower bound, then the dual z_L[i] is -infinity
+			colMarg[i]=0;
+			if (z_L[i]>-prob->inf) colMarg[i]+=isMin*z_L[i];
+			if (z_U[i]<prob->inf) colMarg[i]-=isMin*z_U[i];
 		}
 		unsigned char* rowBasStat=new unsigned char[m];
 		unsigned char* rowIndic=new unsigned char[m];
@@ -308,7 +311,7 @@ finalize_solution (SolverReturn status, Index n, const Number *x,
 				rowLev[i]=g[i];
 			}
     }
-		smagReportSolFull(prob, 2, 1,
+		smagReportSolFull(prob, prob->hesData->lowTriNZ ? 2 : 1, 1,
 			SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, obj_value*isMin, domviolations,
 			rowLev, negLambda, rowBasStat, rowIndic,
 			x, colMarg, colBasStat, colIndic);
