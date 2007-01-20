@@ -166,14 +166,26 @@ public:
 	*/
 	char          *RowName(int rownr, char *buffer, int bufLen);
 	
-	bool ReadOptionsDefinitions(const char* solvername); 
-	bool ReadOptionsFile(); 
-	inline struct optRec* getOptionsHandle() { return optionshandle; }
-
   void setSolution(const double *ColLevel=0, const double *ColMargin=0, 
                    const int *ColBasis=0, const int *ColIndicator=0,
                    const double *RowLevel=0, const double *RowMargin=0, 
                    const int *RowBasis=0, const int *RowIndicator=0);
+
+	bool ReadOptionsDefinitions(const char* solvername); 
+	bool ReadOptionsFile(); 
+
+	bool optDefined(const char *optname);
+	bool optDefinedRecent(const char *optname);
+	
+	inline bool optGetBool(const char* optname) { return optGetInteger(optname); }
+	int optGetInteger(const char *optname);
+	double optGetDouble(const char *optname);
+	char* optGetString(const char *optname, char *sval);
+	
+	inline void optSetBool(const char *optname, bool bval) { optSetInteger(optname, bval ? 1 : 0); }
+	void optSetInteger(const char *optname, int ival);
+	void optSetDouble(const char *optname, double dval);
+	void optSetString(const char *optname, char *sval);
 
 private:
   int nCols_;  // # columns

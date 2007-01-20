@@ -21,7 +21,6 @@
 #include "GamsModel.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsFinalize.hpp"
-#include "optcoinglpk.h"
 
 int printme(void *info, char *msg) {
 	GamsMessageHandler *myout;
@@ -32,7 +31,7 @@ int printme(void *info, char *msg) {
 	return 1;
 }
 
-void write_mps(GamsModel& gm, OsiSolverInterface& solver, GamsMessageHandler& myout);
+void write_mps(GamsModel& gm, OsiSolverInterface& solver, GamsMessageHandler& myout, char* filename);
 
 //#############################################################################
 
@@ -47,6 +46,7 @@ int main (int argc, const char *argv[]) {
 		exit(EXIT_FAILURE);
 	}	
 	int j;
+	char buffer[255]; 
 
 	OsiGlpkSolverInterface solver;
 
@@ -69,15 +69,21 @@ int main (int argc, const char *argv[]) {
 		myout << "Exiting ..." << CoinMessageEol;
 		exit(EXIT_FAILURE);
 	}
-	
-//	gm.ReadOptionsDefinitions("coinglpk");
-//	gm.ReadOptionsFile();
-//
-//	/* Overwrite GAMS Options */
-//	//TODO: maybe put this also into GamsModel?
-//	if (!optDefined_reslim(gm.getOptionsHandle()))   optSetStrD_reslim(gm.getOptionsHandle(), gm.getResLim());
-//	if (!optDefined_iterlim(gm.getOptionsHandle()))  optSetStrI_iterlim(gm.getOptionsHandle(), gm.getIterLim());
-//	if (!optDefined_optcr(gm.getOptionsHandle()))    optSetStrD_optcr(gm.getOptionsHandle(), gm.getOptCR());
+
+	if (!gm.ReadOptionsDefinitions(
+#ifdef GAMS_BUILD	
+	"coinglpk"
+#else
+	"glpk"
+#endif
+	)) myout << "Error intializing option file handling or reading option file definitions!" << CoinMessageEol
+			<< "Processing of options is likely to fail!" << CoinMessageEol;  
+	gm.ReadOptionsFile();
+
+	/* Overwrite GAMS Options */
+	if (!gm.optDefined("reslim")) gm.optSetDouble("reslim", gm.getResLim());
+	if (!gm.optDefined("iterlim")) gm.optSetInteger("iterlim", gm.getIterLim());
+	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
 
 	gm.TimerStart();
 
@@ -105,8 +111,8 @@ int main (int argc, const char *argv[]) {
 		if (discVar[j]) solver.setInteger(j);
 
 	// Write MPS file
-	if (gm.getGamsInteger(0)) 
-		write_mps(gm, solver, myout);
+	if (gm.optDefined("writemps"))
+		write_mps(gm, solver, myout, gm.optGetString("writemps", buffer));
 
 	// why an LP solver cannot minimize a linear function over a box?
 	if (!gm.nRows()) {
@@ -117,7 +123,6 @@ int main (int argc, const char *argv[]) {
 	}
 	
 	// set variable and constraint names in glpk
-	char buffer[255];
 	for (j=gm.nCols(); j; j--)
 		if (gm.ColName(j-1, buffer, 255))
 			lpx_set_col_name(solver.getModelPtr(), j, buffer);
@@ -130,15 +135,15 @@ int main (int argc, const char *argv[]) {
 	}
 
 	// Some tolerances and limits
-	solver.setIntParam(OsiMaxNumIteration, gm.getIterLim());
-	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TMLIM, gm.getResLim());
+	solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
+	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TMLIM, gm.optGetDouble("reslim"));
 
 	// One needs to change the glkp source because the range for optcr is enforced
 	// to be between 1e-7 and 1e-3
 	//		 case LPX_K_TOLOBJ:
 	//				/* if (!(DBL_EPSILON <= val && val <= 0.001)) */	 <- Original
 	//				if (DBL_EPSILON > val)														 <- GAMS change
-	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TOLOBJ, max(1e-7,gm.getOptCR()));
+	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TOLOBJ, max(1e-7,gm.optGetDouble("optcr")));
 
 	solver.messageHandler()->setLogLevel(2);
 
@@ -186,32 +191,30 @@ int main (int argc, const char *argv[]) {
 	return 0;
 }
 
-void write_mps(GamsModel& gm, OsiSolverInterface& solver, GamsMessageHandler& myout) {
-		const char **colnames=new const char *[gm.nCols()];
-		const char **rownames=new const char *[gm.nRows()];
-		char namebuf[10];
-		int j;
+void write_mps(GamsModel& gm, OsiSolverInterface& solver, GamsMessageHandler& myout, char* filename) {
+	const char **colnames=new const char *[gm.nCols()];
+	const char **rownames=new const char *[gm.nRows()];
+	char namebuf[10];
+	int j;
 
-		for (j=gm.nCols()-1; j>=0; --j) {
-//			if (!gm.ColName(j, namebuf, 10))
-				sprintf(namebuf,"X%d",j);
-			colnames[j] = strdup(namebuf);
-		}
+	for (j=gm.nCols()-1; j>=0; --j) {
+		sprintf(namebuf,"X%d",j);
+		colnames[j] = strdup(namebuf);
+	}
 
-		for (j=gm.nRows()-1; j>=0; --j) {
-//			gm.RowName(j, namebuf, 10);
-			sprintf(namebuf,"E%d",j);
-			rownames[j] = strdup(namebuf);
-		}
+	for (j=gm.nRows()-1; j>=0; --j) {
+		sprintf(namebuf,"E%d",j);
+		rownames[j] = strdup(namebuf);
+	}
 
-		myout << "Writing MPS file coinprob.mps... " << CoinMessageEol;
-		solver.writeMpsNative("coinprob.mps",rownames,colnames,0,2,gm.ObjSense());
+	myout << "Writing MPS file " << filename << "... " << CoinMessageEol;
+	solver.writeMpsNative(filename,rownames,colnames,0,2,gm.ObjSense());
 
-		// We don't need these guys anymore
-		for (j=gm.nRows()-1; j>=0; j--)
-			free((void*)rownames[j]);
-		for (j=gm.nCols()-1; j>=0; j--)
-			free((void*)colnames[j]);
-		delete[] rownames;
-		delete[] colnames;
+	// We don't need these guys anymore
+	for (j=gm.nRows()-1; j>=0; j--)
+		free((void*)rownames[j]);
+	for (j=gm.nCols()-1; j>=0; j--)
+		free((void*)colnames[j]);
+	delete[] rownames;
+	delete[] colnames;
 }

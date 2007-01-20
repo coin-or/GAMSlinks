@@ -22736,6 +22736,11 @@ fi
 
 
 if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/Glpk/optglpk.def"
+fi
+
+
+if test $coin_vpath_config = yes; then
   coin_vpath_link_files="$coin_vpath_link_files src/Ipopt/gmsip_us.run"
 fi
 

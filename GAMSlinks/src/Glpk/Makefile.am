@@ -11,7 +11,7 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST =
 
 bin_PROGRAMS = GamsCoinGlpk
-GamsCoinGlpk_SOURCES = GamsCoinGlpk.cpp optcoinglpk.c
+GamsCoinGlpk_SOURCES = GamsCoinGlpk.cpp
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
@@ -44,7 +44,7 @@ DISTCLEANFILES =
 if GAMSIO_IS_UNIX
 install-exec-local:
 	ln -sf $(DESTDIR)$(bindir)/GamsCoinGlpk gmscg_ux.out
-	zip gmscg_.zip gmscg_ux.out gmscg_us.run install/gmscg_un.dat
+	zip gmscg_.zip gmscg_ux.out gmscg_us.run optglpk.def install/gmscg_un.dat
 	$(install_sh_DATA) gmscg_.zip $(DESTDIR)$(bindir)/gmscg_.zip
 	rm -f gmscg_ux.out
 endif
@@ -52,7 +52,7 @@ endif
 if GAMSIO_IS_WINDOWS
 install-exec-local:
 	ln -sf $(DESTDIR)$(bindir)/GamsCoinGlpk.exe gmscg_nx.exe
-	zip gmscg_.zip gmscg_nx.exe gmscg_nt.cmd install/gmscg_nt.dat
+	zip gmscg_.zip gmscg_nx.exe gmscg_nt.cmd optglpk.def install/gmscg_nt.dat
 	$(install_sh_DATA) gmscg_.zip $(DESTDIR)$(bindir)/gmscg_.zip
 	rm -f gmscg_nx.exe  
 endif

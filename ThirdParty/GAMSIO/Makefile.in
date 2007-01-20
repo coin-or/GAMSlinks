@@ -84,7 +84,7 @@ am__installdirs = "$(DESTDIR)$(libdir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libgamsoptions_la_LIBADD =
-am_libgamsoptions_la_OBJECTS = optcc.lo optco.lo
+am_libgamsoptions_la_OBJECTS = optcc.lo
 libgamsoptions_la_OBJECTS = $(am_libgamsoptions_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../../depcomp
 am__depfiles_maybe = depfiles
@@ -96,14 +96,6 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
-	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
-	$(AM_CXXFLAGS) $(CXXFLAGS)
-CXXLD = $(CXX)
-CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libgamsoptions_la_SOURCES)
 DIST_SOURCES = $(libgamsoptions_la_SOURCES)
 ETAGS = etags
@@ -122,7 +114,6 @@ distcleancheck_listfiles = find . -type f -print
 ACLOCAL = @ACLOCAL@
 ADDLIBS = @ADDLIBS@
 ADD_CFLAGS = @ADD_CFLAGS@
-ADD_CXXFLAGS = @ADD_CXXFLAGS@
 ALWAYS_FALSE_FALSE = @ALWAYS_FALSE_FALSE@
 ALWAYS_FALSE_TRUE = @ALWAYS_FALSE_TRUE@
 AMDEP_FALSE = @AMDEP_FALSE@
@@ -139,16 +130,15 @@ CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CDEFS = @CDEFS@
 CFLAGS = @CFLAGS@
+CIA_CODE = @CIA_CODE@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
-CXXDEFS = @CXXDEFS@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DBG_CFLAGS = @DBG_CFLAGS@
-DBG_CXXFLAGS = @DBG_CXXFLAGS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 ECHO = @ECHO@
@@ -161,7 +151,6 @@ F77 = @F77@
 FADDLIBS = @FADDLIBS@
 FFLAGS = @FFLAGS@
 GAMSIO_CODE = @GAMSIO_CODE@
-GAMSIO_CODE2 = @GAMSIO_CODE2@
 HAVE_EXTERNALS_FALSE = @HAVE_EXTERNALS_FALSE@
 HAVE_EXTERNALS_TRUE = @HAVE_EXTERNALS_TRUE@
 INSTALL_DATA = @INSTALL_DATA@
@@ -182,10 +171,8 @@ MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
 MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MPICC = @MPICC@
-MPICXX = @MPICXX@
 OBJEXT = @OBJEXT@
 OPT_CFLAGS = @OPT_CFLAGS@
-OPT_CXXFLAGS = @OPT_CXXFLAGS@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -253,9 +240,9 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = get.LX3 get.LEI get.DAR get.VIS $(am__append_1)
 lib_LTLIBRARIES = libgamsoptions.la
-libgamsoptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c $(GAMSIO_CODE)/optco.cpp
+libgamsoptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libgamsoptions_la_LDFLAGS = 
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -DCIA_$(GAMSIO_CODE2)
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -DCIA_$(CIA_CODE)
 
 # tmpdir = tmpdir
 
@@ -266,7 +253,7 @@ all: config_gamsio.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cpp .lo .o .obj
+.SUFFIXES: .c .lo .o .obj
 am--refresh:
 	@:
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../BuildTools/Makemain.inc $(am__configure_deps)
@@ -345,7 +332,7 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libgamsoptions.la: $(libgamsoptions_la_OBJECTS) $(libgamsoptions_la_DEPENDENCIES) 
-	$(CXXLINK) -rpath $(libdir) $(libgamsoptions_la_LDFLAGS) $(libgamsoptions_la_OBJECTS) $(libgamsoptions_la_LIBADD) $(LIBS)
+	$(LINK) -rpath $(libdir) $(libgamsoptions_la_LDFLAGS) $(libgamsoptions_la_OBJECTS) $(libgamsoptions_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -354,7 +341,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optcc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optco.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -383,34 +369,6 @@ optcc.lo: $(GAMSIO_CODE)/optcc.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMSIO_CODE)/optcc.c' object='optcc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o optcc.lo `test -f '$(GAMSIO_CODE)/optcc.c' || echo '$(srcdir)/'`$(GAMSIO_CODE)/optcc.c
-
-.cpp.o:
-@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ $<
-
-.cpp.obj:
-@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-
-.cpp.lo:
-@am__fastdepCXX_TRUE@	if $(LTCXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Plo"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
-
-optco.lo: $(GAMSIO_CODE)/optco.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT optco.lo -MD -MP -MF "$(DEPDIR)/optco.Tpo" -c -o optco.lo `test -f '$(GAMSIO_CODE)/optco.cpp' || echo '$(srcdir)/'`$(GAMSIO_CODE)/optco.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/optco.Tpo" "$(DEPDIR)/optco.Plo"; else rm -f "$(DEPDIR)/optco.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(GAMSIO_CODE)/optco.cpp' object='optco.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o optco.lo `test -f '$(GAMSIO_CODE)/optco.cpp' || echo '$(srcdir)/'`$(GAMSIO_CODE)/optco.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -12,10 +12,10 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = get.LX3 get.LEI get.DAR get.VIS
 
 lib_LTLIBRARIES = libgamsoptions.la
-libgamsoptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c $(GAMSIO_CODE)/optco.cpp
+libgamsoptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libgamsoptions_la_LDFLAGS = 
 
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -DCIA_$(GAMSIO_CODE2)
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -DCIA_$(CIA_CODE)
 
 ########################################################################
 #                           Extra Targets                              #

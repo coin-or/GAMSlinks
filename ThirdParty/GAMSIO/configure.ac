@@ -57,26 +57,6 @@ AC_COIN_PROG_CC
 CFLAGS=`echo $CFLAGS | sed -e 's/-pedantic-errors//g'`
 AC_MSG_NOTICE([changed C compiler options to $CFLAGS])
 
-# Get the name of the C++ compiler and appropriate compiler options
-AC_COIN_PROG_CXX
-
-case "$CXX" in
-  cl* | */cl*)
-    CXXFLAGS=`echo $CXXFLAGS | sed -e 's/-MTd//g' -e 's/-MT//g'`
-    AC_MSG_NOTICE([changed C++ compiler options to $CXXFLAGS])
-  ;;
-esac
-
-# Get the C++ runtime libraries in case we want to link with a C or
-# Fortran compiler
-# AC_COIN_CXXLIBS
-
-# Get the name of the Fortran compiler and appropriate compiler options
-#AC_COIN_PROG_F77
-
-# Find out how to call Fortran from C and determine Fortran runtime libraries
-#AC_COIN_F77_WRAPPERS
-
 # Initialize automake and libtool
 AC_COIN_INIT_AUTO_TOOLS
 
@@ -92,56 +72,32 @@ GAMSIO_CODE=unsupportedarchitecture
 case $build in
   x86_64-*-linux-*)
       GAMSIO_CODE=LEI
-      GAMSIO_CODE2=LEX
+      CIA_CODE=CIA_LEX
     ;;
   i?86-*-linux-*)
       GAMSIO_CODE=LX3
-      GAMSIO_CODE2=LEI
+      CIA_CODE=CIA_LEX
     ;;
   *-cygwin* | *-mingw*)
       GAMSIO_CODE=VIS
-      GAMSIO_CODE2=VIS
+      CIA_CODE=CIA_VIS
     ;;
   *-darwin*)
       GAMSIO_CODE=DAR
-      GAMSIO_CODE2=DAR
+      CIA_CODE=CIA_DAR
     ;;
 esac
 
 AC_SUBST(GAMSIO_CODE)
-AC_SUBST(GAMSIO_CODE2)
-
-############################################################################
-############################################################################
-#                   Stuff that we need for C++ programs                    #
-############################################################################
-############################################################################
-
-AC_LANG_PUSH(C++)
-
-################
-# Header Files #
-################
-
-
-#AC_COIN_CHECK_CXX_CHEADER(assert)
-#AC_COIN_CHECK_CXX_CHEADER(stdio)
-#AC_COIN_CHECK_CXX_CHEADER(stdlib)
-#AC_COIN_CHECK_CXX_CHEADER(math)
-#AC_COIN_CHECK_CXX_CHEADER(ctype)
-#AC_COIN_CHECK_CXX_CHEADER(stdarg)
-#AC_COIN_CHECK_CXX_CHEADER(float)
-#AC_COIN_CHECK_CXX_CHEADER(time)
-
+AC_SUBST(CIA_CODE)
 
 ############
 # END PART #
 ############
 
-AC_LANG_POP(C++)
-
 AC_CONFIG_FILES([Makefile])
 
+#but actually not used
 AC_CONFIG_HEADER([config_gamsio.h])
 
 AC_COIN_FINALIZE

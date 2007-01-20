@@ -28,7 +28,8 @@ int GamsMessageHandler::print() {
   // white space at the beginning
   while (i-- > 0 && *messageOut == ' ') 
       messageOut++;
-  lastchar = (char*) messageOut + strlen(messageOut); lastchar--;
+	//TODO: maybe copy the string before altering it?  
+  lastchar = const_cast<char*>(messageOut) + strlen(messageOut); lastchar--;
   while (*lastchar == '\n') {
     *lastchar = 0; lastchar--;
   }
