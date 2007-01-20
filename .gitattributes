@@ -41,6 +41,7 @@ GAMSlinks/src/Glpk/install/gmscg_un.dat -text
 GAMSlinks/src/Glpk/optcoinglpk.c -text
 GAMSlinks/src/Glpk/optcoinglpk.h -text
 GAMSlinks/src/Glpk/optglpk.def -text
+GAMSlinks/src/Glpk/optglpk.gms -text
 GAMSlinks/src/Ipopt/GamsIpopt.cpp -text
 GAMSlinks/src/Ipopt/Makefile.am -text
 GAMSlinks/src/Ipopt/Makefile.in -text
