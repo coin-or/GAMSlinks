@@ -7,7 +7,6 @@
 // Author: Stefan Vigerske
 // from the IpFileJournal class in IPOPT
 
-
 #ifndef __SMAGJOURNALIST_HPP__
 #define __SMAGJOURNALIST_HPP__
 
@@ -15,11 +14,7 @@
 #include "smag.h"
 #include "IpJournalist.hpp"
 
-//#include <cstdio>
-
 using namespace Ipopt;
-
-//#include <string>
 
 /** SmagJournal class. This is a particular Journal implementation that
  *  uses the SMAG routines for output.

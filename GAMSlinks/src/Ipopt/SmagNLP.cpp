@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id: SMAGNLP.cpp 22 2007-01-19 17:59:32Z stefan $
+// $Id$
 //
 // Authors:  Steve Dirkse, Stefan Vigerske
 
