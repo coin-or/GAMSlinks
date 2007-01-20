@@ -2,12 +2,14 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: SMAGNLP.hpp 9 2007-01-12 18:17:10Z stefan $
 //
 // Authors:  Steve Dirkse, Stefan Vigerske
 
 #if ! defined(__SMAG_NLP_HPP__)
 #define       __SMAG_NLP_HPP__
+
+#include "GAMSlinksConfig.h"
 
 #include "IpTNLP.hpp"
 #include "smag.h"

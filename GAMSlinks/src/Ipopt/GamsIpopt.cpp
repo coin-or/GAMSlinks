@@ -6,9 +6,12 @@
 //
 // Authors:  Steve Dirkse, Stefan Vigerske
 
+#include "GAMSlinksConfig.h"
+
 #include <iostream>
 #include "IpIpoptApplication.hpp"
 #include "SMAGNLP.hpp"
+#include "SmagJournal.hpp"
 
 using namespace std;
 using namespace Ipopt;
@@ -41,29 +44,21 @@ int main (int argc, char* argv[]) {
   smagHessInit (prob);
 
 	smagPrint(prob, SMAG_LOGMASK, "\nGAMS/IPOPT NLP Solver (IPOPT Library 3.2.3)\nwritten by A. Waechter\n");
+	if (prob->fpLog)
+		fflush(prob->fpLog);
 
   // Create a new instance of your nlp (use a SmartPtr, not raw)
   SmartPtr<TNLP> smagnlp = new SMAG_NLP (prob);
   // Create a new instance of IpoptApplication (use a SmartPtr, not raw)
   SmartPtr<IpoptApplication> app = new IpoptApplication(false);
-
-	// smagOpenLog called before; hope this will go fine... better to write an own Journal class which writes to prob->fpLog
-	switch (prob->logOption) {
-		case 0: // no output
-			break;
-		case 1: { // output to tty
-      SmartPtr<Journal> tty_jrnl = app->Jnlst()->AddFileJournal("console", "/dev/tty", J_ITERSUMMARY);
-			if (!IsNull(tty_jrnl)) tty_jrnl->SetPrintLevel(J_DBG, J_NONE);
-		} break;
-		case 2: { // output to file
-      SmartPtr<Journal> file_jrnl = app->Jnlst()->AddFileJournal("logfile", prob->gms.logFileName, J_ITERSUMMARY);
-			if (!IsNull(file_jrnl)) file_jrnl->SetPrintLevel(J_DBG, J_NONE);
-		} break;
-		default: {
-			SmartPtr<Journal> stdout_jrnl = app->Jnlst()->AddFileJournal("console", "stdout", J_ITERSUMMARY);
-			if (!IsNull(stdout_jrnl)) stdout_jrnl->SetPrintLevel(J_DBG, J_NONE);
-		} break;
-	}
+  
+  SmartPtr<Journal> smag_jrnl;
+  if (prob->logOption) {
+  	smag_jrnl=new SmagJournal(prob, J_ITERSUMMARY);
+		if (!IsNull(smag_jrnl)) smag_jrnl->SetPrintLevel(J_DBG, J_NONE);  	
+		if (!app->Jnlst()->AddJournal(smag_jrnl))
+			smagPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT output.\n");  
+  }
 
 	// Change some options
   app->Options()->SetNumericValue("bound_relax_factor", 0);
@@ -121,6 +116,7 @@ int main (int argc, char* argv[]) {
 			break;
 	}
 	
+	smag_jrnl=NULL;
 	smagCloseLog(prob);
 	smagClose(prob);
 

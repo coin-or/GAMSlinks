@@ -43,8 +43,8 @@ GAMSlinks/src/Glpk/optcoinglpk.h -text
 GAMSlinks/src/Ipopt/GamsIpopt.cpp -text
 GAMSlinks/src/Ipopt/Makefile.am -text
 GAMSlinks/src/Ipopt/Makefile.in -text
-GAMSlinks/src/Ipopt/SMAGNLP.cpp -text
-GAMSlinks/src/Ipopt/SMAGNLP.hpp -text
+GAMSlinks/src/Ipopt/SmagNLP.cpp -text
+GAMSlinks/src/Ipopt/SmagNLP.hpp -text
 GAMSlinks/src/Ipopt/gmsip_nt.cmd -text
 GAMSlinks/src/Ipopt/gmsip_us.run -text
 GAMSlinks/src/Ipopt/install/gmsip_nt.dat -text
