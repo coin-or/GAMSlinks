@@ -70,14 +70,14 @@ int main (int argc, const char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 	
-	gm.ReadOptionsDefinitions("coinglpk");
-	gm.ReadOptionsFile();
-
-	/* Overwrite GAMS Options */
-	//TODO: maybe put this also into GamsModel?
-	if (!optDefined_reslim(gm.getOptionsHandle()))   optSetStrD_reslim(gm.getOptionsHandle(), gm.getResLim());
-	if (!optDefined_iterlim(gm.getOptionsHandle()))  optSetStrI_iterlim(gm.getOptionsHandle(), gm.getIterLim());
-	if (!optDefined_optcr(gm.getOptionsHandle()))    optSetStrD_optcr(gm.getOptionsHandle(), gm.getOptCR());
+//	gm.ReadOptionsDefinitions("coinglpk");
+//	gm.ReadOptionsFile();
+//
+//	/* Overwrite GAMS Options */
+//	//TODO: maybe put this also into GamsModel?
+//	if (!optDefined_reslim(gm.getOptionsHandle()))   optSetStrD_reslim(gm.getOptionsHandle(), gm.getResLim());
+//	if (!optDefined_iterlim(gm.getOptionsHandle()))  optSetStrI_iterlim(gm.getOptionsHandle(), gm.getIterLim());
+//	if (!optDefined_optcr(gm.getOptionsHandle()))    optSetStrD_optcr(gm.getOptionsHandle(), gm.getOptCR());
 
 	gm.TimerStart();
 
