@@ -31,6 +31,11 @@
 #undef PACKAGE_STRING
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
+#undef F77_DUMMY_MAIN
+#undef F77_FUNC
+#undef F77_FUNC_
+#undef FC_DUMMY_MAIN_EQ_F77
+
 #undef VERSION
 
 #else /* HAVE_CONFIG_H */

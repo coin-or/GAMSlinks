@@ -84,6 +84,9 @@ int main (int argc, const char *argv[]) {
 	// OsiSolver needs rowrng for the loadProblem call
 	double *rowrng = new double[gm.nRows()];
 	for (j=0; j<gm.nRows(); ++j) rowrng[j] = 0.0;
+	
+	// Glpk does not like zeros in the problem matrix
+	gm.matSqueezeZeros();
 		
 	solver.setObjSense(gm.ObjSense());
 	solver.setDblParam(OsiObjOffset, gm.ObjRhs()); // obj constant

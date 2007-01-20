@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include "IpIpoptApplication.hpp"
-#include "SMAGNLP.hpp"
+#include "SmagNLP.hpp"
 #include "SmagJournal.hpp"
 
 using namespace std;

@@ -6,7 +6,7 @@
 //
 // Authors:  Steve Dirkse, Stefan Vigerske
 
-#include "SMAGNLP.hpp"
+#include "SmagNLP.hpp"
 
 using namespace Ipopt;
 

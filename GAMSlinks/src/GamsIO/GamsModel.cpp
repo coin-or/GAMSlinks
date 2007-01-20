@@ -214,6 +214,28 @@ void GamsModel::ReadMatrix()
     ObjCoef_[iolib.iobvar] = 1.0;
 }
 
+int GamsModel::matSqueezeZeros() {
+	int col, k;
+	int shift=0;
+	for (col=0; col<nCols_; ++col) {
+		matStart_[col+1]-=shift;
+		k=matStart_[col];
+		while (k<matStart_[col+1]) {
+			matValue_[k]=matValue_[k+shift];
+			matRowIdx_[k]=matRowIdx_[k+shift];
+			if (matValue_[k]==0) {
+				++shift;
+				--matStart_[col+1];
+			} else {
+				++k;
+			}
+		}		
+	}
+	nNnz_-=shift;
+	
+	return shift;
+}
+
 void GamsModel::TimerStart() {
   startTime_ = gfclck();
 }

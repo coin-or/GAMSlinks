@@ -140,6 +140,7 @@ public:
   inline int    *matStart()  { return matStart_; }  // matrix start of column
   inline int    *matRowIdx() { return matRowIdx_; } // matrix row index
   inline double *matValue()  { return matValue_; }  // matrix values
+  int matSqueezeZeros();
 
   inline double *ColLevel()     { return ColLevel_; }
   inline double *ColMargin()    { return ColMargin_; }
