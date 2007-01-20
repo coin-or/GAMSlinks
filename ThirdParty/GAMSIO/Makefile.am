@@ -15,7 +15,7 @@ lib_LTLIBRARIES = libgamsoptions.la
 libgamsoptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libgamsoptions_la_LDFLAGS = 
 
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -DCIA_$(CIA_CODE)
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -D$(CIA_CODE)
 
 ########################################################################
 #                           Extra Targets                              #

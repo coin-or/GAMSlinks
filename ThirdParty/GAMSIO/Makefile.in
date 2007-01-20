@@ -242,7 +242,7 @@ EXTRA_DIST = get.LX3 get.LEI get.DAR get.VIS $(am__append_1)
 lib_LTLIBRARIES = libgamsoptions.la
 libgamsoptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libgamsoptions_la_LDFLAGS = 
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -DCIA_$(CIA_CODE)
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -D$(CIA_CODE)
 
 # tmpdir = tmpdir
 
