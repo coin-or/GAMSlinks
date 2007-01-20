@@ -6,8 +6,8 @@
 //
 // Authors:  Steve Dirkse, Stefan Vigerske
 
-#if ! defined(__SMAG_NLP_HPP__)
-#define       __SMAG_NLP_HPP__
+#if ! defined(__SMAGNLP_HPP__)
+#define       __SMAGNLP_HPP__
 
 #include "GAMSlinksConfig.h"
 
@@ -100,4 +100,4 @@ private:
 };
 
 
-#endif /* if ! defined(__SMAG_NLP_HPP__) */
+#endif /* if ! defined(__SMAGNLP_HPP__) */

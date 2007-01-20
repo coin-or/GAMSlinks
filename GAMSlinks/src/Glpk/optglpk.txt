@@ -1,0 +1,13 @@
+introduction
+GAMS/CoinGlpk brings the open source LP/MIP solver Glpk from the
+GNU Open Software foundation to the broad audience of GAMS users. The
+code has been written primarily by A. Makhorin. The GAMS interface
+for Glpk is maintained by Stefan Vigerske, Humboldt University, in a
+COIN-OR project called GAMSlinks. For more information visit the web site
+for <a href="http://www.coin-or.org">COIN-OR</a>, <a
+href="http://www.gnu.org/software/glpk/glpk.html">Glpk<a>, and <a
+href="https://projects.coin-or.org/GAMSlinks">GAMSlinks</a>.
+
+
+writemps
+Write an MPS problem file.

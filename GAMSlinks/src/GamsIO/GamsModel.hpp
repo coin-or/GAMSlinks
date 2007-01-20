@@ -6,8 +6,8 @@
 //
 // Author:  Michael Bussieck
 
-#ifndef GamsModel_H
-#define GamsModel_H
+#ifndef __GAMSMODEL_HPP__
+#define __GAMSMODEL_HPP__
 
 #include "GAMSlinksConfig.h"
 
@@ -244,4 +244,4 @@ private:
 	struct optRec* optionshandle; // handle for options
 };
 
-#endif // GamsModel_H
+#endif // __GAMSMODEL_HPP__

@@ -6,11 +6,6 @@
 //
 // Authors:  Michael Bussieck, Stefan Vigerske
 
-#if defined(_MSC_VER)
-// Turn off compiler warning about long names
-#  pragma warning(disable:4786)
-#endif
-
 #include "GAMSlinksConfig.h"
 #include <iostream>
 
@@ -69,14 +64,13 @@ int main (int argc, const char *argv[]) {
 		myout << "Exiting ..." << CoinMessageEol;
 		exit(EXIT_FAILURE);
 	}
-
-	if (!gm.ReadOptionsDefinitions(
+	
 #ifdef GAMS_BUILD	
-	"coinglpk"
+	if (!gm.ReadOptionsDefinitions("coinglpk"))
 #else
-	"glpk"
+	if (!gm.ReadOptionsDefinitions("glpk"))
 #endif
-	)) myout << "Error intializing option file handling or reading option file definitions!" << CoinMessageEol
+		myout << "Error intializing option file handling or reading option file definitions!" << CoinMessageEol
 			<< "Processing of options is likely to fail!" << CoinMessageEol;  
 	gm.ReadOptionsFile();
 

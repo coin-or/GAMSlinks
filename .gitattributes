@@ -11,6 +11,8 @@ GAMSlinks/aclocal.m4 -text
 GAMSlinks/configure -text
 GAMSlinks/configure.ac -text
 GAMSlinks/inc/config_gamslinks.h.in -text
+GAMSlinks/src/Cbc/CbcStrategyGams.cpp -text
+GAMSlinks/src/Cbc/CbcStrategyGams.hpp -text
 GAMSlinks/src/Cbc/GamsCoinCbc.cpp -text
 GAMSlinks/src/Cbc/Makefile.am -text
 GAMSlinks/src/Cbc/Makefile.in -text
@@ -20,6 +22,7 @@ GAMSlinks/src/Cbc/install/gmscc_nt.dat -text
 GAMSlinks/src/Cbc/install/gmscc_un.dat -text
 GAMSlinks/src/Cbc/optcbc.def -text
 GAMSlinks/src/Cbc/optcbc.gms -text
+GAMSlinks/src/Cbc/optcbc.txt -text
 GAMSlinks/src/GAMSlinksConfig.h -text
 GAMSlinks/src/GamsIO/GamsFinalize.cpp -text
 GAMSlinks/src/GamsIO/GamsFinalize.hpp -text
@@ -40,6 +43,7 @@ GAMSlinks/src/Glpk/optcoinglpk.c -text
 GAMSlinks/src/Glpk/optcoinglpk.h -text
 GAMSlinks/src/Glpk/optglpk.def -text
 GAMSlinks/src/Glpk/optglpk.gms -text
+GAMSlinks/src/Glpk/optglpk.txt -text
 GAMSlinks/src/Ipopt/GamsIpopt.cpp -text
 GAMSlinks/src/Ipopt/Makefile.am -text
 GAMSlinks/src/Ipopt/Makefile.in -text

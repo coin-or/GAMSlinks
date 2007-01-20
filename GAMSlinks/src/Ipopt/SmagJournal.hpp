@@ -7,8 +7,8 @@
 // Author: Stefan Vigerske
 // from the IpFileJournal class in IPOPT
 
-#ifndef __SMAGJOURNALIST_HPP__
-#define __SMAGJOURNALIST_HPP__
+#ifndef __SMAGJOURNAL_HPP__
+#define __SMAGJOURNAL_HPP__
 
 #include "GAMSlinksConfig.h"
 #include "smag.h"
@@ -75,4 +75,4 @@ private:
   //@}
 };
 
-#endif
+#endif // __SMAGJOURNAL_HPP__

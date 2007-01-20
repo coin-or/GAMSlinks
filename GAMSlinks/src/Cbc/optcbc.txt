@@ -1,0 +1,30 @@
+introduction
+GAMS/CoinCBC brings the open source LP/MIP solver Cbc from the COIN-OR
+foundation to the broad audience of GAMS users. Cbc (COIN-OR branch
+and cut) is an open-source mixed integer programming solver. Cbc is a
+branch and cut code working with the COIN-OR LP solver Clp. The code
+has been written primarily by John J. Forrest, who is the COIN-OR
+project leader for Cbc. The GAMS interface for Cbc is maintained by
+Stefan Vigerske, Humboldt University, in a separate COIN-OR project
+called GAMSLinks. For more information visit the web site for <a
+href="http://www.coin-or.org">COIN-OR</a>, <a
+href="https://projects.coin-or.org/Cbc">Cbc<a>, and <a
+href="https://projects.coin-or.org/GAMSlinks">GAMSlinks</a>.
+
+
+redsplitcuts
+Reduce-and-Split cuts are variants of Gomory cuts: Starting from the
+current optimal tableau, linear combinations of the rows of the
+current optimal simplex tableau are used for generating Gomory
+cuts. The choice of the linear combinations is driven by the objective
+of reducing the coefficients of the non basic continuous variables in
+the resulting row. 
+
+
+writemps
+Write an MPS problem file.
+
+
+startalg.primal
+This option selects the primal simplex algorithm for solving the root
+node.
