@@ -22716,6 +22716,11 @@ fi
 
 
 if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/Cbc/optcbc.def"
+fi
+
+
+if test $coin_vpath_config = yes; then
   coin_vpath_link_files="$coin_vpath_link_files src/Glpk/gmscg_us.run"
 fi
 

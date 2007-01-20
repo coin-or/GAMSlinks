@@ -37,13 +37,22 @@ int main (int argc, char* argv[]) {
   }
 
 	smagOpenLog(prob);
+	FILE* fpStatus;
+	char buffer[255];
+	if (smagOpenStatusC(prob, 0, &fpStatus, buffer, 255)) {
+		cerr << "Error opening status file: " << buffer << endl;
+		fpStatus=NULL;
+	} else {
+		prob->fpStatus=fpStatus;
+	}
+	cout << prob->gms.statusFileName << endl;
   smagReadModelStats (prob);
   smagSetObjFlavor (prob, OBJ_FUNCTION);
   smagSetSqueezeFreeRows (prob, 1);	/* don't show me =n= rows */
   smagReadModel (prob);
   smagHessInit (prob);
 
-	smagPrint(prob, SMAG_LOGMASK, "\nGAMS/IPOPT NLP Solver (IPOPT Library 3.2.3)\nwritten by A. Waechter\n");
+	smagPrint(prob, SMAG_ALLMASK, "\nGAMS/IPOPT NLP Solver (IPOPT Library 3.2.3)\nwritten by A. Waechter\n");
 	if (prob->fpLog)
 		fflush(prob->fpLog);
 
@@ -52,13 +61,10 @@ int main (int argc, char* argv[]) {
   // Create a new instance of IpoptApplication (use a SmartPtr, not raw)
   SmartPtr<IpoptApplication> app = new IpoptApplication(false);
   
-  SmartPtr<Journal> smag_jrnl;
-  if (prob->logOption) {
-  	smag_jrnl=new SmagJournal(prob, J_ITERSUMMARY);
-		if (!IsNull(smag_jrnl)) smag_jrnl->SetPrintLevel(J_DBG, J_NONE);  	
-		if (!app->Jnlst()->AddJournal(smag_jrnl))
-			smagPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT output.\n");  
-  }
+  SmartPtr<Journal> smag_jrnl=new SmagJournal(prob, prob->logOption ? J_SUMMARY : J_ITERSUMMARY);
+	if (!IsNull(smag_jrnl)) smag_jrnl->SetPrintLevel(J_DBG, J_NONE);  	
+	if (!app->Jnlst()->AddJournal(smag_jrnl))
+		smagPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT output.\n");  
 
 	// Change some options
   app->Options()->SetNumericValue("bound_relax_factor", 0);
@@ -117,6 +123,10 @@ int main (int argc, char* argv[]) {
 	}
 	
 	smag_jrnl=NULL;
+	if (fpStatus && fpStatus!=stdout) {
+		fclose(fpStatus);
+		prob->fpStatus=NULL;
+	}
 	smagCloseLog(prob);
 	smagClose(prob);
 

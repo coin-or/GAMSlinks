@@ -35,7 +35,7 @@ protected:
   //@{
   /** Print to the designated output location */
   virtual void PrintImpl(const char* str) {
-		if (str) smagPrint(smag, SMAG_LOGMASK, "%s", str);
+		if (str) smagPrint(smag, SMAG_ALLMASK, "%s", str);
   }
 
   /** Printf to the designated output location */
@@ -45,12 +45,32 @@ protected:
 	 * Also the output coming before looks scrappy.
 	 * if (pformat) smagPrint(smag, SMAG_LOGMASK, pformat, ap);
 	 */
-		if (smag->fpLog) vfprintf(smag->fpLog, pformat, ap);
+		if (smag->fpLog) {
+#ifdef HAVE_VA_COPY
+			va_list apcopy;
+			va_copy(apcopy, ap);
+			vfprintf(smag->fpLog, pformat, apcopy);
+			va_end(apcopy);
+#else
+			vfprintf(smag->fpLog, pformat, ap);
+#endif
+		}
+		if (smag->fpStatus) {
+#ifdef HAVE_VA_COPY
+			va_list apcopy;
+			va_copy(apcopy, ap);
+			vfprintf(smag->fpStatus, pformat, apcopy);
+			va_end(apcopy);
+#else
+			vfprintf(smag->fpStatus, pformat, ap);
+#endif
+		}
 	}
 
   /** Flush output buffer.*/
   virtual void FlushBufferImpl() {
 		if (smag->fpLog) fflush(smag->fpLog);
+		if (smag->fpStatus) fflush(smag->fpStatus);
 	}
   //@}
 
