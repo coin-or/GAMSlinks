@@ -1,0 +1,40 @@
+*
+* optcoincbc.def
+*
+
+cuts enumint 0 0 1 1 switch for cut generation
+ -1 1 no cuts will be generated
+ 0 1 automatic
+ 1 1 cuts from all available cut classes will be generated
+roundingheuristic boolean 0 1 1 1 rounding heuristic
+localsearch boolean 0 1 1 1 local search
+strongbranching boolean 0 1 1 1 strong branching
+integerpresolve boolean 0 1 1 1 integer presolve
+findsos boolean 0 1 1 1 find sos
+probing boolean 0 1 1 1 probing cuts
+gomorycuts boolean 0 1 1 1 Gomory cuts
+knapsackcuts boolean 0 1 1 1 knapsack cuts
+oddholecuts boolean 0 0 1 1 odd hole cuts
+cliquecuts boolean 0 1 1 1 clique cuts
+flowcovercuts boolean 0 1 1 1 flow cover cuts
+mircuts boolean 0 1 1 1 mixed integer rounding cuts
+redsplitcuts boolean 0 0 1 1 reduce and split cuts
+cutsonlyatroot boolean 0 1 1 1 whether cuts are only generated at the root node
+startalg enumstr 0 "primal" 1 1 LP solver for root node
+ "primal" 1 primal simplex algorithm
+ "dual" 1 dual simplex algorithm
+writemps string 0 "" 1 1 create MPS file for problem
+reslim double 0 1000 0 maxdouble 1 1 resource limit
+iterlim integer 0 10000 0 maxint 1 1 iteration limit
+nodelim integer 0 maxint 0 maxint 1 1 node limit
+nodlim integer 0 maxint 0 maxint 1 1 node limit
+optca double 0 0 0 maxdouble 1 1 absolute stopping tolerance
+cutoff double 0 0 0 maxdouble 1 1 cutoff for tree search
+nobounds immediate nobounds 0 1 ignores bounds on options
+readfile immediate readfile 0 1 read secondary option file
+*
+* Groups
+* <group-ident> group <group-number <help-context> <help-text>
+*
+general group 1 1 General Options
+*** End of file

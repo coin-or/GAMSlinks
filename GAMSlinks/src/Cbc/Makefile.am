@@ -13,8 +13,7 @@ EXTRA_DIST =
 
 bin_PROGRAMS = GamsCoinCbc
 GamsCoinCbc_SOURCES = GamsCoinCbc.cpp \
- CbcBranchUser.hpp CbcBranchUser.cpp \
- CbcCompareUser.hpp CbcCompareUser.cpp
+ CbcStrategyGams.hpp CbcStrategyGams.cpp
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
@@ -27,7 +26,6 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglFlowCover` \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglGomory` \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglKnapsackCover` \
- -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglMixedIntegerRounding` \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglMixedIntegerRounding2` \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglOddHole` \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglPreProcess` \
@@ -69,6 +67,7 @@ if COIN_HAS_GLPK
   GamsCoinCbc_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPKLIB)
 endif
 
+
 GamsCoinCbc_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
  
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
@@ -78,7 +77,7 @@ DISTCLEANFILES =
 if GAMSIO_IS_UNIX
 install-exec-local:
 	ln -sf $(DESTDIR)$(bindir)/GamsCoinCbc gmscc_ux.out
-	zip gmscc_.zip gmscc_ux.out gmscc_us.run install/gmscc_un.dat
+	zip gmscc_.zip gmscc_ux.out gmscc_us.run optcbc.def install/gmscc_un.dat
 	$(install_sh_DATA) gmscc_.zip $(DESTDIR)$(bindir)/gmscc_.zip
 	rm -f gmscc_ux.out
 endif
@@ -86,7 +85,7 @@ endif
 if GAMSIO_IS_WINDOWS
 install-exec-local:
 	ln -sf $(DESTDIR)$(bindir)/GamsCoinCbc.exe gmscc_nx.exe
-	zip gmscc_.zip gmscc_nx.exe gmscc_nt.cmd install/gmscc_nt.dat
+	zip gmscc_.zip gmscc_nx.exe gmscc_nt.cmd optcbc.def install/gmscc_nt.dat
 	$(install_sh_DATA) gmscc_.zip $(DESTDIR)$(bindir)/gmscc_.zip
 	rm -f gmscc_nx.exe  
 endif

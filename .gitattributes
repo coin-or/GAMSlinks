@@ -11,10 +11,6 @@ GAMSlinks/aclocal.m4 -text
 GAMSlinks/configure -text
 GAMSlinks/configure.ac -text
 GAMSlinks/inc/config_gamslinks.h.in -text
-GAMSlinks/src/Cbc/CbcBranchUser.cpp -text
-GAMSlinks/src/Cbc/CbcBranchUser.hpp -text
-GAMSlinks/src/Cbc/CbcCompareUser.cpp -text
-GAMSlinks/src/Cbc/CbcCompareUser.hpp -text
 GAMSlinks/src/Cbc/GamsCoinCbc.cpp -text
 GAMSlinks/src/Cbc/Makefile.am -text
 GAMSlinks/src/Cbc/Makefile.in -text
@@ -22,6 +18,8 @@ GAMSlinks/src/Cbc/gmscc_nt.cmd -text
 GAMSlinks/src/Cbc/gmscc_us.run -text
 GAMSlinks/src/Cbc/install/gmscc_nt.dat -text
 GAMSlinks/src/Cbc/install/gmscc_un.dat -text
+GAMSlinks/src/Cbc/optcbc.def -text
+GAMSlinks/src/Cbc/optcbc.gms -text
 GAMSlinks/src/GAMSlinksConfig.h -text
 GAMSlinks/src/GamsIO/GamsFinalize.cpp -text
 GAMSlinks/src/GamsIO/GamsFinalize.hpp -text

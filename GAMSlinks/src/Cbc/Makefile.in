@@ -85,8 +85,8 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_GamsCoinCbc_OBJECTS = GamsCoinCbc.$(OBJEXT) CbcBranchUser.$(OBJEXT) \
-	CbcCompareUser.$(OBJEXT)
+am_GamsCoinCbc_OBJECTS = GamsCoinCbc.$(OBJEXT) \
+	CbcStrategyGams.$(OBJEXT)
 GamsCoinCbc_OBJECTS = $(am_GamsCoinCbc_OBJECTS)
 am__DEPENDENCIES_1 =
 @COIN_HAS_CLP_TRUE@am__DEPENDENCIES_2 =  \
@@ -304,8 +304,7 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = $(am__append_5)
 GamsCoinCbc_SOURCES = GamsCoinCbc.cpp \
- CbcBranchUser.hpp CbcBranchUser.cpp \
- CbcCompareUser.hpp CbcCompareUser.cpp
+ CbcStrategyGams.hpp CbcStrategyGams.cpp
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	-I`$(CYGPATH_W) $(srcdir)/../GamsIO` -I`$(CYGPATH_W) \
@@ -316,7 +315,6 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	$(CGLSRCDIR)/src/CglFlowCover` -I`$(CYGPATH_W) \
 	$(CGLSRCDIR)/src/CglGomory` -I`$(CYGPATH_W) \
 	$(CGLSRCDIR)/src/CglKnapsackCover` -I`$(CYGPATH_W) \
-	$(CGLSRCDIR)/src/CglMixedIntegerRounding` -I`$(CYGPATH_W) \
 	$(CGLSRCDIR)/src/CglMixedIntegerRounding2` -I`$(CYGPATH_W) \
 	$(CGLSRCDIR)/src/CglOddHole` -I`$(CYGPATH_W) \
 	$(CGLSRCDIR)/src/CglPreProcess` -I`$(CYGPATH_W) \
@@ -405,8 +403,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CbcBranchUser.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CbcCompareUser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CbcStrategyGams.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCoinCbc.Po@am__quote@
 
 .cpp.o:
@@ -616,13 +613,13 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 
 @GAMSIO_IS_UNIX_TRUE@install-exec-local:
 @GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinCbc gmscc_ux.out
-@GAMSIO_IS_UNIX_TRUE@	zip gmscc_.zip gmscc_ux.out gmscc_us.run install/gmscc_un.dat
+@GAMSIO_IS_UNIX_TRUE@	zip gmscc_.zip gmscc_ux.out gmscc_us.run optcbc.def install/gmscc_un.dat
 @GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmscc_.zip $(DESTDIR)$(bindir)/gmscc_.zip
 @GAMSIO_IS_UNIX_TRUE@	rm -f gmscc_ux.out
 
 @GAMSIO_IS_WINDOWS_TRUE@install-exec-local:
 @GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinCbc.exe gmscc_nx.exe
-@GAMSIO_IS_WINDOWS_TRUE@	zip gmscc_.zip gmscc_nx.exe gmscc_nt.cmd install/gmscc_nt.dat
+@GAMSIO_IS_WINDOWS_TRUE@	zip gmscc_.zip gmscc_nx.exe gmscc_nt.cmd optcbc.def install/gmscc_nt.dat
 @GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmscc_.zip $(DESTDIR)$(bindir)/gmscc_.zip
 @GAMSIO_IS_WINDOWS_TRUE@	rm -f gmscc_nx.exe  
 
