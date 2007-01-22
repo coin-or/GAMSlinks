@@ -62,7 +62,7 @@ general.(
   nodelim         .i.(def maxint)
   nodlim          .i.(def maxint)
   optca           .r.(def 0)
-  cutoff          .r.(def 0)
+  cutoff          .r.(def 0, lo mindouble)
 * immediates
   nobounds        .b.(def 0)
   readfile        .s.(def '')
