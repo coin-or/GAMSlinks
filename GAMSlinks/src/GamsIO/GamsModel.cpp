@@ -15,6 +15,10 @@
 #include "dict.h"
 #include "optcc.h"
 
+#if defined(_WIN32)
+# define snprintf _snprintf
+#endif
+
 static cntrec cntinfo;          /* control file information */
 
 GamsModel::GamsModel(const char *cntrfile, const double SolverMInf, const double SolverPInf)
