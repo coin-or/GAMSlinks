@@ -22,8 +22,8 @@ using namespace Ipopt;
 class SmagJournal : public Journal {
 public:
   /** Constructor. */
-  SmagJournal(smagHandle_t smag_, EJournalLevel default_level)
-  : Journal("SmagJournal", default_level), smag(smag_)
+  SmagJournal(smagHandle_t smag_, unsigned int smag_mask_, const char* name, EJournalLevel default_level)
+  : Journal(name, default_level), smag(smag_), smag_mask(smag_mask_)
   { }
 
   /** Destructor. */
@@ -34,48 +34,20 @@ protected:
    */
   //@{
   /** Print to the designated output location */
-  virtual void PrintImpl(const char* str) {
-		if (str) smagPrint(smag, SMAG_ALLMASK, "%s", str);
-  }
+  virtual void PrintImpl(const char* str);
 
   /** Printf to the designated output location */
-  virtual void PrintfImpl(const char* pformat, va_list ap) {
-	/**	The following does not work.
-	 * I get a segmentation fault in strlen() from inside the VSNPRINTF call at line 5 of smagPrint.
-	 * Also the output coming before looks scrappy.
-	 * if (pformat) smagPrint(smag, SMAG_LOGMASK, pformat, ap);
-	 */
-		if (smag->fpLog) {
-#ifdef HAVE_VA_COPY
-			va_list apcopy;
-			va_copy(apcopy, ap);
-			vfprintf(smag->fpLog, pformat, apcopy);
-			va_end(apcopy);
-#else
-			vfprintf(smag->fpLog, pformat, ap);
-#endif
-		}
-		if (smag->fpStatus) {
-#ifdef HAVE_VA_COPY
-			va_list apcopy;
-			va_copy(apcopy, ap);
-			vfprintf(smag->fpStatus, pformat, apcopy);
-			va_end(apcopy);
-#else
-			vfprintf(smag->fpStatus, pformat, ap);
-#endif
-		}
-	}
+  virtual void PrintfImpl(const char* pformat, va_list ap);
 
   /** Flush output buffer.*/
   virtual void FlushBufferImpl() {
-		if (smag->fpLog) fflush(smag->fpLog);
-		if (smag->fpStatus) fflush(smag->fpStatus);
+  	smagStdOutputFlush(smag, SMAG_ALLMASK);
 	}
   //@}
 
 private:
 	smagHandle_t smag;
+	unsigned int smag_mask;
   /**@name Default Compiler Generated Methods
    * (Hidden to avoid implicit creation/calling).
    * These methods are not implemented and 

@@ -23,6 +23,7 @@
 #if defined(_MSC_VER)
 // Turn off compiler warning about long names
 #pragma warning(disable:4786)
+#include <windows.h>
 #endif
 
 #ifdef HAVE_CONFIG_H

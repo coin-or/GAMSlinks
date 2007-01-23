@@ -25,7 +25,7 @@ do
 	echo Calling CPLEX with $model to get control file and optimal value.
 	rm -rf 225a
 	rm -f tmpfile
-	$gamspath/gamskeep $model.gms LP=CPLEX MIP=CPLEX OPTCR=0.01 LO=2 LOGFILE=tmpfile 1>/dev/null 2>&1
+	$gamspath/gamskeep $model.gms LP=CPLEX MIP=CPLEX OPTCR=0.01 LO=2 LOGFILE=tmpfile
 	
 	bkov=`sed -n -e '/^Objective/s/Objective : *//p' -e '/^MIP Solution/s/.*: *\(.*\) (.*)/\1/p' tmpfile`
 	bkov_=`echo $bkov | sed -e 's/-/_/g'`
@@ -39,7 +39,7 @@ do
 			echo " "
 			echo Running $solver on model $model
 			rm -f tmpfile
-			$solver 225a/gamscntr.scr 1>/dev/null 2>&1
+			$solver 225a/gamscntr.scr
 		
 			grep "Writing solution. Objective" tmpfile 1>/dev/null 2>&1
 			if test $? = 0; then
@@ -92,7 +92,7 @@ do
 	rm -rf 225a
 	rm -f tmpfile
 	#have to run some solver that also writes dual variables in the control file, otherwise an assertion is failing in smag
-	$gamspath/gamskeep $model.gms NLP=MSNLP LO=2 LOGFILE=tmpfile 1>/dev/null 2>&1
+	$gamspath/gamskeep $model.gms NLP=MSNLP LO=2 LOGFILE=tmpfile
 	
 	bkov=225.19
 	bkov_=`echo $bkov | sed -e 's/-/_/g'`
@@ -106,7 +106,7 @@ do
 			echo " "
 			echo Running $solver on model $model
 			rm -f tmpfile
-			$solver 225a/gamscntr.scr 1>/dev/null 2>&1
+			$solver 225a/gamscntr.scr
 		
 			grep "Objective...." tmpfile 1>/dev/null 2>&1
 			if test $? = 0; then

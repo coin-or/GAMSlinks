@@ -172,7 +172,7 @@ int main (int argc, const char *argv[]) {
 
 	CbcStrategyGams strategy(gm);
 	model.setStrategy(strategy);
-	
+
 	myout << CoinMessageEol << "Starting branch-and-bound..." << CoinMessageEol;
 	model.branchAndBound();
 

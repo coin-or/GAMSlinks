@@ -188,6 +188,7 @@ AC_ARG_WITH([gamssystem],
   [AC_PATH_PROG(gamspath, [gams],,,)
    use_gamssys=${gamspath/%gams/}
   ])
+GAMS_PATH=$use_gamssys
 #if test x"$use_gamssys" != x; then
 #	AC_MSG_NOTICE([found GAMS system at $use_gamssys])
 #else
