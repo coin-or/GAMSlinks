@@ -47,6 +47,7 @@ GAMSlinks/src/Glpk/optglpk.txt -text
 GAMSlinks/src/Ipopt/GamsIpopt.cpp -text
 GAMSlinks/src/Ipopt/Makefile.am -text
 GAMSlinks/src/Ipopt/Makefile.in -text
+GAMSlinks/src/Ipopt/SmagJournal.cpp -text
 GAMSlinks/src/Ipopt/SmagJournal.hpp -text
 GAMSlinks/src/Ipopt/SmagNLP.cpp -text
 GAMSlinks/src/Ipopt/SmagNLP.hpp -text
