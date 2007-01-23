@@ -1,5 +1,5 @@
 *
-* optcoincbc.def
+* optcbc.def
 *
 
 cuts enumint 0 0 1 1 switch for cut generation
@@ -29,7 +29,7 @@ iterlim integer 0 10000 0 maxint 1 1 iteration limit
 nodelim integer 0 maxint 0 maxint 1 1 node limit
 nodlim integer 0 maxint 0 maxint 1 1 node limit
 optca double 0 0 0 maxdouble 1 1 absolute stopping tolerance
-cutoff double 0 0 0 maxdouble 1 1 cutoff for tree search
+cutoff double 0 0 mindouble maxdouble 1 1 cutoff for tree search
 nobounds immediate nobounds 0 1 ignores bounds on options
 readfile immediate readfile 0 1 read secondary option file
 *

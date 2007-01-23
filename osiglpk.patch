@@ -1,5 +1,5 @@
---- originalversion/OsiGlpkSolverInterface.cpp	2006-12-01 21:50:25.000000000 +0100
-+++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	2006-12-26 19:08:12.000000000 +0100
+--- Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Revision 885)
++++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Arbeitskopie)
 @@ -80,6 +80,13 @@
  	}
  }
@@ -46,3 +46,12 @@
  		// What if there's an error there?
  		int err = lpx_integer( model );
  		iter_used_ = lpx_get_int_parm(model, LPX_K_ITCNT);
+@@ -2098,7 +2112,7 @@
+ // Get a pointer to the instance
+ LPX * OsiGlpkSolverInterface::getModelPtr ()
+ {
+-  freeCachedResults();
++//  freeCachedResults();
+   return lp_;
+ }
+ 

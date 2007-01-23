@@ -152,10 +152,10 @@ int main (int argc, const char *argv[]) {
 		myout << "\n" << CoinMessageEol;
 
 		// Do complete search
+		myout << "Starting Branch and Bound... " << CoinMessageEol;
 		solver.branchAndBound();
 
 		int mipstat = lpx_mip_status(solver.getModelPtr());
-
 		if (mipstat == LPX_I_FEAS || mipstat == LPX_I_OPT) {
 			const double *colLevel=solver.getColSolution();
 			// We are loosing colLevel after a call to lpx_set_* when using the Visual compiler. So we save the levels.

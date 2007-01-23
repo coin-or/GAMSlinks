@@ -176,9 +176,8 @@ int main (int argc, const char *argv[]) {
 	myout << CoinMessageEol << "Starting branch-and-bound..." << CoinMessageEol;
 	model.branchAndBound();
 
-	myout << "Cbc Status: " << model.status() << CoinMessageEol;
-  
-	GamsFinalizeOsi(&gm, &myout, model.solver(), 0);
+	// if the lp solver says feasible, but cbc says infeasible, then the lp solver was probably not called and the model found infeasible in the preprocessing 
+	GamsFinalizeOsi(&gm, &myout, model.solver(), model.solver()->isProvenOptimal() && model.isProvenInfeasible());
 
 	return 0;
 }
