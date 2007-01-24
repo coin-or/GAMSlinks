@@ -126,9 +126,8 @@ int main (int argc, char* argv[]) {
 			break;
 	}
 
+	smagStdOutputStop(prob, buffer, sizeof(buffer));
 	smagClose(prob);
-	smagCloseLog(prob);
-	if (prob->fpStatus && prob->fpStatus!=stdout) fclose(prob->fpStatus);
 
   return EXIT_SUCCESS;
 } // main

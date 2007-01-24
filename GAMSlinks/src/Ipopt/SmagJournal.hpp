@@ -34,7 +34,9 @@ protected:
    */
   //@{
   /** Print to the designated output location */
-  virtual void PrintImpl(const char* str);
+  virtual void PrintImpl(const char* str) {
+  	smagStdOutputPrintX(smag, smag_mask, str, 0);
+  }
 
   /** Printf to the designated output location */
   virtual void PrintfImpl(const char* pformat, va_list ap);

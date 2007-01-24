@@ -47,12 +47,3 @@ void SmagJournal::PrintfImpl(const char* pformat, va_list ap) {
 
 	PrintImpl(outBuf);
 }
-
-void SmagJournal::PrintImpl(const char* str) {
-	//TODO: this is horrible  
-  char* lastchar = const_cast<char*>(str) + strlen(str); --lastchar;
-  if (*lastchar == '\n') {
-    *lastchar = 0; lastchar--;
-  }
-	if (*str) smagStdOutputPrint(smag, smag_mask, str);
-}
