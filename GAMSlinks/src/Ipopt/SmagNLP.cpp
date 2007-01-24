@@ -287,20 +287,20 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 		}
 		unsigned char* rowBasStat=new unsigned char[m];
 		unsigned char* rowIndic=new unsigned char[m];
-		double* rowLev=new double[m];
+//		double* rowLev=new double[m];
     for (Index i = 0;  i < m;  i++) {
 			rowBasStat[i]=SMAG_BASSTAT_SUPERBASIC;
 			rowIndic[i]=SMAG_RCINDIC_OK;
       negLambda[i] = -lambda[i] * isMin;
-			if (prob->rowType[i]==SMAG_EQU_EQ) {
-				rowLev[i]=g[i]+prob->rowRHS[i]; //TODO: why I have todo this?
-			} else {
-				rowLev[i]=g[i];
-			}
+//			if (prob->rowType[i]==SMAG_EQU_EQ) {
+//				rowLev[i]=g[i]+prob->rowRHS[i]; //TODO: why I have todo this?
+//			} else {
+//				rowLev[i]=g[i];
+//			}
     }
 		smagReportSolFull(prob, prob->hesData->lowTriNZ ? 2 : 1, 1,
 			SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, obj_value*isMin, domviolations,
-			rowLev, negLambda, rowBasStat, rowIndic,
+			/*rowLev*/ g, negLambda, rowBasStat, rowIndic,
 			x, colMarg, colBasStat, colIndic);
 
 		delete[] colBasStat;
@@ -308,7 +308,7 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 		delete[] colMarg;
 		delete[] rowBasStat;
 		delete[] rowIndic;
-		delete[] rowLev;
+//		delete[] rowLev;
 	}	break;
   case LOCAL_INFEASIBILITY: 
   	// TODO: if IPOPT returns us an infeasible point here, we should write it and return 4 (for LPs) or 5 (for NLPs) 
