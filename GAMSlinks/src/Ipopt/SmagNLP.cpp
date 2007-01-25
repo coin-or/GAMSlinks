@@ -313,12 +313,12 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
   case LOCAL_INFEASIBILITY: 
   	// TODO: if IPOPT returns us an infeasible point here, we should write it and return 4 (for LPs) or 5 (for NLPs) 
 		smagStdOutputPrint(prob, SMAG_LOGMASK, "Local infeasible!!\n");
-		smagReportSolStats (prob, 19, 4, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
+		smagReportSolStats (prob, 19, 1, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
     break;
   case DIVERGING_ITERATES:
   	//TODO: or should we return a solution here and return 3 instead of 18?
 		smagStdOutputPrint(prob, SMAG_LOGMASK, "Diverging iterates: we'll guess unbounded!!\n");
-		smagReportSolStats (prob, 18, 4, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
+		smagReportSolStats (prob, 18, 1, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
     break;
 	case STOP_AT_TINY_STEP:
   case RESTORATION_FAILURE:
