@@ -46,6 +46,15 @@
  		// What if there's an error there?
  		int err = lpx_integer( model );
  		iter_used_ = lpx_get_int_parm(model, LPX_K_ITCNT);
+@@ -463,7 +477,7 @@
+ 	if( bbWasLast_ == 0 )
+ 		return lpx_get_prim_stat( model ) == LPX_P_NOFEAS;
+ 	else
+-		return lpx_mip_status( model ) == LPX_NOFEAS;
++		return lpx_mip_status( model ) == LPX_I_NOFEAS;
+ }
+ 
+ bool OsiGlpkSolverInterface::isProvenDualInfeasible() const
 @@ -2098,7 +2112,7 @@
  // Get a pointer to the instance
  LPX * OsiGlpkSolverInterface::getModelPtr ()
