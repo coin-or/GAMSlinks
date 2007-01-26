@@ -20,7 +20,7 @@ flowcovercuts boolean 0 1 1 1 flow cover cuts
 mircuts boolean 0 1 1 1 mixed integer rounding cuts
 redsplitcuts boolean 0 0 1 1 reduce and split cuts
 cutsonlyatroot boolean 0 1 1 1 whether cuts are only generated at the root node
-startalg enumstr 0 "primal" 1 1 LP solver for root node
+startalg enumstr 0 "dual" 1 1 LP solver for root node
  "primal" 1 primal simplex algorithm
  "dual" 1 dual simplex algorithm
 writemps string 0 "" 1 1 create MPS file for problem

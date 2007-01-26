@@ -54,7 +54,7 @@ general.(
   mircuts             .b.(def 1)
   redsplitcuts        .b.(def 0)
   cutsonlyatroot      .b.(def 1)
-  startalg            .s.(def primal)
+  startalg            .s.(def dual)
   writemps            .s.(def '')
 * GAMS options
   reslim          .r.(def 1000)
