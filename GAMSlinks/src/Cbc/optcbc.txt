@@ -1,7 +1,6 @@
 introduction
 GAMS/CoinCBC brings the open source LP/MIP solver Cbc from the COIN-OR foundation to the broad audience of GAMS users.
-Cbc (COIN-OR branch and cut) is an open-source mixed integer programming solver.
-Cbc is a branch and cut code working with the COIN-OR LP solver Clp and the COIN-OR Cut generator libraries Cgl.
+Cbc (COIN-OR branch and cut) is an open-source mixed integer programming solver working with the COIN-OR LP solver Clp and the COIN-OR Cut generator libraries Cgl.
 The code has been written primarily by John J. Forrest, who is the COIN-OR project leader for Cbc.
 The GAMS interface for Cbc is maintained by Stefan Vigerske, Humboldt University, in a separate COIN-OR project called GAMSLinks.<BR>
 For more information visit the web site for
@@ -31,7 +30,7 @@ A local search heuristic to find feasible solutions of the MIP.
 
 strongbranching
 If strong branching is switched on, then the maximum number of candidates to be evaluated for strong branching is set to 10 (if the problem has less then 5000 variables) or 5 (if the problem has more then 5000 variables).
-If strong branching is switched off, the maximum number is set to 0 (However, Cbc reports still some (but less) strong branching operations.)
+If strong branching is switched off, the maximum number is set to 0. (However, Cbc reports still some (but less) strong branching operations.)
 
 
 integerpresolve
@@ -45,7 +44,7 @@ They can thus replace the existing cuts rather than being added as new cuts. Thi
 
 findsos
 This option switches the identification for special ordered sets of type 1 in the integer preprocessing on.
-For this, it searches for rows with upper bound 1 and where all nonzero coefficients are 1.
+Cbc then searches for rows with upper bound 1 and where all nonzero coefficients are 1.
 
 
 cuts
