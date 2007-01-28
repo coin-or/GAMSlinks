@@ -3,7 +3,7 @@ $eolcom //
 set g Cbc Option Groups /
         general        General Options
       /
-    e / '-1', 0*100, '+n', primal, dual, barrier /
+    e / '-1', 0*100, '+n', primal, dual, barrier, default, depth, objective /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
     t / I Integer, R Real, S String, B Binary /
     o Options /
@@ -24,13 +24,17 @@ set g Cbc Option Groups /
       cutsonlyatroot         whether cuts are only generated at the root node
       startalg               LP solver for root node
       writemps               create MPS file for problem
+      integertolerance       tolerance for integrality
+      printfrequency         print frequency
+      nodecompare            comparision method to determine tree search order
 * GAMS options
       reslim                 resource limit
       iterlim                iteration limit
       nodelim                node limit
       nodlim                 node limit
       optca                  absolute stopping tolerance
-      cutoff                 cutoff for tree search
+      optcr                  relative stopping tolerance
+      cutoff                 cutoff for objective function value
 * immediates
       nobounds               ignores bounds on options
       readfile               read secondary option file
@@ -56,12 +60,16 @@ general.(
   cutsonlyatroot      .b.(def 1)
   startalg            .s.(def dual)
   writemps            .s.(def '')
+  integertolerance    .r.(def 1e-6)
+  printfrequency      .i.(def 10)
+  nodecompare         .s.(def default)
 * GAMS options
   reslim          .r.(def 1000)
   iterlim         .i.(def 10000)
   nodelim         .i.(def maxint)
   nodlim          .i.(def maxint)
   optca           .r.(def 0)
+  optcr           .r.(def 0.1)
   cutoff          .r.(def 0, lo mindouble)
 * immediates
   nobounds        .b.(def 0)
@@ -73,6 +81,9 @@ general.(
                    1      cuts from all available cut classes will be generated )
   startalg.(      primal  primal simplex algorithm
                   dual    dual simplex algorithm )
+  nodecompare.(   default default compare method
+                  depth   depth first search
+                  objective choose node with best objective value )
  /
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /
@@ -82,4 +93,5 @@ general.(
                      nodelim    'GAMS nodlim' 
                      nodlim     'GAMS nodlim' 
                      optca      'GAMS optca' 
+                     optcr      'GAMS optcr'
                      cutoff     'GAMS cutoff' /

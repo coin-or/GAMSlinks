@@ -76,6 +76,7 @@ int main (int argc, const char *argv[]) {
 	if (!gm.optDefined("nodelim")) gm.optSetInteger("nodelim", gm.optDefined("nodlim") ? gm.optGetInteger("nodlim") : gm.getNodeLim());
 	if (!gm.optDefined("nodlim")) gm.optSetInteger("nodlim", gm.getNodeLim());
 	if (!gm.optDefined("optca")) gm.optSetDouble("optca", gm.getOptCA());
+	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
 	if (!gm.optDefined("cutoff") && gm.getCutOff()!=gm.ObjSense()*solver.getInfinity()) gm.optSetDouble("cutoff", gm.getCutOff());
 	
 	gm.TimerStart();
@@ -109,6 +110,7 @@ int main (int argc, const char *argv[]) {
 	solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
 #if (OsiXXXSolverInterface == OsiClpSolverInterface)
 	solver.getModelPtr()->setDualBound(1.0e10);
+	solver.getModelPtr()->setDblParam(ClpMaxSeconds, gm.optGetDouble("reslim"));
 #endif
 
 	CbcModel model(solver);
@@ -145,11 +147,7 @@ int main (int argc, const char *argv[]) {
 		delete[] objects;
   }
 
-	model.setIntParam(CbcModel::CbcMaxNumNode, gm.optGetInteger("nodelim"));
-	model.setDblParam(CbcModel::CbcMaximumSeconds, gm.optGetDouble("reslim"));
-	model.setDblParam(CbcModel::CbcAllowableGap, gm.optGetDouble("optca"));
-	if (gm.optDefined("cutoff")) model.setCutoff(gm.ObjSense()*gm.optGetDouble("cutoff")); // Cbc assumes a minimizatio problem here
-
+	
 	// Do initial solve to continuous
 	if (gm.nDCols() || gm.nSOS1() || gm.nSOS2())
 	  myout << CoinMessageEol << "Solving the root node..." << CoinMessageEol;
@@ -165,9 +163,16 @@ int main (int argc, const char *argv[]) {
 	  gm.setObjVal(gm.ObjSense()*model.solver()->getObjValue());
  
 	  GamsFinalizeOsi(&gm, &myout, model.solver(),0);
-	  return 0;
+	  return EXIT_SUCCESS;
 	}
 	
+	
+	model.setDblParam(CbcModel::CbcMaximumSeconds, gm.optGetDouble("reslim"));
+	model.setIntParam(CbcModel::CbcMaxNumNode, gm.optGetInteger("nodelim"));
+	model.setDblParam(CbcModel::CbcAllowableGap, gm.optGetDouble("optca"));
+	model.setDblParam(CbcModel::CbcAllowableFractionGap, gm.optGetDouble("optcr"));
+	if (gm.optDefined("cutoff")) model.setCutoff(gm.ObjSense()*gm.optGetDouble("cutoff")); // Cbc assumes a minimizatio problem here
+	model.setDblParam(CbcModel::CbcIntegerTolerance, gm.optGetDouble("integertolerance"));
 	model.solver()->setIntParam(OsiMaxNumIterationHotStart,100);
 
 	CbcStrategyGams strategy(gm);
@@ -179,7 +184,7 @@ int main (int argc, const char *argv[]) {
 	// if the lp solver says feasible, but cbc says infeasible, then the lp solver was probably not called and the model found infeasible in the preprocessing 
 	GamsFinalizeOsi(&gm, &myout, model.solver(), model.solver()->isProvenOptimal() && model.isProvenInfeasible());
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 void write_mps(GamsModel& gm, OsiSolverInterface& solver, GamsMessageHandler& myout, char* filename) {

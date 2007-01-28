@@ -3,11 +3,23 @@ $eolcom //
 set g Glpk Option Groups /
         general        General Options
       /
-    e / '-1', 0*100, '+n', primal, dual, barrier /
+    e / '-1', 0*100, '+n', off, 
+        primal, dual,
+        equilibrium, mean, meanequilibrium,
+        textbook, steepestedge,
+        depthfirst, breadthfirst, bestprojection /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
     t / I Integer, R Real, S String, B Binary /
     o Options /
       writemps               create MPS file for problem
+      startalg               LP solver for root node
+      scaling                scaling method
+      pricing                pricing method
+      tol_dual               dual feasibility tolerance
+      tol_primal             primal feasibility tolerance
+      tol_integer            integer feasibility tolerance
+      backtracking           backtracking heuristic
+      cuts                   generation of cuts for root problem
 * GAMS options
       reslim                 resource limit
       iterlim                iteration limit
@@ -20,7 +32,15 @@ set g Glpk Option Groups /
 $onembedded
     optdata(g,o,t,f) /
 general.(
-  writemps            .s.(def '')
+  writemps        .s.(def '')
+  startalg        .s.(def primal)
+  scaling         .s.(def equilibrium)
+  pricing         .s.(def textbook)
+  tol_dual        .r.(def 1e-7)
+  tol_primal      .r.(def 1e-7)
+  tol_integer     .r.(def 1e-5)
+  backtracking    .s.(def bestprojection)
+  cuts            .b.(def 0)
 * GAMS options
   reslim          .r.(def 1000)
   iterlim         .i.(def 10000)
@@ -31,6 +51,17 @@ general.(
 ) /
 $onempty
   oe(o,e) /
+  startalg.(      primal  primal simplex algorithm
+                  dual    dual simplex algorithm )
+  scaling.(       off              no scaling
+                  equilibrium      equilibrium scaling 
+                  mean             geometric mean scaling
+                  meanequilibrium  geometric mean scaling then equilibrium scaling )
+  pricing.(       textbook         textbook pricing
+                  steepestedge     steepest edge pricing )
+  backtracking.(  depthfirst       depth first search
+                  breadthfirst     breadth first search
+                  bestprojection   using best projection heuristic )
  /
 $offempty
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /

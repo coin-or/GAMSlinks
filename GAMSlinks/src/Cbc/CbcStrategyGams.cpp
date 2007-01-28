@@ -41,6 +41,8 @@
 #include "CbcHeuristic.hpp"
 #include "CbcHeuristicLocal.hpp"
 
+// Comparison methods
+#include "CbcCompareActual.hpp"
 
 CbcStrategyGams::CbcStrategyGams(GamsModel& gm_)
 : CbcStrategy(),
@@ -175,7 +177,7 @@ void CbcStrategyGams::setupPrinting(CbcModel& model, int modelLogLevel) {
 		}
 	}
 	
-	model.setPrintFrequency(10);
+	model.setPrintFrequency(gm.optGetInteger("printfrequency"));
 }
 
 // Other stuff e.g. strong branching
@@ -324,6 +326,20 @@ void CbcStrategyGams::setupOther(CbcModel & model) {
 	else
 		model.setNumberStrong(0);
 	model.setNumberBeforeTrust(5);
+	
+	char compareopt[255];
+	gm.optGetString("nodecompare", compareopt);
+	if (strcmp(compareopt, "depth")==0) {
+		CbcCompareDepth comparedepth;
+		model.setNodeComparison(&comparedepth);
+	} else if (strcmp(compareopt, "objective")==0) {
+		CbcCompareObjective compareobjective;
+		model.setNodeComparison(&compareobjective);
+	} else {
+		// default comparision method: nothing to do
+	}
+	//TODO: add CbcCompareEstimate in case that pseudo costs are available
+
 }
 
 // Create C++ lines to get to current state

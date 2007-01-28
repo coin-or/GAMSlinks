@@ -131,15 +131,39 @@ int main (int argc, const char *argv[]) {
 	// Some tolerances and limits
 	solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
 	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TMLIM, gm.optGetDouble("reslim"));
-
+	
 	// One needs to change the glkp source because the range for optcr is enforced
 	// to be between 1e-7 and 1e-3
 	//		 case LPX_K_TOLOBJ:
 	//				/* if (!(DBL_EPSILON <= val && val <= 0.001)) */	 <- Original
 	//				if (DBL_EPSILON > val)														 <- GAMS change
 	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TOLOBJ, max(1e-7,gm.optGetDouble("optcr")));
+	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TOLINT, gm.optGetDouble("tol_integer"));
+	solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual"));
+	solver.setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal"));
 
-	solver.messageHandler()->setLogLevel(2);
+	// more parameters
+	gm.optGetString("scaling", buffer);
+	if (strcmp(buffer, "off")==0)
+		lpx_set_int_parm(solver.getModelPtr(), LPX_K_SCALE, 0);
+	else if (strcmp(buffer, "equilibrium")==0)
+		lpx_set_int_parm(solver.getModelPtr(), LPX_K_SCALE, 1); // default
+	else if (strcmp(buffer, "mean")==0)
+		lpx_set_int_parm(solver.getModelPtr(), LPX_K_SCALE, 2); // default
+	else if (strcmp(buffer, "meanequilibrium")==0)
+		lpx_set_int_parm(solver.getModelPtr(), LPX_K_SCALE, 3); // default
+
+	gm.optGetString("startalg", buffer);
+	if (strcmp(buffer, "dual")==0)
+		lpx_set_int_parm(solver.getModelPtr(), LPX_K_DUAL, 1);
+	
+	gm.optGetString("pricing", buffer);
+	if (strcmp(buffer, "textbook")==0)
+		lpx_set_int_parm(solver.getModelPtr(), LPX_K_PRICE, 0);
+	else if	(strcmp(buffer, "steepestedge")==0)
+		lpx_set_int_parm(solver.getModelPtr(), LPX_K_PRICE, 1);
+
+	solver.messageHandler()->setLogLevel(3);
 
 	if (gm.nDCols())
 		myout << "Solving root problem... " << CoinMessageEol;
@@ -147,9 +171,17 @@ int main (int argc, const char *argv[]) {
 	solver.initialSolve();
 	
 	if (0 != gm.nDCols()) {
-		if (gm.getSysOut()) solver.messageHandler()->setLogLevel(3);
-		else solver.messageHandler()->setLogLevel(2);
 		myout << "\n" << CoinMessageEol;
+
+		gm.optGetString("backtracking", buffer);
+		if (strcmp(buffer, "depthfirst")==0)
+			lpx_set_int_parm(solver.getModelPtr(), LPX_K_BTRACK, 0);
+		else if	(strcmp(buffer, "breadthfirst")==0)
+			lpx_set_int_parm(solver.getModelPtr(), LPX_K_BTRACK, 1);
+		else if	(strcmp(buffer, "bestprojection")==0)
+			lpx_set_int_parm(solver.getModelPtr(), LPX_K_BTRACK, 2);
+			
+		lpx_set_int_parm(solver.getModelPtr(), LPX_K_USECUTS, gm.optGetBool("cuts"));
 
 		// Do complete search
 		myout << "Starting Branch and Bound... " << CoinMessageEol;
