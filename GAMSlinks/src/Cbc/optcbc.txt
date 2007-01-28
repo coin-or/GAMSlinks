@@ -10,7 +10,7 @@ For more information visit the web site for
 <a href="https://projects.coin-or.org/Cgl">Cgl<a>,
 <a href="https://projects.coin-or.org/Clp">Clp<a>, and  
 <a href="https://projects.coin-or.org/GAMSlinks">GAMSlinks</a>.<BR>
-For documentation on GAMS parameters, see the <A href="http://www.gams.com/docs/parame.htm">GAMS parameters documentation</A>.
+For documentation of GAMS parameters, see the <A href="http://www.gams.com/docs/parame.htm">GAMS parameters documentation</A>.
 
 
 roundingheuristic

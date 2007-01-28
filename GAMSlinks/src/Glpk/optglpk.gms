@@ -3,9 +3,9 @@ $eolcom //
 set g Glpk Option Groups /
         general        General Options
       /
-    e / '-1', 0*100, '+n', off, 
+    e / '-1', 0*100,
         primal, dual,
-        equilibrium, mean, meanequilibrium,
+        off, equilibrium, mean, meanequilibrium,
         textbook, steepestedge,
         depthfirst, breadthfirst, bestprojection /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
@@ -40,7 +40,7 @@ general.(
   tol_primal      .r.(def 1e-7)
   tol_integer     .r.(def 1e-5)
   backtracking    .s.(def bestprojection)
-  cuts            .b.(def 0)
+  cuts            .i.(def 0)
 * GAMS options
   reslim          .r.(def 1000)
   iterlim         .i.(def 10000)
@@ -51,8 +51,8 @@ general.(
 ) /
 $onempty
   oe(o,e) /
-  startalg.(      primal  primal simplex algorithm
-                  dual    dual simplex algorithm )
+  startalg.(      primal           use the primal simplex algorithm for the root node
+                  dual             use the dual simplex algorithm for the root node )
   scaling.(       off              no scaling
                   equilibrium      equilibrium scaling 
                   mean             geometric mean scaling
@@ -62,6 +62,8 @@ $onempty
   backtracking.(  depthfirst       depth first search
                   breadthfirst     breadth first search
                   bestprojection   using best projection heuristic )
+  cuts.(          0                do not generate cuts
+                  1                generate cuts for the initial LP relaxation )
  /
 $offempty
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
