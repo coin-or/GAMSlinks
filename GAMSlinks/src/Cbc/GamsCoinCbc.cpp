@@ -73,8 +73,8 @@ int main (int argc, const char *argv[]) {
 	/* Overwrite GAMS Options */
 	if (!gm.optDefined("reslim")) gm.optSetDouble("reslim", gm.getResLim());
 	if (!gm.optDefined("iterlim")) gm.optSetInteger("iterlim", gm.getIterLim());
-	if (!gm.optDefined("nodelim")) gm.optSetInteger("nodelim", gm.optDefined("nodlim") ? gm.optGetInteger("nodlim") : gm.getNodeLim());
 	if (!gm.optDefined("nodlim")) gm.optSetInteger("nodlim", gm.getNodeLim());
+	if (!gm.optDefined("nodelim")) gm.optSetInteger("nodelim", gm.optGetInteger("nodlim"));
 	if (!gm.optDefined("optca")) gm.optSetDouble("optca", gm.getOptCA());
 	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
 	if (!gm.optDefined("cutoff") && gm.getCutOff()!=gm.ObjSense()*solver.getInfinity()) gm.optSetDouble("cutoff", gm.getCutOff());

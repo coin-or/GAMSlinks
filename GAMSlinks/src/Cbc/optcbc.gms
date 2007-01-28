@@ -3,19 +3,19 @@ $eolcom //
 set g Cbc Option Groups /
         general        General Options
       /
-    e / '-1', 0*100, '+n', primal, dual, barrier, default, depth, objective /
+    e / '-1', 0*100, primal, dual, default, depth, objective /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
     t / I Integer, R Real, S String, B Binary /
     o Options /
-      cuts                   switch for cut generation 
       roundingheuristic      rounding heuristic
       localsearch            local search
       strongbranching        strong branching
       integerpresolve        integer presolve
-      findsos                find sos
-      probing                probing cuts
+      findsos                find sos in integer presolve
+      cuts                   switch for cut generation 
+      probing                probing
       gomorycuts             Gomory cuts
-      knapsackcuts           knapsack cuts
+      knapsackcuts           knapsack cover cuts
       oddholecuts            odd hole cuts
       cliquecuts             clique cuts
       flowcovercuts          flow cover cuts
@@ -43,21 +43,21 @@ set g Cbc Option Groups /
 $onembedded
     optdata(g,o,t,f) /
 general.(
+  roundingheuristic   .i.(def 1)
+  localsearch         .i.(def 1)
+  strongbranching     .i.(def 1)
+  integerpresolve     .i.(def 1)
+  findsos             .i.(def 1)
   cuts                .i.(def 0, lo -1, up 1)
-  roundingheuristic   .b.(def 1)
-  localsearch         .b.(def 1)
-  strongbranching     .b.(def 1)
-  integerpresolve     .b.(def 1)
-  findsos             .b.(def 1)
-  probing             .b.(def 1)
-  gomorycuts          .b.(def 1)
-  knapsackcuts        .b.(def 1)
-  oddholecuts         .b.(def 0)
-  cliquecuts          .b.(def 1)
-  flowcovercuts       .b.(def 1)
-  mircuts             .b.(def 1)
-  redsplitcuts        .b.(def 0)
-  cutsonlyatroot      .b.(def 1)
+  probing             .i.(def 1)
+  gomorycuts          .i.(def 1)
+  knapsackcuts        .i.(def 1)
+  oddholecuts         .i.(def 0)
+  cliquecuts          .i.(def 1)
+  flowcovercuts       .i.(def 1)
+  mircuts             .i.(def 1)
+  redsplitcuts        .i.(def 0)
+  cutsonlyatroot      .i.(def 1)
   startalg            .s.(def dual)
   writemps            .s.(def '')
   integertolerance    .r.(def 1e-6)
@@ -76,14 +76,38 @@ general.(
   readfile        .s.(def '')
 ) /
   oe(o,e) /
-  cuts.(         '-1'     no cuts will be generated
+  cuts.(           '-1'   no cuts will be generated
                    0      automatic
                    1      cuts from all available cut classes will be generated )
-  startalg.(      primal  primal simplex algorithm
-                  dual    dual simplex algorithm )
-  nodecompare.(   default default compare method
-                  depth   depth first search
-                  objective choose node with best objective value )
+  localsearch.(    0      local search heuristic is not used
+                   1      local search heuristic is used )
+  strongbranching.(0      strong branching is switched off
+                   1      strong branching is switched on )
+  integerpresolve.(0      don't do integer presolve
+                   1      do integer presolve )
+  findsos.(        0      don't try to find special ordered sets
+                   1      try to find special ordered sets )
+  probing.(        0      don't do probing
+                   1      do probing )
+  gomorycuts.(     0      don't add gomory cuts
+                   1      add gomory cuts )
+  knapsackcuts.(   0      don't add knapsack cover cuts
+                   1      add knapsack cover cuts )
+  oddholecuts.(    0      don't add odd hole cuts
+                   1      add odd hole cuts )
+  cliquecuts.(     0      don't add clique cuts
+                   1      add clique cuts )
+  flowcovercuts.(  0      don't add flow cover cuts
+                   1      add flow cover cuts )
+  mircuts.(        0      don't add mixed integer rounding cuts
+                   1      add mixed integer rounding cuts )
+  redsplitcuts.(   0      don't add reduce and split cuts
+                   1      add reduce and split cuts )
+  cutsonlyatroot.( 0      generate cuts always in the branch and bound
+                   1      generate cuts only at root node )
+  startalg.(       primal  primal simplex algorithm
+                   dual    dual simplex algorithm )
+  nodecompare.(    default, depth, objective )
  /
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /
