@@ -1,4 +1,4 @@
-$setglobal PDFLINK none
+$setglobal PDFLINK coin.pdf
 $eolcom //
 set g Cbc Option Groups /
         general        General Options
@@ -43,21 +43,21 @@ set g Cbc Option Groups /
 $onembedded
     optdata(g,o,t,f) /
 general.(
-  roundingheuristic   .i.(def 1)
-  localsearch         .i.(def 1)
-  strongbranching     .i.(def 1)
-  integerpresolve     .i.(def 1)
-  findsos             .i.(def 1)
+  roundingheuristic   .b.(def 1)
+  localsearch         .b.(def 1)
+  strongbranching     .b.(def 1)
+  integerpresolve     .b.(def 1)
+  findsos             .b.(def 1)
   cuts                .i.(def 0, lo -1, up 1)
-  probing             .i.(def 1)
-  gomorycuts          .i.(def 1)
-  knapsackcuts        .i.(def 1)
-  oddholecuts         .i.(def 0)
-  cliquecuts          .i.(def 1)
-  flowcovercuts       .i.(def 1)
-  mircuts             .i.(def 1)
-  redsplitcuts        .i.(def 0)
-  cutsonlyatroot      .i.(def 1)
+  probing             .b.(def 1)
+  gomorycuts          .b.(def 1)
+  knapsackcuts        .b.(def 1)
+  oddholecuts         .b.(def 0)
+  cliquecuts          .b.(def 1)
+  flowcovercuts       .b.(def 1)
+  mircuts             .b.(def 1)
+  redsplitcuts        .b.(def 0)
+  cutsonlyatroot      .b.(def 1)
   startalg            .s.(def dual)
   writemps            .s.(def '')
   integertolerance    .r.(def 1e-6)
@@ -119,3 +119,6 @@ general.(
                      optca      'GAMS optca' 
                      optcr      'GAMS optcr'
                      cutoff     'GAMS cutoff' /
+ oep(o) / localsearch, strongbranching, integerpresolve, findsos,
+    probing, gomorycuts, knapsackcuts, oddholecuts, cliquecuts,
+    flowcovercuts, mircuts, redsplitcuts, cutsonlyatroot /;

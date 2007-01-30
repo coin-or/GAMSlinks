@@ -1,4 +1,4 @@
-$setglobal PDFLINK none
+$setglobal PDFLINK coin.pdf
 $eolcom //
 set g Glpk Option Groups /
         general        General Options
@@ -40,7 +40,7 @@ general.(
   tol_primal      .r.(def 1e-7)
   tol_integer     .r.(def 1e-5)
   backtracking    .s.(def bestprojection)
-  cuts            .i.(def 0)
+  cuts            .b.(def 0)
 * GAMS options
   reslim          .r.(def 1000)
   iterlim         .i.(def 10000)
@@ -73,5 +73,5 @@ $offempty
                      iterlim    'GAMS iterlim' 
                      optcr      'GAMS optcr' /
 $onempty
- oep(o) enum options for documentation only / /;
+ oep(o) enum options for documentation only / cuts /;
 $offempty

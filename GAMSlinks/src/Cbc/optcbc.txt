@@ -86,7 +86,7 @@ A similar cut can be generated for "sum x(i) >= 1".
 cliquecuts            
 This options switches the generation of clique cuts on.
 Clique cuts are of the form "sum of a set of variables <= 1".
-Refer to the <A href="https://projects.coin-or.org/Cgl/wiki/CglClique">CglClique webpage</A> for further information.
+Refer to the <A href="https://projects.coin-or.org/Cgl/wiki/CglClique">CglClique web page</A> for further information.
 
 
 flowcovercuts
@@ -99,7 +99,7 @@ Although flow cover inequalities requires a special problem structure to be gene
 
 mircuts
 This options switches the generation of mixed integer rounding cuts on.
-Refer to the <A href="https://projects.coin-or.org/Cgl/wiki/CglMixedIntegerRounding2">CglMixedIntegerRounding2 webpage</A> for further information.
+Refer to the <A href="https://projects.coin-or.org/Cgl/wiki/CglMixedIntegerRounding2">CglMixedIntegerRounding2 web page</A> for further information.
 
 
 redsplitcuts
@@ -132,7 +132,7 @@ This option controls the number of nodes evaluated between status prints.
 
 
 nodecompare
-This option determines the comparision method that is used to determine the tree search order.
+This option determines the comparison method that is used to determine the tree search order.
 The following documentation is taken from the <A href="http://www.coin-or.org/Cbc/ch03.html">Cbc manual</A>.
 
 
