@@ -270,10 +270,81 @@ bool SMAG_NLP::intermediate_callback (AlgorithmMode mode, Index iter, Number obj
 
 void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x, const Number *z_L, const Number *z_U,
 		   Index m, const Number *g, const Number *lambda, Number obj_value) {
-	//TODO: set iteration number
+	int model_status;
+	int solver_status;
+	bool write_solution=false;
+	
   switch (status) {
-  case SUCCESS:
-  case STOP_AT_ACCEPTABLE_POINT: {
+	  case SUCCESS:
+	  case STOP_AT_ACCEPTABLE_POINT:
+	  	model_status=smagColCountNL(prob) ? 2 : 1; // local optimal for nlps, optimal for lps
+	  	solver_status=1;
+	  	write_solution=true; 
+			break;
+	  case LOCAL_INFEASIBILITY: 
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "Local infeasible!!\n");
+			model_status=smagColCountNL(prob) ? 5 : 4; // local infeasible for nlps, infeasible for lps
+			solver_status=1;
+			write_solution=true;
+	    break;
+	  case DIVERGING_ITERATES:
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "Diverging iterates: we'll guess unbounded!!\n");
+			model_status=3;
+			solver_status=1;
+			write_solution=true;
+	    break;
+		case STOP_AT_TINY_STEP:
+	  case RESTORATION_FAILURE:
+			//TODO: can Ipopt tell me if current point is feasible?
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: we don't know about optimality or feasibility!!\n");
+			model_status=6;
+			solver_status=4;
+			write_solution=true;
+	    break;
+	  case MAXITER_EXCEEDED:
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "Iteration limit exceeded!!\n");
+			model_status=6;
+			solver_status=2;
+			write_solution=true;
+			break;
+		case USER_REQUESTED_STOP:
+			if (domviollimit && domviolations>=domviollimit) {
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Domain violation limit exceeded!!\n");
+				model_status=6;
+				solver_status=5;
+			} else {
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Time limit exceeded!!\n");
+				model_status=6;
+				solver_status=3;
+			}
+			write_solution=true;
+			break;
+		case ERROR_IN_STEP_COMPUTATION:
+		case TOO_FEW_DEGREES_OF_FREEDOM:
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "Error in step compuation or too few degrees of freedom!!\n");
+			model_status=13;
+			solver_status=10;
+			break;
+		case INVALID_NUMBER_DETECTED:
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "Invalid number detected!!\n");
+			model_status=13;
+			solver_status=13;
+			break;
+		case INTERNAL_ERROR:
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "Internal error!!\n");
+			model_status=13;
+			solver_status=11;
+			break;
+	  default:
+	  	char buffer[255];
+	  	sprintf(buffer, "OUCH: unhandled SolverReturn of %d\n", status);
+			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+			model_status=12;
+			solver_status=13;
+  } // switch
+
+//TODO: set iteration number
+  if (write_solution) {
 		unsigned char* colBasStat=new unsigned char[n];
 		unsigned char* colIndic=new unsigned char[n];
 		double* colMarg=new double[n];
@@ -298,67 +369,20 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 //				rowLev[i]=g[i];
 //			}
     }
-		smagReportSolFull(prob, prob->hesData->lowTriNZ ? 2 : 1, 1,
+		smagReportSolFull(prob, model_status, solver_status,
 			SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, obj_value*isMin, domviolations,
 			/*rowLev*/ g, negLambda, rowBasStat, rowIndic,
 			x, colMarg, colBasStat, colIndic);
-
+			
 		delete[] colBasStat;
 		delete[] colIndic;
 		delete[] colMarg;
 		delete[] rowBasStat;
 		delete[] rowIndic;
 //		delete[] rowLev;
-	}	break;
-  case LOCAL_INFEASIBILITY: 
-  	// TODO: if IPOPT returns us an infeasible point here, we should write it and return 4 (for LPs) or 5 (for NLPs) 
-		smagStdOutputPrint(prob, SMAG_LOGMASK, "Local infeasible!!\n");
-		smagReportSolStats (prob, 19, 1, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
-    break;
-  case DIVERGING_ITERATES:
-  	//TODO: or should we return a solution here and return 3 instead of 18?
-		smagStdOutputPrint(prob, SMAG_LOGMASK, "Diverging iterates: we'll guess unbounded!!\n");
-		smagReportSolStats (prob, 18, 1, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
-    break;
-	case STOP_AT_TINY_STEP:
-  case RESTORATION_FAILURE:
-		//TODO: can Ipopt tell me if current point is feasible?
-		smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: we don't know about optimality or feasibility!!\n");
-		smagReportSolStats (prob, 14, 4, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
-    break;
-  case MAXITER_EXCEEDED:
-  	//TODO: or can we return a solution here and return 6 instead of 14?
-		smagStdOutputPrint(prob, SMAG_LOGMASK, "Iteration limit exceeded!!\n");
-		smagReportSolStats (prob, 14, 2, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
-		break;
-	case USER_REQUESTED_STOP:
-  	//TODO: or can we return a solution here and return 6 instead of 14?
-		if (domviollimit && domviolations>=domviollimit) {
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Domain violation limit exceeded!!\n");
-			smagReportSolStats (prob, 14, 5, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
-		} else {
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Time limit exceeded!!\n");
-			smagReportSolStats (prob, 14, 3, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
-		}
-		break;
-	case ERROR_IN_STEP_COMPUTATION:
-	case TOO_FEW_DEGREES_OF_FREEDOM:
-		smagStdOutputPrint(prob, SMAG_LOGMASK, "Error in step compuation or too few degrees of freedom!!\n");
-		smagReportSolStats (prob, 13, 10, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
-		break;
-	case INVALID_NUMBER_DETECTED:
-		smagStdOutputPrint(prob, SMAG_LOGMASK, "Invalid number detected!!\n");
-		smagReportSolStats (prob, 13, 13, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
-		break;
-	case INTERNAL_ERROR:
-		smagStdOutputPrint(prob, SMAG_LOGMASK, "Internal error!!\n");
-		smagReportSolStats (prob, 13, 11, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
-		break;
-  default:
-  	char buffer[255];
-  	sprintf(buffer, "OUCH: unhandled SolverReturn of %d\n", status);
-		smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
-		smagReportSolStats (prob, 12, 13, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
-  } // switch
+  } else {
+		smagReportSolStats (prob, model_status, solver_status, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
+  }
+  
 
 } // finalize_solution
