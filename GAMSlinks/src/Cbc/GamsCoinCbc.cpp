@@ -67,11 +67,11 @@ int main (int argc, const char *argv[]) {
 	solver.passInMessageHandler(&slvout);
 	solver.setHintParam(OsiDoReducePrint,true,OsiHintTry);
 	
-	myout << "\nGAMS/CoinCbc 1.1.0 LP/MIP Solver\nwritten by J.Forrest\n " << CoinMessageEol;
-	
 #ifdef GAMS_BUILD	
+	myout << "\nGAMS/CoinCbc 1.1.0 LP/MIP Solver\nwritten by J.Forrest\n " << CoinMessageEol;
 	if (!gm.ReadOptionsDefinitions("coincbc"))
 #else
+	myout << "\nGAMS/Cbc 1.1.0 LP/MIP Solver\nwritten by J.Forrest\n " << CoinMessageEol;
 	if (!gm.ReadOptionsDefinitions("cbc"))
 #endif
 		myout << "Error intializing option file handling or reading option file definitions!" << CoinMessageEol

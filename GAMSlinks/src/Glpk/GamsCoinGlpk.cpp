@@ -65,7 +65,11 @@ int main (int argc, const char *argv[]) {
 	lib_set_print_hook(&myout, printme);
 	solver.passInMessageHandler(&slvout);
 
-	myout << "\nGAMS/CoinGlpk Lp/Mip Solver (Glpk Library 4.9)\nwritten by A. Makhorin\n " << CoinMessageEol;
+#ifdef GAMS_BUILD	
+	myout << "\nGAMS/CoinGlpk LP/MIP Solver (Glpk Library 4.9)\nwritten by A. Makhorin\n " << CoinMessageEol;
+#else
+	myout << "\nGAMS/Glpk LP/MIP Solver (Glpk Library 4.9)\nwritten by A. Makhorin\n " << CoinMessageEol;
+#endif
 	
 	if (gm.nSOS1() || gm.nSOS2()) {
 		myout << "GLPK cannot handle special ordered sets (SOS)" << CoinMessageEol;
