@@ -110,6 +110,20 @@ AC_COIN_CHECK_CXX_CHEADER(string)
 AC_COIN_CHECK_CXX_CHEADER(stdarg)
 AC_COIN_CHECK_CXX_CHEADER(limits)
 
+###########
+# va_copy #
+###########
+
+AC_CHECK_DECL([va_copy],[AC_DEFINE([HAVE_VA_COPY],[1],
+                                   [Define to 1 if va_copy is avaliable])],,[
+#ifdef HAVE_CSTDARG
+# include <cstdarg>
+#else
+# ifdef HAVE_STDARG_H
+#  include <stdarg.h>
+# endif
+#endif])
+
 ##########################################################################
 
 # Additional libraries and packages
