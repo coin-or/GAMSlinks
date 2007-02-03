@@ -24,7 +24,7 @@ EXTRA_DIST = \
 # tmpdir = tmpdir
 
 test:
-	cd test; make test
+	cd test; $(MAKE) test
 
 unitTest: test
 

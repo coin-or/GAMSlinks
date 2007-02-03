@@ -31,12 +31,11 @@ AC_CONFIG_SRCDIR(configure.ac)
 # /usr/local.
 AC_PREFIX_DEFAULT([`pwd`])
 
-#############################################################################
-#     We only need automake to generate Makefiles for the distribution      #
+##############################################################################
+#              Create the libtool script for the subdirectories             #
 #############################################################################
 
-# Initialize automake
-AC_COIN_INIT_AUTOMAKE
+AC_COIN_CREATE_LIBTOOL
 
 #############################################################################
 #             Check which ThirdParty sources are available                  #
