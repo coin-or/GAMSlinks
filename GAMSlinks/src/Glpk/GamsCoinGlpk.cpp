@@ -7,7 +7,16 @@
 // Authors:  Michael Bussieck, Stefan Vigerske
 
 #include "GAMSlinksConfig.h"
-#include <iostream>
+
+#ifdef HAVE_CSTDIO
+#include <cstdio>
+#else
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#else
+#error "don't have header file for stdio"
+#endif
+#endif
 
 #include "OsiGlpkSolverInterface.hpp"
 #include "CoinPackedVector.hpp"
@@ -37,7 +46,7 @@ int main (int argc, const char *argv[]) {
 #endif
 
 	if (argc==1) {
-		std::cerr << "usage: " << argv[0] << " <gams-control-file>" << std::endl;
+		fprintf(stderr, "usage: %s <control_file_name>\nexiting ...\n",  argv[0]);
 		exit(EXIT_FAILURE);
 	}	
 	int j;

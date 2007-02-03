@@ -12,6 +12,14 @@
 #include "GAMSlinksConfig.h"
 
 #include "IpTNLP.hpp"
+
+// smag.h will try to include stdio.h and stdarg.h, so we include cstdio and cstdarg before if we know that we have them
+#ifdef HAVE_CSTDIO
+#include <cstdio>
+#endif
+#ifdef HAVE_CSTDARG
+#include <cstdarg>
+#endif
 #include "smag.h"
 
 using namespace Ipopt;

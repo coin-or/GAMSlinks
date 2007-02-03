@@ -8,12 +8,20 @@
 
 #include "GAMSlinksConfig.h"
 
-#include <iostream>
+#ifdef HAVE_CSTDIO
+#include <cstdio>
+#else
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#else
+#error "don't have header file for stdio"
+#endif
+#endif
+
 #include "IpIpoptApplication.hpp"
 #include "SmagNLP.hpp"
 #include "SmagJournal.hpp"
 
-using namespace std;
 using namespace Ipopt;
 
 int main (int argc, char* argv[]) {
@@ -24,24 +32,19 @@ int main (int argc, char* argv[]) {
   smagHandle_t prob;
 
   if (argc < 2) {
-    cout << "usage: " << argv[0] << " control_file_name" << endl;
-    cout << "exiting . . . " << endl;
+  	fprintf(stderr, "usage: %s <control_file_name>\nexiting ...\n", argv[0]);
     return EXIT_FAILURE;
   }
 
   prob = smagInit (argv[1]);
   if (!prob) {
-  	cerr << "Error reading control file " << argv[1] << endl;
-  	cerr << "exiting . . . " << endl;
+  	fprintf(stderr, "Error reading control file %s\nexiting ...\n", argv[1]);
 		return EXIT_FAILURE;  	
   }
   
   char buffer[512];
-  int ret=smagStdOutputStart(prob, SMAG_STATUS_OVERWRITE_IFDUMMY, buffer, sizeof(buffer));
-  if (ret) {
-  	cerr << "Warning: Error opening GAMS output files .. continuing anyhow" << endl;
-    cerr << '\t' << buffer << endl;
-  }
+  if (smagStdOutputStart(prob, SMAG_STATUS_OVERWRITE_IFDUMMY, buffer, sizeof(buffer)!=0))
+  	fprintf(stderr, "Warning: Error opening GAMS output files .. continuing anyhow\t%s\n", buffer);
   
   smagReadModelStats (prob);
   smagSetObjFlavor (prob, OBJ_FUNCTION);

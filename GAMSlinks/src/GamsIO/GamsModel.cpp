@@ -6,11 +6,45 @@
 //
 // Authors:  Michael Bussieck, Stefan Vigerske
 
-#include <cassert>
-#include <cstdio>
-#include <limits.h>
-
 #include "GamsModel.hpp"
+
+#ifdef HAVE_CSTDLIB
+#include <cstdlib>
+#else
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#else
+#error "don't have header file for stdlib"
+#endif
+#endif
+#ifdef HAVE_CSTDIO
+#include <cstdio>
+#else
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#else
+#error "don't have header file for stdio"
+#endif
+#endif
+#ifdef HAVE_CASSERT
+#include <cassert>
+#else
+#ifdef HAVE_ASSERT_H
+#include <assert.h>
+#else
+#error "don't have header file for assert"
+#endif
+#endif
+#ifdef HAVE_CLIMITS
+#include <climits>
+#else
+#ifdef HAVE_ASSERT_H
+#include <limits.h>
+#else
+#error "don't have header file for assert"
+#endif
+#endif
+
 #include "iolib.h"
 #include "dict.h"
 #include "optcc.h"

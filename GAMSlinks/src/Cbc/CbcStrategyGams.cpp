@@ -10,9 +10,18 @@
 
 #include "CbcStrategyGams.hpp"
 
-#include <cassert>
-#include <cmath>
-#include <cfloat>
+#ifdef HAVE_CSTDIO
+#include <cstdio>
+#else
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#else
+#error "don't have header file for stdio"
+#endif
+#endif
+
+// for CoinAbs 
+#include "CoinHelperFunctions.hpp"
 
 #include "OsiSolverInterface.hpp"
 #ifdef COIN_HAS_CLP
@@ -26,8 +35,8 @@
 #include "CbcNode.hpp"
 #include "CoinWarmStart.hpp"
 #include "CglPreProcess.hpp"
-// Cuts
 
+// Cuts
 #include "CglGomory.hpp"
 #include "CglProbing.hpp"
 #include "CglKnapsackCover.hpp"
@@ -141,7 +150,7 @@ void CbcStrategyGams::setupCutGenerators(CbcModel & model) {
 	model.setMaximumCutPasses(10);
 
 	// minimum drop to continue cuts
-	model.setMinimumDrop(min(1.0, fabs(model.getObjValue())*1.0e-3+1.0e-4));
+	model.setMinimumDrop(min(1.0, CoinAbs(model.getObjValue())*1.0e-3+1.0e-4));
 }
 
 // Setup heuristics

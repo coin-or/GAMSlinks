@@ -20,8 +20,6 @@
 #define STATUSMASK 0x2
 #define ALLMASK    LOGMASK|STATUSMASK
 
-#include <cstdlib>
-
 extern "C" struct dictRec;
 extern "C" struct optRec; 
 

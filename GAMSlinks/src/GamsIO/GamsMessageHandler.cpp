@@ -12,8 +12,25 @@
 #endif
 
 #include "GamsMessageHandler.hpp"
+
+#ifdef HAVE_CSTDIO
 #include <cstdio>
+#else
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#else
+#error "don't have header file for stdio"
+#endif
+#endif
+#ifdef HAVE_CSTRING
 #include <cstring>
+#else
+#ifdef HAVE_STRING_H
+#include <string.h>
+#else
+#error "don't have header file for string"
+#endif
+#endif
 
 #define LOGMASK    0x1
 #define STATUSMASK 0x2
