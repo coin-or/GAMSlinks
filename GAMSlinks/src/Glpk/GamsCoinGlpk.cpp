@@ -182,7 +182,7 @@ int main (int argc, const char *argv[]) {
 
 	solver.initialSolve();
 	
-	if (0 != gm.nDCols()) {
+	if (solver.isProvenOptimal() && 0!=gm.nDCols()) {
 		myout << "\n" << CoinMessageEol;
 
 		gm.optGetString("backtracking", buffer);

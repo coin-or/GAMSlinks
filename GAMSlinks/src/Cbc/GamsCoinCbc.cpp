@@ -164,7 +164,8 @@ int main (int argc, const char *argv[]) {
 	model.solver()->messageHandler()->setLogLevel(4);
 	model.initialSolve();
 
-	if (0==gm.nDCols() && 0==gm.nSOS1() && 0==gm.nSOS2()) {  // If this was an LP we are done
+	// If this was an LP or the LP relaxation couldn't be solved we are done
+	if (!model.solver()->isProvenOptimal() || (0==gm.nDCols() && 0==gm.nSOS1() && 0==gm.nSOS2())) {
 	  // Get some statistics 
 	  gm.setIterUsed(model.solver()->getIterationCount());
 	  gm.setResUsed(gm.SecondsSinceStart());

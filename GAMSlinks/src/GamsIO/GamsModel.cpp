@@ -165,6 +165,8 @@ GamsModel::~GamsModel()
 
 	// Close dictionary
 	if (dict) gcdFree(dict);
+	// Close options systems
+	if (optionshandle) optFree(&optionshandle);
   // Close IO system
   gfclos ();
 }
