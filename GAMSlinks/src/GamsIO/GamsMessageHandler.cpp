@@ -32,13 +32,13 @@
 #endif
 #endif
 
-#define LOGMASK    0x1
-#define STATUSMASK 0x2
-#define ALLMASK    LOGMASK|STATUSMASK
+GamsMessageHandler::GamsMessageHandler(GamsModel *GMptr)
+: GMptr_(GMptr), rmlblanks_(1) 
+{ }
 
 // Print message, return 0 normally
 int GamsMessageHandler::print() {
-  const char *messageOut = messageBuffer();
+  char *messageOut = const_cast<char*>(messageBuffer());
   char *lastchar;
   int i=rmlblanks_;
 
@@ -46,30 +46,18 @@ int GamsMessageHandler::print() {
   while (i-- > 0 && *messageOut == ' ') 
       messageOut++;
 	//TODO: maybe copy the string before altering it?  
-  lastchar = const_cast<char*>(messageOut) + strlen(messageOut); lastchar--;
+  lastchar = messageOut + strlen(messageOut); lastchar--;
   while (*lastchar == '\n') {
     *lastchar = 0; lastchar--;
   }
   if (0 == GMptr_)
-    printf("%s", messageOut);
+    printf("%s\n", messageOut);
   else {
     int detail = currentMessage().detail();
     if (detail < 2)
-      GMptr_->PrintOut(ALLMASK, messageOut);
+      GMptr_->PrintOut(GamsModel::AllMask, messageOut);
     else
-      GMptr_->PrintOut(STATUSMASK, messageOut);
+      GMptr_->PrintOut(GamsModel::LogMask, messageOut);
   }
   return 0;
 }
-
-GamsMessageHandler::GamsMessageHandler()
-: GMptr_(NULL), rmlblanks_(1) 
-{ }
-
-void
-GamsMessageHandler::setGamsModel(GamsModel *GMptr)
-{ 
-  GMptr_= GMptr; 
-}
-
-

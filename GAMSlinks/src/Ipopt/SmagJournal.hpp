@@ -12,7 +12,8 @@
 
 #include "GAMSlinksConfig.h"
 
-// smag.h will try to include stdio.h and stdarg.h, so we include cstdio and cstdarg before if we know that we have them
+// smag.h will try to include stdio.h and stdarg.h
+// so we include cstdio and cstdarg before if we know that we have them
 #ifdef HAVE_CSTDIO
 #include <cstdio>
 #endif
@@ -25,36 +26,30 @@
 
 using namespace Ipopt;
 
-/** SmagJournal class. This is a particular Journal implementation that
- *  uses the SMAG routines for output.
+/** A particular Journal implementation that uses the SMAG routines for output.
  */
 class SmagJournal : public Journal {
 public:
-  /** Constructor. */
+  /** Constructor.
+   */
   SmagJournal(smagHandle_t smag_, unsigned int smag_mask_, const char* name, EJournalLevel default_level)
   : Journal(name, default_level), smag(smag_), smag_mask(smag_mask_)
   { }
 
-  /** Destructor. */
+  /** Destructor.
+   */
   ~SmagJournal() { }
 
 protected:
-  /**@name Implementation version of Print methods - Overloaded from Journal base class.
-   */
-  //@{
-  /** Print to the designated output location */
   virtual void PrintImpl(const char* str) {
   	smagStdOutputPrintX(smag, smag_mask, str, 0);
   }
 
-  /** Printf to the designated output location */
   virtual void PrintfImpl(const char* pformat, va_list ap);
 
-  /** Flush output buffer.*/
   virtual void FlushBufferImpl() {
   	smagStdOutputFlush(smag, SMAG_ALLMASK);
 	}
-  //@}
 
 private:
 	smagHandle_t smag;
@@ -66,16 +61,9 @@ private:
    * them for us, so we declare them private
    * and do not define them. This ensures that
    * they will not be implicitly created/called. */
-  //@{
-  /** Default Constructor */
   SmagJournal();
-
-  /** Copy Constructor */
   SmagJournal(const SmagJournal&);
-
-  /** Overloaded Equals Operator */
   void operator=(const SmagJournal&);
-  //@}
 };
 
 #endif // __SMAGJOURNAL_HPP__

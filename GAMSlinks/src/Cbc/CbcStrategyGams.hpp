@@ -5,8 +5,6 @@
 // $Id$
 //
 // Author:  Stefan Vigerske
-//
-// This CbcStrategy is copied in large portions from John Forrest's CbcStrategyDefault.
 
 #ifndef __CBCSTRATEGYGAMS_HPP__
 #define __CBCSTRATEGYGAMS_HPP__
@@ -17,35 +15,47 @@
 #include "CbcModel.hpp"
 #include "CbcStrategy.hpp"
 
+/** The CbcStrategy to use for Gams/CoinCbc.
+ * This CbcStrategy is copied in large portions from John Forrest's CbcStrategyDefault,
+ * but it takes care of options set in a Cbc option file.
+ */ 
 class CbcStrategyGams : public CbcStrategy {
 public:
-  // Default Constructor 
+  /** Default Constructor.
+   * @param gm_ A GamsModel, needed to read options.
+   */ 
   CbcStrategyGams(GamsModel& gm_);
-  // Copy constructor 
+  /** Copy constructor.
+   */ 
   CbcStrategyGams(const CbcStrategyGams& rhs);
    
-  // Destructor 
+  /** Destructor.
+   */ 
   ~CbcStrategyGams() { }
   
-  /// Clone
+  /** Cloning method.
+   */
   virtual CbcStrategy* clone() const;
 
-  /// Setup cut generators
+  /** Setup for cut generators.
+   */
   virtual void setupCutGenerators(CbcModel & model);
-  /// Setup heuristics
+  /** Setup for heuristics.
+   */
   virtual void setupHeuristics(CbcModel & model);
-  /// Do printing stuff
+  /** Setup for printing stuff.
+   */
   virtual void setupPrinting(CbcModel & model,int modelLogLevel);
-  /// Other stuff: preprocessing and strong branching
+  /** Setup for other stuff, e.g., preprocessing and strong branching.
+   */
   virtual void setupOther(CbcModel & model);
-  /// Create C++ lines to get to current state
+  /** Creates C++ lines to get to current state.
+   */
   virtual void generateCpp(FILE * fp);
 
 private:
-  // Illegal Assignment operator 
   CbcStrategyDefault & operator=(const CbcStrategyDefault&);
   
-  // Data
   GamsModel& gm;
 };
 

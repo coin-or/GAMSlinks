@@ -61,10 +61,9 @@ int main (int argc, const char *argv[]) {
 	GamsModel gm(argv[1],-solver.getInfinity(),solver.getInfinity());
 
 	// Pass in the GAMS status/log file print routines 
-	GamsMessageHandler myout, cbcout, slvout;
-	myout.setGamsModel(&gm);
-	slvout.setGamsModel(&gm); slvout.setPrefix(0);
-	cbcout.setGamsModel(&gm); cbcout.setPrefix(0);
+	GamsMessageHandler myout(&gm), cbcout(&gm), slvout(&gm);
+	slvout.setPrefix(0);
+	cbcout.setPrefix(0);
 	solver.passInMessageHandler(&slvout);
 	solver.setHintParam(OsiDoReducePrint,true,OsiHintTry);
 	
@@ -96,7 +95,7 @@ int main (int argc, const char *argv[]) {
 	  rowrng[i] = 0.0;
 
 	solver.setObjSense(gm.ObjSense());
-	solver.setDblParam(OsiObjOffset, gm.ObjRhs()); // obj constant
+	solver.setDblParam(OsiObjOffset, gm.ObjConstant()); // obj constant
 
 	solver.loadProblem(gm.nCols(), gm.nRows(), gm.matStart(), 
 	                    gm.matRowIdx(), gm.matValue(), 

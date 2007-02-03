@@ -13,7 +13,8 @@
 
 #include "IpTNLP.hpp"
 
-// smag.h will try to include stdio.h and stdarg.h, so we include cstdio and cstdarg before if we know that we have them
+// smag.h will try to include stdio.h and stdarg.h
+// so we include cstdio and cstdarg before if we know that we have them
 #ifdef HAVE_CSTDIO
 #include <cstdio>
 #endif
@@ -24,15 +25,18 @@
 
 using namespace Ipopt;
 
+/** A TNLP for Ipopt that uses SMAG to interface the problem formulation.
+ */
 class SMAG_NLP : public TNLP {
 public:
-  /* contructor */
+  /** Contructor.
+   * @param prob The SMAG handle for the problem.
+   */
   SMAG_NLP (smagHandle_t prob);
 
-  /** default destructor */
+  /** Default destructor. */
   virtual ~SMAG_NLP();
 
-  /* Overloaded from TNLP */
   /** Method to return some info about the nlp */
   virtual bool get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
                             Index& nnz_h_lag, IndexStyleEnum& index_style);
@@ -73,10 +77,13 @@ public:
                       bool new_lambda, Index nele_hess, Index* iRow,
                       Index* jCol, Number* values);
 
+	/** Method called by the solver at each iteration.
+	 * Checks the domain violation limit and time limit and stops the solver in case of limit exceedance.
+	 */
 	virtual bool intermediate_callback (AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq);
 
-  /* Solution Methods */
-  /** This method is called when the algorithm is complete so the TNLP can store/write the solution */
+  /** This method is called when the algorithm is complete so the TNLP can store/write the solution.
+   */
   virtual void finalize_solution(SolverReturn status,
 		    Index n, const Number* x, const Number* z_L,
 		    const Number* z_U,
@@ -100,7 +107,6 @@ private:
    *  and never implement them. This prevents the compiler from
    *  implementing an incorrect "default" behavior without us
    *  knowing. (See Scott Meyers book, "Effective C++")
-   *  
    */
 	SMAG_NLP();
   SMAG_NLP(const SMAG_NLP&);

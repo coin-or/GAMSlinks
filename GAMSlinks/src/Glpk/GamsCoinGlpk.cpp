@@ -59,11 +59,10 @@ int main (int argc, const char *argv[]) {
 	GamsModel gm(argv[1],-solver.getInfinity(),solver.getInfinity());
 
 	// Pass in the GAMS status/log file print routines 
-	GamsMessageHandler myout, slvout;
-	myout.setGamsModel(&gm);
-	lib_set_print_hook(&myout, printme);
+	GamsMessageHandler myout(&gm), slvout(&gm);
+	slvout.setPrefix(0);
 
-	slvout.setGamsModel(&gm); slvout.setPrefix(0);
+	lib_set_print_hook(&myout, printme);
 	solver.passInMessageHandler(&slvout);
 
 	myout << "\nGAMS/CoinGlpk Lp/Mip Solver (Glpk Library 4.9)\nwritten by A. Makhorin\n " << CoinMessageEol;
@@ -98,7 +97,7 @@ int main (int argc, const char *argv[]) {
 	gm.matSqueezeZeros();
 		
 	solver.setObjSense(gm.ObjSense());
-	solver.setDblParam(OsiObjOffset, gm.ObjRhs()); // obj constant
+	solver.setDblParam(OsiObjOffset, gm.ObjConstant()); // obj constant
 
 	solver.loadProblem(gm.nCols(), gm.nRows(), gm.matStart(), 
 															gm.matRowIdx(), gm.matValue(), 

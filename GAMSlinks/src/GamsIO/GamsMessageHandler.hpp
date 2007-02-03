@@ -17,17 +17,28 @@
 #include "CoinMessageHandler.hpp"
 #include "GamsModel.hpp"
 
+/** A COIN-OR message handler that writes into the GAMS status- and logfile.
+ */
 class GamsMessageHandler : public CoinMessageHandler {
-
 public:
-  
-  GamsMessageHandler();
-  int print() ;
-  void setGamsModel(GamsModel *GMptr);
+
+	/** Constructor.
+	 * @param GMptr The GamsModel required for printing.
+	 */  
+  GamsMessageHandler(GamsModel* GMptr);
+
+	/** Sets the number of spaces to remove at the front of a message.
+	 */
   inline void setRemoveLBlanks(int rm) { rmlblanks_ = rm; }
 
-private:
+	/** Prints the message from the message buffer.
+	 * Removes at most rmlblanks_ from the beginning and all newlines at the end of the message buffer.
+	 * If currentMessage().detail() is smaller then 2, the message is written to logfile and statusfile, otherwise it is written only to the logfile.
+	 * If the pointer to the GamsModel is not set, the output goes to standard out. 
+	 */  
+  int print();
 
+private:
   GamsModel *GMptr_;
   int rmlblanks_;
 };

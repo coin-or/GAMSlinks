@@ -10,7 +10,7 @@
 #include "CoinWarmStart.hpp"
 #include "CoinWarmStartBasis.hpp"
 
-void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, int PresolveInfeasible) {
+void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool PresolveInfeasible) {
 	if (PresolveInfeasible) {
 		gm->setIterUsed(0);
 		gm->setResUsed(gm->SecondsSinceStart());
