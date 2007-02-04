@@ -32,6 +32,7 @@ GAMSlinks/src/GamsIO/GamsModel.cpp -text
 GAMSlinks/src/GamsIO/GamsModel.hpp -text
 GAMSlinks/src/GamsIO/Makefile.am -text
 GAMSlinks/src/GamsIO/Makefile.in -text
+GAMSlinks/src/GamsIO/gamsio_addlibs.txt.in -text
 GAMSlinks/src/Glpk/GamsCoinGlpk.cpp -text
 GAMSlinks/src/Glpk/Makefile.am -text
 GAMSlinks/src/Glpk/Makefile.in -text

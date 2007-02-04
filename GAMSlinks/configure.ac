@@ -46,7 +46,7 @@ AC_COIN_PROJECTDIR_INIT
 AC_COIN_DEBUG_COMPILE(GAMSlinks)
 
 # We need egrep and ln -s somewhere
-#AC_PROG_EGREP
+AC_PROG_EGREP
 AC_PROG_LN_S
 
 # Get the name of the C compiler and appropriate compiler options
@@ -274,16 +274,16 @@ fi
 # Check if GAMS I/O libs work
 AC_MSG_CHECKING([whether GAMS I/O libraries at $use_gamsio work])
 if test x"$GAMSIO_CODE" = xLX3; then
-  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl $IFORT_LIBS"
+  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a -ldl $IFORT_LIBS"
   SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl $IFORT_LIBS"
 elif test x"$GAMSIO_CODE" = xLEI; then
-  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl $IFORT_LIBS"
+  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a -ldl $IFORT_LIBS"
   SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl $IFORT_LIBS"
 elif test x"$gamsio_system" = xWindows; then
-  GAMSIO_LIBS="$use_gamsio/iolib.lib $use_gamsio/nliolib.lib $use_gamsio/clicelib.lib $use_gamsio/gclib.lib $use_gamsio/g2d.lib"
+  GAMSIO_LIBS="$use_gamsio/iolib.lib $use_gamsio/nliolib.lib $use_gamsio/clicelib.lib $use_gamsio/gclib.lib"
   SMAG_LIBS="$use_gamsio/clicelib.lib $use_gamsio/smag.lib $use_gamsio/gclib.lib $use_gamsio/g2d.lib"
 elif test x"$GAMSIO_CODE" = xDAR; then
-  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -lSystemStubs"
+  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a -ldl -lSystemStubs"
   SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -lSystemStubs"
 fi
 GAMSIO_CPPFLAGS="-I$use_gamsio"
@@ -342,7 +342,7 @@ AC_LANG_POP(C++)
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
-                 src/GamsIO/Makefile
+                 src/GamsIO/Makefile src/GamsIO/gamsio_addlibs.txt
                  src/Cbc/Makefile
                  src/Glpk/Makefile
                  src/Ipopt/Makefile

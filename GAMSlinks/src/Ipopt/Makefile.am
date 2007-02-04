@@ -8,7 +8,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST =
+EXTRA_DIST = gmsip_nt.cmd gmsip_us.run install/gmsip_nt.dat install/gmsip_un.dat
 
 bin_PROGRAMS = GamsIpopt
 GamsIpopt_SOURCES = GamsIpopt.cpp SmagNLP.cpp SmagNLP.hpp SmagJournal.hpp SmagJournal.cpp

@@ -9,7 +9,8 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST =
+EXTRA_DIST = optcbc.def optcbc.gms optcbc.txt \
+  gmscc_nt.cmd gmscc_us.run install/gmscc_nt.dat install/gmscc_un.dat
 
 bin_PROGRAMS = GamsCoinCbc
 GamsCoinCbc_SOURCES = GamsCoinCbc.cpp \

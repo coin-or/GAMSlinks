@@ -8,7 +8,8 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST =
+EXTRA_DIST = optglpk.def optglpk.gms optglpk.txt \
+  gmscg_nt.cmd gmscg_us.run install/gmscg_nt.dat install/gmscg_un.dat
 
 bin_PROGRAMS = GamsCoinGlpk
 GamsCoinGlpk_SOURCES = GamsCoinGlpk.cpp

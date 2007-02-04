@@ -57,7 +57,8 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = $(include_HEADERS) \
 	$(srcdir)/../../../BuildTools/Makemain.inc \
-	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
+	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(srcdir)/gamsio_addlibs.txt.in
 @HAVE_EXTERNALS_TRUE@am__append_1 = Externals
 @HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
 subdir = src/GamsIO
@@ -68,7 +69,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/inc/config_gamslinks.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = gamsio_addlibs.txt
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -289,7 +290,7 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = $(am__append_1)
 lib_LTLIBRARIES = libGamsIO.la
-libGamsIO_la_SOURCES = GAMSlinksConfig.h \
+libGamsIO_la_SOURCES = ../GAMSlinksConfig.h \
   GamsModel.cpp GamsModel.hpp GamsFinalize.cpp \
   GamsMessageHandler.cpp GamsMessageHandler.hpp
 
@@ -303,6 +304,17 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(OSIOBJDIR)/inc`
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
+
+########################################################################
+#                  Installation of the addlibs file                    #
+########################################################################
+addlibsfile = gamsio_addlibs.txt
+
+########################################################################
+#                         Maintainer Stuff                             #
+########################################################################
+
+# Files that are generated and should be cleaned with make distclean
 DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)
 all: all-am
 
@@ -337,6 +349,8 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+gamsio_addlibs.txt: $(top_builddir)/config.status $(srcdir)/gamsio_addlibs.txt.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
 	test -z "$(libdir)" || $(mkdir_p) "$(DESTDIR)$(libdir)"
@@ -556,7 +570,7 @@ info-am:
 
 install-data-am: install-includeHEADERS
 
-install-exec-am: install-libLTLIBRARIES
+install-exec-am: install-exec-local install-libLTLIBRARIES
 
 install-info: install-info-am
 
@@ -583,22 +597,28 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-includeHEADERS uninstall-info-am \
-	uninstall-libLTLIBRARIES
+	uninstall-libLTLIBRARIES uninstall-local
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
 	clean-libLTLIBRARIES clean-libtool ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
-	install-exec-am install-includeHEADERS install-info \
-	install-info-am install-libLTLIBRARIES install-man \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-includeHEADERS uninstall-info-am \
-	uninstall-libLTLIBRARIES
+	install-exec-am install-exec-local install-includeHEADERS \
+	install-info install-info-am install-libLTLIBRARIES \
+	install-man install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-includeHEADERS uninstall-info-am \
+	uninstall-libLTLIBRARIES uninstall-local
 
+
+install-exec-local:
+	$(install_sh_DATA) $(addlibsfile) $(DESTDIR)$(libdir)/$(addlibsfile)
+
+uninstall-local:
+	rm -f $(DESTDIR)$(libdir)/$(addlibsfile)
 
 # Make sure acinclude is using most recent coin.m4
 @MAINTAINER_MODE_TRUE@$(srcdir)/acinclude.m4: $(BUILDTOOLSDIR)/coin.m4

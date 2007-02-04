@@ -273,7 +273,9 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = $(am__append_1)
+EXTRA_DIST = optglpk.def optglpk.gms optglpk.txt gmscg_nt.cmd \
+	gmscg_us.run install/gmscg_nt.dat install/gmscg_un.dat \
+	$(am__append_1)
 GamsCoinGlpk_SOURCES = GamsCoinGlpk.cpp
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
@@ -451,7 +453,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/../../../BuildTools
+	$(mkdir_p) $(distdir)/../../../BuildTools $(distdir)/install
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

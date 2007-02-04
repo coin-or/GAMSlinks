@@ -23,26 +23,27 @@ EXTRA_DIST = \
 
 # tmpdir = tmpdir
 
-test:
+test: all
 	cd test; $(MAKE) test
 
 unitTest: test
 
 .PHONY: test unitTest
 
-########################################################################
-#                  Installation of the addlibs file                    #
-########################################################################
-
-# install-exec-local:
-# 	$(install_sh_DATA) $(addlibsfile) $(DESTDIR)$(libdir)/$(addlibsfile)
-# 
-# uninstall-local:
-# 	rm -f $(DESTDIR)$(libdir)/$(addlibsfile)
-
-
 # Stuff to clean up
+clean-local:
+	if test -r test/Makefile; then cd test; $(MAKE) clean; fi
 
+distclean-local:
+	if test -r test/Makefile; then cd test; $(MAKE) distclean; fi
+
+.PHONY: test unitTest
+
+########################################################################
+#                         Maintainer Stuff                             #
+########################################################################
+
+# Files that are generated and should be cleaned with make distclean
 DISTCLEANFILES =
 				
 include ../BuildTools/Makemain.inc

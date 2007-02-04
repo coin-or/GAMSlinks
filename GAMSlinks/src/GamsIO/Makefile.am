@@ -12,7 +12,7 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST =
 
 lib_LTLIBRARIES = libGamsIO.la
-libGamsIO_la_SOURCES = GAMSlinksConfig.h \
+libGamsIO_la_SOURCES = ../GAMSlinksConfig.h \
   GamsModel.cpp GamsModel.hpp GamsFinalize.cpp \
   GamsMessageHandler.cpp GamsMessageHandler.hpp
 #libGamsModel_la_LDFLAGS
@@ -26,9 +26,25 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
  -I`$(CYGPATH_W) $(OSIOBJDIR)/inc`
  
-
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
+########################################################################
+#                  Installation of the addlibs file                    #
+########################################################################
+
+addlibsfile = gamsio_addlibs.txt
+
+install-exec-local:
+	$(install_sh_DATA) $(addlibsfile) $(DESTDIR)$(libdir)/$(addlibsfile)
+
+uninstall-local:
+	rm -f $(DESTDIR)$(libdir)/$(addlibsfile)
+
+########################################################################
+#                         Maintainer Stuff                             #
+########################################################################
+
+# Files that are generated and should be cleaned with make distclean
 DISTCLEANFILES =
 
 include ../../../BuildTools/Makemain.inc
