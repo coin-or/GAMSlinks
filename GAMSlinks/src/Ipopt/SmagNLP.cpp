@@ -7,12 +7,13 @@
 // Authors:  Steve Dirkse, Stefan Vigerske
 
 #include "SmagNLP.hpp"
+#include "IpIpoptCalculatedQuantities.hpp"
 
 using namespace Ipopt;
 
 // constructor
 SMAG_NLP::SMAG_NLP (smagHandle_t prob)
-: domviolations(0)
+: domviolations(0), div_iter_tol(1E+20), scaled_conviol_tol(1E-8), unscaled_conviol_tol(1E-4)
 {
   this->prob = prob;
   negLambda = new double[smagRowCount(prob)];
@@ -100,8 +101,21 @@ bool SMAG_NLP::get_starting_point (Index n, bool init_x, Number* x,
 		}
 	}
 	if (init_x) {
-  	for (Index j = 0;  j < n;  ++j)
-	    x[j] = prob->colLev[j];
+  	for (Index j = 0;  j < n;  ++j) {
+  		if (prob->colLev[j]<-div_iter_tol) {
+  			x[j]=-.99*div_iter_tol;
+  			char buffer[255];
+  			sprintf(buffer, "Initial value %e for variable %d below diverging iterates tolerance %e. Set initial value to %e.\n", prob->colLev[j], j, -div_iter_tol, -.99*div_iter_tol);
+  			smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+  		} else if (prob->colLev[j]>div_iter_tol) {
+  			x[j]=.99*div_iter_tol;
+  			char buffer[255];
+  			sprintf(buffer, "Initial value %e for variable %d above diverging iterates tolerance %e. Set initial value to %e.\n", prob->colLev[j], j, div_iter_tol, .99*div_iter_tol);
+  			smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+  		} else {
+		    x[j] = prob->colLev[j];
+			}
+  	}
 	}
   return true;
 } // get_starting_point
@@ -263,6 +277,9 @@ bool SMAG_NLP::eval_h (Index n, const Number *x, bool new_x,
 } // eval_h
 
 bool SMAG_NLP::intermediate_callback (AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq) {
+	last_iterationnumber=iter;
+	last_scaled_conviol = ip_cq->curr_nlp_constraint_violation(NORM_MAX);	
+	last_unscaled_conviol = ip_cq->unscaled_curr_nlp_constraint_violation(NORM_MAX);	
 	if (timelimit && smagGetCPUTime(prob)-clockStart>timelimit) return false;
 	if (domviollimit && domviolations>=domviollimit) return false;
 	return true;
@@ -295,26 +312,40 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 	    break;
 		case STOP_AT_TINY_STEP:
 	  case RESTORATION_FAILURE:
-			//TODO: can Ipopt tell me if current point is feasible?
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: we don't know about optimality or feasibility!!\n");
-			model_status=6;
+			if (last_scaled_conviol < scaled_conviol_tol && last_unscaled_conviol < unscaled_conviol_tol) {
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: we don't know about optimality, but we have feasibility!!\n");
+				model_status=7; // intermediate nonoptimal
+			} else {
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: point in not feasibile!!\n");
+				model_status=6; // intermediate infeasible
+			}
 			solver_status=4;
 			write_solution=true;
 	    break;
 	  case MAXITER_EXCEEDED:
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Iteration limit exceeded!!\n");
-			model_status=6;
+			if (last_scaled_conviol < scaled_conviol_tol && last_unscaled_conviol < unscaled_conviol_tol) {
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Iteration limit exceeded!! Point is feasible.\n");
+				model_status=7; // intermediate nonoptimal
+			} else {
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Iteration limit exceeded!! Point is not feasible.\n");
+				model_status=6; // intermediate infeasible
+			}
 			solver_status=2;
 			write_solution=true;
 			break;
 		case USER_REQUESTED_STOP:
 			if (domviollimit && domviolations>=domviollimit) {
 				smagStdOutputPrint(prob, SMAG_LOGMASK, "Domain violation limit exceeded!!\n");
-				model_status=6;
+				model_status=6; // intermediate infeasible
 				solver_status=5;
 			} else {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "Time limit exceeded!!\n");
-				model_status=6;
+				if (last_scaled_conviol < scaled_conviol_tol && last_unscaled_conviol < unscaled_conviol_tol) {
+					smagStdOutputPrint(prob, SMAG_LOGMASK, "Time limit exceeded!! Point is feasible.\n");
+					model_status=7; // intermediate nonoptimal
+				} else {
+					smagStdOutputPrint(prob, SMAG_LOGMASK, "Time limit exceeded!! Point is not feasible.\n");
+					model_status=6; // intermediate infeasible
+				}
 				solver_status=3;
 			}
 			write_solution=true;
@@ -343,14 +374,13 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 			solver_status=13;
   } // switch
 
-//TODO: set iteration number
   if (write_solution) {
 		unsigned char* colBasStat=new unsigned char[n];
 		unsigned char* colIndic=new unsigned char[n];
 		double* colMarg=new double[n];
 		for (Index i=0; i<n; ++i) {
 			colBasStat[i]=SMAG_BASSTAT_SUPERBASIC;
-			colIndic[i]=SMAG_RCINDIC_OK;
+			colIndic[i]=SMAG_RCINDIC_OK; // TODO: not ok, if over the bounds
 			// if, e.g., x_i has no lower bound, then the dual z_L[i] is -infinity
 			colMarg[i]=0;
 			if (z_L[i]>-prob->inf) colMarg[i]+=isMin*z_L[i];
@@ -358,20 +388,14 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 		}
 		unsigned char* rowBasStat=new unsigned char[m];
 		unsigned char* rowIndic=new unsigned char[m];
-//		double* rowLev=new double[m];
     for (Index i = 0;  i < m;  i++) {
 			rowBasStat[i]=SMAG_BASSTAT_SUPERBASIC;
-			rowIndic[i]=SMAG_RCINDIC_OK;
+			rowIndic[i]=SMAG_RCINDIC_OK; // TODO: not ok, if over the bounds
       negLambda[i] = -lambda[i] * isMin;
-//			if (prob->rowType[i]==SMAG_EQU_EQ) {
-//				rowLev[i]=g[i]+prob->rowRHS[i]; //TODO: why I have todo this?
-//			} else {
-//				rowLev[i]=g[i];
-//			}
     }
 		smagReportSolFull(prob, model_status, solver_status,
-			SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, obj_value*isMin, domviolations,
-			/*rowLev*/ g, negLambda, rowBasStat, rowIndic,
+			last_iterationnumber, smagGetCPUTime(prob)-clockStart, obj_value*isMin, domviolations,
+			g, negLambda, rowBasStat, rowIndic,
 			x, colMarg, colBasStat, colIndic);
 			
 		delete[] colBasStat;
@@ -379,7 +403,6 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 		delete[] colMarg;
 		delete[] rowBasStat;
 		delete[] rowIndic;
-//		delete[] rowLev;
   } else {
 		smagReportSolStats (prob, model_status, solver_status, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
   }
