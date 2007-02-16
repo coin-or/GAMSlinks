@@ -90,6 +90,9 @@ public:
 		    Index m, const Number* g, const Number* lambda,
 		    Number obj_value);
 
+	double div_iter_tol;
+	double scaled_conviol_tol;
+	double unscaled_conviol_tol;
 private:
   smagHandle_t prob;
   double clockStart;
@@ -98,6 +101,10 @@ private:
 	double timelimit;
 	int domviollimit;
 	long int domviolations;
+
+  int last_iterationnumber;
+  double last_scaled_conviol; // last scaled constraint violation
+	double last_unscaled_conviol; // last unscaled constraint violation
 
   /* Methods to block default compiler methods.
    * The compiler automatically generates the following three methods.

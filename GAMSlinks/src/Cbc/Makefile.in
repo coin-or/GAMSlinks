@@ -615,14 +615,14 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 
 @COIN_HAS_CLP_TRUE@	LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt`
 
-@GAMSIO_IS_UNIX_TRUE@install-exec-local:
-@GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinCbc gmscc_ux.out
+@GAMSIO_IS_UNIX_TRUE@install-exec-local: .libs/GamsCoinCbc
+@GAMSIO_IS_UNIX_TRUE@	ln -sf .libs/GamsCoinCbc gmscc_ux.out
 @GAMSIO_IS_UNIX_TRUE@	zip gmscc_.zip gmscc_ux.out gmscc_us.run optcbc.def install/gmscc_un.dat
 @GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmscc_.zip $(DESTDIR)$(bindir)/gmscc_.zip
 @GAMSIO_IS_UNIX_TRUE@	rm -f gmscc_ux.out
 
-@GAMSIO_IS_WINDOWS_TRUE@install-exec-local:
-@GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinCbc.exe gmscc_nx.exe
+@GAMSIO_IS_WINDOWS_TRUE@install-exec-local: .libs/GamsCoinCbc.exe
+@GAMSIO_IS_WINDOWS_TRUE@	ln -sf .libs/GamsCoinCbc.exe gmscc_nx.exe
 @GAMSIO_IS_WINDOWS_TRUE@	zip gmscc_.zip gmscc_nx.exe gmscc_nt.cmd optcbc.def install/gmscc_nt.dat
 @GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmscc_.zip $(DESTDIR)$(bindir)/gmscc_.zip
 @GAMSIO_IS_WINDOWS_TRUE@	rm -f gmscc_nx.exe  

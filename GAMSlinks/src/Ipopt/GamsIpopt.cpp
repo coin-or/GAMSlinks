@@ -59,8 +59,9 @@ int main (int argc, char* argv[]) {
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 
-  // Create a new instance of your nlp (use a SmartPtr, not raw)
-  SmartPtr<TNLP> smagnlp = new SMAG_NLP (prob);
+  // Create a new instance of your nlp
+  SMAG_NLP* mysmagnlp = new SMAG_NLP (prob);
+  SmartPtr<TNLP> smagnlp = mysmagnlp;
   // Create a new instance of IpoptApplication (use a SmartPtr, not raw)
   SmartPtr<IpoptApplication> app = new IpoptApplication(false);
   
@@ -88,6 +89,11 @@ int main (int argc, char* argv[]) {
 		app->Initialize(prob->gms.optFileName);
 	else
 		app->Initialize("");
+		
+	app->Options()->GetNumericValue("diverging_iterates_tol", mysmagnlp->div_iter_tol, "");
+	// or should we also check the tolerance for acceptable points?  
+	app->Options()->GetNumericValue("tol", mysmagnlp->scaled_conviol_tol, ""); 
+	app->Options()->GetNumericValue("constr_viol_tol", mysmagnlp->unscaled_conviol_tol, ""); 
 	
   // Ask Ipopt to solve the problem
   ApplicationReturnStatus status = app->OptimizeTNLP(smagnlp);
