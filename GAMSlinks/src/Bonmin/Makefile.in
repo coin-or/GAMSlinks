@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) GAMS Development 2006
+# Copyright (C) GAMS Development 2007
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -53,12 +53,26 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = GamsIpopt$(EXEEXT)
+bin_PROGRAMS = GamsBonmin$(EXEEXT)
+@COIN_HAS_CLP_TRUE@am__append_1 = \
+@COIN_HAS_CLP_TRUE@   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiClp` \
+@COIN_HAS_CLP_TRUE@   -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
+@COIN_HAS_CLP_TRUE@   -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
+
+@COIN_HAS_CLP_TRUE@am__append_2 = \
+@COIN_HAS_CLP_TRUE@   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
+@COIN_HAS_CLP_TRUE@   $(CLPOBJDIR)/src/libClp.la
+
+@COIN_HAS_GLPK_TRUE@am__append_3 = \
+@COIN_HAS_GLPK_TRUE@   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
+@COIN_HAS_GLPK_TRUE@   -I`$(CYGPATH_W) $(GLPKINCDIR)`
+
+@COIN_HAS_GLPK_TRUE@am__append_4 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPKLIB)
 DIST_COMMON = $(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_1 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
-subdir = src/Ipopt
+@HAVE_EXTERNALS_TRUE@am__append_5 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_6 = .Externals-stamp
+subdir = src/Bonmin
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.ac
@@ -70,12 +84,23 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_GamsIpopt_OBJECTS = GamsIpopt.$(OBJEXT) SmagNLP.$(OBJEXT) \
-	SmagJournal.$(OBJEXT)
-GamsIpopt_OBJECTS = $(am_GamsIpopt_OBJECTS)
+am_GamsBonmin_OBJECTS = GamsBonmin.$(OBJEXT) SmagMINLP.$(OBJEXT) \
+	SmagMessageHandler.$(OBJEXT)
+GamsBonmin_OBJECTS = $(am_GamsBonmin_OBJECTS)
 am__DEPENDENCIES_1 =
-GamsIpopt_DEPENDENCIES = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la \
-	$(am__DEPENDENCIES_1)
+@COIN_HAS_CLP_TRUE@am__DEPENDENCIES_2 =  \
+@COIN_HAS_CLP_TRUE@	$(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
+@COIN_HAS_CLP_TRUE@	$(CLPOBJDIR)/src/libClp.la
+@COIN_HAS_GLPK_TRUE@am__DEPENDENCIES_3 =  \
+@COIN_HAS_GLPK_TRUE@	$(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
+@COIN_HAS_GLPK_TRUE@	$(am__DEPENDENCIES_1)
+GamsBonmin_DEPENDENCIES = $(BONMINOBJDIR)/src/Apps/libbonmin.la \
+	$(CBCOBJDIR)/src/libCbc.la $(CGLOBJDIR)/src/libCgl.la \
+	$(OSIOBJDIR)/src/libOsi.la \
+	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
+	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2) \
+	$(am__DEPENDENCIES_3)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -94,8 +119,8 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(GamsIpopt_SOURCES)
-DIST_SOURCES = $(GamsIpopt_SOURCES)
+SOURCES = $(GamsBonmin_SOURCES)
+DIST_SOURCES = $(GamsBonmin_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -195,7 +220,9 @@ IPOPTSRCDIR = @IPOPTSRCDIR@
 LDFLAGS = @LDFLAGS@
 LIBEXT = @LIBEXT@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@ `cat \
+LIBS = @LIBS@ `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt \
+	$(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt \
+	$(CBCOBJDIR)/cbc_addlibs.txt \
 	$(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
@@ -283,24 +310,45 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = gmsip_nt.cmd gmsip_us.run install/gmsip_nt.dat \
-	install/gmsip_un.dat $(am__append_1)
-GamsIpopt_SOURCES = GamsIpopt.cpp SmagNLP.cpp SmagNLP.hpp SmagJournal.hpp SmagJournal.cpp
-AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
- -I`$(CYGPATH_W) $(srcdir)/..` \
- -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
- -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` \
- -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \
- -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Algorithm` \
- -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
-
-GamsIpopt_LDADD = \
- $(IPOPTOBJDIR)/src/Interfaces/libipopt.la \
- $(SMAG_LIBS)
-
-GamsIpopt_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
+EXTRA_DIST = gmsbm_nt.cmd gmsbm_us.run install/gmsbm_nt.dat \
+	install/gmsbm_un.dat $(am__append_5)
+GamsBonmin_SOURCES = GamsBonmin.cpp SmagMINLP.cpp SmagMINLP.hpp SmagMessageHandler.cpp SmagMessageHandler.hpp
+AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
+	-I`$(CYGPATH_W) $(srcdir)/../Ipopt` -I`$(CYGPATH_W) \
+	$(COINUTILSSRCDIR)/src` -I`$(CYGPATH_W) \
+	$(COINUTILSOBJDIR)/inc` -I`$(CYGPATH_W) $(CGLSRCDIR)/src` \
+	-I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglClique` -I`$(CYGPATH_W) \
+	$(CGLSRCDIR)/src/CglDuplicateRow` -I`$(CYGPATH_W) \
+	$(CGLSRCDIR)/src/CglFlowCover` -I`$(CYGPATH_W) \
+	$(CGLSRCDIR)/src/CglGomory` -I`$(CYGPATH_W) \
+	$(CGLSRCDIR)/src/CglKnapsackCover` -I`$(CYGPATH_W) \
+	$(CGLSRCDIR)/src/CglMixedIntegerRounding2` -I`$(CYGPATH_W) \
+	$(CGLSRCDIR)/src/CglOddHole` -I`$(CYGPATH_W) \
+	$(CGLSRCDIR)/src/CglPreProcess` -I`$(CYGPATH_W) \
+	$(CGLSRCDIR)/src/CglProbing` -I`$(CYGPATH_W) \
+	$(CGLSRCDIR)/src/CglRedSplit` -I`$(CYGPATH_W) \
+	$(CGLSRCDIR)/src/CglTwomir` -I`$(CYGPATH_W) $(CGLOBJDIR)/inc` \
+	-I`$(CYGPATH_W) $(OSISRCDIR)/src` -I`$(CYGPATH_W) \
+	$(OSIOBJDIR)/inc` -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
+	-I`$(CYGPATH_W) $(CBCOBJDIR)/inc` -I`$(CYGPATH_W) \
+	$(IPOPTSRCDIR)/src/Interfaces` -I`$(CYGPATH_W) \
+	$(IPOPTSRCDIR)/src/Common` -I`$(CYGPATH_W) \
+	$(IPOPTSRCDIR)/src/LinAlg` -I`$(CYGPATH_W) \
+	$(IPOPTSRCDIR)/src/Algorithm` -I`$(CYGPATH_W) \
+	$(IPOPTOBJDIR)/inc` -I`$(CYGPATH_W) \
+	$(BONMINSRCDIR)/src/IpoptInterface` -I`$(CYGPATH_W) \
+	$(BONMINSRCDIR)/src/CbcBonmin` -I`$(CYGPATH_W) \
+	$(BONMINSRCDIR)/src/OaInterface` -I`$(CYGPATH_W) \
+	$(BONMINOBJDIR)/inc` $(am__append_1) $(am__append_3)
+GamsBonmin_LDADD = $(BONMINOBJDIR)/src/Apps/libbonmin.la \
+	$(CBCOBJDIR)/src/libCbc.la $(CGLOBJDIR)/src/libCgl.la \
+	$(OSIOBJDIR)/src/libOsi.la \
+	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
+	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(SMAG_LIBS) \
+	$(am__append_2) $(am__append_4)
+GamsBonmin_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
-DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(am__append_6) $(VPATH_DISTCLEANFILES)
 all: all-am
 
 .SUFFIXES:
@@ -314,9 +362,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/..
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Ipopt/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Bonmin/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src/Ipopt/Makefile
+	  $(AUTOMAKE) --foreign  src/Bonmin/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -362,9 +410,9 @@ clean-binPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-GamsIpopt$(EXEEXT): $(GamsIpopt_OBJECTS) $(GamsIpopt_DEPENDENCIES) 
-	@rm -f GamsIpopt$(EXEEXT)
-	$(CXXLINK) $(GamsIpopt_LDFLAGS) $(GamsIpopt_OBJECTS) $(GamsIpopt_LDADD) $(LIBS)
+GamsBonmin$(EXEEXT): $(GamsBonmin_OBJECTS) $(GamsBonmin_DEPENDENCIES) 
+	@rm -f GamsBonmin$(EXEEXT)
+	$(CXXLINK) $(GamsBonmin_LDFLAGS) $(GamsBonmin_OBJECTS) $(GamsBonmin_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -372,9 +420,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsIpopt.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagJournal.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagNLP.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsBonmin.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagMINLP.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagMessageHandler.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -579,21 +627,22 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 	tags uninstall uninstall-am uninstall-binPROGRAMS \
 	uninstall-info-am uninstall-local
 
+@COIN_HAS_CLP_TRUE@	LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt`
 
-@GAMSIO_IS_UNIX_TRUE@install-exec-local: $(DESTDIR)$(bindir)/GamsIpopt
-@GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsIpopt gmsip_ux.out
-@GAMSIO_IS_UNIX_TRUE@	zip gmsip_.zip gmsip_ux.out gmsip_us.run install/gmsip_un.dat
-@GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmsip_.zip $(DESTDIR)$(bindir)/gmsip_.zip
-@GAMSIO_IS_UNIX_TRUE@	rm -f gmsip_ux.out
+@GAMSIO_IS_UNIX_TRUE@install-exec-local: $(DESTDIR)$(bindir)/GamsBonmin
+@GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsBonmin gmsbm_ux.out
+@GAMSIO_IS_UNIX_TRUE@	zip gmsbm_.zip gmsbm_ux.out gmsbm_us.run install/gmsbm_un.dat
+@GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmsbm_.zip $(DESTDIR)$(bindir)/gmsbm_.zip
+@GAMSIO_IS_UNIX_TRUE@	rm -f gmsbm_ux.out
 
-@GAMSIO_IS_WINDOWS_TRUE@install-exec-local: $(DESTDIR)$(bindir)/GamsIpopt.exe
-@GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsIpopt.exe gmsip_nx.exe
-@GAMSIO_IS_WINDOWS_TRUE@	zip gmsip_.zip gmsip_nx.exe gmsip_nt.cmd install/gmsip_nt.dat
-@GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmsip_.zip $(DESTDIR)$(bindir)/gmsip_.zip
-@GAMSIO_IS_WINDOWS_TRUE@	rm -f gmsip_nx.exe
+@GAMSIO_IS_WINDOWS_TRUE@install-exec-local: $(DESTDIR)$(bindir)/GamsBonmin.exe
+@GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsBonmin.exe gmsbm_nx.exe
+@GAMSIO_IS_WINDOWS_TRUE@	zip gmsbm_.zip gmsbm_nx.exe gmsbm_nt.cmd install/gmsbm_nt.dat
+@GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmsbm_.zip $(DESTDIR)$(bindir)/gmsbm_.zip
+@GAMSIO_IS_WINDOWS_TRUE@	rm -f gmsbm_nx.exe
 
 uninstall-local:
-	rm -f $(DESTDIR)$(bindir)/gmsip_.zip
+	rm -f $(DESTDIR)$(bindir)/gmsbm_.zip
 
 # Make sure acinclude is using most recent coin.m4
 @MAINTAINER_MODE_TRUE@$(srcdir)/acinclude.m4: $(BUILDTOOLSDIR)/coin.m4

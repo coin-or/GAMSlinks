@@ -2,17 +2,17 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: SmagNLP.cpp 65 2007-02-06 17:29:45Z stefan $
 //
 // Authors:  Steve Dirkse, Stefan Vigerske
 
-#include "SmagNLP.hpp"
+#include "SmagMINLP.hpp"
 #include "IpIpoptCalculatedQuantities.hpp"
 
 using namespace Ipopt;
 
 // constructor
-SMAG_NLP::SMAG_NLP (smagHandle_t prob)
+SMAG_MINLP::SMAG_MINLP (smagHandle_t prob)
 : div_iter_tol(1E+20), scaled_conviol_tol(1E-8), unscaled_conviol_tol(1E-4),
   domviolations(0)
 {
@@ -22,29 +22,32 @@ SMAG_NLP::SMAG_NLP (smagHandle_t prob)
 	
 	timelimit=prob->gms.reslim;
 	domviollimit=prob->gms.domlim;
-} // SMAG_NLP(prob)
+	
+	jac_map = new int[smagNZCount(prob)]; //index mapping row based to column based jacobian 
+} // SMAG_MINLP(prob)
 
 // destructor
-SMAG_NLP::~SMAG_NLP()
+SMAG_MINLP::~SMAG_MINLP()
 {
   delete[] negLambda;
+  delete[] jac_map;
 }
 
 // returns the size of the problem
-bool SMAG_NLP::get_nlp_info (Index& n, Index& m, Index& nnz_jac_g,
-	      Index& nnz_h_lag, IndexStyleEnum& index_style) {
+bool SMAG_MINLP::get_nlp_info (Index& n, Index& m, Index& nnz_jac_g,
+	      Index& nnz_h_lag, TNLP::IndexStyleEnum& index_style) {
   clockStart = smagGetCPUTime (prob);
   n = smagColCount (prob);
   m = smagRowCount (prob);
   nnz_jac_g = smagNZCount (prob); // Jacobian nonzeros
   nnz_h_lag = prob->hesData->lowTriNZ;
-  index_style = TNLP::C_STYLE; // 0-based
+  index_style = TNLP::FORTRAN_STYLE; // 1-based (Bonmin does not seem to like C_STYLE) 
 
   return true;
-} // SMAG_NLP::get_nlp_info
+} // SMAG_MINLP::get_nlp_info
 
 // returns the variable bounds
-bool SMAG_NLP::get_bounds_info (Index n, Number* x_l, Number* x_u,
+bool SMAG_MINLP::get_bounds_info (Index n, Number* x_l, Number* x_u,
 		 Index m, Number* g_l, Number* g_u) {
   // here, the n and m we gave IPOPT in get_nlp_info are passed back to us.
   // If desired, we could assert to make sure they are what we think they are.
@@ -82,8 +85,46 @@ bool SMAG_NLP::get_bounds_info (Index n, Number* x_l, Number* x_u,
   return true;
 } // get_bounds_info
 
+bool SMAG_MINLP::get_var_types(Index n, VariableType* var_types) {
+	for (Index i=0; i<n; ++i) {
+		switch (prob->colType[i]) {
+			case SMAG_VAR_CONT:
+				var_types[i]=CONTINUOUS;
+				break;
+			case SMAG_VAR_BINARY:
+				var_types[i]=BINARY;
+				break;
+			case SMAG_VAR_INTEGER:
+				var_types[i]=INTEGER;
+				break;
+			case SMAG_VAR_SOS1:
+			case SMAG_VAR_SOS2:
+			case SMAG_VAR_SEMICONT:
+			case SMAG_VAR_SEMIINT:
+			default: {
+				char msg[255];
+				sprintf(msg, "Error: Column type %d for variable %d unknown or not supported. Exiting ...\n", prob->colType[i], i);
+				smagStdOutputPrint(prob, SMAG_ALLMASK, msg); 			
+	      smagStdOutputFlush(prob, SMAG_ALLMASK);
+  	    exit (EXIT_FAILURE);
+			}			
+		}
+	}
+	return true;	
+} // get_var_types
+  
+bool SMAG_MINLP::get_constraints_types(Index m, ConstraintType* const_types) {
+	for (Index i=0; i<m; ++i)
+		if (prob->snlData.numInstr[i])
+			const_types[i]=NON_LINEAR;
+		else		
+			const_types[i]=LINEAR;
+	
+	return true;
+} // get_constraints_types
+
 // returns the initial point for the problem
-bool SMAG_NLP::get_starting_point (Index n, bool init_x, Number* x,
+bool SMAG_MINLP::get_starting_point (Index n, bool init_x, Number* x,
 		    bool init_z, Number* z_L, Number* z_U, Index m,
 		    bool init_lambda, Number* lambda) {
 	if (init_lambda) {
@@ -122,7 +163,7 @@ bool SMAG_NLP::get_starting_point (Index n, bool init_x, Number* x,
 } // get_starting_point
 
 // returns the value of the objective function
-bool SMAG_NLP::eval_f (Index n, const Number* x, bool new_x, Number& obj_value) {
+bool SMAG_MINLP::eval_f (Index n, const Number* x, bool new_x, Number& obj_value) {
   int nerror = smagEvalObjFunc (prob, x, &obj_value);
   obj_value *= isMin;
   /* Error handling */
@@ -141,7 +182,7 @@ bool SMAG_NLP::eval_f (Index n, const Number* x, bool new_x, Number& obj_value) 
 } // eval_f
 
 // return the gradient of the objective function grad_{x} f(x)
-bool SMAG_NLP::eval_grad_f (Index n, const Number* x, bool new_x, Number* grad_f) {
+bool SMAG_MINLP::eval_grad_f (Index n, const Number* x, bool new_x, Number* grad_f) {
   double objVal;
 
   int nerror = smagEvalObjGrad (prob, x, &objVal);
@@ -165,7 +206,7 @@ bool SMAG_NLP::eval_grad_f (Index n, const Number* x, bool new_x, Number* grad_f
 } // eval_grad_f
 
 // return the value of the constraints: g(x)
-bool SMAG_NLP::eval_g (Index n, const Number *x, bool new_x, Index m, Number *g) {
+bool SMAG_MINLP::eval_g (Index n, const Number *x, bool new_x, Index m, Number *g) {
   int nerror = smagEvalConFunc (prob, x, g);
 
   /* Error handling */
@@ -183,22 +224,26 @@ bool SMAG_NLP::eval_g (Index n, const Number *x, bool new_x, Index m, Number *g)
   return true;
 } // eval_g
 
+#include <map>
 // return the structure or values of the jacobian
-bool SMAG_NLP::eval_jac_g (Index n, const Number *x, bool new_x,
+bool SMAG_MINLP::eval_jac_g (Index n, const Number *x, bool new_x,
 	    Index m, Index nele_jac, Index *iRow, Index *jCol, Number *values) {
   if (values == NULL) {
     assert(NULL==x);
     assert(NULL!=iRow);
     assert(NULL!=jCol);
     // return the structure of the jacobian
+   	std::map<std::pair<int,int>,int> jac;
     int k = 0;
-    for (Index i = 0;  i < m;  ++i) {
-      for (smagConGradRec_t* cGrad = prob->conGrad[i];  cGrad;  cGrad = cGrad->next) {
-				iRow[k] = i;
-				jCol[k] = cGrad->j;
-				++k;
-      }
-    }
+   	for (Index i=0; i<m; ++i)
+			for (smagConGradRec_t* cGrad = prob->conGrad[i];  cGrad;  cGrad = cGrad->next, ++k)
+				jac.insert(std::pair<std::pair<int,int>,int>(std::pair<int,int>(cGrad->j,i), k));
+		k = 0;
+		for (std::map<std::pair<int,int>,int>::iterator it(jac.begin()); it!=jac.end(); ++it, ++k) {
+			iRow[k] = it->first.second+1;
+			jCol[k] = it->first.first+1;
+			jac_map[it->second] = k;
+		}
     assert(k==smagNZCount(prob));
   } else {
     assert(NULL!=x);
@@ -219,8 +264,8 @@ bool SMAG_NLP::eval_jac_g (Index n, const Number *x, bool new_x,
     }
     int k = 0;
     for (Index i = 0;  i < m;  i++) {
-      for (smagConGradRec_t* cGrad = prob->conGrad[i];  cGrad;  cGrad = cGrad->next) {
-				values[k++] = cGrad->dcdj;
+      for (smagConGradRec_t* cGrad = prob->conGrad[i];  cGrad;  cGrad = cGrad->next, k++) {
+				values[jac_map[k]] = cGrad->dcdj;
       }
     }
     assert(k==smagNZCount(prob));
@@ -230,7 +275,7 @@ bool SMAG_NLP::eval_jac_g (Index n, const Number *x, bool new_x,
 } // eval_jac_g
 
 //return the structure or values of the hessian
-bool SMAG_NLP::eval_h (Index n, const Number *x, bool new_x,
+bool SMAG_MINLP::eval_h (Index n, const Number *x, bool new_x,
 	Number obj_factor, Index m, const Number *lambda, bool new_lambda,
 	Index nele_hess, Index *iRow, Index *jCol, Number *values) {
   if (values == NULL) {
@@ -243,8 +288,8 @@ bool SMAG_NLP::eval_h (Index n, const Number *x, bool new_x,
 		int k, kLast;
     for (Index j = 0;  j < n;  j++) {
       for (k = prob->hesData->colPtr[j]-1, kLast = prob->hesData->colPtr[j+1]-1;  k < kLast;  k++) {
-				iRow[kk] = prob->hesData->rowIdx[k] - 1;
-				jCol[kk] = j;
+				iRow[kk] = prob->hesData->rowIdx[k] - 1+1;
+				jCol[kk] = j+1;
 				kk++;
       }
     }
@@ -277,7 +322,7 @@ bool SMAG_NLP::eval_h (Index n, const Number *x, bool new_x,
   return true;
 } // eval_h
 
-bool SMAG_NLP::intermediate_callback (AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq) {
+bool SMAG_MINLP::intermediate_callback (AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq) {
 	last_iterationnumber=iter;
 	last_scaled_conviol = ip_cq->curr_nlp_constraint_violation(NORM_MAX);	
 	last_unscaled_conviol = ip_cq->unscaled_curr_nlp_constraint_violation(NORM_MAX);	
@@ -286,8 +331,9 @@ bool SMAG_NLP::intermediate_callback (AlgorithmMode mode, Index iter, Number obj
 	return true;
 }
 
-void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x, const Number *z_L, const Number *z_U,
+void SMAG_MINLP::finalize_solution (SolverReturn status, Index n, const Number *x, const Number *z_L, const Number *z_U,
 		   Index m, const Number *g, const Number *lambda, Number obj_value) {
+return;
 	int model_status;
 	int solver_status;
 	bool write_solution=false;

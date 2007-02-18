@@ -89,6 +89,7 @@ AC_COIN_HAS_PROJECT(Osi)
 AC_COIN_HAS_PROJECT(Clp)
 AC_COIN_HAS_PROJECT(Cbc)
 AC_COIN_HAS_PROJECT(Ipopt)
+AC_COIN_HAS_PROJECT(Bonmin)
 
 ############################################################################
 ############################################################################
@@ -333,6 +334,10 @@ AC_COIN_VPATH_LINK(src/Ipopt/gmsip_us.run)
 AC_COIN_VPATH_LINK(src/Ipopt/gmsip_nt.cmd)
 AC_COIN_VPATH_LINK(src/Ipopt/install/gmsip_un.dat)
 AC_COIN_VPATH_LINK(src/Ipopt/install/gmsip_nt.dat)
+AC_COIN_VPATH_LINK(src/Bonmin/gmsbm_us.run)
+AC_COIN_VPATH_LINK(src/Bonmin/gmsbm_nt.cmd)
+AC_COIN_VPATH_LINK(src/Bonmin/install/gmsbm_un.dat)
+AC_COIN_VPATH_LINK(src/Bonmin/install/gmsbm_nt.dat)
 
 ############
 # END PART #
@@ -346,6 +351,7 @@ AC_CONFIG_FILES([Makefile
                  src/Cbc/Makefile
                  src/Glpk/Makefile
                  src/Ipopt/Makefile
+                 src/Bonmin/Makefile
                  test/Makefile test/run_tests
                 ])
 

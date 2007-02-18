@@ -11,6 +11,17 @@ GAMSlinks/aclocal.m4 -text
 GAMSlinks/configure -text
 GAMSlinks/configure.ac -text
 GAMSlinks/inc/config_gamslinks.h.in -text
+GAMSlinks/src/Bonmin/GamsBonmin.cpp -text
+GAMSlinks/src/Bonmin/Makefile.am -text
+GAMSlinks/src/Bonmin/Makefile.in -text
+GAMSlinks/src/Bonmin/SmagMINLP.cpp -text
+GAMSlinks/src/Bonmin/SmagMINLP.hpp -text
+GAMSlinks/src/Bonmin/SmagMessageHandler.cpp -text
+GAMSlinks/src/Bonmin/SmagMessageHandler.hpp -text
+GAMSlinks/src/Bonmin/gmsbm_nt.cmd -text
+GAMSlinks/src/Bonmin/gmsbm_us.run -text
+GAMSlinks/src/Bonmin/install/gmsbm_nt.dat -text
+GAMSlinks/src/Bonmin/install/gmsbm_un.dat -text
 GAMSlinks/src/Cbc/CbcStrategyGams.cpp -text
 GAMSlinks/src/Cbc/CbcStrategyGams.hpp -text
 GAMSlinks/src/Cbc/GamsCoinCbc.cpp -text

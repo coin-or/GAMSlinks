@@ -19,6 +19,9 @@ endif
 if COIN_HAS_IPOPT
   SUBDIRS += Ipopt
 endif
+#if COIN_HAS_BONMIN
+#  SUBDIRS += Bonmin
+#endif
 
 EXTRA_DIST =
 

@@ -76,16 +76,16 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DISTCLEANFILES =
 
 if GAMSIO_IS_UNIX
-install-exec-local: .libs/GamsCoinCbc
-	ln -sf .libs/GamsCoinCbc gmscc_ux.out
+install-exec-local: $(DESTDIR)$(bindir)/GamsCoinCbc
+	ln -sf $(DESTDIR)$(bindir)/GamsCoinCbc gmscc_ux.out
 	zip gmscc_.zip gmscc_ux.out gmscc_us.run optcbc.def install/gmscc_un.dat
 	$(install_sh_DATA) gmscc_.zip $(DESTDIR)$(bindir)/gmscc_.zip
 	rm -f gmscc_ux.out
 endif
 
 if GAMSIO_IS_WINDOWS
-install-exec-local: .libs/GamsCoinCbc.exe
-	ln -sf .libs/GamsCoinCbc.exe gmscc_nx.exe
+install-exec-local: $(DESTDIR)$(bindir)/GamsCoinCbc.exe
+	ln -sf $(DESTDIR)$(bindir)/GamsCoinCbc.exe gmscc_nx.exe
 	zip gmscc_.zip gmscc_nx.exe gmscc_nt.cmd optcbc.def install/gmscc_nt.dat
 	$(install_sh_DATA) gmscc_.zip $(DESTDIR)$(bindir)/gmscc_.zip
 	rm -f gmscc_nx.exe  

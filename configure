@@ -21030,6 +21030,7 @@ echo "${ECHO_T}no" >&6
 
 
 
+#AC_COIN_MAIN_SUBDIRS(Bonmin)
 
 
 echo "$as_me:$LINENO: checking whether directory GAMSlinks is available" >&5

@@ -109,6 +109,8 @@ AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AUX_DIR = @AUX_DIR@
 AWK = @AWK@
+BONMINOBJDIR = @BONMINOBJDIR@
+BONMINSRCDIR = @BONMINSRCDIR@
 BUILDTOOLSDIR = @BUILDTOOLSDIR@
 CBCOBJDIR = @CBCOBJDIR@
 CBCSRCDIR = @CBCSRCDIR@
@@ -122,6 +124,8 @@ CLPOBJDIR = @CLPOBJDIR@
 CLPSRCDIR = @CLPSRCDIR@
 COINUTILSOBJDIR = @COINUTILSOBJDIR@
 COINUTILSSRCDIR = @COINUTILSSRCDIR@
+COIN_HAS_BONMIN_FALSE = @COIN_HAS_BONMIN_FALSE@
+COIN_HAS_BONMIN_TRUE = @COIN_HAS_BONMIN_TRUE@
 COIN_HAS_CBC_FALSE = @COIN_HAS_CBC_FALSE@
 COIN_HAS_CBC_TRUE = @COIN_HAS_CBC_TRUE@
 COIN_HAS_CGL_FALSE = @COIN_HAS_CGL_FALSE@
@@ -577,14 +581,14 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 	uninstall-info-am uninstall-local
 
 
-@GAMSIO_IS_UNIX_TRUE@install-exec-local: .libs/GamsCoinGlpk
-@GAMSIO_IS_UNIX_TRUE@	ln -sf .libs/GamsCoinGlpk gmscg_ux.out
+@GAMSIO_IS_UNIX_TRUE@install-exec-local: $(DESTDIR)$(bindir)/GamsCoinGlpk
+@GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinGlpk gmscg_ux.out
 @GAMSIO_IS_UNIX_TRUE@	zip gmscg_.zip gmscg_ux.out gmscg_us.run optglpk.def install/gmscg_un.dat
 @GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmscg_.zip $(DESTDIR)$(bindir)/gmscg_.zip
 @GAMSIO_IS_UNIX_TRUE@	rm -f gmscg_ux.out
 
-@GAMSIO_IS_WINDOWS_TRUE@install-exec-local: .libs/GamsCoinGlpk.exe
-@GAMSIO_IS_WINDOWS_TRUE@	ln -sf .libs/GamsCoinGlpk.exe gmscg_nx.exe
+@GAMSIO_IS_WINDOWS_TRUE@install-exec-local: $(DESTDIR)$(bindir)/GamsCoinGlpk.exe
+@GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinGlpk.exe gmscg_nx.exe
 @GAMSIO_IS_WINDOWS_TRUE@	zip gmscg_.zip gmscg_nx.exe gmscg_nt.cmd optglpk.def install/gmscg_nt.dat
 @GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmscg_.zip $(DESTDIR)$(bindir)/gmscg_.zip
 @GAMSIO_IS_WINDOWS_TRUE@	rm -f gmscg_nx.exe  
