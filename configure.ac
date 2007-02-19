@@ -57,7 +57,7 @@ AC_COIN_MAIN_SUBDIRS(Osi)
 AC_COIN_MAIN_SUBDIRS(Cgl)
 AC_COIN_MAIN_SUBDIRS(Cbc)
 AC_COIN_MAIN_SUBDIRS(Ipopt)
-#AC_COIN_MAIN_SUBDIRS(Bonmin)
+AC_COIN_MAIN_SUBDIRS(Bonmin)
 AC_COIN_MAIN_SUBDIRS(GAMSlinks)
 
 ##############################################################################

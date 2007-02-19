@@ -56,10 +56,11 @@ host_triplet = @host@
 @COIN_HAS_CBC_TRUE@am__append_1 = Cbc
 @COIN_HAS_GLPK_TRUE@am__append_2 = Glpk
 @COIN_HAS_IPOPT_TRUE@am__append_3 = Ipopt
+@COIN_HAS_BONMIN_TRUE@am__append_4 = Bonmin
 DIST_COMMON = $(srcdir)/../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_4 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_5 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_5 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_6 = .Externals-stamp
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -79,7 +80,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = GamsIO Cbc Glpk Ipopt
+DIST_SUBDIRS = GamsIO Cbc Glpk Ipopt Bonmin
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ADDLIBS = @ADDLIBS@
@@ -264,12 +265,10 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = GamsIO $(am__append_1) $(am__append_2) $(am__append_3)
-#if COIN_HAS_BONMIN
-#  SUBDIRS += Bonmin
-#endif
-EXTRA_DIST = $(am__append_4)
-DISTCLEANFILES = $(am__append_5) $(VPATH_DISTCLEANFILES)
+SUBDIRS = GamsIO $(am__append_1) $(am__append_2) $(am__append_3) \
+	$(am__append_4)
+EXTRA_DIST = $(am__append_5)
+DISTCLEANFILES = $(am__append_6) $(VPATH_DISTCLEANFILES)
 ConfigHeader = GAMSlinksConfig.h
 all: all-recursive
 
