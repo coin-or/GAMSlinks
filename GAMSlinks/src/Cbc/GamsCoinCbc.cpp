@@ -115,7 +115,6 @@ int main (int argc, const char *argv[]) {
 		write_mps(gm, solver, myout, gm.optGetString("writemps", buffer));
 
 	// Some tolerances and limits
-	solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
 #if (OsiXXXSolverInterface == OsiClpSolverInterface)
 	solver.getModelPtr()->setDualBound(1.0e10);
 	solver.getModelPtr()->setDblParam(ClpMaxSeconds, gm.optGetDouble("reslim"));
@@ -157,8 +156,11 @@ int main (int argc, const char *argv[]) {
 
 	
 	// Do initial solve to continuous
-	if (gm.nDCols() || gm.nSOS1() || gm.nSOS2())
+	if (gm.nDCols() || gm.nSOS1() || gm.nSOS2()) {
 	  myout << CoinMessageEol << "Solving the root node..." << CoinMessageEol;
+	} else { // iteration limit only for LPs
+		model.solver()->setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
+	}	
 	buffer[0]=0; gm.optGetString("startalg", buffer);
 	model.solver()->setHintParam(OsiDoDualInInitial, strcmp(buffer, "primal")==0 ? false : true);
 	model.solver()->messageHandler()->setLogLevel(4);

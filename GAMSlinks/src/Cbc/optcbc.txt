@@ -159,16 +159,17 @@ Maximum time in seconds.
 
 
 iterlim
-Maximum number of iterations.
+For an LP, this is the maximum number of iterations to solve the LP.
+For a MIP, this option is ignored.
 
 
 
 nodelim
-Maximum number of nodes in the Branch and Bound.
+Maximum number of nodes that are considered in the Branch and Bound.
 
 
 nodlim
-Maximum number of nodes in the Branch and Bound.
+Maximum number of nodes that are considered in the Branch and Bound.
 This option is overwritten by nodelim, if set.
 
 
