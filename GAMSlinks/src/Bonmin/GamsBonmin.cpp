@@ -92,6 +92,9 @@ int main (int argc, char* argv[]) {
 
 //TODO	app->Options()->SetIntegerValue("max_iter", prob->gms.itnlim);
 //TODO and more options like cutoff and optcr, optca...
+	if (prob->gms.icutof) {
+		nlpSolver.retrieve_options()->SetNumericValue("bonmin.cutoff", prob->gms.cutoff);
+	}
 
 	if (prob->gms.useopt)
 		nlpSolver.readOptionFile(prob->gms.optFileName);
@@ -105,7 +108,8 @@ int main (int argc, char* argv[]) {
   try {
 		BonminCbcParam par;
 		BonminBB bb;
-		par(nlpSolver);
+
+		par(nlpSolver); // process option file
 
 		bb(nlpSolver, par);//process parameter file using Ipopt and do branch and bound
 
