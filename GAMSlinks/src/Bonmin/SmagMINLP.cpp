@@ -20,7 +20,6 @@ SMAG_MINLP::SMAG_MINLP (smagHandle_t prob)
   negLambda = new double[smagRowCount(prob)];
   isMin = smagMinim (prob);		/* 1 for min, -1 for max */
 	
-	timelimit=prob->gms.reslim;
 	domviollimit=prob->gms.domlim;
 	
 	jac_map = new int[smagNZCount(prob)]; //index mapping row based to column based jacobian 
@@ -36,7 +35,6 @@ SMAG_MINLP::~SMAG_MINLP()
 // returns the size of the problem
 bool SMAG_MINLP::get_nlp_info (Index& n, Index& m, Index& nnz_jac_g,
 	      Index& nnz_h_lag, TNLP::IndexStyleEnum& index_style) {
-  clockStart = smagGetCPUTime (prob);
   n = smagColCount (prob);
   m = smagRowCount (prob);
   nnz_jac_g = smagNZCount (prob); // Jacobian nonzeros
@@ -326,7 +324,6 @@ bool SMAG_MINLP::intermediate_callback (AlgorithmMode mode, Index iter, Number o
 	last_iterationnumber=iter;
 	last_scaled_conviol = ip_cq->curr_nlp_constraint_violation(NORM_MAX);	
 	last_unscaled_conviol = ip_cq->unscaled_curr_nlp_constraint_violation(NORM_MAX);	
-	if (timelimit && smagGetCPUTime(prob)-clockStart>timelimit) return false;
 	if (domviollimit && domviolations>=domviollimit) return false;
 	return true;
 }
@@ -334,125 +331,5 @@ bool SMAG_MINLP::intermediate_callback (AlgorithmMode mode, Index iter, Number o
 void SMAG_MINLP::finalize_solution (SolverReturn status, Index n, const Number *x, const Number *z_L, const Number *z_U,
 		   Index m, const Number *g, const Number *lambda, Number obj_value) {
 return;
-	int model_status;
-	int solver_status;
-	bool write_solution=false;
-	
-  switch (status) {
-	  case SUCCESS:
-	  case STOP_AT_ACCEPTABLE_POINT:
-	  	model_status=smagColCountNL(prob) ? 2 : 1; // local optimal for nlps, optimal for lps
-	  	solver_status=1;
-	  	write_solution=true; 
-			break;
-	  case LOCAL_INFEASIBILITY: 
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Local infeasible!!\n");
-			model_status=smagColCountNL(prob) ? 5 : 4; // local infeasible for nlps, infeasible for lps
-			solver_status=1;
-			write_solution=true;
-	    break;
-	  case DIVERGING_ITERATES:
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Diverging iterates: we'll guess unbounded!!\n");
-			model_status=3;
-			solver_status=1;
-			write_solution=true;
-	    break;
-		case STOP_AT_TINY_STEP:
-	  case RESTORATION_FAILURE:
-			if (last_scaled_conviol < scaled_conviol_tol && last_unscaled_conviol < unscaled_conviol_tol) {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: we don't know about optimality, but we have feasibility!!\n");
-				model_status=7; // intermediate nonoptimal
-			} else {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: point in not feasibile!!\n");
-				model_status=6; // intermediate infeasible
-			}
-			solver_status=4;
-			write_solution=true;
-	    break;
-	  case MAXITER_EXCEEDED:
-			if (last_scaled_conviol < scaled_conviol_tol && last_unscaled_conviol < unscaled_conviol_tol) {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "Iteration limit exceeded!! Point is feasible.\n");
-				model_status=7; // intermediate nonoptimal
-			} else {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "Iteration limit exceeded!! Point is not feasible.\n");
-				model_status=6; // intermediate infeasible
-			}
-			solver_status=2;
-			write_solution=true;
-			break;
-		case USER_REQUESTED_STOP:
-			if (domviollimit && domviolations>=domviollimit) {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "Domain violation limit exceeded!!\n");
-				model_status=6; // intermediate infeasible
-				solver_status=5;
-			} else {
-				if (last_scaled_conviol < scaled_conviol_tol && last_unscaled_conviol < unscaled_conviol_tol) {
-					smagStdOutputPrint(prob, SMAG_LOGMASK, "Time limit exceeded!! Point is feasible.\n");
-					model_status=7; // intermediate nonoptimal
-				} else {
-					smagStdOutputPrint(prob, SMAG_LOGMASK, "Time limit exceeded!! Point is not feasible.\n");
-					model_status=6; // intermediate infeasible
-				}
-				solver_status=3;
-			}
-			write_solution=true;
-			break;
-		case ERROR_IN_STEP_COMPUTATION:
-		case TOO_FEW_DEGREES_OF_FREEDOM:
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Error in step compuation or too few degrees of freedom!!\n");
-			model_status=13;
-			solver_status=10;
-			break;
-		case INVALID_NUMBER_DETECTED:
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Invalid number detected!!\n");
-			model_status=13;
-			solver_status=13;
-			break;
-		case INTERNAL_ERROR:
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Internal error!!\n");
-			model_status=13;
-			solver_status=11;
-			break;
-	  default:
-	  	char buffer[255];
-	  	sprintf(buffer, "OUCH: unhandled SolverReturn of %d\n", status);
-			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
-			model_status=12;
-			solver_status=13;
-  } // switch
-
-  if (write_solution) {
-		unsigned char* colBasStat=new unsigned char[n];
-		unsigned char* colIndic=new unsigned char[n];
-		double* colMarg=new double[n];
-		for (Index i=0; i<n; ++i) {
-			colBasStat[i]=SMAG_BASSTAT_SUPERBASIC;
-			colIndic[i]=SMAG_RCINDIC_OK; // TODO: not ok, if over the bounds
-			// if, e.g., x_i has no lower bound, then the dual z_L[i] is -infinity
-			colMarg[i]=0;
-			if (z_L[i]>-prob->inf) colMarg[i]+=isMin*z_L[i];
-			if (z_U[i]<prob->inf) colMarg[i]-=isMin*z_U[i];
-		}
-		unsigned char* rowBasStat=new unsigned char[m];
-		unsigned char* rowIndic=new unsigned char[m];
-    for (Index i = 0;  i < m;  i++) {
-			rowBasStat[i]=SMAG_BASSTAT_SUPERBASIC;
-			rowIndic[i]=SMAG_RCINDIC_OK; // TODO: not ok, if over the bounds
-      negLambda[i] = -lambda[i] * isMin;
-    }
-		smagReportSolFull(prob, model_status, solver_status,
-			last_iterationnumber, smagGetCPUTime(prob)-clockStart, obj_value*isMin, domviolations,
-			g, negLambda, rowBasStat, rowIndic,
-			x, colMarg, colBasStat, colIndic);
-			
-		delete[] colBasStat;
-		delete[] colIndic;
-		delete[] colMarg;
-		delete[] rowBasStat;
-		delete[] rowIndic;
-  } else {
-		smagReportSolStats (prob, model_status, solver_status, SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, SMAG_DBL_NA, domviolations);
-  }
-  
-
+// noone seem to call this method
 } // finalize_solution

@@ -64,37 +64,24 @@ int main (int argc, char* argv[]) {
   // Create a new instance of your minlp
   SMAG_MINLP* mysmagminlp = new SMAG_MINLP(prob);
   SmartPtr<TMINLP> smagminlp = mysmagminlp;
+  
+  SmagMessageHandler messagehandler(prob);
 
+//  IpoptInterface nlpSolver(smagminlp, &messagehandler);
   IpoptInterface nlpSolver(smagminlp);
-  
-  
-//	SmartPtr<Journal> smag_listjrnl=new SmagJournal(prob, SMAG_LISTMASK, "SMAGlisting", J_SUMMARY);
-//	smag_listjrnl->SetPrintLevel(J_DBG, J_NONE);  	
-//	if (!app->Jnlst()->AddJournal(smag_listjrnl))
-//		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT listing output.\n");  
-//
-//  if (prob->logOption) {
-//  	// calling this journal "console" lets IPOPT adjust its print_level according to the print_level parameter (if set) 
-//  	SmartPtr<Journal> smag_logjrnl=new SmagJournal(prob, SMAG_LOGMASK, "console", J_ITERSUMMARY);
-//		smag_logjrnl->SetPrintLevel(J_DBG, J_NONE);  	
-//		if (!app->Jnlst()->AddJournal(smag_logjrnl))
-//			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT logging output.\n");
-//  }
-
-//TODO message control not working yet
-//	SmagMessageHandler msghandler(prob);
-//	nlpSolver.passInMessageHandler(&msghandler);
+	BonminCbcParam par;
+	par.fout=prob->fpLog;
 
 	// Change some options
 	nlpSolver.retrieve_options()->SetNumericValue("bound_relax_factor", 0);
 	nlpSolver.retrieve_options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false);
 	nlpSolver.retrieve_options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false);
-
-//TODO	app->Options()->SetIntegerValue("max_iter", prob->gms.itnlim);
-//TODO and more options like cutoff and optcr, optca...
-	if (prob->gms.icutof) {
+	if (prob->gms.icutof)
 		nlpSolver.retrieve_options()->SetNumericValue("bonmin.cutoff", prob->gms.cutoff);
-	}
+	nlpSolver.retrieve_options()->SetNumericValue("bonmin.allowable_gap", prob->gms.optca);
+	nlpSolver.retrieve_options()->SetNumericValue("bonmin.allowable_fraction_gap", prob->gms.optcr);
+	nlpSolver.retrieve_options()->SetIntegerValue("bonmin.node_limit", prob->gms.nodlim);
+	nlpSolver.retrieve_options()->SetNumericValue("bonmin.time_limit", prob->gms.reslim);
 
 	if (prob->gms.useopt)
 		nlpSolver.readOptionFile(prob->gms.optFileName);
@@ -104,38 +91,31 @@ int main (int argc, char* argv[]) {
 	nlpSolver.retrieve_options()->GetNumericValue("tol", mysmagminlp->scaled_conviol_tol, ""); 
 	nlpSolver.retrieve_options()->GetNumericValue("constr_viol_tol", mysmagminlp->unscaled_conviol_tol, ""); 
 
-
   try {
-		BonminCbcParam par;
+		par(nlpSolver); // process option file
 		BonminBB bb;
 
-		par(nlpSolver); // process option file
+		double clockStart = smagGetCPUTime (prob);
+		bb(nlpSolver, par); //process parameter file using Ipopt and do branch and bound
 
-		bb(nlpSolver, par);//process parameter file using Ipopt and do branch and bound
-
-//    std::string message;
     int model_status;
     int solver_status;
     switch (bb.mipStatus()) {
     	case BonminBB::FeasibleOptimal: {
 	    	model_status=2; // local optimal; we could report optimal if the gap is closed
 	    	solver_status=1; // normal completion
-//	      message = "\nbonmin: Optimal";
 	    } break;
     	case BonminBB::ProvenInfeasible: {
 	    	model_status=4; // infeasible
 	    	solver_status=1; // normal completion
-//	      message = "\nbonmin: Infeasible problem";
 	    } break;
     	case BonminBB::Feasible: {
 	    	model_status=7; // intermediate nonoptimal
 	    	solver_status=1; // normal completion
-//  	    message = "\n Optimization not finished.";
     	} break;
     	case BonminBB::NoSolutionKnown: {
 	    	model_status=6; // intermediate infeasible
 	    	solver_status=1; // normal completion
-//  	    message = "\n Optimization not finished.";
     	} break;
     	default : { // should not happen, since other mipStatus are not defined
 	    	model_status=12; // error unknown
@@ -149,8 +129,8 @@ int main (int argc, char* argv[]) {
 //    <<bb.iterationCount()<<"\t"
 //    <<std::endl;
 
-		double resUsed=0.;
-		int domErrors=0;
+		double resUsed=smagGetCPUTime(prob)-clockStart;
+		int domErrors=mysmagminlp->domviolations;
 		const double* rowMarg=nlpSolver.getRowPrice();
 		//new double[smagRowCount(prob)];
 
@@ -158,19 +138,13 @@ int main (int argc, char* argv[]) {
   }
   catch(IpoptInterface::UnsolvedError &E) {
     //There has been a failure to solve a problem with Ipopt.
-    std::cerr<<"Ipopt has failed to solve a problem"<<std::endl;
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Ipopt has failed to solve a problem.\n");
 	  smagReportSolBrief(prob, 10, 13);
   }
-  catch(IpoptInterface::SimpleError &E) {
-    std::cerr<<E.className()<<"::"<<E.methodName()
-	     <<std::endl
-	     <<E.message()<<std::endl;
-	  smagReportSolBrief(prob, 13, 13);
-  }
   catch(CoinError &E) {
-    std::cerr<<E.className()<<"::"<<E.methodName()
-	     <<std::endl
-	     <<E.message()<<std::endl;
+  	char buf[1024];
+  	snprintf(buf, 1024, "%s::%s\n%s\n", E.className().c_str(), E.methodName().c_str(), E.message().c_str());
+		smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
 	  smagReportSolBrief(prob, 13, 13);
   }
 

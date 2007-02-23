@@ -24,12 +24,17 @@ SmagMessageHandler::SmagMessageHandler(smagHandle_t smag_)
 
 // Print message, return 0 normally
 int SmagMessageHandler::print() {
+  const char *messageOut = messageBuffer();
+  // white space at the beginning
+  if (*messageOut == ' ') ++messageOut;
+
   if (0 == smag)
-    printf("%s", messageBuffer());
+    printf("%s\n", messageOut);
   else {
   	int smag_mask = currentMessage().detail() < 2 ? SMAG_ALLMASK : SMAG_LOGMASK; 
-  	smagStdOutputPrintX(smag, smag_mask, messageBuffer(), 0);
-//  	smagStdOutputFlush(smag, smag_mask);
+  	smagStdOutputPrintX(smag, smag_mask, messageOut, 0);
+  	smagStdOutputPrintX(smag, smag_mask, "\n", 0); // and put a newline
   }
   return 0;
 }
+

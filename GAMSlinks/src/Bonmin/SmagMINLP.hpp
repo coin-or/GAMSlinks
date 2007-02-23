@@ -111,14 +111,12 @@ public:
 	double div_iter_tol;
 	double scaled_conviol_tol;
 	double unscaled_conviol_tol;
+	long int domviolations;
 private:
   smagHandle_t prob;
-  double clockStart;
   double *negLambda;
   double isMin;
-	double timelimit;
-	int domviollimit;
-	long int domviolations;
+	long int domviollimit;
 
   int last_iterationnumber;
   double last_scaled_conviol; // last scaled constraint violation
