@@ -39,7 +39,7 @@ bool SMAG_MINLP::get_nlp_info (Index& n, Index& m, Index& nnz_jac_g,
   m = smagRowCount (prob);
   nnz_jac_g = smagNZCount (prob); // Jacobian nonzeros
   nnz_h_lag = prob->hesData->lowTriNZ;
-  index_style = TNLP::FORTRAN_STYLE; // 1-based (Bonmin does not seem to like C_STYLE) 
+  index_style = TNLP::C_STYLE; 
 
   return true;
 } // SMAG_MINLP::get_nlp_info
@@ -83,7 +83,15 @@ bool SMAG_MINLP::get_bounds_info (Index n, Number* x_l, Number* x_u,
   return true;
 } // get_bounds_info
 
+#include <vector>
+#include <list>
 bool SMAG_MINLP::get_var_types(Index n, VariableType* var_types) {
+	sosinfo.num=prob->gms.nosos1+prob->gms.nosos2; // number of sos
+	sosinfo.types=new char[sosinfo.num]; // types of sos
+	sosinfo.numNz=prob->gms.nsos1+prob->gms.nsos2; // number of variables in sos
+	// collects for each sos the variables which are in there
+	std::vector<std::list<int> > sosvar(sosinfo.num);  
+
 	for (Index i=0; i<n; ++i) {
 		switch (prob->colType[i]) {
 			case SMAG_VAR_CONT:
@@ -96,7 +104,15 @@ bool SMAG_MINLP::get_var_types(Index n, VariableType* var_types) {
 				var_types[i]=INTEGER;
 				break;
 			case SMAG_VAR_SOS1:
+				sosvar[0].push_back(i);
+				sosinfo.types[0]=1;
+				var_types[i]=CONTINUOUS;
+				break;
 			case SMAG_VAR_SOS2:
+				sosvar[0].push_back(i);
+				sosinfo.types[0]=2;
+				var_types[i]=CONTINUOUS;
+				break;
 			case SMAG_VAR_SEMICONT:
 			case SMAG_VAR_SEMIINT:
 			default: {
@@ -108,15 +124,34 @@ bool SMAG_MINLP::get_var_types(Index n, VariableType* var_types) {
 			}			
 		}
 	}
+	
+	sosinfo.indices=new int[sosinfo.numNz];
+	sosinfo.weights=new double[sosinfo.numNz];
+	sosinfo.starts=new int[sosinfo.num+1];
+	int k=0;
+	for (unsigned int i=0; i<sosvar.size(); ++i) {
+		sosinfo.starts[i]=k;
+//		std::clog << i << ' ' << (int)sosinfo.types[i] << ':';
+		for (std::list<int>::iterator it(sosvar[i].begin()); it!=sosvar[i].end(); ++it, ++k) {
+			sosinfo.indices[k]=*it;
+			sosinfo.weights[k]=k-sosinfo.starts[i];
+//			std::clog << *it << ' ';		
+		}
+//		std::clog << std::endl;
+	}
+	sosinfo.starts[sosvar.size()]=k;
+	
+	
 	return true;	
 } // get_var_types
   
 bool SMAG_MINLP::get_constraints_types(Index m, ConstraintType* const_types) {
-	for (Index i=0; i<m; ++i)
-		if (prob->snlData.numInstr[i])
-			const_types[i]=NON_LINEAR;
-		else		
+	if (!prob->snlData.numInstr) // no nonlinearities
+		for (Index i=0; i<m; ++i)
 			const_types[i]=LINEAR;
+	else
+		for (Index i=0; i<m; ++i)
+			const_types[i]=prob->snlData.numInstr[i] ? NON_LINEAR : LINEAR;
 	
 	return true;
 } // get_constraints_types
@@ -238,8 +273,8 @@ bool SMAG_MINLP::eval_jac_g (Index n, const Number *x, bool new_x,
 				jac.insert(std::pair<std::pair<int,int>,int>(std::pair<int,int>(cGrad->j,i), k));
 		k = 0;
 		for (std::map<std::pair<int,int>,int>::iterator it(jac.begin()); it!=jac.end(); ++it, ++k) {
-			iRow[k] = it->first.second+1;
-			jCol[k] = it->first.first+1;
+			iRow[k] = it->first.second;
+			jCol[k] = it->first.first;
 			jac_map[it->second] = k;
 		}
     assert(k==smagNZCount(prob));
@@ -286,8 +321,8 @@ bool SMAG_MINLP::eval_h (Index n, const Number *x, bool new_x,
 		int k, kLast;
     for (Index j = 0;  j < n;  j++) {
       for (k = prob->hesData->colPtr[j]-1, kLast = prob->hesData->colPtr[j+1]-1;  k < kLast;  k++) {
-				iRow[kk] = prob->hesData->rowIdx[k] - 1+1;
-				jCol[kk] = j+1;
+				iRow[kk] = prob->hesData->rowIdx[k] - 1;
+				jCol[kk] = j;
 				kk++;
       }
     }
@@ -328,8 +363,8 @@ bool SMAG_MINLP::intermediate_callback (AlgorithmMode mode, Index iter, Number o
 	return true;
 }
 
-void SMAG_MINLP::finalize_solution (SolverReturn status, Index n, const Number *x, const Number *z_L, const Number *z_U,
-		   Index m, const Number *g, const Number *lambda, Number obj_value) {
-return;
-// noone seem to call this method
-} // finalize_solution
+const TMINLP::SosInfo* SMAG_MINLP::sosConstraints() const {
+	return NULL; // smag does not support sos yet
+	if (!sosinfo.num) return NULL;	
+	return &sosinfo;
+}

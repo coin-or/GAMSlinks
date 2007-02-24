@@ -95,15 +95,18 @@ public:
 	 */
 	virtual bool intermediate_callback (AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq);
 
-  /** This method is called when the algorithm is complete so the TNLP can store/write the solution.
-   */
-  virtual void finalize_solution(SolverReturn status,
+	/** This method is never called.
+	 */
+	virtual void finalize_solution(SolverReturn status,
 		    Index n, const Number* x, const Number* z_L,
 		    const Number* z_U,
 		    Index m, const Number* g, const Number* lambda,
-		    Number obj_value);
+		    Number obj_value) { }
 
-  virtual const SosInfo * sosConstraints() const{return NULL;}
+	/** Provides information about SOS constraints.
+	 */
+  virtual const SosInfo * sosConstraints() const;
+  
   virtual const BranchingInfo* branchingInfo() const{return NULL;}
 
  	int* jac_map;
@@ -121,6 +124,8 @@ private:
   int last_iterationnumber;
   double last_scaled_conviol; // last scaled constraint violation
 	double last_unscaled_conviol; // last unscaled constraint violation
+	
+	SosInfo sosinfo;
 
   /* Methods to block default compiler methods.
    * The compiler automatically generates the following three methods.
