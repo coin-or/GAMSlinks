@@ -21,15 +21,12 @@ SMAG_MINLP::SMAG_MINLP (smagHandle_t prob)
   isMin = smagMinim (prob);		/* 1 for min, -1 for max */
 	
 	domviollimit=prob->gms.domlim;
-	
-	jac_map = new int[smagNZCount(prob)]; //index mapping row based to column based jacobian 
 } // SMAG_MINLP(prob)
 
 // destructor
 SMAG_MINLP::~SMAG_MINLP()
 {
   delete[] negLambda;
-  delete[] jac_map;
 }
 
 // returns the size of the problem
@@ -257,7 +254,6 @@ bool SMAG_MINLP::eval_g (Index n, const Number *x, bool new_x, Index m, Number *
   return true;
 } // eval_g
 
-#include <map>
 // return the structure or values of the jacobian
 bool SMAG_MINLP::eval_jac_g (Index n, const Number *x, bool new_x,
 	    Index m, Index nele_jac, Index *iRow, Index *jCol, Number *values) {
@@ -265,19 +261,13 @@ bool SMAG_MINLP::eval_jac_g (Index n, const Number *x, bool new_x,
     assert(NULL==x);
     assert(NULL!=iRow);
     assert(NULL!=jCol);
+    smagConGradRec_t* cGrad;
     // return the structure of the jacobian
-   	std::map<std::pair<int,int>,int> jac;
-    int k = 0;
    	for (Index i=0; i<m; ++i)
-			for (smagConGradRec_t* cGrad = prob->conGrad[i];  cGrad;  cGrad = cGrad->next, ++k)
-				jac.insert(std::pair<std::pair<int,int>,int>(std::pair<int,int>(cGrad->j,i), k));
-		k = 0;
-		for (std::map<std::pair<int,int>,int>::iterator it(jac.begin()); it!=jac.end(); ++it, ++k) {
-			iRow[k] = it->first.second;
-			jCol[k] = it->first.first;
-			jac_map[it->second] = k;
-		}
-    assert(k==smagNZCount(prob));
+			for (cGrad = prob->conGrad[i];  cGrad;  cGrad = cGrad->next) {
+				*(iRow++) = i;
+				*(jCol++) = cGrad->j;								
+			}
   } else {
     assert(NULL!=x);
     assert(NULL==iRow);
@@ -295,13 +285,9 @@ bool SMAG_MINLP::eval_jac_g (Index n, const Number *x, bool new_x,
 			++domviolations;
       return false;
     }
-    int k = 0;
-    for (Index i = 0;  i < m;  i++) {
-      for (smagConGradRec_t* cGrad = prob->conGrad[i];  cGrad;  cGrad = cGrad->next, k++) {
-				values[jac_map[k]] = cGrad->dcdj;
-      }
-    }
-    assert(k==smagNZCount(prob));
+    for (Index i = 0;  i < m;  i++)
+      for (smagConGradRec_t* cGrad = prob->conGrad[i];  cGrad;  cGrad = cGrad->next)
+				*(values++) = cGrad->dcdj;
   }
 
   return true;
@@ -317,16 +303,13 @@ bool SMAG_MINLP::eval_h (Index n, const Number *x, bool new_x,
     assert(NULL==lambda);
     assert(NULL!=iRow);
     assert(NULL!=jCol);
-		int kk = 0;
 		int k, kLast;
     for (Index j = 0;  j < n;  j++) {
       for (k = prob->hesData->colPtr[j]-1, kLast = prob->hesData->colPtr[j+1]-1;  k < kLast;  k++) {
-				iRow[kk] = prob->hesData->rowIdx[k] - 1;
-				jCol[kk] = j;
-				kk++;
+				*(iRow++) = prob->hesData->rowIdx[k] - 1;
+				*(jCol++) = j;
       }
     }
-    assert(prob->hesData->lowTriNZ==kk);
   }
   else {
     // return the values. This is a symmetric matrix, fill the lower left triangle only.

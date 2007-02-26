@@ -109,8 +109,6 @@ public:
   
   virtual const BranchingInfo* branchingInfo() const{return NULL;}
 
- 	int* jac_map;
-
 	double div_iter_tol;
 	double scaled_conviol_tol;
 	double unscaled_conviol_tol;
