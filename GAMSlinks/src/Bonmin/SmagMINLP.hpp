@@ -97,11 +97,13 @@ public:
 
 	/** This method is never called.
 	 */
-	virtual void finalize_solution(SolverReturn status,
+/*	virtual void finalize_solution(SolverReturn status,
 		    Index n, const Number* x, const Number* z_L,
 		    const Number* z_U,
 		    Index m, const Number* g, const Number* lambda,
 		    Number obj_value) { }
+*/	virtual void finalize_solution(SolverReturn status,
+			Index n, const Number* x, Number obj_value) const { };
 
 	/** Provides information about SOS constraints.
 	 */

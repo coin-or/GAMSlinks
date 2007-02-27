@@ -259,7 +259,7 @@ if test x"$gamsio_system" = xLinux; then
 fi
 
 coin_gamsioobjdir=../ThirdParty/GAMSIO/$GAMSIO_CODE
-coin_gamsiosrcdir=$abs_source_dir/$coin_gamsioobjdir
+coin_gamsiosrcdir=`$CYGPATH_W $abs_source_dir/$coin_gamsioobjdir | sed -e sX\\\\\\\\X/Xg`
 
 #if user provided GAMS I/O libraries, use this one, otherwise check ThirdParty/GAMSIO directory
 AC_ARG_WITH([gamsio],
@@ -271,7 +271,7 @@ if test x"$use_gamsio" = x; then
   coin_has_gamsio=no
 	AC_MSG_ERROR([no GAMS I/O libraries found. Either provide their path with the option --with-gamsio or download them by calling $abs_source_dir/../ThirdParty/GAMSIO/get.$GAMSIO_CODE.])
 fi
-						
+
 # Check if GAMS I/O libs work
 AC_MSG_CHECKING([whether GAMS I/O libraries at $use_gamsio work])
 if test x"$GAMSIO_CODE" = xLX3; then
