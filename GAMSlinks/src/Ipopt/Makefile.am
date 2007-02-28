@@ -13,6 +13,18 @@ EXTRA_DIST = gmsip_nt.cmd gmsip_us.run install/gmsip_nt.dat install/gmsip_un.dat
 bin_PROGRAMS = GamsIpopt
 GamsIpopt_SOURCES = GamsIpopt.cpp SmagNLP.cpp SmagNLP.hpp SmagJournal.hpp SmagJournal.cpp
 
+includeipoptdir = $(includedir)/ipopt
+includeipopt_HEADERS = \
+  $(IPOPTSRCDIR)/src/Algorithm/IpIpoptCalculatedQuantities.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpIpoptNLP.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpNLPScaling.hpp \
+  $(IPOPTSRCDIR)/src/LinAlg/IpScaledMatrix.hpp \
+  $(IPOPTSRCDIR)/src/LinAlg/IpSymScaledMatrix.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpIpoptData.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpIteratesVector.hpp \
+  $(IPOPTSRCDIR)/src/LinAlg/IpCompoundVector.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpTimingStatistics.hpp
+
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \

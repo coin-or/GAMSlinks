@@ -31,6 +31,7 @@
 #                         Maintainer Stuff                             #
 ########################################################################
 
+
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -54,7 +55,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = GamsIpopt$(EXEEXT)
-DIST_COMMON = $(srcdir)/../../../BuildTools/Makemain.inc \
+DIST_COMMON = $(includeipopt_HEADERS) \
+	$(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 @HAVE_EXTERNALS_TRUE@am__append_1 = Externals
 @HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
@@ -67,7 +69,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/inc/config_gamslinks.h
 CONFIG_CLEAN_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includeipoptdir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_GamsIpopt_OBJECTS = GamsIpopt.$(OBJEXT) SmagNLP.$(OBJEXT) \
@@ -94,6 +96,14 @@ LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(GamsIpopt_SOURCES)
 DIST_SOURCES = $(GamsIpopt_SOURCES)
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
+includeipoptHEADERS_INSTALL = $(INSTALL_HEADER)
+HEADERS = $(includeipopt_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -284,6 +294,18 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmsip_nt.cmd gmsip_us.run install/gmsip_nt.dat \
 	install/gmsip_un.dat $(am__append_1)
 GamsIpopt_SOURCES = GamsIpopt.cpp SmagNLP.cpp SmagNLP.hpp SmagJournal.hpp SmagJournal.cpp
+includeipoptdir = $(includedir)/ipopt
+includeipopt_HEADERS = \
+  $(IPOPTSRCDIR)/src/Algorithm/IpIpoptCalculatedQuantities.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpIpoptNLP.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpNLPScaling.hpp \
+  $(IPOPTSRCDIR)/src/LinAlg/IpScaledMatrix.hpp \
+  $(IPOPTSRCDIR)/src/LinAlg/IpSymScaledMatrix.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpIpoptData.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpIteratesVector.hpp \
+  $(IPOPTSRCDIR)/src/LinAlg/IpCompoundVector.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpTimingStatistics.hpp
+
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
@@ -405,6 +427,23 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
+install-includeipoptHEADERS: $(includeipopt_HEADERS)
+	@$(NORMAL_INSTALL)
+	test -z "$(includeipoptdir)" || $(mkdir_p) "$(DESTDIR)$(includeipoptdir)"
+	@list='$(includeipopt_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(includeipoptHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(includeipoptdir)/$$f'"; \
+	  $(includeipoptHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(includeipoptdir)/$$f"; \
+	done
+
+uninstall-includeipoptHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(includeipopt_HEADERS)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(includeipoptdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(includeipoptdir)/$$f"; \
+	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -455,7 +494,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/../../../BuildTools $(distdir)/install
+	$(mkdir_p) $(distdir)/$(IPOPTSRCDIR)/src/Algorithm $(distdir)/$(IPOPTSRCDIR)/src/LinAlg $(distdir)/../../../BuildTools $(distdir)/install
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -484,9 +523,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(PROGRAMS) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includeipoptdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -535,7 +574,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-includeipoptHEADERS
 
 install-exec-am: install-binPROGRAMS install-exec-local
 
@@ -563,20 +602,22 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
+uninstall-am: uninstall-binPROGRAMS uninstall-includeipoptHEADERS \
+	uninstall-info-am uninstall-local
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
 	clean-generic clean-libtool ctags distclean distclean-compile \
 	distclean-generic distclean-libtool distclean-tags distdir dvi \
 	dvi-am html html-am info info-am install install-am \
 	install-binPROGRAMS install-data install-data-am install-exec \
-	install-exec-am install-exec-local install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	install-exec-am install-exec-local install-includeipoptHEADERS \
+	install-info install-info-am install-man install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-binPROGRAMS \
-	uninstall-info-am uninstall-local
+	uninstall-includeipoptHEADERS uninstall-info-am \
+	uninstall-local
 
 
 @GAMSIO_IS_UNIX_TRUE@install-exec-local: $(DESTDIR)$(bindir)/GamsIpopt

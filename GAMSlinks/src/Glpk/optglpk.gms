@@ -1,4 +1,4 @@
-$setglobal PDFLINK coin.pdf
+$setglobal PDFLINK coin
 $eolcom //
 set g Glpk Option Groups /
         general        General Options
