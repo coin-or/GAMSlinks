@@ -24167,7 +24167,7 @@ fi;
 fi
 
 coin_gamsioobjdir=../ThirdParty/GAMSIO/$GAMSIO_CODE
-coin_gamsiosrcdir=$abs_source_dir/$coin_gamsioobjdir
+coin_gamsiosrcdir=`$CYGPATH_W $abs_source_dir/$coin_gamsioobjdir | sed -e sX\\\\\\\\X/Xg`
 
 #if user provided GAMS I/O libraries, use this one, otherwise check ThirdParty/GAMSIO directory
 
