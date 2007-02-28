@@ -33,6 +33,11 @@ GamsCoinGlpk_LDADD = \
  $(OSIOBJDIR)/src/libOsi.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(GAMSIO_LIBS) $(GLPKLIB)
+GamsCoinGlpk_DEPENDENCIES = \
+ ../GamsIO/libGamsIO.la \
+ $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
+ $(OSIOBJDIR)/src/libOsi.la \
+ $(COINUTILSOBJDIR)/src/libCoinUtils.la
 
 ADDLIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt`
 

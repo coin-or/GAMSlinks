@@ -25,6 +25,8 @@ GamsIpopt_LDADD = \
  $(IPOPTOBJDIR)/src/Interfaces/libipopt.la \
  $(SMAG_LIBS)
 
+GamsIpopt_DEPENDENCIES = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
+
 LIBS += `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
 
 GamsIpopt_LDFLAGS = $(ADDLIBS) -rpath $(libdir)

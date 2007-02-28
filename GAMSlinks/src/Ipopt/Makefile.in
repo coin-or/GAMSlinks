@@ -74,8 +74,6 @@ am_GamsIpopt_OBJECTS = GamsIpopt.$(OBJEXT) SmagNLP.$(OBJEXT) \
 	SmagJournal.$(OBJEXT)
 GamsIpopt_OBJECTS = $(am_GamsIpopt_OBJECTS)
 am__DEPENDENCIES_1 =
-GamsIpopt_DEPENDENCIES = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la \
-	$(am__DEPENDENCIES_1)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -294,6 +292,7 @@ GamsIpopt_LDADD = \
  $(IPOPTOBJDIR)/src/Interfaces/libipopt.la \
  $(SMAG_LIBS)
 
+GamsIpopt_DEPENDENCIES = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 GamsIpopt_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)

@@ -46,9 +46,14 @@ GamsCoinCbc_LDADD = \
  $(OSIOBJDIR)/src/libOsi.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(GAMSIO_LIBS)
+GamsCoinCbc_DEPENDENCIES = \
+ ../GamsIO/libGamsIO.la \
+ $(CBCOBJDIR)/src/libCbc.la \
+ $(CGLOBJDIR)/src/libCgl.la \
+ $(OSIOBJDIR)/src/libOsi.la \
+ $(COINUTILSOBJDIR)/src/libCoinUtils.la
 
 LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt`
-
 
 if COIN_HAS_CLP
   AM_CPPFLAGS += \
@@ -56,6 +61,9 @@ if COIN_HAS_CLP
    -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
    -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
   GamsCoinCbc_LDADD += \
+   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
+   $(CLPOBJDIR)/src/libClp.la
+  GamsCoinCbc_DEPENDENCIES += \
    $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
    $(CLPOBJDIR)/src/libClp.la
 	LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt`
@@ -66,6 +74,7 @@ if COIN_HAS_GLPK
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
    -I`$(CYGPATH_W) $(GLPKINCDIR)`
   GamsCoinCbc_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPKLIB)
+  GamsCoinCbc_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la 
 endif
 
 
