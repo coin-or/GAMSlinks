@@ -57,12 +57,23 @@ GamsBonmin_LDADD = \
  $(IPOPTOBJDIR)/src/Interfaces/libipopt.la \
  $(SMAG_LIBS)
 
+GamsBonmin_DEPENDENCIES = \
+ $(BONMINOBJDIR)/src/Apps/libbonmin.la \
+ $(CBCOBJDIR)/src/libCbc.la \
+ $(CGLOBJDIR)/src/libCgl.la \
+ $(OSIOBJDIR)/src/libOsi.la \
+ $(COINUTILSOBJDIR)/src/libCoinUtils.la \
+ $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
+
 if COIN_HAS_CLP
   AM_CPPFLAGS += \
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiClp` \
    -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
    -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
   GamsBonmin_LDADD += \
+   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
+   $(CLPOBJDIR)/src/libClp.la
+  GamsBonmin_DEPENDENCIES += \
    $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
    $(CLPOBJDIR)/src/libClp.la
 	LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt`
@@ -73,6 +84,7 @@ if COIN_HAS_GLPK
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
    -I`$(CYGPATH_W) $(GLPKINCDIR)`
   GamsBonmin_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPKLIB)
+  GamsBonmin_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 endif
 
 LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`

@@ -63,15 +63,20 @@ bin_PROGRAMS = GamsBonmin$(EXEEXT)
 @COIN_HAS_CLP_TRUE@   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
 @COIN_HAS_CLP_TRUE@   $(CLPOBJDIR)/src/libClp.la
 
-@COIN_HAS_GLPK_TRUE@am__append_3 = \
+@COIN_HAS_CLP_TRUE@am__append_3 = \
+@COIN_HAS_CLP_TRUE@   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
+@COIN_HAS_CLP_TRUE@   $(CLPOBJDIR)/src/libClp.la
+
+@COIN_HAS_GLPK_TRUE@am__append_4 = \
 @COIN_HAS_GLPK_TRUE@   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
 @COIN_HAS_GLPK_TRUE@   -I`$(CYGPATH_W) $(GLPKINCDIR)`
 
-@COIN_HAS_GLPK_TRUE@am__append_4 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPKLIB)
+@COIN_HAS_GLPK_TRUE@am__append_5 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPKLIB)
+@COIN_HAS_GLPK_TRUE@am__append_6 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 DIST_COMMON = $(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_5 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_6 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_7 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_8 = .Externals-stamp
 subdir = src/Bonmin
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -95,13 +100,6 @@ am__DEPENDENCIES_1 =
 @COIN_HAS_GLPK_TRUE@am__DEPENDENCIES_3 =  \
 @COIN_HAS_GLPK_TRUE@	$(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
 @COIN_HAS_GLPK_TRUE@	$(am__DEPENDENCIES_1)
-GamsBonmin_DEPENDENCIES = $(BONMINOBJDIR)/src/Apps/libbonmin.la \
-	$(CBCOBJDIR)/src/libCbc.la $(CGLOBJDIR)/src/libCgl.la \
-	$(OSIOBJDIR)/src/libOsi.la \
-	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
-	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2) \
-	$(am__DEPENDENCIES_3)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -312,7 +310,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmsbm_nt.cmd gmsbm_us.run install/gmsbm_nt.dat \
-	install/gmsbm_un.dat $(am__append_5)
+	install/gmsbm_un.dat $(am__append_7)
 GamsBonmin_SOURCES = GamsBonmin.cpp \
   SmagMINLP.cpp SmagMINLP.hpp \
   SmagMessageHandler.cpp SmagMessageHandler.hpp \
@@ -344,16 +342,22 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	$(BONMINSRCDIR)/src/IpoptInterface` -I`$(CYGPATH_W) \
 	$(BONMINSRCDIR)/src/CbcBonmin` -I`$(CYGPATH_W) \
 	$(BONMINSRCDIR)/src/OaInterface` -I`$(CYGPATH_W) \
-	$(BONMINOBJDIR)/inc` $(am__append_1) $(am__append_3)
+	$(BONMINOBJDIR)/inc` $(am__append_1) $(am__append_4)
 GamsBonmin_LDADD = $(BONMINOBJDIR)/src/Apps/libbonmin.la \
 	$(CBCOBJDIR)/src/libCbc.la $(CGLOBJDIR)/src/libCgl.la \
 	$(OSIOBJDIR)/src/libOsi.la \
 	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
 	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(SMAG_LIBS) \
-	$(am__append_2) $(am__append_4)
+	$(am__append_2) $(am__append_5)
+GamsBonmin_DEPENDENCIES = $(BONMINOBJDIR)/src/Apps/libbonmin.la \
+	$(CBCOBJDIR)/src/libCbc.la $(CGLOBJDIR)/src/libCgl.la \
+	$(OSIOBJDIR)/src/libOsi.la \
+	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
+	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(am__append_3) \
+	$(am__append_6)
 GamsBonmin_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
-DISTCLEANFILES = $(am__append_6) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(am__append_8) $(VPATH_DISTCLEANFILES)
 all: all-am
 
 .SUFFIXES:

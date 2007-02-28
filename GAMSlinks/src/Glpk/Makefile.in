@@ -73,11 +73,6 @@ PROGRAMS = $(bin_PROGRAMS)
 am_GamsCoinGlpk_OBJECTS = GamsCoinGlpk.$(OBJEXT)
 GamsCoinGlpk_OBJECTS = $(am_GamsCoinGlpk_OBJECTS)
 am__DEPENDENCIES_1 =
-GamsCoinGlpk_DEPENDENCIES = ../GamsIO/libGamsIO.la \
-	$(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
-	$(OSIOBJDIR)/src/libOsi.la \
-	$(COINUTILSOBJDIR)/src/libCoinUtils.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -300,6 +295,12 @@ GamsCoinGlpk_LDADD = \
  $(OSIOBJDIR)/src/libOsi.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(GAMSIO_LIBS) $(GLPKLIB)
+
+GamsCoinGlpk_DEPENDENCIES = \
+ ../GamsIO/libGamsIO.la \
+ $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
+ $(OSIOBJDIR)/src/libOsi.la \
+ $(COINUTILSOBJDIR)/src/libCoinUtils.la
 
 GamsCoinGlpk_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
