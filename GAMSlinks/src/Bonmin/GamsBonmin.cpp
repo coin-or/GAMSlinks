@@ -88,10 +88,10 @@ void solve_minlp(smagHandle_t prob) {
   SMAG_MINLP* mysmagminlp = new SMAG_MINLP(prob);
   SmartPtr<TMINLP> smagminlp = mysmagminlp;
   
-//  SmagMessageHandler messagehandler(prob);
+  SmagMessageHandler messagehandler(prob);
 
-//  IpoptInterface nlpSolver(smagminlp, &messagehandler);
-  IpoptInterface nlpSolver(smagminlp);
+  IpoptInterface nlpSolver(smagminlp, &messagehandler);
+//  IpoptInterface nlpSolver(smagminlp);
 	BonminCbcParam par;
 	par.fout=prob->fpLog;
 

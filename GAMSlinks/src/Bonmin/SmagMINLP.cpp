@@ -104,12 +104,12 @@ bool SMAG_MINLP::get_var_types(Index n, VariableType* var_types) {
 				sosvar[0].push_back(i);
 				sosinfo.types[0]=1;
 				var_types[i]=CONTINUOUS;
-				break;
+//				break;
 			case SMAG_VAR_SOS2:
 				sosvar[0].push_back(i);
 				sosinfo.types[0]=2;
 				var_types[i]=CONTINUOUS;
-				break;
+//				break;
 			case SMAG_VAR_SEMICONT:
 			case SMAG_VAR_SEMIINT:
 			default: {
