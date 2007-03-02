@@ -18,6 +18,11 @@
 #endif
 #endif
 
+#if defined(_WIN32)
+# define snprintf _snprintf
+#endif
+
+
 #include "IpoptInterface.hpp"
 #include "SmagMINLP.hpp"
 #include "SmagMessageHandler.hpp"
