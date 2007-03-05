@@ -1,0 +1,304 @@
+\subsection{Detailed Descriptions of CoinCbc Options}
+
+\begin{description}
+
+\item[\label{roundingheuristic}\hypertarget{roundingheuristic}
+{\textbf{roundingheuristic (\slshape{integer})}}]\hspace{1.0in}
+
+A simple rounding heuristic to find feasible solutions of the MIP.
+
+\textsl{(default = 1)}
+
+\item[\label{localsearch}\hypertarget{localsearch}
+{\textbf{localsearch (\slshape{integer})}}]\hspace{1.0in}
+
+A local search heuristic to find feasible solutions of the MIP.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] local search heuristic is not used
+\item[1] local search heuristic is used
+\end{itemize}
+
+\item[\label{strongbranching}\hypertarget{strongbranching}
+{\textbf{strongbranching (\slshape{integer})}}]\hspace{1.0in}
+
+If strong branching is switched on, then the maximum number of candidates to be evaluated for strong branching is set to 10 (if the problem has less then 5000 variables) or 5 (if the problem has more then 5000 variables).
+If strong branching is switched off, the maximum number is set to 0. (However, Cbc reports still some (but less) strong branching operations.)
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] strong branching is switched off
+\item[1] strong branching is switched on
+\end{itemize}
+
+\item[\label{integerpresolve}\hypertarget{integerpresolve}
+{\textbf{integerpresolve (\slshape{integer})}}]\hspace{1.0in}
+
+If switched on, a preprocessing on the MIP will be performed.
+The integer presolve also does probing, independent of the setting of the 'probing' parameter.\\
+From the CglPreprocess description:
+This method uses other cut generators to strengthen cuts, establish that some cuts are redundant, fix variables and find relationships such as $x + y = 1$.
+While cuts can be added at any time in the tree, some cuts are actually just stronger versions of existing ones.
+They can thus replace the existing cuts rather than being added as new cuts. This is awkward in the tree but reasonable at the root node.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] don't do integer presolve
+\item[1] do integer presolve
+\end{itemize}
+
+\item[\label{findsos}\hypertarget{findsos}
+{\textbf{findsos (\slshape{integer})}}]\hspace{1.0in}
+
+This option switches the identification for special ordered sets of type 1 in the integer preprocessing on.
+Cbc then searches for rows with upper bound 1 and where all nonzero coefficients are 1.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] don't try to find special ordered sets
+\item[1] try to find special ordered sets
+\end{itemize}
+
+\item[\label{cuts}\hypertarget{cuts}
+{\textbf{cuts (\slshape{integer})}}]\hspace{1.0in}
+
+Regulates the use of cut generator routines in Cbc.\\
+If set to automatic, then the parameters for the single cut generators determine which are added.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[-1] no cuts will be generated
+\item[0] automatic
+\item[1] cuts from all available cut classes will be generated
+\end{itemize}
+
+\item[\label{probing}\hypertarget{probing}
+{\textbf{probing (\slshape{integer})}}]\hspace{1.0in}
+
+This option switches probing on as cut generator.\\
+From the CglProbing description:
+For selected integer variables (e.g. unsatisfied ones) the effect of setting them up or down is investigated.
+Setting a variable up may in turn set other variables (continuous as well as integer).
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] don't do probing
+\item[1] do probing
+\end{itemize}
+
+\item[\label{gomorycuts}\hypertarget{gomorycuts}
+{\textbf{gomorycuts (\slshape{integer})}}]\hspace{1.0in}
+
+This options switches the generation of mixed integer Gomory Cuts on.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] don't add gomory cuts
+\item[1] add gomory cuts
+\end{itemize}
+
+\item[\label{knapsackcuts}\hypertarget{knapsackcuts}
+{\textbf{knapsackcuts (\slshape{integer})}}]\hspace{1.0in}
+
+This options switches the generation of knapsack cover cuts on.\\
+From the CglKnapsackCover description:
+CglKnapsackCover looks for a series of different types of minimal covers.
+If a minimal cover is found, it lifts the associated minimal cover inequality and adds the lifted cut to the cut set.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] don't add knapsack cover cuts
+\item[1] add knapsack cover cuts
+\end{itemize}
+
+\item[\label{oddholecuts}\hypertarget{oddholecuts}
+{\textbf{oddholecuts (\slshape{integer})}}]\hspace{1.0in}
+
+This options switches the generation of odd hole cuts on.\\
+From the CglOddHole description:
+This looks at all rows of type $\sum_i x_i \leq 1 \textrm{(or = 1)}$ (with $x$ binary) and sees if there is an odd cycle cut.
+This is then lifted by using the corresponding Chvatal cut, i.e. by summing up all rows in the cycle.
+The right hand side will be odd and all odd coefficients can be reduced by one.
+The constraint is
+$\sum_j \textrm{even}(j)\,x_j \leq \textrm{odd}$
+which can be replaced by
+$\sum_j \frac{1}{2}\textrm{even}(j)\,x_j \leq \frac{1}{2}(\textrm{odd}-1)$.
+A similar cut can be generated for $\sum_i x_i \geq 1$.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] don't add odd hole cuts
+\item[1] add odd hole cuts
+\end{itemize}
+
+\item[\label{cliquecuts}\hypertarget{cliquecuts}
+{\textbf{cliquecuts (\slshape{integer})}}]\hspace{1.0in}
+
+This options switches the generation of clique cuts on.
+Clique cuts are of the form ''sum of a set of variables $\leq$ 1''.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] don't add clique cuts
+\item[1] add clique cuts
+\end{itemize}
+
+\item[\label{flowcovercuts}\hypertarget{flowcovercuts}
+{\textbf{flowcovercuts (\slshape{integer})}}]\hspace{1.0in}
+
+This options switches the generation of flow cover cuts on.\\
+From the CglFlowCover description:
+The Cgl Flow Cover Cut generator generates lifted simple generalized flow cover inequalities.
+Since flow cover inequalities are generally not facet-defining, they are lifted to obtain stronger inequalities.
+Although flow cover inequalities requires a special problem structure to be generated, they are quite useful for solving general mixed integer linear programs.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] don't add flow cover cuts
+\item[1] add flow cover cuts
+\end{itemize}
+
+\item[\label{mircuts}\hypertarget{mircuts}
+{\textbf{mircuts (\slshape{integer})}}]\hspace{1.0in}
+
+This options switches the generation of mixed integer rounding cuts on.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] don't add mixed integer rounding cuts
+\item[1] add mixed integer rounding cuts
+\end{itemize}
+
+\item[\label{redsplitcuts}\hypertarget{redsplitcuts}
+{\textbf{redsplitcuts (\slshape{integer})}}]\hspace{1.0in}
+
+This options switches the generation of reduce and split cuts on.\\
+From the CglRedSplit description:
+Reduce-and-Split cuts are variants of Gomory cuts:
+Starting from the current optimal tableau, linear combinations of the rows of the current optimal simplex tableau are used for generating Gomory cuts.
+The choice of the linear combinations is driven by the objective of reducing the coefficients of the non basic continuous variables in the resulting row.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] don't add reduce and split cuts
+\item[1] add reduce and split cuts
+\end{itemize}
+
+\item[\label{cutsonlyatroot}\hypertarget{cutsonlyatroot}
+{\textbf{cutsonlyatroot (\slshape{integer})}}]\hspace{1.0in}
+
+This option determines whether cuts should be generated only at the root node.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] generate cuts always in the branch and bound
+\item[1] generate cuts only at root node
+\end{itemize}
+
+\item[\label{startalg}\hypertarget{startalg}
+{\textbf{startalg (\slshape{string})}}]\hspace{1.0in}
+
+This option determines whether a primal or dual simplex algorithm should be used to solve the root node.
+
+\textsl{(default = dual)}
+\begin{itemize}
+\item[primal] primal simplex algorithm
+\item[dual] dual simplex algorithm
+\end{itemize}
+
+\item[\label{writemps}\hypertarget{writemps}
+{\textbf{writemps (\slshape{string})}}]\hspace{1.0in}
+
+Write an MPS problem file.
+The parameter value is the name of the MPS file.
+
+
+\item[\label{integertolerance}\hypertarget{integertolerance}
+{\textbf{integertolerance (\slshape{real})}}]\hspace{1.0in}
+
+An integer variable is deemed to be at an integral value if it is no further than the value of this parameter from the next integral value away.
+
+\textsl{(default = 1e-6)}
+
+\item[\label{printfrequency}\hypertarget{printfrequency}
+{\textbf{printfrequency (\slshape{integer})}}]\hspace{1.0in}
+
+This option controls the number of nodes evaluated between status prints.
+
+\textsl{(default = 10)}
+
+\item[\label{nodecompare}\hypertarget{nodecompare}
+{\textbf{nodecompare (\slshape{string})}}]\hspace{1.0in}
+
+This option determines the comparision method that is used to determine the tree search order.
+The following documentation is taken from the Cbc manual.
+
+\textsl{(default = default)}
+\begin{itemize}
+\item[default] 
+This is designed to do a mostly depth-first search until a solution has been found.
+It then use estimates that are designed to give a slightly better solution.
+If a reasonable number of nodes have been explored (or a reasonable number of solutions found),
+then this class will adopt a breadth-first search (i.e., making a comparison based strictly on objective function values) unless the tree is very large, in which case it will revert to depth-first search.
+\item[depth] 
+This will always choose the node deepest in tree.
+It gives minimum tree size but may take a long time to find the best solution.
+\item[objective] 
+This will always choose the node with the best objective value.
+This may give a very large tree.
+It is likely that the first solution found will be the best and the search should finish soon after the first solution is found.
+\end{itemize}
+
+\item[\label{reslim}\hypertarget{reslim}
+{\textbf{reslim (\slshape{real})}}]\hspace{1.0in}
+
+Maximum time in seconds.
+
+\textsl{(default = GAMS reslim)}
+
+\item[\label{iterlim}\hypertarget{iterlim}
+{\textbf{iterlim (\slshape{integer})}}]\hspace{1.0in}
+
+Maximum number of iterations.
+
+\textsl{(default = GAMS iterlim)}
+
+\item[\label{nodelim}\hypertarget{nodelim}
+{\textbf{nodelim (\slshape{integer})}}]\hspace{1.0in}
+
+Maximum number of nodes in the Branch and Bound.
+
+\textsl{(default = GAMS nodlim)}
+
+\item[\label{nodlim}\hypertarget{nodlim}
+{\textbf{nodlim (\slshape{integer})}}]\hspace{1.0in}
+
+Maximum number of nodes in the Branch and Bound.
+This option is overwritten by nodelim, if set.
+
+\textsl{(default = GAMS nodlim)}
+
+\item[\label{optca}\hypertarget{optca}
+{\textbf{optca (\slshape{real})}}]\hspace{1.0in}
+
+Absolute optimality criterion for a MIP.
+Cbc stops if the gap between the best known solution and the best possible solution is less than this value.
+
+\textsl{(default = GAMS optca)}
+
+\item[\label{optcr}\hypertarget{optcr}
+{\textbf{optcr (\slshape{real})}}]\hspace{1.0in}
+
+Relative optimality criterion for a MIP.
+Cbc stops if the relative gap between the best known solution and the best possible solution is less than this value.
+
+\textsl{(default = GAMS optcr)}
+
+\item[\label{cutoff}\hypertarget{cutoff}
+{\textbf{cutoff (\slshape{real})}}]\hspace{1.0in}
+
+Cbc stops if the objective function values exceeds (in case of maximization) or falls below (in case of minimization) this value.
+
+\textsl{(default = GAMS cutoff)}
+\end{description}

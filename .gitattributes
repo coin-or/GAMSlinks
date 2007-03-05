@@ -10,6 +10,15 @@ GAMSlinks/acinclude.m4 -text
 GAMSlinks/aclocal.m4 -text
 GAMSlinks/configure -text
 GAMSlinks/configure.ac -text
+GAMSlinks/doc/gamsdist/coin.tex -text
+GAMSlinks/doc/gamsdist/gams.sty -text
+GAMSlinks/doc/gamsdist/ind_coin.tex -text
+GAMSlinks/doc/gamsdist/optbonmin_a.tex -text
+GAMSlinks/doc/gamsdist/optcbc_a.tex -text
+GAMSlinks/doc/gamsdist/optcbc_s.tex -text
+GAMSlinks/doc/gamsdist/optglpk_a.tex -text
+GAMSlinks/doc/gamsdist/optglpk_s.tex -text
+GAMSlinks/doc/gamsdist/optipopt_a.tex -text
 GAMSlinks/inc/config_gamslinks.h.in -text
 GAMSlinks/src/Bonmin/GamsBonmin.cpp -text
 GAMSlinks/src/Bonmin/Makefile.am -text

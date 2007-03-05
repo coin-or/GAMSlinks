@@ -1,0 +1,119 @@
+\subsection{Detailed Descriptions of CoinGlpk Options}
+
+\begin{description}
+
+\item[\label{glpkwritemps}\hypertarget{glpkwritemps}
+{\textbf{writemps (\slshape{string})}}]\hspace{1.0in}
+
+Write an MPS problem file.
+The parameter value is the name of the MPS file.
+
+
+\item[\label{glpkstartalg}\hypertarget{glpkstartalg}
+{\textbf{startalg (\slshape{string})}}]\hspace{1.0in}
+
+This option determines whether a primal or dual simplex algorithm should be used to solve the root node.
+
+\textsl{(default = primal)}
+\begin{itemize}
+\item[primal] use the primal simplex algorithm for the root node
+\item[dual] use the dual simplex algorithm for the root node
+\end{itemize}
+
+\item[\label{scaling}\hypertarget{scaling}
+{\textbf{scaling (\slshape{string})}}]\hspace{1.0in}
+
+This option determines the method how the constraint matrix is scaled.
+
+\textsl{(default = equilibrium)}
+\begin{tabbing}
+\hspace{1.1in} \= \\
+off \> no scaling \\
+equilibrium \> equilibrium scaling \\
+mean \> geometric mean scaling \\
+meanequilibrium \> geometric mean scaling then equilibrium scaling
+\end{tabbing}
+
+\item[\label{pricing}\hypertarget{pricing}
+{\textbf{pricing (\slshape{string})}}]\hspace{1.0in}
+
+Sets the pricing method for both primal and dual simplex.
+
+\textsl{(default = textbook)}
+\begin{tabbing}
+\hspace{1in} \= \\
+textbook \> textbook pricing \\
+steepestedge \> steepest edge pricing
+\end{tabbing}
+
+\item[\label{tol_dual}\hypertarget{tol_dual}
+{\textbf{tol\_dual (\slshape{real})}}]\hspace{1.0in}
+
+Absolute tolerance used to check if the current basis solution is dual feasible.
+(Glpk manual: Do not change this parameter without detailed understanding its purpose.)
+
+\textsl{(default = 1e-7)}
+
+\item[\label{tol_primal}\hypertarget{tol_primal}
+{\textbf{tol\_primal (\slshape{real})}}]\hspace{1.0in}
+
+Relative tolerance used to check if the current basis solution is primal feasible.
+(Glpk manual: Do not change this parameter without detailed understanding its purpose.)
+
+\textsl{(default = 1e-7)}
+
+\item[\label{tol_integer}\hypertarget{tol_integer}
+{\textbf{tol\_integer (\slshape{real})}}]\hspace{1.0in}
+
+Absolute tolerance used to check if the current basis solution is integer feasible.
+(Glpk manual: Do not change this parameter without detailed understanding its purpose.)
+
+\textsl{(default = 1e-5)}
+
+\item[\label{backtracking}\hypertarget{backtracking}
+{\textbf{backtracking (\slshape{string})}}]\hspace{1.0in}
+
+Determines which method to use for the backtracking heuristic.
+
+\textsl{(default = bestprojection)}
+\begin{tabbing}
+\hspace{1in} \= \\
+depthfirst \> depth first search \\
+breadthfirst \> breadth first search \\
+bestprojection \> using best projection heuristic
+\end{tabbing}
+
+\item[\label{glpkcuts}\hypertarget{glpkcuts}
+{\textbf{cuts (\slshape{integer})}}]\hspace{1.0in}
+
+Determines whether cuts should be generated for the root problem.
+Currently only Gomory's mixed integer cuts are implemented.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] do not generate cuts
+\item[1] generate cuts for the initial LP relaxation
+\end{itemize}
+
+\item[\label{glpkreslim}\hypertarget{glpkreslim}
+{\textbf{reslim (\slshape{real})}}]\hspace{1.0in}
+
+Maximum time in seconds.
+
+\textsl{(default = GAMS reslim)}
+
+\item[\label{glpkiterlim}\hypertarget{glpkiterlim}
+{\textbf{iterlim (\slshape{integer})}}]\hspace{1.0in}
+
+Maximum number of iterations.
+
+\textsl{(default = GAMS iterlim)}
+
+\item[\label{glpkoptcr}\hypertarget{glpkoptcr}
+{\textbf{optcr (\slshape{real})}}]\hspace{1.0in}
+
+Relative optimality criterion for a MIP.
+Glpk uses this parameter as relative tolerance to check if the value of the objective function is not better than in the best known integer feasible solution.
+
+\textsl{(default = GAMS optcr)}
+\end{description}
