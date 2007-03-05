@@ -1,113 +1,141 @@
-To use the GAMS COIN-OR links, you need a GAMS system and some COIN-OR solvers.
+= Main installation steps =
 
-== Main installation steps ==
+ 1. Install a GAMS system, if you do not have one.
+ 2. Apply patch files to COIN-OR packages to fix some minor bugs.
+ 3. Download the GAMS I/O libraries for your system.
+ 4. Download and install GLPK, if you want to use the GAMS/GLPK link.
+ 5. Download and install Lapack, Blas, and HSL, if you want to use the GAMS/IPOPT link.
+ 6. Modify the site script for the configure call of the GAMSlinks project.
+ 7. Call configure, make, and make install.
+ 8. Install the GAMS/COIN-OR links in your GAMS system.
 
-1. Install a GAMS system, if you do not have one.
-2. Download the GAMS I/O libraries for your system.
-3. Download the COIN solvers you want to use.
-3. Download and install GLPK, if you want to use the GAMS/GLPK link.
-4. Modify the site script for the configure call of the GAMSlinks project.
-5. Call configure, make, and make install.
-6. Install the GAMS/COIN-OR links in your GAMS system.
+= Detailed instructions =
 
+== 1. Installation of a GAMS system ==
 
-== Detailed instructions ==
+To use the COIN-OR/GAMS links, you need a GAMS system.
+For Cbc and Glpk, it is recommended to have at least version 22.3.
+To build the links on Linux, also some libraries from the Intel Fortran Compiler are required.
+Since they are included into a GAMS system, it sufficies to have a GAMS system reachable.
 
-= Installation of a GAMS system =
-
-For the installation under Linux, a GAMS system is currently required, since it contains some libraries that are required for 
-linking. (This requirement might be relaxed in the future.)
-A GAMS demonstration system can be downloaded at http://www.gams.com.
+You can download a GAMS demonstration system at http://www.gams.com/download.
 The demonstrations limits are:
-* Number of constraints: 300
-* Number of variables: 300
-* Number of nonzero elements: 2000 (of which 1000 nonlinear)
-* Number of discrete variables: 50 (including semi continuous, semi integer and member of SOS-Sets)
+ * Number of constraints: 300
+ * Number of variables: 300
+ * Number of nonzero elements: 2000 (of which 1000 nonlinear)
+ * Number of discrete variables: 50 (including semi continuous, semi integer and member of SOS-Sets)
 
+== 2. Apply patch files to COIN-OR packages ==
 
-= Installation of GAMS I/O libraries =
+In the base directory of the GAMSlinks package, you will find some patch files.
+These patches fix some bugs in other COIN-OR packages which are either not fixed there yet, or there hasn't been a new release yet.
+Apply the patches by typing
+>  patch -p0 < osiglpk.patch
+>  patch -p0 < cbc.patch
+>  patch -p0 < cgl.patch
+>  patch -p0 < ipopt.patch
+in the GAMSlinks base directory.
 
-In the directory ThirdParty/GAMSIO you find scripts that downloads (precompiled) GAMS I/O libraries.
+  * osigplk.patch patches the OsiGlpkSolverInterface.
+    It allow the users to set the printlevel of GLPK, and fixes a bug in the isProvenPrimalInfeasible routine.
+    If you do not apply this patch, GAMS/GLPK will also work, but you will get no progress report in a GLPK call and the GAMS model status code might be set wrong.
+
+  * cbc.patch and cgl.patch patches CbcStrategy.cpp, CbcBranchActual.cpp, and CglPreProcess.cpp.
+    They fix some problems with the correct handling of messages.
+    If you do not apply this patch, GAMS/Cbc will also work, but you might have some output going to the standard output instead the GAMS logfile and statusfile.
+
+  * ipopt.patch patches IpTNLPAdapter.cpp.
+    It corrects the computation of row levels as they are given to finalize_solution.
+    If you do not apply this patch, GAMS/Ipopt will also work, but you might have some wrong row level information in your GAMS statusfile.
+
+== 3. Installation of GAMS I/O libraries ==
+
+The GAMSlinks use a set of GAMS I/O library to read an optimization model, write a solution file, and handle option files.
+
+The directory ThirdParty/GAMSIO contains scripts that downloads (precompiled) GAMS I/O libraries.
 According to the kind of system you use, you have to choose a script with the correct acronym.
 Currently available are:
-* LX3: Linux systems on a 32-bit Intel or AMD CPU.
-* VIS: Windows XP, Windows Server 2003, and compatible on AMD- or Intel-based (x86) architectures.
-* DAR: Darwin systems on Macintosh
+ * LX3: Linux systems on a 32-bit Intel or AMD CPU.
+ * LEI: Linux systems on a 64-bit Intel or AMD CPU.
+ * VIS: Windows XP, Windows Server 2003, and compatible on AMD- or Intel-based (x86) architectures.
+ * DAR: Darwin systems on Macintosh
 
+== 4. GNU Linear Programming Toolkit (GLPK) ==
 
-= COIN-OR Solvers =
+In the directory ThirdParty/GLPK you find scripts that download, configure and install the GNU Linear Programming Toolkit (http://www.gnu.org/software/glpk/glpk.html).
+ * The script get.glpk.linux should work on Linux systems.
+   It uses the configure system of the glpk packages to setup, compile, and install glpk.
+   If you want to set options for the glpk configure call, you can setup a site script glpk/share/config.site before calling get.glpk.linux.
+ * If you use a Windows system with mingw and Microsoft C compiler (cl) but without gnu tools, you can use the script get.glpk.cl.
+   This script uses the makefile glpk-4.9/w32vc6.mak to compile glpk.
+ * If you use a Darwin system, you can use the script get.glpk.darwin.
+   This script uses the makefile darwin.mak to compile glpk.
 
-In the main directory you find the files get.CoinCbc and get.CoinGlpk.
-These scripts download the COIN packages required for building the COIN-OR/GAMS links.
-If you want to use the Cbc and the Glpk link, call get.CoinCbc.
-If you need only the Glpk link, it is sufficient to call get.CoinGlpk.
-These scripts apply also the patch osiglpk.patch which simplifies the handling of the logging output for Glpk.
+Note that you will still need to give the --with-glpk-incdir and --with-glpk-lib arguments when you call the configure script for the GAMSlinks.
+The get.glpk.... script will propose you how to use these arguments.
 
+== 5. Installation of Lapack, Blas, and HSL ==
 
-= GLPK =
+Ipopt required some further third party packages.
+For Lapack and Blas you find download scripts in the directories ThirdParty/Lapack and ThirdParty/Blas.
+If you want Ipopt to use the HSL routines as linear solver, you have to go to the HSL web site (http://hsl.rl.ac.uk/archive/hslarchive.html),
+obtain the source code for MA27, and put it into the directory ThirdParty/HSL.
+Note that these routines are freely available for non-commercial, academic use, but it is your responsibility to investigate the licensing of all third party code.
 
-In the directory ThirdParty/GLPK you find two scripts which downloads, configure and install the GNU Linear Programming Toolkit.
-* The script get.glpk.linux seem to work on Linux systems.
-  It uses the configure system of the glpk packages to setup, compile, and install glpk.
-  If you want to set option for your configure call, you can adjust site script glpk/share/config.site
-  (see also https://projects.coin-or.org/BuildTools/wiki/user-configure#ConfigDotSiteFile for information about site-files)
-* If you use a Windows system with mingw and Microsoft C compiler (cl) but without gnu tools,
-  you can use the script get.glpk.cl.
-* If you use a Darwin system, you can use the script get.glpk.darwin.
+For more information we refer to the corresponding part of the Ipopt documentation (http://www.coin-or.org/Ipopt/documentation/node13.html).
 
-Note that you will still need to set --with-glpk-incdir and --with-glpk-lib to the corresponding directory and library, resp., when you call the configure script for the GAMSlinks.
+== 6. Setup configure call ==
 
-
-= Setup configure call =
-
-For the GAMSlinks under Windows we suggest to compile the code in a different place than where the source code is using the VPATH feature of the build system.
-See https://projects.coin-or.org/BuildTools/wiki/user-configure#VpathCompilation for details.
+For the GAMSlinks under Windows we suggest to compile the code in a different place than where the source code is located using the VPATH feature of the build system.
 
 You should consider whether you need to the following options of the configure script (either as arguments in your configure call or by setting up a site-file):
 
-* When the gams system is in the search path, it will automatically found by the GAMSlinks configure script.
-  Otherwise if you work under Linux you have to provide a path with the --with-gamssystem option.
+ * When a GAMS system is in the search path, it will automatically be found by the GAMSlinks configure script.
+   Otherwise if you work under Linux you have to provide a path with the --with-gamssystem option.
 
-* If you do not install the GAMS I/O libraries in ThirdParty/GAMSIO, you can use the option --gams-io to set the path of the GAMS I/O libraries.
+ * If you do not install the GAMS I/O libraries in ThirdParty/GAMSIO, you can use the option --gams-io to set the path of the GAMS I/O libraries.
 
-* If you want to use the GAMS/GLPK interface, you need to tell configure the path of the GLPK include files (--with-glpk-incdir option) and the arguments for linking with GLPK (--with-glpk-lib).
-  Note that you also need to set these parameters when you installed GLPK in ThirdParty/GLPK.
+ * If you compile under Linux, and do not have the GAMS system or Intel Fortran Compiler libraries in your path, you can give the path to the Intel Fortran Compiler libraries with the --with-fort_libdir option.
+
+ * If you want to use the GAMS/GLPK interface, you need to tell configure the path of the GLPK include files (--with-glpk-incdir option) and the arguments for linking with GLPK (--with-glpk-lib).
+   Note that you also need to set these parameters when you installed GLPK in ThirdParty/GLPK.
 
 When compiling under Windows with the Microsoft C-compiler, you might need to set also the following variables:
 
-* The GAMS I/O libraries are compiled with the Microsoft C-compiler and linked against LIBC.
-  Unfortunately, the COIN-OR buildsystem links by default against LIBCMT when compiling with the Microsoft compiler (cl).
-  In this case you need to change the CXXFLAGS used then compiling the COIN-OR packages:
-    ADD_CXXFLAGS="-nologo -EHsc -GR"
-    DBG_CXXFLAGS=" "
-    OPT_CXXFLAGS="-O2 -DNDEBUG"
+ * Unfortunately, while the GAMS I/O libraries are compiled with the Microsoft C-compiler and linked against LIBC, the COIN-OR buildsystem links by default against LIBCMT when compiling with the Microsoft compiler (cl).
+   In this case you need to change the compiler flags that are used when COIN-OR packages are compiled:
+   ADD_CXXFLAGS="-nologo -EHsc -GR"
+   DBG_CXXFLAGS=" "
+   OPT_CXXFLAGS="-O2 -DNDEBUG"
 
-* MAKE is the name of the make program to use. For me, I had to set it to gmake.
+ * MAKE is the name of the make program to use. For me, I had to set it to gmake.
+   MAKE=gmake
 
 When compiling under Darwin, I had a problem to create the default shared libraries version. Hence, you might consider to use static linking:
 
-* Set the parameters "enable_shared=no" and "enable_static=yes" in your site script,
-  or configure with "--enable-shared=no" and "--enable-static=yes".
+ * Set the parameters enable_shared=no and enable_static=yes in your site script,
+   or configure with --enable-shared=no and --enable-static=yes.
 
+Also the Ipopt link will not work under Darwin yet, hence you might need to tell configure to skip the Ipopt package:
 
-= Configure and make COIN-OR/GAMS links =
+  * Set the environment variable COIN_SKIP_PROJECTS to Ipopt.
 
-Now you just call
-* configure (for VPATH-installations, see https://projects.coin-or.org/BuildTools/wiki/user-configure#VpathCompilation)
-* make (or the make program that you prefer, e.g., gmake)
-* make install (or using the make program that you prefer, e.g., gmake install)
+== 7. Configure and make COIN-OR/GAMS links ==
+
+Now you can use the GAMSlinks build system.
+That is, you just call
+ 1. configure
+ 2. make (or the make program that you prefer, e.g., gmake)
+ 3. make install (or using the make program that you prefer)
 
 This should setup the Makefiles, compile all COIN-OR packages and install binaries for the COIN-OR/GAMS links in the subdirectory bin.
 
+== 8. Install COIN-OR solvers in your GAMS system ==
 
-= Install COIN-OR solvers in GAMS system =
-
-The "make install" call also created the files gmscc_.zip and gmscg_.zip which contain the GAMS/CoinCbc and GAMS/CoinGLPK links.
+The make install call also created the files gmscc_.zip, gmscg_.zip, and gmsip_.zip which contain GAMS/Cbc, GAMS/GLPK, and GAMS/Ipopt.
 To install them in your GAMS system, you copy these files into the gams system directory and call gamsinst there.
-gamsinst will then unpack the files and get known about the new solvers.
+gamsinst will then unpack the files and makes GAMS aware about the new solvers.
 
-To use the Cbc and Glpk solver under GAMS, you give the arguments MIP=Cbc or MIP=Glpk to your gams call.
-Note, that there are also CoinCbc and CoinGlpk available under gams.
+To use the Cbc and Glpk solver under GAMS, you give the arguments MIP=Cbc, MIP=Glpk, or NLP=Ipopt to your gams call.
+Note, that there are also CoinCbc, CoinGlpk, and CoinIpopt available under gams.
 This are the COIN-OR solvers as they are distributed within the gams distribution, not the one that you have just compiled.
-
-
