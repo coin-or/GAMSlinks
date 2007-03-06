@@ -51,6 +51,8 @@ cuts
 Determines whether cuts should be generated for the root problem.
 Currently only Gomory's mixed integer cuts are implemented.
 
+reslim_fixedrun
+Maximum time in seconds for solving the MIP with fixed discrete variables.
 
 reslim
 Maximum time in seconds.

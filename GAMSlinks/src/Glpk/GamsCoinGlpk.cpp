@@ -206,8 +206,8 @@ int main (int argc, const char *argv[]) {
 			double *colLevelsav = new double[gm.nCols()];
 			for (j=0; j<gm.nCols(); j++) colLevelsav[j] = colLevel[j];
 			
-			// No time or iteration limit for fixed run
-			lpx_set_real_parm(solver.getModelPtr(), LPX_K_TMLIM, -1.0);
+			// No iteration limit for fixed run and special time limit
+			lpx_set_real_parm(solver.getModelPtr(), LPX_K_TMLIM, gm.optGetDouble("reslim_fixedrun"));
 			lpx_set_int_parm(solver.getModelPtr(), LPX_K_ITLIM, -1);
 			
 			for (j=0; j<gm.nCols(); j++) 

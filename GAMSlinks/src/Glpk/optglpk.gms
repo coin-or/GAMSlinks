@@ -20,6 +20,7 @@ set g Glpk Option Groups /
       tol_integer            integer feasibility tolerance
       backtracking           backtracking heuristic
       cuts                   generation of cuts for root problem
+      reslim_fixedrun        resource limit for solve with fixed discrete variables
 * GAMS options
       reslim                 resource limit
       iterlim                iteration limit
@@ -41,6 +42,7 @@ general.(
   tol_integer     .r.(def 1e-5)
   backtracking    .s.(def bestprojection)
   cuts            .b.(def 0)
+  reslim_fixedrun .r.(def 1000)
 * GAMS options
   reslim          .r.(def 1000)
   iterlim         .i.(def 10000)
