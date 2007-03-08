@@ -96,7 +96,7 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DISTCLEANFILES =
 
 if GAMSIO_IS_UNIX
-install-exec-local: $(DESTDIR)$(bindir)/GamsBonmin
+install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsBonmin gmsbm_ux.out
 	zip gmsbm_.zip gmsbm_ux.out gmsbm_us.run install/gmsbm_un.dat
 	$(install_sh_DATA) gmsbm_.zip $(DESTDIR)$(bindir)/gmsbm_.zip
@@ -104,7 +104,7 @@ install-exec-local: $(DESTDIR)$(bindir)/GamsBonmin
 endif
 
 if GAMSIO_IS_WINDOWS
-install-exec-local: $(DESTDIR)$(bindir)/GamsBonmin.exe
+install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsBonmin.exe gmsbm_nx.exe
 	zip gmsbm_.zip gmsbm_nx.exe gmsbm_nt.cmd install/gmsbm_nt.dat
 	$(install_sh_DATA) gmsbm_.zip $(DESTDIR)$(bindir)/gmsbm_.zip

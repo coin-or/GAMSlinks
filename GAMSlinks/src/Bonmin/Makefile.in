@@ -668,13 +668,13 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 
 @COIN_HAS_CLP_TRUE@	LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt`
 
-@GAMSIO_IS_UNIX_TRUE@install-exec-local: $(DESTDIR)$(bindir)/GamsBonmin
+@GAMSIO_IS_UNIX_TRUE@install-exec-local: install-binPROGRAMS
 @GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsBonmin gmsbm_ux.out
 @GAMSIO_IS_UNIX_TRUE@	zip gmsbm_.zip gmsbm_ux.out gmsbm_us.run install/gmsbm_un.dat
 @GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmsbm_.zip $(DESTDIR)$(bindir)/gmsbm_.zip
 @GAMSIO_IS_UNIX_TRUE@	rm -f gmsbm_ux.out
 
-@GAMSIO_IS_WINDOWS_TRUE@install-exec-local: $(DESTDIR)$(bindir)/GamsBonmin.exe
+@GAMSIO_IS_WINDOWS_TRUE@install-exec-local: install-binPROGRAMS
 @GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsBonmin.exe gmsbm_nx.exe
 @GAMSIO_IS_WINDOWS_TRUE@	zip gmsbm_.zip gmsbm_nx.exe gmsbm_nt.cmd install/gmsbm_nt.dat
 @GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmsbm_.zip $(DESTDIR)$(bindir)/gmsbm_.zip

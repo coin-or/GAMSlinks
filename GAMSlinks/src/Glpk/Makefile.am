@@ -48,7 +48,7 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DISTCLEANFILES =
 
 if GAMSIO_IS_UNIX
-install-exec-local: $(DESTDIR)$(bindir)/GamsCoinGlpk
+install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsCoinGlpk gmscg_ux.out
 	zip gmscg_.zip gmscg_ux.out gmscg_us.run optglpk.def install/gmscg_un.dat
 	$(install_sh_DATA) gmscg_.zip $(DESTDIR)$(bindir)/gmscg_.zip
@@ -56,7 +56,7 @@ install-exec-local: $(DESTDIR)$(bindir)/GamsCoinGlpk
 endif
 
 if GAMSIO_IS_WINDOWS
-install-exec-local: $(DESTDIR)$(bindir)/GamsCoinGlpk.exe
+install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsCoinGlpk.exe gmscg_nx.exe
 	zip gmscg_.zip gmscg_nx.exe gmscg_nt.cmd optglpk.def install/gmscg_nt.dat
 	$(install_sh_DATA) gmscg_.zip $(DESTDIR)$(bindir)/gmscg_.zip
