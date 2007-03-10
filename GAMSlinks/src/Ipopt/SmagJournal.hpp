@@ -32,8 +32,8 @@ class SmagJournal : public Journal {
 public:
   /** Constructor.
    */
-  SmagJournal(smagHandle_t smag_, unsigned int smag_mask_, const char* name, EJournalLevel default_level)
-  : Journal(name, default_level), smag(smag_), smag_mask(smag_mask_)
+  SmagJournal(smagHandle_t smag_, const char* name, EJournalLevel default_level)
+  : Journal(name, default_level), smag(smag_)
   { }
 
   /** Destructor.
@@ -41,11 +41,11 @@ public:
   ~SmagJournal() { }
 
 protected:
-  virtual void PrintImpl(const char* str) {
-  	smagStdOutputPrintX(smag, smag_mask, str, 0);
+  virtual void PrintImpl(EJournalCategory category, EJournalLevel level, const char* str) {
+  	smagStdOutputPrintX(smag, level<=J_SUMMARY ? SMAG_ALLMASK : SMAG_LOGMASK, str, 0);
   }
 
-  virtual void PrintfImpl(const char* pformat, va_list ap);
+  virtual void PrintfImpl(EJournalCategory category, EJournalLevel level, const char* pformat, va_list ap);
 
   virtual void FlushBufferImpl() {
   	smagStdOutputFlush(smag, SMAG_ALLMASK);
@@ -53,7 +53,7 @@ protected:
 
 private:
 	smagHandle_t smag;
-	unsigned int smag_mask;
+	
   /**@name Default Compiler Generated Methods
    * (Hidden to avoid implicit creation/calling).
    * These methods are not implemented and 

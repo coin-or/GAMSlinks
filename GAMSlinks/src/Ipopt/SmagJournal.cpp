@@ -33,7 +33,7 @@ fakevsnprintf(char *str, size_t size, const char *format, va_list ap) {
 #endif
 
 
-void SmagJournal::PrintfImpl(const char* pformat, va_list ap) {
+void SmagJournal::PrintfImpl(EJournalCategory category, EJournalLevel level, const char* pformat, va_list ap) {
   char outBuf[1024];
 
 #ifdef HAVE_VA_COPY
@@ -45,5 +45,5 @@ void SmagJournal::PrintfImpl(const char* pformat, va_list ap) {
   VSNPRINTF(outBuf, sizeof(outBuf), pformat, ap);
 #endif
 
-	PrintImpl(outBuf);
+	PrintImpl(category, level, outBuf);
 }

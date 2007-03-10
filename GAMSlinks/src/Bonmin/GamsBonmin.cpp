@@ -295,18 +295,10 @@ void solve_nlp(smagHandle_t prob) {
   // Create a new instance of IpoptApplication (use a SmartPtr, not raw)
   SmartPtr<IpoptApplication> app = new IpoptApplication(false);
   
-	SmartPtr<Journal> smag_listjrnl=new SmagJournal(prob, SMAG_LISTMASK, "SMAGlisting", J_SUMMARY);
-	smag_listjrnl->SetPrintLevel(J_DBG, J_NONE);  	
-	if (!app->Jnlst()->AddJournal(smag_listjrnl))
-		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT listing output.\n");  
-
-  if (prob->logOption) {
-  	// calling this journal "console" lets IPOPT adjust its print_level according to the print_level parameter (if set) 
-  	SmartPtr<Journal> smag_logjrnl=new SmagJournal(prob, SMAG_LOGMASK, "console", J_ITERSUMMARY);
-		smag_logjrnl->SetPrintLevel(J_DBG, J_NONE);  	
-		if (!app->Jnlst()->AddJournal(smag_logjrnl))
-			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT logging output.\n");
-  }
+ 	SmartPtr<Journal> smag_jrnl=new SmagJournal(prob, "console", J_ITERSUMMARY);
+	smag_jrnl->SetPrintLevel(J_DBG, J_NONE);  	
+	if (!app->Jnlst()->AddJournal(smag_jrnl))
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT output.\n");
 
 	// register Bonmin options so that Ipopt does not stumble over bonmin options
 	IpoptInterface().register_ALL_options(app->RegOptions());

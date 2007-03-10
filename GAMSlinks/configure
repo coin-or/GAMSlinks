@@ -6257,62 +6257,17 @@ fi
 
 
 
-unset ac_cv_file__________libtool
-unset ac_cv_file_______libtool
-unset ac_cv_file____libtool
-
 LIBTOOL=
-echo "$as_me:$LINENO: checking for ../libtool" >&5
-echo $ECHO_N "checking for ../libtool... $ECHO_C" >&6
-if test "${ac_cv_file____libtool+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  test "$cross_compiling" = yes &&
-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
-   { (exit 1); exit 1; }; }
-if test -r "../libtool"; then
-  ac_cv_file____libtool=yes
-else
-  ac_cv_file____libtool=no
-fi
-fi
-echo "$as_me:$LINENO: result: $ac_cv_file____libtool" >&5
-echo "${ECHO_T}$ac_cv_file____libtool" >&6
-if test $ac_cv_file____libtool = yes; then
+if test -r ../libtool; then
   coin_config_dir=..
-               LIBTOOL='$(SHELL) $(top_builddir)/../libtool'
+  LIBTOOL='$(SHELL) $(top_builddir)/../libtool'
 fi
-
 if test "x$LIBTOOL" = x; then
-  echo "$as_me:$LINENO: checking for ../../libtool" >&5
-echo $ECHO_N "checking for ../../libtool... $ECHO_C" >&6
-if test "${ac_cv_file_______libtool+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  test "$cross_compiling" = yes &&
-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
-   { (exit 1); exit 1; }; }
-if test -r "../../libtool"; then
-  ac_cv_file_______libtool=yes
-else
-  ac_cv_file_______libtool=no
+  if test -r ../../libtool; then
+    coin_config_dir=../..
+    LIBTOOL='$(SHELL) $(top_builddir)/../../libtool'
+  fi
 fi
-fi
-echo "$as_me:$LINENO: result: $ac_cv_file_______libtool" >&5
-echo "${ECHO_T}$ac_cv_file_______libtool" >&6
-if test $ac_cv_file_______libtool = yes; then
-  coin_config_dir=../..
-                 LIBTOOL='$(SHELL) $(top_builddir)/../../libtool'
-fi
-
-fi
-# if test "x$LIBTOOL" = x; then
-#   AC_CHECK_FILE([../../../libtool],
-#                 [coin_config_dir=../../..
-#                  LIBTOOL='$(SHELL) $(top_builddir)/../../../libtool'])
-# fi
 
 if test "x$LIBTOOL" = x; then
 # AC_MSG_NOTICE([Creating libtool script (calling COIN_PROG_LIBTOOL).])
@@ -6854,7 +6809,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6857 "configure"' > conftest.$ac_ext
+  echo '#line 6812 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8834,11 +8789,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8837: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8792: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8841: \$? = $ac_status" >&5
+   echo "$as_me:8796: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9102,11 +9057,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9105: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9060: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9109: \$? = $ac_status" >&5
+   echo "$as_me:9064: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9206,11 +9161,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9209: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9164: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9213: \$? = $ac_status" >&5
+   echo "$as_me:9168: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11623,7 +11578,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11626 "configure"
+#line 11581 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11723,7 +11678,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11726 "configure"
+#line 11681 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14082,11 +14037,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14085: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14040: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14089: \$? = $ac_status" >&5
+   echo "$as_me:14044: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14186,11 +14141,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14189: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14144: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14193: \$? = $ac_status" >&5
+   echo "$as_me:14148: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15755,11 +15710,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15758: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15713: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15762: \$? = $ac_status" >&5
+   echo "$as_me:15717: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15859,11 +15814,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15862: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15817: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15866: \$? = $ac_status" >&5
+   echo "$as_me:15821: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18065,11 +18020,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18068: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18023: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18072: \$? = $ac_status" >&5
+   echo "$as_me:18027: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18333,11 +18288,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18336: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18291: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18340: \$? = $ac_status" >&5
+   echo "$as_me:18295: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18437,11 +18392,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18440: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18395: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:18444: \$? = $ac_status" >&5
+   echo "$as_me:18399: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -21129,6 +21084,16 @@ echo "$as_me: Build is \"$build\"." >&6;}
   esac
 
   case $build in
+    *x86_64-*)
+# Here we need to check if -m32 is specified.  If so, we need to correct sys_lib_search_path_spec
+      if test "$GCC" = yes && (echo $CXXFLAGS $CFLAGS $FFLAGS | $EGREP 'm32' >& /dev/null); then
+        { echo "$as_me:$LINENO: Applying patches to libtool for 32bit compilation" >&5
+echo "$as_me: Applying patches to libtool for 32bit compilation" >&6;}
+        sed -e 's|sys_lib_search_path_spec=".*"|sys_lib_search_path_spec="/lib /usr/lib"|' libtool > conftest.bla
+        mv conftest.bla libtool
+        chmod 755 libtool
+      fi
+      ;;
     *-cygwin* | *-mingw*)
     case "$CXX" in
       cl* | */cl* | CL* | */CL*)
@@ -24518,25 +24483,45 @@ ac_compiler_gnu=$ac_cv_f77_compiler_gnu
 
 
 
-FADDLIBS="$ADDLIBS"
-if test x"$coin_need_flibs" = xyes; then
-  ADDLIBS="$ADDLIBS $FLIBS"
-fi
+if test x$coin_skip_ac_output != xyes; then
 
-# library extension
+  FADDLIBS="$ADDLIBS"
+  if test x"$coin_need_flibs" = xyes; then
+    ADDLIBS="$ADDLIBS $FLIBS"
+  fi
 
-case "$CC" in
-  cl* | */cl* | CL* | */CL*)
-       LIBEXT=lib ;;
-    *) LIBEXT=a ;;
-esac
+  # library extension
 
-# Define VPATH_DISTCLEANFILES to be everything that needs to be
-# cleaned for distclean in a vpath configuration
+  case "$CC" in
+    cl* | */cl* | CL* | */CL*)
+         LIBEXT=lib ;;
+      *) LIBEXT=a ;;
+  esac
 
-VPATH_DISTCLEANFILES="$coin_vpath_link_files"
+  # Define VPATH_DISTCLEANFILES to be everything that needs to be
+  # cleaned for distclean in a vpath configuration
 
-cat >confcache <<\_ACEOF
+  VPATH_DISTCLEANFILES="$coin_vpath_link_files"
+
+  # Take out subdirectories if their configuration concluded that they
+  # don't need to be compiled
+  if test x"$coin_ac_skip_subdirs" != x; then
+    new_subdirs=
+    for i in $subdirs; do
+      skipme=no
+      for j in $coin_ac_skip_subdirs; do
+        if test $i = $j; then
+          skipme=yes;
+        fi
+      done
+      if test $skipme = no; then
+        new_subdirs="$new_subdirs $i"
+      fi
+    done
+    subdirs="$new_subdirs"
+  fi
+
+  cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
 # scripts and configure runs, see configure's option --config-cache.
@@ -26163,20 +26148,20 @@ if test "$no_create" != yes; then
 fi
 
 
-if test x"$coin_vpath_link_files" = x; then : ; else
-  lnkcmd=
-  if test "$enable_doscompile" = yes; then
-    lnkcmd=cp
-  fi
-  case "$CC" in
-    cl* | */cl* | CL* | */CL*)
-      lnkcmd=cp ;;
-  esac
-  if test "$lnkcmd" = cp; then
-    { echo "$as_me:$LINENO: Copying data files for VPATH configuration" >&5
+  if test x"$coin_vpath_link_files" = x; then : ; else
+    lnkcmd=
+    if test "$enable_doscompile" = yes; then
+      lnkcmd=cp
+    fi
+    case "$CC" in
+      cl* | */cl* | CL* | */CL*)
+        lnkcmd=cp ;;
+    esac
+    if test "$lnkcmd" = cp; then
+      { echo "$as_me:$LINENO: Copying data files for VPATH configuration" >&5
 echo "$as_me: Copying data files for VPATH configuration" >&6;}
-  else
-    echo "$as_me:$LINENO: checking whether ln -s works" >&5
+    else
+      echo "$as_me:$LINENO: checking whether ln -s works" >&5
 echo $ECHO_N "checking whether ln -s works... $ECHO_C" >&6
 LN_S=$as_ln_s
 if test "$LN_S" = "ln -s"; then
@@ -26187,12 +26172,12 @@ else
 echo "${ECHO_T}no, using $LN_S" >&6
 fi
 
-    { echo "$as_me:$LINENO: Creating VPATH links for data files" >&5
+      { echo "$as_me:$LINENO: Creating VPATH links for data files" >&5
 echo "$as_me: Creating VPATH links for data files" >&6;}
-    lnkcmd="$LN_S"
-  fi
-  for file in $coin_vpath_link_files; do
-    dir=`(dirname "./$file") 2>/dev/null ||
+      lnkcmd="$LN_S"
+    fi
+    for file in $coin_vpath_link_files; do
+      dir=`(dirname "./$file") 2>/dev/null ||
 $as_expr X"./$file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
 	 X"./$file" : 'X\(//\)[^/]' \| \
 	 X"./$file" : 'X\(//\)$' \| \
@@ -26204,8 +26189,8 @@ echo X"./$file" |
   	  /^X\(\/\/\)$/{ s//\1/; q; }
   	  /^X\(\/\).*/{ s//\1/; q; }
   	  s/.*/./; q'`
-    if test -d $dir; then : ; else
-      { if $as_mkdir_p; then
+      if test -d $dir; then : ; else
+        { if $as_mkdir_p; then
     mkdir -p $dir
   else
     as_dir=$dir
@@ -26230,17 +26215,22 @@ echo X"$as_dir" |
 echo "$as_me: error: cannot create directory $dir" >&2;}
    { (exit 1); exit 1; }; }; }
 
-    fi
-    rm -f $file
-    $lnkcmd $abs_source_dir/$file $file
-  done
+      fi
+      rm -f $file
+      $lnkcmd $abs_source_dir/$file $file
+    done
+  fi
+
+  if test x$coin_projectdir = xyes; then
+    { echo "$as_me:$LINENO: Configuration of $PACKAGE_NAME successful" >&5
+echo "$as_me: Configuration of $PACKAGE_NAME successful" >&6;}
+  else
+    { echo "$as_me:$LINENO: Main configuration of $PACKAGE_NAME successful" >&5
+echo "$as_me: Main configuration of $PACKAGE_NAME successful" >&6;}
+  fi
+else
+  { echo "$as_me:$LINENO: No configuration of $PACKAGE_NAME necessary" >&5
+echo "$as_me: No configuration of $PACKAGE_NAME necessary" >&6;}
 fi
 
-if test x$coin_projectdir = xyes; then
-  { echo "$as_me:$LINENO: Configuration of $PACKAGE_NAME successful" >&5
-echo "$as_me: Configuration of $PACKAGE_NAME successful" >&6;}
-else
-  { echo "$as_me:$LINENO: Main configuration of $PACKAGE_NAME successful" >&5
-echo "$as_me: Main configuration of $PACKAGE_NAME successful" >&6;}
-fi
 

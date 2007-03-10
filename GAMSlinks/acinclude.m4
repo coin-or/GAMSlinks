@@ -6395,11 +6395,11 @@ done
 SED=$lt_cv_path_SED
 AC_MSG_RESULT([$SED])
 ])
-# Copyright (C) 2006 International Business Machines..
+# Copyright (C) 2006, 2007 International Business Machines..
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
-## $Id: coin.m4 215 2007-02-01 18:45:00Z andreasw $
+## $Id: coin.m4 243 2007-03-06 16:38:50Z andreasw $
 #
 # Author: Andreas Wachter    IBM      2006-04-14
 
@@ -8036,24 +8036,17 @@ AC_COIN_DISABLE_STATIC
 # Initialize automake
 AC_COIN_INIT_AUTOMAKE
 
-unset ac_cv_file__________libtool
-unset ac_cv_file_______libtool
-unset ac_cv_file____libtool
-
 LIBTOOL=
-AC_CHECK_FILE([../libtool],
-              [coin_config_dir=..
-               LIBTOOL='$(SHELL) $(top_builddir)/../libtool'])
-if test "x$LIBTOOL" = x; then
-  AC_CHECK_FILE([../../libtool],
-                [coin_config_dir=../..
-                 LIBTOOL='$(SHELL) $(top_builddir)/../../libtool'])
+if test -r ../libtool; then
+  coin_config_dir=..
+  LIBTOOL='$(SHELL) $(top_builddir)/../libtool'
 fi
-# if test "x$LIBTOOL" = x; then
-#   AC_CHECK_FILE([../../../libtool],
-#                 [coin_config_dir=../../..
-#                  LIBTOOL='$(SHELL) $(top_builddir)/../../../libtool'])
-# fi
+if test "x$LIBTOOL" = x; then
+  if test -r ../../libtool; then
+    coin_config_dir=../..
+    LIBTOOL='$(SHELL) $(top_builddir)/../../libtool'
+  fi
+fi
 
 if test "x$LIBTOOL" = x; then
 # AC_MSG_NOTICE([Creating libtool script (calling COIN_PROG_LIBTOOL).])
@@ -8181,6 +8174,15 @@ AC_DEFUN([AC_COIN_PROG_LIBTOOL],
   esac
 
   case $build in
+    *x86_64-*)
+# Here we need to check if -m32 is specified.  If so, we need to correct sys_lib_search_path_spec
+      if test "$GCC" = yes && (echo $CXXFLAGS $CFLAGS $FFLAGS | $EGREP 'm32' >& /dev/null); then 
+        AC_MSG_NOTICE(Applying patches to libtool for 32bit compilation)
+        sed -e 's|sys_lib_search_path_spec=".*"|sys_lib_search_path_spec="/lib /usr/lib"|' libtool > conftest.bla
+        mv conftest.bla libtool
+        chmod 755 libtool  
+      fi
+      ;;
     *-cygwin* | *-mingw*)
     case "$CXX" in
       cl* | */cl* | CL* | */CL*) 
@@ -8286,60 +8288,86 @@ AC_SUBST(RPATH_FLAGS)
 # It creates the output files (by using AC_OUTPUT), and might do some other
 # things (such as generating links to data files in a VPATH configuration).
 # It also prints the "success" message.
+# Note: If the variable coin_skip_ac_output is set to yes, then no output
+# files are written.
 
 AC_DEFUN([AC_COIN_FINALIZE],
 [
-FADDLIBS="$ADDLIBS"
-if test x"$coin_need_flibs" = xyes; then
-  ADDLIBS="$ADDLIBS $FLIBS"
-fi
+if test x$coin_skip_ac_output != xyes; then
 
-# library extension
-AC_SUBST(LIBEXT)
-case "$CC" in
-  cl* | */cl* | CL* | */CL*)
-       LIBEXT=lib ;;
-    *) LIBEXT=a ;;
-esac
-
-# Define VPATH_DISTCLEANFILES to be everything that needs to be
-# cleaned for distclean in a vpath configuration
-AC_SUBST(VPATH_DISTCLEANFILES)
-VPATH_DISTCLEANFILES="$coin_vpath_link_files"
-
-AC_OUTPUT
-
-if test x"$coin_vpath_link_files" = x; then : ; else
-  lnkcmd=
-  if test "$enable_doscompile" = yes; then
-    lnkcmd=cp
+  FADDLIBS="$ADDLIBS"
+  if test x"$coin_need_flibs" = xyes; then
+    ADDLIBS="$ADDLIBS $FLIBS"
   fi
+
+  # library extension
+  AC_SUBST(LIBEXT)
   case "$CC" in
     cl* | */cl* | CL* | */CL*)
-      lnkcmd=cp ;;
+         LIBEXT=lib ;;
+      *) LIBEXT=a ;;
   esac
-  if test "$lnkcmd" = cp; then
-    AC_MSG_NOTICE(Copying data files for VPATH configuration)
-  else
-    AC_PROG_LN_S
-    AC_MSG_NOTICE(Creating VPATH links for data files)
-    lnkcmd="$LN_S"
+
+  # Define VPATH_DISTCLEANFILES to be everything that needs to be
+  # cleaned for distclean in a vpath configuration
+  AC_SUBST(VPATH_DISTCLEANFILES)
+  VPATH_DISTCLEANFILES="$coin_vpath_link_files"
+
+  # Take out subdirectories if their configuration concluded that they
+  # don't need to be compiled
+  if test x"$coin_ac_skip_subdirs" != x; then
+    new_subdirs=
+    for i in $subdirs; do
+      skipme=no
+      for j in $coin_ac_skip_subdirs; do
+        if test $i = $j; then
+          skipme=yes;
+        fi
+      done
+      if test $skipme = no; then
+        new_subdirs="$new_subdirs $i"
+      fi
+    done
+    subdirs="$new_subdirs"
   fi
-  for file in $coin_vpath_link_files; do
-    dir=`AS_DIRNAME(["./$file"])`
-    if test -d $dir; then : ; else
-      AS_MKDIR_P($dir)
+
+  AC_OUTPUT
+
+  if test x"$coin_vpath_link_files" = x; then : ; else
+    lnkcmd=
+    if test "$enable_doscompile" = yes; then
+      lnkcmd=cp
     fi
-    rm -f $file
-    $lnkcmd $abs_source_dir/$file $file
-  done
+    case "$CC" in
+      cl* | */cl* | CL* | */CL*)
+        lnkcmd=cp ;;
+    esac
+    if test "$lnkcmd" = cp; then
+      AC_MSG_NOTICE(Copying data files for VPATH configuration)
+    else
+      AC_PROG_LN_S
+      AC_MSG_NOTICE(Creating VPATH links for data files)
+      lnkcmd="$LN_S"
+    fi
+    for file in $coin_vpath_link_files; do
+      dir=`AS_DIRNAME(["./$file"])`
+      if test -d $dir; then : ; else
+        AS_MKDIR_P($dir)
+      fi
+      rm -f $file
+      $lnkcmd $abs_source_dir/$file $file
+    done
+  fi
+
+  if test x$coin_projectdir = xyes; then
+    AC_MSG_NOTICE([Configuration of $PACKAGE_NAME successful])
+  else
+    AC_MSG_NOTICE([Main configuration of $PACKAGE_NAME successful])
+  fi
+else
+  AC_MSG_NOTICE([No configuration of $PACKAGE_NAME necessary])
 fi
 
-if test x$coin_projectdir = xyes; then
-  AC_MSG_NOTICE([Configuration of $PACKAGE_NAME successful])
-else
-  AC_MSG_NOTICE([Main configuration of $PACKAGE_NAME successful])
-fi
 ]) #AC_COIN_FINALIZE
 
 ###########################################################################
@@ -8753,11 +8781,18 @@ AC_ARG_WITH([asldir],
             [use_asldir=$withval], [use_asldir=])
 
 if test "$use_asldir" = BUILD; then
-  AC_CHECK_FILE([$coin_aslobjdir/Makefile],[],
-                [AC_MSG_ERROR([option \"BUILD\" specified for asldir, but directory is not configure (sources missing?)])])
+  if test "$PACKAGE_NAME" != ThirdPartyASL; then
+    # If we are configuring ThirdParty/ASL, don't check
+    AC_CHECK_FILE([$coin_aslobjdir/.MakeOk],[],
+                  [AC_MSG_ERROR([option \"BUILD\" specified for asldir, but directory is not configure (sources missing?)])])
+  fi
 elif test -z "$use_asldir"; then
  # try to find sources - if not given don't compile
-  AC_CHECK_FILE([$coin_aslobjdir/Makefile],[use_asldir=BUILD],[use_asldir=no])
+  if test "$PACKAGE_NAME" != ThirdPartyASL; then
+    AC_CHECK_FILE([$coin_aslobjdir/.MakeOk],[use_asldir=BUILD],[use_asldir=no])
+  else
+    use_asldir=no
+  fi
 elif test "$use_asldir" != "no"; then
   AC_CHECK_FILE([$use_asldir/$ampllib],[],
                 [AC_MSG_ERROR([ASL directory \"$use_asldir\" specified, but library missing])])
@@ -8879,7 +8914,11 @@ esac
 # COIN_BUILD_BLAS, if blas is compiled within COIN.
 
 AC_DEFUN([AC_COIN_HAS_BLAS],
-[coin_blasobjdir=../ThirdParty/Blas
+[if test "$PACKAGE_NAME" = ThirdPartyBlas || test "$PACKAGE_NAME" = ThirdPartyLapack; then
+  coin_blasobjdir=../Blas
+else
+  coin_blasobjdir=../ThirdParty/Blas
+fi
 coin_blassrcdir=$srcdir/$coin_blasobjdir
 
 AC_ARG_WITH([blas],
@@ -8887,11 +8926,15 @@ AC_ARG_WITH([blas],
                            [specify BLAS library (or BUILD for compilation)]),
             [use_blas=$withval], [use_blas=])
 
+MAKEOKFILE=.MakeOk
 # Check if user supplied option makes sense
 if test x"$use_blas" != x; then
   if test "$use_blas" = "BUILD"; then
-    AC_CHECK_FILE([$coin_blasobjdir/Makefile],[],
-                  [AC_MSG_ERROR([option \"BUILD\" specified for Blas, but $coin_blasobjdir directory is not configured])])
+    # Don't check for course code if this is executed in ThirdParty/Blas
+    if test "$PACKAGE_NAME" != ThirdPartyBlas; then
+      AC_CHECK_FILE([$coin_blasobjdir/.MakeOk],[],
+                    [AC_MSG_ERROR([option \"BUILD\" specified for Blas, but $coin_blasobjdir directory is not properly configured])])
+    fi
   elif test "$use_blas" != no ; then
     AC_MSG_CHECKING([whether user supplied BLASLIB=\"$use_blas\" works])
     LIBS="$use_blas $LIBS"
@@ -8903,7 +8946,8 @@ if test x"$use_blas" != x; then
   fi
 else
 # Try to autodetect the library for blas based on build system
-  AC_MSG_CHECKING([default locations for BLAS])
+  #AC_MSG_CHECKING([default locations for BLAS])
+  skip_lblas_check=no
   case $build in
     *-sgi-*) 
       SAVE_LIBS="$LIBS"
@@ -8930,26 +8974,30 @@ else
 # On cygwin, consider -lblas only if doscompile is disabled. The prebuilt
 # library will want to link with cygwin, hence won't run standalone in DOS.
     *-cygwin*)
-      if test "$enable_doscompile" = no; then
-	if test -z "$use_blas"; then
-	  SAVE_LIBS="$LIBS"
-	  AC_MSG_CHECKING([whether -lblas has BLAS])
-	  LIBS="-lblas $LIBS"
-	  AC_COIN_TRY_FLINK([daxpy],
-			    [AC_MSG_RESULT([yes])
-			     ADDLIBS="-lblas $ADDLIBS"
-			     use_blas='-lblas'],
-			    [AC_MSG_RESULT([no])
-			     LIBS="$SAVE_LIBS"])
-	fi
+      if test "$enable_doscompile" = mingw; then
+	skip_lblas_check=yes
       fi
       ;;
-    esac
+  esac
+
+  if test -z "$use_blas" && test $skip_lblas_check = no; then
+    SAVE_LIBS="$LIBS"
+    AC_MSG_CHECKING([whether -lblas has BLAS])
+    LIBS="-lblas $LIBS"
+    AC_COIN_TRY_FLINK([daxpy],
+		      [AC_MSG_RESULT([yes])
+		       ADDLIBS="-lblas $ADDLIBS"
+		       use_blas='-lblas'],
+		      [AC_MSG_RESULT([no])
+	               LIBS="$SAVE_LIBS"])
+  fi
 
 # If we have no other ideas, consider building BLAS.
   if test -z "$use_blas"; then
-    AC_MSG_CHECKING([if BLAS can be built.])
-    AC_CHECK_FILE([$coin_blasobjdir/Makefile],[use_blas=BUILD])
+    if test "$PACKAGE_NAME" != ThirdPartyBlas; then
+      AC_MSG_CHECKING([if BLAS can be built.])
+      AC_CHECK_FILE([$coin_blasobjdir/.MakeOk],[use_blas=BUILD])
+    fi
   fi
 fi
 
@@ -8994,8 +9042,11 @@ AC_ARG_WITH([lapack],
 # Check if user supplied option makes sense
 if test x"$use_lapack" != x; then
   if test "$use_lapack" = "BUILD"; then
-    AC_CHECK_FILE([$coin_lapackobjdir/Makefile],[],
-                  [AC_MSG_ERROR([option \"BUILD\" specified for LAPACK, but $coin_lapackobjdir directory is not configured])])
+    # Don't check for course code if this is executed in ThirdParty/Blas
+    if test "$PACKAGE_NAME" != ThirdPartyLapack; then
+      AC_CHECK_FILE([$coin_lapackobjdir/.MakeOk],[],
+                    [AC_MSG_ERROR([option \"BUILD\" specified for LAPACK, but $coin_lapackobjdir directory is not configured])])
+    fi
   else
     AC_MSG_CHECKING([whether user supplied LAPACKLIB=\"$use_lapack\" works])
     LIBS="$use_lapack $LIBS"
@@ -9013,6 +9064,7 @@ else
                       [AC_MSG_RESULT([yes]); use_lapack=ok],
                       [AC_MSG_RESULT([no])])
   fi
+  skip_llapack_check=no
   if test -z "$use_lapack"; then
     # Try to autodetect the library for lapack based on build system
     case $build in
@@ -9041,25 +9093,30 @@ else
 # On cygwin, do this check only if doscompile is disabled. The prebuilt library
 # will want to link with cygwin, hence won't run standalone in DOS.
       *-cygwin*)
-	if test "$enable_doscompile" = no; then
-	  if test -z "$use_lapack"; then
-	    SAVE_LIBS="$LIBS"
-	    AC_MSG_CHECKING([whether -llapack has LAPACK])
-	    LIBS="-llapack $LIBS"
-	    AC_COIN_TRY_FLINK([dsyev],
-			      [AC_MSG_RESULT([yes])
-			       ADDLIBS="-llapack $ADDLIBS"
-			       use_lapack='-llapack'],
-			      [AC_MSG_RESULT([no])
-			       LIBS="$SAVE_LIBS"])
-	  fi
+	if test "$enable_doscompile" = mingw; then
+	  skip_llapack_check=yes
 	fi
 	;;
     esac
   fi
+
+  if test -z "$use_lapack" && test $skip_llapack_check = no; then
+    SAVE_LIBS="$LIBS"
+    AC_MSG_CHECKING([whether -llapack has LAPACK])
+    LIBS="-llapack $LIBS"
+    AC_COIN_TRY_FLINK([dsyev],
+		      [AC_MSG_RESULT([yes])
+		       ADDLIBS="-llapack $ADDLIBS"
+		       use_lapack='-llapack'],
+		      [AC_MSG_RESULT([no])
+		       LIBS="$SAVE_LIBS"])
+  fi
+
 # If we have no other ideas, consider building LAPACK.
   if test -z "$use_lapack"; then
-    AC_CHECK_FILE([$coin_lapackobjdir/Makefile],[use_lapack=BUILD])
+    if test "$PACKAGE_NAME" != ThirdPartyLapack; then
+      AC_CHECK_FILE([$coin_lapackobjdir/.MakeOk],[use_lapack=BUILD])
+    fi
   fi
 fi
 
