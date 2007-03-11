@@ -14,8 +14,8 @@ libglpk.a: src/glpavl.o \
         src/glpgmp.o \
         src/glphbm.o \
         src/glpiet.o \
-        src/glpinv1.o \
-        src/glpinv2.o \
+        src/glpinv01.o \
+        src/glpinv02.o \
         src/glpios01.o \
         src/glpios02.o \
         src/glpios03.o \
