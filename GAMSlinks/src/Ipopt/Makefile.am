@@ -36,7 +36,7 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DISTCLEANFILES =
 
 if GAMSIO_IS_UNIX
-install-exec-local: .libs/GamsIpopt
+install-exec-local: install-binPROGRAMS
 	ln -sf .libs/GamsIpopt gmsip_ux.out
 	zip gmsip_.zip gmsip_ux.out gmsip_us.run install/gmsip_un.dat
 	$(install_sh_DATA) gmsip_.zip $(DESTDIR)$(bindir)/gmsip_.zip
@@ -44,7 +44,7 @@ install-exec-local: .libs/GamsIpopt
 endif
 
 if GAMSIO_IS_WINDOWS
-install-exec-local: .libs/GamsIpopt.exe
+install-exec-local: install-binPROGRAMS
 	ln -sf .libs/GamsIpopt.exe gmsip_nx.exe
 	zip gmsip_.zip gmsip_nx.exe gmsip_nt.cmd install/gmsip_nt.dat
 	$(install_sh_DATA) gmsip_.zip $(DESTDIR)$(bindir)/gmsip_.zip

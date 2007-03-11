@@ -575,13 +575,13 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 	uninstall-info-am uninstall-local
 
 
-@GAMSIO_IS_UNIX_TRUE@install-exec-local: .libs/GamsIpopt
+@GAMSIO_IS_UNIX_TRUE@install-exec-local: install-binPROGRAMS
 @GAMSIO_IS_UNIX_TRUE@	ln -sf .libs/GamsIpopt gmsip_ux.out
 @GAMSIO_IS_UNIX_TRUE@	zip gmsip_.zip gmsip_ux.out gmsip_us.run install/gmsip_un.dat
 @GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmsip_.zip $(DESTDIR)$(bindir)/gmsip_.zip
 @GAMSIO_IS_UNIX_TRUE@	rm -f gmsip_ux.out
 
-@GAMSIO_IS_WINDOWS_TRUE@install-exec-local: .libs/GamsIpopt.exe
+@GAMSIO_IS_WINDOWS_TRUE@install-exec-local: install-binPROGRAMS
 @GAMSIO_IS_WINDOWS_TRUE@	ln -sf .libs/GamsIpopt.exe gmsip_nx.exe
 @GAMSIO_IS_WINDOWS_TRUE@	zip gmsip_.zip gmsip_nx.exe gmsip_nt.cmd install/gmsip_nt.dat
 @GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmsip_.zip $(DESTDIR)$(bindir)/gmsip_.zip
