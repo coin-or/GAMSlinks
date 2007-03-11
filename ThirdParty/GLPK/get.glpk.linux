@@ -11,26 +11,27 @@ echo "Running script for downloading the GNU Linear Programming Toolkit"
 echo " "
 
 echo "Downloading the library from ftp.gnu.org..."
-wget ftp://ftp.gnu.org/gnu/glpk/glpk-4.9.tar.gz
+wget ftp://ftp.gnu.org/gnu/glpk/glpk-4.15.tar.gz
 
 echo "Unpacking the library..."
-tar xzf glpk-4.9.tar.gz
+tar xzf glpk-4.15.tar.gz
 
 echo "Deleting the tar.gz file..."
-rm -f glpk-4.9.tar.gz
+rm -f glpk-4.15.tar.gz
 
 echo "Applying patch file..."
 patch -p0 < glpk.patch
 
-echo "Configure and make glpk 4.9..."
+echo "Configure and make glpk 4.15..."
 cd glpk
-../glpk-4.9/configure --prefix=`pwd`
+../glpk-4.15/configure --prefix=`pwd`
 make
 make install
 cd ..
+cp glpk-4.15/include/glplib.h glpk/include
 
 echo " "
-echo "Done downloading and installing glpk 4.9."
+echo "Done downloading and installing glpk 4.15."
 
 thepath=`pwd`
 echo "When configuring your COIN project, add the following arguments to you configure call:"
