@@ -119,6 +119,10 @@ int main (int argc, const char *argv[]) {
 	solver.getModelPtr()->setDualBound(1.0e10);
 	solver.getModelPtr()->setDblParam(ClpMaxSeconds, gm.optGetDouble("reslim"));
 #endif
+	solver.setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal"));
+	solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual"));
+	solver.setHintParam(OsiDoScale, gm.optGetBool("scaling"));
+	solver.setHintParam(OsiDoPresolveInInitial, gm.optGetBool("presolve"));
 
 	CbcModel model(solver);
   // Switch off most output
@@ -183,7 +187,7 @@ int main (int argc, const char *argv[]) {
 	model.setDblParam(CbcModel::CbcAllowableGap, gm.optGetDouble("optca"));
 	model.setDblParam(CbcModel::CbcAllowableFractionGap, gm.optGetDouble("optcr"));
 	if (gm.optDefined("cutoff")) model.setCutoff(gm.ObjSense()*gm.optGetDouble("cutoff")); // Cbc assumes a minimizatio problem here
-	model.setDblParam(CbcModel::CbcIntegerTolerance, gm.optGetDouble("integertolerance"));
+	model.setDblParam(CbcModel::CbcIntegerTolerance, gm.optGetDouble("tol_integer"));
 	model.solver()->setIntParam(OsiMaxNumIterationHotStart,100);
 
 	CbcStrategyGams strategy(gm);

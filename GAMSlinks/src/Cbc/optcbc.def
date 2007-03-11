@@ -24,7 +24,11 @@ startalg enumstr 0 "dual" 1 1 LP solver for root node
  "primal" 1 primal simplex algorithm
  "dual" 1 dual simplex algorithm
 writemps string 0 "" 1 1 create MPS file for problem
-integertolerance double 0 1e-6 0 maxdouble 1 1 tolerance for integrality
+tol_dual double 0 1e-7 0 maxdouble 1 1 dual feasibility tolerance
+tol_primal double 0 1e-7 0 maxdouble 1 1 primal feasibility tolerance
+tol_integer double 0 1e-6 0 maxdouble 1 1 tolerance for integrality
+scaling boolean 0 1 1 1 switch for scaling of LP
+presolve boolean 0 1 1 1 switch for initial presolve of LP
 printfrequency integer 0 10 0 maxint 1 1 print frequency
 nodecompare enumstr 0 "default" 1 1 comparision method to determine tree search order
  "default" 1

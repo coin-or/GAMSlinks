@@ -24,7 +24,11 @@ set g Cbc Option Groups /
       cutsonlyatroot         whether cuts are only generated at the root node
       startalg               LP solver for root node
       writemps               create MPS file for problem
-      integertolerance       tolerance for integrality
+      tol_dual               dual feasibility tolerance
+      tol_primal             primal feasibility tolerance
+      tol_integer            tolerance for integrality
+      scaling                switch for scaling of LP
+      presolve               switch for initial presolve of LP
       printfrequency         print frequency
       nodecompare            comparision method to determine tree search order
 * GAMS options
@@ -60,7 +64,11 @@ general.(
   cutsonlyatroot      .b.(def 1)
   startalg            .s.(def dual)
   writemps            .s.(def '')
-  integertolerance    .r.(def 1e-6)
+  tol_primal          .r.(def 1e-7)
+  tol_dual            .r.(def 1e-7)
+  tol_integer         .r.(def 1e-6)
+  scaling             .b.(def 1)
+  presolve            .b.(def 1)
   printfrequency      .i.(def 10)
   nodecompare         .s.(def default)
 * GAMS options
@@ -105,6 +113,10 @@ general.(
                    1      add reduce and split cuts )
   cutsonlyatroot.( 0      generate cuts always in the branch and bound
                    1      generate cuts only at root node )
+  scaling.(        0      don't scale the problem
+                   1      scale the problem )
+  presolve.(       0      don't do an initial presolve on the LP
+                   1      do an initial presolve on the LP )
   startalg.(       primal  primal simplex algorithm
                    dual    dual simplex algorithm )
   nodecompare.(    default, depth, objective )
@@ -121,4 +133,4 @@ general.(
                      cutoff     'GAMS cutoff' /
  oep(o) / localsearch, strongbranching, integerpresolve, findsos,
     probing, gomorycuts, knapsackcuts, oddholecuts, cliquecuts,
-    flowcovercuts, mircuts, redsplitcuts, cutsonlyatroot /;
+    flowcovercuts, mircuts, redsplitcuts, cutsonlyatroot, scaling, presolve /;

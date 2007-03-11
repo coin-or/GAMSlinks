@@ -123,7 +123,15 @@ Write an MPS problem file.
 The parameter value is the name of the MPS file.
 
 
-integertolerance
+tol_dual
+The maximum amount the dual constraints can be violated and still be considered feasible.
+
+
+tol_primal
+The maximum amount the primal constraints can be violated and still be considered feasible.
+
+
+tol_integer
 An integer variable is deemed to be at an integral value if it is no further than the value of this parameter from the next integral value away.
 
 
@@ -154,6 +162,14 @@ This may give a very large tree.
 It is likely that the first solution found will be the best and the search should finish soon after the first solution is found.
 
 
+scaling
+This option determines whether the linear relaxation should be scaled.
+
+
+presolve
+This option determines whether a presolve should be applied to the linear relaxation before it is solved the first time.
+
+
 reslim
 Maximum time in seconds.
 
@@ -161,7 +177,6 @@ Maximum time in seconds.
 iterlim
 For an LP, this is the maximum number of iterations to solve the LP.
 For a MIP, this option is ignored.
-
 
 
 nodelim
