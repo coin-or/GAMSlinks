@@ -20,5 +20,5 @@ capabilities	LP RMIP MIP NLP RMINLP MINLP DNLP QCP RMIQCP MIQCP
 file_type	112
 dictionary_file	4
 run_file	gmsbm_nt.cmd
-exe_file	gmsbm_nt.exe
+exe_file	gmsbm_nx.exe
 special		2

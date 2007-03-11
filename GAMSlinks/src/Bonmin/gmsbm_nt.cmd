@@ -8,4 +8,4 @@
 #    $4 : control file name
 #    $5 : system directory
 
-${5}gmsbm_nt.exe $4
+${5}gmsbm_nx.exe $4
