@@ -8,4 +8,4 @@
 #    $4 : control file name
 #    $5 : system directory
 
-${5}gmsip_nt.exe $4
+${5}gmsip_nx.exe $4
