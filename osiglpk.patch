@@ -1,4 +1,4 @@
---- Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Revision 885)
+--- Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Revision 914)
 +++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Arbeitskopie)
 @@ -80,6 +80,13 @@
  	}
@@ -19,7 +19,7 @@
  	freeCachedData( OsiGlpkSolverInterface::FREECACHED_RESULTS );
  
 -	lpx_set_int_parm(model, LPX_K_MSGLEV, 1);  // suppress most output 
-+	lib_set_print_hook(messageHandler(), OsiGlpkprintme); // tell glpk to use our message handler
++	lib_print_hook(OsiGlpkprintme, messageHandler()); // tell glpk to use our message handler
 +	lpx_set_int_parm(model, LPX_K_MSGLEV, messageHandler()->logLevel());  // set loglevel from message handler 
  	lpx_set_int_parm(model, LPX_K_PRESOL, 1);  // turn on presolver
  	int err = lpx_simplex( model );
@@ -29,7 +29,7 @@
  	freeCachedData( OsiGlpkSolverInterface::FREECACHED_RESULTS );
  
 -	lpx_set_int_parm(model, LPX_K_MSGLEV, 1);  // suppress most output 
-+	lib_set_print_hook(messageHandler(), OsiGlpkprintme); // tell glpk to use our message handler 
++	lib_print_hook(OsiGlpkprintme, messageHandler()); // tell glpk to use our message handler 
 +	lpx_set_int_parm(model, LPX_K_MSGLEV, messageHandler()->logLevel());  // set loglevel from message handler 
  	lpx_set_int_parm(model, LPX_K_DUAL, 1); // Use dual simplex if dual feasible
  	lpx_set_int_parm(model, LPX_K_PRESOL, 0);  // turn off presolver
@@ -39,7 +39,7 @@
   	        if (lpx_get_status(model) != LPX_OPT)
  	          initialSolve();
 +	        else { // in case that the message handler of loglevel changed
-+	        	lib_set_print_hook(messageHandler(), OsiGlpkprintme); // tell glpk to use our message handler
++	        	lib_print_hook(OsiGlpkprintme, messageHandler()); // tell glpk to use our message handler
 +		        lpx_set_int_parm(model, LPX_K_MSGLEV, messageHandler()->logLevel());  // set loglevel from message handler
 +	        } 
 +	          	
@@ -64,3 +64,13 @@
    return lp_;
  }
  
+--- Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(Revision 914)
++++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(Arbeitskopie)
+@@ -12,6 +12,7 @@
+ #include <string>
+ extern "C" {
+ #include "glpk.h"
++#include "glplib.h"
+ }
+ #include "OsiSolverInterface.hpp"
+ #include "CoinPackedMatrix.hpp"

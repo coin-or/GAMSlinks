@@ -62,13 +62,13 @@ int main (int argc, const char *argv[]) {
 	GamsMessageHandler myout(&gm), slvout(&gm);
 	slvout.setPrefix(0);
 
-	lib_set_print_hook(&myout, printme);
+	lib_print_hook(printme, &myout);
 	solver.passInMessageHandler(&slvout);
 
 #ifdef GAMS_BUILD	
-	myout << "\nGAMS/CoinGlpk LP/MIP Solver (Glpk Library 4.9)\nwritten by A. Makhorin\n " << CoinMessageEol;
+	myout << "\nGAMS/CoinGlpk LP/MIP Solver (Glpk Library 4.15)\nwritten by A. Makhorin\n " << CoinMessageEol;
 #else
-	myout << "\nGAMS/Glpk LP/MIP Solver (Glpk Library 4.9)\nwritten by A. Makhorin\n " << CoinMessageEol;
+	myout << "\nGAMS/Glpk LP/MIP Solver (Glpk Library 4.15)\nwritten by A. Makhorin\n " << CoinMessageEol;
 #endif
 	
 	if (gm.nSOS1() || gm.nSOS2()) {
