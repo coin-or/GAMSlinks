@@ -69,9 +69,9 @@ int main (int argc, char* argv[]) {
   smagHessInit (prob);
 
 #ifdef GAMS_BUILD
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinBonmin MINLP Solver (Bonmin Library 0.1.1)\nwritten by P. Bonami\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinBonmin MINLP Solver (Bonmin Library 0.1)\nwritten by P. Bonami\n");
 #else
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Bonmin MINLP Solver (Bonmin Library 0.1.1)\nwritten by P. Bonami\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Bonmin MINLP Solver (Bonmin Library 0.1)\nwritten by P. Bonami\n");
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 

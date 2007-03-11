@@ -53,9 +53,9 @@ int main (int argc, char* argv[]) {
   smagHessInit (prob);
 
 #ifdef GAMS_BUILD
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinIpopt NLP Solver (IPOPT Library 3.2.3dev)\nwritten by A. Waechter\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinIpopt NLP Solver (IPOPT Library 3.3pre)\nwritten by A. Waechter\n");
 #else
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Ipopt NLP Solver (IPOPT Library 3.2.3)\nwritten by A. Waechter\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Ipopt NLP Solver (IPOPT Library 3.3pre)\nwritten by A. Waechter\n");
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 

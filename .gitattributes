@@ -95,8 +95,7 @@ ThirdParty/GLPK/get.glpk.cl -text
 ThirdParty/GLPK/get.glpk.darwin -text
 ThirdParty/GLPK/get.glpk.linux -text
 ThirdParty/GLPK/glpk.patch -text
-/cbc.patch -text
-/cgl.patch -text
+/bonmin.patch -text
 /config.guess -text
 /config.sub -text
 /configure -text
@@ -104,7 +103,6 @@ ThirdParty/GLPK/glpk.patch -text
 /depcomp -text
 doxydoc/doxygen.conf -text
 /install-sh -text
-/ipopt.patch -text
 /ltmain.sh -text
 /missing -text
 /osiglpk.patch -text

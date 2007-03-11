@@ -90,6 +90,7 @@ int main (int argc, const char *argv[]) {
 	if (!gm.optDefined("reslim")) gm.optSetDouble("reslim", gm.getResLim());
 	if (!gm.optDefined("iterlim")) gm.optSetInteger("iterlim", gm.getIterLim());
 	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
+//	if (!gm.optDefined("cutoff") && gm.getCutOff()!=gm.ObjSense()*solver.getInfinity()) gm.optSetDouble("cutoff", gm.getCutOff());
 
 	gm.TimerStart();
 
@@ -192,8 +193,24 @@ int main (int argc, const char *argv[]) {
 			lpx_set_int_parm(solver.getModelPtr(), LPX_K_BTRACK, 1);
 		else if	(strcmp(buffer, "bestprojection")==0)
 			lpx_set_int_parm(solver.getModelPtr(), LPX_K_BTRACK, 2);
-			
-		lpx_set_int_parm(solver.getModelPtr(), LPX_K_USECUTS, gm.optGetBool("cuts"));
+
+		int cutindicator=0;
+		switch (gm.optGetInteger("cuts")) {
+			case -1 : break; // no cuts
+			case  1 : cutindicator=LPX_C_ALL; break; // all cuts
+			case  0 : // user defined cut selection  
+				if (gm.optGetBool("covercuts")) cutindicator|=LPX_C_COVER;
+				if (gm.optGetBool("cliquecuts")) cutindicator|=LPX_C_CLIQUE;
+				if (gm.optGetBool("gomorycuts")) cutindicator|=LPX_C_GOMORY;
+				break;
+			default: ;
+		};
+		lpx_set_int_parm(solver.getModelPtr(), LPX_K_USECUTS, cutindicator);
+
+//		if (gm.optDefined("cutoff")) {
+//			lpx_set_real_parm(solver.getModelPtr(), gm.ObjSense()==1 ? LPX_K_OBJLL : LPX_K_OBJUL, gm.optGetDouble("cutoff"));
+//			myout << "set cutoff to " << gm.optGetDouble("cutoff") << CoinMessageEol;
+//		}
 
 		// Do complete search
 		myout << "Starting Branch and Bound... " << CoinMessageEol;
