@@ -95,7 +95,6 @@ ThirdParty/GLPK/get.glpk.cl -text
 ThirdParty/GLPK/get.glpk.darwin -text
 ThirdParty/GLPK/get.glpk.linux -text
 ThirdParty/GLPK/glpk.patch -text
-/bonmin.patch -text
 /config.guess -text
 /config.sub -text
 /configure -text
