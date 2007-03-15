@@ -94,6 +94,9 @@ int main (int argc, const char *argv[]) {
 	for (i=0; i<gm.nRows(); i++)
 	  rowrng[i] = 0.0;
 
+	// current Cbc does not like zeros when doing postsolve
+	gm.matSqueezeZeros();
+
 	solver.setObjSense(gm.ObjSense());
 	solver.setDblParam(OsiObjOffset, gm.ObjConstant()); // obj constant
 
