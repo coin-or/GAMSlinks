@@ -20,7 +20,7 @@ This option determines whether a primal or dual simplex algorithm should be used
 \item[dual] use the dual simplex algorithm for the root node
 \end{itemize}
 
-\item[\label{scaling}\hypertarget{scaling}
+\item[\label{glpkscaling}\hypertarget{glpkscaling}
 {\textbf{scaling (\slshape{string})}}]\hspace{1.0in}
 
 This option determines the method how the constraint matrix is scaled.
@@ -46,7 +46,7 @@ textbook \> textbook pricing \\
 steepestedge \> steepest edge pricing
 \end{tabbing}
 
-\item[\label{tol_dual}\hypertarget{tol_dual}
+\item[\label{glpktol_dual}\hypertarget{glpktol_dual}
 {\textbf{tol\_dual (\slshape{real})}}]\hspace{1.0in}
 
 Absolute tolerance used to check if the current basis solution is dual feasible.
@@ -54,7 +54,7 @@ Absolute tolerance used to check if the current basis solution is dual feasible.
 
 \textsl{(default = 1e-7)}
 
-\item[\label{tol_primal}\hypertarget{tol_primal}
+\item[\label{glpktol_primal}\hypertarget{glpktol_primal}
 {\textbf{tol\_primal (\slshape{real})}}]\hspace{1.0in}
 
 Relative tolerance used to check if the current basis solution is primal feasible.
@@ -62,7 +62,7 @@ Relative tolerance used to check if the current basis solution is primal feasibl
 
 \textsl{(default = 1e-7)}
 
-\item[\label{tol_integer}\hypertarget{tol_integer}
+\item[\label{glpktol_integer}\hypertarget{glpktol_integer}
 {\textbf{tol\_integer (\slshape{real})}}]\hspace{1.0in}
 
 Absolute tolerance used to check if the current basis solution is integer feasible.
@@ -86,17 +86,54 @@ bestprojection \> using best projection heuristic
 \item[\label{glpkcuts}\hypertarget{glpkcuts}
 {\textbf{cuts (\slshape{integer})}}]\hspace{1.0in}
 
-Determines whether cuts should be generated for the root problem.
-Currently only Gomory's mixed integer cuts are implemented.
+Regulates the use of cut generator routines for the root problem.\\
+If set to automatic, then the parameters for the single cut generators determine which are added.
 
 \textsl{(default = 0)}
 \begin{itemize}
-\item[0] do not generate cuts
-\item[1] generate cuts for the initial LP relaxation
+\item[-1] no cuts will be generated
+\item[0] automatic
+\item[1] cuts from all available cut classes will be generated
 \end{itemize}
 
+\item[\label{glpkgomorycuts}\hypertarget{glpkgomorycuts}
+{\textbf{gomorycuts (\slshape{integer})}}]\hspace{1.0in}
+
+This options switches the generation of mixed integer Gomory Cuts on.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] don't add gomory cuts
+\item[1] add gomory cuts
+\end{itemize}
+
+
+\item[\label{glpkcliquecuts}\hypertarget{glpkcliquecuts}
+{\textbf{cliquecuts (\slshape{integer})}}]\hspace{1.0in}
+
+This options switches the generation of clique cuts on.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] don't add clique cuts
+\item[1] add clique cuts
+\end{itemize}
+
+
+\item[\label{glpkcovercuts}\hypertarget{glpkcovercuts}
+{\textbf{covercuts (\slshape{integer})}}]\hspace{1.0in}
+
+This options switches the generation of mixed cover cuts on.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] don't add mixed cover cuts
+\item[1] add mixed cover cuts
+\end{itemize}
+
+
 \item[\label{reslim_fixedrun}\hypertarget{reslim_fixedrun}
-{\textbf{reslim_fixedrun (\slshape{real})}}]\hspace{1.0in}
+{\textbf{reslim\_fixedrun (\slshape{real})}}]\hspace{1.0in}
 
 Maximum time in seconds for solving the MIP with fixed discrete variables.
 

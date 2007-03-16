@@ -213,13 +213,41 @@ This option determines whether a primal or dual simplex algorithm should be used
 Write an MPS problem file.
 The parameter value is the name of the MPS file.
 
+\item[\label{tol_dual}\hypertarget{tol_dual}
+{\textbf{tol\_dual (\slshape{real})}}]\hspace{1.0in}
 
-\item[\label{integertolerance}\hypertarget{integertolerance}
-{\textbf{integertolerance (\slshape{real})}}]\hspace{1.0in}
+The maximum amount the dual constraints can be violated and still be considered feasible.
+
+\textsl{(default = 1e-7)}
+
+\item[\label{tol_primal}\hypertarget{tol_primal}
+{\textbf{tol\_primal (\slshape{real})}}]\hspace{1.0in}
+
+The maximum amount the primal constraints can be violated and still be considered feasible.
+
+\textsl{(default = 1e-7)}
+
+\item[\label{tol_integer}\hypertarget{tol_integer}
+{\textbf{tol\_integer (\slshape{real})}}]\hspace{1.0in}
 
 An integer variable is deemed to be at an integral value if it is no further than the value of this parameter from the next integral value away.
 
 \textsl{(default = 1e-6)}
+
+
+\item[\label{scaling}\hypertarget{scaling}
+{\textbf{scaling (\slshape{integer})}}]\hspace{1.0in}
+
+This option determines whether the linear relaxation should be scaled.
+
+\textsl{(default = 1)}
+
+\item[\label{presolve}\hypertarget{presolve}
+{\textbf{presolve (\slshape{integer})}}]\hspace{1.0in}
+
+This option determines whether a presolve should be applied to the linear relaxation before it is solved the first time.
+
+\textsl{(default = 1)}
 
 \item[\label{printfrequency}\hypertarget{printfrequency}
 {\textbf{printfrequency (\slshape{integer})}}]\hspace{1.0in}
