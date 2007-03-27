@@ -1,11 +1,2 @@
-#!/bin/csh -f
-# execute BONMIN
-
-# parameters:
-#    $1 : scratch directory
-#    $2 : working directory
-#    $3 : "$1", parameter file
-#    $4 : control file name
-#    $5 : system directory
-
-${5}gmsbm_nx.exe $4
+@echo off
+gmsbm_nx.exe %4
