@@ -76,7 +76,7 @@ case $build in
     ;;
   i?86-*-linux-*)
       GAMSIO_CODE=LX3
-      CIA_CODE=CIA_LEX
+      CIA_CODE=CIA_LNX
     ;;
   *-cygwin* | *-mingw*)
       GAMSIO_CODE=VIS
