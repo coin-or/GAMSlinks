@@ -161,9 +161,14 @@ void solve_minlp(smagHandle_t prob) {
     			model_status=6; // intermediate infeasible
     			resolve_nlp=true;
     		}	else {
-    			model_status=14; // no solution returned
-    		}		    
-	    	solver_status=1; // normal completion
+   				model_status=14; // no solution returned
+    		}
+   			if (smagGetCPUTime(prob)-clockStart>=prob->gms.reslim) {
+   				solver_status=3;
+					smagStdOutputPrint(prob, SMAG_ALLMASK, "Time limit exceeded.\n");
+   			} else {
+	    		solver_status=1; // normal completion
+   			}
     	} break;
     	default : { // should not happen, since other mipStatus is not defined
 	    	model_status=12; // error unknown
