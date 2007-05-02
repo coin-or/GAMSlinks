@@ -132,6 +132,12 @@ void solve_minlp(smagHandle_t prob) {
     int model_status;
     int solver_status;
     int resolve_nlp=false;
+		if (smagGetCPUTime(prob)-clockStart>=prob->gms.reslim) {
+			solver_status=3;
+			smagStdOutputPrint(prob, SMAG_ALLMASK, "Time limit exceeded.\n");
+		} else { // TODO: exceed of iteration limit
+  		solver_status=1; // normal completion
+		}
     switch (bb.mipStatus()) {
     	case BonminBB::FeasibleOptimal: {
 	    	if (bb.bestSolution()) {
@@ -141,11 +147,9 @@ void solve_minlp(smagHandle_t prob) {
 	    	} else { // this should not happen
 	    		model_status=13; // error - no solution
 	    	}
-	    	solver_status=1; // normal completion
 	    } break;
     	case BonminBB::ProvenInfeasible: {
 	    	model_status=19; // infeasible - no solution
-	    	solver_status=1; // normal completion
 	    } break;
     	case BonminBB::Feasible: {
 	    	if (bb.bestSolution()) {
@@ -154,7 +158,6 @@ void solve_minlp(smagHandle_t prob) {
 	    	} else { // this should not happen
 	    		model_status=13; // error - no solution
 	    	}
-	    	solver_status=1; // normal completion
     	} break;
     	case BonminBB::NoSolutionKnown: {
     		if (bb.bestSolution()) { // probably this will not happen
@@ -163,16 +166,9 @@ void solve_minlp(smagHandle_t prob) {
     		}	else {
    				model_status=14; // no solution returned
     		}
-   			if (smagGetCPUTime(prob)-clockStart>=prob->gms.reslim) {
-   				solver_status=3;
-					smagStdOutputPrint(prob, SMAG_ALLMASK, "Time limit exceeded.\n");
-   			} else {
-	    		solver_status=1; // normal completion
-   			}
     	} break;
     	default : { // should not happen, since other mipStatus is not defined
 	    	model_status=12; // error unknown
-	    	solver_status=1; // normal completion
     	}
 		}
 
