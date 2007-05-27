@@ -9,7 +9,12 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = GamsIO
+SUBDIRS = 
+if COIN_HAS_COINUTILS
+if COIN_HAS_OSI
+  SUBDIRS += GamsIO
+endif
+endif
 if COIN_HAS_CBC
   SUBDIRS += Cbc
 endif

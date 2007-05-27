@@ -1112,9 +1112,8 @@ Optional Packages:
                           both]
   --with-tags[=TAGS]
                           include additional configurations [automatic]
-  --with-glpk-incdir specify the directory with the header files for library
-                          Glpk
-  --with-glpk-lib specify the flags to link with the library Glpk
+  --with-glpk-incdir specify the header file directory for library Glpk
+  --with-glpk-lib specify the flags used to link with the library Glpk
   --with-gamssystem       specify directory of GAMS distribution
   --with-ifort_libdir     specify directory of Intel Fortran libraries
   --with-gamsio           specify directory of GAMS I/O libraries and header
@@ -1763,7 +1762,10 @@ fi
 # Check whether --with-gamslinks-verbosity or --without-gamslinks-verbosity was given.
 if test "${with_gamslinks_verbosity+set}" = set; then
   withval="$with_gamslinks_verbosity"
-  coin_gamslinks_verbosity=$withval
+  if test "$withval" = yes; then
+                withval=1
+              fi
+              coin_gamslinks_verbosity=$withval
 else
   coin_gamslinks_verbosity=0
 fi;
@@ -1777,7 +1779,10 @@ _ACEOF
 # Check whether --with-gamslinks-checklevel or --without-gamslinks-checklevel was given.
 if test "${with_gamslinks_checklevel+set}" = set; then
   withval="$with_gamslinks_checklevel"
-  coin_gamslinks_checklevel=$withval
+  if test "$withval" = yes; then
+                withval=1
+              fi
+              coin_gamslinks_checklevel=$withval
 else
   coin_gamslinks_checklevel=0
 fi;
@@ -4078,7 +4083,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:4081:" \
+echo "$as_me:4086:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4273,7 +4278,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_verb"
-(eval echo $as_me:4276: \"$ac_link\") >&5
+(eval echo $as_me:4281: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -4351,7 +4356,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_cv_prog_f77_v"
-(eval echo $as_me:4354: \"$ac_link\") >&5
+(eval echo $as_me:4359: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -6809,7 +6814,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6812 "configure"' > conftest.$ac_ext
+  echo '#line 6817 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8789,11 +8794,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8792: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8797: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8796: \$? = $ac_status" >&5
+   echo "$as_me:8801: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9057,11 +9062,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9060: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9065: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9064: \$? = $ac_status" >&5
+   echo "$as_me:9069: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9161,11 +9166,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9164: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9169: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9168: \$? = $ac_status" >&5
+   echo "$as_me:9173: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11578,7 +11583,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11581 "configure"
+#line 11586 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11678,7 +11683,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11681 "configure"
+#line 11686 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14037,11 +14042,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14040: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14045: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14044: \$? = $ac_status" >&5
+   echo "$as_me:14049: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14141,11 +14146,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14144: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14149: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14148: \$? = $ac_status" >&5
+   echo "$as_me:14153: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15710,11 +15715,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15713: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15718: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15717: \$? = $ac_status" >&5
+   echo "$as_me:15722: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15814,11 +15819,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15817: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15822: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15821: \$? = $ac_status" >&5
+   echo "$as_me:15826: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18020,11 +18025,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18023: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18028: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18027: \$? = $ac_status" >&5
+   echo "$as_me:18032: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18288,11 +18293,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18291: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18296: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18295: \$? = $ac_status" >&5
+   echo "$as_me:18300: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18392,11 +18397,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18395: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18400: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:18399: \$? = $ac_status" >&5
+   echo "$as_me:18404: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -21108,7 +21113,8 @@ echo "$as_me: Applying patches to libtool for cl compiler" >&6;}
   	    -e 's%$AR x \\$f_ex_an_ar_oldlib%bla=\\`lib -nologo -list \\$f_ex_an_ar_oldlib | xargs echo\\`; echo \\$bla; for i in \\$bla; do lib -nologo -extract:\\$i \\$f_ex_an_ar_oldlib; done%' \
 	    -e 's/$AR t/lib -nologo -list/' \
 	    -e 's%f_ex_an_ar_oldlib="\($?*1*\)"%f_ex_an_ar_oldlib='\`"$CYGPATH_W"' \1`%' \
-	    -e  's%^archive_cmds=.*%archive_cmds="\\$CC -o \\$lib \\$libobjs \\$compiler_flags \\\\\\`echo \\\\\\"\\$deplibs\\\\\\" | \\$SED -e '"\'"'s/ -lc\\$//'"\'"'\\\\\\` -link -dll~linknames="%' \
+	    -e 's%^archive_cmds=.*%archive_cmds="\\$CC -o \\$lib \\$libobjs \\$compiler_flags \\\\\\`echo \\\\\\"\\$deplibs\\\\\\" | \\$SED -e '"\'"'s/ -lc\\$//'"\'"'\\\\\\` -link -dll~linknames="%' \
+	    -e 's%old_archive_cmds="lib -OUT:\\$oldlib\\$oldobjs\\$old_deplibs"%old_archive_cmds="if test -r \\$oldlib; then bla=\\"\\$oldlib\\"; else bla=; fi; lib -OUT:\\$oldlib \\\\\\$bla\\$oldobjs\\$old_deplibs"%' \
         libtool > conftest.bla
 
         mv conftest.bla libtool
@@ -21126,6 +21132,16 @@ echo "$as_me: Applying patches to libtool for GNU compiler" >&6;}
         chmod 755 libtool
         ;;
     esac
+    ;;
+    *-darwin*)
+      { echo "$as_me:$LINENO: Applying patches to libtool for Darwin" >&5
+echo "$as_me: Applying patches to libtool for Darwin" >&6;}
+      sed -e 's/verstring="${wl}-compatibility_version ${wl}$minor_current ${wl}-current_version ${wl}$minor_current.$revision"/verstring="-compatibility_version $minor_current -current_version $minor_current.$revision"/' \
+      libtool > conftest.bla
+
+      mv conftest.bla libtool
+      chmod 755 libtool
+      ;;
   esac
 # This fi matches the commented `if test "x$LIBTOOL" = x;' up at the head of
 # the macro. -- lh, 061214 --
@@ -23822,25 +23838,30 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 ADDLIBS_save=$ADDLIBS
 
-echo "$as_me:$LINENO: checking if user provides library for Glpk" >&5
+  echo "$as_me:$LINENO: checking if user provides library for Glpk" >&5
 echo $ECHO_N "checking if user provides library for Glpk... $ECHO_C" >&6
 
 # Check for header file directory
+
 
 # Check whether --with-glpk-incdir or --without-glpk-incdir was given.
 if test "${with_glpk_incdir+set}" = set; then
   withval="$with_glpk_incdir"
   GLPKINCDIR=`cd $withval; pwd`
 fi;
+
 # Check for library directory
+
 
 # Check whether --with-glpk-lib or --without-glpk-lib was given.
 if test "${with_glpk_lib+set}" = set; then
   withval="$with_glpk_lib"
   GLPKLIB=$withval
 fi;
+
 # Switch to disable library check if requested
-# Check whether --enable-glpk-libcheck or --disable-glpk-libcheck was given.
+
+  # Check whether --enable-glpk-libcheck or --disable-glpk-libcheck was given.
 if test "${enable_glpk_libcheck+set}" = set; then
   enableval="$enable_glpk_libcheck"
   glpk_libcheck=$enableval
@@ -23848,23 +23869,32 @@ else
   glpk_libcheck=yes
 fi;
 
-if test x"$GLPKINCDIR" != x || test x"$GLPKLIB" != x; then
-  coin_has_glpk=true
-else
-  coin_has_glpk=false
-fi
+# At this point, if we're going to use the library, both LBRYINCDIR and
+# LBRYLIB must be defined and not empty.
 
-if test $coin_has_glpk = true; then
-# Check either both arguments or none are given
-  if test x"$GLPKINCDIR" = x || test x"$GLPKLIB" = x; then
-    { { echo "$as_me:$LINENO: error: You need to specify both --with-glpk-incdir and --with-glpk-lib if you want to use library Glpk" >&5
-echo "$as_me: error: You need to specify both --with-glpk-incdir and --with-glpk-lib if you want to use library Glpk" >&2;}
+  if test x"$GLPKINCDIR" != x || test x"$GLPKLIB" != x; then
+    if test x"$GLPKINCDIR" = x || test x"$GLPKLIB" = x; then
+      { { echo "$as_me:$LINENO: error: You need to specify both an include directory and link flags to use library Glpk. Use --with-glpk-incdir of environment variable $GLPKINCDIR to specify the include directory. Use --with-glpk-lib or environment variable $GLPKLIB to specify link flags." >&5
+echo "$as_me: error: You need to specify both an include directory and link flags to use library Glpk. Use --with-glpk-incdir of environment variable $GLPKINCDIR to specify the include directory. Use --with-glpk-lib or environment variable $GLPKLIB to specify link flags." >&2;}
    { (exit 1); exit 1; }; }
-  fi
-  echo "$as_me:$LINENO: result: yes" >&5
+    fi
+    coin_has_glpk=true
+    echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
-  # Check if the given header file is there
-  as_ac_File=`echo "ac_cv_file_$GLPKINCDIR/glpk.h" | $as_tr_sh`
+  else
+    coin_has_glpk=false
+    echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+  fi
+
+# If we have instructions for use, consider header and link checks.
+
+  if test $coin_has_glpk = true; then
+
+# If argument 3 (file) is given, check for the file. Typically this will be a
+# header file, but that's not assumed.
+
+    as_ac_File=`echo "ac_cv_file_$GLPKINCDIR/glpk.h" | $as_tr_sh`
 echo "$as_me:$LINENO: checking for $GLPKINCDIR/glpk.h" >&5
 echo $ECHO_N "checking for $GLPKINCDIR/glpk.h... $ECHO_C" >&6
 if eval "test \"\${$as_ac_File+set}\" = set"; then
@@ -23891,28 +23921,33 @@ echo "$as_me: error: Cannot find file glpk.h in $GLPKINCDIR" >&2;}
 fi
 
 
-  # Check if the symbol is provided in the library
-  # ToDo: FOR NOW WE ASSUME THAT WE ARE USING THE C++ COMPILER
-  if test x"$glpk_libcheck" != xno; then
-                    coin_save_LIBS="$LIBS"
-                    LIBS="$GLPKLIB $ADDLIBS"
-		    echo "$as_me:$LINENO: checking whether symbol glp_lpx_simplex is available with GLPK" >&5
-echo $ECHO_N "checking whether symbol glp_lpx_simplex is available with GLPK... $ECHO_C" >&6
-                    ac_ext=c
+# Now see if we can link the function. There are arguments for and against
+# assuming argument 3 is a header file declaring the function. A correct
+# function declaration is the main argument in favour. Having to cope with
+# possible dependencies or other oddities are the main arguments against.
+# Force the use of C as the best single choice amongst C++, C, and Fortran.
+# Obviously, this has limits.
+
+    if test x"$glpk_libcheck" != xno; then
+	   coin_save_LIBS="$LIBS"
+	   LIBS="$GLPKLIB $ADDLIBS"
+	   coin_GLPK_link=no
+	   ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-# ToDo find out what to do about extern "C"
-#                    AC_TRY_LINK([extern "C" {void glp_lpx_simplex();}],[glp_lpx_simplex()],
-                    cat >conftest.$ac_ext <<_ACEOF
+	   for fnm in glp_lpx_simplex ; do
+	     echo "$as_me:$LINENO: checking whether symbol $fnm is available with GLPK" >&5
+echo $ECHO_N "checking whether symbol $fnm is available with GLPK... $ECHO_C" >&6
+	     cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-void glp_lpx_simplex();
+
 #ifdef F77_DUMMY_MAIN
 
 #  ifdef __cplusplus
@@ -23924,7 +23959,7 @@ void glp_lpx_simplex();
 int
 main ()
 {
-glp_lpx_simplex()
+$fnm()
   ;
   return 0;
 }
@@ -23953,37 +23988,48 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   (exit $ac_status); }; }; then
   echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
+		  coin_GLPK_link=yes
+		  break
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
-                                 { { echo "$as_me:$LINENO: error: Cannot find symbol glp_lpx_simplex with GLPK" >&5
-echo "$as_me: error: Cannot find symbol glp_lpx_simplex with GLPK" >&2;}
-   { (exit 1); exit 1; }; }
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
-                    ac_ext=c
+	   done
+	   ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-                    LIBS="$coin_save_LIBS"
-                  fi
+	   if test x"$coin_GLPK_link" = xyes ; then
+	     LIBS="$coin_save_LIBS"
+	   else
+	     { { echo "$as_me:$LINENO: error: Cannot find symbol(s) glp_lpx_simplex with GLPK" >&5
+echo "$as_me: error: Cannot find symbol(s) glp_lpx_simplex with GLPK" >&2;}
+   { (exit 1); exit 1; }; }
+	   fi
+	 fi
 
-  ADDLIBS="$GLPKLIB $ADDLIBS"
+
+# If we make it this far, we've verified the file and linked the function. Add
+# the necessary link flags to ADDLIBS and define the preprocessor symbol
+# COIN_HAS_LBRY.
+
+    ADDLIBS="$GLPKLIB $ADDLIBS"
 
 cat >>confdefs.h <<\_ACEOF
 #define COIN_HAS_GLPK 1
 _ACEOF
 
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
+  fi
+
+# Arrange for configure to substitute LBRYINCDIR and LBRYLIB and create the
+# automake conditional. These actions must occur unconditionally.
 
 
 
