@@ -475,6 +475,9 @@ char* GamsModel::RowName(int rownr, char *buffer, int bufLen) {
     uelIndices[10],
     nIndices,
     lSym;
+    
+  if (isReform_ && rownr>=iolib.slplro-1)
+  	++rownr;
 
   if (rownr<0 || rownr >= gcdNRows(dict)) return NULL;
   if (gcdRowUels(dict, rownr, &lSym, uelIndices, &nIndices) != 0) return NULL;
@@ -488,6 +491,9 @@ char* GamsModel::ColName(int colnr, char *buffer, int bufLen) {
     uelIndices[10],
     nIndices,
     lSym;
+    
+  if (isReform_ && colnr>=iolib.iobvar)
+  	++colnr;
 
   if (colnr < 0 || colnr >= gcdNCols(dict)) return NULL;
   if (gcdColUels(dict, colnr, &lSym, uelIndices, &nIndices) != 0) return NULL;
