@@ -159,6 +159,11 @@ int main (int argc, const char *argv[]) {
 	  for (i=0; i<gm.nSOS1()+gm.nSOS2(); ++i)
 			delete objects[i];
 		delete[] objects;
+		
+		if (gm.optGetBool("integerpresolve")) {
+			myout << "Integer presolve does not support SOS constraints and is therefore switched off." << CoinMessageEol;
+			gm.optSetBool("integerpresolve", false);
+		}
   }
 
 	
