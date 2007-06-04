@@ -52,7 +52,7 @@ general.(
   reslim_fixedrun .r.(def 1000)
 * GAMS options
   reslim          .r.(def 1000)
-  iterlim         .i.(def 10000)
+  iterlim         .i.(def 10000, lo -1)
   optcr           .r.(def 0.1)
 *  cutoff          .r.(def 0, lo mindouble)
 * immediates
