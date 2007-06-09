@@ -90,11 +90,6 @@ ThirdParty/GAMSIO/get.DAR -text
 ThirdParty/GAMSIO/get.LEI -text
 ThirdParty/GAMSIO/get.LX3 -text
 ThirdParty/GAMSIO/get.VIS -text
-ThirdParty/GLPK/darwin.mak -text
-ThirdParty/GLPK/get.glpk.cl -text
-ThirdParty/GLPK/get.glpk.darwin -text
-ThirdParty/GLPK/get.glpk.linux -text
-ThirdParty/GLPK/glpk.patch -text
 /config.guess -text
 /config.sub -text
 /configure -text
