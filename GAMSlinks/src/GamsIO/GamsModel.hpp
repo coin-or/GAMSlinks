@@ -10,11 +10,8 @@
 #define __GAMSMODEL_HPP__
 
 #include "GAMSlinksConfig.h"
-
-#if defined(_MSC_VER)
-// Turn off compiler warning about long names
-#  pragma warning(disable:4786)
-#endif
+// from CoinUtils
+#include "CoinPragma.hpp"
 
 extern "C" struct dictRec;
 extern "C" struct optRec; 

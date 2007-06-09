@@ -9,13 +9,8 @@
 #ifndef GamsMessageHandler_H
 #define GamsMessageHandler_H
 
-#if defined(_MSC_VER)
-// Turn off compiler warning about long names
-#  pragma warning(disable:4786)
-#endif
-
-#include "CoinMessageHandler.hpp"
 #include "GamsModel.hpp"
+#include "CoinMessageHandler.hpp"
 
 /** A COIN-OR message handler that writes into the GAMS status- and logfile.
  */
