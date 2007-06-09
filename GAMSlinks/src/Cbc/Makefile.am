@@ -72,9 +72,9 @@ endif
 if COIN_HAS_GLPK
   AM_CPPFLAGS += \
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
-   -I`$(CYGPATH_W) $(GLPKINCDIR)`
-  GamsCoinCbc_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPKLIB)
-  GamsCoinCbc_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la 
+	 $(GLPK_INCFLAGS)
+  GamsCoinCbc_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPK_LIB)
+  GamsCoinCbc_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPK_LIB)
 endif
 
 

@@ -82,7 +82,7 @@ bool SMAG_MINLP::get_bounds_info (Index n, Number* x_l, Number* x_u,
 
 #include <vector>
 #include <list>
-bool SMAG_MINLP::get_var_types(Index n, VariableType* var_types) {
+bool SMAG_MINLP::get_variables_types(Index n, VariableType* var_types) {
 	sosinfo.num=prob->gms.nosos1+prob->gms.nosos2; // number of sos
 	sosinfo.types=new char[sosinfo.num]; // types of sos
 	sosinfo.numNz=prob->gms.nsos1+prob->gms.nsos2; // number of variables in sos
@@ -141,14 +141,15 @@ bool SMAG_MINLP::get_var_types(Index n, VariableType* var_types) {
 	
 	return true;	
 } // get_var_types
-  
-bool SMAG_MINLP::get_constraints_types(Index m, ConstraintType* const_types) {
+ 
+bool SMAG_MINLP::get_constraints_linearity(Index m, Ipopt::TNLP::LinearityType* const_types) {
+//bool SMAG_MINLP::get_constraints_types(Index m, ConstraintType* const_types) {
 	if (!prob->snlData.numInstr) // no nonlinearities
 		for (Index i=0; i<m; ++i)
-			const_types[i]=LINEAR;
+			const_types[i]=Ipopt::TNLP::LINEAR;
 	else
 		for (Index i=0; i<m; ++i)
-			const_types[i]=prob->snlData.numInstr[i] ? NON_LINEAR : LINEAR;
+			const_types[i]=prob->snlData.numInstr[i] ? Ipopt::TNLP::NON_LINEAR : Ipopt::TNLP::LINEAR;
 	
 	return true;
 } // get_constraints_types
@@ -350,4 +351,8 @@ const TMINLP::SosInfo* SMAG_MINLP::sosConstraints() const {
 	return NULL; // smag does not support sos yet
 	if (!sosinfo.num) return NULL;	
 	return &sosinfo;
+}
+
+void SMAG_MINLP::finalize_solution(TMINLP::SolverReturn status,Index n, const Number* x, Number obj_value) {
+
 }

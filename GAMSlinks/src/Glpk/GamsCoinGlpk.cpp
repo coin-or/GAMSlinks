@@ -21,17 +21,23 @@
 #include "OsiGlpkSolverInterface.hpp"
 #include "CoinPackedVector.hpp"
 
+extern "C" {
+#include "glplib.h"
+}
+
 // GAMS
 #include "GamsModel.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsFinalize.hpp"
 
-int printme(void *info, char *msg) {
-	GamsMessageHandler *myout;
-
-	myout = (GamsMessageHandler*) info;
-	*myout << msg << CoinMessageEol;
-
+int printme(void* info, const char* msg) {
+	GamsMessageHandler* myout=(GamsMessageHandler*)info;
+	assert(myout);
+	
+	*myout << msg;
+	if (*msg && msg[strlen(msg)-1]=='\n')
+		*myout << CoinMessageEol; // this will make the message handler actually print the message
+	
 	return 1;
 }
 
@@ -62,13 +68,13 @@ int main (int argc, const char *argv[]) {
 	GamsMessageHandler myout(&gm), slvout(&gm);
 	slvout.setPrefix(0);
 
-	lib_print_hook(printme, &myout);
+	lib_term_hook(printme, &slvout);
 	solver.passInMessageHandler(&slvout);
 
 #ifdef GAMS_BUILD	
-	myout << "\nGAMS/CoinGlpk LP/MIP Solver (Glpk Library 4.15)\nwritten by A. Makhorin\n " << CoinMessageEol;
+	myout << "\nGAMS/CoinGlpk LP/MIP Solver (Glpk Library" << glp_version() << ")\nwritten by A. Makhorin\n " << CoinMessageEol;
 #else
-	myout << "\nGAMS/Glpk LP/MIP Solver (Glpk Library 4.15)\nwritten by A. Makhorin\n " << CoinMessageEol;
+	myout << "\nGAMS/Glpk LP/MIP Solver (Glpk Library" << glp_version() << ")\nwritten by A. Makhorin\n " << CoinMessageEol;
 #endif
 	
 	if (gm.nSOS1() || gm.nSOS2()) {
@@ -150,10 +156,27 @@ int main (int argc, const char *argv[]) {
 	//		 case LPX_K_TOLOBJ:
 	//				/* if (!(DBL_EPSILON <= val && val <= 0.001)) */	 <- Original
 	//				if (DBL_EPSILON > val)														 <- GAMS change
-	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TOLOBJ, max(1e-7,gm.optGetDouble("optcr")));
-	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TOLINT, gm.optGetDouble("tol_integer"));
-	solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual"));
-	solver.setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal"));
+	double optcr=max(1e-7,gm.optGetDouble("optcr"));
+	if (optcr>0.001) {
+		myout << "Cannot use optcr of larger then 0.001. Setting objective tolerance to 0.001." << CoinMessageEol;
+		optcr=0.001;
+	}
+	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TOLOBJ, optcr);
+	
+	double tol_integer=gm.optGetDouble("tol_integer");
+	if (tol_integer>0.001) {
+		myout << "Cannot use tol_integer of larger then 0.001. Setting integer tolerance to 0.001." << CoinMessageEol;
+		tol_integer=0.001;
+	}
+	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TOLINT, tol_integer);
+
+	if (!solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual"))) {
+		myout << "Failed to set dual tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
+	}
+
+	if (!solver.setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal"))) {
+		myout << "Failed to set primal tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
+	}
 
 	// more parameters
 	gm.optGetString("scaling", buffer);
@@ -176,7 +199,8 @@ int main (int argc, const char *argv[]) {
 	else if	(strcmp(buffer, "steepestedge")==0)
 		lpx_set_int_parm(solver.getModelPtr(), LPX_K_PRICE, 1);
 
-	solver.messageHandler()->setLogLevel(3);
+//	solver.messageHandler()->setLogLevel(3);
+	solver.setHintParam(OsiDoReducePrint, false, OsiForceDo); 
 
 	if (gm.nDCols())
 		myout << "Solving root problem... " << CoinMessageEol;
@@ -232,7 +256,8 @@ int main (int argc, const char *argv[]) {
 					solver.setColBounds(j,colLevelsav[j],colLevelsav[j]);
 			delete[] colLevelsav;
 				
-			solver.messageHandler()->setLogLevel(1);
+//			solver.messageHandler()->setLogLevel(1);
+			solver.setHintParam(OsiDoReducePrint, true, OsiHintTry); 
 			myout << "\nSolving fixed problem... " << CoinMessageEol;
 			solver.resolve();
 			if (!solver.isProvenOptimal()) 

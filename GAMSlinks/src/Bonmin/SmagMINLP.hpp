@@ -11,7 +11,7 @@
 
 #include "GAMSlinksConfig.h"
 
-#include "TMINLP.hpp"
+#include "BonTMINLP.hpp"
 
 // smag.h will try to include stdio.h and stdarg.h
 // so we include cstdio and cstdarg before if we know that we have them
@@ -24,6 +24,7 @@
 #include "smag.h"
 
 using namespace Ipopt;
+using namespace Bonmin;
 
 /** A TNLP for Ipopt that uses SMAG to interface the problem formulation.
  */
@@ -49,13 +50,15 @@ public:
 	 * @param n size of var_types (has to be equal to the number of variables in the problem).
 	 * @var_types types of the variables (has to be filled by function).
   */
-  virtual bool get_var_types(Index n, VariableType* var_types);
+//  virtual bool get_var_types(Index n, VariableType* var_types);
+	virtual bool get_variables_types(Index n, VariableType* var_types);
   
   /** Pass the type of the constraints (LINEAR, NON_LINEAR) to the optimizer.
    * @param m size of const_types (has to be equal to the number of constraints in the problem).
    * @param const_types types of the constraints (has to be filled by function).
   */
-  virtual bool get_constraints_types(Index m, ConstraintType* const_types);
+//  virtual bool get_constraints_types(Index m, ConstraintType* const_types);
+	virtual bool get_constraints_linearity(Index m, Ipopt::TNLP::LinearityType* const_types);
 
 
   /** Method to return the starting point for the algorithm */
@@ -102,8 +105,9 @@ public:
 		    const Number* z_U,
 		    Index m, const Number* g, const Number* lambda,
 		    Number obj_value) { }
-*/	virtual void finalize_solution(SolverReturn status,
+*//*	virtual void finalize_solution(SolverReturn status,
 			Index n, const Number* x, Number obj_value) const { };
+*/    virtual void finalize_solution(TMINLP::SolverReturn status,Index n, const Number* x, Number obj_value);
 
 	/** Provides information about SOS constraints.
 	 */

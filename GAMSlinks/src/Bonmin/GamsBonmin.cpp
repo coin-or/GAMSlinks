@@ -22,11 +22,11 @@
 # define snprintf _snprintf
 #endif
 
-
-#include "IpoptInterface.hpp"
 #include "SmagMINLP.hpp"
 #include "SmagMessageHandler.hpp"
-#include "CbcBonmin.hpp"
+#include "BonCbc.hpp"
+#include "BonCbcParam.hpp"
+#include "BonOsiTMINLPInterface.hpp"
 
 // in case that we have to solve an NLP only
 #include "IpIpoptApplication.hpp"
@@ -37,8 +37,8 @@ using namespace Ipopt;
 
 void solve_minlp(smagHandle_t);
 void solve_nlp(smagHandle_t);
-void write_solution(smagHandle_t prob, IpoptInterface& nlpSolver, int model_status, int solver_status, double resuse, int domviol, int nodeuse);
-void write_solution_nodual(smagHandle_t prob, IpoptInterface& nlpSolver, int model_status, int solver_status, double resuse, int domviol, int nodeuse);
+void write_solution(smagHandle_t prob, OsiTMINLPInterface& nlpSolver, int model_status, int solver_status, double resuse, int domviol, int nodeuse);
+void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& nlpSolver, int model_status, int solver_status, double resuse, int domviol, int nodeuse);
 
 int main (int argc, char* argv[]) {
 #if defined(_MSC_VER)
@@ -95,39 +95,41 @@ void solve_minlp(smagHandle_t prob) {
   
   SmagMessageHandler messagehandler(prob);
 
-  IpoptInterface nlpSolver(smagminlp, &messagehandler);
+	OsiTMINLPInterface nlpSolver;
+	nlpSolver.setModel(smagminlp);
+	//TODO?: set solver
 //  IpoptInterface nlpSolver(smagminlp);
 	BonminCbcParam par;
-	par.fout=prob->fpLog;
+//TODO	par.fout=prob->fpLog;
 
 	// Change some options
-	nlpSolver.retrieve_options()->SetNumericValue("bound_relax_factor", 0);
-	nlpSolver.retrieve_options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false);
-	nlpSolver.retrieve_options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false);
+	nlpSolver.options()->SetNumericValue("bound_relax_factor", 0);
+	nlpSolver.options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false);
+	nlpSolver.options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false);
 	if (prob->gms.icutof)
-		nlpSolver.retrieve_options()->SetNumericValue("bonmin.cutoff", prob->gms.cutoff);
-	nlpSolver.retrieve_options()->SetNumericValue("bonmin.allowable_gap", prob->gms.optca);
-	nlpSolver.retrieve_options()->SetNumericValue("bonmin.allowable_fraction_gap", prob->gms.optcr);
+		nlpSolver.options()->SetNumericValue("bonmin.cutoff", prob->gms.cutoff);
+	nlpSolver.options()->SetNumericValue("bonmin.allowable_gap", prob->gms.optca);
+	nlpSolver.options()->SetNumericValue("bonmin.allowable_fraction_gap", prob->gms.optcr);
 	if (prob->gms.nodlim)
-		nlpSolver.retrieve_options()->SetIntegerValue("bonmin.node_limit", prob->gms.nodlim);
+		nlpSolver.options()->SetIntegerValue("bonmin.node_limit", prob->gms.nodlim);
 	else
-		nlpSolver.retrieve_options()->SetIntegerValue("bonmin.node_limit", prob->gms.itnlim);
-	nlpSolver.retrieve_options()->SetNumericValue("bonmin.time_limit", prob->gms.reslim);
+		nlpSolver.options()->SetIntegerValue("bonmin.node_limit", prob->gms.itnlim);
+	nlpSolver.options()->SetNumericValue("bonmin.time_limit", prob->gms.reslim);
 
 	if (prob->gms.useopt)
 		nlpSolver.readOptionFile(prob->gms.optFileName);
 
-	nlpSolver.retrieve_options()->GetNumericValue("diverging_iterates_tol", mysmagminlp->div_iter_tol, "");
+	nlpSolver.options()->GetNumericValue("diverging_iterates_tol", mysmagminlp->div_iter_tol, "");
 	// or should we also check the tolerance for acceptable points?  
-	nlpSolver.retrieve_options()->GetNumericValue("tol", mysmagminlp->scaled_conviol_tol, ""); 
-	nlpSolver.retrieve_options()->GetNumericValue("constr_viol_tol", mysmagminlp->unscaled_conviol_tol, ""); 
+	nlpSolver.options()->GetNumericValue("tol", mysmagminlp->scaled_conviol_tol, ""); 
+	nlpSolver.options()->GetNumericValue("constr_viol_tol", mysmagminlp->unscaled_conviol_tol, ""); 
 
   try {
-		par(nlpSolver); // process option file
-		BonminBB bb;
+		par.extractParams(&nlpSolver); // process option file
+		Bab bb;
 
 		double clockStart = smagGetCPUTime (prob);
-		bb(nlpSolver, par); //process parameter file using Ipopt and do branch and bound
+		bb(&nlpSolver, par); //process parameter file and do branch and bound
 
     int model_status;
     int solver_status;
@@ -139,7 +141,7 @@ void solve_minlp(smagHandle_t prob) {
   		solver_status=1; // normal completion
 		}
     switch (bb.mipStatus()) {
-    	case BonminBB::FeasibleOptimal: {
+    	case Bab::FeasibleOptimal: {
 	    	if (bb.bestSolution()) {
 	    		resolve_nlp=true;
 //	    		model_status=2; // local optimal; we could report optimal if the gap is closed
@@ -148,10 +150,10 @@ void solve_minlp(smagHandle_t prob) {
 	    		model_status=13; // error - no solution
 	    	}
 	    } break;
-    	case BonminBB::ProvenInfeasible: {
+    	case Bab::ProvenInfeasible: {
 	    	model_status=19; // infeasible - no solution
 	    } break;
-    	case BonminBB::Feasible: {
+    	case Bab::Feasible: {
 	    	if (bb.bestSolution()) {
 	    		resolve_nlp=true;
 		    	model_status=7; // intermediate nonoptimal
@@ -159,7 +161,7 @@ void solve_minlp(smagHandle_t prob) {
 	    		model_status=13; // error - no solution
 	    	}
     	} break;
-    	case BonminBB::NoSolutionKnown: {
+    	case Bab::NoSolutionKnown: {
     		if (bb.bestSolution()) { // probably this will not happen
     			model_status=6; // intermediate infeasible
     			resolve_nlp=true;
@@ -197,7 +199,7 @@ void solve_minlp(smagHandle_t prob) {
 			smagReportSolBrief(prob, model_status, solver_status);
 		}
   }
-  catch(IpoptInterface::UnsolvedError &E) {
+  catch(OsiTMINLPInterface::SimpleError &E) {
     //There has been a failure to solve a problem with Ipopt.
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Ipopt has failed to solve a problem.\n");
 	  smagReportSolBrief(prob, 13, 10);
@@ -212,7 +214,7 @@ void solve_minlp(smagHandle_t prob) {
 
 /** Processes Ipopt solution and calls method to report the solution.
  */
-void write_solution(smagHandle_t prob, IpoptInterface& nlpSolver, int model_status, int solver_status, double resuse, int domviol, int nodeuse) {
+void write_solution(smagHandle_t prob, OsiTMINLPInterface& nlpSolver, int model_status, int solver_status, double resuse, int domviol, int nodeuse) {
 	int n=smagColCount(prob);
 	int m=smagRowCount(prob);
 	int isMin=smagMinim(prob);
@@ -257,7 +259,7 @@ void write_solution(smagHandle_t prob, IpoptInterface& nlpSolver, int model_stat
 	
 } // write_solution
 
-void write_solution_nodual(smagHandle_t prob, IpoptInterface& nlpSolver, int model_status, int solver_status, double resuse, int domviol, int nodeuse) {
+void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& nlpSolver, int model_status, int solver_status, double resuse, int domviol, int nodeuse) {
 	int n=smagColCount(prob);
 	int m=smagRowCount(prob);
 	
@@ -302,7 +304,7 @@ void solve_nlp(smagHandle_t prob) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT output.\n");
 
 	// register Bonmin options so that Ipopt does not stumble over bonmin options
-	IpoptInterface().register_ALL_options(app->RegOptions());
+	OsiTMINLPInterface().registerOptions(app->RegOptions());
 
 	// Change some options
   app->Options()->SetNumericValue("bound_relax_factor", 0);

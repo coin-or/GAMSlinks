@@ -18,26 +18,30 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(srcdir)/../GamsIO` \
  -I`$(CYGPATH_W) $(srcdir)/../Cbc` \
- -I`$(CYGPATH_W) $(GLPKINCDIR)` \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
  -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
  -I`$(CYGPATH_W) $(OSIOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
- -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
+ -I`$(CYGPATH_W) $(CBCOBJDIR)/inc` \
+ $(GLPK_INCFLAGS)
+
+# -I`$(CYGPATH_W) $(GLPKINCDIR)` 
 
 GamsCoinGlpk_LDADD = \
  ../GamsIO/libGamsIO.la \
  $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
  $(OSIOBJDIR)/src/libOsi.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- $(GAMSIO_LIBS) $(GLPKLIB)
+ $(GAMSIO_LIBS) \
+ $(GLPK_LIB)
 GamsCoinGlpk_DEPENDENCIES = \
  ../GamsIO/libGamsIO.la \
  $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
  $(OSIOBJDIR)/src/libOsi.la \
- $(COINUTILSOBJDIR)/src/libCoinUtils.la
+ $(COINUTILSOBJDIR)/src/libCoinUtils.la \
+ $(GLPK_LIB)
 
 ADDLIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt`
 

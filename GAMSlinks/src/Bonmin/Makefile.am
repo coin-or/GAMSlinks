@@ -42,14 +42,14 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Algorithm` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/CGPenalty` \
  -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc` \
- -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/IpoptInterface` \
+ -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Interfaces` \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/CbcBonmin` \
- -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/OaInterface` \
  -I`$(CYGPATH_W) $(BONMINOBJDIR)/inc`
 
 GamsBonmin_LDADD = \
- $(BONMINOBJDIR)/src/Apps/libbonmin.la \
+ $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \
  $(OSIOBJDIR)/src/libOsi.la \
@@ -58,7 +58,7 @@ GamsBonmin_LDADD = \
  $(SMAG_LIBS)
 
 GamsBonmin_DEPENDENCIES = \
- $(BONMINOBJDIR)/src/Apps/libbonmin.la \
+ $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \
  $(OSIOBJDIR)/src/libOsi.la \
@@ -82,9 +82,9 @@ endif
 if COIN_HAS_GLPK
   AM_CPPFLAGS += \
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
-   -I`$(CYGPATH_W) $(GLPKINCDIR)`
-  GamsBonmin_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPKLIB)
-  GamsBonmin_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+	 $(GLPK_INCFLAGS)
+  GamsBonmin_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPK_LIB)
+  GamsBonmin_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPK_LIB)
 endif
 
 LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`

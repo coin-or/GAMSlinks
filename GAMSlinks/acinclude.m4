@@ -6395,11 +6395,11 @@ done
 SED=$lt_cv_path_SED
 AC_MSG_RESULT([$SED])
 ])
-# Copyright (C) 2006, 2007 International Business Machines..
+# Copyright (C) 2006, 2007 International Business Machines.
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
-## $Id: coin.m4 311 2007-04-17 22:35:00Z andreasw $
+## $Id: coin.m4 325 2007-06-09 07:19:11Z andreasw $
 #
 # Author: Andreas Wachter    IBM      2006-04-14
 
@@ -7178,13 +7178,16 @@ AC_LANG_POP(C++)
 # macro reduced to a direct call to AC_CHECK_HEADERS, there are no warnings
 # now that CPPFLAGS contains -mno-cygwin when it needs it. -- lh, 061214 --
 
+# AW 070609: I restored the previous version, since otherwise the warnings
+# still pop up for the cl compiler
+
 AC_DEFUN([AC_COIN_CHECK_HEADER],
-[# if test x"$4" = x; then
- #  hdr="#include <$1>"
- # else
- #   hdr="$4"
- # fi
-AC_CHECK_HEADERS([$1],[$2],[$3],[$4])
+[if test x"$4" = x; then
+  hdr="#include <$1>"
+else
+  hdr="$4"
+fi
+AC_CHECK_HEADERS([$1],[$2],[$3],[$hdr])
 ]) # AC_COIN_CHECK_HEADER
 
 ###########################################################################
@@ -7530,6 +7533,11 @@ if test "$F77" != "unavailable" && test x"$FFLAGS" = x ; then
             coin_add_fflags='-fpp -nologo -MT'
             coin_dbg_fflags='-debug'
           ;;
+          compile_f2c*)
+            coin_opt_fflags='-MT -O2'
+            coin_add_fflags='-nologo -wd4996'
+            coin_dbg_fflags='-MTd'
+          ;;
         esac
         ;;
       *-linux-*)
@@ -7673,39 +7681,50 @@ AC_BEFORE([AC_PROG_F77],[$0])dnl
 
 AC_LANG_PUSH([Fortran 77])
 
+save_FLIBS="$FLIBS"
+
 AC_F77_WRAPPERS
 
-# This is to correct a missing exclusion in autoconf 2.59
-if test x"$FLIBS" != x; then
-  my_flibs=
-  for flag in $FLIBS; do
-    case $flag in
-      -lcrt*.o) ;;
-             *) my_flibs="$my_flibs $flag" ;;
-    esac
-  done
-  FLIBS="$my_flibs"
-fi
+if test x"$save_FLIBS" != x; then
+  FLIBS="$save_FLIBS"
+else
+  # This is to correct a missing exclusion in autoconf 2.59
+  if test x"$FLIBS" != x; then
+    my_flibs=
+    for flag in $FLIBS; do
+      case $flag in
+        -lcrt*.o) ;;
+               *) my_flibs="$my_flibs $flag" ;;
+      esac
+    done
+    FLIBS="$my_flibs"
+  fi
 
-case $build in
-# The following is a fix to define FLIBS for ifort on Windows
-   *-cygwin* | *-mingw*)
-     case "$F77" in
-       ifort* | */ifort* | IFORT* | */IFORT*)
+  case $build in
+  # The following is a fix to define FLIBS for ifort on Windows
+     *-cygwin* | *-mingw*)
+       case "$F77" in
+         ifort* | */ifort* | IFORT* | */IFORT*)
            FLIBS="-link libifcorert.lib $LIBS /NODEFAULTLIB:libc.lib";;
-     esac;;
-   *-hp-*)
-       FLIBS="$FLIBS -lm";;
-   *-ibm-*)
-       FLIBS=`echo $FLIBS | sed 's/-lc)/-lc/g'` ;;
-   *-linux-*)
-     case "$F77" in
-       pgf77* | */pgf77* | pgf90* | */pgf90*)
+         compile_f2c*)
+           FLIBS=`$F77 -FLIBS` ;;
+       esac;;
+     *-hp-*)
+         FLIBS="$FLIBS -lm";;
+     *-ibm-*)
+         FLIBS=`echo $FLIBS | sed 's/-lc)/-lc/g'` ;;
+     *-linux-*)
+       case "$F77" in
+         pgf77* | */pgf77* | pgf90* | */pgf90*)
 # ask linker to go through the archives multiple times
 # (the Fortran compiler seems to do that automatically...
-         FLIBS="-Wl,--start-group $FLIBS -Wl,--end-group" ;;
-     esac
-esac
+           FLIBS="-Wl,--start-group $FLIBS -Wl,--end-group" ;;
+       esac
+  esac
+  ac_cv_f77_libs="$FLIBS"
+fi
+
+AC_LANG_POP([Fortran 77])
 
 ]) # AC_COIN_F77_WRAPPERS
 
@@ -7731,7 +7750,7 @@ AC_DEFUN([AC_COIN_F77_COMPS],
 [case $build in
   *-cygwin* | *-mingw*)
      if test "$enable_doscompile" = msvc ; then
-       coin_f77_comps="ifort fl32"
+       coin_f77_comps="ifort fl32 compile_f2c"
      else
        coin_f77_comps="gfortran g77 ifort fl32"
      fi ;;
@@ -8199,7 +8218,7 @@ AC_DEFUN([AC_COIN_PROG_LIBTOOL],
             -e 's%compile_deplibs=\"\$dir/\$linklib \$compile_deplibs\"%compile_deplibs="'\`"$CYGPATH_W"' \$dir/\$linklib | sed -e '"'"'sY\\\\\\\\Y/Yg'"'"\`' \$compile_deplibs\"'% \
 	    -e 's%lib /OUT:%lib -OUT:%' \
 	    -e "s%cygpath -w%$CYGPATH_W%" \
-  	    -e 's%$AR x \\$f_ex_an_ar_oldlib%bla=\\`lib -nologo -list \\$f_ex_an_ar_oldlib | xargs echo\\`; echo \\$bla; for i in \\$bla; do lib -nologo -extract:\\$i \\$f_ex_an_ar_oldlib; done%' \
+  	    -e 's%$AR x \\$f_ex_an_ar_oldlib%bla=\\`lib -nologo -list \\$f_ex_an_ar_oldlib | xargs echo | dos2unix\\`; echo \\$bla; for i in \\$bla; do lib -nologo -extract:\\$i \\$f_ex_an_ar_oldlib; done%' \
 	    -e 's/$AR t/lib -nologo -list/' \
 	    -e 's%f_ex_an_ar_oldlib="\($?*1*\)"%f_ex_an_ar_oldlib='\`"$CYGPATH_W"' \1`%' \ 
 	    -e 's%^archive_cmds=.*%archive_cmds="\\$CC -o \\$lib \\$libobjs \\$compiler_flags \\\\\\`echo \\\\\\"\\$deplibs\\\\\\" | \\$SED -e '"\'"'s/ -lc\\$//'"\'"'\\\\\\` -link -dll~linknames="%' \
@@ -9114,7 +9133,7 @@ AC_ARG_WITH([lapack],
 # Check if user supplied option makes sense
 if test x"$use_lapack" != x; then
   if test "$use_lapack" = "BUILD"; then
-    # Don't check for course code if this is executed in ThirdParty/Blas
+    # Don't check for course code if this is executed in ThirdParty/Lapack
     if test "$PACKAGE_NAME" != ThirdPartyLapack; then
       if test -r $coin_lapackobjdir/.MakeOk; then :; else
         AC_MSG_ERROR([option \"BUILD\" specified for LAPACK, but $coin_lapackobjdir directory is not configured])

@@ -137,58 +137,86 @@ LIBS_without_ADDLIBS="$LIBS"
 # GLPK LIBRARY #
 ################
 
-#coin_glpkobjdir=../ThirdParty/GLPK
-#coin_glpksrcdir=$srcdir/$coin_glpkobjdir
+AC_DEFUN([AC_COIN_HAS_GLPK],
+[
+if test "$PACKAGE_NAME" = ThirdPartyGlpk; then
+  coin_glpkobjdir=../GLPK
+else
+  coin_glpkobjdir=../ThirdParty/GLPK
+fi
+coin_glpksrcdir=$abs_source_dir/$coin_glpkobjdir
 
-#AC_ARG_WITH([glpk],
-#            AC_HELP_STRING([--with-glpk-incdir],
-#                           [specify the directory with the header files for library Glpk]),
-#            [glpk_incdir=$withval],
-#            [glpk_incdir=])
-#AC_ARG_WITH([glpk],
-#            AC_HELP_STRING([--with-glpk-lib],
-#                           [specify the flags to link with the library Glpk]),
-#            [glpk_lib=$withval],
-#            [glpk_lib=])
+MAKEOKFILE=.MakeOk
 
-#if test x$glpk_incdir = x; 
-#then
-#	AC_CHECK_FILE([$coin_glpkobjdir/glpk-4.9/Makefile],[
-#     glpk_incdir=$coin_glpksrcdir/glpk-4.9/include
-#	   glpk_lib=$coin_glpkobjdir/glpk-4.9/src/libglpk.a
-#	   GLPKINCDIR=$glpk_incdir
-#	   GLPKLIB=$glpk_lib
-#	   coin_has_glpk=true],
-#	  [coin_has_glpk=false])
-#else
-#	AC_MSG_CHECKING([whether user-given GLPK library works])
-# AC_LANG_PUSH(C)
-#	LIBS="$glpk_lib $LIBS"
-#	CPPFLAGS_save=$CPPFLAGS
-#	CPPFLAGS="-I$glpk_incdir $CPPFLAGS"
-#	AC_TRY_LINK([#include "glpk.h"],[glp_lpx_simplex()],
-#              [AC_MSG_RESULT(yes)
-#               CPPFLAGS=$CPPFLAGS_save ],
-#			        [AC_MSG_RESULT(no)
-#               AC_MSG_ERROR([GLPK with include at $glpk_incdir and link flags $glpk_lib does not work])])
-#  AC_DEFINE(COIN_HAS_GLPK,[1],[Define to 1 if the GLPK package is used])
-#  GLPKINCDIR=$glpk_incdir
-#  GLPKLIB=$glpk_lib
-#  coin_has_glpk=true
-# AC_LANG_POP(C)
-#fi
+AC_ARG_WITH([glpk-dir],
+            AC_HELP_STRING([--with-glpk-dir],
+                           [specify directory where GLPK is installed]),
+            [use_glpk="$withval"], [use_glpk=no])
 
-#AC_SUBST(GLPKINCDIR)
-#AC_SUBST(GLPKLIB)
-#AM_CONDITIONAL(COIN_HAS_GLPK, test $coin_has_glpk = true)
+if test "$use_glpk" != "no"; then
+  if test -d $use_glpk; then :; else
+    AC_MSG_ERROR([User provided GLPK directory $use_glpk does not exist.])
+  fi
+	glpk_dir=`cd $use_glpk; pwd`
 
+  case "$CC" in
+    cl* | */cl* | CL* | */CL*)
+         libe=lib ;;
+      *) libe=a ;;
+  esac
 
-AC_LANG_PUSH(C)
-ADDLIBS_save=$ADDLIBS
-AC_COIN_HAS_USER_LIBRARY([Glpk],[GLPK],[glpk.h],[glp_lpx_simplex])
-# not every package will make use of this library
-ADDLIBS=$ADDLIBS_save
-AC_LANG_POP(C)
+  # Check if headers are there
+  AC_CHECK_FILE([$glpk_dir/include/glpk.h],
+                [],
+                [AC_MSG_ERROR([I cannot find headers for GLPK])])
+
+  GLPK_LIB="$glpk_dir/lib/libglpk.$libe"
+  # Check if GLPK actually works
+  save_LIBS="$GLPK_LIB $LIBS"
+#  ADDLIBS="$glpk_dir/lib/libglpk.$libe $ADDLIBS"
+  AC_LANG_PUSH(C)
+  AC_TRY_LINK([void glp_lpx_simplex();],[glp_lpx_simplex()],[],
+              [AC_MSG_ERROR([User provided GLPK library doesn't work])])
+  AC_LANG_POP(C)
+  LIBS="$save_LIBS"
+else
+  use_glpk=BUILD
+
+  # Check if the GLPK' ThirdParty project has been configured
+  if test "$PACKAGE_NAME" != ThirdPartyGlpk; then
+    if test -r $coin_glpkobjdir/.MakeOk; then
+      use_glpk=BUILD
+    else
+      use_glpk=
+    fi
+  fi
+
+  GLPK_LIB="../../../ThirdParty/GLPK/libcoinglpk.la"
+fi
+
+if test x"$use_glpk" != x; then
+  GLPK_INCFLAGS="-I\`\$(CYGPATH_W) $coin_glpksrcdir/glpk/include\`"
+  AC_SUBST(GLPK_INCFLAGS)
+  AC_SUBST(GLPK_LIB)
+fi
+
+AM_CONDITIONAL([COIN_HAS_GLPK],[test x"$use_glpk" != x])
+AM_CONDITIONAL([COIN_BUILD_GLPK],[test "$use_glpk" = BUILD])
+
+AC_MSG_CHECKING([whether GLPK is available])
+
+if test x"$use_glpk" = x || test "$use_glpk" = no; then
+  coin_has_glpk=no
+else
+  coin_has_glpk=yes
+  AC_DEFINE([COIN_HAS_GLPK],[1],
+            [If defined, the GLPK Library is available.])
+fi
+AC_MSG_RESULT([$coin_has_glpk])
+
+]) # AC_COIN_HAS_GLPK
+
+AC_COIN_HAS_GLPK
 
 ###############
 # GAMS SYSTEM #

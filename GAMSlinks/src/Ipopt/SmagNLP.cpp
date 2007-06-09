@@ -287,7 +287,7 @@ bool SMAG_NLP::intermediate_callback (AlgorithmMode mode, Index iter, Number obj
 }
 
 void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x, const Number *z_L, const Number *z_U,
-		   Index m, const Number *g, const Number *lambda, Number obj_value) {
+		   Index m, const Number *g, const Number *lambda, Number obj_value, const IpoptData* data, IpoptCalculatedQuantities* cq) {
 	int model_status;
 	int solver_status;
 	bool write_solution=false;

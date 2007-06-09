@@ -31,6 +31,7 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Algorithm` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/CGPenalty` \
  -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
 
 GamsIpopt_LDADD = \

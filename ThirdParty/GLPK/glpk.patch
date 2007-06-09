@@ -1,0 +1,22 @@
+--- glpk/src/glplib05.c.orig	2007-06-09 19:32:33.000000000 +0200
++++ glpk/src/glplib05.c	2007-06-09 19:31:21.000000000 +0200
+@@ -148,7 +148,7 @@
+ 
+ void lib_print_hook(int (*func)(void *info, char *buf), void *info)
+ {     /* (obsolete) */
+-      int (*hook)(void *, const char *) = (void *)func;
++      int (*hook)(void *, const char *) = (int(*)(void*, const char*))(func);
+       lib_term_hook(hook, info);
+       return;
+ }
+--- glpk/src/glpdmp.c.org	2007-06-09 20:52:17.000000000 +0200
++++ glpk/src/glpdmp.c	2007-06-09 20:11:17.000000000 +0200
+@@ -26,7 +26,7 @@
+ #define _GLPDMP_PRIVATE
+ #include "glpdmp.h"
+ 
+-#define _GLPDMP_DEBUG 1
++#define _GLPDMP_DEBUG 0
+ 
+ #if _GLPDMP_DEBUG
+ struct info
