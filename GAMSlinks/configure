@@ -471,7 +471,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS F77 FFLAGS ac_ct_F77 FLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE CGLSRCDIR CGLOBJDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE CBCSRCDIR CBCOBJDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE GLPK_INCFLAGS GLPK_LIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE gamspath COIN_HAS_GAMSIO_TRUE COIN_HAS_GAMSIO_FALSE coin_has_gamsio GAMS_PATH GAMSIO_CPPFLAGS GAMSIO_LIBS SMAG_LIBS GAMSIO_CODE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS F77 FFLAGS ac_ct_F77 FLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE CGLSRCDIR CGLOBJDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE CBCSRCDIR CBCOBJDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE GLPK_INCFLAGS GLPK_LIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE gamspath COIN_HAS_GAMSIO_TRUE COIN_HAS_GAMSIO_FALSE coin_has_gamsio GAMS_PATH GAMSIO_CPPFLAGS GAMSIO_LIBS SMAG_LIBS GAMSIO_CODE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -22769,60 +22769,6 @@ LIBS_without_ADDLIBS="$LIBS"
 # GLPK LIBRARY #
 ################
 
-#coin_glpkobjdir=../ThirdParty/GLPK
-#coin_glpksrcdir=$srcdir/$coin_glpkobjdir
-
-#AC_ARG_WITH([glpk],
-#            AC_HELP_STRING([--with-glpk-incdir],
-#                           [specify the directory with the header files for library Glpk]),
-#            [glpk_incdir=$withval],
-#            [glpk_incdir=])
-#AC_ARG_WITH([glpk],
-#            AC_HELP_STRING([--with-glpk-lib],
-#                           [specify the flags to link with the library Glpk]),
-#            [glpk_lib=$withval],
-#            [glpk_lib=])
-
-#if test x$glpk_incdir = x;
-#then
-#	AC_CHECK_FILE([$coin_glpkobjdir/glpk-4.9/Makefile],[
-#     glpk_incdir=$coin_glpksrcdir/glpk-4.9/include
-#	   glpk_lib=$coin_glpkobjdir/glpk-4.9/src/libglpk.a
-#	   GLPKINCDIR=$glpk_incdir
-#	   GLPKLIB=$glpk_lib
-#	   coin_has_glpk=true],
-#	  [coin_has_glpk=false])
-#else
-#	AC_MSG_CHECKING([whether user-given GLPK library works])
-# AC_LANG_PUSH(C)
-#	LIBS="$glpk_lib $LIBS"
-#	CPPFLAGS_save=$CPPFLAGS
-#	CPPFLAGS="-I$glpk_incdir $CPPFLAGS"
-#	AC_TRY_LINK([#include "glpk.h"],[glp_lpx_simplex()],
-#              [AC_MSG_RESULT(yes)
-#               CPPFLAGS=$CPPFLAGS_save ],
-#			        [AC_MSG_RESULT(no)
-#               AC_MSG_ERROR([GLPK with include at $glpk_incdir and link flags $glpk_lib does not work])])
-#  AC_DEFINE(COIN_HAS_GLPK,[1],[Define to 1 if the GLPK package is used])
-#  GLPKINCDIR=$glpk_incdir
-#  GLPKLIB=$glpk_lib
-#  coin_has_glpk=true
-# AC_LANG_POP(C)
-#fi
-
-#AC_SUBST(GLPKINCDIR)
-#AC_SUBST(GLPKLIB)
-#AM_CONDITIONAL(COIN_HAS_GLPK, test $coin_has_glpk = true)
-
-
-#AC_LANG_PUSH(C)
-#ADDLIBS_save=$ADDLIBS
-#AC_COIN_HAS_USER_LIBRARY([Glpk],[GLPK],[glpk.h],[glp_lpx_simplex])
-# not every package will make use of this library
-#ADDLIBS=$ADDLIBS_save
-#AC_LANG_POP(C)
-
-
  # AC_COIN_HAS_GLPK
 
 
@@ -22886,10 +22832,11 @@ echo "$as_me: error: I cannot find headers for GLPK" >&2;}
 fi
 
 
+  GLPK_INCFLAGS="-I\`\$(CYGPATH_W) $glpk_dir/include\`"
   GLPK_LIB="$glpk_dir/lib/libglpk.$libe"
   # Check if GLPK actually works
-  save_LIBS="$GLPK_LIB $LIBS"
-#  ADDLIBS="$glpk_dir/lib/libglpk.$libe $ADDLIBS"
+  save_LIBS="$LIBS"
+  LIBS="$GLPK_LIB $LIBS"
   ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -22946,9 +22893,63 @@ else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+void _glp_lpx_simplex();
+#ifdef F77_DUMMY_MAIN
+
+#  ifdef __cplusplus
+     extern "C"
+#  endif
+   int F77_DUMMY_MAIN() { return 1; }
+
+#endif
+int
+main ()
+{
+_glp_lpx_simplex()
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  :
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
 { { echo "$as_me:$LINENO: error: User provided GLPK library doesn't work" >&5
 echo "$as_me: error: User provided GLPK library doesn't work" >&2;}
    { (exit 1); exit 1; }; }
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
@@ -22972,13 +22973,11 @@ else
   fi
 
   GLPK_LIB="../../../ThirdParty/GLPK/libcoinglpk.la"
-fi
-
-if test x"$use_glpk" != x; then
   GLPK_INCFLAGS="-I\`\$(CYGPATH_W) $coin_glpksrcdir/glpk/include\`"
-
-
 fi
+
+
+
 
 
 
@@ -22990,16 +22989,7 @@ else
   COIN_HAS_GLPK_FALSE=
 fi
 
-
-
-if test "$use_glpk" = BUILD; then
-  COIN_BUILD_GLPK_TRUE=
-  COIN_BUILD_GLPK_FALSE='#'
-else
-  COIN_BUILD_GLPK_TRUE='#'
-  COIN_BUILD_GLPK_FALSE=
-fi
-
+#AM_CONDITIONAL([COIN_BUILD_GLPK],[test "$use_glpk" = BUILD])
 
 echo "$as_me:$LINENO: checking whether GLPK is available" >&5
 echo $ECHO_N "checking whether GLPK is available... $ECHO_C" >&6
@@ -23730,13 +23720,6 @@ echo "$as_me: error: conditional \"COIN_HAS_GLPK\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
-if test -z "${COIN_BUILD_GLPK_TRUE}" && test -z "${COIN_BUILD_GLPK_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"COIN_BUILD_GLPK\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"COIN_BUILD_GLPK\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
 if test -z "${COIN_HAS_GAMSIO_TRUE}" && test -z "${COIN_HAS_GAMSIO_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_GAMSIO\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -24435,8 +24418,6 @@ s,@GLPK_INCFLAGS@,$GLPK_INCFLAGS,;t t
 s,@GLPK_LIB@,$GLPK_LIB,;t t
 s,@COIN_HAS_GLPK_TRUE@,$COIN_HAS_GLPK_TRUE,;t t
 s,@COIN_HAS_GLPK_FALSE@,$COIN_HAS_GLPK_FALSE,;t t
-s,@COIN_BUILD_GLPK_TRUE@,$COIN_BUILD_GLPK_TRUE,;t t
-s,@COIN_BUILD_GLPK_FALSE@,$COIN_BUILD_GLPK_FALSE,;t t
 s,@gamspath@,$gamspath,;t t
 s,@COIN_HAS_GAMSIO_TRUE@,$COIN_HAS_GAMSIO_TRUE,;t t
 s,@COIN_HAS_GAMSIO_FALSE@,$COIN_HAS_GAMSIO_FALSE,;t t

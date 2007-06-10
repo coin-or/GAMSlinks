@@ -93,13 +93,16 @@ if test "$use_glpk" != "no"; then
                 [],
                 [AC_MSG_ERROR([I cannot find headers for GLPK])])
                 
+  GLPK_INCFLAGS="-I\`\$(CYGPATH_W) $glpk_dir/include\`"
   GLPK_LIB="$glpk_dir/lib/libglpk.$libe"
   # Check if GLPK actually works
-  save_LIBS="$GLPK_LIB $LIBS"
-#  ADDLIBS="$glpk_dir/lib/libglpk.$libe $ADDLIBS"
+  save_LIBS="$LIBS"
+  LIBS="$GLPK_LIB $LIBS"
   AC_LANG_PUSH(C)
   AC_TRY_LINK([void glp_lpx_simplex();],[glp_lpx_simplex()],[],
-              [AC_MSG_ERROR([User provided GLPK library doesn't work])])
+   [AC_TRY_LINK([void _glp_lpx_simplex();],[_glp_lpx_simplex()],[],
+     AC_MSG_ERROR([User provided GLPK library doesn't work]))
+   ])
   AC_LANG_POP(C)
   LIBS="$save_LIBS"
 
@@ -115,17 +118,15 @@ else
     fi
   fi
 
+  GLPK_INCFLAGS="-I\`\$(CYGPATH_W) $coin_glpksrcdir/glpk/include\`"
   GLPK_LIB="../../../ThirdParty/GLPK/libcoinglpk.la"
 fi
 
-if test x"$use_glpk" != x; then
-  GLPK_INCFLAGS="-I\`\$(CYGPATH_W) $coin_glpksrcdir/glpk/include\`"
-  AC_SUBST(GLPK_INCFLAGS)
-  AC_SUBST(GLPK_LIB)
-fi
+AC_SUBST(GLPK_INCFLAGS)
+AC_SUBST(GLPK_LIB)
 
 AM_CONDITIONAL([COIN_HAS_GLPK],[test x"$use_glpk" != x])
-AM_CONDITIONAL([COIN_BUILD_GLPK],[test "$use_glpk" = BUILD])
+#AM_CONDITIONAL([COIN_BUILD_GLPK],[test "$use_glpk" = BUILD])
 
 AC_MSG_CHECKING([whether GLPK is available])
 

@@ -135,21 +135,23 @@ int main (int argc, const char *argv[]) {
 		solver.addRow(vec, -solver.getInfinity(), solver.getInfinity());
 	}
 	
+	LPX* glpk_model=solver.getModelPtr();
+	
 	// set variable and constraint names in glpk
 	for (j=gm.nCols(); j; j--)
 		if (gm.ColName(j-1, buffer, 255))
-			lpx_set_col_name(solver.getModelPtr(), j, buffer);
+			lpx_set_col_name(glpk_model, j, buffer);
 	for (j=gm.nRows(); j; j--)
 		if (gm.RowName(j-1, buffer, 255))
-			lpx_set_row_name(solver.getModelPtr(), j, buffer);
+			lpx_set_row_name(glpk_model, j, buffer);
 	if (!gm.nRows()) {
 		strcpy(buffer,"fake");
-		lpx_set_row_name(solver.getModelPtr(), 1, buffer);
+		lpx_set_row_name(glpk_model, 1, buffer);
 	}
 
 	// Some tolerances and limits
 	solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
-	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TMLIM, gm.optGetDouble("reslim"));
+	lpx_set_real_parm(glpk_model, LPX_K_TMLIM, gm.optGetDouble("reslim"));
 	
 	// One needs to change the glkp source because the range for optcr is enforced
 	// to be between 1e-7 and 1e-3
@@ -161,14 +163,14 @@ int main (int argc, const char *argv[]) {
 		myout << "Cannot use optcr of larger then 0.001. Setting objective tolerance to 0.001." << CoinMessageEol;
 		optcr=0.001;
 	}
-	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TOLOBJ, optcr);
+	lpx_set_real_parm(glpk_model, LPX_K_TOLOBJ, optcr);
 	
 	double tol_integer=gm.optGetDouble("tol_integer");
 	if (tol_integer>0.001) {
 		myout << "Cannot use tol_integer of larger then 0.001. Setting integer tolerance to 0.001." << CoinMessageEol;
 		tol_integer=0.001;
 	}
-	lpx_set_real_parm(solver.getModelPtr(), LPX_K_TOLINT, tol_integer);
+	lpx_set_real_parm(glpk_model, LPX_K_TOLINT, tol_integer);
 
 	if (!solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual"))) {
 		myout << "Failed to set dual tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
@@ -181,23 +183,23 @@ int main (int argc, const char *argv[]) {
 	// more parameters
 	gm.optGetString("scaling", buffer);
 	if (strcmp(buffer, "off")==0)
-		lpx_set_int_parm(solver.getModelPtr(), LPX_K_SCALE, 0);
+		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 0);
 	else if (strcmp(buffer, "equilibrium")==0)
-		lpx_set_int_parm(solver.getModelPtr(), LPX_K_SCALE, 1); // default
+		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 1); // default
 	else if (strcmp(buffer, "mean")==0)
-		lpx_set_int_parm(solver.getModelPtr(), LPX_K_SCALE, 2); // default
+		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 2); // default
 	else if (strcmp(buffer, "meanequilibrium")==0)
-		lpx_set_int_parm(solver.getModelPtr(), LPX_K_SCALE, 3); // default
+		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 3); // default
 
 	gm.optGetString("startalg", buffer);
 	if (strcmp(buffer, "dual")==0)
-		lpx_set_int_parm(solver.getModelPtr(), LPX_K_DUAL, 1);
+		lpx_set_int_parm(glpk_model, LPX_K_DUAL, 1);
 	
 	gm.optGetString("pricing", buffer);
 	if (strcmp(buffer, "textbook")==0)
-		lpx_set_int_parm(solver.getModelPtr(), LPX_K_PRICE, 0);
+		lpx_set_int_parm(glpk_model, LPX_K_PRICE, 0);
 	else if	(strcmp(buffer, "steepestedge")==0)
-		lpx_set_int_parm(solver.getModelPtr(), LPX_K_PRICE, 1);
+		lpx_set_int_parm(glpk_model, LPX_K_PRICE, 1);
 
 //	solver.messageHandler()->setLogLevel(3);
 	solver.setHintParam(OsiDoReducePrint, false, OsiForceDo); 
@@ -208,15 +210,15 @@ int main (int argc, const char *argv[]) {
 	solver.initialSolve();
 	
 	if (solver.isProvenOptimal() && 0!=gm.nDCols()) {
-		myout << "\n" << CoinMessageEol;
+		myout << CoinMessageNewline << CoinMessageEol;
 
 		gm.optGetString("backtracking", buffer);
 		if (strcmp(buffer, "depthfirst")==0)
-			lpx_set_int_parm(solver.getModelPtr(), LPX_K_BTRACK, 0);
+			lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 0);
 		else if	(strcmp(buffer, "breadthfirst")==0)
-			lpx_set_int_parm(solver.getModelPtr(), LPX_K_BTRACK, 1);
+			lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 1);
 		else if	(strcmp(buffer, "bestprojection")==0)
-			lpx_set_int_parm(solver.getModelPtr(), LPX_K_BTRACK, 2);
+			lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 2);
 
 		int cutindicator=0;
 		switch (gm.optGetInteger("cuts")) {
@@ -229,10 +231,10 @@ int main (int argc, const char *argv[]) {
 				break;
 			default: ;
 		};
-		lpx_set_int_parm(solver.getModelPtr(), LPX_K_USECUTS, cutindicator);
+		lpx_set_int_parm(glpk_model, LPX_K_USECUTS, cutindicator);
 
 //		if (gm.optDefined("cutoff")) {
-//			lpx_set_real_parm(solver.getModelPtr(), gm.ObjSense()==1 ? LPX_K_OBJLL : LPX_K_OBJUL, gm.optGetDouble("cutoff"));
+//			lpx_set_real_parm(glpk_model, gm.ObjSense()==1 ? LPX_K_OBJLL : LPX_K_OBJUL, gm.optGetDouble("cutoff"));
 //			myout << "set cutoff to " << gm.optGetDouble("cutoff") << CoinMessageEol;
 //		}
 
@@ -240,7 +242,7 @@ int main (int argc, const char *argv[]) {
 		myout << "Starting Branch and Bound... " << CoinMessageEol;
 		solver.branchAndBound();
 
-		int mipstat = lpx_mip_status(solver.getModelPtr());
+		int mipstat = lpx_mip_status(glpk_model);
 		if (mipstat == LPX_I_FEAS || mipstat == LPX_I_OPT) {
 			const double *colLevel=solver.getColSolution();
 			// We are loosing colLevel after a call to lpx_set_* when using the Visual compiler. So we save the levels.
@@ -248,8 +250,8 @@ int main (int argc, const char *argv[]) {
 			for (j=0; j<gm.nCols(); j++) colLevelsav[j] = colLevel[j];
 			
 			// No iteration limit for fixed run and special time limit
-			lpx_set_real_parm(solver.getModelPtr(), LPX_K_TMLIM, gm.optGetDouble("reslim_fixedrun"));
-			lpx_set_int_parm(solver.getModelPtr(), LPX_K_ITLIM, -1);
+			lpx_set_real_parm(glpk_model, LPX_K_TMLIM, gm.optGetDouble("reslim_fixedrun"));
+			lpx_set_int_parm(glpk_model, LPX_K_ITLIM, -1);
 			
 			for (j=0; j<gm.nCols(); j++) 
 				if (discVar[j])
