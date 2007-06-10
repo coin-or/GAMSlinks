@@ -10,7 +10,7 @@
 #include "CoinWarmStart.hpp"
 #include "CoinWarmStartBasis.hpp"
 
-void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool PresolveInfeasible) {
+void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool PresolveInfeasible, bool TimeLimitExceeded) {
 	if (PresolveInfeasible) {
 		gm->setIterUsed(0);
 		gm->setResUsed(gm->SecondsSinceStart());
@@ -28,8 +28,10 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 		gm->setStatus(GamsModel::ErrorSystemFailure,GamsModel::ErrorNoSolution);	
 		(*myout) << "\n" << CoinMessageEol;
 
-		if (solver->isAbandoned()) 
-			(*myout) << "Model abandoned.";
+		if (TimeLimitExceeded) {
+			(*myout) << "Time limit exceeded.";
+			gm->setStatus(GamsModel::ResourceInterrupt,GamsModel::NoSolutionReturned);	
+		}
 		else if (solver->isProvenOptimal()) {
 			if (gm->nDCols()) { 
 // If it was a MIP we really don't know that we have the optimum solution, lets
@@ -59,8 +61,13 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 		} 
 		else if (solver->isDualObjectiveLimitReached()) {
 			(*myout) << "Dual objective limit reached.";
-		} else
+		}
+		else if (solver->isAbandoned()) { 
+			(*myout) << "Model abandoned.";
+		}
+		else {
 			(*myout) << "Unknown solve outcome.";
+		}
 	}
 	(*myout) << CoinMessageEol;
 		
@@ -90,7 +97,7 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 		if (solver->optimalBasisIsAvailable()) {
 			solver->getBasisStatus(colBasis, rowBasis);
 			// translate from OSI codes to GAMS codes
-			for (int j=0; j<gm->nCols(); j++)
+			for (int j=0; j<gm->nCols(); j++) {
 				if (discVar[j] || gm->SOSIndicator()[j])
 					colBasis[j]=GamsModel::SuperBasic;
 				else switch (colBasis[j]) {
@@ -100,6 +107,7 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 					case 0: colBasis[j]=GamsModel::SuperBasic; break;
 					default: (*myout) << "Column basis status " << colBasis[j] << " unknown!" << CoinMessageEol; exit(0);
 				}
+			}
 			for (int i=0; i<gm->nRows(); ++i) 
 				switch (rowBasis[i]) { // Clp interchange Lower and Upper activity of rows since it thinks in term of artifical variables
 					case 2: rowBasis[i]=GamsModel::NonBasicLower; break;
@@ -112,7 +120,7 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 			CoinWarmStart* ws=solver->getWarmStart();
 			CoinWarmStartBasis* wsb=dynamic_cast<CoinWarmStartBasis*>(ws);
 			if (wsb) {
-				for (int j=0; j<gm->nCols(); j++)
+				for (int j=0; j<gm->nCols(); j++) {
 					if (discVar[j] || gm->SOSIndicator()[j])
 						colBasis[j]=GamsModel::SuperBasic;
 					else switch (wsb->getStructStatus(j)) {
@@ -122,6 +130,7 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 						case CoinWarmStartBasis::isFree: colBasis[j]=GamsModel::SuperBasic; break;
 						default: (*myout) << "Column basis status " << wsb->getStructStatus(j) << " unknown!" << CoinMessageEol; exit(0);
 					}
+				}
 				for (int j=0; j<gm->nRows(); j++) {
 					switch (wsb->getArtifStatus(j)) {
 						case CoinWarmStartBasis::basic: rowBasis[j]=GamsModel::Basic; break;

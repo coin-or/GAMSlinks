@@ -21,10 +21,6 @@
 #include "OsiGlpkSolverInterface.hpp"
 #include "CoinPackedVector.hpp"
 
-extern "C" {
-#include "glplib.h"
-}
-
 // GAMS
 #include "GamsModel.hpp"
 #include "GamsMessageHandler.hpp"
@@ -68,7 +64,7 @@ int main (int argc, const char *argv[]) {
 	GamsMessageHandler myout(&gm), slvout(&gm);
 	slvout.setPrefix(0);
 
-	lib_term_hook(printme, &slvout);
+	glp_term_hook(printme, &slvout);
 	solver.passInMessageHandler(&slvout);
 
 #ifdef GAMS_BUILD	
@@ -95,7 +91,7 @@ int main (int argc, const char *argv[]) {
 	/* Overwrite GAMS Options */
 	if (!gm.optDefined("reslim")) gm.optSetDouble("reslim", gm.getResLim());
 	if (!gm.optDefined("iterlim")) gm.optSetInteger("iterlim", gm.getIterLim());
-	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
+//	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
 //	if (!gm.optDefined("cutoff") && gm.getCutOff()!=gm.ObjSense()*solver.getInfinity()) gm.optSetDouble("cutoff", gm.getCutOff());
 
 	gm.TimerStart();
@@ -153,32 +149,11 @@ int main (int argc, const char *argv[]) {
 	solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
 	lpx_set_real_parm(glpk_model, LPX_K_TMLIM, gm.optGetDouble("reslim"));
 	
-	// One needs to change the glkp source because the range for optcr is enforced
-	// to be between 1e-7 and 1e-3
-	//		 case LPX_K_TOLOBJ:
-	//				/* if (!(DBL_EPSILON <= val && val <= 0.001)) */	 <- Original
-	//				if (DBL_EPSILON > val)														 <- GAMS change
-	double optcr=max(1e-7,gm.optGetDouble("optcr"));
-	if (optcr>0.001) {
-		myout << "Cannot use optcr of larger then 0.001. Setting objective tolerance to 0.001." << CoinMessageEol;
-		optcr=0.001;
-	}
-	lpx_set_real_parm(glpk_model, LPX_K_TOLOBJ, optcr);
-	
-	double tol_integer=gm.optGetDouble("tol_integer");
-	if (tol_integer>0.001) {
-		myout << "Cannot use tol_integer of larger then 0.001. Setting integer tolerance to 0.001." << CoinMessageEol;
-		tol_integer=0.001;
-	}
-	lpx_set_real_parm(glpk_model, LPX_K_TOLINT, tol_integer);
-
-	if (!solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual"))) {
+	if (!solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual")))
 		myout << "Failed to set dual tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
-	}
 
-	if (!solver.setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal"))) {
+	if (!solver.setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal")))
 		myout << "Failed to set primal tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
-	}
 
 	// more parameters
 	gm.optGetString("scaling", buffer);
@@ -187,22 +162,21 @@ int main (int argc, const char *argv[]) {
 	else if (strcmp(buffer, "equilibrium")==0)
 		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 1); // default
 	else if (strcmp(buffer, "mean")==0)
-		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 2); // default
+		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 2);
 	else if (strcmp(buffer, "meanequilibrium")==0)
-		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 3); // default
+		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 3);
 
 	gm.optGetString("startalg", buffer);
 	if (strcmp(buffer, "dual")==0)
-		lpx_set_int_parm(glpk_model, LPX_K_DUAL, 1);
+		solver.setHintParam(OsiDoDualInInitial, false, OsiForceDo);
 	
 	gm.optGetString("pricing", buffer);
 	if (strcmp(buffer, "textbook")==0)
 		lpx_set_int_parm(glpk_model, LPX_K_PRICE, 0);
 	else if	(strcmp(buffer, "steepestedge")==0)
-		lpx_set_int_parm(glpk_model, LPX_K_PRICE, 1);
+		lpx_set_int_parm(glpk_model, LPX_K_PRICE, 1); // default
 
-//	solver.messageHandler()->setLogLevel(3);
-	solver.setHintParam(OsiDoReducePrint, false, OsiForceDo); 
+	solver.setHintParam(OsiDoReducePrint, false, OsiForceDo); // GLPK loglevel 3
 
 	if (gm.nDCols())
 		myout << "Solving root problem... " << CoinMessageEol;
@@ -233,17 +207,35 @@ int main (int argc, const char *argv[]) {
 		};
 		lpx_set_int_parm(glpk_model, LPX_K_USECUTS, cutindicator);
 
+		// cutoff do not seem to work in Branch&Bound
 //		if (gm.optDefined("cutoff")) {
-//			lpx_set_real_parm(glpk_model, gm.ObjSense()==1 ? LPX_K_OBJLL : LPX_K_OBJUL, gm.optGetDouble("cutoff"));
-//			myout << "set cutoff to " << gm.optGetDouble("cutoff") << CoinMessageEol;
+//			solver.setDblParam(OsiPrimalObjectiveLimit, gm.optGetDouble("cutoff")); 
+//			myout << "OBJLL: " << lpx_get_real_parm(glpk_model, LPX_K_OBJLL)
+//				<< "OBJUL: " << lpx_get_real_parm(glpk_model, LPX_K_OBJUL) << CoinMessageEol;
 //		}
+
+		// not sure that optcr (=relative gap tolerance) is the same as TOLOBJ in GLPK
+//		double optcr=max(1e-7,gm.optGetDouble("optcr"));
+//		if (optcr>0.001) {
+//			myout << "Cannot use optcr of larger then 0.001. Setting objective tolerance to 0.001." << CoinMessageEol;
+//			optcr=0.001;
+//		}
+//		lpx_set_real_parm(glpk_model, LPX_K_TOLOBJ, optcr);
+		
+		double tol_integer=gm.optGetDouble("tol_integer");
+		if (tol_integer>0.001) {
+			myout << "Cannot use tol_integer of larger then 0.001. Setting integer tolerance to 0.001." << CoinMessageEol;
+			tol_integer=0.001;
+		}
+		lpx_set_real_parm(glpk_model, LPX_K_TOLINT, tol_integer);
 
 		// Do complete search
 		myout << "Starting Branch and Bound... " << CoinMessageEol;
 		solver.branchAndBound();
 
 		int mipstat = lpx_mip_status(glpk_model);
-		if (mipstat == LPX_I_FEAS || mipstat == LPX_I_OPT) {
+		if (!solver.isIterationLimitReached() && !solver.isTimeLimitReached() 
+				&& (mipstat == LPX_I_FEAS || mipstat == LPX_I_OPT)) {
 			const double *colLevel=solver.getColSolution();
 			// We are loosing colLevel after a call to lpx_set_* when using the Visual compiler. So we save the levels.
 			double *colLevelsav = new double[gm.nCols()];
@@ -258,8 +250,7 @@ int main (int argc, const char *argv[]) {
 					solver.setColBounds(j,colLevelsav[j],colLevelsav[j]);
 			delete[] colLevelsav;
 				
-//			solver.messageHandler()->setLogLevel(1);
-			solver.setHintParam(OsiDoReducePrint, true, OsiHintTry); 
+			solver.setHintParam(OsiDoReducePrint, true, OsiHintTry); // loglevel 1 
 			myout << "\nSolving fixed problem... " << CoinMessageEol;
 			solver.resolve();
 			if (!solver.isProvenOptimal()) 
@@ -268,7 +259,7 @@ int main (int argc, const char *argv[]) {
 	}
 
 	// Determine status and write solution
-	GamsFinalizeOsi(&gm, &myout, &solver, 0);
+	GamsFinalizeOsi(&gm, &myout, &solver, 0, solver.isTimeLimitReached());
 
 	return 0;
 }

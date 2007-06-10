@@ -23,8 +23,9 @@
  * @param gm The GamsModel.
  * @param myout The GAMS message handler for output.
  * @param solver The OSI solver interface to read the solution from.
- * @param PresolveInfeasible Indicate, whether the solver found the model infeasible in the presolve. 
+ * @param PresolveInfeasible Indicate, whether the solver found the model infeasible in the presolve.
+ * @param TimeLimitExceeded Indicate, whether a time limit was exceeded. (Time Limits are not directly supported by OsiSolverInterface.)  
  */
-void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool PresolveInfeasible);
+void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool PresolveInfeasible, bool TimeLimitExceeded=false);
 
 #endif /*GAMSFINALIZE_HPP_*/
