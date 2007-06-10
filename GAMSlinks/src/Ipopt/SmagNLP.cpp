@@ -121,6 +121,35 @@ bool SMAG_NLP::get_starting_point (Index n, bool init_x, Number* x,
   return true;
 } // get_starting_point
 
+// returns the variables linearity
+bool SMAG_NLP::get_variables_linearity(Index n, LinearityType* var_types) {
+	for (Index i=0; i<n; ++i)
+		var_types[i]=LINEAR;
+	if (smagColCountNL(prob)==0) return true; // no nonlinearities
+	
+  for (smagObjGradRec_t* og = prob->objGrad;  og;  og = og->next)
+  	if (og->degree>1) var_types[og->j]=NON_LINEAR;
+  if (smagRowCountNL(prob)==0) return true; // only objective is nonlinear
+  
+	for (Index i = 0;  i < smagRowCount(prob);  ++i)
+		for (smagConGradRec_t* cGrad = prob->conGrad[i];  cGrad;  cGrad = cGrad->next)
+			if (cGrad->degree>1) var_types[cGrad->j]=NON_LINEAR;     
+	
+	return true;
+}
+
+// returns the constraint linearity
+bool SMAG_NLP::get_constraints_linearity(Index m, LinearityType* const_types) {
+	if (!prob->snlData.numInstr) // no nonlinearities
+		for (Index i=0; i<m; ++i)
+			const_types[i]=LINEAR;
+	else
+		for (Index i=0; i<m; ++i)
+			const_types[i]=prob->snlData.numInstr[i] ? NON_LINEAR : LINEAR;
+	
+	return true;
+}
+
 // returns the value of the objective function
 bool SMAG_NLP::eval_f (Index n, const Number* x, bool new_x, Number& obj_value) {
   int nerror = smagEvalObjFunc (prob, x, &obj_value);
@@ -278,9 +307,6 @@ bool SMAG_NLP::eval_h (Index n, const Number *x, bool new_x,
 } // eval_h
 
 bool SMAG_NLP::intermediate_callback (AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq) {
-	last_iterationnumber=iter;
-	last_scaled_conviol = ip_cq->curr_nlp_constraint_violation(NORM_MAX);	
-	last_unscaled_conviol = ip_cq->unscaled_curr_nlp_constraint_violation(NORM_MAX);	
 	if (timelimit && smagGetCPUTime(prob)-clockStart>timelimit) return false;
 	if (domviollimit && domviolations>=domviollimit) return false;
 	return true;
@@ -313,7 +339,7 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 	    break;
 		case STOP_AT_TINY_STEP:
 	  case RESTORATION_FAILURE:
-			if (last_scaled_conviol < scaled_conviol_tol && last_unscaled_conviol < unscaled_conviol_tol) {
+			if (cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol) {
 				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: we don't know about optimality, but we have feasibility!!\n");
 				model_status=7; // intermediate nonoptimal
 			} else {
@@ -324,7 +350,7 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 			write_solution=true;
 	    break;
 	  case MAXITER_EXCEEDED:
-			if (last_scaled_conviol < scaled_conviol_tol && last_unscaled_conviol < unscaled_conviol_tol) {
+			if (cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol) {
 				smagStdOutputPrint(prob, SMAG_LOGMASK, "Iteration limit exceeded!! Point is feasible.\n");
 				model_status=7; // intermediate nonoptimal
 			} else {
@@ -340,7 +366,7 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 				model_status=6; // intermediate infeasible
 				solver_status=5;
 			} else {
-				if (last_scaled_conviol < scaled_conviol_tol && last_unscaled_conviol < unscaled_conviol_tol) {
+				if (cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol) {
 					smagStdOutputPrint(prob, SMAG_LOGMASK, "Time limit exceeded!! Point is feasible.\n");
 					model_status=7; // intermediate nonoptimal
 				} else {
@@ -395,7 +421,7 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
       negLambda[i] = -lambda[i] * isMin;
     }
 		smagReportSolFull(prob, model_status, solver_status,
-			last_iterationnumber, smagGetCPUTime(prob)-clockStart, obj_value*isMin, domviolations,
+			data->iter_count(), smagGetCPUTime(prob)-clockStart, obj_value*isMin, domviolations,
 			g, negLambda, rowBasStat, rowIndic,
 			x, colMarg, colBasStat, colIndic);
 			

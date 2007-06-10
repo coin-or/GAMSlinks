@@ -51,6 +51,12 @@ public:
                                   Index m, bool init_lambda,
                                   Number* lambda);
 
+  /** Method to return the variables linearity. */
+  virtual bool get_variables_linearity(Index n, LinearityType* var_types);
+
+  /** Method to return the constraint linearity. */
+  virtual bool get_constraints_linearity(Index m, LinearityType* const_types);
+
   /** Method to return the objective value */
   virtual bool eval_f(Index n, const Number* x, bool new_x, Number& obj_value);
 
@@ -102,10 +108,6 @@ private:
 	double timelimit;
 	int domviollimit;
 	long int domviolations;
-
-  int last_iterationnumber;
-  double last_scaled_conviol; // last scaled constraint violation
-	double last_unscaled_conviol; // last unscaled constraint violation
 
   /* Methods to block default compiler methods.
    * The compiler automatically generates the following three methods.
