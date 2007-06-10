@@ -50,14 +50,12 @@ public:
 	 * @param n size of var_types (has to be equal to the number of variables in the problem).
 	 * @var_types types of the variables (has to be filled by function).
   */
-//  virtual bool get_var_types(Index n, VariableType* var_types);
 	virtual bool get_variables_types(Index n, VariableType* var_types);
   
   /** Pass the type of the constraints (LINEAR, NON_LINEAR) to the optimizer.
    * @param m size of const_types (has to be equal to the number of constraints in the problem).
    * @param const_types types of the constraints (has to be filled by function).
   */
-//  virtual bool get_constraints_types(Index m, ConstraintType* const_types);
 	virtual bool get_constraints_linearity(Index m, Ipopt::TNLP::LinearityType* const_types);
 
 
@@ -96,18 +94,9 @@ public:
 	/** Method called by the solver at each iteration.
 	 * Checks the domain violation limit and time limit and stops the solver in case of limit exceedance.
 	 */
-	virtual bool intermediate_callback (AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq);
+//	virtual bool intermediate_callback (AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq);
 
-	/** This method is never called.
-	 */
-/*	virtual void finalize_solution(SolverReturn status,
-		    Index n, const Number* x, const Number* z_L,
-		    const Number* z_U,
-		    Index m, const Number* g, const Number* lambda,
-		    Number obj_value) { }
-*//*	virtual void finalize_solution(SolverReturn status,
-			Index n, const Number* x, Number obj_value) const { };
-*/    virtual void finalize_solution(TMINLP::SolverReturn status,Index n, const Number* x, Number obj_value);
+	virtual void finalize_solution(TMINLP::SolverReturn status,Index n, const Number* x, Number obj_value);
 
 	/** Provides information about SOS constraints.
 	 */
@@ -116,18 +105,19 @@ public:
   virtual const BranchingInfo* branchingInfo() const{return NULL;}
 
 	double div_iter_tol;
-	double scaled_conviol_tol;
-	double unscaled_conviol_tol;
+//	double scaled_conviol_tol;
+//	double unscaled_conviol_tol;
 	long int domviolations;
+	double clock_start; // time when solving starts
+	int model_status, solver_status;
 private:
   smagHandle_t prob;
   double *negLambda;
   double isMin;
-	long int domviollimit;
+//	long int domviollimit;
 
-  int last_iterationnumber;
-  double last_scaled_conviol; // last scaled constraint violation
-	double last_unscaled_conviol; // last unscaled constraint violation
+//  double last_scaled_conviol; // last scaled constraint violation
+//	double last_unscaled_conviol; // last unscaled constraint violation
 	
 	SosInfo sosinfo;
 

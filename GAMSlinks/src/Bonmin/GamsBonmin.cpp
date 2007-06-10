@@ -24,21 +24,20 @@
 
 #include "SmagMINLP.hpp"
 #include "SmagMessageHandler.hpp"
-#include "BonCbc.hpp"
-#include "BonCbcParam.hpp"
-#include "BonOsiTMINLPInterface.hpp"
+#include "SmagJournal.hpp"
+#include "BonBonminSetup.hpp"
+#include "BonCbc2.hpp"
 
 // in case that we have to solve an NLP only
 #include "IpIpoptApplication.hpp"
 #include "SmagNLP.hpp"
-#include "SmagJournal.hpp"
 
 using namespace Ipopt;
 
 void solve_minlp(smagHandle_t);
 void solve_nlp(smagHandle_t);
-void write_solution(smagHandle_t prob, OsiTMINLPInterface& nlpSolver, int model_status, int solver_status, double resuse, int domviol, int nodeuse);
-void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& nlpSolver, int model_status, int solver_status, double resuse, int domviol, int nodeuse);
+void write_solution(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int nodeuse);
+void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int nodeuse);
 
 int main (int argc, char* argv[]) {
 #if defined(_MSC_VER)
@@ -69,9 +68,9 @@ int main (int argc, char* argv[]) {
   smagHessInit (prob);
 
 #ifdef GAMS_BUILD
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinBonmin MINLP Solver (Bonmin Library 0.1)\nwritten by P. Bonami\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinBonmin MINLP Solver (Bonmin Library 0.2pre)\nwritten by P. Bonami\n");
 #else
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Bonmin MINLP Solver (Bonmin Library 0.1)\nwritten by P. Bonami\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Bonmin MINLP Solver (Bonmin Library 0.2pre)\nwritten by P. Bonami\n");
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 
@@ -90,121 +89,99 @@ int main (int argc, char* argv[]) {
 /** Solves a MINLP via Bonmin.
  */
 void solve_minlp(smagHandle_t prob) {
+	// the problem as TMINLP
   SMAG_MINLP* mysmagminlp = new SMAG_MINLP(prob);
   SmartPtr<TMINLP> smagminlp = mysmagminlp;
-  
-  SmagMessageHandler messagehandler(prob);
 
-	OsiTMINLPInterface nlpSolver;
-	nlpSolver.setModel(smagminlp);
-	//TODO?: set solver
-//  IpoptInterface nlpSolver(smagminlp);
-	BonminCbcParam par;
-//TODO	par.fout=prob->fpLog;
+	BonminSetup bonmin_setup;
+
+	// instead of initializeOptionsAndJournalist we do it our own way, so we can use the SmagJournal
+  SmartPtr<OptionsList> options = new OptionsList();
+	SmartPtr<Journalist> journalist= new Journalist();
+  SmartPtr<RegisteredOptions> roptions = new RegisteredOptions();
+ 	SmartPtr<Journal> smag_jrnl=new SmagJournal(prob, "console", J_ITERSUMMARY, J_STRONGWARNING);
+	smag_jrnl->SetPrintLevel(J_DBG, J_NONE);  	
+	if (!journalist->AddJournal(smag_jrnl))
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT output.\n");
+	options->SetJournalist(journalist);
+	options->SetRegisteredOptions(roptions);
+	
+	bonmin_setup.setOptionsAndJournalist(roptions, options, journalist);
+  bonmin_setup.registerOptions();
 
 	// Change some options
-	nlpSolver.options()->SetNumericValue("bound_relax_factor", 0);
-	nlpSolver.options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false);
-	nlpSolver.options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false);
+	bonmin_setup.options()->SetNumericValue("bound_relax_factor", 0);
+	bonmin_setup.options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false);
+	bonmin_setup.options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false);
 	if (prob->gms.icutof)
-		nlpSolver.options()->SetNumericValue("bonmin.cutoff", prob->gms.cutoff);
-	nlpSolver.options()->SetNumericValue("bonmin.allowable_gap", prob->gms.optca);
-	nlpSolver.options()->SetNumericValue("bonmin.allowable_fraction_gap", prob->gms.optcr);
+		bonmin_setup.options()->SetNumericValue("bonmin.cutoff", prob->gms.cutoff);
+	bonmin_setup.options()->SetNumericValue("bonmin.allowable_gap", prob->gms.optca);
+	bonmin_setup.options()->SetNumericValue("bonmin.allowable_fraction_gap", prob->gms.optcr);
 	if (prob->gms.nodlim)
-		nlpSolver.options()->SetIntegerValue("bonmin.node_limit", prob->gms.nodlim);
+		bonmin_setup.options()->SetIntegerValue("bonmin.node_limit", prob->gms.nodlim);
 	else
-		nlpSolver.options()->SetIntegerValue("bonmin.node_limit", prob->gms.itnlim);
-	nlpSolver.options()->SetNumericValue("bonmin.time_limit", prob->gms.reslim);
+		bonmin_setup.options()->SetIntegerValue("bonmin.node_limit", prob->gms.itnlim);
+	bonmin_setup.options()->SetNumericValue("bonmin.time_limit", prob->gms.reslim);
 
 	if (prob->gms.useopt)
-		nlpSolver.readOptionFile(prob->gms.optFileName);
+		bonmin_setup.readOptionsFile(prob->gms.optFileName);
+	else // need to let Bonmin read something, otherwise it will try to read its default option file bonmin.opt
+		bonmin_setup.readOptionsString(std::string());
 
-	nlpSolver.options()->GetNumericValue("diverging_iterates_tol", mysmagminlp->div_iter_tol, "");
-	// or should we also check the tolerance for acceptable points?  
-	nlpSolver.options()->GetNumericValue("tol", mysmagminlp->scaled_conviol_tol, ""); 
-	nlpSolver.options()->GetNumericValue("constr_viol_tol", mysmagminlp->unscaled_conviol_tol, ""); 
+	bonmin_setup.options()->GetNumericValue("diverging_iterates_tol", mysmagminlp->div_iter_tol, "");
+//	// or should we also check the tolerance for acceptable points?  
+//	bonmin_setup.options()->GetNumericValue("tol", mysmagminlp->scaled_conviol_tol, ""); 
+//	bonmin_setup.options()->GetNumericValue("constr_viol_tol", mysmagminlp->unscaled_conviol_tol, ""); 
+
+	// the easiest would be to call bonmin_setup.initializeBonmin(smagminlp), but then we cannot set the message handler
+	// so we do the following
+//	bonmin_setup.use(smagminlp); // this initialize the OsiTMINLPInterface
+	SmagMessageHandler smagmessagehandler(prob);
+	{
+		OsiTMINLPInterface first_osi_tminlp;
+		first_osi_tminlp.initialize(roptions, options, journalist, smagminlp);
+		first_osi_tminlp.passInMessageHandler(&smagmessagehandler);
+		bonmin_setup.initializeBonmin(first_osi_tminlp); // this will clone first_osi_tminlp
+	} 
+//	bonmin_setup.gatherParametersValues(bonmin_setup.options());
+//	bonmin_setup.options()->SetStringValue("bonmin.algorithm", "B-BB");
+//	if (bonmin_setup.getAlgorithm() == Bonmin::B_BB)
+//		bonmin_setup.initializeBBB();
+//	else
+//		bonmin_setup.initializeBHyb(true);
 
   try {
-		par.extractParams(&nlpSolver); // process option file
-		Bab bb;
+		Bab2 bb;
 
-		double clockStart = smagGetCPUTime (prob);
-		bb(&nlpSolver, par); //process parameter file and do branch and bound
+		mysmagminlp->clock_start=smagGetCPUTime(prob);
+		bb(bonmin_setup); //process parameters and do branch and bound
 
-    int model_status;
-    int solver_status;
-    int resolve_nlp=false;
-		if (smagGetCPUTime(prob)-clockStart>=prob->gms.reslim) {
-			solver_status=3;
-			smagStdOutputPrint(prob, SMAG_ALLMASK, "Time limit exceeded.\n");
-		} else { // TODO: exceed of iteration limit
-  		solver_status=1; // normal completion
-		}
-    switch (bb.mipStatus()) {
-    	case Bab::FeasibleOptimal: {
-	    	if (bb.bestSolution()) {
-	    		resolve_nlp=true;
-//	    		model_status=2; // local optimal; we could report optimal if the gap is closed
-	    		model_status=1; // optimal; TODO: the gap should be closed!!!
-	    	} else { // this should not happen
-	    		model_status=13; // error - no solution
-	    	}
-	    } break;
-    	case Bab::ProvenInfeasible: {
-	    	model_status=19; // infeasible - no solution
-	    } break;
-    	case Bab::Feasible: {
-	    	if (bb.bestSolution()) {
-	    		resolve_nlp=true;
-		    	model_status=7; // intermediate nonoptimal
-	    	} else { // this should not happen
-	    		model_status=13; // error - no solution
-	    	}
-    	} break;
-    	case Bab::NoSolutionKnown: {
-    		if (bb.bestSolution()) { // probably this will not happen
-    			model_status=6; // intermediate infeasible
-    			resolve_nlp=true;
-    		}	else {
-   				model_status=14; // no solution returned
-    		}
-    	} break;
-    	default : { // should not happen, since other mipStatus is not defined
-	    	model_status=12; // error unknown
-    	}
-		}
-
-		if (resolve_nlp) {
+		if (bb.bestSolution()) {
+			OsiTMINLPInterface osi_tminlp(*bonmin_setup.nonlinearSolver());
 			bool has_free_var=false;
 			for (Index i=0; i<smagColCount(prob); ++i)
 				if (prob->colType[i]!=SMAG_VAR_CONT)
-					nlpSolver.setColBounds(i, bb.bestSolution()[i], bb.bestSolution()[i]);
-				else if ((!has_free_var) && nlpSolver.getColUpper()[i]-nlpSolver.getColLower()[i]>1e-5)
+					osi_tminlp.setColBounds(i, bb.bestSolution()[i], bb.bestSolution()[i]);
+				else if ((!has_free_var) && osi_tminlp.getColUpper()[i]-osi_tminlp.getColLower()[i]>1e-5)
 					has_free_var=true; 
-			nlpSolver.setColSolution(bb.bestSolution());
+			osi_tminlp.setColSolution(bb.bestSolution());
 
 			if (!has_free_var) {
 				smagStdOutputPrint(prob, SMAG_LOGMASK, "\nAll variables are discrete. Dual variables for fixed problem will be not available.\n");
-				nlpSolver.initialSolve(); // this will only evaluate the constraints, so we get correct row levels
-				write_solution_nodual(prob, nlpSolver, model_status, solver_status, smagGetCPUTime(prob)-clockStart, mysmagminlp->domviolations, bb.numNodes());
+				osi_tminlp.initialSolve(); // this will only evaluate the constraints, so we get correct row levels
+				write_solution_nodual(prob, osi_tminlp, mysmagminlp->model_status, mysmagminlp->solver_status, smagGetCPUTime(prob)-mysmagminlp->clock_start, mysmagminlp->domviolations, bb.numNodes());
 			} else { 
 				smagStdOutputPrint(prob, SMAG_LOGMASK, "\nResolve with fixed discrete variables to get dual values.\n");
-				nlpSolver.initialSolve();
-				if (nlpSolver.isProvenOptimal()) 
-					write_solution(prob, nlpSolver, model_status, solver_status, smagGetCPUTime(prob)-clockStart, mysmagminlp->domviolations, bb.numNodes());
+				osi_tminlp.initialSolve();
+				if (osi_tminlp.isProvenOptimal()) 
+					write_solution(prob, osi_tminlp, mysmagminlp->model_status, mysmagminlp->solver_status, smagGetCPUTime(prob)-mysmagminlp->clock_start, mysmagminlp->domviolations, bb.numNodes());
 				else
 					smagStdOutputPrint(prob, SMAG_LOGMASK, "Problems solving fixed problem.\n");
 			}
 		} else {
-			smagReportSolBrief(prob, model_status, solver_status);
+			smagReportSolBrief(prob, mysmagminlp->model_status, mysmagminlp->solver_status);
 		}
-  }
-  catch(OsiTMINLPInterface::SimpleError &E) {
-    //There has been a failure to solve a problem with Ipopt.
-		smagStdOutputPrint(prob, SMAG_ALLMASK, "Ipopt has failed to solve a problem.\n");
-	  smagReportSolBrief(prob, 13, 10);
-  }
-  catch(CoinError &E) {
+  } catch(CoinError &E) {
   	char buf[1024];
   	snprintf(buf, 1024, "%s::%s\n%s\n", E.className().c_str(), E.methodName().c_str(), E.message().c_str());
 		smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
@@ -214,12 +191,12 @@ void solve_minlp(smagHandle_t prob) {
 
 /** Processes Ipopt solution and calls method to report the solution.
  */
-void write_solution(smagHandle_t prob, OsiTMINLPInterface& nlpSolver, int model_status, int solver_status, double resuse, int domviol, int nodeuse) {
+void write_solution(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int nodeuse) {
 	int n=smagColCount(prob);
 	int m=smagRowCount(prob);
 	int isMin=smagMinim(prob);
 	
-	const double* lambda=nlpSolver.getRowPrice();
+	const double* lambda=osi_tminlp.getRowPrice();
 	const double* z_L=lambda+m;
 	const double* z_U=z_L+n;
 	unsigned char* colBasStat=new unsigned char[n];
@@ -243,9 +220,9 @@ void write_solution(smagHandle_t prob, OsiTMINLPInterface& nlpSolver, int model_
 		negLambda[i]=-lambda[i]*isMin;
   }
 	smagReportSolFull(prob, model_status, solver_status,
-		nodeuse, resuse, nlpSolver.getObjValue()*isMin, domviol,
-		nlpSolver.getRowActivity(), negLambda, rowBasStat, rowIndic,
-		nlpSolver.getColSolution(), colMarg, colBasStat, colIndic);
+		nodeuse, resuse, osi_tminlp.getObjValue()*isMin, domviol,
+		osi_tminlp.getRowActivity(), negLambda, rowBasStat, rowIndic,
+		osi_tminlp.getColSolution(), colMarg, colBasStat, colIndic);
 		
 	delete[] colBasStat;
 	delete[] colIndic;
@@ -253,13 +230,9 @@ void write_solution(smagHandle_t prob, OsiTMINLPInterface& nlpSolver, int model_
 	delete[] rowBasStat;
 	delete[] rowIndic;
 	delete[] negLambda;
-
-//	const double* rowMarg=new double[smagRowCount(prob)];
-//  smagReportSolX(prob, nodeuse, resuse, domviol, rowMarg, nlpSolver.getColSolution());
-	
 } // write_solution
 
-void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& nlpSolver, int model_status, int solver_status, double resuse, int domviol, int nodeuse) {
+void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int nodeuse) {
 	int n=smagColCount(prob);
 	int m=smagRowCount(prob);
 	
@@ -277,9 +250,9 @@ void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& nlpSolver, int
 		rowIndic[i]=SMAG_RCINDIC_OK;
   }
 	smagReportSolFull(prob, model_status, solver_status,
-		nodeuse, resuse, nlpSolver.getObjValue()*smagMinim(prob), domviol,
-		nlpSolver.getRowActivity(), prob->rowPi, rowBasStat, rowIndic,
-		nlpSolver.getColSolution(), prob->colRC, colBasStat, colIndic);
+		nodeuse, resuse, osi_tminlp.getObjValue()*smagMinim(prob), domviol,
+		osi_tminlp.getRowActivity(), prob->rowPi, rowBasStat, rowIndic,
+		osi_tminlp.getColSolution(), prob->colRC, colBasStat, colIndic);
 		
 	delete[] colBasStat;
 	delete[] colIndic;

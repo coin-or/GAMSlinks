@@ -44,6 +44,7 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Algorithm` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/CGPenalty` \
  -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc` \
+ -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms` \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Interfaces` \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/CbcBonmin` \
  -I`$(CYGPATH_W) $(BONMINOBJDIR)/inc`

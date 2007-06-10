@@ -12,15 +12,15 @@
 using namespace Ipopt;
 
 // constructor
-SMAG_MINLP::SMAG_MINLP (smagHandle_t prob)
-: div_iter_tol(1E+20), scaled_conviol_tol(1E-8), unscaled_conviol_tol(1E-4),
-  domviolations(0)
+SMAG_MINLP::SMAG_MINLP (smagHandle_t prob_)
+: div_iter_tol(1E+20), domviolations(0), prob(prob_)
+//: scaled_conviol_tol(1E-8), unscaled_conviol_tol(1E-4),
 {
-  this->prob = prob;
   negLambda = new double[smagRowCount(prob)];
   isMin = smagMinim (prob);		/* 1 for min, -1 for max */
 	
-	domviollimit=prob->gms.domlim;
+//	domviollimit=prob->gms.domlim;
+	clock_start=smagGetCPUTime(prob);
 } // SMAG_MINLP(prob)
 
 // destructor
@@ -138,12 +138,10 @@ bool SMAG_MINLP::get_variables_types(Index n, VariableType* var_types) {
 	}
 	sosinfo.starts[sosvar.size()]=k;
 	
-	
 	return true;	
 } // get_var_types
  
 bool SMAG_MINLP::get_constraints_linearity(Index m, Ipopt::TNLP::LinearityType* const_types) {
-//bool SMAG_MINLP::get_constraints_types(Index m, ConstraintType* const_types) {
 	if (!prob->snlData.numInstr) // no nonlinearities
 		for (Index i=0; i<m; ++i)
 			const_types[i]=Ipopt::TNLP::LINEAR;
@@ -339,13 +337,13 @@ bool SMAG_MINLP::eval_h (Index n, const Number *x, bool new_x,
   return true;
 } // eval_h
 
-bool SMAG_MINLP::intermediate_callback (AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq) {
-	last_iterationnumber=iter;
-	last_scaled_conviol = ip_cq->curr_nlp_constraint_violation(NORM_MAX);	
-	last_unscaled_conviol = ip_cq->unscaled_curr_nlp_constraint_violation(NORM_MAX);	
-	if (domviollimit && domviolations>=domviollimit) return false;
-	return true;
-}
+//bool SMAG_MINLP::intermediate_callback (AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq) {
+//	last_iterationnumber=iter;
+//	last_scaled_conviol = ip_cq->curr_nlp_constraint_violation(NORM_MAX);	
+//	last_unscaled_conviol = ip_cq->unscaled_curr_nlp_constraint_violation(NORM_MAX);
+//	if (domviollimit && domviolations>=domviollimit) return false;
+//	return true;
+//}
 
 const TMINLP::SosInfo* SMAG_MINLP::sosConstraints() const {
 	return NULL; // smag does not support sos yet
@@ -353,6 +351,44 @@ const TMINLP::SosInfo* SMAG_MINLP::sosConstraints() const {
 	return &sosinfo;
 }
 
-void SMAG_MINLP::finalize_solution(TMINLP::SolverReturn status,Index n, const Number* x, Number obj_value) {
-
+void SMAG_MINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const Number* x, Number obj_value) {
+  solver_status=1; // normal completion
+	
+  switch (status) {
+  	case TMINLP::SUCCESS: {
+    	if (x) {
+    		model_status=1; // optimal; if the gap is not closed, Bonmin should report only feasible
+    	} else { // this should not happen
+    		model_status=13; // error - no solution
+    	}
+    } break;
+  	case TMINLP::INFEASIBLE: {
+    	model_status=19; // infeasible - no solution
+    } break;
+  	case TMINLP::LIMIT_EXCEEDED: {
+			if (smagGetCPUTime(prob)-clock_start>=prob->gms.reslim) {
+				solver_status=3;
+				smagStdOutputPrint(prob, SMAG_ALLMASK, "Time limit exceeded.\n");
+			} else { // should be iteration limit = node limit
+				solver_status=2;
+				smagStdOutputPrint(prob, SMAG_ALLMASK, "Iteration (nr. of nodes) limit exceeded.\n");
+			}			
+    	if (x) {
+	    	model_status=7; // intermediate nonoptimal
+    	} else {
+    		model_status=13; // error - no solution
+    	}
+  	} break;
+  	case TMINLP::MINLP_ERROR: {
+  		if (x) {
+  			model_status=6; // intermediate infeasible
+  		}	else {
+ 				model_status=14; // no solution returned
+  		}
+  	} break;
+  	default : { // should not happen, since other mipStatus is not defined
+    	model_status=12; // error unknown
+    	solver_status=11; // error internal solver error
+  	}
+	}
 }

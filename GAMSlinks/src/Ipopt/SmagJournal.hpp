@@ -31,9 +31,10 @@ using namespace Ipopt;
 class SmagJournal : public Journal {
 public:
   /** Constructor.
+   * @param status_level Maximum level where we still write to status file.
    */
-  SmagJournal(smagHandle_t smag_, const char* name, EJournalLevel default_level)
-  : Journal(name, default_level), smag(smag_)
+  SmagJournal(smagHandle_t smag_, const char* name, EJournalLevel default_level, EJournalLevel status_level_=J_SUMMARY)
+  : Journal(name, default_level), smag(smag_), status_level(status_level_)
   { }
 
   /** Destructor.
@@ -42,7 +43,7 @@ public:
 
 protected:
   virtual void PrintImpl(EJournalCategory category, EJournalLevel level, const char* str) {
-  	smagStdOutputPrintX(smag, level<=J_SUMMARY ? SMAG_ALLMASK : SMAG_LOGMASK, str, 0);
+  	smagStdOutputPrintX(smag, level<=status_level ? SMAG_ALLMASK : SMAG_LOGMASK, str, 0);
   }
 
   virtual void PrintfImpl(EJournalCategory category, EJournalLevel level, const char* pformat, va_list ap);
@@ -53,6 +54,7 @@ protected:
 
 private:
 	smagHandle_t smag;
+	EJournalLevel status_level;
 	
   /**@name Default Compiler Generated Methods
    * (Hidden to avoid implicit creation/calling).
