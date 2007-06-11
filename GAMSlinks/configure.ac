@@ -280,10 +280,7 @@ if test x"$gamsio_system" = xLinux; then
           AC_MSG_WARN([Path for Intel Fortran Libraries not given by --with-ifort_libdir and no GAMS system available. GAMS I/O libraries might fail to link.])
          fi
         ])
-      IFORT_LIBS="$IFORT_LIBS -lifcore -limf"
-			if test x"$GAMSIO_CODE" = xLEI; then
-				IFORT_LIBS="$IFORT_LIBS -lirc"
-			fi
+      IFORT_LIBS="$IFORT_LIBS -lifcore -limf -lirc"
 	esac
 fi
 
