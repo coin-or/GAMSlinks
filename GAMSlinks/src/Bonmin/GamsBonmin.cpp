@@ -123,10 +123,16 @@ void solve_minlp(smagHandle_t prob) {
 		bonmin_setup.options()->SetIntegerValue("bonmin.node_limit", prob->gms.itnlim);
 	bonmin_setup.options()->SetNumericValue("bonmin.time_limit", prob->gms.reslim);
 
-	if (prob->gms.useopt)
-		bonmin_setup.readOptionsFile(prob->gms.optFileName);
-	else // need to let Bonmin read something, otherwise it will try to read its default option file bonmin.opt
-		bonmin_setup.readOptionsString(std::string());
+	try {
+		if (prob->gms.useopt)
+			bonmin_setup.readOptionsFile(prob->gms.optFileName);
+		else // need to let Bonmin read something, otherwise it will try to read its default option file bonmin.opt
+			bonmin_setup.readOptionsString(std::string());
+	} catch (IpoptException error) {
+		smagStdOutputPrint(prob, SMAG_ALLMASK, error.Message().c_str());
+	  smagReportSolBrief(prob, 13, 13);
+	  return;
+	}
 
 	bonmin_setup.options()->GetNumericValue("diverging_iterates_tol", mysmagminlp->div_iter_tol, "");
 //	// or should we also check the tolerance for acceptable points?  
@@ -181,9 +187,9 @@ void solve_minlp(smagHandle_t prob) {
 		} else {
 			smagReportSolBrief(prob, mysmagminlp->model_status, mysmagminlp->solver_status);
 		}
-  } catch(CoinError &E) {
+  } catch(CoinError &error) {
   	char buf[1024];
-  	snprintf(buf, 1024, "%s::%s\n%s\n", E.className().c_str(), E.methodName().c_str(), E.message().c_str());
+  	snprintf(buf, 1024, "%s::%s\n%s\n", error.className().c_str(), error.methodName().c_str(), error.message().c_str());
 		smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
 	  smagReportSolBrief(prob, 13, 13);
   }
