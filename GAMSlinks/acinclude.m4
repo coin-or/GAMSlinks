@@ -6399,7 +6399,7 @@ AC_MSG_RESULT([$SED])
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
-## $Id: coin.m4 332 2007-06-11 04:06:26Z andreasw $
+## $Id: coin.m4 351 2007-06-12 05:09:49Z andreasw $
 #
 # Author: Andreas Wachter    IBM      2006-04-14
 
@@ -7752,7 +7752,7 @@ AC_DEFUN([AC_COIN_F77_COMPS],
      if test "$enable_doscompile" = msvc ; then
        coin_f77_comps="ifort fl32 compile_f2c"
      else
-       coin_f77_comps="gfortran g77 ifort fl32"
+       coin_f77_comps="gfortran g77 ifort fl32 compile_f2c"
      fi ;;
   sparc-sun-solaris*)
      coin_f77_comps="f95 f90 f77 xlf fort77 gfortran g77 pgf90 pgf77 ifort ifc frt af77" ;;
@@ -8372,7 +8372,7 @@ if test x$coin_skip_ac_output != xyes; then
 
   if test x"$coin_vpath_link_files" = x; then : ; else
     lnkcmd=
-    if test "$enable_doscompile" = yes; then
+    if test "$enable_doscompile" = mingw; then
       lnkcmd=cp
     fi
     case "$CC" in
