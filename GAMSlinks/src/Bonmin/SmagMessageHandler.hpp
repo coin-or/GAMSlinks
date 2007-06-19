@@ -36,6 +36,8 @@ public:
 	 * If currentMessage().detail() is smaller then 2, the message is written to logfile and statusfile, otherwise it is written only to the logfile.
 	 */  
   int print();
+  
+  CoinMessageHandler* clone() const { return new SmagMessageHandler(smag); }
 
 private:
 	smagHandle_t smag;

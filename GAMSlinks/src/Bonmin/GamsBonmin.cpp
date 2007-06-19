@@ -58,7 +58,7 @@ int main (int argc, char* argv[]) {
   }
   
   char buffer[512];
-  if (smagStdOutputStart(prob, SMAG_STATUS_OVERWRITE_IFDUMMY, buffer, sizeof(buffer)!=0))
+  if (smagStdOutputStart(prob, SMAG_STATUS_OVERWRITE_IFDUMMY, buffer, sizeof(buffer)))
   	fprintf(stderr, "Warning: Error opening GAMS output files .. continuing anyhow\t%s\n", buffer);
   
   smagReadModelStats (prob);
