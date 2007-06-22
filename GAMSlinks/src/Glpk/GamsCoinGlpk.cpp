@@ -178,6 +178,33 @@ int main (int argc, const char *argv[]) {
 
 	solver.setHintParam(OsiDoReducePrint, false, OsiForceDo); // GLPK loglevel 3
 
+  // starting point
+  // solver.setColSolution(gm.ColLevel()); // no useful implementation in OsiGLPK yet
+  // solver.setRowPrice(gm.RowMargin()); // no useful implementation in OsiGLPK yet
+//  CoinWarmStartBasis warmstart;
+//  warmstart.setSize(solver.getNumCols(), solver.getNumRows()); 
+//	for (int j=0; j<gm.nCols(); ++j) {
+//		switch (gm.ColBasis()[j]) {
+//			case GamsModel::NonBasicLower : warmstart.setStructStatus(j, CoinWarmStartBasis::atLowerBound); break;
+//			case GamsModel::NonBasicUpper : warmstart.setStructStatus(j, CoinWarmStartBasis::atUpperBound); break;
+//			case GamsModel::Basic : warmstart.setStructStatus(j, CoinWarmStartBasis::basic); break;
+//			case GamsModel::SuperBasic : warmstart.setStructStatus(j, CoinWarmStartBasis::isFree); break;
+//			default: warmstart.setStructStatus(j, CoinWarmStartBasis::isFree);
+//				myout << "Column basis status " << gm.ColBasis()[j] << " unknown!" << CoinMessageEol;
+//		}
+//	}
+//	for (int j=0; j<gm.nRows(); ++j) {
+//		switch (gm.RowBasis()[j]) {
+//			case GamsModel::NonBasicLower : warmstart.setArtifStatus(j, CoinWarmStartBasis::atLowerBound); break;
+//			case GamsModel::NonBasicUpper : warmstart.setArtifStatus(j, CoinWarmStartBasis::atUpperBound); break;
+//			case GamsModel::Basic : warmstart.setArtifStatus(j, CoinWarmStartBasis::basic); break;
+//			case GamsModel::SuperBasic : warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
+//			default: warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
+//				myout << "Row basis status " << gm.RowBasis()[j] << " unknown!" << CoinMessageEol;
+//		}
+//	}
+//	solver.setWarmStart(&warmstart);
+
 	if (gm.nDCols())
 		myout << "Solving root problem... " << CoinMessageEol;
 

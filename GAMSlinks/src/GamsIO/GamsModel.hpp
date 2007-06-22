@@ -177,7 +177,7 @@ public:
 	/** The column upper bounds.
 	 */
   inline double *ColUb()    { return ColUb_; }
-	/** The indices of the discrete variables.
+	/** Indicates whether a variable is discrete (1) or not (0).
 	 */
   inline int    *ColDisc()  { return ColDisc_; }
 	/** The special ordered sets indicator.
@@ -188,6 +188,24 @@ public:
 	 * - <0, then column i belongs to the special ordered sets of type 2 with the number -SOSIndicator()[i]. 
 	 */
   inline int    *SOSIndicator() { return SOSIndicator_; }
+	/** Initial values and storage for the solution values of the primal variables.
+	 */
+  inline double *ColLevel()     { return ColLevel_; }
+	/** Initial marginals and storage for the solution values of the dual variables corresponding to the column bound constraints (reduced costs).
+	 */
+  inline double *ColMargin()    { return ColMargin_; }
+	/** Initial basis status and storage for the solution basis status of the columns.
+	 */
+  inline int    *ColBasis()     { return ColBasis_; }
+  /** Branching priorities of columns.
+   * In GAMS, you can specify branching priorities with the .prior suffix.
+   * As lower the value, as higher is the priority.
+   */
+  inline double *ColPriority()  { return ColPriority_; }
+  /** Scaling parameters for columns.
+   * In GAMS, you can specify scaling parameters with the .scale suffix.
+   */ 
+  inline double *ColScale()     { return ColScale_; }
 	/** The name of a column.
 	    @param colnr column index
 			@param buffer a buffer for writing the name in
@@ -208,6 +226,19 @@ public:
 	/** The right-hand-side of the rows.
 	 */
   inline double *RowRhs()   { return RowRhs_; }
+	/** Initial values and storage for the solution levels of the rows (row activities).
+	 */
+  inline double *RowLevel()     { return RowLevel_; }
+	/** Initial marginals and storage for the solution values of the dual variables corresponding to the rows (row prices).
+	 */
+  inline double *RowMargin()    { return RowMargin_; }
+	/** Initial basis status and storage for the solution basis status of the rows.
+	 */
+  inline int    *RowBasis()     { return RowBasis_; }
+  /** Scaling parameters for rows.
+   * In GAMS, you can specify scaling parameters with the .scale suffix.
+   */
+  inline double *RowScale()     { return RowScale_; }
 	/** The name of a row.
 	    @param rownr row index
 			@param buffer a buffer for writing the name in
@@ -225,7 +256,12 @@ public:
   /** The sense of the objective function or optimization, respectively.
    * @return 1 for minimization, -1 for maximization.
    */
-  inline double ObjSense() const { return ObjSense_; } 
+  inline double ObjSense() const { return ObjSense_; }
+  /** Scaling parameter for objective function.
+   * Computing from scaling parameter of objective row and objective variable.
+   * Default: 1
+   */
+  inline double ObjScale() const { return ObjScale_; } 
 
 	/** The column starts for the problem matrix.
 	 */
@@ -279,29 +315,10 @@ public:
 	 */                 
   inline double getResUsed() { return ResUsed_; }
 
-	/** Storage for the solution values of the primal variables.
-	 */
-  inline double *ColLevel()     { return ColLevel_; }
-	/** Storage for the solution values of the dual variables corresponding to the column bound constraints (reduced costs).
-	 */
-  inline double *ColMargin()    { return ColMargin_; }
-	/** Storage for the solution basis status of the columns.
-	 */
-  inline int    *ColBasis()     { return ColBasis_; }
 	/** Storage for column indicators.
 	 * @see VariableStatus
 	 */
   inline int    *ColIndicator() { return ColIndicator_; }
-
-	/** Storage for the solution levels of the rows (row activities).
-	 */
-  inline double *RowLevel()     { return RowLevel_; }
-	/** Storage for the solution values of the dual variables corresponding to the rows (row prices).
-	 */
-  inline double *RowMargin()    { return RowMargin_; }
-	/** Storage for the solution basis status of the rows.
-	 */
-  inline int    *RowBasis()     { return RowBasis_; }
 	/** Storage for row indicators.
 	 * @see RowStatus
 	 */
@@ -351,6 +368,12 @@ public:
   /** GAMS Parmeter: Implied upper/lower bound on objective function. 
    */
   double getCutOff();
+  /** GAMS Option: If set, then the solver should use the scaling parameters in ColScale() and RowScale().
+   */
+  bool getScaleOption();
+  /** GAMS Option: If set, then the solver should use the branching priorities in ColPriority().
+   */
+  bool getPriorityOption();
 
 	/** The name of the option file.
 	 * @return The name of the option file, or NULL if no optionfile should be read.
@@ -426,34 +449,34 @@ private:
 
   double *ColLb_;   // lower bound for columns
   double *ColUb_;   // upper bound for columns
-  int    *ColDisc_; // list 0..nDCols_-1 for column indicies of discrete columns
-  int    *ColStat_; // Column basis status
+  int    *ColDisc_; // indicator for discrete columns: discrete (1) or not (0)
   int    *SOSIndicator_;  // indicator for SOS of type 1 and 2
+  double *ColLevel_; // values of column variables
+  double *ColMargin_; // marginal values = duals
+  int    *ColBasis_; // column basis status
+  double *ColPriority_; // branching priority
+  double *ColScale_; // scaling parameter
+  int    *ColIndicator_; // indicator for feasibility
 
   char   *RowSense_; // sense of row
-  double *RowRhs_;   // rhs
-  int    *RowStat_;  // Row basis status
+  double *RowRhs_;   // right hand side
+  double *RowScale_; // scaling parameters
+  double *RowLevel_; // values of rows = row activity
+  double *RowMargin_; // marginal values = duals
+  int    *RowBasis_; // Row basis status
+  int    *RowIndicator_; // indicator for feasibility
 
   double ObjSense_; // objective sense 1=min, -1=max
   double *ObjCoef_;  // Dense objective function
   double  ObjRhs_;   // constant in objective function
   double  zCoef_;    // coefficient of objective variable
+  double ObjScale_;  // scale value of objective variable
   int     isReform_; // reformulated objective function
 
   int    *matStart_;  // matrix start of column
   int    *matRowIdx_; // matrix row index
   double *matValue_;  // matrix values
-
-  double *RowLevel_;
-  double *RowMargin_;
-  int    *RowBasis_;
-  int    *RowIndicator_;
-
-  double *ColLevel_;
-  double *ColMargin_;
-  int    *ColBasis_;
-  int    *ColIndicator_;
-  
+ 
   void Allocate();
   void ReadMatrix();
 

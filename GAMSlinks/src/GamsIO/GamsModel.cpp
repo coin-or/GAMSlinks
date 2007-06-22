@@ -84,6 +84,7 @@ GamsModel::GamsModel(const char *cntrfile, const double SolverMInf, const double
   
   // Some initializations
   ObjVal_   = 0.0;
+  ObjScale_ = 1.0;
   ResUsed_  = 0.0;
   IterUsed_ = 0;
   DomUsed_  = 0;
@@ -108,7 +109,6 @@ void GamsModel::Allocate()
 {
   ColLb_   = new double[nCols_];
   ColUb_   = new double[nCols_];
-  ColStat_ = new int[nCols_];
   ColDisc_ = new int[nCols_];
   SOSIndicator_ = new int[nCols_];
   
@@ -116,7 +116,6 @@ void GamsModel::Allocate()
 
   RowSense_ = new char[nRows_];
   RowRhs_   = new double[nRows_];
-  RowStat_  = new int[nRows_];
 
   matStart_  = new int[nCols_+1];
   matRowIdx_ = new int[nNnz_];
@@ -126,11 +125,14 @@ void GamsModel::Allocate()
   RowMargin_    = new double[nRows_];
   RowBasis_     = new int[nRows_];
   RowIndicator_ = new int[nRows_];
+  RowScale_     = new double[nRows_];
                            
   ColLevel_     = new double[nCols_];
   ColMargin_    = new double[nCols_];
   ColBasis_     = new int[nCols_];
   ColIndicator_ = new int[nCols_];
+  ColPriority_  = new double[nCols_];
+  ColScale_     = new double[nCols_];
 }
 
 // Destructor
@@ -139,7 +141,6 @@ GamsModel::~GamsModel()
   // Release memory
   delete[] ColLb_;
   delete[] ColUb_;
-  delete[] ColStat_;
   delete[] ColDisc_;
   delete[] SOSIndicator_;
   
@@ -147,7 +148,6 @@ GamsModel::~GamsModel()
 
   delete[] RowSense_;
   delete[] RowRhs_;
-  delete[] RowStat_;
 
   delete[] matStart_;
   delete[] matRowIdx_;
@@ -157,11 +157,14 @@ GamsModel::~GamsModel()
   delete[] RowMargin_;
   delete[] RowBasis_;
   delete[] RowIndicator_;
+  delete[] RowScale_;
 
   delete[] ColLevel_;
   delete[] ColMargin_;
   delete[] ColBasis_;
   delete[] ColIndicator_;
+  delete[] ColPriority_;
+  delete[] ColScale_;
 
 	// Close dictionary
 	if (dict) gcdFree(dict);
@@ -203,11 +206,16 @@ void GamsModel::ReadMatrix()
   ObjRhs_=0.0;
   for (i=0, ip=0; i<nRows_; ++i) {
     cioReadRow (&rowRec);
-    if (isReform_ && i==iolib.slplro-1)
+    if (isReform_ && i==iolib.slplro-1) {
       ObjRhs_ = rowRec.rdata[2];
-    else {
+      ObjScale_ = rowRec.rdata[4];
+    } else {
+    	RowLevel_[ip] = rowRec.rdata[1];
       RowRhs_[ip] = rowRec.rdata[2];
-      RowStat_[ip] = rowRec.idata[2];
+      RowMargin_[ip] = rowRec.rdata[3];
+      RowScale_[ip] = rowRec.rdata[4];
+      
+      RowBasis_[ip] = rowRec.idata[2];
       switch (rowRec.idata[1]) {	/* row sense */
       case EQ:
         RowSense_[ip] = 'E';
@@ -238,11 +246,17 @@ void GamsModel::ReadMatrix()
       assert(1==nzcol);
       gfrcof (&zCoef_, &i, &nltype);
       assert(0==nltype);
+      ObjScale_/=colRec.cdata[6];
     }
     else {
       ColLb_[jp] = colRec.cdata[1];
+      ColLevel_[jp] = colRec.cdata[2];
       ColUb_[jp] = colRec.cdata[3];
-      ColStat_[jp] = colRec.idata[2];
+      ColPriority_[jp] = colRec.cdata[4];
+      ColMargin_[jp] = colRec.cdata[5];
+      ColScale_[jp] = colRec.cdata[6];
+      
+      ColBasis_[jp] = colRec.idata[2];
       switch (colRec.idata[3]) {	/* variable type */
       case VARCON:
         ColDisc_[jp]=0;
@@ -377,6 +391,14 @@ double GamsModel::getCutOff() {
     return iolib.cutoff;
   else // plus infinity for min. problem; minus infinity for max. problem
     return (ObjSense_>0)? iolib.usrpinf:iolib.usrminf;
+}
+
+bool GamsModel::getScaleOption() {
+	return iolib.iscopt;
+}
+
+bool GamsModel::getPriorityOption() {
+	return iolib.priots;
 }
 
 void GamsModel::setStatus(const SolverStatus& newSolverStatus, 

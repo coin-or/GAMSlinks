@@ -112,7 +112,7 @@ int main (int argc, const char *argv[]) {
 	int *discVar=gm.ColDisc();
 	for (j=0; j<gm.nCols(); j++) 
 	  if (discVar[j]) solver.setInteger(j);
-
+	  
 	// Write MPS file
 	if (gm.optDefined("writemps"))
 		write_mps(gm, solver, myout, gm.optGetString("writemps", buffer));
@@ -132,6 +132,28 @@ int main (int argc, const char *argv[]) {
 	model.solver()->setHintParam(OsiDoReducePrint,true,OsiHintTry);
 	model.passInMessageHandler(&cbcout);
 
+	// range of priority values
+	double minprior=solver.getInfinity();
+	double maxprior=-solver.getInfinity();
+	// take care of integer variable branching priorities
+	if (gm.getPriorityOption()) {
+		// first check which range of priorities is given
+		for (int i=0; i<gm.nCols(); ++i) {
+			if (gm.ColPriority()[i]<minprior) minprior=gm.ColPriority()[i];
+			if (gm.ColPriority()[i]>maxprior) maxprior=gm.ColPriority()[i];
+		}
+		if (minprior!=maxprior) {
+			int* cbcprior=new int[gm.nDCols()];
+			for (int i=0; i<gm.nDCols(); ++i) {
+				// we map gams priorities into the range {1,..,1000}
+				// (1000 is standard priority in Cbc, and 1 is highest priority)
+				cbcprior[i]=1+(int)(999*(gm.ColPriority()[i]-minprior)/(maxprior-minprior));
+			}
+			model.passInPriorities(cbcprior, false);
+			delete[] cbcprior;
+		}
+	}
+
 	// Tell solver which variables belong to SOS of type 1 or 2
 	if (gm.nSOS1() || gm.nSOS2()) {
 		CbcObject** objects = new CbcObject*[gm.nSOS1()+gm.nSOS2()];
@@ -139,19 +161,32 @@ int main (int argc, const char *argv[]) {
 		int* which = new int[gm.nCols()];
 		for (i=1; i<=gm.nSOS1(); ++i) {
 			int n=0;
+			double priorsum=0.;
 			for (j=0; j<gm.nCols(); ++j)
-				if (gm.SOSIndicator()[j]==i) which[n++]=j;
+				if (gm.SOSIndicator()[j]==i) {
+					which[n++]=j;
+					priorsum+=gm.ColPriority()[j];
+				}
 			objects[i-1]=new CbcSOS(&model, n, which, NULL, i-1, 1);
-			// branch on long sets first
-			objects[i-1]->setPriority(gm.nCols()-n);
+			if (gm.getPriorityOption() && minprior!=maxprior) // scale avg. of gams priorities into {1,..,1000} range
+				objects[i-1]->setPriority(1+(int)(999*((priorsum/n)-minprior)/(maxprior-minprior)));
+			else // branch on long sets first
+				objects[i-1]->setPriority(gm.nCols()-n);
 		}
 		for (i=1; i<=gm.nSOS2(); ++i) {
 			int n=0;
+			double priorsum=0.;
 			for (j=0; j<gm.nCols(); ++j)
-				if (gm.SOSIndicator()[j]==-i) which[n++]=j;
+				if (gm.SOSIndicator()[j]==-i) {
+					which[n++]=j;
+					priorsum+=gm.ColPriority()[j];
+				}
 			objects[gm.nSOS1()+i-1]=new CbcSOS(&model, n, which, NULL, gm.nSOS1()+i-1, 2);
-			// branch on long sets first
-			objects[gm.nSOS1()+i-1]->setPriority(gm.nCols()-n);
+
+			if (gm.getPriorityOption() && minprior!=maxprior) // scale avg. of gams priorities into {1,..,1000} range
+				objects[gm.nSOS1()+i-1]->setPriority(1+(int)(999*((priorsum/n)-minprior)/(maxprior-minprior)));
+			else // branch on long sets first
+				objects[gm.nSOS1()+i-1]->setPriority(gm.nCols()-n);
 		}
 		delete[] which;
 		
@@ -161,11 +196,37 @@ int main (int argc, const char *argv[]) {
 		delete[] objects;
 		
 		if (gm.optGetBool("integerpresolve")) {
-			myout << "Integer presolve does not support SOS constraints and is therefore switched off." << CoinMessageEol;
+			myout << "Integer presolve does not support SOS constraints yet and is therefore switched off." << CoinMessageEol;
 			gm.optSetBool("integerpresolve", false);
 		}
   }
-
+  
+  // starting point
+  model.solver()->setColSolution(gm.ColLevel());
+  model.solver()->setRowPrice(gm.RowMargin());
+  int* cstat=new int[gm.nCols()];
+  int* rstat=new int[gm.nRows()];
+	for (int j=0; j<gm.nCols(); ++j) {
+		switch (gm.ColBasis()[j]) {
+			case GamsModel::NonBasicLower : cstat[j]=3; break;
+			case GamsModel::NonBasicUpper : cstat[j]=2; break;
+			case GamsModel::Basic : cstat[j]=1; break;
+			case GamsModel::SuperBasic : cstat[j]=0; break;
+			default: cstat[j]=0; myout << "Column basis status " << gm.ColBasis()[j] << " unknown!" << CoinMessageEol;
+		}
+	}
+	for (int j=0; j<gm.nRows(); ++j) {
+		switch (gm.RowBasis()[j]) {
+			case GamsModel::NonBasicLower : rstat[j]=2; break;
+			case GamsModel::NonBasicUpper : rstat[j]=3; break;
+			case GamsModel::Basic : rstat[j]=1; break;
+			case GamsModel::SuperBasic : rstat[j]=0; break;
+			default: rstat[j]=0; myout << "Row basis status " << gm.RowBasis()[j] << " unknown!" << CoinMessageEol;
+		}
+	}
+	model.solver()->setBasisStatus(cstat, rstat);
+	delete[] cstat;
+	delete[] rstat;
 	
 	// Do initial solve to continuous
 	if (gm.nDCols() || gm.nSOS1() || gm.nSOS2()) {
@@ -194,7 +255,7 @@ int main (int argc, const char *argv[]) {
 	model.setIntParam(CbcModel::CbcMaxNumNode, gm.optGetInteger("nodelim"));
 	model.setDblParam(CbcModel::CbcAllowableGap, gm.optGetDouble("optca"));
 	model.setDblParam(CbcModel::CbcAllowableFractionGap, gm.optGetDouble("optcr"));
-	if (gm.optDefined("cutoff")) model.setCutoff(gm.ObjSense()*gm.optGetDouble("cutoff")); // Cbc assumes a minimizatio problem here
+	if (gm.optDefined("cutoff")) model.setCutoff(gm.ObjSense()*gm.optGetDouble("cutoff")); // Cbc assumes a minimization problem here
 	model.setDblParam(CbcModel::CbcIntegerTolerance, gm.optGetDouble("tol_integer"));
 	model.solver()->setIntParam(OsiMaxNumIterationHotStart,100);
 
