@@ -19,7 +19,9 @@ if COIN_HAS_CBC
   SUBDIRS += Cbc
 endif
 if COIN_HAS_GLPK
+if COIN_HAS_OSI
   SUBDIRS += Glpk
+endif
 endif
 if COIN_HAS_IPOPT
   SUBDIRS += Ipopt

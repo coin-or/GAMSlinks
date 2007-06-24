@@ -96,6 +96,8 @@ ThirdParty/GLPK/configure -text
 ThirdParty/GLPK/configure.ac -text
 ThirdParty/GLPK/get.GLPK -text
 ThirdParty/GLPK/glpk.patch -text
+/bonmin.patch -text
+/cbc.patch -text
 /config.guess -text
 /config.sub -text
 /configure -text

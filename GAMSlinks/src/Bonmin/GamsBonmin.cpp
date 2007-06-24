@@ -122,6 +122,10 @@ void solve_minlp(smagHandle_t prob) {
 	else
 		bonmin_setup.options()->SetIntegerValue("bonmin.node_limit", prob->gms.itnlim);
 	bonmin_setup.options()->SetNumericValue("bonmin.time_limit", prob->gms.reslim);
+	if (prob->logOption) { // if user wants output, increase default log level a bit 
+		bonmin_setup.options()->SetIntegerValue("bonmin.bb_log_level", 1);
+		bonmin_setup.options()->SetIntegerValue("bonmin.lp_log_level", 1);
+	}
 
 	try {
 		if (prob->gms.useopt)

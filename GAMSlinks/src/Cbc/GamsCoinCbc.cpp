@@ -39,8 +39,6 @@
 #error "Clp or Glpk need to be available."
 #endif
 
-void write_mps(GamsModel& gm, OsiSolverInterface& solver, GamsMessageHandler& myout, char* filename);
-
 int main (int argc, const char *argv[]) {
 #if defined(_MSC_VER)
   /* Prevents hanging "Application Error, Click OK" Windows in case something bad happens */
@@ -112,10 +110,28 @@ int main (int argc, const char *argv[]) {
 	int *discVar=gm.ColDisc();
 	for (j=0; j<gm.nCols(); j++) 
 	  if (discVar[j]) solver.setInteger(j);
+
+	if (gm.haveNames()) { // set variable and constraint names
+		solver.setIntParam(OsiNameDiscipline, 2);
+		std::string stbuffer;
+		for (j=0; j<gm.nCols(); ++j)
+			if (gm.ColName(j, buffer, 255)) {
+				stbuffer=buffer;
+				solver.setColName(j, stbuffer);
+			}
+		for (j=0; j<gm.nRows(); ++j)
+			if (gm.RowName(j, buffer, 255)) {
+				stbuffer=buffer;
+				solver.setRowName(j, stbuffer);
+			}
+	}
 	  
 	// Write MPS file
-	if (gm.optDefined("writemps"))
-		write_mps(gm, solver, myout, gm.optGetString("writemps", buffer));
+	if (gm.optDefined("writemps")) {
+		gm.optGetString("writemps", buffer);
+  	myout << "\nWriting MPS file " << buffer << "... " << CoinMessageEol;
+  	solver.writeMps(buffer,"",gm.ObjSense());
+	}
 
 	// Some tolerances and limits
 #if (OsiXXXSolverInterface == OsiClpSolverInterface)
@@ -269,32 +285,4 @@ int main (int argc, const char *argv[]) {
 	GamsFinalizeOsi(&gm, &myout, model.solver(), model.solver()->isProvenOptimal() && model.isProvenInfeasible());
 
 	return EXIT_SUCCESS;
-}
-
-void write_mps(GamsModel& gm, OsiSolverInterface& solver, GamsMessageHandler& myout, char* filename) {
-	char namebuf[10];
-	const char **colnames=new const char *[gm.nCols()];
-	const char **rownames=new const char *[gm.nRows()];
-	int j;
-
-  for (j=0; j<gm.nCols(); j++) {
-    sprintf(namebuf,"X%d",j);
-    colnames[j]=strdup(namebuf);
-  }
-
-  for (j=0; j<gm.nRows(); j++) {
-    sprintf(namebuf,"E%d",j);
-    rownames[j] = strdup(namebuf); 
-  }
-
-  myout << "\nWriting MPS file " << filename << "... " << CoinMessageEol;
-  solver.writeMpsNative(filename,rownames,colnames,0,2,gm.ObjSense());
-
-  // We don't need these guys anymore
-  for (j=gm.nRows()-1; j>=0; j--)
-    free((void*)rownames[j]);
-  for (j=gm.nCols()-1; j>=0; j--)
-    free((void*)colnames[j]);
-  delete[] rownames;
-  delete[] colnames;
 }

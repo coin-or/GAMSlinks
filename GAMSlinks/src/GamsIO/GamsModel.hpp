@@ -437,6 +437,10 @@ public:
 	void optSetString(const char *optname, char *sval);
 	/**@}*/
 	
+	/** Indicates whether we have column and row names.
+	 */
+	inline bool haveNames() { return dict; }
+	
 private:
   int nCols_;  // # columns
   int nDCols_; // # discrete columns

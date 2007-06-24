@@ -82,6 +82,18 @@ public:
                           Index m, Index nele_jac, Index* iRow, Index *jCol,
                           Number* values);
 
+	/** Compute the value of a single constraint.
+	 * @param i the constraint number (starting counting from 0)
+	 */
+	virtual bool eval_gi(Index n, const Number* x, bool new_x, Index i, Number& gi);
+	
+	/** Compute the structure or values of the gradient for one constraint.
+	 * Things are like with eval_jac_g.
+	 * @param i the constraint number (starting counting from 0)
+	 */
+	virtual bool eval_grad_gi(Index n, const Number* x, bool new_x,
+		Index i, Index& nele_grad_gi, Index* jCol, Number* values);
+
   /** Method to return:
    *   1) The structure of the hessian of the lagrangian (if "values" is NULL)
    *   2) The values of the hessian of the lagrangian (if "values" is not NULL)

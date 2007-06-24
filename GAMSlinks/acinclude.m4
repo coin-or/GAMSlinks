@@ -6399,7 +6399,7 @@ AC_MSG_RESULT([$SED])
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
-## $Id: coin.m4 351 2007-06-12 05:09:49Z andreasw $
+## $Id: coin.m4 373 2007-06-20 20:42:01Z andreasw $
 #
 # Author: Andreas Wachter    IBM      2006-04-14
 
@@ -6904,6 +6904,14 @@ if test -z "$CXX" ; then
   AC_MSG_ERROR([Failed to find a C++ compiler!])
 fi
 
+# It seems that we need to cleanup something here for the Windows 
+case "$CXX" in
+  cl* | */cl* | CL* | */CL* )
+    sed -e 's/^void exit (int);//' confdefs.h >> confdefs.hh
+    mv confdefs.hh confdefs.h
+    ;;
+esac
+
 # Autoconf incorrectly concludes that cl recognises -g. It doesn't.
 case "$CXX" in
   cl* | */cl* | CL* | */CL* )
@@ -6960,7 +6968,7 @@ if test x"$CXXFLAGS" = x; then
           cl* | */cl* | CL* | */CL*)
 	    # The MT and MTd options are mutually exclusive
             coin_opt_cxxflags='-MT -O2'
-            coin_add_cxxflags='-nologo -EHsc -GR -wd4996'
+            coin_add_cxxflags='-nologo -EHsc -GR -wd4996 -D_CRT_SECURE_NO_DEPRECATE'
             coin_dbg_cxxflags='-MTd'
             ;;
         esac
@@ -7319,7 +7327,7 @@ if test x"$CFLAGS" = x; then
         case "$CC" in
           cl* | */cl* | CL* | */CL*)
             coin_opt_cflags='-MT -O2'
-            coin_add_cflags='-nologo -wd4996'
+            coin_add_cflags='-nologo -wd4996 -D_CRT_SECURE_NO_DEPRECATE'
             coin_dbg_cflags='-MTd'
             ;;
         esac

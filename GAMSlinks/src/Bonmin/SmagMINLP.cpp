@@ -292,6 +292,61 @@ bool SMAG_MINLP::eval_jac_g (Index n, const Number *x, bool new_x,
   return true;
 } // eval_jac_g
 
+bool SMAG_MINLP::eval_gi(Index n, const Number* x, bool new_x, Index i, Number& gi) {
+	int nerror;
+	smagEvalConiFunc (prob, i, x, &gi, &nerror);
+
+  /* Error handling */
+  if ( nerror < 0 ) {
+		char buffer[255];  	
+  	sprintf(buffer, "Error detected in SMAG evaluation of constraint %d!\nnerror = %d\nExiting from subroutine - eval_gi\n", i, nerror); 
+		smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+		smagStdOutputFlush(prob, SMAG_ALLMASK);
+    exit(EXIT_FAILURE);
+  } else if (nerror > 0) {
+		++domviolations;
+		return false;
+	}
+
+	return true;
+} // eval_gi
+
+bool SMAG_MINLP::eval_grad_gi(Index n, const Number* x, bool new_x,
+	Index i, Index& nele_grad_gi, Index* jCol, Number* values) {
+  if (values == NULL) {
+    assert(NULL==x);
+    assert(NULL!=jCol);
+		nele_grad_gi=0;
+    smagConGradRec_t* cGrad;
+    // return the structure of the gradient
+		for (cGrad = prob->conGrad[i];  cGrad;  cGrad = cGrad->next, ++jCol, ++nele_grad_gi)
+			*jCol = cGrad->j;								
+  } else {
+    assert(NULL!=x);
+    assert(NULL==jCol);
+
+    int nerror;
+    double val;
+		smagEvalConiGrad (prob, i, x, &val, &nerror);
+
+    /* Error handling */
+    if (nerror < 0) {
+			char buffer[255];  	
+	  	sprintf(buffer, "Error detected in SMAG evaluation of constraint %d!\nnerror = %d\nExiting from subroutine - eval_grad_gi\n", i, nerror); 
+			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+			smagStdOutputFlush(prob, SMAG_ALLMASK);
+	    exit(EXIT_FAILURE);
+    } else if (nerror > 0) {
+			++domviolations;
+      return false;
+    }
+		for (smagConGradRec_t* cGrad = prob->conGrad[i];  cGrad;  cGrad = cGrad->next, ++values)
+			*values = cGrad->dcdj;
+  }
+
+  return true;
+} // eval_grad_gi
+
 //return the structure or values of the hessian
 bool SMAG_MINLP::eval_h (Index n, const Number *x, bool new_x,
 	Number obj_factor, Index m, const Number *lambda, bool new_lambda,

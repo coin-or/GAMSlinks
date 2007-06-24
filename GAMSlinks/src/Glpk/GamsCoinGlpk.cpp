@@ -37,8 +37,6 @@ int printme(void* info, const char* msg) {
 	return 1;
 }
 
-void write_mps(GamsModel& gm, OsiSolverInterface& solver, GamsMessageHandler& myout, char* filename);
-
 //#############################################################################
 
 int main (int argc, const char *argv[]) {
@@ -100,7 +98,7 @@ int main (int argc, const char *argv[]) {
 	double *rowrng = new double[gm.nRows()];
 	for (j=0; j<gm.nRows(); ++j) rowrng[j] = 0.0;
 	
-	// Glpk does not like zeros in the problem matrix
+	// until recently, Glpk did not like zeros in the problem matrix
 	gm.matSqueezeZeros();
 		
 	solver.setObjSense(gm.ObjSense());
@@ -119,10 +117,6 @@ int main (int argc, const char *argv[]) {
 	for (j=0; j<gm.nCols(); j++) 
 		if (discVar[j]) solver.setInteger(j);
 
-	// Write MPS file
-	if (gm.optDefined("writemps"))
-		write_mps(gm, solver, myout, gm.optGetString("writemps", buffer));
-
 	// why an LP solver cannot minimize a linear function over a box?
 	if (!gm.nRows()) {
 		myout << "Problem has no rows. Adding fake row..." << CoinMessageEol;
@@ -130,21 +124,36 @@ int main (int argc, const char *argv[]) {
 		CoinPackedVector vec(1, &index, &coeff);
 		solver.addRow(vec, -solver.getInfinity(), solver.getInfinity());
 	}
-	
-	LPX* glpk_model=solver.getModelPtr();
-	
-	// set variable and constraint names in glpk
-	for (j=gm.nCols(); j; j--)
-		if (gm.ColName(j-1, buffer, 255))
-			lpx_set_col_name(glpk_model, j, buffer);
-	for (j=gm.nRows(); j; j--)
-		if (gm.RowName(j-1, buffer, 255))
-			lpx_set_row_name(glpk_model, j, buffer);
-	if (!gm.nRows()) {
-		strcpy(buffer,"fake");
-		lpx_set_row_name(glpk_model, 1, buffer);
+
+	if (gm.haveNames()) { // set variable and constraint names
+		solver.setIntParam(OsiNameDiscipline, 2);
+		std::string stbuffer;
+		for (j=0; j<gm.nCols(); ++j)
+			if (gm.ColName(j, buffer, 255)) {
+				stbuffer=buffer;
+				solver.setColName(j, stbuffer);
+				myout << j << " " << stbuffer << CoinMessageEol;
+			}
+		for (j=0; j<gm.nRows(); ++j)
+			if (gm.RowName(j, buffer, 255)) {
+				stbuffer=buffer;
+				solver.setRowName(j, stbuffer);
+			}
+		if (!gm.nRows()) {
+			stbuffer="fakerow";
+			solver.setRowName(j, stbuffer);
+		}
 	}
 
+	LPX* glpk_model=solver.getModelPtr();
+
+	// Write MPS file
+	if (gm.optDefined("writemps")) {
+		gm.optGetString("writemps", buffer);
+  	myout << "\nWriting MPS file " << buffer << "... " << CoinMessageEol;
+		lpx_write_mps(glpk_model, buffer);
+	}
+	
 	// Some tolerances and limits
 	solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
 	lpx_set_real_parm(glpk_model, LPX_K_TMLIM, gm.optGetDouble("reslim"));
@@ -289,32 +298,4 @@ int main (int argc, const char *argv[]) {
 	GamsFinalizeOsi(&gm, &myout, &solver, 0, solver.isTimeLimitReached());
 
 	return 0;
-}
-
-void write_mps(GamsModel& gm, OsiSolverInterface& solver, GamsMessageHandler& myout, char* filename) {
-	const char **colnames=new const char *[gm.nCols()];
-	const char **rownames=new const char *[gm.nRows()];
-	char namebuf[10];
-	int j;
-
-	for (j=gm.nCols()-1; j>=0; --j) {
-		sprintf(namebuf,"X%d",j);
-		colnames[j] = strdup(namebuf);
-	}
-
-	for (j=gm.nRows()-1; j>=0; --j) {
-		sprintf(namebuf,"E%d",j);
-		rownames[j] = strdup(namebuf);
-	}
-
-	myout << "Writing MPS file " << filename << "... " << CoinMessageEol;
-	solver.writeMpsNative(filename,rownames,colnames,0,2,gm.ObjSense());
-
-	// We don't need these guys anymore
-	for (j=gm.nRows()-1; j>=0; j--)
-		free((void*)rownames[j]);
-	for (j=gm.nCols()-1; j>=0; j--)
-		free((void*)colnames[j]);
-	delete[] rownames;
-	delete[] colnames;
 }
