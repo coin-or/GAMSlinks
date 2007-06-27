@@ -280,9 +280,57 @@ int main (int argc, const char *argv[]) {
 
 	myout << CoinMessageEol << "Starting branch-and-bound..." << CoinMessageEol;
 	model.branchAndBound();
+	
+	myout << "\n" << CoinMessageEol;
+	bool write_solution=false;
+	if (model.solver()->isProvenDualInfeasible()) {
+		gm.setStatus(GamsModel::NormalCompletion, GamsModel::UnboundedNoSolution);
+		myout << "Model unbounded." << CoinMessageEol;
+	} else if (model.isAbandoned()) {
+		gm.setStatus(GamsModel::ErrorSolverFailure, GamsModel::ErrorNoSolution);
+		myout << "Model abandoned." << CoinMessageEol;
+	} else if (model.isProvenOptimal()) {
+		write_solution=true;
+		gm.setStatus(GamsModel::NormalCompletion, GamsModel::Optimal);
+		myout << "Solved optimal." << CoinMessageEol;
+	} else if (model.isNodeLimitReached()) {
+//		int numIntegInfeas, numObjInfeas;
+//		if (model.feasibleSolution(numIntegInfeas,numObjInfeas)) {
+		if (model.bestSolution()) {
+			write_solution=true;
+			gm.setStatus(GamsModel::IterationInterrupt, GamsModel::IntegerSolution);
+			myout << "Node limit reached. Have feasible solution." << CoinMessageEol;
+		} else {
+			gm.setStatus(GamsModel::IterationInterrupt, GamsModel::NoSolutionReturned);
+			myout << "Node limit reached. No feasible solution found." << CoinMessageEol;
+		}
+	} else if (model.isSecondsLimitReached()) {
+//		int numIntegInfeas, numObjInfeas;
+//		if (model.feasibleSolution(numIntegInfeas,numObjInfeas)) {
+		if (model.bestSolution()) {
+			write_solution=true;
+			gm.setStatus(GamsModel::ResourceInterrupt, GamsModel::IntegerSolution);
+			myout << "Time limit reached. Have feasible solution." << CoinMessageEol;
+		} else {
+			gm.setStatus(GamsModel::ResourceInterrupt, GamsModel::NoSolutionReturned);
+			myout << "Time limit reached. No feasible solution found." << CoinMessageEol;
+		}
+	} else if (model.isProvenInfeasible()) {
+		gm.setStatus(GamsModel::NormalCompletion, GamsModel::InfeasibleNoSolution);
+		myout << "Model infeasible." << CoinMessageEol;
+	}
+	myout << "curr. obj.: " << model.getCurrentObjValue() << CoinMessageEol;
+	gm.setIterUsed(model.getIterationCount());
+	gm.setResUsed(gm.SecondsSinceStart());
+	if (write_solution) {
+		GamsWriteSolutionOsi(&gm, &myout, model.solver());
+	} else {
+		gm.setObjVal(0.0);
+		gm.setSolution(); // trigger the write of GAMS solution file
+	}
 
 	// if the lp solver says feasible, but cbc says infeasible, then the lp solver was probably not called and the model found infeasible in the preprocessing 
-	GamsFinalizeOsi(&gm, &myout, model.solver(), model.solver()->isProvenOptimal() && model.isProvenInfeasible());
+//	GamsFinalizeOsi(&gm, &myout, model.solver(), model.solver()->isProvenOptimal() && model.isProvenInfeasible());
 
 	return EXIT_SUCCESS;
 }

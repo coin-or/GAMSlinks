@@ -132,7 +132,6 @@ int main (int argc, const char *argv[]) {
 			if (gm.ColName(j, buffer, 255)) {
 				stbuffer=buffer;
 				solver.setColName(j, stbuffer);
-				myout << j << " " << stbuffer << CoinMessageEol;
 			}
 		for (j=0; j<gm.nRows(); ++j)
 			if (gm.RowName(j, buffer, 255)) {

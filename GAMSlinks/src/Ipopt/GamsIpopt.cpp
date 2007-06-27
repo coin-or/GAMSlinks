@@ -43,7 +43,7 @@ int main (int argc, char* argv[]) {
   }
   
   char buffer[512];
-  if (smagStdOutputStart(prob, SMAG_STATUS_OVERWRITE_IFDUMMY, buffer, sizeof(buffer)!=0))
+  if (smagStdOutputStart(prob, SMAG_STATUS_OVERWRITE_IFDUMMY, buffer, sizeof(buffer)))
   	fprintf(stderr, "Warning: Error opening GAMS output files .. continuing anyhow\t%s\n", buffer);
   
   smagReadModelStats (prob);
@@ -76,7 +76,10 @@ int main (int argc, char* argv[]) {
   app->Options()->SetStringValue("mu_strategy", "adaptive");
  	app->Options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false);
  	app->Options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false);
-
+ 	if (smagColCountNL(prob)==0) { // LP
+		app->Options()->SetStringValue("mehrotra_algorithm", "yes");
+ 	}
+	
 	if (prob->gms.useopt)
 		app->Initialize(prob->gms.optFileName);
 	else

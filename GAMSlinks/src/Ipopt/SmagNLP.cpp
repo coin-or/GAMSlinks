@@ -421,7 +421,7 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
       negLambda[i] = -lambda[i] * isMin;
     }
 		smagReportSolFull(prob, model_status, solver_status,
-			data->iter_count(), smagGetCPUTime(prob)-clockStart, obj_value*isMin, domviolations,
+			data ? data->iter_count() : SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, obj_value*isMin, domviolations,
 			g, negLambda, rowBasStat, rowIndic,
 			x, colMarg, colBasStat, colIndic);
 			
