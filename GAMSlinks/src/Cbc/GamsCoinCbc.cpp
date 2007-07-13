@@ -319,7 +319,7 @@ int main (int argc, const char *argv[]) {
 		gm.setStatus(GamsModel::NormalCompletion, GamsModel::InfeasibleNoSolution);
 		myout << "Model infeasible." << CoinMessageEol;
 	}
-	myout << "curr. obj.: " << model.getCurrentObjValue() << CoinMessageEol;
+//	myout << "curr. obj.: " << model.getCurrentObjValue() << CoinMessageEol;
 	gm.setIterUsed(model.getIterationCount());
 	gm.setResUsed(gm.SecondsSinceStart());
 	if (write_solution) {
