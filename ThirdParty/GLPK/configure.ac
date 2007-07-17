@@ -89,9 +89,9 @@ if test "$use_glpk" != "no"; then
   esac
 
   # Check if headers are there
-  AC_CHECK_FILE([$glpk_dir/include/glpk.h],
-                [],
-                [AC_MSG_ERROR([I cannot find headers for GLPK])])
+  AC_COIN_CHECK_FILE([$glpk_dir/include/glpk.h],
+                     [],
+                     [AC_MSG_ERROR([I cannot find headers for GLPK])])
                 
   GLPK_INCFLAGS="-I\`\$(CYGPATH_W) $glpk_dir/include\`"
   GLPK_LIB="$glpk_dir/lib/libglpk.$libe"
