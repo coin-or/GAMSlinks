@@ -39,13 +39,13 @@ int main (int argc, char* argv[]) {
   prob = smagInit (argv[1]);
   if (!prob) {
   	fprintf(stderr, "Error reading control file %s\nexiting ...\n", argv[1]);
-		return EXIT_FAILURE;  	
+		return EXIT_FAILURE;
   }
-  
+
   char buffer[512];
   if (smagStdOutputStart(prob, SMAG_STATUS_OVERWRITE_IFDUMMY, buffer, sizeof(buffer)))
   	fprintf(stderr, "Warning: Error opening GAMS output files .. continuing anyhow\t%s\n", buffer);
-  
+
   smagReadModelStats (prob);
   smagSetObjFlavor (prob, OBJ_FUNCTION);
   smagSetSqueezeFreeRows (prob, 1);	/* don't show me =n= rows */
@@ -64,9 +64,9 @@ int main (int argc, char* argv[]) {
   SmartPtr<TNLP> smagnlp = mysmagnlp;
   // Create a new instance of IpoptApplication (use a SmartPtr, not raw)
   SmartPtr<IpoptApplication> app = new IpoptApplication(false);
-  
+
  	SmartPtr<Journal> smag_jrnl=new SmagJournal(prob, "console", J_ITERSUMMARY);
-	smag_jrnl->SetPrintLevel(J_DBG, J_NONE);  	
+	smag_jrnl->SetPrintLevel(J_DBG, J_NONE);
 	if (!app->Jnlst()->AddJournal(smag_jrnl))
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT output.\n");
 
@@ -76,20 +76,20 @@ int main (int argc, char* argv[]) {
   app->Options()->SetStringValue("mu_strategy", "adaptive");
  	app->Options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false);
  	app->Options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false);
- 	if (smagColCountNL(prob)==0) { // LP
-		app->Options()->SetStringValue("mehrotra_algorithm", "yes");
- 	}
-	
+// 	if (smagColCountNL(prob)==0) { // LP
+//		app->Options()->SetStringValue("mehrotra_algorithm", "yes");
+// 	}
+
 	if (prob->gms.useopt)
 		app->Initialize(prob->gms.optFileName);
 	else
 		app->Initialize("");
-		
+
 	app->Options()->GetNumericValue("diverging_iterates_tol", mysmagnlp->div_iter_tol, "");
-	// or should we also check the tolerance for acceptable points?  
-	app->Options()->GetNumericValue("tol", mysmagnlp->scaled_conviol_tol, ""); 
-	app->Options()->GetNumericValue("constr_viol_tol", mysmagnlp->unscaled_conviol_tol, ""); 
-	
+	// or should we also check the tolerance for acceptable points?
+	app->Options()->GetNumericValue("tol", mysmagnlp->scaled_conviol_tol, "");
+	app->Options()->GetNumericValue("constr_viol_tol", mysmagnlp->unscaled_conviol_tol, "");
+
   // Ask Ipopt to solve the problem
   ApplicationReturnStatus status = app->OptimizeTNLP(smagnlp);
 
@@ -149,7 +149,7 @@ int main (int argc, char* argv[]) {
 //     Search_Direction_Becomes_Too_Small=3,
 //     Diverging_Iterates=4,
 //     User_Requested_Stop=5,
-// 
+//
 //     Maximum_Iterations_Exceeded=-1,
 //     Restoration_Failed=-2,
 //     Error_In_Step_Computation=-3,
@@ -157,7 +157,7 @@ int main (int argc, char* argv[]) {
 //     Invalid_Problem_Definition=-11,
 //     Invalid_Option=-12,
 //     Invalid_Number_Detected=-13,
-// 
+//
 //     Unrecoverable_Exception=-100,
 //     NonIpopt_Exception_Thrown=-101,
 //     Insufficient_Memory=-102,
