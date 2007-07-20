@@ -29,11 +29,11 @@
 int printme(void* info, const char* msg) {
 	GamsMessageHandler* myout=(GamsMessageHandler*)info;
 	assert(myout);
-	
+
 	*myout << msg;
 	if (*msg && msg[strlen(msg)-1]=='\n')
 		*myout << CoinMessageEol; // this will make the message handler actually print the message
-	
+
 	return 1;
 }
 
@@ -48,9 +48,9 @@ int main (int argc, const char *argv[]) {
 	if (argc==1) {
 		fprintf(stderr, "usage: %s <control_file_name>\nexiting ...\n",  argv[0]);
 		exit(EXIT_FAILURE);
-	}	
+	}
 	int j;
-	char buffer[255]; 
+	char buffer[255];
 
 	OsiGlpkSolverInterface solver;
 
@@ -58,32 +58,32 @@ int main (int argc, const char *argv[]) {
 	// argument to this program
 	GamsModel gm(argv[1],-solver.getInfinity(),solver.getInfinity());
 
-	// Pass in the GAMS status/log file print routines 
+	// Pass in the GAMS status/log file print routines
 	GamsMessageHandler myout(&gm), slvout(&gm);
 	slvout.setPrefix(0);
 
 	glp_term_hook(printme, &slvout);
 	solver.passInMessageHandler(&slvout);
 
-#ifdef GAMS_BUILD	
+#ifdef GAMS_BUILD
 	myout << "\nGAMS/CoinGlpk LP/MIP Solver (Glpk Library" << glp_version() << ")\nwritten by A. Makhorin\n " << CoinMessageEol;
 #else
 	myout << "\nGAMS/Glpk LP/MIP Solver (Glpk Library" << glp_version() << ")\nwritten by A. Makhorin\n " << CoinMessageEol;
 #endif
-	
+
 	if (gm.nSOS1() || gm.nSOS2()) {
 		myout << "GLPK cannot handle special ordered sets (SOS)" << CoinMessageEol;
 		myout << "Exiting ..." << CoinMessageEol;
 		exit(EXIT_FAILURE);
 	}
-	
-#ifdef GAMS_BUILD	
+
+#ifdef GAMS_BUILD
 	if (!gm.ReadOptionsDefinitions("coinglpk"))
 #else
 	if (!gm.ReadOptionsDefinitions("glpk"))
 #endif
 		myout << "Error intializing option file handling or reading option file definitions!" << CoinMessageEol
-			<< "Processing of options is likely to fail!" << CoinMessageEol;  
+			<< "Processing of options is likely to fail!" << CoinMessageEol;
 	gm.ReadOptionsFile();
 
 	/* Overwrite GAMS Options */
@@ -97,24 +97,24 @@ int main (int argc, const char *argv[]) {
 	// OsiSolver needs rowrng for the loadProblem call
 	double *rowrng = new double[gm.nRows()];
 	for (j=0; j<gm.nRows(); ++j) rowrng[j] = 0.0;
-	
+
 	// until recently, Glpk did not like zeros in the problem matrix
 	gm.matSqueezeZeros();
-		
+
 	solver.setObjSense(gm.ObjSense());
 	solver.setDblParam(OsiObjOffset, gm.ObjConstant()); // obj constant
 
-	solver.loadProblem(gm.nCols(), gm.nRows(), gm.matStart(), 
-															gm.matRowIdx(), gm.matValue(), 
-															gm.ColLb(), gm.ColUb(), gm.ObjCoef(), 
+	solver.loadProblem(gm.nCols(), gm.nRows(), gm.matStart(),
+															gm.matRowIdx(), gm.matValue(),
+															gm.ColLb(), gm.ColUb(), gm.ObjCoef(),
 															gm.RowSense(), gm.RowRhs(), rowrng);
- 	
+
 	// We don't need these guys anymore
 	delete[] rowrng;
 
 	// Tell solver which variables are discrete
 	int *discVar=gm.ColDisc();
-	for (j=0; j<gm.nCols(); j++) 
+	for (j=0; j<gm.nCols(); j++)
 		if (discVar[j]) solver.setInteger(j);
 
 	// why an LP solver cannot minimize a linear function over a box?
@@ -152,11 +152,11 @@ int main (int argc, const char *argv[]) {
   	myout << "\nWriting MPS file " << buffer << "... " << CoinMessageEol;
 		lpx_write_mps(glpk_model, buffer);
 	}
-	
+
 	// Some tolerances and limits
 	solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
 	lpx_set_real_parm(glpk_model, LPX_K_TMLIM, gm.optGetDouble("reslim"));
-	
+
 	if (!solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual")))
 		myout << "Failed to set dual tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
 
@@ -177,7 +177,7 @@ int main (int argc, const char *argv[]) {
 	gm.optGetString("startalg", buffer);
 	if (strcmp(buffer, "dual")==0)
 		solver.setHintParam(OsiDoDualInInitial, false, OsiForceDo);
-	
+
 	gm.optGetString("pricing", buffer);
 	if (strcmp(buffer, "textbook")==0)
 		lpx_set_int_parm(glpk_model, LPX_K_PRICE, 0);
@@ -190,7 +190,7 @@ int main (int argc, const char *argv[]) {
   // solver.setColSolution(gm.ColLevel()); // no useful implementation in OsiGLPK yet
   // solver.setRowPrice(gm.RowMargin()); // no useful implementation in OsiGLPK yet
 //  CoinWarmStartBasis warmstart;
-//  warmstart.setSize(solver.getNumCols(), solver.getNumRows()); 
+//  warmstart.setSize(solver.getNumCols(), solver.getNumRows());
 //	for (int j=0; j<gm.nCols(); ++j) {
 //		switch (gm.ColBasis()[j]) {
 //			case GamsModel::NonBasicLower : warmstart.setStructStatus(j, CoinWarmStartBasis::atLowerBound); break;
@@ -217,7 +217,7 @@ int main (int argc, const char *argv[]) {
 		myout << "Solving root problem... " << CoinMessageEol;
 
 	solver.initialSolve();
-	
+
 	if (solver.isProvenOptimal() && 0!=gm.nDCols()) {
 		myout << CoinMessageNewline << CoinMessageEol;
 
@@ -233,7 +233,7 @@ int main (int argc, const char *argv[]) {
 		switch (gm.optGetInteger("cuts")) {
 			case -1 : break; // no cuts
 			case  1 : cutindicator=LPX_C_ALL; break; // all cuts
-			case  0 : // user defined cut selection  
+			case  0 : // user defined cut selection
 				if (gm.optGetBool("covercuts")) cutindicator|=LPX_C_COVER;
 				if (gm.optGetBool("cliquecuts")) cutindicator|=LPX_C_CLIQUE;
 				if (gm.optGetBool("gomorycuts")) cutindicator|=LPX_C_GOMORY;
@@ -244,7 +244,7 @@ int main (int argc, const char *argv[]) {
 
 		// cutoff do not seem to work in Branch&Bound
 //		if (gm.optDefined("cutoff")) {
-//			solver.setDblParam(OsiPrimalObjectiveLimit, gm.optGetDouble("cutoff")); 
+//			solver.setDblParam(OsiPrimalObjectiveLimit, gm.optGetDouble("cutoff"));
 //			myout << "OBJLL: " << lpx_get_real_parm(glpk_model, LPX_K_OBJLL)
 //				<< "OBJUL: " << lpx_get_real_parm(glpk_model, LPX_K_OBJUL) << CoinMessageEol;
 //		}
@@ -256,7 +256,7 @@ int main (int argc, const char *argv[]) {
 //			optcr=0.001;
 //		}
 //		lpx_set_real_parm(glpk_model, LPX_K_TOLOBJ, optcr);
-		
+
 		double tol_integer=gm.optGetDouble("tol_integer");
 		if (tol_integer>0.001) {
 			myout << "Cannot use tol_integer of larger then 0.001. Setting integer tolerance to 0.001." << CoinMessageEol;
@@ -269,32 +269,40 @@ int main (int argc, const char *argv[]) {
 		solver.branchAndBound();
 
 		int mipstat = lpx_mip_status(glpk_model);
-		if (!solver.isIterationLimitReached() && !solver.isTimeLimitReached() 
+		if (!solver.isIterationLimitReached()
+#ifdef OGSI_HAVE_TIMELIMIT
+				&& !solver.isTimeLimitReached()
+#endif
 				&& (mipstat == LPX_I_FEAS || mipstat == LPX_I_OPT)) {
 			const double *colLevel=solver.getColSolution();
 			// We are loosing colLevel after a call to lpx_set_* when using the Visual compiler. So we save the levels.
 			double *colLevelsav = new double[gm.nCols()];
 			for (j=0; j<gm.nCols(); j++) colLevelsav[j] = colLevel[j];
-			
+
 			// No iteration limit for fixed run and special time limit
 			lpx_set_real_parm(glpk_model, LPX_K_TMLIM, gm.optGetDouble("reslim_fixedrun"));
 			lpx_set_int_parm(glpk_model, LPX_K_ITLIM, -1);
-			
-			for (j=0; j<gm.nCols(); j++) 
+
+			for (j=0; j<gm.nCols(); j++)
 				if (discVar[j])
 					solver.setColBounds(j,colLevelsav[j],colLevelsav[j]);
 			delete[] colLevelsav;
-				
-			solver.setHintParam(OsiDoReducePrint, true, OsiHintTry); // loglevel 1 
+
+			solver.setHintParam(OsiDoReducePrint, true, OsiHintTry); // loglevel 1
 			myout << "\nSolving fixed problem... " << CoinMessageEol;
 			solver.resolve();
-			if (!solver.isProvenOptimal()) 
-			myout << "Problems solving fixed problem. No solution returned." << CoinMessageEol; 
+			if (!solver.isProvenOptimal())
+			myout << "Problems solving fixed problem. No solution returned." << CoinMessageEol;
 		}
 	}
 
 	// Determine status and write solution
-	GamsFinalizeOsi(&gm, &myout, &solver, 0, solver.isTimeLimitReached());
+#ifdef OGSI_HAVE_TIMELIMIT
+	bool timelimitreached=solver.isTimeLimitReached();
+#else
+	bool timelimitreached=false;
+#endif
+	GamsFinalizeOsi(&gm, &myout, &solver, 0, timelimitreached);
 
 	return 0;
 }

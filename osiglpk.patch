@@ -1,5 +1,7 @@
---- Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Revision 1018)
-+++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Arbeitskopie)
+Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
+===================================================================
+--- Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(revision 1023)
++++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(working copy)
 @@ -176,6 +176,7 @@
    If we ever reach the default case, we're deeply confused.
  */
@@ -81,9 +83,21 @@
  	isPrimInfeasible_ = false;
  	isDualInfeasible_ = false;
  	delete [] colsol_;
---- Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(Revision 1018)
-+++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(Arbeitskopie)
-@@ -90,6 +90,8 @@
+Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp
+===================================================================
+--- Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(revision 1023)
++++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(working copy)
+@@ -17,6 +17,9 @@
+ #include "CoinPackedMatrix.hpp"
+ #include "CoinWarmStartBasis.hpp"
+ 
++// A define that tells whether methods to check for the timelimit exists in OsiGlpkSolverInterface
++#define OGSI_HAVE_TIMELIMIT 1
++
+ /** GPLK Solver Interface
+ 
+     Instantiation of OsiGlpkSolverInterface for GPLK
+@@ -90,6 +93,8 @@
      virtual bool isDualObjectiveLimitReached() const;
      /// Iteration limit reached?
      virtual bool isIterationLimitReached() const;
@@ -92,7 +106,7 @@
    //@}
  
    //---------------------------------------------------------------------------
-@@ -770,6 +772,8 @@
+@@ -770,6 +775,8 @@
    // Status information
    /// glpk stopped on iteration limit
    bool isIterationLimitReached_;
