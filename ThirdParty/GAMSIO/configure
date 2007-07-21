@@ -2672,7 +2672,7 @@ rm -f conftest.err conftest.$ac_objext \
         case "$CC" in
           cl* | */cl* | CL* | */CL*)
             coin_opt_cflags='-MT -O2'
-            coin_add_cflags='-nologo -wd4996'
+            coin_add_cflags='-nologo -wd4996 -D_CRT_SECURE_NO_DEPRECATE'
             coin_dbg_cflags='-MTd'
             ;;
         esac
@@ -19746,11 +19746,15 @@ case $build in
     ;;
   *-cygwin* | *-mingw*)
       GAMSIO_CODE=VIS
-      CIA_CODE=CIA_VIS
+      CIA_CODE=CIA_WIN
     ;;
   *-darwin*)
       GAMSIO_CODE=DAR
       CIA_CODE=CIA_DAR
+    ;;
+  i?86-*-solaris*)
+      GAMSIO_CODE=SIG
+      CIA_CODE=SIS
     ;;
 esac
 

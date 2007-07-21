@@ -80,11 +80,15 @@ case $build in
     ;;
   *-cygwin* | *-mingw*)
       GAMSIO_CODE=VIS
-      CIA_CODE=CIA_VIS
+      CIA_CODE=CIA_WIN
     ;;
   *-darwin*)
       GAMSIO_CODE=DAR
       CIA_CODE=CIA_DAR
+    ;;
+  i?86-*-solaris*)
+      GAMSIO_CODE=SIG
+      CIA_CODE=SIS
     ;;
 esac
 
