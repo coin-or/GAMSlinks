@@ -6399,7 +6399,7 @@ AC_MSG_RESULT([$SED])
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
-## $Id: coin.m4 373 2007-06-20 20:42:01Z andreasw $
+## $Id: coin.m4 420 2007-06-28 18:20:54Z andreasw $
 #
 # Author: Andreas Wachter    IBM      2006-04-14
 
@@ -7190,12 +7190,13 @@ AC_LANG_POP(C++)
 # still pop up for the cl compiler
 
 AC_DEFUN([AC_COIN_CHECK_HEADER],
-[if test x"$4" = x; then
-  hdr="#include <$1>"
-else
-  hdr="$4"
-fi
-AC_CHECK_HEADERS([$1],[$2],[$3],[$hdr])
+[#if test x"$4" = x; then
+#  hdr="#include <$1>"
+#else
+#  hdr="$4"
+#fi
+#AC_CHECK_HEADERS([$1],[$2],[$3],[$hdr])
+AC_CHECK_HEADERS([$1],[$2],[$3],[$4])
 ]) # AC_COIN_CHECK_HEADER
 
 ###########################################################################

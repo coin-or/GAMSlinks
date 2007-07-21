@@ -262,6 +262,10 @@ case $build in
       GAMSIO_CODE=DAR
       gamsio_system=Darwin
     ;;
+  i?86-*-solaris*)
+      GAMSIO_CODE=SIG
+      gamsio_system=Solaris
+    ;;
 esac
 
 #Intel Fortran libraries (required for Linux systems when not compiling with Intel compiler)
@@ -312,6 +316,9 @@ elif test x"$gamsio_system" = xWindows; then
 elif test x"$GAMSIO_CODE" = xDAR; then
   GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a -ldl -lSystemStubs"
   SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -lSystemStubs"
+elif test x"$GAMSIO_CODE" = xSIG; then
+  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
+  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
 fi
 GAMSIO_CPPFLAGS="-I$use_gamsio"
 LIBS="$GAMSIO_LIBS $LIBS"
