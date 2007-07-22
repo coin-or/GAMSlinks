@@ -20,15 +20,20 @@ nodist_libcoinglpk_la_SOURCES = \
 $(GLPKDIR)/src/glpapi01.c \
 $(GLPKDIR)/src/glpapi02.c \
 $(GLPKDIR)/src/glpapi03.c \
+$(GLPKDIR)/src/glpapi04.c \
+$(GLPKDIR)/src/glpapi05.c \
+$(GLPKDIR)/src/glpapi06.c \
+$(GLPKDIR)/src/glpapi07.c \
+$(GLPKDIR)/src/glpapi08.c \
+$(GLPKDIR)/src/glpapi09.c \
+$(GLPKDIR)/src/glpapi10.c \
 $(GLPKDIR)/src/glpavl.c \
-$(GLPKDIR)/src/glpbfi.c \
+$(GLPKDIR)/src/glpbfd.c \
 $(GLPKDIR)/src/glpbfx.c \
 $(GLPKDIR)/src/glpdmp.c \
 $(GLPKDIR)/src/glpgmp.c \
 $(GLPKDIR)/src/glphbm.c \
 $(GLPKDIR)/src/glpiet.c \
-$(GLPKDIR)/src/glpinv01.c \
-$(GLPKDIR)/src/glpinv02.c \
 $(GLPKDIR)/src/glpios01.c \
 $(GLPKDIR)/src/glpios02.c \
 $(GLPKDIR)/src/glpios03.c \
@@ -66,7 +71,6 @@ $(GLPKDIR)/src/glplpx16.c \
 $(GLPKDIR)/src/glplpx17.c \
 $(GLPKDIR)/src/glplpx18.c \
 $(GLPKDIR)/src/glplpx19.c \
-$(GLPKDIR)/src/glplpx20.c \
 $(GLPKDIR)/src/glpluf01.c \
 $(GLPKDIR)/src/glpluf02.c \
 $(GLPKDIR)/src/glplux.c \
@@ -87,6 +91,9 @@ $(GLPKDIR)/src/glpssx02.c
 #$(GLPKDIR)/src/glpmpl03.c \
 #$(GLPKDIR)/src/glpmpl04.c \
 #$(GLPKDIR)/src/glptsp.c
+#$(GLPKDIR)/src/glpinv01.c \
+#$(GLPKDIR)/src/glpinv02.c \
+#$(GLPKDIR)/src/glplpx20.c 
 
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)`
