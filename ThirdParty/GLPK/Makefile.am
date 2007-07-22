@@ -71,8 +71,7 @@ $(GLPKDIR)/src/glplpx16.c \
 $(GLPKDIR)/src/glplpx17.c \
 $(GLPKDIR)/src/glplpx18.c \
 $(GLPKDIR)/src/glplpx19.c \
-$(GLPKDIR)/src/glpluf01.c \
-$(GLPKDIR)/src/glpluf02.c \
+$(GLPKDIR)/src/glpluf.c \
 $(GLPKDIR)/src/glplux.c \
 $(GLPKDIR)/src/glpmat.c \
 $(GLPKDIR)/src/glpmip01.c \
@@ -85,16 +84,6 @@ $(GLPKDIR)/src/glpspx01.c \
 $(GLPKDIR)/src/glpspx02.c \
 $(GLPKDIR)/src/glpssx01.c \
 $(GLPKDIR)/src/glpssx02.c
-
-#$(GLPKDIR)/src/glpmpl01.c \
-#$(GLPKDIR)/src/glpmpl02.c \
-#$(GLPKDIR)/src/glpmpl03.c \
-#$(GLPKDIR)/src/glpmpl04.c \
-#$(GLPKDIR)/src/glptsp.c
-#$(GLPKDIR)/src/glpinv01.c \
-#$(GLPKDIR)/src/glpinv02.c \
-#$(GLPKDIR)/src/glplpx20.c 
-
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)`
 
