@@ -61,11 +61,11 @@ if COIN_HAS_CLP
    -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
    -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
   GamsCoinCbc_LDADD += \
-   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
-   $(CLPOBJDIR)/src/libClp.la
+   $(CLPOBJDIR)/src/libClp.la \
+   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la
   GamsCoinCbc_DEPENDENCIES += \
-   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
-   $(CLPOBJDIR)/src/libClp.la
+   $(CLPOBJDIR)/src/libClp.la \
+   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la
 	LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt`
 endif
 

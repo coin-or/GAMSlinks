@@ -6399,7 +6399,7 @@ AC_MSG_RESULT([$SED])
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
-## $Id: coin.m4 420 2007-06-28 18:20:54Z andreasw $
+## $Id: coin.m4 428 2007-07-19 22:15:01Z andreasw $
 #
 # Author: Andreas Wachter    IBM      2006-04-14
 
@@ -6604,6 +6604,22 @@ m4_ifvaln([$10],[AC_MSG_CHECKING(whether directory $10 is available)
 ]) # AC_COIN_MAIN_SUBDIRS
 
 ###########################################################################
+#                            COIN_CHECK_FILE                              #
+###########################################################################
+
+# A simple replacement for AC_CHECK_FILE that works for cross compilation
+
+AC_DEFUN([AC_COIN_CHECK_FILE],
+[if test -r $1; then
+  $2
+  :
+else
+  $3
+  :
+fi
+])
+
+###########################################################################
 #                        COIN_THIRDPARTY_SUBDIRS                          #
 ###########################################################################
 
@@ -6715,7 +6731,9 @@ AC_ARG_ENABLE([debug],
                 [compile all projects with debug options tests])],
 [case "${enableval}" in
    yes) coin_debug_compile=true
-        enable_shared=no
+        if test "${enable_shared+set}" = set; then :; else
+          enable_shared=no
+        fi 
         ;;
    no)  coin_debug_compile=false
         ;;
@@ -7895,9 +7913,9 @@ if test "$enable_maintainer_mode" = yes; then
     fi
     correct_version='1.5.22'
     grep_version=`echo  $correct_version | sed -e 's/\\./\\\\\\./g'`
-    AC_CHECK_FILE([$want_dir/libtool/ltmain.sh],
-	          [have_ltmain=yes],
-                  [have_ltmain=no])
+    AC_COIN_CHECK_FILE([$want_dir/libtool/ltmain.sh],
+	               [have_ltmain=yes],
+                       [have_ltmain=no])
     AC_MSG_CHECKING([whether we are using the correct version ($correct_version) of libtool.])
     if test $have_ltmain = yes; then
     if $EGREP $grep_version $want_dir/libtool/ltmain.sh >/dev/null 2>&1; then
@@ -7918,9 +7936,9 @@ if test "$enable_maintainer_mode" = yes; then
   else
     want_dir=$AUTOTOOLS_DIR/share
   fi
-  AC_CHECK_FILE([$want_dir/aclocal/libtool.m4],
-                [LIBTOOLM4="$want_dir/aclocal/libtool.m4"],
-                [AC_MSG_ERROR([I cannot find the libtool.m4 file.])])
+  AC_COIN_CHECK_FILE([$want_dir/aclocal/libtool.m4],
+                     [LIBTOOLM4="$want_dir/aclocal/libtool.m4"],
+                     [AC_MSG_ERROR([I cannot find the libtool.m4 file.])])
 
   # Check if we have an Externals file
   if test -r $srcdir/Externals; then
@@ -8327,6 +8345,33 @@ AC_SUBST(RPATH_FLAGS)
 ]) # AC_COIN_RPATH_FLAGS
 
 ###########################################################################
+#                        COIN_LINK_INPUT_CMD                              #
+###########################################################################
+
+# This macro determines which command should be used to "link" files
+# that are input to the generated executables.  On Windows, the codes
+# using the native Windows system libraries, cannot understand symbolic
+# links, and a copy should be used instead of 'ln -s'.
+# The result is stored in coin_link_input_cmd
+
+AC_DEFUN([AC_COIN_LINK_INPUT_CMD],
+[AC_REQUIRE([AC_PROG_LN_S])
+AC_BEFORE([AC_COIN_PROG_CC], [$0])
+AC_BEFORE([AC_COIN_ENABLE_DOSCOMPILE], [$0])
+
+AC_MSG_CHECKING([which command should be used to link input files])
+coin_link_input_cmd="$LN_S"
+if test "$enable_doscompile" = mingw; then
+  coin_link_input_cmd=cp
+fi
+case "$CC" in
+  cl* | */cl* | CL* | */CL*)
+    coin_link_input_cmd=cp ;;
+esac
+AC_MSG_RESULT($coin_link_input_cmd)
+])
+
+###########################################################################
 #                              COIN_FINALIZE                              #
 ###########################################################################
 
@@ -8339,6 +8384,7 @@ AC_SUBST(RPATH_FLAGS)
 
 AC_DEFUN([AC_COIN_FINALIZE],
 [
+AC_REQUIRE([AC_COIN_LINK_INPUT_CMD])
 if test x$coin_skip_ac_output != xyes; then
 
   FADDLIBS="$ADDLIBS"
@@ -8380,20 +8426,11 @@ if test x$coin_skip_ac_output != xyes; then
   AC_OUTPUT
 
   if test x"$coin_vpath_link_files" = x; then : ; else
-    lnkcmd=
-    if test "$enable_doscompile" = mingw; then
-      lnkcmd=cp
-    fi
-    case "$CC" in
-      cl* | */cl* | CL* | */CL*)
-        lnkcmd=cp ;;
-    esac
+    lnkcmd="$coin_link_input_cmd"
     if test "$lnkcmd" = cp; then
       AC_MSG_NOTICE(Copying data files for VPATH configuration)
     else
-      AC_PROG_LN_S
       AC_MSG_NOTICE(Creating VPATH links for data files)
-      lnkcmd="$LN_S"
     fi
     for file in $coin_vpath_link_files; do
       dir=`AS_DIRNAME(["./$file"])`
@@ -8800,7 +8837,7 @@ AC_DEFUN([AC_COIN_HAS_USER_LIBRARY],
 # header file, but that's not assumed.
 
     m4_ifval([$3],
-        [AC_CHECK_FILE([$$2INCDIR/$3],[],
+        [AC_COIN_CHECK_FILE([$$2INCDIR/$3],[],
 	     [AC_MSG_ERROR([Cannot find file $3 in $$2INCDIR])])])
 
 # Now see if we can link the function. There are arguments for and against
@@ -8894,10 +8931,10 @@ elif test -z "$use_asldir"; then
     use_asldir=no
   fi
 elif test "$use_asldir" != "no"; then
-  AC_CHECK_FILE([$use_asldir/$ampllib],[],
-                [AC_MSG_ERROR([ASL directory \"$use_asldir\" specified, but library missing])])
-  AC_CHECK_FILE([$use_asldir/asl.h],[],
-                [AC_MSG_ERROR([ASL directory \"$use_asldir\" specified, but header files are missing])])
+  AC_COIN_CHECK_FILE([$use_asldir/$ampllib],[],
+                     [AC_MSG_ERROR([ASL directory \"$use_asldir\" specified, but library missing])])
+  AC_COIN_CHECK_FILE([$use_asldir/asl.h],[],
+                     [AC_MSG_ERROR([ASL directory \"$use_asldir\" specified, but header files are missing])])
   use_asldir=`cd $use_asldir; pwd`
   case $build in
     *-cygwin*) use_asldir=`cygpath -w $use_asldir | sed -e sX\\\\\\\\X/Xg` ;;
@@ -9290,9 +9327,9 @@ if test "$use_mumps" != "no"; then
   esac
 
   # Check if hearders are there
-  AC_CHECK_FILE([$mumps_dir/include/dmumps_c.h],
-                [],
-                [AC_MSG_ERROR([I cannot find headers for MUMPS])])
+  AC_COIN_CHECK_FILE([$mumps_dir/include/dmumps_c.h],
+                     [],
+                     [AC_MSG_ERROR([I cannot find headers for MUMPS])])
   LIBS="$mumps_dir/lib/libdmumps.$libe $mumps_dir/lib/libpord.$libe $mumps_dir/libseq/libmpiseq.$libe $LIBS"
   ADDLIBS="$mumps_dir/lib/libdmumps.$libe $mumps_dir/lib/libpord.$libe $mumps_dir/libseq/libmpiseq.$libe $ADDLIBS"
   # Check if MUMPS actually works
@@ -9347,3 +9384,55 @@ fi
 AC_MSG_RESULT([$coin_has_mumps])
 ]) # AC_COIN_HAS_MUMPS
 
+###########################################################################
+#                             COIN_HAS_GLPK                               #
+###########################################################################
+
+# This macro checks for a library containing the GLPK library.  It
+# checks if the user has provided --with-glpk-lib and --with-glpk-incdir
+# flags, and it not, it checks if the ThirdParty/Glpk project is available.
+
+AC_DEFUN([AC_COIN_HAS_GLPK],
+[
+if test "$PACKAGE_NAME" = ThirdPartyGlpk; then
+  coin_glpkobjdir=../Glpk
+else
+  coin_glpkobjdir=../ThirdParty/Glpk
+fi
+coin_glpksrcdir=$abs_source_dir/$coin_glpkobjdir
+
+AC_COIN_HAS_USER_LIBRARY([Glpk],[GLPK],[glpk.h],
+    [_glp_lpx_simplex glp_lpx_simplex])
+
+MAKEOKFILE=.MakeOk
+use_glpk="$GLPKLIB"
+if test "$GLPKLIB" == ""; then
+
+  # Check if the Glpk's ThirdParty project has been configured
+  if test "$PACKAGE_NAME" != ThirdPartyGlpk; then
+    if test -r $coin_glpkobjdir/.MakeOk; then
+      use_glpk=BUILD
+    fi
+  fi
+fi
+
+if test x"$use_glpk" == xBUILD; then
+
+  GLPKCOINLIB=`cd $coin_glpkobjdir; pwd`/libcoinglpk.la
+  AC_SUBST(GLPKCOINLIB)
+
+  GLPKINCDIR="$coin_glpksrcdir/glpk/include"
+  AC_DEFINE(COIN_HAS_GLPK,[1],[Define to 1 if the Glpk package is used])
+
+  # This is a "true" for AM_CONDITIONAL(COIN_HAS_GLPK)
+  COIN_HAS_GLPK_TRUE=
+  COIN_HAS_GLPK_FALSE='#'
+
+  coin_has_glpk=yes
+
+  AC_MSG_NOTICE([Using Glpk in ThirdParty])
+fi
+
+AM_CONDITIONAL([COIN_BUILD_GLPK],[test x"$use_glpk" = xBUILD])
+
+]) # AC_COIN_HAS_GLPK
