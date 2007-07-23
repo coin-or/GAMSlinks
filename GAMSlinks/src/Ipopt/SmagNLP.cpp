@@ -9,6 +9,8 @@
 #include "SmagNLP.hpp"
 #include "IpIpoptCalculatedQuantities.hpp"
 
+#include <memory.h>
+
 using namespace Ipopt;
 
 // constructor
