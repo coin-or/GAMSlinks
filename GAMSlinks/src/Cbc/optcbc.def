@@ -4,22 +4,48 @@
 
 roundingheuristic boolean 0 1 1 1 rounding heuristic
 localsearch boolean 0 1 1 1 local search
+ 0 local search heuristic is not used
+ 1 local search heuristic is used
 strongbranching boolean 0 1 1 1 strong branching
+ 0 strong branching is switched off
+ 1 strong branching is switched on
 integerpresolve boolean 0 1 1 1 integer presolve
+ 0 don't do integer presolve
+ 1 do integer presolve
 findsos boolean 0 1 1 1 find sos in integer presolve
+ 0 don't try to find special ordered sets
+ 1 try to find special ordered sets
 cuts enumint 0 0 1 1 switch for cut generation
  -1 1 no cuts will be generated
  0 1 automatic
  1 1 cuts from all available cut classes will be generated
 probing boolean 0 1 1 1 probing
+ 0 don't do probing
+ 1 do probing
 gomorycuts boolean 0 1 1 1 Gomory cuts
+ 0 don't add gomory cuts
+ 1 add gomory cuts
 knapsackcuts boolean 0 1 1 1 knapsack cover cuts
+ 0 don't add knapsack cover cuts
+ 1 add knapsack cover cuts
 oddholecuts boolean 0 0 1 1 odd hole cuts
+ 0 don't add odd hole cuts
+ 1 add odd hole cuts
 cliquecuts boolean 0 1 1 1 clique cuts
+ 0 don't add clique cuts
+ 1 add clique cuts
 flowcovercuts boolean 0 1 1 1 flow cover cuts
+ 0 don't add flow cover cuts
+ 1 add flow cover cuts
 mircuts boolean 0 1 1 1 mixed integer rounding cuts
+ 0 don't add mixed integer rounding cuts
+ 1 add mixed integer rounding cuts
 redsplitcuts boolean 0 0 1 1 reduce and split cuts
+ 0 don't add reduce and split cuts
+ 1 add reduce and split cuts
 cutsonlyatroot boolean 0 1 1 1 whether cuts are only generated at the root node
+ 0 generate cuts always in the branch and bound
+ 1 generate cuts only at root node
 startalg enumstr 0 "dual" 1 1 LP solver for root node
  "primal" 1 primal simplex algorithm
  "dual" 1 dual simplex algorithm
@@ -28,7 +54,11 @@ tol_dual double 0 1e-7 0 maxdouble 1 1 dual feasibility tolerance
 tol_primal double 0 1e-7 0 maxdouble 1 1 primal feasibility tolerance
 tol_integer double 0 1e-6 0 maxdouble 1 1 tolerance for integrality
 scaling boolean 0 1 1 1 switch for scaling of LP
+ 0 don't scale the problem
+ 1 scale the problem
 presolve boolean 0 1 1 1 switch for initial presolve of LP
+ 0 don't do an initial presolve on the LP
+ 1 do an initial presolve on the LP
 printfrequency integer 0 10 0 maxint 1 1 print frequency
 nodecompare enumstr 0 "default" 1 1 comparision method to determine tree search order
  "default" 1
