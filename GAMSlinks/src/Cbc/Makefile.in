@@ -61,12 +61,12 @@ bin_PROGRAMS = GamsCoinCbc$(EXEEXT)
 @COIN_HAS_CLP_TRUE@   -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
 
 @COIN_HAS_CLP_TRUE@am__append_2 = \
-@COIN_HAS_CLP_TRUE@   $(CLPOBJDIR)/src/libClp.la \
-@COIN_HAS_CLP_TRUE@   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la
+@COIN_HAS_CLP_TRUE@   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
+@COIN_HAS_CLP_TRUE@   $(CLPOBJDIR)/src/libClp.la
 
 @COIN_HAS_CLP_TRUE@am__append_3 = \
-@COIN_HAS_CLP_TRUE@   $(CLPOBJDIR)/src/libClp.la \
-@COIN_HAS_CLP_TRUE@   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la
+@COIN_HAS_CLP_TRUE@   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
+@COIN_HAS_CLP_TRUE@   $(CLPOBJDIR)/src/libClp.la
 
 @COIN_HAS_GLPK_TRUE@am__append_4 = \
 @COIN_HAS_GLPK_TRUE@   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
@@ -94,8 +94,9 @@ am_GamsCoinCbc_OBJECTS = GamsCoinCbc.$(OBJEXT) \
 	CbcStrategyGams.$(OBJEXT)
 GamsCoinCbc_OBJECTS = $(am_GamsCoinCbc_OBJECTS)
 am__DEPENDENCIES_1 =
-@COIN_HAS_CLP_TRUE@am__DEPENDENCIES_2 = $(CLPOBJDIR)/src/libClp.la \
-@COIN_HAS_CLP_TRUE@	$(OSIOBJDIR)/src/OsiClp/libOsiClp.la
+@COIN_HAS_CLP_TRUE@am__DEPENDENCIES_2 =  \
+@COIN_HAS_CLP_TRUE@	$(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
+@COIN_HAS_CLP_TRUE@	$(CLPOBJDIR)/src/libClp.la
 @COIN_HAS_GLPK_TRUE@am__DEPENDENCIES_3 =  \
 @COIN_HAS_GLPK_TRUE@	$(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
 @COIN_HAS_GLPK_TRUE@	$(am__DEPENDENCIES_1)
