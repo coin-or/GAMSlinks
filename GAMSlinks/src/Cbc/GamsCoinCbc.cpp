@@ -291,8 +291,13 @@ int main (int argc, const char *argv[]) {
 		myout << "Model abandoned." << CoinMessageEol;
 	} else if (model.isProvenOptimal()) {
 		write_solution=true;
-		gm.setStatus(GamsModel::NormalCompletion, GamsModel::Optimal);
-		myout << "Solved optimal." << CoinMessageEol;
+		if (gm.optGetDouble("optca")>0 || gm.optGetDouble("optcr")>0) {
+			gm.setStatus(GamsModel::NormalCompletion, GamsModel::IntegerSolution);
+			myout << "Solved optimal (within gap tolerances: absolute =" << gm.optGetDouble("optca") << "relative =" << gm.optGetDouble("optcr") << ")." << CoinMessageEol;
+		} else {
+			gm.setStatus(GamsModel::NormalCompletion, GamsModel::Optimal);
+			myout << "Solved to optimality." << CoinMessageEol;
+		}
 	} else if (model.isNodeLimitReached()) {
 //		int numIntegInfeas, numObjInfeas;
 //		if (model.feasibleSolution(numIntegInfeas,numObjInfeas)) {

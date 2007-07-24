@@ -412,7 +412,8 @@ void SMAG_MINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const N
   switch (status) {
   	case TMINLP::SUCCESS: {
     	if (x) {
-    		model_status=1; // optimal; if the gap is not closed, Bonmin should report only feasible
+    		model_status=8; // integer feasible solution
+		//TODO: could report optimal of optcr=optca=0 and model is a mip
     	} else { // this should not happen
     		model_status=13; // error - no solution
     	}
