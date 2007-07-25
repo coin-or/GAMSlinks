@@ -161,6 +161,10 @@ void solve_minlp(smagHandle_t prob) {
 		bb(bonmin_setup); //process parameters and do branch and bound
 
 		if (bb.bestSolution()) {
+			char buf[100];
+			snprintf(buf, 100, "\nBonmin finished. Found feasible point. Objective function = %f.\n", bb.bestObj());
+			smagStdOutputPrint(prob, SMAG_LOGMASK, buf);
+
 			OsiTMINLPInterface osi_tminlp(*bonmin_setup.nonlinearSolver());
 			bool has_free_var=false;
 			for (Index i=0; i<smagColCount(prob); ++i)
@@ -171,11 +175,11 @@ void solve_minlp(smagHandle_t prob) {
 			osi_tminlp.setColSolution(bb.bestSolution());
 
 			if (!has_free_var) {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "\nAll variables are discrete. Dual variables for fixed problem will be not available.\n");
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "All variables are discrete. Dual variables for fixed problem will be not available.\n");
 				osi_tminlp.initialSolve(); // this will only evaluate the constraints, so we get correct row levels
 				write_solution_nodual(prob, osi_tminlp, mysmagminlp->model_status, mysmagminlp->solver_status, smagGetCPUTime(prob)-mysmagminlp->clock_start, mysmagminlp->domviolations, bb.numNodes());
 			} else {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "\nResolve with fixed discrete variables to get dual values.\n");
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Resolve with fixed discrete variables to get dual values.\n");
 				osi_tminlp.initialSolve();
 				if (osi_tminlp.isProvenOptimal())
 					write_solution(prob, osi_tminlp, mysmagminlp->model_status, mysmagminlp->solver_status, smagGetCPUTime(prob)-mysmagminlp->clock_start, mysmagminlp->domviolations, bb.numNodes());
@@ -183,6 +187,7 @@ void solve_minlp(smagHandle_t prob) {
 					smagStdOutputPrint(prob, SMAG_LOGMASK, "Problems solving fixed problem.\n");
 			}
 		} else {
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "\nBonmin finished. No feasible point found.\n");
 			smagReportSolBrief(prob, mysmagminlp->model_status, mysmagminlp->solver_status);
 		}
   } catch(CoinError &error) {
