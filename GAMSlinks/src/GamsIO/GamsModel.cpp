@@ -63,8 +63,8 @@ GamsModel::GamsModel(const char *cntrfile, const double SolverMInf, const double
 
   // Sizes for memory allocation
   nCols_ = iolib.ncols;
-  nSOS1_ = iolib.nosos1;
-  nSOS2_ = iolib.nosos2;
+  nSOS1_ = iolib.modin == PROC_MIP? iolib.nosos1:0;
+  nSOS2_ = iolib.modin == PROC_MIP? iolib.nosos2:0;
   nRows_ = iolib.nrows;
   nNnz_  = iolib.nnz;
   Allocate();
