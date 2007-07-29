@@ -240,7 +240,8 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = get.LX3 get.LEI get.DAR get.VIS get.SIG $(am__append_1)
+EXTRA_DIST = get.LX3 get.LEI get.DAR get.VIS get.SIG FILES \
+	INSTALL.GAMSIO LICENCE $(am__append_1)
 lib_LTLIBRARIES = libgamsoptions.la
 libgamsoptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libgamsoptions_la_LDFLAGS = 

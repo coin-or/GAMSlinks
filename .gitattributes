@@ -81,6 +81,9 @@ GAMSlinks/test/Makefile.in -text
 GAMSlinks/test/run_tests.in -text
 /Makefile.am -text
 /Makefile.in -text
+ThirdParty/GAMSIO/FILES -text
+ThirdParty/GAMSIO/INSTALL.GAMSIO -text
+ThirdParty/GAMSIO/LICENCE -text
 ThirdParty/GAMSIO/Makefile.am -text
 ThirdParty/GAMSIO/Makefile.in -text
 ThirdParty/GAMSIO/config_gamsio.h.in -text
