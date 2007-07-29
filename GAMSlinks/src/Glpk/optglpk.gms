@@ -11,10 +11,6 @@ set g Glpk Option Groups /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
     t / I Integer, R Real, S String, B Binary /
     o Options /
-      cuts                   generation of cuts for root problem
-      gomorycuts             Gomorys mixed integer cuts
-      cliquecuts             Clique cuts
-      covercuts              Mixed cover cuts
       writemps               create MPS file for problem
       startalg               LP solver for root node
       scaling                scaling method
@@ -37,10 +33,6 @@ set g Glpk Option Groups /
 $onembedded
     optdata(g,o,t,f) /
 general.(
-  cuts            .i.(def -1, lo -1, up 1)
-  gomorycuts      .b.(def 1)
-  cliquecuts      .b.(def 1)
-  covercuts       .b.(def 1)
   writemps        .s.(def '')
   startalg        .s.(def primal)
   scaling         .s.(def equilibrium)
@@ -61,9 +53,6 @@ general.(
 ) /
 $onempty
   oe(o,e) /
-  cuts.(          '-1'   no cuts will be generated
-                  0      automatic
-                  1      cuts from all available cut classes will be generated )
   startalg.(      primal           use the primal simplex algorithm for the root node
                   dual             use the dual simplex algorithm for the root node )
   scaling.(       off              no scaling
@@ -86,5 +75,5 @@ $offempty
 *                     cutoff     'GAMS cutoff'
                    /
 $onempty
- oep(o) enum options for documentation only / gomorycuts, cliquecuts, covercuts /;
+ oep(o) enum options for documentation only / /;
 $offempty

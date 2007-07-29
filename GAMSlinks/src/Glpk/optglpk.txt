@@ -16,23 +16,6 @@ Write an MPS problem file.
 The parameter value is the name of the MPS file.
 
 
-cuts
-Regulates the use of cut generator routines for the root problem.<BR>
-If set to automatic, then the parameters for the single cut generators determine which are added.
-
-
-gomorycuts
-This options switches the generation of mixed integer Gomory Cuts on.
-
-
-covercuts
-This options switches the generation of mixed cover cuts on.
-
-
-cliquecuts
-This options switches the generation of clique cuts on.
-
-
 startalg
 This option determines whether a primal or dual simplex algorithm should be used to solve the root node.
 

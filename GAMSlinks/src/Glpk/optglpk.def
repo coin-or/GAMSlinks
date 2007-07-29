@@ -2,13 +2,6 @@
 * optglpk.def
 *
 
-cuts enumint 0 -1 1 1 generation of cuts for root problem
- -1 1 no cuts will be generated
- 0 1 automatic
- 1 1 cuts from all available cut classes will be generated
-gomorycuts boolean 0 1 1 1 Gomorys mixed integer cuts
-cliquecuts boolean 0 1 1 1 Clique cuts
-covercuts boolean 0 1 1 1 Mixed cover cuts
 writemps string 0 "" 1 1 create MPS file for problem
 startalg enumstr 0 "primal" 1 1 LP solver for root node
  "primal" 1 use the primal simplex algorithm for the root node
