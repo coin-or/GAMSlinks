@@ -83,7 +83,7 @@ GAMSlinks/test/run_tests.in -text
 /Makefile.in -text
 ThirdParty/GAMSIO/FILES -text
 ThirdParty/GAMSIO/INSTALL.GAMSIO -text
-ThirdParty/GAMSIO/LICENCE -text
+ThirdParty/GAMSIO/LICENSE -text
 ThirdParty/GAMSIO/Makefile.am -text
 ThirdParty/GAMSIO/Makefile.in -text
 ThirdParty/GAMSIO/config_gamsio.h.in -text
@@ -92,6 +92,7 @@ ThirdParty/GAMSIO/configure.ac -text
 ThirdParty/GAMSIO/get.DAR -text
 ThirdParty/GAMSIO/get.LEI -text
 ThirdParty/GAMSIO/get.LX3 -text
+ThirdParty/GAMSIO/get.SIG -text
 ThirdParty/GAMSIO/get.VIS -text
 /config.guess -text
 /config.sub -text
