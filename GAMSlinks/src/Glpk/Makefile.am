@@ -25,23 +25,20 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(OSIOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
  -I`$(CYGPATH_W) $(CBCOBJDIR)/inc` \
- $(GLPK_INCFLAGS)
-
-# -I`$(CYGPATH_W) $(GLPKINCDIR)` 
+ -I`$(CYGPATH_W) $(GLPKINCDIR)`
 
 GamsCoinGlpk_LDADD = \
  ../GamsIO/libGamsIO.la \
  $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
  $(OSIOBJDIR)/src/libOsi.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- $(GAMSIO_LIBS) \
- $(GLPK_LIB)
+ $(GAMSIO_LIBS)
+
 GamsCoinGlpk_DEPENDENCIES = \
  ../GamsIO/libGamsIO.la \
  $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
  $(OSIOBJDIR)/src/libOsi.la \
- $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- $(GLPK_LIB)
+ $(COINUTILSOBJDIR)/src/libCoinUtils.la 
 
 ADDLIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt`
 
@@ -49,7 +46,7 @@ GamsCoinGlpk_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
  
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
-DISTCLEANFILES =
+DISTCLEANFILES = gmscg_.zip
 
 if GAMSIO_IS_UNIX
 install-exec-local: install-binPROGRAMS

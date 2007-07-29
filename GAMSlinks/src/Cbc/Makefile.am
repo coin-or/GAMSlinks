@@ -73,8 +73,8 @@ if COIN_HAS_GLPK
   AM_CPPFLAGS += \
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
 	 $(GLPK_INCFLAGS)
-  GamsCoinCbc_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPK_LIB)
-  GamsCoinCbc_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPK_LIB)
+  GamsCoinCbc_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+  GamsCoinCbc_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 endif
 
 
@@ -82,7 +82,7 @@ GamsCoinCbc_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
  
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
-DISTCLEANFILES =
+DISTCLEANFILES = gmscc_.zip
 
 if GAMSIO_IS_UNIX
 install-exec-local: install-binPROGRAMS

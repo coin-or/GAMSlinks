@@ -6399,7 +6399,7 @@ AC_MSG_RESULT([$SED])
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
-## $Id: coin.m4 428 2007-07-19 22:15:01Z andreasw $
+## $Id: coin.m4 435 2007-07-25 23:13:51Z lou $
 #
 # Author: Andreas Wachter    IBM      2006-04-14
 
@@ -8763,7 +8763,9 @@ AC_MSG_RESULT([$m4_tolower(coin_has_$1)])
 # generated during configuration; a preprocessor symbol COIN_HAS_LBRY; and a
 # matching automake conditional COIN_HAS_LBRY. LBRYINCDIR should specify the
 # directory containing include files for the library. LBRYLIB should specify
-# the flags necessary to link to the library.
+# the flags necessary to link to the library. A variable coin_has_lbry will
+# be set to true or false, as appropriate. A variable lbry_libcheck will be
+# be set to yes or no; no indicates link checks should not be attempted.
 #
 # The macro defines three configure arguments, --with-libraryname-incdir,
 # --with-libraryname-lib, and --disable-libraryname-libcheck, by converting
@@ -8874,7 +8876,7 @@ AC_DEFUN([AC_COIN_HAS_USER_LIBRARY],
 # COIN_HAS_LBRY.
 
     ADDLIBS="$$2LIB $ADDLIBS"
-    AC_DEFINE(COIN_HAS_$2,[1],[Define to 1 if the $1 package is used])
+    AC_DEFINE(COIN_HAS_$2,[1],[Define to 1 if the $1 package is available])
   fi
 
 # Arrange for configure to substitute LBRYINCDIR and LBRYLIB and create the
@@ -9387,10 +9389,29 @@ AC_MSG_RESULT([$coin_has_mumps])
 ###########################################################################
 #                             COIN_HAS_GLPK                               #
 ###########################################################################
-
-# This macro checks for a library containing the GLPK library.  It
-# checks if the user has provided --with-glpk-lib and --with-glpk-incdir
-# flags, and it not, it checks if the ThirdParty/Glpk project is available.
+#
+# This macro checks for the GLPK package. GLPK provides two capabilities,
+# an LP and MIP solver (GLPK) and the GNU Mathprog modelling language (GMPL).
+# The macro checks for either Glpk or Gmpl, according to the value specified as
+# the parameter. Use one of Glpk or Gmpl. Use *exactly* these strings, eh?
+#
+#
+# The macro first uses COIN_HAS_USER_LIBRARY to see if the user has specified
+# a preexisting library (this allows the use of any glpk version, if the user
+# is fussy). The macro then checks for ThirdParty/Glpk.
+#
+# This macro will define the following variables for Glpk:
+#   coin_has_glpk	true or false
+#   GLPKLIB		location of the glpk library at build time; this is
+#			added to ADDLIBS
+#   GLPKINCDIR		location of glpk include files
+#   COIN_HAS_GLPK	Preprocessor symbol, defined to 1
+#   COIN_HAS_GLPK	Automake conditional
+#   COIN_BUILD_GLPK	Automake conditional, defined only if Glpk is to be
+#			built in ThirdParty/Glpk
+#
+# With the exception of COIN_BUILD_GLPK, an identical set of variables is
+# defined for Gmpl.
 
 AC_DEFUN([AC_COIN_HAS_GLPK],
 [
@@ -9401,38 +9422,63 @@ else
 fi
 coin_glpksrcdir=$abs_source_dir/$coin_glpkobjdir
 
-AC_COIN_HAS_USER_LIBRARY([Glpk],[GLPK],[glpk.h],
+use_thirdpartyglpk=no
+
+# Check for the requested component. If the user specified an external glpk
+# library don't force a ThirdParty build, let the error propagate.
+
+m4_if([$1],[Glpk],
+[AC_COIN_HAS_USER_LIBRARY([Glpk],[GLPK],[glpk.h],
     [_glp_lpx_simplex glp_lpx_simplex])
+ if test x"$coin_has_glpk" = xfalse && test x"$GLPKLIB" = x ; then
+   use_thirdpartyglpk=try
+ fi])
+m4_if([$1],[Gmpl],
+[AC_COIN_HAS_USER_LIBRARY([Gmpl],[GMPL],[glpmpl.h],
+    [_glp_mpl_initialize glp_mpl_initialize])
+ if test x"$coin_has_gmpl" = xfalse && test x"$GMPLLIB" = x ; then
+   use_thirdpartyglpk=try
+ fi])
 
-MAKEOKFILE=.MakeOk
-use_glpk="$GLPKLIB"
-if test "$GLPKLIB" == ""; then
+# If the user has supplied an external library, use it. Otherwise, consider
+# a build in ThirdParty/Glpk. If we build, assume we get both glpk and gmpl.
 
+if test x"$use_thirdpartyglpk" = xtry ; then
+  MAKEOKFILE=.MakeOk
   # Check if the Glpk's ThirdParty project has been configured
   if test "$PACKAGE_NAME" != ThirdPartyGlpk; then
     if test -r $coin_glpkobjdir/.MakeOk; then
-      use_glpk=BUILD
+      use_thirdpartyglpk=build
+    else
+      use_thirdpartyglpk=no
     fi
+  else
+    use_thirdpartyglpk=build
+  fi
+
+# If we're building, set the library and include directory variables, create a
+# preprocessor symbol, define a variable that says we're using glpk/gmpl, and
+# another to indicate a link check is a bad idea (hard to do before the library
+# exists).
+
+  if test x"$use_thirdpartyglpk" == xbuild ; then
+    m4_toupper($1LIB)=`cd $coin_glpkobjdir; pwd`/libcoinglpk.la
+    AC_SUBST(m4_toupper($1LIB))
+#    ADDLIBS="$m4_toupper($1LIB) $ADDLIBS"
+    m4_toupper($1INCDIR)="$coin_glpksrcdir/glpk/include"
+    AC_SUBST(m4_toupper($1INCDIR))
+    AC_DEFINE(m4_toupper(COIN_HAS_$1),[1],
+	      [Define to 1 if $1 package is available])
+    m4_tolower(coin_has_$1)=true
+    m4_tolower($1_libcheck)=no
+    AC_MSG_NOTICE([Using $1 in ThirdParty/Glpk])
   fi
 fi
 
-if test x"$use_glpk" == xBUILD; then
+# Define the necessary automake conditionals.
 
-  GLPKCOINLIB=`cd $coin_glpkobjdir; pwd`/libcoinglpk.la
-  AC_SUBST(GLPKCOINLIB)
-
-  GLPKINCDIR="$coin_glpksrcdir/glpk/include"
-  AC_DEFINE(COIN_HAS_GLPK,[1],[Define to 1 if the Glpk package is used])
-
-  # This is a "true" for AM_CONDITIONAL(COIN_HAS_GLPK)
-  COIN_HAS_GLPK_TRUE=
-  COIN_HAS_GLPK_FALSE='#'
-
-  coin_has_glpk=yes
-
-  AC_MSG_NOTICE([Using Glpk in ThirdParty])
-fi
-
-AM_CONDITIONAL([COIN_BUILD_GLPK],[test x"$use_glpk" = xBUILD])
+AM_CONDITIONAL(m4_toupper(COIN_HAS_$1),
+	       [test x"$m4_tolower(coin_has_$1)" = xtrue])
+AM_CONDITIONAL([COIN_BUILD_GLPK],[test x"$use_thirdpartyglpk" = xbuild])
 
 ]) # AC_COIN_HAS_GLPK

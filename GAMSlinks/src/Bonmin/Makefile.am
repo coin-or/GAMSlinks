@@ -84,8 +84,8 @@ if COIN_HAS_GLPK
   AM_CPPFLAGS += \
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
 	 $(GLPK_INCFLAGS)
-  GamsBonmin_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPK_LIB)
-  GamsBonmin_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la $(GLPK_LIB)
+  GamsBonmin_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+  GamsBonmin_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 endif
 
 LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
@@ -94,7 +94,7 @@ GamsBonmin_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
  
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
-DISTCLEANFILES =
+DISTCLEANFILES = gmsbm_.zip
 
 if GAMSIO_IS_UNIX
 install-exec-local: install-binPROGRAMS

@@ -90,12 +90,6 @@ ThirdParty/GAMSIO/get.DAR -text
 ThirdParty/GAMSIO/get.LEI -text
 ThirdParty/GAMSIO/get.LX3 -text
 ThirdParty/GAMSIO/get.VIS -text
-ThirdParty/GLPK/Makefile.am -text
-ThirdParty/GLPK/Makefile.in -text
-ThirdParty/GLPK/configure -text
-ThirdParty/GLPK/configure.ac -text
-ThirdParty/GLPK/get.GLPK -text
-ThirdParty/GLPK/glpk.patch -text
 /config.guess -text
 /config.sub -text
 /configure -text

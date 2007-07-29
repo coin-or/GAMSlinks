@@ -46,7 +46,7 @@ GamsIpopt_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
  
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
-DISTCLEANFILES =
+DISTCLEANFILES = gmsip_.zip
 
 if GAMSIO_IS_UNIX
 install-exec-local: install-binPROGRAMS
