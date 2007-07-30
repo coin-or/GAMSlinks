@@ -6399,7 +6399,7 @@ AC_MSG_RESULT([$SED])
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
-## $Id: coin.m4 435 2007-07-25 23:13:51Z lou $
+## $Id: coin.m4 438 2007-07-30 17:04:53Z lou $
 #
 # Author: Andreas Wachter    IBM      2006-04-14
 
@@ -9461,10 +9461,10 @@ if test x"$use_thirdpartyglpk" = xtry ; then
 # another to indicate a link check is a bad idea (hard to do before the library
 # exists).
 
-  if test x"$use_thirdpartyglpk" == xbuild ; then
+  if test x"$use_thirdpartyglpk" = xbuild ; then
     m4_toupper($1LIB)=`cd $coin_glpkobjdir; pwd`/libcoinglpk.la
     AC_SUBST(m4_toupper($1LIB))
-#    ADDLIBS="$m4_toupper($1LIB) $ADDLIBS"
+    ADDLIBS="$m4_toupper($1LIB) $ADDLIBS"
     m4_toupper($1INCDIR)="$coin_glpksrcdir/glpk/include"
     AC_SUBST(m4_toupper($1INCDIR))
     AC_DEFINE(m4_toupper(COIN_HAS_$1),[1],
