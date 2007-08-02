@@ -42,6 +42,7 @@
 void setupProblem(GamsModel& gm, OsiXXXSolverInterface& solver);
 void setupPrioritiesAndSOS(GamsModel& gm, CbcModel& model);
 void setupStartingPoint(GamsModel& gm, CbcModel& model);
+void setupParameters(GamsModel& gm, CbcModel& model);
 
 int main (int argc, const char *argv[]) {
 #if defined(_MSC_VER)
@@ -62,17 +63,17 @@ int main (int argc, const char *argv[]) {
 	GamsModel gm(argv[1],-solver.getInfinity(),solver.getInfinity());
 
 	// Pass in the GAMS status/log file print routines 
-	GamsMessageHandler myout(&gm), cbcout(&gm), slvout(&gm);
+	GamsMessageHandler myout(&gm), slvout(&gm);
 	slvout.setPrefix(0);
-	cbcout.setPrefix(0);
 	solver.passInMessageHandler(&slvout);
+	solver.getModelPtr()->passInMessageHandler(&slvout);
 	solver.setHintParam(OsiDoReducePrint,true,OsiHintTry);
 	
 #ifdef GAMS_BUILD	
-	myout << "\nGAMS/CoinCbc 1.3pre LP/MIP Solver\nwritten by J.Forrest\n " << CoinMessageEol;
+	myout << "\nGAMS/CoinCbc 1.3pre LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
 	if (!gm.ReadOptionsDefinitions("coincbc"))
 #else
-	myout << "\nGAMS/Cbc 1.3pre LP/MIP Solver\nwritten by J.Forrest\n " << CoinMessageEol;
+	myout << "\nGAMS/Cbc 1.3pre LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
 	if (!gm.ReadOptionsDefinitions("cbc"))
 #endif
 		myout << "Error intializing option file handling or reading option file definitions!" << CoinMessageEol
@@ -99,66 +100,43 @@ int main (int argc, const char *argv[]) {
   	solver.writeMps(buffer,"",gm.ObjSense());
 	}
 
-	// Some tolerances and limits
 #if (OsiXXXSolverInterface == OsiClpSolverInterface)
-	solver.getModelPtr()->setDualBound(1.0e10);
 	solver.getModelPtr()->setDblParam(ClpMaxSeconds, gm.optGetDouble("reslim"));
 #endif
-	solver.setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal"));
-	solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual"));
-	solver.setHintParam(OsiDoScale, gm.optGetBool("scaling"));
-	solver.setHintParam(OsiDoPresolveInInitial, gm.optGetBool("presolve"));
 
 	CbcModel model(solver);
-	model.passInMessageHandler(&cbcout);
+	model.passInMessageHandler(&slvout);
+
 	CbcMain0(model);
   // Switch off most output
 	model.solver()->setHintParam(OsiDoReducePrint,true,OsiHintTry);
 
 	setupPrioritiesAndSOS(gm, model);
 	setupStartingPoint(gm, model);
-  
-	// Do initial solve to continuous
-	if (gm.nDCols() || gm.nSOS1() || gm.nSOS2()) {
-//	  myout << CoinMessageEol << "Solving the root node..." << CoinMessageEol;
-	} else { // iteration limit only for LPs
-		model.solver()->setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
-	}	
-	buffer[0]=0; gm.optGetString("startalg", buffer);
-	model.solver()->setHintParam(OsiDoDualInInitial, strcmp(buffer, "primal")==0 ? false : true);
-	model.solver()->messageHandler()->setLogLevel(4);
-
-	// MIP parameters
-	model.setDblParam(CbcModel::CbcMaximumSeconds, gm.optGetDouble("reslim"));
-	model.setIntParam(CbcModel::CbcMaxNumNode, gm.optGetInteger("nodelim"));
-	model.setDblParam(CbcModel::CbcAllowableGap, gm.optGetDouble("optca"));
-	model.setDblParam(CbcModel::CbcAllowableFractionGap, gm.optGetDouble("optcr"));
-	if (gm.optDefined("cutoff")) model.setCutoff(gm.ObjSense()*gm.optGetDouble("cutoff")); // Cbc assumes a minimization problem here
-	model.setDblParam(CbcModel::CbcIntegerTolerance, gm.optGetDouble("tol_integer"));
-	model.solver()->setIntParam(OsiMaxNumIterationHotStart,100);
+	setupParameters(gm, model);
+//	model.solver()->messageHandler()->setLogLevel(2);
 
 	myout << "\nCalling CBC main solution routine..." << CoinMessageEol;	
 	const char * argv2[]={"GAMS/CBC", "-solve","-quit"};
 	CbcMain1(3,argv2,model);
-//	model.initialSolve();
 
-	myout << "\n" << CoinMessageEol;
 	if (0==gm.nDCols() && 0==gm.nSOS1() && 0==gm.nSOS2()) { // we solved an LP
 	  // Get some statistics 
 	  gm.setIterUsed(model.solver()->getIterationCount());
 	  gm.setResUsed(gm.SecondsSinceStart());
 	  gm.setObjVal(gm.ObjSense()*model.solver()->getObjValue());
  
-	  GamsFinalizeOsi(&gm, &myout, model.solver(),0);
+ 		bool timelimit_reached=model.isSecondsLimitReached();
+//#if (OsiXXXSolverInterface == OsiClpSolverInterface)
+// 		if (solver.getModelPtr()->maximumSeconds()<=gm.SecondsSinceStart())
+// 			timelimit_reached=true;
+// 		myout << gm.SecondsSinceStart() << '\t' << solver.getModelPtr()->maximumSeconds() << CoinMessageEol; 
+//#endif
+	  GamsFinalizeOsi(&gm, &myout, model.solver(), false, timelimit_reached);
 	  return EXIT_SUCCESS;
 	}
 	
-//	CbcStrategyGams strategy(gm);
-//	model.setStrategy(strategy);
-//
-//	myout << CoinMessageEol << "Starting branch-and-bound..." << CoinMessageEol;
-//	model.branchAndBound();
-	
+	myout << "\n" << CoinMessageEol;
 	bool write_solution=false;
 	if (model.solver()->isProvenDualInfeasible()) {
 		gm.setStatus(GamsModel::NormalCompletion, GamsModel::UnboundedNoSolution);
@@ -176,8 +154,6 @@ int main (int argc, const char *argv[]) {
 			myout << "Solved to optimality." << CoinMessageEol;
 		}
 	} else if (model.isNodeLimitReached()) {
-//		int numIntegInfeas, numObjInfeas;
-//		if (model.feasibleSolution(numIntegInfeas,numObjInfeas)) {
 		if (model.bestSolution()) {
 			write_solution=true;
 			gm.setStatus(GamsModel::IterationInterrupt, GamsModel::IntegerSolution);
@@ -187,8 +163,6 @@ int main (int argc, const char *argv[]) {
 			myout << "Node limit reached. No feasible solution found." << CoinMessageEol;
 		}
 	} else if (model.isSecondsLimitReached()) {
-//		int numIntegInfeas, numObjInfeas;
-//		if (model.feasibleSolution(numIntegInfeas,numObjInfeas)) {
 		if (model.bestSolution()) {
 			write_solution=true;
 			gm.setStatus(GamsModel::ResourceInterrupt, GamsModel::IntegerSolution);
@@ -212,9 +186,6 @@ int main (int argc, const char *argv[]) {
 		gm.setObjVal(0.0);
 		gm.setSolution(); // trigger the write of GAMS solution file
 	}
-
-	// if the lp solver says feasible, but cbc says infeasible, then the lp solver was probably not called and the model found infeasible in the preprocessing 
-//	GamsFinalizeOsi(&gm, &myout, model.solver(), model.solver()->isProvenOptimal() && model.isProvenInfeasible());
 
 	return EXIT_SUCCESS;
 }
@@ -362,4 +333,35 @@ void setupStartingPoint(GamsModel& gm, CbcModel& model) {
 	model.solver()->setBasisStatus(cstat, rstat);
 	delete[] cstat;
 	delete[] rstat;
+}
+
+void setupParameters(GamsModel& gm, CbcModel& model) {
+	// Some tolerances and limits
+	model.setDblParam(CbcModel::CbcMaximumSeconds, gm.optGetDouble("reslim"));
+#if (OsiXXXSolverInterface == OsiClpSolverInterface)
+//	model.solver().getModelPtr()->setDualBound(1.0e10);
+//	model.solver().getModelPtr()->setDblParam(ClpMaxSeconds, gm.optGetDouble("reslim"));
+#endif
+	model.solver()->setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal"));
+	model.solver()->setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual"));
+	model.solver()->setHintParam(OsiDoScale, gm.optGetBool("scaling"));
+	model.solver()->setHintParam(OsiDoPresolveInInitial, gm.optGetBool("presolve"));
+  
+	// Do initial solve to continuous
+	if (gm.nDCols() || gm.nSOS1() || gm.nSOS2()) {
+	} else { // iteration limit only for LPs
+		model.solver()->setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
+	}
+	char buffer[255];	 buffer[0]=0;
+	gm.optGetString("startalg", buffer);
+	model.solver()->setHintParam(OsiDoDualInInitial, strcmp(buffer, "primal")==0 ? false : true);
+
+	// MIP parameters
+	model.setDblParam(CbcModel::CbcMaximumSeconds, gm.optGetDouble("reslim"));
+	model.setIntParam(CbcModel::CbcMaxNumNode, gm.optGetInteger("nodelim"));
+	model.setDblParam(CbcModel::CbcAllowableGap, gm.optGetDouble("optca"));
+	model.setDblParam(CbcModel::CbcAllowableFractionGap, gm.optGetDouble("optcr"));
+	if (gm.optDefined("cutoff")) model.setCutoff(gm.ObjSense()*gm.optGetDouble("cutoff")); // Cbc assumes a minimization problem here
+	model.setDblParam(CbcModel::CbcIntegerTolerance, gm.optGetDouble("tol_integer"));
+	model.solver()->setIntParam(OsiMaxNumIterationHotStart,100);
 }
