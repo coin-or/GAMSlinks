@@ -20658,8 +20658,8 @@ echo "${ECHO_T}no" >&6
   fi
 fi
 
-echo "$as_me:$LINENO: checking whether code for third party package GLPK is available" >&5
-echo $ECHO_N "checking whether code for third party package GLPK is available... $ECHO_C" >&6
+echo "$as_me:$LINENO: checking whether code for third party package Glpk is available" >&5
+echo $ECHO_N "checking whether code for third party package Glpk is available... $ECHO_C" >&6
 coin_skip=no
 if test x"$COIN_SKIP_PROJECTS" != x; then
   for dir in $COIN_SKIP_PROJECTS; do

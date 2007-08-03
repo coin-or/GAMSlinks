@@ -1,4 +1,4 @@
-# Copyright (C) GAMS Development 2006
+# Copyright (C) GAMS Development 2006, 2007
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 
@@ -42,7 +42,7 @@ AC_COIN_CREATE_LIBTOOL
 #############################################################################
 
 AC_COIN_THIRDPARTY_SUBDIRS([GAMSIO],[ThirdParty/GAMSIO],[get.LX3])
-AC_COIN_THIRDPARTY_SUBDIRS([GLPK],[ThirdParty/Glpk],[glpk/src/glplpx01.c])
+AC_COIN_THIRDPARTY_SUBDIRS([Glpk],[ThirdParty/Glpk],[glpk/src/glplpx01.c])
 AC_COIN_THIRDPARTY_SUBDIRS([Blas],[ThirdParty/Blas],[daxpy.f])
 AC_COIN_THIRDPARTY_SUBDIRS([Lapack],[ThirdParty/Lapack],[LAPACK/SRC/dlarf.f])
 AC_COIN_THIRDPARTY_SUBDIRS([HSL],[ThirdParty/HSL],[configure.ac])

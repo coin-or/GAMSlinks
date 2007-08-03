@@ -43,7 +43,7 @@ GamsCoinGlpk_DEPENDENCIES = \
 LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt`
 
 GamsCoinGlpk_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
- 
+
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
 DISTCLEANFILES = gmscg_.zip
@@ -63,7 +63,7 @@ install-exec-local: install-binPROGRAMS
 	$(install_sh_DATA) gmscg_.zip $(DESTDIR)$(bindir)/gmscg_.zip
 	rm -f gmscg_nx.exe  
 endif
-	
+
 uninstall-local:
 	rm -f $(DESTDIR)$(bindir)/gmscg_.zip
 

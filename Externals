@@ -6,8 +6,8 @@ Osi           https://projects.coin-or.org/svn/Osi/trunk/Osi
 Cbc           https://projects.coin-or.org/svn/Cbc/trunk/Cbc
 Ipopt         https://projects.coin-or.org/svn/Ipopt/stable/3.3/Ipopt
 Bonmin        https://projects.coin-or.org/svn/Bonmin/trunk/Bonmin
-ThirdParty/HSL https://projects.coin-or.org/svn/BuildTools/ThirdParty/HSL/stable/1.0
-ThirdParty/Blas https://projects.coin-or.org/svn/BuildTools/ThirdParty/Blas/stable/1.0
-ThirdParty/Lapack https://projects.coin-or.org/svn/BuildTools/ThirdParty/Lapack/stable/1.0
-ThirdParty/Mumps https://projects.coin-or.org/svn/BuildTools/ThirdParty/Mumps/stable/1.0
+ThirdParty/HSL https://projects.coin-or.org/svn/BuildTools/ThirdParty/HSL/trunk
+ThirdParty/Blas https://projects.coin-or.org/svn/BuildTools/ThirdParty/Blas/trunk
 ThirdParty/Glpk https://projects.coin-or.org/svn/BuildTools/ThirdParty/Glpk/trunk
+ThirdParty/Lapack https://projects.coin-or.org/svn/BuildTools/ThirdParty/Lapack/trunk
+ThirdParty/Mumps https://projects.coin-or.org/svn/BuildTools/ThirdParty/Mumps/trunk

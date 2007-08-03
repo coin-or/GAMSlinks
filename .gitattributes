@@ -6,7 +6,6 @@ GAMSlinks/LICENSE -text
 GAMSlinks/Makefile.am -text
 GAMSlinks/Makefile.in -text
 GAMSlinks/README -text
-GAMSlinks/acinclude.m4 -text
 GAMSlinks/aclocal.m4 -text
 GAMSlinks/configure -text
 GAMSlinks/configure.ac -text
