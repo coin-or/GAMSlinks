@@ -6,7 +6,7 @@ writemps string 0 "" 1 1 create MPS file for problem
 startalg enumstr 0 "primal" 1 1 LP solver for root node
  "primal" 1 use the primal simplex algorithm for the root node
  "dual" 1 use the dual simplex algorithm for the root node
-scaling enumstr 0 "equilibrium" 1 1 scaling method
+scaling enumstr 0 "meanequilibrium" 1 1 scaling method
  "off" 1 no scaling
  "equilibrium" 1 equilibrium scaling
  "mean" 1 geometric mean scaling
@@ -21,6 +21,7 @@ backtracking enumstr 0 "bestprojection" 1 1 backtracking heuristic
  "depthfirst" 1 depth first search
  "breadthfirst" 1 breadth first search
  "bestprojection" 1 using best projection heuristic
+presolve boolean 0 1 1 1 LP presolver
 reslim_fixedrun double 0 1000 0 maxdouble 1 1 resource limit for solve with fixed discrete variables
 reslim double 0 1000 0 maxdouble 1 1 resource limit
 iterlim integer 0 10000 -1 maxint 1 1 iteration limit

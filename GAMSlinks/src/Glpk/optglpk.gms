@@ -19,6 +19,7 @@ set g Glpk Option Groups /
       tol_primal             primal feasibility tolerance
       tol_integer            integer feasibility tolerance
       backtracking           backtracking heuristic
+      presolve               LP presolver
       reslim_fixedrun        resource limit for solve with fixed discrete variables
 * GAMS options
       reslim                 resource limit
@@ -35,12 +36,13 @@ $onembedded
 general.(
   writemps        .s.(def '')
   startalg        .s.(def primal)
-  scaling         .s.(def equilibrium)
+  scaling         .s.(def meanequilibrium)
   pricing         .s.(def textbook)
   tol_dual        .r.(def 1e-7)
   tol_primal      .r.(def 1e-7)
   tol_integer     .r.(def 1e-5)
   backtracking    .s.(def bestprojection)
+  presolve        .b.(def 1)
   reslim_fixedrun .r.(def 1000)
 * GAMS options
   reslim          .r.(def 1000)

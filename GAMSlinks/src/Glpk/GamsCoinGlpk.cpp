@@ -37,7 +37,9 @@ int printme(void* info, const char* msg) {
 	return 1;
 }
 
-//#############################################################################
+void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model);
+void setupParametersMIP(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model);
+void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver);
 
 int main (int argc, const char *argv[]) {
 #if defined(_MSC_VER)
@@ -117,7 +119,7 @@ int main (int argc, const char *argv[]) {
 	for (j=0; j<gm.nCols(); j++)
 		if (discVar[j]) solver.setInteger(j);
 
-	// why an LP solver cannot minimize a linear function over a box?
+	// why this LP solver cannot minimize a linear function over a box?
 	if (!gm.nRows()) {
 		myout << "Problem has no rows. Adding fake row..." << CoinMessageEol;
 		int index=0; double coeff=1;
@@ -152,116 +154,25 @@ int main (int argc, const char *argv[]) {
   	myout << "\nWriting MPS file " << buffer << "... " << CoinMessageEol;
 		lpx_write_mps(glpk_model, buffer);
 	}
+	
+	setupParameters(gm, myout, solver, glpk_model);
+//	setupStartPoint(gm, myout, solver);
 
-	// Some tolerances and limits
-	solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
-	lpx_set_real_parm(glpk_model, LPX_K_TMLIM, gm.optGetDouble("reslim"));
-
-	if (!solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual")))
-		myout << "Failed to set dual tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
-
-	if (!solver.setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal")))
-		myout << "Failed to set primal tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
-
-	// more parameters
-	gm.optGetString("scaling", buffer);
-	if (strcmp(buffer, "off")==0)
-		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 0);
-	else if (strcmp(buffer, "equilibrium")==0)
-		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 1); // default
-	else if (strcmp(buffer, "mean")==0)
-		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 2);
-	else if (strcmp(buffer, "meanequilibrium")==0)
-		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 3);
-
-	gm.optGetString("startalg", buffer);
-	if (strcmp(buffer, "dual")==0)
-		solver.setHintParam(OsiDoDualInInitial, false, OsiForceDo);
-
-	gm.optGetString("pricing", buffer);
-	if (strcmp(buffer, "textbook")==0)
-		lpx_set_int_parm(glpk_model, LPX_K_PRICE, 0);
-	else if	(strcmp(buffer, "steepestedge")==0)
-		lpx_set_int_parm(glpk_model, LPX_K_PRICE, 1); // default
-
-	solver.setHintParam(OsiDoReducePrint, false, OsiForceDo); // GLPK loglevel 3
-
-  // starting point
-  // solver.setColSolution(gm.ColLevel()); // no useful implementation in OsiGLPK yet
-  // solver.setRowPrice(gm.RowMargin()); // no useful implementation in OsiGLPK yet
-//  CoinWarmStartBasis warmstart;
-//  warmstart.setSize(solver.getNumCols(), solver.getNumRows());
-//	for (int j=0; j<gm.nCols(); ++j) {
-//		switch (gm.ColBasis()[j]) {
-//			case GamsModel::NonBasicLower : warmstart.setStructStatus(j, CoinWarmStartBasis::atLowerBound); break;
-//			case GamsModel::NonBasicUpper : warmstart.setStructStatus(j, CoinWarmStartBasis::atUpperBound); break;
-//			case GamsModel::Basic : warmstart.setStructStatus(j, CoinWarmStartBasis::basic); break;
-//			case GamsModel::SuperBasic : warmstart.setStructStatus(j, CoinWarmStartBasis::isFree); break;
-//			default: warmstart.setStructStatus(j, CoinWarmStartBasis::isFree);
-//				myout << "Column basis status " << gm.ColBasis()[j] << " unknown!" << CoinMessageEol;
-//		}
-//	}
-//	for (int j=0; j<gm.nRows(); ++j) {
-//		switch (gm.RowBasis()[j]) {
-//			case GamsModel::NonBasicLower : warmstart.setArtifStatus(j, CoinWarmStartBasis::atLowerBound); break;
-//			case GamsModel::NonBasicUpper : warmstart.setArtifStatus(j, CoinWarmStartBasis::atUpperBound); break;
-//			case GamsModel::Basic : warmstart.setArtifStatus(j, CoinWarmStartBasis::basic); break;
-//			case GamsModel::SuperBasic : warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
-//			default: warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
-//				myout << "Row basis status " << gm.RowBasis()[j] << " unknown!" << CoinMessageEol;
-//		}
-//	}
-//	solver.setWarmStart(&warmstart);
+	// from glpsol: if scaling is turned on and presolve is off (or interior point is used), then do scaling 
+  if (lpx_get_int_parm(glpk_model, LPX_K_SCALE) && !lpx_get_int_parm(glpk_model, LPX_K_PRESOL))
+  	lpx_scale_prob(glpk_model);
+  // from glpsol: if no presolve (and simplex is used), set advanced basis
+  if (!lpx_get_int_parm(glpk_model, LPX_K_PRESOL)) 
+		lpx_adv_basis(glpk_model);
 
 	myout << CoinMessageNewline << CoinMessageEol;
 	if (gm.nDCols()==0) { // LP
+
 		myout << "Starting Glpk LP solver..." << CoinMessageEol;
 		solver.initialSolve();
 
 	} else { // MIP
-		gm.optGetString("backtracking", buffer);
-		if (strcmp(buffer, "depthfirst")==0)
-			lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 0);
-		else if	(strcmp(buffer, "breadthfirst")==0)
-			lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 1);
-		else if	(strcmp(buffer, "bestprojection")==0)
-			lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 2);
-
-		// cutindicator overwritten by OsiGlpkSolverInterface
-//		int cutindicator=0;
-//		switch (gm.optGetInteger("cuts")) {
-//			case -1 : break; // no cuts
-//			case  1 : cutindicator=LPX_C_ALL; break; // all cuts
-//			case  0 : // user defined cut selection
-//				if (gm.optGetBool("covercuts")) cutindicator|=LPX_C_COVER;
-//				if (gm.optGetBool("cliquecuts")) cutindicator|=LPX_C_CLIQUE;
-//				if (gm.optGetBool("gomorycuts")) cutindicator|=LPX_C_GOMORY;
-//				break;
-//			default: ;
-//		};
-//		lpx_set_int_parm(glpk_model, LPX_K_USECUTS, cutindicator);
-
-		// cutoff do not seem to work in Branch&Bound
-//		if (gm.optDefined("cutoff")) {
-//			solver.setDblParam(OsiPrimalObjectiveLimit, gm.optGetDouble("cutoff"));
-//			myout << "OBJLL: " << lpx_get_real_parm(glpk_model, LPX_K_OBJLL)
-//				<< "OBJUL: " << lpx_get_real_parm(glpk_model, LPX_K_OBJUL) << CoinMessageEol;
-//		}
-
-		// not sure that optcr (=relative gap tolerance) is the same as TOLOBJ in GLPK
-//		double optcr=max(1e-7,gm.optGetDouble("optcr"));
-//		if (optcr>0.001) {
-//			myout << "Cannot use optcr of larger then 0.001. Setting objective tolerance to 0.001." << CoinMessageEol;
-//			optcr=0.001;
-//		}
-//		lpx_set_real_parm(glpk_model, LPX_K_TOLOBJ, optcr);
-
-		double tol_integer=gm.optGetDouble("tol_integer");
-		if (tol_integer>0.001) {
-			myout << "Cannot use tol_integer of larger then 0.001. Setting integer tolerance to 0.001." << CoinMessageEol;
-			tol_integer=0.001;
-		}
-		lpx_set_real_parm(glpk_model, LPX_K_TOLINT, tol_integer);
+		setupParametersMIP(gm, myout, solver, glpk_model);
 
 		myout << "Starting GLPK Branch and Bound... " << CoinMessageEol;
 		solver.branchAndBound();
@@ -303,4 +214,116 @@ int main (int argc, const char *argv[]) {
 	GamsFinalizeOsi(&gm, &myout, &solver, 0, timelimitreached);
 
 	return 0;
+}
+
+void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model) {
+	// Some tolerances and limits
+	solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
+	lpx_set_real_parm(glpk_model, LPX_K_TMLIM, gm.optGetDouble("reslim"));
+
+	if (!solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual")))
+		myout << "Failed to set dual tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
+
+	if (!solver.setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal")))
+		myout << "Failed to set primal tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
+
+	// more parameters
+	char buffer[255];
+	gm.optGetString("scaling", buffer);
+	if (strcmp(buffer, "off")==0)
+		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 0);
+	else if (strcmp(buffer, "equilibrium")==0)
+		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 1);
+	else if (strcmp(buffer, "mean")==0)
+		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 2);
+	else if (strcmp(buffer, "meanequilibrium")==0)
+		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 3); // default (set in OsiGlpk)
+
+	gm.optGetString("startalg", buffer);
+	solver.setHintParam(OsiDoDualInInitial, (strcmp(buffer, "dual")==0), OsiForceDo);
+
+	solver.setHintParam(OsiDoPresolveInInitial, gm.optGetBool("presolve"), OsiForceDo);
+
+	gm.optGetString("pricing", buffer);
+	if (strcmp(buffer, "textbook")==0)
+		lpx_set_int_parm(glpk_model, LPX_K_PRICE, 0);
+	else if	(strcmp(buffer, "steepestedge")==0)
+		lpx_set_int_parm(glpk_model, LPX_K_PRICE, 1); // default
+
+	solver.setHintParam(OsiDoReducePrint, false, OsiForceDo); // GLPK loglevel 3
+}
+
+void setupParametersMIP(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model) {
+	char buffer[255];
+	gm.optGetString("backtracking", buffer);
+	if (strcmp(buffer, "depthfirst")==0)
+		lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 0);
+	else if	(strcmp(buffer, "breadthfirst")==0)
+		lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 1);
+	else if	(strcmp(buffer, "bestprojection")==0)
+		lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 2);
+
+	// cutindicator overwritten by OsiGlpkSolverInterface
+//		int cutindicator=0;
+//		switch (gm.optGetInteger("cuts")) {
+//			case -1 : break; // no cuts
+//			case  1 : cutindicator=LPX_C_ALL; break; // all cuts
+//			case  0 : // user defined cut selection
+//				if (gm.optGetBool("covercuts")) cutindicator|=LPX_C_COVER;
+//				if (gm.optGetBool("cliquecuts")) cutindicator|=LPX_C_CLIQUE;
+//				if (gm.optGetBool("gomorycuts")) cutindicator|=LPX_C_GOMORY;
+//				break;
+//			default: ;
+//		};
+//		lpx_set_int_parm(glpk_model, LPX_K_USECUTS, cutindicator);
+
+	// cutoff do not seem to work in Branch&Bound
+//		if (gm.optDefined("cutoff")) {
+//			solver.setDblParam(OsiPrimalObjectiveLimit, gm.optGetDouble("cutoff"));
+//			myout << "OBJLL: " << lpx_get_real_parm(glpk_model, LPX_K_OBJLL)
+//				<< "OBJUL: " << lpx_get_real_parm(glpk_model, LPX_K_OBJUL) << CoinMessageEol;
+//		}
+
+	// not sure that optcr (=relative gap tolerance) is the same as TOLOBJ in GLPK
+//		double optcr=max(1e-7,gm.optGetDouble("optcr"));
+//		if (optcr>0.001) {
+//			myout << "Cannot use optcr of larger then 0.001. Setting objective tolerance to 0.001." << CoinMessageEol;
+//			optcr=0.001;
+//		}
+//		lpx_set_real_parm(glpk_model, LPX_K_TOLOBJ, optcr);
+
+	double tol_integer=gm.optGetDouble("tol_integer");
+	if (tol_integer>0.001) {
+		myout << "Cannot use tol_integer of larger then 0.001. Setting integer tolerance to 0.001." << CoinMessageEol;
+		tol_integer=0.001;
+	}
+	lpx_set_real_parm(glpk_model, LPX_K_TOLINT, tol_integer);
+}
+
+void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver) {
+//   solver.setColSolution(gm.ColLevel()); // no useful implementation in OsiGLPK yet
+//   solver.setRowPrice(gm.RowMargin()); // no useful implementation in OsiGLPK yet
+  CoinWarmStartBasis warmstart;
+  warmstart.setSize(solver.getNumCols(), solver.getNumRows());
+	for (int j=0; j<gm.nCols(); ++j) {
+		switch (gm.ColBasis()[j]) {
+			case GamsModel::NonBasicLower : warmstart.setStructStatus(j, CoinWarmStartBasis::atLowerBound); break;
+			case GamsModel::NonBasicUpper : warmstart.setStructStatus(j, CoinWarmStartBasis::atUpperBound); break;
+			case GamsModel::Basic : warmstart.setStructStatus(j, CoinWarmStartBasis::basic); break;
+			case GamsModel::SuperBasic : warmstart.setStructStatus(j, CoinWarmStartBasis::isFree); break;
+			default: warmstart.setStructStatus(j, CoinWarmStartBasis::isFree);
+				myout << "Column basis status " << gm.ColBasis()[j] << " unknown!" << CoinMessageEol;
+		}
+	}
+	for (int j=0; j<gm.nRows(); ++j) {
+		switch (gm.RowBasis()[j]) {
+			case GamsModel::NonBasicLower : warmstart.setArtifStatus(j, CoinWarmStartBasis::atLowerBound); break;
+			case GamsModel::NonBasicUpper : warmstart.setArtifStatus(j, CoinWarmStartBasis::atUpperBound); break;
+			case GamsModel::Basic : warmstart.setArtifStatus(j, CoinWarmStartBasis::basic); break;
+			case GamsModel::SuperBasic : warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
+			default: warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
+				myout << "Row basis status " << gm.RowBasis()[j] << " unknown!" << CoinMessageEol;
+		}
+	}
+	solver.setWarmStart(&warmstart);
 }

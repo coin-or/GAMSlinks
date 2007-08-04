@@ -22,6 +22,7 @@ This option determines whether a primal or dual simplex algorithm should be used
 
 scaling
 This option determines the method how the constraint matrix is scaled.
+Note that scaling is only applied when the presolver is turned off (which by default is on).
 
 
 pricing
@@ -46,7 +47,8 @@ Absolute tolerance used to check if the current basis solution is integer feasib
 backtracking
 Determines which method to use for the backtracking heuristic.
 
-
+presolve
+Determines whether the LP presolver should be used.
 
 reslim_fixedrun
 Maximum time in seconds for solving the MIP with fixed discrete variables.
