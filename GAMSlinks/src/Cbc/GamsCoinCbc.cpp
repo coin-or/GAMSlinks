@@ -100,10 +100,6 @@ int main (int argc, const char *argv[]) {
   	solver.writeMps(buffer,"",gm.ObjSense());
 	}
 
-#if (OsiXXXSolverInterface == OsiClpSolverInterface)
-	solver.getModelPtr()->setDblParam(ClpMaxSeconds, gm.optGetDouble("reslim"));
-#endif
-
 	CbcModel model(solver);
 	model.passInMessageHandler(&slvout);
 
@@ -127,11 +123,6 @@ int main (int argc, const char *argv[]) {
 	  gm.setObjVal(gm.ObjSense()*model.solver()->getObjValue());
  
  		bool timelimit_reached=model.isSecondsLimitReached();
-//#if (OsiXXXSolverInterface == OsiClpSolverInterface)
-// 		if (solver.getModelPtr()->maximumSeconds()<=gm.SecondsSinceStart())
-// 			timelimit_reached=true;
-// 		myout << gm.SecondsSinceStart() << '\t' << solver.getModelPtr()->maximumSeconds() << CoinMessageEol; 
-//#endif
 	  GamsFinalizeOsi(&gm, &myout, model.solver(), false, timelimit_reached);
 	  return EXIT_SUCCESS;
 	}
@@ -297,11 +288,6 @@ void setupPrioritiesAndSOS(GamsModel& gm, CbcModel& model) {
 	  for (i=0; i<gm.nSOS1()+gm.nSOS2(); ++i)
 			delete objects[i];
 		delete[] objects;
-		
-//		if (gm.optGetBool("integerpresolve")) {
-//			myout << "Integer presolve does not support SOS constraints yet and is therefore switched off." << CoinMessageEol;
-//			gm.optSetBool("integerpresolve", false);
-//		}
   }
 }
 
@@ -338,10 +324,6 @@ void setupStartingPoint(GamsModel& gm, CbcModel& model) {
 void setupParameters(GamsModel& gm, CbcModel& model) {
 	// Some tolerances and limits
 	model.setDblParam(CbcModel::CbcMaximumSeconds, gm.optGetDouble("reslim"));
-#if (OsiXXXSolverInterface == OsiClpSolverInterface)
-//	model.solver().getModelPtr()->setDualBound(1.0e10);
-//	model.solver().getModelPtr()->setDblParam(ClpMaxSeconds, gm.optGetDouble("reslim"));
-#endif
 	model.solver()->setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal"));
 	model.solver()->setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual"));
 	model.solver()->setHintParam(OsiDoScale, gm.optGetBool("scaling"));
