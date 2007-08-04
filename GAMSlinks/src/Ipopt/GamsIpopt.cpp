@@ -55,7 +55,7 @@ int main (int argc, char* argv[]) {
 #ifdef GAMS_BUILD
 	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinIpopt NLP Solver (IPOPT Library 3.3)\nwritten by A. Waechter\n");
 #else
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Ipopt NLP Solver (IPOPT Library 3.3)\nwritten by A. Waechter\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Ipopt NLP Solver (IPOPT Library 3.3, using MUMPS Library 4.7.3)\nwritten by A. Waechter\n");
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 
