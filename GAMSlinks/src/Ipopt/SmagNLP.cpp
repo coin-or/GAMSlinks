@@ -348,7 +348,7 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: point in not feasibile!!\n");
 				model_status=6; // intermediate infeasible
 			}
-			solver_status=4;
+			solver_status=1; // normal completion
 			write_solution=true;
 	    break;
 	  case MAXITER_EXCEEDED:
@@ -409,7 +409,7 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 		double* colMarg=new double[n];
 		for (Index i=0; i<n; ++i) {
 			colBasStat[i]=SMAG_BASSTAT_SUPERBASIC;
-			colIndic[i]=SMAG_RCINDIC_OK; // TODO: not ok, if over the bounds
+			colIndic[i]=SMAG_RCINDIC_OK;
 			// if, e.g., x_i has no lower bound, then the dual z_L[i] is -infinity
 			colMarg[i]=0;
 			if (z_L[i]>-prob->inf) colMarg[i]+=isMin*z_L[i];
