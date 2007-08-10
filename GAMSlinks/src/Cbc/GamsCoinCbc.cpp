@@ -28,6 +28,7 @@
 #include "CbcBranchActual.hpp" //for CbcSOS
 #include "CbcStrategyGams.hpp"
 
+//TODO: CbcMain allows only Clp as subsolver, so we can forget about all the XXX stuff
 #include "OsiSolverInterface.hpp"
 #if defined(COIN_HAS_CLP)
 #include "OsiClpSolverInterface.hpp"
@@ -66,6 +67,7 @@ int main (int argc, const char *argv[]) {
 	GamsMessageHandler myout(&gm), slvout(&gm);
 	slvout.setPrefix(0);
 	solver.passInMessageHandler(&slvout);
+//TODO: do I need this for Clp?
 	solver.getModelPtr()->passInMessageHandler(&slvout);
 	solver.setHintParam(OsiDoReducePrint,true,OsiHintTry);
 	

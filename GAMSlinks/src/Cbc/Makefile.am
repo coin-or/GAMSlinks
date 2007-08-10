@@ -44,7 +44,6 @@ GamsCoinCbc_LDADD = \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \
  $(OSIOBJDIR)/src/libOsi.la \
- $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(GAMSIO_LIBS)
 GamsCoinCbc_DEPENDENCIES = \
  ../GamsIO/libGamsIO.la \
@@ -77,6 +76,34 @@ if COIN_HAS_GLPK
   GamsCoinCbc_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 endif
 
+if COIN_HAS_DYLP
+  AM_CPPFLAGS += \
+   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiDylp` \
+   -I`$(CYGPATH_W) $(DYLPSRCDIR)/src/Dylp` \
+   -I`$(CYGPATH_W) $(DYLPOBJDIR)/inc`
+  GamsCoinCbc_LDADD += \
+    $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la \
+    $(DYLPOBJDIR)/src/Dylp/libDylp.la
+  GamsCoinCbc_DEPENDENCIES += \
+    $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la \
+    $(DYLPOBJDIR)/src/Dylp/libDylp.la
+	LIBS += `cat $(DYLPOBJDIR)/dylp_addlibs.txt`
+endif  
+
+if COIN_HAS_VOL
+  AM_CPPFLAGS += \
+   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiVol` \
+   -I`$(CYGPATH_W) $(VOLSRCDIR)/src`
+  GamsCoinCbc_LDADD += \
+    $(OSIOBJDIR)/src/OsiVol/libOsiVol.la \
+    $(VOLOBJDIR)/src/libVol.la
+  GamsCoinCbc_DEPENDENCIES += \
+    $(OSIOBJDIR)/src/OsiVol/libOsiVol.la \
+    $(VOLOBJDIR)/src/libVol.la
+	LIBS += `cat $(VOLOBJDIR)/vol_addlibs.txt`
+endif  
+
+GamsCoinCbc_LDADD += $(COINUTILSOBJDIR)/src/libCoinUtils.la
 
 GamsCoinCbc_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
  
