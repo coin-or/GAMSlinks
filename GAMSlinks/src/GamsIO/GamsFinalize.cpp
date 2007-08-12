@@ -97,6 +97,9 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 	const double 
 		*rowLb=solver->getRowLower(), 
 		*rowUb=solver->getRowUpper();
+		
+	assert(colLevel);
+	assert(rowLevel);
 
 	gm->setObjVal(solver->getObjValue());
 
@@ -104,6 +107,7 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 					 << "Time:" << gm->SecondsSinceStart() << "s\n " << CoinMessageEol;
 					 
 	if (solver->optimalBasisIsAvailable()) {
+//		*myout << "Have optimal basis." << CoinMessageEol;
 		solver->getBasisStatus(colBasis, rowBasis);
 		// translate from OSI codes to GAMS codes
 		for (int j=0; j<gm->nCols(); j++) {
@@ -129,7 +133,9 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 		CoinWarmStart* ws=solver->getWarmStart();
 		CoinWarmStartBasis* wsb=dynamic_cast<CoinWarmStartBasis*>(ws);
 		if (wsb) {
+//			*myout << "Have warm start basis." << CoinMessageEol;
 			for (int j=0; j<gm->nCols(); j++) {
+//				*myout << "status col: " << wsb->getStructStatus(j) << CoinMessageEol;
 				if (discVar[j] || gm->SOSIndicator()[j])
 					colBasis[j]=GamsModel::SuperBasic;
 				else switch (wsb->getStructStatus(j)) {
@@ -141,6 +147,7 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 				}
 			}
 			for (int j=0; j<gm->nRows(); j++) {
+//				*myout << "status row: " << wsb->getArtifStatus(j) << CoinMessageEol;
 				switch (wsb->getArtifStatus(j)) {
 					case CoinWarmStartBasis::basic: rowBasis[j]=GamsModel::Basic; break;
 					case CoinWarmStartBasis::atLowerBound: rowBasis[j]=GamsModel::NonBasicLower; break;
@@ -149,7 +156,8 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 					default: (*myout) << "Row basis status " << wsb->getStructStatus(j) << " unknown!" << CoinMessageEol; exit(0);
 				}
 			}
-		} else { // last alternative: trying to guess the basis... this will likely be wrong			
+		} else if (colMargin && rowMargin) { // trying to guess the basis... this will likely be wrong			
+//			*myout << "Have to guess basis." << CoinMessageEol;
 			for (int j=0; j<gm->nCols(); j++) {
 				if (discVar[j] || gm->SOSIndicator()[j])
 					colBasis[j] = GamsModel::SuperBasic; // (for discrete only)
@@ -175,6 +183,11 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 				} else
 					rowBasis[i] = GamsModel::Basic;
 			}
+		} else { // we do not even have marginal values, so we have nothing to guess from, so we set everything to superbasic
+			for (int j=0; j<gm->nCols(); j++)
+				colBasis[j] = GamsModel::SuperBasic;
+			for (int i=0; i<gm->nRows(); i++)
+				rowBasis[i] = GamsModel::SuperBasic; 
 		}
 		if (ws) delete ws;
 	}
