@@ -65,6 +65,9 @@
 /* Define to 1 if you have the <cassert> header file. */
 #undef HAVE_CASSERT
 
+/* Define to 1 if you have the <cctype> header file. */
+#undef HAVE_CCTYPE
+
 /* Define to 1 if you have the <climits> header file. */
 #undef HAVE_CLIMITS
 
@@ -79,6 +82,9 @@
 
 /* Define to 1 if you have the <cstring> header file. */
 #undef HAVE_CSTRING
+
+/* Define to 1 if you have the <ctype.h> header file. */
+#undef HAVE_CTYPE_H
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H

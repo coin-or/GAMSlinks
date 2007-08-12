@@ -28,19 +28,9 @@
 #include "CbcBranchActual.hpp" //for CbcSOS
 #include "CbcStrategyGams.hpp"
 
-//TODO: CbcMain allows only Clp as subsolver, so we can forget about all the XXX stuff
-#include "OsiSolverInterface.hpp"
-#if defined(COIN_HAS_CLP)
 #include "OsiClpSolverInterface.hpp"
-#define OsiXXXSolverInterface OsiClpSolverInterface
-#elif defined(COIN_HAS_GLPK)
-#include "OsiGlpkSolverInterface.hpp"
-#define OsiXXXSolverInterface OsiGlpkSolverInterface
-#else
-#error "Clp or Glpk need to be available."
-#endif
 
-void setupProblem(GamsModel& gm, OsiXXXSolverInterface& solver);
+void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver);
 void setupPrioritiesAndSOS(GamsModel& gm, CbcModel& model);
 void setupStartingPoint(GamsModel& gm, CbcModel& model);
 void setupParameters(GamsModel& gm, CbcModel& model);
@@ -57,19 +47,21 @@ int main (int argc, const char *argv[]) {
 	}	
 	char buffer[255];
 
-	OsiXXXSolverInterface solver;
+	OsiClpSolverInterface solver;
 
 	// Read in the model defined by the GAMS control file passed in as the first
 	// argument to this program
-	GamsModel gm(argv[1],-solver.getInfinity(),solver.getInfinity());
-
+	GamsModel gm(argv[1]);
+	gm.setInfinity(-solver.getInfinity(),solver.getInfinity());
+	gm.readMatrix();
+	
 	// Pass in the GAMS status/log file print routines 
 	GamsMessageHandler myout(&gm), slvout(&gm);
 	slvout.setPrefix(0);
 	solver.passInMessageHandler(&slvout);
-//TODO: do I need this for Clp?
-	solver.getModelPtr()->passInMessageHandler(&slvout);
 	solver.setHintParam(OsiDoReducePrint,true,OsiHintTry);
+//TODO: do I need this for Clp?
+//	solver.getModelPtr()->passInMessageHandler(&slvout);
 	
 #ifdef GAMS_BUILD	
 	myout << "\nGAMS/CoinCbc 1.3pre LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
@@ -112,7 +104,6 @@ int main (int argc, const char *argv[]) {
 	setupPrioritiesAndSOS(gm, model);
 	setupStartingPoint(gm, model);
 	setupParameters(gm, model);
-//	model.solver()->messageHandler()->setLogLevel(2);
 
 	myout << "\nCalling CBC main solution routine..." << CoinMessageEol;	
 	const char * argv2[]={"GAMS/CBC", "-solve","-quit"};
@@ -183,9 +174,9 @@ int main (int argc, const char *argv[]) {
 	return EXIT_SUCCESS;
 }
 
-void setupProblem(GamsModel& gm, OsiXXXSolverInterface& solver) {
+void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver) {
 	int i,j;
-	// CLP needs rowrng for the loadProblem call
+	// Osi needs rowrng for the loadProblem call
 	double *rowrng = new double[gm.nRows()];
 	for (i=0; i<gm.nRows(); i++)
 	  rowrng[i] = 0.0;
@@ -205,9 +196,11 @@ void setupProblem(GamsModel& gm, OsiXXXSolverInterface& solver) {
 	delete[] rowrng;
 
 	// Tell solver which variables are discrete
-	int *discVar=gm.ColDisc();
-	for (j=0; j<gm.nCols(); j++) 
-	  if (discVar[j]) solver.setInteger(j);
+	if (gm.nDCols()) {
+		int *discVar=gm.ColDisc();
+		for (j=0; j<gm.nCols(); j++) 
+	  	if (discVar[j]) solver.setInteger(j);
+	}
 
 	char buffer[255];
 	if (gm.haveNames()) { // set variable and constraint names
@@ -331,12 +324,11 @@ void setupParameters(GamsModel& gm, CbcModel& model) {
 	model.solver()->setHintParam(OsiDoScale, gm.optGetBool("scaling"));
 	model.solver()->setHintParam(OsiDoPresolveInInitial, gm.optGetBool("presolve"));
   
-	// Do initial solve to continuous
-	if (gm.nDCols() || gm.nSOS1() || gm.nSOS2()) {
-	} else { // iteration limit only for LPs
+// iteration limit only for LPs
+	if (!gm.nDCols() && !gm.nSOS1() && !gm.nSOS2())
 		model.solver()->setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
-	}
-	char buffer[255];	 buffer[0]=0;
+
+	char buffer[255];	buffer[0]=0;
 	gm.optGetString("startalg", buffer);
 	model.solver()->setHintParam(OsiDoDualInInitial, strcmp(buffer, "primal")==0 ? false : true);
 

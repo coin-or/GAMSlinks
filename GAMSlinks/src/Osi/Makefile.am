@@ -1,8 +1,8 @@
-# Copyright (C) GAMS Development 2006
+# Copyright (C) GAMS Development 2007
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
-## $Id: Makefile.am 159 2007-08-10 07:28:23Z stefan $
+## $Id$
 #
 # Author: Stefan Vigerske
 # Template from: Andreas Waechter
@@ -23,23 +23,28 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
  -I`$(CYGPATH_W) $(OSIOBJDIR)/inc`
 
-# -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
-# -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
-
 GamsCoinOsi_LDADD = \
  ../GamsIO/libGamsIO.la \
  $(GAMSIO_LIBS)
  
-# $(CBCOBJDIR)/src/libCbc.la 
-
 GamsCoinOsi_DEPENDENCIES = \
- ../GamsIO/libGamsIO.la \
- $(OSIOBJDIR)/src/libOsi.la
-
-# $(CBCOBJDIR)/src/libCbc.la 
+ ../GamsIO/libGamsIO.la
 
 LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt`
-#$(CBCOBJDIR)/cbc_addlibs.txt
+
+if COIN_HAS_CBC
+  AM_CPPFLAGS += \
+   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCbc` \
+   -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
+   -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
+  GamsCoinOsi_LDADD += \
+   $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
+   $(CBCOBJDIR)/src/libCbc.la
+  GamsCoinOsi_DEPENDENCIES += \
+   $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
+   $(CBCOBJDIR)/src/libCbc.la
+	LIBS += `cat $(CBCOBJDIR)/cbc_addlibs.txt`
+endif
 
 if COIN_HAS_CLP
   AM_CPPFLAGS += \
@@ -124,7 +129,28 @@ if COIN_HAS_SYMPHONY
   LIBS += `cat $(CGLOBJDIR)/cgl_addlibs.txt`
 endif
 
-GamsCoinOsi_DEPENDENCIES += $(COINUTILSOBJDIR)/src/libCoinUtils.la
+if COIN_HAS_CBC
+  AM_CPPFLAGS += \
+   -I`$(CYGPATH_W) $(CGLSRCDIR)/src` \
+   -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglClique` \
+   -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglDuplicateRow` \
+   -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglFlowCover` \
+   -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglGomory` \
+   -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglKnapsackCover` \
+   -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglMixedIntegerRounding2` \
+   -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglOddHole` \
+   -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglPreProcess` \
+   -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglProbing` \
+   -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglRedSplit` \
+   -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglTwomir` \
+   -I`$(CYGPATH_W) $(CGLOBJDIR)/inc` 
+  GamsCoinOsi_LDADD += $(CGLOBJDIR)/src/libCgl.la
+  GamsCoinOsi_DEPENDENCIES += $(CGLOBJDIR)/src/libCgl.la
+  LIBS += `cat $(CGLOBJDIR)/cgl_addlibs.txt`
+endif
+
+GamsCoinOsi_DEPENDENCIES += $(COINUTILSOBJDIR)/src/libCoinUtils.la \
+ $(OSIOBJDIR)/src/libOsi.la
 GamsCoinOsi_LDADD += $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(OSIOBJDIR)/src/libOsi.la
 

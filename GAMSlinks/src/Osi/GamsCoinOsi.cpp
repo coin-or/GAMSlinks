@@ -1,10 +1,10 @@
-// Copyright (C) GAMS Development 2006
+// Copyright (C) GAMS Development 2007
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id: GamsCoinGlpk.cpp 157 2007-08-04 19:22:29Z stefan $
+// $Id$
 //
-// Authors:  Michael Bussieck, Stefan Vigerske
+// Author: Stefan Vigerske
 
 #include "GAMSlinksConfig.h"
 
@@ -18,11 +18,34 @@
 #endif
 #endif
 
+#ifdef HAVE_CSTRING
+#include <cstring>
+#else
+#ifdef HAVE_STRING_H
+#include <string.h>
+#else
+#error "don't have header file for string"
+#endif
+#endif
+
+#ifdef HAVE_CCTYPE
+#include <cctype>
+#define HAVE_TOLOWER
+#else
+#ifdef HAVE_CTYPE_H
+#include <ctype.h>
+#define HAVE_TOLOWER
+#endif
+#endif
+
 #include "OsiSolverInterface.hpp"
 #include "CoinPackedVector.hpp"
 
 #if COIN_HAS_CLP
 #include "OsiClpSolverInterface.hpp"
+#endif
+#if COIN_HAS_CBC
+#include "OsiCbcSolverInterface.hpp"
 #endif
 #if COIN_HAS_GLPK
 #include "OsiGlpkSolverInterface.hpp"
@@ -42,22 +65,22 @@
 #include "GamsMessageHandler.hpp"
 #include "GamsFinalize.hpp"
 
-//int printme(void* info, const char* msg) {
-//	GamsMessageHandler* myout=(GamsMessageHandler*)info;
-//	assert(myout);
-//
-//	*myout << msg;
-//	if (*msg && msg[strlen(msg)-1]=='\n')
-//		*myout << CoinMessageEol; // this will make the message handler actually print the message
-//
-//	return 1;
-//}
+#if COIN_HAS_GLPK
+int printme(void* info, const char* msg) {
+	GamsMessageHandler* myout=(GamsMessageHandler*)info;
+	assert(myout);
+
+	*myout << msg;
+	if (*msg && msg[strlen(msg)-1]=='\n')
+		*myout << CoinMessageEol; // this will make the message handler actually print the message
+
+	return 1;
+}
+#endif
 
 void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver);
 void setupParametersMIP(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver);
 void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver);
-
-// TODO: catch CoinError, might be thrown if illegal parameter is set
 
 int main (int argc, const char *argv[]) {
 #if defined(_MSC_VER)
@@ -72,16 +95,10 @@ int main (int argc, const char *argv[]) {
 	int j;
 	char buffer[255];
 	
-	double infty=COIN_DBL_MAX;
-//	double infty=OsiVolInfinity;
-//	double infty=sym_get_infinity();
-	
 	// Read in the model defined by the GAMS control file passed in as the first
 	// argument to this program
-//	GamsModel gm(argv[1],-solver->getInfinity(),solver->getInfinity());
-	GamsModel gm(argv[1], -infty, infty);
+	GamsModel gm(argv[1]);
 
-	// Pass in the GAMS status/log file print routines
 	GamsMessageHandler myout(&gm), slvout(&gm);
 	slvout.setPrefix(0);
 
@@ -94,6 +111,8 @@ int main (int argc, const char *argv[]) {
 	if (gm.nSOS1() || gm.nSOS2()) {
 		myout << "OSI cannot handle special ordered sets (SOS)" << CoinMessageEol;
 		myout << "Exiting ..." << CoinMessageEol;
+		gm.setStatus(GamsModel::CapabilityProblems, GamsModel::ErrorNoSolution);
+		gm.setSolution();
 		exit(EXIT_FAILURE);
 	}
 
@@ -108,57 +127,111 @@ int main (int argc, const char *argv[]) {
 
 	OsiSolverInterface* solver=NULL;
 	if (!gm.optDefined("solver")) {
-		gm.optSetString("solver", "clp");
-		//TODO: be more relaxed
-//		myout << "Error: You need to specify a solver." << CoinMessageEol;
-//		exit(EXIT_FAILURE);
-	}
-	gm.optGetString("solver", buffer);
-	
-try {
-//TODO: we should ignore the case of the given strings
 #if COIN_HAS_CLP
-	if (strcasecmp(buffer, "clp")==0) {
+		gm.optSetString("solver", "clp");
+#else
+#if COIN_HAS_CBC
+		gm.optSetString("solver", "cbc");
+#else
+#if COIN_HAS_GLPK
+		gm.optSetString("solver", "glpk");
+#else
+#if COIN_HAS_DYLP
+		gm.optSetString("solver", "dylp");
+#else
+#if COIN_HAS_VOL
+		gm.optSetString("solver", "volume");
+#else
+#if COIN_HAS_GLPK
+		gm.optSetString("solver", "symphony");
+#else //wow, when will a user get to here?
+		myout << "Error: solver parameter not set and no solver available. Aborting!" << CoinMessageEol;
+		gm.setStatus(ErrorSystemFailure, ErrorNoSolution);
+		gm.setSolution();
+		exit(EXIT_FAILURE);
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+		myout << "Parameter 'solver' not set. Using default solver." << CoinMessageEol;
+	}
+	if (!gm.optGetString("solver", buffer)) {
+		myout << "Error reading value of parameter 'solver'. Aborting!" << CoinMessageEol;
+		gm.setStatus(GamsModel::ErrorSystemFailure, GamsModel::ErrorNoSolution);
+		gm.setSolution();
+		exit(EXIT_FAILURE);
+	}
+#ifdef HAVE_TOLOWER
+	for (int i=strlen(buffer); i--; )
+		buffer[i]=tolower(buffer[i]);
+#endif
+	
+	bool solver_can_mips=false;
+try {
+#if COIN_HAS_CLP
+	if (strcmp(buffer, "clp")==0) {
 		solver=new OsiClpSolverInterface();
-		myout << "Using Clp solver." << CoinMessageEol;
+	}
+#endif
+#if COIN_HAS_CBC
+	if (!solver && strcmp(buffer, "cbc")==0) {
+		solver=new OsiCbcSolverInterface();
+		solver_can_mips=true;
 	}
 #endif
 #if COIN_HAS_GLPK
-	if (strcasecmp(buffer, "glpk")==0) {
+	if (!solver && strcmp(buffer, "glpk")==0) {
 		solver=new OsiGlpkSolverInterface();
-		myout << "Using Glpk solver." << CoinMessageEol;
+		glp_term_hook(printme, &slvout);
+		solver_can_mips=true;
 	}
 #endif
 #if COIN_HAS_VOL
-	if (strcasecmp(buffer, "volume")==0) {
+	if (!solver && strcmp(buffer, "volume")==0) {
 		solver=new OsiVolSolverInterface();
-		myout << "Using Volume solver." << CoinMessageEol;
 	}
 #endif
 #if COIN_HAS_DYLP
-	if (strcasecmp(buffer, "dylp")==0) {
+	if (!solver && strcmp(buffer, "dylp")==0) {
 		solver=new OsiDylpSolverInterface();
-		myout << "Using DyLP solver." << CoinMessageEol;
 	}
 #endif
 #if COIN_HAS_SYMPHONY
-	if (strcasecmp(buffer, "symphony")==0) {
+	if (!solver && strcmp(buffer, "symphony")==0) {
 		solver=new OsiSymSolverInterface();
-		myout << "Using SYMPHONY solver." << CoinMessageEol;
+		solver_can_mips=true;
 	}
 #endif
 	if (!solver) {
 		myout << "Solver " << buffer << " not recognized or not available." << CoinMessageEol;
+		gm.setStatus(GamsModel::ErrorSystemFailure, GamsModel::ErrorNoSolution);
+		gm.setSolution();
 		exit(EXIT_FAILURE);
 	}
 	
-	assert(solver->getInfinity()==infty);
+	string solver_name;
+	if (!solver->getStrParam(OsiSolverName, solver_name))
+		solver_name=buffer;
+	myout << "Using solver " << solver_name << '.' << CoinMessageEol;
+	
+	gm.setInfinity(-solver->getInfinity(), solver->getInfinity());
+	
+	// now load the LP into the GamsModel
+	gm.readMatrix();
 
-//	glp_term_hook(printme, &slvout);
+	if (gm.nDCols() && !solver_can_mips) {
+		myout << "Solver " << solver_name << " cannot handle integer variables. Exiting..." << CoinMessageEol;
+		gm.setStatus(GamsModel::CapabilityProblems, GamsModel::ErrorNoSolution);
+		gm.setSolution();
+		exit(EXIT_FAILURE);
+	}
+	
 	solver->passInMessageHandler(&slvout);
 
 	/* Overwrite GAMS Options */
-	if (!gm.optDefined("reslim")) gm.optSetDouble("reslim", gm.getResLim());
+//	if (!gm.optDefined("reslim")) gm.optSetDouble("reslim", gm.getResLim());
 	if (!gm.optDefined("iterlim")) gm.optSetInteger("iterlim", gm.getIterLim());
 //	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
 //	if (!gm.optDefined("cutoff") && gm.getCutOff()!=gm.ObjSense()*solver.getInfinity()) gm.optSetDouble("cutoff", gm.getCutOff());
@@ -185,8 +258,9 @@ try {
 
 	// Tell solver which variables are discrete
 	int *discVar=gm.ColDisc();
-	for (j=0; j<gm.nCols(); j++)
-		if (discVar[j]) solver->setInteger(j);
+	if (gm.nDCols())
+		for (j=0; j<gm.nCols(); j++)
+			if (discVar[j]) solver->setInteger(j);
 
 	// why some LP solver cannot minimize a linear function over a box?
 	if (!gm.nRows()) {
@@ -195,12 +269,13 @@ try {
 			CoinPackedVector vec(0);
 			solver->addCol(vec, -solver->getInfinity(), solver->getInfinity(), 0.);
 		}
-		int index=0; double coeff=1; //TODO: there need to be one variable !!
+		int index=0; double coeff=1;
 		CoinPackedVector vec(1, &index, &coeff);
 		solver->addRow(vec, -solver->getInfinity(), solver->getInfinity());
 	}
 
 	if (gm.haveNames()) { // set variable and constraint names
+		//TODO: set problem (=model) and objective name
 		solver->setIntParam(OsiNameDiscipline, 2);
 		std::string stbuffer;
 		for (j=0; j<gm.nCols(); ++j)
@@ -214,20 +289,20 @@ try {
 				solver->setRowName(j, stbuffer);
 			}
 		if (!gm.nRows()) {
+			if (!gm.nCols()) {
+				stbuffer="fakecol";
+				solver->setColName(0, stbuffer);
+			}
 			stbuffer="fakerow";
-			solver->setRowName(j, stbuffer);
+			solver->setRowName(0, stbuffer);
 		}
 	}
-
-//	LPX* glpk_model=solver->getModelPtr();
 
 	// Write MPS file
 	if (gm.optDefined("writemps")) {
 		gm.optGetString("writemps", buffer);
   	myout << "\nWriting MPS file " << buffer << "... " << CoinMessageEol;
   	solver->writeMps(buffer);
-  	//TODO
-//		lpx_write_mps(glpk_model, buffer);
 	}
 	
 	setupParameters(gm, myout, *solver);
@@ -235,34 +310,29 @@ try {
 
 	myout << CoinMessageNewline << CoinMessageEol;
 	if (gm.nDCols()==0) { // LP
-
 		myout << "Starting LP solver..." << CoinMessageEol;
 		solver->initialSolve();
 
 	} else { // MIP
 		setupParametersMIP(gm, myout, *solver);
+		solver->setHintParam(OsiDoReducePrint, true, OsiHintDo);
 
 		myout << "Starting MIP solver... " << CoinMessageEol;
 		solver->branchAndBound();
 
-//		int mipstat = lpx_mip_status(glpk_model);
 		if (solver->isProvenOptimal() || solver->isIterationLimitReached()) {
-			const double *colLevel=solver->getColSolution();
 			// We might loose colLevel after a call to setColBounds. So we save the levels.
-			double *colLevelsav = new double[gm.nCols()];
-			for (j=0; j<gm.nCols(); j++) colLevelsav[j] = colLevel[j];
+			double* colLevelsav = CoinCopyOfArray(solver->getColSolution(), gm.nCols());
 
-			// No iteration limit for fixed run and special time limit
-			// TODO
-//			lpx_set_real_parm(glpk_model, LPX_K_TMLIM, gm.optGetDouble("reslim_fixedrun"));
-//			lpx_set_int_parm(glpk_model, LPX_K_ITLIM, -1);
+			// No iteration limit for fixed run
+			solver->setIntParam(OsiMaxNumIteration, 9999999);
 
 			for (j=0; j<gm.nCols(); j++)
 				if (discVar[j])
 					solver->setColBounds(j,colLevelsav[j],colLevelsav[j]);
 			delete[] colLevelsav;
 
-			solver->setHintParam(OsiDoReducePrint, true, OsiHintTry); // loglevel 1
+			solver->setHintParam(OsiDoReducePrint, true, OsiHintTry);
 			myout << "\nSolving fixed problem... " << CoinMessageEol;
 			solver->resolve();
 			if (!solver->isProvenOptimal())
@@ -276,100 +346,73 @@ try {
 } catch (CoinError error) {
 	myout << "We got following error:" << error.message() << CoinMessageEol;
 	myout << "at:" << error.fileName() << ":" << error.className() << "::" << error.methodName() << CoinMessageEol;
+	gm.setStatus(GamsModel::ErrorSolverFailure, GamsModel::ErrorNoSolution);
+	gm.setSolution();
+	exit(EXIT_FAILURE);
 }
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver) {
 	// Some tolerances and limits
-	solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
-//	lpx_set_real_parm(glpk_model, LPX_K_TMLIM, gm.optGetDouble("reslim"));
+	if (!solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim")))
+		myout << "Failed to set iteration limit to " << gm.optGetInteger("iterlim") << CoinMessageEol;
 
 	if (!solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual")))
 		myout << "Failed to set dual tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
 
 	if (!solver.setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal")))
-		myout << "Failed to set primal tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
+		myout << "Failed to set primal tolerance to " << gm.optGetDouble("tol_primal") << CoinMessageEol;
 
-//	// more parameters
-//	gm.optGetString("scaling", buffer);
-//	if (strcmp(buffer, "off")==0)
-//		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 0);
-//	else if (strcmp(buffer, "equilibrium")==0)
-//		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 1);
-//	else if (strcmp(buffer, "mean")==0)
-//		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 2);
-//	else if (strcmp(buffer, "meanequilibrium")==0)
-//		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 3); // default (set in OsiGlpk)
+	if (!solver.setHintParam(OsiDoScale, gm.optGetBool("scaling"), OsiHintDo))
+		myout << "Failed to switch scaling " << (gm.optGetBool("scaling") ? "on" : "off") << '.' << CoinMessageEol;
 
 	char buffer[255];
 	gm.optGetString("startalg", buffer);
-	solver.setHintParam(OsiDoDualInInitial, (strcmp(buffer, "dual")==0), OsiHintDo);
+	if (!solver.setHintParam(OsiDoDualInInitial, (strcmp(buffer, "dual")==0), OsiHintDo))
+		myout << "Failed to set starting algorithm to " << buffer << CoinMessageEol;
 
-	solver.setHintParam(OsiDoPresolveInInitial, gm.optGetBool("presolve"), OsiHintDo);
-
-//	solver.setHintParam(OsiDoReducePrint, true, OsiHintDo); // GLPK loglevel 3
+	if (!solver.setHintParam(OsiDoPresolveInInitial, gm.optGetBool("presolve"), OsiHintDo))
+		myout << "Failed to switch presolve " << (gm.optGetBool("presolve") ? "on" : "off") << '.' << CoinMessageEol;
 }
 
 void setupParametersMIP(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver) {
-//	char buffer[255];
-
-	// cutindicator overwritten by OsiGlpkSolverInterface
-//		int cutindicator=0;
-//		switch (gm.optGetInteger("cuts")) {
-//			case -1 : break; // no cuts
-//			case  1 : cutindicator=LPX_C_ALL; break; // all cuts
-//			case  0 : // user defined cut selection
-//				if (gm.optGetBool("covercuts")) cutindicator|=LPX_C_COVER;
-//				if (gm.optGetBool("cliquecuts")) cutindicator|=LPX_C_CLIQUE;
-//				if (gm.optGetBool("gomorycuts")) cutindicator|=LPX_C_GOMORY;
-//				break;
-//			default: ;
-//		};
-//		lpx_set_int_parm(glpk_model, LPX_K_USECUTS, cutindicator);
-
-	// cutoff do not seem to work in Branch&Bound
-//		if (gm.optDefined("cutoff")) {
-//			solver.setDblParam(OsiPrimalObjectiveLimit, gm.optGetDouble("cutoff"));
-//			myout << "OBJLL: " << lpx_get_real_parm(glpk_model, LPX_K_OBJLL)
-//				<< "OBJUL: " << lpx_get_real_parm(glpk_model, LPX_K_OBJUL) << CoinMessageEol;
-//		}
-
-	// not sure that optcr (=relative gap tolerance) is the same as TOLOBJ in GLPK
-//		double optcr=max(1e-7,gm.optGetDouble("optcr"));
-//		if (optcr>0.001) {
-//			myout << "Cannot use optcr of larger then 0.001. Setting objective tolerance to 0.001." << CoinMessageEol;
-//			optcr=0.001;
-//		}
-//		lpx_set_real_parm(glpk_model, LPX_K_TOLOBJ, optcr);
-
 }
 
 void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver) {
-//	solver.setColSolution(gm.ColLevel()); // TODO: what if we added a fake col because we added a fake row?
-//	solver.setRowPrice(gm.RowMargin()); // TODO: what if we added a fake row?
-  CoinWarmStartBasis warmstart;
-  warmstart.setSize(solver.getNumCols(), solver.getNumRows());
-	for (int j=0; j<gm.nCols(); ++j) {
-		switch (gm.ColBasis()[j]) {
-			case GamsModel::NonBasicLower : warmstart.setStructStatus(j, CoinWarmStartBasis::atLowerBound); break;
-			case GamsModel::NonBasicUpper : warmstart.setStructStatus(j, CoinWarmStartBasis::atUpperBound); break;
-			case GamsModel::Basic : warmstart.setStructStatus(j, CoinWarmStartBasis::basic); break;
-			case GamsModel::SuperBasic : warmstart.setStructStatus(j, CoinWarmStartBasis::isFree); break;
-			default: warmstart.setStructStatus(j, CoinWarmStartBasis::isFree);
-				myout << "Column basis status " << gm.ColBasis()[j] << " unknown!" << CoinMessageEol;
+	if (!gm.nCols() || !gm.nRows()) return;
+
+	try {
+		solver.setColSolution(gm.ColLevel());
+		solver.setRowPrice(gm.RowMargin());
+
+	  CoinWarmStartBasis warmstart;
+	  warmstart.setSize(solver.getNumCols(), solver.getNumRows());
+		for (int j=0; j<gm.nCols(); ++j) {
+			switch (gm.ColBasis()[j]) {
+				case GamsModel::NonBasicLower : warmstart.setStructStatus(j, CoinWarmStartBasis::atLowerBound); break;
+				case GamsModel::NonBasicUpper : warmstart.setStructStatus(j, CoinWarmStartBasis::atUpperBound); break;
+				case GamsModel::Basic : warmstart.setStructStatus(j, CoinWarmStartBasis::basic); break;
+				case GamsModel::SuperBasic : warmstart.setStructStatus(j, CoinWarmStartBasis::isFree); break;
+				default: warmstart.setStructStatus(j, CoinWarmStartBasis::isFree);
+					myout << "Column basis status " << gm.ColBasis()[j] << " unknown!" << CoinMessageEol;
+			}
 		}
-	}
-	for (int j=0; j<gm.nRows(); ++j) {
-		switch (gm.RowBasis()[j]) {
-			case GamsModel::NonBasicLower : warmstart.setArtifStatus(j, CoinWarmStartBasis::atLowerBound); break;
-			case GamsModel::NonBasicUpper : warmstart.setArtifStatus(j, CoinWarmStartBasis::atUpperBound); break;
-			case GamsModel::Basic : warmstart.setArtifStatus(j, CoinWarmStartBasis::basic); break;
-			case GamsModel::SuperBasic : warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
-			default: warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
-				myout << "Row basis status " << gm.RowBasis()[j] << " unknown!" << CoinMessageEol;
+		for (int j=0; j<gm.nRows(); ++j) {
+			switch (gm.RowBasis()[j]) {
+				case GamsModel::NonBasicLower : warmstart.setArtifStatus(j, CoinWarmStartBasis::atLowerBound); break;
+				case GamsModel::NonBasicUpper : warmstart.setArtifStatus(j, CoinWarmStartBasis::atUpperBound); break;
+				case GamsModel::Basic : warmstart.setArtifStatus(j, CoinWarmStartBasis::basic); break;
+				case GamsModel::SuperBasic : warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
+				default: warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
+					myout << "Row basis status " << gm.RowBasis()[j] << " unknown!" << CoinMessageEol;
+			}
 		}
-	}
-	solver.setWarmStart(&warmstart);
+		solver.setWarmStart(&warmstart);
+	} catch (CoinError error) {
+		myout << "Setup of startpoint failed with error:" << error.message() << CoinMessageEol;
+//		myout << "\t at:" << error.fileName() << ":" << error.className() << "::" << error.methodName() << CoinMessageEol;
+		myout << "Trying to continue..." << CoinMessageEol; 
+	}	
 }

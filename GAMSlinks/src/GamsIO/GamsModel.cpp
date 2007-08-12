@@ -55,7 +55,7 @@
 
 static cntrec cntinfo;          /* control file information */
 
-GamsModel::GamsModel(const char *cntrfile, const double SolverMInf, const double SolverPInf)
+GamsModel::GamsModel(const char *cntrfile)
 {
   gfinit ();
   gfrcnt (1, 0, &cntinfo, cntrfile);  // no NLP's
@@ -68,10 +68,6 @@ GamsModel::GamsModel(const char *cntrfile, const double SolverMInf, const double
   nRows_ = iolib.nrows;
   nNnz_  = iolib.nnz;
   Allocate();
-
-  // Solver infinity for infinity bounds
-	if (SolverMInf!=0) iolib.usrminf = SolverMInf;
-  if (SolverPInf!=0) iolib.usrpinf = SolverPInf;
 
   // Can we reformulate the objective function?
   isReform_ = 
@@ -92,8 +88,6 @@ GamsModel::GamsModel(const char *cntrfile, const double SolverMInf, const double
   SolverStatus_ = SolverStatusNotSet;
   ModelStatus_ = ModelStatusNotSet;
 
-  ReadMatrix();
-  
 	dict=NULL;
 	if (iolib.dictFileWritten) {
 		if (gcdLoad(&dict, iolib.flndic, iolib.dictVersion)) {
@@ -103,6 +97,20 @@ GamsModel::GamsModel(const char *cntrfile, const double SolverMInf, const double
 	}
 
 	optionshandle=NULL;
+}
+
+void GamsModel::setInfinity(const double& SolverMInf, const double& SolverPInf) {
+	// Solver infinity for infinity bounds
+	iolib.usrminf = SolverMInf;
+  iolib.usrpinf = SolverPInf;
+}
+
+double GamsModel::getMInfinity() const {
+	return iolib.usrminf;
+}
+
+double GamsModel::getPInfinity() const {
+	return iolib.usrpinf;
 }
 
 void GamsModel::Allocate()
@@ -196,8 +204,7 @@ GamsModel::PrintOut(PrintMask mask, const char *msg)
 #define VARSOS1 3 // sos of type 1
 #define VARSOS2 4 // sos of type 2
 
-void GamsModel::ReadMatrix()
-{
+void GamsModel::readMatrix() {
   int i,ip,j,jp,k,kp,nzcol,nltype;
   double val;
   rowRec_t rowRec;
@@ -802,7 +809,7 @@ void GamsModel::optSetDouble(const char *optname, double dval) {
 	PrintOut(AllMask, stmp);
 }
 
-void GamsModel::optSetString(const char *optname, char *sval) {
+void GamsModel::optSetString(const char *optname, const char *sval) {
 	if (NULL==optionshandle) {
 		PrintOut(AllMask, "GamsModel::optSetString: Optionfile handle not initialized.");
 		return;

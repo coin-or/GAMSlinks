@@ -113,6 +113,7 @@ AC_COIN_CHECK_CXX_CHEADER(stdlib)
 AC_COIN_CHECK_CXX_CHEADER(string)
 AC_COIN_CHECK_CXX_CHEADER(stdarg)
 AC_COIN_CHECK_CXX_CHEADER(limits)
+AC_COIN_CHECK_CXX_CHEADER(ctype)
 
 ###########
 # va_copy #
@@ -268,6 +269,46 @@ AC_SUBST(SMAG_LIBS)
 AC_SUBST(GAMSIO_CODE)
 AM_CONDITIONAL([GAMSIO_IS_UNIX],[test x"$gamsio_system" != xWindows])
 AM_CONDITIONAL([GAMSIO_IS_WINDOWS],[test x"$gamsio_system" = xWindows])
+
+##################################################
+# Check which interfaces we can (and want) build #
+##################################################
+
+AM_CONDITIONAL([GAMSLINKS_BUILD_IPOPT], [
+   test "x$coin_has_ipopt" != "xunavailable" && test "x$coin_has_ipopt" != "xskipping" ])
+
+AM_CONDITIONAL([GAMSLINKS_BUILD_GAMSIO],[
+   test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping  ])
+
+AM_CONDITIONAL([GAMSLINKS_BUILD_GLPK],[
+   test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
+   test "x$coin_has_glpk" = xtrue ])
+
+AM_CONDITIONAL([GAMSLINKS_BUILD_CBC],[
+   test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
+   test "x$coin_has_clp" != xunavailable && test "x$coin_has_clp" != skipping &&
+   test "x$coin_has_cgl" != xunavailable && test "x$coin_has_cgl" != skipping &&
+   test "x$coin_has_cbc" != xunavailable && test "x$coin_has_cbc" != skipping  ])
+
+AM_CONDITIONAL([GAMSLINKS_BUILD_BONMIN],[
+   test "x$coin_has_ipopt" != xunavailable && test "x$coin_has_ipopt" != xskipping &&
+   test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
+   test "x$coin_has_cgl" != xunavailable && test "x$coin_has_cgl" != xskipping &&
+   test "x$coin_has_cbc" != xunavailable && test "x$coin_has_cbc" != xskipping &&
+   test "x$coin_has_clp" != xunavailable && test "x$coin_has_clp" != xskipping &&
+   test "x$coin_has_bonmin" != xunavailable && test "x$coin_has_bonmin" != xskipping ])
+
+AM_CONDITIONAL([GAMSLINKS_BUILD_OSI],[
+   test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
+   ( ( test "x$coin_has_dylp" != xunavailable && test "x$coin_has_dylp" != xskipping ) ||
+     ( test "x$coin_has_symphony" != xunavailable && test "x$coin_has_symphony" != xskipping ) ||
+     ( test "x$coin_has_vol" != xunavailable && test "x$coin_has_vol" != skipping )
+   ) ])
 
 ##############################################################################
 #                VPATH links for GAMS installation files                     #

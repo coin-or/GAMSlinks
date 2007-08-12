@@ -13,8 +13,7 @@ EXTRA_DIST = optcbc.def optcbc.gms optcbc.txt \
   gmscc_nt.cmd gmscc_us.run install/gmscc_nt.dat install/gmscc_un.dat
 
 bin_PROGRAMS = GamsCoinCbc
-GamsCoinCbc_SOURCES = GamsCoinCbc.cpp \
- CbcStrategyGams.hpp CbcStrategyGams.cpp
+GamsCoinCbc_SOURCES = GamsCoinCbc.cpp
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
@@ -36,6 +35,9 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(CGLOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
  -I`$(CYGPATH_W) $(OSIOBJDIR)/inc` \
+ -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiClp` \
+ -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
+ -I`$(CYGPATH_W) $(CLPOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
  -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
 
@@ -44,66 +46,21 @@ GamsCoinCbc_LDADD = \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \
  $(OSIOBJDIR)/src/libOsi.la \
+ $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
+ $(CLPOBJDIR)/src/libClp.la \
+ $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(GAMSIO_LIBS)
+ 
 GamsCoinCbc_DEPENDENCIES = \
  ../GamsIO/libGamsIO.la \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \
  $(OSIOBJDIR)/src/libOsi.la \
+ $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
+ $(CLPOBJDIR)/src/libClp.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la
 
-LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt`
-
-if COIN_HAS_CLP
-  AM_CPPFLAGS += \
-   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiClp` \
-   -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
-   -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
-  GamsCoinCbc_LDADD += \
-   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
-   $(CLPOBJDIR)/src/libClp.la
-  GamsCoinCbc_DEPENDENCIES += \
-   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
-   $(CLPOBJDIR)/src/libClp.la
-	LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt`
-endif
-
-if COIN_HAS_GLPK
-  AM_CPPFLAGS += \
-   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
-	 $(GLPK_INCFLAGS)
-  GamsCoinCbc_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
-  GamsCoinCbc_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
-endif
-
-if COIN_HAS_DYLP
-  AM_CPPFLAGS += \
-   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiDylp` \
-   -I`$(CYGPATH_W) $(DYLPSRCDIR)/src/Dylp` \
-   -I`$(CYGPATH_W) $(DYLPOBJDIR)/inc`
-  GamsCoinCbc_LDADD += \
-    $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la \
-    $(DYLPOBJDIR)/src/Dylp/libDylp.la
-  GamsCoinCbc_DEPENDENCIES += \
-    $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la \
-    $(DYLPOBJDIR)/src/Dylp/libDylp.la
-	LIBS += `cat $(DYLPOBJDIR)/dylp_addlibs.txt`
-endif  
-
-if COIN_HAS_VOL
-  AM_CPPFLAGS += \
-   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiVol` \
-   -I`$(CYGPATH_W) $(VOLSRCDIR)/src`
-  GamsCoinCbc_LDADD += \
-    $(OSIOBJDIR)/src/OsiVol/libOsiVol.la \
-    $(VOLOBJDIR)/src/libVol.la
-  GamsCoinCbc_DEPENDENCIES += \
-    $(OSIOBJDIR)/src/OsiVol/libOsiVol.la \
-    $(VOLOBJDIR)/src/libVol.la
-	LIBS += `cat $(VOLOBJDIR)/vol_addlibs.txt`
-endif  
-
-GamsCoinCbc_LDADD += $(COINUTILSOBJDIR)/src/libCoinUtils.la
+LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt`
 
 GamsCoinCbc_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
  

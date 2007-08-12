@@ -471,7 +471,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS F77 FFLAGS ac_ct_F77 FLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE CGLSRCDIR CGLOBJDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE VOLSRCDIR VOLOBJDIR COIN_HAS_VOL_TRUE COIN_HAS_VOL_FALSE DYLPSRCDIR DYLPOBJDIR COIN_HAS_DYLP_TRUE COIN_HAS_DYLP_FALSE SYMPHONYSRCDIR SYMPHONYOBJDIR COIN_HAS_SYMPHONY_TRUE COIN_HAS_SYMPHONY_FALSE CBCSRCDIR CBCOBJDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE gamspath COIN_HAS_GAMSIO_TRUE COIN_HAS_GAMSIO_FALSE coin_has_gamsio GAMS_PATH GAMSIO_CPPFLAGS GAMSIO_LIBS SMAG_LIBS GAMSIO_CODE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS F77 FFLAGS ac_ct_F77 FLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE CGLSRCDIR CGLOBJDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE VOLSRCDIR VOLOBJDIR COIN_HAS_VOL_TRUE COIN_HAS_VOL_FALSE DYLPSRCDIR DYLPOBJDIR COIN_HAS_DYLP_TRUE COIN_HAS_DYLP_FALSE SYMPHONYSRCDIR SYMPHONYOBJDIR COIN_HAS_SYMPHONY_TRUE COIN_HAS_SYMPHONY_FALSE CBCSRCDIR CBCOBJDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE gamspath COIN_HAS_GAMSIO_TRUE COIN_HAS_GAMSIO_FALSE coin_has_gamsio GAMS_PATH GAMSIO_CPPFLAGS GAMSIO_LIBS SMAG_LIBS GAMSIO_CODE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE GAMSLINKS_BUILD_IPOPT_TRUE GAMSLINKS_BUILD_IPOPT_FALSE GAMSLINKS_BUILD_GAMSIO_TRUE GAMSLINKS_BUILD_GAMSIO_FALSE GAMSLINKS_BUILD_GLPK_TRUE GAMSLINKS_BUILD_GLPK_FALSE GAMSLINKS_BUILD_CBC_TRUE GAMSLINKS_BUILD_CBC_FALSE GAMSLINKS_BUILD_BONMIN_TRUE GAMSLINKS_BUILD_BONMIN_FALSE GAMSLINKS_BUILD_OSI_TRUE GAMSLINKS_BUILD_OSI_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -23903,6 +23903,335 @@ ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ex
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
+ac_ext=cc
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+#if test x"" = x; then
+#  hdr="#include <cctype>"
+#else
+#  hdr=""
+#fi
+#AC_CHECK_HEADERS([cctype],[],[],[$hdr])
+
+for ac_header in cctype
+do
+as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+else
+  # Is the header compilable?
+echo "$as_me:$LINENO: checking $ac_header usability" >&5
+echo $ECHO_N "checking $ac_header usability... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <$ac_header>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_cxx_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_header_compiler=no
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6
+
+# Is the header present?
+echo "$as_me:$LINENO: checking $ac_header presence" >&5
+echo $ECHO_N "checking $ac_header presence... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <$ac_header>
+_ACEOF
+if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
+  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_cxx_preproc_warn_flag
+    ac_cpp_err=$ac_cpp_err$ac_cxx_werror_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+rm -f conftest.err conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_cxx_preproc_warn_flag in
+  yes:no: )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the compiler's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: present but cannot be compiled" >&5
+echo "$as_me: WARNING: $ac_header: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header:     check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: $ac_header:     check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: see the Autoconf documentation" >&5
+echo "$as_me: WARNING: $ac_header: see the Autoconf documentation" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header:     section \"Present But Cannot Be Compiled\"" >&5
+echo "$as_me: WARNING: $ac_header:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: in the future, the compiler will take precedence" >&5
+echo "$as_me: WARNING: $ac_header: in the future, the compiler will take precedence" >&2;}
+    (
+      cat <<\_ASBOX
+## --------------------------------------------------------------- ##
+## Report this to https://projects.coin-or.org/GAMSlinks/newticket ##
+## --------------------------------------------------------------- ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  eval "$as_ac_Header=\$ac_header_preproc"
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+
+fi
+if test `eval echo '${'$as_ac_Header'}'` = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+
+if test "$ac_cv_header_cctype" != "yes"; then
+  #if test x"" = x; then
+#  hdr="#include <ctype.h>"
+#else
+#  hdr=""
+#fi
+#AC_CHECK_HEADERS([ctype.h],[],[],[$hdr])
+
+for ac_header in ctype.h
+do
+as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+else
+  # Is the header compilable?
+echo "$as_me:$LINENO: checking $ac_header usability" >&5
+echo $ECHO_N "checking $ac_header usability... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <$ac_header>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_cxx_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_header_compiler=no
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6
+
+# Is the header present?
+echo "$as_me:$LINENO: checking $ac_header presence" >&5
+echo $ECHO_N "checking $ac_header presence... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <$ac_header>
+_ACEOF
+if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
+  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_cxx_preproc_warn_flag
+    ac_cpp_err=$ac_cpp_err$ac_cxx_werror_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+rm -f conftest.err conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_cxx_preproc_warn_flag in
+  yes:no: )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the compiler's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: present but cannot be compiled" >&5
+echo "$as_me: WARNING: $ac_header: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header:     check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: $ac_header:     check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: see the Autoconf documentation" >&5
+echo "$as_me: WARNING: $ac_header: see the Autoconf documentation" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header:     section \"Present But Cannot Be Compiled\"" >&5
+echo "$as_me: WARNING: $ac_header:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: in the future, the compiler will take precedence" >&5
+echo "$as_me: WARNING: $ac_header: in the future, the compiler will take precedence" >&2;}
+    (
+      cat <<\_ASBOX
+## --------------------------------------------------------------- ##
+## Report this to https://projects.coin-or.org/GAMSlinks/newticket ##
+## --------------------------------------------------------------- ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  eval "$as_ac_Header=\$ac_header_preproc"
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+
+fi
+if test `eval echo '${'$as_ac_Header'}'` = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+
+fi
+ac_ext=cc
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+
 
 ###########
 # va_copy #
@@ -24626,6 +24955,100 @@ else
 fi
 
 
+##################################################
+# Check which interfaces we can (and want) build #
+##################################################
+
+
+
+if
+   test "x$coin_has_ipopt" != "xunavailable" && test "x$coin_has_ipopt" != "xskipping" ; then
+  GAMSLINKS_BUILD_IPOPT_TRUE=
+  GAMSLINKS_BUILD_IPOPT_FALSE='#'
+else
+  GAMSLINKS_BUILD_IPOPT_TRUE='#'
+  GAMSLINKS_BUILD_IPOPT_FALSE=
+fi
+
+
+
+
+if
+   test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping  ; then
+  GAMSLINKS_BUILD_GAMSIO_TRUE=
+  GAMSLINKS_BUILD_GAMSIO_FALSE='#'
+else
+  GAMSLINKS_BUILD_GAMSIO_TRUE='#'
+  GAMSLINKS_BUILD_GAMSIO_FALSE=
+fi
+
+
+
+
+if
+   test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
+   test "x$coin_has_glpk" = xtrue ; then
+  GAMSLINKS_BUILD_GLPK_TRUE=
+  GAMSLINKS_BUILD_GLPK_FALSE='#'
+else
+  GAMSLINKS_BUILD_GLPK_TRUE='#'
+  GAMSLINKS_BUILD_GLPK_FALSE=
+fi
+
+
+
+
+if
+   test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
+   test "x$coin_has_clp" != xunavailable && test "x$coin_has_clp" != skipping &&
+   test "x$coin_has_cgl" != xunavailable && test "x$coin_has_cgl" != skipping &&
+   test "x$coin_has_cbc" != xunavailable && test "x$coin_has_cbc" != skipping  ; then
+  GAMSLINKS_BUILD_CBC_TRUE=
+  GAMSLINKS_BUILD_CBC_FALSE='#'
+else
+  GAMSLINKS_BUILD_CBC_TRUE='#'
+  GAMSLINKS_BUILD_CBC_FALSE=
+fi
+
+
+
+
+if
+   test "x$coin_has_ipopt" != xunavailable && test "x$coin_has_ipopt" != xskipping &&
+   test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
+   test "x$coin_has_cgl" != xunavailable && test "x$coin_has_cgl" != xskipping &&
+   test "x$coin_has_cbc" != xunavailable && test "x$coin_has_cbc" != xskipping &&
+   test "x$coin_has_clp" != xunavailable && test "x$coin_has_clp" != xskipping &&
+   test "x$coin_has_bonmin" != xunavailable && test "x$coin_has_bonmin" != xskipping ; then
+  GAMSLINKS_BUILD_BONMIN_TRUE=
+  GAMSLINKS_BUILD_BONMIN_FALSE='#'
+else
+  GAMSLINKS_BUILD_BONMIN_TRUE='#'
+  GAMSLINKS_BUILD_BONMIN_FALSE=
+fi
+
+
+
+
+if
+   test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
+   ( ( test "x$coin_has_dylp" != xunavailable && test "x$coin_has_dylp" != xskipping ) ||
+     ( test "x$coin_has_symphony" != xunavailable && test "x$coin_has_symphony" != xskipping ) ||
+     ( test "x$coin_has_vol" != xunavailable && test "x$coin_has_vol" != skipping )
+   ) ; then
+  GAMSLINKS_BUILD_OSI_TRUE=
+  GAMSLINKS_BUILD_OSI_FALSE='#'
+else
+  GAMSLINKS_BUILD_OSI_TRUE='#'
+  GAMSLINKS_BUILD_OSI_FALSE=
+fi
+
+
 ##############################################################################
 #                VPATH links for GAMS installation files                     #
 ##############################################################################
@@ -25082,6 +25505,48 @@ if test -z "${GAMSIO_IS_WINDOWS_TRUE}" && test -z "${GAMSIO_IS_WINDOWS_FALSE}"; 
   { { echo "$as_me:$LINENO: error: conditional \"GAMSIO_IS_WINDOWS\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"GAMSIO_IS_WINDOWS\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${GAMSLINKS_BUILD_IPOPT_TRUE}" && test -z "${GAMSLINKS_BUILD_IPOPT_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"GAMSLINKS_BUILD_IPOPT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"GAMSLINKS_BUILD_IPOPT\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${GAMSLINKS_BUILD_GAMSIO_TRUE}" && test -z "${GAMSLINKS_BUILD_GAMSIO_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"GAMSLINKS_BUILD_GAMSIO\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"GAMSLINKS_BUILD_GAMSIO\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${GAMSLINKS_BUILD_GLPK_TRUE}" && test -z "${GAMSLINKS_BUILD_GLPK_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"GAMSLINKS_BUILD_GLPK\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"GAMSLINKS_BUILD_GLPK\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${GAMSLINKS_BUILD_CBC_TRUE}" && test -z "${GAMSLINKS_BUILD_CBC_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"GAMSLINKS_BUILD_CBC\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"GAMSLINKS_BUILD_CBC\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${GAMSLINKS_BUILD_BONMIN_TRUE}" && test -z "${GAMSLINKS_BUILD_BONMIN_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"GAMSLINKS_BUILD_BONMIN\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"GAMSLINKS_BUILD_BONMIN\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${GAMSLINKS_BUILD_OSI_TRUE}" && test -z "${GAMSLINKS_BUILD_OSI_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"GAMSLINKS_BUILD_OSI\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"GAMSLINKS_BUILD_OSI\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -25790,6 +26255,18 @@ s,@GAMSIO_IS_UNIX_TRUE@,$GAMSIO_IS_UNIX_TRUE,;t t
 s,@GAMSIO_IS_UNIX_FALSE@,$GAMSIO_IS_UNIX_FALSE,;t t
 s,@GAMSIO_IS_WINDOWS_TRUE@,$GAMSIO_IS_WINDOWS_TRUE,;t t
 s,@GAMSIO_IS_WINDOWS_FALSE@,$GAMSIO_IS_WINDOWS_FALSE,;t t
+s,@GAMSLINKS_BUILD_IPOPT_TRUE@,$GAMSLINKS_BUILD_IPOPT_TRUE,;t t
+s,@GAMSLINKS_BUILD_IPOPT_FALSE@,$GAMSLINKS_BUILD_IPOPT_FALSE,;t t
+s,@GAMSLINKS_BUILD_GAMSIO_TRUE@,$GAMSLINKS_BUILD_GAMSIO_TRUE,;t t
+s,@GAMSLINKS_BUILD_GAMSIO_FALSE@,$GAMSLINKS_BUILD_GAMSIO_FALSE,;t t
+s,@GAMSLINKS_BUILD_GLPK_TRUE@,$GAMSLINKS_BUILD_GLPK_TRUE,;t t
+s,@GAMSLINKS_BUILD_GLPK_FALSE@,$GAMSLINKS_BUILD_GLPK_FALSE,;t t
+s,@GAMSLINKS_BUILD_CBC_TRUE@,$GAMSLINKS_BUILD_CBC_TRUE,;t t
+s,@GAMSLINKS_BUILD_CBC_FALSE@,$GAMSLINKS_BUILD_CBC_FALSE,;t t
+s,@GAMSLINKS_BUILD_BONMIN_TRUE@,$GAMSLINKS_BUILD_BONMIN_TRUE,;t t
+s,@GAMSLINKS_BUILD_BONMIN_FALSE@,$GAMSLINKS_BUILD_BONMIN_FALSE,;t t
+s,@GAMSLINKS_BUILD_OSI_TRUE@,$GAMSLINKS_BUILD_OSI_TRUE,;t t
+s,@GAMSLINKS_BUILD_OSI_FALSE@,$GAMSLINKS_BUILD_OSI_FALSE,;t t
 s,@LIBEXT@,$LIBEXT,;t t
 s,@VPATH_DISTCLEANFILES@,$VPATH_DISTCLEANFILES,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t

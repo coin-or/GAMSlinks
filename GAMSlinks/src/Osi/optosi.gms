@@ -3,20 +3,20 @@ $eolcom //
 set g Glpk Option Groups /
         general        General Options
       /
-    e / '-1', 0*100,
-        primal, dual, clp, glpk, volume, dylp, symphony /
+    e / 0*100,
+        primal, dual, clp, cbc, glpk, volume, dylp, symphony /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
     t / I Integer, R Real, S String, B Binary /
     o Options /
       solver                 which solver we should use
       writemps               create MPS file for problem
-      startalg               LP solver for root node
+      startalg               LP solver for root node or for LP
       scaling                scaling
       tol_dual               dual feasibility tolerance
       tol_primal             primal feasibility tolerance
       presolve               LP presolver
 * GAMS options
-      reslim                 resource limit
+*      reslim                 resource limit
       iterlim                iteration limit
 *      optcr                  relative stopping tolerance
 *      cutoff                 Cutoff for objective function value
@@ -36,8 +36,8 @@ general.(
   tol_primal      .r.(def 1e-7)
   presolve        .b.(def 1)
 * GAMS options
-  reslim          .r.(def 1000)
-  iterlim         .i.(def 10000, lo -1)
+*  reslim          .r.(def 1000)
+  iterlim         .i.(def 10000)
 *  optcr           .r.(def 0.1)
 *  cutoff          .r.(def 0, lo mindouble)
 * immediates
@@ -53,8 +53,8 @@ $offempty
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /
  hidden(o)         / NoBounds, ReadFile /
- odefault(o)       / reslim     'GAMS reslim'
-                     iterlim    'GAMS iterlim' 
+ odefault(o)       / iterlim    'GAMS iterlim' 
+*                     reslim     'GAMS reslim'
 *                     optcr      'GAMS optcr'
 *                     cutoff     'GAMS cutoff'
                    /

@@ -109,15 +109,19 @@ public:
   
 
   /** Constructor.
+   * Note, that you need to call readMatrix() before you can access the LP.
+   * After constructing a GamsModel you have only access to the options file and can, e.g., change the value for infinity.  
    * @param cntrfile Name of GAMS control file.
-   * @param SolverMInf If not zero, then the solver value for minus infinity. 
-   * @param SolverPInf If not zero, then the solver value for plus infinity. 
    */
-  GamsModel(const char *cntrfile, const double SolverMInf=0, const double SolverPInf=0);
+  GamsModel(const char *cntrfile);
 
   /** Destructor.
    */
   ~GamsModel();
+
+	/** Reads the LP from the GAMS matrix file and stores it into the data structures of this class.
+	 */
+  void readMatrix();
 
 	/**@name Output
 	 *@{*/
@@ -149,6 +153,16 @@ public:
 	 * @return Name of GAMS System directory, or NULL if not available.
 	 */
 	const char* getSystemDir();
+	
+	/** Value used by GAMS for minus infinity.
+	 */ 
+	double getMInfinity() const;
+	/** Value used by GAMS for plus infinity.
+	 */ 
+	double getPInfinity() const;
+	/** Set values that GAMS should use for minus and plus infinity.
+	 */ 
+	void setInfinity(const double& SolverMInf, const double& SolverPInf);
 	
 	/**@name Accessing the GAMS model.
 	 * @{*/
@@ -434,7 +448,7 @@ public:
 	 * @param optname The name of the option.
 	 * @param sval The value to set.
 	 */
-	void optSetString(const char *optname, char *sval);
+	void optSetString(const char *optname, const char *sval);
 	/**@}*/
 	
 	/** Indicates whether we have column and row names.
@@ -482,7 +496,6 @@ private:
   double *matValue_;  // matrix values
  
   void Allocate();
-  void ReadMatrix();
 
   double ObjVal_;
   double ResUsed_;

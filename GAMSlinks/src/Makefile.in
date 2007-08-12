@@ -53,15 +53,16 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@COIN_HAS_COINUTILS_TRUE@@COIN_HAS_OSI_TRUE@am__append_1 = GamsIO
-@COIN_HAS_CBC_TRUE@am__append_2 = Cbc
-@COIN_HAS_GLPK_TRUE@@COIN_HAS_OSI_TRUE@am__append_3 = Glpk
-@COIN_HAS_IPOPT_TRUE@am__append_4 = Ipopt
-@COIN_HAS_BONMIN_TRUE@am__append_5 = Bonmin
+@GAMSLINKS_BUILD_GAMSIO_TRUE@am__append_1 = GamsIO
+@GAMSLINKS_BUILD_CBC_TRUE@am__append_2 = Cbc
+@GAMSLINKS_BUILD_GLPK_TRUE@am__append_3 = Glpk
+@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_4 = Ipopt
+@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_5 = Bonmin
+@GAMSLINKS_BUILD_OSI_TRUE@am__append_6 = Osi
 DIST_COMMON = $(srcdir)/../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_6 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_7 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_7 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_8 = .Externals-stamp
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -81,7 +82,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = GamsIO Cbc Glpk Ipopt Bonmin
+DIST_SUBDIRS = GamsIO Cbc Glpk Ipopt Bonmin Osi
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ADDLIBS = @ADDLIBS@
@@ -175,6 +176,18 @@ GAMSIO_IS_WINDOWS_TRUE = @GAMSIO_IS_WINDOWS_TRUE@
 GAMSIO_LIBS = @GAMSIO_LIBS@
 GAMSLINKSOBJDIR = @GAMSLINKSOBJDIR@
 GAMSLINKSSRCDIR = @GAMSLINKSSRCDIR@
+GAMSLINKS_BUILD_BONMIN_FALSE = @GAMSLINKS_BUILD_BONMIN_FALSE@
+GAMSLINKS_BUILD_BONMIN_TRUE = @GAMSLINKS_BUILD_BONMIN_TRUE@
+GAMSLINKS_BUILD_CBC_FALSE = @GAMSLINKS_BUILD_CBC_FALSE@
+GAMSLINKS_BUILD_CBC_TRUE = @GAMSLINKS_BUILD_CBC_TRUE@
+GAMSLINKS_BUILD_GAMSIO_FALSE = @GAMSLINKS_BUILD_GAMSIO_FALSE@
+GAMSLINKS_BUILD_GAMSIO_TRUE = @GAMSLINKS_BUILD_GAMSIO_TRUE@
+GAMSLINKS_BUILD_GLPK_FALSE = @GAMSLINKS_BUILD_GLPK_FALSE@
+GAMSLINKS_BUILD_GLPK_TRUE = @GAMSLINKS_BUILD_GLPK_TRUE@
+GAMSLINKS_BUILD_IPOPT_FALSE = @GAMSLINKS_BUILD_IPOPT_FALSE@
+GAMSLINKS_BUILD_IPOPT_TRUE = @GAMSLINKS_BUILD_IPOPT_TRUE@
+GAMSLINKS_BUILD_OSI_FALSE = @GAMSLINKS_BUILD_OSI_FALSE@
+GAMSLINKS_BUILD_OSI_TRUE = @GAMSLINKS_BUILD_OSI_TRUE@
 GAMS_PATH = @GAMS_PATH@
 GLPKINCDIR = @GLPKINCDIR@
 GLPKLIB = @GLPKLIB@
@@ -281,11 +294,9 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = $(am__append_1) $(am__append_2) $(am__append_3) \
-	$(am__append_4) $(am__append_5)
-
-#SUBDIRS += Osi
-EXTRA_DIST = $(am__append_6)
-DISTCLEANFILES = $(am__append_7) $(VPATH_DISTCLEANFILES)
+	$(am__append_4) $(am__append_5) $(am__append_6)
+EXTRA_DIST = $(am__append_7)
+DISTCLEANFILES = $(am__append_8) $(VPATH_DISTCLEANFILES)
 ConfigHeader = GAMSlinksConfig.h
 all: all-recursive
 

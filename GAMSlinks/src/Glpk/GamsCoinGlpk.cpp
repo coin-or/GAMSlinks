@@ -58,8 +58,10 @@ int main (int argc, const char *argv[]) {
 
 	// Read in the model defined by the GAMS control file passed in as the first
 	// argument to this program
-	GamsModel gm(argv[1],-solver.getInfinity(),solver.getInfinity());
-
+	GamsModel gm(argv[1]);
+	gm.setInfinity(-solver.getInfinity(),solver.getInfinity());
+	gm.readMatrix();
+	
 	// Pass in the GAMS status/log file print routines
 	GamsMessageHandler myout(&gm), slvout(&gm);
 	slvout.setPrefix(0);
@@ -116,12 +118,18 @@ int main (int argc, const char *argv[]) {
 
 	// Tell solver which variables are discrete
 	int *discVar=gm.ColDisc();
-	for (j=0; j<gm.nCols(); j++)
-		if (discVar[j]) solver.setInteger(j);
+	if (gm.nDCols())
+		for (j=0; j<gm.nCols(); j++)
+			if (discVar[j]) solver.setInteger(j);
 
 	// why this LP solver cannot minimize a linear function over a box?
 	if (!gm.nRows()) {
 		myout << "Problem has no rows. Adding fake row..." << CoinMessageEol;
+		if (!gm.nCols()) {
+			myout << "Problem has no columns. Adding fake column..." << CoinMessageEol;
+			CoinPackedVector vec(0);
+			solver.addCol(vec, -solver.getInfinity(), solver.getInfinity(), 0.);
+		}
 		int index=0; double coeff=1;
 		CoinPackedVector vec(1, &index, &coeff);
 		solver.addRow(vec, -solver.getInfinity(), solver.getInfinity());
@@ -141,8 +149,12 @@ int main (int argc, const char *argv[]) {
 				solver.setRowName(j, stbuffer);
 			}
 		if (!gm.nRows()) {
+			if (!gm.nCols()) {
+				stbuffer="fakecol";
+				solver.setColName(0, stbuffer);
+			}
 			stbuffer="fakerow";
-			solver.setRowName(j, stbuffer);
+			solver.setRowName(0, stbuffer);
 		}
 	}
 
@@ -301,6 +313,7 @@ void setupParametersMIP(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverI
 }
 
 void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver) {
+	if (!gm.nCols() || !gm.nRows()) return;
 //   solver.setColSolution(gm.ColLevel()); // no useful implementation in OsiGLPK yet
 //   solver.setRowPrice(gm.RowMargin()); // no useful implementation in OsiGLPK yet
   CoinWarmStartBasis warmstart;
