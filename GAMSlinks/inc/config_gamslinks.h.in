@@ -21,6 +21,9 @@
 /* Define to 1 if the CoinUtils package is used */
 #undef COIN_HAS_COINUTILS
 
+/* Define to 1 if the DyLP package is used */
+#undef COIN_HAS_DYLP
+
 /* If defined, the GAMS I/O Library is available. */
 #undef COIN_HAS_GAMSIO
 
@@ -35,6 +38,12 @@
 
 /* Define to 1 if the Osi package is used */
 #undef COIN_HAS_OSI
+
+/* Define to 1 if the SYMPHONY package is used */
+#undef COIN_HAS_SYMPHONY
+
+/* Define to 1 if the Vol package is used */
+#undef COIN_HAS_VOL
 
 /* Define to dummy `main' function (if any) required to link to the Fortran
    libraries. */

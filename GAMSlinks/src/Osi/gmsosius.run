@@ -1,0 +1,2 @@
+#!/bin/csh -f
+gmsosiux.out $4

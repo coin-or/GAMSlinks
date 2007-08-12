@@ -286,6 +286,11 @@ AC_COIN_VPATH_LINK(src/Glpk/gmscg_nt.cmd)
 AC_COIN_VPATH_LINK(src/Glpk/install/gmscg_un.dat)
 AC_COIN_VPATH_LINK(src/Glpk/install/gmscg_nt.dat)
 AC_COIN_VPATH_LINK(src/Glpk/optglpk.def)
+AC_COIN_VPATH_LINK(src/Osi/gmsosius.run)
+AC_COIN_VPATH_LINK(src/Osi/gmsosint.cmd)
+AC_COIN_VPATH_LINK(src/Osi/install/gmsosiun.dat)
+AC_COIN_VPATH_LINK(src/Osi/install/gmsosint.dat)
+AC_COIN_VPATH_LINK(src/Osi/optosi.def)
 AC_COIN_VPATH_LINK(src/Ipopt/gmsip_us.run)
 AC_COIN_VPATH_LINK(src/Ipopt/gmsip_nt.cmd)
 AC_COIN_VPATH_LINK(src/Ipopt/install/gmsip_un.dat)
@@ -306,6 +311,7 @@ AC_CONFIG_FILES([Makefile
                  src/GamsIO/Makefile src/GamsIO/gamsio_addlibs.txt
                  src/Cbc/Makefile
                  src/Glpk/Makefile
+                 src/Osi/Makefile
                  src/Ipopt/Makefile
                  src/Bonmin/Makefile
                  test/Makefile test/run_tests

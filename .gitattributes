@@ -75,6 +75,15 @@ GAMSlinks/src/Ipopt/install/gmsip_nt.dat -text
 GAMSlinks/src/Ipopt/install/gmsip_un.dat -text
 GAMSlinks/src/Makefile.am -text
 GAMSlinks/src/Makefile.in -text
+GAMSlinks/src/Osi/GamsCoinOsi.cpp -text
+GAMSlinks/src/Osi/Makefile.am -text
+GAMSlinks/src/Osi/Makefile.in -text
+GAMSlinks/src/Osi/gmsosint.cmd -text
+GAMSlinks/src/Osi/gmsosius.run -text
+GAMSlinks/src/Osi/install/gmsosint.dat -text
+GAMSlinks/src/Osi/install/gmsosiun.dat -text
+GAMSlinks/src/Osi/optosi.def -text
+GAMSlinks/src/Osi/optosi.gms -text
 GAMSlinks/test/Makefile.am -text
 GAMSlinks/test/Makefile.in -text
 GAMSlinks/test/run_tests.in -text

@@ -30,6 +30,8 @@ if COIN_HAS_BONMIN
   SUBDIRS += Bonmin
 endif
 
+#SUBDIRS += Osi
+
 EXTRA_DIST =
 
 DISTCLEANFILES =

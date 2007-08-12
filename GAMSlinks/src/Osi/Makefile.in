@@ -54,7 +54,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = GamsCoinCbc$(EXEEXT)
+bin_PROGRAMS = GamsCoinOsi$(EXEEXT)
+#$(CBCOBJDIR)/cbc_addlibs.txt
 @COIN_HAS_CLP_TRUE@am__append_1 = \
 @COIN_HAS_CLP_TRUE@   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiClp` \
 @COIN_HAS_CLP_TRUE@   -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
@@ -70,13 +71,14 @@ bin_PROGRAMS = GamsCoinCbc$(EXEEXT)
 
 @COIN_HAS_GLPK_TRUE@am__append_4 = \
 @COIN_HAS_GLPK_TRUE@   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
-@COIN_HAS_GLPK_TRUE@	 $(GLPK_INCFLAGS)
+@COIN_HAS_GLPK_TRUE@   -I`$(CYGPATH_W) $(GLPKINCDIR)`
 
 @COIN_HAS_GLPK_TRUE@am__append_5 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 @COIN_HAS_GLPK_TRUE@am__append_6 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 @COIN_HAS_DYLP_TRUE@am__append_7 = \
 @COIN_HAS_DYLP_TRUE@   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiDylp` \
 @COIN_HAS_DYLP_TRUE@   -I`$(CYGPATH_W) $(DYLPSRCDIR)/src/Dylp` \
+@COIN_HAS_DYLP_TRUE@   -I`$(CYGPATH_W) $(DYLPSRCDIR)/src/DylpStdLib` \
 @COIN_HAS_DYLP_TRUE@   -I`$(CYGPATH_W) $(DYLPOBJDIR)/inc`
 
 @COIN_HAS_DYLP_TRUE@am__append_8 = \
@@ -99,11 +101,48 @@ bin_PROGRAMS = GamsCoinCbc$(EXEEXT)
 @COIN_HAS_VOL_TRUE@    $(OSIOBJDIR)/src/OsiVol/libOsiVol.la \
 @COIN_HAS_VOL_TRUE@    $(VOLOBJDIR)/src/libVol.la
 
+@COIN_HAS_SYMPHONY_TRUE@am__append_13 = -I`$(CYGPATH_W) \
+@COIN_HAS_SYMPHONY_TRUE@	$(OSISRCDIR)/src/OsiSym` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) \
+@COIN_HAS_SYMPHONY_TRUE@	$(SYMPHONYSRCDIR)/include` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) $(CGLSRCDIR)/src` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLSRCDIR)/src/CglClique` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLSRCDIR)/src/CglDuplicateRow` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLSRCDIR)/src/CglFlowCover` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLSRCDIR)/src/CglGomory` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLSRCDIR)/src/CglKnapsackCover` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLSRCDIR)/src/CglMixedIntegerRounding2` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLSRCDIR)/src/CglOddHole` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLSRCDIR)/src/CglPreProcess` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLSRCDIR)/src/CglProbing` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLSRCDIR)/src/CglRedSplit` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLSRCDIR)/src/CglTwomir` \
+@COIN_HAS_SYMPHONY_TRUE@	-I`$(CYGPATH_W) $(CGLOBJDIR)/inc`
+@COIN_HAS_SYMPHONY_TRUE@am__append_14 =  \
+@COIN_HAS_SYMPHONY_TRUE@	$(OSIOBJDIR)/src/OsiSym/libOsiSym.la \
+@COIN_HAS_SYMPHONY_TRUE@	$(SYMPHONYOBJDIR)/src/libSym.la \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLOBJDIR)/src/libCgl.la
+@COIN_HAS_SYMPHONY_TRUE@am__append_15 =  \
+@COIN_HAS_SYMPHONY_TRUE@	$(OSIOBJDIR)/src/OsiSym/libOsiSym.la \
+@COIN_HAS_SYMPHONY_TRUE@	$(SYMPHONYOBJDIR)/src/libSym.la \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLOBJDIR)/src/libCgl.la
+@COIN_HAS_SYMPHONY_TRUE@am__append_16 = `cat $(CGLOBJDIR)/cgl_addlibs.txt`
 DIST_COMMON = $(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_13 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_14 = .Externals-stamp
-subdir = src/Cbc
+@HAVE_EXTERNALS_TRUE@am__append_17 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_18 = .Externals-stamp
+subdir = src/Osi
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.ac
@@ -115,9 +154,8 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_GamsCoinCbc_OBJECTS = GamsCoinCbc.$(OBJEXT) \
-	CbcStrategyGams.$(OBJEXT)
-GamsCoinCbc_OBJECTS = $(am_GamsCoinCbc_OBJECTS)
+am_GamsCoinOsi_OBJECTS = GamsCoinOsi.$(OBJEXT)
+GamsCoinOsi_OBJECTS = $(am_GamsCoinOsi_OBJECTS)
 am__DEPENDENCIES_1 =
 @COIN_HAS_CLP_TRUE@am__DEPENDENCIES_2 =  \
 @COIN_HAS_CLP_TRUE@	$(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
@@ -130,6 +168,10 @@ am__DEPENDENCIES_1 =
 @COIN_HAS_VOL_TRUE@am__DEPENDENCIES_5 =  \
 @COIN_HAS_VOL_TRUE@	$(OSIOBJDIR)/src/OsiVol/libOsiVol.la \
 @COIN_HAS_VOL_TRUE@	$(VOLOBJDIR)/src/libVol.la
+@COIN_HAS_SYMPHONY_TRUE@am__DEPENDENCIES_6 =  \
+@COIN_HAS_SYMPHONY_TRUE@	$(OSIOBJDIR)/src/OsiSym/libOsiSym.la \
+@COIN_HAS_SYMPHONY_TRUE@	$(SYMPHONYOBJDIR)/src/libSym.la \
+@COIN_HAS_SYMPHONY_TRUE@	$(CGLOBJDIR)/src/libCgl.la
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -140,16 +182,8 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
-	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
-	$(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
-LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(GamsCoinCbc_SOURCES)
-DIST_SOURCES = $(GamsCoinCbc_SOURCES)
+SOURCES = $(GamsCoinOsi_SOURCES)
+DIST_SOURCES = $(GamsCoinOsi_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -259,9 +293,10 @@ IPOPTSRCDIR = @IPOPTSRCDIR@
 LDFLAGS = @LDFLAGS@
 LIBEXT = @LIBEXT@
 LIBOBJS = @LIBOBJS@
+
+# $(CBCOBJDIR)/src/libCbc.la 
 LIBS = @LIBS@ `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt \
-	$(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt \
-	$(CBCOBJDIR)/cbc_addlibs.txt`
+	$(OSIOBJDIR)/osi_addlibs.txt` $(am__append_16)
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
 LN_S = @LN_S@
@@ -352,43 +387,33 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = optcbc.def optcbc.gms optcbc.txt gmscc_nt.cmd \
-	gmscc_us.run install/gmscc_nt.dat install/gmscc_un.dat \
-	$(am__append_13)
-GamsCoinCbc_SOURCES = GamsCoinCbc.cpp \
- CbcStrategyGams.hpp CbcStrategyGams.cpp
-
+EXTRA_DIST = gmsosint.cmd gmsosius.run install/gmsosint.dat \
+	install/gmsosiun.dat $(am__append_17)
+GamsCoinOsi_SOURCES = GamsCoinOsi.cpp
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	-I`$(CYGPATH_W) $(srcdir)/../GamsIO` -I`$(CYGPATH_W) \
 	$(COINUTILSSRCDIR)/src` -I`$(CYGPATH_W) \
-	$(COINUTILSOBJDIR)/inc` -I`$(CYGPATH_W) $(CGLSRCDIR)/src` \
-	-I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglClique` -I`$(CYGPATH_W) \
-	$(CGLSRCDIR)/src/CglDuplicateRow` -I`$(CYGPATH_W) \
-	$(CGLSRCDIR)/src/CglFlowCover` -I`$(CYGPATH_W) \
-	$(CGLSRCDIR)/src/CglGomory` -I`$(CYGPATH_W) \
-	$(CGLSRCDIR)/src/CglKnapsackCover` -I`$(CYGPATH_W) \
-	$(CGLSRCDIR)/src/CglMixedIntegerRounding2` -I`$(CYGPATH_W) \
-	$(CGLSRCDIR)/src/CglOddHole` -I`$(CYGPATH_W) \
-	$(CGLSRCDIR)/src/CglPreProcess` -I`$(CYGPATH_W) \
-	$(CGLSRCDIR)/src/CglProbing` -I`$(CYGPATH_W) \
-	$(CGLSRCDIR)/src/CglRedSplit` -I`$(CYGPATH_W) \
-	$(CGLSRCDIR)/src/CglTwomir` -I`$(CYGPATH_W) $(CGLOBJDIR)/inc` \
-	-I`$(CYGPATH_W) $(OSISRCDIR)/src` -I`$(CYGPATH_W) \
-	$(OSIOBJDIR)/inc` -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
-	-I`$(CYGPATH_W) $(CBCOBJDIR)/inc` $(am__append_1) \
-	$(am__append_4) $(am__append_7) $(am__append_10)
-GamsCoinCbc_LDADD = ../GamsIO/libGamsIO.la $(CBCOBJDIR)/src/libCbc.la \
-	$(CGLOBJDIR)/src/libCgl.la $(OSIOBJDIR)/src/libOsi.la \
-	$(GAMSIO_LIBS) $(am__append_2) $(am__append_5) $(am__append_8) \
-	$(am__append_11) $(COINUTILSOBJDIR)/src/libCoinUtils.la
-GamsCoinCbc_DEPENDENCIES = ../GamsIO/libGamsIO.la \
-	$(CBCOBJDIR)/src/libCbc.la $(CGLOBJDIR)/src/libCgl.la \
-	$(OSIOBJDIR)/src/libOsi.la \
-	$(COINUTILSOBJDIR)/src/libCoinUtils.la $(am__append_3) \
-	$(am__append_6) $(am__append_9) $(am__append_12)
-GamsCoinCbc_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
+	$(COINUTILSOBJDIR)/inc` -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
+	-I`$(CYGPATH_W) $(OSIOBJDIR)/inc` $(am__append_1) \
+	$(am__append_4) $(am__append_7) $(am__append_10) \
+	$(am__append_13)
+
+# -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
+# -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
+GamsCoinOsi_LDADD = ../GamsIO/libGamsIO.la $(GAMSIO_LIBS) \
+	$(am__append_2) $(am__append_5) $(am__append_8) \
+	$(am__append_11) $(am__append_14) \
+	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
+	$(OSIOBJDIR)/src/libOsi.la
+
+# $(CBCOBJDIR)/src/libCbc.la 
+GamsCoinOsi_DEPENDENCIES = ../GamsIO/libGamsIO.la \
+	$(OSIOBJDIR)/src/libOsi.la $(am__append_3) $(am__append_6) \
+	$(am__append_9) $(am__append_12) $(am__append_15) \
+	$(COINUTILSOBJDIR)/src/libCoinUtils.la
+GamsCoinOsi_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
-DISTCLEANFILES = gmscc_.zip $(am__append_14) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = gmsosi_.zip $(am__append_18) $(VPATH_DISTCLEANFILES)
 all: all-am
 
 .SUFFIXES:
@@ -402,9 +427,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/..
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Cbc/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Osi/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src/Cbc/Makefile
+	  $(AUTOMAKE) --foreign  src/Osi/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -450,9 +475,9 @@ clean-binPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-GamsCoinCbc$(EXEEXT): $(GamsCoinCbc_OBJECTS) $(GamsCoinCbc_DEPENDENCIES) 
-	@rm -f GamsCoinCbc$(EXEEXT)
-	$(CXXLINK) $(GamsCoinCbc_LDFLAGS) $(GamsCoinCbc_OBJECTS) $(GamsCoinCbc_LDADD) $(LIBS)
+GamsCoinOsi$(EXEEXT): $(GamsCoinOsi_OBJECTS) $(GamsCoinOsi_DEPENDENCIES) 
+	@rm -f GamsCoinOsi$(EXEEXT)
+	$(CXXLINK) $(GamsCoinOsi_LDFLAGS) $(GamsCoinOsi_OBJECTS) $(GamsCoinOsi_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -460,8 +485,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CbcStrategyGams.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCoinCbc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCoinOsi.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -669,21 +693,22 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 @COIN_HAS_CLP_TRUE@	LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt`
 @COIN_HAS_DYLP_TRUE@	LIBS += `cat $(DYLPOBJDIR)/dylp_addlibs.txt`
 @COIN_HAS_VOL_TRUE@	LIBS += `cat $(VOLOBJDIR)/vol_addlibs.txt`
+@COIN_HAS_SYMPHONY_TRUE@	LIBS += `cat $(SYMPHONYOBJDIR)/sym_addlibs.txt`
 
 @GAMSIO_IS_UNIX_TRUE@install-exec-local: install-binPROGRAMS
-@GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinCbc gmscc_ux.out
-@GAMSIO_IS_UNIX_TRUE@	zip gmscc_.zip gmscc_ux.out gmscc_us.run optcbc.def install/gmscc_un.dat
-@GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmscc_.zip $(DESTDIR)$(bindir)/gmscc_.zip
-@GAMSIO_IS_UNIX_TRUE@	rm -f gmscc_ux.out
+@GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinOsi gmsosiux.out
+@GAMSIO_IS_UNIX_TRUE@	zip gmsosi_.zip gmsosiux.out gmsosius.run install/gmsosiun.dat optosi.def
+@GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmsosi_.zip $(DESTDIR)$(bindir)/gmsosi_.zip
+@GAMSIO_IS_UNIX_TRUE@	rm -f gmsosiux.out
 
 @GAMSIO_IS_WINDOWS_TRUE@install-exec-local: install-binPROGRAMS
-@GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinCbc.exe gmscc_nx.exe
-@GAMSIO_IS_WINDOWS_TRUE@	zip gmscc_.zip gmscc_nx.exe gmscc_nt.cmd optcbc.def install/gmscc_nt.dat
-@GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmscc_.zip $(DESTDIR)$(bindir)/gmscc_.zip
-@GAMSIO_IS_WINDOWS_TRUE@	rm -f gmscc_nx.exe  
+@GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinOsi.exe gmsosinx.exe
+@GAMSIO_IS_WINDOWS_TRUE@	zip gmsosi_.zip gmsosinx.exe gmsosint.cmd install/gmsosint.dat optosi.def
+@GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmsosi_.zip $(DESTDIR)$(bindir)/gmsosi_.zip
+@GAMSIO_IS_WINDOWS_TRUE@	rm -f gmsosinx.exe
 
 uninstall-local:
-	rm -f $(DESTDIR)$(bindir)/gmscc_.zip
+	rm -f $(DESTDIR)$(bindir)/gmsosi_.zip
 
 # Make sure acinclude is using most recent coin.m4
 @MAINTAINER_MODE_TRUE@$(srcdir)/acinclude.m4: $(BUILDTOOLSDIR)/coin.m4

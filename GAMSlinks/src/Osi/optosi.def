@@ -1,0 +1,23 @@
+*
+* optosi.def
+*
+
+solver string 0 "" 1 1 which solver we should use
+writemps string 0 "" 1 1 create MPS file for problem
+startalg enumstr 0 "primal" 1 1 LP solver for root node
+ "primal" 1 use the primal simplex algorithm for the root node
+ "dual" 1 use the dual simplex algorithm for the root node
+scaling boolean 0 1 1 1 scaling
+tol_dual double 0 1e-7 0 maxdouble 1 1 dual feasibility tolerance
+tol_primal double 0 1e-7 0 maxdouble 1 1 primal feasibility tolerance
+presolve boolean 0 1 1 1 LP presolver
+reslim double 0 1000 0 maxdouble 1 1 resource limit
+iterlim integer 0 10000 -1 maxint 1 1 iteration limit
+nobounds immediate nobounds 0 1 ignores bounds on options
+readfile immediate readfile 0 1 read secondary option file
+*
+* Groups
+* <group-ident> group <group-number <help-context> <help-text>
+*
+general group 1 1 General Options
+*** End of file
