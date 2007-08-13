@@ -211,7 +211,7 @@ try {
 		exit(EXIT_FAILURE);
 	}
 	
-	string solver_name;
+	std::string solver_name;
 	if (!solver->getStrParam(OsiSolverName, solver_name))
 		solver_name=buffer;
 	myout << "Using solver " << solver_name << '.' << CoinMessageEol;

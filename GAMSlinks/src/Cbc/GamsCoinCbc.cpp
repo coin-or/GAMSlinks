@@ -18,6 +18,10 @@
 #endif
 #endif
 
+// some STD templates to simplify Johns parameter handling for us
+#include <list>
+#include <string>
+
 // GAMS
 #include "GamsModel.hpp"
 #include "GamsMessageHandler.hpp"
@@ -34,6 +38,7 @@ void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver);
 void setupPrioritiesAndSOS(GamsModel& gm, CbcModel& model);
 void setupStartingPoint(GamsModel& gm, CbcModel& model);
 void setupParameters(GamsModel& gm, CbcModel& model);
+void setupParameterList(GamsModel& gm, std::list<std::string>& par_list);
 
 int main (int argc, const char *argv[]) {
 #if defined(_MSC_VER)
@@ -104,10 +109,24 @@ int main (int argc, const char *argv[]) {
 	setupPrioritiesAndSOS(gm, model);
 	setupStartingPoint(gm, model);
 	setupParameters(gm, model);
+	
+	std::list<std::string> par_list;
+	setupParameterList(gm, par_list);
+	int par_list_length=par_list.size();
+	const char** cbc_args=new const char*[par_list_length+3];
+	cbc_args[0]="GAMS/CBC";
+	int i=1;
+	for (std::list<std::string>::iterator it(par_list.begin()); it!=par_list.end(); ++it, ++i)
+		cbc_args[i]=it->c_str();
+	cbc_args[i++]="-solve";
+	cbc_args[i++]="-quit";
 
 	myout << "\nCalling CBC main solution routine..." << CoinMessageEol;	
-	const char * argv2[]={"GAMS/CBC", "-solve","-quit"};
-	CbcMain1(3,argv2,model);
+//	const char * argv2[]={"GAMS/CBC", "-solve","-quit"};
+	CbcMain1(par_list_length+3,cbc_args,model);
+
+//	const char * argv2[]={"GAMS/CBC", "-feas", "off", "-solve","-quit"};
+//	CbcMain1(5,argv2,model);
 
 	if (0==gm.nDCols() && 0==gm.nSOS1() && 0==gm.nSOS2()) { // we solved an LP
 	  // Get some statistics 
@@ -321,7 +340,7 @@ void setupParameters(GamsModel& gm, CbcModel& model) {
 	model.setDblParam(CbcModel::CbcMaximumSeconds, gm.optGetDouble("reslim"));
 	model.solver()->setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal"));
 	model.solver()->setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual"));
-	model.solver()->setHintParam(OsiDoScale, gm.optGetBool("scaling"));
+//	model.solver()->setHintParam(OsiDoScale, gm.optGetBool("scaling"));
 	model.solver()->setHintParam(OsiDoPresolveInInitial, gm.optGetBool("presolve"));
   
 // iteration limit only for LPs
@@ -340,4 +359,102 @@ void setupParameters(GamsModel& gm, CbcModel& model) {
 	if (gm.optDefined("cutoff")) model.setCutoff(gm.ObjSense()*gm.optGetDouble("cutoff")); // Cbc assumes a minimization problem here
 	model.setDblParam(CbcModel::CbcIntegerTolerance, gm.optGetDouble("tol_integer"));
 	model.solver()->setIntParam(OsiMaxNumIterationHotStart,100);
+}
+
+void setupParameterList(GamsModel& gm, std::list<std::string>& par_list) {
+	char buffer[255];
+
+	if (gm.optDefined("idiotcrash")) {
+		par_list.push_back("-idiotCrash");
+		sprintf(buffer, "%d", gm.optGetInteger("idiotcrash"));
+		par_list.push_back(buffer);
+	}
+
+	if (gm.optDefined("sprintcrash")) {
+		par_list.push_back("-sprintCrash");
+		sprintf(buffer, "%d", gm.optGetInteger("sprintcrash"));
+		par_list.push_back(buffer);
+	} else if (gm.optDefined("sifting")) { // synonym for sprintCrash
+		par_list.push_back("-sprintCrash");
+		sprintf(buffer, "%d", gm.optGetInteger("sifting"));
+		par_list.push_back(buffer);
+	}
+
+	if (gm.optDefined("crash")) {
+		char* value=gm.optGetString("crash", buffer);
+		if (!value) { } // TODO: error
+		else {
+			if (strcmp(value, "off")==0 || strcmp(value, "on")==0) {
+				par_list.push_back("-crash");
+				par_list.push_back(value);
+			} else if(strcmp(value, "solow_halim")==0) {
+				par_list.push_back("-crash");
+				par_list.push_back("so");
+			} else if(strcmp(value, "halim_solow")==0) {
+				par_list.push_back("-crash");
+				par_list.push_back("ha");
+			} else { } // TODO error 
+		}				
+	}
+
+	if (gm.optDefined("maxfactor")) {
+		par_list.push_back("-maxFactor");
+		sprintf(buffer, "%d", gm.optGetInteger("maxfactor"));
+		par_list.push_back(buffer);
+	}
+
+	if (gm.optDefined("crossover")) { // should be revised if we can do quadratic
+		par_list.push_back("-crossover");
+		par_list.push_back(gm.optGetBool("crossover") ? "on" : "off");
+	}
+
+	if (gm.optDefined("dualpivot")) {
+		char* value=gm.optGetString("dualpivot", buffer);
+		if (!value) { } // TODO: error
+		else {
+			if (strcmp(value, "auto")==0 || 
+			    strcmp(value, "dantzig")==0 || 
+			    strcmp(value, "partial")==0 ||
+					strcmp(value, "steepest")==0) {
+				par_list.push_back("-dualPivot");
+				par_list.push_back(value);
+			} else { } // TODO error 
+		}				
+	}
+
+	if (gm.optDefined("primalpivot")) {
+		char* value=gm.optGetString("primalpivot", buffer);
+		if (!value) { } // TODO: error
+		else {
+			if (strcmp(value, "auto")==0 || 
+			    strcmp(value, "exact")==0 || 
+			    strcmp(value, "dantzig")==0 || 
+			    strcmp(value, "partial")==0 ||
+					strcmp(value, "steepest")==0 ||
+					strcmp(value, "change")==0 ||
+					strcmp(value, "sprint")==0) {
+				par_list.push_back("-primalPivot");
+				par_list.push_back(value);
+			} else { } // TODO error 
+		}				
+	}
+	
+	if (gm.optDefined("perturbation")) {
+		par_list.push_back("-perturb");
+		par_list.push_back(gm.optGetBool("perturbation") ? "on" : "off");
+	}
+	
+	if (gm.optDefined("scaling")) {
+		char* value=gm.optGetString("scaling", buffer);
+		if (!value) { } // TODO: error
+		else {
+			if (strcmp(value, "auto")==0 || 
+			    strcmp(value, "off")==0 || 
+			    strcmp(value, "equilibrium")==0 || 
+					strcmp(value, "geometric")==0) {
+				par_list.push_back("-scaling");
+				par_list.push_back(value);
+			} else { } // TODO error 
+		}				
+	}	
 }
