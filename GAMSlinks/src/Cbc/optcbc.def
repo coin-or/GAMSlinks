@@ -2,6 +2,7 @@
 * optcbc.def
 *
 
+writemps string 0 "" 1 1 create MPS file for problem
 idiotcrash integer 0 -1 -1 999999 1 1 idiot crash
 sprintcrash integer 0 -1 -1 5000000 1 1 sprint crash
 sifting integer 0 -1 -1 5000000 1 1 synonym for sprint crash
@@ -31,15 +32,123 @@ scaling enumstr 0 "auto" 1 1 scaling method
  "auto" 1 automatic choice of scaling method
  "equilibrium" 1 equilibrium based scaling method
  "geometric" 1 geometric based scaling method
+presolve boolean 0 1 1 1 switch for initial presolve of LP
+tol_dual double 0 1e-7 0 maxdouble 1 1 dual feasibility tolerance
+tol_primal double 0 1e-7 0 maxdouble 1 1 primal feasibility tolerance
 startalg enumstr 0 "dual" 1 1 LP solver for root node
  "primal" 1 primal simplex algorithm
  "dual" 1 dual simplex algorithm
-writemps string 0 "" 1 1 create MPS file for problem
-tol_dual double 0 1e-7 0 maxdouble 1 1 dual feasibility tolerance
-tol_primal double 0 1e-7 0 maxdouble 1 1 primal feasibility tolerance
+ "barrier" 1 primal dual predictor corrector algorithm
 tol_integer double 0 1e-6 0 maxdouble 1 1 tolerance for integrality
-presolve boolean 0 1 1 1 switch for initial presolve of LP
-printfrequency integer 0 10 0 maxint 1 1 print frequency
+tol_presolve double 0 1e-8 0 maxdouble 1 1 tolerance used in presolve
+sollim integer 0 -1 -1 2147483647 1 1 limit on number of solutions
+strongbranching integer 0 5 0 999999 1 1 strong branching
+trustpseudocosts integer 0 5 -1 2000000 1 1 after howmany nodes we trust the pseudo costs
+cutdepth integer 0 -1 -1 999999 1 1 depth in tree at which cuts are applied
+cut_passes_root integer 0 -1 -999999 999999 1 1 number of cut passes at root node
+cut_passes_tree integer 0 1 -999999 999999 1 1 number of cut passes at nodes in the tree
+cuts enumstr 0 "on" 1 1 global switch for cutgenerators
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
+cliquecuts enumstr 0 "ifmove" 1 1 Clique Cuts
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
+flowcovercuts enumstr 0 "ifmove" 1 1 Flow Cover Cuts
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
+gomorycuts enumstr 0 "ifmove" 1 1 Gomory Cuts
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
+knapsackcuts enumstr 0 "ifmove" 1 1 Knapsack Cover Cuts
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
+liftandprojectcuts enumstr 0 "off" 1 1 Lift and Project Cuts
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
+mircuts enumstr 0 "ifmove" 1 1 Mixed Integer Rounding Cuts
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
+twomircuts enumstr 0 "root" 1 1 Two Phase Mixed Integer Rounding Cuts
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
+probingcuts enumstr 0 "ifmove" 1 1 Probing Cuts
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
+ "forceonbut" 1
+ "forceonstrong" 1
+ "forceonbutstrong" 1
+reduceandsplitcuts enumstr 0 "off" 1 1 Reduce and Split Cuts
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
+residualcapacitycuts enumstr 0 "off" 1 1 Residual Capacity Cuts
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
+heuristics boolean 0 1 1 1 global switch for heuristics
+combinesolutions boolean 0 1 1 1 combine solutions heuristic
+feaspump boolean 0 1 1 1 feasibility pump
+feaspump_passes integer 0 20 0 10000 1 1 number of feasibility passes
+greedyheuristic enumstr 0 "on" 1 1 greedy heuristic
+ "off" 1
+ "on" 1
+ "root" 1
+localtreesearch boolean 0 0 1 1 local tree search heuristic
+rins boolean 0 0 1 1 relaxed induced neighborhood search
+roundingheuristic boolean 0 1 1 1 rounding heuristic
+coststrategy enumstr 0 "off" 1 1 how to use costs as priorities
+ "off" 1
+ "priorities" 1
+ "columnorder" 1
+ "binaryfirst" 1
+ "binarylast" 1
+ "length" 1
+nodestrategy enumstr 0 "fewest" 1 1 how to select nodes
+ "hybrid" 1
+ "fewest" 1
+ "depth" 1
+ "upfewest" 1
+ "downfewest" 1
+ "updepth" 1
+ "downdepth" 1
+preprocess enumstr 0 "on" 1 1 integer presolve
+ "off" 1
+ "on" 1
+ "equal" 1
+ "equalall" 1
+ "sos" 1
+ "trysos" 1
 reslim double 0 1000 0 maxdouble 1 1 resource limit
 iterlim integer 0 10000 0 maxint 1 1 iteration limit
 nodelim integer 0 maxint 0 maxint 1 1 node limit

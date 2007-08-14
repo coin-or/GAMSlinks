@@ -38,7 +38,7 @@ void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver);
 void setupPrioritiesAndSOS(GamsModel& gm, CbcModel& model);
 void setupStartingPoint(GamsModel& gm, CbcModel& model);
 void setupParameters(GamsModel& gm, CbcModel& model);
-void setupParameterList(GamsModel& gm, std::list<std::string>& par_list);
+void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std::string>& par_list);
 
 int main (int argc, const char *argv[]) {
 #if defined(_MSC_VER)
@@ -111,19 +111,19 @@ int main (int argc, const char *argv[]) {
 	setupParameters(gm, model);
 	
 	std::list<std::string> par_list;
-	setupParameterList(gm, par_list);
+	setupParameterList(gm, myout, par_list);
 	int par_list_length=par_list.size();
-	const char** cbc_args=new const char*[par_list_length+3];
+	const char** cbc_args=new const char*[par_list_length+2];
 	cbc_args[0]="GAMS/CBC";
 	int i=1;
 	for (std::list<std::string>::iterator it(par_list.begin()); it!=par_list.end(); ++it, ++i)
 		cbc_args[i]=it->c_str();
-	cbc_args[i++]="-solve";
+//	cbc_args[i++]="-solve";
 	cbc_args[i++]="-quit";
 
 	myout << "\nCalling CBC main solution routine..." << CoinMessageEol;	
 //	const char * argv2[]={"GAMS/CBC", "-solve","-quit"};
-	CbcMain1(par_list_length+3,cbc_args,model);
+	CbcMain1(par_list_length+2,cbc_args,model);
 
 //	const char * argv2[]={"GAMS/CBC", "-feas", "off", "-solve","-quit"};
 //	CbcMain1(5,argv2,model);
@@ -336,34 +336,31 @@ void setupStartingPoint(GamsModel& gm, CbcModel& model) {
 }
 
 void setupParameters(GamsModel& gm, CbcModel& model) {
+	//note: does not seem to work via Osi: OsiDoPresolveInInitial, OsiDoDualInInitial  
+
 	// Some tolerances and limits
 	model.setDblParam(CbcModel::CbcMaximumSeconds, gm.optGetDouble("reslim"));
 	model.solver()->setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal"));
 	model.solver()->setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual"));
-//	model.solver()->setHintParam(OsiDoScale, gm.optGetBool("scaling"));
-	model.solver()->setHintParam(OsiDoPresolveInInitial, gm.optGetBool("presolve"));
-  
-// iteration limit only for LPs
+	
+	// iteration limit only for LPs
 	if (!gm.nDCols() && !gm.nSOS1() && !gm.nSOS2())
 		model.solver()->setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
 
-	char buffer[255];	buffer[0]=0;
-	gm.optGetString("startalg", buffer);
-	model.solver()->setHintParam(OsiDoDualInInitial, strcmp(buffer, "primal")==0 ? false : true);
-
 	// MIP parameters
-	model.setDblParam(CbcModel::CbcMaximumSeconds, gm.optGetDouble("reslim"));
 	model.setIntParam(CbcModel::CbcMaxNumNode, gm.optGetInteger("nodelim"));
 	model.setDblParam(CbcModel::CbcAllowableGap, gm.optGetDouble("optca"));
 	model.setDblParam(CbcModel::CbcAllowableFractionGap, gm.optGetDouble("optcr"));
 	if (gm.optDefined("cutoff")) model.setCutoff(gm.ObjSense()*gm.optGetDouble("cutoff")); // Cbc assumes a minimization problem here
 	model.setDblParam(CbcModel::CbcIntegerTolerance, gm.optGetDouble("tol_integer"));
-	model.solver()->setIntParam(OsiMaxNumIterationHotStart,100);
+//	model.solver()->setIntParam(OsiMaxNumIterationHotStart,100);
 }
 
-void setupParameterList(GamsModel& gm, std::list<std::string>& par_list) {
+void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std::string>& par_list) {
 	char buffer[255];
 
+	// LP parameters
+	
 	if (gm.optDefined("idiotcrash")) {
 		par_list.push_back("-idiotCrash");
 		sprintf(buffer, "%d", gm.optGetInteger("idiotcrash"));
@@ -382,8 +379,9 @@ void setupParameterList(GamsModel& gm, std::list<std::string>& par_list) {
 
 	if (gm.optDefined("crash")) {
 		char* value=gm.optGetString("crash", buffer);
-		if (!value) { } // TODO: error
-		else {
+		if (!value) {
+			myout << "Cannot read value for option 'crash'. Ignoring this option" << CoinMessageEol;
+		}	else {
 			if (strcmp(value, "off")==0 || strcmp(value, "on")==0) {
 				par_list.push_back("-crash");
 				par_list.push_back(value);
@@ -393,7 +391,9 @@ void setupParameterList(GamsModel& gm, std::list<std::string>& par_list) {
 			} else if(strcmp(value, "halim_solow")==0) {
 				par_list.push_back("-crash");
 				par_list.push_back("ha");
-			} else { } // TODO error 
+			} else {
+				myout << "Value " << value << " not supported for option 'crash'. Ignoring this option" << CoinMessageEol;
+			} 
 		}				
 	}
 
@@ -410,22 +410,26 @@ void setupParameterList(GamsModel& gm, std::list<std::string>& par_list) {
 
 	if (gm.optDefined("dualpivot")) {
 		char* value=gm.optGetString("dualpivot", buffer);
-		if (!value) { } // TODO: error
-		else {
+		if (!value) {
+			myout << "Cannot read value for option 'dualpivot'. Ignoring this option" << CoinMessageEol;
+		} else {
 			if (strcmp(value, "auto")==0 || 
 			    strcmp(value, "dantzig")==0 || 
 			    strcmp(value, "partial")==0 ||
 					strcmp(value, "steepest")==0) {
 				par_list.push_back("-dualPivot");
 				par_list.push_back(value);
-			} else { } // TODO error 
+			} else {
+				myout << "Value " << value << " not supported for option 'dualpivot'. Ignoring this option" << CoinMessageEol;
+			} 
 		}				
 	}
 
 	if (gm.optDefined("primalpivot")) {
 		char* value=gm.optGetString("primalpivot", buffer);
-		if (!value) { } // TODO: error
-		else {
+		if (!value) {
+			myout << "Cannot read value for option 'primalpivot'. Ignoring this option" << CoinMessageEol;
+		} else {
 			if (strcmp(value, "auto")==0 || 
 			    strcmp(value, "exact")==0 || 
 			    strcmp(value, "dantzig")==0 || 
@@ -435,7 +439,9 @@ void setupParameterList(GamsModel& gm, std::list<std::string>& par_list) {
 					strcmp(value, "sprint")==0) {
 				par_list.push_back("-primalPivot");
 				par_list.push_back(value);
-			} else { } // TODO error 
+			} else {
+				myout << "Value " << value << " not supported for option 'primalpivot'. Ignoring this option" << CoinMessageEol;
+			} 
 		}				
 	}
 	
@@ -446,15 +452,412 @@ void setupParameterList(GamsModel& gm, std::list<std::string>& par_list) {
 	
 	if (gm.optDefined("scaling")) {
 		char* value=gm.optGetString("scaling", buffer);
-		if (!value) { } // TODO: error
-		else {
-			if (strcmp(value, "auto")==0 || 
+		if (!value) {
+			myout << "Cannot read value for option 'scaling'. Ignoring this option" << CoinMessageEol;
+		} else if
+		     (strcmp(value, "auto")==0 || 
 			    strcmp(value, "off")==0 || 
 			    strcmp(value, "equilibrium")==0 || 
 					strcmp(value, "geometric")==0) {
-				par_list.push_back("-scaling");
-				par_list.push_back(value);
-			} else { } // TODO error 
-		}				
-	}	
+			par_list.push_back("-scaling");
+			par_list.push_back(value);
+		} else {
+			myout << "Value " << value << " not supported for option 'scaling'. Ignoring this option" << CoinMessageEol;
+		} 
+	}				
+
+	if (gm.optDefined("presolve")) {
+		par_list.push_back("-presolve");
+		par_list.push_back(gm.optGetBool("presolve") ? "on" : "off");
+	}
+
+	if (gm.optDefined("tol_presolve")) {
+		par_list.push_back("-preTolerance");
+		sprintf(buffer, "%g", gm.optGetDouble("tol_presolve"));
+		par_list.push_back(buffer);
+	}
+
+	// MIP parameters
+	
+	if (gm.optDefined("sollim")) {
+		par_list.push_back("-maxSolutions");
+		sprintf(buffer, "%d", gm.optGetInteger("sollim"));
+		par_list.push_back(buffer);
+	}
+
+	if (gm.optDefined("strongbranching")) {
+		par_list.push_back("-strongBranching");
+		sprintf(buffer, "%d", gm.optGetInteger("strongbranching"));
+		par_list.push_back(buffer);
+	}
+			
+	if (gm.optDefined("trustpseudocosts")) {
+		par_list.push_back("-trustPseudoCosts");
+		sprintf(buffer, "%d", gm.optGetInteger("trustpseudocosts"));
+		par_list.push_back(buffer);
+	}
+
+	if (gm.optDefined("cutdepth")) {
+		par_list.push_back("-cutDepth");
+		sprintf(buffer, "%d", gm.optGetInteger("cutdepth"));
+		par_list.push_back(buffer);
+	}
+
+	if (gm.optDefined("cut_passes_root")) {
+		par_list.push_back("-passCuts");
+		sprintf(buffer, "%d", gm.optGetInteger("cut_passes_root"));
+		par_list.push_back(buffer);
+	}
+
+	if (gm.optDefined("cut_passes_tree")) {
+		par_list.push_back("-passTree");
+		sprintf(buffer, "%d", gm.optGetInteger("cut_passes_tree"));
+		par_list.push_back(buffer);
+	}
+	
+	if (gm.optDefined("cuts")) {
+		char* value=gm.optGetString("cuts", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'cuts'. Ignoring this option" << CoinMessageEol;
+		} else if 
+		   ( strcmp(value, "off")==0 ||
+		     strcmp(value, "on")==0 ||
+		     strcmp(value, "root")==0 ||
+		     strcmp(value, "ifmove")==0 ) {
+			par_list.push_back("-cutsOnOff");
+			par_list.push_back(value);
+		} else if (strcmp(value, "forceon")==0) {
+			par_list.push_back("-cutsOnOff");
+			par_list.push_back("forceOn");
+		} else {
+			myout << "Value " << value << " not supported for option 'cuts'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+	
+	if (gm.optDefined("cliquecuts")) {
+		char* value=gm.optGetString("cliquecuts", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'cliquecuts'. Ignoring this option" << CoinMessageEol;
+		} else if 
+		   ( strcmp(value, "off")==0 ||
+		     strcmp(value, "on")==0 ||
+		     strcmp(value, "root")==0 ||
+		     strcmp(value, "ifmove")==0 ) {
+			par_list.push_back("-cliqueCuts");
+			par_list.push_back(value);
+		} else if (strcmp(value, "forceon")==0) {
+			par_list.push_back("-cliqueCuts");
+			par_list.push_back("forceOn");
+		} else {
+			myout << "Value " << value << " not supported for option 'cliquecuts'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+
+	if (gm.optDefined("flowcovercuts")) {
+		char* value=gm.optGetString("flowcovercuts", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'flowcovercuts'. Ignoring this option" << CoinMessageEol;
+		} else if 
+		   ( strcmp(value, "off")==0 ||
+		     strcmp(value, "on")==0 ||
+		     strcmp(value, "root")==0 ||
+		     strcmp(value, "ifmove")==0 ) {
+			par_list.push_back("-flowCoverCuts");
+			par_list.push_back(value);
+		} else if (strcmp(value, "forceon")==0) {
+			par_list.push_back("-flowCoverCuts");
+			par_list.push_back("forceOn");
+		} else {
+			myout << "Value " << value << " not supported for option 'flowcovercuts'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+
+	if (gm.optDefined("gomorycuts")) {
+		char* value=gm.optGetString("gomorycuts", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'gomorycuts'. Ignoring this option" << CoinMessageEol;
+		} else if 
+		   ( strcmp(value, "off")==0 ||
+		     strcmp(value, "on")==0 ||
+		     strcmp(value, "root")==0 ||
+		     strcmp(value, "ifmove")==0 ) {
+			par_list.push_back("-gomoryCuts");
+			par_list.push_back(value);
+		} else if (strcmp(value, "forceon")==0) {
+			par_list.push_back("-gomoryCuts");
+			par_list.push_back("forceOn");
+		} else {
+			myout << "Value " << value << " not supported for option 'gomorycuts'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+
+	if (gm.optDefined("knapsackcuts")) {
+		char* value=gm.optGetString("knapsackcuts", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'knapsackcuts'. Ignoring this option" << CoinMessageEol;
+		} else if 
+		   ( strcmp(value, "off")==0 ||
+		     strcmp(value, "on")==0 ||
+		     strcmp(value, "root")==0 ||
+		     strcmp(value, "ifmove")==0 ) {
+			par_list.push_back("-knapsackCuts");
+			par_list.push_back(value);
+		} else if (strcmp(value, "forceon")==0) {
+			par_list.push_back("-knapsackCuts");
+			par_list.push_back("forceOn");
+		} else {
+			myout << "Value " << value << " not supported for option 'knapsackcuts'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+
+	if (gm.optDefined("liftandprojectcuts")) {
+		char* value=gm.optGetString("liftandprojectcuts", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'liftandprojectcuts'. Ignoring this option" << CoinMessageEol;
+		} else if 
+		   ( strcmp(value, "off")==0 ||
+		     strcmp(value, "on")==0 ||
+		     strcmp(value, "root")==0 ||
+		     strcmp(value, "ifmove")==0 ) {
+			par_list.push_back("-liftAndProjectCuts");
+			par_list.push_back(value);
+		} else if (strcmp(value, "forceon")==0) {
+			par_list.push_back("-liftAndProjectCuts");
+			par_list.push_back("forceOn");
+		} else {
+			myout << "Value " << value << " not supported for option 'liftandprojectcuts'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+
+	if (gm.optDefined("mircuts")) {
+		char* value=gm.optGetString("mircuts", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'mircuts'. Ignoring this option" << CoinMessageEol;
+		} else if 
+		   ( strcmp(value, "off")==0 ||
+		     strcmp(value, "on")==0 ||
+		     strcmp(value, "root")==0 ||
+		     strcmp(value, "ifmove")==0 ) {
+			par_list.push_back("-mixedIntegerRoundingCuts");
+			par_list.push_back(value);
+		} else if (strcmp(value, "forceon")==0) {
+			par_list.push_back("-mixedIntegerRoundingCuts");
+			par_list.push_back("forceOn");
+		} else {
+			myout << "Value " << value << " not supported for option 'mircuts'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+
+	if (gm.optDefined("probingcuts")) {
+		char* value=gm.optGetString("probingcuts", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'probingcuts'. Ignoring this option" << CoinMessageEol;
+		} else if 
+		   ( strcmp(value, "off")==0 ||
+		     strcmp(value, "on")==0 ||
+		     strcmp(value, "root")==0 ||
+		     strcmp(value, "ifmove")==0 ) {
+			par_list.push_back("-probingCuts");
+			par_list.push_back(value);
+		} else if (strcmp(value, "forceon")==0) {
+			par_list.push_back("-probingCuts");
+			par_list.push_back("forceOn");
+		} else if (strcmp(value, "forceonbut")==0) {
+			par_list.push_back("-probingCuts");
+			par_list.push_back("forceOnBut");
+		} else if (strcmp(value, "forceonstrong")==0) {
+			par_list.push_back("-probingCuts");
+			par_list.push_back("forceOnStrong");
+		} else if (strcmp(value, "forceonbutstrong")==0) {
+			par_list.push_back("-probingCuts");
+			par_list.push_back("forceOnButStrong");
+		} else {
+			myout << "Value " << value << " not supported for option 'probingcuts'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+
+	if (gm.optDefined("reduceandsplitcuts")) {
+		char* value=gm.optGetString("reduceandsplitcuts", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'reduceandsplitcuts'. Ignoring this option" << CoinMessageEol;
+		} else if 
+		   ( strcmp(value, "off")==0 ||
+		     strcmp(value, "on")==0 ||
+		     strcmp(value, "root")==0 ||
+		     strcmp(value, "ifmove")==0 ) {
+			par_list.push_back("-reduceAndSplitCuts");
+			par_list.push_back(value);
+		} else if (strcmp(value, "forceon")==0) {
+			par_list.push_back("-reduceAndSplitCuts");
+			par_list.push_back("forceOn");
+		} else {
+			myout << "Value " << value << " not supported for option 'reduceandsplitcuts'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+
+	if (gm.optDefined("residualcapacitycuts")) {
+		char* value=gm.optGetString("residualcapacitycuts", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'residualcapacitycuts'. Ignoring this option" << CoinMessageEol;
+		} else if 
+		   ( strcmp(value, "off")==0 ||
+		     strcmp(value, "on")==0 ||
+		     strcmp(value, "root")==0 ||
+		     strcmp(value, "ifmove")==0 ) {
+			par_list.push_back("-residualCapacityCuts");
+			par_list.push_back(value);
+		} else if (strcmp(value, "forceon")==0) {
+			par_list.push_back("-residualCapacityCuts");
+			par_list.push_back("forceOn");
+		} else {
+			myout << "Value " << value << " not supported for option 'residualcapacitycuts'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+
+	if (gm.optDefined("twomircuts")) {
+		char* value=gm.optGetString("twomircuts", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'twomircuts'. Ignoring this option" << CoinMessageEol;
+		} else if
+		  ( strcmp(value, "off")==0 ||
+		    strcmp(value, "on")==0 ||
+		    strcmp(value, "root")==0 ||
+		    strcmp(value, "ifmove")==0 ||
+		    strcmp(value, "forceon")==0 ) {		   
+			par_list.push_back("-twoMirCuts");
+			par_list.push_back(value);
+		} else {
+			myout << "Value " << value << " not supported for option 'residualcapacitycuts'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+
+	if (gm.optDefined("heuristics")) {
+		par_list.push_back("-heuristicsOnOff");
+		par_list.push_back(gm.optGetBool("heuristics") ? "on" : "off");
+	}
+	
+	if (gm.optDefined("combinesolutions")) {
+		par_list.push_back("-combineSolution");
+		par_list.push_back(gm.optGetBool("combinesolutions") ? "on" : "off");
+	}
+
+	if (gm.optDefined("feaspump")) {
+		par_list.push_back("-feasibilityPump");
+		par_list.push_back(gm.optGetBool("feaspump") ? "on" : "off");
+	}
+
+	if (gm.optDefined("feaspump_passes")) {
+		par_list.push_back("-passFeasibilityPump");
+		sprintf(buffer, "%d", gm.optGetInteger("feaspump_passes"));
+		par_list.push_back(buffer);
+	}
+
+	if (gm.optDefined("greedyheuristic")) {
+		char* value=gm.optGetString("greedyheuristic", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'greedyheuristic'. Ignoring this option" << CoinMessageEol;
+		} else if 
+		   ( strcmp(value, "off")==0 ||
+		     strcmp(value, "on")==0 ||
+		     strcmp(value, "root")==0 ) {
+			par_list.push_back("-greedyHeuristic");
+			par_list.push_back(value);
+		} else {
+			myout << "Value " << value << " not supported for option 'greedyheuristic'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+
+	if (gm.optDefined("localtreesearch")) {
+		par_list.push_back("-localTreeSearch");
+		par_list.push_back(gm.optGetBool("localtreesearch") ? "on" : "off");
+	}
+
+	if (gm.optDefined("rins")) {
+		par_list.push_back("-Rins");
+		par_list.push_back(gm.optGetBool("rins") ? "on" : "off");
+	}
+
+	if (gm.optDefined("roundingheuristic")) {
+		par_list.push_back("-roundingHeuristic");
+		par_list.push_back(gm.optGetBool("roundingheuristic") ? "on" : "off");
+	}
+	
+	if (gm.optDefined("coststrategy")) {
+		char* value=gm.optGetString("coststrategy", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'coststrategy'. Ignoring this option" << CoinMessageEol;
+		} else if 
+		   ( strcmp(value, "off")==0 ||
+		     strcmp(value, "priorities")==0 ||
+		     strcmp(value, "length")==0 ||
+		     strcmp(value, "columnorder")==0 ) {
+			par_list.push_back("-costStrategy");
+			par_list.push_back(value);
+		} else if (strcmp(value, "binaryfirst")==0) {
+			par_list.push_back("-costStrategy");
+			par_list.push_back("01first");
+		} else if (strcmp(value, "binarylast")==0) {
+			par_list.push_back("-costStrategy");
+			par_list.push_back("01last");
+		} else {
+			myout << "Value " << value << " not supported for option 'coststrategy'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+	
+	if (gm.optDefined("nodestrategy")) {
+		char* value=gm.optGetString("nodestrategy", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'nodestrategy'. Ignoring this option" << CoinMessageEol;
+		} else if 
+		   ( strcmp(value, "hybrid")==0 ||
+		     strcmp(value, "fewest")==0 ||
+		     strcmp(value, "depth")==0 ||
+		     strcmp(value, "upfewest")==0 ||
+		     strcmp(value, "downfewest")==0 ||
+		     strcmp(value, "updepth")==0 ||
+		     strcmp(value, "downdepth")==0 ) {
+			par_list.push_back("-nodeStrategy");
+			par_list.push_back(value);
+		} else {
+			myout << "Value " << value << " not supported for option 'nodestrategy'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+
+	if (gm.optDefined("preprocess")) {
+		char* value=gm.optGetString("preprocess", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'preprocess'. Ignoring this option" << CoinMessageEol;
+		} else if
+		  ( strcmp(value, "off")==0 ||
+		    strcmp(value, "on")==0 ||
+		    strcmp(value, "equal")==0 ||
+		    strcmp(value, "equalall")==0 ||
+		    strcmp(value, "sos")==0 ||
+		    strcmp(value, "trysos")==0 ) {
+			par_list.push_back("-preprocess");
+			par_list.push_back(value);
+		} else {
+			myout << "Value " << value << " not supported for option 'coststrategy'. Ignoring this option" << CoinMessageEol;
+		} 
+	}
+
+	// algorithm for root node and solve command 
+
+	if (gm.optDefined("startalg")) {
+		char* value=gm.optGetString("startalg", buffer);
+		if (!value) {
+			myout << "Cannot read value for option 'startalg'. Ignoring this option" << CoinMessageEol;
+		} else if (strcmp(value, "primal")==0) {
+			par_list.push_back("-primalSimplex");
+		} else if (strcmp(value, "dual")==0) {
+			par_list.push_back("-dualSimplex");
+		} else if (strcmp(value, "barrier")==0) {
+			par_list.push_back("-barrier");
+		} else {
+			myout << "Value " << value << " not supported for option 'startalg'. Ignoring this option" << CoinMessageEol;
+		} 
+		if (gm.nDCols() || gm.nSOS1() || gm.nSOS2())
+			par_list.push_back("-solve"); 
+	} else
+		par_list.push_back("-solve"); 
 }

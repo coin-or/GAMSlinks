@@ -3,12 +3,18 @@ $eolcom //
 set g Cbc Option Groups /
         general        General Options
       /
-    e / '-1', 0*200, primal, dual, default, off, on, auto,
+    e / '-1', 0*100, primal, dual, barrier, default, off, on, auto,
         solow_halim, halim_solow, dantzig, steepest, partial, exact, change, sprint, equilibrium, geometric
+        root, ifmove, forceon, forceonbut, forceonstrong, forceonbutstrong
+        priorities, columnorder, binaryfirst, binarylast, length
+        hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth
+        equal, equalall, sos, trysos
       /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
     t / I Integer, R Real, S String, B Binary /
     o Options /
+      writemps               create MPS file for problem
+*LP options
       idiotcrash             idiot crash
       sprintcrash            sprint crash
       sifting                synonym for sprint crash
@@ -19,29 +25,41 @@ set g Cbc Option Groups /
       primalpivot            primal pivot choice algorithm
       perturbation           perturbation of problem
       scaling                scaling method
-*      roundingheuristic      rounding heuristic
-*      localsearch            local search
-*      strongbranching        strong branching
-*      integerpresolve        integer presolve
-*      findsos                find sos in integer presolve
-*      cuts                   switch for cut generation 
-*      probing                probing
-*      gomorycuts             Gomory cuts
-*      knapsackcuts           knapsack cover cuts
-*      oddholecuts            odd hole cuts
-*      cliquecuts             clique cuts
-*      flowcovercuts          flow cover cuts
-*      mircuts        		     mixed integer rounding cuts
-*      redsplitcuts           reduce and split cuts
-*      cutsonlyatroot         whether cuts are only generated at the root node
-      startalg               LP solver for root node
-      writemps               create MPS file for problem
+      presolve               switch for initial presolve of LP
       tol_dual               dual feasibility tolerance
       tol_primal             primal feasibility tolerance
+      startalg               LP solver for root node
+*MIP options
       tol_integer            tolerance for integrality
-      presolve               switch for initial presolve of LP
-      printfrequency         print frequency
-*      nodecompare            comparision method to determine tree search order
+      tol_presolve           tolerance used in presolve
+      sollim                 limit on number of solutions
+      strongbranching        strong branching
+      trustpseudocosts       after howmany nodes we trust the pseudo costs
+      cutdepth               depth in tree at which cuts are applied
+      cut_passes_root        number of cut passes at root node
+      cut_passes_tree        number of cut passes at nodes in the tree
+      cuts                   global switch for cutgenerators
+      cliquecuts             Clique Cuts
+      flowcovercuts          Flow Cover Cuts
+      gomorycuts             Gomory Cuts
+      knapsackcuts           Knapsack Cover Cuts
+      liftandprojectcuts     Lift and Project Cuts
+      mircuts        		     Mixed Integer Rounding Cuts
+      twomircuts             Two Phase Mixed Integer Rounding Cuts
+      probingcuts            Probing Cuts
+      reduceandsplitcuts     Reduce and Split Cuts
+      residualcapacitycuts   Residual Capacity Cuts
+      heuristics             global switch for heuristics
+      combinesolutions       combine solutions heuristic
+      feaspump               feasibility pump      
+      feaspump_passes        number of feasibility passes
+      greedyheuristic        greedy heuristic
+      localtreesearch        local tree search heuristic
+      rins                   relaxed induced neighborhood search
+      roundingheuristic      rounding heuristic
+      coststrategy           how to use costs as priorities
+      nodestrategy           how to select nodes
+      preprocess             integer presolve
 * GAMS options
       reslim                 resource limit
       iterlim                iteration limit
@@ -58,6 +76,7 @@ set g Cbc Option Groups /
 $onembedded
     optdata(g,o,t,f) /
 general.(
+  writemps             .s.(def '')
   idiotcrash           .i.(def -1, lo -1, up 999999)
   sprintcrash          .i.(def -1, lo -1, up 5000000)
   sifting              .i.(def -1, lo -1, up 5000000)
@@ -68,29 +87,40 @@ general.(
   primalpivot          .s.(def auto)
   perturbation         .b.(def 1)
   scaling              .s.(def auto)
-*  roundingheuristic   .b.(def 1)
-*  localsearch         .b.(def 1)
-*  strongbranching     .b.(def 1)
-*  integerpresolve     .b.(def 1)
-*  findsos             .b.(def 1)
-*  cuts                .i.(def 0, lo -1, up 1)
-*  probing             .b.(def 1)
-*  gomorycuts          .b.(def 1)
-*  knapsackcuts        .b.(def 1)
-*  oddholecuts         .b.(def 0)
-*  cliquecuts          .b.(def 1)
-*  flowcovercuts       .b.(def 1)
-*  mircuts             .b.(def 1)
-*  redsplitcuts        .b.(def 0)
-*  cutsonlyatroot      .b.(def 1)
-  startalg            .s.(def dual)
-  writemps            .s.(def '')
-  tol_primal          .r.(def 1e-7)
-  tol_dual            .r.(def 1e-7)
-  tol_integer         .r.(def 1e-6)
-  presolve            .b.(def 1)
-  printfrequency      .i.(def 10)
-*  nodecompare         .s.(def default)
+  presolve             .b.(def 1)
+  tol_dual             .r.(def 1e-7)
+  tol_primal           .r.(def 1e-7)
+  startalg             .s.(def dual)
+  tol_integer          .r.(def 1e-6)
+  tol_presolve         .r.(def 1e-8)
+  sollim               .i.(def -1, lo -1, up 2147483647)
+  strongbranching      .i.(def 5, lo 0, up 999999)
+  trustpseudocosts     .i.(def 5, lo -1, up 2000000)
+  cutdepth             .i.(def -1, lo -1, up 999999)
+  cut_passes_root      .i.(def -1, lo -999999, up 999999)
+  cut_passes_tree      .i.(def 1, lo -999999, up 999999)
+  cuts                 .s.(def on)
+  cliquecuts           .s.(def ifmove)
+  flowcovercuts        .s.(def ifmove)
+  gomorycuts           .s.(def ifmove)
+  knapsackcuts         .s.(def ifmove)
+  liftandprojectcuts   .s.(def off)
+  mircuts        		   .s.(def ifmove)
+  twomircuts           .s.(def root)
+  probingcuts          .s.(def ifmove)
+  reduceandsplitcuts   .s.(def off)
+  residualcapacitycuts .s.(def off)
+  heuristics           .b.(def 1)
+  combinesolutions     .b.(def 1)
+  feaspump             .b.(def 1)
+  feaspump_passes      .i.(def 20, lo 0, up 10000)
+  greedyheuristic      .s.(def on)
+  localtreesearch      .b.(def 0)
+  rins                 .b.(def 0)
+  roundingheuristic    .b.(def 1)
+  coststrategy         .s.(def off)
+  nodestrategy         .s.(def fewest)
+  preprocess           .s.(def on)
 * GAMS options
   reslim          .r.(def 1000)
   iterlim         .i.(def 10000)
@@ -123,42 +153,26 @@ general.(
                     equilibrium equilibrium based scaling method
                     geometric geometric based scaling method
                     auto   automatic choice of scaling method )
-*  cuts.(           '-1'   no cuts will be generated
-*                   0      automatic
-*                   1      cuts from all available cut classes will be generated )
-*  localsearch.(    0      local search heuristic is not used
-*                   1      local search heuristic is used )
-*  strongbranching.(0      strong branching is switched off
-*                   1      strong branching is switched on )
-*  integerpresolve.(0      don't do integer presolve
-*                   1      do integer presolve )
-*  findsos.(        0      don't try to find special ordered sets
-*                   1      try to find special ordered sets )
-*  probing.(        0      don't do probing
-*                   1      do probing )
-*  gomorycuts.(     0      don't add gomory cuts
-*                   1      add gomory cuts )
-*  knapsackcuts.(   0      don't add knapsack cover cuts
-*                   1      add knapsack cover cuts )
-*  oddholecuts.(    0      don't add odd hole cuts
-*                   1      add odd hole cuts )
-*  cliquecuts.(     0      don't add clique cuts
-*                   1      add clique cuts )
-*  flowcovercuts.(  0      don't add flow cover cuts
-*                   1      add flow cover cuts )
-*  mircuts.(        0      don't add mixed integer rounding cuts
-*                   1      add mixed integer rounding cuts )
-*  redsplitcuts.(   0      don't add reduce and split cuts
-*                   1      add reduce and split cuts )
-*  cutsonlyatroot.( 0      generate cuts always in the branch and bound
-*                   1      generate cuts only at root node )
-*  scaling.(        0      don't scale the problem
-*                   1      scale the problem )
-  presolve.(       0      don't do an initial presolve on the LP
-                   1      do an initial presolve on the LP )
-  startalg.(       primal  primal simplex algorithm
-                   dual    dual simplex algorithm )
-*  nodecompare.(    default, depth, objective )
+   presolve.(       0      don't do an initial presolve on the LP
+                    1      do an initial presolve on the LP )
+   startalg.(       primal  primal simplex algorithm
+                    dual    dual simplex algorithm
+                    barrier primal dual predictor corrector algorithm )
+   cuts.(           off, on, root, ifmove, forceon )
+   cliquecuts.(     off, on, root, ifmove, forceon )
+   flowcovercuts.(  off, on, root, ifmove, forceon )
+   gomorycuts.(     off, on, root, ifmove, forceon )
+   knapsackcuts.(   off, on, root, ifmove, forceon )
+   liftandprojectcuts.( off, on, root, ifmove, forceon )
+   mircuts.(        off, on, root, ifmove, forceon )
+   twomircuts.(     off, on, root, ifmove, forceon )
+   probingcuts.(    off, on, root, ifmove, forceon, forceonbut, forceonstrong, forceonbutstrong )
+   reduceandsplitcuts.( off, on, root, ifmove, forceon )
+   residualcapacitycuts.( off, on, root, ifmove, forceon )
+   greedyheuristic.( off, on, root )
+   coststrategy.(   off, priorities, columnorder, binaryfirst, binarylast, length )
+   nodestrategy.(   hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth )
+   preprocess.(     off, on, equal, equalall, sos, trysos )
  /
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /
@@ -170,8 +184,6 @@ general.(
                      optca      'GAMS optca' 
                      optcr      'GAMS optcr'
                      cutoff     'GAMS cutoff' /
-* oep(o) / localsearch, strongbranching, integerpresolve, findsos,
-*    probing, gomorycuts, knapsackcuts, oddholecuts, cliquecuts,
-*    flowcovercuts, mircuts, redsplitcuts, cutsonlyatroot, scaling, presolve /;
- oep(o) / presolve /;
+ oep(o) / crossover, perturbation, presolve,
+    heuristics, combinesolutions, feaspump, localtreesearch, rins, roundingheuristic /;
     
