@@ -43,6 +43,7 @@ int main (int argc, char* argv[]) {
   }
 
   char buffer[512];
+  prob->logFlush = 1; // flush output more often to avoid funny look
   if (smagStdOutputStart(prob, SMAG_STATUS_OVERWRITE_IFDUMMY, buffer, sizeof(buffer)))
   	fprintf(stderr, "Warning: Error opening GAMS output files .. continuing anyhow\t%s\n", buffer);
 
