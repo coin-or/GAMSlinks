@@ -37,6 +37,22 @@ int printme(void* info, const char* msg) {
 	return 1;
 }
 
+#ifdef OGSI_HAVE_CALLBACK
+void glpk_callback(glp_tree* tree, void* info) {
+	double gap=glp_ios_mip_gap(tree);
+	if (gap<=*(double*)info) {
+		printf("interrupt because gap = %g <= %g = optcr\n", gap, *(double*)info);
+		glp_ios_terminate(tree);
+	}
+//	switch (glp_ios_reason(tree)) {
+//		case GLP_IBINGO:
+//		case GLP_IHEUR:
+//			
+//		
+//	}
+}
+#endif
+
 void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model);
 void setupParametersMIP(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model);
 void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver);
@@ -185,7 +201,10 @@ int main (int argc, const char *argv[]) {
 
 	} else { // MIP
 		setupParametersMIP(gm, myout, solver, glpk_model);
-
+#ifdef OGSI_HAVE_CALLBACK
+		double optcr=gm.getOptCR();
+		solver.registerCallback(glpk_callback, (void*)&optcr);
+#endif
 		myout << "Starting GLPK Branch and Bound... " << CoinMessageEol;
 		solver.branchAndBound();
 

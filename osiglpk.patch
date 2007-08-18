@@ -1,7 +1,7 @@
 Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
 ===================================================================
---- Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(revision 1023)
-+++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(working copy)
+--- Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Revision 1069)
++++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Arbeitskopie)
 @@ -176,6 +176,7 @@
    If we ever reach the default case, we're deeply confused.
  */
@@ -36,7 +36,28 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
      case LPX_E_FAULT:
      case LPX_E_SING:
      { isAbandoned_ = true ;
-@@ -340,6 +346,7 @@
+@@ -304,7 +310,20 @@
+     lpx_set_int_parm(model,LPX_K_USECUTS,0) ;
+ #   endif
+ #   endif
++#		ifdef OGSI_HAVE_CALLBACK
++		// parameters for glp_intopt call
++		glp_iocp param;
++		glp_init_iocp(&param);
++		if (callback_routine) {
++			param.cb_func=callback_routine;
++			param.cb_info=callback_info;
++		}
++    if (lpx_get_status(model) != LPX_OPT)
++    { initialSolve() ; }
++		err = glp_intopt(model, &param);
++#		else
+     err = lpx_intopt(model) ;
++#		endif
+ #   else
+     if (lpx_get_status(model) != LPX_OPT)
+     { initialSolve() ; }
+@@ -340,6 +359,7 @@
  */
      iter_used_ = lpx_get_int_parm(model,LPX_K_ITCNT) ;
      isIterationLimitReached_ = false ;
@@ -44,7 +65,7 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
      isAbandoned_ = false ;
      isPrimInfeasible_ = false ;
      isDualInfeasible_ = false ;
-@@ -366,8 +373,9 @@
+@@ -366,8 +386,9 @@
        case LPX_E_NODFS:
        { isDualInfeasible_ = true ;
  	break ; }
@@ -55,7 +76,22 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
        { isIterationLimitReached_ = true ;
  	break ; }
        case LPX_E_SING:
-@@ -841,6 +849,11 @@
+@@ -741,6 +762,14 @@
+   }
+   return true;
+ }
++
++#ifdef OGSI_HAVE_CALLBACK
++void OGSI::registerCallback(callback_t callback_routine_, void* callback_info_) {
++	callback_routine=callback_routine_;
++	callback_info=callback_info_;
++}
++#endif
++
+ //#############################################################################
+ // Methods returning info on how the solution process terminated
+ //#############################################################################
+@@ -841,6 +870,11 @@
  	return isIterationLimitReached_;
  }
  
@@ -67,7 +103,19 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
  //#############################################################################
  // WarmStart related methods
  //#############################################################################
-@@ -3139,6 +3152,7 @@
+@@ -3096,6 +3130,11 @@
+ #   endif
+     assert(retval == LPX_E_OK) ; }
+ 
++#ifdef OGSI_HAVE_CALLBACK    
++	callback_routine = source.callback_routine;
++  callback_info = source.callback_info;
++#endif
++
+   return ; }
+ 
+ 
+@@ -3139,9 +3178,15 @@
    hotStartRStatSize_ = 0;
  
    isIterationLimitReached_ = false;
@@ -75,7 +123,15 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
    isAbandoned_ = false;
    isPrimInfeasible_ = false;
    isDualInfeasible_ = false;
-@@ -3252,6 +3266,7 @@
++  
++#ifdef OGSI_HAVE_CALLBACK
++  callback_routine = NULL;
++  callback_info = NULL;
++#endif
+ 
+   lp_ = lpx_create_prob();
+   assert( lp_ != NULL );
+@@ -3252,6 +3297,7 @@
          iter_used_ = 0;
  	isAbandoned_ = false;
  	isIterationLimitReached_ = false;
@@ -85,19 +141,38 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
  	delete [] colsol_;
 Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp
 ===================================================================
---- Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(revision 1023)
-+++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(working copy)
-@@ -17,6 +17,9 @@
+--- Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(Revision 1069)
++++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(Arbeitskopie)
+@@ -17,6 +17,14 @@
  #include "CoinPackedMatrix.hpp"
  #include "CoinWarmStartBasis.hpp"
  
 +// A define that tells whether methods to check for the timelimit exists in OsiGlpkSolverInterface
-+#define OGSI_HAVE_TIMELIMIT 1
++#define OGSI_HAVE_TIMELIMIT
++#if defined(GLP_MAJOR_VERSION) && defined(GLP_MINOR_VERSION)
++#if (GLP_MAJOR_VERSION > 4) || (GLP_MAJOR_VERSION == 4 && GLP_MINOR_VERSION == 20)  
++//#define OGSI_HAVE_CALLBACK
++#endif
++#endif
 +
  /** GPLK Solver Interface
  
      Instantiation of OsiGlpkSolverInterface for GPLK
-@@ -90,6 +93,8 @@
+@@ -73,6 +81,13 @@
+     bool getStrParam(OsiStrParam key, std::string& value) const;
+   //@}
+ 
++#ifdef OGSI_HAVE_CALLBACK
++		/** Signature of GLPK callback routine.
++		 */ 
++	  typedef void (*callback_t)(glp_tree* tree, void* info);
++    void registerCallback(callback_t callback_routine_, void* callback_info_=NULL);
++#endif
++
+   //---------------------------------------------------------------------------
+   ///@name Methods returning info on how the solution process terminated
+   //@{
+@@ -90,6 +105,8 @@
      virtual bool isDualObjectiveLimitReached() const;
      /// Iteration limit reached?
      virtual bool isIterationLimitReached() const;
@@ -106,7 +181,7 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp
    //@}
  
    //---------------------------------------------------------------------------
-@@ -770,6 +775,8 @@
+@@ -770,6 +787,8 @@
    // Status information
    /// glpk stopped on iteration limit
    bool isIterationLimitReached_;
@@ -115,3 +190,15 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp
    /// glpk abandoned the problem 
    bool isAbandoned_;
    /*! \brief  glpk stopped on lower objective limit
+@@ -840,6 +859,11 @@
+   /// Pointer to row-wise copy of problem matrix coefficients.
+   mutable CoinPackedMatrix *matrixByCol_;  
+   //@}
++
++#ifdef OGSI_HAVE_CALLBACK  
++  callback_t callback_routine;
++  void* callback_info;
++#endif
+   //@}
+ };
+ 
