@@ -79,6 +79,8 @@ int main (int argc, char* argv[]) {
 // 	if (smagColCountNL(prob)==0) { // LP
 //		app->Options()->SetStringValue("mehrotra_algorithm", "yes");
 // 	}
+	if (prob->modType==procQCP || prob->modType==procRMIQCP)
+		app->Options()->SetStringValue("hessian_constant", "yes"); 
 
 	if (prob->gms.useopt)
 		app->Initialize(prob->gms.optFileName);
