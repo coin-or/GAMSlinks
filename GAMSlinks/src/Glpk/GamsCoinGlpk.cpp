@@ -91,9 +91,11 @@ int main (int argc, const char *argv[]) {
 	myout << "\nGAMS/Glpk LP/MIP Solver (Glpk Library" << glp_version() << ")\nwritten by A. Makhorin\n " << CoinMessageEol;
 #endif
 
-	if (gm.nSOS1() || gm.nSOS2()) {
-		myout << "GLPK cannot handle special ordered sets (SOS)" << CoinMessageEol;
+	if (gm.nSOS1() || gm.nSOS2() || gm.nSemiContinuous()) {
+		myout << "GLPK cannot handle special ordered sets (SOS) or semicontinuous variables" << CoinMessageEol;
 		myout << "Exiting ..." << CoinMessageEol;
+		gm.setStatus(GamsModel::CapabilityProblems, GamsModel::ErrorNoSolution);
+		gm.setSolution();
 		exit(EXIT_FAILURE);
 	}
 
@@ -133,7 +135,7 @@ int main (int argc, const char *argv[]) {
 	delete[] rowrng;
 
 	// Tell solver which variables are discrete
-	int *discVar=gm.ColDisc();
+	bool* discVar=gm.ColDisc();
 	if (gm.nDCols())
 		for (j=0; j<gm.nCols(); j++)
 			if (discVar[j]) solver.setInteger(j);

@@ -30,12 +30,13 @@
 // For Branch and bound
 #include "CbcModel.hpp"
 #include "CbcBranchActual.hpp" //for CbcSOS
-#include "CbcStrategyGams.hpp"
+#include "CbcBranchLotsize.hpp" //for CbcLotsize
+//#include "CbcStrategyGams.hpp"
 
 #include "OsiClpSolverInterface.hpp"
 
 void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver);
-void setupPrioritiesAndSOS(GamsModel& gm, CbcModel& model);
+void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model);
 void setupStartingPoint(GamsModel& gm, CbcModel& model);
 void setupParameters(GamsModel& gm, CbcModel& model);
 void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std::string>& par_list);
@@ -106,7 +107,7 @@ int main (int argc, const char *argv[]) {
   // Switch off most output
 	model.solver()->setHintParam(OsiDoReducePrint,true,OsiHintTry);
 
-	setupPrioritiesAndSOS(gm, model);
+	setupPrioritiesSOSSemiCon(gm, model);
 	setupStartingPoint(gm, model);
 	setupParameters(gm, model);
 	
@@ -118,17 +119,12 @@ int main (int argc, const char *argv[]) {
 	int i=1;
 	for (std::list<std::string>::iterator it(par_list.begin()); it!=par_list.end(); ++it, ++i)
 		cbc_args[i]=it->c_str();
-//	cbc_args[i++]="-solve";
 	cbc_args[i++]="-quit";
 
 	myout << "\nCalling CBC main solution routine..." << CoinMessageEol;	
-//	const char * argv2[]={"GAMS/CBC", "-solve","-quit"};
 	CbcMain1(par_list_length+2,cbc_args,model);
 
-//	const char * argv2[]={"GAMS/CBC", "-feas", "off", "-solve","-quit"};
-//	CbcMain1(5,argv2,model);
-
-	if (0==gm.nDCols() && 0==gm.nSOS1() && 0==gm.nSOS2()) { // we solved an LP
+	if (gm.isLP()) { // we solved an LP
 	  // Get some statistics 
 	  gm.setIterUsed(model.solver()->getIterationCount());
 	  gm.setResUsed(gm.SecondsSinceStart());
@@ -216,7 +212,7 @@ void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver) {
 
 	// Tell solver which variables are discrete
 	if (gm.nDCols()) {
-		int *discVar=gm.ColDisc();
+		bool* discVar=gm.ColDisc();
 		for (j=0; j<gm.nCols(); j++) 
 	  	if (discVar[j]) solver.setInteger(j);
 	}
@@ -238,7 +234,7 @@ void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver) {
 	}
 }
 
-void setupPrioritiesAndSOS(GamsModel& gm, CbcModel& model) {
+void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model) {
 	int i,j;
 	// range of priority values
 	double minprior=model.solver()->getInfinity();
@@ -303,6 +299,34 @@ void setupPrioritiesAndSOS(GamsModel& gm, CbcModel& model) {
 			delete objects[i];
 		delete[] objects;
   }
+  
+  if (gm.nSemiContinuous()) {
+		CbcObject** objects = new CbcObject*[gm.nSemiContinuous()];
+		int object_nr=0;
+		double points[4];
+		points[0]=0.;
+		points[1]=0.;
+		for (i=0; i<gm.nCols(); ++i) {
+			if (!gm.ColSemiContinuous()[i]) continue;
+			
+			points[2]=gm.ColLb()[i];
+			points[3]=gm.ColUb()[i];			
+			if (gm.ColLb()[i]==gm.ColUb()[i]) // var. can be only 0 or ColLb()[i]
+				objects[object_nr]=new CbcLotsize(&model, i, 2, points+1, false);
+			else // var. can be 0 or in the range between low and upper 
+				objects[object_nr]=new CbcLotsize(&model, i, 4, points, true);
+				
+			if (gm.getPriorityOption() && minprior!=maxprior)
+				objects[object_nr]->setPriority(1+(int)(999*(gm.ColPriority()[i]-minprior)/(maxprior-minprior)));
+				
+			++object_nr;
+		}
+		assert(object_nr==gm.nSemiContinuous());
+	  model.addObjects(object_nr, objects);
+	  for (i=0; i<object_nr; ++i)
+			delete objects[i];
+		delete[] objects;
+  }
 }
 
 
@@ -344,7 +368,7 @@ void setupParameters(GamsModel& gm, CbcModel& model) {
 	model.solver()->setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual"));
 	
 	// iteration limit only for LPs
-	if (!gm.nDCols() && !gm.nSOS1() && !gm.nSOS2())
+	if (gm.isLP())
 		model.solver()->setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
 
 	// MIP parameters

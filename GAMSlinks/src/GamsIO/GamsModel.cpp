@@ -63,8 +63,17 @@ GamsModel::GamsModel(const char *cntrfile)
 
   // Sizes for memory allocation
   nCols_ = iolib.ncols;
-  nSOS1_ = iolib.modin == PROC_MIP? iolib.nosos1:0;
-  nSOS2_ = iolib.modin == PROC_MIP? iolib.nosos2:0;
+  if (iolib.modin == PROC_MIP) {
+  	nDCols_ = iolib.ndisc+iolib.nsemii;
+	  nSOS1_ = iolib.nosos1;
+  	nSOS2_ = iolib.nosos2;
+	  nSemiCon_ = iolib.nsemi+iolib.nsemii;
+  } else {
+  	nDCols_ = 0;
+	  nSOS1_ = 0;
+  	nSOS2_ = 0;
+	  nSemiCon_ = 0;
+  }
   nRows_ = iolib.nrows;
   nNnz_  = iolib.nnz;
   Allocate();
@@ -117,8 +126,9 @@ void GamsModel::Allocate()
 {
   ColLb_   = new double[nCols_];
   ColUb_   = new double[nCols_];
-  ColDisc_ = new int[nCols_];
+  ColDisc_ = new bool[nCols_];
   SOSIndicator_ = new int[nCols_];
+  ColSemiCon_ = new bool[nCols_];
   
   ObjCoef_ = new double[nCols_];
 
@@ -203,6 +213,8 @@ GamsModel::PrintOut(PrintMask mask, const char *msg)
 #define VARINT 2 // integer
 #define VARSOS1 3 // sos of type 1
 #define VARSOS2 4 // sos of type 2
+#define VARSEMICON 5 // semicontinuous
+#define VARSEMIINT 6 // semiinteger
 
 void GamsModel::readMatrix() {
   int i,ip,j,jp,k,kp,nzcol,nltype;
@@ -244,7 +256,7 @@ void GamsModel::readMatrix() {
     }
   }
 
-  nDCols_ = 0;
+//  nDCols_ = 0;
   for (j=0, jp=0, kp=0; j<nCols_; ++j) {
     cioReadCol (&colRec);
     nzcol = colRec.idata[1];
@@ -266,25 +278,42 @@ void GamsModel::readMatrix() {
       ColBasis_[jp] = colRec.idata[2];
       switch (colRec.idata[3]) {	/* variable type */
       case VARCON:
-        ColDisc_[jp]=0;
+        ColDisc_[jp]=false;
+				ColSemiCon_[jp]=false;
         SOSIndicator_[jp]=0;
         break;
       case VARINT:
       case VARBIN:
-        ColDisc_[jp]=1;
+        ColDisc_[jp]=true;
+				ColSemiCon_[jp]=false;
         SOSIndicator_[jp]=0;
-        nDCols_++;
+//        nDCols_++;
         break;
       case VARSOS1:
-        ColDisc_[jp]=0;
+        ColDisc_[jp]=false;
+				ColSemiCon_[jp]=false;
         SOSIndicator_[jp]=colRec.idata[4];
       	break;
       case VARSOS2:
-        ColDisc_[jp]=0;
+        ColDisc_[jp]=false;
+				ColSemiCon_[jp]=false;
         SOSIndicator_[jp]=-colRec.idata[4];
       	break;
+      case VARSEMICON:
+        ColDisc_[jp]=false;
+				ColSemiCon_[jp]=true;
+        SOSIndicator_[jp]=0;
+        PrintOut(AllMask, "\n found semicontinuous variable\n");
+        break;
+      case VARSEMIINT:
+        ColDisc_[jp]=true;
+				ColSemiCon_[jp]=true;
+        SOSIndicator_[jp]=0;
+//        nDCols_++;
+        PrintOut(AllMask, "\n found semiinteger variable\n");
+        break;
       default:
-        PrintOut(AllMask, "\n*** Unhandled column type. Allowed column types: continuous, binary, integer, sos1, sos2\n");
+        PrintOut(AllMask, "\n*** Unhandled column type. Allowed column types: continuous, binary, integer, sos1, sos2, semicontinuous, semiinteger\n");
         exit(EXIT_FAILURE); // We should throw an exception
       }
       matStart_[jp] = kp;
@@ -342,6 +371,11 @@ int GamsModel::matSqueezeZeros() {
 	
 	return shift;
 }
+
+bool GamsModel::isLP() const {
+	return (0==nDCols() && 0==nSOS1() && 0==nSOS2() && 0==nSemiContinuous());	
+}
+
 
 void GamsModel::TimerStart() {
   startTime_ = gfclck();

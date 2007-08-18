@@ -108,8 +108,8 @@ int main (int argc, const char *argv[]) {
 	myout << "\nGAMS/Osi LP/MIP Solver" << CoinMessageEol;
 #endif
 
-	if (gm.nSOS1() || gm.nSOS2()) {
-		myout << "OSI cannot handle special ordered sets (SOS)" << CoinMessageEol;
+	if (gm.nSOS1() || gm.nSOS2() || gm.nSemiContinuous()) {
+		myout << "OSI cannot handle special ordered sets (SOS) or semicontinuous variables." << CoinMessageEol;
 		myout << "Exiting ..." << CoinMessageEol;
 		gm.setStatus(GamsModel::CapabilityProblems, GamsModel::ErrorNoSolution);
 		gm.setSolution();
@@ -215,18 +215,18 @@ try {
 	if (!solver->getStrParam(OsiSolverName, solver_name))
 		solver_name=buffer;
 	myout << "Using solver " << solver_name << '.' << CoinMessageEol;
-	
-	gm.setInfinity(-solver->getInfinity(), solver->getInfinity());
-	
-	// now load the LP into the GamsModel
-	gm.readMatrix();
 
-	if (gm.nDCols() && !solver_can_mips) {
+	if (!gm.isLP() && !solver_can_mips) {
 		myout << "Solver " << solver_name << " cannot handle integer variables. Exiting..." << CoinMessageEol;
 		gm.setStatus(GamsModel::CapabilityProblems, GamsModel::ErrorNoSolution);
 		gm.setSolution();
 		exit(EXIT_FAILURE);
 	}
+	
+	gm.setInfinity(-solver->getInfinity(), solver->getInfinity());
+	
+	// now load the LP (or MIP) into the GamsModel
+	gm.readMatrix();
 	
 	solver->passInMessageHandler(&slvout);
 
@@ -257,7 +257,7 @@ try {
 	delete[] rowrng;
 
 	// Tell solver which variables are discrete
-	int *discVar=gm.ColDisc();
+	bool* discVar=gm.ColDisc();
 	if (gm.nDCols())
 		for (j=0; j<gm.nCols(); j++)
 			if (discVar[j]) solver->setInteger(j);

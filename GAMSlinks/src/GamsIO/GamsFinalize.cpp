@@ -89,7 +89,8 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 		*rowMargin=solver->getRowPrice();		
 	int 
 		*colBasis=gm->ColBasis(),
-		*rowBasis=gm->RowBasis(),
+		*rowBasis=gm->RowBasis();
+  bool
 		*discVar=gm->ColDisc();
 	double 
 		*colLb=gm->ColLb(), 
@@ -111,7 +112,7 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 		solver->getBasisStatus(colBasis, rowBasis);
 		// translate from OSI codes to GAMS codes
 		for (int j=0; j<gm->nCols(); j++) {
-			if (discVar[j] || gm->SOSIndicator()[j])
+			if (discVar[j] || gm->SOSIndicator()[j] || gm->ColSemiContinuous()[j])
 				colBasis[j]=GamsModel::SuperBasic;
 			else switch (colBasis[j]) {
 				case 3: colBasis[j]=GamsModel::NonBasicLower; break;
@@ -136,7 +137,7 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 //			*myout << "Have warm start basis." << CoinMessageEol;
 			for (int j=0; j<gm->nCols(); j++) {
 //				*myout << "status col: " << wsb->getStructStatus(j) << CoinMessageEol;
-				if (discVar[j] || gm->SOSIndicator()[j])
+				if (discVar[j] || gm->SOSIndicator()[j] || gm->ColSemiContinuous()[j])
 					colBasis[j]=GamsModel::SuperBasic;
 				else switch (wsb->getStructStatus(j)) {
 					case CoinWarmStartBasis::basic: colBasis[j]=GamsModel::Basic; break;
@@ -159,7 +160,7 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 		} else if (colMargin && rowMargin) { // trying to guess the basis... this will likely be wrong			
 //			*myout << "Have to guess basis." << CoinMessageEol;
 			for (int j=0; j<gm->nCols(); j++) {
-				if (discVar[j] || gm->SOSIndicator()[j])
+				if (discVar[j] || gm->SOSIndicator()[j] || gm->ColSemiContinuous()[j])
 					colBasis[j] = GamsModel::SuperBasic; // (for discrete only)
 				else if (colMargin[j]) {
 					if (colLevel[j] - colLb[j] < 1e-4)

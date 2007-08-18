@@ -166,6 +166,10 @@ public:
 	
 	/**@name Accessing the GAMS model.
 	 * @{*/
+	/** Indicates whether we represent an LP or not.
+	 * It is an LP, if there are no discrete columns, no SOS, and no semicontinuous variables.
+	 */
+	bool isLP() const;
 	/** The number of columns in the model.
 	 */
   inline int nCols() const  { return nCols_; }
@@ -178,6 +182,9 @@ public:
 	/** The number of special ordered sets of type 2 in the model
 	 */
   inline int nSOS2() const  { return nSOS2_; }
+  /** The number of semicontinuous variables.
+   */
+	inline int nSemiContinuous() const { return nSemiCon_; }
 	/** The number of rows in the model.
 	 */
   inline int nRows() const  { return nRows_; }
@@ -191,9 +198,9 @@ public:
 	/** The column upper bounds.
 	 */
   inline double *ColUb()    { return ColUb_; }
-	/** Indicates whether a variable is discrete (1) or not (0).
+	/** Indicates whether a variable is discrete (true) or not (false).
 	 */
-  inline int    *ColDisc()  { return ColDisc_; }
+  inline bool   *ColDisc()  { return ColDisc_; }
 	/** The special ordered sets indicator.
 	 * For each variable, SOSIndicator()[i] tells to which special ordered set from which type it belongs, if any. 
 	 * If SOSIndicator()[i] is
@@ -202,6 +209,11 @@ public:
 	 * - <0, then column i belongs to the special ordered sets of type 2 with the number -SOSIndicator()[i]. 
 	 */
   inline int    *SOSIndicator() { return SOSIndicator_; }
+  /** Indicates whether a variable is semicontinuous or semiinteger (true) or not (false).
+   * To distinguish between semicontinious and semiinteger variables, consult the ColDisc() array.
+   * That is, a variable is semiinteger if it is semicontinuous and discrete.    
+   */
+  inline bool   *ColSemiContinuous() { return ColSemiCon_; } 
 	/** Initial values and storage for the solution values of the primal variables.
 	 */
   inline double *ColLevel()     { return ColLevel_; }
@@ -460,6 +472,7 @@ private:
   int nDCols_; // # discrete columns
   int nSOS1_;  // # SOS type 1
   int nSOS2_;  // # SOS type 2
+  int nSemiCon_; // # semicontinuous or semicont. integer columns
   int nRows_;  // # rows
   int nNnz_;   // # non zeros
 
@@ -467,8 +480,9 @@ private:
 
   double *ColLb_;   // lower bound for columns
   double *ColUb_;   // upper bound for columns
-  int    *ColDisc_; // indicator for discrete columns: discrete (1) or not (0)
+  bool   *ColDisc_; // indicator for discrete columns: discrete (true) or not (false)
   int    *SOSIndicator_;  // indicator for SOS of type 1 and 2
+  bool   *ColSemiCon_;  // indicator for semicontinuous columns: semicon. (true) or not (false)
   double *ColLevel_; // values of column variables
   double *ColMargin_; // marginal values = duals
   int    *ColBasis_; // column basis status
