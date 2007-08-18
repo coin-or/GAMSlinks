@@ -51,7 +51,6 @@ int main (int argc, char* argv[]) {
   smagSetObjFlavor (prob, OBJ_FUNCTION);
   smagSetSqueezeFreeRows (prob, 1);	/* don't show me =n= rows */
   smagReadModel (prob);
-  smagHessInit (prob);
 
 #ifdef GAMS_BUILD
 	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinIpopt NLP Solver (IPOPT Library 3.3, using MUMPS Library 4.7.3)\nwritten by A. Waechter\n");
@@ -90,6 +89,15 @@ int main (int argc, char* argv[]) {
 	// or should we also check the tolerance for acceptable points?
 	app->Options()->GetNumericValue("tol", mysmagnlp->scaled_conviol_tol, "");
 	app->Options()->GetNumericValue("constr_viol_tol", mysmagnlp->unscaled_conviol_tol, "");
+
+	std::string hess_approx;
+	app->Options()->GetStringValue("hessian_approximation", hess_approx, "");
+	if (hess_approx=="exact") {
+	  if (smagHessInit(prob)) {
+			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to initialize Hessian structure. We continue and tell Ipopt to work with a limited-memory Hessian approximation!\n");
+			app->Options()->SetStringValue("hessian_approximation", "limited-memory");
+	  }
+	}
 
   // Ask Ipopt to solve the problem
   ApplicationReturnStatus status = app->OptimizeTNLP(smagnlp);

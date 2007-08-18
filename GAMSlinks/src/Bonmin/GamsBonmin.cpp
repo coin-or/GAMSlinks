@@ -66,7 +66,6 @@ int main (int argc, char* argv[]) {
   smagSetObjFlavor (prob, OBJ_FUNCTION);
   smagSetSqueezeFreeRows (prob, 1);	/* don't show me =n= rows */
   smagReadModel (prob);
-  smagHessInit (prob);
 
 #ifdef GAMS_BUILD
 	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinBonmin MINLP Solver (Bonmin Library 0.2pre, using MUMPS Library 4.7.3)\nwritten by P. Bonami\n");
@@ -143,6 +142,15 @@ void solve_minlp(smagHandle_t prob) {
 //	// or should we also check the tolerance for acceptable points?
 //	bonmin_setup.options()->GetNumericValue("tol", mysmagminlp->scaled_conviol_tol, "");
 //	bonmin_setup.options()->GetNumericValue("constr_viol_tol", mysmagminlp->unscaled_conviol_tol, "");
+
+	std::string hess_approx;
+	bonmin_setup.options()->GetStringValue("hessian_approximation", hess_approx, "");
+	if (hess_approx=="exact") {
+	  if (smagHessInit(prob)) {
+			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to initialize Hessian structure. We continue and tell Bonmin to work with a limited-memory Hessian approximation!\n");
+			bonmin_setup.options()->SetStringValue("hessian_approximation", "limited-memory");
+	  }
+	}
 
 	// the easiest would be to call bonmin_setup.initializeBonmin(smagminlp), but then we cannot set the message handler
 	// so we do the following
@@ -310,6 +318,15 @@ void solve_nlp(smagHandle_t prob) {
 	// or should we also check the tolerance for acceptable points?
 	app->Options()->GetNumericValue("tol", mysmagnlp->scaled_conviol_tol, "");
 	app->Options()->GetNumericValue("constr_viol_tol", mysmagnlp->unscaled_conviol_tol, "");
+
+	std::string hess_approx;
+	app->Options()->GetStringValue("hessian_approximation", hess_approx, "");
+	if (hess_approx=="exact") {
+	  if (smagHessInit(prob)) {
+			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to initialize Hessian structure. We continue and tell Ipopt to work with a limited-memory Hessian approximation!\n");
+			app->Options()->SetStringValue("hessian_approximation", "limited-memory");
+	  }
+	}
 
   // Ask Ipopt to solve the problem
   ApplicationReturnStatus status = app->OptimizeTNLP(smagnlp);
