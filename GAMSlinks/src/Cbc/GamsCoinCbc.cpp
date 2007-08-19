@@ -314,7 +314,7 @@ void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model) {
 			if (gm.ColLb()[i]==gm.ColUb()[i]) // var. can be only 0 or ColLb()[i]
 				objects[object_nr]=new CbcLotsize(&model, i, 2, points+1, false);
 			else // var. can be 0 or in the range between low and upper 
-				objects[object_nr]=new CbcLotsize(&model, i, 4, points, true);
+				objects[object_nr]=new CbcLotsize(&model, i, 2, points, true);
 				
 			if (gm.getPriorityOption() && minprior!=maxprior)
 				objects[object_nr]->setPriority(1+(int)(999*(gm.ColPriority()[i]-minprior)/(maxprior-minprior)));
@@ -863,6 +863,10 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} else {
 			myout << "Value " << value << " not supported for option 'coststrategy'. Ignoring this option" << CoinMessageEol;
 		} 
+	} else if (gm.nSemiContinuous()) {
+		myout << "CBC integer preprocessing does not handle semicontinuous variables correct (yet), thus we switch it off." << CoinMessageEol;
+		par_list.push_back("-preprocess");
+		par_list.push_back("off");
 	}
 
 	// algorithm for root node and solve command 
