@@ -126,7 +126,8 @@ void solve_minlp(smagHandle_t prob) {
 		bonmin_setup.options()->SetIntegerValue("bonmin.bb_log_level", 1);
 		bonmin_setup.options()->SetIntegerValue("bonmin.lp_log_level", 1);
 	}
-	if (prob->modType==procQCP || prob->modType==procMIQCP || prob->modType==procRMIQCP)
+
+	if ((prob->modType==procQCP || prob->modType==procMIQCP || prob->modType==procRMIQCP) && prob->rowCountNL==0)
 		bonmin_setup.options()->SetStringValue("hessian_constant", "yes"); 
 
 	try {
@@ -310,7 +311,7 @@ void solve_nlp(smagHandle_t prob) {
   app->Options()->SetStringValue("mu_strategy", "adaptive");
  	app->Options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false);
  	app->Options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false);
-	if (prob->modType==procQCP || prob->modType==procMIQCP || prob->modType==procRMIQCP)
+	if ((prob->modType==procQCP || prob->modType==procMIQCP || prob->modType==procRMIQCP) && prob->rowCountNL==0)
 		app->Options()->SetStringValue("hessian_constant", "yes"); 
 
 	if (prob->gms.useopt)

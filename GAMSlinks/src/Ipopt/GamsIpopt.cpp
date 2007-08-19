@@ -79,7 +79,8 @@ int main (int argc, char* argv[]) {
 // 	if (smagColCountNL(prob)==0) { // LP
 //		app->Options()->SetStringValue("mehrotra_algorithm", "yes");
 // 	}
-	if (prob->modType==procQCP || prob->modType==procRMIQCP)
+// if we have linear rows and a quadratic objective, then the hessian of the lag. is constant, and Ipopt can make use of this  
+	if ((prob->modType==procQCP || prob->modType==procRMIQCP) && prob->rowCountNL==0)
 		app->Options()->SetStringValue("hessian_constant", "yes"); 
 
 	if (prob->gms.useopt)
