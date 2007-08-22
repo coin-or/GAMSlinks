@@ -44,6 +44,7 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
 GamsCoinCbc_LDADD = \
  ../GamsIO/libGamsIO.la \
  $(CBCOBJDIR)/src/libCbc.la \
+ $(CBCOBJDIR)/src/libCbcSolver.la \
  $(CGLOBJDIR)/src/libCgl.la \
  $(OSIOBJDIR)/src/libOsi.la \
  $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
@@ -54,6 +55,7 @@ GamsCoinCbc_LDADD = \
 GamsCoinCbc_DEPENDENCIES = \
  ../GamsIO/libGamsIO.la \
  $(CBCOBJDIR)/src/libCbc.la \
+ $(CBCOBJDIR)/src/libCbcSolver.la \
  $(CGLOBJDIR)/src/libCgl.la \
  $(OSIOBJDIR)/src/libOsi.la \
  $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \

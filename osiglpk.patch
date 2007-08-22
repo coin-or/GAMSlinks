@@ -1,6 +1,6 @@
 Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
 ===================================================================
---- Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Revision 1069)
+--- Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Revision 1073)
 +++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Arbeitskopie)
 @@ -176,6 +176,7 @@
    If we ever reach the default case, we're deeply confused.
@@ -103,7 +103,7 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
  //#############################################################################
  // WarmStart related methods
  //#############################################################################
-@@ -3096,6 +3130,11 @@
+@@ -3098,6 +3132,11 @@
  #   endif
      assert(retval == LPX_E_OK) ; }
  
@@ -115,7 +115,7 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
    return ; }
  
  
-@@ -3139,9 +3178,15 @@
+@@ -3141,9 +3180,15 @@
    hotStartRStatSize_ = 0;
  
    isIterationLimitReached_ = false;
@@ -131,7 +131,7 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
  
    lp_ = lpx_create_prob();
    assert( lp_ != NULL );
-@@ -3252,6 +3297,7 @@
+@@ -3254,6 +3299,7 @@
          iter_used_ = 0;
  	isAbandoned_ = false;
  	isIterationLimitReached_ = false;
@@ -141,7 +141,7 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
  	delete [] colsol_;
 Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp
 ===================================================================
---- Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(Revision 1069)
+--- Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(Revision 1073)
 +++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(Arbeitskopie)
 @@ -17,6 +17,14 @@
  #include "CoinPackedMatrix.hpp"
@@ -181,7 +181,7 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp
    //@}
  
    //---------------------------------------------------------------------------
-@@ -770,6 +787,8 @@
+@@ -780,6 +797,8 @@
    // Status information
    /// glpk stopped on iteration limit
    bool isIterationLimitReached_;
@@ -190,7 +190,7 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp
    /// glpk abandoned the problem 
    bool isAbandoned_;
    /*! \brief  glpk stopped on lower objective limit
-@@ -840,6 +859,11 @@
+@@ -850,6 +869,11 @@
    /// Pointer to row-wise copy of problem matrix coefficients.
    mutable CoinPackedMatrix *matrixByCol_;  
    //@}

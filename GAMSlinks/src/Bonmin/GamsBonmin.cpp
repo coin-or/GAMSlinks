@@ -26,7 +26,7 @@
 #include "SmagMessageHandler.hpp"
 #include "SmagJournal.hpp"
 #include "BonBonminSetup.hpp"
-#include "BonCbc2.hpp"
+#include "BonCbc.hpp"
 
 // in case that we have to solve an NLP only
 #include "IpIpoptApplication.hpp"
@@ -167,7 +167,7 @@ void solve_minlp(smagHandle_t prob) {
 		bonmin_setup.initialize(first_osi_tminlp); // this will clone first_osi_tminlp
 	}
 
-		Bab2 bb;
+		Bab bb;
 
 		mysmagminlp->clock_start=smagGetCPUTime(prob);
 		bb(bonmin_setup); //process parameters and do branch and bound
