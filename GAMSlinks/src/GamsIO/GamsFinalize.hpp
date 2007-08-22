@@ -20,10 +20,10 @@
  * @param gm The GamsModel.
  * @param myout A GAMS message handler for output.
  * @param solver The OSI solver interface to read the solution from.
- * @param PresolveInfeasible Indicate, whether the solver found the model infeasible in the presolve.
  * @param TimeLimitExceeded Indicate, whether a time limit was exceeded. (Time Limits are not directly supported by OsiSolverInterface.)  
+ * @param swapRowStatus Some OSI solvers think in term of artifical variables when dealing with the basis status of a row. Hence, the row status CoinWarmStartBasis::atLowerBound correponds to GamsModel::NonBasicUpper, and similar for atUpperBound. Setting swapRowStatus to true swaps atLowerBound and atUpperBound so that the row status in GAMS is correct again.    
  */
-void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool PresolveInfeasible, bool TimeLimitExceeded=false);
+void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool TimeLimitExceeded=false, bool swapRowStatus=false);
 
 /** Writes GAMS solution file for a solution stored in an OsiSolverInterface.
  * If solver->optimalBasisIsAvailable() returns positive, the basis returned by solver->getBasisStatus is used.
@@ -32,7 +32,8 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
  * @param gm The GamsModel.
  * @param myout A GAMS message handler for output.
  * @param solver The OSI solver interface to read the solution from.
+ * @param swapRowStatus Some OSI solvers think in term of artifical variables when dealing with the basis status of a row. Hence, the row status CoinWarmStartBasis::atLowerBound correponds to GamsModel::NonBasicUpper, and similar for atUpperBound. Setting swapRowStatus to true swaps atLowerBound and atUpperBound so that the row status in GAMS is correct again.    
  */
-void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver);
+void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool swapRowStatus=false);
 
 #endif /*GAMSFINALIZE_HPP_*/

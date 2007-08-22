@@ -169,16 +169,19 @@ int main (int argc, const char *argv[]) {
 #endif
 	
 	bool solver_can_mips=false;
+	bool swapRowStatus=false;
 try {
 #if COIN_HAS_CLP
 	if (strcmp(buffer, "clp")==0) {
 		solver=new OsiClpSolverInterface();
+		swapRowStatus=true;
 	}
 #endif
 #if COIN_HAS_CBC
 	if (!solver && strcmp(buffer, "cbc")==0) {
 		solver=new OsiCbcSolverInterface();
 		solver_can_mips=true;
+		swapRowStatus=true;
 	}
 #endif
 #if COIN_HAS_GLPK
@@ -341,7 +344,7 @@ try {
 	}
 
 	// Determine status and write solution
-	GamsFinalizeOsi(&gm, &myout, solver, 0, false);
+	GamsFinalizeOsi(&gm, &myout, solver, false, swapRowStatus);
 
 } catch (CoinError error) {
 	myout << "We got following error:" << error.message() << CoinMessageEol;

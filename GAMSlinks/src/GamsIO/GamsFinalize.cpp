@@ -10,8 +10,8 @@
 #include "CoinWarmStart.hpp"
 #include "CoinWarmStartBasis.hpp"
 
-void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool PresolveInfeasible, bool TimeLimitExceeded) {
-	if (PresolveInfeasible) {
+void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool TimeLimitExceeded, bool swapRowStatus) {
+/*	if (PresolveInfeasible) {
 		gm->setIterUsed(0);
 		gm->setResUsed(gm->SecondsSinceStart());
 		gm->setObjVal(0.0);
@@ -20,7 +20,7 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 		(*myout) << "\n" << CoinMessageEol;
 		(*myout) << "Presolve determined model infeasible.";
 	}	else {
-		// Get some statistics 
+*/		// Get some statistics 
 		gm->setIterUsed(solver->getIterationCount());
 		gm->setResUsed(gm->SecondsSinceStart());
 		gm->setObjVal(solver->getObjValue());
@@ -68,19 +68,19 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 		else {
 			(*myout) << "Unknown solve outcome.";
 		}
-	}
+//	}
 	(*myout) << CoinMessageEol;
 		
 	// We write a solution if model was declared optimal.
 	if (GamsModel::Optimal==gm->getModelStatus() || 
 			GamsModel::IntegerSolution==gm->getModelStatus()) {
-		GamsWriteSolutionOsi(gm, myout, solver);
+		GamsWriteSolutionOsi(gm, myout, solver, swapRowStatus);
 	}	else {
 		gm->setSolution(); // Need this to trigger the write of GAMS solution file
 	}
 }
 
-void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver) {
+void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool swapRowStatus) {
 	const double 
 		*colLevel=solver->getColSolution(),
 		*colMargin=solver->getReducedCost(); 
@@ -123,9 +123,9 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 			}
 		}
 		for (int i=0; i<gm->nRows(); ++i) 
-			switch (rowBasis[i]) { // Clp interchange Lower and Upper activity of rows since it thinks in term of artifical variables
-				case 2: rowBasis[i]=GamsModel::NonBasicLower; break;
-				case 3: rowBasis[i]=GamsModel::NonBasicUpper; break;
+			switch (rowBasis[i]) { 
+				case 2: rowBasis[i]=swapRowStatus ? GamsModel::NonBasicUpper : GamsModel::NonBasicLower; break;
+				case 3: rowBasis[i]=swapRowStatus ? GamsModel::NonBasicLower : GamsModel::NonBasicUpper; break;
 				case 1: rowBasis[i]=GamsModel::Basic; break;
 				case 0: rowBasis[i]=GamsModel::SuperBasic; break;
 				default: (*myout) << "Row basis status " << rowBasis[i] << " unknown!" << CoinMessageEol; exit(0);
@@ -151,8 +151,8 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 //				*myout << "status row: " << wsb->getArtifStatus(j) << CoinMessageEol;
 				switch (wsb->getArtifStatus(j)) {
 					case CoinWarmStartBasis::basic: rowBasis[j]=GamsModel::Basic; break;
-					case CoinWarmStartBasis::atLowerBound: rowBasis[j]=GamsModel::NonBasicLower; break;
-					case CoinWarmStartBasis::atUpperBound: rowBasis[j]=GamsModel::NonBasicUpper; break;
+					case CoinWarmStartBasis::atLowerBound: rowBasis[j]=swapRowStatus ? GamsModel::NonBasicUpper : GamsModel::NonBasicLower; break;
+					case CoinWarmStartBasis::atUpperBound: rowBasis[j]=swapRowStatus ? GamsModel::NonBasicLower : GamsModel::NonBasicUpper; break;
 					case CoinWarmStartBasis::isFree: rowBasis[j]=GamsModel::SuperBasic; break;
 					default: (*myout) << "Row basis status " << wsb->getStructStatus(j) << " unknown!" << CoinMessageEol; exit(0);
 				}

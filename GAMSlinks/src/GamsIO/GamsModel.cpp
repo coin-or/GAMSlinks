@@ -89,7 +89,7 @@ GamsModel::GamsModel(const char *cntrfile)
   
   // Some initializations
   ObjVal_   = 0.0;
-  ObjScale_ = 1.0;
+  ObjSense_ = (0 == iolib.idir) ? 1.0 : -1.0;
   ResUsed_  = 0.0;
   IterUsed_ = 0;
   DomUsed_  = 0;
@@ -303,14 +303,12 @@ void GamsModel::readMatrix() {
         ColDisc_[jp]=false;
 				ColSemiCon_[jp]=true;
         SOSIndicator_[jp]=0;
-        PrintOut(AllMask, "\n found semicontinuous variable\n");
         break;
       case VARSEMIINT:
         ColDisc_[jp]=true;
 				ColSemiCon_[jp]=true;
         SOSIndicator_[jp]=0;
 //        nDCols_++;
-        PrintOut(AllMask, "\n found semiinteger variable\n");
         break;
       default:
         PrintOut(AllMask, "\n*** Unhandled column type. Allowed column types: continuous, binary, integer, sos1, sos2, semicontinuous, semiinteger\n");
@@ -339,7 +337,6 @@ void GamsModel::readMatrix() {
   nCols_ = jp;
   nRows_ = ip;
 
-  ObjSense_ = (0 == iolib.idir) ? 1.0 : -1.0;
   if (isReform_) {
     for (j=0; j<nCols_; j++) {
       ObjCoef_[j] /= -zCoef_;

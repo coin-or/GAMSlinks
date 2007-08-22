@@ -59,16 +59,13 @@ int main (int argc, const char *argv[]) {
 	// argument to this program
 	GamsModel gm(argv[1]);
 	gm.setInfinity(-solver.getInfinity(),solver.getInfinity());
-	gm.readMatrix();
 	
 	// Pass in the GAMS status/log file print routines 
 	GamsMessageHandler myout(&gm), slvout(&gm);
 	slvout.setPrefix(0);
 	solver.passInMessageHandler(&slvout);
 	solver.setHintParam(OsiDoReducePrint,true,OsiHintTry);
-//TODO: do I need this for Clp?
-//	solver.getModelPtr()->passInMessageHandler(&slvout);
-	
+
 #ifdef GAMS_BUILD	
 	myout << "\nGAMS/CoinCbc 1.3pre LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
 	if (!gm.ReadOptionsDefinitions("coincbc"))
@@ -88,6 +85,23 @@ int main (int argc, const char *argv[]) {
 	if (!gm.optDefined("optca")) gm.optSetDouble("optca", gm.getOptCA());
 	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
 	if (!gm.optDefined("cutoff") && gm.getCutOff()!=gm.ObjSense()*solver.getInfinity()) gm.optSetDouble("cutoff", gm.getCutOff());
+	
+	gm.readMatrix();
+	myout << "Problem statistics:" << gm.nCols() << "columns and" << gm.nRows() << "rows." << CoinMessageEol;
+	if (gm.nDCols()) myout << "                   " << gm.nDCols() << "variables have integrality restrictions." << CoinMessageEol;
+	if (gm.nSemiContinuous()) myout << "                   " << gm.nSemiContinuous() << "variables are semicontinuous or semiinteger." << CoinMessageEol;
+	if (gm.nSOS1() || gm.nSOS2()) {
+		myout << "                   ";
+		if (gm.nSOS1()) myout << gm.nSOS1() << "SOS of type 1.";
+		if (gm.nSOS2()) myout << gm.nSOS2() << "SOS of type 2.";
+		myout << CoinMessageEol;
+	}
+	if (gm.nSemiContinuous()) {
+		myout << "CBC does not handle semicontinuous variables correct (yet). Exiting..." << CoinMessageEol;
+		gm.setStatus(GamsModel::CapabilityProblems, GamsModel::ErrorNoSolution);
+		gm.setSolution();
+		exit(EXIT_FAILURE);
+	}
 	
 	gm.TimerStart();
 	
@@ -131,7 +145,8 @@ int main (int argc, const char *argv[]) {
 	  gm.setObjVal(gm.ObjSense()*model.solver()->getObjValue());
  
  		bool timelimit_reached=model.isSecondsLimitReached();
-	  GamsFinalizeOsi(&gm, &myout, model.solver(), false, timelimit_reached);
+		// Clp interchange Lower and Upper activity of rows since it thinks in term of artifical variables
+	  GamsFinalizeOsi(&gm, &myout, model.solver(), timelimit_reached, true);
 	  return EXIT_SUCCESS;
 	}
 	
@@ -180,7 +195,7 @@ int main (int argc, const char *argv[]) {
 	gm.setIterUsed(model.getIterationCount());
 	gm.setResUsed(gm.SecondsSinceStart());
 	if (write_solution) {
-		GamsWriteSolutionOsi(&gm, &myout, model.solver());
+		GamsWriteSolutionOsi(&gm, &myout, model.solver(), true);
 	} else {
 		gm.setObjVal(0.0);
 		gm.setSolution(); // trigger the write of GAMS solution file

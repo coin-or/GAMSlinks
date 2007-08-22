@@ -244,7 +244,7 @@ int main (int argc, const char *argv[]) {
 #else
 	bool timelimitreached=false;
 #endif
-	GamsFinalizeOsi(&gm, &myout, &solver, 0, timelimitreached);
+	GamsFinalizeOsi(&gm, &myout, &solver, timelimitreached);
 
 	return 0;
 }
