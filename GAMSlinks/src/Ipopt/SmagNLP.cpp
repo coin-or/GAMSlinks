@@ -345,7 +345,7 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: we don't know about optimality, but we have feasibility!!\n");
 				model_status=7; // intermediate nonoptimal
 			} else {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: point in not feasibile!!\n");
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: point is not feasibile!!\n");
 				model_status=6; // intermediate infeasible
 			}
 			solver_status=1; // normal completion
