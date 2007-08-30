@@ -348,7 +348,7 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: point is not feasibile!!\n");
 				model_status=6; // intermediate infeasible
 			}
-			solver_status=1; // normal completion
+			solver_status=4; // terminated by solver (normal completion not allowed by GAMS philosophy here: its not normal when it stops with an intermediate point)
 			write_solution=true;
 	    break;
 	  case MAXITER_EXCEEDED:
