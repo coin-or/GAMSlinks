@@ -119,24 +119,26 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 				case 2: colBasis[j]=GamsModel::NonBasicUpper; break;
 				case 1: colBasis[j]=GamsModel::Basic; break;
 				case 0: colBasis[j]=GamsModel::SuperBasic; break;
-				default: (*myout) << "Column basis status " << colBasis[j] << " unknown!" << CoinMessageEol; exit(0);
+				default: (*myout) << "Column basis status " << colBasis[j] << " unknown!" << CoinMessageEol; exit(EXIT_FAILURE);
 			}
 		}
-		for (int i=0; i<gm->nRows(); ++i) 
-			switch (rowBasis[i]) { 
+		for (int i=0; i<gm->nRows(); ++i) { 
+//			*myout << "status row: " << rowBasis[i] << '\t' << rowLevel[i] << CoinMessageEol;
+			switch (rowBasis[i]) {
 				case 2: rowBasis[i]=swapRowStatus ? GamsModel::NonBasicUpper : GamsModel::NonBasicLower; break;
 				case 3: rowBasis[i]=swapRowStatus ? GamsModel::NonBasicLower : GamsModel::NonBasicUpper; break;
 				case 1: rowBasis[i]=GamsModel::Basic; break;
 				case 0: rowBasis[i]=GamsModel::SuperBasic; break;
-				default: (*myout) << "Row basis status " << rowBasis[i] << " unknown!" << CoinMessageEol; exit(0);
+				default: (*myout) << "Row basis status " << rowBasis[i] << " unknown!" << CoinMessageEol; exit(EXIT_FAILURE);
 			}
+		}
 	} else {
 		CoinWarmStart* ws=solver->getWarmStart();
 		CoinWarmStartBasis* wsb=dynamic_cast<CoinWarmStartBasis*>(ws);
 		if (wsb) {
 //			*myout << "Have warm start basis." << CoinMessageEol;
 			for (int j=0; j<gm->nCols(); j++) {
-//				*myout << "status col: " << wsb->getStructStatus(j) << CoinMessageEol;
+//				*myout << "col " << j << ": " << wsb->getStructStatus(j) << '\t' << colLevel[j] << CoinMessageEol;
 				if (discVar[j] || gm->SOSIndicator()[j] || gm->ColSemiContinuous()[j])
 					colBasis[j]=GamsModel::SuperBasic;
 				else switch (wsb->getStructStatus(j)) {

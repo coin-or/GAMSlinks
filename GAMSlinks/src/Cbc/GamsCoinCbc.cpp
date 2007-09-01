@@ -189,6 +189,7 @@ int main (int argc, const char *argv[]) {
 		gm.setStatus(GamsModel::NormalCompletion, GamsModel::InfeasibleNoSolution);
 		myout << "Model infeasible." << CoinMessageEol;
 	} else {
+		gm.setStatus(GamsModel::ErrorSystemFailure,GamsModel::ErrorNoSolution);	
 		myout << "Model status unkown." << CoinMessageEol;
 	}
 
