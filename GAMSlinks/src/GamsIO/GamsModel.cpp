@@ -161,6 +161,7 @@ GamsModel::~GamsModel()
   delete[] ColUb_;
   delete[] ColDisc_;
   delete[] SOSIndicator_;
+  delete[] ColSemiCon_;
   
   delete[] ObjCoef_;
 

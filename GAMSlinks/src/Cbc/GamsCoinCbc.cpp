@@ -137,6 +137,7 @@ int main (int argc, const char *argv[]) {
 
 	myout << "\nCalling CBC main solution routine..." << CoinMessageEol;	
 	CbcMain1(par_list_length+2,cbc_args,model);
+	delete[] cbc_args;
 
 	if (gm.isLP()) { // we solved an LP
 	  // Get some statistics 
