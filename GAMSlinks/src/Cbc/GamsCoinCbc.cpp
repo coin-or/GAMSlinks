@@ -34,6 +34,7 @@
 //#include "CbcStrategyGams.hpp"
 
 #include "OsiClpSolverInterface.hpp"
+#include "CoinHelperFunctions.hpp"
 
 void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver);
 void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model);
@@ -207,11 +208,8 @@ int main (int argc, const char *argv[]) {
 }
 
 void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver) {
-	int i,j;
 	// Osi needs rowrng for the loadProblem call
-	double *rowrng = new double[gm.nRows()];
-	for (i=0; i<gm.nRows(); i++)
-	  rowrng[i] = 0.0;
+	double *rowrng = CoinCopyOfArrayOrZero((double*)NULL, gm.nRows()); 
 
 	// current Cbc does not like zeros when doing postsolve
 	gm.matSqueezeZeros();
@@ -223,6 +221,12 @@ void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver) {
 	                    gm.matRowIdx(), gm.matValue(), 
 	                    gm.ColLb(), gm.ColUb(), gm.ObjCoef(), 
 	                    gm.RowSense(), gm.RowRhs(), rowrng);
+//	for (int i=0; i<gm.nCols(); ++i)
+//		printf("%d %.20g %.20g %.20g %d\n", i, gm.ColLb()[i], gm.ColUb()[i], gm.ObjCoef()[i], gm.matStart()[i]);  
+//	for (int i=0; i<gm.nRows(); ++i)
+//		printf("%d %d %.20g\n", i, gm.RowSense()[i], gm.RowRhs()[i]);  
+//	for (int i=0; i<gm.nNnz(); ++i)
+//		printf("%d %d %.20g\n", i, gm.matRowIdx()[i], gm.matValue()[i]);  
 
 	// We don't need these guys anymore
 	delete[] rowrng;
@@ -230,7 +234,7 @@ void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver) {
 	// Tell solver which variables are discrete
 	if (gm.nDCols()) {
 		bool* discVar=gm.ColDisc();
-		for (j=0; j<gm.nCols(); j++) 
+		for (int j=0; j<gm.nCols(); j++) 
 	  	if (discVar[j]) solver.setInteger(j);
 	}
 
@@ -238,12 +242,12 @@ void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver) {
 	if (gm.haveNames()) { // set variable and constraint names
 		solver.setIntParam(OsiNameDiscipline, 2);
 		std::string stbuffer;
-		for (j=0; j<gm.nCols(); ++j)
+		for (int j=0; j<gm.nCols(); ++j)
 			if (gm.ColName(j, buffer, 255)) {
 				stbuffer=buffer;
 				solver.setColName(j, stbuffer);
 			}
-		for (j=0; j<gm.nRows(); ++j)
+		for (int j=0; j<gm.nRows(); ++j)
 			if (gm.RowName(j, buffer, 255)) {
 				stbuffer=buffer;
 				solver.setRowName(j, stbuffer);
@@ -359,7 +363,7 @@ void setupStartingPoint(GamsModel& gm, CbcModel& model) {
 			case GamsModel::NonBasicUpper : cstat[j]=2; break;
 			case GamsModel::Basic : cstat[j]=1; break;
 			case GamsModel::SuperBasic : cstat[j]=0; break;
-			default: cstat[j]=0; // myout << "Column basis status " << gm.ColBasis()[j] << " unknown!" << CoinMessageEol;
+			default: cstat[j]=0;
 		}
 	}
 	for (int j=0; j<gm.nRows(); ++j) {
@@ -368,7 +372,7 @@ void setupStartingPoint(GamsModel& gm, CbcModel& model) {
 			case GamsModel::NonBasicUpper : rstat[j]=3; break;
 			case GamsModel::Basic : rstat[j]=1; break;
 			case GamsModel::SuperBasic : rstat[j]=0; break;
-			default: rstat[j]=0; // myout << "Row basis status " << gm.RowBasis()[j] << " unknown!" << CoinMessageEol;
+			default: rstat[j]=0;
 		}
 	}
 	model.solver()->setBasisStatus(cstat, rstat);

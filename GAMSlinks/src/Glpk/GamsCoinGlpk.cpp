@@ -20,6 +20,7 @@
 
 #include "OsiGlpkSolverInterface.hpp"
 #include "CoinPackedVector.hpp"
+#include "CoinHelperFunctions.hpp"
 
 // GAMS
 #include "GamsModel.hpp"
@@ -117,8 +118,7 @@ int main (int argc, const char *argv[]) {
 	gm.TimerStart();
 
 	// OsiSolver needs rowrng for the loadProblem call
-	double *rowrng = new double[gm.nRows()];
-	for (j=0; j<gm.nRows(); ++j) rowrng[j] = 0.0;
+	double *rowrng = CoinCopyOfArrayOrZero((double*)NULL, gm.nRows());
 
 	// until recently, Glpk did not like zeros in the problem matrix
 	gm.matSqueezeZeros();
