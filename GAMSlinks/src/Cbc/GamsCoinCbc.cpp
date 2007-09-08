@@ -97,12 +97,12 @@ int main (int argc, const char *argv[]) {
 		if (gm.nSOS2()) myout << gm.nSOS2() << "SOS of type 2.";
 		myout << CoinMessageEol;
 	}
-	if (gm.nSemiContinuous()) {
-		myout << "CBC does not handle semicontinuous variables correct (yet). Exiting..." << CoinMessageEol;
-		gm.setStatus(GamsModel::CapabilityProblems, GamsModel::ErrorNoSolution);
-		gm.setSolution();
-		exit(EXIT_FAILURE);
-	}
+//	if (gm.nSemiContinuous()) {
+//		myout << "CBC does not handle semicontinuous variables correct (yet). Exiting..." << CoinMessageEol;
+//		gm.setStatus(GamsModel::CapabilityProblems, GamsModel::ErrorNoSolution);
+//		gm.setSolution();
+//		exit(EXIT_FAILURE);
+//	}
 	
 	gm.TimerStart();
 	
@@ -141,14 +141,8 @@ int main (int argc, const char *argv[]) {
 	delete[] cbc_args;
 
 	if (gm.isLP()) { // we solved an LP
-	  // Get some statistics 
-	  gm.setIterUsed(model.solver()->getIterationCount());
-	  gm.setResUsed(gm.SecondsSinceStart());
-	  gm.setObjVal(gm.ObjSense()*model.solver()->getObjValue());
- 
- 		bool timelimit_reached=model.isSecondsLimitReached();
-		// Clp interchange Lower and Upper activity of rows since it thinks in term of artifical variables
-	  GamsFinalizeOsi(&gm, &myout, model.solver(), timelimit_reached, true);
+		// Clp interchange lower and upper activity of rows since it thinks in term of artifical variables
+	  GamsFinalizeOsi(&gm, &myout, model.solver(), model.isSecondsLimitReached(), true);
 	  return EXIT_SUCCESS;
 	}
 	
@@ -234,9 +228,14 @@ void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver) {
 	// Tell solver which variables are discrete
 	if (gm.nDCols()) {
 		bool* discVar=gm.ColDisc();
-		for (int j=0; j<gm.nCols(); j++) 
+		for (int j=0; j<gm.nCols(); ++j) 
 	  	if (discVar[j]) solver.setInteger(j);
 	}
+	
+	// Cbc thinks in terms of lotsize objects, and for those the lower bound has to be 0
+	if (gm.nSemiContinuous())
+		for (int j=0; j<gm.nCols(); ++j)
+			if (gm.ColSemiContinuous()[j]) solver.setColLower(j, 0.);		
 
 	char buffer[255];
 	if (gm.haveNames()) { // set variable and constraint names
