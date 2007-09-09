@@ -608,15 +608,12 @@ bool GamsModel::ReadOptionsDefinitions(const char* solvername) {
 	/* Get the Option File Handling set up */
 	char buffer[255];
 	if (NULL==optionshandle)
-#ifdef GAMS_BUILD
-		optCreate(&optionshandle, buffer, 255);
-#else
-		optCreate(&optionshandle);
-#endif
-	if (NULL==optionshandle) {
-		PrintOut(AllMask, "\n*** Could not create optionfile handle."); 
-		return false;
-	}
+		if (!optCreate(&optionshandle, buffer, 255)) {
+			PrintOut(AllMask, "\n*** Could not create optionfile handle: "); 
+			PrintOut(AllMask, buffer); 
+			PrintOut(AllMask, "\n"); 
+			return false;
+		}
 
 	if (snprintf(buffer, 255, "%sopt%s.def", getSystemDir(), solvername)>=255) {
 		PrintOut(AllMask, "\n*** Path to GAMS system directory too long.\n");
