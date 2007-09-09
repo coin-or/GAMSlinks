@@ -1,13 +1,17 @@
 BuildTools    https://projects.coin-or.org/svn/BuildTools/trunk
-CoinUtils     https://projects.coin-or.org/svn/CoinUtils/trunk/CoinUtils
+CoinUtils     https://projects.coin-or.org/svn/CoinUtils/stable/2.1/CoinUtils
 Cgl           https://projects.coin-or.org/svn/Cgl/trunk/Cgl
 Clp           https://projects.coin-or.org/svn/Clp/trunk/Clp
 Osi           https://projects.coin-or.org/svn/Osi/trunk/Osi
 Cbc           https://projects.coin-or.org/svn/Cbc/trunk/Cbc
 Ipopt         https://projects.coin-or.org/svn/Ipopt/stable/3.3/Ipopt
-Bonmin        https://projects.coin-or.org/svn/Bonmin/trunk/Bonmin
+Bonmin -r766  https://projects.coin-or.org/svn/Bonmin/trunk/Bonmin
 ThirdParty/HSL https://projects.coin-or.org/svn/BuildTools/ThirdParty/HSL/trunk
 ThirdParty/Blas https://projects.coin-or.org/svn/BuildTools/ThirdParty/Blas/trunk
 ThirdParty/Glpk https://projects.coin-or.org/svn/BuildTools/ThirdParty/Glpk/trunk
 ThirdParty/Lapack https://projects.coin-or.org/svn/BuildTools/ThirdParty/Lapack/trunk
 ThirdParty/Mumps https://projects.coin-or.org/svn/BuildTools/ThirdParty/Mumps/trunk
+
+#SYMPHONY      https://projects.coin-or.org/svn/SYMPHONY/trunk/SYMPHONY
+#DyLP          https://projects.coin-or.org/svn/DyLP/trunk/DyLP
+#Vol           https://projects.coin-or.org/svn/Vol/trunk/Vol
