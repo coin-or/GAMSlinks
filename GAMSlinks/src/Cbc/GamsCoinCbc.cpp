@@ -888,6 +888,21 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		par_list.push_back("-preprocess");
 		par_list.push_back("off");
 	}
+	
+	// special options set by user and passed unseen to CBC
+	if (gm.optDefined("special")) {
+		char longbuffer[10000];
+		char* value=gm.optGetString("special", longbuffer);
+		if (!value) {
+			myout << "Cannot read value for option 'special'. Ignoring this option" << CoinMessageEol;
+		} else {
+			char* tok=strtok(value, " ");
+			while (tok) {
+				par_list.push_back(tok);
+				tok=strtok(NULL, " ");
+			} 
+		}		
+	}
 
 	// algorithm for root node and solve command 
 

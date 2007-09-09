@@ -14,6 +14,7 @@ set g Cbc Option Groups /
     t / I Integer, R Real, S String, B Binary /
     o Options /
       writemps               create MPS file for problem
+      special                options passed unseen to CBC
 *LP options
       idiotcrash             idiot crash
       sprintcrash            sprint crash
@@ -77,6 +78,7 @@ $onembedded
     optdata(g,o,t,f) /
 general.(
   writemps             .s.(def '')
+  special              .s.(def '')
   idiotcrash           .i.(def -1, lo -1, up 999999)
   sprintcrash          .i.(def -1, lo -1, up 5000000)
   sifting              .i.(def -1, lo -1, up 5000000)

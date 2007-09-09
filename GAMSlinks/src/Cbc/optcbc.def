@@ -3,6 +3,7 @@
 *
 
 writemps string 0 "" 1 1 create MPS file for problem
+special string 0 "" 1 1 options passed unseen to CBC
 idiotcrash integer 0 -1 -1 999999 1 1 idiot crash
 sprintcrash integer 0 -1 -1 5000000 1 1 sprint crash
 sifting integer 0 -1 -1 5000000 1 1 synonym for sprint crash
