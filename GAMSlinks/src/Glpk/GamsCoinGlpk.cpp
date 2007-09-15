@@ -252,7 +252,12 @@ int main (int argc, const char *argv[]) {
 void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model) {
 	// Some tolerances and limits
 	solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
-	lpx_set_real_parm(glpk_model, LPX_K_TMLIM, gm.optGetDouble("reslim"));
+	double timelimit=gm.optGetDouble("reslim");
+	if (timelimit>1e+6) { // GLPK cannot handle very large timelimits, so we run it without limit then 
+		myout << "Time limit" << timelimit << "too large. GLPK will run without timelimit." << CoinMessageEol;
+		timelimit=-1;
+	}
+	lpx_set_real_parm(glpk_model, LPX_K_TMLIM, timelimit);
 
 	if (!solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual")))
 		myout << "Failed to set dual tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
