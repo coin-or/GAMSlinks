@@ -11,7 +11,7 @@ scaling enumstr 0 "meanequilibrium" 1 1 scaling method
  "equilibrium" 1 equilibrium scaling
  "mean" 1 geometric mean scaling
  "meanequilibrium" 1 geometric mean scaling then equilibrium scaling
-pricing enumstr 0 "textbook" 1 1 pricing method
+pricing enumstr 0 "steepestedge" 1 1 pricing method
  "textbook" 1 textbook pricing
  "steepestedge" 1 steepest edge pricing
 tol_dual double 0 1e-7 0 maxdouble 1 1 dual feasibility tolerance

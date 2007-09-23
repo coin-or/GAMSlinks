@@ -274,7 +274,7 @@ void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInte
 		myout << "Failed to set dual tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
 
 	if (!solver.setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal")))
-		myout << "Failed to set primal tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
+		myout << "Failed to set primal tolerance to " << gm.optGetDouble("tol_primal") << CoinMessageEol;
 
 	// more parameters
 	char buffer[255];

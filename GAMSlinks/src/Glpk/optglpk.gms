@@ -37,7 +37,7 @@ general.(
   writemps        .s.(def '')
   startalg        .s.(def primal)
   scaling         .s.(def meanequilibrium)
-  pricing         .s.(def textbook)
+  pricing         .s.(def steepestedge)
   tol_dual        .r.(def 1e-7)
   tol_primal      .r.(def 1e-7)
   tol_integer     .r.(def 1e-5)
