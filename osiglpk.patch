@@ -1,8 +1,6 @@
-Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
-===================================================================
---- Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Revision 1073)
+--- Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Revision 1081)
 +++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp	(Arbeitskopie)
-@@ -176,6 +176,7 @@
+@@ -176,9 +176,11 @@
    If we ever reach the default case, we're deeply confused.
  */
    isIterationLimitReached_ = false ;
@@ -10,7 +8,11 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
    isAbandoned_ = false ;
    isPrimInfeasible_ = false ;
    isDualInfeasible_ = false ;
-@@ -195,6 +196,8 @@
++  isFeasible_ = false ;
+   isObjLowerLimitReached_ = false ;
+   isObjUpperLimitReached_ = false ;
+ 
+@@ -195,6 +197,8 @@
      { isObjUpperLimitReached_ = true ;
        break ; }
      case LPX_E_TMLIM:
@@ -19,7 +21,23 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
      case LPX_E_FAULT:
      case LPX_E_SING:
      { isAbandoned_ = true ;
-@@ -231,6 +234,7 @@
+@@ -207,6 +211,15 @@
+       break ; }
+     default:
+     { assert(false) ; } }
++    
++  switch (lpx_get_status(model))
++  { case LPX_OPT:
++  	case LPX_FEAS:
++  	{ isFeasible_ = true ;
++  		break ; }
++  	default:
++  	{ }
++  }
+ 	  
+   // Record that simplex was most recent
+   bbWasLast_ = 0 ;
+@@ -231,11 +244,13 @@
    iter_used_ = lpx_get_int_parm(model,LPX_K_ITCNT) ;
  
    isIterationLimitReached_ = false ;
@@ -27,7 +45,13 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
    isAbandoned_ = false ;
    isObjLowerLimitReached_ = false ;
    isObjUpperLimitReached_ = false ;
-@@ -250,6 +254,8 @@
+   isPrimInfeasible_ = false ;
+   isDualInfeasible_ = false ;
++  isFeasible_ = false ;
+ 
+   switch (err)
+   { case LPX_E_OK:
+@@ -250,6 +265,8 @@
      { isObjUpperLimitReached_ = true ;
        break ; }
      case LPX_E_TMLIM:
@@ -36,7 +60,23 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
      case LPX_E_FAULT:
      case LPX_E_SING:
      { isAbandoned_ = true ;
-@@ -304,7 +310,20 @@
+@@ -263,6 +280,15 @@
+     default:
+     { assert(false) ; } }
+ 
++  switch (lpx_get_status(model))
++  { case LPX_OPT:
++  	case LPX_FEAS:
++  	{ isFeasible_ = true ;
++  		break ; }
++  	default:
++  	{ }
++  }
++
+   // Record that simplex was most recent
+   bbWasLast_ = 0 ;
+ 
+@@ -304,7 +330,20 @@
      lpx_set_int_parm(model,LPX_K_USECUTS,0) ;
  #   endif
  #   endif
@@ -57,7 +97,7 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
  #   else
      if (lpx_get_status(model) != LPX_OPT)
      { initialSolve() ; }
-@@ -340,6 +359,7 @@
+@@ -340,25 +379,17 @@
  */
      iter_used_ = lpx_get_int_parm(model,LPX_K_ITCNT) ;
      isIterationLimitReached_ = false ;
@@ -65,7 +105,30 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
      isAbandoned_ = false ;
      isPrimInfeasible_ = false ;
      isDualInfeasible_ = false ;
-@@ -366,8 +386,9 @@
++    isFeasible_ = false ;
++    isObjLowerLimitReached_ = false ;
++    isObjUpperLimitReached_ = false ;
+ 
+     switch (err)
+     { case LPX_E_OK:
+-      { int mip_status = lpx_mip_status(model) ;
+-	switch (mip_status)
+-	{ case LPX_I_OPT:
+-	  { break ; }
+-	  case LPX_I_NOFEAS:
+-	  { isPrimInfeasible_ = false ;
+-	    break ; }
+-	  case LPX_I_UNDEF:
+-	  case LPX_I_FEAS:
+-	  { break ; }
+-	  default:
+-	  { assert(false) ;
+-	    break ; } }
++      { 
+ 	break ; }
+       case LPX_E_NOPFS:
+       { isPrimInfeasible_ = true ;
+@@ -366,8 +397,9 @@
        case LPX_E_NODFS:
        { isDualInfeasible_ = true ;
  	break ; }
@@ -76,7 +139,32 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
        { isIterationLimitReached_ = true ;
  	break ; }
        case LPX_E_SING:
-@@ -741,6 +762,14 @@
+@@ -379,6 +411,24 @@
+       default:
+       { assert(false) ;
+ 	break ; } }
++	
++	//check this also if err!=LPX_E_OPT, so we know about feasibility in case time/resource limit is reached  
++	int mip_status = lpx_mip_status(model) ;
++	switch (mip_status)
++	{ case LPX_I_OPT:
++	  { isFeasible_ = true ;
++	  	break ; }
++	  case LPX_I_NOFEAS:
++	  { isPrimInfeasible_ = true ;
++	    break ; }
++	  case LPX_I_UNDEF:
++	  { break ; }
++	  case LPX_I_FEAS:
++	  { isFeasible_ = true ;
++	  	break ; }
++	  default:
++	  { assert(false) ;
++	    break ; } }
+ /*
+   The final action is to note that our last call to glpk was the MIP solver.
+ */
+@@ -741,6 +791,14 @@
    }
    return true;
  }
@@ -91,7 +179,7 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
  //#############################################################################
  // Methods returning info on how the solution process terminated
  //#############################################################################
-@@ -841,6 +870,11 @@
+@@ -841,6 +899,16 @@
  	return isIterationLimitReached_;
  }
  
@@ -100,10 +188,15 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
 +	return isTimeLimitReached_;
 +}
 +
++bool OGSI::isFeasible() const
++{
++	return isFeasible_;
++}
++
  //#############################################################################
  // WarmStart related methods
  //#############################################################################
-@@ -3098,6 +3132,11 @@
+@@ -3098,6 +3166,11 @@
  #   endif
      assert(retval == LPX_E_OK) ; }
  
@@ -115,7 +208,7 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
    return ; }
  
  
-@@ -3141,9 +3180,15 @@
+@@ -3141,9 +3214,16 @@
    hotStartRStatSize_ = 0;
  
    isIterationLimitReached_ = false;
@@ -123,6 +216,7 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
    isAbandoned_ = false;
    isPrimInfeasible_ = false;
    isDualInfeasible_ = false;
++  isFeasible_ = false;
 +  
 +#ifdef OGSI_HAVE_CALLBACK
 +  callback_routine = NULL;
@@ -131,24 +225,28 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.cpp
  
    lp_ = lpx_create_prob();
    assert( lp_ != NULL );
-@@ -3254,6 +3299,7 @@
+@@ -3254,8 +3334,10 @@
          iter_used_ = 0;
  	isAbandoned_ = false;
  	isIterationLimitReached_ = false;
 +	isTimeLimitReached_ = false;
  	isPrimInfeasible_ = false;
  	isDualInfeasible_ = false;
++	isFeasible_ = false;
  	delete [] colsol_;
-Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp
-===================================================================
---- Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(Revision 1073)
+ 	delete [] rowsol_;
+ 	delete [] redcost_;
+--- Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(Revision 1081)
 +++ Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp	(Arbeitskopie)
-@@ -17,6 +17,14 @@
+@@ -17,6 +17,17 @@
  #include "CoinPackedMatrix.hpp"
  #include "CoinWarmStartBasis.hpp"
  
-+// A define that tells whether methods to check for the timelimit exists in OsiGlpkSolverInterface
++// A define that tells whether methods to check for the timelimit exist in OsiGlpkSolverInterface
 +#define OGSI_HAVE_TIMELIMIT
++// A define that tells whether methods to check for the feasibility exist in OsiGlpkSolverInterface
++#define OGSI_HAVE_FEASIBILITY
++// A define that tells whether methods to set callbacks exist in OsiGlpkSolverInterface (currently turned off)
 +#if defined(GLP_MAJOR_VERSION) && defined(GLP_MINOR_VERSION)
 +#if (GLP_MAJOR_VERSION > 4) || (GLP_MAJOR_VERSION == 4 && GLP_MINOR_VERSION == 20)  
 +//#define OGSI_HAVE_CALLBACK
@@ -158,7 +256,7 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp
  /** GPLK Solver Interface
  
      Instantiation of OsiGlpkSolverInterface for GPLK
-@@ -73,6 +81,13 @@
+@@ -73,6 +84,13 @@
      bool getStrParam(OsiStrParam key, std::string& value) const;
    //@}
  
@@ -172,16 +270,18 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp
    //---------------------------------------------------------------------------
    ///@name Methods returning info on how the solution process terminated
    //@{
-@@ -90,6 +105,8 @@
+@@ -90,6 +108,10 @@
      virtual bool isDualObjectiveLimitReached() const;
      /// Iteration limit reached?
      virtual bool isIterationLimitReached() const;
 +    /// Time limit reached?
 +    virtual bool isTimeLimitReached() const;
++    /// (Integer) Feasible solution found?
++    virtual bool isFeasible() const;
    //@}
  
    //---------------------------------------------------------------------------
-@@ -780,6 +797,8 @@
+@@ -780,6 +802,8 @@
    // Status information
    /// glpk stopped on iteration limit
    bool isIterationLimitReached_;
@@ -190,7 +290,16 @@ Index: Osi/src/OsiGlpk/OsiGlpkSolverInterface.hpp
    /// glpk abandoned the problem 
    bool isAbandoned_;
    /*! \brief  glpk stopped on lower objective limit
-@@ -850,6 +869,11 @@
+@@ -798,6 +822,8 @@
+   bool isPrimInfeasible_;
+   /// glpk declared the problem dual infeasible
+   bool isDualInfeasible_;
++  /// glpk declared the problem feasible
++  bool isFeasible_;
+ 
+   /**@name Cached information derived from the GLPK model */
+   //@{
+@@ -850,6 +876,11 @@
    /// Pointer to row-wise copy of problem matrix coefficients.
    mutable CoinPackedMatrix *matrixByCol_;  
    //@}

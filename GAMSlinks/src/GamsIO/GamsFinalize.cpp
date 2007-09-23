@@ -10,7 +10,7 @@
 #include "CoinWarmStart.hpp"
 #include "CoinWarmStartBasis.hpp"
 
-void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool TimeLimitExceeded, bool swapRowStatus) {
+void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool TimeLimitExceeded, bool HaveFeasibleSolution, bool swapRowStatus) {
 /*	if (PresolveInfeasible) {
 		gm->setIterUsed(0);
 		gm->setResUsed(gm->SecondsSinceStart());
@@ -29,11 +29,19 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 		(*myout) << "\n" << CoinMessageEol;
 
 		if (TimeLimitExceeded) {
-			(*myout) << "Time limit exceeded.";
-			gm->setStatus(GamsModel::ResourceInterrupt,GamsModel::NoSolutionReturned);	
+			if (HaveFeasibleSolution) {
+				(*myout) << "Time limit exceeded. Have feasible solution.";
+				if (gm->isLP())
+					gm->setStatus(GamsModel::ResourceInterrupt,GamsModel::IntermediateNonoptimal);
+				else
+					gm->setStatus(GamsModel::ResourceInterrupt,GamsModel::IntegerSolution);
+			} else {
+				(*myout) << "Time limit exceeded.";
+				gm->setStatus(GamsModel::ResourceInterrupt,GamsModel::NoSolutionReturned);	
+			}
 		}
 		else if (solver->isProvenOptimal()) {
-			if (gm->nDCols() || gm->nSOS1() || gm->nSOS2()) { 
+			if (!gm->isLP()) { 
 // If it was a MIP we really don't know that we have the optimum solution, lets
 // be conservative and just say we have an integer solution.
 				(*myout) << "Integer Solution.";
@@ -46,15 +54,22 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 			(*myout) << "Model infeasible.";
 			gm->setStatus(GamsModel::NormalCompletion,GamsModel::InfeasibleNoSolution);	
 		} 
-		// GAMS doesn't have dual infeasible, so we hope for the best and call it
-		// unbounded
+		// GAMS doesn't have dual infeasible, so we hope for the best and call it unbounded
 		else if (solver->isProvenDualInfeasible()) {
 			(*myout) << "Model unbounded.";
 			gm->setStatus(GamsModel::NormalCompletion,GamsModel::UnboundedNoSolution);	
 		} 
 		else if (solver->isIterationLimitReached()) {
-			(*myout) << "Iteration limit exceeded.";
-			gm->setStatus(GamsModel::IterationInterrupt,GamsModel::NoSolutionReturned);	
+			if (HaveFeasibleSolution) {
+				(*myout) << "Iteration limit exceeded. Have feasible solution.";
+				if (gm->isLP())
+					gm->setStatus(GamsModel::IterationInterrupt,GamsModel::IntermediateNonoptimal);
+				else
+					gm->setStatus(GamsModel::IterationInterrupt,GamsModel::IntegerSolution);
+			} else {
+				(*myout) << "Iteration limit exceeded.";
+				gm->setStatus(GamsModel::IterationInterrupt,GamsModel::NoSolutionReturned);	
+			}
 		} 
 		else if (solver->isPrimalObjectiveLimitReached()) {
 			(*myout) << "Primal objective limit reached.";

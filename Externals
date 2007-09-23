@@ -1,9 +1,9 @@
 BuildTools    https://projects.coin-or.org/svn/BuildTools/trunk
 CoinUtils     https://projects.coin-or.org/svn/CoinUtils/stable/2.1/CoinUtils
 Cgl           https://projects.coin-or.org/svn/Cgl/trunk/Cgl
-Clp           https://projects.coin-or.org/svn/Clp/trunk/Clp
+Clp           https://projects.coin-or.org/svn/Clp/stable/1.5/Clp
 Osi           https://projects.coin-or.org/svn/Osi/trunk/Osi
-Cbc           https://projects.coin-or.org/svn/Cbc/trunk/Cbc
+Cbc -r782     https://projects.coin-or.org/svn/Cbc/trunk/Cbc
 Ipopt         https://projects.coin-or.org/svn/Ipopt/stable/3.3/Ipopt
 Bonmin -r766  https://projects.coin-or.org/svn/Bonmin/trunk/Bonmin
 ThirdParty/HSL https://projects.coin-or.org/svn/BuildTools/ThirdParty/HSL/trunk

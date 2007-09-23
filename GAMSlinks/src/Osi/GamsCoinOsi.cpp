@@ -344,7 +344,7 @@ try {
 	}
 
 	// Determine status and write solution
-	GamsFinalizeOsi(&gm, &myout, solver, false, swapRowStatus);
+	GamsFinalizeOsi(&gm, &myout, solver, false, false, swapRowStatus);
 
 } catch (CoinError error) {
 	myout << "We got following error:" << error.message() << CoinMessageEol;

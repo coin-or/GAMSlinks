@@ -244,7 +244,12 @@ int main (int argc, const char *argv[]) {
 #else
 	bool timelimitreached=false;
 #endif
-	GamsFinalizeOsi(&gm, &myout, &solver, timelimitreached);
+#ifdef OGSI_HAVE_FEASIBILITY
+	bool feasible=solver.isFeasible();
+#else
+	bool feasible=false;
+#endif
+	GamsFinalizeOsi(&gm, &myout, &solver, timelimitreached, feasible);
 
 	return 0;
 }

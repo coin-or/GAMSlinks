@@ -142,7 +142,8 @@ int main (int argc, const char *argv[]) {
 
 	if (gm.isLP()) { // we solved an LP
 		// Clp interchange lower and upper activity of rows since it thinks in term of artifical variables
-	  GamsFinalizeOsi(&gm, &myout, model.solver(), model.isSecondsLimitReached(), true);
+		//TODO: report whether feasible if time/iterlimit reached
+	  GamsFinalizeOsi(&gm, &myout, model.solver(), model.isSecondsLimitReached(), false, true);
 	  return EXIT_SUCCESS;
 	}
 	

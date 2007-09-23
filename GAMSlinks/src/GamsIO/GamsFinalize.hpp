@@ -20,10 +20,11 @@
  * @param gm The GamsModel.
  * @param myout A GAMS message handler for output.
  * @param solver The OSI solver interface to read the solution from.
- * @param TimeLimitExceeded Indicate, whether a time limit was exceeded. (Time Limits are not directly supported by OsiSolverInterface.)  
+ * @param TimeLimitExceeded Indicate, whether a time limit was exceeded. (Time Limits are not directly supported by OsiSolverInterface.)
+ * @param HaveFeasibleSolution In case that time or iteration limit is exceeded, this indicates whether a feasible solution was found. (Feasibility checks are not directly supported by OsiSolverInterface.)
  * @param swapRowStatus Some OSI solvers think in term of artifical variables when dealing with the basis status of a row. Hence, the row status CoinWarmStartBasis::atLowerBound correponds to GamsModel::NonBasicUpper, and similar for atUpperBound. Setting swapRowStatus to true swaps atLowerBound and atUpperBound so that the row status in GAMS is correct again.    
  */
-void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool TimeLimitExceeded=false, bool swapRowStatus=false);
+void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterface *solver, bool TimeLimitExceeded=false, bool HaveFeasibleSolution=false, bool swapRowStatus=false);
 
 /** Writes GAMS solution file for a solution stored in an OsiSolverInterface.
  * If solver->optimalBasisIsAvailable() returns positive, the basis returned by solver->getBasisStatus is used.
