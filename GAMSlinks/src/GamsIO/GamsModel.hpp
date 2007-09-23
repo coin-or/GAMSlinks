@@ -399,6 +399,9 @@ public:
 	/** GAMS Parameter: Allowed relative difference between incumbent solution and best bound (for MIPs).
 	 */
   double getOptCR();   
+	/** GAMS Parameter: A new valid solution must be at least this much better than incumbent integer solution (for MIPs).
+	 */
+  double getCheat();   
   /** GAMS Parmeter: Implied upper/lower bound on objective function. 
    */
   double getCutOff();

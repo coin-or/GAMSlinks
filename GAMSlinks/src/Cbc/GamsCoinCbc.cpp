@@ -88,6 +88,7 @@ int main (int argc, const char *argv[]) {
 	if (!gm.optDefined("optca")) gm.optSetDouble("optca", gm.getOptCA());
 	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
 	if (!gm.optDefined("cutoff") && gm.getCutOff()!=gm.ObjSense()*solver.getInfinity()) gm.optSetDouble("cutoff", gm.getCutOff());
+	if (!gm.optDefined("increment") && gm.getCheat()) gm.optSetDouble("increment", gm.getCheat());
 	
 	gm.readMatrix();
 	myout << "Problem statistics:" << gm.nCols() << "columns and" << gm.nRows() << "rows." << CoinMessageEol;
@@ -405,6 +406,7 @@ void setupParameters(GamsModel& gm, CbcModel& model) {
 	model.setDblParam(CbcModel::CbcAllowableFractionGap, gm.optGetDouble("optcr"));
 	if (gm.optDefined("cutoff")) model.setCutoff(gm.ObjSense()*gm.optGetDouble("cutoff")); // Cbc assumes a minimization problem here
 	model.setDblParam(CbcModel::CbcIntegerTolerance, gm.optGetDouble("tol_integer"));
+	model.setPrintFrequency(gm.optGetInteger("printfrequency"));
 //	model.solver()->setIntParam(OsiMaxNumIterationHotStart,100);
 }
 
@@ -895,6 +897,12 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		myout << "CBC integer preprocessing does not handle semicontinuous variables correct (yet), thus we switch it off." << CoinMessageEol;
 		par_list.push_back("-preprocess");
 		par_list.push_back("off");
+	}
+	
+	if (gm.optDefined("increment")) {
+		par_list.push_back("-increment");
+		sprintf(buffer, "%g", gm.optGetDouble("increment"));
+		par_list.push_back(buffer);
 	}
 	
 	// special options set by user and passed unseen to CBC

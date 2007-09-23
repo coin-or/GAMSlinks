@@ -427,6 +427,17 @@ This option is similar to sos, but allows any number extra.
 ???
 
 
+printfrequency
+Controls the number of nodes that are evaluated between status prints.
+If set to 0, then the print frequency is 100 for large problems and 1000 for small problems.
+
+
+increment
+A valid solution must be at least this much better than last integer solution.
+If this option is not set then it CBC will try and work one out.
+E.g., if all objective coefficients are multiples of 0.01 and only integer variables have entries in objective then this can be set to 0.01.
+
+
 reslim
 Maximum time in seconds.
 

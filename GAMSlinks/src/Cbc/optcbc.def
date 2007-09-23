@@ -150,6 +150,8 @@ preprocess enumstr 0 "on" 1 1 integer presolve
  "equalall" 1
  "sos" 1
  "trysos" 1
+printfrequency integer 0 0 0 maxint 1 1 frequency of status prints
+increment double 0 0 0 maxdouble 1 1 increment of cutoff when new incumbent
 reslim double 0 1000 0 maxdouble 1 1 resource limit
 iterlim integer 0 10000 0 maxint 1 1 iteration limit
 nodelim integer 0 maxint 0 maxint 1 1 node limit

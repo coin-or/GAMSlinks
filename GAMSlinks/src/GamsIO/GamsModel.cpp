@@ -423,6 +423,13 @@ double GamsModel::getOptCR() {
   return iolib.optcr;
 }
 
+double GamsModel::getCheat() {
+	if (iolib.icheat)
+		return iolib.cheat;
+	else
+		return 0.;
+}
+
 int GamsModel::getSysOut() {
   return iolib.sysout;
 }

@@ -61,6 +61,8 @@ set g Cbc Option Groups /
       coststrategy           how to use costs as priorities
       nodestrategy           how to select nodes
       preprocess             integer presolve
+      printfrequency         frequency of status prints
+      increment              increment of cutoff when new incumbent
 * GAMS options
       reslim                 resource limit
       iterlim                iteration limit
@@ -123,6 +125,8 @@ general.(
   coststrategy         .s.(def off)
   nodestrategy         .s.(def fewest)
   preprocess           .s.(def on)
+  printfrequency       .i.(def 0)
+  increment            .r.(def 0)
 * GAMS options
   reslim          .r.(def 1000)
   iterlim         .i.(def 10000)
@@ -185,7 +189,8 @@ general.(
                      nodlim     'GAMS nodlim' 
                      optca      'GAMS optca' 
                      optcr      'GAMS optcr'
-                     cutoff     'GAMS cutoff' /
+                     cutoff     'GAMS cutoff'
+                     increment  'GAMS cheat'
+                   /
  oep(o) / crossover, perturbation, presolve,
     heuristics, combinesolutions, feaspump, localtreesearch, rins, roundingheuristic /;
-    

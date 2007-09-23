@@ -30,8 +30,6 @@ GAMSlinks/src/Bonmin/gmsbm_nt.cmd -text
 GAMSlinks/src/Bonmin/gmsbm_us.run -text
 GAMSlinks/src/Bonmin/install/gmsbm_nt.dat -text
 GAMSlinks/src/Bonmin/install/gmsbm_un.dat -text
-GAMSlinks/src/Cbc/CbcStrategyGams.cpp -text
-GAMSlinks/src/Cbc/CbcStrategyGams.hpp -text
 GAMSlinks/src/Cbc/GamsCoinCbc.cpp -text
 GAMSlinks/src/Cbc/Makefile.am -text
 GAMSlinks/src/Cbc/Makefile.in -text
