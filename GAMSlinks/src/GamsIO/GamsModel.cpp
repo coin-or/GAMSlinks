@@ -89,10 +89,12 @@ GamsModel::GamsModel(const char *cntrfile)
   
   // Some initializations
   ObjVal_   = 0.0;
+  ObjBound_ = iolib.vlundf;
   ObjSense_ = (0 == iolib.idir) ? 1.0 : -1.0;
   ResUsed_  = 0.0;
   IterUsed_ = 0;
   DomUsed_  = 0;
+  NodeUsed_ = 0;
 
   SolverStatus_ = SolverStatusNotSet;
   ModelStatus_ = ModelStatusNotSet;
@@ -469,7 +471,6 @@ void GamsModel::setSolution(const double *ColLevel, const double *ColMargin,
   assert(SolverStatus_ > SolverStatusNotSet && SolverStatus_ < LastSolverStatus);
   assert(ModelStatus_ > ModelStatusNotSet && ModelStatus_ < LastModelStatus);
   gfwsta (ModelStatus_, SolverStatus_, IterUsed_, ResUsed_, ObjVal_, DomUsed_);
-  // gfcsol ();
 
   if (ModelStatus_ == Optimal || ModelStatus_ == IntegerSolution) { // and other cases where we want to write a solution
     int i,j,basis,indicator;
@@ -528,6 +529,10 @@ void GamsModel::setSolution(const double *ColLevel, const double *ColMargin,
       }
     }
   }
+
+	gfwbnd(ObjBound_);
+	gfwnod(NodeUsed_);
+	gfcsol(); // close solution file 
 }
 
 char* GamsModel::RowName(int rownr, char *buffer, int bufLen) {

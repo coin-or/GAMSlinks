@@ -198,11 +198,12 @@ int main (int argc, const char *argv[]) {
 
 	gm.setIterUsed(model.getIterationCount());
 	gm.setResUsed(gm.SecondsSinceStart());
+	gm.setObjBound(model.getBestPossibleObjValue());
+	gm.setNodesUsed(model.getNodeCount());
 	if (write_solution) {
 		GamsWriteSolutionOsi(&gm, &myout, model.solver(), true);
-	} else {
-		gm.setObjVal(0.0);
-		gm.setSolution(); // trigger the write of GAMS solution file
+	} else { // trigger the write of GAMS solution file
+		gm.setSolution();
 	}
 
 	return EXIT_SUCCESS;

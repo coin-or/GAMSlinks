@@ -330,10 +330,18 @@ public:
 	 * @param ResUsed Number of seconds the solver used.
 	 */                 
   inline void setResUsed(const double ResUsed) { ResUsed_ = ResUsed; }
-	/** Sets the objective function value.
+	/** Sets the number of nodes used (in a branch-and-bound algorithm).
+	 * @param NodesUsed Number of nodes the solver used.
+	 */                 
+  inline void setNodesUsed(const int NodesUsed) { NodeUsed_ = NodesUsed; }
+	/** Sets the objective function value in the solution.
 	 * @param ObjVal Value of objective function.
 	 */                 
   inline void setObjVal(const double ObjVal) { ObjVal_ = ObjVal; }
+	/** Sets an bound (estimate) on the optimal value.
+	 * @param ObjBound Value of optimal value estimate.
+	 */                 
+  inline void setObjBound(const double ObjBound) { ObjBound_ = ObjBound; }
 	/** Gives the stored objective function value.
 	 */                 
   inline double getObjVal() { return ObjVal_; }
@@ -512,9 +520,11 @@ private:
   void Allocate();
 
   double ObjVal_;
+  double ObjBound_;
   double ResUsed_;
   int    IterUsed_;
   int    DomUsed_;
+  int    NodeUsed_;
 
   SolverStatus SolverStatus_;
   ModelStatus ModelStatus_;
