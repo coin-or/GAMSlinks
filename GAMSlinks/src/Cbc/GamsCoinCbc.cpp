@@ -67,6 +67,8 @@ int main (int argc, const char *argv[]) {
 	solver.passInMessageHandler(&slvout);
 	solver.setHintParam(OsiDoReducePrint,true,OsiHintTry);
 
+	myout.setCurrentDetail(1);
+	gm.PrintOut(GamsModel::StatusMask, "=1"); // turn on copying into .lst file
 #ifdef GAMS_BUILD	
 	myout << "\nGAMS/CoinCbc 1.3pre LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
 	if (!gm.ReadOptionsDefinitions("coincbc"))
@@ -107,7 +109,7 @@ int main (int argc, const char *argv[]) {
 	gm.TimerStart();
 	
 	setupProblem(gm, solver);
-
+	
 	// Write MPS file
 	if (gm.optDefined("writemps")) {
 		gm.optGetString("writemps", buffer);
@@ -136,10 +138,14 @@ int main (int argc, const char *argv[]) {
 		cbc_args[i]=it->c_str();
 	cbc_args[i++]="-quit";
 
+	gm.PrintOut(GamsModel::StatusMask, "=2"); // turn off copying into .lst file
 	myout << "\nCalling CBC main solution routine..." << CoinMessageEol;	
+	myout.setCurrentDetail(2);
 	CbcMain1(par_list_length+2,cbc_args,model);
 	delete[] cbc_args;
 
+	myout.setCurrentDetail(1);
+	gm.PrintOut(GamsModel::StatusMask, "=1"); // turn on copying into .lst file
 	if (gm.isLP()) { // we solved an LP
 		// Clp interchange lower and upper activity of rows since it thinks in term of artifical variables
 		//TODO: report whether feasible if time/iterlimit reached

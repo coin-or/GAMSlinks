@@ -25,6 +25,14 @@ public:
 	/** Sets the number of spaces to remove at the front of a message.
 	 */
   inline void setRemoveLBlanks(int rm) { rmlblanks_ = rm; }
+  
+  /** Sets the detail level of the current message.
+   */
+  void setCurrentDetail(int detail);
+
+  /** Returns the detail level of the current message.
+   */
+  int getCurrentDetail() const;
 
 	/** Prints the message from the message buffer.
 	 * Removes at most rmlblanks_ from the beginning and all newlines at the end of the message buffer.

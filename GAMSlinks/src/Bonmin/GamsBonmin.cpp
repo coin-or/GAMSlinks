@@ -175,7 +175,7 @@ void solve_minlp(smagHandle_t prob) {
 		if (bb.bestSolution()) {
 			char buf[100];
 			snprintf(buf, 100, "\nBonmin finished. Found feasible point. Objective function = %f.\n", bb.bestObj());
-			smagStdOutputPrint(prob, SMAG_LOGMASK, buf);
+			smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
 
 			OsiTMINLPInterface osi_tminlp(*bonmin_setup.nonlinearSolver());
 			bool has_free_var=false;
@@ -196,10 +196,10 @@ void solve_minlp(smagHandle_t prob) {
 				if (osi_tminlp.isProvenOptimal())
 					write_solution(prob, osi_tminlp, mysmagminlp->model_status, mysmagminlp->solver_status, smagGetCPUTime(prob)-mysmagminlp->clock_start, mysmagminlp->domviolations, bb.numNodes());
 				else
-					smagStdOutputPrint(prob, SMAG_LOGMASK, "Problems solving fixed problem.\n");
+					smagStdOutputPrint(prob, SMAG_ALLMASK, "Problems solving fixed problem.\n");
 			}
 		} else {
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "\nBonmin finished. No feasible point found.\n");
+			smagStdOutputPrint(prob, SMAG_ALLMASK, "\nBonmin finished. No feasible point found.\n");
 			smagReportSolBrief(prob, mysmagminlp->model_status, mysmagminlp->solver_status);
 		}
   } catch(CoinError &error) {

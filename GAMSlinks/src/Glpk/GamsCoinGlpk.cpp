@@ -85,6 +85,8 @@ int main (int argc, const char *argv[]) {
 
 	glp_term_hook(printme, &slvout);
 	solver.passInMessageHandler(&slvout);
+	myout.setCurrentDetail(1);
+	gm.PrintOut(GamsModel::StatusMask, "=1"); // turn on copying into .lst file
 
 #ifdef GAMS_BUILD
 	myout << "\nGAMS/CoinGlpk LP/MIP Solver (Glpk Library" << glp_version() << ")\nwritten by A. Makhorin\n " << CoinMessageEol;
@@ -195,6 +197,8 @@ int main (int argc, const char *argv[]) {
   if (!lpx_get_int_parm(glpk_model, LPX_K_PRESOL)) 
 		lpx_adv_basis(glpk_model);
 
+	myout.setCurrentDetail(2);
+	gm.PrintOut(GamsModel::StatusMask, "=2"); // turn off copying into .lst file
 	myout << CoinMessageNewline << CoinMessageEol;
 	if (gm.nDCols()==0) { // LP
 
@@ -234,7 +238,7 @@ int main (int argc, const char *argv[]) {
 			myout << "\nSolving fixed problem... " << CoinMessageEol;
 			solver.resolve();
 			if (!solver.isProvenOptimal())
-			myout << "Problems solving fixed problem. No solution returned." << CoinMessageEol;
+				myout << "Problems solving fixed problem. No solution returned." << CoinMessageEol;
 		}
 	}
 
@@ -249,6 +253,8 @@ int main (int argc, const char *argv[]) {
 #else
 	bool feasible=false;
 #endif
+	myout.setCurrentDetail(1);
+	gm.PrintOut(GamsModel::StatusMask, "=1"); // turn on copying into .lst file
 	GamsFinalizeOsi(&gm, &myout, &solver, timelimitreached, feasible);
 
 	return 0;

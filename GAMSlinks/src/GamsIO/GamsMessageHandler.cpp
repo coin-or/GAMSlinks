@@ -36,6 +36,14 @@ GamsMessageHandler::GamsMessageHandler(GamsModel *GMptr)
 : GMptr_(GMptr), rmlblanks_(1) 
 { }
 
+void GamsMessageHandler::setCurrentDetail(int detail) {
+	currentMessage_.setDetail(detail);
+}
+
+int GamsMessageHandler::getCurrentDetail() const {
+	return currentMessage_.detail();
+}
+
 // Print message, return 0 normally
 int GamsMessageHandler::print() {
   char *messageOut = const_cast<char*>(messageBuffer());
@@ -53,8 +61,7 @@ int GamsMessageHandler::print() {
   if (0 == GMptr_)
     printf("%s\n", messageOut);
   else {
-    int detail = currentMessage().detail();
-    if (detail < 2)
+    if (currentMessage_.detail() < 2)
       GMptr_->PrintOut(GamsModel::AllMask, messageOut);
     else
       GMptr_->PrintOut(GamsModel::LogMask, messageOut);
