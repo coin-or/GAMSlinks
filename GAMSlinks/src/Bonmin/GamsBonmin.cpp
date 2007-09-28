@@ -68,9 +68,9 @@ int main (int argc, char* argv[]) {
   smagReadModel (prob);
 
 #ifdef GAMS_BUILD
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinBonmin MINLP Solver (Bonmin Library 0.2pre, using MUMPS Library 4.7.3)\nwritten by P. Bonami\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinBonmin MINLP Solver (Bonmin Library 0.9, using MUMPS Library 4.7.3)\nwritten by P. Bonami\n");
 #else
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Bonmin MINLP Solver (Bonmin Library 0.2pre)\nwritten by P. Bonami\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Bonmin MINLP Solver (Bonmin Library 0.9)\nwritten by P. Bonami\n");
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 
@@ -98,13 +98,13 @@ void solve_minlp(smagHandle_t prob) {
 	// instead of initializeOptionsAndJournalist we do it our own way, so we can use the SmagJournal
   SmartPtr<OptionsList> options = new OptionsList();
 	SmartPtr<Journalist> journalist= new Journalist();
-  SmartPtr<RegisteredOptions> roptions = new RegisteredOptions();
+  SmartPtr<Bonmin::RegisteredOptions> roptions = new Bonmin::RegisteredOptions();
  	SmartPtr<Journal> smag_jrnl=new SmagJournal(prob, "console", J_ITERSUMMARY, J_STRONGWARNING);
 	smag_jrnl->SetPrintLevel(J_DBG, J_NONE);
 	if (!journalist->AddJournal(smag_jrnl))
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT output.\n");
 	options->SetJournalist(journalist);
-	options->SetRegisteredOptions(roptions);
+	options->SetRegisteredOptions(GetRawPtr(roptions));
 
 	bonmin_setup.setOptionsAndJournalist(roptions, options, journalist);
   bonmin_setup.registerOptions();
@@ -303,7 +303,11 @@ void solve_nlp(smagHandle_t prob) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT output.\n");
 
 	// register Bonmin options so that Ipopt does not stumble over bonmin options
-	OsiTMINLPInterface().registerOptions(app->RegOptions());
+  SmartPtr<Bonmin::RegisteredOptions> roptions = new Bonmin::RegisteredOptions();
+	BonminSetup::registerAllOptions(roptions);
+	app->Options()->SetRegisteredOptions(GetRawPtr(roptions));
+
+//	OsiTMINLPInterface::registerOptions(app->RegOptions());
 
 	// Change some options
   app->Options()->SetNumericValue("bound_relax_factor", 0);

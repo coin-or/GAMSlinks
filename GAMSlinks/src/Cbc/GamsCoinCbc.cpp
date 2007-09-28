@@ -70,10 +70,10 @@ int main (int argc, const char *argv[]) {
 	myout.setCurrentDetail(1);
 	gm.PrintOut(GamsModel::StatusMask, "=1"); // turn on copying into .lst file
 #ifdef GAMS_BUILD	
-	myout << "\nGAMS/CoinCbc 1.3pre LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
+	myout << "\nGAMS/CoinCbc 2.0 LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
 	if (!gm.ReadOptionsDefinitions("coincbc"))
 #else
-	myout << "\nGAMS/Cbc 1.3pre LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
+	myout << "\nGAMS/Cbc 2.0 LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
 	if (!gm.ReadOptionsDefinitions("cbc"))
 #endif
 		myout << "Error intializing option file handling or reading option file definitions!" << CoinMessageEol
