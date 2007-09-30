@@ -4,8 +4,12 @@
 
 writemps string 0 "" 1 1 create MPS file for problem
 special string 0 "" 1 1 options passed unseen to CBC
-idiotcrash integer 0 -1 -1 999999 1 1 idiot crash
-sprintcrash integer 0 -1 -1 5000000 1 1 sprint crash
+idiotcrash enumint 0 -1 1 1 idiot crash
+ -1 1
+ 0 1
+sprintcrash enumint 0 -1 1 1 sprint crash
+ -1 1
+ 0 1
 sifting integer 0 -1 -1 5000000 1 1 synonym for sprint crash
 crash enumstr 0 "off" 1 1 use crash method to get dual feasible
  "off" 1 do not create basis by crash method
@@ -45,7 +49,8 @@ tol_presolve double 0 1e-8 0 maxdouble 1 1 tolerance used in presolve
 sollim integer 0 -1 -1 2147483647 1 1 limit on number of solutions
 strongbranching integer 0 5 0 999999 1 1 strong branching
 trustpseudocosts integer 0 5 -1 2000000 1 1 after howmany nodes we trust the pseudo costs
-cutdepth integer 0 -1 -1 999999 1 1 depth in tree at which cuts are applied
+cutdepth enumint 0 -1 1 1 depth in tree at which cuts are applied
+ -1 1
 cut_passes_root integer 0 -1 -999999 999999 1 1 number of cut passes at root node
 cut_passes_tree integer 0 1 -999999 999999 1 1 number of cut passes at nodes in the tree
 cuts enumstr 0 "on" 1 1 global switch for cutgenerators
@@ -54,69 +59,19 @@ cuts enumstr 0 "on" 1 1 global switch for cutgenerators
  "root" 1
  "ifmove" 1
  "forceon" 1
-cliquecuts enumstr 0 "ifmove" 1 1 Clique Cuts
- "off" 1
- "on" 1
- "root" 1
- "ifmove" 1
- "forceon" 1
-flowcovercuts enumstr 0 "ifmove" 1 1 Flow Cover Cuts
- "off" 1
- "on" 1
- "root" 1
- "ifmove" 1
- "forceon" 1
-gomorycuts enumstr 0 "ifmove" 1 1 Gomory Cuts
- "off" 1
- "on" 1
- "root" 1
- "ifmove" 1
- "forceon" 1
-knapsackcuts enumstr 0 "ifmove" 1 1 Knapsack Cover Cuts
- "off" 1
- "on" 1
- "root" 1
- "ifmove" 1
- "forceon" 1
-liftandprojectcuts enumstr 0 "off" 1 1 Lift and Project Cuts
- "off" 1
- "on" 1
- "root" 1
- "ifmove" 1
- "forceon" 1
-mircuts enumstr 0 "ifmove" 1 1 Mixed Integer Rounding Cuts
- "off" 1
- "on" 1
- "root" 1
- "ifmove" 1
- "forceon" 1
-twomircuts enumstr 0 "root" 1 1 Two Phase Mixed Integer Rounding Cuts
- "off" 1
- "on" 1
- "root" 1
- "ifmove" 1
- "forceon" 1
+cliquecuts string 0 "ifmove" 1 1 Clique Cuts
+flowcovercuts string 0 "ifmove" 1 1 Flow Cover Cuts
+gomorycuts string 0 "ifmove" 1 1 Gomory Cuts
+knapsackcuts string 0 "ifmove" 1 1 Knapsack Cover Cuts
+liftandprojectcuts string 0 "off" 1 1 Lift and Project Cuts
+mircuts string 0 "ifmove" 1 1 Mixed Integer Rounding Cuts
+twomircuts string 0 "root" 1 1 Two Phase Mixed Integer Rounding Cuts
 probingcuts enumstr 0 "ifmove" 1 1 Probing Cuts
- "off" 1
- "on" 1
- "root" 1
- "ifmove" 1
- "forceon" 1
  "forceonbut" 1
  "forceonstrong" 1
  "forceonbutstrong" 1
-reduceandsplitcuts enumstr 0 "off" 1 1 Reduce and Split Cuts
- "off" 1
- "on" 1
- "root" 1
- "ifmove" 1
- "forceon" 1
-residualcapacitycuts enumstr 0 "off" 1 1 Residual Capacity Cuts
- "off" 1
- "on" 1
- "root" 1
- "ifmove" 1
- "forceon" 1
+reduceandsplitcuts string 0 "off" 1 1 Reduce and Split Cuts
+residualcapacitycuts string 0 "off" 1 1 Residual Capacity Cuts
 heuristics boolean 0 1 1 1 global switch for heuristics
 combinesolutions boolean 0 1 1 1 combine solutions heuristic
 feaspump boolean 0 1 1 1 feasibility pump
@@ -150,7 +105,8 @@ preprocess enumstr 0 "on" 1 1 integer presolve
  "equalall" 1
  "sos" 1
  "trysos" 1
-printfrequency integer 0 0 0 maxint 1 1 frequency of status prints
+printfrequency enumint 0 0 1 1 frequency of status prints
+ 0 1
 increment double 0 0 0 maxdouble 1 1 increment of cutoff when new incumbent
 reslim double 0 1000 0 maxdouble 1 1 resource limit
 iterlim integer 0 10000 0 maxint 1 1 iteration limit

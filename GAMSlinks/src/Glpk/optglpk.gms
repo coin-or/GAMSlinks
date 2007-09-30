@@ -66,6 +66,7 @@ $onempty
   backtracking.(  depthfirst       depth first search
                   breadthfirst     breadth first search
                   bestprojection   using best projection heuristic )
+  iterlim.(       '-1' )
  /
 $offempty
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /

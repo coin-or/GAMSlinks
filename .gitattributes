@@ -39,6 +39,7 @@ GAMSlinks/src/Cbc/install/gmscc_nt.dat -text
 GAMSlinks/src/Cbc/install/gmscc_un.dat -text
 GAMSlinks/src/Cbc/optcbc.def -text
 GAMSlinks/src/Cbc/optcbc.gms -text
+GAMSlinks/src/Cbc/optcbc.html -text
 GAMSlinks/src/Cbc/optcbc.txt -text
 GAMSlinks/src/GAMSlinksConfig.h -text
 GAMSlinks/src/GamsIO/GamsFinalize.cpp -text
@@ -59,6 +60,7 @@ GAMSlinks/src/Glpk/install/gmscg_nt.dat -text
 GAMSlinks/src/Glpk/install/gmscg_un.dat -text
 GAMSlinks/src/Glpk/optglpk.def -text
 GAMSlinks/src/Glpk/optglpk.gms -text
+GAMSlinks/src/Glpk/optglpk.html -text
 GAMSlinks/src/Glpk/optglpk.txt -text
 GAMSlinks/src/Ipopt/GamsIpopt.cpp -text
 GAMSlinks/src/Ipopt/Makefile.am -text

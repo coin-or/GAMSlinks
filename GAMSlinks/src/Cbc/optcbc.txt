@@ -1,5 +1,5 @@
 introduction
-GAMS/CoinCBC brings the open source LP/MIP solver Cbc from the COIN-OR foundation to the broad audience of GAMS users.
+GAMS/CoinCBC brings the open source LP/MIP solver Cbc from the COIN-OR foundation to the broad audience of GAMS users.<BR>
 CBC (COIN-OR branch and cut) is an open-source mixed integer programming solver working with the COIN-OR LP solver CLP and the COIN-OR Cut generator libraries CGL.
 The code has been written primarily by John J. Forrest, who is the COIN-OR project leader for CBC.
 The GAMS interface for Cbc is maintained by Stefan Vigerske, Humboldt-University Berlin, in a separate COIN-OR project called GAMSLinks.<BR>
@@ -28,42 +28,75 @@ The parameter value is the name of the MPS file.
 
 
 idiotcrash
-idiot crash
-???
+This is a type of 'crash' which works well on some homogeneous problems.
+It works best on problems with unit elements and right hand sides but will do something to any model.
+It should only be used before the primal simplex algorithm.<BR>
+A positive number determines the number of passes that idiotcrash is called.
+
+
+idiotcrash.'-1'
+Let CLP decide by itself whether to use it.
+
+
+idiotcrash.0
+Switch this method off.
+
 
 sprintcrash
-sprint crash
-???
+For long and thin problems this method may solve a series of small problems created by taking a subset of the columns.
+Cplex calls it 'sifting'.
+A positive number determines the number of passes that sprintcrash is called.
+
+
+sprintcrash.'-1'
+Let CLP decide by itself whether to use it.
+
+
+sprintcrash.0
+Switch this method off.
+
 
 sifting
-Synonym for sprintcrash.
+Synonym for <a href="#sprintcrash">sprintcrash</a>.
 
 
 crash
 Determines whether CLP should use a crash algorithm to find a dual feasible basis.
 
+
 crash.off
 Switch off the creation of dual feasible basis by the crash method.
+
 
 crash.on
 Switch on the creation of dual feasible basis by the crash method.
 
+
 crash.solow_halim
 Switch on a crash variant due to Solow and Halim.
+
 
 crash.halim_solow
 Switch on a crash variant due to Solow and Halim with modifications of John J. Forrest.
 
 
 maxfactor
-Maximum number of iterations between refactorizations in CLP.
+Maximum number of iterations between refactorizations in CLP.<BR>
+If this is left at the default value of 200 then CLP will guess at a value to use.
+CLP may decide to refactorize earlier for accuracy.
 
 
 crossover
-Determines whether CLP should crossover to the simplex algorithm after the barrier algorithm finished.
+Determines whether CLP should crossover to the simplex algorithm after the barrier algorithm finished.<BR>
+Interior point algorithms do not obtain a basic solution.
+This option will crossover to a basic solution suitable for ranging or branch and cut.
+With the current state of the quadratic solver it may be a good idea to switch off the crossover for quadratic problems (and maybe presolve as well).
+CLP does this.
+
 
 crossover.0
 Turn off crossover to simplex algorithm after barrier algorithm finished.
+
 
 crossover.1
 Turn on crossover to simplex algorithm after barrier algorithm finished.
@@ -72,14 +105,18 @@ Turn on crossover to simplex algorithm after barrier algorithm finished.
 dualpivot
 Choice of the pivoting strategy in the dual simplex algorithm.
 
+
 dualpivot.auto
-Let CLP use a variant of the steepest choice method which decides on each iteration based on the current factorization...
+Let CLP use a variant of the steepest choice method which decides on each iteration based on the current factorization.
+
 
 dualpivot.dantzig
 Let CLP use the pivoting strategy due to Dantzig.
 
+
 dualpivot.steepest
 Let CLP use the steepest choice method.
+
 
 dualpivot.partial
 Let CLP use a variant of the steepest choice method which scans only a subset...
@@ -88,23 +125,30 @@ Let CLP use a variant of the steepest choice method which scans only a subset...
 primalpivot
 Choice of the pivoting strategy in the primal simplex algorithm.
 
+
 primalpivot.auto
 Let CLP use a variant of the exact devex method.
+
 
 primalpivot.exact
 Let CLP use the exact devex method.
 
+
 primalpivot.dantzig
-Let CLP use the pivoting strategu due to Dantzig.
+Let CLP use the pivoting strategy due to Dantzig.
+
 
 primalpivot.partial
 Let CLP use a variant of the exact devex method which scans only a subset...
 
+
 primalpivot.steepest
 Let CLP use the steepest choice method.
 
+
 primalpivot.change
 Let CLP initially use Dantzig pivot method until the factorization becomes denser.
+
 
 primalpivot.sprint
 Let CLP use the sprint pivot method.
@@ -112,9 +156,14 @@ Let CLP use the sprint pivot method.
 
 perturbation
 Determines whether CLP should perturb the problem before starting.
+Perturbation helps to stop cycling, but CLP uses other measures for this.
+However, large problems and especially ones with unit elements and unit right hand sides or costs benefit from perturbation.
+Normally CLP tries to be intelligent, but you can switch this off.
+
 
 perturbation.0
 Turns off perturbation of LP.
+
 
 perturbation.1
 Turns on perturbation of LP.
@@ -124,16 +173,19 @@ scaling
 Scaling can help in solving problems which might otherwise fail because of lack of accuracy.
 It can also reduce the number of iterations.
 It is not applied if the range of elements is small.
-When scaling is turned off it is possible that there may be small primal and/or dual infeasibilities.
+
 
 scaling.off
 Turns off scaling.
 
+
 scaling.equilibrium
 Let CLP use an equilibrium based scaling method.
 
+
 scaling.geometric
 Let CLP use a geometric based scaling method.
+
 
 scaling.auto
 Let CLP choose the scaling method automatically.
@@ -143,8 +195,10 @@ presolve
 Presolve analyzes the model to find such things as redundant constraints, constraints which fix some variables, constraints which can be transformed into bounds, etc.
 For the initial solve of any problem this is worth doing unless you know that it will have no effect.
 
+
 presolve.0
 Turns off the initial presolve.
+
 
 presolve.1
 Turns on the initial presolve.
@@ -165,11 +219,14 @@ The maximum amount the primal constraints can be violated and still be considere
 startalg
 Determines the algorithm to use for an LP or the initial LP relaxation if the problem is a MIP.
 
+
 startalg.primal
 Let CLP use the primal simplex algorithm.
 
+
 startalg.dual
 Let CLP use the dual simplex algorithm.
+
 
 startalg.barrier
 Let CLP use a primal dual predictor corrector algorithm.
@@ -184,10 +241,10 @@ A limit on number of feasible solutions that CBC should find for a MIP.
 
 
 strongbranching
-Determines the number of variables to look at in strong branching.
+Determines the number of variables to look at in strong branching.<BR>
 In order to decide which variable to branch on, the code will choose up to this number of unsatisfied variables and try minimal up and down branches.
 The most effective one is chosen.
-If a variable is branched on many times then the previous average up and down costs may be used - see the option trustpseudocosts.
+If a variable is branched on many times then the previous average up and down costs may be used - see the <a href="#trustpseudocosts">option trustpseudocosts</a>.
 
 
 trustpseudocosts
@@ -196,18 +253,19 @@ This parameter determines after how many branches for a variable we just trust t
 
 
 cutdepth
-If the depth in the tree is a multiple of cutdepth, then cut generators are applied.
+If the depth in the tree is a multiple of cutdepth, then cut generators are applied.<BR>
 Cut generators may be off, on only at the root, on if they look useful, or on at some interval.
 If they are done every node then that is that (???), but it may be worth doing them every so often.
 The original method was every so many nodes but it is more logical to do it whenever depth in tree is a multiple of K.
 This option does that and defaults to -1 (off).
 
-cutdepth.-1
-Does not turn on cut generators if the depth of the tree is a multiple of a value.
+
+cutdepth.'-1'
+Does not turn on cut generators because the depth of the tree is a multiple of a value.
 
 
 cut_passes_root
-Determines the number of rounds that the cut generators are applied in the root node.
+Determines the number of rounds that the cut generators are applied in the root node.<BR>
 The default is 100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop is small) if it has less than 5000 columns, and 20 passes otherwise.
 ??? What is -1 good for?
 
@@ -218,92 +276,114 @@ Determines the number of rounds that the cut generators are applied in the nodes
 
 
 cuts
-A global switch to turn on or off the cutgenerators.
+A global switch to turn on or off the cutgenerators.<BR>
 This can be used to switch on or off all default cut generators.
 Then you can set individual ones off or on using the specific options.
+
 
 cuts.off
 Turns off all cut generators.
 
+
 cuts.on
 Turns on all default cut generators and CBC will try them in the branch and cut tree (see the option cutdepth how to fine tune the behaviour).
+
 
 cuts.root
 Let CBC generate cuts only at the root node.
 
+
 cuts.ifmove
 Let CBC use cut generators in the tree if they look as if they are doing some good and moving the objective value.
 
+
 cuts.forceon
-???
+Turns on all default cut generators and force CBC to use the cut generator at every node.
 
 
 cliquecuts
-Determines whether and when CBC should try to generate clique cuts.
-See the option cuts for an explanation on the different values.
-Clique cuts are of the form "sum of a set of variables <= 1".
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglClique">clique cuts</a>.
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+Clique cuts are of the form "sum of a set of variables <= 1".<BR>
+Reference: M. Eso, Parallel branch and cut for set partitioning, Cornell University, 1999.
 
 
 flowcovercuts
-Determines whether and when CBC should try to generate flow cover cuts.
-See the option cuts for an explanation on the different values.
-The flow cover cut generator generates lifts simple generalized flow cover inequalities.
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglFlowCover">flow cover cuts</a>.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+The flow cover cut generator generates lifted simple generalized flow cover inequalities.
 Since flow cover inequalities are generally not facet-defining, they are lifted to obtain stronger inequalities.
-Although flow cover inequalities requires a special problem structure to be generated, they are quite useful for solving general mixed integer linear programs.
+Although flow cover inequalities requires a special problem structure to be generated, they are quite useful for solving general mixed integer linear programs.<BR>
+Reference: Z. Gu, G.L. Nemhauser, M.W.P. Savelsbergh, Lifted flow cover inequalities for mixed 0-1 integer programs, Math. Programming A 85 (1999) 439-467.
 
 
 gomorycuts
-Determines whether and when CBC should try to generate Gomory cuts.
-See the option cuts for an explanation on the different values.
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglGomory">mixed-integer Gomory cuts</a>.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+Reference: Laurence A. Wolsey, Integer Programming, Wiley, John & Sons, (1998) 124-132.
 
 
 knapsackcuts
-Determines whether and when CBC should try to generate knapsack cover cuts.
-See the option cuts for an explanation on the different values.
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglKnapsackCover">knapsack cover cuts</a>.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
 The knapsack cover cut generator looks for a series of different types of minimal covers.
-If a minimal cover is found, it lifts the associated minimal cover inequality and adds the lifted cut to the cut set.
+If a minimal cover is found, it lifts the associated minimal cover inequality and adds the lifted cut to the cut set.<BR>
+Reference: S. Martello, and P. Toth, Knapsack Problems, Wiley, 1990, p30.
 
 
 liftandprojectcuts
-Determines whether and when CBC should try to generate lift and project cuts.
-See the option cuts for an explanation on the different values.
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglLandP">lift and project cuts</a>.
+They might be expensive to compute, thus they are switched off by default.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+Reference: E. Balas and M. Perregaard, A precise correspondence between lift-and-project cuts, simple disjunctive cuts, and mixed integer Gomory cuts for 0-1 programming. Math. Program., 94(203,Ser. B):221-245,2003.
 
 
 mircuts
-Determines whether and when CBC should try to generate mixed integer rounding cuts.
-See the option cuts for an explanation on the different values.
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglMixedIntegerRounding2">mixed integer rounding cuts</a>.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+Reference: H. Marchand and L. A. Wolsey, Aggregation and Mixed Integer Rounding to Solve MIPs, Operations Research, 49(3), (2001).
 
 
 twomircuts
-Determines whether and when CBC should try to generate two phase mixed integer rounding cuts.
-See the option cuts for an explanation on the different values.
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglTwomir">two phase mixed integer rounding cuts</a>.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+Reference: S. Dash, and O. Guenluek, Valid Inequalities Based on Simple Mixed-integer Sets, to appear in Math. Programming.
 
 
 probingcuts
-Determines whether and when CBC should try to generate cuts based on probing.
-See the option cuts for an explanation on the different values.
+Determines whether and when CBC should try to generate cuts based on <a href="https://projects.coin-or.org/Cgl/wiki/CglProbing">probing</a>.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+Reference: M. Savelsbergh, Preprocessing and Probing Techniques for Mixed Integer Programming Problems, ORSA Journal on Computing 6 (1994), 445.
+
 
 probingcuts.forceonbut
-???
+Turns on Probing and forces CBC to call the cut generator at every node, but does only probing, not strengthening etc.
+
 
 probingcuts.forceonstrong
 ???
+
 
 probingcuts.forceonbutstrong
 ???
 
 
 reduceandsplitcuts
-Determines whether and when CBC should try to generate reduced and split cuts.
-See the option cuts for an explanation on the different values.
+Determines whether and when CBC should try to generate reduced and split cuts.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
 Reduce and split cuts are variants of Gomory cuts.
 Starting from the current optimal tableau, linear combinations of the rows of the current optimal simplex tableau are used for generating Gomory cuts.
-The choice of the linear combinations is driven by the objective of reducing the coefficients of the non basic continuous variables in the resulting row. 
+The choice of the linear combinations is driven by the objective of reducing the coefficients of the non basic continuous variables in the resulting row.<BR>
+Reference: K. Anderson, G. Cornuejols, and Yanjun Li, Reduce-and-Split Cuts: Improving the Performance of Mixed Integer Gomory Cuts, Management Science 51 (2005).
 
 
 residualcapacitycuts
-Determines whether and when CBC should try to generate residual capacity cuts.
-See the option cuts for an explanation on the different values.
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglResidualCapacity">residual capacity cuts</a>.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+These inequalities are particularly useful for Network Design and Capacity Planning models.<BR>
+References:<BR>
+T.L. Magnanti, P. Mirchandani, and R. Vachani, The convex hull of two core capacitated network design problems, Math. Programming, 60 (1993), pp. 233-250.<BR>
+A. Atamturk and D. Rajan, On splittable and unsplittable flow capacitated network design arc-set polyhedra, Math. Programming, 92 (2002), pp. 315-333.
 
 
 heuristics
@@ -317,31 +397,35 @@ It is obviously only tried after two or more solutions.
 
 
 feaspump
-This parameter control the use of the feasibility pump heuristic at the root.
+This parameter control the use of the feasibility pump heuristic at the root.<BR>
 This is due to Fischetti and Lodi and uses a sequence of LPs to try and get an integer feasible solution.
-Some fine tuning is available by the feaspump_passes option.
-??? add reference
+Some fine tuning is available by the feaspump_passes option.<BR>
+Reference: M. Fischetti, F. Glover, and A. Lodi, The feasibility pump, Math. Programming, 104 (2005), pp. 91-104.
+
 
 feaspump_passes
 This fine tunes the feasibility pump heuristic by setting the number of passes.
 
 
 greedyheuristic
-This parameter control the use of a pair of greedy heuristic which will try and obtain a solution.
+This parameter control the use of a pair of greedy heuristic which will try to obtain a solution.
 It may just fix a percentage of variables and then try a small branch and cut run.
+
 
 greedyheuristic.on
 Turns on the greedy heuristic.
 
+
 greedyheuristic.root
 Turns on the greedy heuristic only for the root node.
+
 
 greedyheuristic.off
 Turns off the greedy heuristic.
 
 
 localtreesearch
-This parameter control the use of a local search algorithm when a solution is found.
+This parameter control the use of a local search algorithm when a solution is found.<BR>
 It is from Fischetti and Lodi and is not really a heuristic although it can be used as one (with limited functionality).
 This heuristic is not controlled by the heuristics option.
 ??? Is this local branching? reference
@@ -361,20 +445,26 @@ This parameter influence the branching variable selection.
 If turned on, then the variables are sorted in order of their absolute costs, and branching is done first on variables with largest cost.
 This primitive strategy can be surprisingly effective.
 
+
 coststrategy.off
 ???
+
 
 coststrategy.priorities
 ???
 
+
 coststrategy.columnorder
 ???
+
 
 coststrategy.binaryfirst
 ???
 
+
 coststrategy.binarylast
 ???
+
 
 coststrategy.length
 ???
@@ -382,23 +472,35 @@ coststrategy.length
 
 nodestrategy
 This determines the strategy used to select the next node from the branch and cut tree.
-???
+
 
 nodestrategy.hybrid
+Let CBC do first a breath search on nodes with a small depth in the tree and then switch to choose nodes with fewest infeasibilities.
+
 
 nodestrategy.fewest
+This will let CBC choose the node with the fewest infeasibilities.
+
 
 nodestrategy.depth
-This will always choose the node deepest in tree.
+This will let CBC always choose the node deepest in tree.
 It gives minimum tree size but may take a long time to find the best solution.
 
+
 nodestrategy.upfewest
+This will let CBC choose the node with the fewest infeasibilities and do up branches first.
+
 
 nodestrategy.downfewest
+This will let CBC choose the node with the fewest infeasibilities and do down branches first.
+
 
 nodestrategy.updepth
+This will let CBC choose the node deepest in tree and do up branches first.
+
 
 nodestrategy.downdepth
+This will let CBC choose the node deepest in tree and do down branches first.
 
 
 preprocess
@@ -406,21 +508,27 @@ This option controls the MIP specific presolve routines.
 They try to reduce the size of the model in a similar way to presolve and also try to strengthen the model.
 This can be very useful and is worth trying.
 
+
 preprocess.off
 Turns off the presolve routines.
 
+
 preprocess.on
-???
+Turns on the presolve routines.
+
 
 preprocess.equal
 This option let CBC turn =L= rows into =E= for cliques.
 
+
 preprocess.equalall
 This option let CBC turn all valid inequalities into equalities with integer slacks.
+
 
 preprocess.sos
 This option let CBC search for rows with upper bound 1 and where all nonzero coefficients are 1 and creates special ordered sets.
 ??? create special ordered sets if all 0-1 in sets (well one extra is allowed) and no overlaps.
+
 
 preprocess.trysos
 This option is similar to sos, but allows any number extra.
@@ -429,11 +537,14 @@ This option is similar to sos, but allows any number extra.
 
 printfrequency
 Controls the number of nodes that are evaluated between status prints.
-If set to 0, then the print frequency is 100 for large problems and 1000 for small problems.
+
+
+printfrequency.0
+Automatic choice, which is 100 for large problems and 1000 for small problems.
 
 
 increment
-A valid solution must be at least this much better than last integer solution.
+A valid solution must be at least this much better than last integer solution.<BR>
 If this option is not set then it CBC will try and work one out.
 E.g., if all objective coefficients are multiples of 0.01 and only integer variables have entries in objective then this can be set to 0.01.
 
@@ -471,6 +582,6 @@ CBC stops if the objective function values exceeds (in case of maximization) or 
 
 
 special
-This parameter let you specify CBC options which are not supported by the GAMS/CoinCBC interface.
+This parameter let you specify CBC options which are not supported by the GAMS/CoinCBC interface.<BR>
 The string value given to this parameter is split up into parts at each space and added to the array of parameters given to CBC (in front of the -solve command).
 Hence, the use is like what you would give as command line parameters to the CBC standalone version.

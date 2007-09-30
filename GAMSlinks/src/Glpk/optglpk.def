@@ -24,7 +24,8 @@ backtracking enumstr 0 "bestprojection" 1 1 backtracking heuristic
 presolve boolean 0 1 1 1 LP presolver
 reslim_fixedrun double 0 1000 0 maxdouble 1 1 resource limit for solve with fixed discrete variables
 reslim double 0 1000 0 maxdouble 1 1 resource limit
-iterlim integer 0 10000 -1 maxint 1 1 iteration limit
+iterlim enumint 0 10000 1 1 iteration limit
+ -1 1
 nobounds immediate nobounds 0 1 ignores bounds on options
 readfile immediate readfile 0 1 read secondary option file
 *

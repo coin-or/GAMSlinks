@@ -140,10 +140,13 @@ general.(
   readfile        .s.(def '')
 ) /
   oe(o,e) /
+   idiotcrash.(     '-1', 0 )
+   sprintcrash.(    '-1', 0 )
    crash.(          off    do not create basis by crash method
                     on     create basis to get dual feasible
                     solow_halim use crash variant due to Solow and Halim
                     halim_solow use crash variant due to Solow and Halim with JJ Forrest modification )
+   crossover.(      0, 1 )
    dualpivot.(      auto   Variant of Steepest which decides on each iteration based on factorization
                     dantzig Dantzig method
                     steepest Steepest choice method
@@ -155,30 +158,33 @@ general.(
                     steepest Steepest choice method
                     change initially does Dantzig until the factorization becomes denser
                     sprint Sprint method )
+   perturbation.(   0, 1 )
    scaling.(        off    no scaling
                     equilibrium equilibrium based scaling method
                     geometric geometric based scaling method
                     auto   automatic choice of scaling method )
-   presolve.(       0      don't do an initial presolve on the LP
-                    1      do an initial presolve on the LP )
+   presolve.(       0, 1 )
    startalg.(       primal  primal simplex algorithm
                     dual    dual simplex algorithm
                     barrier primal dual predictor corrector algorithm )
+   cutdepth.(       '-1')
    cuts.(           off, on, root, ifmove, forceon )
-   cliquecuts.(     off, on, root, ifmove, forceon )
-   flowcovercuts.(  off, on, root, ifmove, forceon )
-   gomorycuts.(     off, on, root, ifmove, forceon )
-   knapsackcuts.(   off, on, root, ifmove, forceon )
-   liftandprojectcuts.( off, on, root, ifmove, forceon )
-   mircuts.(        off, on, root, ifmove, forceon )
-   twomircuts.(     off, on, root, ifmove, forceon )
-   probingcuts.(    off, on, root, ifmove, forceon, forceonbut, forceonstrong, forceonbutstrong )
-   reduceandsplitcuts.( off, on, root, ifmove, forceon )
-   residualcapacitycuts.( off, on, root, ifmove, forceon )
+*   cliquecuts.(     off, on, root, ifmove, forceon )
+*   flowcovercuts.(  off, on, root, ifmove, forceon )
+*   gomorycuts.(     off, on, root, ifmove, forceon )
+*   knapsackcuts.(   off, on, root, ifmove, forceon )
+*   liftandprojectcuts.( off, on, root, ifmove, forceon )
+*   mircuts.(        off, on, root, ifmove, forceon )
+*   twomircuts.(     off, on, root, ifmove, forceon )
+*   probingcuts.(    off, on, root, ifmove, forceon, forceonbut, forceonstrong, forceonbutstrong )
+   probingcuts.(    forceonbut, forceonstrong, forceonbutstrong )
+*   reduceandsplitcuts.( off, on, root, ifmove, forceon )
+*   residualcapacitycuts.( off, on, root, ifmove, forceon )
    greedyheuristic.( off, on, root )
    coststrategy.(   off, priorities, columnorder, binaryfirst, binarylast, length )
    nodestrategy.(   hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth )
    preprocess.(     off, on, equal, equalall, sos, trysos )
+   printfrequency.(  0 )
  /
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /

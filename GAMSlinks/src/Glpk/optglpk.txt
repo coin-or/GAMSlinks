@@ -2,7 +2,7 @@ introduction
 GAMS/CoinGlpk brings the open source LP/MIP solver Glpk from the GNU Open Software foundation to the broad audience of GAMS users.
 The code has been written primarily by A. Makhorin.
 The GAMS interface for Glpk is maintained by Stefan Vigerske, Humboldt University, in a COIN-OR project called GAMSlinks.
-The interface uses the OSI Glpk interface written by Vivian De Smedt and Braden Hunsaker.<BR>
+The interface uses the OSI Glpk interface written by Vivian De Smedt, Braden Hunsaker, and Lou Hafer.<BR>
 For more information visit the web site for
 <a href="http://www.coin-or.org">COIN-OR</a>,
 <a href="https://projects.coin-or.org/Osi">OSI<a>,
@@ -47,8 +47,10 @@ Absolute tolerance used to check if the current basis solution is integer feasib
 backtracking
 Determines which method to use for the backtracking heuristic.
 
+
 presolve
 Determines whether the LP presolver should be used.
+
 
 reslim_fixedrun
 Maximum time in seconds for solving the MIP with fixed discrete variables.
@@ -60,7 +62,10 @@ Maximum time in seconds.
 
 iterlim
 Maximum number of simplex iterations.
-Set this option to -1 to switch off an iteration limit.
+
+
+iterlim.'-1'
+Runs GLPK without an iteration limit.
 
 
 optcr
