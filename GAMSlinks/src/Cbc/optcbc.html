@@ -31,81 +31,74 @@ complete <a href="docs/solvers/coin.pdf">CBC manual</a>.
 <h2>Summary of CBC Options</h2>
 <table>
 <tr><th height=75 valign=bottom colspan=2 align=left><h3>General Options</h3></th></tr>
-<tr><td><a href="#cliquecuts">
-cliquecuts</a></td>
-<td>Clique Cuts</td></tr>
-<tr><td><a href="#combinesolutions">
-combinesolutions</a></td>
-<td>combine solutions heuristic</td></tr>
-<tr><td><a href="#coststrategy">
-coststrategy</a></td>
-<td>how to use costs as priorities</td></tr>
+<tr><td><a href="#iterlim">
+iterlim</a></td>
+<td>iteration limit</td></tr>
+<tr><td><a href="#reslim">
+reslim</a></td>
+<td>resource limit</td></tr>
+<tr><td><a href="#special">
+special</a></td>
+<td>options passed unseen to CBC</td></tr>
+<tr><td><a href="#writemps">
+writemps</a></td>
+<td>create MPS file for problem</td></tr>
+<tr><th height=75 valign=bottom colspan=2 align=left><h3>LP Options</h3></th></tr>
 <tr><td><a href="#crash">
 crash</a></td>
 <td>use crash method to get dual feasible</td></tr>
 <tr><td><a href="#crossover">
 crossover</a></td>
 <td>crossover to simplex algorithm after barrier</td></tr>
-<tr><td><a href="#cutdepth">
-cutdepth</a></td>
-<td>depth in tree at which cuts are applied</td></tr>
-<tr><td><a href="#cutoff">
-cutoff</a></td>
-<td>cutoff for objective function value</td></tr>
-<tr><td><a href="#cuts">
-cuts</a></td>
-<td>global switch for cutgenerators</td></tr>
-<tr><td><a href="#cut_passes_root">
-cut_passes_root</a></td>
-<td>number of cut passes at root node</td></tr>
-<tr><td><a href="#cut_passes_tree">
-cut_passes_tree</a></td>
-<td>number of cut passes at nodes in the tree</td></tr>
 <tr><td><a href="#dualpivot">
 dualpivot</a></td>
 <td>dual pivot choice algorithm</td></tr>
-<tr><td><a href="#feaspump">
-feaspump</a></td>
-<td>feasibility pump</td></tr>
-<tr><td><a href="#feaspump_passes">
-feaspump_passes</a></td>
-<td>number of feasibility passes</td></tr>
-<tr><td><a href="#flowcovercuts">
-flowcovercuts</a></td>
-<td>Flow Cover Cuts</td></tr>
-<tr><td><a href="#gomorycuts">
-gomorycuts</a></td>
-<td>Gomory Cuts</td></tr>
-<tr><td><a href="#greedyheuristic">
-greedyheuristic</a></td>
-<td>greedy heuristic</td></tr>
-<tr><td><a href="#heuristics">
-heuristics</a></td>
-<td>global switch for heuristics</td></tr>
 <tr><td><a href="#idiotcrash">
 idiotcrash</a></td>
 <td>idiot crash</td></tr>
-<tr><td><a href="#increment">
-increment</a></td>
-<td>increment of cutoff when new incumbent</td></tr>
-<tr><td><a href="#iterlim">
-iterlim</a></td>
-<td>iteration limit</td></tr>
-<tr><td><a href="#knapsackcuts">
-knapsackcuts</a></td>
-<td>Knapsack Cover Cuts</td></tr>
-<tr><td><a href="#liftandprojectcuts">
-liftandprojectcuts</a></td>
-<td>Lift and Project Cuts</td></tr>
-<tr><td><a href="#localtreesearch">
-localtreesearch</a></td>
-<td>local tree search heuristic</td></tr>
 <tr><td><a href="#maxfactor">
 maxfactor</a></td>
 <td>maximum number of iterations between refactorizations</td></tr>
-<tr><td><a href="#mircuts">
-mircuts</a></td>
-<td>Mixed Integer Rounding Cuts</td></tr>
+<tr><td><a href="#perturbation">
+perturbation</a></td>
+<td>perturbation of problem</td></tr>
+<tr><td><a href="#presolve">
+presolve</a></td>
+<td>switch for initial presolve of LP</td></tr>
+<tr><td><a href="#primalpivot">
+primalpivot</a></td>
+<td>primal pivot choice algorithm</td></tr>
+<tr><td><a href="#scaling">
+scaling</a></td>
+<td>scaling method</td></tr>
+<tr><td><a href="#sifting">
+sifting</a></td>
+<td>synonym for sprint crash</td></tr>
+<tr><td><a href="#sprintcrash">
+sprintcrash</a></td>
+<td>sprint crash</td></tr>
+<tr><td><a href="#startalg">
+startalg</a></td>
+<td>LP solver for root node</td></tr>
+<tr><td><a href="#tol_dual">
+tol_dual</a></td>
+<td>dual feasibility tolerance</td></tr>
+<tr><td><a href="#tol_presolve">
+tol_presolve</a></td>
+<td>tolerance used in presolve</td></tr>
+<tr><td><a href="#tol_primal">
+tol_primal</a></td>
+<td>primal feasibility tolerance</td></tr>
+<tr><th height=75 valign=bottom colspan=2 align=left><h3>MIP Options</h3></th></tr>
+<tr><td><a href="#coststrategy">
+coststrategy</a></td>
+<td>how to use costs as priorities</td></tr>
+<tr><td><a href="#cutoff">
+cutoff</a></td>
+<td>cutoff for objective function value</td></tr>
+<tr><td><a href="#increment">
+increment</a></td>
+<td>increment of cutoff when new incumbent</td></tr>
 <tr><td><a href="#nodelim">
 nodelim</a></td>
 <td>node limit</td></tr>
@@ -121,21 +114,55 @@ optca</a></td>
 <tr><td><a href="#optcr">
 optcr</a></td>
 <td>relative stopping tolerance</td></tr>
-<tr><td><a href="#perturbation">
-perturbation</a></td>
-<td>perturbation of problem</td></tr>
 <tr><td><a href="#preprocess">
 preprocess</a></td>
 <td>integer presolve</td></tr>
-<tr><td><a href="#presolve">
-presolve</a></td>
-<td>switch for initial presolve of LP</td></tr>
-<tr><td><a href="#primalpivot">
-primalpivot</a></td>
-<td>primal pivot choice algorithm</td></tr>
 <tr><td><a href="#printfrequency">
 printfrequency</a></td>
 <td>frequency of status prints</td></tr>
+<tr><td><a href="#sollim">
+sollim</a></td>
+<td>limit on number of solutions</td></tr>
+<tr><td><a href="#strongbranching">
+strongbranching</a></td>
+<td>strong branching</td></tr>
+<tr><td><a href="#tol_integer">
+tol_integer</a></td>
+<td>tolerance for integrality</td></tr>
+<tr><td><a href="#trustpseudocosts">
+trustpseudocosts</a></td>
+<td>after howmany nodes we trust the pseudo costs</td></tr>
+<tr><th height=75 valign=bottom colspan=2 align=left><h3>MIP Options for Cutting Plane Generators</h3></th></tr>
+<tr><td><a href="#cliquecuts">
+cliquecuts</a></td>
+<td>Clique Cuts</td></tr>
+<tr><td><a href="#cutdepth">
+cutdepth</a></td>
+<td>depth in tree at which cuts are applied</td></tr>
+<tr><td><a href="#cuts">
+cuts</a></td>
+<td>global switch for cutgenerators</td></tr>
+<tr><td><a href="#cut_passes_root">
+cut_passes_root</a></td>
+<td>number of cut passes at root node</td></tr>
+<tr><td><a href="#cut_passes_tree">
+cut_passes_tree</a></td>
+<td>number of cut passes at nodes in the tree</td></tr>
+<tr><td><a href="#flowcovercuts">
+flowcovercuts</a></td>
+<td>Flow Cover Cuts</td></tr>
+<tr><td><a href="#gomorycuts">
+gomorycuts</a></td>
+<td>Gomory Cuts</td></tr>
+<tr><td><a href="#knapsackcuts">
+knapsackcuts</a></td>
+<td>Knapsack Cover Cuts</td></tr>
+<tr><td><a href="#liftandprojectcuts">
+liftandprojectcuts</a></td>
+<td>Lift and Project Cuts</td></tr>
+<tr><td><a href="#mircuts">
+mircuts</a></td>
+<td>Mixed Integer Rounding Cuts</td></tr>
 <tr><td><a href="#probingcuts">
 probingcuts</a></td>
 <td>Probing Cuts</td></tr>
@@ -145,57 +172,34 @@ reduceandsplitcuts</a></td>
 <tr><td><a href="#residualcapacitycuts">
 residualcapacitycuts</a></td>
 <td>Residual Capacity Cuts</td></tr>
-<tr><td><a href="#reslim">
-reslim</a></td>
-<td>resource limit</td></tr>
+<tr><td><a href="#twomircuts">
+twomircuts</a></td>
+<td>Two Phase Mixed Integer Rounding Cuts</td></tr>
+<tr><th height=75 valign=bottom colspan=2 align=left><h3>MIP Options for Heuristics</h3></th></tr>
+<tr><td><a href="#combinesolutions">
+combinesolutions</a></td>
+<td>combine solutions heuristic</td></tr>
+<tr><td><a href="#feaspump">
+feaspump</a></td>
+<td>feasibility pump</td></tr>
+<tr><td><a href="#feaspump_passes">
+feaspump_passes</a></td>
+<td>number of feasibility passes</td></tr>
+<tr><td><a href="#greedyheuristic">
+greedyheuristic</a></td>
+<td>greedy heuristic</td></tr>
+<tr><td><a href="#heuristics">
+heuristics</a></td>
+<td>global switch for heuristics</td></tr>
+<tr><td><a href="#localtreesearch">
+localtreesearch</a></td>
+<td>local tree search heuristic</td></tr>
 <tr><td><a href="#rins">
 rins</a></td>
 <td>relaxed induced neighborhood search</td></tr>
 <tr><td><a href="#roundingheuristic">
 roundingheuristic</a></td>
-<td>rounding heuristic</td></tr>
-<tr><td><a href="#scaling">
-scaling</a></td>
-<td>scaling method</td></tr>
-<tr><td><a href="#sifting">
-sifting</a></td>
-<td>synonym for sprint crash</td></tr>
-<tr><td><a href="#sollim">
-sollim</a></td>
-<td>limit on number of solutions</td></tr>
-<tr><td><a href="#special">
-special</a></td>
-<td>options passed unseen to CBC</td></tr>
-<tr><td><a href="#sprintcrash">
-sprintcrash</a></td>
-<td>sprint crash</td></tr>
-<tr><td><a href="#startalg">
-startalg</a></td>
-<td>LP solver for root node</td></tr>
-<tr><td><a href="#strongbranching">
-strongbranching</a></td>
-<td>strong branching</td></tr>
-<tr><td><a href="#tol_dual">
-tol_dual</a></td>
-<td>dual feasibility tolerance</td></tr>
-<tr><td><a href="#tol_integer">
-tol_integer</a></td>
-<td>tolerance for integrality</td></tr>
-<tr><td><a href="#tol_presolve">
-tol_presolve</a></td>
-<td>tolerance used in presolve</td></tr>
-<tr><td><a href="#tol_primal">
-tol_primal</a></td>
-<td>primal feasibility tolerance</td></tr>
-<tr><td><a href="#trustpseudocosts">
-trustpseudocosts</a></td>
-<td>after howmany nodes we trust the pseudo costs</td></tr>
-<tr><td><a href="#twomircuts">
-twomircuts</a></td>
-<td>Two Phase Mixed Integer Rounding Cuts</td></tr>
-<tr><td><a href="#writemps">
-writemps</a></td>
-<td>create MPS file for problem</td></tr></table>
+<td>rounding heuristic</td></tr></table>
 <h2>Detailed Descriptions of CBC Options</h2>
 
 <h4><a name="cliquecuts">

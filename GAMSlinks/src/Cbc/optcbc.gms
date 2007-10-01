@@ -2,6 +2,10 @@ $setglobal PDFLINK coin
 $eolcom //
 set g Cbc Option Groups /
         general        General Options
+        lpoptions      LP Options
+        mipgeneral     MIP Options
+        mipcuts        MIP Options for Cutting Plane Generators
+        mipheu         MIP Options for Heuristics
       /
     e / '-1', 0*100, primal, dual, barrier, default, off, on, auto,
         solow_halim, halim_solow, dantzig, steepest, partial, exact, change, sprint, equilibrium, geometric
@@ -29,10 +33,10 @@ set g Cbc Option Groups /
       presolve               switch for initial presolve of LP
       tol_dual               dual feasibility tolerance
       tol_primal             primal feasibility tolerance
+      tol_presolve           tolerance used in presolve
       startalg               LP solver for root node
 *MIP options
       tol_integer            tolerance for integrality
-      tol_presolve           tolerance used in presolve
       sollim                 limit on number of solutions
       strongbranching        strong branching
       trustpseudocosts       after howmany nodes we trust the pseudo costs
@@ -77,10 +81,18 @@ set g Cbc Option Groups /
  /
 
 $onembedded
-    optdata(g,o,t,f) /
+optdata(g,o,t,f) /
 general.(
   writemps             .s.(def '')
   special              .s.(def '')
+* GAMS options
+  reslim          .r.(def 1000)
+  iterlim         .i.(def 10000)
+* immediates
+  nobounds        .b.(def 0)
+  readfile        .s.(def '')
+)
+lpoptions.(
   idiotcrash           .i.(def -1, lo -1, up 999999)
   sprintcrash          .i.(def -1, lo -1, up 5000000)
   sifting              .i.(def -1, lo -1, up 5000000)
@@ -94,12 +106,26 @@ general.(
   presolve             .b.(def 1)
   tol_dual             .r.(def 1e-7)
   tol_primal           .r.(def 1e-7)
-  startalg             .s.(def dual)
-  tol_integer          .r.(def 1e-6)
   tol_presolve         .r.(def 1e-8)
+  startalg             .s.(def dual)
+)
+mipgeneral.(
+  tol_integer          .r.(def 1e-6)
   sollim               .i.(def -1, lo -1, up 2147483647)
   strongbranching      .i.(def 5, lo 0, up 999999)
   trustpseudocosts     .i.(def 5, lo -1, up 2000000)
+  coststrategy         .s.(def off)
+  nodestrategy         .s.(def fewest)
+  preprocess           .s.(def on)
+  printfrequency       .i.(def 0)
+  increment            .r.(def 0)
+  nodelim         .i.(def maxint)
+  nodlim          .i.(def maxint)
+  optca           .r.(def 0)
+  optcr           .r.(def 0.1)
+  cutoff          .r.(def 0, lo mindouble)
+)
+mipcuts.(
   cutdepth             .i.(def -1, lo -1, up 999999)
   cut_passes_root      .i.(def -1, lo -999999, up 999999)
   cut_passes_tree      .i.(def 1, lo -999999, up 999999)
@@ -114,6 +140,8 @@ general.(
   probingcuts          .s.(def ifmove)
   reduceandsplitcuts   .s.(def off)
   residualcapacitycuts .s.(def off)
+)
+mipheu.(
   heuristics           .b.(def 1)
   combinesolutions     .b.(def 1)
   feaspump             .b.(def 1)
@@ -122,23 +150,8 @@ general.(
   localtreesearch      .b.(def 0)
   rins                 .b.(def 0)
   roundingheuristic    .b.(def 1)
-  coststrategy         .s.(def off)
-  nodestrategy         .s.(def fewest)
-  preprocess           .s.(def on)
-  printfrequency       .i.(def 0)
-  increment            .r.(def 0)
-* GAMS options
-  reslim          .r.(def 1000)
-  iterlim         .i.(def 10000)
-  nodelim         .i.(def maxint)
-  nodlim          .i.(def maxint)
-  optca           .r.(def 0)
-  optcr           .r.(def 0.1)
-  cutoff          .r.(def 0, lo mindouble)
-* immediates
-  nobounds        .b.(def 0)
-  readfile        .s.(def '')
-) /
+)
+/
   oe(o,e) /
    idiotcrash.(     '-1', 0 )
    sprintcrash.(    '-1', 0 )
