@@ -221,29 +221,35 @@ This parameter control the use of a heuristic which does branch and cut on the g
 It is obviously only tried after two or more solutions.
 
 <br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the combine solutions heuristic off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the combine solutions heuristic on.</td></tr>
+</table>
 
 <h4><a name="coststrategy">
 coststrategy</a>
 <i> (string)</i> how to use costs as priorities</h4><p>
 
-This parameter influence the branching variable selection.
+This parameter influence the branching variable selection.<BR>
 If turned on, then the variables are sorted in order of their absolute costs, and branching is done first on variables with largest cost.
 This primitive strategy can be surprisingly effective.
 
 <br><i>(default = off)</i>
 <table>
 <tr valign="top"><td width=20 align=right>off</td><td>.
-???</td></tr>
+Turns off a specific cost strategy.</td></tr>
 <tr valign="top"><td width=20 align=right>priorities</td><td>.
-???</td></tr>
+Assigns highest priority to variables with largest absolute cost.</td></tr>
 <tr valign="top"><td width=20 align=right>columnorder</td><td>.
-???</td></tr>
+Assigns the priorities 1, 2, 3,.. with respect to the column ordering.</td></tr>
 <tr valign="top"><td width=20 align=right>binaryfirst</td><td>.
-???</td></tr>
+Handles two sets of priorities such that binary variables get high priority.</td></tr>
 <tr valign="top"><td width=20 align=right>binarylast</td><td>.
-???</td></tr>
+Handles two sets of priorities such that binary variables get low priority.</td></tr>
 <tr valign="top"><td width=20 align=right>length</td><td>.
-???</td></tr>
+Assigns high priority to variables that are at most nonzero.</td></tr>
 </table>
 
 <h4><a name="crash">
@@ -254,13 +260,13 @@ Determines whether CLP should use a crash algorithm to find a dual feasible basi
 
 <br><i>(default = off)</i>
 <table>
-<tr valign="top"><td width=20 align=right>off</td><td>do not create basis by crash method.
+<tr valign="top"><td width=20 align=right>off</td><td>.
 Switch off the creation of dual feasible basis by the crash method.</td></tr>
-<tr valign="top"><td width=20 align=right>on</td><td>create basis to get dual feasible.
+<tr valign="top"><td width=20 align=right>on</td><td>.
 Switch on the creation of dual feasible basis by the crash method.</td></tr>
-<tr valign="top"><td width=20 align=right>solow_halim</td><td>use crash variant due to Solow and Halim.
+<tr valign="top"><td width=20 align=right>solow_halim</td><td>.
 Switch on a crash variant due to Solow and Halim.</td></tr>
-<tr valign="top"><td width=20 align=right>halim_solow</td><td>use crash variant due to Solow and Halim with JJ Forrest modification.
+<tr valign="top"><td width=20 align=right>halim_solow</td><td>.
 Switch on a crash variant due to Solow and Halim with modifications of John J. Forrest.</td></tr>
 </table>
 
@@ -288,9 +294,7 @@ cutdepth</a>
 
 If the depth in the tree is a multiple of cutdepth, then cut generators are applied.<BR>
 Cut generators may be off, on only at the root, on if they look useful, or on at some interval.
-If they are done every node then that is that (???), but it may be worth doing them every so often.
-The original method was every so many nodes but it is more logical to do it whenever depth in tree is a multiple of K.
-This option does that and defaults to -1 (off).
+Setting this option to a positive value K let CBC call a cutgenerator on a node whenever the depth in the tree is a multiple of K.
 
 <br><i>(default = -1)</i>
 <table>
@@ -333,17 +337,16 @@ cut_passes_root</a>
 <i> (integer)</i> number of cut passes at root node</h4><p>
 
 Determines the number of rounds that the cut generators are applied in the root node.<BR>
-The default is 100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop is small) if it has less than 5000 columns, and 20 passes otherwise.
-??? What is -1 good for?
+The default is 100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop in the objective function value is small) if it has less than 5000 columns, and 20 passes otherwise.<BR>
+A negative value -n means that n passes are also applied if the objective does not drop.
 
-<br><i>(default = -1)</i>
 
 <h4><a name="cut_passes_tree">
 cut_passes_tree</a>
 <i> (integer)</i> number of cut passes at nodes in the tree</h4><p>
 
-Determines the number of rounds that the cut generators are applied in the nodes of the tree other than the root node.
-???
+Determines the number of rounds that the cut generators are applied in the nodes of the tree other than the root node.<BR>
+A negative value -n means that n passes are also applied if the objective does not drop.
 
 <br><i>(default = 1)</i>
 
@@ -355,14 +358,15 @@ Choice of the pivoting strategy in the dual simplex algorithm.
 
 <br><i>(default = auto)</i>
 <table>
-<tr valign="top"><td width=20 align=right>auto</td><td>Variant of Steepest which decides on each iteration based on factorization.
-Let CLP use a variant of the steepest choice method which decides on each iteration based on the current factorization.</td></tr>
-<tr valign="top"><td width=20 align=right>dantzig</td><td>Dantzig method.
+<tr valign="top"><td width=20 align=right>auto</td><td>.
+Let CLP use a variant of the steepest choice method which starts like partial, i.e., scans only a subset of the primal infeasibilities,
+and later changes to full pricing when the factorization becomes denser.</td></tr>
+<tr valign="top"><td width=20 align=right>dantzig</td><td>.
 Let CLP use the pivoting strategy due to Dantzig.</td></tr>
-<tr valign="top"><td width=20 align=right>steepest</td><td>Steepest choice method.
+<tr valign="top"><td width=20 align=right>steepest</td><td>.
 Let CLP use the steepest choice method.</td></tr>
-<tr valign="top"><td width=20 align=right>partial</td><td>Variant of Steepest which scan only a subset.
-Let CLP use a variant of the steepest choice method which scans only a subset...</td></tr>
+<tr valign="top"><td width=20 align=right>partial</td><td>.
+Let CLP use a variant of the steepest choice method which scans only a subset of the primal infeasibilities to select the pivot step.</td></tr>
 </table>
 
 <h4><a name="feaspump">
@@ -375,6 +379,12 @@ Some fine tuning is available by the feaspump_passes option.<BR>
 Reference: M. Fischetti, F. Glover, and A. Lodi, The feasibility pump, Math. Programming, 104 (2005), pp. 91-104.
 
 <br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the feasibility pump off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the feasiblity pump on.</td></tr>
+</table>
 
 <h4><a name="feaspump_passes">
 feaspump_passes</a>
@@ -432,6 +442,12 @@ This parameter can be used to switch on or off all heuristics, except for the lo
 Then you can set individual ones off or on.
 
 <br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns all MIP heuristics off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns all MIP heuristics on (except <a href="#localtreesearch">local tree search</a>).</td></tr>
+</table>
 
 <h4><a name="idiotcrash">
 idiotcrash</a>
@@ -498,10 +514,16 @@ localtreesearch</a>
 
 This parameter control the use of a local search algorithm when a solution is found.<BR>
 It is from Fischetti and Lodi and is not really a heuristic although it can be used as one (with limited functionality).
-This heuristic is not controlled by the heuristics option.
-??? Is this local branching? reference
+This heuristic is not controlled by the heuristics option.<BR>
+Reference: M. Fischetti and A. Lodi, Local Branching, Math. Programming B, 98 (2003), pp. 23-47.
 
 <br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the local tree search off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the local tree search on.</td></tr>
+</table>
 
 <h4><a name="maxfactor">
 maxfactor</a>
@@ -615,15 +637,13 @@ Turns off the presolve routines.</td></tr>
 <tr valign="top"><td width=20 align=right>on</td><td>.
 Turns on the presolve routines.</td></tr>
 <tr valign="top"><td width=20 align=right>equal</td><td>.
-This option let CBC turn =L= rows into =E= for cliques.</td></tr>
+Turns on the presolve routines and let CBC turn inequalities with more than 5 elements into equalities (cliques) by adding slack variables.</td></tr>
 <tr valign="top"><td width=20 align=right>equalall</td><td>.
-This option let CBC turn all valid inequalities into equalities with integer slacks.</td></tr>
+Turns on the presolve routines and let CBC turn all inequalities into equalities by adding slack variables.</td></tr>
 <tr valign="top"><td width=20 align=right>sos</td><td>.
-This option let CBC search for rows with upper bound 1 and where all nonzero coefficients are 1 and creates special ordered sets.
-??? create special ordered sets if all 0-1 in sets (well one extra is allowed) and no overlaps.</td></tr>
+This option let CBC search for rows with upper bound 1 and where all nonzero coefficients are 1 and creates special ordered sets if the sets are not overlapping and all integer variables (except for at most one) are in the sets.</td></tr>
 <tr valign="top"><td width=20 align=right>trysos</td><td>.
-This option is similar to sos, but allows any number extra.
-???</td></tr>
+This option is similar to sos, but allows any number integer variables to be outside of the sets.</td></tr>
 </table>
 
 <h4><a name="presolve">
@@ -649,20 +669,18 @@ Choice of the pivoting strategy in the primal simplex algorithm.
 
 <br><i>(default = auto)</i>
 <table>
-<tr valign="top"><td width=20 align=right>auto</td><td>Variant of exact devex.
+<tr valign="top"><td width=20 align=right>auto</td><td>.
 Let CLP use a variant of the exact devex method.</td></tr>
-<tr valign="top"><td width=20 align=right>dantzig</td><td>Dantzig method.
+<tr valign="top"><td width=20 align=right>dantzig</td><td>.
 Let CLP use the pivoting strategy due to Dantzig.</td></tr>
-<tr valign="top"><td width=20 align=right>steepest</td><td>Steepest choice method.
+<tr valign="top"><td width=20 align=right>steepest</td><td>.
 Let CLP use the steepest choice method.</td></tr>
-<tr valign="top"><td width=20 align=right>partial</td><td>Variant of exact devex which scan only a subset.
-Let CLP use a variant of the exact devex method which scans only a subset...</td></tr>
-<tr valign="top"><td width=20 align=right>exact</td><td>Exact devex method.
+<tr valign="top"><td width=20 align=right>partial</td><td>.
+Let CLP use a variant of the exact devex method which scans only a subset of the primal infeasibilities to select the pivot step.</td></tr>
+<tr valign="top"><td width=20 align=right>exact</td><td>.
 Let CLP use the exact devex method.</td></tr>
-<tr valign="top"><td width=20 align=right>change</td><td>initially does Dantzig until the factorization becomes denser.
+<tr valign="top"><td width=20 align=right>change</td><td>.
 Let CLP initially use Dantzig pivot method until the factorization becomes denser.</td></tr>
-<tr valign="top"><td width=20 align=right>sprint</td><td>Sprint method.
-Let CLP use the sprint pivot method.</td></tr>
 </table>
 
 <h4><a name="printfrequency">
@@ -682,7 +700,7 @@ probingcuts</a>
 <i> (string)</i> Probing Cuts</h4><p>
 
 Determines whether and when CBC should try to generate cuts based on <a href="https://projects.coin-or.org/Cgl/wiki/CglProbing">probing</a>.<BR>
-See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+Additional to the values for the <a href="#cuts">option cuts</a> three more values are possible here.<BR>
 Reference: M. Savelsbergh, Preprocessing and Probing Techniques for Mixed Integer Programming Problems, ORSA Journal on Computing 6 (1994), 445.
 
 <br><i>(default = ifmove)</i>
@@ -690,9 +708,10 @@ Reference: M. Savelsbergh, Preprocessing and Probing Techniques for Mixed Intege
 <tr valign="top"><td width=20 align=right>forceonbut</td><td>.
 Turns on Probing and forces CBC to call the cut generator at every node, but does only probing, not strengthening etc.</td></tr>
 <tr valign="top"><td width=20 align=right>forceonstrong</td><td>.
-???</td></tr>
+If CBC is forced to turn Probing on at every node (by setting this option to force), but this generator produces no cuts, then it is actually turned on only weakly (i.e., just every now and then).
+Setting forceonstrong forces CBC strongly to do probing at every node.</td></tr>
 <tr valign="top"><td width=20 align=right>forceonbutstrong</td><td>.
-???</td></tr>
+This is like forceonstrong, but does only probing (column fixing) and turns off row strengthening, so the matrix will not change inside the branch and bound.</td></tr>
 </table>
 
 <h4><a name="reduceandsplitcuts">
@@ -733,10 +752,17 @@ Maximum time in seconds.
 rins</a>
 <i> (integer)</i> relaxed induced neighborhood search</h4><p>
 
-This parameter control the use of the relaxed induced neighborhood search heuristic.
-???
+This parameter control the use of the relaxed induced neighborhood search heuristic.<BR>
+This heuristic compares the current solution with the best incumbent, fixes all discrete variables with the same value, presolves the problem, and does a branch and bound for 200 nodes.<BR>
+Reference: E. Danna, E. Rothberg, and C. Le Pape, Exploring relaxation induced neighborhoods to improve MIP solutions, Math. Programming, 102 (1) (2005), pp. 71-91.
 
 <br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the relaxed induced neighborhood search off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the relaxed induced neighborhood search on.</td></tr>
+</table>
 
 <h4><a name="roundingheuristic">
 roundingheuristic</a>
@@ -745,6 +771,12 @@ roundingheuristic</a>
 This parameter control the use of a simple (but effective) rounding heuristic at each node of tree.
 
 <br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the rounding heuristic off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the rounding heuristic on.</td></tr>
+</table>
 
 <h4><a name="scaling">
 scaling</a>
@@ -753,17 +785,19 @@ scaling</a>
 Scaling can help in solving problems which might otherwise fail because of lack of accuracy.
 It can also reduce the number of iterations.
 It is not applied if the range of elements is small.
+Both methods do several passes alternating between rows and columns using current scale factors from one and applying them to the other.
 
 <br><i>(default = auto)</i>
 <table>
-<tr valign="top"><td width=20 align=right>off</td><td>no scaling.
+<tr valign="top"><td width=20 align=right>off</td><td>.
 Turns off scaling.</td></tr>
-<tr valign="top"><td width=20 align=right>auto</td><td>automatic choice of scaling method.
-Let CLP choose the scaling method automatically.</td></tr>
-<tr valign="top"><td width=20 align=right>equilibrium</td><td>equilibrium based scaling method.
-Let CLP use an equilibrium based scaling method.</td></tr>
-<tr valign="top"><td width=20 align=right>geometric</td><td>geometric based scaling method.
-Let CLP use a geometric based scaling method.</td></tr>
+<tr valign="top"><td width=20 align=right>auto</td><td>.
+Let CLP choose the scaling method automatically.
+It decides for one of these methods depending on which gives the better ratio of the largest element to the smallest one.</td></tr>
+<tr valign="top"><td width=20 align=right>equilibrium</td><td>.
+Let CLP use an equilibrium based scaling method which uses the largest scaled element.</td></tr>
+<tr valign="top"><td width=20 align=right>geometric</td><td>.
+Let CLP use a geometric based scaling method which uses the squareroot of the product of largest and smallest element.</td></tr>
 </table>
 
 <h4><a name="sifting">
@@ -781,6 +815,10 @@ sollim</a>
 A limit on number of feasible solutions that CBC should find for a MIP.
 
 <br><i>(default = -1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>-1</td><td>.
+No limit on the number of feasible solutions.</td></tr>
+</table>
 
 <h4><a name="special">
 special</a>
@@ -815,11 +853,11 @@ Determines the algorithm to use for an LP or the initial LP relaxation if the pr
 
 <br><i>(default = dual)</i>
 <table>
-<tr valign="top"><td width=20 align=right>primal</td><td>primal simplex algorithm.
+<tr valign="top"><td width=20 align=right>primal</td><td>.
 Let CLP use the primal simplex algorithm.</td></tr>
-<tr valign="top"><td width=20 align=right>dual</td><td>dual simplex algorithm.
+<tr valign="top"><td width=20 align=right>dual</td><td>.
 Let CLP use the dual simplex algorithm.</td></tr>
-<tr valign="top"><td width=20 align=right>barrier</td><td>primal dual predictor corrector algorithm.
+<tr valign="top"><td width=20 align=right>barrier</td><td>.
 Let CLP use a primal dual predictor corrector algorithm.</td></tr>
 </table>
 

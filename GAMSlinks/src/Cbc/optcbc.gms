@@ -119,15 +119,15 @@ mipgeneral.(
   preprocess           .s.(def on)
   printfrequency       .i.(def 0)
   increment            .r.(def 0)
-  nodelim         .i.(def maxint)
-  nodlim          .i.(def maxint)
-  optca           .r.(def 0)
-  optcr           .r.(def 0.1)
-  cutoff          .r.(def 0, lo mindouble)
+  nodelim              .i.(def maxint)
+  nodlim               .i.(def maxint)
+  optca                .r.(def 0)
+  optcr                .r.(def 0.1)
+  cutoff               .r.(def 0, lo mindouble)
 )
 mipcuts.(
   cutdepth             .i.(def -1, lo -1, up 999999)
-  cut_passes_root      .i.(def -1, lo -999999, up 999999)
+  cut_passes_root      .i.(lo -999999, up 999999)
   cut_passes_tree      .i.(def 1, lo -999999, up 999999)
   cuts                 .s.(def on)
   cliquecuts           .s.(def ifmove)
@@ -155,31 +155,34 @@ mipheu.(
   oe(o,e) /
    idiotcrash.(     '-1', 0 )
    sprintcrash.(    '-1', 0 )
-   crash.(          off    do not create basis by crash method
-                    on     create basis to get dual feasible
-                    solow_halim use crash variant due to Solow and Halim
-                    halim_solow use crash variant due to Solow and Halim with JJ Forrest modification )
+   crash.(          off    
+                    on     
+                    solow_halim 
+                    halim_solow )
    crossover.(      0, 1 )
-   dualpivot.(      auto   Variant of Steepest which decides on each iteration based on factorization
-                    dantzig Dantzig method
-                    steepest Steepest choice method
-                    partial Variant of Steepest which scan only a subset )
-   primalpivot.(    auto   Variant of exact devex
-                    exact  Exact devex method
-                    dantzig Dantzig method
-                    partial Variant of exact devex which scan only a subset
-                    steepest Steepest choice method
-                    change initially does Dantzig until the factorization becomes denser
-                    sprint Sprint method )
+   dualpivot.(      auto   
+                    dantzig 
+                    steepest 
+                    partial  )
+   primalpivot.(    auto   
+                    exact  
+                    dantzig 
+                    partial 
+                    steepest 
+                    change 
+*JJF: "I don't think sprint option works"; so we do not advertise it
+*                    sprint 
+                    )
    perturbation.(   0, 1 )
-   scaling.(        off    no scaling
-                    equilibrium equilibrium based scaling method
-                    geometric geometric based scaling method
-                    auto   automatic choice of scaling method )
+   scaling.(        off    
+                    equilibrium 
+                    geometric 
+                    auto   )
    presolve.(       0, 1 )
-   startalg.(       primal  primal simplex algorithm
-                    dual    dual simplex algorithm
-                    barrier primal dual predictor corrector algorithm )
+   startalg.(       primal  
+                    dual    
+                    barrier  )
+   sollim.(         '-1')
    cutdepth.(       '-1')
    cuts.(           off, on, root, ifmove, forceon )
 *   cliquecuts.(     off, on, root, ifmove, forceon )
@@ -193,7 +196,13 @@ mipheu.(
    probingcuts.(    forceonbut, forceonstrong, forceonbutstrong )
 *   reduceandsplitcuts.( off, on, root, ifmove, forceon )
 *   residualcapacitycuts.( off, on, root, ifmove, forceon )
+   heuristics.(     0, 1 )
+   combinesolutions.( 0, 1 )
+   feaspump.(       0, 1 )
    greedyheuristic.( off, on, root )
+   localtreesearch.( 0, 1 )
+   rins.(           0, 1 )
+   roundingheuristic.( 0, 1 )
    coststrategy.(   off, priorities, columnorder, binaryfirst, binarylast, length )
    nodestrategy.(   hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth )
    preprocess.(     off, on, equal, equalall, sos, trysos )

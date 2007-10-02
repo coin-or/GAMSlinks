@@ -66,9 +66,12 @@ Determines which method to use for the backtracking heuristic.
 
 <br><i>(default = bestprojection)</i>
 <table>
-<tr valign="top"><td width=20 align=right>depthfirst</td><td>depth first search</td></tr>
-<tr valign="top"><td width=20 align=right>breadthfirst</td><td>breadth first search</td></tr>
-<tr valign="top"><td width=20 align=right>bestprojection</td><td>using best projection heuristic</td></tr>
+<tr valign="top"><td width=20 align=right>depthfirst</td><td>.
+Let GLPK use a depth first search.</td></tr>
+<tr valign="top"><td width=20 align=right>breadthfirst</td><td>.
+Let GLPK use a breadth first search.</td></tr>
+<tr valign="top"><td width=20 align=right>bestprojection</td><td>.
+Let GLPK use a best projection heuristic.</td></tr>
 </table>
 
 <h4><a name="iterlim">
@@ -90,6 +93,12 @@ presolve</a>
 Determines whether the LP presolver should be used.
 
 <br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns off the LP presolver.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns on the LP presolver.</td></tr>
+</table>
 
 <h4><a name="pricing">
 pricing</a>
@@ -99,8 +108,10 @@ Sets the pricing method for both primal and dual simplex.
 
 <br><i>(default = steepestedge)</i>
 <table>
-<tr valign="top"><td width=20 align=right>textbook</td><td>textbook pricing</td></tr>
-<tr valign="top"><td width=20 align=right>steepestedge</td><td>steepest edge pricing</td></tr>
+<tr valign="top"><td width=20 align=right>textbook</td><td>.
+Use a textbook pricing rule.</td></tr>
+<tr valign="top"><td width=20 align=right>steepestedge</td><td>.
+Use a steepest edge pricing rule.</td></tr>
 </table>
 
 <h4><a name="reslim">
@@ -128,22 +139,28 @@ Note that scaling is only applied when the presolver is turned off (which by def
 
 <br><i>(default = meanequilibrium)</i>
 <table>
-<tr valign="top"><td width=20 align=right>off</td><td>no scaling</td></tr>
-<tr valign="top"><td width=20 align=right>equilibrium</td><td>equilibrium scaling</td></tr>
-<tr valign="top"><td width=20 align=right>mean</td><td>geometric mean scaling</td></tr>
-<tr valign="top"><td width=20 align=right>meanequilibrium</td><td>geometric mean scaling then equilibrium scaling</td></tr>
+<tr valign="top"><td width=20 align=right>off</td><td>.
+Turn off scaling.</td></tr>
+<tr valign="top"><td width=20 align=right>equilibrium</td><td>.
+Let GLPK use an equilibrium scaling method.</td></tr>
+<tr valign="top"><td width=20 align=right>mean</td><td>.
+Let GLPK use a geometric mean scaling method.</td></tr>
+<tr valign="top"><td width=20 align=right>meanequilibrium</td><td>.
+Let GLPK use first a geometric mean scaling, then an equilibrium scaling.</td></tr>
 </table>
 
 <h4><a name="startalg">
 startalg</a>
 <i> (string)</i> LP solver for root node</h4><p>
 
-This option determines whether a primal or dual simplex algorithm should be used to solve the root node.
+This option determines whether a primal or dual simplex algorithm should be used to solve an LP or the root node of a MIP.
 
 <br><i>(default = primal)</i>
 <table>
-<tr valign="top"><td width=20 align=right>primal</td><td>use the primal simplex algorithm for the root node</td></tr>
-<tr valign="top"><td width=20 align=right>dual</td><td>use the dual simplex algorithm for the root node</td></tr>
+<tr valign="top"><td width=20 align=right>primal</td><td>.
+Let GLPK use a primal simplex algorithm.</td></tr>
+<tr valign="top"><td width=20 align=right>dual</td><td>.
+Let GLPK use a dual simplex algorithm.</td></tr>
 </table>
 
 <h4><a name="tol_dual">

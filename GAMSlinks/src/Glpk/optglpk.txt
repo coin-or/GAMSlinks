@@ -17,7 +17,15 @@ The parameter value is the name of the MPS file.
 
 
 startalg
-This option determines whether a primal or dual simplex algorithm should be used to solve the root node.
+This option determines whether a primal or dual simplex algorithm should be used to solve an LP or the root node of a MIP.
+
+
+startalg.primal
+Let GLPK use a primal simplex algorithm.
+
+
+startalg.dual
+Let GLPK use a dual simplex algorithm.
 
 
 scaling
@@ -25,8 +33,32 @@ This option determines the method how the constraint matrix is scaled.
 Note that scaling is only applied when the presolver is turned off (which by default is on).
 
 
+scaling.off
+Turn off scaling.
+
+
+scaling.equilibrium
+Let GLPK use an equilibrium scaling method.
+
+
+scaling.mean
+Let GLPK use a geometric mean scaling method.
+
+
+scaling.meanequilibrium
+Let GLPK use first a geometric mean scaling, then an equilibrium scaling.
+
+
 pricing
 Sets the pricing method for both primal and dual simplex.
+
+
+pricing.textbook
+Use a textbook pricing rule.
+
+
+pricing.steepestedge
+Use a steepest edge pricing rule.
 
 
 tol_dual
@@ -48,8 +80,28 @@ backtracking
 Determines which method to use for the backtracking heuristic.
 
 
+backtracking.depthfirst
+Let GLPK use a depth first search.
+
+
+backtracking.breadthfirst
+Let GLPK use a breadth first search.
+
+
+backtracking.bestprojection
+Let GLPK use a best projection heuristic.
+
+
 presolve
 Determines whether the LP presolver should be used.
+
+
+presolve.0
+Turns off the LP presolver.
+
+
+presolve.1
+Turns on the LP presolver.
 
 
 reslim_fixedrun

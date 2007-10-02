@@ -12,46 +12,46 @@ sprintcrash enumint 0 -1 1 2 sprint crash
  0 1
 sifting integer 0 -1 -1 5000000 1 2 synonym for sprint crash
 crash enumstr 0 "off" 1 2 use crash method to get dual feasible
- "off" 1 do not create basis by crash method
- "on" 1 create basis to get dual feasible
- "solow_halim" 1 use crash variant due to Solow and Halim
- "halim_solow" 1 use crash variant due to Solow and Halim with JJ Forrest modification
+ "off" 1
+ "on" 1
+ "solow_halim" 1
+ "halim_solow" 1
 maxfactor integer 0 200 1 999999 1 2 maximum number of iterations between refactorizations
 crossover boolean 0 1 1 2 crossover to simplex algorithm after barrier
 dualpivot enumstr 0 "auto" 1 2 dual pivot choice algorithm
- "auto" 1 Variant of Steepest which decides on each iteration based on factorization
- "dantzig" 1 Dantzig method
- "steepest" 1 Steepest choice method
- "partial" 1 Variant of Steepest which scan only a subset
+ "auto" 1
+ "dantzig" 1
+ "steepest" 1
+ "partial" 1
 primalpivot enumstr 0 "auto" 1 2 primal pivot choice algorithm
- "auto" 1 Variant of exact devex
- "dantzig" 1 Dantzig method
- "steepest" 1 Steepest choice method
- "partial" 1 Variant of exact devex which scan only a subset
- "exact" 1 Exact devex method
- "change" 1 initially does Dantzig until the factorization becomes denser
- "sprint" 1 Sprint method
+ "auto" 1
+ "dantzig" 1
+ "steepest" 1
+ "partial" 1
+ "exact" 1
+ "change" 1
 perturbation boolean 0 1 1 2 perturbation of problem
 scaling enumstr 0 "auto" 1 2 scaling method
- "off" 1 no scaling
- "auto" 1 automatic choice of scaling method
- "equilibrium" 1 equilibrium based scaling method
- "geometric" 1 geometric based scaling method
+ "off" 1
+ "auto" 1
+ "equilibrium" 1
+ "geometric" 1
 presolve boolean 0 1 1 2 switch for initial presolve of LP
 tol_dual double 0 1e-7 0 maxdouble 1 2 dual feasibility tolerance
 tol_primal double 0 1e-7 0 maxdouble 1 2 primal feasibility tolerance
 tol_presolve double 0 1e-8 0 maxdouble 1 2 tolerance used in presolve
 startalg enumstr 0 "dual" 1 2 LP solver for root node
- "primal" 1 primal simplex algorithm
- "dual" 1 dual simplex algorithm
- "barrier" 1 primal dual predictor corrector algorithm
+ "primal" 1
+ "dual" 1
+ "barrier" 1
 tol_integer double 0 1e-6 0 maxdouble 1 3 tolerance for integrality
-sollim integer 0 -1 -1 2147483647 1 3 limit on number of solutions
+sollim enumint 0 -1 1 3 limit on number of solutions
+ -1 1
 strongbranching integer 0 5 0 999999 1 3 strong branching
 trustpseudocosts integer 0 5 -1 2000000 1 3 after howmany nodes we trust the pseudo costs
 cutdepth enumint 0 -1 1 4 depth in tree at which cuts are applied
  -1 1
-cut_passes_root integer 0 -1 -999999 999999 1 4 number of cut passes at root node
+cut_passes_root integer 0 0 -999999 999999 1 4 number of cut passes at root node
 cut_passes_tree integer 0 1 -999999 999999 1 4 number of cut passes at nodes in the tree
 cuts enumstr 0 "on" 1 4 global switch for cutgenerators
  "off" 1

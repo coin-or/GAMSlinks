@@ -32,7 +32,7 @@ set g Glpk Option Groups /
  /
 
 $onembedded
-    optdata(g,o,t,f) /
+optdata(g,o,t,f) /
 general.(
   writemps        .s.(def '')
   startalg        .s.(def primal)
@@ -55,17 +55,18 @@ general.(
 ) /
 $onempty
   oe(o,e) /
-  startalg.(      primal           use the primal simplex algorithm for the root node
-                  dual             use the dual simplex algorithm for the root node )
-  scaling.(       off              no scaling
-                  equilibrium      equilibrium scaling 
-                  mean             geometric mean scaling
-                  meanequilibrium  geometric mean scaling then equilibrium scaling )
-  pricing.(       textbook         textbook pricing
-                  steepestedge     steepest edge pricing )
-  backtracking.(  depthfirst       depth first search
-                  breadthfirst     breadth first search
-                  bestprojection   using best projection heuristic )
+  startalg.(      primal          
+                  dual       )
+  scaling.(       off              
+                  equilibrium      
+                  mean             
+                  meanequilibrium  )
+  pricing.(       textbook         
+                  steepestedge     )
+  backtracking.(  depthfirst       
+                  breadthfirst     
+                  bestprojection   )
+  presolve.(      0, 1  )
   iterlim.(       '-1' )
  /
 $offempty
@@ -78,5 +79,5 @@ $offempty
 *                     cutoff     'GAMS cutoff'
                    /
 $onempty
- oep(o) enum options for documentation only / /;
+ oep(o) enum options for documentation only / presolve /;
 $offempty
