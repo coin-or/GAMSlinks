@@ -61,6 +61,43 @@ pricing.steepestedge
 Use a steepest edge pricing rule.
 
 
+factorization
+Sets the method for the LP basis factorization.<BR>
+If you observe that GLPK reports numerical instabilities than you could try to use a more stable factorization method.
+
+
+factorization.forresttomlin
+Does a LU factorization followed by Forrest-Tomlin updates.
+This method is fast, but less stable than others.
+
+
+factorization.bartelsgolub
+Does a LU factorization followed by a Schur complement and Bartels-Golub updates.
+This method is slower than Forrest-Tomlin, but more stable.
+
+
+factorization.givens
+Does a LU factorization followed by a Schur complement and Givens rotation updates.
+This method is slower than Forrest-Tomlin, but more stable.
+
+
+initbasis
+Sets the method that computes the initial basis.
+Setting this option has only effect if the <a href="#presolve">presolver</a> is turned off, which is on by default.
+
+
+initbasis.standard
+Uses the standard initial basis of all slacks.
+
+
+initbasis.advanced
+Computes an advanced initial basis.
+
+
+initbasis.bixby
+Uses Bixby's initial basis.
+
+
 tol_dual
 Absolute tolerance used to check if the current basis solution is dual feasible.
 (Glpk manual: Do not change this parameter without detailed understanding its purpose.)
@@ -116,8 +153,16 @@ iterlim
 Maximum number of simplex iterations.
 
 
-iterlim.'-1'
-Runs GLPK without an iteration limit.
+noiterlim
+Allows to switch off the <a href="#iterlim">simplex iteration limit</a>.
+
+
+noiterlim.0
+Keeps simplex iteration limit.
+
+
+noiterlim.1
+Turns off simplex iteration limit.
 
 
 optcr

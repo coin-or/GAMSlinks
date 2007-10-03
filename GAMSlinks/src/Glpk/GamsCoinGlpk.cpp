@@ -193,9 +193,16 @@ int main (int argc, const char *argv[]) {
 	// from glpsol: if scaling is turned on and presolve is off (or interior point is used), then do scaling 
   if (lpx_get_int_parm(glpk_model, LPX_K_SCALE) && !lpx_get_int_parm(glpk_model, LPX_K_PRESOL))
   	lpx_scale_prob(glpk_model);
-  // from glpsol: if no presolve (and simplex is used), set advanced basis
-  if (!lpx_get_int_parm(glpk_model, LPX_K_PRESOL)) 
-		lpx_adv_basis(glpk_model);
+  // from glpsol: if no presolve (and simplex is used), use special basis method
+  if (!lpx_get_int_parm(glpk_model, LPX_K_PRESOL)) {
+		gm.optGetString("initbasis", buffer);
+		if (strcmp(buffer, "standard")==0)
+			lpx_std_basis(glpk_model);
+		else if (strcmp(buffer, "advanced")==0)
+			lpx_adv_basis(glpk_model);
+		else if (strcmp(buffer, "bixby")==0)
+			lpx_cpx_basis(glpk_model);
+  }
 
 	myout.setCurrentDetail(2);
 	gm.PrintOut(GamsModel::StatusMask, "=2"); // turn off copying into .lst file
@@ -300,6 +307,14 @@ void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInte
 		lpx_set_int_parm(glpk_model, LPX_K_PRICE, 1); // default
 
 	solver.setHintParam(OsiDoReducePrint, false, OsiForceDo); // GLPK loglevel 3
+	
+	gm.optGetString("factorization", buffer);
+	if (strcmp(buffer, "forresttomlin")==0)
+		lpx_set_int_parm(glpk_model, LPX_K_BFTYPE, 1);
+	else if (strcmp(buffer, "bartelsgolub")==0)
+		lpx_set_int_parm(glpk_model, LPX_K_BFTYPE, 2);
+	else if (strcmp(buffer, "givens")==0)
+		lpx_set_int_parm(glpk_model, LPX_K_BFTYPE, 3);
 }
 
 void setupParametersMIP(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model) {

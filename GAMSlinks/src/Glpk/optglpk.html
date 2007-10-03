@@ -23,9 +23,18 @@ complete <a href="docs/solvers/coin.pdf">GLPK manual</a>.
 <tr><td><a href="#backtracking">
 backtracking</a></td>
 <td>backtracking heuristic</td></tr>
+<tr><td><a href="#factorization">
+factorization</a></td>
+<td>basis factorization method</td></tr>
+<tr><td><a href="#initbasis">
+initbasis</a></td>
+<td>method for initial basis</td></tr>
 <tr><td><a href="#iterlim">
 iterlim</a></td>
 <td>iteration limit</td></tr>
+<tr><td><a href="#noiterlim">
+noiterlim</a></td>
+<td>turn off iteration limit</td></tr>
 <tr><td><a href="#presolve">
 presolve</a></td>
 <td>LP presolver</td></tr>
@@ -74,6 +83,43 @@ Let GLPK use a breadth first search.</td></tr>
 Let GLPK use a best projection heuristic.</td></tr>
 </table>
 
+<h4><a name="factorization">
+factorization</a>
+<i> (string)</i> basis factorization method</h4><p>
+
+Sets the method for the LP basis factorization.<BR>
+If you observe that GLPK reports numerical instabilities than you could try to use a more stable factorization method.
+
+<br><i>(default = forresttomlin)</i>
+<table>
+<tr valign="top"><td width=20 align=right>forresttomlin</td><td>.
+Does a LU factorization followed by Forrest-Tomlin updates.
+This method is fast, but less stable than others.</td></tr>
+<tr valign="top"><td width=20 align=right>bartelsgolub</td><td>.
+Does a LU factorization followed by a Schur complement and Bartels-Golub updates.
+This method is slower than Forrest-Tomlin, but more stable.</td></tr>
+<tr valign="top"><td width=20 align=right>givens</td><td>.
+Does a LU factorization followed by a Schur complement and Givens rotation updates.
+This method is slower than Forrest-Tomlin, but more stable.</td></tr>
+</table>
+
+<h4><a name="initbasis">
+initbasis</a>
+<i> (string)</i> method for initial basis</h4><p>
+
+Sets the method that computes the initial basis.
+Setting this option has only effect if the <a href="#presolve">presolver</a> is turned off, which is on by default.
+
+<br><i>(default = advanced)</i>
+<table>
+<tr valign="top"><td width=20 align=right>standard</td><td>.
+Uses the standard initial basis of all slacks.</td></tr>
+<tr valign="top"><td width=20 align=right>advanced</td><td>.
+Computes an advanced initial basis.</td></tr>
+<tr valign="top"><td width=20 align=right>bixby</td><td>.
+Uses Bixby's initial basis.</td></tr>
+</table>
+
 <h4><a name="iterlim">
 iterlim</a>
 <i> (integer)</i> iteration limit</h4><p>
@@ -81,9 +127,19 @@ iterlim</a>
 Maximum number of simplex iterations.
 
 <br><i>(default = GAMS iterlim)</i>
+
+<h4><a name="noiterlim">
+noiterlim</a>
+<i> (integer)</i> turn off iteration limit</h4><p>
+
+Allows to switch off the <a href="#iterlim">simplex iteration limit</a>.
+
+<br><i>(default = 0)</i>
 <table>
-<tr valign="top"><td width=20 align=right>-1</td><td>.
-Runs GLPK without an iteration limit.</td></tr>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Keeps simplex iteration limit.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns off simplex iteration limit.</td></tr>
 </table>
 
 <h4><a name="presolve">
