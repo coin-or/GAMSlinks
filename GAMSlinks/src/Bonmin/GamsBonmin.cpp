@@ -139,7 +139,7 @@ void solve_minlp(smagHandle_t prob) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, error.Message().c_str());
 	  smagReportSolBrief(prob, 13, 13);
 	  return;
-  } catch (std::bad_alloc) {
+	} catch (std::bad_alloc) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Not enough memory\n");
 		smagReportSolBrief(prob, 13, 13);
 	} catch (...) {
@@ -214,11 +214,17 @@ void solve_minlp(smagHandle_t prob) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
 	  smagReportSolBrief(prob, 13, 13);
   } catch (TNLPSolver::UnsolvedError *E) { 	    //There has been a failure to solve a problem with Ipopt.
-	  char buf[1024];
-	  	snprintf(buf, 1024, "Error: %s exited with error %s\n", E->solverName().c_str(), E->errorName().c_str());
-			smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
-		  smagReportSolBrief(prob, 13, 13);
-  }
+		char buf[1024];
+		snprintf(buf, 1024, "Error: %s exited with error %s\n", E->solverName().c_str(), E->errorName().c_str());
+		smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
+		smagReportSolBrief(prob, 13, 13);
+	} catch (std::bad_alloc) {
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Not enough memory\n");
+		smagReportSolBrief(prob, 13, 13);
+	} catch (...) {
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Unknown exception thrown.\n");
+		smagReportSolBrief(prob, 13, 13);
+	}
 } // solve_minlp()
 
 /** Processes Ipopt solution and calls method to report the solution.
