@@ -139,6 +139,12 @@ void solve_minlp(smagHandle_t prob) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, error.Message().c_str());
 	  smagReportSolBrief(prob, 13, 13);
 	  return;
+  } catch (std::bad_alloc) {
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Not enough memory\n");
+		smagReportSolBrief(prob, 13, 13);
+	} catch (...) {
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Unknown exception thrown.\n");
+		smagReportSolBrief(prob, 13, 13);
 	}
 
 	bonmin_setup.options()->GetNumericValue("diverging_iterates_tol", mysmagminlp->div_iter_tol, "");
