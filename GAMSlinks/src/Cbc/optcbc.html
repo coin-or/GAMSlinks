@@ -323,7 +323,7 @@ Then you can set individual ones off or on using the specific options.
 <tr valign="top"><td width=20 align=right>off</td><td>.
 Turns off all cut generators.</td></tr>
 <tr valign="top"><td width=20 align=right>on</td><td>.
-Turns on all default cut generators and CBC will try them in the branch and cut tree (see the option cutdepth how to fine tune the behaviour).</td></tr>
+Turns on all default cut generators and CBC will try them in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> how to fine tune the behaviour).</td></tr>
 <tr valign="top"><td width=20 align=right>root</td><td>.
 Let CBC generate cuts only at the root node.</td></tr>
 <tr valign="top"><td width=20 align=right>ifmove</td><td>.
@@ -705,6 +705,16 @@ Reference: M. Savelsbergh, Preprocessing and Probing Techniques for Mixed Intege
 
 <br><i>(default = ifmove)</i>
 <table>
+<tr valign="top"><td width=20 align=right>off</td><td>.
+Turns off Probing.</td></tr>
+<tr valign="top"><td width=20 align=right>on</td><td>.
+Turns on Probing and CBC will try it in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> how to fine tune this behaviour).</td></tr>
+<tr valign="top"><td width=20 align=right>root</td><td>.
+Let CBC do Probing only at the root node.</td></tr>
+<tr valign="top"><td width=20 align=right>ifmove</td><td>.
+Let CBC do Probing in the tree if it looks as if it is doing some good and moves the objective value.</td></tr>
+<tr valign="top"><td width=20 align=right>forceon</td><td>.
+Turns on Probing and forces CBC to do Probing at every node.</td></tr>
 <tr valign="top"><td width=20 align=right>forceonbut</td><td>.
 Turns on Probing and forces CBC to call the cut generator at every node, but does only probing, not strengthening etc.</td></tr>
 <tr valign="top"><td width=20 align=right>forceonstrong</td><td>.

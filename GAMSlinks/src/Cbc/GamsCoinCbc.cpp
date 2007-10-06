@@ -65,6 +65,7 @@ int main (int argc, const char *argv[]) {
 	GamsMessageHandler myout(&gm), slvout(&gm);
 	slvout.setPrefix(0);
 	solver.passInMessageHandler(&slvout);
+	solver.getModelPtr()->passInMessageHandler(&slvout);
 	solver.setHintParam(OsiDoReducePrint,true,OsiHintTry);
 
 	myout.setCurrentDetail(1);

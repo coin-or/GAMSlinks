@@ -67,6 +67,11 @@ liftandprojectcuts string 0 "off" 1 4 Lift and Project Cuts
 mircuts string 0 "ifmove" 1 4 Mixed Integer Rounding Cuts
 twomircuts string 0 "root" 1 4 Two Phase Mixed Integer Rounding Cuts
 probingcuts enumstr 0 "ifmove" 1 4 Probing Cuts
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
  "forceonbut" 1
  "forceonstrong" 1
  "forceonbutstrong" 1

@@ -291,7 +291,7 @@ Turns off all cut generators.
 
 
 cuts.on
-Turns on all default cut generators and CBC will try them in the branch and cut tree (see the option cutdepth how to fine tune the behaviour).
+Turns on all default cut generators and CBC will try them in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> how to fine tune the behaviour).
 
 
 cuts.root
@@ -359,6 +359,26 @@ probingcuts
 Determines whether and when CBC should try to generate cuts based on <a href="https://projects.coin-or.org/Cgl/wiki/CglProbing">probing</a>.<BR>
 Additional to the values for the <a href="#cuts">option cuts</a> three more values are possible here.<BR>
 Reference: M. Savelsbergh, Preprocessing and Probing Techniques for Mixed Integer Programming Problems, ORSA Journal on Computing 6 (1994), 445.
+
+
+probingcuts.off
+Turns off Probing.
+
+
+probingcuts.on
+Turns on Probing and CBC will try it in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> how to fine tune this behaviour).
+
+
+probingcuts.root
+Let CBC do Probing only at the root node.
+
+
+probingcuts.ifmove
+Let CBC do Probing in the tree if it looks as if it is doing some good and moves the objective value.
+
+
+probingcuts.forceon
+Turns on Probing and forces CBC to do Probing at every node.
 
 
 probingcuts.forceonbut
