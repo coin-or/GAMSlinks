@@ -9,6 +9,11 @@
 #include "SmagMINLP.hpp"
 #include "IpIpoptCalculatedQuantities.hpp"
 
+#include <vector>
+#include <list>
+
+//#define SMAG_HAS_SOS
+
 using namespace Ipopt;
 
 // constructor
@@ -18,6 +23,7 @@ SMAG_MINLP::SMAG_MINLP (smagHandle_t prob_)
 {
   negLambda = new double[smagRowCount(prob)];
   isMin = smagMinim (prob);		/* 1 for min, -1 for max */
+  setupPrioritiesSOS();
 	
 //	domviollimit=prob->gms.domlim;
 	clock_start=smagGetCPUTime(prob);
@@ -28,6 +34,73 @@ SMAG_MINLP::~SMAG_MINLP()
 {
   delete[] negLambda;
 }
+
+void SMAG_MINLP::setupPrioritiesSOS() {
+#ifdef SMAG_HAS_SOS
+	// range of priority values
+	double minprior=prob->inf;
+	double maxprior=-prob->inf;
+	// take care of integer variables branching priorities
+	if (prob->gms.priots) {
+		// first check which range of priorities is given
+		for (int i=0; i<smagColCount(prob); ++i) {
+			if (prob->colPriority[i]<minprior) minprior=prob->colPriority[i];
+			if (prob->colPriority[i]>maxprior) maxprior=prob->colPriority[i];
+		}
+		if (minprior!=maxprior) {
+			branchinginfo.size=smagColCount(prob);
+			branchinginfo.priorities=new int[branchinginfo.size];
+			for (int i=0; i<branchinginfo.size; ++i) {
+				// we map gams priorities into the range {1,..,1000}
+				// CBC: 1000 is standard priority and 1 is highest priority
+				// GAMS: 1 is standard priority for discrete variables, and as smaller the value as higher the priority
+				branchinginfo.priorities[i]=1+(int)(999*(prob->colPriority[i]-minprior)/(maxprior-minprior));
+//				std::clog << "Priority column " << i << "\t " << prob->colPriority[i] << " -> " << branchinginfo.priorities[i] << std::endl;  
+			}
+		}
+	}
+#endif
+
+	sosinfo.num=prob->gms.nosos1+prob->gms.nosos2; // number of sos
+	if (!sosinfo.num) return;
+#ifdef SMAG_HAS_SOS
+	sosinfo.types=new char[sosinfo.num]; // types of sos
+	sosinfo.numNz=prob->gms.nsos1+prob->gms.nsos2; // number of variables in sos
+	// collects for each sos the variables which are in there
+	std::vector<std::list<int> > sosvar(sosinfo.num);  
+//std::clog << "Number of SOS type 1: " << prob->gms.nosos1 << "\t type 2: " << prob->gms.nosos2 << std::endl; 
+	for (Index i=0; i<smagColCount(prob); ++i) {
+		if ((prob->colType[i]!=SMAG_VAR_SOS1) && (prob->colType[i]!=SMAG_VAR_SOS2))
+			continue; 
+//				std::clog << "Variable " << i << " is in SOS type 1 " << prob->colSOS[i] << std::endl; 
+		sosvar.at(prob->colSOS[i]-1).push_back(i);
+		sosinfo.types[prob->colSOS[i]-1]=(prob->colType[i]==SMAG_VAR_SOS1 ? 1 : 2);
+	}
+	
+	sosinfo.indices=new int[sosinfo.numNz];
+	sosinfo.weights=new double[sosinfo.numNz];
+	sosinfo.starts=new int[sosinfo.num+1];
+	sosinfo.priorities=new int[sosinfo.num];
+	int k=0;
+	for (int i=0; i<sosinfo.num; ++i) {
+		sosinfo.starts[i]=k;
+//		std::clog << "SOS " << i << " is type " << (int)sosinfo.types[i] << " vars.: ";
+		double priorsum=0;
+		for (std::list<int>::iterator it(sosvar[i].begin()); it!=sosvar[i].end(); ++it, ++k) {
+			sosinfo.indices[k]=*it;
+			sosinfo.weights[k]=k-sosinfo.starts[i];
+			priorsum+=prob->colPriority[*it];
+			std::clog << *it << ' ';		
+		}
+		if (prob->gms.priots)	// scale avg. of gams priorities into {1,..,1000} range
+			sosinfo.priorities[k]=1+(int)(999*((priorsum/(k-sosinfo.starts[i])-minprior)/(maxprior-minprior)));
+		else // branch on long sets first
+			sosinfo.priorities[k]=smagColCount(prob)-(k-sosinfo.starts[i]);
+//		std::clog << "\t prior.: " << sosinfo.priorities[k] << std::endl;
+	}
+	sosinfo.starts[sosvar.size()]=k;
+#endif
+} // initSOS
 
 // returns the size of the problem
 bool SMAG_MINLP::get_nlp_info (Index& n, Index& m, Index& nnz_jac_g,
@@ -80,15 +153,7 @@ bool SMAG_MINLP::get_bounds_info (Index n, Number* x_l, Number* x_u,
   return true;
 } // get_bounds_info
 
-#include <vector>
-#include <list>
 bool SMAG_MINLP::get_variables_types(Index n, VariableType* var_types) {
-	sosinfo.num=prob->gms.nosos1+prob->gms.nosos2; // number of sos
-	sosinfo.types=new char[sosinfo.num]; // types of sos
-	sosinfo.numNz=prob->gms.nsos1+prob->gms.nsos2; // number of variables in sos
-	// collects for each sos the variables which are in there
-	std::vector<std::list<int> > sosvar(sosinfo.num);  
-
 	for (Index i=0; i<n; ++i) {
 		switch (prob->colType[i]) {
 			case SMAG_VAR_CONT:
@@ -101,15 +166,11 @@ bool SMAG_MINLP::get_variables_types(Index n, VariableType* var_types) {
 				var_types[i]=INTEGER;
 				break;
 			case SMAG_VAR_SOS1:
-				sosvar[0].push_back(i);
-				sosinfo.types[0]=1;
-				var_types[i]=CONTINUOUS;
-//				break;
 			case SMAG_VAR_SOS2:
-				sosvar[0].push_back(i);
-				sosinfo.types[0]=2;
 				var_types[i]=CONTINUOUS;
-//				break;
+#ifdef SMAG_HAS_SOS
+				break;
+#endif
 			case SMAG_VAR_SEMICONT:
 			case SMAG_VAR_SEMIINT:
 			default: {
@@ -121,22 +182,6 @@ bool SMAG_MINLP::get_variables_types(Index n, VariableType* var_types) {
 			}			
 		}
 	}
-	
-	sosinfo.indices=new int[sosinfo.numNz];
-	sosinfo.weights=new double[sosinfo.numNz];
-	sosinfo.starts=new int[sosinfo.num+1];
-	int k=0;
-	for (unsigned int i=0; i<sosvar.size(); ++i) {
-		sosinfo.starts[i]=k;
-//		std::clog << i << ' ' << (int)sosinfo.types[i] << ':';
-		for (std::list<int>::iterator it(sosvar[i].begin()); it!=sosvar[i].end(); ++it, ++k) {
-			sosinfo.indices[k]=*it;
-			sosinfo.weights[k]=k-sosinfo.starts[i];
-//			std::clog << *it << ' ';		
-		}
-//		std::clog << std::endl;
-	}
-	sosinfo.starts[sosvar.size()]=k;
 	
 	return true;	
 } // get_var_types
@@ -401,10 +446,21 @@ bool SMAG_MINLP::eval_h (Index n, const Number *x, bool new_x,
 //}
 
 const TMINLP::SosInfo* SMAG_MINLP::sosConstraints() const {
-	return NULL; // smag does not support sos yet
-	if (!sosinfo.num) return NULL;	
+#ifdef SMAG_HAS_SOS
+	if (sosinfo.num)
 	return &sosinfo;
+#endif
+	return NULL;
 }
+
+const TMINLP::BranchingInfo* SMAG_MINLP::branchingInfo() const {
+#ifdef SMAG_HAS_SOS
+	if (prob->gms.priots)
+		return &branchinginfo;
+#endif
+	return NULL;
+}
+
 
 void SMAG_MINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const Number* x, Number obj_value) {
   solver_status=1; // normal completion

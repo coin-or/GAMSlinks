@@ -112,9 +112,11 @@ public:
 
 	/** Provides information about SOS constraints.
 	 */
-  virtual const SosInfo * sosConstraints() const;
+  virtual const SosInfo* sosConstraints() const;
   
-  virtual const BranchingInfo* branchingInfo() const{return NULL;}
+	/** Provides information about branching priorities. 
+	 */
+  virtual const BranchingInfo* branchingInfo() const;
 
 	double div_iter_tol;
 //	double scaled_conviol_tol;
@@ -132,6 +134,7 @@ private:
 //	double last_unscaled_conviol; // last unscaled constraint violation
 	
 	SosInfo sosinfo;
+	BranchingInfo branchinginfo;
 
   /* Methods to block default compiler methods.
    * The compiler automatically generates the following three methods.
@@ -145,6 +148,10 @@ private:
 	SMAG_MINLP();
   SMAG_MINLP(const SMAG_MINLP&);
   SMAG_MINLP& operator=(const SMAG_MINLP&);
+
+  /** Internal routine to initialize sosinfo and branchinginfo.
+   */
+  void setupPrioritiesSOS();
 };
 
 
