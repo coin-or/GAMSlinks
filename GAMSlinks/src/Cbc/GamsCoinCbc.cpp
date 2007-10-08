@@ -31,14 +31,13 @@
 #include "CbcModel.hpp"
 #include "CbcBranchActual.hpp" //for CbcSOS
 #include "CbcBranchLotsize.hpp" //for CbcLotsize
-//#include "CbcStrategyGams.hpp"
 
 #include "OsiClpSolverInterface.hpp"
 #include "CoinHelperFunctions.hpp"
 
 void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver);
 void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model);
-void setupStartingPoint(GamsModel& gm, CbcModel& model);
+void setupStartingPoint(GamsModel& gm, CoinMessageHandler& myout, CbcModel& model);
 void setupParameters(GamsModel& gm, CbcModel& model);
 void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std::string>& par_list);
 
@@ -124,10 +123,10 @@ int main (int argc, const char *argv[]) {
 
 	CbcMain0(model);
   // Switch off most output
-	model.solver()->setHintParam(OsiDoReducePrint,true,OsiHintTry);
+	model.solver()->setHintParam(OsiDoReducePrint, true, OsiHintTry);
 
 	setupPrioritiesSOSSemiCon(gm, model);
-	setupStartingPoint(gm, model);
+	setupStartingPoint(gm, myout, model);
 	setupParameters(gm, model);
 	
 	std::list<std::string> par_list;
@@ -360,7 +359,7 @@ void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model) {
 }
 
 
-void setupStartingPoint(GamsModel& gm, CbcModel& model) {
+void setupStartingPoint(GamsModel& gm, CoinMessageHandler& myout, CbcModel& model) {
   // starting point
   model.solver()->setColSolution(gm.ColLevel());
   model.solver()->setRowPrice(gm.RowMargin());
@@ -384,7 +383,15 @@ void setupStartingPoint(GamsModel& gm, CbcModel& model) {
 			default: rstat[j]=0;
 		}
 	}
-	model.solver()->setBasisStatus(cstat, rstat);
+	// this call initializes ClpSimplex data structures, which can produce an error if CLP does not like the model
+	if (model.solver()->setBasisStatus(cstat, rstat)) {
+		myout << "Failed to set initial basis. Probably CLP abandoned the model." << CoinMessageEol;
+		myout << "Exiting ..." << CoinMessageEol;
+		gm.setStatus(GamsModel::TerminatedBySolver, GamsModel::ErrorNoSolution);
+		gm.setSolution();
+		exit(EXIT_FAILURE);
+	}
+
 	delete[] cstat;
 	delete[] rstat;
 }
