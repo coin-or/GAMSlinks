@@ -75,7 +75,7 @@ int main (int argc, char* argv[]) {
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 
 	// call Bonmin if there are any discrete variables; call Ipopt otherwise
-	if (prob->gms.ndisc)
+	if (prob->gms.ndisc || prob->gms.nosos1 || prob->gms.nosos2 || prob->gms.nsemi || prob->gms.nsemii)
 		solve_minlp(prob);
 	else
 		solve_nlp(prob);

@@ -90,12 +90,12 @@ void SMAG_MINLP::setupPrioritiesSOS() {
 			sosinfo.indices[k]=*it;
 			sosinfo.weights[k]=k-sosinfo.starts[i];
 			priorsum+=prob->colPriority[*it];
-			std::clog << *it << ' ';		
+//			std::clog << *it << ' ';		
 		}
 		if (prob->gms.priots)	// scale avg. of gams priorities into {1,..,1000} range
-			sosinfo.priorities[k]=1+(int)(999*((priorsum/(k-sosinfo.starts[i])-minprior)/(maxprior-minprior)));
+			sosinfo.priorities[i]=1+(int)(999*((priorsum/(k-sosinfo.starts[i])-minprior)/(maxprior-minprior)));
 		else // branch on long sets first
-			sosinfo.priorities[k]=smagColCount(prob)-(k-sosinfo.starts[i]);
+			sosinfo.priorities[i]=smagColCount(prob)-(k-sosinfo.starts[i]);
 //		std::clog << "\t prior.: " << sosinfo.priorities[k] << std::endl;
 	}
 	sosinfo.starts[sosvar.size()]=k;
