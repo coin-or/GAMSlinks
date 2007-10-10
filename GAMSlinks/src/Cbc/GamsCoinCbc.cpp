@@ -37,7 +37,7 @@
 
 void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver);
 void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model);
-void setupStartingPoint(GamsModel& gm, CoinMessageHandler& myout, CbcModel& model);
+void setupStartingPoint(GamsModel& gm, CbcModel& model);
 void setupParameters(GamsModel& gm, CbcModel& model);
 void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std::string>& par_list);
 
@@ -125,8 +125,10 @@ int main (int argc, const char *argv[]) {
   // Switch off most output
 	model.solver()->setHintParam(OsiDoReducePrint, true, OsiHintTry);
 
-	setupPrioritiesSOSSemiCon(gm, model);
-	setupStartingPoint(gm, myout, model);
+	if (gm.nCols()) {
+		setupPrioritiesSOSSemiCon(gm, model);
+		setupStartingPoint(gm, model);
+	}
 	setupParameters(gm, model);
 	
 	std::list<std::string> par_list;
@@ -246,6 +248,12 @@ void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver) {
 		for (int j=0; j<gm.nCols(); ++j)
 			if (gm.ColSemiContinuous()[j]) solver.setColLower(j, 0.);		
 
+	if (!gm.nCols()) {
+		gm.PrintOut(GamsModel::LogMask, "Problem has no columns. Adding fake column...\n");
+		CoinPackedVector vec(0);
+		solver.addCol(vec, -solver.getInfinity(), solver.getInfinity(), 0.);
+	}
+
 	char buffer[255];
 	if (gm.haveNames()) { // set variable and constraint names
 		solver.setIntParam(OsiNameDiscipline, 2);
@@ -359,7 +367,7 @@ void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model) {
 }
 
 
-void setupStartingPoint(GamsModel& gm, CoinMessageHandler& myout, CbcModel& model) {
+void setupStartingPoint(GamsModel& gm, CbcModel& model) {
   // starting point
   model.solver()->setColSolution(gm.ColLevel());
   model.solver()->setRowPrice(gm.RowMargin());
@@ -385,8 +393,7 @@ void setupStartingPoint(GamsModel& gm, CoinMessageHandler& myout, CbcModel& mode
 	}
 	// this call initializes ClpSimplex data structures, which can produce an error if CLP does not like the model
 	if (model.solver()->setBasisStatus(cstat, rstat)) {
-		myout << "Failed to set initial basis. Probably CLP abandoned the model." << CoinMessageEol;
-		myout << "Exiting ..." << CoinMessageEol;
+		gm.PrintOut(GamsModel::AllMask, "Failed to set initial basis. Probably CLP abandoned the model.\nExiting ...\n"); 
 		gm.setStatus(GamsModel::TerminatedBySolver, GamsModel::ErrorNoSolution);
 		gm.setSolution();
 		exit(EXIT_FAILURE);
