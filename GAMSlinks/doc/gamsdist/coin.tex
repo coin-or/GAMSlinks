@@ -19,7 +19,7 @@
 
 
 \chapter{COIN-OR}
-\textbf{Stefan Vigerske, Humboldt-University Berlin, Germany}
+\textbf{Stefan Vigerske, Humboldt University Berlin, Germany}
 \vspace{1cm}
 
 \minitoc
@@ -27,31 +27,32 @@
 
 \section{Introduction}
 
-The COIN-OR project (\textbf{CO}mputational \textbf{IN}frastructure for \textbf{O}perations \textbf{R}esearch, \texttt{http://www.coin-or.org}) is an initiative to spur the development of open-source software for the operations research community.
-GAMS has added a link to some of the solvers in COIN-OR.
+COIN-OR (\textbf{CO}mputational \textbf{IN}frastructure for \textbf{O}perations \textbf{R}esearch, \texttt{http://www.coin-or.org}) is an initiative to spur the development of open-source software for the operations research community.
+One of the projects hosted at COIN-OR is the GAMSlinks project (\texttt{https://projects.coin-or.org/GAMSlinks}).
+It is dedicated to the development of interfaces between GAMS and open source solvers.
+Some of these links and solvers have also found their way into the regular GAMS distribution.
 
-As of GAMS Distribution 22.5, available solvers include:
-
+As of GAMS Distribution 22.6, available solvers include:
 \begin{itemize}
-\item CoinBonmin 0.1.1: Basic Open-source Nonlinear Mixed Integer programming\\
+\item CoinBonmin 0.9: Basic Open-source Nonlinear Mixed Integer programming\\
 (model types: LP, RMIP, MIP, DNLP, NLP, RMINLP, MINLP, QCP, RMIQCP, MIQCP)
-\item CoinCbc 1.1.0: A branch and cut code\\
+\item CoinCbc 2.0: COIN-OR Branch and Cut\\
 (model types: LP, MIP, RMIP)
-\item CoinGlpk 4.9: Gnu Linear Programming Kit\\
+\item CoinGlpk 4.22: Gnu Linear Programming Kit\\
 (model types: LP, MIP, RMIP)
-\item CoinIpopt 3.2.3dev: Interior Point Optimizer\\
+\item CoinIpopt 3.3: Interior Point Optimizer\\
 (model types: LP, RMIP, DNLP, NLP, RMINLP, QCP, RMIQCP)
 \end{itemize}
 
-With the availability of source code for the GAMS/COIN-OR link and other parts the user is not limited to the out of the box GAMS/COIN-OR solvers that come with a regular GAMS distribution.
-The open source concept opens new possibilities for our advanced users:
-
-\begin{itemize}
-\item Make modifications to the existing links
-\item Port the links to another platform supported by GAMS
-\item Connect new solvers to GAMS/COIN-OR
-\item Extend the documentation
-\end{itemize}
+With the availability of source code for the GAMS/COIN-OR links the user is not limited to the out of the box GAMS/COIN-OR solvers that come with a regular GAMS distribution.
+% The open source concept opens new possibilities for our advanced users:
+% 
+% \begin{itemize}
+% \item Make modifications to the existing links
+% \item Port the links to another platform supported by GAMS
+% \item Connect new solvers to GAMS/COIN-OR
+% \item Extend the documentation
+% \end{itemize}
 
 For more information see the COIN-OR/GAMSlinks web site at
 \texttt{https://projects.coin-or.org/GAMSlinks}.
@@ -59,25 +60,27 @@ For more information see the COIN-OR/GAMSlinks web site at
 \section{CoinBonmin}
 
 GAMS/CoinBonmin brings the open source MINLP solver Bonmin from the COIN-OR foundation to the broad audience of GAMS users.
-It is currently available for Linux (32 and 64 bit) and Windows (32 bit) systems.
+It is currently available for Linux (32 and 64 bit), Windows (32 bit), and Sun Solaris (Intel 64 bit) systems.
 
-Bonmin (\textbf{B}asic \textbf{O}pen-source \textbf{N}onlinear \textbf{M}ixed \textbf{In}teger programming) 0.1.1 is an open-source solver for mixed-integer nonlinear programming (MINLPs), whereof some parts are still experimental.
-The code is managed by Pierre Bonami, who is the COIN-OR project leader for Bonmin.
-It implements four different algorithms:
+Bonmin (\textbf{B}asic \textbf{O}pen-source \textbf{N}onlinear \textbf{M}ixed \textbf{In}teger programming) 0.9 is an open-source solver for mixed-integer nonlinear programming (MINLPs), whereof some parts are still experimental.
+The code is developed in a joined project of IBM and the Carnegie Mellon University.
+The COIN-OR project leader for Bonmin is Pierre Bonami.
+
+Bonmin implements five different algorithms:
 \begin{itemize}
-\item {B-BB}: a simple branch-and-bound algorithm based on solving
-a continuous nonlinear program at each node of the search tree and
-branching on variables
+\item {B-BB}: a simple branch-and-bound algorithm based on solving a continuous nonlinear program at each node of the search tree and branching on variables
 \item {B-OA}: an outer-approximation based decomposition algorithm
-\item {B-QG}: an outer-approximation based branch-and-bound algorithm (by Queseda and Grossmann)
+\item {B-QG}: an outer-approximation based branch-and-cut algorithm (by Queseda and Grossmann)
 \item {B-Hyb}: a hybrid outer-approximation/nonlinear programming based branch-and-cut algorithm (default)
+\item {B-Ecp}: an ECP cuts based branch-and-cut algorithm a la FilMINT
 \end{itemize}
 The algorithms are exact when the problem is convex, otherwise they are heuristics.
 
-For convex MINLPs, experiments on a reasonably large test set of problems have shown that B-Hyp is the algorithm of choice (it solved the most of the problems in our test set in 3 hours of computing time).
+For convex MINLPs, experiments on a reasonably large test set of problems have shown that B-Hyp is the algorithm of choice (it solved most of the problems in 3 hours of computing time).
 Therefore, it is the default algorithm in Bonmin.
 Nevertheless, there are cases where B-OA is much faster than B-Hyb and others where B-BB is interesting.
 B-QG corresponds mainly to a specific parameter setting of B-Hyb where some features are disabled.
+B-Ecp has just been added to Bonmin and is still experimental.
 For nonconvex MINLPs, it is strongly recommend to use B-BB, even though it is only a heuristic for such problems too.
 
 For more information we refer to
@@ -93,7 +96,7 @@ Bonmin can handle mixed-integer nonlinear programming models which functions can
 The Bonmin link in GAMS supports continuous, binary, and integer variables, but no special ordered sets, semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide).
 Also branching priorities are not supported yet.
 
-If GAMS/CoinBonmin is called for a model without discrete variables, the interface will directly call Ipopt.
+If GAMS/CoinBonmin is called for a model without discrete variables, the interface directly calls Ipopt.
 
 \subsection{Usage of CoinBonmin}
 
@@ -110,102 +113,228 @@ If CoinBonmin was specified as the default solver during GAMS installation, the 
 
 A Bonmin option file contains both Ipopt and Bonmin options, for clarity all Bonmin options should be preceded with the prefix ``\texttt{bonmin.}''.
 %Bonmin has many options that can be adjusted for the algorithm (see Section \ref{sub:bonminoptions}).
-Options can be set by creating a \texttt{bonmin.opt} file in the directory you are executing Bonmin.
-The option file is handled in the same was as by Ipopt (see Section \ref{sub:ipoptoptionspec}).
+The scheme to name option files is the same as for all other GAMS solvers.
+Specifying \texttt{optfile=1} let Gams/CoinBonmin read \texttt{coinbonmin.opt}, \texttt{optfile=2} corresponds to \texttt{coinbonmin.op2}, and so on.
+The format of the option file is the same as for Ipopt (see Section \ref{sub:ipoptoptionspec}).
+
+An example of a \texttt{bonmin.opt} file is as follows:
+\begin{verbatim}
+   bonmin.algorithm B-BB
+   bonmin.bb_log_level 4
+   print_level 6
+\end{verbatim}
+This sets algorithm to be used to branch-and-bound, the level of branch-and-bound related output to $4$, and the print level for \texttt{Ipopt} to $6$.
 
 The most important option in Bonmin is the choice of the solution algorithm.
-This can be set by using the option named \texttt{bonmin.algorithm} which can be set to \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, or \texttt{B-Hyb} (it's default value is \texttt{B-Hyb}).
+This can be set by using the option named \texttt{bonmin.algorithm} which can be set to \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, \texttt{B-Hyb}, or \texttt{B-Ecp} (it's default value is \texttt{B-Hyb}).
 Depending on the value of this option, certain other options may be available or not.
 
-In the context of outer approximation decomposition, several option are available for configuring the MILP subsolver Cbc.
+In the context of outer approximation decomposition, several option are available for configuring the MILP subsolver CBC.
 By setting the option \texttt{bonmin.milp\_subsolver} to \texttt{Cbc\_Par}, a version of \texttt{Cbc} is chosen that can be parameterized by the user.
 The options that can be set are the node-selection strategy, the number of strong-branching candidates,
 the number of branches before pseudo costs are to be trusted, and the frequency of the various cut generators
 To pass those options to the MILP subsolver, you have to replace the prefix ``\texttt{bonmin.}'' with ``\texttt{milp\_sub.}''.
 
-Table \ref{tab:bonminoptions} gives the list of options together with their types, default values and availability in each of the four algorithms.
+GAMS/CoinBonmin understand currently the following GAMS parameters: reslim (time limit), iterlim (iteration limit), nodlim (node limit), cutoff, optca (absolute gap tolerance), and optcr (relative gap tolerance).
+You can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your GAMS program, e.g. \verb+Option nodlim=1000;+.
+
+The following tables gives the list of options together with their types, default values and availability in each of the four main algorithms.
 The column labeled `type' indicates the type of the parameter (`F' stands for float, `I' for integer, and `S' for
 string).
 The column labeled `default' indicates the global default value.
 Then for each of the four algorithm \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, and \texttt{B-Hyb}, `$+$' indicates that the option is available for that particular algorithm while `$-$' indicates that it is not.
 Options that are marked with $^*$ are those that can be used to configure the MILP subsolver.
 
-An example of a \texttt{bonmin.opt} file is as follows:
-\begin{verbatim}
-   bonmin.bb_log_level 4
-   bonmin.algorithm B-BB
-   print_level 6
-\end{verbatim}
-This sets the level of output of the branch-and-bound in Bonmin to $4$, the algorithm to branch-and-bound
-and the output level for \texttt{Ipopt} to $6$.
-
-\begin{table}[!ht]
 \begin{center}
-\begin{tabular}{|l|r|r|r|r|r|r|}
-\hline
+\begin{tabular}{|l|r|r|r|r|r|r|}\hline
 Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{output options}\\
 \hline
-bb\_log\_level & I & 1 & + & $-$  & + & +\\
-bb\_log\_interval & I & 100 & + & $-$ & + & +\\
-lp\_log\_level & I & 0 & $-$ & $-$ & + & +\\
-milp\_log\_level & I &  0 & $-$ &  + & $-$ & +\\
-oa\_log\_level & I & 1 & $-$ &  + & $-$ & +\\
-oa\_log\_frequency & I & 100 & $ - $ & $+$ & $-$ & $+$\\
-nlp\_log\_level & I & 1 & +&  + & + & +\\
-print\_user\_options & S & no & + & + & + & +\\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Algorithm choice}\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{branch-and-bound options}\\
+algorithm& S& B\-Hyb& +& +& +& +\\
 \hline
-time\_limit & F & reslim (1000) & + & + & + & +\\
-allowable\_gap  & F & optca (0) & + & + & + & +\\
-allowable\_fraction\_gap & F & optcr ($0.1$)& +& + & +& +\\
-cutoff & F& cutoff or $10^{100}$ &  + & +& +& +\\
-cutoff\_decr & F & $10^{-5}$ & + & + & + & +\\
-integer\_tolerance & F & $10^{-6}$ &  + & + & + & +\\
-node\_limit & I & nodlim or iterlim ($10000$) &  + & +& + & + \\
-nodeselect\_stra$^*$ & S & best-bound & + & + & +& +\\
-number\_before\_trust$^*$ & I & 8 & $-$ & + & + & +\\
-number\_strong\_branch$^*$ & I & 20 & $-$ & + & + &+ \\
-%sos\_constraints & S & enable & + & - & - & - \\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Branch-and-bound}\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{options for robustness}\\
+allowable\_fraction\_gap& F& optrc (0.1)& +& +& +& +\\
+allowable\_gap& F& optca (0)& +& +& +& +\\
+cutoff& F& cutoff or $10^{100}$& +& +& +& +\\
+cutoff\_decr& F& $10^{-5}$& +& +& +& +\\
+integer\_tolerance& F& $10^{-6}$& +& +& +& +\\
+iteration\_limit& I& $\infty$& +& +& +& +\\
+nlp\_failure\_behavior& S& stop& +& +& +& +\\
+node\_comparison& S& dynamic& +& +& +& +\\
+node\_limit& I& nodlim or iterlim (10000)& +& +& +& +\\
+num\_cut\_passes& I& 1& --& +& +& +\\
+num\_cut\_passes\_at\_root& I& 20& --& +& +& +\\
+number\_before\_trust$^*$& I& 8& +& +& +& +\\
+number\_strong\_branch$^*$& I& 20& +& +& +& +\\
+solution\_limit& I& $\infty$& +& +& +& +\\
+sos\_constraints& S& enable& +& --& +& +\\
+time\_limit& F& reslim (1000)& +& +& +& +\\
+tree\_search\_strategy& S& top\-node& +& +& +& +\\
+varselect\_stra& S& strong\-branching& +& +& +& +\\
 \hline
-max\_random\_point\_radius & F & $10^5$  &+ &+ &+ &+\\
-max\_consecutive\_failures & I & 10 & + & $-$ & $-$ & $-$\\
-nlp\_failure\_behavior & S & stop   & + & + & + & + \\
-num\_iterations\_suspect & I & $-$1 & + & + & + & + \\
-num\_retry\_unsolved\_random\_point & I & 0 & + & + & + & + \\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Outer Approximation decomposition}\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{options for nonconvex problems}\\
+milp\_subsolver& S& Cbc\_D& --& +& --& +\\
+oa\_dec\_time\_limit& F& 30& +& +& +& +\\
 \hline
-max\_consecutive\_infeasible & I & 0 & + & $-$ & $-$ & $-$\\
-num\_resolve\_at\_node & I & 0 & + & +  & + & + \\
-num\_resolve\_at\_root & I & 0& + & + & + & +  \\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Outer Approximation cuts}\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{{\tt B-Hyb }specific options}\\
+add\_only\_violated\_oa& S& no& --& +& +& +\\
+cut\_strengthening\_type& S& none& --& +& +& +\\
+disjunctive\_cut\_type& S& none& --& +& +& +\\
+oa\_cuts\_scope& S& global& --& +& +& +\\
+tiny\_element& F& $10^{-8}$& --& +& +& +\\
+very\_tiny\_element& F& $10^{-7}$& --& +& +& +\\
 \hline
-nlp\_solve\_frequency & I & 10 & $-$ & $-$ & $-$ & +\\
-oa\_dec\_time\_limit & F& 120 & $-$ & $-$ & $-$ & +\\
-tiny\_element & F & $10^{-8}$ & $-$ & + & + & + \\
-very\_tiny\_element & F & $10^{-17}$ & $-$ & + & + & + \\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Ecp based strong branching}\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{MILP options}\\
+ecp\_abs\_tol& F& $10^{-6}$& --& --& --& +\\
+ecp\_abs\_tol\_strong& F& $10^{-6}$& +& +& +& +\\
+ecp\_max\_rounds& I& 5& --& --& --& +\\
+ecp\_max\_rounds\_strong& I& 5& +& +& +& +\\
+ecp\_propability\_factor& F& 1000& --& --& --& +\\
+ecp\_rel\_tol& F& 0& --& --& --& +\\
+ecp\_rel\_tol\_strong& F& 0.1& +& +& +& +\\
+filmint\_ecp\_cuts& I& 0& --& --& --& +\\
 \hline
-cover\_cuts$^*$  & I & $-$5 & $-$ & + & $-$ & +\\
-Gomory\_cuts$^*$ & I & $-$5 & $-$ &  + & $-$ & + \\
-milp\_subsolver &S & {\tt Cbc\_D} & $-$ & + & $-$ & + \\
-mir\_cuts$^*$  & I & $-$5 & $-$  & + & $-$ &+\\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Output}\\
+\hline
+bb\_log\_interval& I& 100& +& --& +& +\\
+bb\_log\_level& I& 1& +& --& +& +\\
+lp\_log\_level& I& 0& --& --& +& +\\
+milp\_log\_level& I& 0& --& +& --& +\\
+nlp\_log\_level& I& 1& +& +& +& +\\
+oa\_cuts\_log\_level& I& 0& --& +& +& +\\
+oa\_log\_frequency& F& 100& +& +& +& +\\
+oa\_log\_level& I& 1& +& +& +& +\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{NLP interface}\\
+\hline
+nlp\_solve\_frequency& I& 10& --& --& --& +\\
+nlp\_solve\_max\_depth& I& 10& --& --& --& +\\
+% file\_solution& S& no& +& +& +& +\\
+% nlp\_solver& S& Ipopt& +& +& +& +\\
+warm\_start& S& none& +& --& --& --\\
+\hline
+\end{tabular}
+
+\begin{tabular}{|l|r|r|r|r|r|r|}\hline
+Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
+\hline
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{MILP cutting planes}\\
+\hline
+2mir\_cuts& I& 0& --& +& --& +\\
+Gomory\_cuts$^*$& I& \-5& --& +& --& +\\
+clique\_cuts& I& \-5& --& +& --& +\\
+cover\_cuts$^*$& I& \-5& --& +& --& +\\
+flow\_covers\_cuts& I& \-5& --& +& --& +\\
+lift\_and\_project\_cuts& I& 0& --& +& --& +\\
+mir\_cuts$^*$& I& \-5& --& +& --& +\\
+probing\_cuts& I& \-5& --& +& --& +\\
+reduce\_and\_split\_cuts& I& 0& --& +& --& +\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{non-convex problems}\\
+\hline
+max\_consecutive\_infeasible& I& 0& +& +& +& +\\
+num\_resolve\_at\_infeasibles& I& 0& +& --& --& --\\
+num\_resolve\_at\_node& I& 0& +& --& --& --\\
+num\_resolve\_at\_root& I& 0& +& --& --& --\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Robustness}\\
+\hline
+max\_consecutive\_failures& I& 10& +& +& +& +\\
+max\_random\_point\_radius& F& 100000& +& --& --& --\\
+num\_iterations\_suspect& I& \-1& +& +& +& +\\
+num\_retry\_unsolved\_random\_point& I& 0& +& +& +& +\\
+random\_point\_perturbation\_interval& F& 1& +& --& --& --\\
+random\_point\_type& S& Jon& +& --& --& --\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Diving}\\
+\hline
+max\_backtracks\_in\_dive& I& 5& +& +& +& +\\
+max\_dive\_depth& I& $\infty$& +& +& +& +\\
+stop\_diving\_on\_cutoff& S& no& +& +& +& +\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{experimental options}\\
+\hline
+maxmin\_crit\_have\_sol& F& 0.1& +& +& +& +\\
+maxmin\_crit\_no\_sol& F& 0.7& +& +& +& +\\
+number\_before\_trust\_list& I& 0& +& +& +& +\\
+number\_strong\_branch\_root& I& $\infty$& +& +& +& +\\
+setup\_pseudo\_frac& F& 0.5& +& +& +& +\\
 \hline
 \end{tabular}
 \end{center}
-% $\strut^*$ option is available for MILP subsolver (it is only passed if the {\tt milp\_subsolver} option is set to {\tt Cbc\_Par}).
-\caption{\label{tab:bonminoptions}List of Bonmin options and compatibility with the different algorithms.}
-\end{table}
 
-GAMS/CoinBonmin understand currently the following GAMS parameters: reslim (time limit), iterlim (iteration limit), nodlim (node limit), cutoff, optca (absolute gap tolerance), and optcr (relative gap tolerance).
-You can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your GAMS program, e.g. \verb+Option nodlim=1000;+.
+% 
+% \begin{table}[!ht]
+% \begin{center}
+% \begin{tabular}{|l|r|r|r|r|r|r|}
+% \hline
+% Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
+% \hline
+% \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{output options}\\
+% \hline
+% bb\_log\_level & I & 1 & + & $-$  & + & +\\
+% bb\_log\_interval & I & 100 & + & $-$ & + & +\\
+% lp\_log\_level & I & 0 & $-$ & $-$ & + & +\\
+% milp\_log\_level & I &  0 & $-$ &  + & $-$ & +\\
+% oa\_log\_level & I & 1 & $-$ &  + & $-$ & +\\
+% oa\_log\_frequency & I & 100 & $ - $ & $+$ & $-$ & $+$\\
+% nlp\_log\_level & I & 1 & +&  + & + & +\\
+% print\_user\_options & S & no & + & + & + & +\\
+% \hline
+% \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{branch-and-bound options}\\
+% \hline
+% time\_limit & F & reslim (1000) & + & + & + & +\\
+% allowable\_gap  & F & optca (0) & + & + & + & +\\
+% allowable\_fraction\_gap & F & optcr ($0.1$)& +& + & +& +\\
+% cutoff & F& cutoff or $10^{100}$ &  + & +& +& +\\
+% cutoff\_decr & F & $10^{-5}$ & + & + & + & +\\
+% integer\_tolerance & F & $10^{-6}$ &  + & + & + & +\\
+% node\_limit & I & nodlim or iterlim ($10000$) &  + & +& + & + \\
+% node\_comparison$^*$ & S & dynamic & + & + & +& +\\
+% number\_before\_trust$^*$ & I & 8 & $-$ & + & + & +\\
+% number\_strong\_branch$^*$ & I & 20 & $-$ & + & + &+ \\
+% %sos\_constraints & S & enable & + & - & - & - \\
+% \hline
+% \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{options for robustness}\\
+% \hline
+% max\_random\_point\_radius & F & $10^5$  &+ &+ &+ &+\\
+% max\_consecutive\_failures & I & 10 & + & $-$ & $-$ & $-$\\
+% nlp\_failure\_behavior & S & stop   & + & + & + & + \\
+% num\_iterations\_suspect & I & $-$1 & + & + & + & + \\
+% num\_retry\_unsolved\_random\_point & I & 0 & + & + & + & + \\
+% \hline
+% \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{options for nonconvex problems}\\
+% \hline
+% max\_consecutive\_infeasible & I & 0 & + & $-$ & $-$ & $-$\\
+% num\_resolve\_at\_node & I & 0 & + & +  & + & + \\
+% num\_resolve\_at\_root & I & 0& + & + & + & +  \\
+% \hline
+% \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{{\tt B-Hyb }specific options}\\
+% \hline
+% nlp\_solve\_frequency & I & 10 & $-$ & $-$ & $-$ & +\\
+% oa\_dec\_time\_limit & F& 120 & $-$ & $-$ & $-$ & +\\
+% tiny\_element & F & $10^{-8}$ & $-$ & + & + & + \\
+% very\_tiny\_element & F & $10^{-17}$ & $-$ & + & + & + \\
+% \hline
+% \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{MILP options}\\
+% \hline
+% milp\_subsolver &S & {\tt Cbc\_D} & $-$ & + & $-$ & + \\
+% cover\_cuts$^*$  & I & $-$5 & $-$ & + & $-$ & +\\
+% Gomory\_cuts$^*$ & I & $-$5 & $-$ &  + & $-$ & + \\
+% mir\_cuts$^*$  & I & $-$5 & $-$  & + & $-$ &+\\
+% \hline
+% \end{tabular}
+% \end{center}
+% % $\strut^*$ option is available for MILP subsolver (it is only passed if the {\tt milp\_subsolver} option is set to {\tt Cbc\_Par}).
+% \caption{\label{tab:bonminoptions}Compatibility of some Bonmin options with different algorithms.}
+% \end{table}
 
 \subsection{Detailed Description of CoinBonmin Options}
 \label{sub:bonminoptions}
