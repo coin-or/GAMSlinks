@@ -293,34 +293,35 @@ Additionally, Gams/CoinBonmin overwrites the default setting of the parameter \t
 
 \section{CoinCbc}
 
-GAMS/CoinCBC brings the open source LP/MIP solver Cbc from the COIN-OR foundation to the broad audience of GAMS users. It is currently available for Linux (32 and 64 bit), Windows (32 bit), and Darwin systems.
+GAMS/CoinCBC brings the open source LP/MIP solver CBC from the COIN-OR foundation to the broad audience of GAMS users.
+It is currently available for Linux (32 and 64 bit), Windows (32 bit), and Sun Solaris (Intel 64 bit) systems.
 
-Cbc (COIN-OR branch and cut) is an open-source mixed integer programming solver working with the COIN-OR LP solver Clp and the COIN-OR Cut generator libraries Cgl.
+CBC (COIN-OR Branch and Cut) is an open-source mixed integer programming solver working with the COIN-OR LP solver CLP and the COIN-OR Cut generator library Cgl.
 The code has been written primarily by John J. Forrest, who is the COIN-OR project leader for Cbc.
 
 For more information we refer to
 \begin{itemize}
-\item the Cbc web site \texttt{https://projects.coin-or.org/Cbc},
+\item the CBC web site \texttt{https://projects.coin-or.org/Cbc},
 \item the Cgl web site \texttt{https://projects.coin-or.org/Cgl}, and
-\item the Clp web site \texttt{https://projects.coin-or.org/Clp}.
+\item the CLP web site \texttt{https://projects.coin-or.org/Clp}.
 \end{itemize}
 
 \subsection{Model requirements}
 
-The Cbc link in GAMS supports continuous, binary, and integer variables, and special ordered sets of type 1 and 2, but no semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide).
-Also quadratic objective functions and branching priorities are not supported yet.
+The CBC link in GAMS supports continuous, binary, integer, semicontinuous, semiinteger variables, special ordered sets of type 1 and 2, and branching priorities (see chapter 17.1 of the GAMS User's Guide).
+Quadratic objective functions are not supported yet.
 
 \subsection{Usage of CoinCbc}
 
-The following statement can be used inside your GAMS program to specify using CoinCbc
+The following statement can be used inside your GAMS program to specify using CoinCBC
 \begin{verbatim}
   Option LP = CoinCbc;     { or MIP or RMIP }
 \end{verbatim}
 
 The above statement should appear before the Solve statement.
-If CoinCbc was specified as the default solver during GAMS installation, the above statement is not necessary.
+If CoinCBC was specified as the default solver during GAMS installation, the above statement is not necessary.
 
-The GAMS/CoinCbc options file consists of one option or comment per line.
+The GAMS/CoinCBC options file consists of one option or comment per line.
 An asterisk (*) at the beginning of a line causes the entire line to be ignored.
 Otherwise, the line will be interpreted as an option name and value separated by any amount of white space (blanks or tabs).
 Following is an example options file coincbc.opt.
@@ -328,8 +329,8 @@ Following is an example options file coincbc.opt.
   cuts 1
   printfrequency 20
 \end{verbatim}
-It will cause CoinCbc to use all supported cut generators and not only the default ones.
-The iteration log will have an entry for each 20 iterations instead of each 10 iterations.
+It will cause CoinCBC to use all supported cut generators and not only the default ones.
+The iteration log will have an entry for every 20th iteration instead of every 10th iteration.
 
 % \subsection{CoinCbc output}
 % \subsection{Some CoinCbc features}
@@ -342,9 +343,9 @@ The iteration log will have an entry for each 20 iterations instead of each 10 i
 \section{CoinGlpk}
 
 GAMS/CoinGlpk brings the open source LP/MIP solver Glpk from the GNU Open Software foundation to the broad audience of GAMS users.
-It is currently available for Linux (32 and 64 bit), Windows (32 bit), and Darwin systems.
+It is currently available for Linux (32 and 64 bit), Windows (32 bit), and Sun Solaris (Intel 64 bit) systems.
 The code has been written primarily by A. Makhorin.
-The interface uses the OSI Glpk interface written by Vivian De Smedt and Braden Hunsaker.
+The interface uses the OSI Glpk interface written by Vivian De Smedt, Braden Hunsaker, and Lou Hafer.
 
 For more information we refer to
 \begin{itemize}
@@ -372,10 +373,9 @@ An asterisk (*) at the beginning of a line causes the entire line to be ignored.
 Otherwise, the line will be interpreted as an option name and value separated by any amount of white space (blanks or tabs).
 Following is an example options file coincbc.opt.
 \begin{verbatim}
-  cuts 1
   scaling mean
 \end{verbatim}
-It will cause CoinGlpk to generate gomory mixed integer cuts for the root node and change the scaling method to a geometric mean scaling.
+It will cause CoinGlpk to change the scaling method to a geometric mean scaling.
 
 \input{optglpk_s}
 \input{optglpk_a}
@@ -385,7 +385,7 @@ It will cause CoinGlpk to generate gomory mixed integer cuts for the root node a
 \section{CoinIpopt}
 
 GAMS/CoinIpopt brings the open source NLP solver Ipopt from the COIN-OR foundation to the broad audience of GAMS users.
-It is currently available for Linux (32 and 64 bit) and Windows (32 bit) systems.
+It is currently available for Linux (32 and 64 bit), Windows (32 bit), and Sun Solaris (Intel 64 bit) systems.
 
 Ipopt (\textbf{I}nterior \textbf{P}oint \textbf{Opt}imizer) is an open-source solver for large-scale nonlinear programming.
 The code has been written primarily by Andreas W\"achter, who is the COIN-OR project leader for Ipopt.
