@@ -1,326 +1,594 @@
-\subsubsection{Output}
-\label{app:opt_loglevel}
-\paragraph{bb\_log\_level} specify branch-and-bound's log level. \\
- Set the level of output of the branch-and-bound:
- \begin{itemize}
-  \item {\tt 0} - none,
-  \item {\tt 1} - minimal,
-  \item {\tt 2} - normal low,
-  \item {\tt 3} - normal high,
-  \end{itemize}
- The valid range for this integer option is
- ${\tt 0} \le \hbox{\tt bb\_log\_level } \le {\tt 3}$
-and its default value is {\tt 1}.
-
-
-\paragraph{bb\_log\_interval} Interval at which node level output is printed. \\
- Set the interval (in terms of number of nodes) at
-which a log on node resolutions (consisting of
-lower and upper bounds) is given. The valid range for this integer option is
-${\tt 0} \le \hbox{\tt bb\_log\_interval } <  \infty$
-and its default value is {\tt 100}.
-
-
-\paragraph{lp\_log\_level} specify LP log level. \\
- Set the level of output of the linear programming
-subsolver in {\tt B-Hyb }or {\tt B-QG}:
- \begin{itemize}
-  \item {\tt 0} - none,
-  \item {\tt 1} - minimal,
-  \item {\tt 2} - normal low,
-  \item {\tt 3} - normal high,
-  \item {\tt 4} - verbose.
-  \end{itemize}
-The valid range for this integer option is
-${\tt 0} \le \hbox{\tt lp\_log\_level } \le {\tt 4}$
-and its default value is {\tt 0}.
-
-\paragraph{milp\_log\_level} specify MILP subsolver log level.\\
- Set the level of output of the MILP subsolver in OA:
- \begin{itemize}
-  \item {\tt 0} - none,
-  \item {\tt 1} - minimal,
-  \item {\tt 2} - normal low,
-  \item {\tt 3} - normal high,
-  \end{itemize}
-The valid range for this integer option is
-${\tt 0} \le \hbox{\tt milp\_log\_level } \le {\tt 3}$
-and its default value is {\tt 0}.
-
-\paragraph{oa\_log\_level} specify OA iterations log level.\\
- Set the level of output of OA decomposition solver :
- \begin{itemize}
-  \item {\tt 0} - none,
-  \item {\tt 1} - normal low,
-  \item {\tt 2} - normal high.
-  \end{itemize}
-  The valid range for this integer option is
-  ${\tt 0} \le \hbox{\tt oa\_log\_level } \le {\tt 2}$
-  and its default value is {\tt 1}.
-
-\paragraph{oa\_log\_frequency} specify OA log frequency. \\
-  The valid range for this real option is
-  $ 0 \le \hbox{\tt oa\_log\_frequency } \le \infty $
-  and its default value is $100$.
-
-
-
-\paragraph{nlp\_log\_level} specify NLP solver interface log level (independent from ipopt print\_level).
-  Set the level of output of the IpoptInterface:
-  \begin{itemize}
-  \item {\tt 0} - none,
-  \item {\tt 1} - low and readable with warnings,
-  \item {\tt 2} - verbose
-  \end{itemize}
- The valid range for this integer option is
-${\tt 0} \le {\tt nlp\_log\_level } \le {\tt 2}$
-and its default value is {\tt 1}.
-
-\paragraph{print\_user\_options} Prints the list of options set by the user.\\
-The default value for this option is ``no".\\
-Possible values are:
-\begin{itemize}
-\item yes: print the list,
-\item no: don't.
-\end{itemize}
-
-\subsubsection{Branch-and-Bound}
-
-\paragraph{algorithm} Choice of the algorithm.\\
- This will preset default values for most options of Bonmin but depending on which algorithm some of these can be changed (refer to Table \ref{tab:bonminoptions} to see which options are valid with which algorithm).
-  The default value for this string option is ``{\tt B-Hyb}''.\\
+\subsubsection{Algorithm choice}
+\label{sec:Bonmin_algorithm_choice}
+\paragraph{algorithm:} Choice of the algorithm. $\;$ \\
+ This will preset some of the options of bonmin
+depending on the algorithm choice.
+The default value for this string option is "B-Hyb".
+\\ 
 Possible values:
 \begin{itemize}
-   \item {\tt B-BB}: simple branch-and-bound algorithm,
-   \item {\tt B-OA}: OA Decomposition algorithm,
-   \item {\tt B-QG}: Quesada and Grossmann branch-and-cut algorithm,
-   \item {\tt B-Hyb}: hybrid outer approximation based branch-and-cut.
+   \item B-BB: simple branch-and-bound algorithm,
+   \item B-OA: OA Decomposition algorithm,
+   \item B-QG: Quesada and Grossmann branch-and-cut algorithm,
+   \item B-Hyb: hybrid outer approximation based branch-and-cut.
+   \item B-Ecp: ecp cuts based branch-and-cut a la FilMINT.
 \end{itemize}
 
-
-\paragraph{allowable\_gap} Specify the value of absolute gap under which the algorithm stops.\\
- Stop the tree search when the gap between the objective value of the best known solution and the best lower bound on the objective of any solution is less than this.
-For nonconvex problems, the solution given by {\tt Ipopt} does not truly give a lower bound. We then allow for
-changing the fathoming rule to continue branching even if the solution value to the current node is worse
-than the best-known solution.
-This is achieved by setting the parameters {\tt allowable\_gap} and {\tt allowable\_fraction\_gap} and {\tt cutoff\_decr} to negative values.
-The valid range for this real option is $-10^{20} \le \hbox{\tt allowable\_gap } \le 10^{20}$ and its default value is the value of the GAMS parameter optca, which default value is $0$.
-
-\paragraph{allowable\_fraction\_gap}
-Specify the value of relative gap under which the algorithm stops.\\
+\subsubsection{Branch-and-bound}
+\label{sec:bonmin_branch-and-bound_options}
+\paragraph{allowable\_fraction\_gap:} Specify the value of relative gap under which the algorithm stops. $\;$ \\
  Stop the tree search when the gap between the
 objective value of the best known solution and
 the best bound on the objective of any solution
 is less than this fraction of the absolute value
-of the best known solution value. The valid range for this real option is
-$-10^{20} \le \hbox{\tt allowable\_fraction\_gap } \le 10^{20}$
+of the best known solution value. The valid range for this real option is 
+$-1 \cdot 10^{+20} \le {\tt allowable\_fraction\_gap } \le 1 \cdot 10^{+20}$
 and its default value is the value of the GAMS parameter optcr, which default value is $0.1$.
 
-\paragraph{cutoff}Specify a cutoff value\\
-cutoff should be the value of a feasible solution known by the user (if any).
-The algorithm will only look for solutions better (meaning with a lower objective value) than cutoff. The valid range for this real option is $-10^{100} \le \hbox{\tt cutoff } \le 10^{100}$ and its default value is the value of the GAMS parameter cutoff, if set, otherwise it is $10^{100}$.
 
-\paragraph{cutoff\_decr} Specify cutoff decrement.\\
-Specify the amount by which cutoff is decremented
+\paragraph{allowable\_gap:} Specify the value of absolute gap under which the algorithm stops. $\;$ \\
+ Stop the tree search when the gap between the
+objective value of the best known solution and
+the best bound on the objective of any solution
+is less than this. The valid range for this real option is 
+$-1 \cdot 10^{+20} \le {\tt allowable\_gap } \le 1 \cdot 10^{+20}$
+and its default value is the value of the GAMS parameter optca, which default value is $0$.
+
+
+\paragraph{cutoff:} Specify cutoff value. $\;$ \\
+ cutoff should be the value of a feasible solution
+known by the user (if any). The algorithm will
+only look for solutions better than cutoof. The valid range for this real option is 
+$-1 \cdot 10^{+100} \le {\tt cutoff } \le 1 \cdot 10^{+100}$
+and its default value is the value of the GAMS parameter cutoff, if set, otherwise it is $10^{100}$.
+
+
+\paragraph{cutoff\_decr:} Specify cutoff decrement. $\;$ \\
+ Specify the amount by which cutoff is decremented
 below a new best upper-bound (usually a small
-positive value but in non-convex problems it may
-be a negative value). The valid range for this real option is
-${\tt -10^{10}} \le \hbox{\tt cutoff\_decr } \le {\tt 10^{10}}$
-and its default value is ${\tt 10^{-05}}$.
+postive value but in non-convex problems it may
+be a negative value). The valid range for this real option is 
+$-1 \cdot 10^{+10} \le {\tt cutoff\_decr } \le 1 \cdot 10^{+10}$
+and its default value is $1 \cdot 10^{-05}$.
 
 
-\paragraph{nodeselect\_stra} Choose the node selection strategy.\\
- Choose the strategy for selecting the next node to be processed.
-The default value for this string option is ``{\tt best-bound}''. \\
+\paragraph{integer\_tolerance:} Set integer tolerance. $\;$ \\
+ Any number within that value of an integer is
+considered integer. The valid range for this real option is 
+$0 <  {\tt integer\_tolerance } <  0.5$
+and its default value is $1 \cdot 10^{-06}$.
+
+
+\paragraph{iteration\_limit:} Set the cummulated maximum number of iteration in the algorithm used to process nodes continuous relaxations in the branch-and-bound. $\;$ \\
+ value 0 deactivates option. The valid range for this integer option is
+$0 \le {\tt iteration\_limit } <  {\tt +inf}$
+and its default value is $2147483647$.
+
+
+\paragraph{nlp\_failure\_behavior:} Set the behavior when an NLP or a series of NLP are unsolved by Ipopt (we call unsolved an NLP for which Ipopt is not able to guarantee optimality within the specified tolerances). $\;$ \\
+ If set to "fathom", the algorithm will fathom the
+node when Ipopt fails to find a solution to the
+nlp at that node whithin the specified
+tolerances. The algorithm then becomes a
+heuristic, and the user will be warned that the
+solution might not be optimal.
+The default value for this string option is "stop".
+\\ 
 Possible values:
 \begin{itemize}
-   \item {\tt best-bound}: choose node with the least bound,
-   \item {\tt depth-first}: Perform depth-first search,
-   \item {\tt breadth-first}: Perform breadth-first search,
-   \item {\tt dynamic}: {\tt Cbc} dynamic strategy (start with depth-first
-search and turn to best bound after 3 integer
-feasible solutions have been found).
+   \item stop: Stop when failure happens.
+   \item fathom: Continue when failure happens.
 \end{itemize}
 
+\paragraph{node\_comparison:} Choose the node selection strategy. $\;$ \\
+ Choose the strategy for selecting the next node
+to be processed.
+The default value for this string option is "dynamic".
+\\ 
+Possible values:
+\begin{itemize}
+   \item best-bound: choose node whith the smallest bound,
+   \item depth-first: Perform depth first search,
+   \item breadth-first: Perform breadth first search,
+   \item dynamic: Cbc dynamic strategy (starts with a depth first
+search and turn to best bound after 3 integer
+feasible solutions have been found).
+   \item best-guess: choose node with smallest guessed integer
+solution
+\end{itemize}
 
-\paragraph{number\_strong\_branch}
-Choose the maximum number of variables considered for strong branching. \\
- Set the number of variables on which to do strong
-branching. The valid range for this integer option is
-${\tt 0} \le \hbox{\tt number\_strong\_branch } <  \infty$
-and its default value is ${\tt 20}$.
-
-\paragraph{number\_before\_trust}
-Set the number of branches on a variable before its pseudo costs are to be believed in dynamic strong branching.\\
-The valid range for this integer option is
-$0<\hbox{\tt number\_before\_trust}<\infty$
-and its default value is ${\tt 8}$.
-A value of 0 disables dynamic strong branching.
-
-\paragraph{time\_limit}
-Set the global maximum computation time (in seconds) for the algorithm.\\
- The valid range for this real option is
-${\tt 0} <  \hbox{\tt time\_limit } <  \infty$
-and its default value is the value of the GAMS parameter reslim, which default value is $1000$.
-
-
-\paragraph{node\_limit}
-Set the maximum number of nodes explored in the branch-and-bound search.\\
-The valid range for this integer option is
-${\tt 0} \le \hbox{\tt node\_limit } <  \infty$
+\paragraph{node\_limit:} Set the maximum number of nodes explored in the branch-and-bound search. $\;$ \\
+ The valid range for this integer option is
+$0 \le {\tt node\_limit } <  {\tt +inf}$
 and its default value is the value of the GAMS parameter nodlim, if set, otherwise it is the value of the GAMS parameter iterlim, which default value is 10000.
 
 
-\paragraph{integer\_tolerance}
-Set integer tolerance.\\
- Any number within that value of an integer is considered integer.
-The valid range for this real option is
-${\tt 0} <  \hbox{\tt integer\_tolerance } <  {\tt 0.5}$
-and its default value is ${\tt 10^{-6}}$.
-
-\paragraph{warm\_start}
-Select the warm start method.\\ Possible values:
-\begin{itemize}
-\item {\tt none}: no warm start,
-\item {\tt optimum}: warm start with direct parent optimum",
-\item {\tt interior\_point}: Warm start with an interior point of direct parent".
-\end{itemize}
-The default value is {\tt optimum}.
-
-\subsubsection{Robustness}
-
-\paragraph{max\_random\_point\_radius}
-Set max value $r$ for coordinate of a random point.\\
-When a random point is generated, each coordinate is selected uniformly in the interval $[\min(\max(l,-r),u-r),\max(\min(u,r),l+r)]$ where $l$ is the lower bound
-for the variable and $u$ is its upper bound.
-Beware that this is a very naive procedure. In particular, it may not be possible to evaluate some functions (such as $\log$, $1/x$) at such a randomly generated point (if Bonmin finds that this is the case, it will give up random point generation).
-The valid range for this real option is
-${\tt 0} <  \hbox{\tt max\_random\_point\_radius } <  \infty$
-and its default value is ${\tt 10^{5}}$.
-
-\paragraph{max\_consecutive\_failures}
-Number $n$ of consecutive unsolved problems before aborting a branch of the tree.\\
- When $n > 0$, continue exploring a branch of the
-tree until $n$ consecutive problems in the branch
-are unsolved (i.e., for
-which {\tt Ipopt} can not guarantee optimality within
-the specified tolerances). The valid range for this integer option is
-${\tt 0} \le \hbox{\tt max\_consecutive\_failures } <  \infty$
-and its default value is ${\tt 10}$.
+\paragraph{num\_cut\_passes:} Set the maximum number of cut passes at regular nodes of the branch-and-cut. $\;$ \\
+ The valid range for this integer option is
+$0 \le {\tt num\_cut\_passes } <  {\tt +inf}$
+and its default value is $1$.
 
 
-\paragraph{num\_iterations\_suspect}
-(for debugging purposes only) number of iterations to consider a problem
-suspect. \\
-When the number of iterations taken by the continuous nonlinear solver
-(for the moment this is Ipopt) to solve a node is above this number,
-the subproblem is considered to be suspect and is outputed
-to a file. If set to {\tt -1} no subproblem is ever considered suspect.
-The valid range for this integer option is
-${\tt -1} \le \hbox{\tt num\_iterations\_suspect } <  \infty$
-and its default value is $-1$.
+\paragraph{num\_cut\_passes\_at\_root:} Set the maximum number of cut passes at regular nodes of the branch-and-cut. $\;$ \\
+ The valid range for this integer option is
+$0 \le {\tt num\_cut\_passes\_at\_root } <  {\tt +inf}$
+and its default value is $20$.
 
-\paragraph{nlp\_failure\_behavior}
-Set the behavior when an NLP or a series of NLP are unsolved by {\tt Ipopt}
-(an NLP is unsolved if {\tt Ipopt} is not able to guarantee optimality within the specified tolerances).\\
-If set to ``{\tt fathom}'', the algorithm will fathom the node when an NLP is unsolved. The algorithm then becomes a heuristic. A warning that the solution might not be optimal is printed.
-The default value for this string option is ``{\tt stop}". \\
+
+\paragraph{number\_before\_trust:} Set the number of branches on a variable before its pseudo costs are to be believed in dynamic strong branching. $\;$ \\
+ A value of -1 disables pseudo costs. The valid range for this integer option is
+$-1 \le {\tt number\_before\_trust } <  {\tt +inf}$
+and its default value is $8$.
+
+
+\paragraph{number\_strong\_branch:} Choose the maximum number of variables considered for strong branching. $\;$ \\
+ Set the number of variables on which to do strong
+branching. The valid range for this integer option is
+$0 \le {\tt number\_strong\_branch } <  {\tt +inf}$
+and its default value is $20$.
+
+
+\paragraph{solution\_limit:} Abort after that much integer feasible solution have been found by algorithm $\;$ \\
+ value 0 deactivates option The valid range for this integer option is
+$0 \le {\tt solution\_limit } <  {\tt +inf}$
+and its default value is $2147483647$.
+
+
+% \paragraph{sos\_constraints:} Wether or not to activate SOS constraints. $\;$ \\
+% The default value for this string option is "enable".
+% \\ 
+% Possible values:
+% \begin{itemize}
+%    \item enable: 
+%    \item disable: 
+% \end{itemize}
+
+\paragraph{time\_limit:} Set the global maximum computation time (in secs) for the algorithm. $\;$ \\
+ The valid range for this real option is 
+$0 <  {\tt time\_limit } <  {\tt +inf}$
+and its default value is the value of the GAMS parameter reslim, which default value is $1000$.
+
+
+\paragraph{tree\_search\_strategy:} Pick a strategy for traversing the tree $\;$ \\
+ All strategies can be used in conjunction with
+any of the node comparison functions.Options
+which affect dfs-dive are max-backtracks-in-dive
+and max-dive-depth. The dfs-dive won't work in a
+non-convex problem where objective does not
+decrease down branches.
+The default value for this string option is "top-node".
+\\ 
 Possible values:
 \begin{itemize}
-   \item {\tt stop}: Stop when failure happens.
-   \item {\tt fathom}: Continue when failure happens.
+   \item top-node:  Always pick the top node as sorted by the node
+comparison function
+   \item dive: Dive in the tree if possible, otherwise pick
+top node as sorted by the tree comparison
+function
+   \item dfs-dive: Dive in the tree if possible doing a depth
+first search.Backtrack on leaves or when a
+prescribed depth is attained or when estimate
+of best possible integer feasible solution in
+subtree is worst than cutoff. Once a prescribed
+limit of backtracks is attained pick top node
+as sorted by the tree comparison function
+   \item dfs-dive-dynamic: Same as dfs-dive but once enough solution are
+found switch to best-bound and if too many
+nodes switch to depth-first.
 \end{itemize}
 
-\paragraph{num\_retry\_unsolved\_random\_point}
-Number $k$ of times that the algorithm tries to resolve an unsolved NLP with a random starting point (unsolved NLP as defined above). \\
- When an NLP is unsolved, if $k > 0$, the algorithm tries
+\paragraph{varselect\_stra:} Chooses variable selection strategy\\
+The default value for this string option is "strong-branching".
+\\ 
+Possible values:
+\begin{itemize}
+   \item most-fractional: Choose most fractional variable
+   \item strong-branching: Perform strong branching
+   \item reliability-branching: Use reliability branching
+   \item curvature-estimator: Use curvature estimation to select branching
+variable
+   \item qp-strong-branching: Perform strong branching with QP approximation
+   \item lp-strong-branching: Perform strong branching with LP approximation
+   \item nlp-strong-branching: Perform strong branching with NLP approximation
+   \item osi-simple: Osi method to do simple branching
+   \item osi-strong: Osi method to do strong branching
+\end{itemize}
+
+\subsubsection{Outer Approximation decomposition}
+\label{sec:bonmin_options_:_Options_for_MILP_subsolver_in_OA_decomposition}
+\label{sec:bonmin_options_:_Options_for_OA_decomposition}
+
+\paragraph{milp\_subsolver:} Choose the subsolver to solve MILPs sub-problems in OA decompositions. $\;$ \\
+The default value for this string option is "Cbc\_D".
+\\ 
+Possible values:
+\begin{itemize}
+   \item Cbc\_D: Coin Branch and Cut with its default
+   \item Cbc\_Par: Coin Branch and Cut with passed parameters
+\end{itemize}
+
+\paragraph{oa\_dec\_time\_limit:} Specify the maximum number of seconds spent overall in OA decomposition iterations. $\;$ \\
+ The valid range for this real option is 
+$0 \le {\tt oa\_dec\_time\_limit } <  {\tt +inf}$
+and its default value is $30$.
+
+
+\subsubsection{Outer Approximation cuts}
+\label{sec:bonmin_options_:_Outer_Approximation_cuts}
+\paragraph{add\_only\_violated\_oa:} Do we add all OA cuts or only the ones violated by current point? $\;$ \\
+The default value for this string option is "no".
+\\ 
+Possible values:
+\begin{itemize}
+   \item no: Add all cuts
+   \item yes: Add only violated Cuts
+\end{itemize}
+
+\paragraph{cut\_strengthening\_type:} Determines if and what kind of cut strengthening should be performed. $\;$ \\
+The default value for this string option is "none".
+\\ 
+Possible values:
+\begin{itemize}
+   \item none: No strengthening of cuts.
+   \item sglobal: Strengthen global cuts.
+   \item uglobal-slocal: Unstrengthened global and strengthened local
+cuts
+   \item sglobal-slocal: Strengthened global and strengthened local cuts
+\end{itemize}
+
+\paragraph{disjunctive\_cut\_type:} Determine if and what kind of disjunctive cuts should be computed. $\;$ \\
+The default value for this string option is "none".
+\\ 
+Possible values:
+\begin{itemize}
+   \item none: No disjunctive cuts.
+   \item most-fractional: If discrete variables present, compute
+disjunction for most-fractional variable
+\end{itemize}
+
+\paragraph{oa\_cuts\_scope:} Specify if OA cuts added are to be set globally or locally valid $\;$ \\
+The default value for this string option is "global".
+\\ 
+Possible values:
+\begin{itemize}
+   \item local: Cuts are treated as globally valid
+   \item global: Cuts are treated as locally valid
+\end{itemize}
+
+\paragraph{tiny\_element:} Value for tiny element in OA cut $\;$ \\
+ We will remove "cleanly" (by relaxing cut) an
+element lower than this. The valid range for this real option is 
+$-0 \le {\tt tiny\_element } <  {\tt +inf}$
+and its default value is $1 \cdot 10^{-08}$.
+
+
+\paragraph{very\_tiny\_element:} Value for very tiny element in OA cut $\;$ \\
+ Algorithm will take the risk of neglecting an
+element lower than this. The valid range for this real option is 
+$-0 \le {\tt very\_tiny\_element } <  {\tt +inf}$
+and its default value is $1 \cdot 10^{-17}$.
+
+
+
+\subsubsection{Ecp based strong branching}
+\label{sec:Bonmin_ecp_based_strong_branching}
+\label{sec:bonmin_options_:_Options_for_ecp_cuts_generation}
+
+\paragraph{ecp\_abs\_tol:} Set the absolute termination tolerance for ECP rounds. $\;$ \\
+ The valid range for this real option is 
+$0 \le {\tt ecp\_abs\_tol } <  {\tt +inf}$
+and its default value is $1 \cdot 10^{-06}$.
+
+\paragraph{ecp\_abs\_tol\_strong:} Set the absolute termination tolerance for ECP rounds in strong branching. $\;$ \\
+ The valid range for this real option is 
+$0 \le {\tt ecp\_abs\_tol\_strong } <  {\tt +inf}$
+and its default value is $1 \cdot 10^{-06}$.
+
+
+\paragraph{ecp\_max\_rounds:} Set the maximal number of rounds of ECP cuts. $\;$ \\
+ The valid range for this integer option is
+$0 \le {\tt ecp\_max\_rounds } <  {\tt +inf}$
+and its default value is $5$.
+
+\paragraph{ecp\_max\_rounds\_strong:} Set the maximal number of rounds of ECP cuts in strong branching. $\;$ \\
+ The valid range for this integer option is
+$0 \le {\tt ecp\_max\_rounds\_strong } <  {\tt +inf}$
+and its default value is $5$.
+
+\paragraph{ecp\_rel\_tol:} Set the relative termination tolerance for ECP rounds. $\;$ \\
+ The valid range for this real option is 
+$0 \le {\tt ecp\_rel\_tol } <  {\tt +inf}$
+and its default value is $0$.
+
+\paragraph{ecp\_rel\_tol\_strong:} Set the relative termination tolerance for ECP rounds in strong branching. $\;$ \\
+ The valid range for this real option is 
+$0 \le {\tt ecp\_rel\_tol\_strong } <  {\tt +inf}$
+and its default value is $0.1$.
+
+\paragraph{ecp\_propability\_factor:} Factor appearing in formula for skipping ECP cuts. $\;$ \\
+ Choosing -1 disables the skipping. The valid range for this real option is 
+${\tt -inf} <  {\tt ecp\_propability\_factor } <  {\tt +inf}$
+and its default value is $1000$.
+
+\paragraph{filmint\_ecp\_cuts:} Specify the frequency (in terms of nodes) at which some a la filmint ecp cuts are generated. $\;$ \\
+ A frequency of 0 amounts to to never solve the
+NLP relaxation. The valid range for this integer option is
+$0 \le {\tt filmint\_ecp\_cuts } <  {\tt +inf}$
+and its default value is $0$.
+
+
+\subsubsection{Output}
+\label{sec:bonmin_output_options}
+\paragraph{bb\_log\_interval:} Interval at which node level output is printed. $\;$ \\
+ Set the interval (in terms of number of nodes) at
+which a log on node resolutions (consisting of
+lower and upper bounds) is given. The valid range for this integer option is
+$0 \le {\tt bb\_log\_interval } <  {\tt +inf}$
+and its default value is $100$.
+
+
+\paragraph{bb\_log\_level:} specify main branch-and-bound log level. $\;$ \\
+ Set the level of output of the branch-and-bound :
+0 - none, 1 - minimal, 2 - normal low, 3 - normal
+high The valid range for this integer option is
+$0 \le {\tt bb\_log\_level } \le 5$
+and its default value is $1$.
+
+
+\paragraph{lp\_log\_level:} specify LP log level. $\;$ \\
+ Set the level of output of the linear programming
+sub-solver in B-Hyb or B-QG : 0 - none, 1 -
+minimal, 2 - normal low, 3 - normal high, 4 -
+verbose The valid range for this integer option is
+$0 \le {\tt lp\_log\_level } \le 4$
+and its default value is $0$.
+
+\paragraph{milp\_log\_level:} specify MILP subsolver log level. $\;$ \\
+ Set the level of output of the MILP subsolver in
+OA : 0 - none, 1 - minimal, 2 - normal low, 3 -
+normal high The valid range for this integer option is
+$0 \le {\tt milp\_log\_level } \le 3$
+and its default value is $0$.
+
+\paragraph{nlp\_log\_level:} specify NLP solver interface log level (independent from ipopt print\_level). $\;$ \\
+ Set the level of output of the OsiTMINLPInterface
+: 0 - none, 1 - normal, 2 - verbose The valid range for this integer option is
+$0 \le {\tt nlp\_log\_level } \le 2$
+and its default value is $1$.
+
+\paragraph{oa\_cuts\_log\_level:} level of log when generating OA cuts. $\;$ \\
+ 0: ouputs nothings,
+1: when a cut is generated,
+its violation and index of row from which it
+originates,
+2: always output violation of the
+cut.
+3: ouput generated cuts incidence vectors. The valid range for this integer option is
+$0 \le {\tt oa\_cuts\_log\_level } <  {\tt +inf}$
+and its default value is $0$.
+
+\paragraph{oa\_log\_frequency:} display an update on lower and upper bounds in OA every n seconds $\;$ \\
+ The valid range for this real option is 
+$0 <  {\tt oa\_log\_frequency } <  {\tt +inf}$
+and its default value is $100$.
+
+
+\paragraph{oa\_log\_level:} specify OA iterations log level. $\;$ \\
+ Set the level of output of OA decomposition
+solver : 0 - none, 1 - normal, 2 - verbose The valid range for this integer option is
+$0 \le {\tt oa\_log\_level } \le 2$
+and its default value is $1$.
+
+
+\subsubsection{NLP interface}
+\label{sec:bonmin_nlp_interface_option}
+\label{sec:bonmin_options_:_Nlp_solve_options}
+
+\paragraph{nlp\_solve\_frequency:} Specify the frequency (in terms of nodes) at which NLP relaxations are solved in B-Hyb. $\;$ \\
+ A frequency of 0 amounts to to never solve the
+NLP relaxation. The valid range for this integer option is
+$0 \le {\tt nlp\_solve\_frequency } <  {\tt +inf}$
+and its default value is $10$.
+
+
+\paragraph{nlp\_solve\_max\_depth:} Set maximum depth in the tree at which NLP relaxations are solved in B-Hyb. $\;$ \\
+ A depth of 0 amounts to to never solve the NLP
+relaxation. The valid range for this integer option is
+$0 \le {\tt nlp\_solve\_max\_depth } <  {\tt +inf}$
+and its default value is $10$.
+
+\paragraph{warm\_start:} Select the warm start method $\;$ \\
+ This will affect the function getWarmStart(), and
+as a consequence the wam starting in the various
+algorithms.
+The default value for this string option is "none".
+\\ 
+Possible values:
+\begin{itemize}
+   \item none: No warm start
+   \item optimum: Warm start with direct parent optimum
+   \item interior\_point: Warm start with an interior point of direct
+parent
+\end{itemize}
+
+
+\subsubsection{MILP cutting planes}
+\label{sec:bonmin_options_for_MILP_cutting_planes}
+
+A value $k$ for the follwing cut generator frequency parameters is interpreted as followed by CBC:
+If $k > 0$, cuts are generated every $k$ nodes, if
+$-99 < k < 0$ cuts are generated every $-k$ nodes but
+Cbc may decide to stop generating cuts, if not
+enough are generated at the root node, if $k=-99$
+generate cuts only at the root node, if $k=0$ or
+$100$ do not generate cuts.
+The valid range for these integer options is $[-100, \infty)$.
+
+\paragraph{2mir\_cuts:} Frequency (in terms of nodes) for generating 2-MIR cuts in branch-and-cut $\;$ \\
+The default value is $0$.
+
+\paragraph{Gomory\_cuts:} Frequency (in terms of nodes) for generating Gomory cuts in branch-and-cut. $\;$ \\
+The default value is $-5$.
+
+\paragraph{clique\_cuts:} Frequency (in terms of nodes) for generating clique cuts in branch-and-cut $\;$ \\
+The default value is $-5$.
+
+\paragraph{cover\_cuts:} Frequency (in terms of nodes) for generating cover cuts in branch-and-cut $\;$ \\
+The default value is $-5$.
+
+\paragraph{flow\_covers\_cuts:} Frequency (in terms of nodes) for generating flow cover cuts in branch-and-cut $\;$ \\
+The default value is $-5$.
+
+\paragraph{lift\_and\_project\_cuts:} Frequency (in terms of nodes) for generating lift-and-project cuts in branch-and-cut $\;$ \\
+The default value is $0$.
+
+\paragraph{mir\_cuts:} Frequency (in terms of nodes) for generating MIR cuts in branch-and-cut $\;$ \\
+The default value is $-5$.
+
+\paragraph{probing\_cuts:} Frequency (in terms of nodes) for generating probing cuts in branch-and-cut $\;$ \\
+The default value is $-5$.
+
+\paragraph{reduce\_and\_split\_cuts:} Frequency (in terms of nodes) for generating reduce-and-split cuts in branch-and-cut $\;$ \\
+The default value is $0$.
+
+\subsubsection{Options for non-convex problems}
+\label{sec:bonmin_options_for_non-convex_problems}
+\paragraph{max\_consecutive\_infeasible:} Number of consecutive infeasible subproblems before aborting a branch. $\;$ \\
+ Will continue exploring a branch of the tree
+until "max\_consecutive\_infeasible"consecutive
+problems are infeasibles by the NLP sub-solver. The valid range for this integer option is
+$0 \le {\tt max\_consecutive\_infeasible } <  {\tt +inf}$
+and its default value is $0$.
+
+
+\paragraph{num\_resolve\_at\_infeasibles:} Number $k$ of tries to resolve an infeasible node (other than the root) of the tree with different starting point. $\;$ \\
+ The algorithm will solve all the infeasible nodes
+with $k$ different random starting points and
+will keep the best local optimum found. The valid range for this integer option is
+$0 \le {\tt num\_resolve\_at\_infeasibles } <  {\tt +inf}$
+and its default value is $0$.
+
+
+\paragraph{num\_resolve\_at\_node:} Number $k$ of tries to resolve a node (other than the root) of the tree with different starting point. $\;$ \\
+ The algorithm will solve all the nodes with $k$
+different random starting points and will keep
+the best local optimum found. The valid range for this integer option is
+$0 \le {\tt num\_resolve\_at\_node } <  {\tt +inf}$
+and its default value is $0$.
+
+
+\paragraph{num\_resolve\_at\_root:} Number $k$ of tries to resolve the root node with different starting points. $\;$ \\
+ The algorithm will solve the root node with $k$
+random starting points and will keep the best
+local optimum found. The valid range for this integer option is
+$0 \le {\tt num\_resolve\_at\_root } <  {\tt +inf}$
+and its default value is $0$.
+
+
+\subsubsection{Robustness}
+\label{sec:bonmin_options_for_robustness}
+\paragraph{max\_consecutive\_failures:} (temporarily removed) Number $n$ of consecutive unsolved problems before aborting a branch of the tree. $\;$ \\
+ When $n > 0$, continue exploring a branch of the
+tree until $n$ consecutive problems in the branch
+are unsolved (we call unsolved a problem for
+which Ipopt can not guarantee optimality within
+the specified tolerances). The valid range for this integer option is
+$0 \le {\tt max\_consecutive\_failures } <  {\tt +inf}$
+and its default value is $10$.
+
+
+\paragraph{max\_random\_point\_radius:} Set max value r for coordinate of a random point. $\;$ \\
+ When picking a random point coordinate i will be
+in the interval [min(max(l,-r),u-r),
+max(min(u,r),l+r)] (where l is the lower bound
+for the variable and u is its upper bound) The valid range for this real option is 
+$0 <  {\tt max\_random\_point\_radius } <  {\tt +inf}$
+and its default value is $100000$.
+
+
+\paragraph{num\_iterations\_suspect:} Number of iterations over which a node is considered "suspect" (for debugging purposes only, see detailed documentation). $\;$ \\
+ When the number of iterations to solve a node is
+above this number, the subproblem at this node is
+considered to be suspect and it will be outputed
+in a file (set to -1 to deactivate this). The valid range for this integer option is
+$-1 \le {\tt num\_iterations\_suspect } <  {\tt +inf}$
+and its default value is $-1$.
+
+
+\paragraph{num\_retry\_unsolved\_random\_point:} Number $k$ of times that the algorithm will try to resolve an unsolved NLP with a random starting point (we call unsolved an NLP for which Ipopt is not able to guarantee optimality within the specified tolerances). $\;$ \\
+ When Ipopt fails to solve a continuous NLP
+sub-problem, if $k > 0$, the algorithm will try
 again to solve the failed NLP with $k$ new
 randomly chosen starting points  or until the
 problem is solved with success. The valid range for this integer option is
-${\tt 0} \le \hbox{\tt num\_retry\_unsolved\_random\_point } <  \infty$
-and its default value is {\tt 0}.
-
-\subsubsection{Non-convex problems}
-
-\paragraph{max\_consecutive\_infeasible}
-Number $k$ of consecutive infeasible subproblems before aborting a branch. \\
- Explores a branch of the tree until $k$ consecutive
-problems are infeasible by the NLP subsolver. The valid range for
-this integer option is
-${\tt 0} \le \hbox{\tt max\_consecutive\_infeasible } <  \infty$
-and its default value is {\tt 0}.
-
-\paragraph{num\_resolve\_at\_root}
-Number $k$ of trials to solve the root node with different starting points. \\
- The algorithm solves the root node with $k$ random starting points and keeps the best local optimum found.
-Note that the function to generate a random starting point is very na\"{\i}ve: it chooses a random point (uniformly) between the bounds provided for the variable.
-In particular if there are some functions that can not be evaluated at some points of the domain, it may pick such points, and so it is not robust in that respect.
-The valid range for this integer option is
-${\tt 0} \le \hbox{\tt num\_resolve\_at\_root } <  \infty $
-and its default value is {\tt 0}.
-
-\paragraph{num\_resolve\_at\_node}
-Number $k$ of tries to solve a node (other than the root) of the tree with different starting point. \\
- The algorithm solves all the nodes with $k$ different random starting points and keeps the best local optimum found.
-Note that the function to generate a random starting point is very na\"{\i}ve: it chooses a random point (uniformly) between the bounds provided for the variable.
-In particular if there are some functions that can not be evaluated at some points of the domain, it may pick such points, and so it is not robust in that respect.
-The valid range for this integer option is
-${\tt 0} \le \hbox{\tt num\_resolve\_at\_node } <  \infty$
-and its default value is {\tt 0}.
+$0 \le {\tt num\_retry\_unsolved\_random\_point } <  {\tt +inf}$
+and its default value is $0$.
 
 
+\paragraph{random\_point\_perturbation\_interval:} Amount by which starting point is perturbed when choosing to pick random point by perturbating starting point $\;$ \\
+ The valid range for this real option is 
+$0 <  {\tt random\_point\_perturbation\_interval } <  {\tt +inf}$
+and its default value is $1$.
 
-\subsubsection{\texttt{B-Hyb} specific options}
 
-\paragraph{nlp\_solve\_frequency}
-Specify the frequency (in terms of nodes) at which NLP relaxations are solved in {\tt B-Hyb}. \\
- A frequency of 0 amounts to never solve the
-NLP relaxation. The valid range for this integer option is
-${\tt 0} \le \hbox{\tt nlp\_solve\_frequency } <  \infty$
-and its default value is {\tt 10}.
-
-\paragraph{oa\_dec\_time\_limit}
-Specify the maximum number of seconds spent overall in OA decomposition iterations. \\
- The valid range for this real option is
-${\tt 0} \le \hbox{\tt oa\_dec\_time\_limit } <  \infty$
-and its default value is {\tt 120}.
-
-\paragraph{tiny\_element}
-Value for tiny element in OA cut. \\
-We will remove cleanly (by relaxing cut) an element lower than this.
-The  valid range for this real option is
-$0 \le \hbox{\tt tiny\_element } <  \infty$
-and its default value is $10^{-8}$.
-
-\paragraph{very\_tiny\_element}
-Value for very tiny element in OA cut. \\
-Algorithm will take the risk of neglecting an element lower
-than this. The  valid range for this real option is
-$0 \le \hbox{\tt very\_tiny\_element } <  \infty$
-and its default value is $10^{-17}$.
-
-\paragraph{milp\_subsolver}
-Choose the subsolver to solve MILPs sub-problems in OA decompositions. \\
-The default value for this string option is ``{\tt Cbc\_D}''.
-\\
+\paragraph{random\_point\_type:} method to choose a random starting point $\;$ \\
+The default value for this string option is "Jon".
+\\ 
 Possible values:
 \begin{itemize}
-   \item {\tt Cbc\_D}: COIN-OR Branch and Cut with default options
-   \item {\tt Cbc\_Par}: COIN-OR Branch and Cut with options passed by user
+   \item Jon: Choose random point uniformly between the bounds
+   \item Andreas: perturb the starting point of the problem
+within a prescriped interval
+   \item Claudia: perturb the starting point using the
+perturbation radius suffix information
 \end{itemize}
 
 
-\subsubsection{Cut generators frequency}
-\paragraph{Gomory\_cuts, cover\_cuts, mir\_cuts}
-For each one of the cut generators sets the frequency (in terms of nodes) for generating cuts of
-the given type in the branch-and-cut.\\
-Possible values:
-\begin{itemize}
-\item $k > 0$, cuts are generated every k nodes,
-\item $-99 < k < 0$,  cuts are generated every -k nodes but
-{\tt Cbc} may decide to stop generating cuts, if not
-enough are generated at the root node,
-\item$k = -99$ cuts are generated only at the root node,
-\item $k = 0$ or $k = -100$ cuts are not generated.
-\end{itemize}
- The default value for this integer option is ${\tt -5}$.
+\subsubsection{Diving}
+\label{sec:Diving_options}
+\paragraph{max\_backtracks\_in\_dive:} Set the number of backtracks in a dive when using dfs-dive tree searchstrategy. $\;$ \\
+ The valid range for this integer option is
+$0 \le {\tt max\_backtracks\_in\_dive } <  {\tt +inf}$
+and its default value is $5$.
+
+
+\paragraph{max\_dive\_depth:} When using dfs-dive search. Maximum depth to go to from the diving board (node where the diving started. $\;$ \\
+ The valid range for this integer option is
+$0 \le {\tt max\_dive\_depth } <  {\tt +inf}$
+and its default value is $2147483647$.
+
+
+\paragraph{stop\_diving\_on\_cutoff:} Flag indicating whether we stop diving based on guessed feasible objective and the current cutoff $\;$ \\
+The default value for this string option is "no". Possible values are "yes" and "no".
+
+
+\subsubsection{Experimental options}
+\label{sec:bonmin_experimental_options}
+\paragraph{maxmin\_crit\_have\_sol:} Weight towards minimum in of lower and upper branching estimates when a solution has been found. $\;$ \\
+ The valid range for this real option is 
+$0 \le {\tt maxmin\_crit\_have\_sol } \le 1$
+and its default value is $0.1$.
+
+
+\paragraph{maxmin\_crit\_no\_sol:} Weight towards minimum in of lower and upper branching estimates when no solution has been found yet. $\;$ \\
+ The valid range for this real option is 
+$0 \le {\tt maxmin\_crit\_no\_sol } \le 1$
+and its default value is $0.7$.
+
+
+\paragraph{number\_before\_trust\_list:} Set the number of branches on a variable before its pseudo costs are to be believed during setup of strong branching candidate list. $\;$ \\
+ The valid range for this integer option is
+$-1 \le {\tt number\_before\_trust\_list } <  {\tt +inf}$ and its default is that of "number\_before\_trust".
+
+
+
+\paragraph{number\_strong\_branch\_root:} Maximum number of variables considered for strong branching in root node. $\;$ \\
+ The valid range for this integer option is
+$0 \le {\tt number\_strong\_branch\_root } <  {\tt +inf}$
+and its default value is $2147483647$.
+
+
+\paragraph{setup\_pseudo\_frac:} Proportion of strong branching list that has to be taken from most-integer-infeasible list. $\;$ \\
+ The valid range for this real option is 
+$0 \le {\tt setup\_pseudo\_frac } \le 1$
+and its default value is $0.5$.

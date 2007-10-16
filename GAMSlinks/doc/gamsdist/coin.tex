@@ -138,6 +138,9 @@ To pass those options to the MILP subsolver, you have to replace the prefix ``\t
 GAMS/CoinBonmin understand currently the following GAMS parameters: reslim (time limit), iterlim (iteration limit), nodlim (node limit), cutoff, optca (absolute gap tolerance), and optcr (relative gap tolerance).
 You can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your GAMS program, e.g. \verb+Option nodlim=1000;+.
 
+\subsection{Description of CoinBonmin Options}
+\label{sub:bonminoptions}
+
 The following tables gives the list of options together with their types, default values and availability in each of the four main algorithms.
 The column labeled `type' indicates the type of the parameter (`F' stands for float, `I' for integer, and `S' for
 string).
@@ -163,14 +166,14 @@ cutoff\_decr& F& $10^{-5}$& +& +& +& +\\
 integer\_tolerance& F& $10^{-6}$& +& +& +& +\\
 iteration\_limit& I& $\infty$& +& +& +& +\\
 nlp\_failure\_behavior& S& stop& +& +& +& +\\
-node\_comparison& S& dynamic& +& +& +& +\\
+node\_comparison$^*$& S& dynamic& +& +& +& +\\
 node\_limit& I& nodlim or iterlim (10000)& +& +& +& +\\
 num\_cut\_passes& I& 1& --& +& +& +\\
 num\_cut\_passes\_at\_root& I& 20& --& +& +& +\\
 number\_before\_trust$^*$& I& 8& +& +& +& +\\
 number\_strong\_branch$^*$& I& 20& +& +& +& +\\
 solution\_limit& I& $\infty$& +& +& +& +\\
-sos\_constraints& S& enable& +& --& +& +\\
+% sos\_constraints& S& enable& +& --& +& +\\
 time\_limit& F& reslim (1000)& +& +& +& +\\
 tree\_search\_strategy& S& top\-node& +& +& +& +\\
 varselect\_stra& S& strong\-branching& +& +& +& +\\
@@ -237,7 +240,7 @@ mir\_cuts$^*$& I& \-5& --& +& --& +\\
 probing\_cuts& I& \-5& --& +& --& +\\
 reduce\_and\_split\_cuts& I& 0& --& +& --& +\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{non-convex problems}\\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Options for non-convex problems}\\
 \hline
 max\_consecutive\_infeasible& I& 0& +& +& +& +\\
 num\_resolve\_at\_infeasibles& I& 0& +& --& --& --\\
@@ -259,7 +262,7 @@ max\_backtracks\_in\_dive& I& 5& +& +& +& +\\
 max\_dive\_depth& I& $\infty$& +& +& +& +\\
 stop\_diving\_on\_cutoff& S& no& +& +& +& +\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{experimental options}\\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Experimental options}\\
 \hline
 maxmin\_crit\_have\_sol& F& 0.1& +& +& +& +\\
 maxmin\_crit\_no\_sol& F& 0.7& +& +& +& +\\
@@ -269,75 +272,6 @@ setup\_pseudo\_frac& F& 0.5& +& +& +& +\\
 \hline
 \end{tabular}
 \end{center}
-
-% 
-% \begin{table}[!ht]
-% \begin{center}
-% \begin{tabular}{|l|r|r|r|r|r|r|}
-% \hline
-% Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
-% \hline
-% \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{output options}\\
-% \hline
-% bb\_log\_level & I & 1 & + & $-$  & + & +\\
-% bb\_log\_interval & I & 100 & + & $-$ & + & +\\
-% lp\_log\_level & I & 0 & $-$ & $-$ & + & +\\
-% milp\_log\_level & I &  0 & $-$ &  + & $-$ & +\\
-% oa\_log\_level & I & 1 & $-$ &  + & $-$ & +\\
-% oa\_log\_frequency & I & 100 & $ - $ & $+$ & $-$ & $+$\\
-% nlp\_log\_level & I & 1 & +&  + & + & +\\
-% print\_user\_options & S & no & + & + & + & +\\
-% \hline
-% \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{branch-and-bound options}\\
-% \hline
-% time\_limit & F & reslim (1000) & + & + & + & +\\
-% allowable\_gap  & F & optca (0) & + & + & + & +\\
-% allowable\_fraction\_gap & F & optcr ($0.1$)& +& + & +& +\\
-% cutoff & F& cutoff or $10^{100}$ &  + & +& +& +\\
-% cutoff\_decr & F & $10^{-5}$ & + & + & + & +\\
-% integer\_tolerance & F & $10^{-6}$ &  + & + & + & +\\
-% node\_limit & I & nodlim or iterlim ($10000$) &  + & +& + & + \\
-% node\_comparison$^*$ & S & dynamic & + & + & +& +\\
-% number\_before\_trust$^*$ & I & 8 & $-$ & + & + & +\\
-% number\_strong\_branch$^*$ & I & 20 & $-$ & + & + &+ \\
-% %sos\_constraints & S & enable & + & - & - & - \\
-% \hline
-% \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{options for robustness}\\
-% \hline
-% max\_random\_point\_radius & F & $10^5$  &+ &+ &+ &+\\
-% max\_consecutive\_failures & I & 10 & + & $-$ & $-$ & $-$\\
-% nlp\_failure\_behavior & S & stop   & + & + & + & + \\
-% num\_iterations\_suspect & I & $-$1 & + & + & + & + \\
-% num\_retry\_unsolved\_random\_point & I & 0 & + & + & + & + \\
-% \hline
-% \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{options for nonconvex problems}\\
-% \hline
-% max\_consecutive\_infeasible & I & 0 & + & $-$ & $-$ & $-$\\
-% num\_resolve\_at\_node & I & 0 & + & +  & + & + \\
-% num\_resolve\_at\_root & I & 0& + & + & + & +  \\
-% \hline
-% \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{{\tt B-Hyb }specific options}\\
-% \hline
-% nlp\_solve\_frequency & I & 10 & $-$ & $-$ & $-$ & +\\
-% oa\_dec\_time\_limit & F& 120 & $-$ & $-$ & $-$ & +\\
-% tiny\_element & F & $10^{-8}$ & $-$ & + & + & + \\
-% very\_tiny\_element & F & $10^{-17}$ & $-$ & + & + & + \\
-% \hline
-% \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{MILP options}\\
-% \hline
-% milp\_subsolver &S & {\tt Cbc\_D} & $-$ & + & $-$ & + \\
-% cover\_cuts$^*$  & I & $-$5 & $-$ & + & $-$ & +\\
-% Gomory\_cuts$^*$ & I & $-$5 & $-$ &  + & $-$ & + \\
-% mir\_cuts$^*$  & I & $-$5 & $-$  & + & $-$ &+\\
-% \hline
-% \end{tabular}
-% \end{center}
-% % $\strut^*$ option is available for MILP subsolver (it is only passed if the {\tt milp\_subsolver} option is set to {\tt Cbc\_Par}).
-% \caption{\label{tab:bonminoptions}Compatibility of some Bonmin options with different algorithms.}
-% \end{table}
-
-\subsection{Detailed Description of CoinBonmin Options}
-\label{sub:bonminoptions}
 
 \input{optbonmin_a}
 
