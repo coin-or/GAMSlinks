@@ -132,13 +132,13 @@ Their name coincide with Bonmins options, except that the ``\texttt{bonmin.}'' p
 
 An example of a \texttt{bonmin.opt} file is as follows:
 \begin{verbatim}
-   bonmin.algorithm B-OA
+   bonmin.algorithm B-Hyb
    bonmin.oa_log_level 4
    bonmin.milp_subsolver Cbc_Par
    milp_sub.cover_cuts 0
    print_level 6
 \end{verbatim}
-This sets the algorithm to be used to outer approximation, the level of outer approximation related output to $4$, the print level for \texttt{Ipopt} to $6$, the MILP subsolver for outer approximation to a parametrized version of CBC, and switches off cover cutting planes for the MILP subsolver.
+This sets the algorithm to be used to the hybrid algorithm, the level of outer approximation related output to $4$, the print level for \texttt{Ipopt} to $6$, the MILP subsolver for outer approximation to a parametrized version of CBC, and switches off cover cutting planes for the MILP subsolver.
 
 GAMS/CoinBonmin understand currently the following GAMS parameters: reslim (time limit), iterlim (iteration limit), nodlim (node limit), cutoff, optca (absolute gap tolerance), and optcr (relative gap tolerance).
 You can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your GAMS program, e.g. \verb+Option nodlim=1000;+.
