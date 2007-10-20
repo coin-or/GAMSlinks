@@ -1,217 +1,216 @@
-\subsection{Detailed Descriptions of CoinCbc Options}
+\subsection{Detailed Descriptions of CoinCBC Options}
+
+\subsubsection{General Options}
 
 \begin{description}
 
-\item[\label{roundingheuristic}\hypertarget{roundingheuristic}
-{\textbf{roundingheuristic (\slshape{integer})}}]\hspace{1.0in}
+\item[\label{iterlim}\hypertarget{iterlim}
+{\textbf{iterlim (\slshape{integer})}}]\hspace{1.0in}
 
-A simple rounding heuristic to find feasible solutions of the MIP.
+For an LP, this is the maximum number of iterations to solve the LP.
+For a MIP, this option is ignored.
 
-\textsl{(default = 1)}
+\textsl{(default = GAMS iterlim)}
 
-\item[\label{localsearch}\hypertarget{localsearch}
-{\textbf{localsearch (\slshape{integer})}}]\hspace{1.0in}
+\item[\label{reslim}\hypertarget{reslim}
+{\textbf{reslim (\slshape{real})}}]\hspace{1.0in}
 
-A local search heuristic to find feasible solutions of the MIP.
+Maximum time in seconds.
 
-\textsl{(default = 1)}
-\begin{itemize}
-\item[0] local search heuristic is not used
-\item[1] local search heuristic is used
-\end{itemize}
-
-\item[\label{strongbranching}\hypertarget{strongbranching}
-{\textbf{strongbranching (\slshape{integer})}}]\hspace{1.0in}
-
-If strong branching is switched on, then the maximum number of candidates to be evaluated for strong branching is set to 10 (if the problem has less then 5000 variables) or 5 (if the problem has more then 5000 variables).
-If strong branching is switched off, the maximum number is set to 0. (However, Cbc reports still some (but less) strong branching operations.)
-
-\textsl{(default = 1)}
-\begin{itemize}
-\item[0] strong branching is switched off
-\item[1] strong branching is switched on
-\end{itemize}
-
-\item[\label{integerpresolve}\hypertarget{integerpresolve}
-{\textbf{integerpresolve (\slshape{integer})}}]\hspace{1.0in}
-
-If switched on, a preprocessing on the MIP will be performed.
-The integer presolve also does probing, independent of the setting of the 'probing' parameter.\\
-From the CglPreprocess description:
-This method uses other cut generators to strengthen cuts, establish that some cuts are redundant, fix variables and find relationships such as $x + y = 1$.
-While cuts can be added at any time in the tree, some cuts are actually just stronger versions of existing ones.
-They can thus replace the existing cuts rather than being added as new cuts. This is awkward in the tree but reasonable at the root node.
-
-\textsl{(default = 1)}
-\begin{itemize}
-\item[0] don't do integer presolve
-\item[1] do integer presolve
-\end{itemize}
-
-\item[\label{findsos}\hypertarget{findsos}
-{\textbf{findsos (\slshape{integer})}}]\hspace{1.0in}
-
-This option switches the identification for special ordered sets of type 1 in the integer preprocessing on.
-Cbc then searches for rows with upper bound 1 and where all nonzero coefficients are 1.
-
-\textsl{(default = 1)}
-\begin{itemize}
-\item[0] don't try to find special ordered sets
-\item[1] try to find special ordered sets
-\end{itemize}
-
-\item[\label{cuts}\hypertarget{cuts}
-{\textbf{cuts (\slshape{integer})}}]\hspace{1.0in}
-
-Regulates the use of cut generator routines in Cbc.\\
-If set to automatic, then the parameters for the single cut generators determine which are added.
-
-\textsl{(default = 0)}
-\begin{itemize}
-\item[-1] no cuts will be generated
-\item[0] automatic
-\item[1] cuts from all available cut classes will be generated
-\end{itemize}
-
-\item[\label{probing}\hypertarget{probing}
-{\textbf{probing (\slshape{integer})}}]\hspace{1.0in}
-
-This option switches probing on as cut generator.\\
-From the CglProbing description:
-For selected integer variables (e.g. unsatisfied ones) the effect of setting them up or down is investigated.
-Setting a variable up may in turn set other variables (continuous as well as integer).
-
-\textsl{(default = 1)}
-\begin{itemize}
-\item[0] don't do probing
-\item[1] do probing
-\end{itemize}
-
-\item[\label{gomorycuts}\hypertarget{gomorycuts}
-{\textbf{gomorycuts (\slshape{integer})}}]\hspace{1.0in}
-
-This options switches the generation of mixed integer Gomory Cuts on.
-
-\textsl{(default = 1)}
-\begin{itemize}
-\item[0] don't add gomory cuts
-\item[1] add gomory cuts
-\end{itemize}
-
-\item[\label{knapsackcuts}\hypertarget{knapsackcuts}
-{\textbf{knapsackcuts (\slshape{integer})}}]\hspace{1.0in}
-
-This options switches the generation of knapsack cover cuts on.\\
-From the CglKnapsackCover description:
-CglKnapsackCover looks for a series of different types of minimal covers.
-If a minimal cover is found, it lifts the associated minimal cover inequality and adds the lifted cut to the cut set.
-
-\textsl{(default = 1)}
-\begin{itemize}
-\item[0] don't add knapsack cover cuts
-\item[1] add knapsack cover cuts
-\end{itemize}
-
-\item[\label{oddholecuts}\hypertarget{oddholecuts}
-{\textbf{oddholecuts (\slshape{integer})}}]\hspace{1.0in}
-
-This options switches the generation of odd hole cuts on.\\
-From the CglOddHole description:
-This looks at all rows of type $\sum_i x_i \leq 1 \textrm{(or = 1)}$ (with $x$ binary) and sees if there is an odd cycle cut.
-This is then lifted by using the corresponding Chvatal cut, i.e. by summing up all rows in the cycle.
-The right hand side will be odd and all odd coefficients can be reduced by one.
-The constraint is
-$\sum_j \textrm{even}(j)\,x_j \leq \textrm{odd}$
-which can be replaced by
-$\sum_j \frac{1}{2}\textrm{even}(j)\,x_j \leq \frac{1}{2}(\textrm{odd}-1)$.
-A similar cut can be generated for $\sum_i x_i \geq 1$.
-
-\textsl{(default = 0)}
-\begin{itemize}
-\item[0] don't add odd hole cuts
-\item[1] add odd hole cuts
-\end{itemize}
-
-\item[\label{cliquecuts}\hypertarget{cliquecuts}
-{\textbf{cliquecuts (\slshape{integer})}}]\hspace{1.0in}
-
-This options switches the generation of clique cuts on.
-Clique cuts are of the form ''sum of a set of variables $\leq$ 1''.
-
-\textsl{(default = 1)}
-\begin{itemize}
-\item[0] don't add clique cuts
-\item[1] add clique cuts
-\end{itemize}
-
-\item[\label{flowcovercuts}\hypertarget{flowcovercuts}
-{\textbf{flowcovercuts (\slshape{integer})}}]\hspace{1.0in}
-
-This options switches the generation of flow cover cuts on.\\
-From the CglFlowCover description:
-The Cgl Flow Cover Cut generator generates lifted simple generalized flow cover inequalities.
-Since flow cover inequalities are generally not facet-defining, they are lifted to obtain stronger inequalities.
-Although flow cover inequalities requires a special problem structure to be generated, they are quite useful for solving general mixed integer linear programs.
-
-\textsl{(default = 1)}
-\begin{itemize}
-\item[0] don't add flow cover cuts
-\item[1] add flow cover cuts
-\end{itemize}
-
-\item[\label{mircuts}\hypertarget{mircuts}
-{\textbf{mircuts (\slshape{integer})}}]\hspace{1.0in}
-
-This options switches the generation of mixed integer rounding cuts on.
-
-\textsl{(default = 1)}
-\begin{itemize}
-\item[0] don't add mixed integer rounding cuts
-\item[1] add mixed integer rounding cuts
-\end{itemize}
-
-\item[\label{redsplitcuts}\hypertarget{redsplitcuts}
-{\textbf{redsplitcuts (\slshape{integer})}}]\hspace{1.0in}
-
-This options switches the generation of reduce and split cuts on.\\
-From the CglRedSplit description:
-Reduce-and-Split cuts are variants of Gomory cuts:
-Starting from the current optimal tableau, linear combinations of the rows of the current optimal simplex tableau are used for generating Gomory cuts.
-The choice of the linear combinations is driven by the objective of reducing the coefficients of the non basic continuous variables in the resulting row.
-
-\textsl{(default = 0)}
-\begin{itemize}
-\item[0] don't add reduce and split cuts
-\item[1] add reduce and split cuts
-\end{itemize}
-
-\item[\label{cutsonlyatroot}\hypertarget{cutsonlyatroot}
-{\textbf{cutsonlyatroot (\slshape{integer})}}]\hspace{1.0in}
-
-This option determines whether cuts should be generated only at the root node.
-
-\textsl{(default = 1)}
-\begin{itemize}
-\item[0] generate cuts always in the branch and bound
-\item[1] generate cuts only at root node
-\end{itemize}
-
-\item[\label{startalg}\hypertarget{startalg}
-{\textbf{startalg (\slshape{string})}}]\hspace{1.0in}
-
-This option determines whether a primal or dual simplex algorithm should be used to solve the root node.
-
-\textsl{(default = dual)}
-\begin{itemize}
-\item[primal] primal simplex algorithm
-\item[dual] dual simplex algorithm
-\end{itemize}
+\textsl{(default = GAMS reslim)}
 
 \item[\label{writemps}\hypertarget{writemps}
 {\textbf{writemps (\slshape{string})}}]\hspace{1.0in}
 
-Write an MPS problem file.
+Write the problem formulation in MPS format.
 The parameter value is the name of the MPS file.
+
+\item[\label{special}\hypertarget{special}
+{\textbf{special (\slshape{string})}}]\hspace{1.0in}
+
+This parameter let you specify CBC options which are not supported by the GAMS/CoinCBC interface.
+
+The string value given to this parameter is split up into parts at each space and added to the array of parameters given to CBC (in front of the -solve command).
+Hence, you can use it like the command line parameters for the CBC standalone version.
+
+\end{description}
+
+\subsubsection{LP Options}
+
+\begin{description}
+
+\item[\label{idiotcrash}\hypertarget{idiotcrash}
+{\textbf{idiotcrash (\slshape{integer})}}]\hspace{1.0in}
+
+This is a type of `crash' which works well on some homogeneous problems.
+It works best on problems with unit elements and right hand sides but will do something to any model.
+It should only be used before the primal simplex algorithm.
+
+A positive number determines the number of passes that idiotcrash is called.
+
+\textsl{(default = -1)}
+\begin{itemize}
+\item[-1] 
+Let CLP decide by itself whether to use it.
+\item[0] 
+Switch this method off.
+\end{itemize}
+
+\item[\label{sprintcrash}\hypertarget{sprintcrash}
+{\textbf{sprintcrash (\slshape{integer})}}]\hspace{1.0in}
+
+For long and thin problems this method may solve a series of small problems created by taking a subset of the columns.
+Cplex calls it `sifting'.
+
+A positive number determines the number of passes that sprintcrash is called.
+
+\textsl{(default = -1)}
+\begin{itemize}
+\item[-1] 
+Let CLP decide by itself whether to use it.
+\item[0] 
+Switch this method off.
+\end{itemize}
+
+\item[\label{sifting}\hypertarget{sifting}
+{\textbf{sifting (\slshape{integer})}}]\hspace{1.0in}
+
+Synonym for \hyperlink{sprintcrash}{sprintcrash}.
+
+\textsl{(default = -1)}
+
+\item[\label{crash}\hypertarget{crash}
+{\textbf{crash (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether CLP should use a crash algorithm to find a dual feasible basis.
+
+\textsl{(default = off)}
+\begin{itemize}
+\item[off] 
+Switch off the creation of dual feasible basis by the crash method.
+\item[on] 
+Switch on the creation of dual feasible basis by the crash method.
+\item[solow\_halim] 
+Switch on a crash variant due to Solow and Halim.
+\item[halim\_solow] 
+Switch on a crash variant due to Solow and Halim with modifications of John J. Forrest.
+\end{itemize}
+
+\item[\label{maxfactor}\hypertarget{maxfactor}
+{\textbf{maxfactor (\slshape{integer})}}]\hspace{1.0in}
+
+Maximum number of iterations between refactorizations in CLP.
+
+If this is left at the default value of 200 then CLP will guess at a value to use.
+CLP may decide to refactorize earlier for accuracy.
+
+\textsl{(default = 200)}
+
+\item[\label{crossover}\hypertarget{crossover}
+{\textbf{crossover (\slshape{integer})}}]\hspace{1.0in}
+
+Determines whether CLP should crossover to the simplex algorithm after the barrier algorithm finished.
+
+Interior point algorithms do not obtain a basic solution.
+This option will crossover to a basic solution suitable for ranging or branch and cut.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] 
+Turn off crossover to simplex algorithm after barrier algorithm finished.
+\item[1] 
+Turn on crossover to simplex algorithm after barrier algorithm finished.
+\end{itemize}
+
+\item[\label{dualpivot}\hypertarget{dualpivot}
+{\textbf{dualpivot (\slshape{string})}}]\hspace{1.0in}
+
+Choice of the pivoting strategy in the dual simplex algorithm.
+
+\textsl{(default = auto)}
+\begin{itemize}
+\item[auto] 
+Let CLP use a variant of the steepest choice method which starts like partial, i.e., scans only a subset of the primal infeasibilities,
+and later changes to full pricing when the factorization becomes denser.
+\item[dantzig] 
+Let CLP use the pivoting strategy due to Dantzig.
+\item[steepest] 
+Let CLP use the steepest choice method.
+\item[partial] 
+Let CLP use a variant of the steepest choice method which scans only a subset of the primal infeasibilities to select the pivot step.
+\end{itemize}
+
+\item[\label{primalpivot}\hypertarget{primalpivot}
+{\textbf{primalpivot (\slshape{string})}}]\hspace{1.0in}
+
+Choice of the pivoting strategy in the primal simplex algorithm.
+
+\textsl{(default = auto)}
+\begin{itemize}
+\item[auto] 
+Let CLP use a variant of the exact devex method.
+\item[dantzig] 
+Let CLP use the pivoting strategy due to Dantzig.
+\item[steepest] 
+Let CLP use the steepest choice method.
+\item[partial] 
+Let CLP use a variant of the exact devex method which scans only a subset of the primal infeasibilities to select the pivot step.
+\item[exact] 
+Let CLP use the exact devex method.
+\item[change] 
+Let CLP initially use Dantzig pivot method until the factorization becomes denser.
+\end{itemize}
+
+\item[\label{perturbation}\hypertarget{perturbation}
+{\textbf{perturbation (\slshape{integer})}}]\hspace{1.0in}
+
+Determines whether CLP should perturb the problem before starting.
+Perturbation helps to stop cycling, but CLP uses other measures for this.
+However, large problems and especially ones with unit elements and unit right hand sides or costs benefit from perturbation.
+Normally CLP tries to be intelligent, but you can switch this off.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] 
+Turns off perturbation of LP.
+\item[1] 
+Turns on perturbation of LP.
+\end{itemize}
+
+\item[\label{scaling}\hypertarget{scaling}
+{\textbf{scaling (\slshape{string})}}]\hspace{1.0in}
+
+Scaling can help in solving problems which might otherwise fail because of lack of accuracy.
+It can also reduce the number of iterations.
+It is not applied if the range of elements is small.
+Both methods do several passes alternating between rows and columns using current scale factors from one and applying them to the other.
+
+\textsl{(default = auto)}
+\begin{itemize}
+\item[off] 
+Turns off scaling.
+\item[auto] 
+Let CLP choose the scaling method automatically.
+It decides for one of these methods depending on which gives the better ratio of the largest element to the smallest one.
+\item[equilibrium] 
+Let CLP use an equilibrium based scaling method which uses the largest scaled element.
+\item[geometric] 
+Let CLP use a geometric based scaling method which uses the squareroot of the product of largest and smallest element.
+\end{itemize}
+
+\item[\label{presolve}\hypertarget{presolve}
+{\textbf{presolve (\slshape{integer})}}]\hspace{1.0in}
+
+Presolve analyzes the model to find such things as redundant constraints, constraints which fix some variables, constraints which can be transformed into bounds, etc.
+For the initial solve of any problem this is worth doing unless you know that it will have no effect.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] 
+Turns off the initial presolve.
+\item[1] 
+Turns on the initial presolve.
+\end{itemize}
 
 \item[\label{tol_dual}\hypertarget{tol_dual}
 {\textbf{tol\_dual (\slshape{real})}}]\hspace{1.0in}
@@ -227,82 +226,174 @@ The maximum amount the primal constraints can be violated and still be considere
 
 \textsl{(default = 1e-7)}
 
+\item[\label{tol_presolve}\hypertarget{tol_presolve}
+{\textbf{tol\_presolve (\slshape{real})}}]\hspace{1.0in}
+
+The tolerance used in presolve.
+
+\textsl{(default = 1e-8)}
+
+\item[\label{startalg}\hypertarget{startalg}
+{\textbf{startalg (\slshape{string})}}]\hspace{1.0in}
+
+Determines the algorithm to use for an LP or the initial LP relaxation if the problem is a MIP.
+
+\textsl{(default = dual)}
+\begin{itemize}
+\item[primal] 
+Let CLP use the primal simplex algorithm.
+\item[dual] 
+Let CLP use the dual simplex algorithm.
+\item[barrier] 
+Let CLP use a primal dual predictor corrector algorithm.
+\end{itemize}
+
+\end{description}
+
+\subsubsection{MIP Options}
+
+\begin{description}
+
 \item[\label{tol_integer}\hypertarget{tol_integer}
 {\textbf{tol\_integer (\slshape{real})}}]\hspace{1.0in}
 
-An integer variable is deemed to be at an integral value if it is no further than the value of this parameter from the next integral value away.
+For an optimal solution, no integer variable may be farther than this from an integer value.
 
 \textsl{(default = 1e-6)}
 
+\item[\label{sollim}\hypertarget{sollim}
+{\textbf{sollim (\slshape{integer})}}]\hspace{1.0in}
 
-\item[\label{scaling}\hypertarget{scaling}
-{\textbf{scaling (\slshape{integer})}}]\hspace{1.0in}
+A limit on number of feasible solutions that CBC should find for a MIP.
 
-This option determines whether the linear relaxation should be scaled.
+\textsl{(default = -1)}
+\begin{itemize}
+\item[-1] 
+No limit on the number of feasible solutions.
+\end{itemize}
 
-\textsl{(default = 1)}
+\item[\label{strongbranching}\hypertarget{strongbranching}
+{\textbf{strongbranching (\slshape{integer})}}]\hspace{1.0in}
 
-\item[\label{presolve}\hypertarget{presolve}
-{\textbf{presolve (\slshape{integer})}}]\hspace{1.0in}
+Determines the number of variables to look at in strong branching.
 
-This option determines whether a presolve should be applied to the linear relaxation before it is solved the first time.
+In order to decide which variable to branch on, the code will choose up to this number of unsatisfied variables and try minimal up and down branches.
+The most effective one is chosen.
+If a variable is branched on many times then the previous average up and down costs may be used - see the option \hyperlink{trustpseudocosts}{trustpseudocosts}.
 
-\textsl{(default = 1)}
+\textsl{(default = 5)}
+
+\item[\label{trustpseudocosts}\hypertarget{trustpseudocosts}
+{\textbf{trustpseudocosts (\slshape{integer})}}]\hspace{1.0in}
+
+Using strong branching computes pseudo-costs.
+This parameter determines after how many branches for a variable we just trust the pseudo costs and do not do any more strong branching.
+
+\textsl{(default = 5)}
+
+\item[\label{coststrategy}\hypertarget{coststrategy}
+{\textbf{coststrategy (\slshape{string})}}]\hspace{1.0in}
+
+This parameter influence the branching variable selection.
+
+If turned on, then the variables are sorted in order of their absolute costs, and branching is done first on variables with largest cost.
+This primitive strategy can be surprisingly effective.
+
+\textsl{(default = off)}
+\begin{itemize}
+\item[off] 
+Turns off a specific cost strategy.
+\item[priorities] 
+Assigns highest priority to variables with largest absolute cost.
+\item[columnorder] 
+Assigns the priorities 1, 2, 3,.. with respect to the column ordering.
+\item[binaryfirst] 
+Handles two sets of priorities such that binary variables get high priority.
+\item[binarylast] 
+Handles two sets of priorities such that binary variables get low priority.
+\item[length] 
+Assigns high priority to variables that are at most nonzero.
+\end{itemize}
+
+\item[\label{nodestrategy}\hypertarget{nodestrategy}
+{\textbf{nodestrategy (\slshape{string})}}]\hspace{1.0in}
+
+This determines the strategy used to select the next node from the branch and cut tree.
+
+\textsl{(default = fewest)}
+\begin{itemize}
+\item[hybrid] 
+Let CBC do first a breath search on nodes with a small depth in the tree and then switch to choose nodes with fewest infeasibilities.
+\item[fewest] 
+This will let CBC choose the node with the fewest infeasibilities.
+\item[depth] 
+This will let CBC always choose the node deepest in tree.
+It gives minimum tree size but may take a long time to find the best solution.
+\item[upfewest] 
+This will let CBC choose the node with the fewest infeasibilities and do up branches first.
+\item[downfewest] 
+This will let CBC choose the node with the fewest infeasibilities and do down branches first.
+\item[updepth] 
+This will let CBC choose the node deepest in tree and do up branches first.
+\item[downdepth] 
+This will let CBC choose the node deepest in tree and do down branches first.
+\end{itemize}
+
+\item[\label{preprocess}\hypertarget{preprocess}
+{\textbf{preprocess (\slshape{string})}}]\hspace{1.0in}
+
+This option controls the MIP specific presolve routines.
+They try to reduce the size of the model in a similar way to presolve and also try to strengthen the model.
+This can be very useful and is worth trying.
+
+\textsl{(default = on)}
+\begin{itemize}
+\item[off] 
+Turns off the presolve routines.
+\item[on] 
+Turns on the presolve routines.
+\item[equal] 
+Turns on the presolve routines and let CBC turn inequalities with more than 5 elements into equalities (cliques) by adding slack variables.
+\item[equalall] 
+Turns on the presolve routines and let CBC turn all inequalities into equalities by adding slack variables.
+\item[sos] 
+This option let CBC search for rows with upper bound 1 and where all nonzero coefficients are 1 and creates special ordered sets if the sets are not overlapping and all integer variables (except for at most one) are in the sets.
+\item[trysos] 
+This option is similar to sos, but allows any number integer variables to be outside of the sets.
+\end{itemize}
 
 \item[\label{printfrequency}\hypertarget{printfrequency}
 {\textbf{printfrequency (\slshape{integer})}}]\hspace{1.0in}
 
-This option controls the number of nodes evaluated between status prints.
+Controls the number of nodes that are evaluated between status prints.
 
-\textsl{(default = 10)}
-
-\item[\label{nodecompare}\hypertarget{nodecompare}
-{\textbf{nodecompare (\slshape{string})}}]\hspace{1.0in}
-
-This option determines the comparision method that is used to determine the tree search order.
-The following documentation is taken from the Cbc manual.
-
-\textsl{(default = default)}
+\textsl{(default = 0)}
 \begin{itemize}
-\item[default] 
-This is designed to do a mostly depth-first search until a solution has been found.
-It then use estimates that are designed to give a slightly better solution.
-If a reasonable number of nodes have been explored (or a reasonable number of solutions found),
-then this class will adopt a breadth-first search (i.e., making a comparison based strictly on objective function values) unless the tree is very large, in which case it will revert to depth-first search.
-\item[depth] 
-This will always choose the node deepest in tree.
-It gives minimum tree size but may take a long time to find the best solution.
-\item[objective] 
-This will always choose the node with the best objective value.
-This may give a very large tree.
-It is likely that the first solution found will be the best and the search should finish soon after the first solution is found.
+\item[0] 
+Automatic choice, which is 100 for large problems and 1000 for small problems.
 \end{itemize}
 
-\item[\label{reslim}\hypertarget{reslim}
-{\textbf{reslim (\slshape{real})}}]\hspace{1.0in}
+\item[\label{increment}\hypertarget{increment}
+{\textbf{increment (\slshape{real})}}]\hspace{1.0in}
 
-Maximum time in seconds.
+A valid solution must be at least this much better than last integer solution.
 
-\textsl{(default = GAMS reslim)}
+If this option is not set then it CBC will try and work one out.
+E.g., if all objective coefficients are multiples of 0.01 and only integer variables have entries in objective then this can be set to 0.01.
 
-\item[\label{iterlim}\hypertarget{iterlim}
-{\textbf{iterlim (\slshape{integer})}}]\hspace{1.0in}
-
-Maximum number of iterations.
-
-\textsl{(default = GAMS iterlim)}
+\textsl{(default = GAMS cheat)}
 
 \item[\label{nodelim}\hypertarget{nodelim}
 {\textbf{nodelim (\slshape{integer})}}]\hspace{1.0in}
 
-Maximum number of nodes in the Branch and Bound.
+Maximum number of nodes that are considered in the Branch and Bound.
 
 \textsl{(default = GAMS nodlim)}
 
 \item[\label{nodlim}\hypertarget{nodlim}
 {\textbf{nodlim (\slshape{integer})}}]\hspace{1.0in}
 
-Maximum number of nodes in the Branch and Bound.
+Maximum number of nodes that are considered in the Branch and Bound.
 This option is overwritten by nodelim, if set.
 
 \textsl{(default = GAMS nodlim)}
@@ -311,7 +402,7 @@ This option is overwritten by nodelim, if set.
 {\textbf{optca (\slshape{real})}}]\hspace{1.0in}
 
 Absolute optimality criterion for a MIP.
-Cbc stops if the gap between the best known solution and the best possible solution is less than this value.
+CBC stops if the gap between the best known solution and the best possible solution is less than this value.
 
 \textsl{(default = GAMS optca)}
 
@@ -319,14 +410,345 @@ Cbc stops if the gap between the best known solution and the best possible solut
 {\textbf{optcr (\slshape{real})}}]\hspace{1.0in}
 
 Relative optimality criterion for a MIP.
-Cbc stops if the relative gap between the best known solution and the best possible solution is less than this value.
+CBC stops if the relative gap between the best known solution and the best possible solution is less than this value.
 
 \textsl{(default = GAMS optcr)}
 
 \item[\label{cutoff}\hypertarget{cutoff}
 {\textbf{cutoff (\slshape{real})}}]\hspace{1.0in}
 
-Cbc stops if the objective function values exceeds (in case of maximization) or falls below (in case of minimization) this value.
+CBC stops if the objective function values exceeds (in case of maximization) or falls below (in case of minimization) this value.
 
 \textsl{(default = GAMS cutoff)}
+
+\end{description}
+
+\subsubsection{MIP Options for Cutting Plane Generators}
+
+\begin{description}
+
+
+\item[\label{cutdepth}\hypertarget{cutdepth}
+{\textbf{cutdepth (\slshape{integer})}}]\hspace{1.0in}
+
+If the depth in the tree is a multiple of cutdepth, then cut generators are applied.
+
+Cut generators may be off, on only at the root, on if they look useful, or on at some interval.
+Setting this option to a positive value K let CBC call a cutgenerator on a node whenever the depth in the tree is a multiple of K.
+
+\textsl{(default = -1)}
+\begin{itemize}
+\item[-1]
+Does not turn on cut generators because the depth of the tree is a multiple of a value.
+\end{itemize}
+
+\item[\label{cut_passes_root}\hypertarget{cut_passes_root}
+{\textbf{cut\_passes\_root (\slshape{integer})}}]\hspace{1.0in}
+
+Determines the number of rounds that the cut generators are applied in the root node.
+
+A negative value $-n$ means that $n$ passes are also applied if the objective does not drop.
+
+\textsl{(default = 100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop in the objective function value is small) if it has less than 5000 columns, and 20 passes otherwise)}
+
+
+\item[\label{cut_passes_tree}\hypertarget{cut_passes_tree}
+{\textbf{cut\_passes\_tree (\slshape{integer})}}]\hspace{1.0in}
+
+Determines the number of rounds that the cut generators are applied in the nodes of the tree other than the root node.
+
+A negative value $-n$ means that $n$ passes are also applied if the objective does not drop.
+
+\textsl{(default = 1)}
+
+\item[\label{cuts}\hypertarget{cuts}
+{\textbf{cuts (\slshape{string})}}]\hspace{1.0in}
+
+A global switch to turn on or off the cutgenerators.
+
+This can be used to switch on or off all default cut generators.
+Then you can set individual ones off or on using the specific options.
+
+\textsl{(default = on)}
+\begin{itemize}
+\item[off] 
+Turns off all cut generators.
+\item[on] 
+Turns on all default cut generators and CBC will try them in the branch and cut tree (see the option \hyperlink{cutdepth}{cutdepth} on how to fine tune the behaviour).
+\item[root] 
+Let CBC generate cuts only at the root node.
+\item[ifmove] 
+Let CBC use cut generators in the tree if they look as if they are doing some good and moving the objective value.
+\item[forceon] 
+Turns on all default cut generators and force CBC to use the cut generator at every node.
+\end{itemize}
+
+\item[\label{cliquecuts}\hypertarget{cliquecuts}
+{\textbf{cliquecuts (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether and when CBC should try to generate clique cuts.
+See the option \hyperlink{cuts}{cuts} for an explanation on the different values.
+
+Clique cuts are of the form ``sum of a set of variables $<=$ 1''.
+
+Reference: M. Eso, Parallel branch and cut for set partitioning, Cornell University, 1999.
+
+\textsl{(default = ifmove)}
+
+\item[\label{flowcovercuts}\hypertarget{flowcovercuts}
+{\textbf{flowcovercuts (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether and when CBC should try to generate flow cover cuts.
+
+See the option \hyperlink{cuts}{cuts} for an explanation on the different values.
+
+The flow cover cut generator generates lifted simple generalized flow cover inequalities.
+Since flow cover inequalities are generally not facet-defining, they are lifted to obtain stronger inequalities.
+Although flow cover inequalities requires a special problem structure to be generated, they are quite useful for solving general mixed integer linear programs.
+
+Reference: Z. Gu, G.L. Nemhauser, M.W.P. Savelsbergh, Lifted flow cover inequalities for mixed 0-1 integer programs, Math. Programming A 85 (1999) 439-467.
+
+\textsl{(default = ifmove)}
+
+\item[\label{gomorycuts}\hypertarget{gomorycuts}
+{\textbf{gomorycuts (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether and when CBC should try to generate mixed-integer Gomory cuts.
+
+See the option \hyperlink{cuts}{cuts} for an explanation on the different values.
+
+Reference: Laurence A. Wolsey, Integer Programming, Wiley, John \& Sons, (1998) 124-132.
+
+\textsl{(default = ifmove)}
+
+\item[\label{knapsackcuts}\hypertarget{knapsackcuts}
+{\textbf{knapsackcuts (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether and when CBC should try to generate knapsack cover cuts.
+
+See the option \hyperlink{cuts}{cuts} for an explanation on the different values.
+
+The knapsack cover cut generator looks for a series of different types of minimal covers.
+If a minimal cover is found, it lifts the associated minimal cover inequality and adds the lifted cut to the cut set.
+
+Reference: S. Martello, and P. Toth, Knapsack Problems, Wiley, 1990, p30.
+
+\textsl{(default = ifmove)}
+
+\item[\label{liftandprojectcuts}\hypertarget{liftandprojectcuts}
+{\textbf{liftandprojectcuts (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether and when CBC should try to generate lift and project cuts.
+They might be expensive to compute, thus they are switched off by default.
+
+See the option \hyperlink{cuts}{cuts} for an explanation on the different values.
+
+Reference: E. Balas and M. Perregaard, A precise correspondence between lift-and-project cuts, simple disjunctive cuts, and mixed integer Gomory cuts for 0-1 programming. Math. Program., 94(203,Ser. B):221-245,2003.
+
+\textsl{(default = off)}
+
+\item[\label{mircuts}\hypertarget{mircuts}
+{\textbf{mircuts (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether and when CBC should try to generate mixed integer rounding cuts.
+
+See the option \hyperlink{cuts}{cuts} for an explanation on the different values.
+
+Reference: H. Marchand and L. A. Wolsey, Aggregation and Mixed Integer Rounding to Solve MIPs, Operations Research, 49(3), (2001).
+
+\textsl{(default = ifmove)}
+
+\item[\label{twomircuts}\hypertarget{twomircuts}
+{\textbf{twomircuts (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether and when CBC should try to generate two phase mixed integer rounding cuts.
+
+See the option \hyperlink{cuts}{cuts} for an explanation on the different values.
+
+Reference: S. Dash, and O. Guenluek, Valid Inequalities Based on Simple Mixed-integer Sets, to appear in Math. Programming.
+
+\textsl{(default = root)}
+
+\item[\label{probingcuts}\hypertarget{probingcuts}
+{\textbf{probingcuts (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether and when CBC should try to generate cuts based on probing.
+
+Additional to the values for the option \hyperlink{cuts}{cuts} three more values are possible here.
+
+Reference: M. Savelsbergh, Preprocessing and Probing Techniques for Mixed Integer Programming Problems, ORSA Journal on Computing 6 (1994), 445.
+
+\textsl{(default = ifmove)}
+\begin{itemize}
+\item[off] 
+Turns off Probing.
+\item[on] 
+Turns on Probing and CBC will try it in the branch and cut tree (see the option \hyperlink{cutdepth}{cutdepth} how to fine tune this behaviour).
+\item[root] 
+Let CBC do Probing only at the root node.
+\item[ifmove] 
+Let CBC do Probing in the tree if it looks as if it is doing some good and moves the objective value.
+\item[forceon] 
+Turns on Probing and forces CBC to do Probing at every node.
+\item[forceonbut] 
+Turns on Probing and forces CBC to call the cut generator at every node, but does only probing, not strengthening etc.
+\item[forceonstrong] 
+If CBC is forced to turn Probing on at every node (by setting this option to force), but this generator produces no cuts, then it is actually turned on only weakly (i.e., just every now and then).
+Setting forceonstrong forces CBC strongly to do probing at every node.
+\item[forceonbutstrong] 
+This is like forceonstrong, but does only probing (column fixing) and turns off row strengthening, so the matrix will not change inside the branch and bound.
+\end{itemize}
+
+\item[\label{reduceandsplitcuts}\hypertarget{reduceandsplitcuts}
+{\textbf{reduceandsplitcuts (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether and when CBC should try to generate reduced and split cuts.
+
+See the option \hyperlink{cuts}{cuts} for an explanation on the different values.
+
+Reduce and split cuts are variants of Gomory cuts.
+Starting from the current optimal tableau, linear combinations of the rows of the current optimal simplex tableau are used for generating Gomory cuts.
+The choice of the linear combinations is driven by the objective of reducing the coefficients of the non basic continuous variables in the resulting row.
+
+Reference: K. Anderson, G. Cornuejols, and Yanjun Li, Reduce-and-Split Cuts: Improving the Performance of Mixed Integer Gomory Cuts, Management Science 51 (2005).
+
+\textsl{(default = off)}
+
+\item[\label{residualcapacitycuts}\hypertarget{residualcapacitycuts}
+{\textbf{residualcapacitycuts (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether and when CBC should try to generate residual capacity cuts.
+
+See the option \hyperlink{cuts}{cuts} for an explanation on the different values.
+
+These inequalities are particularly useful for Network Design and Capacity Planning models.
+
+References:\\
+T.L. Magnanti, P. Mirchandani, and R. Vachani, The convex hull of two core capacitated network design problems, Math. Programming, 60 (1993), pp. 233-250.\\
+A. Atamturk and D. Rajan, On splittable and unsplittable flow capacitated network design arc-set polyhedra, Math. Programming, 92 (2002), pp. 315-333.
+
+\textsl{(default = off)}
+
+\end{description}
+
+\subsubsection{MIP Options for Heuristics}
+
+\begin{description}
+
+\item[\label{heuristics}\hypertarget{heuristics}
+{\textbf{heuristics (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter can be used to switch on or off all heuristics, except for the local tree search as it dramatically alters the search.
+Then you can set individual ones off or on.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] 
+Turns all MIP heuristics off.
+\item[1] 
+Turns all MIP heuristics on (except \hyperlink{localtreesearch}{local tree search}).
+\end{itemize}
+
+\item[\label{combinesolutions}\hypertarget{combinesolutions}
+{\textbf{combinesolutions (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter control the use of a heuristic which does branch and cut on the given problem by just using variables which have appeared in one or more solutions.
+It is obviously only tried after two or more solutions.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] 
+Turns the combine solutions heuristic off.
+\item[1] 
+Turns the combine solutions heuristic on.
+\end{itemize}
+
+\item[\label{feaspump}\hypertarget{feaspump}
+{\textbf{feaspump (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter control the use of the feasibility pump heuristic at the root.
+
+This is due to Fischetti and Lodi and uses a sequence of LPs to try and get an integer feasible solution.
+Some fine tuning is available by the option \hyperlink{feaspump_passes}{feaspump\_passes}.
+Reference: M. Fischetti, F. Glover, and A. Lodi, The feasibility pump, Math. Programming, 104 (2005), pp. 91-104.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] 
+Turns the feasibility pump off.
+\item[1] 
+Turns the feasibility pump on.
+\end{itemize}
+
+\item[\label{feaspump_passes}\hypertarget{feaspump_passes}
+{\textbf{feaspump\_passes (\slshape{integer})}}]\hspace{1.0in}
+
+This fine tunes the feasibility pump heuristic by setting the number of passes.
+
+\textsl{(default = 20)}
+
+\item[\label{greedyheuristic}\hypertarget{greedyheuristic}
+{\textbf{greedyheuristic (\slshape{string})}}]\hspace{1.0in}
+
+This parameter control the use of a pair of greedy heuristic which will try to obtain a solution.
+It may just fix a percentage of variables and then try a small branch and cut run.
+
+\textsl{(default = on)}
+\begin{itemize}
+\item[off] 
+Turns off the greedy heuristic.
+\item[on] 
+Turns on the greedy heuristic.
+\item[root] 
+Turns on the greedy heuristic only for the root node.
+\end{itemize}
+
+\item[\label{localtreesearch}\hypertarget{localtreesearch}
+{\textbf{localtreesearch (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter control the use of a local search algorithm when a solution is found.
+
+It is from Fischetti and Lodi and is not really a heuristic although it can be used as one (with limited functionality).
+This heuristic is not controlled by the option \hyperlink{heuristics}{heuristics}.
+
+Reference: M. Fischetti and A. Lodi, Local Branching, Math. Programming B, 98 (2003), pp. 23-47.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] 
+Turns the local tree search off.
+\item[1] 
+Turns the local tree search on.
+\end{itemize}
+
+\item[\label{rins}\hypertarget{rins}
+{\textbf{rins (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter control the use of the relaxed induced neighborhood search heuristic.
+
+This heuristic compares the current solution with the best incumbent, fixes all discrete variables with the same value, presolves the problem, and does a branch and bound for 200 nodes.
+
+Reference: E. Danna, E. Rothberg, and C. Le Pape, Exploring relaxation induced neighborhoods to improve MIP solutions, Math. Programming, 102 (1) (2005), pp. 71-91.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] 
+Turns the relaxed induced neighborhood search off.
+\item[1] 
+Turns the relaxed induced neighborhood search on.
+\end{itemize}
+
+\item[\label{roundingheuristic}\hypertarget{roundingheuristic}
+{\textbf{roundingheuristic (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter control the use of a simple (but effective) rounding heuristic at each node of tree.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] 
+Turns the rounding heuristic off.
+\item[1] 
+Turns the rounding heuristic on.
+\end{itemize}
+
 \end{description}

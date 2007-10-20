@@ -121,14 +121,14 @@ The most important option in Bonmin is the choice of the solution algorithm.
 This can be set by using the option named \texttt{bonmin.algorithm} which can be set to \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, \texttt{B-Hyb}, or \texttt{B-Ecp} (its default value is \texttt{B-Hyb}).
 Depending on the value of this option, certain other options may be available or not.
 
-In the context of outer approximation decomposition, several options are available for configuring the MILP subsolver CBC.
+In the context of outer approximation decomposition, several options are available for configuring the MIP subsolver CBC.
 By setting the option \texttt{bonmin.milp\_subsolver} to \texttt{Cbc\_Par}, a version of CBC is chosen that can be parameterized by the user.
 The options that can be set are 
 %the node-selection strategy,
 the number of strong-branching candidates,
 the number of branches before pseudo costs are to be trusted, and the frequency of some cut generators.
 Their name coincide with Bonmins options, except that the ``\texttt{bonmin.}'' prefix is replaced with  ``\texttt{milp\_sub.}''.
-% To pass those options to the MILP subsolver, you have to replace the prefix ``\texttt{bonmin.}'' with ``\texttt{milp\_sub.}''.
+% To pass those options to the MIP subsolver, you have to replace the prefix ``\texttt{bonmin.}'' with ``\texttt{milp\_sub.}''.
 
 An example of a \texttt{bonmin.opt} file is as follows:
 \begin{verbatim}
@@ -138,9 +138,9 @@ An example of a \texttt{bonmin.opt} file is as follows:
    milp_sub.cover_cuts 0
    print_level 6
 \end{verbatim}
-This sets the algorithm to be used to the hybrid algorithm, the level of outer approximation related output to $4$, the print level for \texttt{Ipopt} to $6$, the MILP subsolver for outer approximation to a parametrized version of CBC, and switches off cover cutting planes for the MILP subsolver.
+This sets the algorithm to be used to the hybrid algorithm, the level of outer approximation related output to $4$, the print level for \texttt{Ipopt} to $6$, the MIP subsolver for outer approximation to a parameterized version of CBC, and switches off cover cutting planes for the MIP subsolver.
 
-GAMS/CoinBonmin understand currently the following GAMS parameters: reslim (time limit), iterlim (iteration limit), nodlim (node limit), cutoff, optca (absolute gap tolerance), and optcr (relative gap tolerance).
+GAMS/CoinBonmin understands currently the following GAMS parameters: reslim (time limit), iterlim (iteration limit), nodlim (node limit), cutoff, optca (absolute gap tolerance), and optcr (relative gap tolerance).
 You can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your GAMS program, e.g. \verb+Option nodlim=1000;+.
 
 \subsection{Description of CoinBonmin Options}
@@ -151,7 +151,7 @@ The column labeled `type' indicates the type of the parameter (`F' stands for fl
 string).
 The column labeled `default' indicates the global default value.
 Then for each of the four algorithm \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, and \texttt{B-Hyb}, `$+$' indicates that the option is available for that particular algorithm while `$-$' indicates that it is not.
-Options that are marked with $^*$ are those that can be used to configure the MILP subsolver.
+Options that are marked with $^*$ are those that can be used to configure the MIP subsolver.
 
 \begin{center}
 \begin{tabular}{|l|r|r|r|r|r|r|}\hline
@@ -234,7 +234,7 @@ warm\_start& S& none& +& --& --& --\\
 Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
 \hline
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{MILP cutting planes}\\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{MIP cutting planes}\\
 \hline
 2mir\_cuts& I& 0& --& +& --& +\\
 Gomory\_cuts$^*$& I& \-5& --& +& --& +\\
@@ -283,7 +283,7 @@ setup\_pseudo\_frac& F& 0.5& +& +& +& +\\
 
 \subsubsection{Ipopt}
 All Ipopt options are available in CoinBonmin, please refer to section \ref{sub:ipoptoptions} for a detailed description.
-Bonmin changes the default value of the following Ipopt parameters:
+The default value of the following Ipopt parameters are changed in Gams/CoinBonmin:
 \begin{itemize}
 \item \texttt{mu\_strategy} and \texttt{mu\_oracle} are set, respectively, to {\tt adaptive} and {\tt probing} by default.
 \item \texttt{gamma\_phi} and \texttt{gamma\_theta} are set to $10^{-8}$ and $10^{-4}$ respectively. This has the effect of reducing the size of the filter in the line search performed by Ipopt.
@@ -293,9 +293,8 @@ detect infeasible problems faster.
 \item \texttt{expect\_infeasible\_problem} is set to {\tt yes} which enables some heuristics to detect infeasible problems faster.
 \item \texttt{warm\_start\_init\_point} is set to {\tt yes} when a full primal/dual starting point is available (generally for all the optimizations after the continuous relaxation has been solved).
 \item \texttt{print\_level} is set to $0$ by default to turn off Ipopt output.
+\item \texttt{bound\_relax\_factor} is set to $0.0$.
 \end{itemize}
-
-Additionally, Gams/CoinBonmin overwrites the default setting of the parameter \texttt{bound\_relax\_factor} with $0.0$.
 
 \section{CoinCbc}
 
@@ -311,6 +310,7 @@ For more information we refer to
 \item the Cgl web site \texttt{https://projects.coin-or.org/Cgl}, and
 \item the CLP web site \texttt{https://projects.coin-or.org/Clp}.
 \end{itemize}
+Most of the CBC documentation in the section was copied from the help in the CBC standalone version.
 
 \subsection{Model requirements}
 
@@ -327,16 +327,25 @@ The following statement can be used inside your GAMS program to specify using Co
 The above statement should appear before the Solve statement.
 If CoinCBC was specified as the default solver during GAMS installation, the above statement is not necessary.
 
+There are many parameters which can affect the performance the CBCs Branch and Cut Algorithm.
+First just try with default settings and look carefully at the log file.
+Did cuts help? Did they take too long? Look at the output to see which cuts were effective and then do some tuning (see the option \hyperlink{cuts}{cuts}).
+If the \hyperlink{preprocess}{preprocessing} reduced the size of the problem or strengthened many coefficients then it is probably wise to leave it on.
+Switch off \hyperlink{heuristics}{heuristics} which did not provide solutions.
+The other major area to look at is the search. Hopefully good solutions were obtained fairly early in the search so the important point is to select the best variable to branch on.
+See whether strong branching did a good job - or did it just take a lot of iterations.
+Adjust the options \hyperlink{strongbranching}{strongbranching} and \hyperlink{trustpseudocosts}{trustpseudocosts}.
+
 The GAMS/CoinCBC options file consists of one option or comment per line.
 An asterisk (*) at the beginning of a line causes the entire line to be ignored.
 Otherwise, the line will be interpreted as an option name and value separated by any amount of white space (blanks or tabs).
 Following is an example options file coincbc.opt.
 \begin{verbatim}
-  cuts 1
-  printfrequency 20
+  cuts root
+  perturbation off
 \end{verbatim}
-It will cause CoinCBC to use all supported cut generators and not only the default ones.
-The iteration log will have an entry for every 20th iteration instead of every 10th iteration.
+It will cause CoinCBC to use cut generators only in the root node and turns off the perturbation of the LP relaxation.
+
 
 % \subsection{CoinCbc output}
 % \subsection{Some CoinCbc features}
@@ -358,6 +367,7 @@ For more information we refer to
 \item the Glpk web site \texttt{http://www.gnu.org/software/glpk/glpk.html} and
 \item the Osi web site \texttt{https://projects.coin-or.org/Osi}.
 \end{itemize}
+Most of the Glpk documentation in the section was copied from the help in the Glpk manual.
 
 \subsection{Model requirements}
 
@@ -379,9 +389,10 @@ An asterisk (*) at the beginning of a line causes the entire line to be ignored.
 Otherwise, the line will be interpreted as an option name and value separated by any amount of white space (blanks or tabs).
 Following is an example options file coincbc.opt.
 \begin{verbatim}
-  scaling mean
+  factorization givens
+  initbasis standard
 \end{verbatim}
-It will cause CoinGlpk to change the scaling method to a geometric mean scaling.
+It will cause CoinGlpk to use Givens rotation updates for the factorization and to use a standard initial basis. (This option setting might help to avoid numerical difficulties in some cases.)
 
 \input{optglpk_s}
 \input{optglpk_a}
@@ -533,7 +544,7 @@ The following is a list of the possible output messages to the console, and a br
 Ipopt has many options that can be adjusted for the algorithm (see Section \ref{sub:ipoptoptions}).
 Options are all identified by a string name, and their values can be of one of three types: Number (real), Integer, or String.
 Number options are used for things like tolerances, integer options are used for things like maximum number of iterations, and string options are used for setting algorithm details, like the NLP scaling method.
-Options can be set by creating a \texttt{ipopt.opt} file in the directory you are executing IPOPT.
+Options can be set by creating a \texttt{ipopt.opt} file in the directory you are executing Ipopt.
 
 The \texttt{ipopt.opt} file is read line by line and each line should contain the option name, followed by whitespace, and then the value.
 Comments can be included with the \# symbol. Don't forget to ensure you have a newline at the end of the file. For example,

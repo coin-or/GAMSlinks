@@ -11,11 +11,6 @@ For more information visit the web site for
 For documentation of GAMS parameters, see the <A href="http://www.gams.com/docs/parame.htm">GAMS parameters documentation</A>.
 
 
-writemps
-Write an MPS problem file.
-The parameter value is the name of the MPS file.
-
-
 startalg
 This option determines whether a primal or dual simplex algorithm should be used to solve an LP or the root node of a MIP.
 
@@ -151,6 +146,7 @@ Maximum time in seconds.
 
 iterlim
 Maximum number of simplex iterations.
+You can remove the limit on the simplex iterations by setting the <a href="#noiterlim">noiterlim option</a>.
 
 
 noiterlim
@@ -163,6 +159,11 @@ Keeps simplex iteration limit.
 
 noiterlim.1
 Turns off simplex iteration limit.
+
+
+writemps
+Write an MPS problem file.
+The parameter value is the name of the MPS file.
 
 
 optcr

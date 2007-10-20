@@ -12,7 +12,7 @@
 #include <vector>
 #include <list>
 
-//#define SMAG_HAS_SOS
+#define SMAG_HAS_SOS
 
 using namespace Ipopt;
 

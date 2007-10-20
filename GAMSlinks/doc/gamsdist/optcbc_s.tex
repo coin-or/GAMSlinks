@@ -1,63 +1,80 @@
-\subsection{Summary of CoinCbc Options}
+\subsection{Summary of CoinCBC Options}
 
-Among all Cbc options, the following GAMS parameters are currently supported in CoinCbc:
-\hyperlink{reslim}{reslim}, \hyperlink{iterlim}{iterlim}, \hyperlink{nodlim}{nodlim}, \hyperlink{optca}{optca}, \hyperlink{optcr}{optcr}, \hyperlink{cutoff}{cutoff}.
+Among all CBC options, the following GAMS parameters are currently supported in CoinCBC:
+\hyperlink{reslim}{reslim}, \hyperlink{iterlim}{iterlim}, \hyperlink{nodlim}{nodlim}, \hyperlink{optca}{optca}, \hyperlink{optcr}{optcr}, \hyperlink{increment}{cheat}, \hyperlink{cutoff}{cutoff}.
 
-Currently CoinCbc understands the following options:
+Currently CoinCBC understands the following options:
+
+\subsubsection{General Options}
 \begin{tabbing}
-\hspace {1.1in} \= \\
-\hyperlink{roundingheuristic}
-{roundingheuristic} \> rounding heuristic \\
-\hyperlink{localsearch}
-{localsearch} \> local search \\
-\hyperlink{strongbranching}
-{strongbranching} \> strong branching \\
-\hyperlink{integerpresolve}
-{integerpresolve} \> integer presolve \\
-\hyperlink{findsos}
-{findsos} \> find sos in integer presolve \\
-\hyperlink{cuts}
-{cuts} \> switch for cut generation \\
-\hyperlink{probing}
-{probing} \> probing \\
-\hyperlink{gomorycuts}
-{gomorycuts} \> Gomory cuts \\
-\hyperlink{knapsackcuts}
-{knapsackcuts} \> knapsack cover cuts \\
-\hyperlink{oddholecuts}
-{oddholecuts} \> odd hole cuts \\
-\hyperlink{cliquecuts}
-{cliquecuts} \> clique cuts \\
-\hyperlink{flowcovercuts}
-{flowcovercuts} \> flow cover cuts \\
-\hyperlink{mircuts}
-{mircuts} \> mixed integer rounding cuts \\
-\hyperlink{redsplitcuts}
-{redsplitcuts} \> reduce and split cuts \\
-\hyperlink{cutsonlyatroot}
-{cutsonlyatroot} \> whether cuts are only generated at the root node \\
-\hyperlink{startalg}
-{startalg} \> LP solver for root node \\
+\hspace {1.3in} \= \\
+\hyperlink{iterlim}
+{iterlim} \> iteration limit \\
+\hyperlink{reslim}
+{reslim} \> resource limit \\
+\hyperlink{special}
+{special} \> options passed unseen to CBC \\
 \hyperlink{writemps}
 {writemps} \> create MPS file for problem \\
+\end{tabbing}
+
+\subsubsection{LP Options}
+\begin{tabbing}
+\hspace {1.3in} \= \\
+\hyperlink{idiotcrash}
+{idiotcrash} \> idiot crash \\
+\hyperlink{sprintcrash}
+{sprintcrash} \> sprint crash \\
+\hyperlink{sifting}
+{sifting} \> synonym for sprint crash \\
+\hyperlink{crash}
+{crash} \> use crash method to get dual feasible \\
+\hyperlink{maxfactor}
+{maxfactor} \> maximum number of iterations between refactorizations \\
+\hyperlink{crossover}
+{crossover} \> crossover to simplex algorithm after barrier \\
+\hyperlink{dualpivot}
+{dualpivot} \> dual pivot choice algorithm \\
+\hyperlink{primalpivot}
+{primalpivot} \> primal pivot choice algorithm \\
+\hyperlink{perturbation}
+{perturbation} \> perturbation of problem \\
+\hyperlink{scaling}
+{scaling} \> scaling method \\
+\hyperlink{presolve}
+{presolve} \> switch for initial presolve of LP \\
 \hyperlink{tol_dual}
 {tol\_dual} \> dual feasibility tolerance \\
 \hyperlink{tol_primal}
 {tol\_primal} \> primal feasibility tolerance \\
+\hyperlink{tol_presolve}
+{tol\_presolve} \> tolerance used in presolve \\
+\hyperlink{startalg}
+{startalg} \> LP solver for root node \\
+\end{tabbing}
+
+
+\subsubsection{MIP Options}
+\begin{tabbing}
+\hspace {1.3in} \= \\
 \hyperlink{tol_integer}
 {tol\_integer} \> tolerance for integrality \\
-\hyperlink{scaling}
-{scaling} \> switch for scaling of LP \\
-\hyperlink{presolve}
-{scaling} \> switch for initial presolve of LP \\
+\hyperlink{sollim}
+{sollim} \> limit on number of solutions \\
+\hyperlink{strongbranching}
+{strongbranching} \> strong branching \\
+\hyperlink{trustpseudocosts}
+{trustpseudocosts} \> after howmany nodes we trust the pseudo costs \\
+\hyperlink{coststrategy}
+{coststrategy} \> how to use costs as priorities \\
+\hyperlink{nodestrategy}
+{nodestrategy} \> how to select nodes \\
+\hyperlink{preprocess}
+{preprocess} \> integer presolve \\
 \hyperlink{printfrequency}
-{printfrequency} \> print frequency \\
-\hyperlink{nodecompare}
-{nodecompare} \> comparision method to determine tree search order \\
-\hyperlink{reslim}
-{reslim} \> resource limit \\
-\hyperlink{iterlim}
-{iterlim} \> iteration limit \\
+{printfrequency} \> frequency of status prints \\
+\hyperlink{increment}
+{increment} \> increment of cutoff when new incumbent \\
 \hyperlink{nodelim}
 {nodelim} \> node limit \\
 \hyperlink{nodlim}
@@ -68,5 +85,61 @@ Currently CoinCbc understands the following options:
 {optcr} \> relative stopping tolerance \\
 \hyperlink{cutoff}
 {cutoff} \> cutoff for objective function value \\
+\end{tabbing}
+
+
+\subsubsection{MIP Options for Cutting Plane Generators}
+\begin{tabbing}
+\hspace {1.3in} \= \\
+\hyperlink{cutdepth}
+{cutdepth} \> depth in tree at which cuts are applied \\
+\hyperlink{cut_passes_root}
+{cut\_passes\_root} \> number of cut passes at root node \\
+\hyperlink{cut_passes_tree}
+{cut\_passes\_tree} \> number of cut passes at nodes in the tree \\
+\hyperlink{cuts}
+{cuts} \> global switch for cutgenerators \\
+\hyperlink{cliquecuts}
+{cliquecuts} \> Clique Cuts \\
+\hyperlink{flowcovercuts}
+{flowcovercuts} \> Flow Cover Cuts \\
+\hyperlink{gomorycuts}
+{gomorycuts} \> Gomory Cuts \\
+\hyperlink{knapsackcuts}
+{knapsackcuts} \> Knapsack Cover Cuts \\
+\hyperlink{liftandprojectcuts}
+{liftandprojectcuts} \> Lift and Project Cuts \\
+\hyperlink{mircuts}
+{mircuts} \> Mixed Integer Rounding Cuts \\
+\hyperlink{twomircuts}
+{twomircuts} \> Two Phase Mixed Integer Rounding Cuts \\
+\hyperlink{probingcuts}
+{probingcuts} \> Probing Cuts \\
+\hyperlink{reduceandsplitcuts}
+{reduceandsplitcuts} \> Reduce and Split Cuts \\
+\hyperlink{residualcapacitycuts}
+{residualcapacitycuts} \> Residual Capacity Cuts \\
+\end{tabbing}
+
+
+\subsubsection{MIP Options for Heuristics}
+\begin{tabbing}
+\hspace {1.3in} \= \\
+\hyperlink{heuristics}
+{heuristics} \> global switch for heuristics \\
+\hyperlink{combinesolutions}
+{combinesolutions} \> combine solutions heuristic \\
+\hyperlink{feaspump}
+{feaspump} \> feasibility pump \\
+\hyperlink{feaspump_passes}
+{feaspump\_passes} \> number of feasibility passes \\
+\hyperlink{greedyheuristic}
+{greedyheuristic} \> greedy heuristic \\
+\hyperlink{localtreesearch}
+{localtreesearch} \> local tree search heuristic \\
+\hyperlink{rins}
+{rins} \> relaxed induced neighborhood search \\
+\hyperlink{roundingheuristic}
+{roundingheuristic} \> rounding heuristic \\
 \end{tabbing}
 

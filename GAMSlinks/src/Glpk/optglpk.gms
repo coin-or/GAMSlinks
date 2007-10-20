@@ -13,7 +13,6 @@ set g Glpk Option Groups /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
     t / I Integer, R Real, S String, B Binary /
     o Options /
-      writemps               create MPS file for problem
       startalg               LP solver for root node
       scaling                scaling method
       pricing                pricing method
@@ -31,6 +30,7 @@ set g Glpk Option Groups /
       iterlim                iteration limit
 *      optcr                  relative stopping tolerance
 *      cutoff                 Cutoff for objective function value
+      writemps               create MPS file for problem
 * immediates
       nobounds               ignores bounds on options
       readfile               read secondary option file

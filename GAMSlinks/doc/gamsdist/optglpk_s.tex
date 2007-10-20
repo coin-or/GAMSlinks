@@ -1,19 +1,20 @@
 \subsection{Summary of CoinGlpk Options}
 
-Among all Glpk options, the following GAMS parameters are currently supported in CoinGlpk:
-\hyperlink{glpkreslim}{reslim}, \hyperlink{glpkiterlim}{iterlim}, \hyperlink{glpkoptcr}{optcr}.
+Among the following Glpk options, only the GAMS parameters \hyperlink{glpkreslim}{reslim} and \hyperlink{glpkiterlim}{iterlim} are currently supported in CoinGlpk.
+Note, that the options optcr and optca to set the MIP gap tolerances are currently not supported.
 
-Currently CoinGlpk understands the following options:
 \begin{tabbing}
 \hspace {1.0in} \= \\
-\hyperlink{glpkwritemps}
-{writemps} \> create MPS file for problem \\
 \hyperlink{glpkstartalg}
 {startalg} \> LP solver for root node \\
 \hyperlink{glpkscaling}
 {scaling} \> scaling method \\
 \hyperlink{pricing}
 {pricing} \> pricing method \\
+\hyperlink{factorization}
+{factorization} \> basis factorization method \\
+\hyperlink{initbasis}
+{initbasis} \> method for initial basis \\
 \hyperlink{glpktol_dual}
 {tol\_dual} \> dual feasibility tolerance \\
 \hyperlink{glpktol_primal}
@@ -22,21 +23,17 @@ Currently CoinGlpk understands the following options:
 {tol\_integer} \> integer feasibility tolerance \\
 \hyperlink{backtracking}
 {backtracking} \> backtracking heuristic \\
-\hyperlink{glpkcuts}
-{cuts} \> generation of cuts for root problem \\
-\hyperlink{glpkgomorycuts}
-{gomorycuts} \> Gomorys mixed integer cuts \\
-\hyperlink{glpkcliquecuts}
-{cliquecuts} \> Clique cuts \\
-\hyperlink{glpkcovercuts}
-{covercuts} \> Mixed cover cuts \\
+\hyperlink{glpkpresolve}
+{presolve} \> LP presolver \\
 \hyperlink{reslim_fixedrun}
 {reslim\_fixedrun} \> resource limit for solve with fixed discrete variables \\
+\hyperlink{noiterlim}
+{noiterlim} \> turn off iteration limit \\
 \hyperlink{glpkreslim}
 {reslim} \> resource limit \\
 \hyperlink{glpkiterlim}
 {iterlim} \> iteration limit \\
-\hyperlink{glpkoptcr}
-{optcr} \> relative stopping tolerance \\
+\hyperlink{glpkwritemps}
+{writemps} \> create MPS file for problem \\
 \end{tabbing}
 

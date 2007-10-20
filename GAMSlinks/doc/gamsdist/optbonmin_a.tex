@@ -10,7 +10,7 @@ Possible values:
    \item B-BB: simple branch-and-bound algorithm,
    \item B-OA: OA Decomposition algorithm,
    \item B-QG: Quesada and Grossmann branch-and-cut algorithm,
-   \item B-Hyb: hybrid outer approximation based branch-and-cut.
+   \item B-Hyb: hybrid outer approximation based branch-and-cut,
    \item B-Ecp: ecp cuts based branch-and-cut a la FilMINT.
 \end{itemize}
 
@@ -46,7 +46,7 @@ and its default value is the value of the GAMS parameter cutoff, if set, otherwi
 \paragraph{cutoff\_decr:} Specify cutoff decrement. $\;$ \\
  Specify the amount by which cutoff is decremented
 below a new best upper-bound (usually a small
-postive value but in non-convex problems it may
+positive value but in non-convex problems it may
 be a negative value). The valid range for this real option is 
 $-1 \cdot 10^{+10} \le {\tt cutoff\_decr } \le 1 \cdot 10^{+10}$
 and its default value is $1 \cdot 10^{-05}$.
@@ -59,7 +59,7 @@ $0 <  {\tt integer\_tolerance } <  0.5$
 and its default value is $1 \cdot 10^{-06}$.
 
 
-\paragraph{iteration\_limit:} Set the cummulated maximum number of iteration in the algorithm used to process nodes continuous relaxations in the branch-and-bound. $\;$ \\
+\paragraph{iteration\_limit:} Set the cumulated maximum number of iteration in the algorithm used to process nodes continuous relaxations in the branch-and-bound. $\;$ \\
  value 0 deactivates option. The valid range for this integer option is
 $0 \le {\tt iteration\_limit } <  {\tt +inf}$
 and its default value is $2147483647$.
@@ -87,7 +87,7 @@ The default value for this string option is "dynamic".
 \\ 
 Possible values:
 \begin{itemize}
-   \item best-bound: choose node whith the smallest bound,
+   \item best-bound: choose node with the smallest bound,
    \item depth-first: Perform depth first search,
    \item breadth-first: Perform breadth first search,
    \item dynamic: Cbc dynamic strategy (starts with a depth first
@@ -143,7 +143,7 @@ and its default value is $2147483647$.
 %    \item disable: 
 % \end{itemize}
 
-\paragraph{time\_limit:} Set the global maximum computation time (in secs) for the algorithm. $\;$ \\
+\paragraph{time\_limit:} Set the global maximum computation time (in seconds) for the algorithm. $\;$ \\
  The valid range for this real option is 
 $0 <  {\tt time\_limit } <  {\tt +inf}$
 and its default value is the value of the GAMS parameter reslim, which default value is $1000$.
@@ -198,7 +198,7 @@ variable
 \label{sec:bonmin_options_:_Options_for_MILP_subsolver_in_OA_decomposition}
 \label{sec:bonmin_options_:_Options_for_OA_decomposition}
 
-\paragraph{milp\_subsolver:} Choose the subsolver to solve MILPs sub-problems in OA decompositions. $\;$ \\
+\paragraph{milp\_subsolver:} Choose the subsolver to solve MIP sub-problems in OA decompositions. $\;$ \\
 The default value for this string option is "Cbc\_D".
 \\ 
 Possible values:
@@ -357,13 +357,13 @@ $0 \le {\tt nlp\_log\_level } \le 2$
 and its default value is $1$.
 
 \paragraph{oa\_cuts\_log\_level:} level of log when generating OA cuts. $\;$ \\
- 0: ouputs nothings,
+ 0: outputs nothings,
 1: when a cut is generated,
 its violation and index of row from which it
 originates,
 2: always output violation of the
 cut.
-3: ouput generated cuts incidence vectors. The valid range for this integer option is
+3: output generated cuts incidence vectors. The valid range for this integer option is
 $0 \le {\tt oa\_cuts\_log\_level } <  {\tt +inf}$
 and its default value is $0$.
 
@@ -399,7 +399,7 @@ and its default value is $10$.
 
 \paragraph{warm\_start:} Select the warm start method $\;$ \\
  This will affect the function getWarmStart(), and
-as a consequence the wam starting in the various
+as a consequence the warm starting in the various
 algorithms.
 The default value for this string option is "none".
 \\ 
@@ -415,7 +415,7 @@ parent
 \subsubsection{MILP cutting planes}
 \label{sec:bonmin_options_for_MILP_cutting_planes}
 
-A value $k$ for the follwing cut generator frequency parameters is interpreted as followed by CBC:
+A value $k$ for the following cut generator frequency parameters is interpreted as followed by CBC:
 If $k > 0$, cuts are generated every $k$ nodes, if
 $-99 < k < 0$ cuts are generated every $-k$ nodes but
 Cbc may decide to stop generating cuts, if not
@@ -538,7 +538,7 @@ Possible values:
 \begin{itemize}
    \item Jon: Choose random point uniformly between the bounds
    \item Andreas: perturb the starting point of the problem
-within a prescriped interval
+within a prescribed interval
    \item Claudia: perturb the starting point using the
 perturbation radius suffix information
 \end{itemize}

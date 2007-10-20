@@ -12,7 +12,7 @@ and its default value is $4$.
  If selected, the algorithm will print the list of
 all options set by the user including their
 values and whether they have been used.
-The default value for this string option is "no".
+The default value for this string option is ``no''.
 \\ 
 Possible values:
 \begin{itemize}
@@ -25,7 +25,7 @@ Possible values:
 all available algorithmic options with some
 documentation before solving the optimization
 problem.
-The default value for this string option is "no".
+The default value for this string option is ``no''.
 \\ 
 Possible values:
 \begin{itemize}
@@ -37,10 +37,10 @@ Possible values:
 An output file with this
 name will be written (leave unset for no file
 output).  The verbosity level is by default set
-to "print\_level", but can be overridden with
-"file\_print\_level".  The file name is changed
+to ``print\_level'', but can be overridden with
+``file\_print\_level''.  The file name is changed
 to use only small letters.
-The default value for this string option is "".
+With the default settings no output file is generated.
 \\ 
 Possible values:
 \begin{itemize}
@@ -50,8 +50,8 @@ Possible values:
 \paragraph{file\_print\_level:} Verbosity level for output file. $\;$ \\
  NOTE: This option only works when read from the
 ipopt.opt options file! Determines the verbosity
-level for the file specified by "output\_file". 
-By default it is the same as "print\_level". The valid range for this integer option is
+level for the file specified by ``output\_file''.
+By default it is the same as ``print\_level''. The valid range for this integer option is
 $0 \le {\tt file\_print\_level } \le 11$
 and its default value is $4$.
 
@@ -62,17 +62,21 @@ and its default value is $4$.
 algorithm.  The algorithm terminates
 successfully, if the (scaled) NLP error becomes
 smaller than this value, and if the (absolute)
-criteria according to "dual\_inf\_tol",
-"primal\_inf\_tol", and "cmpl\_inf\_tol" are met.
- (This is epsilon\_tol in Eqn. (6) in
+criteria according to ``dual\_inf\_tol'',
+``primal\_inf\_tol'', and ``cmpl\_inf\_tol'' are met.
+ (This is $\varepsilon_\mathrm{tol}$ in Eqn. (6) in the
 implementation paper).  See also
-"acceptable\_tol" as a second termination
+``acceptable\_tol'' as a second termination
 criterion.  Note, some other algorithmic features
 also use this quantity to determine thresholds
 etc. The valid range for this real option is 
 $0 <  {\tt tol } <  {\tt +inf}$
 and its default value is $1 \cdot 10^{-08}$.
 
+\paragraph{s\_max:} Scaling threshold for the NLP error. $\;$ \\
+The valid range for this integer option is
+$0 \le {\tt s\_max } <  {\tt +inf}$
+and its default value is $100$.
 
 \paragraph{max\_iter:} Maximum number of iterations. $\;$ \\
  The algorithm terminates with an error message if
@@ -90,6 +94,14 @@ $0 <  {\tt compl\_inf\_tol } <  {\tt +inf}$
 and its default value is $0.0001$.
 
 
+\paragraph{constr\_viol\_tol:} Desired threshold for the constraint violation. $\;$ \\
+ Absolute tolerance on the constraint violation.
+Successful termination requires that the max-norm
+of the (unscaled) constraint violation is less
+than this threshold. The default value for this real option is $0.0001$ and its
+valid range is $0<\texttt{constr\_viol\_tol}<{\tt +inf}$.
+
+
 \paragraph{dual\_inf\_tol:} Desired threshold for the dual infeasibility. $\;$ \\
  Absolute tolerance on the dual infeasibility.
 Successful termination requires that the max-norm
@@ -99,35 +111,33 @@ $0 <  {\tt dual\_inf\_tol } <  {\tt +inf}$
 and its default value is $0.0001$.
 
 
-\paragraph{constr\_viol\_tol:} Desired threshold for the constraint violation. $\;$ \\
- Absolute tolerance on the constraint violation.
-Successful termination requires that the max-norm
-of the (unscaled) constraint violation is less
-than this threshold. The default value for this real option is $0.0001$ and its
-valid range is $0<\texttt{constr\_viol\_tol}<{\tt +inf}$.
-
-
-\paragraph{acceptable\_tol:} "Acceptable" convergence tolerance (relative). $\;$ \\
+\paragraph{acceptable\_tol:} ``Acceptable'' convergence tolerance (relative). $\;$ \\
  Determines which (scaled) overall optimality
-error is considered to be "acceptable." There are
+error is considered to be ``acceptable''. There are
 two levels of termination criteria.  If the usual
-"desired" tolerances (see tol, dual\_inf\_tol
+``desired'' tolerances (see tol, dual\_inf\_tol
 etc) are satisfied at an iteration, the algorithm
 immediately terminates with a success message. 
 On the other hand, if the algorithm encounters
-"acceptable\_iter" many iterations in a row that
-are considered "acceptable", it will terminate
+``acceptable\_iter'' many iterations in a row that
+are considered ``acceptable'', it will terminate
 before the desired convergence tolerance is met.
 This is useful in cases where the algorithm might
-not be able to achieve the "desired" level of
+not be able to achieve the ``desired'' level of
 accuracy. The valid range for this real option is 
 $0 <  {\tt acceptable\_tol } <  {\tt +inf}$
 and its default value is $1 \cdot 10^{-06}$.
 
+\paragraph{acceptable\_iter:} Number of ``acceptable'' iterates before triggering termination. $\;$ \\
+If the algorithm encounters this many successive ``acceptable'' iterates (see ``acceptable\_tol''), it terminates, assuming that the problem has been solved to best possible accuracy given round-off.
+If it is set to zero, this heuristic is disabled.
+The valid range for this integer option is
+$0 \le {\tt acceptable\_iter } <  {\tt +inf}$
+and its default value is $15$.
 
-\paragraph{acceptable\_compl\_inf\_tol:} "Acceptance" threshold for the complementarity conditions. $\;$ \\
+\paragraph{acceptable\_compl\_inf\_tol:} ``Acceptance'' threshold for the complementarity conditions. $\;$ \\
  Absolute tolerance on the complementarity.
-"Acceptable" termination requires that the
+``Acceptable'' termination requires that the
 max-norm of the (unscaled) complementarity is
 less than this threshold; see also
 acceptable\_tol. The valid range for this real option is 
@@ -135,9 +145,9 @@ $0 <  {\tt acceptable\_compl\_inf\_tol } <  {\tt +inf}$
 and its default value is $0.01$.
 
 
-\paragraph{acceptable\_constr\_viol\_tol:} "Acceptance" threshold for the constraint violation. $\;$ \\
+\paragraph{acceptable\_constr\_viol\_tol:} ``Acceptance'' threshold for the constraint violation. $\;$ \\
  Absolute tolerance on the constraint violation.
-"Acceptable" termination requires that the
+``Acceptable'' termination requires that the
 max-norm of the (unscaled) constraint violation
 is less than this threshold; see also
 acceptable\_tol. The valid range for this real option is 
@@ -145,9 +155,9 @@ $0 <  {\tt acceptable\_constr\_viol\_tol } <  {\tt +inf}$
 and its default value is $0.01$.
 
 
-\paragraph{acceptable\_dual\_inf\_tol:} "Acceptance" threshold for the dual infeasibility. $\;$ \\
+\paragraph{acceptable\_dual\_inf\_tol:} ``Acceptance'' threshold for the dual infeasibility. $\;$ \\
  Absolute tolerance on the dual infeasibility.
-"Acceptable" termination requires that the
+``Acceptable'' termination requires that the
 (max-norm of the unscaled) dual infeasibility is
 less than this threshold; see also
 acceptable\_tol. The valid range for this real option is 
@@ -162,17 +172,6 @@ is aborted with the exit message that the
 iterates seem to be diverging. The valid range for this real option is 
 $0 <  {\tt diverging\_iterates\_tol } <  {\tt +inf}$
 and its default value is $1 \cdot 10^{+20}$.
-
-
-\paragraph{barrier\_tol\_factor:} Factor for mu in barrier stop test. $\;$ \\
- The convergence tolerance for each barrier
-problem in the monotone mode is the value of the
-barrier parameter times "barrier\_tol\_factor".
-This option is also used in the adaptive mu
-strategy during the monotone mode. (This is
-kappa\_epsilon in implementation paper). The valid range for this real option is 
-$0 <  {\tt barrier\_tol\_factor } <  {\tt +inf}$
-and its default value is $10$.
 
 \subsubsection{NLP Scaling}
 
@@ -194,7 +193,7 @@ and its default value is $1$.
  Selects the technique used for scaling the
 problem internally before it is solved. For
 user-scaling, the parameters come from the NLP.
-The default value for this string option is "gradient-based".
+The default value for this string option is ``gradient-based''.
 \\ 
 Possible values:
 \begin{itemize}
@@ -209,22 +208,63 @@ the starting point is scaling\_max\_gradient
 maximum gradient is above this value, then
 gradient based scaling will be performed. Scaling
 parameters are calculated to scale the maximum
-gradient back to this value. (This is g\_max in
+gradient back to this value. (This is $g_{\max}$ in
 Section 3.8 of the implementation paper.) Note:
 This option is only used if
-"nlp\_scaling\_method" is chosen as
-"gradient-based". The valid range for this real option is 
+``nlp\_scaling\_method'' is chosen as
+``gradient-based''. The valid range for this real option is 
 $0 <  {\tt nlp\_scaling\_max\_gradient } <  {\tt +inf}$
 and its default value is $100$.
 
+\paragraph{nlp\_scaling\_obj\_target\_gradient:} Target value for objective function gradient size. $\;$ \\
+     If a positive number is chosen, the scaling factor the objective function
+     is computed so that the gradient as the max norm of the given size at the
+     starting point.  This overrides nlp\_scaling\_max\_gradient for the
+     objective function.
+The valid range for this real option is 
+$0 <  {\tt nlp\_scaling\_obj\_target\_gradient } <  {\tt +inf}$
+and its default value is $0$.
+
 \subsubsection{NLP corrections}
+
+\paragraph{dependency\_detector:} Indicates which linear solver should be used to detect linearly dependent equality constraints. $\;$ \\
+The default value for this string option is ``none''.
+\\ 
+Possible values:
+\begin{itemize}
+\item none:                    don't check; no extra work at beginning
+\item mumps:                   use MUMPS
+\end{itemize}
+
+\paragraph{dependency\_detection\_with\_rhs:} Indicates if the right hand sides of the constraints should be considered during dependency detection. $\;$ \\
+The default value for this string option is ``no''.\\
+Possible values:
+\begin{itemize}
+\item no:                      only look at gradients
+\item yes:                     also consider right hand side
+\end{itemize}
+
+\paragraph{point\_perturbation\_radius:} Maximal perturbation of an evaluation point. $\;$ \\
+     If a random perturbation of a points is required, this number indicates
+     the maximal perturbation.  Currently, this is only used when we perturb
+     the initial point in order to get a random Jacobian for the linear
+     dependency detection of equality constraints.
+The valid range for this real option is 
+$0 \le {\tt point\_perturbation\_radius } <  {\tt +inf}$
+and its default value is $10$.
+
+\paragraph{kappa\_d:} Weight for linear damping term (to handle one-sided bounds). $\;$ \\
+The valid range for this real option is 
+$0 \le {\tt kappa\_d } <  {\tt +inf}$
+and its default value is $10^{-5}$.
 
 \paragraph{bound\_relax\_factor:} Factor for initial relaxation of the bounds. $\;$ \\
  Before start of the optimization, the bounds
 given by the user are relaxed.  This option sets
 the factor for this relaxation.  If it is set to
 zero, then then bounds relaxation is disabled.
-(See Eqn.(35) in implementation paper.) The valid range for this real option is 
+(See Eqn.(35) in the implementation paper.)
+The valid range for this real option is 
 $0 \le {\tt bound\_relax\_factor } <  {\tt +inf}$
 and its default value is $0$.
 
@@ -232,11 +272,11 @@ and its default value is $0$.
 \paragraph{honor\_original\_bounds:} Indicates whether final points should be projected into original bounds. $\;$ \\
  Ipopt might relax the bounds during the
 optimization (see, e.g., option
-"bound\_relax\_factor").  This option determines
+``bound\_relax\_factor'').  This option determines
 whether the final point should be projected back
 into the user-provide original bounds after the
 optimization.
-The default value for this string option is "yes".
+The default value for this string option is ``yes''.
 \\ 
 Possible values:
 \begin{itemize}
@@ -251,7 +291,7 @@ Possible values:
 % not activated, the test is skipped, and the
 % algorithm might proceed with invalid numbers and
 % fail.
-% The default value for this string option is "no".
+% The default value for this string option is ``no''.
 % \\ 
 % Possible values:
 % \begin{itemize}
@@ -259,131 +299,29 @@ Possible values:
 %    \item yes: Check Jacobians and Hessian for Nan and Inf.
 % \end{itemize}
 
-\subsubsection{Barrier parameter}
-
-\paragraph{mu\_strategy:} Update strategy for barrier parameter. $\;$ \\
- Determines which barrier parameter update
-strategy is to be used.
-The default value for this string option is "adaptive".
+\paragraph{fixed\_variable\_treatment:} Determines how fixed variables should be handled. $\;$ \\
+The main difference between those options is that the starting point in the ``make\_constraint'' case still has the fixed variables at their given values, whereas in the case ``make\_parameter''
+the functions are always evaluated with the fixed values for those variables. 
+Also, for ``relax\_bounds'', the fixing bound constraints are relaxed (according to ``bound\_relax\_factor'').
+For both ``make\_constraints'' and ``relax\_bounds'', bound multipliers are computed for the fixed variables.
+The default value for this string option is ``make\_parameter''.
 \\ 
 Possible values:
 \begin{itemize}
-   \item monotone: use the monotone (Fiacco-McCormick) strategy
-   \item adaptive: use the adaptive update strategy
+\item make\_parameter:    Remove fixed variable from optimization variables.
+\item make\_constraint:   Add equality constraints fixing variables.
+\item relax\_bounds:      Relax fixing bound constraints.
 \end{itemize}
 
-\paragraph{mu\_oracle:} Oracle for a new barrier parameter in the adaptive strategy. $\;$ \\
- Determines how a new barrier parameter is
-computed in each "free-mode" iteration of the
-adaptive barrier parameter strategy. (Only
-considered if "adaptive" is selected for option
-"mu\_strategy").
-The default value for this string option is "quality-function".
-\\ 
-Possible values:
-\begin{itemize}
-   \item probing: Mehrotra's probing heuristic
-   \item loqo: LOQO's centrality rule
-   \item quality-function: minimize a quality function
-\end{itemize}
-
-\paragraph{quality\_function\_max\_section\_steps:} Maximum number of search steps during direct search procedure determining the optimal centering parameter. $\;$ \\
- The golden section search is performed for the
-quality function based mu oracle. The valid range for this integer option is
-$0 \le {\tt quality\_function\_max\_section\_steps } <  {\tt +inf}$
-and its default value is $8$.
-This option is only used if the option "mu\_oracle" is set to "quality-function".
-
-
-\paragraph{fixed\_mu\_oracle:} Oracle for the barrier parameter when switching to fixed mode. $\;$ \\
- Determines how the first value of the barrier
-parameter should be computed when switching to
-the "monotone mode" in the adaptive strategy.
-(Only considered if "adaptive" is selected for
-option "mu\_strategy".)
-The default value for this string option is "average\_compl".
-\\ 
-Possible values:
-\begin{itemize}
-   \item probing: Mehrotra's probing heuristic
-   \item loqo: LOQO's centrality rule
-   \item quality-function: minimize a quality function
-   \item average\_compl: base on current average complementarity
-\end{itemize}
-
-\paragraph{mu\_init:} Initial value for the barrier parameter. $\;$ \\
- This option determines the initial value for the
-barrier parameter (mu).  It is only relevant in
-the monotone, Fiacco-McCormick version of the
-algorithm. (i.e., if "mu\_strategy" is chosen as
-"monotone") The valid range for this real option is 
-$0 <  {\tt mu\_init } <  {\tt +inf}$
-and its default value is $0.1$.
-
-
-\paragraph{mu\_max\_fact:} Factor for initialization of maximum value for barrier parameter. $\;$ \\
- This option determines the upper bound on the
-barrier parameter.  This upper bound is computed
-as the average complementarity at the initial
-point times the value of this option. (Only used
-if option "mu\_strategy" is chosen as "adaptive".) The valid range for this real option is 
-$0 <  {\tt mu\_max\_fact } <  {\tt +inf}$
-and its default value is $1000$.
-
-
-\paragraph{mu\_max:} Maximum value for barrier parameter. $\;$ \\
- This option specifies an upper bound on the
-barrier parameter in the adaptive mu selection
-mode.  If this option is set, it overwrites the
-effect of mu\_max\_fact. (Only used if option
-"mu\_strategy" is chosen as "adaptive".) The valid range for this real option is 
-$0 <  {\tt mu\_max } <  {\tt +inf}$
-and its default value is $100000$.
-
-
-\paragraph{mu\_min:} Minimum value for barrier parameter. $\;$ \\
- This option specifies the lower bound on the
-barrier parameter in the adaptive mu selection
-mode. By default, it is set to
-min("tol","compl\_inf\_tol")/("barrier\_tol\_fact-
-or"+1), which should be a reasonable value. (Only
-used if option "mu\_strategy" is chosen as
-"adaptive".) The valid range for this real option is 
-$0 <  {\tt mu\_min } <  {\tt +inf}$
-and its default value is $1 \cdot 10^{-09}$.
-
-
-\paragraph{mu\_linear\_decrease\_factor:} Determines linear decrease rate of barrier parameter. $\;$ \\
- For the Fiacco-McCormick update procedure the new
-barrier parameter mu is obtained by taking the
-minimum of mu*"mu\_linear\_decrease\_factor" and
-mu\^"superlinear\_decrease\_power".  (This is
-kappa\_mu in implementation paper.) This option
-is also used in the adaptive mu strategy during
-the monotone mode. The valid range for this real option is 
-$0 <  {\tt mu\_linear\_decrease\_factor } <  1$
-and its default value is $0.2$.
-
-
-\paragraph{mu\_superlinear\_decrease\_power:} Determines superlinear decrease rate of barrier parameter. $\;$ \\
- For the Fiacco-McCormick update procedure the new
-barrier parameter mu is obtained by taking the
-minimum of mu*"mu\_linear\_decrease\_factor" and
-mu\^"superlinear\_decrease\_power".  (This is
-theta\_mu in implementation paper.) This option
-is also used in the adaptive mu strategy during
-the monotone mode. The valid range for this real option is 
-$1 <  {\tt mu\_superlinear\_decrease\_power } <  2$
-and its default value is $1.5$.
 
 \subsubsection{Initialization}
 
 \paragraph{bound\_frac:} Desired minimum relative distance from the initial point to bound. $\;$ \\
  Determines how much the initial point might have
 to be modified in order to be sufficiently inside
-the bounds (together with "bound\_push").  (This
-is kappa\_2 in Section 3.6 of implementation
-paper.) The valid range for this real option is 
+the bounds (together with ``bound\_push'').
+(This is $\kappa_2$ in Section 3.6 of the implementation paper.)
+The valid range for this real option is 
 $0 <  {\tt bound\_frac } \le 0.5$
 and its default value is $0.01$.
 
@@ -391,10 +329,27 @@ and its default value is $0.01$.
 \paragraph{bound\_push:} Desired minimum absolute distance from the initial point to bound. $\;$ \\
  Determines how much the initial point might have
 to be modified in order to be sufficiently inside
-the bounds (together with "bound\_frac").  (This
-is kappa\_1 in Section 3.6 of implementation
-paper.) The valid range for this real option is 
+the bounds (together with ``bound\_frac'').
+(This is $\kappa_1$ in Section 3.6 of the implementation paper.)
+The valid range for this real option is 
 $0 <  {\tt bound\_push } <  {\tt +inf}$
+and its default value is $0.01$.
+
+
+\paragraph{slack\_bound\_push:} Desired minimum absolute distance from the initial slack to bound. $\;$ \\       Determines how much the initial slack variables might have to be modified
+in order to be sufficiently inside the inequality bounds (together with ``slack\_bound\_frac'').
+(This is $\kappa_1$ in Section 3.6 of the implementation paper.)
+The valid range for this real option is 
+$0 <  {\tt slack\_bound\_push } <  {\tt +inf}$
+and its default value is $0.01$.
+
+\paragraph{slack\_bound\_frac:} Desired minimum relative distance from the initial slack to bound.
+     Determines how much the initial slack variables might have to be modified
+     in order to be sufficiently inside the inequality bounds (together with
+     ``slack\_bound\_push'').
+(This is $\kappa_2$ in Section 3.6 of the implementation paper.)
+The valid range for this real option is 
+$0 <  {\tt slack\_bound\_frac } \le  0.5$
 and its default value is $0.01$.
 
 
@@ -413,7 +368,7 @@ this value, it is discarded and all constraint
 multipliers are set to zero.  This options is
 also used when initializing the restoration
 phase. By default,
-"resto.constr\_mult\_init\_max" (the one used in
+``resto.constr\_mult\_init\_max'' (the one used in
 RestoIterateInitializer) is set to zero. The valid range for this real option is 
 $0 \le {\tt constr\_mult\_init\_max } <  {\tt +inf}$
 and its default value is $1000$.
@@ -425,12 +380,392 @@ constraints are initialized to this value. The valid range for this real option 
 $0 <  {\tt bound\_mult\_init\_val } <  {\tt +inf}$
 and its default value is $1$.
 
+\paragraph{least\_square\_init\_primal:} Least square initialization of the primal variables. $\;$ \\
+     If set to yes, Ipopt ignores the user provided point and solves a least
+     square problem for the primal variables (x and s), to fit the linearize
+     equality and inequality constraints.  This might be useful if the user
+     doesn't know anything about the starting point, or for solving an LP or
+     QP.
+The default value for this string option is ``no''.\\
+   Possible values:
+\begin{itemize}
+    \item no:                      take user-provided point
+    \item yes:                     overwrite user-provided point with least-square estimates
+\end{itemize}
+
+\paragraph{least\_square\_init\_duals:} Least square initialization of all dual variables. $\;$ \\
+     If set to yes, Ipopt tries to compute least-square multipliers
+     (considering ALL dual variables).  If successful, the bound multipliers
+     are possibly corrected to be at least bound\_mult\_init\_val. This might be
+     useful if the user doesn't know anything about the starting point, or for
+     solving an LP or QP.
+The default value for this string option is ``no''.\\
+   Possible values:
+\begin{itemize}
+    \item no:                      use bound\_mult\_init\_val and least-square equality constraint multipliers
+    \item yes:                     overwrite user-provided point with least-square estimates
+\end{itemize}
+
+\subsubsection{Barrier parameter update}
+
+\paragraph{mehrotra\_algorithm:} Indicates if we want to do Mehrotra's algorithm. $\;$ \\
+ If set to yes, Ipopt runs as Mehrotra's
+predictor-corrector algorithm. This works usually
+very well for LPs and convex QPs.  This
+automatically disables the line search, and
+chooses the (unglobalized) adaptive mu strategy
+with the ``probing'' oracle, and uses
+``corrector\_type=affine'' without any safeguards;
+you should not set any of those options
+explicitly in addition.  Also, unlessotherwise
+specified, the values of ``bound\_push'',
+``bound\_frac'', and ``bound\_mult\_init\_val'' are
+set more aggressive, and sets
+``alpha\_for\_y=bound\_mult''.
+The default value for this string option is ``no''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item no: Do the usual Ipopt algorithm.
+   \item yes: Do Mehrotra's predictor-corrector algorithm.
+\end{itemize}
+
+\paragraph{mu\_strategy:} Update strategy for barrier parameter. $\;$ \\
+ Determines which barrier parameter update
+strategy is to be used.
+The default value for this string option is ``adaptive''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item monotone: use the monotone (Fiacco-McCormick) strategy
+   \item adaptive: use the adaptive update strategy
+\end{itemize}
+
+\paragraph{mu\_oracle:} Oracle for a new barrier parameter in the adaptive strategy. $\;$ \\
+ Determines how a new barrier parameter is
+computed in each ``free-mode'' iteration of the
+adaptive barrier parameter strategy. (Only
+considered if ``adaptive'' is selected for option
+``mu\_strategy'').
+The default value for this string option is ``quality-function''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item probing: Mehrotra's probing heuristic
+   \item loqo: LOQO's centrality rule
+   \item quality-function: minimize a quality function
+\end{itemize}
+
+\paragraph{quality\_function\_max\_section\_steps:} Maximum number of search steps during direct search procedure determining the optimal centering parameter. $\;$ \\
+ The golden section search is performed for the
+quality function based mu oracle. The valid range for this integer option is
+$0 \le {\tt quality\_function\_max\_section\_steps } <  {\tt +inf}$
+and its default value is $8$.
+This option is only used if the option ``mu\_oracle'' is set to ``quality-function''.
+
+
+\paragraph{fixed\_mu\_oracle:} Oracle for the barrier parameter when switching to fixed mode. $\;$ \\
+ Determines how the first value of the barrier
+parameter should be computed when switching to
+the ``monotone mode'' in the adaptive strategy.
+(Only considered if ``adaptive'' is selected for
+option ``mu\_strategy''.)
+The default value for this string option is ``average\_compl''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item probing: Mehrotra's probing heuristic
+   \item loqo: LOQO's centrality rule
+   \item quality-function: minimize a quality function
+   \item average\_compl: base on current average complementarity
+\end{itemize}
+
+\paragraph{mu\_init:} Initial value for the barrier parameter. $\;$ \\
+ This option determines the initial value for the
+barrier parameter (mu).  It is only relevant in
+the monotone, Fiacco-McCormick version of the
+algorithm. (i.e., if ``mu\_strategy'' is chosen as
+``monotone'') The valid range for this real option is 
+$0 <  {\tt mu\_init } <  {\tt +inf}$
+and its default value is $0.1$.
+
+\paragraph{mu\_max\_fact:} Factor for initialization of maximum value for barrier parameter. $\;$ \\
+ This option determines the upper bound on the
+barrier parameter.  This upper bound is computed
+as the average complementarity at the initial
+point times the value of this option. (Only used
+if option ``mu\_strategy'' is chosen as ``adaptive''.) The valid range for this real option is 
+$0 <  {\tt mu\_max\_fact } <  {\tt +inf}$
+and its default value is $1000$.
+
+
+\paragraph{mu\_max:} Maximum value for barrier parameter. $\;$ \\
+ This option specifies an upper bound on the
+barrier parameter in the adaptive mu selection
+mode.  If this option is set, it overwrites the
+effect of mu\_max\_fact. (Only used if option
+``mu\_strategy'' is chosen as ``adaptive''.) The valid range for this real option is 
+$0 <  {\tt mu\_max } <  {\tt +inf}$
+and its default value is $100000$.
+
+
+\paragraph{mu\_min:} Minimum value for barrier parameter. $\;$ \\
+ This option specifies the lower bound on the
+barrier parameter in the adaptive mu selection
+mode. By default, it is set to
+min(``tol'', ``compl\_inf\_tol'')/(``barrier\_tol\_fact-
+or''+1), which should be a reasonable value. (Only
+used if option ``mu\_strategy'' is chosen as
+``adaptive''.) The valid range for this real option is 
+$0 <  {\tt mu\_min } <  {\tt +inf}$
+and its default value is $1 \cdot 10^{-09}$.
+
+\paragraph{barrier\_tol\_factor:} Factor for mu in barrier stop test. $\;$ \\
+ The convergence tolerance for each barrier
+problem in the monotone mode is the value of the
+barrier parameter times ``barrier\_tol\_factor''.
+This option is also used in the adaptive mu
+strategy during the monotone mode. (This is
+$\kappa_\varepsilon$ in the implementation paper). The valid range for this real option is 
+$0 <  {\tt barrier\_tol\_factor } <  {\tt +inf}$
+and its default value is $10$.
+
+\paragraph{mu\_linear\_decrease\_factor:} Determines linear decrease rate of barrier parameter. $\;$ \\
+ For the Fiacco-McCormick update procedure the new
+barrier parameter mu is obtained by taking the
+minimum of mu$\cdot$``mu\_linear\_decrease\_factor'' and
+mu$^\textrm{``superlinear\_decrease\_power''}$.  (This is
+$\kappa_\mu$ in the implementation paper.) This option
+is also used in the adaptive mu strategy during
+the monotone mode. The valid range for this real option is 
+$0 <  {\tt mu\_linear\_decrease\_factor } <  1$
+and its default value is $0.2$.
+
+
+\paragraph{mu\_superlinear\_decrease\_power:} Determines superlinear decrease rate of barrier parameter. $\;$ \\
+ For the Fiacco-McCormick update procedure the new
+barrier parameter mu is obtained by taking the
+minimum of mu$\cdot$``mu\_linear\_decrease\_factor'' and
+mu$^\textrm{``superlinear\_decrease\_power''}$.  (This is
+$\theta_\mu$ in the implementation paper.) This option
+is also used in the adaptive mu strategy during
+the monotone mode. The valid range for this real option is 
+$1 <  {\tt mu\_superlinear\_decrease\_power } <  2$
+and its default value is $1.5$.
+
+\subsubsection{Barrier parameter update (expert options)}
+
+\paragraph{mu\_allow\_fast\_monotone\_decrease:} Allow skipping of barrier problem if barrier test is already met. $\;$ \\
+ If set to ``no'', the algorithm enforces at least
+one iteration per barrier problem, even if the
+barrier test is already met for the updated
+barrier parameter.
+The default value for this string option is ``yes''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item no: Take at least one iteration per barrier problem
+   \item yes: Allow fast decrease of mu if barrier test it met
+\end{itemize}
+
+\paragraph{adaptive\_mu\_globalization:} Globalization strategy for the adaptive mu selection mode. $\;$ \\
+ To achieve global convergence of the adaptive
+version, the algorithm has to switch to the
+monotone mode (Fiacco-McCormick approach) when
+convergence does not seem to appear.  This option
+sets the criterion used to decide when to do this
+switch. (Only used if option ``mu\_strategy'' is
+chosen as ``adaptive''.)
+The default value for this string option is ``obj-constr-filter''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item kkt-error: nonmonotone decrease of kkt-error
+   \item obj-constr-filter: 2-dim filter for objective and constraint
+violation
+   \item never-monotone-mode: disables globalization
+\end{itemize}
+
+\paragraph{adaptive\_mu\_kkterror\_red\_iters:} Maximum number of iterations requiring sufficient progress. $\;$ \\
+ For the ``kkt-error'' based globalization strategy,
+the progress made in at most ``adaptive\_mu\_kkterror\_red\_iters'' iterations must be sufficient.
+If this number of iterations is exceeded, the
+globalization strategy switches to the monotone
+mode. The valid range for this integer option is
+$0 \le {\tt adaptive\_mu\_kkterror\_red\_iters } <  {\tt +inf}$
+and its default value is $4$.
+
+
+\paragraph{adaptive\_mu\_kkterror\_red\_fact:} Sufficient decrease factor for ``kkt-error'' globalization strategy. $\;$ \\
+ For the ``kkt-error'' based globalization strategy,
+the error must decrease by this factor to be
+deemed sufficient decrease. The valid range for this real option is 
+$0 <  {\tt adaptive\_mu\_kkterror\_red\_fact } <  1$
+and its default value is $0.9999$.
+
+
+\paragraph{filter\_margin\_fact:} Factor determining width of margin for obj-constr-filter adaptive globalization strategy. $\;$ \\
+ When using the adaptive globalization strategy,
+``obj-constr-filter'', sufficient progress for a
+filter entry is defined as follows: (new obj) <
+(filter obj) - filter\_margin\_fact$\cdot$ (new
+constr-viol) OR (new constr-viol) $<$ (filter
+constr-viol) - filter\_margin\_fact$\cdot$ (new
+constr-viol).  For the description of the
+``kkt-error-filter'' option see
+``filter\_max\_margin''. The valid range for this real option is 
+$0 <  {\tt filter\_margin\_fact } <  1$
+and its default value is $1 \cdot 10^{-05}$.
+
+
+\paragraph{filter\_max\_margin:} Maximum width of margin in obj-constr-filter adaptive globalization strategy. $\;$ \\
+ The valid range for this real option is 
+$0 <  {\tt filter\_max\_margin } <  {\tt +inf}$
+and its default value is $1$.
+
+
+\paragraph{adaptive\_mu\_restore\_previous\_iterate:} Indicates if the previous iterate should be restored if the monotone mode is entered. $\;$ \\
+ When the globalization strategy for the adaptive
+barrier algorithm switches to the monotone mode,
+it can either start from the most recent iterate
+(no), or from the last iterate that was accepted
+(yes).
+The default value for this string option is ``no''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item no: don't restore accepted iterate
+   \item yes: restore accepted iterate
+\end{itemize}
+
+\paragraph{adaptive\_mu\_monotone\_init\_factor:} Determines the initial value of the barrier parameter when switching to the monotone mode. $\;$ \\
+ When the globalization strategy for the adaptive
+barrier algorithm switches to the monotone mode
+and the option fixed\_mu\_oracle is chosen as
+``average\_compl'', the barrier parameter is set to
+the current average complementarity times the
+value of ``adaptive\_mu\_monotone\_init\_factor''. The default value for this option is $0.8$ and its valid range is $0 <  {\tt adaptive\_mu\_monotone\_init\_factor } <  {\tt +inf}$.
+
+
+\paragraph{adaptive\_mu\_kkt\_norm\_type:} Norm used for the KKT error in the adaptive mu globalization strategies. $\;$ \\
+ When computing the KKT error for the
+globalization strategies, the norm to be used is
+specified with this option. Note, this options is
+also used in the QualityFunctionMuOracle.
+The default value for this string option is ``2-norm-squared''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item 1-norm: use the 1-norm (abs sum)
+   \item 2-norm-squared: use the 2-norm squared (sum of squares)
+   \item max-norm: use the infinity norm (max)
+   \item 2-norm: use 2-norm
+\end{itemize}
+
+\paragraph{tau\_min:} Lower bound on fraction-to-the-boundary parameter tau. $\;$ \\
+ (This is $\tau_{\min}$ in the implementation paper.)  This
+option is also used in the adaptive mu strategy
+during the monotone mode. The valid range for this real option is 
+$0 <  {\tt tau\_min } <  1$
+and its default value is $0.99$.
+
+
+\paragraph{sigma\_max:} Maximum value of the centering parameter. $\;$ \\
+ This is the upper bound for the centering
+parameter chosen by the quality function based
+barrier parameter update. (Only used if option
+``mu\_oracle'' is set to ``quality-function''.) The valid range for this real option is 
+$0 <  {\tt sigma\_max } <  {\tt +inf}$
+and its default value is $100$.
+
+
+\paragraph{sigma\_min:} Minimum value of the centering parameter. $\;$ \\
+ This is the lower bound for the centering
+parameter chosen by the quality function based
+barrier parameter update. (Only used if option
+``mu\_oracle'' is set to ``quality-function''.) The valid range for this real option is 
+$0 \le {\tt sigma\_min } <  {\tt +inf}$
+and its default value is $1 \cdot 10^{-06}$.
+
+
+\paragraph{quality\_function\_norm\_type:} Norm used for components of the quality function. $\;$ \\
+ (Only used if option ``mu\_oracle'' is set to
+``quality-function''.)
+The default value for this string option is ``2-norm-squared''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item 1-norm: use the 1-norm (abs sum)
+   \item 2-norm-squared: use the 2-norm squared (sum of squares)
+   \item max-norm: use the infinity norm (max)
+   \item 2-norm: use 2-norm
+\end{itemize}
+
+\paragraph{quality\_function\_centrality:} The penalty term for centrality that is included in quality function. $\;$ \\
+ This determines whether a term is added to the
+quality function to penalize deviation from
+centrality with respect to complementarity.  The
+complementarity measure here is the xi in the
+Loqo update rule. (Only used if option
+``mu\_oracle'' is set to ``quality-function''.)
+The default value for this string option is ``none''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item none: no penalty term is added
+   \item log: complementarity $\cdot$ the log of the centrality
+measure
+   \item reciprocal: complementarity $\cdot$ the reciprocal of the
+centrality measure
+   \item cubed-reciprocal: complementarity $\cdot$ the reciprocal of the
+centrality measure cubed
+\end{itemize}
+
+\paragraph{quality\_function\_balancing\_term:} The balancing term included in the quality function for centrality. $\;$ \\
+ This determines whether a term is added to the
+quality function that penalizes situations where
+the complementarity is much smaller than dual and
+primal infeasibilities. (Only used if option
+``mu\_oracle'' is set to ``quality-function''.)
+The default value for this string option is ``none''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item none: no balancing term is added
+   \item cubic: $\max(0,\max(\textrm{dual\_inf},\textrm{primal\_inf})-\textrm{compl})^3$
+\end{itemize}
+
+\paragraph{quality\_function\_max\_section\_steps:} Maximum number of search steps during direct search procedure determining the optimal centering parameter. $\;$ \\
+ The golden section search is performed for the
+quality function based mu oracle. The valid range for this integer option is
+$0 \le {\tt quality\_function\_max\_section\_steps } <  {\tt +inf}$
+and its default value is $8$.
+(Only used if
+option ``mu\_oracle'' is set to ``quality-function''.)
+
+
+\paragraph{quality\_function\_section\_sigma\_tol:} Tolerance for the section search procedure determining the optimal centering parameter (in sigma space). $\;$ \\
+ The golden section search is performed for the
+quality function based mu oracle. (Only used if
+option ``mu\_oracle'' is set to ``quality-function''.) The valid range for this real option is 
+$0 \le {\tt quality\_function\_section\_sigma\_tol } <  1$
+and its default value is $0.01$.
+
+
+\paragraph{quality\_function\_section\_qf\_tol:} Tolerance for the golden section search procedure determining the optimal centering parameter (in the function value space). $\;$ \\
+ The golden section search is performed for the
+quality function based mu oracle. (Only used if
+option ``mu\_oracle'' is set to ``quality-function''.) The valid range for this real option is 
+$0 \le {\tt quality\_function\_section\_qf\_tol } <  1$
+and its default value is $0$.
+
+
 \subsubsection{Warm start}
 
 \paragraph{warm\_start\_init\_point:} Warm-start for initial point $\;$ \\
  Indicates whether this optimization should use a warm start initialization, where values of dual variables are given by GAMS (You can set marginal values for variables and equations in your GAMS model to set the starting point for the dual variables.)
-For the primal values, IPOPT uses the starting point that is given by GAMS (You can set level values for variables (and equations) in your GAMS model to set the starting point for the primal variables.)
-The default value for this string option is "no".
+For the primal values, Ipopt uses the starting point that is given by GAMS (You can set level values for variables (and equations) in your GAMS model to set the starting point for the primal variables.)
+The default value for this string option is ``no''.
 \\ 
 Possible values:
 \begin{itemize}
@@ -447,6 +782,18 @@ and its default value is $0.001$.
 \paragraph{warm\_start\_bound\_frac:} same as bound\_frac for the regular initializer. $\;$ \\
  The valid range for this real option is 
 $0 <  {\tt warm\_start\_bound\_frac } \le 0.5$
+and its default value is $0.001$.
+
+
+\paragraph{warm\_start\_slack\_bound\_frac:} same as slack\_bound\_frac for the regular initializer. $\;$ \\
+ The valid range for this real option is 
+$0 <  {\tt warm\_start\_slack\_bound\_frac } \le 0.5$
+and its default value is $0.001$.
+
+
+\paragraph{warm\_start\_slack\_bound\_push:} same as slack\_bound\_push for the regular initializer. $\;$ \\
+ The valid range for this real option is 
+$0 <  {\tt warm\_start\_slack\_bound\_push } <  {\tt +inf}$
 and its default value is $0.001$.
 
 
@@ -467,7 +814,7 @@ and its default value is $1 \cdot 10^{+06}$.
  This option determines how the step size
 (alpha\_y) will be calculated when updating the
 constraint multipliers.
-The default value for this string option is "primal".
+The default value for this string option is ``primal''.
 \\ 
 Possible values:
 \begin{itemize}
@@ -479,9 +826,18 @@ for LPs)
    \item full: take a full step of size one
    \item min\_dual\_infeas: choose step size minimizing new dual
 infeasibility
-   \item safe\_min\_dual\_infeas: like "min\_dual\_infeas", but safeguarded by
-"min" and "max"
+   \item safe\_min\_dual\_infeas: like ``min\_dual\_infeas'', but safeguarded by
+``min'' and ``max''
 \end{itemize}
+
+\paragraph{alpha\_for\_y\_tol:} Tolerance for switching to full equality multiplier steps. $\;$ \\
+ This is only relevant if ``alpha\_for\_y'' is
+chosen ``primal-and-full'' or ``dual-and-full''.  The
+step size for the equality constraint multipliers
+is taken to be one if the max-norm of the primal
+step is less than this tolerance. The valid range for this real option is 
+$0 \le {\tt alpha\_for\_y\_tol } <  {\tt +inf}$
+and its default value is $10$.
 
 \paragraph{recalc\_y:} Tells the algorithm to recalculate the equality and inequality multipliers as least square estimates. $\;$ \\
  This asks Ipopt to recompute the
@@ -492,7 +848,7 @@ However, each recalculation requires an extra
 factorization of the linear system.  If a limited
 memory quasi-Newton option is chosen, this is
 used by default.
-The default value for this string option is "no".
+The default value for this string option is ``no''.
 \\ 
 Possible values:
 \begin{itemize}
@@ -511,8 +867,8 @@ and its default value is $1 \cdot 10^{-06}$.
 
 \paragraph{max\_soc:} Maximum number of second order correction trial steps at each iteration. $\;$ \\
  Choosing 0 disables the second order corrections.
-(This is p\^{max} of Step A-5.9 of Algorithm A in
-implementation paper.) The valid range for this integer option is
+(This is $p^{\max}$ of Step A-5.9 of Algorithm A in
+the implementation paper.) The valid range for this integer option is
 $0 \le {\tt max\_soc } <  {\tt +inf}$
 and its default value is $4$.
 
@@ -521,7 +877,7 @@ and its default value is $4$.
  If the number of successive iterations in which
 the backtracking line search did not accept the
 first trial point exceeds this number, the
-watchdog procedure is activated.  Choosing "0"
+watchdog procedure is activated.  Choosing 0
 here disables the watchdog procedure. The valid range for this integer option is
 $0 \le {\tt watchdog\_shortened\_iter\_trigger } <  {\tt +inf}$
 and its default value is $10$.
@@ -535,6 +891,225 @@ stored point. The valid range for this integer option is
 $1 \le {\tt watchdog\_trial\_iter\_max } <  {\tt +inf}$
 and its default value is $3$.
 
+\paragraph{corrector\_type:} The type of corrector steps that should be taken (experimental!). $\;$ \\
+ If ``mu\_strategy'' is ``adaptive'', this option
+determines what kind of corrector steps should be
+tried.
+The default value for this string option is ``none''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item none: no corrector
+   \item affine: corrector step towards mu=0
+   \item primal-dual: corrector step towards current mu
+\end{itemize}
+
+\subsubsection{Line search (expert options)}
+
+\paragraph{alpha\_red\_factor:} Fractional reduction of the trial step size in the backtracking line search. $\;$ \\
+ At every step of the backtracking line search,
+the trial step size is reduced by this factor. The valid range for this real option is 
+$0 <  {\tt alpha\_red\_factor } <  1$
+and its default value is $0.5$.
+
+
+\paragraph{accept\_every\_trial\_step:} Always accept the first trial step. $\;$ \\
+ Setting this option to ``yes'' essentially disables
+the line search and makes the algorithm take
+aggressive steps, without global convergence
+guarantees.
+The default value for this string option is ``no''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item no: don't arbitrarily accept the full step
+   \item yes: always accept the full step
+\end{itemize}
+
+\paragraph{tiny\_step\_tol:} Tolerance for detecting numerically insignificant steps. $\;$ \\
+ If the search direction in the primal variables
+(x and s) is, in relative terms for each
+component, less than this value, the algorithm
+accepts the full step without line search.  If
+this happens repeatedly, the algorithm will
+terminate with a corresponding exit message. The
+default value is 10 times machine precision. The valid range for this real option is 
+$0 \le {\tt tiny\_step\_tol } <  {\tt +inf}$
+and its default value is $2.22045 \cdot 10^{-15}$.
+
+
+\paragraph{tiny\_step\_y\_tol:} Tolerance for quitting because of numerically insignificant steps. $\;$ \\
+ If the search direction in the primal variables
+(x and s) is, in relative terms for each
+component, repeatedly less than tiny\_step\_tol,
+and the step in the y variables is smaller than
+this threshold, the algorithm will terminate. The valid range for this real option is 
+$0 \le {\tt tiny\_step\_y\_tol } <  {\tt +inf}$
+and its default value is $0.01$.
+
+
+\paragraph{theta\_max\_fact:} Determines upper bound for constraint violation in the filter. $\;$ \\
+ The algorithmic parameter theta\_max is
+determined as theta\_max\_fact times the maximum
+of 1 and the constraint violation at initial
+point.  Any point with a constraint violation
+larger than theta\_max is unacceptable to the
+filter (see Eqn. (21) in the implementation paper). The valid range for this real option is 
+$0 <  {\tt theta\_max\_fact } <  {\tt +inf}$
+and its default value is $10000$.
+
+
+\paragraph{theta\_min\_fact:} Determines constraint violation threshold in the switching rule. $\;$ \\
+ The algorithmic parameter theta\_min is
+determined as theta\_min\_fact times the maximum
+of 1 and the constraint violation at initial
+point.  The switching rules treats an iteration
+as an h-type iteration whenever the current
+constraint violation is larger than theta\_min
+(see paragraph before Eqn. (19) in the implementation
+paper). The valid range for this real option is 
+$0 <  {\tt theta\_min\_fact } <  {\tt +inf}$
+and its default value is $0.0001$.
+
+
+\paragraph{eta\_phi:} Relaxation factor in the Armijo condition. $\;$ \\
+ (See Eqn. (20) in the implementation paper) The valid range for this real option is 
+$0 <  {\tt eta\_phi } <  0.5$
+and its default value is $1 \cdot 10^{-08}$.
+
+
+\paragraph{delta:} Multiplier for constraint violation in the switching rule. $\;$ \\
+ (See Eqn. (19) in the implementation paper.) The valid range for this real option is 
+$0 <  {\tt delta } <  {\tt +inf}$
+and its default value is $1$.
+
+
+\paragraph{s\_phi:} Exponent for linear barrier function model in the switching rule. $\;$ \\
+ (See Eqn. (19) in the implementation paper.) The valid range for this real option is 
+$1 <  {\tt s\_phi } <  {\tt +inf}$
+and its default value is $2.3$.
+
+
+\paragraph{s\_theta:} Exponent for current constraint violation in the switching rule. $\;$ \\
+ (See Eqn. (19) in the implementation paper.) The valid range for this real option is 
+$1 <  {\tt s\_theta } <  {\tt +inf}$
+and its default value is $1.1$.
+
+
+\paragraph{gamma\_phi:} Relaxation factor in the filter margin for the barrier function. $\;$ \\
+ (See Eqn. (18a) in the implementation paper.) The valid range for this real option is 
+$0 <  {\tt gamma\_phi } <  1$
+and its default value is $1 \cdot 10^{-08}$.
+
+
+\paragraph{gamma\_theta:} Relaxation factor in the filter margin for the constraint violation. $\;$ \\
+ (See Eqn. (18b) in the implementation paper.) The valid range for this real option is 
+$0 <  {\tt gamma\_theta } <  1$
+and its default value is $1 \cdot 10^{-05}$.
+
+
+\paragraph{alpha\_min\_frac:} Safety factor for the minimal step size (before switching to restoration phase). $\;$ \\
+ (This is $\gamma_\alpha$ in Eqn. (20) in the
+implementation paper.) The default value of this real option is $0.05$ and its
+valid range is $0 <  {\tt alpha\_min\_frac } <  1$.
+
+
+\paragraph{kappa\_soc:} Factor in the sufficient reduction rule for second order correction. $\;$ \\
+ This option determines how much a second order
+correction step must reduce the constraint
+violation so that further correction steps are
+attempted.  (See Step A-5.9 of Algorithm A in
+the implementation paper.) The valid range for this real option is 
+$0 <  {\tt kappa\_soc } <  {\tt +inf}$
+and its default value is $0.99$.
+
+
+\paragraph{obj\_max\_inc:} Determines the upper bound on the acceptable increase of barrier objective function. $\;$ \\
+ Trial points are rejected if they lead to an
+increase in the barrier objective function by
+more than obj\_max\_inc orders of magnitude. The valid range for this real option is 
+$1 <  {\tt obj\_max\_inc } <  {\tt +inf}$
+and its default value is $5$.
+
+
+\paragraph{max\_filter\_resets:} Maximal allowed number of filter resets $\;$ \\
+ A positive number enables a heuristic that resets
+the filter, whenever in more than
+``filter\_reset\_trigger'' successive iterations
+the last rejected trial steps size was rejected
+because of the filter.  This option determine the
+maximal number of resets that are allowed to take
+place. The valid range for this integer option is
+$0 \le {\tt max\_filter\_resets } <  {\tt +inf}$
+and its default value is $5$.
+
+
+\paragraph{filter\_reset\_trigger:} Number of iterations that trigger the filter reset. $\;$ \\
+ If the filter reset heuristic is active and the
+number of successive iterations in which the last
+rejected trial step size was rejected because of
+the filter, the filter is reset. The valid range for this integer option is
+$1 \le {\tt filter\_reset\_trigger } <  {\tt +inf}$
+and its default value is $5$.
+
+
+% \paragraph{skip\_corr\_if\_neg\_curv:} Skip the corrector step in negative curvature iteration (unsupported!). $\;$ \\
+%  The corrector step is not tried if negative
+% curvature has been encountered during the
+% computation of the search direction in the
+% current iteration. This option is only used if
+% ``mu\_strategy'' is ``adaptive''.
+% The default value for this string option is ``yes''.
+% \\ 
+% Possible values:
+% \begin{itemize}
+%    \item no: don't skip
+%    \item yes: skip
+% \end{itemize}
+
+% \paragraph{skip\_corr\_in\_monotone\_mode:} Skip the corrector step during monotone barrier parameter mode (unsupported!). $\;$ \\
+%  The corrector step is not tried if the algorithm
+% is currently in the monotone mode (see also
+% option ``barrier\_strategy'').This option is only
+% used if ``mu\_strategy'' is ``adaptive''.
+% The default value for this string option is ``yes''.
+% \\ 
+% Possible values:
+% \begin{itemize}
+%    \item no: don't skip
+%    \item yes: skip
+% \end{itemize}
+
+% \paragraph{corrector\_compl\_avrg\_red\_fact:} Complementarity tolerance factor for accepting corrector step (unsupported!). $\;$ \\
+%  This option determines the factor by which
+% complementarity is allowed to increase for a
+% corrector step to be accepted. The valid range for this real option is 
+% $0 <  {\tt corrector\_compl\_avrg\_red\_fact } <  {\tt +inf}$
+% and its default value is $1$.
+
+
+\paragraph{kappa\_sigma:} Factor limiting the deviation of dual variables from primal estimates. $\;$ \\
+ If the dual variables deviate from their primal
+estimates, a correction is performed. (See Eqn.
+(16) in the the implementation paper.) Setting the
+value to less than 1 disables the correction. The valid range for this real option is 
+$0 <  {\tt kappa\_sigma } <  {\tt +inf}$
+and its default value is $1 \cdot 10^{+10}$.
+
+
+\paragraph{slack\_move:} Correction size for very small slacks. $\;$ \\
+ Due to numerical issues or the lack of an
+interior, the slack variables might become very
+small.  If a slack becomes very small compared to
+machine precision, the corresponding bound is
+moved slightly.  This parameter determines how
+large the move should be.  Its default value is
+mach\_eps$^{3/4}$.  (See also end of Section 3.5
+in the implementation paper - but actual
+the implementation might be somewhat different.) The valid range for this real option is 
+$0 \le {\tt slack\_move } <  {\tt +inf}$
+and its default value is $1.81899 \cdot 10^{-12}$.
+
 \subsubsection{Restoration phase}
 
 \paragraph{expect\_infeasible\_problem:} Enable heuristics to quickly detect an infeasible problem. $\;$ \\
@@ -547,7 +1122,7 @@ more quickly than usually, and more reduction in
 the constraint violation is enforced before the
 restoration phase is left. If the problem is
 square, this option is enabled automatically.
-The default value for this string option is "no".
+The default value for this string option is ``no''.
 \\ 
 Possible values:
 \begin{itemize}
@@ -555,9 +1130,9 @@ Possible values:
    \item yes: the problem has a good chance to be infeasible
 \end{itemize}
 
-\paragraph{expect\_infeasible\_problem\_ctol:} Threshold for disabling "expect\_infeasible\_problem" option. $\;$ \\
+\paragraph{expect\_infeasible\_problem\_ctol:} Threshold for disabling ``expect\_infeasible\_problem'' option. $\;$ \\
  If the constraint violation becomes smaller than
-this threshold, the "expect\_infeasible\_problem"
+this threshold, the ``expect\_infeasible\_problem''
 heuristics in the filter line search are
 disabled. If the problem is square, this options
 is set to 0. The valid range for this real option is 
@@ -566,11 +1141,11 @@ and its default value is $0.001$.
 
 
 \paragraph{start\_with\_resto:} Tells algorithm to switch to restoration phase in first iteration. $\;$ \\
- Setting this option to "yes" forces the algorithm
+ Setting this option to ``yes'' forces the algorithm
 to switch to the feasibility restoration phase in
 the first iteration. If the initial point is
 feasible, the algorithm will abort with a failure.
-The default value for this string option is "no".
+The default value for this string option is ``no''.
 \\ 
 Possible values:
 \begin{itemize}
@@ -585,7 +1160,7 @@ damped primal-dual step (damped only to satisfy
 the fraction-to-the-boundary rule) is not
 decreasing the primal-dual error by at least this
 factor, then the regular restoration phase is
-called. Choosing "0" here disables the soft
+called. Choosing 0 here disables the soft
 restoration phase. The valid range for this real option is 
 $0 \le {\tt soft\_resto\_pderror\_reduction\_factor } <  {\tt +inf}$
 and its default value is $0.9999$.
@@ -598,6 +1173,22 @@ filter and the infeasibility has been reduced by
 at least the fraction given by this option. The valid range for this real option is 
 $0 \le {\tt required\_infeasibility\_reduction } <  1$
 and its default value is $0.9$.
+
+
+\paragraph{max\_soft\_resto\_iters:} Maximum number of iterations performed successively in soft restoration phase. $\;$ \\
+ If the soft restoration phase is performed for
+more than so many iterations in a row, the regular
+restoration phase is called. The valid range for this integer option is
+$0 \le {\tt max\_soft\_resto\_iters } <  {\tt +inf}$
+and its default value is $10$.
+
+
+\paragraph{max\_resto\_iter:} Maximum number of successive iterations in restoration phase. $\;$ \\
+ The algorithm terminates with an error message if
+the number of iterations successively taken in
+the restoration phase exceeds this number. The valid range for this integer option is
+$0 \le {\tt max\_resto\_iter } <  {\tt +inf}$
+and its default value is $3000000$.
 
 
 \paragraph{bound\_mult\_reset\_threshold:} Threshold for resetting bound multipliers after the restoration phase. $\;$ \\
@@ -624,7 +1215,7 @@ and its default value is $0$.
 
 
 \paragraph{evaluate\_orig\_obj\_at\_resto\_trial:} Determines if the original objective function should be evaluated at restoration phase trial points. $\;$ \\
- Setting this option to "yes" makes the
+ Setting this option to ``yes'' makes the
 restoration phase algorithm evaluate the
 objective function of the original problem at
 every trial point encountered during the
@@ -638,7 +1229,7 @@ for the restoration phase problem, but not the
 original problem.  On the other hand, if the
 evaluation of the original objective is
 expensive, this might be costly.
-The default value for this string option is "yes".
+The default value for this string option is ``yes''.
 \\ 
 Possible values:
 \begin{itemize}
@@ -647,6 +1238,22 @@ Possible values:
 \end{itemize}
 
 \subsubsection{Linear solver}
+
+\paragraph{fast\_step\_computation:} Indicates if the linear system should be solved quickly. $\;$ \\
+ If set to yes, the algorithm assumes that the
+linear system that is solved to obtain the search
+direction, is solved sufficiently well. In that
+case, no residuals are computed, and the
+computation of the search direction is a little
+faster.
+The default value for this string option is ``no''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item no: Verify solution of linear system by computing
+residuals.
+   \item yes: Trust that linear systems are solved well.
+\end{itemize}
 
 \paragraph{max\_refinement\_steps:} Maximum number of iterative refinement steps per linear system solve. $\;$ \\
  Iterative refinement (on the full unsymmetric
@@ -662,9 +1269,34 @@ and its default value is $10$.
 system) is performed for each right hand side. 
 This option determines the minimum number of
 iterative refinements (i.e. at least
-"min\_refinement\_steps" iterative refinement
+``min\_refinement\_steps'' iterative refinement
 steps are enforced per right hand side.) The valid range for this integer option is
 $0 \le {\tt min\_refinement\_steps } <  {\tt +inf}$
+and its default value is $1$.
+
+\paragraph{residual\_ratio\_max:} Iterative refinement tolerance $\;$ \\
+ Iterative refinement is performed until the
+residual test ratio is less than this tolerance
+(or until the limit ``max\_refinement\_steps'' is hit). The valid range for this real option is 
+$0 <  {\tt residual\_ratio\_max } <  {\tt +inf}$
+and its default value is $1 \cdot 10^{-10}$.
+
+
+\paragraph{residual\_ratio\_singular:} Threshold for declaring linear system singular after failed iterative refinement. $\;$ \\
+ If the residual test ratio is larger than this
+value after failed iterative refinement, the
+algorithm pretends that the linear system is
+singular. The valid range for this real option is 
+$0 <  {\tt residual\_ratio\_singular } <  {\tt +inf}$
+and its default value is $1 \cdot 10^{-05}$.
+
+
+\paragraph{residual\_improvement\_factor:} Minimal required reduction of residual test ratio in iterative refinement. $\;$ \\
+ If the improvement of the residual test ratio
+made by one iterative refinement step is not
+better than this factor, iterative refinement is
+aborted. The valid range for this real option is 
+$0 <  {\tt residual\_improvement\_factor } <  {\tt +inf}$
 and its default value is $1$.
 
 \paragraph{mumps\_pivtol:} Pivot tolerance for the linear solver MUMPS. \\
@@ -685,6 +1317,32 @@ The valid range for this integer option is
 $0 \le {\tt mumps\_mem\_percent } < {\tt +inf}$
 and its default value is $1000$.
 
+\paragraph{mumps\_permuting\_scaling:} Controls permuting and scaling in MUMPS $\;$ \\
+ This is ICTL(6) in MUMPS. The valid range for this integer option is
+$0 \le {\tt mumps\_permuting\_scaling } \le 7$
+and its default value is $7$.
+
+
+\paragraph{mumps\_pivot\_order:} Controls pivot order in MUMPS $\;$ \\
+ This is ICTL(7) in MUMPS. The valid range for this integer option is
+$0 \le {\tt mumps\_pivot\_order } \le 7$
+and its default value is $7$.
+
+
+\paragraph{mumps\_scaling:} Controls scaling in MUMPS $\;$ \\
+ This is ICTL(8) in MUMPS. The valid range for this integer option is
+$-2 \le {\tt mumps\_scaling } \le 7$
+and its default value is $7$.
+
+
+\paragraph{mumps\_dep\_tol:} Pivot threshold for detection of linearly dependent constraints in MUMPS. $\;$ \\
+ When MUMPS is used to determine linearly
+dependent constraints, this is determines the
+threshold for a pivot to be considered zero. 
+This is CNTL(3) in MUMPS. The valid range for this real option is 
+${\tt -inf} <  {\tt mumps\_dep\_tol } <  {\tt +inf}$
+and its default value is $-1$.
+
 \subsubsection{Hessian perturbation}
 
 \paragraph{max\_hessian\_perturbation:} Maximum value of regularization parameter for handling negative curvature. $\;$ \\
@@ -703,7 +1361,7 @@ augmented system. This parameter gives the
 maximum value of the regularization parameter. If
 a regularization of that size is not enough, the
 algorithm skips this iteration and goes to the
-restoration phase. (This is delta\_w\^max in the
+restoration phase. (This is $\delta_w^{\max}$ in the
 implementation paper.) The valid range for this real option is 
 $0 <  {\tt max\_hessian\_perturbation } <  {\tt +inf}$
 and its default value is $1 \cdot 10^{+20}$.
@@ -713,14 +1371,14 @@ and its default value is $1 \cdot 10^{+20}$.
  The size of the perturbation of the Hessian block
 is never selected smaller than this value, unless
 no perturbation is necessary. (This is
-delta\_w\^min in implementation paper.) The valid range for this real option is 
+$\delta_w^{\min}$ in the implementation paper.) The valid range for this real option is 
 $0 \le {\tt min\_hessian\_perturbation } <  {\tt +inf}$
 and its default value is $1 \cdot 10^{-20}$.
 
 
 \paragraph{first\_hessian\_perturbation:} Size of first x-s perturbation tried. $\;$ \\
  The first value tried for the x-s perturbation in
-the inertia correction scheme.(This is delta\_0
+the inertia correction scheme.(This is $\delta_0$
 in the implementation paper.) The valid range for this real option is 
 $0 <  {\tt first\_hessian\_perturbation } <  {\tt +inf}$
 and its default value is $0.0001$.
@@ -733,7 +1391,7 @@ value is used for the computation of the very
 first perturbation and allows a different value
 for for the first perturbation than that used for
 the remaining perturbations. (This is
-bar\_kappa\_w\^+ in the implementation paper.) The valid range for this real option is 
+$\bar\kappa_w^+$ in the implementation paper.) The valid range for this real option is 
 $1 <  {\tt perturb\_inc\_fact\_first } <  {\tt +inf}$
 and its default value is $100$.
 
@@ -743,7 +1401,7 @@ and its default value is $100$.
 when a trial value was not sufficient - this
 value is used for the computation of all
 perturbations except for the first. (This is
-kappa\_w\^+ in the implementation paper.) The valid range for this real option is 
+$\kappa_w^+$ in the implementation paper.) The valid range for this real option is 
 $1 <  {\tt perturb\_inc\_fact } <  {\tt +inf}$
 and its default value is $8$.
 
@@ -752,18 +1410,109 @@ and its default value is $8$.
  The factor by which the perturbation is decreased
 when a trial value is deduced from the size of
 the most recent successful perturbation. (This is
-kappa\_w\^- in the implementation paper.) The valid range for this real option is 
+$\kappa_w^-$ in the implementation paper.) The valid range for this real option is 
 $0 <  {\tt perturb\_dec\_fact } <  1$
 and its default value is $0.333333$.
 
 
 \paragraph{jacobian\_regularization\_value:} Size of the regularization for rank-deficient constraint Jacobians. $\;$ \\
- (This is bar delta\_c in the implementation
+ (This is $\bar\delta_c$ in the implementation
 paper.) The valid range for this real option is\\ 
 $0 \le {\tt jacobian\_regularization\_value } <  {\tt +inf}$
 and its default value is $1 \cdot 10^{-08}$.
 
 
+\paragraph{jacobian\_regularization\_exponent:} Exponent for mu in the regularization for rank-deficient constraint Jacobians. $\;$ \\
+ (This is $\kappa_c$ in the implementation paper.) The default value for this real option is $0.25$
+and its valid range is $0 \le {\tt jacobian\_regularization\_exponent } <  {\tt +inf}$.
+
+
+\paragraph{perturb\_always\_cd:} Active permanent perturbation of constraint linearization. $\;$ \\
+ This options makes the delta\_c and delta\_d
+perturbation be used for the computation of every
+search direction.  Usually, it is only used when
+the iteration matrix is singular.
+The default value for this string option is ``no''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item no: perturbation only used when required
+   \item yes: always use perturbation
+\end{itemize}
+
+\subsubsection{Hessian approximation}
+
+\paragraph{hessian\_approximation:} Indicates what Hessian information is to be used. $\;$ \\
+ This determines which kind of information for the
+Hessian of the Lagrangian function is used by the
+algorithm.
+The default value for this string option is to use ``exact'' if the GAMS system is able to provide a hessian, and ``limited-memory'' otherwise (a warning is issued in this case).
+\\ 
+Possible values:
+\begin{itemize}
+   \item exact: Use second derivatives provided by the NLP.
+   \item limited-memory: Perform a limited-memory quasi-Newton
+approximation
+\end{itemize}
+
+\paragraph{hessian\_approximation\_space:} Indicates in which subspace the Hessian information is to be approximated. \\
+The default value for this string option is ``nonlinear-variables''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item nonlinear-variables: only in space of nonlinear variables.
+   \item all-variables: in space of all variables (without slacks)
+\end{itemize}
+
+\paragraph{limited\_memory\_max\_history:} Maximum size of the history for the limited quasi-Newton Hessian approximation. $\;$ \\
+ This option determines the number of most recent
+iterations that are taken into account for the
+limited-memory quasi-Newton approximation. The valid range for this integer option is
+$0 \le {\tt limited\_memory\_max\_history } <  {\tt +inf}$
+and its default value is $6$.
+
+
+\paragraph{limited\_memory\_update\_type:} Quasi-Newton update formula for the limited memory approximation. $\;$ \\
+ Determines which update formula is to be used for
+the limited-memory quasi-Newton approximation.
+The default value for this string option is ``bfgs''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item bfgs: BFGS update (with skipping)
+   \item sr1: SR1 (not working well)
+\end{itemize}
+
+\paragraph{limited\_memory\_initialization:} Initialization strategy for the limited memory quasi-Newton approximation. $\;$ \\
+ Determines how the diagonal Matrix B\_0 as the
+first term in the limited memory approximation
+should be computed.
+The default value for this string option is ``scalar1''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item scalar1: sigma = $s^Ty/s^Ts$
+   \item scalar2: sigma = $y^Ty/s^Ty$
+   \item constant: sigma = limited\_memory\_init\_val
+\end{itemize}
+
+\paragraph{limited\_memory\_init\_val:} Value for B0 in low-rank update. $\;$ \\
+ The starting matrix in the low rank update, B0,
+is chosen to be this multiple of the identity in
+the first iteration (when no updates have been
+performed yet), and remains constant at this
+value, if ``limited\_memory\_initialization'' is
+``constant''. The valid range for this real option is 
+$0 <  {\tt limited\_memory\_init\_val } <  {\tt +inf}$
+and its default value is $1$.
+
+
+\paragraph{limited\_memory\_max\_skipping:} Threshold for successive iterations where update is skipped. $\;$ \\
+ If the update is skipped more than this number of
+successive iterations, we quasi-Newton
+approximation is reset. The valid range for this integer option is
+$1 \le {\tt limited\_memory\_max\_skipping } <  {\tt +inf}$
+and its default value is $2$.
 
 
 % \paragraph{derivative\_test:} Enable derivative checker $\;$ \\
@@ -772,7 +1521,7 @@ and its default value is $1 \cdot 10^{-08}$.
 % The test is performed at the user provided
 % starting point and marks derivative values that
 % seem suspicious.
-% The default value for this string option is "none".
+% The default value for this string option is ``none''.
 % \\ 
 % Possible values:
 % \begin{itemize}
@@ -801,7 +1550,7 @@ and its default value is $1 \cdot 10^{-08}$.
 % 
 % \paragraph{derivative\_test\_print\_all:} Indicates whether information for all estimated derivatives should be printed. $\;$ \\
 %  Determines verbosity of derivative checker.
-% The default value for this string option is "no".
+% The default value for this string option is ``no''.
 % \\ 
 % Possible values:
 % \begin{itemize}

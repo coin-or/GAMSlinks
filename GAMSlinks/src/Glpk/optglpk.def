@@ -2,7 +2,6 @@
 * optglpk.def
 *
 
-writemps string 0 "" 1 1 create MPS file for problem
 startalg enumstr 0 "primal" 1 1 LP solver for root node
  "primal" 1
  "dual" 1
@@ -34,6 +33,7 @@ reslim_fixedrun double 0 1000 0 maxdouble 1 1 resource limit for solve with fixe
 noiterlim boolean 0 0 1 1 turn off iteration limit
 reslim double 0 1000 0 maxdouble 1 1 resource limit
 iterlim integer 0 10000 0 maxint 1 1 iteration limit
+writemps string 0 "" 1 1 create MPS file for problem
 nobounds immediate nobounds 0 1 ignores bounds on options
 readfile immediate readfile 0 1 read secondary option file
 *
