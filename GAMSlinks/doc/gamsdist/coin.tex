@@ -117,23 +117,28 @@ The scheme to name option files is the same as for all other GAMS solvers.
 Specifying \texttt{optfile=1} let Gams/CoinBonmin read \texttt{coinbonmin.opt}, \texttt{optfile=2} corresponds to \texttt{coinbonmin.op2}, and so on.
 The format of the option file is the same as for Ipopt (see Section \ref{sub:ipoptoptionspec}).
 
-An example of a \texttt{bonmin.opt} file is as follows:
-\begin{verbatim}
-   bonmin.algorithm B-BB
-   bonmin.bb_log_level 4
-   print_level 6
-\end{verbatim}
-This sets algorithm to be used to branch-and-bound, the level of branch-and-bound related output to $4$, and the print level for \texttt{Ipopt} to $6$.
-
 The most important option in Bonmin is the choice of the solution algorithm.
-This can be set by using the option named \texttt{bonmin.algorithm} which can be set to \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, \texttt{B-Hyb}, or \texttt{B-Ecp} (it's default value is \texttt{B-Hyb}).
+This can be set by using the option named \texttt{bonmin.algorithm} which can be set to \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, \texttt{B-Hyb}, or \texttt{B-Ecp} (its default value is \texttt{B-Hyb}).
 Depending on the value of this option, certain other options may be available or not.
 
-In the context of outer approximation decomposition, several option are available for configuring the MILP subsolver CBC.
-By setting the option \texttt{bonmin.milp\_subsolver} to \texttt{Cbc\_Par}, a version of \texttt{Cbc} is chosen that can be parameterized by the user.
-The options that can be set are the node-selection strategy, the number of strong-branching candidates,
-the number of branches before pseudo costs are to be trusted, and the frequency of the various cut generators
-To pass those options to the MILP subsolver, you have to replace the prefix ``\texttt{bonmin.}'' with ``\texttt{milp\_sub.}''.
+In the context of outer approximation decomposition, several options are available for configuring the MILP subsolver CBC.
+By setting the option \texttt{bonmin.milp\_subsolver} to \texttt{Cbc\_Par}, a version of CBC is chosen that can be parameterized by the user.
+The options that can be set are 
+%the node-selection strategy,
+the number of strong-branching candidates,
+the number of branches before pseudo costs are to be trusted, and the frequency of some cut generators.
+Their name coincide with Bonmins options, except that the ``\texttt{bonmin.}'' prefix is replaced with  ``\texttt{milp\_sub.}''.
+% To pass those options to the MILP subsolver, you have to replace the prefix ``\texttt{bonmin.}'' with ``\texttt{milp\_sub.}''.
+
+An example of a \texttt{bonmin.opt} file is as follows:
+\begin{verbatim}
+   bonmin.algorithm B-OA
+   bonmin.oa_log_level 4
+   bonmin.milp_subsolver Cbc_Par
+   milp_sub.cover_cuts 0
+   print_level 6
+\end{verbatim}
+This sets the algorithm to be used to outer approximation, the level of outer approximation related output to $4$, the print level for \texttt{Ipopt} to $6$, the MILP subsolver for outer approximation to a parametrized version of CBC, and switches off cover cutting planes for the MILP subsolver.
 
 GAMS/CoinBonmin understand currently the following GAMS parameters: reslim (time limit), iterlim (iteration limit), nodlim (node limit), cutoff, optca (absolute gap tolerance), and optcr (relative gap tolerance).
 You can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your GAMS program, e.g. \verb+Option nodlim=1000;+.
@@ -166,7 +171,8 @@ cutoff\_decr& F& $10^{-5}$& +& +& +& +\\
 integer\_tolerance& F& $10^{-6}$& +& +& +& +\\
 iteration\_limit& I& $\infty$& +& +& +& +\\
 nlp\_failure\_behavior& S& stop& +& +& +& +\\
-node\_comparison$^*$& S& dynamic& +& +& +& +\\
+% node\_comparison$^*$& S& dynamic& +& +& +& +\\
+node\_comparison& S& dynamic& +& +& +& +\\
 node\_limit& I& nodlim or iterlim (10000)& +& +& +& +\\
 num\_cut\_passes& I& 1& --& +& +& +\\
 num\_cut\_passes\_at\_root& I& 20& --& +& +& +\\
