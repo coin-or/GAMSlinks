@@ -7,7 +7,7 @@ Currently supported are
 - LEI: 64bit AMD- or Intel-based (x86_64) Linux systems with the 2.3 C libraries.
 - VIS: Windows XP, Windows Server 2003, and compatible on AMD- or Intel-based (x86) architectures.
 - SIG: Solaris 10.0 or higher on a x86 (64 bit only) machine.
-- DAR: Macintosh PowerPC-based system for G4/G5 processors built on Darwin 8.4.
+- DII: Intel-based Macintosh system with Darwin.
 
 If you are working under Unix/Linux-like system and you have `wget'
 installed, you can downloaded the required libraries

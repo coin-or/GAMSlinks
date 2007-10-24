@@ -7,12 +7,12 @@ For license information see the file LICENSE.
 === Introduction ===
 
 Currently for the following solvers links are available:
-* CoinGlpk: Gnu Linear Programming Kit
-* CoinCbc:  Coin Branch and Cut code
-* Ipopt: Interior Point Optimizer
+* Glpk:   Gnu Linear Programming Kit
+* Cbc:    Coin Branch and Cut code
+* Ipopt:  Interior Point Optimizer
 * Bonmin: Basic open-source nonlinear mixed-integer programming
 
-There are known to work under Linux (32 and 64 bit), Windows (32 bit), and Darwin (only CoinGlpk and CoinCbc).
+There are known to work under Linux (32 and 64 bit), Windows (32 bit), and Intel Darwin.
 
 === Parameters ===
 
@@ -44,7 +44,7 @@ For that, follow the following steps:
 2. Add the COIN-OR solvers to the set of "master solvers" by changing line 125 of quality.gms to
 	SET solver 'master set of solvers' / system.solverNames , Glpk , Cbc, Ipopt, Bonmin /;
 3. Let him skip the tests that check for the correct handling of SOS and semicontinuous variables
-   (Glpk does not support both, the Cbc interface does not support semicontinuous variables yet) by adding around line 412:
+   (Glpk does not support both, for Cbc the dual variables when using semicontinuous variables are not correct) by adding around line 412:
 	skip("cbc","semicon1")=yes;
 	skip("cbc","sl4scon1")=yes;
 	skip("glpk","sos1a")=yes;

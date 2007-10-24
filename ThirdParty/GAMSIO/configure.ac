@@ -82,8 +82,8 @@ case $build in
       GAMSIO_CODE=VIS
       CIA_CODE=CIA_WIN
     ;;
-  *-darwin*)
-      GAMSIO_CODE=DAR
+  i?86-*-darwin*)
+      GAMSIO_CODE=DII
       CIA_CODE=CIA_DAR
     ;;
   i?86-*-solaris*)

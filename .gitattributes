@@ -97,7 +97,7 @@ ThirdParty/GAMSIO/Makefile.in -text
 ThirdParty/GAMSIO/config_gamsio.h.in -text
 ThirdParty/GAMSIO/configure -text
 ThirdParty/GAMSIO/configure.ac -text
-ThirdParty/GAMSIO/get.DAR -text
+ThirdParty/GAMSIO/get.DII -text
 ThirdParty/GAMSIO/get.LEI -text
 ThirdParty/GAMSIO/get.LX3 -text
 ThirdParty/GAMSIO/get.SIG -text

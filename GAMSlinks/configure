@@ -24709,8 +24709,8 @@ case $build in
       GAMSIO_CODE=VIS
       gamsio_system=Windows
     ;;
-  *-darwin*)
-      GAMSIO_CODE=DAR
+  i?86-*-darwin*)
+      GAMSIO_CODE=DII
       gamsio_system=Darwin
     ;;
   i?86-*-solaris*)
@@ -24841,7 +24841,7 @@ elif test x"$GAMSIO_CODE" = xLEI; then
 elif test x"$gamsio_system" = xWindows; then
   GAMSIO_LIBS="$use_gamsio/iolib.lib $use_gamsio/nliolib.lib $use_gamsio/clicelib.lib $use_gamsio/gclib.lib"
   SMAG_LIBS="$use_gamsio/clicelib.lib $use_gamsio/smag.lib $use_gamsio/gclib.lib $use_gamsio/g2d.lib"
-elif test x"$GAMSIO_CODE" = xDAR; then
+elif test x"$GAMSIO_CODE" = xDII; then
   GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a -ldl -lSystemStubs"
   SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -lSystemStubs"
 elif test x"$GAMSIO_CODE" = xSIG; then

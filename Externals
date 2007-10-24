@@ -1,11 +1,11 @@
-BuildTools    https://projects.coin-or.org/svn/BuildTools/stable/0.5
-CoinUtils     https://projects.coin-or.org/svn/CoinUtils/stable/2.1/CoinUtils
-Cgl           https://projects.coin-or.org/svn/Cgl/stable/0.51/Cgl
-Clp           https://projects.coin-or.org/svn/Clp/stable/1.6/Clp
-Osi           https://projects.coin-or.org/svn/Osi/stable/0.97/Osi
-Cbc           https://projects.coin-or.org/svn/Cbc/stable/2.0/Cbc
-Ipopt         https://projects.coin-or.org/svn/Ipopt/stable/3.3/Ipopt
-Bonmin        https://projects.coin-or.org/svn/Bonmin/branches/0.9/Bonmin
+BuildTools -r594 https://projects.coin-or.org/svn/BuildTools/stable/0.5
+CoinUtils -r862 https://projects.coin-or.org/svn/CoinUtils/stable/2.1/CoinUtils
+Cgl -r574     https://projects.coin-or.org/svn/Cgl/stable/0.51/Cgl
+Clp -r1128    https://projects.coin-or.org/svn/Clp/stable/1.6/Clp
+Osi -r1113    https://projects.coin-or.org/svn/Osi/stable/0.97/Osi
+Cbc -r828     https://projects.coin-or.org/svn/Cbc/stable/2.0/Cbc
+Ipopt -r1109  https://projects.coin-or.org/svn/Ipopt/stable/3.3/Ipopt
+Bonmin -r836  https://projects.coin-or.org/svn/Bonmin/branches/0.9/Bonmin
 ThirdParty/HSL https://projects.coin-or.org/svn/BuildTools/ThirdParty/HSL/stable/1.0
 ThirdParty/Blas https://projects.coin-or.org/svn/BuildTools/ThirdParty/Blas/stable/1.0
 ThirdParty/Glpk https://projects.coin-or.org/svn/BuildTools/ThirdParty/Glpk/stable/1.1

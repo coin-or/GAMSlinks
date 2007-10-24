@@ -9,7 +9,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = get.LX3 get.LEI get.DAR get.VIS get.SIG FILES INSTALL.GAMSIO LICENSE
+EXTRA_DIST = get.LX3 get.LEI get.DII get.VIS get.SIG FILES INSTALL.GAMSIO LICENSE
 
 lib_LTLIBRARIES = libgamsoptions.la
 libgamsoptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c

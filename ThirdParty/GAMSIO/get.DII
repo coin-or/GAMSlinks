@@ -10,12 +10,21 @@ echo " "
 echo "Running script for downloading the GAMS I/O libraries for Darwin platform"
 echo " "
 
-MACHINECODE=DAR
-. FILES
-FILES="${IOLIB_FILES}"
+MACHINECODE=DII
+FILES="\
+${MACHINECODE}ciolib_rev1801LIB.zip \
+${MACHINECODE}clicelib_ver015LIB.zip \
+${MACHINECODE}gclib_rev1798LIB.zip \
+${MACHINECODE}g2ddll_rev1801LIB.zip \
+${MACHINECODE}g2dlib_rev1815LIB.zip \
+${MACHINECODE}gdxio_ver234LIB.zip \
+${MACHINECODE}optobj_rev1811LIB.zip \
+${MACHINECODE}smaglib_rev1879LIB.zip"
 
-mkdir -p DAR
-cd DAR
+#FILES="${IOLIB_FILES} ${SMAGLIB_FILES}"
+
+mkdir -p DII
+cd DII
 rm -f $FILES
 
 echo "Downloading the libraries from www.gams.com..."

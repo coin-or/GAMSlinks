@@ -58,7 +58,7 @@ Currently available are:
  * LX3: Linux systems on a 32-bit Intel or AMD CPU.
  * LEI: Linux systems on a 64-bit Intel or AMD CPU.
  * VIS: Windows XP, Windows Server 2003, and compatible on AMD- or Intel-based (x86) architectures.
- * DAR: Darwin systems on Macintosh
+ * DII: Darwin systems on Intel CPU
 
 == 4. GNU Linear Programming Toolkit (GLPK) ==
 
