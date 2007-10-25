@@ -24,7 +24,7 @@
 /* Define to 1 if the GAMSlinks package is used */
 #undef COIN_HAS_GAMSLINKS
 
-/* Define to 1 if the Glpk package is used */
+/* Define to 1 if the Glpk package is available */
 #undef COIN_HAS_GLPK
 
 /* Define to 1 if the Ipopt package is used */
