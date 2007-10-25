@@ -31,22 +31,16 @@ In the base directory of the GAMSlinks package, you will find some patch files.
 These patches fix some bugs in other COIN-OR packages which are either not fixed there yet, or there hasn't been a new release yet.
 Apply the patches by typing
 >  patch -p0 < osiglpk.patch
->  patch -p0 < cbc.patch
 >  patch -p0 < cgl.patch
->  patch -p0 < ipopt.patch
 in the GAMSlinks base directory.
 
   * osigplk.patch patches the OsiGlpkSolverInterface.
     It allow the users to set the printlevel of GLPK, and fixes a bug in the isProvenPrimalInfeasible routine.
     If you do not apply this patch, GAMS/GLPK will also work, but you will get no progress report in a GLPK call and the GAMS model status code might be set wrong.
 
-  * cbc.patch and cgl.patch patches CbcStrategy.cpp, CbcBranchActual.cpp, and CglPreProcess.cpp.
+  * cgl.patch patches CglPreProcess.cpp.
     They fix some problems with the correct handling of messages.
     If you do not apply this patch, GAMS/Cbc will also work, but you might have some output going to the standard output instead the GAMS logfile and statusfile.
-
-  * ipopt.patch patches IpTNLPAdapter.cpp.
-    It corrects the computation of row levels as they are given to finalize_solution.
-    If you do not apply this patch, GAMS/Ipopt will also work, but you might have some wrong row level information in your GAMS statusfile.
 
 == 3. Installation of GAMS I/O libraries ==
 
