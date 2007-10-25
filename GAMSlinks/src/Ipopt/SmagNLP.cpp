@@ -422,11 +422,12 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 			rowIndic[i]=SMAG_RCINDIC_OK; // TODO: not ok, if over the bounds
       negLambda[i] = -lambda[i] * isMin;
     }
+    smagSetObjEst(prob, obj_value*isMin);
 		smagReportSolFull(prob, model_status, solver_status,
 			data ? data->iter_count() : SMAG_INT_NA, smagGetCPUTime(prob)-clockStart, obj_value*isMin, domviolations,
 			g, negLambda, rowBasStat, rowIndic,
 			x, colMarg, colBasStat, colIndic);
-			
+
 		delete[] colBasStat;
 		delete[] colIndic;
 		delete[] colMarg;

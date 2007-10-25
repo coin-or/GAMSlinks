@@ -36,8 +36,8 @@ using namespace Ipopt;
 
 void solve_minlp(smagHandle_t);
 void solve_nlp(smagHandle_t);
-void write_solution(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int nodeuse);
-void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int nodeuse);
+void write_solution(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int iterations);
+void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int iterations);
 
 int main (int argc, char* argv[]) {
 #if defined(_MSC_VER)
@@ -173,6 +173,11 @@ void solve_minlp(smagHandle_t prob) {
 
 		mysmagminlp->clock_start=smagGetCPUTime(prob);
 		bb(bonmin_setup); //process parameters and do branch and bound
+		
+		double best_bound=smagMinim(prob)*bb.bestBound();
+		if (best_bound>-1e200 && best_bound<1e200)
+			smagSetObjEst(prob, best_bound);
+		smagSetNodUsd(prob, bb.numNodes());
 
 		if (bb.bestSolution()) {
 			char buf[100];
@@ -191,12 +196,12 @@ void solve_minlp(smagHandle_t prob) {
 			if (!has_free_var) {
 				smagStdOutputPrint(prob, SMAG_LOGMASK, "All variables are discrete. Dual variables for fixed problem will be not available.\n");
 				osi_tminlp.initialSolve(); // this will only evaluate the constraints, so we get correct row levels
-				write_solution_nodual(prob, osi_tminlp, mysmagminlp->model_status, mysmagminlp->solver_status, smagGetCPUTime(prob)-mysmagminlp->clock_start, mysmagminlp->domviolations, bb.numNodes());
+				write_solution_nodual(prob, osi_tminlp, mysmagminlp->model_status, mysmagminlp->solver_status, smagGetCPUTime(prob)-mysmagminlp->clock_start, mysmagminlp->domviolations, bb.iterationCount());
 			} else {
 				smagStdOutputPrint(prob, SMAG_LOGMASK, "Resolve with fixed discrete variables to get dual values.\n");
 				osi_tminlp.initialSolve();
 				if (osi_tminlp.isProvenOptimal())
-					write_solution(prob, osi_tminlp, mysmagminlp->model_status, mysmagminlp->solver_status, smagGetCPUTime(prob)-mysmagminlp->clock_start, mysmagminlp->domviolations, bb.numNodes());
+					write_solution(prob, osi_tminlp, mysmagminlp->model_status, mysmagminlp->solver_status, smagGetCPUTime(prob)-mysmagminlp->clock_start, mysmagminlp->domviolations, bb.iterationCount());
 				else
 					smagStdOutputPrint(prob, SMAG_ALLMASK, "Problems solving fixed problem.\n");
 			}
@@ -225,7 +230,7 @@ void solve_minlp(smagHandle_t prob) {
 
 /** Processes Ipopt solution and calls method to report the solution.
  */
-void write_solution(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int nodeuse) {
+void write_solution(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int iterations) {
 	int n=smagColCount(prob);
 	int m=smagRowCount(prob);
 	int isMin=smagMinim(prob);
@@ -254,7 +259,7 @@ void write_solution(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model
 		negLambda[i]=-lambda[i]*isMin;
   }
 	smagReportSolFull(prob, model_status, solver_status,
-		nodeuse, resuse, osi_tminlp.getObjValue()*isMin, domviol,
+		iterations, resuse, osi_tminlp.getObjValue()*isMin, domviol,
 		osi_tminlp.getRowActivity(), negLambda, rowBasStat, rowIndic,
 		osi_tminlp.getColSolution(), colMarg, colBasStat, colIndic);
 
@@ -266,7 +271,7 @@ void write_solution(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model
 	delete[] negLambda;
 } // write_solution
 
-void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int nodeuse) {
+void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int iterations) {
 	int n=smagColCount(prob);
 	int m=smagRowCount(prob);
 
@@ -284,7 +289,7 @@ void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, in
 		rowIndic[i]=SMAG_RCINDIC_OK;
   }
 	smagReportSolFull(prob, model_status, solver_status,
-		nodeuse, resuse, osi_tminlp.getObjValue()*smagMinim(prob), domviol,
+		iterations, resuse, osi_tminlp.getObjValue()*smagMinim(prob), domviol,
 		osi_tminlp.getRowActivity(), prob->rowPi, rowBasStat, rowIndic,
 		osi_tminlp.getColSolution(), prob->colRC, colBasStat, colIndic);
 
