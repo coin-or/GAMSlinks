@@ -78,6 +78,7 @@ done
 
 
 ipopt="../src/Ipopt/GamsIpopt"
+bonmin="../src/Bonmin/GamsBonmin"
 examples="abel"
 
 for model in $examples
@@ -100,7 +101,7 @@ do
 	
 	echo "Optimal value of problem $model is $bkov."
 	
-	for solver in $ipopt
+	for solver in $ipopt $bonmin
 	do
 		if [ -e $solver ]; then
 			echo " "

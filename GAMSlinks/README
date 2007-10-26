@@ -11,33 +11,32 @@ Currently for the following solvers links are available:
 * Cbc:    Coin Branch and Cut code
 * Ipopt:  Interior Point Optimizer
 * Bonmin: Basic open-source nonlinear mixed-integer programming
+* Osi:    LP and MIP solvers with a COIN-OR/OSI interface (this link has not been tested much)
 
-There are known to work under Linux (32 and 64 bit), Windows (32 bit), and Intel Darwin.
+There are known to work under Linux (32 and 64 bit), Windows (32 bit), Solaris Intel (64 bit), and Intel Darwin.
 
 === Parameters ===
 
 The GAMS/COIN-OR solvers implement a subset of all possible GAMS parameters.
-Not all bells and whistles of regular GAMS solvers are part of the interfaces.
-For nonstandard solver parameters that can be set, see src/Cbc/optcbc.gms, src/Glpk/optglpk.gms, and the IPOPT and Bonmin documentation.
+Not all bells and whistles of regular GAMS solvers are part of the interfaces yet.
+For nonstandard solver parameters that can be set, see the documentation in doc/gamsdist or src/Cbc/optcbc.gms, src/Glpk/optglpk.gms, and the IPOPT and Bonmin documentation.
 
-= Writing an MPS file =
-
-For debugging and reproducing bugs of the GAMS/OSI interface, the user can write out the model in MPS format.
-You can do that by setting the parameter "writemps" to the name of the mpsfile that you want to write.
+For GAMS/OSI, only a few options are available, see src/Osi/optosi.gms.
+The most important option is "solver". It determines which solver that had been linked into GAMS/OSI will be used.
+If all so-far supported solvers have been linked with GAMS/OSI, then the available values are clp, cbc, glpk, volume, dylp, and symphony.
 
 === Tests ===
 
-The directory test contains a script that tests Cbc, Glpk, and Ipopt (if available) on the models
+The directory test contains a script that tests Cbc, Glpk, Ipopt, and Bonmin on the models
 * trnsport (small LP)
 * thai (small MIP)
 * abel (small NLP)
 from the GAMS model library.
 The models are chosen such that they can also be run with a gams demo licence.
 A test is passed when the optimal value found by Cbc or Glpk coincides with the one from CPLEX (within a gap tolerance of 1%).
-For IPOPT a test is passed when the optimal value is within a tolerance of 1% of the known optimum.
-Since there is no CPLEX on Darwin, these tests will not work on Darwin systems.
+For Ipopt and Bonmin a test is passed when the optimal value is within a tolerance of 1% of the known optimum.
 
-If you have installed Cbc, Glpk, IPOPT, or Bonmin in your GAMS system, then you can also use the GAMS test library to run a set of tests.
+If you have installed Cbc, Glpk, Ipopt, or Bonmin in your GAMS system, then you can also use the GAMS test library to run a set of tests.
 For that, follow the following steps:
 1. Get the quality tests:
 	testlib quality  (where the program testlib is located in your GAMS system directory)
