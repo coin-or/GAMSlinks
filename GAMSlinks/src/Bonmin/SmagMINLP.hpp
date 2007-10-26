@@ -48,7 +48,7 @@ public:
 
   /** Pass the type of the variables (INTEGER, BINARY, CONTINUOUS) to the optimizer.
 	 * @param n size of var_types (has to be equal to the number of variables in the problem).
-	 * @var_types types of the variables (has to be filled by function).
+	 * @param var_types types of the variables (has to be filled by function).
   */
 	virtual bool get_variables_types(Index n, VariableType* var_types);
   
@@ -83,13 +83,23 @@ public:
                           Number* values);
 
 	/** Compute the value of a single constraint.
+	 * @param n the number of variables
+	 * @param x the point to evaluate
+	 * @param new_x whether x is a new point
 	 * @param i the constraint number (starting counting from 0)
+	 * @param gi to store the value of g_i at x
 	 */
 	virtual bool eval_gi(Index n, const Number* x, bool new_x, Index i, Number& gi);
 	
 	/** Compute the structure or values of the gradient for one constraint.
 	 * Things are like with eval_jac_g.
+	 * @param n the number of variables
+	 * @param x the point to compute the gradient for
+	 * @param new_x whether x is a new point
 	 * @param i the constraint number (starting counting from 0)
+	 * @param nele_grad_gi the number of nonzero elements in the gradient of g_i
+	 * @param jCol the indices of the nonzero columns
+	 * @param values the values for the nonzero columns
 	 */
 	virtual bool eval_grad_gi(Index n, const Number* x, bool new_x,
 		Index i, Index& nele_grad_gi, Index* jCol, Number* values);

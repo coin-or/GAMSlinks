@@ -31,7 +31,10 @@ using namespace Ipopt;
 class SmagJournal : public Journal {
 public:
   /** Constructor.
-   * @param status_level Maximum level where we still write to status file.
+   * @param smag_ A pointer to the SMAG structure.
+   * @param name The name of this journal.
+   * @param default_level The default print level for this journal.
+   * @param status_level_ Maximum level where we still write to status file.
    */
   SmagJournal(smagHandle_t smag_, const char* name, EJournalLevel default_level, EJournalLevel status_level_=J_SUMMARY)
   : Journal(name, default_level), smag(smag_), status_level(status_level_)
