@@ -94,10 +94,9 @@ Most of the Bonmin documentation in the section was copied from the Bonmin manua
 \subsection{Model requirements}
 
 Bonmin can handle mixed-integer nonlinear programming models which functions can be nonconvex, but should be twice continuously differentiable.
-The Bonmin link in GAMS supports continuous, binary, and integer variables, but no special ordered sets, semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide).
-Also branching priorities are not supported yet.
+The Bonmin link in GAMS supports continuous, binary, and integer variables, special ordered sets, branching priorities, but no semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide).
 
-If GAMS/CoinBonmin is called for a model without discrete variables, the interface directly calls Ipopt.
+If GAMS/CoinBonmin is called for a model with only continuous variables, the interface directly calls Ipopt.
 
 \subsection{Usage of CoinBonmin}
 
@@ -124,14 +123,10 @@ Depending on the value of this option, certain other options may be available or
 
 In the context of outer approximation decomposition, several options are available for configuring the MIP subsolver CBC.
 By setting the option \texttt{bonmin.milp\_subsolver} to \texttt{Cbc\_Par}, a version of CBC is chosen that can be parameterized by the user.
-The options that can be set are 
-%the node-selection strategy,
-the number of strong-branching candidates,
-the number of branches before pseudo costs are to be trusted, and the frequency of some cut generators.
+The options that can be set are the node-selection strategy, the number of strong-branching candidates, the number of branches before pseudo costs are to be trusted, and the frequency of some cut generators.
 Their name coincide with Bonmins options, except that the ``\texttt{bonmin.}'' prefix is replaced with  ``\texttt{milp\_sub.}''.
-% To pass those options to the MIP subsolver, you have to replace the prefix ``\texttt{bonmin.}'' with ``\texttt{milp\_sub.}''.
 
-An example of a \texttt{bonmin.opt} file is as follows:
+An example of a \texttt{bonmin.opt} file is the following:
 \begin{verbatim}
    bonmin.algorithm B-Hyb
    bonmin.oa_log_level 4
@@ -172,8 +167,7 @@ cutoff\_decr& F& $10^{-5}$& +& +& +& +\\
 integer\_tolerance& F& $10^{-6}$& +& +& +& +\\
 iteration\_limit& I& $\infty$& +& +& +& +\\
 nlp\_failure\_behavior& S& stop& +& +& +& +\\
-% node\_comparison$^*$& S& dynamic& +& +& +& +\\
-node\_comparison& S& dynamic& +& +& +& +\\
+node\_comparison$^*$& S& dynamic& +& +& +& +\\
 node\_limit& I& nodlim or iterlim (10000)& +& +& +& +\\
 num\_cut\_passes& I& 1& --& +& +& +\\
 num\_cut\_passes\_at\_root& I& 20& --& +& +& +\\
@@ -221,6 +215,12 @@ oa\_cuts\_log\_level& I& 0& --& +& +& +\\
 oa\_log\_frequency& F& 100& +& +& +& +\\
 oa\_log\_level& I& 1& +& +& +& +\\
 \hline
+\end{tabular}
+
+\begin{tabular}{|l|r|r|r|r|r|r|}\hline
+Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
+\hline
+\hline
 \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{NLP interface}\\
 \hline
 nlp\_solve\_frequency& I& 10& --& --& --& +\\
@@ -228,12 +228,6 @@ nlp\_solve\_max\_depth& I& 10& --& --& --& +\\
 % file\_solution& S& no& +& +& +& +\\
 % nlp\_solver& S& Ipopt& +& +& +& +\\
 warm\_start& S& none& +& --& --& --\\
-\hline
-\end{tabular}
-
-\begin{tabular}{|l|r|r|r|r|r|r|}\hline
-Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
-\hline
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{MIP cutting planes}\\
 \hline
