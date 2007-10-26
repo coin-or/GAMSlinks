@@ -12,9 +12,9 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([GAMSlinks],[0.2],[https://projects.coin-or.org/GAMSlinks/newticket])
+AC_INIT([GAMSlinks],[0.3],[https://projects.coin-or.org/GAMSlinks/newticket])
 
-AC_COPYRIGHT([Copyright (C) GAMS Development 2006
+AC_COPYRIGHT([Copyright (C) GAMS Development 2006-2007
 All Rights Reserved.
 This file is part of the open source package Coin which is distributed
 under the Common Public License.])
