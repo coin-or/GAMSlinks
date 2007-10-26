@@ -11,9 +11,12 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = get.LX3 get.LEI get.DII get.VIS get.SIG FILES INSTALL.GAMSIO LICENSE
 
-lib_LTLIBRARIES = libgamsoptions.la
-libgamsoptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
-libgamsoptions_la_LDFLAGS = 
+noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la
+nodist_libGamsOptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
+libGamsOptions_la_LDFLAGS = 
+
+nodist_libGamsGDX_la_SOURCES = $(GAMSIO_CODE)/gdxwrap.c
+libGamsGDX_la_LDFLAGS = 
 
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -D$(CIA_CODE)
 

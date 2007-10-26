@@ -7,7 +7,7 @@ Currently supported are
 - LEI: 64bit AMD- or Intel-based (x86_64) Linux systems with the 2.3 C libraries.
 - VIS: Windows XP, Windows Server 2003, and compatible on AMD- or Intel-based (x86) architectures.
 - SIG: Solaris 10.0 or higher on a x86 (64 bit only) machine.
-- DII: Intel-based Macintosh system with Darwin.
+- DII: Intel-based (x86) Macintosh system with Darwin.
 
 If you are working under Unix/Linux-like system and you have `wget'
 installed, you can downloaded the required libraries
@@ -22,6 +22,6 @@ Point your browser to
 
 http://www.gams.com/~svigerske
 
-download all latest versions of the zip-files which name corresond to your machine
-(e.g., LX3ciolib_ver037.zip, LX3clicelib_ver015LIB.zip, ...)
-into the created directory, and unpack them (ignore multiple appearing files).
+download all latest versions of the zip-files which name corresond to your machine,
+e.g., LX3*_latestLIB.zip, into the created directory, and unpack them
+(ignore questions about multiple appearing files).
