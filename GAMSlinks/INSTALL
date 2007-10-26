@@ -115,7 +115,7 @@ This should setup the Makefiles, compile all COIN-OR packages and install binari
 
 == 9. Install COIN-OR solvers in your GAMS system ==
 
-The make install call also created the files gmscc_.zip, gmscg_.zip, gmsip_.zip, gmsbm_.zip, and (optional) gmsos_.zip which contain GAMS/Cbc, GAMS/GLPK, GAMS/Ipopt, GAMS/Bonmin, and (optional) GAMS/Osi.
+The make install call also created the files gmscc_.zip, gmscg_.zip, gmsip_.zip, gmsbm_.zip, and (optional) gmsosi_.zip which contain GAMS/Cbc, GAMS/GLPK, GAMS/Ipopt, GAMS/Bonmin, and (optional) GAMS/Osi.
 To install them in your GAMS system, you copy these files into the GAMS system directory and call gamsinst there.
 gamsinst will then unpack the files and makes GAMS aware about the new solvers.
 
