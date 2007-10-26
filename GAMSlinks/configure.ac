@@ -169,27 +169,49 @@ GAMS_PATH=$use_gamssys
 # COIN_HAS_GAMSIO, if GAMS I/O is available.
 
 GAMSIO_CODE=unsupportedarchitecture
-case $build in
-  x86_64-*-linux-*)
-      GAMSIO_CODE=LEI
+
+AC_ARG_WITH([gamsio-code],
+  AC_HELP_STRING([--with-gamsio-code],[specify the GAMS I/O code used to identify the GAMS I/O libraries types]),
+  [GAMSIO_CODE=$withval],
+  [case $build in
+      x86_64-*-linux-*)
+        GAMSIO_CODE=LEI
+      ;;
+      i?86-*-linux-*)
+        GAMSIO_CODE=LX3
+      ;;
+      *-cygwin* | *-mingw*)
+        GAMSIO_CODE=VIS
+      ;;
+      i?86-*-darwin*)
+        GAMSIO_CODE=DII
+      ;;
+      i?86-*-solaris*)
+        GAMSIO_CODE=SIG
+      ;;
+      *)
+        AC_MSG_ERROR([Build type $build not supported by GAMS I/O libraries.])
+  esac]
+)
+
+case $GAMSIO_CODE in
+  LEI)
       gamsio_system=Linux
     ;;
-  i?86-*-linux-*)
-      GAMSIO_CODE=LX3
+  LX3)
       gamsio_system=Linux
     ;;
-  *-cygwin* | *-mingw*)
-      GAMSIO_CODE=VIS
+  VIS)
       gamsio_system=Windows
     ;;
-  i?86-*-darwin*)
-      GAMSIO_CODE=DII
+  DII)
       gamsio_system=Darwin
     ;;
-  i?86-*-solaris*)
-      GAMSIO_CODE=SIG
+  SIG)
       gamsio_system=Solaris
     ;;
+  *)
+      AC_MSG_ERROR([GAMS I/O libraries with system code $GAMSIO_CODE not supported.])
 esac
 
 #Intel Fortran libraries (required for Linux systems when not compiling with Intel compiler)
@@ -199,13 +221,13 @@ if test x"$gamsio_system" = xLinux; then
 		icpc* | */icpc*)
 			;;
 		*)
-		  AC_ARG_WITH([ifort_libdir],
-        AC_HELP_STRING([--with-ifort_libdir],[specify directory of Intel Fortran libraries]),
+		  AC_ARG_WITH([ifort-libdir],
+        AC_HELP_STRING([--with-ifort-libdir],[specify directory of Intel Fortran libraries]),
         AC_CHECK_FILE([$withval/libifcore.so],[IFORT_LIBS="-L$withval"],),
         [if test x"$use_gamssys" != x; then
           AC_CHECK_FILE([$use_gamssys/libifcore.so],[IFORT_LIBS="-L$use_gamssys"],)
          else
-          AC_MSG_WARN([Path for Intel Fortran Libraries not given by --with-ifort_libdir and no GAMS system available. GAMS I/O libraries might fail to link.])
+          AC_MSG_WARN([Path for Intel Fortran Libraries not given by --with-ifort-libdir and no GAMS system available. GAMS I/O libraries might fail to link.])
          fi
         ])
       IFORT_LIBS="$IFORT_LIBS -lifcore -limf -lirc"

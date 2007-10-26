@@ -1115,7 +1115,9 @@ Optional Packages:
   --with-glpk-incdir specify the header file directory for library Glpk
   --with-glpk-lib specify the flags used to link with the library Glpk
   --with-gamssystem       specify directory of GAMS distribution
-  --with-ifort_libdir     specify directory of Intel Fortran libraries
+  --with-gamsio-code      specify the GAMS I/O code used to identify the GAMS
+                          I/O libraries types
+  --with-ifort-libdir     specify directory of Intel Fortran libraries
   --with-gamsio           specify directory of GAMS I/O libraries and header
                           files
 
@@ -4098,7 +4100,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:4101:" \
+echo "$as_me:4103:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4293,7 +4295,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_verb"
-(eval echo $as_me:4296: \"$ac_link\") >&5
+(eval echo $as_me:4298: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -4371,7 +4373,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_cv_prog_f77_v"
-(eval echo $as_me:4374: \"$ac_link\") >&5
+(eval echo $as_me:4376: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -6813,7 +6815,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6816 "configure"' > conftest.$ac_ext
+  echo '#line 6818 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8793,11 +8795,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8796: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8798: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8800: \$? = $ac_status" >&5
+   echo "$as_me:8802: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9061,11 +9063,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9064: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9066: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9068: \$? = $ac_status" >&5
+   echo "$as_me:9070: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9165,11 +9167,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9168: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9170: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9172: \$? = $ac_status" >&5
+   echo "$as_me:9174: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11582,7 +11584,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11585 "configure"
+#line 11587 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11682,7 +11684,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11685 "configure"
+#line 11687 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14042,11 +14044,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14045: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14047: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14049: \$? = $ac_status" >&5
+   echo "$as_me:14051: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14146,11 +14148,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14149: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14151: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14153: \$? = $ac_status" >&5
+   echo "$as_me:14155: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15716,11 +15718,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15719: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15721: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15723: \$? = $ac_status" >&5
+   echo "$as_me:15725: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15820,11 +15822,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15823: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15825: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15827: \$? = $ac_status" >&5
+   echo "$as_me:15829: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18027,11 +18029,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18030: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18032: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18034: \$? = $ac_status" >&5
+   echo "$as_me:18036: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18295,11 +18297,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18298: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18300: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18302: \$? = $ac_status" >&5
+   echo "$as_me:18304: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18399,11 +18401,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18402: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18404: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:18406: \$? = $ac_status" >&5
+   echo "$as_me:18408: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -24696,27 +24698,57 @@ GAMS_PATH=$use_gamssys
 # COIN_HAS_GAMSIO, if GAMS I/O is available.
 
 GAMSIO_CODE=unsupportedarchitecture
-case $build in
-  x86_64-*-linux-*)
-      GAMSIO_CODE=LEI
+
+
+# Check whether --with-gamsio-code or --without-gamsio-code was given.
+if test "${with_gamsio_code+set}" = set; then
+  withval="$with_gamsio_code"
+  GAMSIO_CODE=$withval
+else
+  case $build in
+      x86_64-*-linux-*)
+        GAMSIO_CODE=LEI
+      ;;
+      i?86-*-linux-*)
+        GAMSIO_CODE=LX3
+      ;;
+      *-cygwin* | *-mingw*)
+        GAMSIO_CODE=VIS
+      ;;
+      i?86-*-darwin*)
+        GAMSIO_CODE=DII
+      ;;
+      i?86-*-solaris*)
+        GAMSIO_CODE=SIG
+      ;;
+      *)
+        { { echo "$as_me:$LINENO: error: Build type $build not supported by GAMS I/O libraries." >&5
+echo "$as_me: error: Build type $build not supported by GAMS I/O libraries." >&2;}
+   { (exit 1); exit 1; }; }
+  esac
+
+fi;
+
+case $GAMSIO_CODE in
+  LEI)
       gamsio_system=Linux
     ;;
-  i?86-*-linux-*)
-      GAMSIO_CODE=LX3
+  LX3)
       gamsio_system=Linux
     ;;
-  *-cygwin* | *-mingw*)
-      GAMSIO_CODE=VIS
+  VIS)
       gamsio_system=Windows
     ;;
-  i?86-*-darwin*)
-      GAMSIO_CODE=DII
+  DII)
       gamsio_system=Darwin
     ;;
-  i?86-*-solaris*)
-      GAMSIO_CODE=SIG
+  SIG)
       gamsio_system=Solaris
     ;;
+  *)
+      { { echo "$as_me:$LINENO: error: GAMS I/O libraries with system code $GAMSIO_CODE not supported." >&5
+echo "$as_me: error: GAMS I/O libraries with system code $GAMSIO_CODE not supported." >&2;}
+   { (exit 1); exit 1; }; }
 esac
 
 #Intel Fortran libraries (required for Linux systems when not compiling with Intel compiler)
@@ -24727,7 +24759,7 @@ if test x"$gamsio_system" = xLinux; then
 			;;
 		*)
 
-# Check whether --with-ifort_libdir or --without-ifort_libdir was given.
+# Check whether --with-ifort-libdir or --without-ifort-libdir was given.
 if test "${with_ifort_libdir+set}" = set; then
   withval="$with_ifort_libdir"
   as_ac_File=`echo "ac_cv_file_$withval/libifcore.so" | $as_tr_sh`
@@ -24777,8 +24809,8 @@ if test `eval echo '${'$as_ac_File'}'` = yes; then
 fi
 
          else
-          { echo "$as_me:$LINENO: WARNING: Path for Intel Fortran Libraries not given by --with-ifort_libdir and no GAMS system available. GAMS I/O libraries might fail to link." >&5
-echo "$as_me: WARNING: Path for Intel Fortran Libraries not given by --with-ifort_libdir and no GAMS system available. GAMS I/O libraries might fail to link." >&2;}
+          { echo "$as_me:$LINENO: WARNING: Path for Intel Fortran Libraries not given by --with-ifort-libdir and no GAMS system available. GAMS I/O libraries might fail to link." >&5
+echo "$as_me: WARNING: Path for Intel Fortran Libraries not given by --with-ifort-libdir and no GAMS system available. GAMS I/O libraries might fail to link." >&2;}
          fi
 
 fi;

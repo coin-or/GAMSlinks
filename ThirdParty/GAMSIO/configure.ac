@@ -67,29 +67,55 @@ AC_COIN_INIT_AUTO_TOOLS
 #                              GAMSIO stuff                              #
 ##########################################################################
 
-
 GAMSIO_CODE=unsupportedarchitecture
-case $build in
-  x86_64-*-linux-*)
-      GAMSIO_CODE=LEI
+
+AC_ARG_WITH([gamsio-code],
+  AC_HELP_STRING([--with-gamsio-code],[specify the GAMS I/O code used to identify the GAMS I/O libraries types]),
+  [GAMSIO_CODE=$withval],
+  [case $build in
+      x86_64-*-linux-*)
+        GAMSIO_CODE=LEI
+      ;;
+      i?86-*-linux-*)
+        GAMSIO_CODE=LX3
+      ;;
+      *-cygwin* | *-mingw*)
+        GAMSIO_CODE=VIS
+      ;;
+      i?86-*-darwin*)
+        GAMSIO_CODE=DII
+      ;;
+      i?86-*-solaris*)
+        GAMSIO_CODE=SIG
+      ;;
+      *)
+        AC_MSG_ERROR([Build type $build not supported by GAMS I/O libraries.])
+  esac]
+)
+
+case $GAMSIO_CODE in
+  LEI)
+      gamsio_system=Linux
       CIA_CODE=CIA_LEX
     ;;
-  i?86-*-linux-*)
-      GAMSIO_CODE=LX3
+  LX3)
+      gamsio_system=Linux
       CIA_CODE=CIA_LNX
     ;;
-  *-cygwin* | *-mingw*)
-      GAMSIO_CODE=VIS
+  VIS)
+      gamsio_system=Windows
       CIA_CODE=CIA_WIN
     ;;
-  i?86-*-darwin*)
-      GAMSIO_CODE=DII
+  DII)
+      gamsio_system=Darwin
       CIA_CODE=CIA_DAR
     ;;
-  i?86-*-solaris*)
-      GAMSIO_CODE=SIG
+  SIG)
+      gamsio_system=Solaris
       CIA_CODE=SIS
     ;;
+  *)
+      AC_MSG_ERROR([GAMS I/O libraries with system code $GAMSIO_CODE not supported.])
 esac
 
 AC_SUBST(GAMSIO_CODE)
