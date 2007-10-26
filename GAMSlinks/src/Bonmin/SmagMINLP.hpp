@@ -103,11 +103,6 @@ public:
                       bool new_lambda, Index nele_hess, Index* iRow,
                       Index* jCol, Number* values);
 
-	/** Method called by the solver at each iteration.
-	 * Checks the domain violation limit and time limit and stops the solver in case of limit exceedance.
-	 */
-//	virtual bool intermediate_callback (AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq);
-
 	virtual void finalize_solution(TMINLP::SolverReturn status,Index n, const Number* x, Number obj_value);
 
 	/** Provides information about SOS constraints.
@@ -119,8 +114,6 @@ public:
   virtual const BranchingInfo* branchingInfo() const;
 
 	double div_iter_tol;
-//	double scaled_conviol_tol;
-//	double unscaled_conviol_tol;
 	long int domviolations;
 	double clock_start; // time when solving starts
 	int model_status, solver_status;
@@ -130,9 +123,6 @@ private:
   double isMin;
 //	long int domviollimit;
 
-//  double last_scaled_conviol; // last scaled constraint violation
-//	double last_unscaled_conviol; // last unscaled constraint violation
-	
 	SosInfo sosinfo;
 	BranchingInfo branchinginfo;
 

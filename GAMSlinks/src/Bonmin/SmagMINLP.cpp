@@ -12,14 +12,11 @@
 #include <vector>
 #include <list>
 
-#define SMAG_HAS_SOS
-
 using namespace Ipopt;
 
 // constructor
 SMAG_MINLP::SMAG_MINLP (smagHandle_t prob_)
 : div_iter_tol(1E+20), domviolations(0), prob(prob_)
-//: scaled_conviol_tol(1E-8), unscaled_conviol_tol(1E-4),
 {
   negLambda = new double[smagRowCount(prob)];
   isMin = smagMinim (prob);		/* 1 for min, -1 for max */
@@ -36,7 +33,6 @@ SMAG_MINLP::~SMAG_MINLP()
 }
 
 void SMAG_MINLP::setupPrioritiesSOS() {
-#ifdef SMAG_HAS_SOS
 	// range of priority values
 	double minprior=prob->inf;
 	double maxprior=-prob->inf;
@@ -55,24 +51,19 @@ void SMAG_MINLP::setupPrioritiesSOS() {
 				// CBC: 1000 is standard priority and 1 is highest priority
 				// GAMS: 1 is standard priority for discrete variables, and as smaller the value as higher the priority
 				branchinginfo.priorities[i]=1+(int)(999*(prob->colPriority[i]-minprior)/(maxprior-minprior));
-//				std::clog << "Priority column " << i << "\t " << prob->colPriority[i] << " -> " << branchinginfo.priorities[i] << std::endl;  
 			}
 		}
 	}
-#endif
 
 	sosinfo.num=prob->gms.nosos1+prob->gms.nosos2; // number of sos
 	if (!sosinfo.num) return;
-#ifdef SMAG_HAS_SOS
 	sosinfo.types=new char[sosinfo.num]; // types of sos
 	sosinfo.numNz=prob->gms.nsos1+prob->gms.nsos2; // number of variables in sos
 	// collects for each sos the variables which are in there
 	std::vector<std::list<int> > sosvar(sosinfo.num);  
-//std::clog << "Number of SOS type 1: " << prob->gms.nosos1 << "\t type 2: " << prob->gms.nosos2 << std::endl; 
 	for (Index i=0; i<smagColCount(prob); ++i) {
 		if ((prob->colType[i]!=SMAG_VAR_SOS1) && (prob->colType[i]!=SMAG_VAR_SOS2))
 			continue; 
-//				std::clog << "Variable " << i << " is in SOS type 1 " << prob->colSOS[i] << std::endl; 
 		sosvar.at(prob->colSOS[i]-1).push_back(i);
 		sosinfo.types[prob->colSOS[i]-1]=(prob->colType[i]==SMAG_VAR_SOS1 ? 1 : 2);
 	}
@@ -84,27 +75,22 @@ void SMAG_MINLP::setupPrioritiesSOS() {
 	int k=0;
 	for (int i=0; i<sosinfo.num; ++i) {
 		sosinfo.starts[i]=k;
-//		std::clog << "SOS " << i << " is type " << (int)sosinfo.types[i] << " vars.: ";
 		double priorsum=0;
 		for (std::list<int>::iterator it(sosvar[i].begin()); it!=sosvar[i].end(); ++it, ++k) {
 			sosinfo.indices[k]=*it;
 			sosinfo.weights[k]=k-sosinfo.starts[i];
 			priorsum+=prob->colPriority[*it];
-//			std::clog << *it << ' ';		
 		}
 		if (prob->gms.priots)	// scale avg. of gams priorities into {1,..,1000} range
 			sosinfo.priorities[i]=1+(int)(999*((priorsum/(k-sosinfo.starts[i])-minprior)/(maxprior-minprior)));
 		else // branch on long sets first
 			sosinfo.priorities[i]=smagColCount(prob)-(k-sosinfo.starts[i]);
-//		std::clog << "\t prior.: " << sosinfo.priorities[k] << std::endl;
 	}
 	sosinfo.starts[sosvar.size()]=k;
-#endif
 } // initSOS
 
 // returns the size of the problem
-bool SMAG_MINLP::get_nlp_info (Index& n, Index& m, Index& nnz_jac_g,
-	      Index& nnz_h_lag, TNLP::IndexStyleEnum& index_style) {
+bool SMAG_MINLP::get_nlp_info (Index& n, Index& m, Index& nnz_jac_g, Index& nnz_h_lag, TNLP::IndexStyleEnum& index_style) {
   n = smagColCount (prob);
   m = smagRowCount (prob);
   nnz_jac_g = smagNZCount (prob); // Jacobian nonzeros
@@ -168,18 +154,15 @@ bool SMAG_MINLP::get_variables_types(Index n, VariableType* var_types) {
 			case SMAG_VAR_SOS1:
 			case SMAG_VAR_SOS2:
 				var_types[i]=CONTINUOUS;
-#ifdef SMAG_HAS_SOS
 				break;
-#endif
 			case SMAG_VAR_SEMICONT:
 			case SMAG_VAR_SEMIINT:
 			default: {
-				char msg[255];
-				sprintf(msg, "Error: Column type %d for variable %d unknown or not supported. Exiting ...\n", prob->colType[i], i);
-				smagStdOutputPrint(prob, SMAG_ALLMASK, msg); 			
+				smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Semicontinuous and semiinteger variables are not supported yet. Exiting ...\n"); 			
 	      smagStdOutputFlush(prob, SMAG_ALLMASK);
+			  smagReportSolBrief(prob, 13, 6);
   	    exit (EXIT_FAILURE);
-			}			
+			}
 		}
 	}
 	
@@ -437,30 +420,17 @@ bool SMAG_MINLP::eval_h (Index n, const Number *x, bool new_x,
   return true;
 } // eval_h
 
-//bool SMAG_MINLP::intermediate_callback (AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq) {
-//	last_iterationnumber=iter;
-//	last_scaled_conviol = ip_cq->curr_nlp_constraint_violation(NORM_MAX);	
-//	last_unscaled_conviol = ip_cq->unscaled_curr_nlp_constraint_violation(NORM_MAX);
-//	if (domviollimit && domviolations>=domviollimit) return false;
-//	return true;
-//}
-
 const TMINLP::SosInfo* SMAG_MINLP::sosConstraints() const {
-#ifdef SMAG_HAS_SOS
 	if (sosinfo.num)
-	return &sosinfo;
-#endif
+		return &sosinfo;
 	return NULL;
 }
 
 const TMINLP::BranchingInfo* SMAG_MINLP::branchingInfo() const {
-#ifdef SMAG_HAS_SOS
 	if (prob->gms.priots)
 		return &branchinginfo;
-#endif
 	return NULL;
 }
-
 
 void SMAG_MINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const Number* x, Number obj_value) {
   solver_status=1; // normal completion
@@ -468,8 +438,10 @@ void SMAG_MINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const N
   switch (status) {
   	case TMINLP::SUCCESS: {
     	if (x) {
-    		model_status=8; // integer feasible solution
-		//TODO: could report optimal of optcr=optca=0 and model is a mip
+    		if (prob->gms.optca==0 && prob->gms.optcr==0 && prob->colCountNL==0) // report optimal if optcr=optca=0 and model is a mip
+    			model_status=1; // optimal
+    		else
+    			model_status=8; // integer feasible solution
     	} else { // this should not happen
     		model_status=13; // error - no solution
     	}

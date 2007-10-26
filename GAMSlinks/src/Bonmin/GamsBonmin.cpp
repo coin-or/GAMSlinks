@@ -199,11 +199,22 @@ void solve_minlp(smagHandle_t prob) {
 				write_solution_nodual(prob, osi_tminlp, mysmagminlp->model_status, mysmagminlp->solver_status, smagGetCPUTime(prob)-mysmagminlp->clock_start, mysmagminlp->domviolations, bb.iterationCount());
 			} else {
 				smagStdOutputPrint(prob, SMAG_LOGMASK, "Resolve with fixed discrete variables to get dual values.\n");
-				osi_tminlp.initialSolve();
-				if (osi_tminlp.isProvenOptimal())
+				bool error_in_fixedsolve=false;
+				try {
+					osi_tminlp.initialSolve();
+					error_in_fixedsolve=!osi_tminlp.isProvenOptimal();
+				} catch (TNLPSolver::UnsolvedError *E) { // there has been a failure to solve a problem with Ipopt
+					char buf[1024];
+					snprintf(buf, 1024, "Error: %s exited with error %s\n", E->solverName().c_str(), E->errorName().c_str());
+					smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
+					error_in_fixedsolve=true;
+				}
+				if (!error_in_fixedsolve) {
 					write_solution(prob, osi_tminlp, mysmagminlp->model_status, mysmagminlp->solver_status, smagGetCPUTime(prob)-mysmagminlp->clock_start, mysmagminlp->domviolations, bb.iterationCount());
-				else
-					smagStdOutputPrint(prob, SMAG_ALLMASK, "Problems solving fixed problem.\n");
+				} else {
+					smagStdOutputPrint(prob, SMAG_ALLMASK, "Problems solving fixed problem. Dual variables for NLP subproblem not available.\n");
+					write_solution_nodual(prob, osi_tminlp, mysmagminlp->model_status, mysmagminlp->solver_status, smagGetCPUTime(prob)-mysmagminlp->clock_start, mysmagminlp->domviolations, bb.iterationCount());
+				}
 			}
 		} else {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "\nBonmin finished. No feasible point found.\n");
@@ -214,7 +225,7 @@ void solve_minlp(smagHandle_t prob) {
   	snprintf(buf, 1024, "%s::%s\n%s\n", error.className().c_str(), error.methodName().c_str(), error.message().c_str());
 		smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
 	  smagReportSolBrief(prob, 13, 13);
-  } catch (TNLPSolver::UnsolvedError *E) { 	    //There has been a failure to solve a problem with Ipopt.
+  } catch (TNLPSolver::UnsolvedError *E) { 	// there has been a failure to solve a problem with Ipopt.
 		char buf[1024];
 		snprintf(buf, 1024, "Error: %s exited with error %s\n", E->solverName().c_str(), E->errorName().c_str());
 		smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
