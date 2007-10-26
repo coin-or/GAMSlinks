@@ -1,11 +1,11 @@
 = Main installation steps =
 
  1. Install a GAMS system, if you do not have one.
- 2. Apply patch files to COIN-OR packages to fix some minor bugs and add additional optional features.
+ 2. Apply a patch for the OsiGlpkSolverInterface to fix some minor bugs and add additional optional features.
  3. Download the GAMS I/O libraries for your system.
  4. Download additional COIN-OR solvers that are not included by default.
  5. Download and install Glpk, if you want to use the GAMS/GLPK link.
- 6. Download and install Lapack, Blas, and HSL or MUMPS, if you want to use the GAMS/IPOPT link.
+ 6. Download and install Lapack, Blas, and HSL or MUMPS, if you want to use the GAMS/IPOPT or GAMS/Bonmin link.
  7. Modify the site script for the configure call of the GAMSlinks project.
  8. Call configure, make, and make install.
  9. Install the GAMS/COIN-OR links in your GAMS system.
@@ -18,7 +18,7 @@
 To use the COIN-OR/GAMS links, you need a GAMS system.
 It is recommended to have at least version 22.3.
 To build the links on Linux, also some libraries from the Intel Fortran Compiler are required.
-Since they are included into a GAMS system, it sufficies to have a GAMS system reachable.
+Since they are included into a GAMS system, it suffices to have a GAMS system reachable.
 
 You can download a GAMS demonstration system at http://www.gams.com/download.
 The demonstrations limits are:
@@ -27,7 +27,7 @@ The demonstrations limits are:
  * Number of nonzero elements: 2000 (of which 1000 nonlinear)
  * Number of discrete variables: 50 (including semi continuous, semi integer and member of SOS-Sets)
 
-== 2. Apply patch files to COIN-OR packages ==
+== 2. Apply patch file for OsiGlpk ==
 
 In the base directory of the GAMSlinks package, you will find a patch file.
 This patch fixes some minor bugs in the OsiGlpkSolverInterface and adds additional routines to get more information about GLPKs status at termination.
@@ -51,28 +51,28 @@ Currently available are:
 
 == 4. Download additional COIN-OR solvers ==
 
-Using the GAMS/OSI link, additional solvers which provide a COIN-OR OSI (OpenSolverInterface) can be easily connected to GAMS.
+Using the GAMS/OSI link, additional solvers which provide a COIN-OR OSI (Open Solver Interface) can be easily connected to GAMS.
 Currently, the build system and the OSI link are prepared to compile with support for the COIN-OR solvers SYMPHONY, DyLP, and Vol.
 
 To activate them, you only need to provide the corresponding solver.
-If you have obtained the GAMSlinks system via subversion (svn), then the easiest way to do this is by opening the file Externals in your favorite editor,
-uncommenting the line that corresponds to the solver(s) you want to use, and to call in the GAMSlinks base directory:
+If you have obtained the GAMSlinks system via subversion (svn), then the easiest way to do this is by opening the file Externals from the GAMSlinks base directory in your favorite editor,
+uncommenting the line that corresponds to the solver(s) you want to use, and to update your GAMSlinks download:
  svn propset svn:externals -F Externals .
  svn update
 
 == 5. GNU Linear Programming Toolkit (GLPK) ==
 
 In the directory ThirdParty/Glpk you find the script get.Glpk that downloads the GNU Linear Programming Toolkit (http://www.gnu.org/software/glpk/glpk.html).
-Just run it or read the instructions INSTALL.Glpk in ThirdParty/Glpk.
+Just run it or read the instructions in ThirdParty/Glpk/INSTALL.Glpk.
 
-== 6. Installation of Lapack, Blas, and HSL ==
+== 6. Installation of Lapack, Blas, HSL, and MUMPS ==
 
-Ipopt requires some further third party packages.
+Ipopt and Bonmin require some further third party packages.
 For Lapack and Blas you find download scripts in the directories ThirdParty/Lapack and ThirdParty/Blas.
 If you want Ipopt to use the HSL routines as linear solver, you have to go to the HSL web site (http://hsl.rl.ac.uk/archive/hslarchive.html),
 obtain the source code for MA27, and put it into the directory ThirdParty/HSL.
 Note that these routines are freely available for non-commercial, academic use, but it is your responsibility to investigate the licensing of all third party code.
-Alternatively, you can use the MUMPS routines as linear solver. A download script for them is available at ThirdParty/Mumps.
+Alternatively, you can use the MUMPS (http://graal.ens-lyon.fr/MUMPS/index.html) routines as linear solver. A download script for them is available at ThirdParty/Mumps.
 
 For more information we refer to the corresponding part of the Ipopt documentation (http://www.coin-or.org/Ipopt/documentation/node13.html).
 
@@ -125,6 +125,6 @@ This are the COIN-OR solvers as they are shipped within the GAMS distribution, n
 
 == 10. Troubleshooting ==
 
-With GAMS system before 22.6, it can happen that calling Bonmin or Ipopt fails with a message concerning a missing symbol in the library liboptdclib.so (or similiar, depending on the system type).
+With GAMS system before 22.6, it can happen that calling Cbc, Clp, or Osi fails with a message concerning a missing symbol in the library liboptdclib.so (or similiar, depending on the system type).
 This is due to a missing backward compatibility in the GAMS I/O libraries.
 You can easily upgrade the outdated library in your GAMS distribution by overwriting it with the corresponding file from ThirdParty/GAMSIO/<system-type>.
