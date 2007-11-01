@@ -32,6 +32,7 @@
 #                         Maintainer Stuff                             #
 ########################################################################
 
+
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -54,6 +55,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@GAMSIO_IS_UNIX_TRUE@noinst_PROGRAMS = gdx2gams$(EXEEXT)
 DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../BuildTools/Makemain.inc \
 	$(srcdir)/../../config.guess $(srcdir)/../../config.sub \
@@ -81,6 +83,11 @@ libGamsGDX_la_OBJECTS = $(nodist_libGamsGDX_la_OBJECTS)
 libGamsOptions_la_LIBADD =
 nodist_libGamsOptions_la_OBJECTS = optcc.lo
 libGamsOptions_la_OBJECTS = $(nodist_libGamsOptions_la_OBJECTS)
+PROGRAMS = $(noinst_PROGRAMS)
+am__gdx2gams_SOURCES_DIST = gdx2gams.c
+@GAMSIO_IS_UNIX_TRUE@am_gdx2gams_OBJECTS = gdx2gams.$(OBJEXT)
+gdx2gams_OBJECTS = $(am_gdx2gams_OBJECTS)
+gdx2gams_LDADD = $(LDADD)
 depcomp = $(SHELL) $(top_srcdir)/../../depcomp
 am__depfiles_maybe = depfiles
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -92,8 +99,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(nodist_libGamsGDX_la_SOURCES) \
-	$(nodist_libGamsOptions_la_SOURCES)
-DIST_SOURCES =
+	$(nodist_libGamsOptions_la_SOURCES) $(gdx2gams_SOURCES)
+DIST_SOURCES = $(am__gdx2gams_SOURCES_DIST)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -147,6 +154,10 @@ F77 = @F77@
 FADDLIBS = @FADDLIBS@
 FFLAGS = @FFLAGS@
 GAMSIO_CODE = @GAMSIO_CODE@
+GAMSIO_IS_UNIX_FALSE = @GAMSIO_IS_UNIX_FALSE@
+GAMSIO_IS_UNIX_TRUE = @GAMSIO_IS_UNIX_TRUE@
+GAMSIO_IS_WINDOWS_FALSE = @GAMSIO_IS_WINDOWS_FALSE@
+GAMSIO_IS_WINDOWS_TRUE = @GAMSIO_IS_WINDOWS_TRUE@
 HAVE_EXTERNALS_FALSE = @HAVE_EXTERNALS_FALSE@
 HAVE_EXTERNALS_TRUE = @HAVE_EXTERNALS_TRUE@
 INSTALL_DATA = @INSTALL_DATA@
@@ -243,6 +254,8 @@ nodist_libGamsOptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libGamsOptions_la_LDFLAGS = 
 nodist_libGamsGDX_la_SOURCES = $(GAMSIO_CODE)/gdxwrap.c
 libGamsGDX_la_LDFLAGS = 
+@GAMSIO_IS_UNIX_TRUE@gdx2gams_SOURCES = gdx2gams.c
+@GAMSIO_IS_UNIX_TRUE@gdx2gams_LDFLAGS = libGamsGDX.la -ldl
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -D$(CIA_CODE)
 
 # tmpdir = tmpdir
@@ -319,12 +332,23 @@ libGamsGDX.la: $(libGamsGDX_la_OBJECTS) $(libGamsGDX_la_DEPENDENCIES)
 libGamsOptions.la: $(libGamsOptions_la_OBJECTS) $(libGamsOptions_la_DEPENDENCIES) 
 	$(LINK)  $(libGamsOptions_la_LDFLAGS) $(libGamsOptions_la_OBJECTS) $(libGamsOptions_la_LIBADD) $(LIBS)
 
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
+	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  echo " rm -f $$p $$f"; \
+	  rm -f $$p $$f ; \
+	done
+gdx2gams$(EXEEXT): $(gdx2gams_OBJECTS) $(gdx2gams_DEPENDENCIES) 
+	@rm -f gdx2gams$(EXEEXT)
+	$(LINK) $(gdx2gams_LDFLAGS) $(gdx2gams_OBJECTS) $(gdx2gams_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdx2gams.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdxwrap.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optcc.Plo@am__quote@
 
@@ -550,7 +574,7 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) config_gamsio.h
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) config_gamsio.h
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -580,7 +604,7 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
-	mostlyclean-am
+	clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -632,18 +656,19 @@ ps-am:
 uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am am--refresh check check-am clean \
-	clean-generic clean-libtool clean-noinstLTLIBRARIES ctags dist \
-	dist-all dist-bzip2 dist-gzip dist-shar dist-tarZ dist-zip \
-	distcheck distclean distclean-compile distclean-generic \
-	distclean-hdr distclean-libtool distclean-tags distcleancheck \
-	distdir distuninstallcheck dvi dvi-am html html-am info \
-	info-am install install-am install-data install-data-am \
-	install-exec install-exec-am install-info install-info-am \
-	install-man install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-info-am
+	clean-generic clean-libtool clean-noinstLTLIBRARIES \
+	clean-noinstPROGRAMS ctags dist dist-all dist-bzip2 dist-gzip \
+	dist-shar dist-tarZ dist-zip distcheck distclean \
+	distclean-compile distclean-generic distclean-hdr \
+	distclean-libtool distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-exec \
+	install-exec-am install-info install-info-am install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-info-am
 
 
 ########################################################################

@@ -16,7 +16,14 @@ nodist_libGamsOptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libGamsOptions_la_LDFLAGS = 
 
 nodist_libGamsGDX_la_SOURCES = $(GAMSIO_CODE)/gdxwrap.c
-libGamsGDX_la_LDFLAGS = 
+libGamsGDX_la_LDFLAGS =
+
+#could be improved to allow also Windows, if I figure out how dynamic linking is working there
+if GAMSIO_IS_UNIX
+noinst_PROGRAMS = gdx2gams
+gdx2gams_SOURCES = gdx2gams.c
+gdx2gams_LDFLAGS = libGamsGDX.la -ldl
+endif
 
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -D$(CIA_CODE)
 

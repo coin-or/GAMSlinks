@@ -120,6 +120,8 @@ esac
 
 AC_SUBST(GAMSIO_CODE)
 AC_SUBST(CIA_CODE)
+AM_CONDITIONAL([GAMSIO_IS_UNIX],[test x"$gamsio_system" != xWindows])
+AM_CONDITIONAL([GAMSIO_IS_WINDOWS],[test x"$gamsio_system" = xWindows])
 
 ############
 # END PART #
