@@ -227,9 +227,9 @@ void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver) {
 	                    gm.ColLb(), gm.ColUb(), gm.ObjCoef(), 
 	                    gm.RowSense(), gm.RowRhs(), rowrng);
 //	for (int i=0; i<gm.nCols(); ++i)
-//		printf("%d %.20g %.20g %.20g %d\n", i, gm.ColLb()[i], gm.ColUb()[i], gm.ObjCoef()[i], gm.matStart()[i]);  
+//		printf("col. %d: [%.20g, %.20g]\t %.20g\t %d\n", i, gm.ColLb()[i], gm.ColUb()[i], gm.ObjCoef()[i], gm.matStart()[i]);  
 //	for (int i=0; i<gm.nRows(); ++i)
-//		printf("%d %d %.20g\n", i, gm.RowSense()[i], gm.RowRhs()[i]);  
+//		printf("row. %d: %c\t %.20g\n", i, gm.RowSense()[i], gm.RowRhs()[i]);  
 //	for (int i=0; i<gm.nNnz(); ++i)
 //		printf("%d %d %.20g\n", i, gm.matRowIdx()[i], gm.matValue()[i]);  
 
