@@ -256,6 +256,7 @@ nodist_libGamsGDX_la_SOURCES = $(GAMSIO_CODE)/gdxwrap.c
 libGamsGDX_la_LDFLAGS = 
 @GAMSIO_IS_UNIX_TRUE@gdx2gams_SOURCES = gdx2gams.c
 @GAMSIO_IS_UNIX_TRUE@gdx2gams_LDFLAGS = libGamsGDX.la -ldl
+@GAMSIO_IS_UNIX_TRUE@gdx2gams_DEPENDENCIES = libGamsGDX.la
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -D$(CIA_CODE)
 
 # tmpdir = tmpdir
