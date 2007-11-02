@@ -23,6 +23,7 @@ if GAMSIO_IS_UNIX
 noinst_PROGRAMS = gdx2gams
 gdx2gams_SOURCES = gdx2gams.c
 gdx2gams_LDFLAGS = libGamsGDX.la -ldl
+gdx2gams_DEPENDENCIES = libGamsGDX.la
 endif
 
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -D$(CIA_CODE)
