@@ -114,7 +114,7 @@ int main (int argc, const char *argv[]) {
 	/* Overwrite GAMS Options */
 	if (!gm.optDefined("reslim")) gm.optSetDouble("reslim", gm.getResLim());
 	if (!gm.optDefined("iterlim")) gm.optSetInteger("iterlim", gm.getIterLim());
-//	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
+	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
 //	if (!gm.optDefined("cutoff") && gm.getCutOff()!=gm.ObjSense()*solver.getInfinity()) gm.optSetDouble("cutoff", gm.getCutOff());
 
 	gm.TimerStart();
@@ -348,13 +348,8 @@ void setupParametersMIP(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverI
 //				<< "OBJUL: " << lpx_get_real_parm(glpk_model, LPX_K_OBJUL) << CoinMessageEol;
 //		}
 
-	// not sure that optcr (=relative gap tolerance) is the same as TOLOBJ in GLPK
-//		double optcr=max(1e-7,gm.optGetDouble("optcr"));
-//		if (optcr>0.001) {
-//			myout << "Cannot use optcr of larger then 0.001. Setting objective tolerance to 0.001." << CoinMessageEol;
-//			optcr=0.001;
-//		}
-//		lpx_set_real_parm(glpk_model, LPX_K_TOLOBJ, optcr);
+	double optcr=gm.optGetDouble("optcr");
+	lpx_set_real_parm(glpk_model, LPX_K_MIPGAP, optcr);
 
 	double tol_integer=gm.optGetDouble("tol_integer");
 	if (tol_integer>0.001) {

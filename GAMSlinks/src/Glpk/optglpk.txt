@@ -168,4 +168,5 @@ The parameter value is the name of the MPS file.
 
 optcr
 Relative optimality criterion for a MIP.
-Glpk uses this parameter as relative tolerance to check if the value of the objective function is not better than in the best known integer feasible solution.
+The search is stoped when the relative gap between the incumbent and the bound given by the LP relaxation is smaller than this value.    
+

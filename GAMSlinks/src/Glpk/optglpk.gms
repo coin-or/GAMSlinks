@@ -28,7 +28,7 @@ set g Glpk Option Groups /
 * GAMS options
       reslim                 resource limit
       iterlim                iteration limit
-*      optcr                  relative stopping tolerance
+      optcr                  relative stopping tolerance on MIP gap
 *      cutoff                 Cutoff for objective function value
       writemps               create MPS file for problem
 * immediates
@@ -55,7 +55,7 @@ general.(
 * GAMS options
   reslim          .r.(def 1000)
   iterlim         .i.(def 10000)
-*  optcr           .r.(def 0.1)
+  optcr           .r.(def 0.1)
 *  cutoff          .r.(def 0, lo mindouble)
 * immediates
   nobounds        .b.(def 0)
@@ -89,7 +89,7 @@ $offempty
  hidden(o)         / NoBounds, ReadFile /
  odefault(o)       / reslim     'GAMS reslim'
                      iterlim    'GAMS iterlim' 
-*                     optcr      'GAMS optcr'
+                     optcr      'GAMS optcr'
 *                     cutoff     'GAMS cutoff'
                    /
 $onempty

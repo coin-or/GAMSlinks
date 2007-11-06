@@ -35,6 +35,9 @@ iterlim</a></td>
 <tr><td><a href="#noiterlim">
 noiterlim</a></td>
 <td>turn off iteration limit</td></tr>
+<tr><td><a href="#optcr">
+optcr</a></td>
+<td>relative stopping tolerance on MIP gap</td></tr>
 <tr><td><a href="#presolve">
 presolve</a></td>
 <td>LP presolver</td></tr>
@@ -142,6 +145,15 @@ Keeps simplex iteration limit.</td></tr>
 <tr valign="top"><td width=20 align=right>1</td><td>.
 Turns off simplex iteration limit.</td></tr>
 </table>
+
+<h4><a name="optcr">
+optcr</a>
+<i> (real)</i> relative stopping tolerance on MIP gap</h4><p>
+
+Relative optimality criterion for a MIP.
+The search is stoped when the relative gap between the incumbent and the bound given by the LP relaxation is smaller than this value.
+
+<br><i>(default = GAMS optcr)</i>
 
 <h4><a name="presolve">
 presolve</a>
