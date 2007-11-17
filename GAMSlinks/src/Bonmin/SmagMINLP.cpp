@@ -168,7 +168,17 @@ bool SMAG_MINLP::get_variables_types(Index n, VariableType* var_types) {
 	
 	return true;	
 } // get_var_types
- 
+
+bool SMAG_MINLP::get_variables_linearity(Index n, Ipopt::TNLP::LinearityType* var_linearity) {
+	for (Index i=0; i<n; ++i)
+		if (((prob->colFlags[i]&0x0cu) >= 0x08u) || // nonlinear in constraint
+		    ((prob->colFlags[i]&0x03u) >= 0x02u)) // nonlinear in objective
+			var_linearity[i]=Ipopt::TNLP::NON_LINEAR;
+		else
+			var_linearity[i]=Ipopt::TNLP::LINEAR;
+	return true;
+}
+
 bool SMAG_MINLP::get_constraints_linearity(Index m, Ipopt::TNLP::LinearityType* const_types) {
 	if (!prob->snlData.numInstr) // no nonlinearities
 		for (Index i=0; i<m; ++i)
