@@ -50,13 +50,19 @@ public:
 	 * @param n size of var_types (has to be equal to the number of variables in the problem).
 	 * @param var_types types of the variables (has to be filled by function).
   */
-	virtual bool get_variables_types(Index n, VariableType* var_types);
-  
+  virtual bool get_variables_types(Index n, VariableType* var_types);
+
+  /** Pass the type of the variables linearity (LINEAR, NON_LINEAR) to the optimizer.
+   * @param n size of var_linearity (has to be equal to the number of variables in the problem).
+   * @param var_linearity linearity of the variables (has to be filled by function).
+  */
+  virtual bool get_variables_linearity(Index n, Ipopt::TNLP::LinearityType* var_linearity);
+
   /** Pass the type of the constraints (LINEAR, NON_LINEAR) to the optimizer.
    * @param m size of const_types (has to be equal to the number of constraints in the problem).
    * @param const_types types of the constraints (has to be filled by function).
   */
-	virtual bool get_constraints_linearity(Index m, Ipopt::TNLP::LinearityType* const_types);
+  virtual bool get_constraints_linearity(Index m, Ipopt::TNLP::LinearityType* const_types);
 
 
   /** Method to return the starting point for the algorithm */

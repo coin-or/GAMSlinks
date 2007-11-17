@@ -138,9 +138,11 @@ void solve_minlp(smagHandle_t prob) {
 	} catch (std::bad_alloc) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Not enough memory\n");
 		smagReportSolBrief(prob, 13, 13);
+		return;
 	} catch (...) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Unknown exception thrown.\n");
 		smagReportSolBrief(prob, 13, 13);
+		return;
 	}
 
 	bonmin_setup.options()->GetNumericValue("diverging_iterates_tol", mysmagminlp->div_iter_tol, "");
@@ -148,13 +150,25 @@ void solve_minlp(smagHandle_t prob) {
 //	bonmin_setup.options()->GetNumericValue("tol", mysmagminlp->scaled_conviol_tol, "");
 //	bonmin_setup.options()->GetNumericValue("constr_viol_tol", mysmagminlp->unscaled_conviol_tol, "");
 
-	std::string hess_approx;
-	bonmin_setup.options()->GetStringValue("hessian_approximation", hess_approx, "");
-	if (hess_approx=="exact") {
+	bool hessian_is_approx=false;
+	std::string parvalue;
+	bonmin_setup.options()->GetStringValue("hessian_approximation", parvalue, "");
+	if (parvalue=="exact") {
 	  if (smagHessInit(prob)) {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to initialize Hessian structure. We continue and tell Bonmin to work with a limited-memory Hessian approximation!\n");
 			bonmin_setup.options()->SetStringValue("hessian_approximation", "limited-memory");
+	  	hessian_is_approx=true;
 	  }
+	} else
+		hessian_is_approx=true;
+	
+	if (hessian_is_approx) { // check whether QP strong branching is enabled
+		bonmin_setup.options()->GetStringValue("varselect_stra", parvalue, "bonmin.");
+		if (parvalue=="qp-strong-branching") {
+			smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: QP strong branching does not work when the Hessian is approximated. Aborting...\n");
+			smagReportSolBrief(prob, 13, 13);
+			return;
+		}
 	}
 
 	// the easiest would be to call bonmin_setup.initializeBonmin(smagminlp), but then we cannot set the message handler
