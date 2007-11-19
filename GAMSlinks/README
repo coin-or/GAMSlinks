@@ -1,6 +1,6 @@
 These directories contain links between the GAMS modeling system (http://www.gams.com) and some COIN-OR solvers.
 
-For requirements and installation instruction see the file INSTALL.
+For requirements and installation instruction see the file INSTALL in the GAMSlinks base directory.
 For information on how to use the installed solvers in GAMS and which parameters are supported, see the COIN-OR solver documentation part from the GAMS solver manuals, located in doc/gamsdist (compile ind_coin.tex with pdflatex).
 For license information see the file LICENSE.
 

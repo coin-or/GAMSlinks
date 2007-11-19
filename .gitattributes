@@ -1,7 +1,6 @@
 * text=auto !eol
 /Externals -text
 GAMSlinks/AUTHORS -text
-GAMSlinks/INSTALL -text
 GAMSlinks/LICENSE -text
 GAMSlinks/Makefile.am -text
 GAMSlinks/Makefile.in -text
@@ -86,6 +85,7 @@ GAMSlinks/src/Osi/optosi.gms -text
 GAMSlinks/test/Makefile.am -text
 GAMSlinks/test/Makefile.in -text
 GAMSlinks/test/run_tests.in -text
+/INSTALL -text
 /Makefile.am -text
 /Makefile.in -text
 ThirdParty/GAMSIO/FILES -text
