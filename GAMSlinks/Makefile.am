@@ -37,8 +37,6 @@ clean-local:
 distclean-local:
 	if test -r test/Makefile; then cd test; $(MAKE) distclean; fi
 
-.PHONY: test unitTest
-
 ########################################################################
 #                         Maintainer Stuff                             #
 ########################################################################

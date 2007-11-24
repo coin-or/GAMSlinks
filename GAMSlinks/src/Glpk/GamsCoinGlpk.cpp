@@ -204,6 +204,7 @@ int main (int argc, const char *argv[]) {
 			lpx_cpx_basis(glpk_model);
   }
 
+  bool mipoptimal=false;
 	myout.setCurrentDetail(2);
 	gm.PrintOut(GamsModel::StatusMask, "=2"); // turn off copying into .lst file
 	myout << CoinMessageNewline << CoinMessageEol;
@@ -220,6 +221,7 @@ int main (int argc, const char *argv[]) {
 #endif
 		myout << "Starting GLPK Branch and Bound... " << CoinMessageEol;
 		solver.branchAndBound();
+		mipoptimal=solver.isProvenOptimal();
 
 		int mipstat = lpx_mip_status(glpk_model);
 		if (!solver.isIterationLimitReached()
@@ -250,6 +252,16 @@ int main (int argc, const char *argv[]) {
 	}
 
 	// Determine status and write solution
+	myout.setCurrentDetail(1);
+	gm.PrintOut(GamsModel::StatusMask, "=1"); // turn on copying into .lst file
+	
+	gm.setIterUsed(solver.getIterationCount());
+	gm.setResUsed(gm.SecondsSinceStart());
+	gm.setObjVal(solver.getObjValue());
+
+	gm.setStatus(GamsModel::ErrorSystemFailure,GamsModel::ErrorNoSolution);	
+	myout << "\n" << CoinMessageEol;
+
 #ifdef OGSI_HAVE_TIMELIMIT
 	bool timelimitreached=solver.isTimeLimitReached();
 #else
@@ -260,9 +272,62 @@ int main (int argc, const char *argv[]) {
 #else
 	bool feasible=false;
 #endif
-	myout.setCurrentDetail(1);
-	gm.PrintOut(GamsModel::StatusMask, "=1"); // turn on copying into .lst file
-	GamsFinalizeOsi(&gm, &myout, &solver, timelimitreached, feasible);
+
+	if (timelimitreached) {
+		if (feasible) {
+			myout << "Time limit exceeded. Have feasible solution.";
+			if (gm.isLP())
+				gm.setStatus(GamsModel::ResourceInterrupt,GamsModel::IntermediateNonoptimal);
+			else
+				gm.setStatus(GamsModel::ResourceInterrupt,GamsModel::IntegerSolution);
+		} else {
+			myout << "Time limit exceeded.";
+			gm.setStatus(GamsModel::ResourceInterrupt,GamsModel::NoSolutionReturned);	
+		}
+	} else if (solver.isProvenOptimal()) { // LP or fixed LP was solved to optimality
+		if (!gm.isLP() && !mipoptimal) { 
+			myout << "Integer Solution.";
+			gm.setStatus(GamsModel::NormalCompletion,GamsModel::IntegerSolution);	
+		} else {
+			myout << "Solved optimal.";
+			gm.setStatus(GamsModel::NormalCompletion,GamsModel::Optimal);	
+		}
+	}	else if (solver.isProvenPrimalInfeasible()) {
+		myout << "Model infeasible.";
+		gm.setStatus(GamsModel::NormalCompletion,GamsModel::InfeasibleNoSolution);	
+	} else if (solver.isProvenDualInfeasible()) { // GAMS doesn't have dual infeasible, so we hope for the best and call it unbounded
+		myout << "Model unbounded.";
+		gm.setStatus(GamsModel::NormalCompletion,GamsModel::UnboundedNoSolution);	
+	} else if (solver.isIterationLimitReached()) {
+		if (feasible) {
+			myout << "Iteration limit exceeded. Have feasible solution.";
+			if (gm.isLP())
+				gm.setStatus(GamsModel::IterationInterrupt,GamsModel::IntermediateNonoptimal);
+			else
+				gm.setStatus(GamsModel::IterationInterrupt,GamsModel::IntegerSolution);
+		} else {
+			myout << "Iteration limit exceeded.";
+			gm.setStatus(GamsModel::IterationInterrupt,GamsModel::NoSolutionReturned);	
+		}
+	} else if (solver.isPrimalObjectiveLimitReached()) {
+		myout << "Primal objective limit reached.";
+	} else if (solver.isDualObjectiveLimitReached()) {
+		myout << "Dual objective limit reached.";
+	} else if (solver.isAbandoned()) { 
+		myout << "Model abandoned.";
+	} else {
+		myout << "Unknown solve outcome.";
+	}
+
+	myout << CoinMessageEol;
+
+	// We write a solution if model was declared optimal or feasible.
+	if (GamsModel::Optimal==gm.getModelStatus() || 
+			GamsModel::IntegerSolution==gm.getModelStatus()) {
+		GamsWriteSolutionOsi(&gm, &myout, &solver);
+	}	else {
+		gm.setSolution(); // Need this to trigger the write of GAMS solution file
+	}
 
 	return 0;
 }
