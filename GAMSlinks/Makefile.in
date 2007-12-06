@@ -60,7 +60,7 @@ DIST_COMMON = README $(am__configure_deps) \
 	$(srcdir)/../ltmain.sh $(srcdir)/../missing \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/configure \
-	$(top_srcdir)/inc/config_gamslinks.h.in AUTHORS INSTALL
+	$(top_srcdir)/inc/config_gamslinks.h.in AUTHORS
 @HAVE_EXTERNALS_TRUE@am__append_2 = Externals
 @HAVE_EXTERNALS_TRUE@am__append_3 = .Externals-stamp
 subdir = .
@@ -302,6 +302,7 @@ prefix = @prefix@
 program_transform_name = @program_transform_name@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
+sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
@@ -766,8 +767,6 @@ clean-local:
 
 distclean-local:
 	if test -r test/Makefile; then cd test; $(MAKE) distclean; fi
-
-.PHONY: test unitTest
 
 # Make sure acinclude is using most recent coin.m4
 @MAINTAINER_MODE_TRUE@$(srcdir)/acinclude.m4: $(BUILDTOOLSDIR)/coin.m4
