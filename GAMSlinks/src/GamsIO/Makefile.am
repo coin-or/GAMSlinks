@@ -15,7 +15,7 @@ lib_LTLIBRARIES = libGamsIO.la
 libGamsIO_la_SOURCES = ../GAMSlinksConfig.h \
   GamsModel.cpp GamsModel.hpp GamsFinalize.cpp \
   GamsMessageHandler.cpp GamsMessageHandler.hpp
-#libGamsModel_la_LDFLAGS
+#libGamsIO_la_LDFLAGS
 libGamsIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la \
   $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
 
@@ -26,7 +26,7 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
  -I`$(CYGPATH_W) $(OSIOBJDIR)/inc`
- 
+
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
 ########################################################################

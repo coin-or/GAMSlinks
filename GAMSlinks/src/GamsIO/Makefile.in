@@ -336,7 +336,7 @@ libGamsIO_la_SOURCES = ../GAMSlinksConfig.h \
   GamsModel.cpp GamsModel.hpp GamsFinalize.cpp \
   GamsMessageHandler.cpp GamsMessageHandler.hpp
 
-#libGamsModel_la_LDFLAGS
+#libGamsIO_la_LDFLAGS
 libGamsIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la \
   $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
 

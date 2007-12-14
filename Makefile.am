@@ -8,9 +8,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = doxydoc/doxygen.conf cbc.patch cgl.patch ipopt.patch osiglpk.patch \
-  ThirdParty/GLPK/get.glpk.cl ThirdParty/GLPK/get.glpk.darwin ThirdParty/GLPK/get.glpk.linux \
-  ThirdParty/GLPK/darwin.mak ThirdParty/GLPK/glpk.patch ThirdParty/GLPK/glpk/share
+EXTRA_DIST = doxydoc/doxygen.conf osiglpk.patch
 
 ########################################################################
 #                          Subdirectories                              #

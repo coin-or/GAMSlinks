@@ -85,7 +85,7 @@ install-exec-local: install-binPROGRAMS
 	$(install_sh_DATA) gmscc_.zip $(DESTDIR)$(bindir)/gmscc_.zip
 	rm -f gmscc_nx.exe  
 endif
-	
+
 uninstall-local:
 	rm -f $(DESTDIR)$(bindir)/gmscc_.zip
 

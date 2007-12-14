@@ -43,7 +43,7 @@ GamsIpopt_DEPENDENCIES = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 LIBS += `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
 
 GamsIpopt_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
- 
+
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
 DISTCLEANFILES = gmsip_.zip
@@ -63,7 +63,7 @@ install-exec-local: install-binPROGRAMS
 	$(install_sh_DATA) gmsip_.zip $(DESTDIR)$(bindir)/gmsip_.zip
 	rm -f gmsip_nx.exe
 endif
-	
+
 uninstall-local:
 	rm -f $(DESTDIR)$(bindir)/gmsip_.zip
 

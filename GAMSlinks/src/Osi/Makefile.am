@@ -43,7 +43,7 @@ if COIN_HAS_CBC
   GamsCoinOsi_DEPENDENCIES += \
    $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
    $(CBCOBJDIR)/src/libCbc.la
-	LIBS += `cat $(CBCOBJDIR)/cbc_addlibs.txt`
+  LIBS += `cat $(CBCOBJDIR)/cbc_addlibs.txt`
 endif
 
 if COIN_HAS_CLP
@@ -57,7 +57,7 @@ if COIN_HAS_CLP
   GamsCoinOsi_DEPENDENCIES += \
    $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
    $(CLPOBJDIR)/src/libClp.la
-	LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt`
+  LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt`
 endif
 
 if COIN_HAS_GLPK
@@ -80,7 +80,7 @@ if COIN_HAS_DYLP
   GamsCoinOsi_DEPENDENCIES += \
     $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la \
     $(DYLPOBJDIR)/src/Dylp/libDylp.la
-	LIBS += `cat $(DYLPOBJDIR)/dylp_addlibs.txt`
+  LIBS += `cat $(DYLPOBJDIR)/dylp_addlibs.txt`
 endif  
 
 if COIN_HAS_VOL
@@ -93,7 +93,7 @@ if COIN_HAS_VOL
   GamsCoinOsi_DEPENDENCIES += \
     $(OSIOBJDIR)/src/OsiVol/libOsiVol.la \
     $(VOLOBJDIR)/src/libVol.la
-	LIBS += `cat $(VOLOBJDIR)/vol_addlibs.txt`
+  LIBS += `cat $(VOLOBJDIR)/vol_addlibs.txt`
 endif
 
 if COIN_HAS_SYMPHONY
@@ -106,7 +106,7 @@ if COIN_HAS_SYMPHONY
   GamsCoinOsi_DEPENDENCIES += \
     $(OSIOBJDIR)/src/OsiSym/libOsiSym.la \
     $(SYMPHONYOBJDIR)/src/libSym.la
-	LIBS += `cat $(SYMPHONYOBJDIR)/sym_addlibs.txt`
+  LIBS += `cat $(SYMPHONYOBJDIR)/sym_addlibs.txt`
 endif
 
 if COIN_HAS_SYMPHONY
@@ -175,7 +175,7 @@ install-exec-local: install-binPROGRAMS
 	$(install_sh_DATA) gmsosi_.zip $(DESTDIR)$(bindir)/gmsosi_.zip
 	rm -f gmsosinx.exe
 endif
-	
+
 uninstall-local:
 	rm -f $(DESTDIR)$(bindir)/gmsosi_.zip
 

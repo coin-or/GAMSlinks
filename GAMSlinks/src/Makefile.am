@@ -50,4 +50,3 @@ uninstall-local:
 	rm -f $(DESTDIR)$(includedir)/$(ConfigHeader)
 
 include ../../BuildTools/Makemain.inc
-	

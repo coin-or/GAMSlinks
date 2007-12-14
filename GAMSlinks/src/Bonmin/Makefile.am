@@ -77,13 +77,13 @@ if COIN_HAS_CLP
   GamsBonmin_DEPENDENCIES += \
    $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
    $(CLPOBJDIR)/src/libClp.la
-	LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt`
+  LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt`
 endif
 
 if COIN_HAS_GLPK
   AM_CPPFLAGS += \
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
-	 $(GLPK_INCFLAGS)
+   -I`$(CYGPATH_W) $(GLPKINCDIR)`
   GamsBonmin_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
   GamsBonmin_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 endif
