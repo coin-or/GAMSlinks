@@ -73,6 +73,15 @@ GAMSlinks/src/Ipopt/install/gmsip_nt.dat -text
 GAMSlinks/src/Ipopt/install/gmsip_un.dat -text
 GAMSlinks/src/Makefile.am -text
 GAMSlinks/src/Makefile.in -text
+GAMSlinks/src/OS/GamsOS.cpp -text
+GAMSlinks/src/OS/Makefile.am -text
+GAMSlinks/src/OS/Makefile.in -text
+GAMSlinks/src/OS/Smag2OSiL.cpp -text
+GAMSlinks/src/OS/Smag2OSiL.hpp -text
+GAMSlinks/src/OS/gmsos_nt.cmd -text
+GAMSlinks/src/OS/gmsos_us.run -text
+GAMSlinks/src/OS/install/gmsos_nt.dat -text
+GAMSlinks/src/OS/install/gmsos_un.dat -text
 GAMSlinks/src/Osi/GamsCoinOsi.cpp -text
 GAMSlinks/src/Osi/Makefile.am -text
 GAMSlinks/src/Osi/Makefile.in -text
@@ -102,6 +111,7 @@ ThirdParty/GAMSIO/get.LEI -text
 ThirdParty/GAMSIO/get.LX3 -text
 ThirdParty/GAMSIO/get.SIG -text
 ThirdParty/GAMSIO/get.VIS -text
+/compile -text
 /config.guess -text
 /config.sub -text
 /configure -text

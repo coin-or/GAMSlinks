@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) GAMS Development 2006
+# Copyright (C) GAMS Development 2007
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -53,12 +53,12 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = GamsCoinGlpk$(EXEEXT)
+bin_PROGRAMS = GamsOS$(EXEEXT)
 DIST_COMMON = $(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 @HAVE_EXTERNALS_TRUE@am__append_1 = Externals
 @HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
-subdir = src/Glpk
+subdir = src/OS
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.ac
@@ -70,8 +70,8 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_GamsCoinGlpk_OBJECTS = GamsCoinGlpk.$(OBJEXT)
-GamsCoinGlpk_OBJECTS = $(am_GamsCoinGlpk_OBJECTS)
+am_GamsOS_OBJECTS = GamsOS.$(OBJEXT) Smag2OSiL.$(OBJEXT)
+GamsOS_OBJECTS = $(am_GamsOS_OBJECTS)
 am__DEPENDENCIES_1 =
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -83,8 +83,8 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(GamsCoinGlpk_SOURCES)
-DIST_SOURCES = $(GamsCoinGlpk_SOURCES)
+SOURCES = $(GamsOS_SOURCES)
+DIST_SOURCES = $(GamsOS_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -214,8 +214,7 @@ IPOPTSRCDIR = @IPOPTSRCDIR@
 LDFLAGS = @LDFLAGS@
 LIBEXT = @LIBEXT@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@ `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt \
-	$(OSIOBJDIR)/osi_addlibs.txt`
+LIBS = @LIBS@ `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
 LN_S = @LN_S@
@@ -309,39 +308,32 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = optglpk.def optglpk.gms optglpk.txt gmscg_nt.cmd \
-	gmscg_us.run install/gmscg_nt.dat install/gmscg_un.dat \
-	$(am__append_1)
-GamsCoinGlpk_SOURCES = GamsCoinGlpk.cpp
+EXTRA_DIST = gmsos_nt.cmd gmsos_us.run install/gmsos_nt.dat \
+	install/gmsos_un.dat $(am__append_1)
+GamsOS_SOURCES = GamsOS.cpp Smag2OSiL.cpp
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(srcdir)/../GamsIO` \
- -I`$(CYGPATH_W) $(srcdir)/../Cbc` \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
- -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
- -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
- -I`$(CYGPATH_W) $(OSIOBJDIR)/inc` \
- -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
- -I`$(CYGPATH_W) $(CBCOBJDIR)/inc` \
- -I`$(CYGPATH_W) $(GLPKINCDIR)`
+ -I`$(CYGPATH_W) $(OSSRCDIR)/src` \
+ -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSCommonInterfaces` \
+ -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSUtils` \
+ -I`$(CYGPATH_W) $(OSOBJDIR)/inc` \
+ -I`$(CYGPATH_W) $(CPPADSRCDIR)/..`
 
-GamsCoinGlpk_LDADD = \
- ../GamsIO/libGamsIO.la \
- $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
- $(OSIOBJDIR)/src/libOsi.la \
+GamsOS_LDADD = \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- $(GAMSIO_LIBS)
+ $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
+ $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
+ $(SMAG_LIBS)
 
-GamsCoinGlpk_DEPENDENCIES = \
- ../GamsIO/libGamsIO.la \
- $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
- $(OSIOBJDIR)/src/libOsi.la \
- $(COINUTILSOBJDIR)/src/libCoinUtils.la 
+GamsOS_DEPENDENCIES = \
+ $(COINUTILSOBJDIR)/src/libCoinUtils.la
 
-GamsCoinGlpk_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
+GamsOS_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
-DISTCLEANFILES = gmscg_.zip $(am__append_2) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = gmsos_.zip $(am__append_2) $(VPATH_DISTCLEANFILES)
 all: all-am
 
 .SUFFIXES:
@@ -355,9 +347,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/..
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Glpk/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/OS/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src/Glpk/Makefile
+	  $(AUTOMAKE) --foreign  src/OS/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -403,9 +395,9 @@ clean-binPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-GamsCoinGlpk$(EXEEXT): $(GamsCoinGlpk_OBJECTS) $(GamsCoinGlpk_DEPENDENCIES) 
-	@rm -f GamsCoinGlpk$(EXEEXT)
-	$(CXXLINK) $(GamsCoinGlpk_LDFLAGS) $(GamsCoinGlpk_OBJECTS) $(GamsCoinGlpk_LDADD) $(LIBS)
+GamsOS$(EXEEXT): $(GamsOS_OBJECTS) $(GamsOS_DEPENDENCIES) 
+	@rm -f GamsOS$(EXEEXT)
+	$(CXXLINK) $(GamsOS_LDFLAGS) $(GamsOS_OBJECTS) $(GamsOS_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -413,7 +405,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCoinGlpk.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOS.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Smag2OSiL.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -620,19 +613,19 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 
 
 @GAMSIO_IS_UNIX_TRUE@install-exec-local: install-binPROGRAMS
-@GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinGlpk gmscg_ux.out
-@GAMSIO_IS_UNIX_TRUE@	zip gmscg_.zip gmscg_ux.out gmscg_us.run optglpk.def install/gmscg_un.dat
-@GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmscg_.zip $(DESTDIR)$(bindir)/gmscg_.zip
-@GAMSIO_IS_UNIX_TRUE@	rm -f gmscg_ux.out
+@GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsOS gmsos_ux.out
+@GAMSIO_IS_UNIX_TRUE@	zip gmsos_.zip gmsos_ux.out gmsos_us.run install/gmsos_un.dat
+@GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmsos_.zip $(DESTDIR)$(bindir)/gmsos_.zip
+@GAMSIO_IS_UNIX_TRUE@	rm -f gmsos_ux.out
 
 @GAMSIO_IS_WINDOWS_TRUE@install-exec-local: install-binPROGRAMS
-@GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsCoinGlpk.exe gmscg_nx.exe
-@GAMSIO_IS_WINDOWS_TRUE@	zip gmscg_.zip gmscg_nx.exe gmscg_nt.cmd optglpk.def install/gmscg_nt.dat
-@GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmscg_.zip $(DESTDIR)$(bindir)/gmscg_.zip
-@GAMSIO_IS_WINDOWS_TRUE@	rm -f gmscg_nx.exe  
+@GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsOS.exe gmsos_nx.exe
+@GAMSIO_IS_WINDOWS_TRUE@	zip gmsos_.zip gmsos_nx.exe gmsos_nt.cmd install/gmsos_nt.dat
+@GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmsos_.zip $(DESTDIR)$(bindir)/gmsos_.zip
+@GAMSIO_IS_WINDOWS_TRUE@	rm -f gmsos_nx.exe
 
 uninstall-local:
-	rm -f $(DESTDIR)$(bindir)/gmscg_.zip
+	rm -f $(DESTDIR)$(bindir)/gmsos_.zip
 
 # Make sure acinclude is using most recent coin.m4
 @MAINTAINER_MODE_TRUE@$(srcdir)/acinclude.m4: $(BUILDTOOLSDIR)/coin.m4

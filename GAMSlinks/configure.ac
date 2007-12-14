@@ -93,6 +93,8 @@ AC_COIN_HAS_PROJECT(SYMPHONY)
 AC_COIN_HAS_PROJECT(Cbc)
 AC_COIN_HAS_PROJECT(Ipopt)
 AC_COIN_HAS_PROJECT(Bonmin)
+AC_COIN_HAS_PROJECT(cppad)
+AC_COIN_HAS_PROJECT(OS)
 
 ############################################################################
 ############################################################################
@@ -331,6 +333,11 @@ AM_CONDITIONAL([GAMSLINKS_BUILD_OSI],[
      ( test "x$coin_has_symphony" != xunavailable && test "x$coin_has_symphony" != xskipping ) ||
      ( test "x$coin_has_vol" != xunavailable && test "x$coin_has_vol" != skipping )
    ) ])
+   
+AM_CONDITIONAL([GAMSLINKS_BUILD_OS], [
+   test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
+   test "x$coin_has_cppad" != xunavailable && test "x$coin_has_cppad" != xskipping ])
 
 ##############################################################################
 #                VPATH links for GAMS installation files                     #
@@ -362,6 +369,10 @@ AC_COIN_VPATH_LINK(src/Bonmin/gmsbm_us.run)
 AC_COIN_VPATH_LINK(src/Bonmin/gmsbm_nt.cmd)
 AC_COIN_VPATH_LINK(src/Bonmin/install/gmsbm_un.dat)
 AC_COIN_VPATH_LINK(src/Bonmin/install/gmsbm_nt.dat)
+AC_COIN_VPATH_LINK(src/OS/gmsos_us.run)
+AC_COIN_VPATH_LINK(src/OS/gmsos_nt.cmd)
+AC_COIN_VPATH_LINK(src/OS/install/gmsos_un.dat)
+AC_COIN_VPATH_LINK(src/OS/install/gmsos_nt.dat)
 
 ############
 # END PART #
@@ -377,6 +388,7 @@ AC_CONFIG_FILES([Makefile
                  src/Osi/Makefile
                  src/Ipopt/Makefile
                  src/Bonmin/Makefile
+                 src/OS/Makefile
                  test/Makefile test/run_tests
                 ])
 

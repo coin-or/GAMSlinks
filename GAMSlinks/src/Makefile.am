@@ -28,6 +28,9 @@ endif
 if GAMSLINKS_BUILD_OSI
   SUBDIRS += Osi
 endif
+if GAMSLINKS_BUILD_OS
+  SUBDIRS += OS
+endif
 
 EXTRA_DIST =
 

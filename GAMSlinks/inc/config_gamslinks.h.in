@@ -21,6 +21,9 @@
 /* Define to 1 if the CoinUtils package is used */
 #undef COIN_HAS_COINUTILS
 
+/* Define to 1 if the cppad package is used */
+#undef COIN_HAS_CPPAD
+
 /* Define to 1 if the DyLP package is used */
 #undef COIN_HAS_DYLP
 
@@ -35,6 +38,9 @@
 
 /* Define to 1 if the Ipopt package is used */
 #undef COIN_HAS_IPOPT
+
+/* Define to 1 if the OS package is used */
+#undef COIN_HAS_OS
 
 /* Define to 1 if the Osi package is used */
 #undef COIN_HAS_OSI
