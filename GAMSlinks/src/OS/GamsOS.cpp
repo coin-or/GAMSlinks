@@ -32,16 +32,16 @@
 #include "Smag2OSiL.hpp"
 
 #include "OSiLWriter.h"
-#include "ErrorClass.h"
-#include "DefaultSolver.h"
+#include "OSErrorClass.h"
+#include "OSDefaultSolver.h"
 #ifdef COIN_HAS_OSI
-#include "CoinSolver.h"
+#include "OSCoinSolver.h"
 #endif
 #ifdef COIN_HAS_IPOPT
-#include "IpoptSolver.h"
+#include "OSIpoptSolver.h"
 #endif
 
-string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob);
+std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob);
 
 int main (int argc, char* argv[]) {
 #if defined(_MSC_VER)
@@ -93,7 +93,7 @@ int main (int argc, char* argv[]) {
 		smagStdOutputPrint(prob, SMAG_LOGMASK, "Done writing the instance.\n");
 	}
 
-	string solvername;//="ipopt"; // TODO: should be set via parameter
+	std::string solvername;//="ipopt"; // TODO: should be set via parameter
 	if (solvername=="") { // set default solver depending on problem type and what is available
 		solvername=getSolverName(
 				smagosil.osinstance->getNumberOfNonlinearExpressions() || smagosil.osinstance->getNumberOfQuadraticTerms(),
@@ -157,7 +157,7 @@ int main (int argc, char* argv[]) {
   return EXIT_SUCCESS;
 } // main
 
-string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) {
+std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) {
 	if (isnonlinear) { // (MI)NLP
 		if (isdiscrete) { // MINLP
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: No MINLP solver with OS interface available.\n");
