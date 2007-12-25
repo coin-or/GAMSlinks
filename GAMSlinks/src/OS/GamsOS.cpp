@@ -67,7 +67,7 @@ int main (int argc, char* argv[]) {
   	fprintf(stderr, "Warning: Error opening GAMS output files .. continuing anyhow\t%s\n", buffer);
 
   smagReadModelStats (prob);
-  smagSetInf (prob, OSINFINITY);
+  smagSetInf (prob, OSDBL_MAX);
   smagSetObjFlavor (prob, OBJ_FUNCTION);
   smagSetSqueezeFreeRows (prob, 1);	/* don't show me =n= rows */
   smagReadModel (prob);

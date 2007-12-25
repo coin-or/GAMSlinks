@@ -23,7 +23,7 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSSolverInterfaces` \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSUtils` \
  -I`$(CYGPATH_W) $(OSOBJDIR)/inc` \
- -I`$(CYGPATH_W) $(CPPADSRCDIR)/..`
+ -I`$(CYGPATH_W) $(CPPADSRCDIR)`
 
 GamsOS_LDADD = \
  $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la \
