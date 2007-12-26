@@ -51,6 +51,9 @@
 /* Define to 1 if the Vol package is used */
 #undef COIN_HAS_VOL
 
+/* If defined, the Gams/OS interface should allow local solves */
+#undef COIN_OS_SOLVER
+
 /* Define to 1 if you have the <assert.h> header file. */
 #undef HAVE_ASSERT_H
 

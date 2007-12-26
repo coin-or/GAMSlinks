@@ -297,6 +297,21 @@ AC_SUBST(GAMSIO_CODE)
 AM_CONDITIONAL([GAMSIO_IS_UNIX],[test x"$gamsio_system" != xWindows])
 AM_CONDITIONAL([GAMSIO_IS_WINDOWS],[test x"$gamsio_system" = xWindows])
 
+########################
+# OS Solver Interfaces #
+########################
+
+#if enable-os-solver is set, then we link the Gams/OS binary with all available coin solvers that have an OS interface and allow a "local" solve 
+AC_MSG_CHECKING([whether to include solvers into GamsOS binary])
+AC_ARG_ENABLE(os-solver,
+  AC_HELP_STRING([--enable-os-solver],["whether to include solver interfaces to available solvers into the GamsOS binary (default=no)"]),
+  [os_solver=yes
+   AC_DEFINE([COIN_OS_SOLVER],[1],[If defined, the Gams/OS interface should allow local solves])],
+  [os_solver=no] )
+  
+AM_CONDITIONAL(COIN_OS_SOLVER, [test x"$os_solver" = xyes])
+AC_MSG_RESULT([$os_solver])
+
 ##################################################
 # Check which interfaces we can (and want) build #
 ##################################################
@@ -339,8 +354,8 @@ AM_CONDITIONAL([GAMSLINKS_BUILD_OSI],[
    
 AM_CONDITIONAL([GAMSLINKS_BUILD_OS], [
    test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
-   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
    test "x$coin_has_cppad" != xunavailable && test "x$coin_has_cppad" != xskipping ])
+#test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
 
 ##############################################################################
 #                VPATH links for GAMS installation files                     #

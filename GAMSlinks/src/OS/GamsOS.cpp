@@ -33,6 +33,8 @@
 
 #include "OSiLWriter.h"
 #include "OSErrorClass.h"
+
+#ifdef COIN_OS_SOLVER
 #include "OSDefaultSolver.h"
 #ifdef COIN_HAS_OSI
 #include "OSCoinSolver.h"
@@ -40,8 +42,9 @@
 #ifdef COIN_HAS_IPOPT
 #include "OSIpoptSolver.h"
 #endif
+#endif
 
-std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob);
+void localSolve(smagHandle_t prob, OSInstance* osinstance);
 
 int main (int argc, char* argv[]) {
 #if defined(_MSC_VER)
@@ -73,9 +76,9 @@ int main (int argc, char* argv[]) {
   smagReadModel (prob);
 
 #ifdef GAMS_BUILD
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinOS (OS Library 1.0)\nwritten by Jun Ma, Kipp Martin, ...\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinOS (OS Library trunk)\nwritten by Jun Ma, Kipp Martin, ...\n");
 #else
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/OS (OS Library 1.0)\nwritten by Jun Ma, Kipp Martin, ...\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/OS (OS Library trunk)\nwritten by Jun Ma, Kipp Martin, ...\n");
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 
@@ -93,63 +96,8 @@ int main (int argc, char* argv[]) {
 		smagStdOutputPrint(prob, SMAG_LOGMASK, "Done writing the instance.\n");
 	}
 
-	std::string solvername;//="ipopt"; // TODO: should be set via parameter
-	if (solvername=="") { // set default solver depending on problem type and what is available
-		solvername=getSolverName(
-				smagosil.osinstance->getNumberOfNonlinearExpressions() || smagosil.osinstance->getNumberOfQuadraticTerms(),
-				smagosil.osinstance->getNumberOfBinaryVariables() || smagosil.osinstance->getNumberOfIntegerVariables(),
-				prob);
-	}
-	
-	//TODO: setup solver only for solve on local machine; otherwise check option "service" and do a remote solve
-	
-	DefaultSolver* solver=NULL;
-#ifdef COIN_HAS_IPOPT
-	// we need to keep a smartptr-lock on an IpoptSolver object, otherwise the ipoptsolver deletes itself after solve due to a "SmartPtr<TNLP> nlp = this" in IpoptSolver::solve()
-	SmartPtr<IpoptSolver> tnlp;
-#endif
-	if (solvername.find("ipopt")!=std::string::npos) {
-#ifdef COIN_HAS_IPOPT
-		tnlp=new IpoptSolver();
-		solver=GetRawPtr(tnlp);
-#else
-		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Ipopt not available.\n");
-    smagStdOutputFlush(prob, SMAG_ALLMASK);
-	  smagReportSolBrief(prob, 13, 6);
-    exit (EXIT_FAILURE);
-#endif
-	} else {
-#ifdef COIN_HAS_OSI
-		solver=new CoinSolver();
-#else
-		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: CoinSolver not available.\n");
-    smagStdOutputFlush(prob, SMAG_ALLMASK);
-	  smagReportSolBrief(prob, 13, 6);
-    exit (EXIT_FAILURE);
-#endif		
-	}
-	
-	solver->sSolverName = solvername;
-	solver->osinstance=smagosil.osinstance;
-	
-	//TODO: setup options
-	
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "Solving the instance...\n\n");
-	try {
-		solver->solve();
-		smagStdOutputPrint(prob, SMAG_ALLMASK, "\nDone solving the instance.\n");		
-
-		bool writeosrl=false; // TODO: should be a parameter and go into a file
-		if (writeosrl)
-			smagStdOutputPrint(prob, SMAG_LOGMASK, solver->osrl.c_str());
-		
-		//TODO: write gams solution file
-	
-	} catch(ErrorClass error) {
-		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error solving the instance. Error message:\n");
-		smagStdOutputPrint(prob, SMAG_ALLMASK, error.errormsg.c_str());
-	  smagReportSolBrief(prob, 13, 13);
-	}
+	//TODO: try a local solve only if the option "service" is not set; otherwise do a remote solve
+	localSolve(prob, smagosil.osinstance);
 	
 	smagStdOutputStop(prob, buffer, sizeof(buffer));
 	smagClose(prob);
@@ -157,6 +105,7 @@ int main (int argc, char* argv[]) {
   return EXIT_SUCCESS;
 } // main
 
+#ifdef COIN_OS_SOLVER
 std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) {
 	if (isnonlinear) { // (MI)NLP
 		if (isdiscrete) { // MINLP
@@ -199,3 +148,69 @@ std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) 
 
 	return "error"; // should never reach this point of code
 }
+
+void localSolve(smagHandle_t prob, OSInstance* osinstance) {
+	std::string solvername;//="ipopt"; // TODO: should be set via parameter
+	if (solvername=="") { // set default solver depending on problem type and what is available
+		solvername=getSolverName(
+				osinstance->getNumberOfNonlinearExpressions() || osinstance->getNumberOfQuadraticTerms(),
+				osinstance->getNumberOfBinaryVariables() || osinstance->getNumberOfIntegerVariables(),
+				prob);
+	}
+
+	DefaultSolver* solver=NULL;
+#ifdef COIN_HAS_IPOPT
+	// we need to keep a smartptr-lock on an IpoptSolver object, otherwise the ipoptsolver deletes itself after solve due to a "SmartPtr<TNLP> nlp = this" in IpoptSolver::solve()
+	SmartPtr<IpoptSolver> tnlp;
+#endif
+	if (solvername.find("ipopt")!=std::string::npos) {
+#ifdef COIN_HAS_IPOPT
+		tnlp=new IpoptSolver();
+		solver=GetRawPtr(tnlp);
+#else
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Ipopt not available.\n");
+		smagStdOutputFlush(prob, SMAG_ALLMASK);
+		smagReportSolBrief(prob, 13, 6);
+		exit (EXIT_FAILURE);
+#endif
+	} else {
+#ifdef COIN_HAS_OSI
+		solver=new CoinSolver();
+#else
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: CoinSolver not available.\n");
+		smagStdOutputFlush(prob, SMAG_ALLMASK);
+		smagReportSolBrief(prob, 13, 6);
+		exit (EXIT_FAILURE);
+#endif		
+	}
+
+	solver->sSolverName = solvername;
+	solver->osinstance=osinstance;
+
+	//TODO: setup options
+
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "Solving the instance...\n\n");
+	try {
+		solver->solve();
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "\nDone solving the instance.\n");		
+
+		bool writeosrl=false; // TODO: should be a parameter and go into a file
+		if (writeosrl)
+			smagStdOutputPrint(prob, SMAG_LOGMASK, solver->osrl.c_str());
+
+		//TODO: write gams solution file
+
+	} catch(ErrorClass error) {
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error solving the instance. Error message:\n");
+		smagStdOutputPrint(prob, SMAG_ALLMASK, error.errormsg.c_str());
+		smagReportSolBrief(prob, 13, 13);
+	}
+} // localSolve
+#else
+
+void localSolve(smagHandle_t prob, OSInstance* osinstance) {
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "Local solve of instances not supported. You need to rebuild GamsOS with the option --enable-os-solver.\n");
+	smagReportSolBrief(prob, 13, 6);
+}
+
+#endif

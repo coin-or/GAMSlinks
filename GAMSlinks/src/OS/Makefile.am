@@ -12,6 +12,8 @@ EXTRA_DIST = gmsos_nt.cmd gmsos_us.run install/gmsos_nt.dat install/gmsos_un.dat
 
 bin_PROGRAMS = GamsOS
 GamsOS_SOURCES = GamsOS.cpp Smag2OSiL.cpp
+GamsOS_LDADD =
+GamsOS_DEPENDENCIES =
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
@@ -20,25 +22,31 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSCommonInterfaces` \
- -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSSolverInterfaces` \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSUtils` \
  -I`$(CYGPATH_W) $(OSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(CPPADSRCDIR)`
 
-GamsOS_LDADD = \
- $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la \
+#OSSolverInterface.la need to come before OSCommonInterfaces.la
+if COIN_OS_SOLVER
+  AM_CPPFLAGS += -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSSolverInterfaces`
+  GamsOS_LDADD += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
+  GamsOS_DEPENDENCIES += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
+endif
+
+GamsOS_LDADD += \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
  $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
  $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
  $(SMAG_LIBS)
 
-GamsOS_DEPENDENCIES = \
+GamsOS_DEPENDENCIES += \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
- $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la
 
 LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
+
+if COIN_OS_SOLVER
 
 if COIN_HAS_CLP
   AM_CPPFLAGS += \
@@ -148,9 +156,6 @@ if COIN_HAS_OSI
   LIBS += `cat $(OSIOBJDIR)/osi_addlibs.txt`
 endif
 
-GamsOS_LDADD += \
- $(COINUTILSOBJDIR)/src/libCoinUtils.la
-
 if COIN_HAS_IPOPT
   AM_CPPFLAGS += \
    -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
@@ -165,6 +170,12 @@ if COIN_HAS_IPOPT
    $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
   LIBS += `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
 endif
+
+# end of check for COIN_OS_SOLVER
+endif
+
+GamsOS_LDADD += \
+ $(COINUTILSOBJDIR)/src/libCoinUtils.la
 
 GamsOS_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 
