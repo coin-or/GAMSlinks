@@ -55,6 +55,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+
+#could be improved to allow also Windows, but requires windows.h
+#have only new-style gdx wrapper for dii currently
+@GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@am__append_1 = $(GAMSIO_CODE)/gdxwrap.c
 @GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@noinst_PROGRAMS = gdx2gams$(EXEEXT)
 DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../BuildTools/Makemain.inc \
@@ -63,8 +67,8 @@ DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../ltmain.sh $(srcdir)/../../missing \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config_gamsio.h.in $(top_srcdir)/configure
-@HAVE_EXTERNALS_TRUE@am__append_1 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_2 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_3 = .Externals-stamp
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -78,7 +82,9 @@ CONFIG_HEADER = config_gamsio.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libGamsGDX_la_LIBADD =
-nodist_libGamsGDX_la_OBJECTS = gdxwrap.lo
+@GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@am__objects_1 =  \
+@GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@	gdxwrap.lo
+nodist_libGamsGDX_la_OBJECTS = $(am__objects_1)
 libGamsGDX_la_OBJECTS = $(nodist_libGamsGDX_la_OBJECTS)
 libGamsOptions_la_LIBADD =
 nodist_libGamsOptions_la_OBJECTS = optcc.lo
@@ -251,11 +257,11 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = get.LX3 get.LEI get.DII get.VIS get.SIG FILES \
-	INSTALL.GAMSIO LICENSE $(am__append_1)
+	INSTALL.GAMSIO LICENSE $(am__append_2)
 noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la
 nodist_libGamsOptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libGamsOptions_la_LDFLAGS = 
-nodist_libGamsGDX_la_SOURCES = $(GAMSIO_CODE)/gdxwrap.c
+nodist_libGamsGDX_la_SOURCES = $(am__append_1)
 libGamsGDX_la_LDFLAGS = 
 @GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@gdx2gams_SOURCES = gdx2gams.c
 @GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@gdx2gams_LDFLAGS = libGamsGDX.la -ldl
@@ -265,7 +271,7 @@ AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -D$(CIA_CODE)
 # tmpdir = tmpdir
 
 # Stuff to clean up
-DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(am__append_3) $(VPATH_DISTCLEANFILES)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 all: config_gamsio.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am

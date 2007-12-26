@@ -15,7 +15,7 @@ noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la
 nodist_libGamsOptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libGamsOptions_la_LDFLAGS = 
 
-nodist_libGamsGDX_la_SOURCES = $(GAMSIO_CODE)/gdxwrap.c
+nodist_libGamsGDX_la_SOURCES = 
 libGamsGDX_la_LDFLAGS =
 
 #could be improved to allow also Windows, but requires windows.h
@@ -23,6 +23,8 @@ if GAMSIO_IS_UNIX
 #have only new-style gdx wrapper for dii currently
 if GAMSIO_IS_DARWIN
 else
+nodist_libGamsGDX_la_SOURCES += $(GAMSIO_CODE)/gdxwrap.c
+
 noinst_PROGRAMS = gdx2gams
 gdx2gams_SOURCES = gdx2gams.c
 gdx2gams_LDFLAGS = libGamsGDX.la -ldl
