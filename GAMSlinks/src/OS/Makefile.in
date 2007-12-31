@@ -28,7 +28,7 @@
 # Author:  Andreas Waechter           IBM    2006-04-13
 
 ########################################################################
-#                         Maintainer Stuff                             #
+#                    Documentation installation                        #
 ########################################################################
 
 srcdir = @srcdir@
@@ -194,7 +194,8 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_GamsOS_OBJECTS = GamsOS.$(OBJEXT) Smag2OSiL.$(OBJEXT)
+am_GamsOS_OBJECTS = GamsOS.$(OBJEXT) Smag2OSiL.$(OBJEXT) \
+	OSrL2Smag.$(OBJEXT)
 GamsOS_OBJECTS = $(am_GamsOS_OBJECTS)
 @COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_1 = $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
 am__DEPENDENCIES_2 =
@@ -453,7 +454,7 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmsos_nt.cmd gmsos_us.run install/gmsos_nt.dat \
 	install/gmsos_un.dat $(am__append_39)
-GamsOS_SOURCES = GamsOS.cpp Smag2OSiL.cpp
+GamsOS_SOURCES = GamsOS.cpp Smag2OSiL.cpp OSrL2Smag.cpp
 
 # end of check for COIN_OS_SOLVER
 GamsOS_LDADD = $(am__append_2) \
@@ -485,6 +486,8 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 GamsOS_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DISTCLEANFILES = gmsos_.zip $(am__append_40) $(VPATH_DISTCLEANFILES)
+DocFiles = README AUTHORS LICENSE
+DocInstallDir = $(prefix)/share/doc/$(PACKAGE_NAME)
 all: all-am
 
 .SUFFIXES:
@@ -557,6 +560,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOS.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OSrL2Smag.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Smag2OSiL.Po@am__quote@
 
 .cpp.o:
@@ -778,6 +782,22 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 uninstall-local:
 	rm -f $(DESTDIR)$(bindir)/gmsos_.zip
 
+install-doc:
+	test -z "$(DocInstallDir)" || $(mkdir_p) "$(DESTDIR)$(DocInstallDir)"
+	for file in $(DocFiles); do \
+	  if test -f "$$file"; then dir=; else dir="$(srcdir)/"; fi; \
+	  if test -f "$$dir$$file"; then $(INSTALL_DATA) "$$dir$$file" "$(DESTDIR)$(DocInstallDir)/$$file"; fi; \
+	done
+
+uninstall-doc:
+	for file in $(DocFiles); do \
+	  rm -f "$(DESTDIR)$(DocInstallDir)/$$file"; \
+	done
+
+########################################################################
+#                         Maintainer Stuff                             #
+########################################################################
+
 # Make sure acinclude is using most recent coin.m4
 @MAINTAINER_MODE_TRUE@$(srcdir)/acinclude.m4: $(BUILDTOOLSDIR)/coin.m4
 @MAINTAINER_MODE_TRUE@	cat $(LIBTOOLM4) $< > $@
@@ -810,6 +830,8 @@ uninstall-local:
 
 @HAVE_EXTERNALS_TRUE@@MAINTAINER_MODE_TRUE@update-externals: .Externals-stamp
 @HAVE_EXTERNALS_TRUE@@MAINTAINER_MODE_TRUE@	cd $(srcdir); svn update
+
+.PHONY: install-doc uninstall-doc update-externals
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

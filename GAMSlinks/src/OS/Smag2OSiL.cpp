@@ -62,8 +62,11 @@ bool Smag2OSiL::createOSInstance() {
 	if (!osinstance->addObjective(-1, "",
 		smagMinim(smag)==1 ? "min" : "max",
 		smag->gms.grhs[smag->gms.slplro-1]*smag->gObjFactor,
-		1., objectiveCoefficients))
+		1., objectiveCoefficients)) {
+		delete objectiveCoefficients;
 		return false;
+	}
+	delete objectiveCoefficients;
 	
 	osinstance->setConstraintNumber(smagRowCount(smag));
 

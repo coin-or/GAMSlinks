@@ -11,7 +11,7 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmsos_nt.cmd gmsos_us.run install/gmsos_nt.dat install/gmsos_un.dat
 
 bin_PROGRAMS = GamsOS
-GamsOS_SOURCES = GamsOS.cpp Smag2OSiL.cpp
+GamsOS_SOURCES = GamsOS.cpp Smag2OSiL.cpp OSrL2Smag.cpp
 GamsOS_LDADD =
 GamsOS_DEPENDENCIES =
 

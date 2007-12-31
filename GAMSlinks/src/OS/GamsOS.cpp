@@ -30,6 +30,7 @@
 
 #include "smag.h"
 #include "Smag2OSiL.hpp"
+#include "OSrL2Smag.hpp"
 
 #include "OSiLWriter.h"
 #include "OSErrorClass.h"
@@ -186,8 +187,9 @@ void localSolve(smagHandle_t prob, OSInstance* osinstance) {
 
 	solver->sSolverName = solvername;
 	solver->osinstance=osinstance;
-
-	//TODO: setup options
+	
+	//TODO: option handling; for now we just give an "empty" xml file
+	solver->osol = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <osol xmlns=\"os.optimizationservices.org\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"os.optimizationservices.org http://www.optimizationservices.org/schemas/OSoL.xsd\"><other> </other></osol>";
 
 	smagStdOutputPrint(prob, SMAG_ALLMASK, "Solving the instance...\n\n");
 	try {
@@ -198,13 +200,19 @@ void localSolve(smagHandle_t prob, OSInstance* osinstance) {
 		if (writeosrl)
 			smagStdOutputPrint(prob, SMAG_LOGMASK, solver->osrl.c_str());
 
-		//TODO: write gams solution file
+		OSrL2Smag osrl2smag(prob);
+		if (solver->osresult)
+			osrl2smag.writeSolution(*solver->osresult);
+		else
+			osrl2smag.writeSolution(solver->osrl);
 
 	} catch(ErrorClass error) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error solving the instance. Error message:\n");
 		smagStdOutputPrint(prob, SMAG_ALLMASK, error.errormsg.c_str());
 		smagReportSolBrief(prob, 13, 13);
 	}
+	
+	delete solver;
 } // localSolve
 #else
 

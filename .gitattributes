@@ -76,6 +76,8 @@ GAMSlinks/src/Makefile.in -text
 GAMSlinks/src/OS/GamsOS.cpp -text
 GAMSlinks/src/OS/Makefile.am -text
 GAMSlinks/src/OS/Makefile.in -text
+GAMSlinks/src/OS/OSrL2Smag.cpp -text
+GAMSlinks/src/OS/OSrL2Smag.hpp -text
 GAMSlinks/src/OS/Smag2OSiL.cpp -text
 GAMSlinks/src/OS/Smag2OSiL.hpp -text
 GAMSlinks/src/OS/gmsos_nt.cmd -text
