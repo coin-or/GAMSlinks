@@ -103,10 +103,13 @@ void OSrL2Smag::writeSolution(OSResult& osresult) {
 			colLev[(*it)->idx]=(*it)->value;
 		}
 
+	double objvalue=SMAG_DBL_NA;
+	if (sol->objectives && sol->objectives->values && sol->objectives->values->obj[0])
+		objvalue=sol->objectives->values->obj[0]->value;
 	
 	smagReportSolFull(smag, model_status, solver_status,
 			SMAG_INT_NA /*iter used*/, SMAG_DBL_NA /*time used*/,			
-  		sol->objectives->values->obj[0]->value /*obj func value*/,
+  		objvalue /*obj func value*/,
   		SMAG_INT_NA /*dom errors*/,
   		rowLev, rowMarg, rowBasStat, rowIndic,
 		  colLev, colMarg, colBasStat, colIndic);

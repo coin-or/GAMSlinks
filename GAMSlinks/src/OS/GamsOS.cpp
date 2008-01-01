@@ -186,7 +186,7 @@ void localSolve(smagHandle_t prob, OSInstance* osinstance) {
 	}
 
 	solver->sSolverName = solvername;
-	solver->osinstance=osinstance;
+	solver->osinstance = osinstance;
 	
 	//TODO: option handling; for now we just give an "empty" xml file
 	solver->osol = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <osol xmlns=\"os.optimizationservices.org\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"os.optimizationservices.org http://www.optimizationservices.org/schemas/OSoL.xsd\"><other> </other></osol>";
@@ -212,7 +212,8 @@ void localSolve(smagHandle_t prob, OSInstance* osinstance) {
 		smagReportSolBrief(prob, 13, 13);
 	}
 	
-	delete solver;
+	if (solvername.find("ipopt")==std::string::npos) // if its ipopt, then the destruction of tnlp will do the delete
+		delete solver;
 } // localSolve
 #else
 
