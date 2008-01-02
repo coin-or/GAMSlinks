@@ -1,10 +1,10 @@
 
-IOLIB_FILES="${MACHINECODE}ciolib_latestLIB.zip \
-${MACHINECODE}clicelib_latestLIB.zip \
-${MACHINECODE}gclib_latestLIB.zip \
-${MACHINECODE}g2ddll_latestLIB.zip \
-${MACHINECODE}g2dlib_latestLIB.zip \
-${MACHINECODE}gdxio_latestLIB.zip \
-${MACHINECODE}optobj_latestLIB.zip"
+IOLIB_FILES="${MACHINECODE}ciolib_ver037LIB.zip \
+${MACHINECODE}clicelib_ver015LIB.zip \
+${MACHINECODE}gclib_ver016LIB.zip \
+${MACHINECODE}g2ddll_ver018LIB.zip \
+${MACHINECODE}g2dlib_ver018LIB.zip \
+${MACHINECODE}gdxio_ver234LIB.zip \
+${MACHINECODE}optobj_ver006LIB.zip"
 
-SMAGLIB_FILES="${MACHINECODE}smaglib_latestLIB.zip"
+SMAGLIB_FILES="${MACHINECODE}smaglib_rev1879LIB.zip"
