@@ -16,10 +16,13 @@
 extern "C" struct dictRec;
 extern "C" struct optRec; 
 
+class GamsBCH;
+
 /** Representation of a mixed-integer linear GAMS model.
  * This class is a layer between the GAMS I/O libraries and the GAMS-interfaces to COIN-OR LP and MIP solvers.
  */ 
 class GamsModel  {
+	friend class GamsBCH;
 public:
 
 	/** Basis status indicator used in GAMS.

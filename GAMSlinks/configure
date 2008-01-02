@@ -24174,6 +24174,15 @@ else
 fi
 
 
+#temporarily, until I get the gdx stuff cleaned up
+if test x"$gamsio_system" != xDarwin; then
+
+cat >>confdefs.h <<\_ACEOF
+#define COIN_HAS_GDX 1
+_ACEOF
+
+fi
+
 ########################
 # OS Solver Interfaces #
 ########################

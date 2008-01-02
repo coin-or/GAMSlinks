@@ -6,6 +6,7 @@ set g Cbc Option Groups /
         mipgeneral     MIP Options
         mipcuts        MIP Options for Cutting Plane Generators
         mipheu         MIP Options for Heuristics
+        bch            MIP Options for the GAMS Branch Cut and Heuristic Facility
       /
     e / '-1', 0*100, primal, dual, barrier, default, off, on, auto,
         solow_halim, halim_solow, dantzig, steepest, partial, exact, change, sprint, equilibrium, geometric
@@ -67,6 +68,27 @@ set g Cbc Option Groups /
       preprocess             integer presolve
       printfrequency         frequency of status prints
       increment              increment of cutoff when new incumbent
+      usercutcall      The GAMS command line to call the cut generator
+      usercutfirst     Calls the cut generator for the first n nodes
+      usercutfreq      Determines the frequency of the cut generator model calls
+      usercutinterval  Determines the interval when to apply the multiplier for the frequency of the cut generator model calls
+      usercutmult      Determines the multiplier for the frequency of the cut generator model calls
+      usercutnewint    Calls the cut generator if the solver found a new integer feasible solution
+      usergdxin        The name of the GDX file read back into Cplex
+      usergdxname      The name of the GDX file exported from the solver with the solution at the node
+      usergdxnameinc   The name of the GDX file exported from the solver with the incumbent solution
+      usergdxprefix   'Prefixes usergdxin, usergdxname, and usergdxnameinc'
+*      userheurcall     The GAMS command line to call the heuristic
+*      userheurfirst    Calls the heuristic for the first n nodes
+*      userheurfreq     Determines the frequency of the heuristic model calls
+*      userheurinterval Determines the interval when to apply the multiplier for the frequency of the heuristic model calls
+*      userheurmult     Determines the multiplier for the frequency of the heuristic model calls
+*      userheurnewint   Calls the heuristic if the solver found a new integer feasible solution
+*      userheurobjfirst '***'
+*      userincbcall     The GAMS command line to call the incumbent checking program
+*      userincbicall    The GAMS command line to call the incumbent reporting program
+      userjobid        'Postfixes lf, o on call adds --userjobid to the call. Postfixes gdxname, gdxnameinc and gdxin'
+      userkeep         Calls gamskeep instead of gams
 * GAMS options
       reslim                 resource limit
       iterlim                iteration limit
@@ -151,6 +173,29 @@ mipheu.(
   rins                 .b.(def 0)
   roundingheuristic    .b.(def 1)
 )
+bch.(
+            usercutcall      .s.(def '')
+            usercutfirst     .i.(def 10, lo 0, up maxint)
+            usercutfreq      .i.(def 10, lo 0, up maxint)
+            usercutinterval  .i.(def 100, lo 0, up maxint)
+            usercutmult      .i.(def 2, lo 0, up maxint)
+            usercutnewint    .b.(def 1)
+            usergdxin        .s.(def 'bchin.gdx')
+            usergdxname      .s.(def 'bchout.gdx')
+            usergdxnameinc   .s.(def 'bchout_i.gdx')
+            usergdxprefix    .s.(def '')
+*            userheurcall     .s.(def '')
+*            userheurfirst    .i.(def 10, lo 0, up maxint)
+*            userheurfreq     .i.(def 10, lo 0, up maxint)
+*            userheurinterval .i.(def 100, lo 0, up maxint)
+*            userheurmult     .i.(def 2, lo 0, up maxint)
+*            userheurnewint   .b.(def 1)
+*            userheurobjfirst .i.(def 0, lo 0, up maxint)
+*            userincbcall     .s.(def '')
+*            userincbicall    .s.(def '')
+            userkeep         .b.(def 0)
+            userjobid        .s.(def '')
+       )
 /
   oe(o,e) /
    idiotcrash.(     '-1', 0 )

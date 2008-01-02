@@ -29,7 +29,7 @@
 # Author:  Andreas Waechter           IBM    2006-04-13
 
 ########################################################################
-#                         Maintainer Stuff                             #
+#                    Documentation installation                        #
 ########################################################################
 
 
@@ -83,7 +83,7 @@ libGamsIO_la_DEPENDENCIES =  \
 	$(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la \
 	$(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
 am_libGamsIO_la_OBJECTS = GamsModel.lo GamsFinalize.lo \
-	GamsMessageHandler.lo
+	GamsMessageHandler.lo GamsBCH.lo
 libGamsIO_la_OBJECTS = $(am_libGamsIO_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -334,14 +334,13 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = $(am__append_1)
 lib_LTLIBRARIES = libGamsIO.la
 libGamsIO_la_SOURCES = ../GAMSlinksConfig.h \
-  GamsModel.cpp GamsModel.hpp GamsFinalize.cpp \
-  GamsMessageHandler.cpp GamsMessageHandler.hpp
+  GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsBCH.cpp
 
 #libGamsIO_la_LDFLAGS
 libGamsIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la \
   $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
 
-include_HEADERS = ../../inc/config_gamslinks.h GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp
+include_HEADERS = ../../inc/config_gamslinks.h GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsBCH.hpp
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
@@ -361,6 +360,8 @@ addlibsfile = gamsio_addlibs.txt
 
 # Files that are generated and should be cleaned with make distclean
 DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)
+DocFiles = README AUTHORS LICENSE
+DocInstallDir = $(prefix)/share/doc/$(PACKAGE_NAME)
 all: all-am
 
 .SUFFIXES:
@@ -432,6 +433,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsBCH.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsFinalize.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsModel.Plo@am__quote@
@@ -665,6 +667,22 @@ install-exec-local:
 uninstall-local:
 	rm -f $(DESTDIR)$(libdir)/$(addlibsfile)
 
+install-doc:
+	test -z "$(DocInstallDir)" || $(mkdir_p) "$(DESTDIR)$(DocInstallDir)"
+	for file in $(DocFiles); do \
+	  if test -f "$$file"; then dir=; else dir="$(srcdir)/"; fi; \
+	  if test -f "$$dir$$file"; then $(INSTALL_DATA) "$$dir$$file" "$(DESTDIR)$(DocInstallDir)/$$file"; fi; \
+	done
+
+uninstall-doc:
+	for file in $(DocFiles); do \
+	  rm -f "$(DESTDIR)$(DocInstallDir)/$$file"; \
+	done
+
+########################################################################
+#                         Maintainer Stuff                             #
+########################################################################
+
 # Make sure acinclude is using most recent coin.m4
 @MAINTAINER_MODE_TRUE@$(srcdir)/acinclude.m4: $(BUILDTOOLSDIR)/coin.m4
 @MAINTAINER_MODE_TRUE@	cat $(LIBTOOLM4) $< > $@
@@ -697,6 +715,8 @@ uninstall-local:
 
 @HAVE_EXTERNALS_TRUE@@MAINTAINER_MODE_TRUE@update-externals: .Externals-stamp
 @HAVE_EXTERNALS_TRUE@@MAINTAINER_MODE_TRUE@	cd $(srcdir); svn update
+
+.PHONY: install-doc uninstall-doc update-externals
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

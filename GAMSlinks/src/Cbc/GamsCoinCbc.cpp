@@ -26,6 +26,8 @@
 #include "GamsModel.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsFinalize.hpp"
+#include "GamsBCH.hpp"
+#include "GamsCutGenerator.hpp"
 
 // For Branch and bound
 #include "CbcModel.hpp"
@@ -40,6 +42,20 @@ void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model);
 void setupStartingPoint(GamsModel& gm, CbcModel& model);
 void setupParameters(GamsModel& gm, CbcModel& model);
 void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std::string>& par_list);
+
+//GamsBCH* bch=NULL;
+///* Meaning of whereFrom:
+//   1 after initial solve by dualsimplex etc
+//   2 after preprocessing
+//   3 just before branchAndBound (so user can override)
+//   4 just after branchAndBound (before postprocessing)
+//   5 after postprocessing
+//   6 after a user called heuristic phase
+//*/
+//int gamsCallBack(CbcModel* currentSolver, int whereFrom) {
+//	printf("Got callback from %d. Incumbent sol.: %g\n", whereFrom, currentSolver->getObjValue());
+//	return 0;
+//}
 
 int main (int argc, const char *argv[]) {
 #if defined(_MSC_VER)
@@ -129,6 +145,9 @@ int main (int argc, const char *argv[]) {
 		setupPrioritiesSOSSemiCon(gm, model);
 		setupStartingPoint(gm, model);
 	}
+	if (gm.optDefined("usercutcall")) { //TODO: avoid this
+		gm.optSetString("preprocess", "off");
+	}
 	setupParameters(gm, model);
 	
 	std::list<std::string> par_list;
@@ -141,6 +160,15 @@ int main (int argc, const char *argv[]) {
 		cbc_args[i]=it->c_str();
 	cbc_args[i++]="-quit";
 
+	// setup BCH if required
+	GamsBCH* bch=NULL;
+	if (gm.optDefined("usercutcall")) {
+		bch=new GamsBCH(gm);
+		GamsCutGenerator gamscutgen(*bch, model);
+		model.addCutGenerator(&gamscutgen, 1, "GamsBCH"); // TODO: check the remaining arguments
+	}
+	
+	
 	gm.PrintOut(GamsModel::StatusMask, "=2"); // turn off copying into .lst file
 	myout << "\nCalling CBC main solution routine..." << CoinMessageEol;	
 	myout.setCurrentDetail(2);
@@ -208,6 +236,8 @@ int main (int argc, const char *argv[]) {
 	} else { // trigger the write of GAMS solution file
 		gm.setSolution();
 	}
+	
+	delete bch;
 
 	return EXIT_SUCCESS;
 }

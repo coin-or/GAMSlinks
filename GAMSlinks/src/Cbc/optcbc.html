@@ -199,7 +199,44 @@ rins</a></td>
 <td>relaxed induced neighborhood search</td></tr>
 <tr><td><a href="#roundingheuristic">
 roundingheuristic</a></td>
-<td>rounding heuristic</td></tr></table>
+<td>rounding heuristic</td></tr>
+<tr><th height=75 valign=bottom colspan=2 align=left><h3>MIP Options for the GAMS Branch Cut and Heuristic Facility</h3></th></tr>
+<tr><td><a href="#usercutcall">
+usercutcall</a></td>
+<td>The GAMS command line to call the cut generator</td></tr>
+<tr><td><a href="#usercutfirst">
+usercutfirst</a></td>
+<td>Calls the cut generator for the first n nodes</td></tr>
+<tr><td><a href="#usercutfreq">
+usercutfreq</a></td>
+<td>Determines the frequency of the cut generator model calls</td></tr>
+<tr><td><a href="#usercutinterval">
+usercutinterval</a></td>
+<td>Determines the interval when to apply the multiplier for the frequency of the cut generator model calls</td></tr>
+<tr><td><a href="#usercutmult">
+usercutmult</a></td>
+<td>Determines the multiplier for the frequency of the cut generator model calls</td></tr>
+<tr><td><a href="#usercutnewint">
+usercutnewint</a></td>
+<td>Calls the cut generator if the solver found a new integer feasible solution</td></tr>
+<tr><td><a href="#usergdxin">
+usergdxin</a></td>
+<td>The name of the GDX file read back into Cplex</td></tr>
+<tr><td><a href="#usergdxname">
+usergdxname</a></td>
+<td>The name of the GDX file exported from the solver with the solution at the node</td></tr>
+<tr><td><a href="#usergdxnameinc">
+usergdxnameinc</a></td>
+<td>The name of the GDX file exported from the solver with the incumbent solution</td></tr>
+<tr><td><a href="#usergdxprefix">
+usergdxprefix</a></td>
+<td>Prefixes usergdxin, usergdxname, and usergdxnameinc</td></tr>
+<tr><td><a href="#userjobid">
+userjobid</a></td>
+<td>Postfixes lf, o on call adds --userjobid to the call. Postfixes gdxname, gdxnameinc and gdxin</td></tr>
+<tr><td><a href="#userkeep">
+userkeep</a></td>
+<td>Calls gamskeep instead of gams</td></tr></table>
 <h2>Detailed Descriptions of CBC Options</h2>
 
 <h4><a name="cliquecuts">
@@ -932,6 +969,87 @@ See the <a href="#cuts">option cuts</a> for an explanation on the different valu
 Reference: S. Dash, and O. Guenluek, Valid Inequalities Based on Simple Mixed-integer Sets, to appear in Math. Programming.
 
 <br><i>(default = root)</i>
+
+<h4><a name="usercutcall">
+usercutcall</a>
+<i> (string)</i> The GAMS command line to call the cut generator</h4><p>
+
+
+
+<h4><a name="usercutfirst">
+usercutfirst</a>
+<i> (integer)</i> Calls the cut generator for the first n nodes</h4><p>
+
+
+<br><i>(default = 10)</i>
+
+<h4><a name="usercutfreq">
+usercutfreq</a>
+<i> (integer)</i> Determines the frequency of the cut generator model calls</h4><p>
+
+
+<br><i>(default = 10)</i>
+
+<h4><a name="usercutinterval">
+usercutinterval</a>
+<i> (integer)</i> Determines the interval when to apply the multiplier for the frequency of the cut generator model calls</h4><p>
+
+
+<br><i>(default = 100)</i>
+
+<h4><a name="usercutmult">
+usercutmult</a>
+<i> (integer)</i> Determines the multiplier for the frequency of the cut generator model calls</h4><p>
+
+
+<br><i>(default = 2)</i>
+
+<h4><a name="usercutnewint">
+usercutnewint</a>
+<i> (integer)</i> Calls the cut generator if the solver found a new integer feasible solution</h4><p>
+
+
+<br><i>(default = 1)</i>
+
+<h4><a name="usergdxin">
+usergdxin</a>
+<i> (string)</i> The name of the GDX file read back into Cplex</h4><p>
+
+
+<br><i>(default = bchin.gdx)</i>
+
+<h4><a name="usergdxname">
+usergdxname</a>
+<i> (string)</i> The name of the GDX file exported from the solver with the solution at the node</h4><p>
+
+
+<br><i>(default = bchout.gdx)</i>
+
+<h4><a name="usergdxnameinc">
+usergdxnameinc</a>
+<i> (string)</i> The name of the GDX file exported from the solver with the incumbent solution</h4><p>
+
+
+<br><i>(default = bchout_i.gdx)</i>
+
+<h4><a name="usergdxprefix">
+usergdxprefix</a>
+<i> (string)</i> Prefixes usergdxin, usergdxname, and usergdxnameinc</h4><p>
+
+
+
+<h4><a name="userjobid">
+userjobid</a>
+<i> (string)</i> Postfixes lf, o on call adds --userjobid to the call. Postfixes gdxname, gdxnameinc and gdxin</h4><p>
+
+
+
+<h4><a name="userkeep">
+userkeep</a>
+<i> (integer)</i> Calls gamskeep instead of gams</h4><p>
+
+
+<br><i>(default = 0)</i>
 
 <h4><a name="writemps">
 writemps</a>

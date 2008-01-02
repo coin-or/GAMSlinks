@@ -29,6 +29,8 @@ GAMSlinks/src/Bonmin/gmsbm_us.run -text
 GAMSlinks/src/Bonmin/install/gmsbm_nt.dat -text
 GAMSlinks/src/Bonmin/install/gmsbm_un.dat -text
 GAMSlinks/src/Cbc/GamsCoinCbc.cpp -text
+GAMSlinks/src/Cbc/GamsCutGenerator.cpp -text
+GAMSlinks/src/Cbc/GamsCutGenerator.hpp -text
 GAMSlinks/src/Cbc/Makefile.am -text
 GAMSlinks/src/Cbc/Makefile.in -text
 GAMSlinks/src/Cbc/gmscc_nt.cmd -text
@@ -40,6 +42,8 @@ GAMSlinks/src/Cbc/optcbc.gms -text
 GAMSlinks/src/Cbc/optcbc.html -text
 GAMSlinks/src/Cbc/optcbc.txt -text
 GAMSlinks/src/GAMSlinksConfig.h -text
+GAMSlinks/src/GamsIO/GamsBCH.cpp -text
+GAMSlinks/src/GamsIO/GamsBCH.hpp -text
 GAMSlinks/src/GamsIO/GamsFinalize.cpp -text
 GAMSlinks/src/GamsIO/GamsFinalize.hpp -text
 GAMSlinks/src/GamsIO/GamsMessageHandler.cpp -text
