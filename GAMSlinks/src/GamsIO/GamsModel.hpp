@@ -14,7 +14,6 @@
 #include "CoinPragma.hpp"
 
 extern "C" struct dictRec;
-extern "C" struct optRec; 
 
 class GamsBCH;
 
@@ -372,7 +371,7 @@ public:
                    const int *RowBasis=0, const int *RowIndicator=0);
   /**@}*/
 
-	/**@name Options and parameters
+	/**@name GAMS specific options and parameters
 	 * @{*/
 	/** GAMS Parameter: Time limit for model run in seconds.
 	 */
@@ -419,62 +418,6 @@ public:
 	 * @return The name of the option file, or NULL if no optionfile should be read.
 	 */
 	const char* getOptionfile();
-
-	/** Initialization of optionfile reading.
-	 * Initialization of options handle.
-	 * Reading of the file "<GamsSystemDir>/opt<solvername>.def" to learn which options are supported.
-	 * @param solvername The name of your solver.
-	 */
-	bool ReadOptionsDefinitions(const char* solvername); 
-	/** Reads the options file, if desired.
-	 */
-	bool ReadOptionsFile(); 
-
-	/** Check whether the user specified some option.
-	 * @param optname The name of the option.
-	 * @return True, if the option had been specified in the option file.
-	 */
-	bool optDefined(const char *optname);
-//	bool optDefinedRecent(const char *optname);
-	
-	/** Gets the value of a boolean option.
-	 * @param optname The name of the option.
-	 */
-	inline bool optGetBool(const char* optname) { return optGetInteger(optname); }
-	/** Gets the value of an integer option.
-	 * @param optname The name of the option.
-	 */
-	int optGetInteger(const char *optname);
-	/** Gets the value of a real (double) option.
-	 * @param optname The name of the option.
-	 */
-	double optGetDouble(const char *optname);
-	/** Gets the value of a string option.
-	 * @param optname The name of the option.
-	 * @param buffer A buffer where the value can be stored (it should be large enough).
-	 */
-	char* optGetString(const char *optname, char *buffer);
-	
-	/** Sets the value of a boolean option.
-	 * @param optname The name of the option.
-	 * @param bval The value to set.
-	 */
-	inline void optSetBool(const char *optname, bool bval) { optSetInteger(optname, bval ? 1 : 0); }
-	/** Sets the value of an integer option.
-	 * @param optname The name of the option.
-	 * @param ival The value to set.
-	 */
-	void optSetInteger(const char *optname, int ival);
-	/** Sets the value of a double option.
-	 * @param optname The name of the option.
-	 * @param dval The value to set.
-	 */
-	void optSetDouble(const char *optname, double dval);
-	/** Sets the value of a string option.
-	 * @param optname The name of the option.
-	 * @param sval The value to set.
-	 */
-	void optSetString(const char *optname, const char *sval);
 	/**@}*/
 	
 	/** Indicates whether we have column and row names.
@@ -537,8 +480,6 @@ private:
 
   struct dictRec* dict; // handle for dictionary  
 	char* ConstructName(char* buffer, int bufLen, int lSym, int* uelIndices, int nIndices);
-
-	struct optRec* optionshandle; // handle for options
 };
 
 #endif // __GAMSMODEL_HPP__

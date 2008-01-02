@@ -13,12 +13,12 @@ EXTRA_DIST =
 
 lib_LTLIBRARIES = libGamsIO.la
 libGamsIO_la_SOURCES = ../GAMSlinksConfig.h \
-  GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsBCH.cpp
+  GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsOptions.cpp GamsBCH.cpp
 #libGamsIO_la_LDFLAGS
 libGamsIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la \
   $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
 
-include_HEADERS = ../../inc/config_gamslinks.h GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsBCH.hpp
+include_HEADERS = ../../inc/config_gamslinks.h GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsBCH.hpp
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \

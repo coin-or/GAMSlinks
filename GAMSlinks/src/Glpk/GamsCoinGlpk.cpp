@@ -26,6 +26,7 @@
 #include "GamsModel.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsFinalize.hpp"
+#include "GamsOptions.hpp"
 
 int printme(void* info, const char* msg) {
 	GamsMessageHandler* myout=(GamsMessageHandler*)info;
@@ -54,8 +55,8 @@ void glpk_callback(glp_tree* tree, void* info) {
 }
 #endif
 
-void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model);
-void setupParametersMIP(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model);
+void setupParameters(GamsOptions& opt, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model);
+void setupParametersMIP(GamsOptions& opt, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model);
 void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver);
 
 int main (int argc, const char *argv[]) {
@@ -103,19 +104,17 @@ int main (int argc, const char *argv[]) {
 	}
 
 #ifdef GAMS_BUILD
-	if (!gm.ReadOptionsDefinitions("coinglpk"))
+	GamsOptions opt(gm.getSystemDir(), "coinglpk");
 #else
-	if (!gm.ReadOptionsDefinitions("glpk"))
+	GamsOptions opt(gm.getSystemDir(), "glpk");
 #endif
-		myout << "Error intializing option file handling or reading option file definitions!" << CoinMessageEol
-			<< "Processing of options is likely to fail!" << CoinMessageEol;
-	gm.ReadOptionsFile();
+	opt.readOptionsFile(gm.getOptionfile());
 
 	/* Overwrite GAMS Options */
-	if (!gm.optDefined("reslim")) gm.optSetDouble("reslim", gm.getResLim());
-	if (!gm.optDefined("iterlim")) gm.optSetInteger("iterlim", gm.getIterLim());
-	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
-//	if (!gm.optDefined("cutoff") && gm.getCutOff()!=gm.ObjSense()*solver.getInfinity()) gm.optSetDouble("cutoff", gm.getCutOff());
+	if (!opt.isDefined("reslim")) opt.setDouble("reslim", gm.getResLim());
+	if (!opt.isDefined("iterlim")) opt.setInteger("iterlim", gm.getIterLim());
+	if (!opt.isDefined("optcr")) opt.setDouble("optcr", gm.getOptCR());
+//	if (!opt.isDefined("cutoff") && gm.getCutOff()!=gm.ObjSense()*solver.getInfinity()) opt.setDouble("cutoff", gm.getCutOff());
 
 	gm.TimerStart();
 
@@ -181,13 +180,13 @@ int main (int argc, const char *argv[]) {
 	LPX* glpk_model=solver.getModelPtr();
 
 	// Write MPS file
-	if (gm.optDefined("writemps")) {
-		gm.optGetString("writemps", buffer);
+	if (opt.isDefined("writemps")) {
+		opt.getString("writemps", buffer);
   	myout << "\nWriting MPS file " << buffer << "... " << CoinMessageEol;
 		lpx_write_mps(glpk_model, buffer);
 	}
 	
-	setupParameters(gm, myout, solver, glpk_model);
+	setupParameters(opt, myout, solver, glpk_model);
 //	setupStartPoint(gm, myout, solver);
 
 	// from glpsol: if scaling is turned on and presolve is off (or interior point is used), then do scaling 
@@ -195,7 +194,7 @@ int main (int argc, const char *argv[]) {
   	lpx_scale_prob(glpk_model);
   // from glpsol: if no presolve (and simplex is used), use special basis method
   if (!lpx_get_int_parm(glpk_model, LPX_K_PRESOL)) {
-		gm.optGetString("initbasis", buffer);
+		opt.getString("initbasis", buffer);
 		if (strcmp(buffer, "standard")==0)
 			lpx_std_basis(glpk_model);
 		else if (strcmp(buffer, "advanced")==0)
@@ -214,7 +213,7 @@ int main (int argc, const char *argv[]) {
 		solver.initialSolve();
 
 	} else { // MIP
-		setupParametersMIP(gm, myout, solver, glpk_model);
+		setupParametersMIP(opt, myout, solver, glpk_model);
 #ifdef OGSI_HAVE_CALLBACK
 		double optcr=gm.getOptCR();
 		solver.registerCallback(glpk_callback, (void*)&optcr);
@@ -235,7 +234,7 @@ int main (int argc, const char *argv[]) {
 			for (j=0; j<gm.nCols(); j++) colLevelsav[j] = colLevel[j];
 
 			// No iteration limit for fixed run and special time limit
-			lpx_set_real_parm(glpk_model, LPX_K_TMLIM, gm.optGetDouble("reslim_fixedrun"));
+			lpx_set_real_parm(glpk_model, LPX_K_TMLIM, opt.getDouble("reslim_fixedrun"));
 			lpx_set_int_parm(glpk_model, LPX_K_ITLIM, -1);
 
 			for (j=0; j<gm.nCols(); j++)
@@ -332,25 +331,25 @@ int main (int argc, const char *argv[]) {
 	return 0;
 }
 
-void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model) {
+void setupParameters(GamsOptions& opt, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model) {
 	// Some tolerances and limits
-	solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
-	double timelimit=gm.optGetDouble("reslim");
+	solver.setIntParam(OsiMaxNumIteration, opt.getInteger("iterlim"));
+	double timelimit=opt.getDouble("reslim");
 	if (timelimit>1e+6) { // GLPK cannot handle very large timelimits, so we run it without limit then 
 		myout << "Time limit" << timelimit << "too large. GLPK will run without timelimit." << CoinMessageEol;
 		timelimit=-1;
 	}
 	lpx_set_real_parm(glpk_model, LPX_K_TMLIM, timelimit);
 
-	if (!solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual")))
-		myout << "Failed to set dual tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
+	if (!solver.setDblParam(OsiDualTolerance, opt.getDouble("tol_dual")))
+		myout << "Failed to set dual tolerance to " << opt.getDouble("tol_dual") << CoinMessageEol;
 
-	if (!solver.setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal")))
-		myout << "Failed to set primal tolerance to " << gm.optGetDouble("tol_primal") << CoinMessageEol;
+	if (!solver.setDblParam(OsiPrimalTolerance, opt.getDouble("tol_primal")))
+		myout << "Failed to set primal tolerance to " << opt.getDouble("tol_primal") << CoinMessageEol;
 
 	// more parameters
 	char buffer[255];
-	gm.optGetString("scaling", buffer);
+	opt.getString("scaling", buffer);
 	if (strcmp(buffer, "off")==0)
 		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 0);
 	else if (strcmp(buffer, "equilibrium")==0)
@@ -360,12 +359,12 @@ void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInte
 	else if (strcmp(buffer, "meanequilibrium")==0)
 		lpx_set_int_parm(glpk_model, LPX_K_SCALE, 3); // default (set in OsiGlpk)
 
-	gm.optGetString("startalg", buffer);
+	opt.getString("startalg", buffer);
 	solver.setHintParam(OsiDoDualInInitial, (strcmp(buffer, "dual")==0), OsiForceDo);
 
-	solver.setHintParam(OsiDoPresolveInInitial, gm.optGetBool("presolve"), OsiForceDo);
+	solver.setHintParam(OsiDoPresolveInInitial, opt.getBool("presolve"), OsiForceDo);
 
-	gm.optGetString("pricing", buffer);
+	opt.getString("pricing", buffer);
 	if (strcmp(buffer, "textbook")==0)
 		lpx_set_int_parm(glpk_model, LPX_K_PRICE, 0);
 	else if	(strcmp(buffer, "steepestedge")==0)
@@ -373,7 +372,7 @@ void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInte
 
 	solver.setHintParam(OsiDoReducePrint, false, OsiForceDo); // GLPK loglevel 3
 	
-	gm.optGetString("factorization", buffer);
+	opt.getString("factorization", buffer);
 	if (strcmp(buffer, "forresttomlin")==0)
 		lpx_set_int_parm(glpk_model, LPX_K_BFTYPE, 1);
 	else if (strcmp(buffer, "bartelsgolub")==0)
@@ -382,9 +381,9 @@ void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInte
 		lpx_set_int_parm(glpk_model, LPX_K_BFTYPE, 3);
 }
 
-void setupParametersMIP(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model) {
+void setupParametersMIP(GamsOptions& opt, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model) {
 	char buffer[255];
-	gm.optGetString("backtracking", buffer);
+	opt.getString("backtracking", buffer);
 	if (strcmp(buffer, "depthfirst")==0)
 		lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 0);
 	else if	(strcmp(buffer, "breadthfirst")==0)
@@ -413,10 +412,10 @@ void setupParametersMIP(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverI
 //				<< "OBJUL: " << lpx_get_real_parm(glpk_model, LPX_K_OBJUL) << CoinMessageEol;
 //		}
 
-	double optcr=gm.optGetDouble("optcr");
+	double optcr=opt.getDouble("optcr");
 	lpx_set_real_parm(glpk_model, LPX_K_MIPGAP, optcr);
 
-	double tol_integer=gm.optGetDouble("tol_integer");
+	double tol_integer=opt.getDouble("tol_integer");
 	if (tol_integer>0.001) {
 		myout << "Cannot use tol_integer of larger then 0.001. Setting integer tolerance to 0.001." << CoinMessageEol;
 		tol_integer=0.001;

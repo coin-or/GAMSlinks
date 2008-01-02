@@ -64,6 +64,7 @@
 #include "GamsModel.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsFinalize.hpp"
+#include "GamsOptions.hpp"
 
 #if COIN_HAS_GLPK
 int printme(void* info, const char* msg) {
@@ -78,8 +79,8 @@ int printme(void* info, const char* msg) {
 }
 #endif
 
-void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver);
-void setupParametersMIP(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver);
+void setupParameters(GamsOptions& opt, CoinMessageHandler& myout, OsiSolverInterface& solver);
+void setupParametersMIP(GamsOptions& opt, CoinMessageHandler& myout, OsiSolverInterface& solver);
 void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver);
 
 int main (int argc, const char *argv[]) {
@@ -117,33 +118,31 @@ int main (int argc, const char *argv[]) {
 	}
 
 #ifdef GAMS_BUILD
-	if (!gm.ReadOptionsDefinitions("coinosi"))
+	GamsOptions opt(gm.getSystemDir(), "coinosi");
 #else
-	if (!gm.ReadOptionsDefinitions("osi"))
+	GamsOptions opt(gm.getSystemDir(), "osi");
 #endif
-		myout << "Error intializing option file handling or reading option file definitions!" << CoinMessageEol
-			<< "Processing of options is likely to fail!" << CoinMessageEol;
-	gm.ReadOptionsFile();
+	opt.readOptionsFile(gm.getOptionfile());
 
 	OsiSolverInterface* solver=NULL;
-	if (!gm.optDefined("solver")) {
+	if (!opt.isDefined("solver")) {
 #if COIN_HAS_CLP
-		gm.optSetString("solver", "clp");
+		opt.setString("solver", "clp");
 #else
 #if COIN_HAS_CBC
-		gm.optSetString("solver", "cbc");
+		opt.setString("solver", "cbc");
 #else
 #if COIN_HAS_GLPK
-		gm.optSetString("solver", "glpk");
+		opt.setString("solver", "glpk");
 #else
 #if COIN_HAS_DYLP
-		gm.optSetString("solver", "dylp");
+		opt.setString("solver", "dylp");
 #else
 #if COIN_HAS_VOL
-		gm.optSetString("solver", "volume");
+		opt.setString("solver", "volume");
 #else
 #if COIN_HAS_GLPK
-		gm.optSetString("solver", "symphony");
+		opt.setString("solver", "symphony");
 #else //wow, when will a user get to here?
 		myout << "Error: solver parameter not set and no solver available. Aborting!" << CoinMessageEol;
 		gm.setStatus(ErrorSystemFailure, ErrorNoSolution);
@@ -157,7 +156,7 @@ int main (int argc, const char *argv[]) {
 #endif
 		myout << "Parameter 'solver' not set. Using default solver." << CoinMessageEol;
 	}
-	if (!gm.optGetString("solver", buffer)) {
+	if (!opt.getString("solver", buffer)) {
 		myout << "Error reading value of parameter 'solver'. Aborting!" << CoinMessageEol;
 		gm.setStatus(GamsModel::ErrorSystemFailure, GamsModel::ErrorNoSolution);
 		gm.setSolution();
@@ -213,7 +212,7 @@ try {
 		gm.setSolution();
 		exit(EXIT_FAILURE);
 	}
-	
+
 	std::string solver_name;
 	if (!solver->getStrParam(OsiSolverName, solver_name))
 		solver_name=buffer;
@@ -235,7 +234,7 @@ try {
 
 	/* Overwrite GAMS Options */
 //	if (!gm.optDefined("reslim")) gm.optSetDouble("reslim", gm.getResLim());
-	if (!gm.optDefined("iterlim")) gm.optSetInteger("iterlim", gm.getIterLim());
+	if (!opt.isDefined("iterlim")) opt.setInteger("iterlim", gm.getIterLim());
 //	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
 //	if (!gm.optDefined("cutoff") && gm.getCutOff()!=gm.ObjSense()*solver.getInfinity()) gm.optSetDouble("cutoff", gm.getCutOff());
 
@@ -302,13 +301,13 @@ try {
 	}
 
 	// Write MPS file
-	if (gm.optDefined("writemps")) {
-		gm.optGetString("writemps", buffer);
+	if (opt.isDefined("writemps")) {
+		opt.getString("writemps", buffer);
   	myout << "\nWriting MPS file " << buffer << "... " << CoinMessageEol;
   	solver->writeMps(buffer);
 	}
 	
-	setupParameters(gm, myout, *solver);
+	setupParameters(opt, myout, *solver);
 	setupStartPoint(gm, myout, *solver);
 
 	myout << CoinMessageNewline << CoinMessageEol;
@@ -317,7 +316,7 @@ try {
 		solver->initialSolve();
 
 	} else { // MIP
-		setupParametersMIP(gm, myout, *solver);
+		setupParametersMIP(opt, myout, *solver);
 		solver->setHintParam(OsiDoReducePrint, true, OsiHintDo);
 
 		myout << "Starting MIP solver... " << CoinMessageEol;
@@ -357,30 +356,30 @@ try {
 	return EXIT_SUCCESS;
 }
 
-void setupParameters(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver) {
+void setupParameters(GamsOptions& opt, CoinMessageHandler& myout, OsiSolverInterface& solver) {
 	// Some tolerances and limits
-	if (!solver.setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim")))
-		myout << "Failed to set iteration limit to " << gm.optGetInteger("iterlim") << CoinMessageEol;
+	if (!solver.setIntParam(OsiMaxNumIteration, opt.getInteger("iterlim")))
+		myout << "Failed to set iteration limit to " << opt.getInteger("iterlim") << CoinMessageEol;
 
-	if (!solver.setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual")))
-		myout << "Failed to set dual tolerance to " << gm.optGetDouble("tol_dual") << CoinMessageEol;
+	if (!solver.setDblParam(OsiDualTolerance, opt.getDouble("tol_dual")))
+		myout << "Failed to set dual tolerance to " << opt.getDouble("tol_dual") << CoinMessageEol;
 
-	if (!solver.setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal")))
-		myout << "Failed to set primal tolerance to " << gm.optGetDouble("tol_primal") << CoinMessageEol;
+	if (!solver.setDblParam(OsiPrimalTolerance, opt.getDouble("tol_primal")))
+		myout << "Failed to set primal tolerance to " << opt.getDouble("tol_primal") << CoinMessageEol;
 
-	if (!solver.setHintParam(OsiDoScale, gm.optGetBool("scaling"), OsiHintDo))
-		myout << "Failed to switch scaling " << (gm.optGetBool("scaling") ? "on" : "off") << '.' << CoinMessageEol;
+	if (!solver.setHintParam(OsiDoScale, opt.getBool("scaling"), OsiHintDo))
+		myout << "Failed to switch scaling " << (opt.getBool("scaling") ? "on" : "off") << '.' << CoinMessageEol;
 
 	char buffer[255];
-	gm.optGetString("startalg", buffer);
+	opt.getString("startalg", buffer);
 	if (!solver.setHintParam(OsiDoDualInInitial, (strcmp(buffer, "dual")==0), OsiHintDo))
 		myout << "Failed to set starting algorithm to " << buffer << CoinMessageEol;
 
-	if (!solver.setHintParam(OsiDoPresolveInInitial, gm.optGetBool("presolve"), OsiHintDo))
-		myout << "Failed to switch presolve " << (gm.optGetBool("presolve") ? "on" : "off") << '.' << CoinMessageEol;
+	if (!solver.setHintParam(OsiDoPresolveInInitial, opt.getBool("presolve"), OsiHintDo))
+		myout << "Failed to switch presolve " << (opt.getBool("presolve") ? "on" : "off") << '.' << CoinMessageEol;
 }
 
-void setupParametersMIP(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver) {
+void setupParametersMIP(GamsOptions& opt, CoinMessageHandler& myout, OsiSolverInterface& solver) {
 }
 
 void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver) {

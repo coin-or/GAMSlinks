@@ -17,6 +17,7 @@
 
 // lets see, maybe we can make this optional later in order to allow smag also
 #include "GamsModel.hpp"
+#include "GamsOptions.hpp"
 
 /** Interface to GAMS BCH facility.
  */
@@ -38,6 +39,7 @@ public:
 	
 private:
 	GamsModel& gm;
+	GamsOptions& opt;
 
 	struct dictRec* dict;
 	
@@ -98,7 +100,7 @@ private:
 	void translateToGamsSpaceUB(const double* ub_, double* ub);
 	
 public:	
-	GamsBCH(GamsModel& gm_);
+	GamsBCH(GamsModel& gm_, GamsOptions& opt_);
 
 	~GamsBCH();
 	

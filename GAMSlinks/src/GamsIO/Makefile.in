@@ -83,7 +83,7 @@ libGamsIO_la_DEPENDENCIES =  \
 	$(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la \
 	$(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
 am_libGamsIO_la_OBJECTS = GamsModel.lo GamsFinalize.lo \
-	GamsMessageHandler.lo GamsBCH.lo
+	GamsMessageHandler.lo GamsOptions.lo GamsBCH.lo
 libGamsIO_la_OBJECTS = $(am_libGamsIO_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -334,13 +334,13 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = $(am__append_1)
 lib_LTLIBRARIES = libGamsIO.la
 libGamsIO_la_SOURCES = ../GAMSlinksConfig.h \
-  GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsBCH.cpp
+  GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsOptions.cpp GamsBCH.cpp
 
 #libGamsIO_la_LDFLAGS
 libGamsIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la \
   $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
 
-include_HEADERS = ../../inc/config_gamslinks.h GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsBCH.hpp
+include_HEADERS = ../../inc/config_gamslinks.h GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsBCH.hpp
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
@@ -437,6 +437,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsFinalize.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsModel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOptions.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

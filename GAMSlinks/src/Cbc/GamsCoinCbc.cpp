@@ -26,6 +26,7 @@
 #include "GamsModel.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsFinalize.hpp"
+#include "GamsOptions.hpp"
 #include "GamsBCH.hpp"
 #include "GamsCutGenerator.hpp"
 
@@ -40,8 +41,8 @@
 void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver);
 void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model);
 void setupStartingPoint(GamsModel& gm, CbcModel& model);
-void setupParameters(GamsModel& gm, CbcModel& model);
-void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std::string>& par_list);
+void setupParameters(GamsModel& gm, GamsOptions& opt, CbcModel& model);
+void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myout, std::list<std::string>& par_list);
 
 //GamsBCH* bch=NULL;
 ///* Meaning of whereFrom:
@@ -87,24 +88,22 @@ int main (int argc, const char *argv[]) {
 	gm.PrintOut(GamsModel::StatusMask, "=1"); // turn on copying into .lst file
 #ifdef GAMS_BUILD	
 	myout << "\nGAMS/CoinCbc 2.0 LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
-	if (!gm.ReadOptionsDefinitions("coincbc"))
+	GamsOptions opt(gm.getSystemDir(), "coincbc");
 #else
 	myout << "\nGAMS/Cbc 2.0 LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
-	if (!gm.ReadOptionsDefinitions("cbc"))
+	GamsOptions opt(gm.getSystemDir(), "cbc");
 #endif
-		myout << "Error intializing option file handling or reading option file definitions!" << CoinMessageEol
-			<< "Processing of options is likely to fail!" << CoinMessageEol;  
-	gm.ReadOptionsFile();
+	opt.readOptionsFile(gm.getOptionfile());
 
 	/* Overwrite GAMS Options */
-	if (!gm.optDefined("reslim")) gm.optSetDouble("reslim", gm.getResLim());
-	if (!gm.optDefined("iterlim")) gm.optSetInteger("iterlim", gm.getIterLim());
-	if (!gm.optDefined("nodlim")) gm.optSetInteger("nodlim", gm.getNodeLim());
-	if (!gm.optDefined("nodelim")) gm.optSetInteger("nodelim", gm.optGetInteger("nodlim"));
-	if (!gm.optDefined("optca")) gm.optSetDouble("optca", gm.getOptCA());
-	if (!gm.optDefined("optcr")) gm.optSetDouble("optcr", gm.getOptCR());
-	if (!gm.optDefined("cutoff") && gm.getCutOff()!=gm.ObjSense()*solver.getInfinity()) gm.optSetDouble("cutoff", gm.getCutOff());
-	if (!gm.optDefined("increment") && gm.getCheat()) gm.optSetDouble("increment", gm.getCheat());
+	if (!opt.isDefined("reslim")) opt.setDouble("reslim", gm.getResLim());
+	if (!opt.isDefined("iterlim")) opt.setInteger("iterlim", gm.getIterLim());
+	if (!opt.isDefined("nodlim")) opt.setInteger("nodlim", gm.getNodeLim());
+	if (!opt.isDefined("nodelim")) opt.setInteger("nodelim", opt.getInteger("nodlim"));
+	if (!opt.isDefined("optca")) opt.setDouble("optca", gm.getOptCA());
+	if (!opt.isDefined("optcr")) opt.setDouble("optcr", gm.getOptCR());
+	if (!opt.isDefined("cutoff") && gm.getCutOff()!=gm.ObjSense()*solver.getInfinity()) opt.setDouble("cutoff", gm.getCutOff());
+	if (!opt.isDefined("increment") && gm.getCheat()) opt.setDouble("increment", gm.getCheat());
 	
 	gm.readMatrix();
 	myout << "Problem statistics:" << gm.nCols() << "columns and" << gm.nRows() << "rows." << CoinMessageEol;
@@ -128,8 +127,8 @@ int main (int argc, const char *argv[]) {
 	setupProblem(gm, solver);
 	
 	// Write MPS file
-	if (gm.optDefined("writemps")) {
-		gm.optGetString("writemps", buffer);
+	if (opt.isDefined("writemps")) {
+		opt.getString("writemps", buffer);
   	myout << "\nWriting MPS file " << buffer << "... " << CoinMessageEol;
   	solver.writeMps(buffer,"",gm.ObjSense());
 	}
@@ -145,13 +144,13 @@ int main (int argc, const char *argv[]) {
 		setupPrioritiesSOSSemiCon(gm, model);
 		setupStartingPoint(gm, model);
 	}
-	if (gm.optDefined("usercutcall")) { //TODO: avoid this
-		gm.optSetString("preprocess", "off");
+	if (opt.isDefined("usercutcall")) { //TODO: avoid this
+		opt.setString("preprocess", "off");
 	}
-	setupParameters(gm, model);
+	setupParameters(gm, opt, model);
 	
 	std::list<std::string> par_list;
-	setupParameterList(gm, myout, par_list);
+	setupParameterList(gm, opt, myout, par_list);
 	int par_list_length=par_list.size();
 	const char** cbc_args=new const char*[par_list_length+2];
 	cbc_args[0]="GAMS/CBC";
@@ -162,8 +161,8 @@ int main (int argc, const char *argv[]) {
 
 	// setup BCH if required
 	GamsBCH* bch=NULL;
-	if (gm.optDefined("usercutcall")) {
-		bch=new GamsBCH(gm);
+	if (opt.isDefined("usercutcall")) {
+		bch=new GamsBCH(gm, opt);
 		GamsCutGenerator gamscutgen(*bch, model);
 		model.addCutGenerator(&gamscutgen, 1, "GamsBCH"); // TODO: check the remaining arguments
 	}
@@ -194,9 +193,9 @@ int main (int argc, const char *argv[]) {
 		myout << "Model abandoned." << CoinMessageEol;
 	} else if (model.isProvenOptimal()) {
 		write_solution=true;
-		if (gm.optGetDouble("optca")>0 || gm.optGetDouble("optcr")>0) {
+		if (opt.getDouble("optca")>0 || opt.getDouble("optcr")>0) {
 			gm.setStatus(GamsModel::NormalCompletion, GamsModel::IntegerSolution);
-			myout << "Solved optimal (within gap tolerances: absolute =" << gm.optGetDouble("optca") << "relative =" << gm.optGetDouble("optcr") << ")." << CoinMessageEol;
+			myout << "Solved optimal (within gap tolerances: absolute =" << opt.getDouble("optca") << "relative =" << opt.getDouble("optcr") << ")." << CoinMessageEol;
 		} else {
 			gm.setStatus(GamsModel::NormalCompletion, GamsModel::Optimal);
 			myout << "Solved to optimality." << CoinMessageEol;
@@ -433,51 +432,51 @@ void setupStartingPoint(GamsModel& gm, CbcModel& model) {
 	delete[] rstat;
 }
 
-void setupParameters(GamsModel& gm, CbcModel& model) {
+void setupParameters(GamsModel& gm, GamsOptions& opt, CbcModel& model) {
 	//note: does not seem to work via Osi: OsiDoPresolveInInitial, OsiDoDualInInitial  
 
 	// Some tolerances and limits
-	model.setDblParam(CbcModel::CbcMaximumSeconds, gm.optGetDouble("reslim"));
-	model.solver()->setDblParam(OsiPrimalTolerance, gm.optGetDouble("tol_primal"));
-	model.solver()->setDblParam(OsiDualTolerance, gm.optGetDouble("tol_dual"));
+	model.setDblParam(CbcModel::CbcMaximumSeconds, opt.getDouble("reslim"));
+	model.solver()->setDblParam(OsiPrimalTolerance, opt.getDouble("tol_primal"));
+	model.solver()->setDblParam(OsiDualTolerance, opt.getDouble("tol_dual"));
 	
 	// iteration limit only for LPs
 	if (gm.isLP())
-		model.solver()->setIntParam(OsiMaxNumIteration, gm.optGetInteger("iterlim"));
+		model.solver()->setIntParam(OsiMaxNumIteration, opt.getInteger("iterlim"));
 
 	// MIP parameters
-	model.setIntParam(CbcModel::CbcMaxNumNode, gm.optGetInteger("nodelim"));
-	model.setDblParam(CbcModel::CbcAllowableGap, gm.optGetDouble("optca"));
-	model.setDblParam(CbcModel::CbcAllowableFractionGap, gm.optGetDouble("optcr"));
-	if (gm.optDefined("cutoff")) model.setCutoff(gm.ObjSense()*gm.optGetDouble("cutoff")); // Cbc assumes a minimization problem here
-	model.setDblParam(CbcModel::CbcIntegerTolerance, gm.optGetDouble("tol_integer"));
-	model.setPrintFrequency(gm.optGetInteger("printfrequency"));
+	model.setIntParam(CbcModel::CbcMaxNumNode, opt.getInteger("nodelim"));
+	model.setDblParam(CbcModel::CbcAllowableGap, opt.getDouble("optca"));
+	model.setDblParam(CbcModel::CbcAllowableFractionGap, opt.getDouble("optcr"));
+	if (opt.isDefined("cutoff")) model.setCutoff(gm.ObjSense()*opt.getDouble("cutoff")); // Cbc assumes a minimization problem here
+	model.setDblParam(CbcModel::CbcIntegerTolerance, opt.getDouble("tol_integer"));
+	model.setPrintFrequency(opt.getInteger("printfrequency"));
 //	model.solver()->setIntParam(OsiMaxNumIterationHotStart,100);
 }
 
-void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std::string>& par_list) {
+void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myout, std::list<std::string>& par_list) {
 	char buffer[255];
 
 	// LP parameters
 	
-	if (gm.optDefined("idiotcrash")) {
+	if (opt.isDefined("idiotcrash")) {
 		par_list.push_back("-idiotCrash");
-		sprintf(buffer, "%d", gm.optGetInteger("idiotcrash"));
+		sprintf(buffer, "%d", opt.getInteger("idiotcrash"));
 		par_list.push_back(buffer);
 	}
 
-	if (gm.optDefined("sprintcrash")) {
+	if (opt.isDefined("sprintcrash")) {
 		par_list.push_back("-sprintCrash");
-		sprintf(buffer, "%d", gm.optGetInteger("sprintcrash"));
+		sprintf(buffer, "%d", opt.getInteger("sprintcrash"));
 		par_list.push_back(buffer);
-	} else if (gm.optDefined("sifting")) { // synonym for sprintCrash
+	} else if (opt.isDefined("sifting")) { // synonym for sprintCrash
 		par_list.push_back("-sprintCrash");
-		sprintf(buffer, "%d", gm.optGetInteger("sifting"));
+		sprintf(buffer, "%d", opt.getInteger("sifting"));
 		par_list.push_back(buffer);
 	}
 
-	if (gm.optDefined("crash")) {
-		char* value=gm.optGetString("crash", buffer);
+	if (opt.isDefined("crash")) {
+		char* value=opt.getString("crash", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'crash'. Ignoring this option" << CoinMessageEol;
 		}	else {
@@ -496,19 +495,19 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		}				
 	}
 
-	if (gm.optDefined("maxfactor")) {
+	if (opt.isDefined("maxfactor")) {
 		par_list.push_back("-maxFactor");
-		sprintf(buffer, "%d", gm.optGetInteger("maxfactor"));
+		sprintf(buffer, "%d", opt.getInteger("maxfactor"));
 		par_list.push_back(buffer);
 	}
 
-	if (gm.optDefined("crossover")) { // should be revised if we can do quadratic
+	if (opt.isDefined("crossover")) { // should be revised if we can do quadratic
 		par_list.push_back("-crossover");
-		par_list.push_back(gm.optGetBool("crossover") ? "on" : "off");
+		par_list.push_back(opt.getBool("crossover") ? "on" : "off");
 	}
 
-	if (gm.optDefined("dualpivot")) {
-		char* value=gm.optGetString("dualpivot", buffer);
+	if (opt.isDefined("dualpivot")) {
+		char* value=opt.getString("dualpivot", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'dualpivot'. Ignoring this option" << CoinMessageEol;
 		} else {
@@ -524,8 +523,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		}				
 	}
 
-	if (gm.optDefined("primalpivot")) {
-		char* value=gm.optGetString("primalpivot", buffer);
+	if (opt.isDefined("primalpivot")) {
+		char* value=opt.getString("primalpivot", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'primalpivot'. Ignoring this option" << CoinMessageEol;
 		} else {
@@ -544,13 +543,13 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		}				
 	}
 	
-	if (gm.optDefined("perturbation")) {
+	if (opt.isDefined("perturbation")) {
 		par_list.push_back("-perturb");
-		par_list.push_back(gm.optGetBool("perturbation") ? "on" : "off");
+		par_list.push_back(opt.getBool("perturbation") ? "on" : "off");
 	}
 	
-	if (gm.optDefined("scaling")) {
-		char* value=gm.optGetString("scaling", buffer);
+	if (opt.isDefined("scaling")) {
+		char* value=opt.getString("scaling", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'scaling'. Ignoring this option" << CoinMessageEol;
 		} else if
@@ -565,57 +564,57 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}				
 
-	if (gm.optDefined("presolve")) {
+	if (opt.isDefined("presolve")) {
 		par_list.push_back("-presolve");
-		par_list.push_back(gm.optGetBool("presolve") ? "on" : "off");
+		par_list.push_back(opt.getBool("presolve") ? "on" : "off");
 	}
 
-	if (gm.optDefined("tol_presolve")) {
+	if (opt.isDefined("tol_presolve")) {
 		par_list.push_back("-preTolerance");
-		sprintf(buffer, "%g", gm.optGetDouble("tol_presolve"));
+		sprintf(buffer, "%g", opt.getDouble("tol_presolve"));
 		par_list.push_back(buffer);
 	}
 
 	// MIP parameters
 	
-	if (gm.optDefined("sollim")) {
+	if (opt.isDefined("sollim")) {
 		par_list.push_back("-maxSolutions");
-		sprintf(buffer, "%d", gm.optGetInteger("sollim"));
+		sprintf(buffer, "%d", opt.getInteger("sollim"));
 		par_list.push_back(buffer);
 	}
 
-	if (gm.optDefined("strongbranching")) {
+	if (opt.isDefined("strongbranching")) {
 		par_list.push_back("-strongBranching");
-		sprintf(buffer, "%d", gm.optGetInteger("strongbranching"));
+		sprintf(buffer, "%d", opt.getInteger("strongbranching"));
 		par_list.push_back(buffer);
 	}
 			
-	if (gm.optDefined("trustpseudocosts")) {
+	if (opt.isDefined("trustpseudocosts")) {
 		par_list.push_back("-trustPseudoCosts");
-		sprintf(buffer, "%d", gm.optGetInteger("trustpseudocosts"));
+		sprintf(buffer, "%d", opt.getInteger("trustpseudocosts"));
 		par_list.push_back(buffer);
 	}
 
-	if (gm.optDefined("cutdepth")) {
+	if (opt.isDefined("cutdepth")) {
 		par_list.push_back("-cutDepth");
-		sprintf(buffer, "%d", gm.optGetInteger("cutdepth"));
+		sprintf(buffer, "%d", opt.getInteger("cutdepth"));
 		par_list.push_back(buffer);
 	}
 
-	if (gm.optDefined("cut_passes_root")) {
+	if (opt.isDefined("cut_passes_root")) {
 		par_list.push_back("-passCuts");
-		sprintf(buffer, "%d", gm.optGetInteger("cut_passes_root"));
+		sprintf(buffer, "%d", opt.getInteger("cut_passes_root"));
 		par_list.push_back(buffer);
 	}
 
-	if (gm.optDefined("cut_passes_tree")) {
+	if (opt.isDefined("cut_passes_tree")) {
 		par_list.push_back("-passTree");
-		sprintf(buffer, "%d", gm.optGetInteger("cut_passes_tree"));
+		sprintf(buffer, "%d", opt.getInteger("cut_passes_tree"));
 		par_list.push_back(buffer);
 	}
 	
-	if (gm.optDefined("cuts")) {
-		char* value=gm.optGetString("cuts", buffer);
+	if (opt.isDefined("cuts")) {
+		char* value=opt.getString("cuts", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'cuts'. Ignoring this option" << CoinMessageEol;
 		} else if 
@@ -633,8 +632,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 	
-	if (gm.optDefined("cliquecuts")) {
-		char* value=gm.optGetString("cliquecuts", buffer);
+	if (opt.isDefined("cliquecuts")) {
+		char* value=opt.getString("cliquecuts", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'cliquecuts'. Ignoring this option" << CoinMessageEol;
 		} else if 
@@ -652,8 +651,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 
-	if (gm.optDefined("flowcovercuts")) {
-		char* value=gm.optGetString("flowcovercuts", buffer);
+	if (opt.isDefined("flowcovercuts")) {
+		char* value=opt.getString("flowcovercuts", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'flowcovercuts'. Ignoring this option" << CoinMessageEol;
 		} else if 
@@ -671,8 +670,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 
-	if (gm.optDefined("gomorycuts")) {
-		char* value=gm.optGetString("gomorycuts", buffer);
+	if (opt.isDefined("gomorycuts")) {
+		char* value=opt.getString("gomorycuts", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'gomorycuts'. Ignoring this option" << CoinMessageEol;
 		} else if 
@@ -690,8 +689,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 
-	if (gm.optDefined("knapsackcuts")) {
-		char* value=gm.optGetString("knapsackcuts", buffer);
+	if (opt.isDefined("knapsackcuts")) {
+		char* value=opt.getString("knapsackcuts", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'knapsackcuts'. Ignoring this option" << CoinMessageEol;
 		} else if 
@@ -709,8 +708,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 
-	if (gm.optDefined("liftandprojectcuts")) {
-		char* value=gm.optGetString("liftandprojectcuts", buffer);
+	if (opt.isDefined("liftandprojectcuts")) {
+		char* value=opt.getString("liftandprojectcuts", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'liftandprojectcuts'. Ignoring this option" << CoinMessageEol;
 		} else if 
@@ -728,8 +727,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 
-	if (gm.optDefined("mircuts")) {
-		char* value=gm.optGetString("mircuts", buffer);
+	if (opt.isDefined("mircuts")) {
+		char* value=opt.getString("mircuts", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'mircuts'. Ignoring this option" << CoinMessageEol;
 		} else if 
@@ -747,8 +746,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 
-	if (gm.optDefined("probingcuts")) {
-		char* value=gm.optGetString("probingcuts", buffer);
+	if (opt.isDefined("probingcuts")) {
+		char* value=opt.getString("probingcuts", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'probingcuts'. Ignoring this option" << CoinMessageEol;
 		} else if 
@@ -775,8 +774,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 
-	if (gm.optDefined("reduceandsplitcuts")) {
-		char* value=gm.optGetString("reduceandsplitcuts", buffer);
+	if (opt.isDefined("reduceandsplitcuts")) {
+		char* value=opt.getString("reduceandsplitcuts", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'reduceandsplitcuts'. Ignoring this option" << CoinMessageEol;
 		} else if 
@@ -794,8 +793,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 
-	if (gm.optDefined("residualcapacitycuts")) {
-		char* value=gm.optGetString("residualcapacitycuts", buffer);
+	if (opt.isDefined("residualcapacitycuts")) {
+		char* value=opt.getString("residualcapacitycuts", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'residualcapacitycuts'. Ignoring this option" << CoinMessageEol;
 		} else if 
@@ -813,8 +812,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 
-	if (gm.optDefined("twomircuts")) {
-		char* value=gm.optGetString("twomircuts", buffer);
+	if (opt.isDefined("twomircuts")) {
+		char* value=opt.getString("twomircuts", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'twomircuts'. Ignoring this option" << CoinMessageEol;
 		} else if
@@ -830,29 +829,29 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 
-	if (gm.optDefined("heuristics")) {
+	if (opt.isDefined("heuristics")) {
 		par_list.push_back("-heuristicsOnOff");
-		par_list.push_back(gm.optGetBool("heuristics") ? "on" : "off");
+		par_list.push_back(opt.getBool("heuristics") ? "on" : "off");
 	}
 	
-	if (gm.optDefined("combinesolutions")) {
+	if (opt.isDefined("combinesolutions")) {
 		par_list.push_back("-combineSolution");
-		par_list.push_back(gm.optGetBool("combinesolutions") ? "on" : "off");
+		par_list.push_back(opt.getBool("combinesolutions") ? "on" : "off");
 	}
 
-	if (gm.optDefined("feaspump")) {
+	if (opt.isDefined("feaspump")) {
 		par_list.push_back("-feasibilityPump");
-		par_list.push_back(gm.optGetBool("feaspump") ? "on" : "off");
+		par_list.push_back(opt.getBool("feaspump") ? "on" : "off");
 	}
 
-	if (gm.optDefined("feaspump_passes")) {
+	if (opt.isDefined("feaspump_passes")) {
 		par_list.push_back("-passFeasibilityPump");
-		sprintf(buffer, "%d", gm.optGetInteger("feaspump_passes"));
+		sprintf(buffer, "%d", opt.getInteger("feaspump_passes"));
 		par_list.push_back(buffer);
 	}
 
-	if (gm.optDefined("greedyheuristic")) {
-		char* value=gm.optGetString("greedyheuristic", buffer);
+	if (opt.isDefined("greedyheuristic")) {
+		char* value=opt.getString("greedyheuristic", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'greedyheuristic'. Ignoring this option" << CoinMessageEol;
 		} else if 
@@ -866,23 +865,23 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 
-	if (gm.optDefined("localtreesearch")) {
+	if (opt.isDefined("localtreesearch")) {
 		par_list.push_back("-localTreeSearch");
-		par_list.push_back(gm.optGetBool("localtreesearch") ? "on" : "off");
+		par_list.push_back(opt.getBool("localtreesearch") ? "on" : "off");
 	}
 
-	if (gm.optDefined("rins")) {
+	if (opt.isDefined("rins")) {
 		par_list.push_back("-Rins");
-		par_list.push_back(gm.optGetBool("rins") ? "on" : "off");
+		par_list.push_back(opt.getBool("rins") ? "on" : "off");
 	}
 
-	if (gm.optDefined("roundingheuristic")) {
+	if (opt.isDefined("roundingheuristic")) {
 		par_list.push_back("-roundingHeuristic");
-		par_list.push_back(gm.optGetBool("roundingheuristic") ? "on" : "off");
+		par_list.push_back(opt.getBool("roundingheuristic") ? "on" : "off");
 	}
 	
-	if (gm.optDefined("coststrategy")) {
-		char* value=gm.optGetString("coststrategy", buffer);
+	if (opt.isDefined("coststrategy")) {
+		char* value=opt.getString("coststrategy", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'coststrategy'. Ignoring this option" << CoinMessageEol;
 		} else if 
@@ -903,8 +902,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 	
-	if (gm.optDefined("nodestrategy")) {
-		char* value=gm.optGetString("nodestrategy", buffer);
+	if (opt.isDefined("nodestrategy")) {
+		char* value=opt.getString("nodestrategy", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'nodestrategy'. Ignoring this option" << CoinMessageEol;
 		} else if 
@@ -922,8 +921,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		} 
 	}
 
-	if (gm.optDefined("preprocess")) {
-		char* value=gm.optGetString("preprocess", buffer);
+	if (opt.isDefined("preprocess")) {
+		char* value=opt.getString("preprocess", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'preprocess'. Ignoring this option" << CoinMessageEol;
 		} else if
@@ -944,16 +943,16 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 		par_list.push_back("off");
 	}
 	
-	if (gm.optDefined("increment")) {
+	if (opt.isDefined("increment")) {
 		par_list.push_back("-increment");
-		sprintf(buffer, "%g", gm.optGetDouble("increment"));
+		sprintf(buffer, "%g", opt.getDouble("increment"));
 		par_list.push_back(buffer);
 	}
 	
 	// special options set by user and passed unseen to CBC
-	if (gm.optDefined("special")) {
+	if (opt.isDefined("special")) {
 		char longbuffer[10000];
-		char* value=gm.optGetString("special", longbuffer);
+		char* value=opt.getString("special", longbuffer);
 		if (!value) {
 			myout << "Cannot read value for option 'special'. Ignoring this option" << CoinMessageEol;
 		} else {
@@ -967,8 +966,8 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 
 	// algorithm for root node and solve command 
 
-	if (gm.optDefined("startalg")) {
-		char* value=gm.optGetString("startalg", buffer);
+	if (opt.isDefined("startalg")) {
+		char* value=opt.getString("startalg", buffer);
 		if (!value) {
 			myout << "Cannot read value for option 'startalg'. Ignoring this option" << CoinMessageEol;
 		} else if (strcmp(value, "primal")==0) {
@@ -981,7 +980,7 @@ void setupParameterList(GamsModel& gm, CoinMessageHandler& myout, std::list<std:
 			myout << "Value " << value << " not supported for option 'startalg'. Ignoring this option" << CoinMessageEol;
 		} 
 		if (gm.nDCols() || gm.nSOS1() || gm.nSOS2())
-			par_list.push_back("-solve"); 
+			par_list.push_back("-solve");
 	} else
 		par_list.push_back("-solve"); 
 }

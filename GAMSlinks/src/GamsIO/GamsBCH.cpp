@@ -55,8 +55,8 @@ extern "C" {
 #endif
 }
 
-GamsBCH::GamsBCH(GamsModel& gm_)
-: gm(gm_), dict(gm_.dict)
+GamsBCH::GamsBCH(GamsModel& gm_, GamsOptions& opt_)
+: gm(gm_), opt(opt_), dict(gm_.dict)
 { init();
 }
 
@@ -96,45 +96,45 @@ void GamsBCH::init() {
 //  cbinfo.incbicall  = (char *) malloc(1024*sizeof(char));
 	
   char gdxprefix[256];
-  if (gm.optDefined("usergdxprefix"))
-  	gm.optGetString("usergdxprefix", gdxprefix);
+  if (opt.isDefined("usergdxprefix"))
+  	opt.getString("usergdxprefix", gdxprefix);
   else *gdxprefix=0;
   
-  if (gm.optDefined("userjobid"))
-  	gm.optGetString("userjobid", userjobid);
+  if (opt.isDefined("userjobid"))
+  	opt.getString("userjobid", userjobid);
   else *userjobid=0;
   
-  gm.optGetString("usergdxname", buffer);
+  opt.getString("usergdxname", buffer);
   // remove ".gdx" suffix, if exists
   int len=strlen(buffer);
   if (len>4 && strncmp(buffer+(len-4), ".gdx", 4)==0)
   	buffer[len-4]=0;
   snprintf(gdxname, 1024, "%s%s%s.gdx", gdxprefix, buffer, userjobid);
   
-  gm.optGetString("usergdxnameinc", buffer);
+  opt.getString("usergdxnameinc", buffer);
   len=strlen(buffer);
   if (len>4 && strncmp(buffer+(len-4), ".gdx", 4)==0)
   	buffer[len-4]=0;
   snprintf(gdxnameinc, 1024, "%s%s%s.gdx", gdxprefix, buffer, userjobid);
   
-  gm.optGetString("usergdxin", buffer);
+  opt.getString("usergdxin", buffer);
   len=strlen(buffer);
   if (len>4 && strncmp(buffer+(len-4), ".gdx", 4)==0)
   	buffer[len-4]=0;
   snprintf(usergdxin, 1024, "%s%s%s.gdx", gdxprefix, buffer, userjobid);
   
-  gm.optGetString("usercutcall", cutcall);
+  opt.getString("usercutcall", cutcall);
   len=strlen(cutcall);
   if (*userjobid)
   	snprintf(cutcall+len, 1024-len, " --userjobid=%s", userjobid);
 
-  userkeep=gm.optGetBool("userkeep");
+  userkeep=opt.getBool("userkeep");
 
-  cutfreq=gm.optGetInteger("usercutfreq");
-  cutinterval=gm.optGetInteger("usercutinterval");
-  cutmult=gm.optGetInteger("usercutmult");
-  cutfirst=gm.optGetInteger("usercutfirst");
-  cutnewint=gm.optGetBool("usercutnewint");
+  cutfreq=opt.getInteger("usercutfreq");
+  cutinterval=opt.getInteger("usercutinterval");
+  cutmult=opt.getInteger("usercutmult");
+  cutfirst=opt.getInteger("usercutfirst");
+  cutnewint=opt.getBool("usercutnewint");
 
 //  sprintf(cbinfo.heurcall, "%s %s%s", optGetStrS_userheurcall(Optr,sval), 
 //                                      optDefined_userjobid(Optr)? "--userjobid=":"",

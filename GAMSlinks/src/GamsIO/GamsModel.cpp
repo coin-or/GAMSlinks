@@ -41,7 +41,7 @@
 #ifdef HAVE_ASSERT_H
 #include <limits.h>
 #else
-#error "don't have header file for assert"
+#error "don't have header file for limits"
 #endif
 #endif
 
@@ -106,8 +106,6 @@ GamsModel::GamsModel(const char *cntrfile)
 			dict=NULL;
 		}
 	}
-
-	optionshandle=NULL;
 }
 
 void GamsModel::setInfinity(const double& SolverMInf, const double& SolverPInf) {
@@ -189,14 +187,11 @@ GamsModel::~GamsModel()
 
 	// Close dictionary
 	if (dict) gcdFree(dict);
-	// Close options systems
-	if (optionshandle) optFree(&optionshandle);
   // Close IO system
   gfclos ();
 }
 
-void 
-GamsModel::PrintOut(PrintMask mask, const char *msg)
+void GamsModel::PrintOut(PrintMask mask, const char *msg)
 {
   if (mask&LogMask && 0 != gfiolog) {
     fprintf (gfiolog, "%s\n", msg); fflush (gfiolog);
@@ -386,7 +381,10 @@ double GamsModel::SecondsSinceStart() {
 }
 
 const char* GamsModel::getOptionfile() {
-	return iolib.flnopt;	
+	if (iolib.useopt)
+		return iolib.flnopt;
+	else
+		return NULL;
 }
 
 const char* GamsModel::getSystemDir() {
@@ -613,279 +611,4 @@ char* GamsModel::ConstructName(char* buffer, int bufLen, int lSym, int* uelIndic
   *targ = '\0';
 
   return buffer;
-}
-
-
-bool GamsModel::ReadOptionsDefinitions(const char* solvername) {
-	/* Get the Option File Handling set up */
-	char buffer[255];
-	if (NULL==optionshandle)
-		if (!optCreate(&optionshandle, buffer, 255)) {
-			PrintOut(AllMask, "\n*** Could not create optionfile handle: "); 
-			PrintOut(AllMask, buffer); 
-			PrintOut(AllMask, "\n"); 
-			return false;
-		}
-
-	if (snprintf(buffer, 255, "%sopt%s.def", getSystemDir(), solvername)>=255) {
-		PrintOut(AllMask, "\n*** Path to GAMS system directory too long.\n");
-		return false;
-	}
-	if (optReadDefinition(optionshandle,buffer)) {
-		int itype; 
-		for (int i=1; i<=optMessageCount(optionshandle); ++i) {
-			optGetMessage(optionshandle, i, buffer, &itype);
-			PrintOut(AllMask, buffer);
-		}
-		optClearMessages(optionshandle);
-		return false;
-	}   
-	optEOLOnlySet(optionshandle,1);
-	
-	return true;
-}
-
-bool GamsModel::ReadOptionsFile() {
-	if (NULL==optionshandle) {
-		PrintOut(AllMask, "GamsModel::ReadOptionsFile: Optionfile handle not initialized.");
-		return false;
-	}
-	/* Read option file */
-	if (iolib.useopt) {
-	  optEchoSet(optionshandle, 1);
-	  optReadParameterFile(optionshandle, getOptionfile());
-	  if (optMessageCount(optionshandle)) {
-		  char buffer[255];
-		  int itype;
-		  for (int i=1; i<=optMessageCount(optionshandle); ++i) {
-	  	  optGetMessage(optionshandle, i, buffer, &itype);
-	    	if (itype<=optMsgFileLeave || itype==optMsgUserError)
-	    		PrintOut(AllMask, buffer);
-		  }
-		  optClearMessages(optionshandle);
-		}   
-		optEchoSet(optionshandle, 0);
-	}
-
-	return true;
-}
-
-
-bool GamsModel::optDefined(const char *optname) {
-	if (NULL==optionshandle) {
-		PrintOut(AllMask, "GamsModel::optDefined: Optionfile handle not initialized.");
-		return false;
-	}
-  int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType;
-
-  if (optFindStr(optionshandle, optname, &i, &refNum)) {
-    optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
-    return isDefined;
-  } else {
-  	char buffer[255];
-  	snprintf(buffer, 255, "*** Internal Error. Unknown option %s", optname);
-		PrintOut(AllMask, buffer);
-    return false;
-  }
-}
-
-//bool GamsModel::optDefinedRecent(const char *optname) {
-//	if (NULL==optionshandle) {
-//		PrintOut(AllMask, "GamsModel::optDefinedRecent: Optionfile handle not initialized.");
-//		return false;
-//	}
-//  int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType;
-//
-//  if (optFindStr (optionshandle, optname, &i, &refNum)) {
-//    optGetInfoNr (optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
-//    return isDefinedRecent;
-//  } else {
-//  	char buffer[255];
-//  	snprintf(buffer, 255, "*** Internal Error. Unknown option %s", optname);
-//		PrintOut(AllMask, buffer);
-//    return false;
-//  }
-//}
-
-int GamsModel::optGetInteger(const char *optname) {
-	if (NULL==optionshandle) {
-		PrintOut(AllMask, "GamsModel::optGetInteger: Optionfile handle not initialized.");
-		return 0;
-	}
-  int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType, ival;
-  double dval;
-  char sval[255], oname[255];
-
-  if (optFindStr(optionshandle, optname, &i, &refNum)) {
-    optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
-    if (dataType != optDataInteger) {
-    	snprintf(sval, 255, "*** Internal Error. Option %s is not an integer (it is %d)", optname, dataType);
-    	PrintOut(AllMask, sval);
-      return 0;
-    }
-    optGetValuesNr(optionshandle, i, oname, &ival, &dval, sval);
-    return ival;
-  } 
-
- 	snprintf(sval, 255, "*** Internal Error. Unknown option %s", optname);
-	PrintOut(AllMask, sval);
-	return 0;
-}
-
-double GamsModel::optGetDouble(const char *optname) {
-	if (NULL==optionshandle) {
-		PrintOut(AllMask, "GamsModel::optGetDouble: Optionfile handle not initialized.");
-		return 0.;
-	}
-  int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType, ival;
-  double dval;
-  char sval[255], oname[255];
-
-  if (optFindStr(optionshandle, optname, &i, &refNum)) {
-    optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
-    if (dataType != optDataDouble) {
-    	snprintf(sval, 255, "*** Internal Error. Option %s is not a double (it is %d)", optname, dataType);
-    	PrintOut(AllMask, sval);
-      return 0.;
-    }
-    optGetValuesNr(optionshandle, i, oname, &ival, &dval, sval);
-    return dval;
-  }
-
- 	snprintf(sval, 255, "*** Internal Error. Unknown option %s", optname);
-	PrintOut(AllMask, sval);
-	return 0.;
-}
-
-char* GamsModel::optGetString(const char *optname, char *sval) {
-	if (NULL==optionshandle) {
-		PrintOut(AllMask, "GamsModel::optGetString: Optionfile handle not initialized.");
-		return sval;
-	}
-  int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType, ival;
-  double dval;
-  char oname[255];
-
-  if (optFindStr(optionshandle, optname, &i, &refNum)) {
-    optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
-    if (dataType != optDataString) {
-    	snprintf(oname, 255, "*** Internal Error. Option %s is not a string (it is %d)", optname, dataType);
- 	  	PrintOut(AllMask, oname);
-   	  return sval;
-    }
-    optGetValuesNr(optionshandle, i, oname, &ival, &dval, sval);
-    return sval;
-  }
-
- 	snprintf(oname, 255, "*** Internal Error. Unknown option %s", optname);
-	PrintOut(AllMask, oname);
-	return sval;
-}
-
-void GamsModel::optSetInteger(const char *optname, int ival) {
-	if (NULL==optionshandle) {
-		PrintOut(AllMask, "GamsModel::optSetInteger: Optionfile handle not initialized.");
-		return;
-	}
-  int i, k, refNum, isDefined, isDefinedRecent, dataType, optType, subType;
-  char stmp[255];
-
-  if (optFindStr(optionshandle, optname, &i, &refNum)) {
-    optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
-    if (dataType != optDataInteger) {
-			snprintf(stmp, 255, "*** Internal Error. Option %s is not an integer (it is %d)\n", optname, dataType);
-			PrintOut(AllMask, stmp);
-      return;
-    }
-    optSetValuesNr(optionshandle, i, ival, 0.0, "");
-    
-    if (optMessageCount(optionshandle)) {
-    	char buffer[255];
-	    for (i=1; i<=optMessageCount(optionshandle); i++) {
-	      optGetMessage(optionshandle, i, stmp, &k);
-	      if (k==optMsgUserError || k<optMsgFileEnter) {
-					snprintf(buffer, 255, "%d: %s\n", k, stmp);
-					PrintOut(AllMask, buffer);
-	      }
-			}
-	    optClearMessages(optionshandle);
-		}
-		
-		return;
-  }
-  
- 	snprintf(stmp, 255, "*** Internal Error. Unknown option %s", optname);
-	PrintOut(AllMask, stmp);
-}
-
-void GamsModel::optSetDouble(const char *optname, double dval) {
-	if (NULL==optionshandle) {
-		PrintOut(AllMask, "GamsModel::optSetDouble: Optionfile handle not initialized.");
-		return;
-	}
-  int i, k, refNum, isDefined, isDefinedRecent, dataType, optType, subType;
-  char stmp[255];
-
-  if (optFindStr(optionshandle, optname, &i, &refNum)) {
-    optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
-    if (dataType != optDataDouble) {
-			snprintf(stmp, 255, "*** Internal Error. Option %s is not a double (it is %d)\n", optname, dataType);
-			PrintOut(AllMask, stmp);
-      return;
-    }
-    optSetValuesNr(optionshandle, i, 0, dval, "");
-    
-    if (optMessageCount(optionshandle)) {
-    	char buffer[255];
-	    for (i=1; i<=optMessageCount(optionshandle); i++) {
-	      optGetMessage(optionshandle, i, stmp, &k);
-	      if (k==optMsgUserError || k<optMsgFileEnter) {
-					snprintf(buffer, 255, "%d: %s\n", k, stmp);
-					PrintOut(AllMask, buffer);
-	      }
-			}
-	    optClearMessages(optionshandle);
-		}
-		
-		return;
-  }
-  
- 	snprintf(stmp, 255, "*** Internal Error. Unknown option %s", optname);
-	PrintOut(AllMask, stmp);
-}
-
-void GamsModel::optSetString(const char *optname, const char *sval) {
-	if (NULL==optionshandle) {
-		PrintOut(AllMask, "GamsModel::optSetString: Optionfile handle not initialized.");
-		return;
-	}
-  int i, k, refNum, isDefined, isDefinedRecent, dataType, optType, subType;
-  char stmp[255];
-
-  if (optFindStr(optionshandle, optname, &i, &refNum)) {
-    optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
-    if (dataType != optDataString) {
-			snprintf(stmp, 255, "*** Internal Error. Option %s is not a string (it is %d)\n", optname, dataType);
-			PrintOut(AllMask, stmp);
-      return;
-    }
-    optSetValuesNr(optionshandle, i, 0, 0.0, sval);
-
-    if (optMessageCount(optionshandle)) {
-    	char buffer[255];
-	    for (i=1; i<=optMessageCount(optionshandle); i++) {
-	      optGetMessage(optionshandle, i, stmp, &k);
-	      if (k==optMsgUserError || k<optMsgFileEnter) {
-					snprintf(buffer, 255, "%d: %s\n", k, stmp);
-					PrintOut(AllMask, buffer);
-	      }
-			}
-	    optClearMessages(optionshandle);
-		}
-		
-		return;
-  }
-  
- 	snprintf(stmp, 255, "*** Internal Error. Unknown option %s", optname);
-	PrintOut(AllMask, stmp);
 }
