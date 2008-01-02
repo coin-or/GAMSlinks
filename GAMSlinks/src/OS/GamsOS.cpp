@@ -151,7 +151,7 @@ std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) 
 }
 
 void localSolve(smagHandle_t prob, OSInstance* osinstance) {
-	std::string solvername;//="ipopt"; // TODO: should be set via parameter
+	std::string solvername="ipopt"; // TODO: should be set via parameter
 	if (solvername=="") { // set default solver depending on problem type and what is available
 		solvername=getSolverName(
 				osinstance->getNumberOfNonlinearExpressions() || osinstance->getNumberOfQuadraticTerms(),
@@ -160,14 +160,9 @@ void localSolve(smagHandle_t prob, OSInstance* osinstance) {
 	}
 
 	DefaultSolver* solver=NULL;
-#ifdef COIN_HAS_IPOPT
-	// we need to keep a smartptr-lock on an IpoptSolver object, otherwise the ipoptsolver deletes itself after solve due to a "SmartPtr<TNLP> nlp = this" in IpoptSolver::solve()
-	SmartPtr<IpoptSolver> tnlp;
-#endif
 	if (solvername.find("ipopt")!=std::string::npos) {
 #ifdef COIN_HAS_IPOPT
-		tnlp=new IpoptSolver();
-		solver=GetRawPtr(tnlp);
+		solver=new IpoptSolver();
 #else
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Ipopt not available.\n");
 		smagStdOutputFlush(prob, SMAG_ALLMASK);
@@ -212,8 +207,7 @@ void localSolve(smagHandle_t prob, OSInstance* osinstance) {
 		smagReportSolBrief(prob, 13, 13);
 	}
 	
-	if (solvername.find("ipopt")==std::string::npos) // if its ipopt, then the destruction of tnlp will do the delete
-		delete solver;
+	delete solver;
 } // localSolve
 #else
 

@@ -124,6 +124,7 @@ ThirdParty/GAMSIO/get.VIS -text
 /config.sub -text
 /configure -text
 /configure.ac -text
+/cppad.patch -text
 /depcomp -text
 doxydoc/doxygen.conf -text
 /install-sh -text

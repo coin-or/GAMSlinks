@@ -1,0 +1,30 @@
+Index: cppad/cppad/rosen_34.hpp
+===================================================================
+--- cppad/cppad/rosen_34.hpp	(Revision 1118)
++++ cppad/cppad/rosen_34.hpp	(Arbeitskopie)
+@@ -388,8 +388,9 @@
+ 	xf = xi;           // initialize solution
+ 	for(m = 0; m < M; m++)
+ 	{	// time at beginning of this interval
++		Scalar m_scalar(int(m));
+ 		Scalar t = ti * (Scalar(int(M - m)) / ns) 
+-		         + tf * (Scalar(int(m)) / ns);
++		         + tf * (m_scalar / ns);
+ 
+ 		// value of x at beginning of this interval
+ 		x3 = x4 = xf;
+Index: cppad/cppad/runge_45.hpp
+===================================================================
+--- cppad/cppad/runge_45.hpp	(Revision 1118)
++++ cppad/cppad/runge_45.hpp	(Arbeitskopie)
+@@ -348,8 +348,9 @@
+ 	for(m = 0; m < M; m++)
+ 	{	// time at beginning of this interval
+ 		// (convert to int to avoid MS compiler warning)
++		Scalar m_scalar(int(m));
+ 		Scalar t = ti * (Scalar(int(M - m)) / ns) 
+-		         + tf * (Scalar(int(m)) / ns);
++		         + tf * (m_scalar / ns);
+ 
+ 		// loop over integration steps
+ 		x4 = x5 = xf;   // start x4 and x5 at same point for each step

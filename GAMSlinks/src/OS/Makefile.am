@@ -35,13 +35,14 @@ endif
 
 GamsOS_LDADD += \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
- $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
  $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
+ $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
  $(SMAG_LIBS)
 
 GamsOS_DEPENDENCIES += \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
+ $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la
 
 LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt`

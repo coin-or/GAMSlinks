@@ -459,8 +459,8 @@ GamsOS_SOURCES = GamsOS.cpp Smag2OSiL.cpp OSrL2Smag.cpp
 # end of check for COIN_OS_SOLVER
 GamsOS_LDADD = $(am__append_2) \
 	$(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
-	$(OSOBJDIR)/src/OSUtils/libOSUtils.la \
-	$(OSOBJDIR)/src/OSParsers/libOSParsers.la $(SMAG_LIBS) \
+	$(OSOBJDIR)/src/OSParsers/libOSParsers.la \
+	$(OSOBJDIR)/src/OSUtils/libOSUtils.la $(SMAG_LIBS) \
 	$(am__append_5) $(am__append_9) $(am__append_12) \
 	$(am__append_16) $(am__append_20) $(am__append_24) \
 	$(am__append_28) $(am__append_32) $(am__append_36) \
@@ -468,6 +468,7 @@ GamsOS_LDADD = $(am__append_2) \
 GamsOS_DEPENDENCIES = $(am__append_3) \
 	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
 	$(OSOBJDIR)/src/OSUtils/libOSUtils.la \
+	$(OSOBJDIR)/src/OSParsers/libOSParsers.la \
 	$(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
 	$(am__append_6) $(am__append_10) $(am__append_13) \
 	$(am__append_17) $(am__append_21) $(am__append_25) \
