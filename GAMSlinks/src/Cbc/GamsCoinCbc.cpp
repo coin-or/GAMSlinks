@@ -248,6 +248,7 @@ int main (int argc, const char *argv[]) {
 	if (gdxhandle) {
 		gdxClose(gdxhandle);
 		gdxFree(&gdxhandle);
+		gdxLibraryUnload();
 	}
 
 	return EXIT_SUCCESS;

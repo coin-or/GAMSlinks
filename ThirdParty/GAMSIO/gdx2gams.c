@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
 	Elements=(char**)malloc(10*sizeof(char*));
 	for (i=0; i<10; ++i) Elements[i]=(char*)malloc(32*sizeof(char));
 	Elements[1][0]=0;
-	Values=(double*)malloc(10*sizeof(double));
+	Values=(double*)malloc(5*sizeof(double));
 	for (i=1; i<=nrsy; ++i) {
 		gdxSymbolInfo(gdxhandle, i, buffer, &dim, &type);
 		if (type!=dt_var) continue;
@@ -96,6 +96,7 @@ int main(int argc, char** argv) {
 	
 	gdxClose(gdxhandle);
 	gdxFree(&gdxhandle);
+	gdxLibraryUnload();
 
   return EXIT_SUCCESS;
 }
