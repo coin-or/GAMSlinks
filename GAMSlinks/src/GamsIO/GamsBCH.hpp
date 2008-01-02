@@ -20,6 +20,7 @@
 #include "GamsOptions.hpp"
 
 /** Interface to GAMS BCH facility.
+ * To use this interface, it is assumed that you have initialized the GDX I/O library (use gdxGetReady or gdxCreate).
  */
 class GamsBCH {
 public:

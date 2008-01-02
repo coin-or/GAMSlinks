@@ -29,6 +29,9 @@
 #include "GamsOptions.hpp"
 #include "GamsBCH.hpp"
 #include "GamsCutGenerator.hpp"
+extern "C" {
+#include "gdxcc.h"
+}
 
 // For Branch and bound
 #include "CbcModel.hpp"
@@ -161,7 +164,12 @@ int main (int argc, const char *argv[]) {
 
 	// setup BCH if required
 	GamsBCH* bch=NULL;
+	gdxHandle_t gdxhandle=NULL;
 	if (opt.isDefined("usercutcall")) {
+		if (!gdxCreate(&gdxhandle, buffer, sizeof(buffer))) {
+			gm.PrintOut(GamsModel::AllMask, buffer);
+			exit(EXIT_FAILURE);
+		}
 		bch=new GamsBCH(gm, opt);
 		GamsCutGenerator gamscutgen(*bch, model);
 		model.addCutGenerator(&gamscutgen, 1, "GamsBCH"); // TODO: check the remaining arguments
@@ -235,8 +243,12 @@ int main (int argc, const char *argv[]) {
 	} else { // trigger the write of GAMS solution file
 		gm.setSolution();
 	}
-	
+
 	delete bch;
+	if (gdxhandle) {
+		gdxClose(gdxhandle);
+		gdxFree(&gdxhandle);
+	}
 
 	return EXIT_SUCCESS;
 }

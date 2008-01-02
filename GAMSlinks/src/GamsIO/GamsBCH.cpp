@@ -50,9 +50,6 @@ extern "C" {
 #include "iolib.h"
 #include "dict.h"
 #include "bch.h"
-#ifdef COIN_HAS_GDX
-#include "gdxwrap.h"
-#endif
 }
 
 GamsBCH::GamsBCH(GamsModel& gm_, GamsOptions& opt_)
@@ -67,23 +64,10 @@ GamsBCH::~GamsBCH() {
 	delete[] incumbent;
 	delete[] global_lb;
 	delete[] global_ub;
-	
-#ifdef COIN_HAS_GDX
-	//TODO: what if someone else still uses the GDX lib?
-	gdxWrapFini();
-#endif
 }
 
 void GamsBCH::init() {
   char buffer[256];
-
-#ifdef COIN_HAS_GDX
-  //TODO: should check whether the gdx lib is already loaded; maybe with the new API...
-	if (gdxWrapInit(NULL, buffer, sizeof(buffer))) {
-		gm.PrintOut(GamsModel::AllMask, buffer);
-		exit(EXIT_FAILURE);
-	}
-#endif
 	
 	node_x=new double[iolib.ncols];
 	node_lb=new double[iolib.ncols];
@@ -248,8 +232,7 @@ bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
 //	gm.PrintOut(GamsModel::LogMask, "GamsBCH: Spawn GAMS cutgenerator.");
 	char command[1024];
 	snprintf(command, 1024, "%s --ncalls %d", cutcall, ncalls++);
-//	int rcode = bchRunGAMS(command, usergdxin, userkeep, userjobid);
-	int rcode = bchRunGAMS(command, usergdxin);
+	int rcode = bchRunGAMS(command, usergdxin, userkeep, userjobid);
 	
 	if (rcode > 0) {
 		gm.PrintOut(GamsModel::AllMask, "GamsBCH: Could not spawn GAMS cutgenerator.");

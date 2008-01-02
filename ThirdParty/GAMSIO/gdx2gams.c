@@ -9,30 +9,30 @@
 #include <string.h>
 
 //GDX client
-#include "gdxwrap.h"
+#include "gdxcc.h"
+
+gdxHandle_t gdxhandle=NULL;
+char buffer[1024];
 
 void gdx_error(int n) {
 //	int n = GDXGetLastError(gdxio);
-	char* msg;
-	if (!GDXErrorStr(n, &msg))
+	if (!gdxErrorStr(gdxhandle, n, buffer))
 		fprintf(stderr, "Error %d in GDX I/O library. Cannot retrieve error message.\n", n);
 	else
-		fprintf(stderr, "Error %d in GDX I/O library: %s.\n", n, msg);
+		fprintf(stderr, "Error %d in GDX I/O library: %s.\n", n, buffer);
 	exit(EXIT_FAILURE);
 }
 
 
 int main(int argc, char** argv) {
-	PGXFile gdxhandle=NULL;
 	int errornr;
 	int nrsy=0, nruel=0;
 	int dim, type;
 	int recCount;
-	TgdxStrIndex Elements; // symbol names
-	TgdxValues Values; // symbol values
+	char** Elements; // symbol names
+	double* Values; // symbol values
 	int afdim; // mostly 1, I think.
 	int i,j,k;
-	char buffer[1024];
 
 	if (argc==0)
 		exit(EXIT_FAILURE);
@@ -42,30 +42,32 @@ int main(int argc, char** argv) {
 	}
 
 	// init gdxio library
-	if (gdxWrapInit(NULL, buffer, 1024)) {
+	if (!gdxCreate(&gdxhandle, buffer, 1024)) {
 		fprintf(stderr, "Error loading GDX I/O library: %s\n", buffer);
 		exit(EXIT_FAILURE);
 	}
 
-	errornr=GDXOpenRead(&gdxhandle, argv[1]);
+	gdxOpenRead(gdxhandle, argv[1], &errornr);
 	if (errornr) gdx_error(errornr);
 
-	if (GDXSystemInfo(gdxhandle, &nrsy, &nruel)==0) {
+	if (gdxSystemInfo(gdxhandle, &nrsy, &nruel)==0) {
 		fprintf(stderr, "Error retrieving symbol infos.\n");
 		exit(EXIT_FAILURE);
 	}
 
+	Elements=(char**)malloc(10*sizeof(char*));
 	for (i=0; i<10; ++i) Elements[i]=(char*)malloc(32*sizeof(char));
 	Elements[1][0]=0;
+	Values=(double*)malloc(10*sizeof(double));
 	for (i=1; i<=nrsy; ++i) {
-		GDXSymbolInfo(gdxhandle, i, buffer, &dim, &type);
+		gdxSymbolInfo(gdxhandle, i, buffer, &dim, &type);
 		if (type!=dt_var) continue;
 
-		GDXDataReadStrStart(gdxhandle, i, &recCount);
+		gdxDataReadStrStart(gdxhandle, i, &recCount);
 
 		for (j=1;  j<=recCount; j++) {
 			int binary;
-			GDXDataReadStr(gdxhandle, Elements, Values, &afdim);
+			gdxDataReadStr(gdxhandle, Elements, Values, &afdim);
 			binary=!strncmp(buffer, "y_", 2);
 			printf(buffer);
 			if (binary) printf(".fx");
@@ -86,9 +88,14 @@ int main(int argc, char** argv) {
 			printf(";\n");
 		}
 
-		GDXDataReadDone(gdxhandle);
+		gdxDataReadDone(gdxhandle);
 	}
 	for (i=0; i<10; ++i) free(Elements[i]);
+	free(Elements);
+	free(Values);
+	
+	gdxClose(gdxhandle);
+	gdxFree(&gdxhandle);
 
   return EXIT_SUCCESS;
 }

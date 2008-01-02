@@ -33,9 +33,6 @@
 /* Define to 1 if the GAMSlinks package is used */
 #undef COIN_HAS_GAMSLINKS
 
-/* If defined, then we can use the GDX library. */
-#undef COIN_HAS_GDX
-
 /* Define to 1 if Glpk package is available */
 #undef COIN_HAS_GLPK
 

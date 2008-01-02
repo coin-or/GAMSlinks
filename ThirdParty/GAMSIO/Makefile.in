@@ -55,11 +55,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-
-#could be improved to allow also Windows, but requires windows.h
-#have only new-style gdx wrapper for dii currently
-@GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@am__append_1 = $(GAMSIO_CODE)/gdxwrap.c
-@GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@noinst_PROGRAMS = gdx2gams$(EXEEXT)
+noinst_PROGRAMS = gdx2gams$(EXEEXT)
+@GAMSIO_IS_UNIX_TRUE@am__append_1 = -ldl
 DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../BuildTools/Makemain.inc \
 	$(srcdir)/../../config.guess $(srcdir)/../../config.sub \
@@ -82,16 +79,13 @@ CONFIG_HEADER = config_gamsio.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libGamsGDX_la_LIBADD =
-@GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@am__objects_1 =  \
-@GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@	gdxwrap.lo
-nodist_libGamsGDX_la_OBJECTS = $(am__objects_1)
+nodist_libGamsGDX_la_OBJECTS = gdxcc.lo
 libGamsGDX_la_OBJECTS = $(nodist_libGamsGDX_la_OBJECTS)
 libGamsOptions_la_LIBADD =
 nodist_libGamsOptions_la_OBJECTS = optcc.lo
 libGamsOptions_la_OBJECTS = $(nodist_libGamsOptions_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
-am__gdx2gams_SOURCES_DIST = gdx2gams.c
-@GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@am_gdx2gams_OBJECTS = gdx2gams.$(OBJEXT)
+am_gdx2gams_OBJECTS = gdx2gams.$(OBJEXT)
 gdx2gams_OBJECTS = $(am_gdx2gams_OBJECTS)
 gdx2gams_LDADD = $(LDADD)
 depcomp = $(SHELL) $(top_srcdir)/../../depcomp
@@ -106,7 +100,7 @@ LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(nodist_libGamsGDX_la_SOURCES) \
 	$(nodist_libGamsOptions_la_SOURCES) $(gdx2gams_SOURCES)
-DIST_SOURCES = $(am__gdx2gams_SOURCES_DIST)
+DIST_SOURCES = $(gdx2gams_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -261,11 +255,11 @@ EXTRA_DIST = get.LX3 get.LEI get.DII get.VIS get.SIG FILES \
 noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la
 nodist_libGamsOptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libGamsOptions_la_LDFLAGS = 
-nodist_libGamsGDX_la_SOURCES = $(am__append_1)
+nodist_libGamsGDX_la_SOURCES = $(GAMSIO_CODE)/gdxcc.c
 libGamsGDX_la_LDFLAGS = 
-@GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@gdx2gams_SOURCES = gdx2gams.c
-@GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@gdx2gams_LDFLAGS = libGamsGDX.la -ldl
-@GAMSIO_IS_DARWIN_FALSE@@GAMSIO_IS_UNIX_TRUE@gdx2gams_DEPENDENCIES = libGamsGDX.la
+gdx2gams_SOURCES = gdx2gams.c
+gdx2gams_LDFLAGS = gdxcc.lo $(am__append_1)
+gdx2gams_DEPENDENCIES = gdxcc.lo
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -D$(CIA_CODE)
 
 # tmpdir = tmpdir
@@ -361,7 +355,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdx2gams.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdxwrap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdxcc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optcc.Plo@am__quote@
 
 .c.o:
@@ -385,12 +379,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-gdxwrap.lo: $(GAMSIO_CODE)/gdxwrap.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gdxwrap.lo -MD -MP -MF "$(DEPDIR)/gdxwrap.Tpo" -c -o gdxwrap.lo `test -f '$(GAMSIO_CODE)/gdxwrap.c' || echo '$(srcdir)/'`$(GAMSIO_CODE)/gdxwrap.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/gdxwrap.Tpo" "$(DEPDIR)/gdxwrap.Plo"; else rm -f "$(DEPDIR)/gdxwrap.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMSIO_CODE)/gdxwrap.c' object='gdxwrap.lo' libtool=yes @AMDEPBACKSLASH@
+gdxcc.lo: $(GAMSIO_CODE)/gdxcc.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gdxcc.lo -MD -MP -MF "$(DEPDIR)/gdxcc.Tpo" -c -o gdxcc.lo `test -f '$(GAMSIO_CODE)/gdxcc.c' || echo '$(srcdir)/'`$(GAMSIO_CODE)/gdxcc.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/gdxcc.Tpo" "$(DEPDIR)/gdxcc.Plo"; else rm -f "$(DEPDIR)/gdxcc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMSIO_CODE)/gdxcc.c' object='gdxcc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gdxwrap.lo `test -f '$(GAMSIO_CODE)/gdxwrap.c' || echo '$(srcdir)/'`$(GAMSIO_CODE)/gdxwrap.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gdxcc.lo `test -f '$(GAMSIO_CODE)/gdxcc.c' || echo '$(srcdir)/'`$(GAMSIO_CODE)/gdxcc.c
 
 optcc.lo: $(GAMSIO_CODE)/optcc.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT optcc.lo -MD -MP -MF "$(DEPDIR)/optcc.Tpo" -c -o optcc.lo `test -f '$(GAMSIO_CODE)/optcc.c' || echo '$(srcdir)/'`$(GAMSIO_CODE)/optcc.c; \

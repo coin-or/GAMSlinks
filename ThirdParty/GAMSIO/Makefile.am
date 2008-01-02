@@ -12,24 +12,20 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = get.LX3 get.LEI get.DII get.VIS get.SIG FILES INSTALL.GAMSIO LICENSE
 
 noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la
+
 nodist_libGamsOptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libGamsOptions_la_LDFLAGS = 
 
-nodist_libGamsGDX_la_SOURCES = 
+nodist_libGamsGDX_la_SOURCES = $(GAMSIO_CODE)/gdxcc.c
 libGamsGDX_la_LDFLAGS =
-
-#could be improved to allow also Windows, but requires windows.h
-if GAMSIO_IS_UNIX
-#have only new-style gdx wrapper for dii currently
-if GAMSIO_IS_DARWIN
-else
-nodist_libGamsGDX_la_SOURCES += $(GAMSIO_CODE)/gdxwrap.c
 
 noinst_PROGRAMS = gdx2gams
 gdx2gams_SOURCES = gdx2gams.c
-gdx2gams_LDFLAGS = libGamsGDX.la -ldl
-gdx2gams_DEPENDENCIES = libGamsGDX.la
-endif
+gdx2gams_LDFLAGS = gdxcc.lo
+gdx2gams_DEPENDENCIES = gdxcc.lo
+
+if GAMSIO_IS_UNIX
+gdx2gams_LDFLAGS += -ldl
 endif
 
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -D$(CIA_CODE)

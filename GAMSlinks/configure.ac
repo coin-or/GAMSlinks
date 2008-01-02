@@ -297,11 +297,6 @@ AC_SUBST(GAMSIO_CODE)
 AM_CONDITIONAL([GAMSIO_IS_UNIX],[test x"$gamsio_system" != xWindows])
 AM_CONDITIONAL([GAMSIO_IS_WINDOWS],[test x"$gamsio_system" = xWindows])
 
-#temporarily, until I get the gdx stuff cleaned up
-if test x"$gamsio_system" != xDarwin; then
-  AC_DEFINE([COIN_HAS_GDX],[1],[If defined, then we can use the GDX library.])
-fi 
-
 ########################
 # OS Solver Interfaces #
 ########################
