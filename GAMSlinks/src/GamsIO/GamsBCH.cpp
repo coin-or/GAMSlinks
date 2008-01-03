@@ -200,19 +200,16 @@ void GamsBCH::setIncumbentSolution(const double* x_, double objval_) {
 	have_incumbent=true;
 }
 
+bool GamsBCH::doCuts() {
+	double bestint=have_incumbent ? incumbent[iolib.iobvar] : (gm.ObjSense()==1 ? iolib.usrpinf : iolib.usrminf);
+	return bchQueryCuts(cutfreq, cutinterval, cutmult,
+                    cutfirst, bestint, have_incumbent, (int)gm.ObjSense(),
+                    cutnewint);	
+}
+
 bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
 	cuts.clear();
 	++ncalls;
-	
-	double bestint=have_incumbent ? incumbent[iolib.iobvar] : (gm.ObjSense()==1 ? iolib.usrpinf : iolib.usrminf);
-	if (!bchQueryCuts(cutfreq, cutinterval, cutmult,
-                    cutfirst, bestint, have_incumbent, (int)gm.ObjSense(),
-                    cutnewint)) {
-		char buffer[200];
-	  sprintf(buffer, "GamsBCH call %d: Cut generation skipped.", ncalls);
-	  gm.PrintOut(GamsModel::LogMask, buffer);
-		return true;
-	}
 	
 //	printf("node relax. solution: ");
 //	for (int i=0; i<iolib.ncols; ++i) printf("%g ", node_x[i]);

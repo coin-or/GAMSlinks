@@ -113,8 +113,14 @@ public:
 	void setNodeSolution(const double* x_, double objval_, const double* lb_, const double* ub_);
 	void setIncumbentSolution(const double* x_, double objval_);
 	
+	/** Returns true if generateCuts should be called, otherwise false.
+	 * You should call this method before generateCuts().
+	 */
+	bool doCuts();
+	
 	/** Calls the GAMS cut generator.
 	 * Note, that you need to set the solution of the current nodes relaxation with.
+	 * Note, that you should call this method only if doCuts() returned true.
 	 */
 	bool generateCuts(std::vector<Cut>& cuts);
 };

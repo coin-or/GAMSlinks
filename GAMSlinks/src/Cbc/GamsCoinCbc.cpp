@@ -56,10 +56,12 @@ void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myo
 //   5 after postprocessing
 //   6 after a user called heuristic phase
 //*/
-//int gamsCallBack(CbcModel* currentSolver, int whereFrom) {
-//	printf("Got callback from %d. Incumbent sol.: %g\n", whereFrom, currentSolver->getObjValue());
-//	return 0;
-//}
+CbcModel* preprocessedmodel=NULL;
+int gamsCallBack(CbcModel* currentSolver, int whereFrom) {
+	printf("Got callback from %d with current solver %d\n", whereFrom, (int)currentSolver);
+	if (whereFrom==3) preprocessedmodel=currentSolver;
+	return 0;
+}
 
 int main (int argc, const char *argv[]) {
 #if defined(_MSC_VER)
@@ -171,15 +173,16 @@ int main (int argc, const char *argv[]) {
 			exit(EXIT_FAILURE);
 		}
 		bch=new GamsBCH(gm, opt);
-		GamsCutGenerator gamscutgen(*bch, model);
-		model.addCutGenerator(&gamscutgen, 1, "GamsBCH"); // TODO: check the remaining arguments
+		GamsCutGenerator gamscutgen(*bch, preprocessedmodel);
+		// TODO: check arguments and try to map to gams parameters
+		model.addCutGenerator(&gamscutgen, 1, "GamsBCH", true, opt.getBool("usercutnewint"));
 	}
 	
 	
 	gm.PrintOut(GamsModel::StatusMask, "=2"); // turn off copying into .lst file
 	myout << "\nCalling CBC main solution routine..." << CoinMessageEol;	
 	myout.setCurrentDetail(2);
-	CbcMain1(par_list_length+2,cbc_args,model);
+	CbcMain1(par_list_length+2,cbc_args,model,gamsCallBack);
 	delete[] cbc_args;
 
 	myout.setCurrentDetail(1);

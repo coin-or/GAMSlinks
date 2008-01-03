@@ -8,23 +8,23 @@
 
 #include "GamsCutGenerator.hpp"
 
-GamsCutGenerator::GamsCutGenerator(GamsBCH& bch_, const CbcModel& model_)
-: bch(bch_), model(model_)
+GamsCutGenerator::GamsCutGenerator(GamsBCH& bch_, CbcModel*& modelptr_)
+: bch(bch_), modelptr(modelptr_), last_inc_objval(1E+300)
 { }
 
 CglCutGenerator* GamsCutGenerator::clone() const {
-	return new GamsCutGenerator(bch, model);
+	return new GamsCutGenerator(bch, modelptr);
 }
 
 void GamsCutGenerator::generateCuts(const OsiSolverInterface &si, OsiCuts &cs, const CglTreeInfo info) const {
-//	printf("current inc. sol.: %g\t%g\t%d\n", model.getObjValue(), model.getBestPossibleObjValue(), (int)model.bestSolution());
-	if (model.getObjValue()>-si.getInfinity() && model.getObjValue()<si.getInfinity()) {
-		assert(model.bestSolution());
-//		if (!have_incumbent || true)
-			bch.setIncumbentSolution(model.bestSolution(), model.getObjValue());
+	if (modelptr && modelptr->bestSolution() && modelptr->getObjValue()!=last_inc_objval) { 
+		printf("GamsBCH: update incumbent solution to objvalue %g\t (best possible: %g)\n", modelptr->getObjValue(), modelptr->getBestPossibleObjValue());
+		bch.setIncumbentSolution(modelptr->bestSolution(), modelptr->getObjValue());
+		last_inc_objval=modelptr->getObjValue();
 	}
-//TODO	bch.setIncumbent();
-//	printf("gm dim: x\t osi dim: %d\n", si.getNumCols());
+	
+	if (!bch.doCuts()) return; // skip cut generation
+
 	bch.setNodeSolution(si.getColSolution(), si.getObjValue(), si.getColLower(), si.getColUpper());
 
 	std::vector<GamsBCH::Cut> cuts;

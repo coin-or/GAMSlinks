@@ -151,7 +151,7 @@ std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) 
 }
 
 void localSolve(smagHandle_t prob, OSInstance* osinstance) {
-	std::string solvername="ipopt"; // TODO: should be set via parameter
+	std::string solvername;//="ipopt"; // TODO: should be set via parameter
 	if (solvername=="") { // set default solver depending on problem type and what is available
 		solvername=getSolverName(
 				osinstance->getNumberOfNonlinearExpressions() || osinstance->getNumberOfQuadraticTerms(),

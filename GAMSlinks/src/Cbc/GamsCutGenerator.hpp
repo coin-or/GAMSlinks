@@ -21,10 +21,12 @@ class GamsCutGenerator : public CglCutGenerator {
 private:
 	GamsBCH& bch;
 	
-	const CbcModel& model;
+	CbcModel*& modelptr;
+	
+	mutable double last_inc_objval;
 
 public:
-	GamsCutGenerator(GamsBCH& bch_, const CbcModel& model_);
+	GamsCutGenerator(GamsBCH& bch_, CbcModel*& modelptr_);
 	
 	void generateCuts(const OsiSolverInterface &si, OsiCuts &cs, const CglTreeInfo info) const;
 	
