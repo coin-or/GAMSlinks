@@ -23943,7 +23943,7 @@ esac
 
 #Intel Fortran libraries (required for Linux systems when not compiling with Intel compiler)
 IFORT_LIBS=
-if test x"$gamsio_system" = xLinux; then
+if test x"$gamsio_system" = xLinux || test x"$gamsio_system" = xDarwin; then
 	case "$CXX" in
 		icpc* | */icpc*)
 			;;
@@ -24064,8 +24064,8 @@ elif test x"$gamsio_system" = xWindows; then
   GAMSIO_LIBS="$use_gamsio/iolib.lib $use_gamsio/nliolib.lib $use_gamsio/clicelib.lib $use_gamsio/gclib.lib"
   SMAG_LIBS="$use_gamsio/clicelib.lib $use_gamsio/smag.lib $use_gamsio/gclib.lib $use_gamsio/g2d.lib"
 elif test x"$GAMSIO_CODE" = xDII; then
-  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a -ldl -lSystemStubs"
-  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -lSystemStubs"
+  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a -ldl -lSystemStubs $IFORT_LIBS"
+  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -lSystemStubs $IFORT_LIBS"
 elif test x"$GAMSIO_CODE" = xSIG; then
   GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
   SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
