@@ -230,7 +230,10 @@ if test x"$gamsio_system" = xLinux || test x"$gamsio_system" = xDarwin; then
         AC_HELP_STRING([--with-ifort-libdir],[specify directory of Intel Fortran libraries]),
         AC_CHECK_FILE([$withval/libifcore.so],[IFORT_LIBS="-L$withval"],),
         [if test x"$use_gamssys" != x; then
-          AC_CHECK_FILE([$use_gamssys/libifcore.so],[IFORT_LIBS="-L$use_gamssys"],)
+          AC_CHECK_FILE([$use_gamssys/libifcore.so],[IFORT_LIBS="-L$use_gamssys"],
+            AC_CHECK_FILE([$use_gamssys/libifcore.a],[IFORT_LIBS="-L$use_gamssys"],
+              AC_MSG_WARN([Path for Intel Fortran Libraries given by --with-ifort-libdir but no libifcore.so or libifcore.a found. GAMS I/O libraries might fail to link.])
+          ))
          else
           AC_MSG_WARN([Path for Intel Fortran Libraries not given by --with-ifort-libdir and no GAMS system available. GAMS I/O libraries might fail to link.])
          fi
