@@ -78,13 +78,13 @@ set g Cbc Option Groups /
       usergdxname      The name of the GDX file exported from the solver with the solution at the node
       usergdxnameinc   The name of the GDX file exported from the solver with the incumbent solution
       usergdxprefix   'Prefixes usergdxin, usergdxname, and usergdxnameinc'
-*      userheurcall     The GAMS command line to call the heuristic
-*      userheurfirst    Calls the heuristic for the first n nodes
-*      userheurfreq     Determines the frequency of the heuristic model calls
-*      userheurinterval Determines the interval when to apply the multiplier for the frequency of the heuristic model calls
-*      userheurmult     Determines the multiplier for the frequency of the heuristic model calls
-*      userheurnewint   Calls the heuristic if the solver found a new integer feasible solution
-*      userheurobjfirst '***'
+      userheurcall     The GAMS command line to call the heuristic
+      userheurfirst    Calls the heuristic for the first n nodes
+      userheurfreq     Determines the frequency of the heuristic model calls
+      userheurinterval Determines the interval when to apply the multiplier for the frequency of the heuristic model calls
+      userheurmult     Determines the multiplier for the frequency of the heuristic model calls
+      userheurnewint   Calls the heuristic if the solver found a new integer feasible solution
+      userheurobjfirst '***'
 *      userincbcall     The GAMS command line to call the incumbent checking program
 *      userincbicall    The GAMS command line to call the incumbent reporting program
       userjobid        'Postfixes lf, o on call adds --userjobid to the call. Postfixes gdxname, gdxnameinc and gdxin'
@@ -184,13 +184,13 @@ bch.(
             usergdxname      .s.(def 'bchout.gdx')
             usergdxnameinc   .s.(def 'bchout_i.gdx')
             usergdxprefix    .s.(def '')
-*            userheurcall     .s.(def '')
-*            userheurfirst    .i.(def 10, lo 0, up maxint)
-*            userheurfreq     .i.(def 10, lo 0, up maxint)
-*            userheurinterval .i.(def 100, lo 0, up maxint)
-*            userheurmult     .i.(def 2, lo 0, up maxint)
-*            userheurnewint   .b.(def 1)
-*            userheurobjfirst .i.(def 0, lo 0, up maxint)
+            userheurcall     .s.(def '')
+            userheurfirst    .i.(def 10, lo 0, up maxint)
+            userheurfreq     .i.(def 10, lo 0, up maxint)
+            userheurinterval .i.(def 100, lo 0, up maxint)
+            userheurmult     .i.(def 2, lo 0, up maxint)
+            userheurnewint   .b.(def 1)
+            userheurobjfirst .i.(def 0, lo 0, up maxint)
 *            userincbcall     .s.(def '')
 *            userincbicall    .s.(def '')
             userkeep         .b.(def 0)

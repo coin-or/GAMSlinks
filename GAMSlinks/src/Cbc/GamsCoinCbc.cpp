@@ -29,6 +29,7 @@
 #include "GamsOptions.hpp"
 #include "GamsBCH.hpp"
 #include "GamsCutGenerator.hpp"
+#include "GamsHeuristic.hpp"
 extern "C" {
 #include "gdxcc.h"
 }
@@ -47,7 +48,6 @@ void setupStartingPoint(GamsModel& gm, CbcModel& model);
 void setupParameters(GamsModel& gm, GamsOptions& opt, CbcModel& model);
 void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myout, std::list<std::string>& par_list);
 
-//GamsBCH* bch=NULL;
 ///* Meaning of whereFrom:
 //   1 after initial solve by dualsimplex etc
 //   2 after preprocessing
@@ -58,7 +58,7 @@ void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myo
 //*/
 CbcModel* preprocessedmodel=NULL;
 int gamsCallBack(CbcModel* currentSolver, int whereFrom) {
-	printf("Got callback from %d with current solver %d\n", whereFrom, (int)currentSolver);
+//	printf("Got callback from %d with current solver %d\n", whereFrom, (int)currentSolver);
 	if (whereFrom==3) preprocessedmodel=currentSolver;
 	return 0;
 }
@@ -149,7 +149,7 @@ int main (int argc, const char *argv[]) {
 		setupPrioritiesSOSSemiCon(gm, model);
 		setupStartingPoint(gm, model);
 	}
-	if (opt.isDefined("usercutcall")) { //TODO: avoid this
+	if (opt.isDefined("usercutcall") || opt.isDefined("userheurcall")) { //TODO: avoid this
 		opt.setString("preprocess", "off");
 	}
 	setupParameters(gm, opt, model);
@@ -167,15 +167,22 @@ int main (int argc, const char *argv[]) {
 	// setup BCH if required
 	GamsBCH* bch=NULL;
 	gdxHandle_t gdxhandle=NULL;
-	if (opt.isDefined("usercutcall")) {
+	if (opt.isDefined("usercutcall") || opt.isDefined("userheurcall")) {
 		if (!gdxCreate(&gdxhandle, buffer, sizeof(buffer))) {
 			gm.PrintOut(GamsModel::AllMask, buffer);
 			exit(EXIT_FAILURE);
 		}
 		bch=new GamsBCH(gm, opt);
-		GamsCutGenerator gamscutgen(*bch, preprocessedmodel);
-		// TODO: check arguments and try to map to gams parameters
-		model.addCutGenerator(&gamscutgen, 1, "GamsBCH", true, opt.getBool("usercutnewint"));
+
+		if (opt.isDefined("usercutcall")) {
+			GamsCutGenerator gamscutgen(*bch, preprocessedmodel);
+			// TODO: check arguments and try to map to gams parameters
+			model.addCutGenerator(&gamscutgen, 1, "GamsBCH", true, opt.getBool("usercutnewint"));
+		}
+		if (opt.isDefined("userheurcall")) {
+			GamsHeuristic gamsheu(*bch);
+			model.addHeuristic(&gamsheu, "GamsBCH");
+		}
 	}
 	
 	

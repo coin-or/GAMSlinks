@@ -22,8 +22,6 @@ private:
 	GamsBCH& bch;
 	
 	CbcModel*& modelptr;
-	
-	mutable double last_inc_objval;
 
 public:
 	GamsCutGenerator(GamsBCH& bch_, CbcModel*& modelptr_);

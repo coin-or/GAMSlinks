@@ -231,6 +231,27 @@ usergdxnameinc</a></td>
 <tr><td><a href="#usergdxprefix">
 usergdxprefix</a></td>
 <td>Prefixes usergdxin, usergdxname, and usergdxnameinc</td></tr>
+<tr><td><a href="#userheurcall">
+userheurcall</a></td>
+<td>The GAMS command line to call the heuristic</td></tr>
+<tr><td><a href="#userheurfirst">
+userheurfirst</a></td>
+<td>Calls the heuristic for the first n nodes</td></tr>
+<tr><td><a href="#userheurfreq">
+userheurfreq</a></td>
+<td>Determines the frequency of the heuristic model calls</td></tr>
+<tr><td><a href="#userheurinterval">
+userheurinterval</a></td>
+<td>Determines the interval when to apply the multiplier for the frequency of the heuristic model calls</td></tr>
+<tr><td><a href="#userheurmult">
+userheurmult</a></td>
+<td>Determines the multiplier for the frequency of the heuristic model calls</td></tr>
+<tr><td><a href="#userheurnewint">
+userheurnewint</a></td>
+<td>Calls the heuristic if the solver found a new integer feasible solution</td></tr>
+<tr><td><a href="#userheurobjfirst">
+userheurobjfirst</a></td>
+<td>***</td></tr>
 <tr><td><a href="#userjobid">
 userjobid</a></td>
 <td>Postfixes lf, o on call adds --userjobid to the call. Postfixes gdxname, gdxnameinc and gdxin</td></tr>
@@ -1037,6 +1058,54 @@ usergdxprefix</a>
 <i> (string)</i> Prefixes usergdxin, usergdxname, and usergdxnameinc</h4><p>
 
 
+
+<h4><a name="userheurcall">
+userheurcall</a>
+<i> (string)</i> The GAMS command line to call the heuristic</h4><p>
+
+
+
+<h4><a name="userheurfirst">
+userheurfirst</a>
+<i> (integer)</i> Calls the heuristic for the first n nodes</h4><p>
+
+
+<br><i>(default = 10)</i>
+
+<h4><a name="userheurfreq">
+userheurfreq</a>
+<i> (integer)</i> Determines the frequency of the heuristic model calls</h4><p>
+
+
+<br><i>(default = 10)</i>
+
+<h4><a name="userheurinterval">
+userheurinterval</a>
+<i> (integer)</i> Determines the interval when to apply the multiplier for the frequency of the heuristic model calls</h4><p>
+
+
+<br><i>(default = 100)</i>
+
+<h4><a name="userheurmult">
+userheurmult</a>
+<i> (integer)</i> Determines the multiplier for the frequency of the heuristic model calls</h4><p>
+
+
+<br><i>(default = 2)</i>
+
+<h4><a name="userheurnewint">
+userheurnewint</a>
+<i> (integer)</i> Calls the heuristic if the solver found a new integer feasible solution</h4><p>
+
+
+<br><i>(default = 1)</i>
+
+<h4><a name="userheurobjfirst">
+userheurobjfirst</a>
+<i> (integer)</i> ***</h4><p>
+
+
+<br><i>(default = 0)</i>
 
 <h4><a name="userjobid">
 userjobid</a>

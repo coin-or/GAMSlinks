@@ -52,6 +52,7 @@ private:
   double    *node_ub;
 
   bool have_incumbent;
+  bool new_incumbent;
 	/* storage of size iolib.ncols for incumbent solution */
   double    *incumbent;
 	/* storage of size iolib.ncols for global lower bounds */
@@ -61,13 +62,13 @@ private:
   
   bool       userkeep;       /* indicator for running gamskeep */
 
-//  int       heurfreq;       /* heuristic frequency */
-//  int       heurinterval;
-//  int       heurmult;
-//  int       heurfirst;      /* heuristic at first nodes */
-//  int       heurnewint;     /* heuristic if new incumbent */
-//  int       heurobjfirst;   /* heurisitc at first nodes if node obj is good */
-//  char      *heurcall;      /* command line minus gams for the heuristic */
+  int       heurfreq;       /* heuristic frequency */
+  int       heurinterval;
+  int       heurmult;
+  int       heurfirst;      /* heuristic at first nodes */
+  int       heurnewint;     /* heuristic if new incumbent */
+  int       heurobjfirst;   /* heurisitc at first nodes if node obj is good */
+  char      heurcall[1024];      /* command line minus gams for the heuristic */
 
   char      cutcall[1024];       /* command line minus gams for the cut generation */
   int       cutfreq;        /* cut frequency */
@@ -79,27 +80,21 @@ private:
 //  char      *incbcall;      /* command line minus gams for the incumbent callback */
 //  char      *incbicall;     /* command line minus gams for the information incumbent callback */
 
-//  char      *userprefix[1024];    /* prefix gdxname, gdxnameinc, and usergdxin */
   char      userjobid[1024];     /* jobid added to gdxname, gdxnameinc, usergdxin, adds --userjobid to the calls and o and lf */
 
-//  int       objvar;         /* index of objective variables */
-//  int       objrow;         /* index of objective row, if there is one, otherwise -1 */
-//  double    objvarcoef;     /* objective variable coefficient */
-//  double    lastincumbent;  /* last incumbent */
-//  int       numcols;        /* number of variables */
   char      gdxname[1024];       /* GDX file name for solution read by the GAMS models */
   char      gdxnameinc[1024];    /* GDX file name for incumbent read by the GAMS models */
   char      usergdxin[1024];     /* GDX file name for reading stuff back */
 	
-	int ncalls;
+	int       ncalls;
 
-	
 	void init();
 	
 	void translateToGamsSpaceX(const double* x_, double objval_, double* x);
 	void translateToGamsSpaceLB(const double* lb_, double* lb);
 	void translateToGamsSpaceUB(const double* ub_, double* ub);
-	
+	void translateFromGamsSpaceX(const double* x_, double* x);
+
 public:	
 	GamsBCH(GamsModel& gm_, GamsOptions& opt_);
 
@@ -110,7 +105,15 @@ public:
 	 */
 	void setGlobalBounds(const double* lb_, const double* ub_);
 
+	/** Sets the solution and bounds of the current node.
+	 * Should be called before generateCuts() and runHeuristics().
+	 */
 	void setNodeSolution(const double* x_, double objval_, const double* lb_, const double* ub_);
+
+	/** Informs BCH about the current incumbent.
+	 * Should be called before generateCuts() and runHeuristics().
+	 * Checks whether the objective value changed, and does nothing if its the same.
+	 */
 	void setIncumbentSolution(const double* x_, double objval_);
 	
 	/** Returns true if generateCuts should be called, otherwise false.
@@ -121,8 +124,21 @@ public:
 	/** Calls the GAMS cut generator.
 	 * Note, that you need to set the solution of the current nodes relaxation with.
 	 * Note, that you should call this method only if doCuts() returned true.
+	 * @return True, if everything worked fine (even though we might not have found cuts), false if something went wrong.
 	 */
 	bool generateCuts(std::vector<Cut>& cuts);
+	
+	/** Returns true if runHeuristic should be called, otherwise false.
+	 * You should call this method before doHeuristic().
+	 */
+	bool doHeuristic(double bestbnd, double curobj);
+
+	/** Calls the GAMS heuristic.
+	 * @param x Space to store a solution.
+	 * @param objvalue A double to store objective value of new solution.
+	 * @return True, if a point has been found, false otherwise.  
+	 */
+	bool runHeuristic(double* x, double& objvalue);
 };
 
 #endif /*GAMSBCH_HPP_*/

@@ -120,18 +120,21 @@ void GamsBCH::init() {
   cutfirst=opt.getInteger("usercutfirst");
   cutnewint=opt.getBool("usercutnewint");
 
-//  sprintf(cbinfo.heurcall, "%s %s%s", optGetStrS_userheurcall(Optr,sval), 
-//                                      optDefined_userjobid(Optr)? "--userjobid=":"",
-//                                      optDefined_userjobid(Optr)? optGetStrS_userjobid(Optr,sval1):"");
-//  cbinfo.heurfreq     = optGetStrI_userheurfreq(Optr);
-//  cbinfo.heurinterval = optGetStrI_userheurinterval(Optr);
-//  cbinfo.heurmult     = optGetStrI_userheurmult(Optr);
-//  cbinfo.heurfirst    = optGetStrI_userheurfirst(Optr);
-//  cbinfo.heurnewint   = optGetStrI_userheurnewint(Optr);
-//  cbinfo.heurobjfirst = optGetStrI_userheurobjfirst(Optr);
+  opt.getString("userheurcall", heurcall);
+  len=strlen(heurcall);
+  if (*userjobid)
+  	snprintf(heurcall+len, 1024-len, " --userjobid=%s", userjobid);
+
+  heurfreq=opt.getInteger("userheurfreq");
+  heurinterval=opt.getInteger("userheurinterval");
+  heurmult=opt.getInteger("userheurmult");
+  heurfirst=opt.getInteger("userheurfirst");
+  heurnewint=opt.getInteger("userheurnewint");
+  heurobjfirst=opt.getInteger("userheurobjfirst");
 	
   ncalls=0;
   have_incumbent=false;
+  new_incumbent=false;
 	
   bchSlvSetInf(gm.getPInfinity(), gm.getMInfinity());
   setGlobalBounds(gm.ColLb(), gm.ColUb());
@@ -150,6 +153,18 @@ void GamsBCH::translateToGamsSpaceX(const double* x_, double objval_, double* x)
 		CoinDisjointCopyN(x_, iolib.ncols, x);
 	}
 }
+
+void GamsBCH::translateFromGamsSpaceX(const double* x_, double* x) {
+	if (gm.isReform_) {
+		assert(iolib.ncols == gm.nCols()+1);
+		CoinDisjointCopyN(x_, iolib.iobvar, x);
+		CoinDisjointCopy(x_+iolib.iobvar+1, x_+iolib.ncols, x+iolib.iobvar);
+	} else {
+		assert(iolib.ncols == gm.nCols());
+		CoinDisjointCopyN(x_, iolib.ncols, x);
+	}
+}
+
 
 void GamsBCH::translateToGamsSpaceLB(const double* lb_, double* lb) {
 	if (gm.isReform_) {
@@ -196,8 +211,15 @@ void GamsBCH::setGlobalBounds(const double* lb_, const double* ub_) {
 }
 
 void GamsBCH::setIncumbentSolution(const double* x_, double objval_) {
-	translateToGamsSpaceX(x_, objval_, incumbent);
-	have_incumbent=true;
+	if (!have_incumbent || (objval_!=incumbent[iolib.iobvar])) {
+		translateToGamsSpaceX(x_, objval_, incumbent);
+		have_incumbent=true;
+		new_incumbent=true;
+
+		char buffer[255];
+		snprintf(buffer, 255, "GamsBCH: updated incumbent solution to objvalue %g", objval_);
+		gm.PrintOut(GamsModel::LogMask, buffer);
+	}
 }
 
 bool GamsBCH::doCuts() {
@@ -209,7 +231,6 @@ bool GamsBCH::doCuts() {
 
 bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
 	cuts.clear();
-	++ncalls;
 	
 //	printf("node relax. solution: ");
 //	for (int i=0; i<iolib.ncols; ++i) printf("%g ", node_x[i]);
@@ -219,11 +240,12 @@ bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
 		return false;
 	}
 	
-	if (have_incumbent) {
+	if (new_incumbent) {
     if (bchWriteSol(gdxnameinc, dict, iolib.ncols, global_lb, incumbent, global_ub, NULL)) {
       gm.PrintOut(GamsModel::AllMask, "GamsBCH: Could not write incumbent solution to GDX file.");
       return false;
     }
+    new_incumbent=false;
 	}
 
 //	gm.PrintOut(GamsModel::LogMask, "GamsBCH: Spawn GAMS cutgenerator.");
@@ -327,3 +349,61 @@ bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
   return true;
 }
 
+//curobj = objective value for the subproblem at the current node
+//bestbnd = obj. value of best remaining node
+bool GamsBCH::doHeuristic(double bestbnd, double curobj) {
+	double bestint=have_incumbent ? incumbent[iolib.iobvar] : (gm.ObjSense()==1 ? iolib.usrpinf : iolib.usrminf);
+	return bchQueryHeuristic(heurfreq, heurinterval, heurmult,
+	                         heurfirst, heurobjfirst, bestbnd,
+	                         bestint, curobj, have_incumbent, (int)gm.ObjSense(), heurnewint);
+}
+
+bool GamsBCH::runHeuristic(double* x, double& objvalue) {
+	if (bchWriteSol(gdxname, dict, iolib.ncols, node_lb, node_x, node_ub, NULL)) {
+		gm.PrintOut(GamsModel::AllMask, "GamsBCH: Could not write node solution to GDX file.");
+		return false;
+	}
+	
+	if (new_incumbent) {
+    if (bchWriteSol(gdxnameinc, dict, iolib.ncols, global_lb, incumbent, global_ub, NULL)) {
+      gm.PrintOut(GamsModel::AllMask, "GamsBCH: Could not write incumbent solution to GDX file.");
+      return false;
+    }
+    new_incumbent=false;
+	}
+
+	char command[1024];
+	snprintf(command, 1024, "%s --ncalls %d", heurcall, ncalls++);
+	int rcode = bchRunGAMS(command, usergdxin, userkeep, userjobid);
+	
+	if (rcode > 0) {
+		gm.PrintOut(GamsModel::AllMask, "GamsBCH: Could not spawn GAMS cutgenerator.");
+		return false;
+	} else if (rcode < 0) {
+		// what is the error in this case?
+    return false;
+  }
+	
+	// initialize storage with global lower bound
+	double* newx=	CoinCopyOfArray(global_lb, iolib.ncols);
+	if (bchReadSolGDX(usergdxin, dict, iolib.ncols, newx)) {
+		gm.PrintOut(GamsModel::AllMask, "GamsBCH: Could not read solution GDX file.");
+		delete[] newx;
+		return false;
+	}
+	
+	if (!have_incumbent || gm.ObjSense()*(incumbent[iolib.iobvar]-newx[iolib.iobvar])>1e-6) {
+		translateFromGamsSpaceX(newx, x);
+		objvalue=newx[iolib.iobvar];
+
+	  sprintf(command, "GamsBCH call %d: Got new incumbent with objvalue %g.", ncalls, objvalue);
+		gm.PrintOut(GamsModel::AllMask, command);
+
+		delete[] newx;
+		return true;
+	} else {
+		delete[] newx;
+		return false;
+	}
+	
+}

@@ -72,7 +72,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_GamsCoinCbc_OBJECTS = GamsCoinCbc.$(OBJEXT) \
-	GamsCutGenerator.$(OBJEXT)
+	GamsCutGenerator.$(OBJEXT) GamsHeuristic.$(OBJEXT)
 GamsCoinCbc_OBJECTS = $(am_GamsCoinCbc_OBJECTS)
 am__DEPENDENCIES_1 =
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
@@ -316,7 +316,7 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = optcbc.def optcbc.gms optcbc.txt gmscc_nt.cmd \
 	gmscc_us.run install/gmscc_nt.dat install/gmscc_un.dat \
 	$(am__append_1)
-GamsCoinCbc_SOURCES = GamsCoinCbc.cpp GamsCutGenerator.cpp
+GamsCoinCbc_SOURCES = GamsCoinCbc.cpp GamsCutGenerator.cpp GamsHeuristic.cpp
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(srcdir)/../GamsIO` \
@@ -442,6 +442,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCoinCbc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCutGenerator.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsHeuristic.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

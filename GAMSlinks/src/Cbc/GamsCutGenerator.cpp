@@ -9,7 +9,7 @@
 #include "GamsCutGenerator.hpp"
 
 GamsCutGenerator::GamsCutGenerator(GamsBCH& bch_, CbcModel*& modelptr_)
-: bch(bch_), modelptr(modelptr_), last_inc_objval(1E+300)
+: bch(bch_), modelptr(modelptr_)
 { }
 
 CglCutGenerator* GamsCutGenerator::clone() const {
@@ -17,11 +17,8 @@ CglCutGenerator* GamsCutGenerator::clone() const {
 }
 
 void GamsCutGenerator::generateCuts(const OsiSolverInterface &si, OsiCuts &cs, const CglTreeInfo info) const {
-	if (modelptr && modelptr->bestSolution() && modelptr->getObjValue()!=last_inc_objval) { 
-		printf("GamsBCH: update incumbent solution to objvalue %g\t (best possible: %g)\n", modelptr->getObjValue(), modelptr->getBestPossibleObjValue());
+	if (modelptr && modelptr->bestSolution()) 
 		bch.setIncumbentSolution(modelptr->bestSolution(), modelptr->getObjValue());
-		last_inc_objval=modelptr->getObjValue();
-	}
 	
 	if (!bch.doCuts()) return; // skip cut generation
 
