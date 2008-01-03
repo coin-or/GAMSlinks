@@ -1,9 +1,15 @@
 #!/bin/sh
 
+wgetcmd=wget
 wgetcount=`which wget 2>/dev/null | wc -w`
 if test ! $wgetcount = 1; then
   echo "Utility wget not found in your PATH."
-  exit -1
+  if test `uname` = Darwin; then
+    wgetcmd=ftp
+    echo "Using ftp command instead."
+  else
+    exit -1
+  fi
 fi
 
 echo " "
@@ -21,7 +27,7 @@ rm -f $FILES
 echo "Downloading the libraries from www.gams.com..."
 for file in $FILES
 do
-	wget http://www.gams.com/~svigerske/$file
+	$wgetcmd http://www.gams.com/~svigerske/$file
 done
 
 echo "Unpacking the libraries..."
