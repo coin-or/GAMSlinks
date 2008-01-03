@@ -23972,30 +23972,6 @@ echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
 echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
 if test `eval echo '${'$as_ac_File'}'` = yes; then
   IFORT_LIBS="-L$withval"
-fi
-
-else
-  if test x"$use_gamssys" != x; then
-          as_ac_File=`echo "ac_cv_file_$use_gamssys/libifcore.so" | $as_tr_sh`
-echo "$as_me:$LINENO: checking for $use_gamssys/libifcore.so" >&5
-echo $ECHO_N "checking for $use_gamssys/libifcore.so... $ECHO_C" >&6
-if eval "test \"\${$as_ac_File+set}\" = set"; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  test "$cross_compiling" = yes &&
-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
-   { (exit 1); exit 1; }; }
-if test -r "$use_gamssys/libifcore.so"; then
-  eval "$as_ac_File=yes"
-else
-  eval "$as_ac_File=no"
-fi
-fi
-echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
-echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
-if test `eval echo '${'$as_ac_File'}'` = yes; then
-  IFORT_LIBS="-L$use_gamssys"
 else
   as_ac_File=`echo "ac_cv_file_$use_gamssys/libifcore.a" | $as_tr_sh`
 echo "$as_me:$LINENO: checking for $use_gamssys/libifcore.a" >&5
@@ -24023,6 +23999,30 @@ echo "$as_me: WARNING: Path for Intel Fortran Libraries given by --with-ifort-li
 
 fi
 
+fi
+
+else
+  if test x"$use_gamssys" != x; then
+          as_ac_File=`echo "ac_cv_file_$use_gamssys/libifcore.so" | $as_tr_sh`
+echo "$as_me:$LINENO: checking for $use_gamssys/libifcore.so" >&5
+echo $ECHO_N "checking for $use_gamssys/libifcore.so... $ECHO_C" >&6
+if eval "test \"\${$as_ac_File+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  test "$cross_compiling" = yes &&
+  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+   { (exit 1); exit 1; }; }
+if test -r "$use_gamssys/libifcore.so"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
+if test `eval echo '${'$as_ac_File'}'` = yes; then
+  IFORT_LIBS="-L$use_gamssys"
 fi
 
          else
