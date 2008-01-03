@@ -23973,9 +23973,9 @@ echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
 if test `eval echo '${'$as_ac_File'}'` = yes; then
   IFORT_LIBS="-L$withval"
 else
-  as_ac_File=`echo "ac_cv_file_$use_gamssys/libifcore.a" | $as_tr_sh`
-echo "$as_me:$LINENO: checking for $use_gamssys/libifcore.a" >&5
-echo $ECHO_N "checking for $use_gamssys/libifcore.a... $ECHO_C" >&6
+  as_ac_File=`echo "ac_cv_file_$withval/libifcore.a" | $as_tr_sh`
+echo "$as_me:$LINENO: checking for $withval/libifcore.a" >&5
+echo $ECHO_N "checking for $withval/libifcore.a... $ECHO_C" >&6
 if eval "test \"\${$as_ac_File+set}\" = set"; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
@@ -23983,7 +23983,7 @@ else
   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
 echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
    { (exit 1); exit 1; }; }
-if test -r "$use_gamssys/libifcore.a"; then
+if test -r "$withval/libifcore.a"; then
   eval "$as_ac_File=yes"
 else
   eval "$as_ac_File=no"
@@ -23992,7 +23992,7 @@ fi
 echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
 echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
 if test `eval echo '${'$as_ac_File'}'` = yes; then
-  IFORT_LIBS="-L$use_gamssys"
+  IFORT_LIBS="-L$withval"
 else
   { echo "$as_me:$LINENO: WARNING: Path for Intel Fortran Libraries given by --with-ifort-libdir but no libifcore.so or libifcore.a found. GAMS I/O libraries might fail to link." >&5
 echo "$as_me: WARNING: Path for Intel Fortran Libraries given by --with-ifort-libdir but no libifcore.so or libifcore.a found. GAMS I/O libraries might fail to link." >&2;}
