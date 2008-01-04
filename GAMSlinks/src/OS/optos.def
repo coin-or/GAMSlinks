@@ -1,0 +1,17 @@
+*
+* optos.def
+*
+
+readosol string 0 "" 1 1 read the solver options from an OSoL file
+writeosil string 0 "" 1 1 write the problem instance as OSiL file
+writeosrl string 0 "" 1 1 write the optimization result as OSrL file
+service string 0 "" 1 1 call an Optimization Service to solve the instance
+solver string 0 "" 1 1 specification of solver for a local solve
+nobounds immediate nobounds 0 1 ignores bounds on options
+readfile immediate readfile 0 1 read secondary option file
+*
+* Groups
+* <group-ident> group <group-number <help-context> <help-text>
+*
+general group 1 1 General Options
+*** End of file

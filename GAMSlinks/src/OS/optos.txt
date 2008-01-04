@@ -1,0 +1,9 @@
+introduction
+GAMS/OS brings the open source Optimization Services project to the broad audience of GAMS users.
+The code has been written primarily by Jun Ma and Kipp Martin.
+The GAMS interface for OS is maintained by Stefan Vigerske, Humboldt University, in a COIN-OR project called GAMSlinks.
+For more information visit the web site for
+<a href="http://www.coin-or.org">COIN-OR</a>,
+<a href="https://projects.coin-or.org/OS">OS<a>, and
+<a href="https://projects.coin-or.org/GAMSlinks">GAMSlinks</a>.<BR>
+For documentation of GAMS parameters, see the <A href="http://www.gams.com/docs/parame.htm">GAMS parameters documentation</A>.

@@ -92,6 +92,10 @@ GAMSlinks/src/OS/gmsos_nt.cmd -text
 GAMSlinks/src/OS/gmsos_us.run -text
 GAMSlinks/src/OS/install/gmsos_nt.dat -text
 GAMSlinks/src/OS/install/gmsos_un.dat -text
+GAMSlinks/src/OS/optos.def -text
+GAMSlinks/src/OS/optos.gms -text
+GAMSlinks/src/OS/optos.html -text
+GAMSlinks/src/OS/optos.txt -text
 GAMSlinks/src/Osi/GamsCoinOsi.cpp -text
 GAMSlinks/src/Osi/Makefile.am -text
 GAMSlinks/src/Osi/Makefile.in -text

@@ -28,13 +28,18 @@
 #endif
 #endif
 
+#include <iostream>
+#include <fstream>
+
 #include "smag.h"
 #include "Smag2OSiL.hpp"
 #include "OSrL2Smag.hpp"
+#include "GamsOptions.hpp"
 
 #include "OSiLWriter.h"
+#include "OSrLWriter.h"
 #include "OSErrorClass.h"
-
+#include "OSSolverAgent.h"
 #ifdef COIN_OS_SOLVER
 #include "OSDefaultSolver.h"
 #ifdef COIN_HAS_OSI
@@ -45,7 +50,9 @@
 #endif
 #endif
 
-void localSolve(smagHandle_t prob, OSInstance* osinstance);
+void localSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std::string& osol);
+void remoteSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std::string& osol);
+void processResult(smagHandle_t prob, GamsOptions& opt, string* osrl, OSResult* osresult);
 
 int main (int argc, char* argv[]) {
 #if defined(_MSC_VER)
@@ -83,22 +90,55 @@ int main (int argc, char* argv[]) {
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 
+#ifdef GAMS_BUILD
+	GamsOptions opt(prob->gms.sysDir, "coinos");
+#else
+	GamsOptions opt(prob->gms.sysDir, "os");
+#endif
+	if (prob->gms.useopt)
+		opt.readOptionsFile(prob->gms.optFileName);
+
 	Smag2OSiL smagosil(prob);
 	if (!smagosil.createOSInstance()) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Creation of OSInstance failed.\n");
 		return EXIT_FAILURE;
 	}
 	
-	bool writeosil=false; // TODO: should be a parameter that also gives the filename
-	if (writeosil) {
+	if (opt.isDefined("writeosil")) {
 		OSiLWriter osilwriter;
-		smagStdOutputPrint(prob, SMAG_LOGMASK, "Writing the instance...\n");
-		smagStdOutputPrint(prob, SMAG_LOGMASK, osilwriter.writeOSiL(smagosil.osinstance).c_str());
-		smagStdOutputPrint(prob, SMAG_LOGMASK, "Done writing the instance.\n");
+		char osilfilename[255];
+		std::ofstream osilfile(opt.getString("writeosil", osilfilename));
+		if (!osilfile.good()) {
+			snprintf(buffer, 255, "Error opening file %s for writing of instance in OSiL.\n", osilfilename);
+			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+		} else {
+			snprintf(buffer, 255, "Writing instance in OSiL to %s.\n", osilfilename);
+			smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+			osilfile << osilwriter.writeOSiL(smagosil.osinstance);
+		}
+	}
+	
+	std::string osol;
+	if (opt.isDefined("readosol")) {
+		char osolfilename[255], buffer[512];
+		std::ifstream osolfile(opt.getString("readosol", osolfilename));
+		if (!osolfile.good()) {
+			snprintf(buffer, 255, "Error opening file %s for reading solver options in OSoL.\n", osolfilename);
+			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+		} else {
+			snprintf(buffer, 255, "Reading solver options in OSoL from %s.\n", osolfilename);
+			smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+			std::getline(osolfile, osol, '\0');
+		}		
+	} else { // just give an "empty" xml file
+		osol = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <osol xmlns=\"os.optimizationservices.org\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"os.optimizationservices.org http://www.optimizationservices.org/schemas/OSoL.xsd\"><other> </other></osol>";
 	}
 
-	//TODO: try a local solve only if the option "service" is not set; otherwise do a remote solve
-	localSolve(prob, smagosil.osinstance);
+	if (opt.isDefined("service")) {
+		remoteSolve(prob, opt, smagosil.osinstance, osol);
+	} else {
+		localSolve(prob, opt, smagosil.osinstance, osol);
+	}
 	
 	smagStdOutputStop(prob, buffer, sizeof(buffer));
 	smagClose(prob);
@@ -150,9 +190,13 @@ std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) 
 	return "error"; // should never reach this point of code
 }
 
-void localSolve(smagHandle_t prob, OSInstance* osinstance) {
-	std::string solvername;//="ipopt"; // TODO: should be set via parameter
-	if (solvername=="") { // set default solver depending on problem type and what is available
+void localSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std::string& osol) {
+	std::string solvername;
+	if (opt.isDefined("solver")) {
+		char buffer[128];
+		if (opt.getString("solver", buffer))
+			solvername.assign(buffer);
+	} else { // set default solver depending on problem type and what is available
 		solvername=getSolverName(
 				osinstance->getNumberOfNonlinearExpressions() || osinstance->getNumberOfQuadraticTerms(),
 				osinstance->getNumberOfBinaryVariables() || osinstance->getNumberOfIntegerVariables(),
@@ -182,24 +226,14 @@ void localSolve(smagHandle_t prob, OSInstance* osinstance) {
 
 	solver->sSolverName = solvername;
 	solver->osinstance = osinstance;
+	solver->osol = osol;
 	
-	//TODO: option handling; for now we just give an "empty" xml file
-	solver->osol = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <osol xmlns=\"os.optimizationservices.org\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"os.optimizationservices.org http://www.optimizationservices.org/schemas/OSoL.xsd\"><other> </other></osol>";
-
 	smagStdOutputPrint(prob, SMAG_ALLMASK, "Solving the instance...\n\n");
 	try {
 		solver->solve();
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "\nDone solving the instance.\n");		
 
-		bool writeosrl=false; // TODO: should be a parameter and go into a file
-		if (writeosrl)
-			smagStdOutputPrint(prob, SMAG_LOGMASK, solver->osrl.c_str());
-
-		OSrL2Smag osrl2smag(prob);
-		if (solver->osresult)
-			osrl2smag.writeSolution(*solver->osresult);
-		else
-			osrl2smag.writeSolution(solver->osrl);
+		processResult(prob, opt, &solver->osrl, solver->osresult);
 
 	} catch(ErrorClass error) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error solving the instance. Error message:\n");
@@ -211,9 +245,54 @@ void localSolve(smagHandle_t prob, OSInstance* osinstance) {
 } // localSolve
 #else
 
-void localSolve(smagHandle_t prob, OSInstance* osinstance) {
+void localSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std::string& osol) {
 	smagStdOutputPrint(prob, SMAG_ALLMASK, "Local solve of instances not supported. You need to rebuild GamsOS with the option --enable-os-solver.\n");
 	smagReportSolBrief(prob, 13, 6);
 }
 
 #endif
+
+void remoteSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std::string& osol) {
+	char buffer[512];
+	
+	if (opt.isDefined("solver")) { // if a solver option was specified put that into osol
+		string::size_type iStringpos = osol.find("</osol");
+		std::string solverInput = "<other name=\"os_solver\">";
+		opt.getString("solver", buffer);
+		solverInput += buffer;
+		solverInput += "</other>";
+		osol.insert(iStringpos, solverInput);
+		std::clog << "OSoL: " << osol;
+	}
+
+	OSSolverAgent agent(opt.getString("service", buffer));
+	
+	std::string osrl = agent.solve(OSiLWriter().writeOSiL(osinstance), osol);
+	
+	processResult(prob, opt, &osrl, NULL);
+}
+
+void processResult(smagHandle_t prob, GamsOptions& opt, string* osrl, OSResult* osresult) {
+	assert(osrl || osresult);
+	if (opt.isDefined("writeosrl")) {
+		char osrlfilename[255], buffer[512];
+		std::ofstream osrlfile(opt.getString("writeosrl", osrlfilename));
+		if (!osrlfile.good()) {
+			snprintf(buffer, 255, "Error opening file %s for writing optimization results in OSrL.\n", osrlfilename);
+			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+		} else {
+			snprintf(buffer, 255, "Writing result in OSrL to %s.\n", osrlfilename);
+			smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+			if (osrl)
+				osrlfile << *osrl;
+			else
+				osrlfile << OSrLWriter().writeOSrL(osresult);
+		}
+	}
+
+	OSrL2Smag osrl2smag(prob);
+	if (osresult)
+		osrl2smag.writeSolution(*osresult);
+	else
+		osrl2smag.writeSolution(*osrl);
+}

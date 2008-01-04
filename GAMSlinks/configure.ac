@@ -407,6 +407,7 @@ AC_COIN_VPATH_LINK(src/OS/gmsos_us.run)
 AC_COIN_VPATH_LINK(src/OS/gmsos_nt.cmd)
 AC_COIN_VPATH_LINK(src/OS/install/gmsos_un.dat)
 AC_COIN_VPATH_LINK(src/OS/install/gmsos_nt.dat)
+AC_COIN_VPATH_LINK(src/OS/optos.def)
 
 ############
 # END PART #

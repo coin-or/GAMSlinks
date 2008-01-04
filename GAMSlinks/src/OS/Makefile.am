@@ -23,6 +23,7 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSCommonInterfaces` \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSUtils` \
+ -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSAgent` \
  -I`$(CYGPATH_W) $(OSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(CPPADSRCDIR)`
 
@@ -37,16 +38,18 @@ GamsOS_LDADD += \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
  $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
  $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
+ $(OSOBJDIR)/src/OSAgent/libOSAgent.la \
  ../GamsIO/libSmagIO.la
  
 GamsOS_DEPENDENCIES += \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
+ $(OSOBJDIR)/src/OSAgent/libOSAgent.la \
  $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
  ../GamsIO/libSmagIO.la $(SMAG_LIBS)
 
-LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
+LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(OSOBJDIR)/os_addlibs.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
 
 if COIN_OS_SOLVER
 

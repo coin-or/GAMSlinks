@@ -461,7 +461,8 @@ GamsOS_SOURCES = GamsOS.cpp Smag2OSiL.cpp OSrL2Smag.cpp
 GamsOS_LDADD = ../GamsIO/libSmagIO.la $(am__append_2) \
 	$(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
 	$(OSOBJDIR)/src/OSParsers/libOSParsers.la \
-	$(OSOBJDIR)/src/OSUtils/libOSUtils.la ../GamsIO/libSmagIO.la \
+	$(OSOBJDIR)/src/OSUtils/libOSUtils.la \
+	$(OSOBJDIR)/src/OSAgent/libOSAgent.la ../GamsIO/libSmagIO.la \
 	$(am__append_5) $(am__append_9) $(am__append_12) \
 	$(am__append_16) $(am__append_20) $(am__append_24) \
 	$(am__append_28) $(am__append_32) $(am__append_36) \
@@ -469,6 +470,7 @@ GamsOS_LDADD = ../GamsIO/libSmagIO.la $(am__append_2) \
 GamsOS_DEPENDENCIES = $(am__append_3) \
 	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
 	$(OSOBJDIR)/src/OSUtils/libOSUtils.la \
+	$(OSOBJDIR)/src/OSAgent/libOSAgent.la \
 	$(OSOBJDIR)/src/OSParsers/libOSParsers.la \
 	$(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
 	../GamsIO/libSmagIO.la $(SMAG_LIBS) $(am__append_6) \
@@ -481,11 +483,11 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	$(COINUTILSOBJDIR)/inc` -I`$(CYGPATH_W) $(OSSRCDIR)/src` \
 	-I`$(CYGPATH_W) $(OSSRCDIR)/src/OSCommonInterfaces` \
 	-I`$(CYGPATH_W) $(OSSRCDIR)/src/OSUtils` -I`$(CYGPATH_W) \
-	$(OSOBJDIR)/inc` -I`$(CYGPATH_W) $(CPPADSRCDIR)` \
-	$(am__append_1) $(am__append_4) $(am__append_8) \
-	$(am__append_11) $(am__append_15) $(am__append_19) \
-	$(am__append_23) $(am__append_27) $(am__append_31) \
-	$(am__append_35)
+	$(OSSRCDIR)/src/OSAgent` -I`$(CYGPATH_W) $(OSOBJDIR)/inc` \
+	-I`$(CYGPATH_W) $(CPPADSRCDIR)` $(am__append_1) \
+	$(am__append_4) $(am__append_8) $(am__append_11) \
+	$(am__append_15) $(am__append_19) $(am__append_23) \
+	$(am__append_27) $(am__append_31) $(am__append_35)
 GamsOS_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DISTCLEANFILES = gmsos_.zip $(am__append_40) $(VPATH_DISTCLEANFILES)
