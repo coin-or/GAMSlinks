@@ -10,6 +10,8 @@
 #include "OSrLReader.h"
 #include "CoinHelperFunctions.hpp"
 
+#include <cstring>
+
 OSrL2Smag::OSrL2Smag(smagHandle_t smag_)
 : smag(smag_)
 { }
@@ -101,6 +103,16 @@ void OSrL2Smag::writeSolution(OSResult& osresult) {
 		for (std::vector<VarValue*>::const_iterator it(sol->variables->values->var.begin());
 		it!=sol->variables->values->var.end(); ++it) {
 			colLev[(*it)->idx]=(*it)->value;
+		}
+	if (sol->variables)
+		for (int i=0; i<sol->variables->numberOfOtherVariableResult; ++i) {
+			if (sol->variables->other[i]->name=="reduced costs") {
+				for (std::vector<OtherVarResult*>::const_iterator it(sol->variables->other[i]->var.begin());
+				it!=sol->variables->other[i]->var.end(); ++it) {
+					colMarg[(*it)->idx]=atof((*it)->value.c_str());
+				}
+				break;
+			}
 		}
 
 	double objvalue=SMAG_DBL_NA;
