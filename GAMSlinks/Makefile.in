@@ -59,7 +59,8 @@ DIST_COMMON = README $(am__configure_deps) \
 	$(srcdir)/../config.sub $(srcdir)/../install-sh \
 	$(srcdir)/../ltmain.sh $(srcdir)/../missing \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/configure \
+	$(srcdir)/gamsio_addlibs.txt.in \
+	$(srcdir)/smagio_addlibs.txt.in $(top_srcdir)/configure \
 	$(top_srcdir)/inc/config_gamslinks.h.in AUTHORS
 @HAVE_EXTERNALS_TRUE@am__append_2 = Externals
 @HAVE_EXTERNALS_TRUE@am__append_3 = .Externals-stamp
@@ -73,7 +74,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno configure.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/inc/config_gamslinks.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = gamsio_addlibs.txt smagio_addlibs.txt
 SOURCES =
 DIST_SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
@@ -186,6 +187,7 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FADDLIBS = @FADDLIBS@
 FFLAGS = @FFLAGS@
+GAMSIO_ADDLIBS = @GAMSIO_ADDLIBS@
 GAMSIO_CODE = @GAMSIO_CODE@
 GAMSIO_CPPFLAGS = @GAMSIO_CPPFLAGS@
 GAMSIO_IS_UNIX_FALSE = @GAMSIO_IS_UNIX_FALSE@
@@ -318,7 +320,13 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = src $(am__append_1)
-EXTRA_DIST = README INSTALL LICENSE AUTHORS $(am__append_2)
+EXTRA_DIST = README LICENSE AUTHORS $(am__append_2)
+
+########################################################################
+#                  Installation of the addlibs file                    #
+########################################################################
+addlibsfile1 = gamsio_addlibs.txt
+addlibsfile2 = smagio_addlibs.txt
 
 ########################################################################
 #                         Maintainer Stuff                             #
@@ -381,6 +389,10 @@ $(top_srcdir)/inc/config_gamslinks.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_
 
 distclean-hdr:
 	-rm -f inc/config_gamslinks.h inc/stamp-h1
+gamsio_addlibs.txt: $(top_builddir)/config.status $(srcdir)/gamsio_addlibs.txt.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+smagio_addlibs.txt: $(top_builddir)/config.status $(srcdir)/smagio_addlibs.txt.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -527,7 +539,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/.. $(distdir)/../BuildTools $(distdir)/inc $(distdir)/src/GamsIO $(distdir)/test
+	$(mkdir_p) $(distdir)/. $(distdir)/.. $(distdir)/../BuildTools $(distdir)/inc $(distdir)/test
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -718,7 +730,7 @@ info-am:
 
 install-data-am:
 
-install-exec-am:
+install-exec-am: install-exec-local
 
 install-info: install-info-recursive
 
@@ -744,7 +756,7 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-info-am
+uninstall-am: uninstall-info-am uninstall-local
 
 uninstall-info: uninstall-info-recursive
 
@@ -756,13 +768,14 @@ uninstall-info: uninstall-info-recursive
 	distclean-local distclean-recursive distclean-tags \
 	distcleancheck distdir distuninstallcheck dvi dvi-am html \
 	html-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic maintainer-clean-recursive \
-	mostlyclean mostlyclean-generic mostlyclean-libtool \
-	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
-	uninstall uninstall-am uninstall-info-am
+	install-data-am install-exec install-exec-am \
+	install-exec-local install-info install-info-am install-man \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am maintainer-clean maintainer-clean-generic \
+	maintainer-clean-recursive mostlyclean mostlyclean-generic \
+	mostlyclean-libtool mostlyclean-recursive pdf pdf-am ps ps-am \
+	tags tags-recursive uninstall uninstall-am uninstall-info-am \
+	uninstall-local
 
 
 # tmpdir = tmpdir
@@ -780,6 +793,14 @@ clean-local:
 
 distclean-local:
 	if test -r test/Makefile; then cd test; $(MAKE) distclean; fi
+
+install-exec-local: install-doc
+	$(install_sh_DATA) $(addlibsfile1) $(DESTDIR)$(libdir)/$(addlibsfile1)
+	$(install_sh_DATA) $(addlibsfile2) $(DESTDIR)$(libdir)/$(addlibsfile2)
+
+uninstall-local: uninstall-doc
+	rm -f $(DESTDIR)$(libdir)/$(addlibsfile1)
+	rm -f $(DESTDIR)$(libdir)/$(addlibsfile2)
 
 install-doc:
 	test -z "$(DocInstallDir)" || $(mkdir_p) "$(DESTDIR)$(DocInstallDir)"

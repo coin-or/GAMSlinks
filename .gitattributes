@@ -16,14 +16,13 @@ GAMSlinks/doc/gamsdist/optcbc_s.tex -text
 GAMSlinks/doc/gamsdist/optglpk_a.tex -text
 GAMSlinks/doc/gamsdist/optglpk_s.tex -text
 GAMSlinks/doc/gamsdist/optipopt_a.tex -text
+GAMSlinks/gamsio_addlibs.txt.in -text
 GAMSlinks/inc/config_gamslinks.h.in -text
 GAMSlinks/src/Bonmin/GamsBonmin.cpp -text
 GAMSlinks/src/Bonmin/Makefile.am -text
 GAMSlinks/src/Bonmin/Makefile.in -text
 GAMSlinks/src/Bonmin/SmagMINLP.cpp -text
 GAMSlinks/src/Bonmin/SmagMINLP.hpp -text
-GAMSlinks/src/Bonmin/SmagMessageHandler.cpp -text
-GAMSlinks/src/Bonmin/SmagMessageHandler.hpp -text
 GAMSlinks/src/Bonmin/gmsbm_nt.cmd -text
 GAMSlinks/src/Bonmin/gmsbm_us.run -text
 GAMSlinks/src/Bonmin/install/gmsbm_nt.dat -text
@@ -56,7 +55,10 @@ GAMSlinks/src/GamsIO/GamsOptions.cpp -text
 GAMSlinks/src/GamsIO/GamsOptions.hpp -text
 GAMSlinks/src/GamsIO/Makefile.am -text
 GAMSlinks/src/GamsIO/Makefile.in -text
-GAMSlinks/src/GamsIO/gamsio_addlibs.txt.in -text
+GAMSlinks/src/GamsIO/SmagJournal.cpp -text
+GAMSlinks/src/GamsIO/SmagJournal.hpp -text
+GAMSlinks/src/GamsIO/SmagMessageHandler.cpp -text
+GAMSlinks/src/GamsIO/SmagMessageHandler.hpp -text
 GAMSlinks/src/Glpk/GamsCoinGlpk.cpp -text
 GAMSlinks/src/Glpk/Makefile.am -text
 GAMSlinks/src/Glpk/Makefile.in -text
@@ -71,8 +73,6 @@ GAMSlinks/src/Glpk/optglpk.txt -text
 GAMSlinks/src/Ipopt/GamsIpopt.cpp -text
 GAMSlinks/src/Ipopt/Makefile.am -text
 GAMSlinks/src/Ipopt/Makefile.in -text
-GAMSlinks/src/Ipopt/SmagJournal.cpp -text
-GAMSlinks/src/Ipopt/SmagJournal.hpp -text
 GAMSlinks/src/Ipopt/SmagNLP.cpp -text
 GAMSlinks/src/Ipopt/SmagNLP.hpp -text
 GAMSlinks/src/Ipopt/gmsip_nt.cmd -text
@@ -105,8 +105,10 @@ GAMSlinks/test/Makefile.am -text
 GAMSlinks/test/Makefile.in -text
 GAMSlinks/test/run_tests.in -text
 /INSTALL -text
+/LICENSE -text
 /Makefile.am -text
 /Makefile.in -text
+/README -text
 ThirdParty/GAMSIO/FILES -text
 ThirdParty/GAMSIO/INSTALL.GAMSIO -text
 ThirdParty/GAMSIO/LICENSE -text

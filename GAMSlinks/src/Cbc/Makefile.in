@@ -74,7 +74,6 @@ PROGRAMS = $(bin_PROGRAMS)
 am_GamsCoinCbc_OBJECTS = GamsCoinCbc.$(OBJEXT) \
 	GamsCutGenerator.$(OBJEXT) GamsHeuristic.$(OBJEXT)
 GamsCoinCbc_OBJECTS = $(am_GamsCoinCbc_OBJECTS)
-am__DEPENDENCIES_1 =
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -180,6 +179,7 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FADDLIBS = @FADDLIBS@
 FFLAGS = @FFLAGS@
+GAMSIO_ADDLIBS = @GAMSIO_ADDLIBS@
 GAMSIO_CODE = @GAMSIO_CODE@
 GAMSIO_CPPFLAGS = @GAMSIO_CPPFLAGS@
 GAMSIO_IS_UNIX_FALSE = @GAMSIO_IS_UNIX_FALSE@
@@ -219,7 +219,8 @@ LIBEXT = @LIBEXT@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@ `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt \
 	$(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt \
-	$(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt`
+	$(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt \
+	$(GAMSLINKSOBJDIR)/gamsio_addlibs.txt`
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
 LN_S = @LN_S@
@@ -344,7 +345,6 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
 
 GamsCoinCbc_LDADD = \
- ../GamsIO/libGamsIO.la \
  $(CBCOBJDIR)/src/libCbcSolver.la \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \
@@ -352,10 +352,10 @@ GamsCoinCbc_LDADD = \
  $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
  $(CLPOBJDIR)/src/libClp.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- $(GAMSIO_LIBS)
+ ../GamsIO/libGamsIO.la
 
 GamsCoinCbc_DEPENDENCIES = \
- ../GamsIO/libGamsIO.la \
+ ../GamsIO/libGamsIO.la $(GAMSIO_LIBS) \
  $(CBCOBJDIR)/src/libCbcSolver.la \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \

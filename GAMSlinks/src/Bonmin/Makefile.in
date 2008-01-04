@@ -91,14 +91,12 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_GamsBonmin_OBJECTS = GamsBonmin.$(OBJEXT) SmagMINLP.$(OBJEXT) \
-	SmagMessageHandler.$(OBJEXT) SmagNLP.$(OBJEXT) \
-	SmagJournal.$(OBJEXT)
+	SmagNLP.$(OBJEXT)
 GamsBonmin_OBJECTS = $(am_GamsBonmin_OBJECTS)
-am__DEPENDENCIES_1 =
-@COIN_HAS_CLP_TRUE@am__DEPENDENCIES_2 =  \
+@COIN_HAS_CLP_TRUE@am__DEPENDENCIES_1 =  \
 @COIN_HAS_CLP_TRUE@	$(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
 @COIN_HAS_CLP_TRUE@	$(CLPOBJDIR)/src/libClp.la
-@COIN_HAS_GLPK_TRUE@am__DEPENDENCIES_3 =  \
+@COIN_HAS_GLPK_TRUE@am__DEPENDENCIES_2 =  \
 @COIN_HAS_GLPK_TRUE@	$(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -213,6 +211,7 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FADDLIBS = @FADDLIBS@
 FFLAGS = @FFLAGS@
+GAMSIO_ADDLIBS = @GAMSIO_ADDLIBS@
 GAMSIO_CODE = @GAMSIO_CODE@
 GAMSIO_CPPFLAGS = @GAMSIO_CPPFLAGS@
 GAMSIO_IS_UNIX_FALSE = @GAMSIO_IS_UNIX_FALSE@
@@ -254,7 +253,8 @@ LIBS = @LIBS@ $(am__append_4) `cat \
 	$(COINUTILSOBJDIR)/coinutils_addlibs.txt \
 	$(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt \
 	$(CBCOBJDIR)/cbc_addlibs.txt \
-	$(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
+	$(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt \
+	$(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
 LN_S = @LN_S@
@@ -351,17 +351,15 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmsbm_nt.cmd gmsbm_us.run install/gmsbm_nt.dat \
 	install/gmsbm_un.dat $(am__append_8)
 GamsBonmin_SOURCES = GamsBonmin.cpp \
-  SmagMINLP.cpp SmagMINLP.hpp \
-  SmagMessageHandler.cpp SmagMessageHandler.hpp \
-  ../Ipopt/SmagNLP.cpp ../Ipopt/SmagJournal.cpp
+  SmagMINLP.cpp SmagMINLP.hpp ../Ipopt/SmagNLP.cpp
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
-	-I`$(CYGPATH_W) $(srcdir)/../Ipopt` -I`$(CYGPATH_W) \
-	$(COINUTILSSRCDIR)/src` -I`$(CYGPATH_W) \
-	$(COINUTILSOBJDIR)/inc` -I`$(CYGPATH_W) $(CGLSRCDIR)/src` \
-	-I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglClique` -I`$(CYGPATH_W) \
-	$(CGLSRCDIR)/src/CglDuplicateRow` -I`$(CYGPATH_W) \
-	$(CGLSRCDIR)/src/CglFlowCover` -I`$(CYGPATH_W) \
+	-I`$(CYGPATH_W) $(srcdir)/../GamsIO` -I`$(CYGPATH_W) \
+	$(srcdir)/../Ipopt` -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
+	-I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` -I`$(CYGPATH_W) \
+	$(CGLSRCDIR)/src` -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglClique` \
+	-I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglDuplicateRow` \
+	-I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglFlowCover` -I`$(CYGPATH_W) \
 	$(CGLSRCDIR)/src/CglGomory` -I`$(CYGPATH_W) \
 	$(CGLSRCDIR)/src/CglKnapsackCover` -I`$(CYGPATH_W) \
 	$(CGLSRCDIR)/src/CglMixedIntegerRounding2` -I`$(CYGPATH_W) \
@@ -383,13 +381,15 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	$(BONMINSRCDIR)/src/Interfaces` -I`$(CYGPATH_W) \
 	$(BONMINSRCDIR)/src/CbcBonmin` -I`$(CYGPATH_W) \
 	$(BONMINOBJDIR)/inc` $(am__append_1) $(am__append_5)
-GamsBonmin_LDADD = $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
+GamsBonmin_LDADD = ../GamsIO/libSmagIO.la \
+	$(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
 	$(CBCOBJDIR)/src/libCbc.la $(CGLOBJDIR)/src/libCgl.la \
 	$(OSIOBJDIR)/src/libOsi.la \
 	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
-	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(SMAG_LIBS) \
-	$(am__append_2) $(am__append_6)
-GamsBonmin_DEPENDENCIES = $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
+	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(am__append_2) \
+	$(am__append_6)
+GamsBonmin_DEPENDENCIES = ../GamsIO/libSmagIO.la $(SMAG_LIBS) \
+	$(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
 	$(CBCOBJDIR)/src/libCbc.la $(CGLOBJDIR)/src/libCgl.la \
 	$(OSIOBJDIR)/src/libOsi.la \
 	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
@@ -472,9 +472,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsBonmin.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagJournal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagMINLP.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagMessageHandler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagNLP.Po@am__quote@
 
 .cpp.o:
@@ -511,20 +509,6 @@ SmagNLP.obj: ../Ipopt/SmagNLP.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../Ipopt/SmagNLP.cpp' object='SmagNLP.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SmagNLP.obj `if test -f '../Ipopt/SmagNLP.cpp'; then $(CYGPATH_W) '../Ipopt/SmagNLP.cpp'; else $(CYGPATH_W) '$(srcdir)/../Ipopt/SmagNLP.cpp'; fi`
-
-SmagJournal.o: ../Ipopt/SmagJournal.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SmagJournal.o -MD -MP -MF "$(DEPDIR)/SmagJournal.Tpo" -c -o SmagJournal.o `test -f '../Ipopt/SmagJournal.cpp' || echo '$(srcdir)/'`../Ipopt/SmagJournal.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SmagJournal.Tpo" "$(DEPDIR)/SmagJournal.Po"; else rm -f "$(DEPDIR)/SmagJournal.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../Ipopt/SmagJournal.cpp' object='SmagJournal.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SmagJournal.o `test -f '../Ipopt/SmagJournal.cpp' || echo '$(srcdir)/'`../Ipopt/SmagJournal.cpp
-
-SmagJournal.obj: ../Ipopt/SmagJournal.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SmagJournal.obj -MD -MP -MF "$(DEPDIR)/SmagJournal.Tpo" -c -o SmagJournal.obj `if test -f '../Ipopt/SmagJournal.cpp'; then $(CYGPATH_W) '../Ipopt/SmagJournal.cpp'; else $(CYGPATH_W) '$(srcdir)/../Ipopt/SmagJournal.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SmagJournal.Tpo" "$(DEPDIR)/SmagJournal.Po"; else rm -f "$(DEPDIR)/SmagJournal.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../Ipopt/SmagJournal.cpp' object='SmagJournal.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SmagJournal.obj `if test -f '../Ipopt/SmagJournal.cpp'; then $(CYGPATH_W) '../Ipopt/SmagJournal.cpp'; else $(CYGPATH_W) '$(srcdir)/../Ipopt/SmagJournal.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

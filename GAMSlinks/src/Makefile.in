@@ -175,6 +175,7 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FADDLIBS = @FADDLIBS@
 FFLAGS = @FFLAGS@
+GAMSIO_ADDLIBS = @GAMSIO_ADDLIBS@
 GAMSIO_CODE = @GAMSIO_CODE@
 GAMSIO_CPPFLAGS = @GAMSIO_CPPFLAGS@
 GAMSIO_IS_UNIX_FALSE = @GAMSIO_IS_UNIX_FALSE@
@@ -312,6 +313,7 @@ SUBDIRS = $(am__append_1) $(am__append_2) $(am__append_3) \
 EXTRA_DIST = $(am__append_8)
 DISTCLEANFILES = $(am__append_9) $(VPATH_DISTCLEANFILES)
 ConfigHeader = GAMSlinksConfig.h
+includecoindir = $(includedir)/coin
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/$(PACKAGE_NAME)
 all: all-recursive
@@ -631,11 +633,11 @@ install-exec-local:
 	echo "#define HAVE_CONFIG_H" >>bla
 	echo "#endif" >> bla
 	cat $(srcdir)/$(ConfigHeader) >> bla
-	$(install_sh_DATA) bla $(DESTDIR)$(includedir)/$(ConfigHeader)
+	$(install_sh_DATA) bla $(DESTDIR)$(includecoindir)/$(ConfigHeader)
 	rm -f bla
 
 uninstall-local:
-	rm -f $(DESTDIR)$(includedir)/$(ConfigHeader)
+	rm -f $(DESTDIR)$(includecoindir)/$(ConfigHeader)
 
 install-doc:
 	test -z "$(DocInstallDir)" || $(mkdir_p) "$(DESTDIR)$(DocInstallDir)"

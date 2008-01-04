@@ -55,12 +55,20 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-DIST_COMMON = $(include_HEADERS) \
+@COIN_HAS_IPOPT_TRUE@am__append_1 = SmagJournal.cpp
+@COIN_HAS_IPOPT_TRUE@am__append_2 = \
+@COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
+@COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` \
+@COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \
+@COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Algorithm` \
+@COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/CGPenalty` \
+@COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
+
+DIST_COMMON = $(includecoin_HEADERS) \
 	$(srcdir)/../../../BuildTools/Makemain.inc \
-	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/gamsio_addlibs.txt.in
-@HAVE_EXTERNALS_TRUE@am__append_1 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
+	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
+@HAVE_EXTERNALS_TRUE@am__append_3 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_4 = .Externals-stamp
 subdir = src/GamsIO
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -69,14 +77,14 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/inc/config_gamslinks.h
-CONFIG_CLEAN_FILES = gamsio_addlibs.txt
+CONFIG_CLEAN_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includecoindir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libGamsIO_la_DEPENDENCIES =  \
@@ -85,6 +93,14 @@ libGamsIO_la_DEPENDENCIES =  \
 am_libGamsIO_la_OBJECTS = GamsModel.lo GamsFinalize.lo \
 	GamsMessageHandler.lo GamsOptions.lo GamsBCH.lo
 libGamsIO_la_OBJECTS = $(am_libGamsIO_la_OBJECTS)
+libSmagIO_la_DEPENDENCIES =  \
+	$(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la
+am__libSmagIO_la_SOURCES_DIST = GamsOptions.cpp SmagMessageHandler.cpp \
+	SmagJournal.cpp
+@COIN_HAS_IPOPT_TRUE@am__objects_1 = SmagJournal.lo
+am_libSmagIO_la_OBJECTS = GamsOptions.lo SmagMessageHandler.lo \
+	$(am__objects_1)
+libSmagIO_la_OBJECTS = $(am_libSmagIO_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -95,18 +111,11 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
-	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
-	$(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
-LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libGamsIO_la_SOURCES)
-DIST_SOURCES = $(libGamsIO_la_SOURCES)
-includeHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(include_HEADERS)
+SOURCES = $(libGamsIO_la_SOURCES) $(libSmagIO_la_SOURCES)
+DIST_SOURCES = $(libGamsIO_la_SOURCES) \
+	$(am__libSmagIO_la_SOURCES_DIST)
+includecoinHEADERS_INSTALL = $(INSTALL_HEADER)
+HEADERS = $(includecoin_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -200,6 +209,7 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FADDLIBS = @FADDLIBS@
 FFLAGS = @FFLAGS@
+GAMSIO_ADDLIBS = @GAMSIO_ADDLIBS@
 GAMSIO_CODE = @GAMSIO_CODE@
 GAMSIO_CPPFLAGS = @GAMSIO_CPPFLAGS@
 GAMSIO_IS_UNIX_FALSE = @GAMSIO_IS_UNIX_FALSE@
@@ -331,35 +341,36 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = $(am__append_1)
-lib_LTLIBRARIES = libGamsIO.la
-libGamsIO_la_SOURCES = ../GAMSlinksConfig.h \
+EXTRA_DIST = $(am__append_3)
+lib_LTLIBRARIES = libGamsIO.la libSmagIO.la
+libGamsIO_la_SOURCES = \
   GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsOptions.cpp GamsBCH.cpp
 
-#libGamsIO_la_LDFLAGS
+libGamsIO_la_LDFLAGS = 
 libGamsIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la \
   $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
 
-include_HEADERS = ../../inc/config_gamslinks.h GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsBCH.hpp
+libSmagIO_la_SOURCES = GamsOptions.cpp SmagMessageHandler.cpp \
+	$(am__append_1)
+libSmagIO_la_LDFLAGS = 
+libSmagIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la
+includecoindir = $(includedir)/coin
+includecoin_HEADERS = ../../inc/config_gamslinks.h \
+  GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsBCH.hpp \
+  SmagJournal.hpp SmagMessageHandler.hpp
+
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
- -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
- -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
- -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
- -I`$(CYGPATH_W) $(OSIOBJDIR)/inc`
-
+	-I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` -I`$(CYGPATH_W) \
+	$(COINUTILSOBJDIR)/inc` -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
+	-I`$(CYGPATH_W) $(OSIOBJDIR)/inc` $(am__append_2)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
-
-########################################################################
-#                  Installation of the addlibs file                    #
-########################################################################
-addlibsfile = gamsio_addlibs.txt
 
 ########################################################################
 #                         Maintainer Stuff                             #
 ########################################################################
 
 # Files that are generated and should be cleaned with make distclean
-DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(am__append_4) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/$(PACKAGE_NAME)
 all: all-am
@@ -395,8 +406,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-gamsio_addlibs.txt: $(top_builddir)/config.status $(srcdir)/gamsio_addlibs.txt.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
 	test -z "$(libdir)" || $(mkdir_p) "$(DESTDIR)$(libdir)"
@@ -426,6 +435,8 @@ clean-libLTLIBRARIES:
 	done
 libGamsIO.la: $(libGamsIO_la_OBJECTS) $(libGamsIO_la_DEPENDENCIES) 
 	$(CXXLINK) -rpath $(libdir) $(libGamsIO_la_LDFLAGS) $(libGamsIO_la_OBJECTS) $(libGamsIO_la_LIBADD) $(LIBS)
+libSmagIO.la: $(libSmagIO_la_OBJECTS) $(libSmagIO_la_DEPENDENCIES) 
+	$(CXXLINK) -rpath $(libdir) $(libSmagIO_la_LDFLAGS) $(libSmagIO_la_OBJECTS) $(libSmagIO_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -438,6 +449,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsModel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOptions.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagJournal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagMessageHandler.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -469,22 +482,22 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
-install-includeHEADERS: $(include_HEADERS)
+install-includecoinHEADERS: $(includecoin_HEADERS)
 	@$(NORMAL_INSTALL)
-	test -z "$(includedir)" || $(mkdir_p) "$(DESTDIR)$(includedir)"
-	@list='$(include_HEADERS)'; for p in $$list; do \
+	test -z "$(includecoindir)" || $(mkdir_p) "$(DESTDIR)$(includecoindir)"
+	@list='$(includecoin_HEADERS)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f=$(am__strip_dir) \
-	  echo " $(includeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(includedir)/$$f'"; \
-	  $(includeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(includedir)/$$f"; \
+	  echo " $(includecoinHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(includecoindir)/$$f'"; \
+	  $(includecoinHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(includecoindir)/$$f"; \
 	done
 
-uninstall-includeHEADERS:
+uninstall-includecoinHEADERS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(include_HEADERS)'; for p in $$list; do \
+	@list='$(includecoin_HEADERS)'; for p in $$list; do \
 	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(includedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(includedir)/$$f"; \
+	  echo " rm -f '$(DESTDIR)$(includecoindir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(includecoindir)/$$f"; \
 	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -567,7 +580,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includecoindir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -616,9 +629,9 @@ info: info-am
 
 info-am:
 
-install-data-am: install-includeHEADERS
+install-data-am: install-includecoinHEADERS
 
-install-exec-am: install-exec-local install-libLTLIBRARIES
+install-exec-am: install-libLTLIBRARIES
 
 install-info: install-info-am
 
@@ -644,29 +657,23 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-includeHEADERS uninstall-info-am \
-	uninstall-libLTLIBRARIES uninstall-local
+uninstall-am: uninstall-includecoinHEADERS uninstall-info-am \
+	uninstall-libLTLIBRARIES
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
 	clean-libLTLIBRARIES clean-libtool ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
-	install-exec-am install-exec-local install-includeHEADERS \
-	install-info install-info-am install-libLTLIBRARIES \
-	install-man install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-includeHEADERS uninstall-info-am \
-	uninstall-libLTLIBRARIES uninstall-local
+	install-exec-am install-includecoinHEADERS install-info \
+	install-info-am install-libLTLIBRARIES install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-includecoinHEADERS uninstall-info-am \
+	uninstall-libLTLIBRARIES
 
-
-install-exec-local:
-	$(install_sh_DATA) $(addlibsfile) $(DESTDIR)$(libdir)/$(addlibsfile)
-
-uninstall-local:
-	rm -f $(DESTDIR)$(libdir)/$(addlibsfile)
 
 install-doc:
 	test -z "$(DocInstallDir)" || $(mkdir_p) "$(DESTDIR)$(DocInstallDir)"

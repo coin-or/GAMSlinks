@@ -198,21 +198,20 @@ am_GamsOS_OBJECTS = GamsOS.$(OBJEXT) Smag2OSiL.$(OBJEXT) \
 	OSrL2Smag.$(OBJEXT)
 GamsOS_OBJECTS = $(am_GamsOS_OBJECTS)
 @COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_1 = $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
-am__DEPENDENCIES_2 =
-@COIN_HAS_CLP_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_3 = $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
+@COIN_HAS_CLP_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_2 = $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
 @COIN_HAS_CLP_TRUE@@COIN_OS_SOLVER_TRUE@	$(CLPOBJDIR)/src/libClp.la
-@COIN_HAS_GLPK_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_4 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
-@COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_5 = $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
+@COIN_HAS_GLPK_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_3 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+@COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_4 = $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
 @COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@	$(CBCOBJDIR)/src/libCbc.la
-@COIN_HAS_DYLP_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_6 = $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la \
+@COIN_HAS_DYLP_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_5 = $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la \
 @COIN_HAS_DYLP_TRUE@@COIN_OS_SOLVER_TRUE@	$(DYLPOBJDIR)/src/Dylp/libDylp.la
-@COIN_HAS_VOL_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_7 = $(OSIOBJDIR)/src/OsiVol/libOsiVol.la \
+@COIN_HAS_VOL_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_6 = $(OSIOBJDIR)/src/OsiVol/libOsiVol.la \
 @COIN_HAS_VOL_TRUE@@COIN_OS_SOLVER_TRUE@	$(VOLOBJDIR)/src/libVol.la
-@COIN_HAS_SYMPHONY_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_8 = $(OSIOBJDIR)/src/OsiSym/libOsiSym.la \
+@COIN_HAS_SYMPHONY_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_7 = $(OSIOBJDIR)/src/OsiSym/libOsiSym.la \
 @COIN_HAS_SYMPHONY_TRUE@@COIN_OS_SOLVER_TRUE@	$(SYMPHONYOBJDIR)/src/libSym.la
-@COIN_HAS_CGL_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_9 = $(CGLOBJDIR)/src/libCgl.la
-@COIN_HAS_OSI_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_10 = $(OSIOBJDIR)/src/libOsi.la
-@COIN_HAS_IPOPT_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_11 = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
+@COIN_HAS_CGL_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_8 = $(CGLOBJDIR)/src/libCgl.la
+@COIN_HAS_OSI_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_9 = $(OSIOBJDIR)/src/libOsi.la
+@COIN_HAS_IPOPT_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_10 = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -318,6 +317,7 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FADDLIBS = @FADDLIBS@
 FFLAGS = @FFLAGS@
+GAMSIO_ADDLIBS = @GAMSIO_ADDLIBS@
 GAMSIO_CODE = @GAMSIO_CODE@
 GAMSIO_CPPFLAGS = @GAMSIO_CPPFLAGS@
 GAMSIO_IS_UNIX_FALSE = @GAMSIO_IS_UNIX_FALSE@
@@ -355,10 +355,11 @@ IPOPTSRCDIR = @IPOPTSRCDIR@
 LDFLAGS = @LDFLAGS@
 LIBEXT = @LIBEXT@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@ `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt` \
-	$(am__append_7) $(am__append_14) $(am__append_18) \
-	$(am__append_22) $(am__append_26) $(am__append_30) \
-	$(am__append_34) $(am__append_38)
+LIBS = @LIBS@ `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt \
+	$(GAMSLINKSOBJDIR)/smagio_addlibs.txt` $(am__append_7) \
+	$(am__append_14) $(am__append_18) $(am__append_22) \
+	$(am__append_26) $(am__append_30) $(am__append_34) \
+	$(am__append_38)
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
 LN_S = @LN_S@
@@ -457,10 +458,10 @@ EXTRA_DIST = gmsos_nt.cmd gmsos_us.run install/gmsos_nt.dat \
 GamsOS_SOURCES = GamsOS.cpp Smag2OSiL.cpp OSrL2Smag.cpp
 
 # end of check for COIN_OS_SOLVER
-GamsOS_LDADD = $(am__append_2) \
+GamsOS_LDADD = ../GamsIO/libSmagIO.la $(am__append_2) \
 	$(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
 	$(OSOBJDIR)/src/OSParsers/libOSParsers.la \
-	$(OSOBJDIR)/src/OSUtils/libOSUtils.la $(SMAG_LIBS) \
+	$(OSOBJDIR)/src/OSUtils/libOSUtils.la ../GamsIO/libSmagIO.la \
 	$(am__append_5) $(am__append_9) $(am__append_12) \
 	$(am__append_16) $(am__append_20) $(am__append_24) \
 	$(am__append_28) $(am__append_32) $(am__append_36) \
@@ -470,9 +471,10 @@ GamsOS_DEPENDENCIES = $(am__append_3) \
 	$(OSOBJDIR)/src/OSUtils/libOSUtils.la \
 	$(OSOBJDIR)/src/OSParsers/libOSParsers.la \
 	$(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
-	$(am__append_6) $(am__append_10) $(am__append_13) \
-	$(am__append_17) $(am__append_21) $(am__append_25) \
-	$(am__append_29) $(am__append_33) $(am__append_37)
+	../GamsIO/libSmagIO.la $(SMAG_LIBS) $(am__append_6) \
+	$(am__append_10) $(am__append_13) $(am__append_17) \
+	$(am__append_21) $(am__append_25) $(am__append_29) \
+	$(am__append_33) $(am__append_37)
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	-I`$(CYGPATH_W) $(srcdir)/../GamsIO` -I`$(CYGPATH_W) \
 	$(COINUTILSSRCDIR)/src` -I`$(CYGPATH_W) \

@@ -12,12 +12,11 @@ EXTRA_DIST = gmsbm_nt.cmd gmsbm_us.run install/gmsbm_nt.dat install/gmsbm_un.dat
 
 bin_PROGRAMS = GamsBonmin
 GamsBonmin_SOURCES = GamsBonmin.cpp \
-  SmagMINLP.cpp SmagMINLP.hpp \
-  SmagMessageHandler.cpp SmagMessageHandler.hpp \
-  ../Ipopt/SmagNLP.cpp ../Ipopt/SmagJournal.cpp
+  SmagMINLP.cpp SmagMINLP.hpp ../Ipopt/SmagNLP.cpp
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
+ -I`$(CYGPATH_W) $(srcdir)/../GamsIO` \
  -I`$(CYGPATH_W) $(srcdir)/../Ipopt` \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
@@ -49,16 +48,15 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/CbcBonmin` \
  -I`$(CYGPATH_W) $(BONMINOBJDIR)/inc`
 
-GamsBonmin_LDADD = \
+GamsBonmin_LDADD = ../GamsIO/libSmagIO.la \
  $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \
  $(OSIOBJDIR)/src/libOsi.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- $(IPOPTOBJDIR)/src/Interfaces/libipopt.la \
- $(SMAG_LIBS)
+ $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 
-GamsBonmin_DEPENDENCIES = \
+GamsBonmin_DEPENDENCIES = ../GamsIO/libSmagIO.la $(SMAG_LIBS) \
  $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \
@@ -88,7 +86,7 @@ if COIN_HAS_GLPK
   GamsBonmin_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 endif
 
-LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
+LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
 
 GamsBonmin_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
  

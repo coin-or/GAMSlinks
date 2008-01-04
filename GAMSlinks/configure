@@ -471,7 +471,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE CGLSRCDIR CGLOBJDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE VOLSRCDIR VOLOBJDIR COIN_HAS_VOL_TRUE COIN_HAS_VOL_FALSE DYLPSRCDIR DYLPOBJDIR COIN_HAS_DYLP_TRUE COIN_HAS_DYLP_FALSE SYMPHONYSRCDIR SYMPHONYOBJDIR COIN_HAS_SYMPHONY_TRUE COIN_HAS_SYMPHONY_FALSE CBCSRCDIR CBCOBJDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE CPPADSRCDIR CPPADOBJDIR COIN_HAS_CPPAD_TRUE COIN_HAS_CPPAD_FALSE OSSRCDIR OSOBJDIR COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE gamspath COIN_HAS_GAMSIO_TRUE COIN_HAS_GAMSIO_FALSE coin_has_gamsio GAMS_PATH GAMSIO_CPPFLAGS GAMSIO_LIBS SMAG_LIBS GAMSIO_CODE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE COIN_OS_SOLVER_TRUE COIN_OS_SOLVER_FALSE GAMSLINKS_BUILD_IPOPT_TRUE GAMSLINKS_BUILD_IPOPT_FALSE GAMSLINKS_BUILD_GAMSIO_TRUE GAMSLINKS_BUILD_GAMSIO_FALSE GAMSLINKS_BUILD_GLPK_TRUE GAMSLINKS_BUILD_GLPK_FALSE GAMSLINKS_BUILD_CBC_TRUE GAMSLINKS_BUILD_CBC_FALSE GAMSLINKS_BUILD_BONMIN_TRUE GAMSLINKS_BUILD_BONMIN_FALSE GAMSLINKS_BUILD_OSI_TRUE GAMSLINKS_BUILD_OSI_FALSE GAMSLINKS_BUILD_OS_TRUE GAMSLINKS_BUILD_OS_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE CGLSRCDIR CGLOBJDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE VOLSRCDIR VOLOBJDIR COIN_HAS_VOL_TRUE COIN_HAS_VOL_FALSE DYLPSRCDIR DYLPOBJDIR COIN_HAS_DYLP_TRUE COIN_HAS_DYLP_FALSE SYMPHONYSRCDIR SYMPHONYOBJDIR COIN_HAS_SYMPHONY_TRUE COIN_HAS_SYMPHONY_FALSE CBCSRCDIR CBCOBJDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE CPPADSRCDIR CPPADOBJDIR COIN_HAS_CPPAD_TRUE COIN_HAS_CPPAD_FALSE OSSRCDIR OSOBJDIR COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE gamspath COIN_HAS_GAMSIO_TRUE COIN_HAS_GAMSIO_FALSE coin_has_gamsio GAMS_PATH GAMSIO_CPPFLAGS GAMSIO_ADDLIBS GAMSIO_LIBS SMAG_LIBS GAMSIO_CODE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE COIN_OS_SOLVER_TRUE COIN_OS_SOLVER_FALSE GAMSLINKS_BUILD_IPOPT_TRUE GAMSLINKS_BUILD_IPOPT_FALSE GAMSLINKS_BUILD_GAMSIO_TRUE GAMSLINKS_BUILD_GAMSIO_FALSE GAMSLINKS_BUILD_GLPK_TRUE GAMSLINKS_BUILD_GLPK_FALSE GAMSLINKS_BUILD_CBC_TRUE GAMSLINKS_BUILD_CBC_FALSE GAMSLINKS_BUILD_BONMIN_TRUE GAMSLINKS_BUILD_BONMIN_FALSE GAMSLINKS_BUILD_OSI_TRUE GAMSLINKS_BUILD_OSI_FALSE GAMSLINKS_BUILD_OS_TRUE GAMSLINKS_BUILD_OS_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -24081,24 +24081,36 @@ fi
 # Check if GAMS I/O libs work
 echo "$as_me:$LINENO: checking whether GAMS I/O libraries at $use_gamsio work" >&5
 echo $ECHO_N "checking whether GAMS I/O libraries at $use_gamsio work... $ECHO_C" >&6
-if test x"$GAMSIO_CODE" = xLX3; then
-  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a -ldl $IFORT_LIBS"
-  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl $IFORT_LIBS"
-elif test x"$GAMSIO_CODE" = xLEI; then
-  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a -ldl $IFORT_LIBS"
-  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl $IFORT_LIBS"
-elif test x"$gamsio_system" = xWindows; then
-  GAMSIO_LIBS="$use_gamsio/iolib.lib $use_gamsio/nliolib.lib $use_gamsio/clicelib.lib $use_gamsio/gclib.lib"
-  SMAG_LIBS="$use_gamsio/clicelib.lib $use_gamsio/smag.lib $use_gamsio/gclib.lib $use_gamsio/g2d.lib"
-elif test x"$GAMSIO_CODE" = xDII; then
-  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a -ldl -lSystemStubs $IFORT_LIBS"
-  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -lSystemStubs $IFORT_LIBS"
-elif test x"$GAMSIO_CODE" = xSIG; then
-  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
-  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
-fi
+case $GAMSIO_CODE in
+  LX3)
+      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
+      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
+      GAMSIO_ADDLIBS="-ldl $IFORT_LIBS"
+    ;;
+  LEI)
+      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
+      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
+      GAMSIO_ADDLIBS="-ldl $IFORT_LIBS"
+    ;;
+  VIS)
+      GAMSIO_LIBS="$use_gamsio/iolib.lib $use_gamsio/nliolib.lib $use_gamsio/clicelib.lib $use_gamsio/gclib.lib"
+      SMAG_LIBS="$use_gamsio/clicelib.lib $use_gamsio/smag.lib $use_gamsio/gclib.lib $use_gamsio/g2d.lib"
+      GAMSIO_ADDLIBS=""
+    ;;
+  DII)
+      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
+      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
+      GAMSIO_ADDLIBS="-ldl -lSystemStubs $IFORT_LIBS"
+    ;;
+  SIG)
+      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
+      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
+      GAMSIO_ADDLIBS=""
+    ;;
+esac
+
 GAMSIO_CPPFLAGS="-I$use_gamsio"
-LIBS="$GAMSIO_LIBS $LIBS"
+LIBS="$GAMSIO_LIBS $GAMSIO_ADDLIBS $LIBS"
 CPPFLAGS_save=$CPPFLAGS
 CPPFLAGS="$GAMSIO_CPPFLAGS $CPPFLAGS"
 cat >conftest.$ac_ext <<_ACEOF
@@ -24173,6 +24185,7 @@ coin_has_gamsio=yes
 cat >>confdefs.h <<\_ACEOF
 #define COIN_HAS_GAMSIO 1
 _ACEOF
+
 
 
 
@@ -24506,7 +24519,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-                                                                                                                        ac_config_files="$ac_config_files Makefile src/Makefile src/GamsIO/Makefile src/GamsIO/gamsio_addlibs.txt src/Cbc/Makefile src/Glpk/Makefile src/Osi/Makefile src/Ipopt/Makefile src/Bonmin/Makefile src/OS/Makefile test/Makefile test/run_tests"
+                                                                                                                                  ac_config_files="$ac_config_files Makefile gamsio_addlibs.txt smagio_addlibs.txt src/Makefile src/GamsIO/Makefile src/Cbc/Makefile src/Glpk/Makefile src/Osi/Makefile src/Ipopt/Makefile src/Bonmin/Makefile src/OS/Makefile test/Makefile test/run_tests"
 
 
           ac_config_headers="$ac_config_headers inc/config_gamslinks.h"
@@ -25336,9 +25349,10 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "gamsio_addlibs.txt" ) CONFIG_FILES="$CONFIG_FILES gamsio_addlibs.txt" ;;
+  "smagio_addlibs.txt" ) CONFIG_FILES="$CONFIG_FILES smagio_addlibs.txt" ;;
   "src/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
   "src/GamsIO/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/GamsIO/Makefile" ;;
-  "src/GamsIO/gamsio_addlibs.txt" ) CONFIG_FILES="$CONFIG_FILES src/GamsIO/gamsio_addlibs.txt" ;;
   "src/Cbc/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Cbc/Makefile" ;;
   "src/Glpk/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Glpk/Makefile" ;;
   "src/Osi/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Osi/Makefile" ;;
@@ -25598,6 +25612,7 @@ s,@COIN_HAS_GAMSIO_FALSE@,$COIN_HAS_GAMSIO_FALSE,;t t
 s,@coin_has_gamsio@,$coin_has_gamsio,;t t
 s,@GAMS_PATH@,$GAMS_PATH,;t t
 s,@GAMSIO_CPPFLAGS@,$GAMSIO_CPPFLAGS,;t t
+s,@GAMSIO_ADDLIBS@,$GAMSIO_ADDLIBS,;t t
 s,@GAMSIO_LIBS@,$GAMSIO_LIBS,;t t
 s,@SMAG_LIBS@,$SMAG_LIBS,;t t
 s,@GAMSIO_CODE@,$GAMSIO_CODE,;t t

@@ -42,7 +42,6 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
 
 GamsCoinCbc_LDADD = \
- ../GamsIO/libGamsIO.la \
  $(CBCOBJDIR)/src/libCbcSolver.la \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \
@@ -50,10 +49,10 @@ GamsCoinCbc_LDADD = \
  $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
  $(CLPOBJDIR)/src/libClp.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- $(GAMSIO_LIBS)
+ ../GamsIO/libGamsIO.la
  
 GamsCoinCbc_DEPENDENCIES = \
- ../GamsIO/libGamsIO.la \
+ ../GamsIO/libGamsIO.la $(GAMSIO_LIBS) \
  $(CBCOBJDIR)/src/libCbcSolver.la \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \
@@ -62,7 +61,7 @@ GamsCoinCbc_DEPENDENCIES = \
  $(CLPOBJDIR)/src/libClp.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la
 
-LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt`
+LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt $(GAMSLINKSOBJDIR)/gamsio_addlibs.txt`
 
 GamsCoinCbc_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
  

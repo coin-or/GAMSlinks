@@ -72,7 +72,6 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_GamsCoinGlpk_OBJECTS = GamsCoinGlpk.$(OBJEXT)
 GamsCoinGlpk_OBJECTS = $(am_GamsCoinGlpk_OBJECTS)
-am__DEPENDENCIES_1 =
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -178,6 +177,7 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FADDLIBS = @FADDLIBS@
 FFLAGS = @FFLAGS@
+GAMSIO_ADDLIBS = @GAMSIO_ADDLIBS@
 GAMSIO_CODE = @GAMSIO_CODE@
 GAMSIO_CPPFLAGS = @GAMSIO_CPPFLAGS@
 GAMSIO_IS_UNIX_FALSE = @GAMSIO_IS_UNIX_FALSE@
@@ -216,7 +216,8 @@ LDFLAGS = @LDFLAGS@
 LIBEXT = @LIBEXT@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@ `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt \
-	$(OSIOBJDIR)/osi_addlibs.txt`
+	$(OSIOBJDIR)/osi_addlibs.txt \
+	$(GAMSLINKSOBJDIR)/gamsio_addlibs.txt`
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
 LN_S = @LN_S@
@@ -331,11 +332,10 @@ GamsCoinGlpk_LDADD = \
  ../GamsIO/libGamsIO.la \
  $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
  $(OSIOBJDIR)/src/libOsi.la \
- $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- $(GAMSIO_LIBS)
+ $(COINUTILSOBJDIR)/src/libCoinUtils.la
 
 GamsCoinGlpk_DEPENDENCIES = \
- ../GamsIO/libGamsIO.la \
+ ../GamsIO/libGamsIO.la $(GAMSIO_LIBS) \
  $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la \
  $(OSIOBJDIR)/src/libOsi.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la 

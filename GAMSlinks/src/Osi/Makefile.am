@@ -24,13 +24,12 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(OSIOBJDIR)/inc`
 
 GamsCoinOsi_LDADD = \
- ../GamsIO/libGamsIO.la \
- $(GAMSIO_LIBS)
+ ../GamsIO/libGamsIO.la
  
 GamsCoinOsi_DEPENDENCIES = \
- ../GamsIO/libGamsIO.la
+ ../GamsIO/libGamsIO.la $(GAMSIO_LIBS)
 
-LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt`
+LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(GAMSLINKSOBJDIR)/gamsio_addlibs.txt`
 
 if COIN_HAS_CBC
   AM_CPPFLAGS += \

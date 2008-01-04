@@ -11,7 +11,7 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmsip_nt.cmd gmsip_us.run install/gmsip_nt.dat install/gmsip_un.dat
 
 bin_PROGRAMS = GamsIpopt
-GamsIpopt_SOURCES = GamsIpopt.cpp SmagNLP.cpp SmagNLP.hpp SmagJournal.hpp SmagJournal.cpp
+GamsIpopt_SOURCES = GamsIpopt.cpp SmagNLP.cpp ../GamsIO/SmagJournal.cpp
 
 includeipoptdir = $(includedir)/ipopt
 includeipopt_HEADERS = \
@@ -27,6 +27,7 @@ includeipopt_HEADERS = \
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
+ -I`$(CYGPATH_W) $(srcdir)/../GamsIO` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \
@@ -34,13 +35,11 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/CGPenalty` \
  -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
 
-GamsIpopt_LDADD = \
- $(IPOPTOBJDIR)/src/Interfaces/libipopt.la \
- $(SMAG_LIBS)
+GamsIpopt_LDADD = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 
-GamsIpopt_DEPENDENCIES = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
+GamsIpopt_DEPENDENCIES = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(SMAG_LIBS)
 
-LIBS += `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
+LIBS += `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
 
 GamsIpopt_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 

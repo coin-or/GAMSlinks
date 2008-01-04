@@ -258,24 +258,36 @@ fi
 
 # Check if GAMS I/O libs work
 AC_MSG_CHECKING([whether GAMS I/O libraries at $use_gamsio work])
-if test x"$GAMSIO_CODE" = xLX3; then
-  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a -ldl $IFORT_LIBS"
-  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl $IFORT_LIBS"
-elif test x"$GAMSIO_CODE" = xLEI; then
-  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a -ldl $IFORT_LIBS"
-  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl $IFORT_LIBS"
-elif test x"$gamsio_system" = xWindows; then
-  GAMSIO_LIBS="$use_gamsio/iolib.lib $use_gamsio/nliolib.lib $use_gamsio/clicelib.lib $use_gamsio/gclib.lib"
-  SMAG_LIBS="$use_gamsio/clicelib.lib $use_gamsio/smag.lib $use_gamsio/gclib.lib $use_gamsio/g2d.lib"
-elif test x"$GAMSIO_CODE" = xDII; then
-  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a -ldl -lSystemStubs $IFORT_LIBS"
-  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a -ldl -lSystemStubs $IFORT_LIBS"
-elif test x"$GAMSIO_CODE" = xSIG; then
-  GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
-  SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
-fi
+case $GAMSIO_CODE in
+  LX3)
+      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
+      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
+      GAMSIO_ADDLIBS="-ldl $IFORT_LIBS"
+    ;;
+  LEI)
+      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
+      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
+      GAMSIO_ADDLIBS="-ldl $IFORT_LIBS"
+    ;;
+  VIS)
+      GAMSIO_LIBS="$use_gamsio/iolib.lib $use_gamsio/nliolib.lib $use_gamsio/clicelib.lib $use_gamsio/gclib.lib"
+      SMAG_LIBS="$use_gamsio/clicelib.lib $use_gamsio/smag.lib $use_gamsio/gclib.lib $use_gamsio/g2d.lib"
+      GAMSIO_ADDLIBS=""
+    ;;
+  DII)
+      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
+      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
+      GAMSIO_ADDLIBS="-ldl -lSystemStubs $IFORT_LIBS"
+    ;;
+  SIG)
+      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
+      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
+      GAMSIO_ADDLIBS=""
+    ;;
+esac
+
 GAMSIO_CPPFLAGS="-I$use_gamsio"
-LIBS="$GAMSIO_LIBS $LIBS"
+LIBS="$GAMSIO_LIBS $GAMSIO_ADDLIBS $LIBS"
 CPPFLAGS_save=$CPPFLAGS
 CPPFLAGS="$GAMSIO_CPPFLAGS $CPPFLAGS"
 AC_TRY_LINK([
@@ -294,6 +306,7 @@ AC_DEFINE([COIN_HAS_GAMSIO],[1],[If defined, the GAMS I/O Library is available.]
 AC_SUBST(coin_has_gamsio)
 AC_SUBST(GAMS_PATH)
 AC_SUBST(GAMSIO_CPPFLAGS)
+AC_SUBST(GAMSIO_ADDLIBS)
 AC_SUBST(GAMSIO_LIBS)
 AC_SUBST(SMAG_LIBS)
 AC_SUBST(GAMSIO_CODE)
@@ -402,8 +415,9 @@ AC_COIN_VPATH_LINK(src/OS/install/gmsos_nt.dat)
 AC_LANG_POP(C++)
 
 AC_CONFIG_FILES([Makefile
+                 gamsio_addlibs.txt smagio_addlibs.txt
                  src/Makefile
-                 src/GamsIO/Makefile src/GamsIO/gamsio_addlibs.txt
+                 src/GamsIO/Makefile
                  src/Cbc/Makefile
                  src/Glpk/Makefile
                  src/Osi/Makefile

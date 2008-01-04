@@ -51,10 +51,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-DIST_COMMON = $(am__configure_deps) $(srcdir)/BuildTools/Makemain.inc \
-	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/configure INSTALL compile config.guess \
-	config.sub depcomp install-sh ltmain.sh missing
+DIST_COMMON = README $(am__configure_deps) \
+	$(srcdir)/BuildTools/Makemain.inc $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in $(top_srcdir)/configure INSTALL compile \
+	config.guess config.sub depcomp install-sh ltmain.sh missing
 @HAVE_EXTERNALS_TRUE@am__append_1 = Externals
 @HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
 subdir = .
@@ -224,7 +224,8 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = doxydoc/doxygen.conf osiglpk.patch $(am__append_1)
+EXTRA_DIST = doxydoc/doxygen.conf osiglpk.patch INSTALL LICENCE README \
+	$(am__append_1)
 
 ########################################################################
 #                          Subdirectories                              #

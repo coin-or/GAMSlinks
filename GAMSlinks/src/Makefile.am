@@ -38,15 +38,17 @@ DISTCLEANFILES =
 
 ConfigHeader = GAMSlinksConfig.h
 
+includecoindir = $(includedir)/coin
+
 install-exec-local:
 	echo "#ifndef HAVE_CONFIG_H" >bla
 	echo "#define HAVE_CONFIG_H" >>bla
 	echo "#endif" >> bla
 	cat $(srcdir)/$(ConfigHeader) >> bla
-	$(install_sh_DATA) bla $(DESTDIR)$(includedir)/$(ConfigHeader)
+	$(install_sh_DATA) bla $(DESTDIR)$(includecoindir)/$(ConfigHeader)
 	rm -f bla
 
 uninstall-local:
-	rm -f $(DESTDIR)$(includedir)/$(ConfigHeader)
+	rm -f $(DESTDIR)$(includecoindir)/$(ConfigHeader)
 
 include ../../BuildTools/Makemain.inc
