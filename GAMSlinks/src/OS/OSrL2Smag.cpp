@@ -8,6 +8,7 @@
 
 #include "OSrL2Smag.hpp"
 #include "OSrLReader.h"
+#include "OSErrorClass.h"
 #include "CoinHelperFunctions.hpp"
 
 #include <cstring>
@@ -137,9 +138,20 @@ void OSrL2Smag::writeSolution(OSResult& osresult) {
 }
 
 void OSrL2Smag::writeSolution(std::string& osrl) {
-	OSResult* osresult=OSrLReader().readOSrL(osrl);
-	writeSolution(*osresult);
-	delete osresult;
+	OSResult* osresult=NULL;
+	try {
+		osresult=OSrLReader().readOSrL(osrl);
+	} catch(const ErrorClass& error) {
+		smagStdOutputPrint(smag, SMAG_ALLMASK, "Error parsing the OS result string:\n");
+		smagStdOutputPrint(smag, SMAG_ALLMASK, error.errormsg.c_str());
+		smagStdOutputFlush(smag, SMAG_ALLMASK);
+		smagReportSolBrief(smag, 13, 13);
+		return;
+	}
+	if (osresult) {
+		writeSolution(*osresult);
+		delete osresult;
+	}
 }
 
 
