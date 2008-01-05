@@ -356,6 +356,7 @@ LDFLAGS = @LDFLAGS@
 LIBEXT = @LIBEXT@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@ `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt \
+	$(OSOBJDIR)/os_addlibs.txt \
 	$(GAMSLINKSOBJDIR)/smagio_addlibs.txt` $(am__append_7) \
 	$(am__append_14) $(am__append_18) $(am__append_22) \
 	$(am__append_26) $(am__append_30) $(am__append_34) \
@@ -774,13 +775,13 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 
 @GAMSIO_IS_UNIX_TRUE@install-exec-local: install-binPROGRAMS
 @GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsOS gmsos_ux.out
-@GAMSIO_IS_UNIX_TRUE@	zip gmsos_.zip gmsos_ux.out gmsos_us.run install/gmsos_un.dat
+@GAMSIO_IS_UNIX_TRUE@	zip gmsos_.zip gmsos_ux.out gmsos_us.run optos.def install/gmsos_un.dat
 @GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmsos_.zip $(DESTDIR)$(bindir)/gmsos_.zip
 @GAMSIO_IS_UNIX_TRUE@	rm -f gmsos_ux.out
 
 @GAMSIO_IS_WINDOWS_TRUE@install-exec-local: install-binPROGRAMS
 @GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsOS.exe gmsos_nx.exe
-@GAMSIO_IS_WINDOWS_TRUE@	zip gmsos_.zip gmsos_nx.exe gmsos_nt.cmd install/gmsos_nt.dat
+@GAMSIO_IS_WINDOWS_TRUE@	zip gmsos_.zip gmsos_nx.exe gmsos_nt.cmd optos.def install/gmsos_nt.dat
 @GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmsos_.zip $(DESTDIR)$(bindir)/gmsos_.zip
 @GAMSIO_IS_WINDOWS_TRUE@	rm -f gmsos_nx.exe
 
