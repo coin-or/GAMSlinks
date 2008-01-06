@@ -30,7 +30,16 @@ void GamsCutGenerator::generateCuts(const OsiSolverInterface &si, OsiCuts &cs, c
 	for (std::vector<GamsBCH::Cut>::iterator it(cuts.begin()); it!=cuts.end(); ++it) {
 		// this constructors takes over the ownership of indices and coeff
 		OsiRowCut* cut=new OsiRowCut(it->lb, it->ub, it->nnz, it->nnz, it->indices, it->coeff);
+		cut->setGloballyValid(!info.inTree);
+//		std::clog << "Cut consistent: " << cut->consistent() << cut->consistent(si)
+//			<< " infeasible: " << cut->infeasible(si)
+//			<< " violation: " << cut->violated(si.getColSolution())
+//			<< "\t globally valid: " << cut->globallyValid()
+//			<< std::endl;
+//		cut->mutableRow().sortIncrIndex();
 		cs.insert(cut);
 	}
+//	std::clog << "GamsCutGen: Added " << cs.sizeRowCuts() << " cuts." << std::endl;
+//	cs.printCuts();
 	
 }

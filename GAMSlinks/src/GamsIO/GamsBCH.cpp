@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development 2006
+// Copyright (C) GAMS Development 2007
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -232,6 +232,7 @@ bool GamsBCH::doCuts() {
 bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
 	cuts.clear();
 	
+//	printf("node relax. opt.val.: %g\n", node_x[iolib.iobvar]);
 //	printf("node relax. solution: ");
 //	for (int i=0; i<iolib.ncols; ++i) printf("%g ", node_x[i]);
 //	printf("\n");
@@ -257,6 +258,7 @@ bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
 		gm.PrintOut(GamsModel::AllMask, "GamsBCH: Could not spawn GAMS cutgenerator.");
 		return false;
 	} else if (rcode < 0) {
+//		gm.PrintOut(GamsModel::AllMask, "GamsBCH: GAMS cutgenerator returned with negative return code.");
 		// what is the error in this case?
     return false;
   }
@@ -305,6 +307,12 @@ bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
 //  printf("\ncut rhs: ");
 //  for (int i=0; i<ncuts; ++i)
 //  	printf("%g ", cutrhs[i]);
+//  printf("\ncut sense: ");
+//  for (int i=0; i<ncuts; ++i)
+//  	printf("%d ", cutsense[i]);
+//  printf("\ncut nnz: ");
+//  for (int i=0; i<ncuts; ++i)
+//  	printf("%d ", cutNnz[i]);
 //  printf("\n");
 
   cuts.resize(ncuts);
