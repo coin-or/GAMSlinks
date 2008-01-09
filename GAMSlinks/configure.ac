@@ -370,6 +370,7 @@ AM_CONDITIONAL([GAMSLINKS_BUILD_OSI],[
    
 AM_CONDITIONAL([GAMSLINKS_BUILD_OS], [
    test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_os" != xunavailable && test "x$coin_has_os" != xskipping &&
    test "x$coin_has_cppad" != xunavailable && test "x$coin_has_cppad" != xskipping ])
 #test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
 
