@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) GAMS Development 2006
+# Copyright (C) GAMS Development 2008
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -9,149 +9,89 @@
 
 srcdir="@srcdir@"
 gamspath="@GAMS_PATH@"
-cbc="../src/Cbc/GamsCoinCbc"
-glpk="../src/Glpk/GamsCoinGlpk"
 
-examples="trnsport thai"
+if test x$gamspath == xUNAVAILABLE; then
+  echo "No GAMS system available."
+  echo "Please download demo system from www.gams.com, rerun configure, install the solvers, and try again."
+  exit 1
+else
+  echo "Using GAMS system at " $gamspath
+fi
 
-for model in $examples
-do
+#echo " "
+echo Getting quality tests driver from GAMS test library...
+$gamspath/testlib quality
 
-	echo " "
-	echo Getting test problem $model from GAMS model library...
-	$gamspath/gamslib $model
-	echo " "
-	
-	echo Calling CPLEX with $model to get control file and optimal value.
-	rm -rf 225a
-	rm -f tmpfile
-	$gamspath/gamskeep $model.gms LP=CPLEX MIP=CPLEX OPTCR=0.01 LO=2 LOGFILE=tmpfile
-	
-	bkov=`sed -n -e '/^Objective/s/Objective : *//p' -e '/^MIP Solution/s/.*: *\(.*\) (.*)/\1/p' tmpfile`
-	bkov_=`echo $bkov | sed -e 's/-/_/g'`
-	bkovn=`echo $bkov | sed -e 's/-//g'`
-	
-	echo "Optimal value of problem $model is $bkov."
-	
-	for solver in $cbc $glpk
-	do
-		if [ -e $solver ]; then
-			echo " "
-			echo Running $solver on model $model
-			rm -f tmpfile
-			$solver 225a/gamscntr.scr
-		
-			grep "Writing solution. Objective" tmpfile 1>/dev/null 2>&1
-			if test $? = 0; then
-				opt_val=`sed -n -e '/Writing solution. Objective/s/.*Objective: \(.*\) Time.*/\1/p' tmpfile`
-				opt_val_=`echo $opt_val | sed -e 's/-/_/g'`
+#TODO: check whether quality.gms is there now
 
-				#compute relative error
-				rel_error=`dc -e "2 k $opt_val_ $bkov_ - $bkovn 1 + / p"`
-				rel_=`echo $rel_error | sed -e 's/-/_/g'`
-				rel100=`dc -e "$rel_ 100 * p" | sed -e 's/\..*//'`
-				if test $rel100 -le 1 -a $rel100 -ge 0; then
-					echo "   Optimal value is $opt_val. Test passed!"
-				else
-					echo " "
-					echo " ---- 8< ---- Start of test program output ---- 8< ----"
-					cat tmpfile
-					echo " ---- 8< ----  End of test program output  ---- 8< ----"
-					echo " "
-					echo "    ******** Test FAILED! ********"
-					echo "    Best known optimal value is $bkov, but $solver found $opt_val. Relative error is $rel100 percent."
-					echo "Output of the test program is above."
-				fi
-			else
-				echo " "
-				echo " ---- 8< ---- Start of test program output ---- 8< ----"
-				cat tmpfile
-				echo " ---- 8< ----  End of test program output  ---- 8< ----"
-				echo " "
-				echo "    ******** Test FAILED! ********"
-				echo "    $solver found no optimal solution."
-				echo "Output of the test program is above."
-			fi
-		fi
-	done
+solvers=
+skiplist=
+nrtests=0
+declare -a testlist
+if test @coin_build_ipopt@ ; then
+  solvers="$solvers , Ipopt"
+  skiplist="$skiplist skip('Ipopt','lp03')=yes;"
+  skiplist="$skiplist skip('Ipopt','sl4lp03')=yes;"
+  skiplist="$skiplist skip('Ipopt','lp10')=yes;"
+  skiplist="$skiplist skip('Ipopt','sl4lp10')=yes;"
+  testlist[${#testlist[@]}]="--solver ipopt --suite nlp"
+  testlist[${#testlist[@]}]="--solver ipopt --suite qcp"
+fi
+if test @coin_build_glpk@ ; then
+  solvers="$solvers , Glpk"
+  skiplist="$skiplist skip('Glpk','sos1a')=yes;"
+  skiplist="$skiplist skip('Glpk','sl4sos1a')=yes;"
+  skiplist="$skiplist skip('Glpk','semicon1')=yes;"
+  skiplist="$skiplist skip('Glpk','sl4scon1')=yes;"
+  testlist[${#testlist[@]}]="--solver glpk --suite lp"
+  testlist[${#testlist[@]}]="--solver glpk --suite mip"
+fi
+if test @coin_build_cbc@ ; then
+  solvers="$solvers , Cbc"
+#  skiplist="$skiplist skip('Cbc','semicon1')=yes;"
+#  skiplist="$skiplist skip('Cbc','sl4scon1')=yes;"
+  testlist[${#testlist[@]}]="--solver cbc --suite lp"
+  testlist[${#testlist[@]}]="--solver cbc --suite mip"
+fi
+if test @coin_build_bonmin@ ; then
+  solvers="$solvers , Bonmin"
+  skiplist="$skiplist skip('Bonmin','sos1a')=yes;"
+  skiplist="$skiplist skip('Bonmin','sl4sos1a')=yes;"
+  skiplist="$skiplist skip('Bonmin','semicon1')=yes;"
+  skiplist="$skiplist skip('Bonmin','sl4scon1')=yes;"
+  skiplist="$skiplist skip('Bonmin','lp03')=yes;"
+  skiplist="$skiplist skip('Bonmin','sl4lp03')=yes;"
+  skiplist="$skiplist skip('Bonmin','lp10')=yes;"
+  skiplist="$skiplist skip('Bonmin','sl4lp10')=yes;"
+  testlist[${#testlist[@]}]="--solver bonmin --suite lp"
+  testlist[${#testlist[@]}]="--solver bonmin --suite mip"
+  testlist[${#testlist[@]}]="--solver bonmin --suite nlp"
+  testlist[${#testlist[@]}]="--solver bonmin --suite qcp"
+fi
+
+echo "Patch quality test driver to get COIN solvers and skip list in." 
+#we add our solvers to the list of master solvers and put our skiplist somewhere (in front of skip('convert',mdl)=yes)
+sed -e "/master set of solvers/s/\/;\$/$solvers \/;/" \
+    -e "/^skip('convert'/s/^/$skiplist /" \
+    quality.gms > quality_coin.gms
+echo ""
+
+#indicates whether there was a failed test, also return code of this script
+testfailed=0
+
+for (( i=0 ; i<${#testlist[@]} ; i++ )) ; do
+  echo "Run quality test driver with options " ${testlist[$i]} 
+
+	if $gamspath/gams quality_coin.gms ${testlist[$i]} lo=2 logfile=quality_test_$i.log ; then
+		echo "Test " ${testlist[$i]} " passed."
+	else
+		testfailed=1
+		mv failures_qa.gms failures_qa_$i.gms    
+		echo "Test " ${testlist[$i]} " failed. Content of failures_qa_$i.gms:"
+		cat failures_qa_$i.gms
+	fi
+	echo ""
+	
 done
 
-
-ipopt="../src/Ipopt/GamsIpopt"
-bonmin="../src/Bonmin/GamsBonmin"
-examples="abel"
-
-for model in $examples
-do
-
-	echo " "
-	echo Getting test problem $model from GAMS model library...
-	$gamspath/gamslib $model
-	echo " "
-	
-	echo Calling MSNLP with $model to get control file.
-	rm -rf 225a
-	rm -f tmpfile
-	#have to run some solver that also writes dual variables in the control file, otherwise an assertion is failing in smag
-	$gamspath/gamskeep $model.gms NLP=MSNLP LO=2 LOGFILE=tmpfile
-	
-	bkov=225.19
-	bkov_=`echo $bkov | sed -e 's/-/_/g'`
-	bkovn=`echo $bkov | sed -e 's/-//g'`
-	
-	echo "Optimal value of problem $model is $bkov."
-	
-	for solver in $ipopt $bonmin
-	do
-		if [ -e $solver ]; then
-			echo " "
-			echo Running $solver on model $model
-			rm -f tmpfile
-			$solver 225a/gamscntr.scr
-		
-			grep "Objective...." tmpfile 1>/dev/null 2>&1
-			if test $? = 0; then
-				opt_val=`awk '/Objective...*/ { print $3 }' tmpfile`
-				opt_val_=`echo $opt_val | sed -e 's/-/_/g'`
-
-				#compute relative error, does not work here
-#				rel_error=`dc -e "2 k $opt_val_ $bkov_ - $bkovn 1 + / p"`
-#				rel_=`echo $rel_error | sed -e 's/-/_/g'`
-#				rel100=`dc -e "$rel_ 100 * p" | sed -e 's/\..*//'`
-				rel_error=1;
-				rel100=100;
-        case $opt_val in
-        	2.25*e+02)
-        		rel_error=0
-        		rel100=0
-        		;;
-        esac
-				if test $rel100 -le 1 -a $rel100 -ge 0; then
-					echo "   Optimal value is $opt_val. Test passed!"
-				else
-					echo " "
-					echo " ---- 8< ---- Start of test program output ---- 8< ----"
-					cat tmpfile
-					echo " ---- 8< ----  End of test program output  ---- 8< ----"
-					echo " "
-					echo "    ******** Test FAILED! ********"
-					echo "    Best known optimal value is $bkov, but $solver found $opt_val. Relative error is $rel100 percent."
-					echo "Output of the test program is above."
-				fi
-			else
-				echo " "
-				echo " ---- 8< ---- Start of test program output ---- 8< ----"
-				cat tmpfile
-				echo " ---- 8< ----  End of test program output  ---- 8< ----"
-				echo " "
-				echo "    ******** Test FAILED! ********"
-				echo "    $solver found no optimal solution."
-				echo "Output of the test program is above."
-			fi
-		fi
-	done
-done
-
-
-rm -f tmpfile
-rm -rf 225a
+exit $testfailed

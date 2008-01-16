@@ -471,7 +471,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE CGLSRCDIR CGLOBJDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE VOLSRCDIR VOLOBJDIR COIN_HAS_VOL_TRUE COIN_HAS_VOL_FALSE DYLPSRCDIR DYLPOBJDIR COIN_HAS_DYLP_TRUE COIN_HAS_DYLP_FALSE SYMPHONYSRCDIR SYMPHONYOBJDIR COIN_HAS_SYMPHONY_TRUE COIN_HAS_SYMPHONY_FALSE CBCSRCDIR CBCOBJDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE CPPADSRCDIR CPPADOBJDIR COIN_HAS_CPPAD_TRUE COIN_HAS_CPPAD_FALSE OSSRCDIR OSOBJDIR COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE gamspath COIN_HAS_GAMSIO_TRUE COIN_HAS_GAMSIO_FALSE coin_has_gamsio GAMS_PATH GAMSIO_CPPFLAGS GAMSIO_ADDLIBS GAMSIO_LIBS SMAG_LIBS GAMSIO_CODE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE COIN_OS_SOLVER_TRUE COIN_OS_SOLVER_FALSE GAMSLINKS_BUILD_IPOPT_TRUE GAMSLINKS_BUILD_IPOPT_FALSE GAMSLINKS_BUILD_GAMSIO_TRUE GAMSLINKS_BUILD_GAMSIO_FALSE GAMSLINKS_BUILD_GLPK_TRUE GAMSLINKS_BUILD_GLPK_FALSE GAMSLINKS_BUILD_CBC_TRUE GAMSLINKS_BUILD_CBC_FALSE GAMSLINKS_BUILD_BONMIN_TRUE GAMSLINKS_BUILD_BONMIN_FALSE GAMSLINKS_BUILD_OSI_TRUE GAMSLINKS_BUILD_OSI_FALSE GAMSLINKS_BUILD_OS_TRUE GAMSLINKS_BUILD_OS_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE CGLSRCDIR CGLOBJDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE VOLSRCDIR VOLOBJDIR COIN_HAS_VOL_TRUE COIN_HAS_VOL_FALSE DYLPSRCDIR DYLPOBJDIR COIN_HAS_DYLP_TRUE COIN_HAS_DYLP_FALSE SYMPHONYSRCDIR SYMPHONYOBJDIR COIN_HAS_SYMPHONY_TRUE COIN_HAS_SYMPHONY_FALSE CBCSRCDIR CBCOBJDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE CPPADSRCDIR CPPADOBJDIR COIN_HAS_CPPAD_TRUE COIN_HAS_CPPAD_FALSE OSSRCDIR OSOBJDIR COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE gamspath COIN_HAS_GAMSIO_TRUE COIN_HAS_GAMSIO_FALSE coin_has_gamsio GAMS_PATH GAMSIO_CPPFLAGS GAMSIO_ADDLIBS GAMSIO_LIBS SMAG_LIBS GAMSIO_CODE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE COIN_OS_SOLVER_TRUE COIN_OS_SOLVER_FALSE coin_build_ipopt coin_build_glpk coin_build_cbc coin_build_bonmin coin_build_osi GAMSLINKS_BUILD_IPOPT_TRUE GAMSLINKS_BUILD_IPOPT_FALSE GAMSLINKS_BUILD_GAMSIO_TRUE GAMSLINKS_BUILD_GAMSIO_FALSE GAMSLINKS_BUILD_GLPK_TRUE GAMSLINKS_BUILD_GLPK_FALSE GAMSLINKS_BUILD_CBC_TRUE GAMSLINKS_BUILD_CBC_FALSE GAMSLINKS_BUILD_BONMIN_TRUE GAMSLINKS_BUILD_BONMIN_FALSE GAMSLINKS_BUILD_OSI_TRUE GAMSLINKS_BUILD_OSI_FALSE GAMSLINKS_BUILD_OS_TRUE GAMSLINKS_BUILD_OS_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -23812,6 +23812,7 @@ fi
 # GAMS SYSTEM #
 ###############
 
+GAMS_PATH=UNAVAILABLE
 
 # Check whether --with-gamssystem or --without-gamssystem was given.
 if test "${with_gamssystem+set}" = set; then
@@ -23835,9 +23836,9 @@ fi
 echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
 echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
 if test `eval echo '${'$as_ac_File'}'` = yes; then
-  use_gamssys=$withval
+  GAMS_PATH=$withval
 else
-  use_gamssys=
+  GAMS_PATH=UNAVAILABLE
 fi
 
 else
@@ -23867,6 +23868,7 @@ do
 done
 done
 
+  test -z "$ac_cv_path_gamspath" && ac_cv_path_gamspath="UNAVAILABLE"
   ;;
 esac
 fi
@@ -23880,12 +23882,11 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-   use_gamssys=${gamspath/%gams/}
+   GAMS_PATH=${gamspath/%gams/}
 
 fi;
-GAMS_PATH=$use_gamssys
-#if test x"$use_gamssys" != x; then
-#	AC_MSG_NOTICE([found GAMS system at $use_gamssys])
+#if test x"$GAMS_PATH" != xUNAVAILABLE; then
+#	AC_MSG_NOTICE([found GAMS system at $GAMS_PATH])
 #else
 #	AC_MSG_RESULT([no GAMS system available])
 #fi
@@ -24013,10 +24014,10 @@ fi
 fi
 
 else
-  if test x"$use_gamssys" != x; then
-          as_ac_File=`echo "ac_cv_file_$use_gamssys/libifcore.so" | $as_tr_sh`
-echo "$as_me:$LINENO: checking for $use_gamssys/libifcore.so" >&5
-echo $ECHO_N "checking for $use_gamssys/libifcore.so... $ECHO_C" >&6
+  if test x"$GAMS_PATH" != xUNAVAILABLE; then
+          as_ac_File=`echo "ac_cv_file_$GAMS_PATH/libifcore.so" | $as_tr_sh`
+echo "$as_me:$LINENO: checking for $GAMS_PATH/libifcore.so" >&5
+echo $ECHO_N "checking for $GAMS_PATH/libifcore.so... $ECHO_C" >&6
 if eval "test \"\${$as_ac_File+set}\" = set"; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
@@ -24024,7 +24025,7 @@ else
   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
 echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
    { (exit 1); exit 1; }; }
-if test -r "$use_gamssys/libifcore.so"; then
+if test -r "$GAMS_PATH/libifcore.so"; then
   eval "$as_ac_File=yes"
 else
   eval "$as_ac_File=no"
@@ -24033,7 +24034,7 @@ fi
 echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
 echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
 if test `eval echo '${'$as_ac_File'}'` = yes; then
-  IFORT_LIBS="-L$use_gamssys"
+  IFORT_LIBS="-L$GAMS_PATH"
 fi
 
          else
@@ -24261,6 +24262,75 @@ echo "${ECHO_T}$os_solver" >&6
 ##################################################
 # Check which interfaces we can (and want) build #
 ##################################################
+
+if test "x$coin_has_ipopt" != "xunavailable" && test "x$coin_has_ipopt" != "xskipping"; then
+  coin_build_ipopt=1
+else
+  coin_build_ipopt=0
+fi
+
+
+if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping ; then
+  coin_build_gamsio=1
+else
+  coin_build_gamsio=0
+fi
+
+if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
+   test "x$coin_has_glpk" = xtrue ; then
+  coin_build_glpk=1
+else
+  coin_build_glpk=0
+fi
+
+
+if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
+   test "x$coin_has_clp" != xunavailable && test "x$coin_has_clp" != skipping &&
+   test "x$coin_has_cgl" != xunavailable && test "x$coin_has_cgl" != skipping &&
+   test "x$coin_has_cbc" != xunavailable && test "x$coin_has_cbc" != skipping ; then
+  coin_build_cbc=1
+else
+  coin_build_cbc=0
+fi
+
+
+if test "x$coin_has_ipopt" != xunavailable && test "x$coin_has_ipopt" != xskipping &&
+   test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
+   test "x$coin_has_cgl" != xunavailable && test "x$coin_has_cgl" != xskipping &&
+   test "x$coin_has_cbc" != xunavailable && test "x$coin_has_cbc" != xskipping &&
+   test "x$coin_has_clp" != xunavailable && test "x$coin_has_clp" != xskipping &&
+   test "x$coin_has_bonmin" != xunavailable && test "x$coin_has_bonmin" != xskipping ; then
+  coin_build_bonmin=1
+else
+  coin_build_bonmin=0
+fi
+
+
+if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != xskipping &&
+   ( ( test "x$coin_has_dylp" != xunavailable && test "x$coin_has_dylp" != xskipping ) ||
+     ( test "x$coin_has_symphony" != xunavailable && test "x$coin_has_symphony" != xskipping ) ||
+     ( test "x$coin_has_vol" != xunavailable && test "x$coin_has_vol" != skipping )
+   ) ; then
+  coin_build_osi=1
+else
+  coin_build_osi=0
+fi
+
+
+if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_os" != xunavailable && test "x$coin_has_os" != xskipping &&
+   test "x$coin_has_cppad" != xunavailable && test "x$coin_has_cppad" != xskipping ; then
+  coin_build_os=1
+else
+  coin_build_os=0
+fi
+
+
 
 
 
@@ -25639,6 +25709,11 @@ s,@GAMSIO_IS_WINDOWS_TRUE@,$GAMSIO_IS_WINDOWS_TRUE,;t t
 s,@GAMSIO_IS_WINDOWS_FALSE@,$GAMSIO_IS_WINDOWS_FALSE,;t t
 s,@COIN_OS_SOLVER_TRUE@,$COIN_OS_SOLVER_TRUE,;t t
 s,@COIN_OS_SOLVER_FALSE@,$COIN_OS_SOLVER_FALSE,;t t
+s,@coin_build_ipopt@,$coin_build_ipopt,;t t
+s,@coin_build_glpk@,$coin_build_glpk,;t t
+s,@coin_build_cbc@,$coin_build_cbc,;t t
+s,@coin_build_bonmin@,$coin_build_bonmin,;t t
+s,@coin_build_osi@,$coin_build_osi,;t t
 s,@GAMSLINKS_BUILD_IPOPT_TRUE@,$GAMSLINKS_BUILD_IPOPT_TRUE,;t t
 s,@GAMSLINKS_BUILD_IPOPT_FALSE@,$GAMSLINKS_BUILD_IPOPT_FALSE,;t t
 s,@GAMSLINKS_BUILD_GAMSIO_TRUE@,$GAMSLINKS_BUILD_GAMSIO_TRUE,;t t
