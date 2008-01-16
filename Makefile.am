@@ -38,8 +38,11 @@ unitTests: tests
 
 doxydoc:
 	cd $(srcdir); doxygen doxydoc/doxygen.conf
+	
+gams-install:
+	cd GAMSlinks; $(MAKE) gams-install
 
-.PHONY: test unitTest tests unitTests doxydoc
+.PHONY: test unitTest tests unitTests gams-install doxydoc
 
 ########################################################################
 #                         Maintainer Stuff                             #

@@ -147,6 +147,8 @@ COIN_HAS_GAMSIO_FALSE = @COIN_HAS_GAMSIO_FALSE@
 COIN_HAS_GAMSIO_TRUE = @COIN_HAS_GAMSIO_TRUE@
 COIN_HAS_GAMSLINKS_FALSE = @COIN_HAS_GAMSLINKS_FALSE@
 COIN_HAS_GAMSLINKS_TRUE = @COIN_HAS_GAMSLINKS_TRUE@
+COIN_HAS_GAMSSYSTEM_FALSE = @COIN_HAS_GAMSSYSTEM_FALSE@
+COIN_HAS_GAMSSYSTEM_TRUE = @COIN_HAS_GAMSSYSTEM_TRUE@
 COIN_HAS_GLPK_FALSE = @COIN_HAS_GLPK_FALSE@
 COIN_HAS_GLPK_TRUE = @COIN_HAS_GLPK_TRUE@
 COIN_HAS_IPOPT_FALSE = @COIN_HAS_IPOPT_FALSE@
@@ -290,14 +292,14 @@ build_alias = @build_alias@
 build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
-coin_build_bonmin = @coin_build_bonmin@
-coin_build_cbc = @coin_build_cbc@
-coin_build_glpk = @coin_build_glpk@
-coin_build_ipopt = @coin_build_ipopt@
-coin_build_osi = @coin_build_osi@
 coin_has_gamsio = @coin_has_gamsio@
 datadir = @datadir@
 exec_prefix = @exec_prefix@
+gamslinks_build_bonmin = @gamslinks_build_bonmin@
+gamslinks_build_cbc = @gamslinks_build_cbc@
+gamslinks_build_glpk = @gamslinks_build_glpk@
+gamslinks_build_ipopt = @gamslinks_build_ipopt@
+gamslinks_build_osi = @gamslinks_build_osi@
 gamspath = @gamspath@
 have_autoconf = @have_autoconf@
 have_automake = @have_automake@
@@ -790,7 +792,15 @@ test: all
 
 unitTest: test
 
-.PHONY: test unitTest
+@COIN_HAS_GAMSSYSTEM_TRUE@gams-install: install
+@COIN_HAS_GAMSSYSTEM_TRUE@	echo "Installation of solvers in GAMS distribution at @GAMS_PATH@."
+@COIN_HAS_GAMSSYSTEM_TRUE@	cp $(DESTDIR)$(bindir)/gms*_.zip @GAMS_PATH@
+@COIN_HAS_GAMSSYSTEM_TRUE@	cd @GAMS_PATH@; gamsinst -a
+@COIN_HAS_GAMSSYSTEM_FALSE@gams-install: 
+@COIN_HAS_GAMSSYSTEM_FALSE@	echo "Installation of solvers in GAMS distribution fails because path of GAMS system not known."
+@COIN_HAS_GAMSSYSTEM_FALSE@	exit 1
+
+.PHONY: test unitTest gams-install
 
 # Stuff to clean up
 clean-local:

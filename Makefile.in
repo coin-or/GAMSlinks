@@ -683,7 +683,10 @@ unitTests: tests
 doxydoc:
 	cd $(srcdir); doxygen doxydoc/doxygen.conf
 
-.PHONY: test unitTest tests unitTests doxydoc
+gams-install:
+	cd GAMSlinks; $(MAKE) gams-install
+
+.PHONY: test unitTest tests unitTests gams-install doxydoc
 
 install-doc: $(DocFiles)
 	test -z "$(DocInstallDir)" || $(mkdir_p) "$(DESTDIR)$(DocInstallDir)"

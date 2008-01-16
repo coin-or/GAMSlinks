@@ -124,6 +124,7 @@ ThirdParty/GAMSIO/configure -text
 ThirdParty/GAMSIO/configure.ac -text
 ThirdParty/GAMSIO/gdx2gams.c -text
 ThirdParty/GAMSIO/get.DII -text
+ThirdParty/GAMSIO/get.GAMSIO -text
 ThirdParty/GAMSIO/get.LEI -text
 ThirdParty/GAMSIO/get.LX3 -text
 ThirdParty/GAMSIO/get.SIG -text

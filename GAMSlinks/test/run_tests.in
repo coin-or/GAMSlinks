@@ -22,22 +22,25 @@ fi
 echo Getting quality tests driver from GAMS test library...
 $gamspath/testlib quality
 
-#TODO: check whether quality.gms is there now
+if test ! -e quality.gms ; then
+  echo "Failed to obtain quality.gms from GAMS test library."
+  exit 1
+fi
 
 solvers=
 skiplist=
-nrtests=0
 declare -a testlist
-if test @coin_build_ipopt@ ; then
+if test @gamslinks_build_ipopt@ == 1 ; then
   solvers="$solvers , Ipopt"
   skiplist="$skiplist skip('Ipopt','lp03')=yes;"
   skiplist="$skiplist skip('Ipopt','sl4lp03')=yes;"
   skiplist="$skiplist skip('Ipopt','lp10')=yes;"
   skiplist="$skiplist skip('Ipopt','sl4lp10')=yes;"
+  testlist[${#testlist[@]}]="--solver ipopt --suite lp"
   testlist[${#testlist[@]}]="--solver ipopt --suite nlp"
   testlist[${#testlist[@]}]="--solver ipopt --suite qcp"
 fi
-if test @coin_build_glpk@ ; then
+if test @gamslinks_build_glpk@ == 1 ; then
   solvers="$solvers , Glpk"
   skiplist="$skiplist skip('Glpk','sos1a')=yes;"
   skiplist="$skiplist skip('Glpk','sl4sos1a')=yes;"
@@ -46,14 +49,14 @@ if test @coin_build_glpk@ ; then
   testlist[${#testlist[@]}]="--solver glpk --suite lp"
   testlist[${#testlist[@]}]="--solver glpk --suite mip"
 fi
-if test @coin_build_cbc@ ; then
+if test @gamslinks_build_cbc@ == 1 ; then
   solvers="$solvers , Cbc"
 #  skiplist="$skiplist skip('Cbc','semicon1')=yes;"
 #  skiplist="$skiplist skip('Cbc','sl4scon1')=yes;"
   testlist[${#testlist[@]}]="--solver cbc --suite lp"
   testlist[${#testlist[@]}]="--solver cbc --suite mip"
 fi
-if test @coin_build_bonmin@ ; then
+if test @gamslinks_build_bonmin@ == 1 ; then
   solvers="$solvers , Bonmin"
   skiplist="$skiplist skip('Bonmin','sos1a')=yes;"
   skiplist="$skiplist skip('Bonmin','sl4sos1a')=yes;"
@@ -76,11 +79,14 @@ sed -e "/master set of solvers/s/\/;\$/$solvers \/;/" \
     quality.gms > quality_coin.gms
 echo ""
 
+#remove all log or failure files
+rm -f quality_test_*.log failures_qa*.gms
+
 #indicates whether there was a failed test, also return code of this script
 testfailed=0
 
 for (( i=0 ; i<${#testlist[@]} ; i++ )) ; do
-  echo "Run quality test driver with options " ${testlist[$i]} 
+  echo "Run quality test $(($i+1)) of ${#testlist[@]} with options " ${testlist[$i]} 
 
 	if $gamspath/gams quality_coin.gms ${testlist[$i]} lo=2 logfile=quality_test_$i.log ; then
 		echo "Test " ${testlist[$i]} " passed."

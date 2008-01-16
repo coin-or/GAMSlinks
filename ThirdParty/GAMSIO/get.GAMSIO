@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo "Calling all get.XXX scripts in this directory."
+echo ""
+
+./get.DII
+./get.LEI
+./get.LX3
+./get.SIG
+./get.VIS
