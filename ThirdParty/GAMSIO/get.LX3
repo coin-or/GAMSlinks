@@ -11,7 +11,7 @@ echo "Running script for downloading the GAMS I/O libraries for Linux 32-bit pla
 echo " "
 
 MACHINECODE=LX3
-. FILES
+. ./FILES
 FILES="${IOLIB_FILES} ${SMAGLIB_FILES}"
 
 mkdir -p LX3

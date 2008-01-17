@@ -11,7 +11,7 @@ echo "Running script for downloading the GAMS I/O libraries for Solaris on x86_6
 echo " "
 
 MACHINECODE=SIG
-. FILES
+. ./FILES
 FILES="${IOLIB_FILES} ${SMAGLIB_FILES}"
 
 mkdir -p ${MACHINECODE}

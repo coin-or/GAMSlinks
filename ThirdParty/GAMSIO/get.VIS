@@ -11,7 +11,7 @@ echo "Running script for downloading the GAMS I/O libraries for Windows platform
 echo " "
 
 MACHINECODE=VIS
-. FILES
+. ./FILES
 FILES="${IOLIB_FILES} ${SMAGLIB_FILES}"
 
 mkdir -p VIS

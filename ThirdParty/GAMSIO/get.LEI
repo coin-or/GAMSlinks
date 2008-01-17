@@ -11,7 +11,7 @@ echo "Running script for downloading the GAMS I/O libraries for Linux 64-bit pla
 echo " "
 
 MACHINECODE=LEI
-. FILES
+. ./FILES
 FILES="${IOLIB_FILES} ${SMAGLIB_FILES}"
 
 mkdir -p LEI
