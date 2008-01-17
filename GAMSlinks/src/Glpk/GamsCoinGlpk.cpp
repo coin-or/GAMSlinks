@@ -187,7 +187,7 @@ int main (int argc, const char *argv[]) {
 	}
 	
 	setupParameters(opt, myout, solver, glpk_model);
-//	setupStartPoint(gm, myout, solver);
+//TODO	setupStartPoint(gm, myout, solver);
 
 	// from glpsol: if scaling is turned on and presolve is off (or interior point is used), then do scaling 
   if (lpx_get_int_parm(glpk_model, LPX_K_SCALE) && !lpx_get_int_parm(glpk_model, LPX_K_PRESOL))
@@ -224,9 +224,7 @@ int main (int argc, const char *argv[]) {
 
 		int mipstat = lpx_mip_status(glpk_model);
 		if (!solver.isIterationLimitReached()
-#ifdef OGSI_HAVE_TIMELIMIT
 				&& !solver.isTimeLimitReached()
-#endif
 				&& (mipstat == LPX_I_FEAS || mipstat == LPX_I_OPT)) {
 			const double *colLevel=solver.getColSolution();
 			// We are loosing colLevel after a call to lpx_set_* when using the Visual compiler. So we save the levels.
@@ -261,19 +259,8 @@ int main (int argc, const char *argv[]) {
 	gm.setStatus(GamsModel::ErrorSystemFailure,GamsModel::ErrorNoSolution);	
 	myout << "\n" << CoinMessageEol;
 
-#ifdef OGSI_HAVE_TIMELIMIT
-	bool timelimitreached=solver.isTimeLimitReached();
-#else
-	bool timelimitreached=false;
-#endif
-#ifdef OGSI_HAVE_FEASIBILITY
-	bool feasible=solver.isFeasible();
-#else
-	bool feasible=false;
-#endif
-
-	if (timelimitreached) {
-		if (feasible) {
+	if (solver.isTimeLimitReached()) {
+		if (solver.isFeasible()) {
 			myout << "Time limit exceeded. Have feasible solution.";
 			if (gm.isLP())
 				gm.setStatus(GamsModel::ResourceInterrupt,GamsModel::IntermediateNonoptimal);
@@ -298,7 +285,7 @@ int main (int argc, const char *argv[]) {
 		myout << "Model unbounded.";
 		gm.setStatus(GamsModel::NormalCompletion,GamsModel::UnboundedNoSolution);	
 	} else if (solver.isIterationLimitReached()) {
-		if (feasible) {
+		if (solver.isFeasible()) {
 			myout << "Iteration limit exceeded. Have feasible solution.";
 			if (gm.isLP())
 				gm.setStatus(GamsModel::IterationInterrupt,GamsModel::IntermediateNonoptimal);
@@ -312,7 +299,7 @@ int main (int argc, const char *argv[]) {
 		myout << "Primal objective limit reached.";
 	} else if (solver.isDualObjectiveLimitReached()) {
 		myout << "Dual objective limit reached.";
-	} else if (solver.isAbandoned()) { 
+	} else if (solver.isAbandoned()) {
 		myout << "Model abandoned.";
 	} else {
 		myout << "Unknown solve outcome.";
@@ -323,7 +310,7 @@ int main (int argc, const char *argv[]) {
 	// We write a solution if model was declared optimal or feasible.
 	if (GamsModel::Optimal==gm.getModelStatus() || 
 			GamsModel::IntegerSolution==gm.getModelStatus()) {
-		GamsWriteSolutionOsi(&gm, &myout, &solver);
+		GamsWriteSolutionOsi(&gm, &myout, &solver, true);
 	}	else {
 		gm.setSolution(); // Need this to trigger the write of GAMS solution file
 	}
@@ -441,8 +428,8 @@ void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInte
 	}
 	for (int j=0; j<gm.nRows(); ++j) {
 		switch (gm.RowBasis()[j]) {
-			case GamsModel::NonBasicLower : warmstart.setArtifStatus(j, CoinWarmStartBasis::atLowerBound); break;
-			case GamsModel::NonBasicUpper : warmstart.setArtifStatus(j, CoinWarmStartBasis::atUpperBound); break;
+			case GamsModel::NonBasicLower : warmstart.setArtifStatus(j, CoinWarmStartBasis::atUpperBound); break;
+			case GamsModel::NonBasicUpper : warmstart.setArtifStatus(j, CoinWarmStartBasis::atLowerBound); break;
 			case GamsModel::Basic : warmstart.setArtifStatus(j, CoinWarmStartBasis::basic); break;
 			case GamsModel::SuperBasic : warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
 			default: warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
