@@ -10,7 +10,7 @@
 srcdir="@srcdir@"
 gamspath="@GAMS_PATH@"
 
-if test x$gamspath == xUNAVAILABLE; then
+if test x$gamspath = xUNAVAILABLE; then
   echo "No GAMS system available."
   echo "Please download demo system from www.gams.com, rerun configure, install the solvers, and try again."
   exit 1
@@ -30,7 +30,7 @@ fi
 solvers=
 skiplist=
 declare -a testlist
-if test @gamslinks_build_ipopt@ == 1 ; then
+if test @gamslinks_build_ipopt@ = 1 ; then
   solvers="$solvers , Ipopt"
   skiplist="$skiplist skip('Ipopt','lp03')=yes;"
   skiplist="$skiplist skip('Ipopt','sl4lp03')=yes;"
@@ -40,7 +40,7 @@ if test @gamslinks_build_ipopt@ == 1 ; then
   testlist[${#testlist[@]}]="--solver ipopt --suite nlp"
   testlist[${#testlist[@]}]="--solver ipopt --suite qcp"
 fi
-if test @gamslinks_build_glpk@ == 1 ; then
+if test @gamslinks_build_glpk@ = 1 ; then
   solvers="$solvers , Glpk"
   skiplist="$skiplist skip('Glpk','sos1a')=yes;"
   skiplist="$skiplist skip('Glpk','sl4sos1a')=yes;"
@@ -49,14 +49,14 @@ if test @gamslinks_build_glpk@ == 1 ; then
   testlist[${#testlist[@]}]="--solver glpk --suite lp"
   testlist[${#testlist[@]}]="--solver glpk --suite mip"
 fi
-if test @gamslinks_build_cbc@ == 1 ; then
+if test @gamslinks_build_cbc@ = 1 ; then
   solvers="$solvers , Cbc"
   skiplist="$skiplist skip('Cbc','semicon1')=yes;"
   skiplist="$skiplist skip('Cbc','sl4scon1')=yes;"
   testlist[${#testlist[@]}]="--solver cbc --suite lp"
   testlist[${#testlist[@]}]="--solver cbc --suite mip"
 fi
-if test @gamslinks_build_bonmin@ == 1 ; then
+if test @gamslinks_build_bonmin@ = 1 ; then
   solvers="$solvers , Bonmin"
   skiplist="$skiplist skip('Bonmin','sos1a')=yes;"
   skiplist="$skiplist skip('Bonmin','sl4sos1a')=yes;"
