@@ -31,7 +31,7 @@ if COIN_HAS_GAMSSYSTEM
 gams-install: install
 	echo "Installation of solvers in GAMS distribution at @GAMS_PATH@."
 	cp $(DESTDIR)$(bindir)/gms*_.zip @GAMS_PATH@
-	cd @GAMS_PATH@; gamsinst -a
+	cd @GAMS_PATH@; ./gamsinst -a
 else
 gams-install: 
 	echo "Installation of solvers in GAMS distribution fails because path of GAMS system not known."
