@@ -491,7 +491,8 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	$(COINUTILSOBJDIR)/inc` -I`$(CYGPATH_W) $(OSSRCDIR)/src` \
 	-I`$(CYGPATH_W) $(OSSRCDIR)/src/OSCommonInterfaces` \
 	-I`$(CYGPATH_W) $(OSSRCDIR)/src/OSUtils` -I`$(CYGPATH_W) \
-	$(OSSRCDIR)/src/OSAgent` -I`$(CYGPATH_W) $(OSOBJDIR)/inc` \
+	$(OSSRCDIR)/src/OSAgent` -I`$(CYGPATH_W) \
+	$(OSSRCDIR)/src/OSParsers` -I`$(CYGPATH_W) $(OSOBJDIR)/inc` \
 	-I`$(CYGPATH_W) $(CPPADSRCDIR)` $(am__append_1) \
 	$(am__append_4) $(am__append_8) $(am__append_11) \
 	$(am__append_15) $(am__append_19) $(am__append_23) \

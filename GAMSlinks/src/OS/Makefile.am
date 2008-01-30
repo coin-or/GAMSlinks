@@ -24,6 +24,7 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSCommonInterfaces` \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSUtils` \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSAgent` \
+ -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSParsers` \
  -I`$(CYGPATH_W) $(OSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(CPPADSRCDIR)`
 

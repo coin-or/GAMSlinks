@@ -90,6 +90,8 @@ void OSrL2Smag::writeSolution(OSResult& osresult) {
 	double* rowLev=CoinCopyOfArray((double*)NULL, smagRowCount(smag), SMAG_DBL_NA);
 	double* rowMarg=CoinCopyOfArray((double*)NULL, smagRowCount(smag), SMAG_DBL_NA);
 	
+	//TODO: add some checks that we do not write over the length of our arrays
+	
 	if (sol->constraints && sol->constraints->values) // set row levels, if available
 		for (std::vector<ConValue*>::iterator it(sol->constraints->values->con.begin());
 		it!=sol->constraints->values->con.end(); ++it) {

@@ -265,11 +265,114 @@ void remoteSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, st
 		std::clog << "OSoL: " << osol;
 	}
 
-	OSSolverAgent agent(opt.getString("service", buffer));
-	
-	std::string osrl = agent.solve(OSiLWriter().writeOSiL(osinstance), osol);
-	
-	processResult(prob, opt, &osrl, NULL);
+	try {
+		OSSolverAgent agent(opt.getString("service", buffer));
+
+		if (!opt.getString("service_method", buffer)) {
+			smagStdOutputPrint(prob, SMAG_ALLMASK, "Error reading value of parameter service_method\n");
+			smagReportSolBrief(prob, 13, 13);
+			return;
+		}
+
+		if (strncmp(buffer, "solve", 5)==0) {
+			std::string osrl = agent.solve(OSiLWriter().writeOSiL(osinstance), osol);
+			processResult(prob, opt, &osrl, NULL);
+
+		} else if (strncmp(buffer, "getJobID", 8)==0) {
+			std::string jobid = agent.getJobID(osol);
+			sprintf(buffer, "OS Job ID: %s\n", jobid.c_str());
+			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+			smagReportSolBrief(prob, 14, 1); // no solution returned; normal completion
+
+		} else if (strncmp(buffer, "knock", 5)==0) {
+			string ospl;
+			if (opt.isDefined("readospl")) {
+				char osplfilename[255];
+				std::ifstream osplfile(opt.getString("readospl", osplfilename));
+				if (!osplfile.good()) {
+					snprintf(buffer, 255, "Error opening OSpL file %s for reading knock request.\n", osplfilename);
+					smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+					smagReportSolBrief(prob, 13, 13);
+					return;
+				} else {
+					snprintf(buffer, 255, "Reading knock request from OSpL file %s.\n", osplfilename);
+					smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+					std::getline(osplfile, ospl, '\0');
+				}		
+			} else {
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Error: To use OS service method 'knock', a ospl file need to be given (use option 'readospl').\n");
+				smagReportSolBrief(prob, 13, 13);
+				return;
+			}
+			ospl=agent.knock(ospl, osol);
+
+			if (opt.isDefined("writeospl")) {
+				char osplfilename[255];
+				std::ofstream osplfile(opt.getString("writeospl", osplfilename));
+				if (!osplfile.good()) {
+					snprintf(buffer, 255, "Error opening file %s for writing knock result in OSpL.\n", osplfilename);
+					smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+					smagReportSolBrief(prob, 13, 13);
+					return;
+				} else {
+					snprintf(buffer, 255, "Writing knock result in OSpL to %s.\n", osplfilename);
+					smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+					osplfile << ospl;
+				}
+			} else {
+				smagStdOutputPrint(prob, SMAG_ALLMASK, "Answer from knock:\n");
+				smagStdOutputPrint(prob, SMAG_ALLMASK, ospl.c_str());
+				smagReportSolBrief(prob, 14, 1); // no solution returned; normal completion
+			}
+
+		} else if (strncmp(buffer, "kill", 4)==0) {
+			std::string ospl=agent.kill(osol);
+
+			if (opt.isDefined("writeospl")) {
+				char osplfilename[255];
+				std::ofstream osplfile(opt.getString("writeospl", osplfilename));
+				if (!osplfile.good()) {
+					snprintf(buffer, 255, "Error opening file %s for writing kill result in OSpL.\n", osplfilename);
+					smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+					smagReportSolBrief(prob, 13, 13);
+					return;
+				} else {
+					snprintf(buffer, 255, "Writing kill result in OSpL to %s.\n", osplfilename);
+					smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+					osplfile << ospl;
+				}
+			} else {
+				smagStdOutputPrint(prob, SMAG_ALLMASK, "Answer from kill:\n");
+				smagStdOutputPrint(prob, SMAG_ALLMASK, ospl.c_str());
+				smagReportSolBrief(prob, 14, 1); // no solution returned; normal completion
+			}
+
+		} else if (strncmp(buffer, "send", 4)==0) {
+			bool success=agent.send(OSiLWriter().writeOSiL(osinstance), osol);
+			if (success) {
+				smagStdOutputPrint(prob, SMAG_ALLMASK, "Problem instance successfully send to OS service.\n");
+				smagReportSolBrief(prob, 14, 1); // no solution returned; normal completion
+			} else {
+				smagStdOutputPrint(prob, SMAG_ALLMASK, "There was an error sending the problem instance to the OS service.\n");
+				smagReportSolBrief(prob, 14, 13); // no solution returned; error system failure			
+			}
+
+		} else if (strncmp(buffer, "retrieve", 8)==0) {
+			std::string osrl = agent.retrieve(osol);
+			processResult(prob, opt, &osrl, NULL);
+
+		} else {
+			char buffer2[512];
+			snprintf(buffer2, 512, "Error: OS service method %s not known.\n", buffer);
+			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer2);
+			smagReportSolBrief(prob, 13, 13);
+			return;
+		}
+	} catch(ErrorClass error) {
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error handling the OS service. Error message:\n");
+		smagStdOutputPrint(prob, SMAG_ALLMASK, error.errormsg.c_str());
+		smagReportSolBrief(prob, 13, 13);
+	}
 }
 
 void processResult(smagHandle_t prob, GamsOptions& opt, string* osrl, OSResult* osresult) {

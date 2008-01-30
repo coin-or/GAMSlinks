@@ -21,15 +21,24 @@ complete <a href="docs/solvers/coin.pdf">OS manual</a>.
 <tr><td><a href="#readosol">
 readosol</a></td>
 <td>read the solver options from an OSoL file</td></tr>
+<tr><td><a href="#readospl">
+readospl</a></td>
+<td>read knock request as OSpL file</td></tr>
 <tr><td><a href="#service">
 service</a></td>
-<td>call an Optimization Service to solve the instance</td></tr>
+<td>address of an Optimization Services Agent for a remote solve</td></tr>
+<tr><td><a href="#service_method">
+service_method</a></td>
+<td>method of an OS Agent to call</td></tr>
 <tr><td><a href="#solver">
 solver</a></td>
-<td>specification of solver for a local solve</td></tr>
+<td>specification of a solver</td></tr>
 <tr><td><a href="#writeosil">
 writeosil</a></td>
 <td>write the problem instance as OSiL file</td></tr>
+<tr><td><a href="#writeospl">
+writeospl</a></td>
+<td>write knock or kill reply into OSpL file</td></tr>
 <tr><td><a href="#writeosrl">
 writeosrl</a></td>
 <td>write the optimization result as OSrL file</td></tr></table>
@@ -41,21 +50,48 @@ readosol</a>
 
 
 
+<h4><a name="readospl">
+readospl</a>
+<i> (string)</i> read knock request as OSpL file</h4><p>
+
+
+
 <h4><a name="service">
 service</a>
-<i> (string)</i> call an Optimization Service to solve the instance</h4><p>
+<i> (string)</i> address of an Optimization Services Agent for a remote solve</h4><p>
 
 
+
+<h4><a name="service_method">
+service_method</a>
+<i> (string)</i> method of an OS Agent to call</h4><p>
+
+
+<br><i>(default = solve)</i>
+<table>
+<tr valign="top"><td width=20 align=right>solve</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>getJobID</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>knock</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>kill</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>send</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>retrieve</td><td></td></tr>
+</table>
 
 <h4><a name="solver">
 solver</a>
-<i> (string)</i> specification of solver for a local solve</h4><p>
+<i> (string)</i> specification of a solver</h4><p>
 
 
 
 <h4><a name="writeosil">
 writeosil</a>
 <i> (string)</i> write the problem instance as OSiL file</h4><p>
+
+
+
+<h4><a name="writeospl">
+writeospl</a>
+<i> (string)</i> write knock or kill reply into OSpL file</h4><p>
 
 
 
