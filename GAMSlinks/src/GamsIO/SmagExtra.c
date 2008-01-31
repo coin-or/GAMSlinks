@@ -2,7 +2,7 @@
  All Rights Reserved.
  This code is published under the Common Public License.
 
- $Id: SmagJournal.cpp 298 2008-01-04 14:03:20Z stefan $
+ $Id$
 
  Author: Stefan Vigerske
 */
