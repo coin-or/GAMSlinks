@@ -78,6 +78,8 @@ private:
 	smagHandle_t smag;
 
 	OSnLNode* parseGamsInstructions(unsigned int* instr, int num_instr, double* constants);
+	
+	bool getQuadraticTerms();
 };
 
 #endif /*SMAG2OSIL_HPP_*/

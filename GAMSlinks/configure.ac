@@ -1,4 +1,4 @@
-# Copyright (C) GAMS Development 2006-2007
+# Copyright (C) GAMS Development 2006-2008
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -69,11 +69,11 @@ AC_COIN_CXXLIBS
 # Check if we have a Fortran compiler; if we do, acquire the appropriate
 # options. This has to be done before we call AC_COIN_INIT_AUTO_TOOLS, else
 # it will helpfully set FFLAGS to an incorrect value.
-#AC_COIN_FIND_F77
-#if test "$F77" != unavailable ; then
-#  AC_COIN_PROG_F77
-#  AC_COIN_F77_WRAPPERS
-#fi
+AC_COIN_FIND_F77
+if test "$F77" != unavailable ; then
+  AC_COIN_PROG_F77
+  AC_COIN_F77_WRAPPERS
+fi
 
 # Initialize automake and libtool
 AC_COIN_INIT_AUTO_TOOLS
@@ -313,6 +313,26 @@ AC_SUBST(SMAG_LIBS)
 AC_SUBST(GAMSIO_CODE)
 AM_CONDITIONAL([GAMSIO_IS_UNIX],[test x"$gamsio_system" != xWindows])
 AM_CONDITIONAL([GAMSIO_IS_WINDOWS],[test x"$gamsio_system" = xWindows])
+
+#to use the g2dexports.h in SmagExtra.c, we need to define the fortran name mangling scheme 
+case $ac_cv_f77_mangling in
+  "lower case, no underscore"*)
+    FORTRAN_NAMEMANGLING_CFLAG="-DFNAME_LCASE_NODECOR"
+  ;;
+  "lower case, underscore"*)
+    FORTRAN_NAMEMANGLING_CFLAG="-DFNAME_LCASE_DECOR"
+  ;;
+  "upper case, no underscore"*)
+    FORTRAN_NAMEMANGLING_CFLAG="-DFNAME_UCASE_NODECOR"
+  ;;
+  "upper case, underscore"*)
+    FORTRAN_NAMEMANGLING_CFLAG="-DFNAME_UCASE_DECOR"
+  ;;
+  *)
+    AC_MSG_ERROR("cannot handle name mangling scheme '$ac_cv_f77_mangling'. Compilation of SmagExtra.c will probably fail.")
+  ;;
+esac
+AC_SUBST(FORTRAN_NAMEMANGLING_CFLAG)
 
 ########################
 # OS Solver Interfaces #

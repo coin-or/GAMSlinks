@@ -96,13 +96,21 @@ libGamsIO_la_OBJECTS = $(am_libGamsIO_la_OBJECTS)
 libSmagIO_la_DEPENDENCIES =  \
 	$(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la
 am__libSmagIO_la_SOURCES_DIST = GamsOptions.cpp SmagMessageHandler.cpp \
-	SmagJournal.cpp
+	SmagExtra.c SmagJournal.cpp
 @COIN_HAS_IPOPT_TRUE@am__objects_1 = SmagJournal.lo
 am_libSmagIO_la_OBJECTS = GamsOptions.lo SmagMessageHandler.lo \
-	$(am__objects_1)
+	SmagExtra.lo $(am__objects_1)
 libSmagIO_la_OBJECTS = $(am_libSmagIO_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
@@ -123,6 +131,7 @@ ACLOCAL = @ACLOCAL@
 ADDLIBS = @ADDLIBS@
 ADD_CFLAGS = @ADD_CFLAGS@
 ADD_CXXFLAGS = @ADD_CXXFLAGS@
+ADD_FFLAGS = @ADD_FFLAGS@
 ALWAYS_FALSE_FALSE = @ALWAYS_FALSE_FALSE@
 ALWAYS_FALSE_TRUE = @ALWAYS_FALSE_TRUE@
 AMDEP_FALSE = @AMDEP_FALSE@
@@ -198,6 +207,7 @@ CXXLIBS = @CXXLIBS@
 CYGPATH_W = @CYGPATH_W@
 DBG_CFLAGS = @DBG_CFLAGS@
 DBG_CXXFLAGS = @DBG_CXXFLAGS@
+DBG_FFLAGS = @DBG_FFLAGS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DYLPOBJDIR = @DYLPOBJDIR@
@@ -211,6 +221,8 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FADDLIBS = @FADDLIBS@
 FFLAGS = @FFLAGS@
+FLIBS = @FLIBS@
+FORTRAN_NAMEMANGLING_CFLAG = @FORTRAN_NAMEMANGLING_CFLAG@
 GAMSIO_ADDLIBS = @GAMSIO_ADDLIBS@
 GAMSIO_CODE = @GAMSIO_CODE@
 GAMSIO_CPPFLAGS = @GAMSIO_CPPFLAGS@
@@ -261,9 +273,11 @@ MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MPICC = @MPICC@
 MPICXX = @MPICXX@
+MPIF77 = @MPIF77@
 OBJEXT = @OBJEXT@
 OPT_CFLAGS = @OPT_CFLAGS@
 OPT_CXXFLAGS = @OPT_CXXFLAGS@
+OPT_FFLAGS = @OPT_FFLAGS@
 OSIOBJDIR = @OSIOBJDIR@
 OSISRCDIR = @OSISRCDIR@
 OSOBJDIR = @OSOBJDIR@
@@ -358,7 +372,7 @@ libGamsIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la 
   $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
 
 libSmagIO_la_SOURCES = GamsOptions.cpp SmagMessageHandler.cpp \
-	$(am__append_1)
+	SmagExtra.c $(am__append_1)
 libSmagIO_la_LDFLAGS = 
 libSmagIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la
 includecoindir = $(includedir)/coin
@@ -366,8 +380,9 @@ includecoin_HEADERS = ../../inc/config_gamslinks.h \
   GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsBCH.hpp \
   SmagJournal.hpp SmagMessageHandler.hpp
 
-AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
-	-I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` -I`$(CYGPATH_W) \
+AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) $(FORTRAN_NAMEMANGLING_CFLAG) \
+	-I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) \
+	$(COINUTILSSRCDIR)/src` -I`$(CYGPATH_W) \
 	$(COINUTILSOBJDIR)/inc` -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
 	-I`$(CYGPATH_W) $(OSIOBJDIR)/inc` $(am__append_2)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
@@ -383,7 +398,7 @@ DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .lo .o .obj
+.SUFFIXES: .c .cpp .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../../BuildTools/Makemain.inc $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -456,8 +471,30 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsModel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOptions.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagExtra.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagJournal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagMessageHandler.Plo@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	if $(LTCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Plo"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

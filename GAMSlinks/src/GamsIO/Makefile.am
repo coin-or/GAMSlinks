@@ -19,7 +19,7 @@ libGamsIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la 
   $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
 
 libSmagIO_la_SOURCES = \
-  GamsOptions.cpp SmagMessageHandler.cpp
+  GamsOptions.cpp SmagMessageHandler.cpp SmagExtra.c
 if COIN_HAS_IPOPT
 libSmagIO_la_SOURCES += SmagJournal.cpp
 endif
@@ -31,12 +31,12 @@ includecoin_HEADERS = ../../inc/config_gamslinks.h \
   GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsBCH.hpp \
   SmagJournal.hpp SmagMessageHandler.hpp
 
-AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
+AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) $(FORTRAN_NAMEMANGLING_CFLAG) -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
  -I`$(CYGPATH_W) $(OSIOBJDIR)/inc`
-
+ 
 if COIN_HAS_IPOPT
 AM_CPPFLAGS += \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \

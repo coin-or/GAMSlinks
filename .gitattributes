@@ -56,6 +56,8 @@ GAMSlinks/src/GamsIO/GamsOptions.cpp -text
 GAMSlinks/src/GamsIO/GamsOptions.hpp -text
 GAMSlinks/src/GamsIO/Makefile.am -text
 GAMSlinks/src/GamsIO/Makefile.in -text
+GAMSlinks/src/GamsIO/SmagExtra.c -text
+GAMSlinks/src/GamsIO/SmagExtra.h -text
 GAMSlinks/src/GamsIO/SmagJournal.cpp -text
 GAMSlinks/src/GamsIO/SmagJournal.hpp -text
 GAMSlinks/src/GamsIO/SmagMessageHandler.cpp -text

@@ -33,7 +33,7 @@ public:
 	~GamsOptions();
 	
 	/** Reads an options file.
-	 * @param Giving NULL for optfilename will read nothing and returns true.
+	 * @param optfilename Giving NULL for optfilename will read nothing and returns true.
 	 */
 	bool readOptionsFile(const char* optfilename); 
 

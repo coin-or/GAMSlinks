@@ -8,6 +8,10 @@
 
 #include "Smag2OSiL.hpp"
 
+extern "C" {
+#include "SmagExtra.h"
+}
+
 Smag2OSiL::Smag2OSiL(smagHandle_t smag_)
 : osinstance(NULL), smag(smag_)
 { }
@@ -114,8 +118,10 @@ bool Smag2OSiL::createOSInstance() {
 		return false;
 
 	//TODO; if there are nonlinearities, we finish here, since they are not implemented yet
-	if (smagRowCountNL(smag) || smagObjColCountNL(smag))
+	if (smagRowCountNL(smag) || smagObjColCountNL(smag)) {
+		if (!getQuadraticTerms()) return false; //TODO: should call this only if it is a QQP
 		return true;
+	}
 	
 	//nonlinear stuff
 	osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions = 
@@ -146,6 +152,30 @@ bool Smag2OSiL::createOSInstance() {
 
 	// TODO: separate quadratic terms from expression trees
 
+	return true;
+}
+
+
+bool Smag2OSiL::getQuadraticTerms() {
+	int hesSize=(int)(smag->gms.workFactor * 10 * smag->gms.nnz);
+
+	int* hesRowIdx=new int[hesSize];
+	int* hesColIdx=new int [hesSize];
+	double* hesValues=new double[hesSize];
+	int* rowStart=new int[smagRowCount(smag)+2];
+	
+	int rc=smagSingleHessians(smag, hesRowIdx, hesColIdx, hesValues, hesSize, rowStart);
+	if (rc) {
+		smagStdOutputPrint(smag, SMAG_ALLMASK, "Error getting structure and values of Hessians. Exiting ...\n");
+		smagStdOutputFlush(smag, SMAG_ALLMASK);
+		return false;
+	}
+
+	delete[] hesRowIdx;
+	delete[] hesColIdx;
+	delete[] hesValues;
+	delete[] rowStart;
+	
 	return true;
 }
 
