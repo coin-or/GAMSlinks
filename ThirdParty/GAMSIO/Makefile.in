@@ -22,7 +22,7 @@
 # Author: Stefan Vigerske
 # Template from: Andreas Waechter
 
-# Copyright (C) 2006 International Business Machines and others.
+# Copyright (C) 2006, 2007 International Business Machines and others.
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 
@@ -268,7 +268,7 @@ AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -D$(CIA_CODE)
 DISTCLEANFILES = $(am__append_3) $(VPATH_DISTCLEANFILES)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DocFiles = README AUTHORS LICENSE
-DocInstallDir = $(prefix)/share/doc/$(PACKAGE_NAME)
+DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: config_gamsio.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -683,7 +683,7 @@ uninstall-am: uninstall-info-am
 
 .PHONY:
 
-install-doc:
+install-doc: $(DocFiles)
 	test -z "$(DocInstallDir)" || $(mkdir_p) "$(DESTDIR)$(DocInstallDir)"
 	for file in $(DocFiles); do \
 	  if test -f "$$file"; then dir=; else dir="$(srcdir)/"; fi; \
