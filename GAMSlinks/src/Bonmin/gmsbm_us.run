@@ -1,4 +1,4 @@
-#!/bin/csh -f
+#!/bin/sh
 # execute BONMIN
 
 # parameters:
@@ -9,3 +9,4 @@
 #    $5 : system directory
 
 ${5}gmsbm_ux.out $4
+exit 11

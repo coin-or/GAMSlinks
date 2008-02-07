@@ -1,4 +1,4 @@
-#!/bin/csh -f
+#!/bin/sh
 # execute Optimization Services
 
 # parameters:
@@ -9,3 +9,4 @@
 #    $5 : system directory
 
 ${5}gmsos_ux.out $4
+exit 11
