@@ -47,14 +47,14 @@ if test @gamslinks_build_glpk@ = 1 ; then
   skiplist="$skiplist skip('Glpk','semicon1')=yes;"
   skiplist="$skiplist skip('Glpk','sl4scon1')=yes;"
   testlist[${#testlist[@]}]="--solver glpk --suite lp"
-  testlist[${#testlist[@]}]="--solver glpk --suite mip"
+  testlist[${#testlist[@]}]="--solver glpk --suite mip user1=rmip=glpk"
 fi
 if test @gamslinks_build_cbc@ = 1 ; then
   solvers="$solvers , Cbc"
   skiplist="$skiplist skip('Cbc','semicon1')=yes;"
   skiplist="$skiplist skip('Cbc','sl4scon1')=yes;"
   testlist[${#testlist[@]}]="--solver cbc --suite lp"
-  testlist[${#testlist[@]}]="--solver cbc --suite mip"
+  testlist[${#testlist[@]}]="--solver cbc --suite mip user1=rmip=cbc"
 fi
 if test @gamslinks_build_bonmin@ = 1 ; then
   solvers="$solvers , Bonmin"
@@ -67,7 +67,7 @@ if test @gamslinks_build_bonmin@ = 1 ; then
   skiplist="$skiplist skip('Bonmin','lp10')=yes;"
   skiplist="$skiplist skip('Bonmin','sl4lp10')=yes;"
   testlist[${#testlist[@]}]="--solver bonmin --suite lp"
-  testlist[${#testlist[@]}]="--solver bonmin --suite mip"
+  testlist[${#testlist[@]}]="--solver bonmin --suite mip user1=rmip=bonmin"
   testlist[${#testlist[@]}]="--solver bonmin --suite nlp"
   testlist[${#testlist[@]}]="--solver bonmin --suite qcp"
 fi
