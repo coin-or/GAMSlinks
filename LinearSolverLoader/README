@@ -1,0 +1,49 @@
+
+The purpose of the LinearSolverLoader is to provide a library that
+loads a linear solver as used by Ipopt from a dynamically linked library.
+From Ipopts point of view, the LinearSolverLoader behaves like a linear solver.
+When Ipopt the first time tries to call a method of the linear solver,
+the LinearSolverLoader tries to open a shared library containing the actual solver,
+imports the symbols from there, and from then on passes every call from Ipopt to the shared library.
+
+The advantage is, that the linear solver does not need to be present when Ipopt is build.
+That is, an Ipopt executable can be delivered without any third-party linear solver library,
+and it is the users liability to provide a linear solver.
+
+Currently, only the HSL routines are supported.
+See configure --help how to enable the HSL library loader and to specify which HSL routines should be loaded.           
+
+Construction of an HSL library as it is supported from the LinearSolverLoader looks as follows for gfortran:
+gfortran -shared -fPIC -Wl,-soname,libhsl.so -o libhsl.so <hsl-fortran-files>
+
+To use the library loader to dynamically load a HSL library in Ipopt,
+you need to configure Ipopt with the options
+--with-hsl="<your-LinearSolverLoader.a> -ldl"
+The extra -ldl is to include the dynamic linker library.
+
+Depending on which HSL routines you have enabled for the build of the LinearSolverLoader,
+the Ipopt configure system should recognize the corresponding symbols in the LinearSolverLoader library.
+
+
+
+Example:
+You have the MA27 HSL libraries, but do not want to link them into your Ipopt executable.
+
+* Download the LinearSolverLoader project:
+  svn checkout https://projects.coin-or.org/svn/GAMSlinks/branches/LinearSolverLoader LinearSolverLoader
+* In LinearSolverLoader, call configure with proper options:
+  ./configure -C --enable-hslloader --enable-ma27
+* Create the library:
+  make; make install
+  
+* Configure your Ipopt build via
+  ./configure --with-hsl="<some-path>/LinearSolverLoader/lib/libLinearSolverLoader.a -ldl"
+  Note that it recognizes that MA27 is available.
+* Build Ipopt as usual:
+  make; make install
+
+* Create a shared library containing your HSL sources:
+  gfortran -shared -fPIC -Wl,-soname,libhsl.so -o libhsl.so <hsl-fortran-sources>
+* Copy the libhsl.so to a place where the dynamic linker can find it.
+ 
+* Call Ipopt and enjoy.
