@@ -224,7 +224,7 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = doxydoc/doxygen.conf osiglpk.patch INSTALL LICENCE README \
+EXTRA_DIST = doxydoc/doxygen.conf INSTALL LICENCE README \
 	$(am__append_1)
 
 ########################################################################

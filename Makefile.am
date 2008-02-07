@@ -8,7 +8,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = doxydoc/doxygen.conf osiglpk.patch INSTALL LICENCE README
+EXTRA_DIST = doxydoc/doxygen.conf INSTALL LICENCE README
 
 ########################################################################
 #                          Subdirectories                              #
