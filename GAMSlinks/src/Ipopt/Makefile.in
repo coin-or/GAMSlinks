@@ -55,11 +55,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = GamsIpopt$(EXEEXT)
+@COIN_HAS_LSL_TRUE@am__append_1 = -I`$(CYGPATH_W) $(srcdir)/../../../LinearSolverLoader/src`
 DIST_COMMON = $(includeipopt_HEADERS) \
 	$(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_1 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_2 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_3 = .Externals-stamp
 subdir = src/Ipopt
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -160,6 +161,8 @@ COIN_HAS_GLPK_FALSE = @COIN_HAS_GLPK_FALSE@
 COIN_HAS_GLPK_TRUE = @COIN_HAS_GLPK_TRUE@
 COIN_HAS_IPOPT_FALSE = @COIN_HAS_IPOPT_FALSE@
 COIN_HAS_IPOPT_TRUE = @COIN_HAS_IPOPT_TRUE@
+COIN_HAS_LSL_FALSE = @COIN_HAS_LSL_FALSE@
+COIN_HAS_LSL_TRUE = @COIN_HAS_LSL_TRUE@
 COIN_HAS_OSI_FALSE = @COIN_HAS_OSI_FALSE@
 COIN_HAS_OSI_TRUE = @COIN_HAS_OSI_TRUE@
 COIN_HAS_OS_FALSE = @COIN_HAS_OS_FALSE@
@@ -348,7 +351,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmsip_nt.cmd gmsip_us.run install/gmsip_nt.dat \
-	install/gmsip_un.dat $(am__append_1)
+	install/gmsip_un.dat $(am__append_2)
 GamsIpopt_SOURCES = GamsIpopt.cpp SmagNLP.cpp ../GamsIO/SmagJournal.cpp
 includeipoptdir = $(includedir)/ipopt
 includeipopt_HEADERS = \
@@ -362,21 +365,19 @@ includeipopt_HEADERS = \
   $(IPOPTSRCDIR)/src/LinAlg/IpCompoundVector.hpp \
   $(IPOPTSRCDIR)/src/Algorithm/IpTimingStatistics.hpp
 
-AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
- -I`$(CYGPATH_W) $(srcdir)/..` \
- -I`$(CYGPATH_W) $(srcdir)/../GamsIO` \
- -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
- -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` \
- -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \
- -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Algorithm` \
- -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/CGPenalty` \
- -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
-
+AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
+	-I`$(CYGPATH_W) $(srcdir)/../GamsIO` -I`$(CYGPATH_W) \
+	$(IPOPTSRCDIR)/src/Interfaces` -I`$(CYGPATH_W) \
+	$(IPOPTSRCDIR)/src/Common` -I`$(CYGPATH_W) \
+	$(IPOPTSRCDIR)/src/LinAlg` -I`$(CYGPATH_W) \
+	$(IPOPTSRCDIR)/src/Algorithm` -I`$(CYGPATH_W) \
+	$(IPOPTSRCDIR)/src/contrib/CGPenalty` -I`$(CYGPATH_W) \
+	$(IPOPTOBJDIR)/inc` $(am__append_1)
 GamsIpopt_LDADD = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 GamsIpopt_DEPENDENCIES = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(SMAG_LIBS)
 GamsIpopt_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
-DISTCLEANFILES = gmsip_.zip $(am__append_2) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = gmsip_.zip $(am__append_3) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: all-am

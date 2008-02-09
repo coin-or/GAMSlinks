@@ -48,6 +48,10 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/CbcBonmin` \
  -I`$(CYGPATH_W) $(BONMINOBJDIR)/inc`
 
+if COIN_HAS_LSL
+  AM_CPPFLAGS += -I`$(CYGPATH_W) $(srcdir)/../../../LinearSolverLoader/src`
+endif
+
 GamsBonmin_LDADD = ../GamsIO/libSmagIO.la \
  $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
  $(CBCOBJDIR)/src/libCbc.la \

@@ -471,7 +471,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS F77 ADD_FFLAGS DBG_FFLAGS OPT_FFLAGS FFLAGS ac_ct_F77 MPIF77 FLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR GAMSLINKSDOCDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE CGLSRCDIR CGLOBJDIR CGLDOCDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COINUTILSDOCDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR OSIDOCDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR CLPDOCDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE VOLSRCDIR VOLOBJDIR VOLDOCDIR COIN_HAS_VOL_TRUE COIN_HAS_VOL_FALSE DYLPSRCDIR DYLPOBJDIR DYLPDOCDIR COIN_HAS_DYLP_TRUE COIN_HAS_DYLP_FALSE SYMPHONYSRCDIR SYMPHONYOBJDIR SYMPHONYDOCDIR COIN_HAS_SYMPHONY_TRUE COIN_HAS_SYMPHONY_FALSE CBCSRCDIR CBCOBJDIR CBCDOCDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR IPOPTDOCDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR BONMINDOCDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE CPPADSRCDIR CPPADOBJDIR CPPADDOCDIR COIN_HAS_CPPAD_TRUE COIN_HAS_CPPAD_FALSE OSSRCDIR OSOBJDIR OSDOCDIR COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE gamspath COIN_HAS_GAMSSYSTEM_TRUE COIN_HAS_GAMSSYSTEM_FALSE COIN_HAS_GAMSIO_TRUE COIN_HAS_GAMSIO_FALSE coin_has_gamsio GAMS_PATH GAMSIO_CPPFLAGS GAMSIO_ADDLIBS GAMSIO_LIBS SMAG_LIBS GAMSIO_CODE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE FORTRAN_NAMEMANGLING_CFLAG COIN_OS_SOLVER_TRUE COIN_OS_SOLVER_FALSE gamslinks_build_ipopt GAMSLINKS_BUILD_IPOPT_TRUE GAMSLINKS_BUILD_IPOPT_FALSE GAMSLINKS_BUILD_GAMSIO_TRUE GAMSLINKS_BUILD_GAMSIO_FALSE gamslinks_build_glpk GAMSLINKS_BUILD_GLPK_TRUE GAMSLINKS_BUILD_GLPK_FALSE gamslinks_build_cbc GAMSLINKS_BUILD_CBC_TRUE GAMSLINKS_BUILD_CBC_FALSE gamslinks_build_bonmin GAMSLINKS_BUILD_BONMIN_TRUE GAMSLINKS_BUILD_BONMIN_FALSE gamslinks_build_osi GAMSLINKS_BUILD_OSI_TRUE GAMSLINKS_BUILD_OSI_FALSE GAMSLINKS_BUILD_OS_TRUE GAMSLINKS_BUILD_OS_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS F77 ADD_FFLAGS DBG_FFLAGS OPT_FFLAGS FFLAGS ac_ct_F77 MPIF77 FLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR GAMSLINKSDOCDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE CGLSRCDIR CGLOBJDIR CGLDOCDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COINUTILSDOCDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR OSIDOCDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR CLPDOCDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE VOLSRCDIR VOLOBJDIR VOLDOCDIR COIN_HAS_VOL_TRUE COIN_HAS_VOL_FALSE DYLPSRCDIR DYLPOBJDIR DYLPDOCDIR COIN_HAS_DYLP_TRUE COIN_HAS_DYLP_FALSE SYMPHONYSRCDIR SYMPHONYOBJDIR SYMPHONYDOCDIR COIN_HAS_SYMPHONY_TRUE COIN_HAS_SYMPHONY_FALSE CBCSRCDIR CBCOBJDIR CBCDOCDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR IPOPTDOCDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR BONMINDOCDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE CPPADSRCDIR CPPADOBJDIR CPPADDOCDIR COIN_HAS_CPPAD_TRUE COIN_HAS_CPPAD_FALSE OSSRCDIR OSOBJDIR OSDOCDIR COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE gamspath COIN_HAS_GAMSSYSTEM_TRUE COIN_HAS_GAMSSYSTEM_FALSE COIN_HAS_GAMSIO_TRUE COIN_HAS_GAMSIO_FALSE coin_has_gamsio GAMS_PATH GAMSIO_CPPFLAGS GAMSIO_ADDLIBS GAMSIO_LIBS SMAG_LIBS GAMSIO_CODE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE FORTRAN_NAMEMANGLING_CFLAG COIN_OS_SOLVER_TRUE COIN_OS_SOLVER_FALSE COIN_HAS_LSL_TRUE COIN_HAS_LSL_FALSE gamslinks_build_ipopt GAMSLINKS_BUILD_IPOPT_TRUE GAMSLINKS_BUILD_IPOPT_FALSE GAMSLINKS_BUILD_GAMSIO_TRUE GAMSLINKS_BUILD_GAMSIO_FALSE gamslinks_build_glpk GAMSLINKS_BUILD_GLPK_TRUE GAMSLINKS_BUILD_GLPK_FALSE gamslinks_build_cbc GAMSLINKS_BUILD_CBC_TRUE GAMSLINKS_BUILD_CBC_FALSE gamslinks_build_bonmin GAMSLINKS_BUILD_BONMIN_TRUE GAMSLINKS_BUILD_BONMIN_FALSE gamslinks_build_osi GAMSLINKS_BUILD_OSI_TRUE GAMSLINKS_BUILD_OSI_FALSE GAMSLINKS_BUILD_OS_TRUE GAMSLINKS_BUILD_OS_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1114,8 +1114,12 @@ Optional Features:
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-glpk-libcheck use disable-glpk-libcheck to skip the
                           link check at configuration time
-  --enable-os-solver      "whether to include solver interfaces to available
-                          solvers into the GamsOS binary (default=no)"
+  --enable-os-solver      whether to include solver interfaces to available
+                          solvers into the GamsOS binary (default=no)
+  --enable-hslloader      whether Ipopt will be linked to a LinearSolverLoader
+                          library containing an HSL loader (default=no)
+  --enable-pardisoloader  whether Ipopt will be linked to a LinearSolverLoader
+                          library containing a Pardiso lib loader (default=no)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -4326,7 +4330,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:4329:" \
+echo "$as_me:4333:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4892,7 +4896,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_verb"
-(eval echo $as_me:4895: \"$ac_link\") >&5
+(eval echo $as_me:4899: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -4970,7 +4974,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_cv_prog_f77_v"
-(eval echo $as_me:4973: \"$ac_link\") >&5
+(eval echo $as_me:4977: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -7417,7 +7421,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7420 "configure"' > conftest.$ac_ext
+  echo '#line 7424 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9397,11 +9401,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9400: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9404: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9404: \$? = $ac_status" >&5
+   echo "$as_me:9408: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9665,11 +9669,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9668: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9672: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9672: \$? = $ac_status" >&5
+   echo "$as_me:9676: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9769,11 +9773,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9772: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9776: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9776: \$? = $ac_status" >&5
+   echo "$as_me:9780: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12186,7 +12190,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12189 "configure"
+#line 12193 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12286,7 +12290,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12289 "configure"
+#line 12293 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14646,11 +14650,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14649: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14653: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14653: \$? = $ac_status" >&5
+   echo "$as_me:14657: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14750,11 +14754,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14753: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14757: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14757: \$? = $ac_status" >&5
+   echo "$as_me:14761: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16320,11 +16324,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16323: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16327: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16327: \$? = $ac_status" >&5
+   echo "$as_me:16331: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16424,11 +16428,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16427: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16431: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16431: \$? = $ac_status" >&5
+   echo "$as_me:16435: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18631,11 +18635,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18634: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18638: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18638: \$? = $ac_status" >&5
+   echo "$as_me:18642: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18899,11 +18903,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18902: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18906: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18906: \$? = $ac_status" >&5
+   echo "$as_me:18910: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19003,11 +19007,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19006: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19010: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19010: \$? = $ac_status" >&5
+   echo "$as_me:19014: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -25850,6 +25854,50 @@ fi
 echo "$as_me:$LINENO: result: $os_solver" >&5
 echo "${ECHO_T}$os_solver" >&6
 
+######################
+# LinearSolverLoader #
+######################
+
+linearsolverloader=no
+# Check whether --enable-hslloader or --disable-hslloader was given.
+if test "${enable_hslloader+set}" = set; then
+  enableval="$enable_hslloader"
+  hslloader=yes
+   linearsolverloader=yes
+
+cat >>confdefs.h <<\_ACEOF
+#define COIN_HAS_LSLHSL 1
+_ACEOF
+
+else
+  hslloader=no
+fi;
+
+# Check whether --enable-pardisoloader or --disable-pardisoloader was given.
+if test "${enable_pardisoloader+set}" = set; then
+  enableval="$enable_pardisoloader"
+  pardisoloader=yes
+   linearsolverloader=yes
+
+cat >>confdefs.h <<\_ACEOF
+#define COIN_HAS_LSLPARDISO 1
+_ACEOF
+
+else
+  pardisoloader=no
+fi;
+
+
+
+if test $linearsolverloader = yes; then
+  COIN_HAS_LSL_TRUE=
+  COIN_HAS_LSL_FALSE='#'
+else
+  COIN_HAS_LSL_TRUE='#'
+  COIN_HAS_LSL_FALSE=
+fi
+
+
 ##################################################
 # Check which interfaces we can (and want) build #
 ##################################################
@@ -26492,6 +26540,13 @@ if test -z "${COIN_OS_SOLVER_TRUE}" && test -z "${COIN_OS_SOLVER_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"COIN_OS_SOLVER\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"COIN_OS_SOLVER\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${COIN_HAS_LSL_TRUE}" && test -z "${COIN_HAS_LSL_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_LSL\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COIN_HAS_LSL\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -27283,6 +27338,8 @@ s,@GAMSIO_IS_WINDOWS_FALSE@,$GAMSIO_IS_WINDOWS_FALSE,;t t
 s,@FORTRAN_NAMEMANGLING_CFLAG@,$FORTRAN_NAMEMANGLING_CFLAG,;t t
 s,@COIN_OS_SOLVER_TRUE@,$COIN_OS_SOLVER_TRUE,;t t
 s,@COIN_OS_SOLVER_FALSE@,$COIN_OS_SOLVER_FALSE,;t t
+s,@COIN_HAS_LSL_TRUE@,$COIN_HAS_LSL_TRUE,;t t
+s,@COIN_HAS_LSL_FALSE@,$COIN_HAS_LSL_FALSE,;t t
 s,@gamslinks_build_ipopt@,$gamslinks_build_ipopt,;t t
 s,@GAMSLINKS_BUILD_IPOPT_TRUE@,$GAMSLINKS_BUILD_IPOPT_TRUE,;t t
 s,@GAMSLINKS_BUILD_IPOPT_FALSE@,$GAMSLINKS_BUILD_IPOPT_FALSE,;t t

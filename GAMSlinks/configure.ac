@@ -341,13 +341,34 @@ AC_SUBST(FORTRAN_NAMEMANGLING_CFLAG)
 #if enable-os-solver is set, then we link the Gams/OS binary with all available coin solvers that have an OS interface and allow a "local" solve 
 AC_MSG_CHECKING([whether to include solvers into GamsOS binary])
 AC_ARG_ENABLE(os-solver,
-  AC_HELP_STRING([--enable-os-solver],["whether to include solver interfaces to available solvers into the GamsOS binary (default=no)"]),
+  AC_HELP_STRING([--enable-os-solver],[whether to include solver interfaces to available solvers into the GamsOS binary (default=no)]),
   [os_solver=yes
    AC_DEFINE([COIN_OS_SOLVER],[1],[If defined, the Gams/OS interface should allow local solves])],
   [os_solver=no] )
   
 AM_CONDITIONAL(COIN_OS_SOLVER, [test x"$os_solver" = xyes])
 AC_MSG_RESULT([$os_solver])
+
+######################
+# LinearSolverLoader #
+######################
+
+linearsolverloader=no
+AC_ARG_ENABLE(hslloader,
+  AC_HELP_STRING([--enable-hslloader], [whether Ipopt will be linked to a LinearSolverLoader library containing an HSL loader (default=no)]),
+  [hslloader=yes
+   linearsolverloader=yes
+   AC_DEFINE([COIN_HAS_LSLHSL], [1], [If defined, then Ipopt will link against a LinearSolverLibrary with an HSL loader])],
+  [hslloader=no])
+
+AC_ARG_ENABLE(pardisoloader,
+  AC_HELP_STRING([--enable-pardisoloader], [whether Ipopt will be linked to a LinearSolverLoader library containing a Pardiso lib loader (default=no)]),
+  [pardisoloader=yes
+   linearsolverloader=yes
+   AC_DEFINE([COIN_HAS_LSLPARDISO], [1], [If defined, then Ipopt will link against a LinearSolverLibrary with a Pardiso lib loader])],
+  [pardisoloader=no])
+
+AM_CONDITIONAL(COIN_HAS_LSL, [test $linearsolverloader = yes]) 
 
 ##################################################
 # Check which interfaces we can (and want) build #

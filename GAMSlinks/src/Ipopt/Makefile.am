@@ -34,6 +34,10 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Algorithm` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/CGPenalty` \
  -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
+ 
+if COIN_HAS_LSL
+  AM_CPPFLAGS += -I`$(CYGPATH_W) $(srcdir)/../../../LinearSolverLoader/src`
+endif
 
 GamsIpopt_LDADD = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 
