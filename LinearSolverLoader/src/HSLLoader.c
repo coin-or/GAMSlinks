@@ -7,6 +7,7 @@
  Authors:  Stefan Vigerske
 */
 
+#include "LinearSolverLoaderConfig.h"
 #include "LibraryHandler.h"
 #include "HSLLoader.h"
 

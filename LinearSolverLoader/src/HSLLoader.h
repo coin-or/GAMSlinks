@@ -10,8 +10,6 @@
 #ifndef HSLLOADER_H_
 #define HSLLOADER_H_
 
-#include "LinearSolverLoaderConfig.h"
-
 /**
  * @return Zero on success, nonzero on failure.
  */
