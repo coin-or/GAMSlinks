@@ -10,18 +10,23 @@ The advantage is, that the linear solver does not need to be present when Ipopt 
 That is, an Ipopt executable can be delivered without any third-party linear solver library,
 and it is the users liability to provide a linear solver.
 
-Currently, only the HSL routines are supported.
-See configure --help how to enable the HSL library loader and to specify which HSL routines should be loaded.           
+Currently, the HSL routines and Pardiso are supported.
+See configure --help how to enable a specific library loader.
+For HSL, you also need to specify which HSL routines should be loaded.           
 
 Construction of an HSL library as it is supported from the LinearSolverLoader looks as follows for gfortran:
 gfortran -shared -fPIC -Wl,-soname,libhsl.so -o libhsl.so <hsl-fortran-files>
 
-To use the library loader to dynamically load a HSL library in Ipopt,
+For Pardiso you can use a shared library as it is provided and rename it to libpardiso.so. 
+
+To use the library loader to dynamically load a linear solver library in Ipopt,
 you need to configure Ipopt with the options
 --with-hsl="<your-LinearSolverLoader.a> -ldl"
+or/and
+--with-pardiso="<your-LinearSolverLoader.a> -ldl"
 The extra -ldl is to include the dynamic linker library.
 
-Depending on which HSL routines you have enabled for the build of the LinearSolverLoader,
+Depending on whether Pardiso or which HSL routines you have enabled for the build of the LinearSolverLoader,
 the Ipopt configure system should recognize the corresponding symbols in the LinearSolverLoader library.
 
 

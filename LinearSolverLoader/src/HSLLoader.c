@@ -361,7 +361,7 @@ void LSL_lateHSLLoad() {
 	char buffer[512];
 	int rc;
 	
-	rc = LSL_loadHSLlib(NULL, buffer, 512);
+	rc = LSL_loadHSL(NULL, buffer, 512);
 	if (rc!=0) {
 		fprintf(stderr, "Error loading HSL dynamic library " HSLLIBNAME ": %s\nAborting...\n", buffer);
 		exit(EXIT_FAILURE);
