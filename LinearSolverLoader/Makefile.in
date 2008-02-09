@@ -52,7 +52,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-DIST_COMMON = $(am__configure_deps) \
+DIST_COMMON = README $(am__configure_deps) \
 	$(srcdir)/../BuildTools/Makemain.inc $(srcdir)/../config.guess \
 	$(srcdir)/../config.sub $(srcdir)/../install-sh \
 	$(srcdir)/../ltmain.sh $(srcdir)/../missing \
@@ -235,13 +235,6 @@ SUBDIRS = src
 #  SUBDIRS += test
 #endif
 EXTRA_DIST = README LICENSE AUTHORS $(am__append_1)
-
-# Stuff to clean up
-#clean-local:
-#	if test -r test/Makefile; then cd test; $(MAKE) clean; fi
-
-#distclean-local:
-#	if test -r test/Makefile; then cd test; $(MAKE) distclean; fi
 
 ########################################################################
 #                  Installation of the addlibs file                    #
@@ -698,13 +691,6 @@ uninstall-info: uninstall-info-recursive
 	mostlyclean-libtool mostlyclean-recursive pdf pdf-am ps ps-am \
 	tags tags-recursive uninstall uninstall-am uninstall-info-am
 
-
-#test: all
-#	cd test; $(MAKE) test
-
-#unitTest: test
-
-#.PHONY: test unitTest gams-install
 
 .PHONY:
 

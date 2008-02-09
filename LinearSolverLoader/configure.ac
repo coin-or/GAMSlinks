@@ -75,9 +75,25 @@ fi
 # Initialize automake and libtool
 AC_COIN_INIT_AUTO_TOOLS
 
-#############################################################################
-# Check for which linear solver we should provide a dynamic library loader  #
-#############################################################################
+####################################
+# Check which build system we have #
+####################################
+
+case $build in
+  *-cygwin* | *-mingw*)
+     AC_DEFINE(BUILD_TYPE_WINDOWS, [1], "If defined, then we build on a Windows system")
+  ;;
+  *-darwin*)
+     AC_DEFINE(BUILD_TYPE_DARWIN, [1], "If defined, then we build on a Darwin system")
+  ;;
+  *)
+     AC_DEFINE(BUILD_TYPE_UNIX, [1], "If defined, then we build on a Unix system")
+  ;;
+esac
+
+############################################################################
+# Check for which linear solver we should provide a dynamic library loader #
+############################################################################
 
 AC_ARG_ENABLE([hslloader],
   AC_HELP_STRING([--enable-hslloader], [enables loader for dynamic library containing HSL routines (no)]),

@@ -243,12 +243,13 @@ void F77_FUNC(mc19ad,MC19AD)(ipfint *N, ipfint *NZ, double* A, ipfint *IRN,
 }
 #endif
 
-/* TODO: recognition of HP and Darwin systems, probably via configure */
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(BUILD_TYPE_WINDOWS)
 # define HSLLIBNAME "libhsl.dll"
+/* no HP support yet
 #elif defined(CIA_HP7)
 # define HSLLIBNAME "libhsl.sl"
-#elif defined(CIA_DAR) || defined(CIA_DII)
+*/
+#elif defined(BUILD_TYPE_DARWIN)
 # define HSLLIBNAME "libhsl.dylib"
 #else
 # define HSLLIBNAME "libhsl.so"

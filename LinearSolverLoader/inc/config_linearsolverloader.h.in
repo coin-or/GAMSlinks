@@ -1,5 +1,14 @@
 /* inc/config_linearsolverloader.h.in.  Generated from configure.ac by autoheader.  */
 
+/* "If defined */
+#undef BUILD_TYPE_DARWIN
+
+/* "If defined */
+#undef BUILD_TYPE_UNIX
+
+/* "If defined */
+#undef BUILD_TYPE_WINDOWS
+
 /* If defined, MA27 is load from a dynamic library */
 #undef COIN_ENABLE_MA27LOADER
 

@@ -11,25 +11,26 @@
 
 #include "LibraryHandler.h"
 
-/* TODO: recognition of system type (Win, HP, Darwin), probably via configure */
-
 soHandle_t loadLib(const char *libName, char *msgBuf, int msgLen)
 {
 	soHandle_t h=NULL;
+/* no HP support yet
 #if defined(CIA_HP7)
   int flag = 0;
 #endif
-
+*/
+	
 	if (libName==NULL) {
 		snprintf(msgBuf, msgLen, "loadLib error: no library name given (libName is NULL)");
 		return NULL;
 	}
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(BUILD_TYPE_WINDOWS)
   h = LoadLibrary (libName);
   if (NULL == h) {
   	snprintf(msgBuf, msgLen, "Windows error while loading shared library %s", libName);
   }
+/* no HP support yet 
 #elif defined(CIA_HP7)
   flag = BIND_IMMEDIATE | BIND_VERBOSE | DYNAMIC_PATH;
   h = shl_load (libName, flag, 0L);
@@ -37,6 +38,7 @@ soHandle_t loadLib(const char *libName, char *msgBuf, int msgLen)
   	strncpy(msgBuf, strerror(errno), msgLen);
   	msgBuf[msgLen-1]=0;
   }
+*/
 #else
   h = dlopen (libName, RTLD_NOW);
   if (NULL == h) {
@@ -52,11 +54,13 @@ int unloadLib (soHandle_t h)
 {
   int rc;
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(BUILD_TYPE_WINDOWS)
   rc = FreeLibrary (h);
   rc = ! rc;
+/* no HP support yet
 #elif defined(CIA_HP7)
   rc = shl_unload (h);
+*/
 #else
   rc = dlclose (h);
 #endif
@@ -75,9 +79,11 @@ void* loadSym (soHandle_t h, const char *symName, char *msgBuf, int msgLen)
   char ocbuf[257];
   size_t symLen;
   int trip;
+/* no HP support yet
 #if defined(CIA_HP7)
   int rc;
 #endif
+*/
 
   /* search in this order:
    *  1. original
@@ -128,20 +134,22 @@ void* loadSym (soHandle_t h, const char *symName, char *msgBuf, int msgLen)
     default:
       tripSym = symName;
     } /* end switch */
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(BUILD_TYPE_WINDOWS)
     s = GetProcAddress (h, tripSym);
     if (NULL != s) {
       return s;
     }
+/* no HP support yet
 #elif defined(CIA_HP7)
     rc = shl_findsym (&h, tripSym, TYPE_UNDEFINED, &s);
-    if (rc) {                     /* failure */
+    if (rc) {                     
       strncpy(msgBuf, strerror(errno), msgLen);
       msgBuf[msgLen-1]=0;
     }
-    else {                        /* success */
+    else {                        
       return s;
     }
+*/
 #else
     s = dlsym (h, tripSym);
     err = dlerror();  /* we have only one chance; a successive call to dlerror() returns NULL */ 

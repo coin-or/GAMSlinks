@@ -21345,9 +21345,37 @@ LT_LDFLAGS=
 #END
 }
 
-#############################################################################
-# Check for which linear solver we should provide a dynamic library loader  #
-#############################################################################
+####################################
+# Check which build system we have #
+####################################
+
+case $build in
+  *-cygwin* | *-mingw*)
+
+cat >>confdefs.h <<\_ACEOF
+#define BUILD_TYPE_WINDOWS 1
+_ACEOF
+
+  ;;
+  *-darwin*)
+
+cat >>confdefs.h <<\_ACEOF
+#define BUILD_TYPE_DARWIN 1
+_ACEOF
+
+  ;;
+  *)
+
+cat >>confdefs.h <<\_ACEOF
+#define BUILD_TYPE_UNIX 1
+_ACEOF
+
+  ;;
+esac
+
+############################################################################
+# Check for which linear solver we should provide a dynamic library loader #
+############################################################################
 
 # Check whether --enable-hslloader or --disable-hslloader was given.
 if test "${enable_hslloader+set}" = set; then
