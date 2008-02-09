@@ -7,23 +7,22 @@
  Authors:  Stefan Vigerske
 */
 
-#ifndef HSLLOADER_H_
-#define HSLLOADER_H_
+#ifndef PARDISOLOADER_H_
+#define PARDISOLOADER_H_
 
 /**
  * @return Zero on success, nonzero on failure.
  */
-int LSL_loadHSL(const char* libname, char* msgbuf, int msglen);
+int LSL_loadPardisoLib(const char* libname, char* msgbuf, int msglen);
 
 /**
  * @return Zero on success, nonzero on failure.
  */
-int LSL_unloadHSL();
+int LSL_unloadPardisoLib();
 
 /**
  * @return Zero if not loaded, nonzero if handle is loaded
  */
-int LSL_isHSLLoaded();
+int LSL_isPardisoLoaded();
 
-
-#endif /*HSLLOADER_H_*/
+#endif /*PARADISOLOADER_H_*/

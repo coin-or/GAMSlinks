@@ -95,6 +95,8 @@ esac
 # Check for which linear solver we should provide a dynamic library loader #
 ############################################################################
 
+# HSL
+
 AC_ARG_ENABLE([hslloader],
   AC_HELP_STRING([--enable-hslloader], [enables loader for dynamic library containing HSL routines (no)]),
   [hsl=yes],
@@ -121,10 +123,14 @@ fi
 
 AM_CONDITIONAL([COIN_ENABLE_HSLLOADER], [test hsl=yes])
 
+# Pardiso
 
-# mumps
+AC_ARG_ENABLE([pardisoloader],
+  AC_HELP_STRING([--enable-pardisoloader], [enables loader for dynamic library containing Pardiso routines (no)]),
+  [pardiso=yes],
+  [pardiso=no])
+AM_CONDITIONAL([COIN_ENABLE_PARDISOLOADER], [test pardiso=yes])
 
-# paradiso
 
 AC_CONFIG_FILES([
   Makefile

@@ -11,7 +11,7 @@
 
 #include "LibraryHandler.h"
 
-soHandle_t loadLib(const char *libName, char *msgBuf, int msgLen)
+soHandle_t LSL_loadLib(const char *libName, char *msgBuf, int msgLen)
 {
 	soHandle_t h=NULL;
 /* no HP support yet
@@ -48,9 +48,9 @@ soHandle_t loadLib(const char *libName, char *msgBuf, int msgLen)
 #endif
 
   return h;
-} /* loadLib */
+} /* LSL_loadLib */
 
-int unloadLib (soHandle_t h)
+int LSL_unloadLib (soHandle_t h)
 {
   int rc;
 
@@ -65,9 +65,9 @@ int unloadLib (soHandle_t h)
   rc = dlclose (h);
 #endif
   return rc;
-} /* unLoadLib */
+} /* LSL_unLoadLib */
 
-void* loadSym (soHandle_t h, const char *symName, char *msgBuf, int msgLen)
+void* LSL_loadSym (soHandle_t h, const char *symName, char *msgBuf, int msgLen)
 {
   void *s;
   const char *from;
@@ -163,4 +163,4 @@ void* loadSym (soHandle_t h, const char *symName, char *msgBuf, int msgLen)
   } /* end loop over symbol name variations */
 
   return NULL;
-} /* loadSym */
+} /* LSL_loadSym */

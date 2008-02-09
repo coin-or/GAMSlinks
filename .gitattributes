@@ -16,6 +16,8 @@ LinearSolverLoader/src/LibraryHandler.h -text
 LinearSolverLoader/src/LinearSolverLoaderConfig.h -text
 LinearSolverLoader/src/Makefile.am -text
 LinearSolverLoader/src/Makefile.in -text
+LinearSolverLoader/src/PardisoLoader.c -text
+LinearSolverLoader/src/PardisoLoader.h -text
 /Makefile.am -text
 /Makefile.in -text
 /README -text

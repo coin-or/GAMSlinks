@@ -17,6 +17,10 @@ if COIN_ENABLE_HSLLOADER
   libLinearSolverLoader_a_SOURCES += HSLLoader.c
 endif
 
+if COIN_ENABLE_PARDISOLOADER
+  libLinearSolverLoader_a_SOURCES += PardisoLoader.c
+endif
+
 AM_CPPFLAGS = 
 #-I`$(CYGPATH_W) $(srcdir)/..`
 

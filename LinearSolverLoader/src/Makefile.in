@@ -54,10 +54,11 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @COIN_ENABLE_HSLLOADER_TRUE@am__append_1 = HSLLoader.c
+@COIN_ENABLE_PARDISOLOADER_TRUE@am__append_2 = PardisoLoader.c
 DIST_COMMON = $(srcdir)/../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_2 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_3 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_3 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_4 = .Externals-stamp
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -79,10 +80,12 @@ LIBRARIES = $(lib_LIBRARIES)
 ARFLAGS = cru
 libLinearSolverLoader_a_AR = $(AR) $(ARFLAGS)
 am__libLinearSolverLoader_a_SOURCES_DIST = LibraryHandler.c \
-	HSLLoader.c
+	HSLLoader.c PardisoLoader.c
 @COIN_ENABLE_HSLLOADER_TRUE@am__objects_1 = HSLLoader.$(OBJEXT)
+@COIN_ENABLE_PARDISOLOADER_TRUE@am__objects_2 =  \
+@COIN_ENABLE_PARDISOLOADER_TRUE@	PardisoLoader.$(OBJEXT)
 am_libLinearSolverLoader_a_OBJECTS = LibraryHandler.$(OBJEXT) \
-	$(am__objects_1)
+	$(am__objects_1) $(am__objects_2)
 libLinearSolverLoader_a_OBJECTS =  \
 	$(am_libLinearSolverLoader_a_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
@@ -122,6 +125,8 @@ CDEFS = @CDEFS@
 CFLAGS = @CFLAGS@
 COIN_ENABLE_HSLLOADER_FALSE = @COIN_ENABLE_HSLLOADER_FALSE@
 COIN_ENABLE_HSLLOADER_TRUE = @COIN_ENABLE_HSLLOADER_TRUE@
+COIN_ENABLE_PARDISOLOADER_FALSE = @COIN_ENABLE_PARDISOLOADER_FALSE@
+COIN_ENABLE_PARDISOLOADER_TRUE = @COIN_ENABLE_PARDISOLOADER_TRUE@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
@@ -235,9 +240,10 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = $(am__append_2)
+EXTRA_DIST = $(am__append_3)
 lib_LIBRARIES = libLinearSolverLoader.a
-libLinearSolverLoader_a_SOURCES = LibraryHandler.c $(am__append_1)
+libLinearSolverLoader_a_SOURCES = LibraryHandler.c $(am__append_1) \
+	$(am__append_2)
 AM_CPPFLAGS = 
 #-I`$(CYGPATH_W) $(srcdir)/..`
 libLinearSolverLoader_a_LIBADD = 
@@ -247,7 +253,7 @@ libLinearSolverLoader_a_DEPENDENCIES =
 
 #libLinearSolverLoader_a_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
-DISTCLEANFILES = $(am__append_3) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(am__append_4) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: all-am
@@ -325,6 +331,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HSLLoader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LibraryHandler.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PardisoLoader.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

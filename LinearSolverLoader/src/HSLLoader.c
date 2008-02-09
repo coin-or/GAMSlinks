@@ -13,7 +13,7 @@
 
 soHandle_t HSL_handle=NULL;
 
-void lateLibLoad();
+void LSL_lateHSLLoad();
 
 typedef int ipfint;
 
@@ -107,7 +107,7 @@ ma27cd_t func_ma27cd=NULL;
 
 void F77_FUNC(ma27id,MA27ID)(ipfint* ICNTL, double* CNTL)
 {
-	if (func_ma27id==NULL) lateLibLoad();
+	if (func_ma27id==NULL) LSL_lateHSLLoad();
 	func_ma27id(ICNTL, CNTL);
 }
 
@@ -115,7 +115,7 @@ void F77_FUNC(ma27ad,MA27AD)(ipfint *N, ipfint *NZ, const ipfint *IRN, const ipf
                              ipfint *IW, ipfint* LIW, ipfint* IKEEP, ipfint *IW1,
                              ipfint* NSTEPS, ipfint* IFLAG, ipfint* ICNTL,
                              double* CNTL, ipfint *INFO, double* OPS) {
-	if (func_ma27ad==NULL) lateLibLoad();
+	if (func_ma27ad==NULL) LSL_lateHSLLoad();
 	func_ma27ad(N, NZ, IRN, ICN, IW, LIW, IKEEP, IW1, NSTEPS, IFLAG, ICNTL, CNTL, INFO, OPS);	
 }
 
@@ -124,7 +124,7 @@ void F77_FUNC(ma27bd,MA27BD)(ipfint *N, ipfint *NZ, const ipfint *IRN, const ipf
                              ipfint* IKEEP, ipfint* NSTEPS, ipfint* MAXFRT,
                              ipfint* IW1, ipfint* ICNTL, double* CNTL,
                              ipfint* INFO) {
-	if (func_ma27bd==NULL) lateLibLoad();
+	if (func_ma27bd==NULL) LSL_lateHSLLoad();
 	func_ma27bd(N, NZ, IRN, ICN, A, LA, IW, LIW, IKEEP, NSTEPS, MAXFRT, IW1, ICNTL, CNTL, INFO);
 }
 
@@ -132,7 +132,7 @@ void F77_FUNC(ma27cd,MA27CD)(ipfint *N, double* A, ipfint* LA, ipfint* IW,
                              ipfint* LIW, double* W, ipfint* MAXFRT,
                              double* RHS, ipfint* IW1, ipfint* NSTEPS,
                              ipfint* ICNTL, double* CNTL) {
-	if (func_ma27cd==NULL) lateLibLoad();
+	if (func_ma27cd==NULL) LSL_lateHSLLoad();
 	func_ma27cd(N, A, LA, IW, LIW, W, MAXFRT, RHS, IW1, NSTEPS, ICNTL, CNTL);
 }
 
@@ -144,7 +144,7 @@ ma28ad_t func_ma28ad=NULL;
 
 void F77_FUNC(ma28ad,MA28AD)(void* nsize, void* nz, void* rw, void* licn, void* iw,
 		                         void* lirn, void* iw2, void* pivtol, void* iw3, void* iw4, void* rw2, void* iflag) {
-	if (func_ma28ad==NULL) lateLibLoad();
+	if (func_ma28ad==NULL) LSL_lateHSLLoad();
 	func_ma28ad(nsize, nz, rw, licn, iw, lirn, iw2, pivtol, iw3, iw4, rw2, iflag);
 }
 #endif
@@ -158,7 +158,7 @@ ma57cd_t func_ma57cd=NULL;
 ma57ed_t func_ma57ed=NULL;
 
 void  F77_FUNC (ma57id, MA57ID) (double    *cntl,  ipfint    *icntl) {
-	if (func_ma57id==NULL) lateLibLoad();
+	if (func_ma57id==NULL) LSL_lateHSLLoad();
 	func_ma57id(cntl, icntl);
 }
 
@@ -173,7 +173,7 @@ void  F77_FUNC (ma57ad, MA57AD) (
     ipfint    *icntl,     /* Integer Control parameter of length 30*/
     ipfint    *info,      /* Statistical Information; Integer array of length 20 */
     double    *rinfo)    /* Double Control parameter of length 5 */ {
-	if (func_ma57ad==NULL) lateLibLoad();
+	if (func_ma57ad==NULL) LSL_lateHSLLoad();
 	func_ma57ad(n, ne, irn, jcn, lkeep, keep, iwork, icntl, info, rinfo);
 }
 
@@ -192,7 +192,7 @@ void  F77_FUNC (ma57bd, MA57BD) (
     double    *cntl,      /* Double Control parameter of length 5. */
     ipfint    *info,      /* Statistical Information; Integer array of length 40. */
     double    *rinfo)    /* Statistical Information; Real array of length 20. */ {
-	if (func_ma57bd==NULL) lateLibLoad();
+	if (func_ma57bd==NULL) LSL_lateHSLLoad();
 	func_ma57bd(n, ne, a, fact, lfact, ifact, lifact, lkeep, keep, iwork, icntl, cntl, info, rinfo);	
 }
 
@@ -211,7 +211,7 @@ void  F77_FUNC (ma57cd, MA57CD) (
     ipfint    *iwork,     /* Integer array of length `n'. */
     ipfint    *icntl,     /* Integer Control parameter array of length 20. */
     ipfint    *info)     /* Statistical Information; Integer array of length 40. */ {
-	if (func_ma57cd==NULL) lateLibLoad();
+	if (func_ma57cd==NULL) LSL_lateHSLLoad();
 	func_ma57cd(job, n, fact, lfact, ifact, lifact, nrhs, rhs, lrhs, work, lwork, iwork, icntl, info);    
 }
 
@@ -228,7 +228,7 @@ void  F77_FUNC (ma57ed, MA57ED) (
     ipfint    *newifc,
     ipfint    *linew,
     ipfint    *info) {
-	if (func_ma57ed==NULL) lateLibLoad();
+	if (func_ma57ed==NULL) LSL_lateHSLLoad();
 	func_ma57ed(n, ic, keep, fact, lfact, newfac, lnew, ifact, lifact, newifc, linew, info);
 }
 #endif
@@ -239,7 +239,7 @@ mc19ad_t func_mc19ad=NULL;
 
 void F77_FUNC(mc19ad,MC19AD)(ipfint *N, ipfint *NZ, double* A, ipfint *IRN,
                              ipfint* ICN, float* R, float* C, float* W) {
-	if (func_mc19ad==NULL) lateLibLoad();
+	if (func_mc19ad==NULL) LSL_lateHSLLoad();
 	func_mc19ad(N, NZ, A, IRN, ICN, R, C, W);
 }
 #endif
@@ -256,68 +256,68 @@ void F77_FUNC(mc19ad,MC19AD)(ipfint *N, ipfint *NZ, double* A, ipfint *IRN,
 # define HSLLIBNAME "libhsl.so"
 #endif
 
-int LSL_loadHSLlib(const char* libname, char* msgbuf, int msglen) {
+int LSL_loadHSL(const char* libname, char* msgbuf, int msglen) {
 	/* load HSL library */
 	if (libname) {
-		HSL_handle=loadLib(libname, msgbuf, msglen);
+		HSL_handle=LSL_loadLib(libname, msgbuf, msglen);
 	} else { /* try a default library name */
-		HSL_handle=loadLib(HSLLIBNAME, msgbuf, msglen); 
+		HSL_handle=LSL_loadLib(HSLLIBNAME, msgbuf, msglen); 
 	}
 	if (HSL_handle==NULL)
 		return 1;
 	
 	/* load HSL functions */
 #ifdef COIN_ENABLE_MA27LOADER
-	func_ma27id=(ma27id_t)loadSym(HSL_handle, "ma27id", msgbuf, msglen);
+	func_ma27id=(ma27id_t)LSL_loadSym(HSL_handle, "ma27id", msgbuf, msglen);
 	if (func_ma27id == NULL) return 1;
 	
-	func_ma27ad=(ma27ad_t)loadSym(HSL_handle, "ma27ad", msgbuf, msglen);
+	func_ma27ad=(ma27ad_t)LSL_loadSym(HSL_handle, "ma27ad", msgbuf, msglen);
 	if (func_ma27ad == NULL) return 1;
 	
-	func_ma27bd=(ma27bd_t)loadSym(HSL_handle, "ma27bd", msgbuf, msglen);
+	func_ma27bd=(ma27bd_t)LSL_loadSym(HSL_handle, "ma27bd", msgbuf, msglen);
 	if (func_ma27bd == NULL) return 1;
 	
-	func_ma27cd=(ma27cd_t)loadSym(HSL_handle, "ma27cd", msgbuf, msglen);
+	func_ma27cd=(ma27cd_t)LSL_loadSym(HSL_handle, "ma27cd", msgbuf, msglen);
 	if (func_ma27cd == NULL) return 1;
 #endif
 
 #ifdef COIN_ENABLE_MA28LOADER
-  func_ma28ad=(ma28ad_t)loadSym(HSL_handle, "ma28ad", msgbuf, msglen);
+  func_ma28ad=(ma28ad_t)LSL_loadSym(HSL_handle, "ma28ad", msgbuf, msglen);
   if (func_ma28ad == NULL) return 1;
 #endif
 
 #ifdef COIN_ENABLE_MA57LOADER
-  func_ma57id=(ma57id_t)loadSym(HSL_handle, "ma57id", msgbuf, msglen);
+  func_ma57id=(ma57id_t)LSL_loadSym(HSL_handle, "ma57id", msgbuf, msglen);
   if (func_ma57id == NULL) return 1;
 
-  func_ma57ad=(ma57ad_t)loadSym(HSL_handle, "ma57ad", msgbuf, msglen);
+  func_ma57ad=(ma57ad_t)LSL_loadSym(HSL_handle, "ma57ad", msgbuf, msglen);
   if (func_ma57ad == NULL) return 1;
 
-  func_ma57bd=(ma57bd_t)loadSym(HSL_handle, "ma57bd", msgbuf, msglen);
+  func_ma57bd=(ma57bd_t)LSL_loadSym(HSL_handle, "ma57bd", msgbuf, msglen);
   if (func_ma57bd == NULL) return 1;
 
-  func_ma57cd=(ma57cd_t)loadSym(HSL_handle, "ma57cd", msgbuf, msglen);
+  func_ma57cd=(ma57cd_t)LSL_loadSym(HSL_handle, "ma57cd", msgbuf, msglen);
   if (func_ma57cd == NULL) return 1;
 
-  func_ma57ed=(ma57ed_t)loadSym(HSL_handle, "ma57ed", msgbuf, msglen);
+  func_ma57ed=(ma57ed_t)LSL_loadSym(HSL_handle, "ma57ed", msgbuf, msglen);
   if (func_ma57ed == NULL) return 1;
 #endif
 
 #ifdef COIN_ENABLE_MC19LOADER
-  func_mc19ad=(mc19ad_t)loadSym(HSL_handle, "mc19ad", msgbuf, msglen);
+  func_mc19ad=(mc19ad_t)LSL_loadSym(HSL_handle, "mc19ad", msgbuf, msglen);
   if (func_mc19ad == NULL) return 1;
 #endif
 
 	return 0;
 }
 
-int LSL_unloadHSLlib() {
+int LSL_unloadHSL() {
 	int rc;
 	
 	if (HSL_handle==NULL)
 		return 0;
 	
-	rc = unloadLib(HSL_handle);
+	rc = LSL_unloadLib(HSL_handle);
 	HSL_handle=NULL;
 	
 #ifdef COIN_ENABLE_MA27LOADER
@@ -353,17 +353,17 @@ int LSL_unloadHSLlib() {
 	return rc;
 }
 
-int LSL_isHSLloaded() {
+int LSL_isHSLLoaded() {
 	return HSL_handle!=NULL;
 }
 
-void lateLibLoad() {
+void LSL_lateHSLLoad() {
 	char buffer[512];
 	int rc;
 	
 	rc = LSL_loadHSLlib(NULL, buffer, 512);
 	if (rc!=0) {
-		fprintf(stderr, "Error loading HSL dynamic library libhsl.so: %s\nAborting...\n", buffer);
+		fprintf(stderr, "Error loading HSL dynamic library " HSLLIBNAME ": %s\nAborting...\n", buffer);
 		exit(EXIT_FAILURE);
 	}
 }

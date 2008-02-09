@@ -39,13 +39,13 @@
 /** Loads shared library.
  * @return Shared library handle, or NULL if failure.
  */
-soHandle_t loadLib(const char* libname, char* msgbuf, int msglen);
+soHandle_t LSL_loadLib(const char* libname, char* msgbuf, int msglen);
 
 /** Unloads shared library.
  * @return Zero on success, nonzero on failure.
  */
-int unloadLib(soHandle_t libhandle);
+int LSL_unloadLib(soHandle_t libhandle);
 
-void* loadSym (soHandle_t h, const char *symName, char *msgBuf, int msgLen);
+void* LSL_loadSym (soHandle_t h, const char *symName, char *msgBuf, int msgLen);
 
 #endif /*LIBRARYHANDLER_H_*/
