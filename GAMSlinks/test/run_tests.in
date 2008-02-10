@@ -27,8 +27,17 @@ if test ! -e quality.gms ; then
   exit 1
 fi
 
+if test -e $gamspath/gamslice.txt ; then
+  echo "Found GAMS licence file. We will run all tests."
+  demoparam=
+else
+  echo "Did not found GAMS licence file. We will run only tests that can be run in demomode."
+  demoparam="--DEMOSIZE=1" 
+fi
+
 solvers=
 skiplist=
+stdskiplist=
 declare -a testlist
 if test @gamslinks_build_ipopt@ = 1 ; then
   solvers="$solvers , Ipopt"
@@ -71,11 +80,52 @@ if test @gamslinks_build_bonmin@ = 1 ; then
   testlist[${#testlist[@]}]="--solver bonmin --suite nlp"
   testlist[${#testlist[@]}]="--solver bonmin --suite qcp"
 fi
+if test @gamslinks_build_osi@ = 1 ; then
+  solvers="$solvers , Osi"
+  skiplist="$skiplist skip('Osi','sos1a')=yes;"
+  skiplist="$skiplist skip('Osi','sl4sos1a')=yes;"
+  skiplist="$skiplist skip('Osi','semicon1')=yes;"
+  skiplist="$skiplist skip('Osi','sl4scon1')=yes;"
+  
+  stdskiplist="$stdskiplist slvstdskip('Osi')=yes;"
+ 
+  if test @coin_build_clp@ = 1 ; then
+    echo "solver clp" > osi.opt
+    testlist[${#testlist[@]}]="--solver osi --suite lp user1=\"optdir=`pwd` optfile=1\""
+  fi
+    
+  if test @coin_build_cbc@ = 1 ; then
+    echo "solver cbc" > osi.op2
+    testlist[${#testlist[@]}]="--solver osi --suite lp user1=\"optdir=`pwd` optfile=2\""
+    testlist[${#testlist[@]}]="--solver osi --suite mip user1=\"optdir=`pwd` optfile=2 rmip=osi\""
+  fi
+  
+  if test @coin_build_glpk@ = 1 ; then
+    echo "solver glpk" > osi.op3
+    testlist[${#testlist[@]}]="--solver osi --suite lp user1=\"optdir=`pwd` optfile=3\""
+    testlist[${#testlist[@]}]="--solver osi --suite mip user1=\"optdir=`pwd` optfile=3 rmip=osi\""
+  fi
+
+  if test @coin_build_dylp@ = 1 ; then
+    echo "solver dylp" > osi.op4
+# dylp is currently skipped:
+# lp01, lp11, and lp12 fail because DyLP does not like problems like min 0 s.t. x = 0, or min 0 s.t. nothing (DyLP ticket 10)
+# lp03 fail because it reports all variables are free in row sum(i,x(i))=0 (DyLP ticket 11)
+#    testlist[${#testlist[@]}]="--solver osi --suite lp user1=\"optdir=`pwd` optfile=4\""
+  fi
+
+  if test @coin_build_symphony@ = 1 ; then
+    echo "solver symphony" > osi.op5
+    testlist[${#testlist[@]}]="--solver osi --suite mip user1=\"optdir=`pwd` optfile=5 rmip=osi\""
+  fi
+
+fi
 
 echo "Patch quality test driver to get COIN solvers and skip list in." 
 #we add our solvers to the list of master solvers and put our skiplist somewhere (in front of skip('convert',mdl)=yes)
 sed -e "/master set of solvers/s/\/;\$/$solvers \/;/" \
     -e "/^skip('convert'/s/^/$skiplist /" \
+    -e "/^set slvtest/s/^/$stdskiplist /" \
     quality.gms > quality_coin.gms
 echo ""
 
@@ -88,7 +138,7 @@ testfailed=0
 for (( i=0 ; i<${#testlist[@]} ; i++ )) ; do
   echo "Run quality test $(($i+1)) of ${#testlist[@]} with options " ${testlist[$i]} 
 
-	if $gamspath/gams quality_coin.gms ${testlist[$i]} --DEMOSIZE=1 lo=2 logfile=quality_test_$i.log ; then
+	if $gamspath/gams quality_coin.gms ${testlist[$i]} $demoparam lo=2 logfile=quality_test_$i.log ; then
 		echo "Test " ${testlist[$i]} " passed."
 	else
 		testfailed=1

@@ -81,7 +81,7 @@ int printme(void* info, const char* msg) {
 
 void setupParameters(GamsOptions& opt, CoinMessageHandler& myout, OsiSolverInterface& solver);
 void setupParametersMIP(GamsOptions& opt, CoinMessageHandler& myout, OsiSolverInterface& solver);
-void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver);
+void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver, bool swapRowStatus=false);
 
 int main (int argc, const char *argv[]) {
 #if defined(_MSC_VER)
@@ -173,7 +173,7 @@ try {
 #if COIN_HAS_CLP
 	if (strcmp(buffer, "clp")==0) {
 		solver=new OsiClpSolverInterface();
-		swapRowStatus=true;
+		swapRowStatus=false;
 	}
 #endif
 #if COIN_HAS_CBC
@@ -188,6 +188,7 @@ try {
 		solver=new OsiGlpkSolverInterface();
 		glp_term_hook(printme, &slvout);
 		solver_can_mips=true;
+		swapRowStatus=true;
 	}
 #endif
 #if COIN_HAS_VOL
@@ -198,6 +199,7 @@ try {
 #if COIN_HAS_DYLP
 	if (!solver && strcmp(buffer, "dylp")==0) {
 		solver=new OsiDylpSolverInterface();
+		swapRowStatus=true;
 	}
 #endif
 #if COIN_HAS_SYMPHONY
@@ -308,7 +310,7 @@ try {
 	}
 	
 	setupParameters(opt, myout, *solver);
-	setupStartPoint(gm, myout, *solver);
+	setupStartPoint(gm, myout, *solver, swapRowStatus);
 
 	myout << CoinMessageNewline << CoinMessageEol;
 	if (gm.nDCols()==0) { // LP
@@ -382,7 +384,7 @@ void setupParameters(GamsOptions& opt, CoinMessageHandler& myout, OsiSolverInter
 void setupParametersMIP(GamsOptions& opt, CoinMessageHandler& myout, OsiSolverInterface& solver) {
 }
 
-void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver) {
+void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver, bool swapRowStatus /*=false*/) {
 	if (!gm.nCols() || !gm.nRows()) return;
 
 	try {
@@ -403,8 +405,8 @@ void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterfac
 		}
 		for (int j=0; j<gm.nRows(); ++j) {
 			switch (gm.RowBasis()[j]) {
-				case GamsModel::NonBasicLower : warmstart.setArtifStatus(j, CoinWarmStartBasis::atLowerBound); break;
-				case GamsModel::NonBasicUpper : warmstart.setArtifStatus(j, CoinWarmStartBasis::atUpperBound); break;
+				case GamsModel::NonBasicLower : warmstart.setArtifStatus(j, swapRowStatus ? CoinWarmStartBasis::atUpperBound : CoinWarmStartBasis::atLowerBound); break;
+				case GamsModel::NonBasicUpper : warmstart.setArtifStatus(j, swapRowStatus ? CoinWarmStartBasis::atLowerBound : CoinWarmStartBasis::atUpperBound); break;
 				case GamsModel::Basic : warmstart.setArtifStatus(j, CoinWarmStartBasis::basic); break;
 				case GamsModel::SuperBasic : warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
 				default: warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
