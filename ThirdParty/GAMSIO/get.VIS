@@ -1,14 +1,33 @@
 #!/bin/sh
 
+echo " "
+echo "Running script for downloading the GAMS I/O libraries for Windows platform"
+echo " "
+
 wgetcount=`which wget 2>/dev/null | wc -w`
 if test ! $wgetcount = 1; then
   echo "Utility wget not found in your PATH."
   exit -1
 fi
 
-echo " "
-echo "Running script for downloading the GAMS I/O libraries for Windows platform"
-echo " "
+decompress=INVALID
+for tool in unzip
+do
+  toolcount=`which $tool 2>/dev/null | wc -w`
+  if test $toolcount = 1; then
+    if test $tool = unzip ; then
+      decompress="unzip -o"
+    fi
+    break
+  else
+    echo "Utility $tool not found in your PATH."
+  fi
+done
+
+if test "$decompress" = INVALID ; then
+  echo "Do not know how to unpack ZIP files."
+  exit -1 
+fi 
 
 MACHINECODE=VIS
 . ./FILES
@@ -27,7 +46,7 @@ done
 echo "Unpacking the libraries..."
 for file in $FILES
 do
-	unzip -o $file
+	$decompress $file
 done
 
 echo "Deleting the zip files..."
