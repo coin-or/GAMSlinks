@@ -116,7 +116,7 @@ case $GAMSIO_CODE in
     ;;
   SIG)
       gamsio_system=Solaris
-      CIA_CODE=SIS
+      CIA_CODE=CIA_SIS
     ;;
   *)
       AC_MSG_ERROR([GAMS I/O libraries with system code $GAMSIO_CODE not supported.])
