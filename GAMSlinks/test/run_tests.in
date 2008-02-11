@@ -130,7 +130,8 @@ sed -e "/master set of solvers/s/\/;\$/$solvers \/;/" \
 echo ""
 
 #remove all log or failure files
-rm -f quality_test_*.log failures_qa*.gms
+rm -f quality_test_*.log failures_qa*.gms testlib.*
+rm -rf @CIA_CODE@_qa_* failed_test_* onetest*
 
 #indicates whether there was a failed test, also return code of this script
 testfailed=0
@@ -142,9 +143,10 @@ for (( i=0 ; i<${#testlist[@]} ; i++ )) ; do
 		echo "Test " ${testlist[$i]} " passed."
 	else
 		testfailed=1
+		rename @CIA_CODE@_qa_ failed_test_$i_ @CIA_CODE@_qa_* 
 		mv failures_qa.gms failures_qa_$i.gms    
-		echo "Test " ${testlist[$i]} " failed. Content of failures_qa_$i.gms:"
-		cat failures_qa_$i.gms
+		echo "Test " ${testlist[$i]} " failed. Content of failures_qa_$i.gms:" 1>&2
+		cat failures_qa_$i.gms 1>&2
 	fi
 	echo ""
 	

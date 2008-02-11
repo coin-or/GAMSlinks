@@ -203,18 +203,23 @@ AC_ARG_WITH([gamsio-code],
 case $GAMSIO_CODE in
   LEI)
       gamsio_system=Linux
+      CIA_CODE=LEX
     ;;
   LX3)
       gamsio_system=Linux
+      CIA_CODE=LNX
     ;;
   VIS)
       gamsio_system=Windows
+      CIA_CODE=WIN
     ;;
   DII)
       gamsio_system=Darwin
+      CIA_CODE=DAR
     ;;
   SIG)
       gamsio_system=Solaris
+      CIA_CODE=SIS
     ;;
   *)
       AC_MSG_ERROR([GAMS I/O libraries with system code $GAMSIO_CODE not supported.])
@@ -311,6 +316,7 @@ AC_SUBST(GAMSIO_ADDLIBS)
 AC_SUBST(GAMSIO_LIBS)
 AC_SUBST(SMAG_LIBS)
 AC_SUBST(GAMSIO_CODE)
+AC_SUBST(CIA_CODE)
 AM_CONDITIONAL([GAMSIO_IS_UNIX],[test x"$gamsio_system" != xWindows])
 AM_CONDITIONAL([GAMSIO_IS_WINDOWS],[test x"$gamsio_system" = xWindows])
 
