@@ -34,6 +34,7 @@
 #include "smag.h"
 #include "Smag2OSiL.hpp"
 #include "OSrL2Smag.hpp"
+#include "GamsHandlerSmag.hpp"
 #include "GamsOptions.hpp"
 
 #include "OSiLWriter.h"
@@ -89,11 +90,13 @@ int main (int argc, char* argv[]) {
 	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/OS (OS Library trunk)\nwritten by Jun Ma, Kipp Martin, ...\n");
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
+	
+	GamsHandlerSmag gamshandler(prob);
 
 #ifdef GAMS_BUILD
-	GamsOptions opt(prob->gms.sysDir, "coinos");
+	GamsOptions opt(gamshandler, "coinos");
 #else
-	GamsOptions opt(prob->gms.sysDir, "os");
+	GamsOptions opt(gamshandler, "os");
 #endif
 	if (prob->gms.useopt)
 		opt.readOptionsFile(prob->gms.optFileName);

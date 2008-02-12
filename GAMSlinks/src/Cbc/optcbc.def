@@ -4,6 +4,7 @@
 
 writemps string 0 "" 1 1 create MPS file for problem
 special string 0 "" 1 1 options passed unseen to CBC
+names boolean 0 0 1 1 specifies whether variable and equation names should be given to CBC
 idiotcrash enumint 0 -1 1 2 idiot crash
  -1 1
  0 1

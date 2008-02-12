@@ -46,8 +46,15 @@ GAMSlinks/src/Cbc/optcbc.txt -text
 GAMSlinks/src/GAMSlinksConfig.h -text
 GAMSlinks/src/GamsIO/GamsBCH.cpp -text
 GAMSlinks/src/GamsIO/GamsBCH.hpp -text
+GAMSlinks/src/GamsIO/GamsDictionary.cpp -text
+GAMSlinks/src/GamsIO/GamsDictionary.hpp -text
 GAMSlinks/src/GamsIO/GamsFinalize.cpp -text
 GAMSlinks/src/GamsIO/GamsFinalize.hpp -text
+GAMSlinks/src/GamsIO/GamsHandler.hpp -text
+GAMSlinks/src/GamsIO/GamsHandlerIOLib.cpp -text
+GAMSlinks/src/GamsIO/GamsHandlerIOLib.hpp -text
+GAMSlinks/src/GamsIO/GamsHandlerSmag.cpp -text
+GAMSlinks/src/GamsIO/GamsHandlerSmag.hpp -text
 GAMSlinks/src/GamsIO/GamsMessageHandler.cpp -text
 GAMSlinks/src/GamsIO/GamsMessageHandler.hpp -text
 GAMSlinks/src/GamsIO/GamsModel.cpp -text
@@ -60,8 +67,6 @@ GAMSlinks/src/GamsIO/SmagExtra.c -text
 GAMSlinks/src/GamsIO/SmagExtra.h -text
 GAMSlinks/src/GamsIO/SmagJournal.cpp -text
 GAMSlinks/src/GamsIO/SmagJournal.hpp -text
-GAMSlinks/src/GamsIO/SmagMessageHandler.cpp -text
-GAMSlinks/src/GamsIO/SmagMessageHandler.hpp -text
 GAMSlinks/src/Glpk/GamsCoinGlpk.cpp -text
 GAMSlinks/src/Glpk/Makefile.am -text
 GAMSlinks/src/Glpk/Makefile.in -text

@@ -20,6 +20,7 @@ set g Cbc Option Groups /
     o Options /
       writemps               create MPS file for problem
       special                options passed unseen to CBC
+      names                  specifies whether variable and equation names should be given to CBC 
 *LP options
       idiotcrash             idiot crash
       sprintcrash            sprint crash
@@ -107,6 +108,7 @@ optdata(g,o,t,f) /
 general.(
   writemps             .s.(def '')
   special              .s.(def '')
+  names                .b.(def 0)
 * GAMS options
   reslim          .r.(def 1000)
   iterlim         .i.(def 10000)

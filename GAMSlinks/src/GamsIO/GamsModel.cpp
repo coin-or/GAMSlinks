@@ -47,7 +47,6 @@
 
 #include "iolib.h"
 #include "dict.h"
-#include "optcc.h"
 
 #if defined(_WIN32)
 # define snprintf _snprintf
@@ -98,14 +97,6 @@ GamsModel::GamsModel(const char *cntrfile)
 
   SolverStatus_ = SolverStatusNotSet;
   ModelStatus_ = ModelStatusNotSet;
-
-	dict=NULL;
-	if (iolib.dictFileWritten) {
-		if (gcdLoad(&dict, iolib.flndic, iolib.dictVersion)) {
-			PrintOut(AllMask, "Error reading dictionary file.\n");
-			dict=NULL;
-		}
-	}
 }
 
 void GamsModel::setInfinity(const double& SolverMInf, const double& SolverPInf) {
@@ -185,8 +176,6 @@ GamsModel::~GamsModel()
   delete[] ColPriority_;
   delete[] ColScale_;
 
-	// Close dictionary
-	if (dict) gcdFree(dict);
   // Close IO system
   gfclos ();
 }
@@ -538,77 +527,4 @@ void GamsModel::setSolution(const double *ColLevel, const double *ColMargin,
 	gfwbnd(ObjBound_);
 	gfwnod(NodeUsed_);
 	gfcsol(); // close solution file 
-}
-
-char* GamsModel::RowName(int rownr, char *buffer, int bufLen) {
-	if (!dict) return NULL;
-  int
-    uelIndices[10],
-    nIndices,
-    lSym;
-    
-  if (isReform_ && rownr>=iolib.slplro-1)
-  	++rownr;
-
-  if (rownr<0 || rownr >= gcdNRows(dict)) return NULL;
-  if (gcdRowUels(dict, rownr, &lSym, uelIndices, &nIndices) != 0) return NULL;
-  
-  return ConstructName(buffer, bufLen, lSym, uelIndices, nIndices); 
-}
-
-char* GamsModel::ColName(int colnr, char *buffer, int bufLen) {
-	if (!dict) return NULL;
-  int
-    uelIndices[10],
-    nIndices,
-    lSym;
-    
-  if (isReform_ && colnr>=iolib.iobvar)
-  	++colnr;
-
-  if (colnr < 0 || colnr >= gcdNCols(dict)) return NULL;
-  if (gcdColUels(dict, colnr, &lSym, uelIndices, &nIndices) != 0) return NULL;
-  
-  return ConstructName(buffer, bufLen, lSym, uelIndices, nIndices);
-}
-
-char* GamsModel::ConstructName(char* buffer, int bufLen, int lSym, int* uelIndices, int nIndices) {
-	if (bufLen<=0)
-		return NULL;
-  char
-    quote,
-    *targ,
-    *end,
-    *s,
-    tbuf[32];
-	
-  if ((s=gcdSymName (dict, lSym, tbuf, 32)) == NULL) return NULL;
-
-  targ = buffer;
-  end = targ + bufLen-1; // keep one byte for a closing \0
-
-  while (targ < end && *s != '\0') *targ++ = *s++;
-
-  if (0 == nIndices || targ==end) {
-    *targ = '\0';
-    return buffer;
-  }
-
-  *targ++ = '(';
-  for (int k=0;  k<nIndices && targ < end;  k++) {
-    s = gcdUelLabel (dict, uelIndices[k], tbuf, 32, &quote);
-    if (NULL == s) return NULL;
-
-    if (' ' != quote) *targ++ = quote;
-    while (targ < end && *s != '\0') *targ++ = *s++;
-    if (targ == end) break;
-    if (' ' != quote) {
-    	*targ++ = quote;
-	    if (targ == end) break;
-    }
-		*targ++ = (k+1==nIndices) ? ')' : ',';
-  }
-  *targ = '\0';
-
-  return buffer;
 }

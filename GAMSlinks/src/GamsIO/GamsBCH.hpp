@@ -15,9 +15,9 @@
 
 #include <vector>
 
-// lets see, maybe we can make this optional later in order to allow smag also
-#include "GamsModel.hpp"
+#include "GamsHandler.hpp"
 #include "GamsOptions.hpp"
+#include "GamsDictionary.hpp"
 
 /** Interface to GAMS BCH facility.
  * To use this interface, it is assumed that you have initialized the GDX I/O library (use gdxGetReady or gdxCreate).
@@ -34,12 +34,15 @@ public:
 		int* indices;
 		double* coeff;
 		
+		/** Constructor.
+		 * Initializes lb and ub to 0! indices and coeff are set to NULL, nnz to -1.
+		 */
 		Cut();
 		~Cut();
 	};
 	
 private:
-	GamsModel& gm;
+	GamsHandler& gams;
 	GamsOptions& opt;
 
 	struct dictRec* dict;
@@ -51,8 +54,9 @@ private:
 	/* storage of size iolib.ncols for node upper bound */
   double    *node_ub;
 
-  bool have_incumbent;
-  bool new_incumbent;
+  bool      have_incumbent;
+  bool      new_incumbent;
+  double    incumbent_value; /* objective function value of incumbent */
 	/* storage of size iolib.ncols for incumbent solution */
   double    *incumbent;
 	/* storage of size iolib.ncols for global lower bounds */
@@ -90,18 +94,12 @@ private:
 
 	void init();
 	
-	void translateToGamsSpaceX(const double* x_, double objval_, double* x);
-	void translateToGamsSpaceLB(const double* lb_, double* lb);
-	void translateToGamsSpaceUB(const double* ub_, double* ub);
-	void translateFromGamsSpaceX(const double* x_, double* x);
-
 public:	
-	GamsBCH(GamsModel& gm_, GamsOptions& opt_);
+	GamsBCH(GamsHandler& gams_, GamsOptions& opt_, GamsDictionary& gamsdict);
 
 	~GamsBCH();
 	
-	/** The global bounds are initialized with the one taken from the GamsModel.
-	 * But you can use this routine to overwrite them, if convenient.
+	/** You should call this method after the constructor.
 	 */
 	void setGlobalBounds(const double* lb_, const double* ub_);
 

@@ -13,12 +13,16 @@
 // from CoinUtils
 #include "CoinPragma.hpp"
 
+#include "GamsHandler.hpp"
+
 extern "C" struct optRec; 
 
 /** Class to handle the access to a GAMS options file.
  */
 class GamsOptions {
 private:
+	GamsHandler& gams;
+
 	struct optRec* optionshandle; // handle for options
 
 public:
@@ -28,7 +32,7 @@ public:
 	 * @param systemdir The name of the GAMS system directory (where the opt...def-file is located).
 	 * @param solvername The name of your solver.
 	 */
-	GamsOptions(const char* systemdir, const char* solvername);
+	GamsOptions(GamsHandler& gams_, const char* solvername);
 	
 	~GamsOptions();
 	

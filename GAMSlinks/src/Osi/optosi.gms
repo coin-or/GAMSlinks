@@ -15,6 +15,7 @@ set g Glpk Option Groups /
       tol_dual               dual feasibility tolerance
       tol_primal             primal feasibility tolerance
       presolve               LP presolver
+      names                  indicates whether row and column names should be given to osi
 * GAMS options
 *      reslim                 resource limit
       iterlim                iteration limit
@@ -35,6 +36,7 @@ general.(
   tol_dual        .r.(def 1e-7)
   tol_primal      .r.(def 1e-7)
   presolve        .b.(def 1)
+  names           .b.(def 0)
 * GAMS options
 *  reslim          .r.(def 1000)
   iterlim         .i.(def 10000)

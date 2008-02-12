@@ -26,6 +26,8 @@
 #include "GamsModel.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsFinalize.hpp"
+#include "GamsHandlerIOLib.hpp"
+#include "GamsDictionary.hpp"
 #include "GamsOptions.hpp"
 
 int printme(void* info, const char* msg) {
@@ -79,9 +81,11 @@ int main (int argc, const char *argv[]) {
 	GamsModel gm(argv[1]);
 	gm.setInfinity(-solver.getInfinity(),solver.getInfinity());
 	gm.readMatrix();
-	
+
+	GamsHandlerIOLib gamshandler(gm.isReformulated());
+
 	// Pass in the GAMS status/log file print routines
-	GamsMessageHandler myout(&gm), slvout(&gm);
+	GamsMessageHandler myout(gamshandler), slvout(gamshandler);
 	slvout.setPrefix(0);
 
 	glp_term_hook(printme, &slvout);
@@ -104,9 +108,9 @@ int main (int argc, const char *argv[]) {
 	}
 
 #ifdef GAMS_BUILD
-	GamsOptions opt(gm.getSystemDir(), "coinglpk");
+	GamsOptions opt(gamshandler, "coinglpk");
 #else
-	GamsOptions opt(gm.getSystemDir(), "glpk");
+	GamsOptions opt(gamshandler, "glpk");
 #endif
 	opt.readOptionsFile(gm.getOptionfile());
 
@@ -154,16 +158,19 @@ int main (int argc, const char *argv[]) {
 		solver.addRow(vec, -solver.getInfinity(), solver.getInfinity());
 	}
 
-	if (gm.haveNames()) { // set variable and constraint names
+	GamsDictionary gamsdict(gamshandler);
+	if (opt.getBool("names"))
+		gamsdict.readDictionary();
+	if (gamsdict.haveNames()) { // set variable and constraint names
 		solver.setIntParam(OsiNameDiscipline, 2);
 		std::string stbuffer;
 		for (j=0; j<gm.nCols(); ++j)
-			if (gm.ColName(j, buffer, 255)) {
+			if (gamsdict.getColName(j, buffer, 255)) {
 				stbuffer=buffer;
 				solver.setColName(j, stbuffer);
 			}
 		for (j=0; j<gm.nRows(); ++j)
-			if (gm.RowName(j, buffer, 255)) {
+			if (gamsdict.getRowName(j, buffer, 255)) {
 				stbuffer=buffer;
 				solver.setRowName(j, stbuffer);
 			}

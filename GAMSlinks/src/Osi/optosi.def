@@ -11,6 +11,7 @@ scaling boolean 0 1 1 1 scaling
 tol_dual double 0 1e-7 0 maxdouble 1 1 dual feasibility tolerance
 tol_primal double 0 1e-7 0 maxdouble 1 1 primal feasibility tolerance
 presolve boolean 0 1 1 1 LP presolver
+names boolean 0 0 1 1 indicates whether row and column names should be given to osi
 iterlim integer 0 10000 0 maxint 1 1 iteration limit
 nobounds immediate nobounds 0 1 ignores bounds on options
 readfile immediate readfile 0 1 read secondary option file

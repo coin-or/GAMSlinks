@@ -1,15 +1,10 @@
-// Copyright (C) GAMS Development 2006
+// Copyright (C) GAMS Development 2006-2008
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
 // $Id$
 //
 // Authors: Michael Bussieck, Stefan Vigerske
-
-#if defined(_MSC_VER)
-// Turn off compiler warning about long names
-#  pragma warning(disable:4786)
-#endif
 
 #include "GamsMessageHandler.hpp"
 
@@ -32,8 +27,8 @@
 #endif
 #endif
 
-GamsMessageHandler::GamsMessageHandler(GamsModel *GMptr)
-: GMptr_(GMptr), rmlblanks_(1) 
+GamsMessageHandler::GamsMessageHandler(GamsHandler& gams_)
+: gams(gams_), rmlblanks_(1) 
 { }
 
 void GamsMessageHandler::setCurrentDetail(int detail) {
@@ -46,25 +41,21 @@ int GamsMessageHandler::getCurrentDetail() const {
 
 // Print message, return 0 normally
 int GamsMessageHandler::print() {
-  char *messageOut = const_cast<char*>(messageBuffer());
-  char *lastchar;
+  const char *messageOut = messageBuffer();
   int i=rmlblanks_;
 
   // white space at the beginning
   while (i-- > 0 && *messageOut == ' ') 
-      messageOut++;
-	//TODO: maybe copy the string before altering it?  
-  lastchar = messageOut + strlen(messageOut); lastchar--;
-  while (*lastchar == '\n') {
-    *lastchar = 0; lastchar--;
-  }
-  if (0 == GMptr_)
-    printf("%s\n", messageOut);
-  else {
-    if (currentMessage_.detail() < 2)
-      GMptr_->PrintOut(GamsModel::AllMask, messageOut);
-    else
-      GMptr_->PrintOut(GamsModel::LogMask, messageOut);
-  }
+  	++messageOut;
+
+//TODO: change back to distinguishing between allmask and logmask as soon as smag bug fixed
+  if (messageOut[strlen(messageOut)-1]=='\n')
+    gams.print(GamsHandler::LogMask, messageOut);
+  else
+    gams.println(GamsHandler::LogMask, messageOut);
+//  	gams.print(currentMessage_.detail() < 2 ? GamsHandler::AllMask : GamsHandler::LogMask, messageOut);
+//  else
+//  	gams.println(currentMessage_.detail() < 2 ? GamsHandler::AllMask : GamsHandler::LogMask, messageOut);
+
   return 0;
 }

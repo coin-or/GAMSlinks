@@ -64,7 +64,9 @@
 #include "GamsModel.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsFinalize.hpp"
+#include "GamsHandlerIOLib.hpp"
 #include "GamsOptions.hpp"
+#include "GamsDictionary.hpp"
 
 #if COIN_HAS_GLPK
 int printme(void* info, const char* msg) {
@@ -100,7 +102,9 @@ int main (int argc, const char *argv[]) {
 	// argument to this program
 	GamsModel gm(argv[1]);
 
-	GamsMessageHandler myout(&gm), slvout(&gm);
+	GamsHandlerIOLib gamshandler(gm.isReformulated());
+
+	GamsMessageHandler myout(gamshandler), slvout(gamshandler);
 	slvout.setPrefix(0);
 
 #ifdef GAMS_BUILD
@@ -118,9 +122,9 @@ int main (int argc, const char *argv[]) {
 	}
 
 #ifdef GAMS_BUILD
-	GamsOptions opt(gm.getSystemDir(), "coinosi");
+	GamsOptions opt(gamshandler, "coinosi");
 #else
-	GamsOptions opt(gm.getSystemDir(), "osi");
+	GamsOptions opt(gamshandler, "osi");
 #endif
 	opt.readOptionsFile(gm.getOptionfile());
 
@@ -278,17 +282,20 @@ try {
 		solver->addRow(vec, -solver->getInfinity(), solver->getInfinity());
 	}
 
-	if (gm.haveNames()) { // set variable and constraint names
+	GamsDictionary gamsdict(gamshandler);
+	if (opt.getBool("names"))
+		gamsdict.readDictionary();
+	if (gamsdict.haveNames()) { // set variable and constraint names
 		//TODO: set problem (=model) and objective name
 		solver->setIntParam(OsiNameDiscipline, 2);
 		std::string stbuffer;
 		for (j=0; j<gm.nCols(); ++j)
-			if (gm.ColName(j, buffer, 255)) {
+			if (gamsdict.getColName(j, buffer, 255)) {
 				stbuffer=buffer;
 				solver->setColName(j, stbuffer);
 			}
 		for (j=0; j<gm.nRows(); ++j)
-			if (gm.RowName(j, buffer, 255)) {
+			if (gamsdict.getRowName(j, buffer, 255)) {
 				stbuffer=buffer;
 				solver->setRowName(j, stbuffer);
 			}

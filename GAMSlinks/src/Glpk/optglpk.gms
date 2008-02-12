@@ -25,6 +25,7 @@ set g Glpk Option Groups /
       presolve               LP presolver
       reslim_fixedrun        resource limit for solve with fixed discrete variables
       noiterlim              turn off iteration limit
+      names                  indicates whether row and column names should be given to glpk
 * GAMS options
       reslim                 resource limit
       iterlim                iteration limit
@@ -52,6 +53,7 @@ general.(
   presolve        .b.(def 1)
   reslim_fixedrun .r.(def 1000)
   noiterlim       .b.(def 0)
+  names           .b.(def 0)
 * GAMS options
   reslim          .r.(def 1000)
   iterlim         .i.(def 10000)

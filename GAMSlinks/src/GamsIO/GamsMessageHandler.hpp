@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development 2006
+// Copyright (C) GAMS Development 2006-2008
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -9,8 +9,12 @@
 #ifndef GamsMessageHandler_H
 #define GamsMessageHandler_H
 
-#include "GamsModel.hpp"
+#include "GAMSlinksConfig.h"
+
+#include "CoinPragma.hpp"
 #include "CoinMessageHandler.hpp"
+
+#include "GamsHandler.hpp"
 
 /** A COIN-OR message handler that writes into the GAMS status- and logfile.
  */
@@ -20,7 +24,7 @@ public:
 	/** Constructor.
 	 * @param GMptr The GamsModel required for printing.
 	 */  
-  GamsMessageHandler(GamsModel* GMptr);
+  GamsMessageHandler(GamsHandler& gams_);
 
 	/** Sets the number of spaces to remove at the front of a message.
 	 */
@@ -40,9 +44,11 @@ public:
 	 * If the pointer to the GamsModel is not set, the output goes to standard out. 
 	 */  
   int print();
+  
+  CoinMessageHandler* clone() const { return new GamsMessageHandler(gams); }
 
 private:
-  GamsModel *GMptr_;
+	GamsHandler& gams;
   int rmlblanks_;
 };
 

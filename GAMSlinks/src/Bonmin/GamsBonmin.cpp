@@ -23,8 +23,9 @@
 #endif
 
 #include "SmagMINLP.hpp"
-#include "SmagMessageHandler.hpp"
 #include "SmagJournal.hpp"
+#include "GamsHandlerSmag.hpp"
+#include "GamsMessageHandler.hpp"
 #include "BonBonminSetup.hpp"
 #include "BonCbc.hpp"
 
@@ -254,12 +255,14 @@ void solve_minlp(smagHandle_t prob) {
 	// the easiest would be to call bonmin_setup.initializeBonmin(smagminlp), but then we cannot set the message handler
 	// so we do the following
 //	bonmin_setup.use(smagminlp); // this initialize the OsiTMINLPInterface
-	SmagMessageHandler smagmessagehandler(prob);
+	GamsHandlerSmag gamshandler(prob);
+	GamsMessageHandler messagehandler(gamshandler);
+//	SmagMessageHandler smagmessagehandler(prob);
 	try {
 	{
 		OsiTMINLPInterface first_osi_tminlp;
 		first_osi_tminlp.initialize(roptions, options, journalist, smagminlp);
-		first_osi_tminlp.passInMessageHandler(&smagmessagehandler);
+		first_osi_tminlp.passInMessageHandler(&messagehandler);
 		bonmin_setup.initialize(first_osi_tminlp); // this will clone first_osi_tminlp
 	}
 

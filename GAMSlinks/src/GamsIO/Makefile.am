@@ -13,13 +13,14 @@ EXTRA_DIST =
 
 lib_LTLIBRARIES = libGamsIO.la libSmagIO.la
 libGamsIO_la_SOURCES = \
-  GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsOptions.cpp GamsBCH.cpp
+  GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsOptions.cpp GamsDictionary.cpp GamsBCH.cpp GamsHandlerIOLib.cpp
 libGamsIO_la_LDFLAGS =
 libGamsIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la \
   $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
 
+#TODO: put also GamsBCH and GamsDictionary into SmagIO lib, once we got required gams libs separated from ciolib
 libSmagIO_la_SOURCES = \
-  GamsOptions.cpp SmagMessageHandler.cpp SmagExtra.c
+  GamsOptions.cpp GamsMessageHandler.cpp SmagExtra.c GamsHandlerSmag.cpp
 if COIN_HAS_IPOPT
 libSmagIO_la_SOURCES += SmagJournal.cpp
 endif
@@ -28,8 +29,8 @@ libSmagIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la
 
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = ../../inc/config_gamslinks.h \
-  GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsBCH.hpp \
-  SmagJournal.hpp SmagMessageHandler.hpp
+  GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsDictionary.hpp GamsBCH.hpp GamsHandler.hpp GamsHandlerIOLib.hpp \
+  SmagJournal.hpp GamsHandlerSmag.hpp
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) $(FORTRAN_NAMEMANGLING_CFLAG) -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \

@@ -15,13 +15,10 @@
 
 extern "C" struct dictRec;
 
-class GamsBCH;
-
 /** Representation of a mixed-integer linear GAMS model.
  * This class is a layer between the GAMS I/O libraries and the GAMS-interfaces to COIN-OR LP and MIP solvers.
  */ 
 class GamsModel  {
-	friend class GamsBCH;
 public:
 
 	/** Basis status indicator used in GAMS.
@@ -166,6 +163,10 @@ public:
 	 */ 
 	void setInfinity(const double& SolverMInf, const double& SolverPInf);
 	
+	/** Tells whether the model has been reformulated by moving the objective equation into the objective and eliminating the objective variable.
+	 */ 
+	bool isReformulated() const { return isReform_; }
+	
 	/**@name Accessing the GAMS model.
 	 * @{*/
 	/** Indicates whether we represent an LP or not.
@@ -240,7 +241,7 @@ public:
 			@param bufLen length of the buffer
       @return buffer on success, NULL on failure
 	*/
-	char          *ColName(int colnr, char *buffer, int bufLen);
+//	char          *ColName(int colnr, char *buffer, int bufLen);
 
 	/** The sense of the rows.
 	 * RowSense[i] is
@@ -273,7 +274,7 @@ public:
 			@param bufLen length of the buffer
       @return buffer on success, NULL on failure
 	*/
-	char          *RowName(int rownr, char *buffer, int bufLen);
+//	char          *RowName(int rownr, char *buffer, int bufLen);
 
 	/** The coefficients of the objective function (dense format).
 	 */
@@ -422,7 +423,7 @@ public:
 	
 	/** Indicates whether we have column and row names.
 	 */
-	inline bool haveNames() { return dict; }
+//	inline bool haveNames() { return dict; }
 	
 private:
   int nCols_;  // # columns
@@ -478,8 +479,9 @@ private:
   SolverStatus SolverStatus_;
   ModelStatus ModelStatus_;
 
-  struct dictRec* dict; // handle for dictionary  
-	char* ConstructName(char* buffer, int bufLen, int lSym, int* uelIndices, int nIndices);
+public: // TODO, just temporarily
+//  struct dictRec* dict; // handle for dictionary  
+//	char* ConstructName(char* buffer, int bufLen, int lSym, int* uelIndices, int nIndices);
 };
 
 #endif // __GAMSMODEL_HPP__

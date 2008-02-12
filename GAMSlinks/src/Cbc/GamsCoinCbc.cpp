@@ -27,6 +27,8 @@
 #include "GamsMessageHandler.hpp"
 #include "GamsFinalize.hpp"
 #include "GamsOptions.hpp"
+#include "GamsDictionary.hpp"
+#include "GamsHandlerIOLib.hpp"
 #include "GamsBCH.hpp"
 #include "GamsCutGenerator.hpp"
 #include "GamsHeuristic.hpp"
@@ -42,7 +44,7 @@ extern "C" {
 #include "OsiClpSolverInterface.hpp"
 #include "CoinHelperFunctions.hpp"
 
-void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver);
+void setupProblem(GamsModel& gm, GamsDictionary& gamsdict, OsiClpSolverInterface& solver);
 void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model);
 void setupStartingPoint(GamsModel& gm, CbcModel& model);
 void setupParameters(GamsModel& gm, GamsOptions& opt, CbcModel& model);
@@ -80,10 +82,12 @@ int main (int argc, const char *argv[]) {
 	// Read in the model defined by the GAMS control file passed in as the first
 	// argument to this program
 	GamsModel gm(argv[1]);
-	gm.setInfinity(-solver.getInfinity(),solver.getInfinity());
+	gm.setInfinity(-solver.getInfinity(), solver.getInfinity());
+	
+	GamsHandlerIOLib gamshandler(gm.isReformulated());
 	
 	// Pass in the GAMS status/log file print routines 
-	GamsMessageHandler myout(&gm), slvout(&gm);
+	GamsMessageHandler myout(gamshandler), slvout(gamshandler);
 	slvout.setPrefix(0);
 	solver.passInMessageHandler(&slvout);
 	solver.getModelPtr()->passInMessageHandler(&slvout);
@@ -93,10 +97,10 @@ int main (int argc, const char *argv[]) {
 	gm.PrintOut(GamsModel::StatusMask, "=1"); // turn on copying into .lst file
 #ifdef GAMS_BUILD	
 	myout << "\nGAMS/CoinCbc 2.0 LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
-	GamsOptions opt(gm.getSystemDir(), "coincbc");
+	GamsOptions opt(gamshandler, "coincbc");
 #else
 	myout << "\nGAMS/Cbc 2.0 LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
-	GamsOptions opt(gm.getSystemDir(), "cbc");
+	GamsOptions opt(gamshandler, "cbc");
 #endif
 	opt.readOptionsFile(gm.getOptionfile());
 
@@ -129,7 +133,11 @@ int main (int argc, const char *argv[]) {
 	
 	gm.TimerStart();
 	
-	setupProblem(gm, solver);
+	GamsDictionary gamsdict(gamshandler);
+	if (opt.getBool("names"))
+		gamsdict.readDictionary();
+
+	setupProblem(gm, gamsdict, solver);
 	
 	// Write MPS file
 	if (opt.isDefined("writemps")) {
@@ -172,7 +180,13 @@ int main (int argc, const char *argv[]) {
 			gm.PrintOut(GamsModel::AllMask, buffer);
 			exit(EXIT_FAILURE);
 		}
-		bch=new GamsBCH(gm, opt);
+		if (!gamsdict.haveNames() && !gamsdict.readDictionary()) {
+			gm.PrintOut(GamsModel::AllMask, "Error: Need dictionary to enable BCH.");
+			exit(EXIT_FAILURE);
+		}
+		
+		bch=new GamsBCH(gamshandler, opt, gamsdict);
+		bch->setGlobalBounds(gm.ColLb(), gm.ColUb());
 
 		if (opt.isDefined("usercutcall")) {
 			GamsCutGenerator gamscutgen(*bch, preprocessedmodel);
@@ -264,7 +278,7 @@ int main (int argc, const char *argv[]) {
 	return EXIT_SUCCESS;
 }
 
-void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver) {
+void setupProblem(GamsModel& gm, GamsDictionary& gamsdict, OsiClpSolverInterface& solver) {
 	// Osi needs rowrng for the loadProblem call
 	double *rowrng = CoinCopyOfArrayOrZero((double*)NULL, gm.nRows()); 
 
@@ -306,17 +320,17 @@ void setupProblem(GamsModel& gm, OsiClpSolverInterface& solver) {
 		solver.addCol(vec, -solver.getInfinity(), solver.getInfinity(), 0.);
 	}
 
-	char buffer[255];
-	if (gm.haveNames()) { // set variable and constraint names
+	if (gamsdict.haveNames()) { // set variable and constraint names
 		solver.setIntParam(OsiNameDiscipline, 2);
+		char buffer[255]; 
 		std::string stbuffer;
 		for (int j=0; j<gm.nCols(); ++j)
-			if (gm.ColName(j, buffer, 255)) {
+			if (gamsdict.getColName(j, buffer, 255)) {
 				stbuffer=buffer;
 				solver.setColName(j, stbuffer);
 			}
 		for (int j=0; j<gm.nRows(); ++j)
-			if (gm.RowName(j, buffer, 255)) {
+			if (gamsdict.getRowName(j, buffer, 255)) {
 				stbuffer=buffer;
 				solver.setRowName(j, stbuffer);
 			}
