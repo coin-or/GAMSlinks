@@ -33,7 +33,7 @@ soHandle_t LSL_loadLib(const char *libName, char *msgBuf, int msgLen)
 #if defined(_WIN32) || defined(BUILD_TYPE_WINDOWS)
   h = LoadLibrary (libName);
   if (NULL == h) {
-  	snprintf(msgBuf, msgLen, "Windows error while loading shared library %s", libName);
+  	snprintf(msgBuf, msgLen, "Windows error while loading dynamic library %s", libName);
   }
 /* no HP support yet 
 #elif defined(CIA_HP7)
@@ -166,6 +166,10 @@ void* LSL_loadSym (soHandle_t h, const char *symName, char *msgBuf, int msgLen)
     }
 #endif
   } /* end loop over symbol name variations */
+
+#if defined(_WIN32) || defined(BUILD_TYPE_WINDOWS)
+	snprintf(msgBuf, msgLen, "Cannot find symbol %s in dynamic library.", symName);
+#endif
 
   return NULL;
 } /* LSL_loadSym */

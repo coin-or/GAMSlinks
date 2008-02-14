@@ -17,21 +17,42 @@ For HSL, you also need to specify which HSL routines should be loaded.
 Construction of an HSL library as it is supported from the LinearSolverLoader looks as follows for gfortran:
 gfortran -shared -fPIC -Wl,-soname,libhsl.so -o libhsl.so <hsl-fortran-files>
 
+Under Windows things are not so easy (as usual ;-)).
+The following seemed to work when f2c and cl are used:  
+1. Translate your HSL sources from Fortran to C.
+2. Add __declspec(dllexport) to the declarations of the functions
+   ma27id, ma27ad, ma27bd, ma27cd, if you enabled MA27,
+   ma28ad, if you enabled MA28
+   ma57id, ma57ad, ma57bd, ma57cd, ma57ed, if you enabled MA57,
+   mc19ad, if you enabled MC19.
+   E.g., the ma27ad function should start with
+     int __declspec(dllexport) ma27ad_(integer ...)
+3. Compile the modified hsl-c-sources and make a DLL out of them.
+   cl will complain about unresolved symbols belonging to Blas and the f2c library.
+   I think they can be ignored since they are resolved in the Ipopt binary.
+   Thus, you can do  
+     cl -I<path-to-libf2c> -LD -Felibhsl.dll <hsl-c-files> -link /force:unresolved
+   The path to the libf2c (maybe /usr/local/lib/libf2c?) is needed to find f2c.h
+   If you do not feel well about the unresolved symbols, then you can do
+     cl -I<path-to-libf2c> -LD -Felibhsl.dll <hsl-c-files> <blas-library> <f2c library>
+4. Put the library somewhere where Ipopt can found it, i.e.,
+   the directory where you run Ipopt or a directory in $PATH.       
+
 For Pardiso you can use a shared library as it is provided and rename it to libpardiso.so. 
 
 To use the library loader to dynamically load a linear solver library in Ipopt,
 you need to configure Ipopt with the options
---with-hsl="<your-LinearSolverLoader.a> -ldl"
+--with-hsl="<your-LinearSolverLoader.so> -ldl"
 or/and
---with-pardiso="<your-LinearSolverLoader.a> -ldl"
-The extra -ldl is to include the dynamic linker library.
+--with-pardiso="<your-LinearSolverLoader.so> -ldl"
+The extra -ldl is to include the dynamic linker library (only in Linux).
 
 Depending on whether Pardiso or which HSL routines you have enabled for the build of the LinearSolverLoader,
 the Ipopt configure system should recognize the corresponding symbols in the LinearSolverLoader library.
 
 
 
-Example:
+Example (for Linux):
 You have the MA27 HSL libraries, but do not want to link them into your Ipopt executable.
 
 * Download the LinearSolverLoader project:
@@ -43,7 +64,7 @@ You have the MA27 HSL libraries, but do not want to link them into your Ipopt ex
   
 * Configure your Ipopt build via
   ./configure --with-hsl="<some-path>/LinearSolverLoader/lib/libLinearSolverLoader.a -ldl"
-  Note that it recognizes that MA27 is available.
+  Check that it recognizes that MA27 is available.
 * Build Ipopt as usual:
   make; make install
 

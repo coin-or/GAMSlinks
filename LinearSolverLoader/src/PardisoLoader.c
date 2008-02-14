@@ -102,6 +102,7 @@ void LSL_lateParadisoLibLoad() {
 	char buffer[512];
 	int rc;
 	
+	sprintf(buffer, "Error unknown.");
 	rc = LSL_loadPardisoLib(NULL, buffer, 512);
 	if (rc!=0) {
 		fprintf(stderr, "Error loading Pardiso dynamic library " PARDISOLIBNAME ": %s\nAborting...\n", buffer);

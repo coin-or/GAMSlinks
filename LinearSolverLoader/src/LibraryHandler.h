@@ -22,7 +22,6 @@
 #include <errno.h>
 
 #if defined(_WIN32) || defined(BUILD_TYPE_WINDOWS)
-  static char winErr[] = "Windows error";
   typedef HINSTANCE soHandle_t;
 /* no HP support yet
 #elif defined(CIA_HP7)
