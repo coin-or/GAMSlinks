@@ -11,6 +11,11 @@
 
 #include "LibraryHandler.h"
 
+#if defined(_WIN32) || defined(BUILD_TYPE_WINDOWS)
+#define snprintf _snprintf
+#endif
+
+
 soHandle_t LSL_loadLib(const char *libName, char *msgBuf, int msgLen)
 {
 	soHandle_t h=NULL;

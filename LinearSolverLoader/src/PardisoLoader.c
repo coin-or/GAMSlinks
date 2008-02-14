@@ -25,7 +25,7 @@ typedef void (*pardiso_t)(void** PT, const ipfint* MAXFCT,
                            const ipfint* JA, const ipfint* PERM,
                            const ipfint* NRHS, ipfint* IPARM,
                            const ipfint* MSGLVL, double* B, double* X,
-                           ipfint* ERROR);
+                           ipfint* E);
 
 pardisoinit_t func_pardisoinit=NULL;
 pardiso_t func_pardiso=NULL;
@@ -42,9 +42,9 @@ void F77_FUNC(pardiso,PARDISO)(void** PT, const ipfint* MAXFCT,
                                const ipfint* JA, const ipfint* PERM,
                                const ipfint* NRHS, ipfint* IPARM,
                                const ipfint* MSGLVL, double* B, double* X,
-                               ipfint* ERROR) {
+                               ipfint* E) {
 	if (func_pardiso==NULL) LSL_lateParadisoLibLoad(); 
-	func_pardiso(PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA, JA, PERM, NRHS, IPARM, MSGLVL, B, X, ERROR);
+	func_pardiso(PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA, JA, PERM, NRHS, IPARM, MSGLVL, B, X, E);
 }
 
 #if defined(_WIN32) || defined(BUILD_TYPE_WINDOWS)

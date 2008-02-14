@@ -10,26 +10,26 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = 
 
-lib_LIBRARIES = libLinearSolverLoader.a
-libLinearSolverLoader_a_SOURCES = LibraryHandler.c
+lib_LTLIBRARIES = libLinearSolverLoader.la
+libLinearSolverLoader_la_SOURCES = LibraryHandler.c
 
 if COIN_ENABLE_HSLLOADER
-  libLinearSolverLoader_a_SOURCES += HSLLoader.c
+  libLinearSolverLoader_la_SOURCES += HSLLoader.c
 endif
 
 if COIN_ENABLE_PARDISOLOADER
-  libLinearSolverLoader_a_SOURCES += PardisoLoader.c
+  libLinearSolverLoader_la_SOURCES += PardisoLoader.c
 endif
 
 AM_CPPFLAGS = 
 #-I`$(CYGPATH_W) $(srcdir)/..`
 
-libLinearSolverLoader_a_LIBADD = 
-libLinearSolverLoader_a_DEPENDENCIES =  
+libLinearSolverLoader_la_LIBADD = 
+libLinearSolverLoader_la_DEPENDENCIES =  
 
 #LIBS += 
 
-#libLinearSolverLoader_a_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
+#libLinearSolverLoader_la_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
