@@ -121,7 +121,7 @@ if test "$hsl" = yes ; then
   )
 fi
 
-AM_CONDITIONAL([COIN_ENABLE_HSLLOADER], [test hsl=yes])
+AM_CONDITIONAL([COIN_ENABLE_HSLLOADER], [test $hsl = yes])
 
 # Pardiso
 
@@ -129,7 +129,7 @@ AC_ARG_ENABLE([pardisoloader],
   AC_HELP_STRING([--enable-pardisoloader], [enables loader for dynamic library containing Pardiso routines (no)]),
   [pardiso=yes],
   [pardiso=no])
-AM_CONDITIONAL([COIN_ENABLE_PARDISOLOADER], [test pardiso=yes])
+AM_CONDITIONAL([COIN_ENABLE_PARDISOLOADER], [test $pardiso = yes])
 
 
 AC_CONFIG_FILES([
