@@ -21430,7 +21430,7 @@ fi
 
 
 
-if test hsl=yes; then
+if test $hsl = yes; then
   COIN_ENABLE_HSLLOADER_TRUE=
   COIN_ENABLE_HSLLOADER_FALSE='#'
 else
@@ -21450,7 +21450,7 @@ else
 fi;
 
 
-if test pardiso=yes; then
+if test $pardiso = yes; then
   COIN_ENABLE_PARDISOLOADER_TRUE=
   COIN_ENABLE_PARDISOLOADER_FALSE='#'
 else
