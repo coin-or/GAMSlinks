@@ -145,5 +145,6 @@ ThirdParty/GAMSIO/get.VIS -text
 /depcomp -text
 doxydoc/doxygen.conf -text
 /install-sh -text
+/ipopt.patch -text
 /ltmain.sh -text
 /missing -text

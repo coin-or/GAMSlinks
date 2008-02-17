@@ -144,7 +144,7 @@ int main (int argc, char* argv[]) {
 
 #ifdef COIN_HAS_LSLHSL
 	std::string hsllib;
-	app->Options()->GetStringValue("hsl_library", hsllib, "");
+	app->Options()->GetStringValue("hsl_library", hsllib, "" /*, true */);
 	if (hsllib!="") {
 		if (LSL_loadHSL(hsllib.c_str(), buffer, 512)!=0) {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to load HSL library at user specified path: ");
@@ -157,7 +157,7 @@ int main (int argc, char* argv[]) {
 #endif
 #ifdef COIN_HAS_LSLPARDISO
 	std::string pardisolib;
-	app->Options()->GetStringValue("pardiso_library", pardisolib, "");
+	app->Options()->GetStringValue("pardiso_library", pardisolib, ""/*, true*/);
 	if (pardisolib!="") {
 		if (LSL_loadPardisoLib(pardisolib.c_str(), buffer, 512)!=0) {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to load Pardiso library at user specified path: ");

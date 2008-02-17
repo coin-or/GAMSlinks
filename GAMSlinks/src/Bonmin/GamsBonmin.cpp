@@ -199,7 +199,7 @@ void solve_minlp(smagHandle_t prob) {
 
 #ifdef COIN_HAS_LSLHSL
 	std::string hsllib;
-	bonmin_setup.options()->GetStringValue("hsl_library", hsllib, "");
+	bonmin_setup.options()->GetStringValue("hsl_library", hsllib, "" /*, true*/);
 	if (hsllib!="") {
 		char buffer[512];
 		if (LSL_loadHSL(hsllib.c_str(), buffer, 512)!=0) {
@@ -213,7 +213,7 @@ void solve_minlp(smagHandle_t prob) {
 #endif
 #ifdef COIN_HAS_LSLPARDISO
 	std::string pardisolib;
-	bonmin_setup.options()->GetStringValue("pardiso_library", pardisolib, "");
+	bonmin_setup.options()->GetStringValue("pardiso_library", pardisolib, "" /*, true*/);
 	if (pardisolib!="") {
 		char buffer[512];
 		if (LSL_loadPardisoLib(pardisolib.c_str(), buffer, 512)!=0) {
@@ -480,7 +480,7 @@ void solve_nlp(smagHandle_t prob) {
 
 #ifdef COIN_HAS_LSLHSL
 	std::string hsllib;
-	app->Options()->GetStringValue("hsl_library", hsllib, "");
+	app->Options()->GetStringValue("hsl_library", hsllib, "" /*, true*/);
 	if (hsllib!="") {
 		char buffer[512];
 		if (LSL_loadHSL(hsllib.c_str(), buffer, 512)!=0) {
@@ -494,7 +494,7 @@ void solve_nlp(smagHandle_t prob) {
 #endif
 #ifdef COIN_HAS_LSLPARDISO
 	std::string pardisolib;
-	app->Options()->GetStringValue("pardiso_library", pardisolib, "");
+	app->Options()->GetStringValue("pardiso_library", pardisolib, "" /*, true*/);
 	if (pardisolib!="") {
 		char buffer[512];
 		if (LSL_loadPardisoLib(pardisolib.c_str(), buffer, 512)!=0) {

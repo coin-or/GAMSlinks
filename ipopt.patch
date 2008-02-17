@@ -1,0 +1,144 @@
+Index: Ipopt/src/Common/IpOptionsList.cpp
+===================================================================
+--- Ipopt/src/Common/IpOptionsList.cpp	(Revision 1150)
++++ Ipopt/src/Common/IpOptionsList.cpp	(Arbeitskopie)
+@@ -108,7 +108,7 @@
+     }
+     else {
+       //    if (will_allow_clobber(tag)) {
+-      OptionsList::OptionValue optval(lowercase(value), allow_clobber,
++      OptionsList::OptionValue optval(value, allow_clobber,
+                                       dont_print);
+       options_[lowercase(tag)] = optval;
+     }
+@@ -315,11 +315,11 @@
+   }
+ 
+   bool OptionsList::GetStringValue(const std::string& tag, std::string& value,
+-                                   const std::string& prefix) const
++                                   const std::string& prefix, bool original_case /* = false */) const
+   {
+     SmartPtr<const RegisteredOption> option = NULL;
+ 
+-    bool found = find_tag(tag, prefix, value);
++    bool found = find_tag(tag, prefix, value, original_case);
+ 
+     if (IsValid(reg_options_)) {
+       option = reg_options_->GetOption(tag);
+@@ -530,7 +530,9 @@
+     return false;
+   }
+ 
+-  const std::string& OptionsList::lowercase(const std::string tag) const
++  std::string OptionsList::lowercase_buffer_;
++
++  const std::string& OptionsList::lowercase(const std::string tag)
+   {
+     lowercase_buffer_ = tag;
+     for (Index i=0; i<(Index)tag.length(); i++) {
+@@ -666,7 +668,8 @@
+ 
+   bool OptionsList::find_tag(const std::string& tag,
+                              const std::string& prefix,
+-                             std::string& value) const
++                             std::string& value,
++                             bool original_case /*=false*/) const
+   {
+     bool found=false;
+     std::map< std::string, OptionValue >::const_iterator p;
+@@ -686,7 +689,7 @@
+     }
+ 
+     if (found) {
+-      value = p->second.GetValue();
++      value = p->second.GetValue(original_case);
+     }
+ 
+     return found;
+Index: Ipopt/src/Common/IpOptionsList.hpp
+===================================================================
+--- Ipopt/src/Common/IpOptionsList.hpp	(Revision 1150)
++++ Ipopt/src/Common/IpOptionsList.hpp	(Arbeitskopie)
+@@ -80,20 +80,24 @@
+       //@}
+ 
+       /** Method for retrieving the value of an option.  Calling this
+-       *  method will increase the counter by one. */
+-      std::string GetValue() const
++       *  method will increase the counter by one.
++       *  By default, the option value is returned with all letters in lower case,
++       *  the optional argument allows to get the original option value. */
++      std::string GetValue(bool original_case=false) const
+       {
+         DBG_ASSERT(initialized_);
+         counter_++;
+-        return value_;
++        return original_case ? value_ : OptionsList::lowercase(value_);
+       }
+ 
+       /** Method for retrieving the value without increasing the
+-       *  counter */
+-      std::string Value() const
++       *  counter.
++       *  By default, the option value is returned with all letters in lower case,
++       *  the optional argument allows to get the original option value. */
++      std::string Value(bool original_case=false) const
+       {
+         DBG_ASSERT(initialized_);
+-        return value_;
++        return original_case ? value_ : OptionsList::lowercase(value_);
+       }
+ 
+       /** Method for accessing current value of the request counter */
+@@ -208,10 +212,14 @@
+ 
+     /** @name Methods for retrieving values from the options list.  If
+      *  a tag is not found, the methods return false, and value is set
+-     *  to the default value defined in the registered options. */
++     *  to the default value defined in the registered options.
++     *  For string options (which are not restricted to a set of possible values)
++     *  it is also possible to ask for the value in its original form.
++     *  By default the option value is returned in lowercase form.
++     *  */
+     //@{
+     bool GetStringValue(const std::string& tag, std::string& value,
+-                        const std::string& prefix) const;
++                        const std::string& prefix, bool original_case=false) const;
+     bool GetEnumValue(const std::string& tag, Index& value,
+                       const std::string& prefix) const;
+     bool GetBoolValue(const std::string& tag, bool& value,
+@@ -257,18 +265,21 @@
+     /** Journalist for writing error messages, etc. */
+     SmartPtr<Journalist> jnlst_;
+ 
+-    /** auxilliary method for converting sting to all lower-case
++    /** auxilliary method for converting string to all lower-case
+      *  letters */
+-    const std::string& lowercase(const std::string tag) const;
++    static const std::string& lowercase(const std::string tag);
+ 
+     /** auxilliary method for finding the value for a tag in the
+      *  options list.  This method first looks for the concatenated
+      *  string prefix+tag (if prefix is not ""), and if this is not
+      *  found, it looks for tag.  The return value is true iff
+      *  prefix+tag or tag is found.  In that case, the corresponding
+-     *  string value is copied into value. */
++     *  string value is copied into value.
++     *  Depending on the optional argument original_case, the value
++     *  is transformed to lowercase (default) or kept in its original
++     *  form. */
+     bool find_tag(const std::string& tag, const std::string& prefix,
+-                  std::string& value) const;
++                  std::string& value, bool original_case=false) const;
+ 
+     /** tells whether or not we can clobber a particular option.
+      *  returns true if the option does not already exist, or if
+@@ -281,7 +292,7 @@
+     bool readnexttoken(std::istream& is, std::string& token);
+ 
+     /** auxilliary string set by lowercase method */
+-    mutable std::string lowercase_buffer_;
++    static std::string lowercase_buffer_;
+   };
+ 
+ } // namespace Ipopt
