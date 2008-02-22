@@ -1,4 +1,4 @@
-// Copyright (C) 2008
+// Copyright (C) 2008 GAMS Development and others
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -201,7 +201,7 @@ int main (int argc, const char *argv[]) {
   	if (!prob->gms.nbin && !prob->gms.numint) {
   		scipret = setupLPParameters(prob, lpi);
     	checkScipReturn(prob, scipret);
-    	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nStarting LP solve...\n");
+    	smagStdOutputPrint(prob, SMAG_LOGMASK, "Starting LP solve...\n");
   	} else {
     	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nSolving LP with fixed discrete variables...\n");
   	}
@@ -242,6 +242,15 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 	SCIP_CALL( SCIPcreateProb(scip, "gamsmodel", NULL, NULL, NULL, NULL, NULL, NULL) );
 	
 	vars=new SCIP_VAR*[smagColCount(prob)];
+	
+	double minprior,maxprior;
+	if (prob->gms.priots && smagColCount(prob)>0) { // compute range of given priorities
+		minprior=prob->colPriority[0];
+		maxprior=prob->colPriority[0];
+		for (int i=0; i<smagColCount(prob); ++i)
+			if (prob->colPriority[i]<minprior) minprior=prob->colPriority[i];
+			else if (prob->colPriority[i]>maxprior) maxprior=prob->colPriority[i];
+	}
 
 	smagObjGradRec_t* og = prob->objGrad;
 	for (int i=0; i<smagColCount(prob); ++i) {
@@ -270,9 +279,15 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 		//TODO: variable names
 		SCIP_CALL( SCIPcreateVar(scip, vars+i, NULL /*varname*/, prob->colLB[i], prob->colUB[i], obj_coeff, vartype, TRUE, FALSE, NULL, NULL, NULL, NULL) );
 		SCIP_CALL( SCIPaddVar(scip, vars[i]) );
+
+		if (prob->gms.priots && minprior<maxprior) {
+			// in GAMS: higher priorities are given by smaller .prior values
+			// in SCIP: variables with higher branch priority are always preferred to variables with lower priority in selection of branching variable
+			// thus, we scale the values from GAMS to lie between 0 (lowest prior) and 1000 (highest prior) 
+			int branchpriority = (int)(1000./(maxprior-minprior)*(maxprior-prob->colPriority[i]));		
+			SCIP_CALL( SCIPchgVarBranchPriority(scip, vars[i], branchpriority) );
+		}
 	}
-	
-	//TODO: priorities
 	
 	// overestimate on max. nr. of nonzero in a row (prob->gms.maxcol does not seem to work)
 	SCIP_VAR** con_vars=new SCIP_VAR*[smagColCount(prob)];

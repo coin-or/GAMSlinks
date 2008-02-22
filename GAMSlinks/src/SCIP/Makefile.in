@@ -54,13 +54,10 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = GamsScip$(EXEEXT)
-@COIN_BUILD_SCIP_TRUE@am__append_1 = $(SCIPOBJDIR)/libcoinscip.la
-@COIN_BUILD_SCIP_TRUE@am__append_2 = $(SCIPOBJDIR)/libcoinscip.la
-@COIN_BUILD_SCIP_FALSE@am__append_3 = $(SCIPLIB)
 DIST_COMMON = $(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_4 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_5 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_1 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
 subdir = src/SCIP
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_scip.m4 \
@@ -75,10 +72,7 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_GamsScip_OBJECTS = GamsScip.$(OBJEXT)
 GamsScip_OBJECTS = $(am_GamsScip_OBJECTS)
-@COIN_BUILD_SCIP_TRUE@am__DEPENDENCIES_1 =  \
-@COIN_BUILD_SCIP_TRUE@	$(SCIPOBJDIR)/libcoinscip.la
-am__DEPENDENCIES_2 =
-@COIN_BUILD_SCIP_FALSE@am__DEPENDENCIES_3 = $(am__DEPENDENCIES_2)
+am__DEPENDENCIES_1 =
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -362,7 +356,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmssc_nt.cmd gmssc_us.run install/gmssc_nt.dat \
-	install/gmssc_un.dat $(am__append_4)
+	install/gmssc_un.dat $(am__append_1)
 GamsScip_SOURCES = GamsScip.cpp
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
@@ -373,15 +367,26 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(CLPOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(SCIPINCDIR)`
 
-GamsScip_LDADD = ../GamsIO/libSmagIO.la $(CLPOBJDIR)/src/libClp.la \
-	$(COINUTILSOBJDIR)/src/libCoinUtils.la $(am__append_1) \
-	$(am__append_3)
-GamsScip_DEPENDENCIES = $(COINUTILSOBJDIR)/src/libCoinUtils.la \
-	$(CLPOBJDIR)/src/libClp.la ../GamsIO/libSmagIO.la $(SMAG_LIBS) \
-	$(am__append_2)
+@COIN_BUILD_SCIP_FALSE@GamsScip_LDADD = $(SCIPLIB) \
+@COIN_BUILD_SCIP_FALSE@	../GamsIO/libSmagIO.la \
+@COIN_BUILD_SCIP_FALSE@	$(CLPOBJDIR)/src/libClp.la \
+@COIN_BUILD_SCIP_FALSE@	$(COINUTILSOBJDIR)/src/libCoinUtils.la
+@COIN_BUILD_SCIP_TRUE@GamsScip_LDADD = $(SCIPOBJDIR)/libcoinscip.la \
+@COIN_BUILD_SCIP_TRUE@	../GamsIO/libSmagIO.la \
+@COIN_BUILD_SCIP_TRUE@	$(CLPOBJDIR)/src/libClp.la \
+@COIN_BUILD_SCIP_TRUE@	$(COINUTILSOBJDIR)/src/libCoinUtils.la
+@COIN_BUILD_SCIP_FALSE@GamsScip_DEPENDENCIES = ../GamsIO/libSmagIO.la \
+@COIN_BUILD_SCIP_FALSE@	$(SMAG_LIBS) \
+@COIN_BUILD_SCIP_FALSE@	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
+@COIN_BUILD_SCIP_FALSE@	$(CLPOBJDIR)/src/libClp.la
+@COIN_BUILD_SCIP_TRUE@GamsScip_DEPENDENCIES =  \
+@COIN_BUILD_SCIP_TRUE@	$(SCIPOBJDIR)/libcoinscip.la \
+@COIN_BUILD_SCIP_TRUE@	../GamsIO/libSmagIO.la $(SMAG_LIBS) \
+@COIN_BUILD_SCIP_TRUE@	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
+@COIN_BUILD_SCIP_TRUE@	$(CLPOBJDIR)/src/libClp.la
 GamsScip_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
-DISTCLEANFILES = gmssc_.zip $(am__append_5) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = gmssc_.zip $(am__append_2) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: all-am

@@ -22,22 +22,23 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(CLPOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(SCIPINCDIR)`
 
-GamsScip_LDADD = \
+if COIN_BUILD_SCIP
+GamsScip_LDADD = $(SCIPOBJDIR)/libcoinscip.la
+GamsScip_DEPENDENCIES = $(SCIPOBJDIR)/libcoinscip.la
+else
+GamsScip_LDADD = $(SCIPLIB)
+GamsScip_DEPENDENCIES =
+endif 
+
+GamsScip_LDADD += \
  ../GamsIO/libSmagIO.la \
  $(CLPOBJDIR)/src/libClp.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la
 
-GamsScip_DEPENDENCIES = \
+GamsScip_DEPENDENCIES += \
+ ../GamsIO/libSmagIO.la $(SMAG_LIBS) \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- $(CLPOBJDIR)/src/libClp.la \
- ../GamsIO/libSmagIO.la $(SMAG_LIBS)
-
-if COIN_BUILD_SCIP
-GamsScip_LDADD += $(SCIPOBJDIR)/libcoinscip.la
-GamsScip_DEPENDENCIES += $(SCIPOBJDIR)/libcoinscip.la
-else
-GamsScip_LDADD += $(SCIPLIB)
-endif 
+ $(CLPOBJDIR)/src/libClp.la
 
 LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
 
