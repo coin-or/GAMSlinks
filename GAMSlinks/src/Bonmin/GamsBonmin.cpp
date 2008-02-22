@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development 2007
+// Copyright (C) 2007-2008 GAMS Development and others
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -34,12 +34,8 @@
 #include "SmagNLP.hpp"
 
 extern "C" {
-#ifdef COIN_HAS_LSLHSL
 #include "HSLLoader.h"
-#endif
-#ifdef COIN_HAS_LSLPARDISO
 #include "PardisoLoader.h"
-#endif
 }
 
 using namespace Ipopt;
@@ -90,16 +86,12 @@ int main (int argc, char* argv[]) {
 	else
 		solve_nlp(prob);
 
-#ifdef COIN_HAS_LSLHSL
   if (LSL_isHSLLoaded())
   	if (LSL_unloadHSL()!=0)
   		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to unload HSL library.\n");
-#endif
-#ifdef COIN_HAS_LSLPARDISO
   if (LSL_isPardisoLoaded())
   	if (LSL_unloadPardisoLib()!=0)
   		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to unload Pardiso library.\n");
-#endif
 	
 	smagStdOutputStop(prob, buffer, sizeof(buffer));
 	smagClose(prob);
@@ -130,16 +122,7 @@ void solve_minlp(smagHandle_t prob) {
 	bonmin_setup.setOptionsAndJournalist(roptions, options, journalist);
   bonmin_setup.registerOptions();
 
-#if defined(COIN_HAS_LSLHSL) || defined(COIN_HAS_LSLPARDISO)
-  // if Ipopt was linked to the LSL, then the default linear solver in Ipopt might require a dynamic library load  
-	// we want to avoid that this is the default behaviour
-	// thus, we set the default for the linear solver to MUMPS, by what we assume that Ipopt was linked against Mumps
-  // the default for the linear_system_scaling we leave at MC19, by what we assume that its availablity is implied by the availability of MA27 (of course user can change)
-  bonmin_setup.options()->SetStringValue("linear_solver", "mumps");
-	//	app->Options()->SetStringValue("linear_system_scaling", "none");
-#endif
-#if defined(COIN_HAS_LSLHSL)
-	// add option to specify path to hsl library; currently only working for lowercase paths
+	// add option to specify path to hsl library
   bonmin_setup.roptions()->AddStringOption1("hsl_library", // name
 			"path and filename of HSL library for dynamic load",  // short description
 			"", // default value 
@@ -148,9 +131,7 @@ void solve_minlp(smagHandle_t prob) {
 			"Specify the path to a library that contains HSL routines and can be load via dynamic linking."
 			"Note, that you still need to specify to use the corresponding routines (ma27, ...) by setting the corresponding options (linear_solver, ...)."
 	);
-#endif
-#if defined(COIN_HAS_LSLPARDISO)
-	// add option to specify path to pardiso library; currently only working for lowercase paths
+	// add option to specify path to pardiso library
   bonmin_setup.roptions()->AddStringOption1("pardiso_library", // name
 			"path and filename of Pardiso library for dynamic load",  // short description
 			"", // default value 
@@ -159,7 +140,6 @@ void solve_minlp(smagHandle_t prob) {
 			"Specify the path to a Pardiso library that and can be load via dynamic linking."
 			"Note, that you still need to specify to pardiso as linear_solver."
 	);
-#endif
   
 	// Change some options
 	bonmin_setup.options()->SetNumericValue("bound_relax_factor", 0);
@@ -197,12 +177,10 @@ void solve_minlp(smagHandle_t prob) {
 		return;
 	}
 
-#ifdef COIN_HAS_LSLHSL
-	std::string hsllib;
-	bonmin_setup.options()->GetStringValue("hsl_library", hsllib, "" /*, true*/);
-	if (hsllib!="") {
+	std::string libpath;
+	if (bonmin_setup.options()->GetStringValue("hsl_library", libpath, "")) {
 		char buffer[512];
-		if (LSL_loadHSL(hsllib.c_str(), buffer, 512)!=0) {
+		if (LSL_loadHSL(libpath.c_str(), buffer, 512)!=0) {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to load HSL library at user specified path: ");
 			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "\n");
@@ -210,13 +188,9 @@ void solve_minlp(smagHandle_t prob) {
 		  return;
 		}
 	}
-#endif
-#ifdef COIN_HAS_LSLPARDISO
-	std::string pardisolib;
-	bonmin_setup.options()->GetStringValue("pardiso_library", pardisolib, "" /*, true*/);
-	if (pardisolib!="") {
+	if (bonmin_setup.options()->GetStringValue("pardiso_library", libpath, "")) {
 		char buffer[512];
-		if (LSL_loadPardisoLib(pardisolib.c_str(), buffer, 512)!=0) {
+		if (LSL_loadPardisoLib(libpath.c_str(), buffer, 512)!=0) {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to load Pardiso library at user specified path: ");
 			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "\n");
@@ -224,7 +198,6 @@ void solve_minlp(smagHandle_t prob) {
 		  return;
 		}
 	}
-#endif
 
 	bonmin_setup.options()->GetNumericValue("diverging_iterates_tol", mysmagminlp->div_iter_tol, "");
 //	// or should we also check the tolerance for acceptable points?
@@ -430,17 +403,7 @@ void solve_nlp(smagHandle_t prob) {
 
 //	OsiTMINLPInterface::registerOptions(app->RegOptions());
 
-#if defined(COIN_HAS_LSLHSL) || defined(COIN_HAS_LSLPARDISO)
-  // if Ipopt was linked to the LSL, then the default linear solver in Ipopt might require a dynamic library load  
-	// we want to avoid that this is the default behaviour
-	// thus, we set the default for the linear solver to MUMPS, by what we assume that Ipopt was linked against Mumps
-  // the default for the linear_system_scaling we leave at MC19, by what we assume that its availablity is implied by the availability of MA27 (of course user can change)
-	app->Options()->SetStringValue("linear_solver", "mumps");
-	//	app->Options()->SetStringValue("linear_system_scaling", "none");
-#endif
-#if defined(COIN_HAS_LSLHSL)
-	// add option to specify path to hsl library; currently only working for lowercase paths
-	// note that we have to use roptions here and not app->RegOptions() 
+	// add option to specify path to hsl library
 	roptions->AddStringOption1("hsl_library", // name
 			"path and filename of HSL library for dynamic load",  // short description
 			"", // default value 
@@ -449,11 +412,8 @@ void solve_nlp(smagHandle_t prob) {
 			"Specify the path to a library that contains HSL routines and can be load via dynamic linking."
 			"Note, that you still need to specify to use the corresponding routines (ma27, ...) by setting the corresponding options (linear_solver, ...)."
 	);
-#endif
-#if defined(COIN_HAS_LSLPARDISO)
-	// add option to specify path to pardiso library; currently only working for lowercase paths
-	// note that we have to use roptions here and not app->RegOptions() 
-	roptions->AddStringOption1("pardiso_library", // name
+	// add option to specify path to pardiso library
+  roptions->AddStringOption1("pardiso_library", // name
 			"path and filename of Pardiso library for dynamic load",  // short description
 			"", // default value 
 			"*", // setting1
@@ -461,8 +421,6 @@ void solve_nlp(smagHandle_t prob) {
 			"Specify the path to a Pardiso library that and can be load via dynamic linking."
 			"Note, that you still need to specify to pardiso as linear_solver."
 	);
-#endif
-
 
 	// Change some options
   app->Options()->SetNumericValue("bound_relax_factor", 0);
@@ -478,12 +436,10 @@ void solve_nlp(smagHandle_t prob) {
 	else
 		app->Initialize("");
 
-#ifdef COIN_HAS_LSLHSL
-	std::string hsllib;
-	app->Options()->GetStringValue("hsl_library", hsllib, "" /*, true*/);
-	if (hsllib!="") {
+	std::string libpath;
+	if (app->Options()->GetStringValue("hsl_library", libpath, "")) {
 		char buffer[512];
-		if (LSL_loadHSL(hsllib.c_str(), buffer, 512)!=0) {
+		if (LSL_loadHSL(libpath.c_str(), buffer, 512)!=0) {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to load HSL library at user specified path: ");
 			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "\n");
@@ -491,13 +447,9 @@ void solve_nlp(smagHandle_t prob) {
 		  return;
 		}
 	}
-#endif
-#ifdef COIN_HAS_LSLPARDISO
-	std::string pardisolib;
-	app->Options()->GetStringValue("pardiso_library", pardisolib, "" /*, true*/);
-	if (pardisolib!="") {
+	if (app->Options()->GetStringValue("pardiso_library", libpath, "")) {
 		char buffer[512];
-		if (LSL_loadPardisoLib(pardisolib.c_str(), buffer, 512)!=0) {
+		if (LSL_loadPardisoLib(libpath.c_str(), buffer, 512)!=0) {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to load Pardiso library at user specified path: ");
 			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "\n");
@@ -505,7 +457,6 @@ void solve_nlp(smagHandle_t prob) {
 		  return;
 		}
 	}
-#endif
 
 	app->Options()->GetNumericValue("diverging_iterates_tol", mysmagnlp->div_iter_tol, "");
 	// or should we also check the tolerance for acceptable points?

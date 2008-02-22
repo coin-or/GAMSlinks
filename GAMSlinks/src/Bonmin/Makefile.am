@@ -1,4 +1,4 @@
-# Copyright (C) GAMS Development 2007
+# Copyright (C) 2007-2008 GAMS Development and others
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -41,15 +41,12 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Algorithm` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/CGPenalty` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/LinearSolverLoader` \
  -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms` \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Interfaces` \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/CbcBonmin` \
  -I`$(CYGPATH_W) $(BONMINOBJDIR)/inc`
-
-if COIN_HAS_LSL
-  AM_CPPFLAGS += -I`$(CYGPATH_W) $(srcdir)/../../../LinearSolverLoader/src`
-endif
 
 GamsBonmin_LDADD = ../GamsIO/libSmagIO.la \
  $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \

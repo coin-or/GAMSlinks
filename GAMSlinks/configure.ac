@@ -423,27 +423,6 @@ AC_ARG_ENABLE(os-solver,
 AM_CONDITIONAL(COIN_OS_SOLVER, [test x"$os_solver" = xyes])
 AC_MSG_RESULT([$os_solver])
 
-######################
-# LinearSolverLoader #
-######################
-
-linearsolverloader=no
-AC_ARG_ENABLE(hslloader,
-  AC_HELP_STRING([--enable-hslloader], [whether Ipopt will be linked to a LinearSolverLoader library containing an HSL loader (default=no)]),
-  [hslloader=yes
-   linearsolverloader=yes
-   AC_DEFINE([COIN_HAS_LSLHSL], [1], [If defined, then Ipopt will link against a LinearSolverLibrary with an HSL loader])],
-  [hslloader=no])
-
-AC_ARG_ENABLE(pardisoloader,
-  AC_HELP_STRING([--enable-pardisoloader], [whether Ipopt will be linked to a LinearSolverLoader library containing a Pardiso lib loader (default=no)]),
-  [pardisoloader=yes
-   linearsolverloader=yes
-   AC_DEFINE([COIN_HAS_LSLPARDISO], [1], [If defined, then Ipopt will link against a LinearSolverLibrary with a Pardiso lib loader])],
-  [pardisoloader=no])
-
-AM_CONDITIONAL(COIN_HAS_LSL, [test $linearsolverloader = yes]) 
-
 #################################################################################
 # Check which OSI solvers we build and which interfaces we can (and want) build #
 #################################################################################

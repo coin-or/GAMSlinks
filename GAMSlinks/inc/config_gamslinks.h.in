@@ -39,14 +39,6 @@
 /* Define to 1 if the Ipopt package is used */
 #undef COIN_HAS_IPOPT
 
-/* If defined, then Ipopt will link against a LinearSolverLibrary with an HSL
-   loader */
-#undef COIN_HAS_LSLHSL
-
-/* If defined, then Ipopt will link against a LinearSolverLibrary with a
-   Pardiso lib loader */
-#undef COIN_HAS_LSLPARDISO
-
 /* Define to 1 if the OS package is used */
 #undef COIN_HAS_OS
 

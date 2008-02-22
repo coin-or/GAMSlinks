@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development 2007
+// Copyright (C) 2007-2008 GAMS Development and others
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -23,12 +23,8 @@
 #include "SmagJournal.hpp"
 
 extern "C" {
-#ifdef COIN_HAS_LSLHSL
 #include "HSLLoader.h"
-#endif
-#ifdef COIN_HAS_LSLPARDISO
 #include "PardisoLoader.h"
-#endif
 }
 
 using namespace Ipopt;
@@ -92,16 +88,7 @@ int main (int argc, char* argv[]) {
 	if ((prob->modType==procQCP || prob->modType==procRMIQCP) && prob->rowCountNL==0)
 		app->Options()->SetStringValue("hessian_constant", "yes"); 
 
-#if defined(COIN_HAS_LSLHSL) || defined(COIN_HAS_LSLPARDISO)
-  // if Ipopt was linked to the LSL, then the default linear solver in Ipopt might require a dynamic library load  
-	// we want to avoid that this is the default behaviour
-	// thus, we set the default for the linear solver to MUMPS, by what we assume that Ipopt was linked against Mumps
-  // the default for the linear_system_scaling we leave at MC19, by what we assume that its availablity is implied by the availability of MA27 (of course user can change)
-	app->Options()->SetStringValue("linear_solver", "mumps");
-	//	app->Options()->SetStringValue("linear_system_scaling", "none");
-#endif
-#if defined(COIN_HAS_LSLHSL)
-	// add option to specify path to hsl library; currently only working for lowercase paths
+	// add option to specify path to hsl library
 	app->RegOptions()->AddStringOption1("hsl_library", // name
 			"path and filename of HSL library for dynamic load",  // short description
 			"", // default value 
@@ -110,9 +97,7 @@ int main (int argc, char* argv[]) {
 			"Specify the path to a library that contains HSL routines and can be load via dynamic linking."
 			"Note, that you still need to specify to use the corresponding routines (ma27, ...) by setting the corresponding options (linear_solver, ...)."
 	);
-#endif
-#if defined(COIN_HAS_LSLPARDISO)
-	// add option to specify path to pardiso library; currently only working for lowercase paths
+	// add option to specify path to pardiso library
 	app->RegOptions()->AddStringOption1("pardiso_library", // name
 			"path and filename of Pardiso library for dynamic load",  // short description
 			"", // default value 
@@ -121,7 +106,6 @@ int main (int argc, char* argv[]) {
 			"Specify the path to a Pardiso library that and can be load via dynamic linking."
 			"Note, that you still need to specify to pardiso as linear_solver."
 	);
-#endif
 	
 	if (prob->gms.useopt)
 		app->Initialize(prob->gms.optFileName);
@@ -142,11 +126,9 @@ int main (int argc, char* argv[]) {
 	  }
 	}
 
-#ifdef COIN_HAS_LSLHSL
-	std::string hsllib;
-	app->Options()->GetStringValue("hsl_library", hsllib, "" /*, true */);
-	if (hsllib!="") {
-		if (LSL_loadHSL(hsllib.c_str(), buffer, 512)!=0) {
+	std::string libpath;
+	if (app->Options()->GetStringValue("hsl_library", libpath, "")) {
+		if (LSL_loadHSL(libpath.c_str(), buffer, 512)!=0) {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to load HSL library at user specified path: ");
 			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "\n");
@@ -154,12 +136,8 @@ int main (int argc, char* argv[]) {
 		  return EXIT_SUCCESS;
 		}
 	}
-#endif
-#ifdef COIN_HAS_LSLPARDISO
-	std::string pardisolib;
-	app->Options()->GetStringValue("pardiso_library", pardisolib, ""/*, true*/);
-	if (pardisolib!="") {
-		if (LSL_loadPardisoLib(pardisolib.c_str(), buffer, 512)!=0) {
+	if (app->Options()->GetStringValue("pardiso_library", libpath, "")) {
+		if (LSL_loadPardisoLib(libpath.c_str(), buffer, 512)!=0) {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to load Pardiso library at user specified path: ");
 			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "\n");
@@ -167,7 +145,6 @@ int main (int argc, char* argv[]) {
 		  return EXIT_SUCCESS;
 		}
 	}
-#endif
 	
   // Ask Ipopt to solve the problem
   ApplicationReturnStatus status = app->OptimizeTNLP(smagnlp);
@@ -213,16 +190,16 @@ int main (int argc, char* argv[]) {
 			break;
 	}
 
-#ifdef COIN_HAS_LSLHSL
+//#ifdef COIN_HAS_LSLHSL
   if (LSL_isHSLLoaded())
   	if (LSL_unloadHSL()!=0)
   		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to unload HSL library.\n");
-#endif
-#ifdef COIN_HAS_LSLPARDISO
+//#endif
+//#ifdef COIN_HAS_LSLPARDISO
   if (LSL_isPardisoLoaded())
   	if (LSL_unloadPardisoLib()!=0)
   		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to unload Pardiso library.\n");
-#endif
+//#endif
 	
 	smagStdOutputStop(prob, buffer, sizeof(buffer));
 	smagClose(prob);
