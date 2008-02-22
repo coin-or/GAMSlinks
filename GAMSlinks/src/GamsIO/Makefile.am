@@ -19,11 +19,9 @@ libGamsIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la 
   $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
 
 #TODO: put also GamsBCH and GamsDictionary into SmagIO lib, once we got required gams libs separated from ciolib
+#we do not add SmagJournal to SmagIO to avoid dependence on Ipopt
 libSmagIO_la_SOURCES = \
   GamsOptions.cpp GamsMessageHandler.cpp SmagExtra.c GamsHandlerSmag.cpp
-if COIN_HAS_IPOPT
-libSmagIO_la_SOURCES += SmagJournal.cpp
-endif
 libSmagIO_la_LDFLAGS =
 libSmagIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la
 

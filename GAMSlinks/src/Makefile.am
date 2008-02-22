@@ -31,6 +31,9 @@ endif
 if GAMSLINKS_BUILD_OS
   SUBDIRS += OS
 endif
+if GAMSLINKS_BUILD_SCIP
+  SUBDIRS += SCIP
+endif
 
 EXTRA_DIST =
 

@@ -148,6 +148,74 @@ LIBS_without_ADDLIBS="$LIBS"
 
 AC_COIN_HAS_GLPK(Glpk)
 
+################
+# SCIP LIBRARY #
+################
+
+AC_DEFUN([AC_COIN_HAS_SCIP],
+[
+if test "$PACKAGE_NAME" = ThirdPartyScip; then
+  coin_scipobjdir=.
+else
+  coin_scipobjdir=../ThirdParty/SCIP
+fi
+coin_scipsrcdir=$abs_source_dir/$coin_scipobjdir
+
+use_thirdpartyscip=no
+
+# Check for the requested component. If the user specified an external SCIP
+# library don't force a ThirdParty build, let the error propagate.
+
+AC_COIN_HAS_USER_LIBRARY([Scip],[SCIP],[scip.h],[_SCIPcreate SCIPcreate])
+if test x"$coin_has_scip" = xfalse && test x"$SCIPLIB" = x ; then
+   use_thirdpartyscip=try
+fi
+
+# If the user has supplied an external library, use it.
+# Otherwise, consider a build in ThirdParty/SCIP.
+
+if test x"$use_thirdpartyscip" = xtry ; then
+  MAKEOKFILE=.MakeOk
+  # Check if the SCIP's ThirdParty project has been configured
+  if test "$PACKAGE_NAME" != ThirdPartyScip; then
+    if test -r $coin_scipobjdir/.MakeOk; then
+      use_thirdpartyscip=build
+    else
+      use_thirdpartyscip=no
+    fi
+  else
+    use_thirdpartyscip=build
+  fi
+
+# If we're building, set the library and include directory variables, create a
+# preprocessor symbol, define a variable that says we're using SCIP, and
+# another to indicate a link check is a bad idea (hard to do before the library
+# exists).
+
+  if test x"$use_thirdpartyscip" = xbuild ; then
+    SCIPINCDIR="$coin_scipsrcdir/scip/src"
+    SCIPOBJDIR="$coin_scipobjdir"
+    AC_SUBST(SCIPINCDIR)
+    AC_SUBST(SCIPOBJDIR)
+    AC_DEFINE(COIN_HAS_SCIP,[1],[Define to 1 if $1 package is available])
+    coin_has_scip=true
+    scip_libcheck=no
+    AC_MSG_NOTICE([Using SCIP in ThirdParty/SCIP])
+  fi
+fi
+
+# Define the necessary automake conditionals.
+
+AM_CONDITIONAL(COIN_HAS_SCIP, [test x"coin_has_scip" = xtrue])
+AM_CONDITIONAL(COIN_BUILD_SCIP, [test x"$use_thirdpartyscip" = xbuild])
+
+]) # AC_COIN_HAS_SCIP
+
+
+## Check if SCIP is already provided by user
+AC_COIN_HAS_SCIP
+
+
 ###############
 # GAMS SYSTEM #
 ###############
@@ -483,6 +551,13 @@ else
 fi
 AM_CONDITIONAL([GAMSLINKS_BUILD_OS], [test $gamslinks_build_os = 1])
 
+if test $gamslinks_build_gamsio = 1 && test "x$coin_has_scip" = xtrue && test $coin_build_clp = 1 ; then
+  gamslinks_build_scip=1
+else
+  gamslinks_build_scip=0
+fi
+AC_SUBST(gamslinks_build_scip)
+AM_CONDITIONAL([GAMSLINKS_BUILD_SCIP],[test $gamslinks_build_scip = 1])
 
 ##############################################################################
 #                VPATH links for GAMS installation files                     #
@@ -519,6 +594,10 @@ AC_COIN_VPATH_LINK(src/OS/gmsos_nt.cmd)
 AC_COIN_VPATH_LINK(src/OS/install/gmsos_un.dat)
 AC_COIN_VPATH_LINK(src/OS/install/gmsos_nt.dat)
 AC_COIN_VPATH_LINK(src/OS/optos.def)
+AC_COIN_VPATH_LINK(src/SCIP/gmssc_us.run)
+AC_COIN_VPATH_LINK(src/SCIP/gmssc_nt.cmd)
+AC_COIN_VPATH_LINK(src/SCIP/install/gmssc_un.dat)
+AC_COIN_VPATH_LINK(src/SCIP/install/gmssc_nt.dat)
 
 ############
 # END PART #
@@ -536,6 +615,7 @@ AC_CONFIG_FILES([Makefile
                  src/Ipopt/Makefile
                  src/Bonmin/Makefile
                  src/OS/Makefile
+                 src/SCIP/Makefile
                  test/Makefile test/run_tests
                 ])
 

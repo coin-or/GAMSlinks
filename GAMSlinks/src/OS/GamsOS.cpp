@@ -62,7 +62,7 @@ int main (int argc, char* argv[]) {
 #endif
   smagHandle_t prob;
 
-  if (argc < 2) {
+  if (argc == 1) {
   	fprintf(stderr, "usage: %s <control_file_name>\nexiting ...\n", argv[0]);
     return EXIT_FAILURE;
   }

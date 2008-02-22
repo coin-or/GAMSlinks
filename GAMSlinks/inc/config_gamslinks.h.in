@@ -53,6 +53,9 @@
 /* Define to 1 if the Osi package is used */
 #undef COIN_HAS_OSI
 
+/* Define to 1 if package is available */
+#undef COIN_HAS_SCIP
+
 /* Define to 1 if the SYMPHONY package is used */
 #undef COIN_HAS_SYMPHONY
 

@@ -55,8 +55,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@COIN_HAS_IPOPT_TRUE@am__append_1 = SmagJournal.cpp
-@COIN_HAS_IPOPT_TRUE@am__append_2 = \
+@COIN_HAS_IPOPT_TRUE@am__append_1 = \
 @COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
 @COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` \
 @COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \
@@ -67,8 +66,8 @@ host_triplet = @host@
 DIST_COMMON = $(includecoin_HEADERS) \
 	$(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_3 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_4 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_2 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_3 = .Externals-stamp
 subdir = src/GamsIO
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -96,11 +95,8 @@ am_libGamsIO_la_OBJECTS = GamsModel.lo GamsFinalize.lo \
 libGamsIO_la_OBJECTS = $(am_libGamsIO_la_OBJECTS)
 libSmagIO_la_DEPENDENCIES =  \
 	$(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la
-am__libSmagIO_la_SOURCES_DIST = GamsOptions.cpp GamsMessageHandler.cpp \
-	SmagExtra.c GamsHandlerSmag.cpp SmagJournal.cpp
-@COIN_HAS_IPOPT_TRUE@am__objects_1 = SmagJournal.lo
 am_libSmagIO_la_OBJECTS = GamsOptions.lo GamsMessageHandler.lo \
-	SmagExtra.lo GamsHandlerSmag.lo $(am__objects_1)
+	SmagExtra.lo GamsHandlerSmag.lo
 libSmagIO_la_OBJECTS = $(am_libSmagIO_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -121,8 +117,7 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libGamsIO_la_SOURCES) $(libSmagIO_la_SOURCES)
-DIST_SOURCES = $(libGamsIO_la_SOURCES) \
-	$(am__libSmagIO_la_SOURCES_DIST)
+DIST_SOURCES = $(libGamsIO_la_SOURCES) $(libSmagIO_la_SOURCES)
 includecoinHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(includecoin_HEADERS)
 ETAGS = etags
@@ -167,6 +162,8 @@ COINUTILSOBJDIR = @COINUTILSOBJDIR@
 COINUTILSSRCDIR = @COINUTILSSRCDIR@
 COIN_BUILD_GLPK_FALSE = @COIN_BUILD_GLPK_FALSE@
 COIN_BUILD_GLPK_TRUE = @COIN_BUILD_GLPK_TRUE@
+COIN_BUILD_SCIP_FALSE = @COIN_BUILD_SCIP_FALSE@
+COIN_BUILD_SCIP_TRUE = @COIN_BUILD_SCIP_TRUE@
 COIN_HAS_BONMIN_FALSE = @COIN_HAS_BONMIN_FALSE@
 COIN_HAS_BONMIN_TRUE = @COIN_HAS_BONMIN_TRUE@
 COIN_HAS_CBC_FALSE = @COIN_HAS_CBC_FALSE@
@@ -197,6 +194,8 @@ COIN_HAS_OSI_FALSE = @COIN_HAS_OSI_FALSE@
 COIN_HAS_OSI_TRUE = @COIN_HAS_OSI_TRUE@
 COIN_HAS_OS_FALSE = @COIN_HAS_OS_FALSE@
 COIN_HAS_OS_TRUE = @COIN_HAS_OS_TRUE@
+COIN_HAS_SCIP_FALSE = @COIN_HAS_SCIP_FALSE@
+COIN_HAS_SCIP_TRUE = @COIN_HAS_SCIP_TRUE@
 COIN_HAS_SYMPHONY_FALSE = @COIN_HAS_SYMPHONY_FALSE@
 COIN_HAS_SYMPHONY_TRUE = @COIN_HAS_SYMPHONY_TRUE@
 COIN_HAS_VOL_FALSE = @COIN_HAS_VOL_FALSE@
@@ -259,6 +258,8 @@ GAMSLINKS_BUILD_OSI_FALSE = @GAMSLINKS_BUILD_OSI_FALSE@
 GAMSLINKS_BUILD_OSI_TRUE = @GAMSLINKS_BUILD_OSI_TRUE@
 GAMSLINKS_BUILD_OS_FALSE = @GAMSLINKS_BUILD_OS_FALSE@
 GAMSLINKS_BUILD_OS_TRUE = @GAMSLINKS_BUILD_OS_TRUE@
+GAMSLINKS_BUILD_SCIP_FALSE = @GAMSLINKS_BUILD_SCIP_FALSE@
+GAMSLINKS_BUILD_SCIP_TRUE = @GAMSLINKS_BUILD_SCIP_TRUE@
 GAMS_PATH = @GAMS_PATH@
 GLPKINCDIR = @GLPKINCDIR@
 GLPKLIB = @GLPKLIB@
@@ -306,6 +307,9 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
 RPATH_FLAGS = @RPATH_FLAGS@
+SCIPINCDIR = @SCIPINCDIR@
+SCIPLIB = @SCIPLIB@
+SCIPOBJDIR = @SCIPOBJDIR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SMAG_LIBS = @SMAG_LIBS@
@@ -359,6 +363,7 @@ gamslinks_build_cbc = @gamslinks_build_cbc@
 gamslinks_build_glpk = @gamslinks_build_glpk@
 gamslinks_build_ipopt = @gamslinks_build_ipopt@
 gamslinks_build_osi = @gamslinks_build_osi@
+gamslinks_build_scip = @gamslinks_build_scip@
 gamspath = @gamspath@
 have_autoconf = @have_autoconf@
 have_automake = @have_automake@
@@ -385,7 +390,7 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = $(am__append_3)
+EXTRA_DIST = $(am__append_2)
 lib_LTLIBRARIES = libGamsIO.la libSmagIO.la
 libGamsIO_la_SOURCES = \
   GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsOptions.cpp GamsDictionary.cpp GamsBCH.cpp GamsHandlerIOLib.cpp
@@ -396,8 +401,10 @@ libGamsIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la 
 
 
 #TODO: put also GamsBCH and GamsDictionary into SmagIO lib, once we got required gams libs separated from ciolib
-libSmagIO_la_SOURCES = GamsOptions.cpp GamsMessageHandler.cpp \
-	SmagExtra.c GamsHandlerSmag.cpp $(am__append_1)
+#we do not add SmagJournal to SmagIO to avoid dependence on Ipopt
+libSmagIO_la_SOURCES = \
+  GamsOptions.cpp GamsMessageHandler.cpp SmagExtra.c GamsHandlerSmag.cpp
+
 libSmagIO_la_LDFLAGS = 
 libSmagIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la
 includecoindir = $(includedir)/coin
@@ -409,7 +416,7 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) $(FORTRAN_NAMEMANGLING_CFLAG) \
 	-I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) \
 	$(COINUTILSSRCDIR)/src` -I`$(CYGPATH_W) \
 	$(COINUTILSOBJDIR)/inc` -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
-	-I`$(CYGPATH_W) $(OSIOBJDIR)/inc` $(am__append_2)
+	-I`$(CYGPATH_W) $(OSIOBJDIR)/inc` $(am__append_1)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
 ########################################################################
@@ -417,7 +424,7 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 ########################################################################
 
 # Files that are generated and should be cleaned with make distclean
-DISTCLEANFILES = $(am__append_4) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(am__append_3) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: all-am
@@ -500,7 +507,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsModel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOptions.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagExtra.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagJournal.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

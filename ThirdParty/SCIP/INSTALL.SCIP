@@ -1,0 +1,34 @@
+Installation of SCIP subroutines within COIN-OR.
+
+**********************************************************************
+Note: It is YOUR RESPONSIBILITY to ensure that you are entitled to
+      download and use this third party package.
+**********************************************************************
+
+You may download SCIP by following the links at
+
+http://www.zib.de
+
+and unpack it in this directory:
+
+gunzip scip-1.00.tgz
+tar xf scip-1.00.tar
+
+Then you need to rename the directory
+  scip-1.00
+into
+  scip
+.
+
+Finally you add the line
+
+#include <limits.h>
+
+at the beginning of scip/src/tclique/tclique_branch.c .
+
+To compile the GAMS/SCIP interface, you currently need to switch
+off some compiler warnings by adding
+
+ADD_CXXFLAGS="-Wno-unknown-pragmas -Wno-long-long"
+
+to your configure call.

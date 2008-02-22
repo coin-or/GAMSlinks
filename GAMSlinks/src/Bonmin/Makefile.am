@@ -11,8 +11,7 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmsbm_nt.cmd gmsbm_us.run install/gmsbm_nt.dat install/gmsbm_un.dat
 
 bin_PROGRAMS = GamsBonmin
-GamsBonmin_SOURCES = GamsBonmin.cpp \
-  SmagMINLP.cpp SmagMINLP.hpp ../Ipopt/SmagNLP.cpp
+GamsBonmin_SOURCES = GamsBonmin.cpp SmagMINLP.cpp SmagMINLP.hpp ../Ipopt/SmagNLP.cpp ../GamsIO/SmagJournal.cpp
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
