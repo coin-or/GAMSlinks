@@ -374,34 +374,34 @@ SCIP_RETCODE checkMIPsolve(smagHandle_t prob, SCIP* scip, SCIP_VAR** vars, Solve
 			break;
 		case SCIP_STATUS_USERINTERRUPT: // the user interrupted the solving process (by pressing Ctrl-C)
 			solstatus.solver_status = 8; // user interrupt
-			solstatus.model_status = nrsol ? 8 : 6; // integer solution or intermediate infeasible
+			solstatus.model_status = nrsol ? 8 : 14; // integer solution or no solution
 //			smagStdOutputPrint(prob, SMAG_LOGMASK, "User interrupt.\n");
 			break;
 		case SCIP_STATUS_NODELIMIT: // the solving process was interrupted because the node limit was reached
 		case SCIP_STATUS_STALLNODELIMIT: // the solving process was interrupted because the node limit was reached
 			solstatus.solver_status = 2; // lets call it iteration interrupt
-			solstatus.model_status = nrsol ? 8 : 6; // integer solution or intermediate infeasible
+			solstatus.model_status = nrsol ? 8 : 14; // integer solution or no solution
 //			smagStdOutputPrint(prob, SMAG_LOGMASK, "Node limit exceeded.\n");
 			break;
 		case SCIP_STATUS_TIMELIMIT: // the solving process was interrupted because the time limit was reached
 			solstatus.solver_status = 3; // resource interrupt
-			solstatus.model_status = nrsol ? 8 : 6; // integer solution or intermediate infeasible
+			solstatus.model_status = nrsol ? 8 : 14; // integer solution or no solution
 //			smagStdOutputPrint(prob, SMAG_LOGMASK, "Time limit exceeded.\n");
 			break;
 		case SCIP_STATUS_MEMLIMIT: // the solving process was interrupted because the memory limit was reached
 			solstatus.solver_status = 3; // resource interrupt
-			solstatus.model_status = nrsol ? 8 : 6; // integer solution or intermediate infeasible
+			solstatus.model_status = nrsol ? 8 : 14; // integer solution or no solution
 //			smagStdOutputPrint(prob, SMAG_LOGMASK, "Memory limit exceeded.\n");
 			break;
 		case SCIP_STATUS_GAPLIMIT: // the solving process was interrupted because the gap limit was reached
 			solstatus.solver_status = 1; // normal completion
-			solstatus.model_status = nrsol ? ((SCIPgetGap(scip)>0) ? 8 : 1) : 6;
+			solstatus.model_status = nrsol ? ((SCIPgetGap(scip)>0) ? 8 : 1) : 14;
 //			smagStdOutputPrint(prob, SMAG_LOGMASK, "Optimality gap below tolerance.\n");
 			break;
 		case SCIP_STATUS_SOLLIMIT: // the solving process was interrupted because the solution limit was reached
 		case SCIP_STATUS_BESTSOLLIMIT: // the solving process was interrupted because the solution improvement limit was reached
 			solstatus.solver_status = 3; // resource interrupt
-			solstatus.model_status = nrsol ? 8 : 6;
+			solstatus.model_status = nrsol ? 8 : 14;
 //			smagStdOutputPrint(prob, SMAG_LOGMASK, "Solutions limit exceeded.\n");
 			break;
 		case SCIP_STATUS_OPTIMAL: // the problem was solved to optimality, an optimal solution is available
