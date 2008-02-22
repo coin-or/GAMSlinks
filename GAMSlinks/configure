@@ -8,7 +8,7 @@
 # This configure script is free software; the Free Software Foundation
 # gives unlimited permission to copy, distribute and modify it.
 #
-# Copyright (C) GAMS Development 2006-2007
+# Copyright (C) 2006-2008 GAMS Development and others
 # All Rights Reserved.
 # This file is part of the open source package Coin which is distributed
 # under the Common Public License.
@@ -1281,7 +1281,7 @@ Copyright (C) 2003 Free Software Foundation, Inc.
 This configure script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it.
 
-Copyright (C) GAMS Development 2006-2007
+Copyright (C) 2006-2008 GAMS Development and others
 All Rights Reserved.
 This file is part of the open source package Coin which is distributed
 under the Common Public License.
@@ -25367,10 +25367,6 @@ fi
 # SCIP LIBRARY #
 ################
 
- # AC_COIN_HAS_SCIP
-
-
-## Check if SCIP is already provided by user
 
 if test "$PACKAGE_NAME" = ThirdPartyScip; then
   coin_scipobjdir=.
@@ -25379,11 +25375,9 @@ else
 fi
 coin_scipsrcdir=$abs_source_dir/$coin_scipobjdir
 
-use_thirdpartyscip=no
-
 # Check for the requested component. If the user specified an external SCIP
 # library don't force a ThirdParty build, let the error propagate.
-
+# this macro defined SCIPLIB, SCIPINCDIR,
 
   echo "$as_me:$LINENO: checking if user provides library for Scip" >&5
 echo $ECHO_N "checking if user provides library for Scip... $ECHO_C" >&6
@@ -25441,12 +25435,12 @@ echo "${ECHO_T}no" >&6
 # If argument 3 (file) is given, check for the file. Typically this will be a
 # header file, but that's not assumed.
 
-    if test -r $SCIPINCDIR/scip.h; then
+    if test -r $SCIPINCDIR/scip/scip.h; then
 
   :
 else
-  { { echo "$as_me:$LINENO: error: Cannot find file scip.h in $SCIPINCDIR" >&5
-echo "$as_me: error: Cannot find file scip.h in $SCIPINCDIR" >&2;}
+  { { echo "$as_me:$LINENO: error: Cannot find file scip/scip.h in $SCIPINCDIR" >&5
+echo "$as_me: error: Cannot find file scip/scip.h in $SCIPINCDIR" >&2;}
    { (exit 1); exit 1; }; }
   :
 fi
@@ -25469,7 +25463,7 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-	   for fnm in _SCIPcreate SCIPcreate ; do
+	   for fnm in SCIPcreate _SCIPcreate ; do
 	     echo "$as_me:$LINENO: checking whether symbol $fnm is available with SCIP" >&5
 echo $ECHO_N "checking whether symbol $fnm is available with SCIP... $ECHO_C" >&6
 	     cat >conftest.$ac_ext <<_ACEOF
@@ -25540,8 +25534,8 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 	   if test x"$coin_SCIP_link" = xyes ; then
 	     LIBS="$coin_save_LIBS"
 	   else
-	     { { echo "$as_me:$LINENO: error: Cannot find symbol(s) _SCIPcreate SCIPcreate with SCIP" >&5
-echo "$as_me: error: Cannot find symbol(s) _SCIPcreate SCIPcreate with SCIP" >&2;}
+	     { { echo "$as_me:$LINENO: error: Cannot find symbol(s) SCIPcreate _SCIPcreate with SCIP" >&5
+echo "$as_me: error: Cannot find symbol(s) SCIPcreate _SCIPcreate with SCIP" >&2;}
    { (exit 1); exit 1; }; }
 	   fi
 	 fi
@@ -25575,14 +25569,11 @@ else
 fi
 
 
+
+# If the user has supplied an external library (coin_has_scip=true), use it.
+# Otherwise, we consider a build in ThirdParty/SCIP.
+
 if test x"$coin_has_scip" = xfalse && test x"$SCIPLIB" = x ; then
-   use_thirdpartyscip=try
-fi
-
-# If the user has supplied an external library, use it.
-# Otherwise, consider a build in ThirdParty/SCIP.
-
-if test x"$use_thirdpartyscip" = xtry ; then
   MAKEOKFILE=.MakeOk
   # Check if the SCIP's ThirdParty project has been configured
   if test "$PACKAGE_NAME" != ThirdPartyScip; then
@@ -25594,15 +25585,19 @@ if test x"$use_thirdpartyscip" = xtry ; then
   else
     use_thirdpartyscip=build
   fi
+else
+  #we use user provided SCIP
+  use_thirdpartyscip=no
+fi
 
 # If we're building, set the library and include directory variables, create a
 # preprocessor symbol, define a variable that says we're using SCIP, and
 # another to indicate a link check is a bad idea (hard to do before the library
 # exists).
 
-  if test x"$use_thirdpartyscip" = xbuild ; then
-    SCIPINCDIR="$coin_scipsrcdir/scip/src"
-    SCIPOBJDIR="$coin_scipobjdir"
+if test x"$use_thirdpartyscip" = xbuild ; then
+  SCIPINCDIR="$coin_scipsrcdir/scip/src"
+  SCIPOBJDIR=`cd $coin_scipobjdir; pwd`
 
 
 
@@ -25610,11 +25605,10 @@ cat >>confdefs.h <<\_ACEOF
 #define COIN_HAS_SCIP 1
 _ACEOF
 
-    coin_has_scip=true
-    scip_libcheck=no
-    { echo "$as_me:$LINENO: Using SCIP in ThirdParty/SCIP" >&5
+  coin_has_scip=true
+  scip_libcheck=no
+  { echo "$as_me:$LINENO: Using SCIP in ThirdParty/SCIP" >&5
 echo "$as_me: Using SCIP in ThirdParty/SCIP" >&6;}
-  fi
 fi
 
 # Define the necessary automake conditionals.
@@ -25638,7 +25632,6 @@ else
   COIN_BUILD_SCIP_TRUE='#'
   COIN_BUILD_SCIP_FALSE=
 fi
-
 
 
 

@@ -3,11 +3,12 @@ Installation of SCIP subroutines within COIN-OR.
 **********************************************************************
 Note: It is YOUR RESPONSIBILITY to ensure that you are entitled to
       download and use this third party package.
+      Read the SCIP licence terms at http://scip.zib.de/licence.shtml
 **********************************************************************
 
-You may download SCIP by following the links at
+If you agree with the SCIP licence terms, then you may download SCIP at
 
-http://www.zib.de
+http://scip.zib.de
 
 and unpack it in this directory:
 
@@ -19,6 +20,8 @@ Then you need to rename the directory
 into
   scip
 .
+
+Optionally, you can put a symbolic link named scip to your scip sources.
 
 Finally you add the line
 

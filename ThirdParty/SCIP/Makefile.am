@@ -2,7 +2,7 @@
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 
-## $Id: Makefile.am 138 2007-07-22 14:02:41Z stefan $
+## $Id$
 
 AUTOMAKE_OPTIONS = foreign
 
@@ -17,10 +17,8 @@ endif
 SCIPDIR = @SCIPDIR@
 
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)`
-#  -I`$(CYGPATH_W) $(SCIPINCDIR)/../blockmemshell`
 
-AM_CPPFLAGS += -Wall -Wno-unknown-pragmas
-# -DINT_MAX=1E99
+AM_CPPFLAGS += -Wall -Wno-unknown-pragmas -DHAVE_CONFIG_H
 
 nodist_libcoinscip_la_SOURCES = \
       $(SCIPDIR)/src/scip/branch.c \

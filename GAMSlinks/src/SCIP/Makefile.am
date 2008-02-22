@@ -24,15 +24,20 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
 
 GamsScip_LDADD = \
  ../GamsIO/libSmagIO.la \
- ../../$(SCIPOBJDIR)/libcoinscip.la \
  $(CLPOBJDIR)/src/libClp.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la
- 
+
 GamsScip_DEPENDENCIES = \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(CLPOBJDIR)/src/libClp.la \
- ../GamsIO/libSmagIO.la $(SMAG_LIBS) \
- ../../$(SCIPOBJDIR)/libcoinscip.la
+ ../GamsIO/libSmagIO.la $(SMAG_LIBS)
+
+if COIN_BUILD_SCIP
+GamsScip_LDADD += $(SCIPOBJDIR)/libcoinscip.la
+GamsScip_DEPENDENCIES += $(SCIPOBJDIR)/libcoinscip.la
+else
+GamsScip_LDADD += $(SCIPLIB)
+endif 
 
 LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
 
