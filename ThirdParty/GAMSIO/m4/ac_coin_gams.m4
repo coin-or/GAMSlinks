@@ -21,7 +21,8 @@
 # GAMSIO_IS_UNIX       AM_CONDITIONAL that tells whether we build on a Unix-like system (= !Windows)
 # GAMSIO_IS_WINDOWS    AM_CONDITIONAL that tells whether we build on a Windows system
 #
-# coin_has_gamsio      shell variable that tells whether the GAMS I/O library is there (value is yes or no) 
+# coin_has_gamsio      shell variable that tells whether the GAMS I/O library is there (value is yes or no)
+# GAMSIO_PRESENT       AM_CONDITIONAL that tells whether the GAMS I/O library is present (no test about functionality here) 
 
 AC_DEFUN([AC_COIN_HAVE_GAMS], [
 
@@ -128,6 +129,8 @@ AC_CHECK_FILE([$gamsio_srcdir/iolib.h],[coin_has_gamsio=yes],[
   coin_has_gamsio=no
 	AC_MSG_WARN([no GAMS I/O libraries in ThirdParty/GAMSIO/$GAMSIO_CODE found. You can download them by calling get.GAMSIO $GAMSIO_CODE.])
 ])
+
+AM_CONDITIONAL([GAMSIO_PRESENT], [test $coin_has_gamsio = yes])
 
 ])  #end of COIN_HAVE_GAMS
 

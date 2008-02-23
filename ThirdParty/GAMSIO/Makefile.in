@@ -54,7 +54,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = gdx2gams$(EXEEXT)
+@GAMSIO_PRESENT_TRUE@noinst_PROGRAMS = gdx2gams$(EXEEXT)
 @GAMSIO_IS_UNIX_TRUE@am__append_1 = -ldl
 DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../BuildTools/Makemain.inc \
@@ -79,9 +79,11 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 libGamsGDX_la_LIBADD =
 nodist_libGamsGDX_la_OBJECTS = gdxcc.lo
 libGamsGDX_la_OBJECTS = $(nodist_libGamsGDX_la_OBJECTS)
+@GAMSIO_PRESENT_TRUE@am_libGamsGDX_la_rpath =
 libGamsOptions_la_LIBADD =
 nodist_libGamsOptions_la_OBJECTS = optcc.lo
 libGamsOptions_la_OBJECTS = $(nodist_libGamsOptions_la_OBJECTS)
+@GAMSIO_PRESENT_TRUE@am_libGamsOptions_la_rpath =
 PROGRAMS = $(noinst_PROGRAMS)
 am_gdx2gams_OBJECTS = gdx2gams.$(OBJEXT)
 gdx2gams_OBJECTS = $(am_gdx2gams_OBJECTS)
@@ -160,6 +162,8 @@ GAMSIO_IS_UNIX_FALSE = @GAMSIO_IS_UNIX_FALSE@
 GAMSIO_IS_UNIX_TRUE = @GAMSIO_IS_UNIX_TRUE@
 GAMSIO_IS_WINDOWS_FALSE = @GAMSIO_IS_WINDOWS_FALSE@
 GAMSIO_IS_WINDOWS_TRUE = @GAMSIO_IS_WINDOWS_TRUE@
+GAMSIO_PRESENT_FALSE = @GAMSIO_PRESENT_FALSE@
+GAMSIO_PRESENT_TRUE = @GAMSIO_PRESENT_TRUE@
 GAMS_PATH = @GAMS_PATH@
 HAVE_EXTERNALS_FALSE = @HAVE_EXTERNALS_FALSE@
 HAVE_EXTERNALS_TRUE = @HAVE_EXTERNALS_TRUE@
@@ -253,7 +257,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = get.GAMSIO INSTALL.GAMSIO LICENSE $(am__append_2)
-noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la
+@GAMSIO_PRESENT_TRUE@noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la
 nodist_libGamsOptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libGamsOptions_la_LDFLAGS = 
 nodist_libGamsGDX_la_SOURCES = $(GAMSIO_CODE)/gdxcc.c
@@ -317,9 +321,9 @@ clean-noinstLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libGamsGDX.la: $(libGamsGDX_la_OBJECTS) $(libGamsGDX_la_DEPENDENCIES) 
-	$(LINK)  $(libGamsGDX_la_LDFLAGS) $(libGamsGDX_la_OBJECTS) $(libGamsGDX_la_LIBADD) $(LIBS)
+	$(LINK) $(am_libGamsGDX_la_rpath) $(libGamsGDX_la_LDFLAGS) $(libGamsGDX_la_OBJECTS) $(libGamsGDX_la_LIBADD) $(LIBS)
 libGamsOptions.la: $(libGamsOptions_la_OBJECTS) $(libGamsOptions_la_DEPENDENCIES) 
-	$(LINK)  $(libGamsOptions_la_LDFLAGS) $(libGamsOptions_la_OBJECTS) $(libGamsOptions_la_LIBADD) $(LIBS)
+	$(LINK) $(am_libGamsOptions_la_rpath) $(libGamsOptions_la_LDFLAGS) $(libGamsOptions_la_OBJECTS) $(libGamsOptions_la_LIBADD) $(LIBS)
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
