@@ -1,10 +1,37 @@
 #!/bin/sh
 
-echo "Calling all get.XXX scripts in this directory."
-echo ""
+echo " "
 
-./get.DII
-./get.LEI
-./get.LX3
-./get.SIG
-./get.VIS
+uname=`uname -sp`
+case "$uname" in
+  Linux*i?86*)
+    echo "This seem to be a Linux 32bit machine, running get.LX3 and get.LEI."
+    ./get.LX3
+    ./get.LEI
+    ;;
+  Linux*x86_64*)
+    echo "This seem to be a Linux 64bit machine, running get.LEI and get.LX3."
+    ./get.LEI
+    ./get.LX3
+    ;;
+  Darwin*i?86*)
+    echo "This seem to be a Darwin machine, running get.DII."
+    ./get.DII
+    ;;
+  SunOS*i?86*)
+    echo "This seem to be a Solaris machine, running get.SIG."
+    ./get.SIG
+    ;;
+  MINGW* | CYGWIN*)
+    echo "This seem to be a Windows machine, running get.VIS."
+    ./get.VIS
+    ;;
+  *)
+    echo "Cannot determine build type, running all get.XXX scripts. uname -sp output: $uname"
+    ./get.DII
+    ./get.LEI
+    ./get.LX3
+    ./get.SIG
+    ./get.VIS
+    ;;
+esac
