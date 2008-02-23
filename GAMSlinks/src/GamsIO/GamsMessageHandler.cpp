@@ -1,10 +1,10 @@
-// Copyright (C) GAMS Development 2006-2008
+// Copyright (C) 2006-2008 GAMS Development and others 
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
 // $Id$
 //
-// Authors: Michael Bussieck, Stefan Vigerske
+// Author: Stefan Vigerske
 
 #include "GamsMessageHandler.hpp"
 
@@ -48,14 +48,10 @@ int GamsMessageHandler::print() {
   while (i-- > 0 && *messageOut == ' ') 
   	++messageOut;
 
-//TODO: change back to distinguishing between allmask and logmask as soon as smag bug fixed
   if (messageOut[strlen(messageOut)-1]=='\n')
-    gams.print(GamsHandler::LogMask, messageOut);
+  	gams.print(currentMessage_.detail() < 2 ? GamsHandler::AllMask : GamsHandler::LogMask, messageOut);
   else
-    gams.println(GamsHandler::LogMask, messageOut);
-//  	gams.print(currentMessage_.detail() < 2 ? GamsHandler::AllMask : GamsHandler::LogMask, messageOut);
-//  else
-//  	gams.println(currentMessage_.detail() < 2 ? GamsHandler::AllMask : GamsHandler::LogMask, messageOut);
+  	gams.println(currentMessage_.detail() < 2 ? GamsHandler::AllMask : GamsHandler::LogMask, messageOut);
 
   return 0;
 }

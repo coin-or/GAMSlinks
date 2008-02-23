@@ -9,6 +9,7 @@
 
 srcdir="@srcdir@"
 gamspath="@GAMS_PATH@"
+cia=`echo @GAMSIO_CIA@ | cut -c 5-`
 
 if test x$gamspath = xUNAVAILABLE; then
   echo "No GAMS system available."
@@ -146,7 +147,7 @@ echo ""
 
 #remove all log or failure files
 rm -f quality_test_*.log failures_qa*.gms testlib.*
-rm -rf @GAMSIO_CIA@_qa_* failed_test_* onetest*
+rm -rf ${cia}_qa_* failed_test_* onetest*
 
 #indicates whether there was a failed test, also return code of this script
 testfailed=0
@@ -158,7 +159,7 @@ for (( i=0 ; i<${#testlist[@]} ; i++ )) ; do
 		echo "Test " ${testlist[$i]} " passed."
 	else
 		testfailed=1
-		rename @GAMSIO_CIA@_qa_ failed_test_$i_ @CIA_CODE@_qa_* 
+		rename ${cia}_qa_ failed_test_$i_ ${cia}_qa_* 
 		mv failures_qa.gms failures_qa_$i.gms    
 		echo "Test " ${testlist[$i]} " failed. Content of failures_qa_$i.gms:" 1>&2
 		cat failures_qa_$i.gms 1>&2
