@@ -130,7 +130,6 @@ GAMSlinks/test/run_tests.in -text
 /Makefile.am -text
 /Makefile.in -text
 /README -text
-ThirdParty/GAMSIO/FILES -text
 ThirdParty/GAMSIO/INSTALL.GAMSIO -text
 ThirdParty/GAMSIO/LICENSE -text
 ThirdParty/GAMSIO/Makefile.am -text

@@ -15,7 +15,7 @@
 # GAMS_PATH            path of GAMS system if available
 # COIN_HAS_GAMSSYSTEM  AM_CONDITIONAL that tells whether gams is available
 #
-# GAMSIO_CODE          the GAMS code for the architecture we build on (LNX,SIG,...)
+# GAMSIO_CODE          the GAMS code for the architecture we build on (LX3,SIG,...)
 # GAMSIO_CIA           the GAMS CIA code for the architecture we use (CIA_LEX,CIA_WIN,...) 
 # GAMSIO_IS_DARWIN     AM_CONDITIONAL that tells whether we build on a Darwin system
 # GAMSIO_IS_UNIX       AM_CONDITIONAL that tells whether we build on a Unix-like system (= !Windows)
@@ -50,10 +50,24 @@ AC_ARG_WITH([gamsio-code],
   [GAMSIO_CODE=$withval],
   [case $build in
       x86_64-*-linux-*)
-        GAMSIO_CODE=LEI
+        case "$CC" in 
+          icpc* | */icpc* | icc* | */icc* | icl* | */icl* )
+            GAMSIO_CODE=LEI
+            ;;
+          *)
+            GAMSIO_CODE=LEG
+            ;;
+        esac
       ;;
       i?86-*-linux-*)
-        GAMSIO_CODE=LX3
+        case "$CC" in 
+          icpc* | */icpc* | icc* | */icc* | icl* | */icl* )
+            GAMSIO_CODE=LX3
+            ;;
+          *)
+            GAMSIO_CODE=LNX
+            ;;
+        esac
       ;;
       *-cygwin* | *-mingw*)
         GAMSIO_CODE=VIS
@@ -70,11 +84,11 @@ AC_ARG_WITH([gamsio-code],
 )
 
 case $GAMSIO_CODE in
-  LEI)
+  LEI | LEG)
       gamsio_system=Linux
       GAMSIO_CIA=CIA_LEX
     ;;
-  LX3)
+  LX3 | LNX)
       gamsio_system=Linux
       GAMSIO_CIA=CIA_LNX
     ;;
@@ -167,19 +181,19 @@ fi
 # setting up linker flags
 
 case $GAMSIO_CODE in
-  LX3)
+#  LX3 | LEI)
+#      GAMSIO_LIBS="$gamsio_srcdir/iolib.a $gamsio_srcdir/nliolib.a $gamsio_srcdir/clicelib.a $gamsio_srcdir/gclib.a"
+#      SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libg2d.a"
+#      GAMSIO_ADDLIBS="-ldl"
+#    ;;
+  LNX | LEG | LX3 | LEI)
       GAMSIO_LIBS="$gamsio_srcdir/iolib.a $gamsio_srcdir/nliolib.a $gamsio_srcdir/clicelib.a $gamsio_srcdir/gclib.a"
       SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libg2d.a"
       GAMSIO_ADDLIBS="-ldl $IFORT_LIBS"
     ;;
-  LEI)
+  SIG)
       GAMSIO_LIBS="$gamsio_srcdir/iolib.a $gamsio_srcdir/nliolib.a $gamsio_srcdir/clicelib.a $gamsio_srcdir/gclib.a"
       SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libg2d.a"
-      GAMSIO_ADDLIBS="-ldl $IFORT_LIBS"
-    ;;
-  VIS)
-      GAMSIO_LIBS="$gamsio_srcdir/iolib.lib $gamsio_srcdir/nliolib.lib $gamsio_srcdir/clicelib.lib $gamsio_srcdir/gclib.lib"
-      SMAG_LIBS="$gamsio_srcdir/clicelib.lib $gamsio_srcdir/smag.lib $gamsio_srcdir/gclib.lib $gamsio_srcdir/g2d.lib"
       GAMSIO_ADDLIBS=""
     ;;
   DII)
@@ -187,9 +201,9 @@ case $GAMSIO_CODE in
       SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libg2d.a"
       GAMSIO_ADDLIBS="-ldl -lSystemStubs $IFORT_LIBS"
     ;;
-  SIG)
-      GAMSIO_LIBS="$gamsio_srcdir/iolib.a $gamsio_srcdir/nliolib.a $gamsio_srcdir/clicelib.a $gamsio_srcdir/gclib.a"
-      SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libg2d.a"
+  VIS)
+      GAMSIO_LIBS="$gamsio_srcdir/iolib.lib $gamsio_srcdir/nliolib.lib $gamsio_srcdir/clicelib.lib $gamsio_srcdir/gclib.lib"
+      SMAG_LIBS="$gamsio_srcdir/clicelib.lib $gamsio_srcdir/smag.lib $gamsio_srcdir/gclib.lib $gamsio_srcdir/g2d.lib"
       GAMSIO_ADDLIBS=""
     ;;
 esac

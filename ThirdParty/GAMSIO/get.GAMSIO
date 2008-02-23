@@ -56,14 +56,18 @@ else
 uname=`uname -sp`
 case "$uname" in
   Linux*i?86*)
-    echo "This seem to be a Linux 32bit machine, downloading lx3 and lei builds."
+    echo "This seem to be a Linux 32bit machine, downloading lnx, lx3, leg, and lei builds."
+    download lnx
     download lx3
+    download leg
     download lei
     ;;
   Linux*x86_64*)
-    echo "This seem to be a Linux 64bit machine, downloading lei and lx3 builds."
+    echo "This seem to be a Linux 64bit machine, downloading leg, lei, lnx, and lx3 builds."
     echo ""
+    download leg
     download lei
+    download lnx
     download lx3
     ;;
   Darwin*i?86*)
@@ -85,6 +89,8 @@ case "$uname" in
     echo "Cannot determine build type, downloading all builds. uname -sp output: $uname"
     echo ""
     download dii
+    download lnx
+    download leg
     download lei
     download lx3
     download sig

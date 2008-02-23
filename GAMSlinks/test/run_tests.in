@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) GAMS Development 2008
+# Copyright (C) 2008 GAMS Development and others
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -146,7 +146,7 @@ echo ""
 
 #remove all log or failure files
 rm -f quality_test_*.log failures_qa*.gms testlib.*
-rm -rf @CIA_CODE@_qa_* failed_test_* onetest*
+rm -rf @GAMSIO_CIA@_qa_* failed_test_* onetest*
 
 #indicates whether there was a failed test, also return code of this script
 testfailed=0
@@ -158,7 +158,7 @@ for (( i=0 ; i<${#testlist[@]} ; i++ )) ; do
 		echo "Test " ${testlist[$i]} " passed."
 	else
 		testfailed=1
-		rename @CIA_CODE@_qa_ failed_test_$i_ @CIA_CODE@_qa_* 
+		rename @GAMSIO_CIA@_qa_ failed_test_$i_ @CIA_CODE@_qa_* 
 		mv failures_qa.gms failures_qa_$i.gms    
 		echo "Test " ${testlist[$i]} " failed. Content of failures_qa_$i.gms:" 1>&2
 		cat failures_qa_$i.gms 1>&2

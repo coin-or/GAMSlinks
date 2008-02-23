@@ -432,7 +432,7 @@ PACKAGE_VERSION='0.0'
 PACKAGE_STRING='ThirdPartyGAMSIO 0.0'
 PACKAGE_BUGREPORT='https://projects.coin-or.org/GAMSlinks/newticket'
 
-ac_unique_file="get.LX3"
+ac_unique_file="get.GAMSIO"
 ac_default_prefix=`pwd`
 # Factoring default headers for most tests.
 ac_includes_default="\
@@ -19791,10 +19791,24 @@ if test "${with_gamsio_code+set}" = set; then
 else
   case $build in
       x86_64-*-linux-*)
-        GAMSIO_CODE=LEI
+        case "$CC" in
+          icpc* | */icpc* | icc* | */icc* | icl* | */icl* )
+            GAMSIO_CODE=LEI
+            ;;
+          *)
+            GAMSIO_CODE=LEG
+            ;;
+        esac
       ;;
       i?86-*-linux-*)
-        GAMSIO_CODE=LX3
+        case "$CC" in
+          icpc* | */icpc* | icc* | */icc* | icl* | */icl* )
+            GAMSIO_CODE=LX3
+            ;;
+          *)
+            GAMSIO_CODE=LNX
+            ;;
+        esac
       ;;
       *-cygwin* | *-mingw*)
         GAMSIO_CODE=VIS
@@ -19814,11 +19828,11 @@ echo "$as_me: error: Build type $build not supported by GAMS I/O libraries." >&2
 fi;
 
 case $GAMSIO_CODE in
-  LEI)
+  LEI | LEG)
       gamsio_system=Linux
       GAMSIO_CIA=CIA_LEX
     ;;
-  LX3)
+  LX3 | LNX)
       gamsio_system=Linux
       GAMSIO_CIA=CIA_LNX
     ;;
