@@ -96,9 +96,9 @@ esac
 
 AC_SUBST(GAMSIO_CODE)
 AC_SUBST(GAMSIO_CIA)
-AM_CONDITIONAL([GAMSIO_IS_DARWIN], [test x"$gamsio_system" = xDarwin])
+AM_CONDITIONAL([GAMSIO_IS_DARWIN], [test x"$gamsio_system"  = xDarwin])
 AM_CONDITIONAL([GAMSIO_IS_UNIX],   [test x"$gamsio_system" != xWindows])
-AM_CONDITIONAL([GAMSIO_IS_WINDOWS],[test x"$gamsio_system" = xWindows])
+AM_CONDITIONAL([GAMSIO_IS_WINDOWS],[test x"$gamsio_system"  = xWindows])
 
 # check whether we have the GAMS I/O libraries that we need
 
@@ -112,7 +112,7 @@ gamsio_objdir=`cd $gamsio_objdir; pwd`
 gamsio_objdir=`$CYGPATH_W $gamsio_objdir`
 AC_CHECK_FILE([$gamsio_srcdir/iolib.h],[coin_has_gamsio=yes],[
   coin_has_gamsio=no
-	AC_MSG_WARN([no GAMS I/O libraries in ThirdParty/GAMSIO/$GAMSIO_CODE found. You can download them by calling $abs_source_dir/../ThirdParty/GAMSIO/get.$GAMSIO_CODE.])
+	AC_MSG_WARN([no GAMS I/O libraries in ThirdParty/GAMSIO/$GAMSIO_CODE found. You can download them by calling get.GAMSIO $GAMSIO_CODE.])
 ])
 
 ])  #end of COIN_HAVE_GAMS

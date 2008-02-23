@@ -11,17 +11,22 @@ Currently supported are
 
 If you are working under Unix/Linux-like system and you have `wget'
 installed, you can downloaded the required libraries
-by executing the included get-script in this directory.
+by executing the script get.GAMSIO in this directory with the corresponding system code as parameter, e.g.
+  ./get_GAMSIO LX3
+If you are not sure which system code is right for you, you can also call this script with several parameter or no parameter.
+If no parameter is given, the script tries to determine the system code according to the output of uname.
+If it fails to determine the system code, libraries for all available systems are downloaded. 
 
-Otherwise, follow those instructions:
+If the script does not work for you, follow the following instructions:
 
 Create a directory which name is the code that corresponds to your machine
 (e.g., LX3 for Linux 32bit, VIS for Windows, ...).
 
 Point your browser to
 
-http://www.gams.com/~svigerske
+  http://www.gams.com/~svigerske
 
-download all latest versions of the zip-files which name corresond to your machine,
-e.g., LX3*_latestLIB.zip, into the created directory, and unpack them
-(ignore questions about multiple appearing files).
+download the file <syscode>_latest.tgz into the created directory, where <syscode> is the system code in lower case letters.
+Then unpack this file:
+  tar xzf <syscode>_latest.tgz
+.

@@ -1,37 +1,98 @@
 #!/bin/sh
+#
+# This script downloads the GAMS I/O libraries from the GAMS server.
+# It takes as argument one or several build types in lowercase for which libaries should be downloaded.
+# E.g., ./get.GAMSIO lx3 lei
+# If no parameters are given, the script tries to guess the build type according to the output of uname. 
+
+function download() {
+
+echo ""
+
+# haven't found another way to translate from lowercase into uppercase and vice versa  
+sys=`echo $1 | sed -e y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/`
+sysdir=`echo ${sys} | sed -e y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/`
+
+mkdir -p ${sysdir}
+cd ${sysdir}
+rm -f ${sys}_latest.tgz
+
+echo "Downloading the ${sys} libraries into directory ${sysdir} from www.gams.com..."
+$wgetcmd http://www.gams.com/~svigerske/${sys}_latest.tgz
+
+echo "Unpacking the libraries..."
+tar xzf ${sys}_latest.tgz
+
+echo "Deleting the tgz file..."
+rm -f ${sys}_latest.tgz
+
+cd ..
+
+}
 
 echo " "
+echo "Running script for downloading the GAMS I/O libraries for Linux 64-bit platform"
 
+wgetcmd=wget
+wgetcount=`which wget 2>/dev/null | wc -w`
+if test ! $wgetcount = 1; then
+  echo "Utility wget not found in your PATH."
+  if test `uname` = Darwin; then
+    wgetcmd=ftp
+    echo "Using ftp command instead."
+  else
+    exit -1
+  fi
+fi
+
+#if parameters are given, then call download for each parameter
+#otherwise try to guess build system and start appropriate downloads
+ 
+if test $# != 0 ; then
+  for i in "$@"; do
+    download $i
+  done
+else
 uname=`uname -sp`
 case "$uname" in
   Linux*i?86*)
-    echo "This seem to be a Linux 32bit machine, running get.LX3 and get.LEI."
-    ./get.LX3
-    ./get.LEI
+    echo "This seem to be a Linux 32bit machine, downloading lx3 and lei builds."
+    download lx3
+    download lei
     ;;
   Linux*x86_64*)
-    echo "This seem to be a Linux 64bit machine, running get.LEI and get.LX3."
-    ./get.LEI
-    ./get.LX3
+    echo "This seem to be a Linux 64bit machine, downloading lei and lx3 builds."
+    echo ""
+    download lei
+    download lx3
     ;;
   Darwin*i?86*)
-    echo "This seem to be a Darwin machine, running get.DII."
-    ./get.DII
+    echo "This seem to be a Darwin machine, downloading dii build."
+    echo ""
+    download dii
     ;;
   SunOS*i?86*)
-    echo "This seem to be a Solaris machine, running get.SIG."
-    ./get.SIG
+    echo "This seem to be a Solaris machine, downloading sig build."
+    echo ""
+    download sig
     ;;
   MINGW* | CYGWIN*)
-    echo "This seem to be a Windows machine, running get.VIS."
-    ./get.VIS
+    echo "This seem to be a Windows machine, downloading vis build."
+    echo ""
+    download vis
     ;;
   *)
-    echo "Cannot determine build type, running all get.XXX scripts. uname -sp output: $uname"
-    ./get.DII
-    ./get.LEI
-    ./get.LX3
-    ./get.SIG
-    ./get.VIS
+    echo "Cannot determine build type, downloading all builds. uname -sp output: $uname"
+    echo ""
+    download dii
+    download lei
+    download lx3
+    download sig
+    download vis
     ;;
 esac
+fi
+
+echo " "
+echo "Done downloading the GAMS I/O libraries."
+echo " "

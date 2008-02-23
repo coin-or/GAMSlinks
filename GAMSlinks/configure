@@ -25736,7 +25736,7 @@ esac
 
 
 
-if test x"$gamsio_system" = xDarwin; then
+if test x"$gamsio_system"  = xDarwin; then
   GAMSIO_IS_DARWIN_TRUE=
   GAMSIO_IS_DARWIN_FALSE='#'
 else
@@ -25756,7 +25756,7 @@ fi
 
 
 
-if test x"$gamsio_system" = xWindows; then
+if test x"$gamsio_system"  = xWindows; then
   GAMSIO_IS_WINDOWS_TRUE=
   GAMSIO_IS_WINDOWS_FALSE='#'
 else
@@ -25798,8 +25798,8 @@ if test `eval echo '${'$as_ac_File'}'` = yes; then
 else
 
   coin_has_gamsio=no
-	{ echo "$as_me:$LINENO: WARNING: no GAMS I/O libraries in ThirdParty/GAMSIO/$GAMSIO_CODE found. You can download them by calling $abs_source_dir/../ThirdParty/GAMSIO/get.$GAMSIO_CODE." >&5
-echo "$as_me: WARNING: no GAMS I/O libraries in ThirdParty/GAMSIO/$GAMSIO_CODE found. You can download them by calling $abs_source_dir/../ThirdParty/GAMSIO/get.$GAMSIO_CODE." >&2;}
+	{ echo "$as_me:$LINENO: WARNING: no GAMS I/O libraries in ThirdParty/GAMSIO/$GAMSIO_CODE found. You can download them by calling get.GAMSIO $GAMSIO_CODE." >&5
+echo "$as_me: WARNING: no GAMS I/O libraries in ThirdParty/GAMSIO/$GAMSIO_CODE found. You can download them by calling get.GAMSIO $GAMSIO_CODE." >&2;}
 
 fi
 

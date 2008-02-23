@@ -252,8 +252,7 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = get.LX3 get.LEI get.DII get.VIS get.SIG get.GAMSIO FILES \
-	INSTALL.GAMSIO LICENSE $(am__append_2)
+EXTRA_DIST = get.GAMSIO INSTALL.GAMSIO LICENSE $(am__append_2)
 noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la
 nodist_libGamsOptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libGamsOptions_la_LDFLAGS = 
