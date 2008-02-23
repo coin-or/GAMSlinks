@@ -18,6 +18,7 @@ GAMSlinks/doc/gamsdist/optglpk_s.tex -text
 GAMSlinks/doc/gamsdist/optipopt_a.tex -text
 GAMSlinks/gamsio_addlibs.txt.in -text
 GAMSlinks/inc/config_gamslinks.h.in -text
+GAMSlinks/m4/ac_coin_gams.m4 -text
 GAMSlinks/m4/ac_coin_scip.m4 -text
 GAMSlinks/smagio_addlibs.txt.in -text
 GAMSlinks/src/Bonmin/GamsBonmin.cpp -text
@@ -134,7 +135,6 @@ ThirdParty/GAMSIO/INSTALL.GAMSIO -text
 ThirdParty/GAMSIO/LICENSE -text
 ThirdParty/GAMSIO/Makefile.am -text
 ThirdParty/GAMSIO/Makefile.in -text
-ThirdParty/GAMSIO/config_gamsio.h.in -text
 ThirdParty/GAMSIO/configure -text
 ThirdParty/GAMSIO/configure.ac -text
 ThirdParty/GAMSIO/gdx2gams.c -text
@@ -144,6 +144,7 @@ ThirdParty/GAMSIO/get.LEI -text
 ThirdParty/GAMSIO/get.LX3 -text
 ThirdParty/GAMSIO/get.SIG -text
 ThirdParty/GAMSIO/get.VIS -text
+ThirdParty/GAMSIO/m4/ac_coin_gams.m4 -text
 ThirdParty/SCIP/INSTALL.SCIP -text
 ThirdParty/SCIP/Makefile.am -text
 ThirdParty/SCIP/Makefile.in -text

@@ -243,7 +243,8 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 	
 	vars=new SCIP_VAR*[smagColCount(prob)];
 	
-	double minprior,maxprior;
+	double minprior=0;
+	double maxprior=0;
 	if (prob->gms.priots && smagColCount(prob)>0) { // compute range of given priorities
 		minprior=prob->colPriority[0];
 		maxprior=prob->colPriority[0];

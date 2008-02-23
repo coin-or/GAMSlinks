@@ -14,13 +14,12 @@
 
 @SET_MAKE@
 
-# Copyright (C) GAMS Development 2006
+# Copyright (C) 2006-2008 GAMS Development and others
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
 #
 # Author: Stefan Vigerske
-# Template from: Andreas Waechter
 
 # Copyright (C) 2006, 2007 International Business Machines and others.
 # All Rights Reserved.
@@ -55,23 +54,16 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@COIN_HAS_IPOPT_TRUE@am__append_1 = \
-@COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
-@COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` \
-@COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \
-@COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Algorithm` \
-@COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/CGPenalty` \
-@COIN_HAS_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
-
 DIST_COMMON = $(includecoin_HEADERS) \
 	$(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_2 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_3 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_1 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
 subdir = src/GamsIO
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_scip.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
+	$(top_srcdir)/m4/ac_coin_scip.m4 $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -86,15 +78,13 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includecoindir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libGamsIO_la_DEPENDENCIES =  \
-	$(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la \
-	$(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
+libGamsIO_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsOptions.la \
+	$(GAMSIO_OBJDIR)/libGamsGDX.la
 am_libGamsIO_la_OBJECTS = GamsModel.lo GamsFinalize.lo \
 	GamsMessageHandler.lo GamsOptions.lo GamsDictionary.lo \
 	GamsBCH.lo GamsHandlerIOLib.lo
 libGamsIO_la_OBJECTS = $(am_libGamsIO_la_OBJECTS)
-libSmagIO_la_DEPENDENCIES =  \
-	$(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la
+libSmagIO_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsOptions.la
 am_libSmagIO_la_OBJECTS = GamsOptions.lo GamsMessageHandler.lo \
 	SmagExtra.lo GamsHandlerSmag.lo
 libSmagIO_la_OBJECTS = $(am_libSmagIO_la_OBJECTS)
@@ -153,7 +143,6 @@ CFLAGS = @CFLAGS@
 CGLDOCDIR = @CGLDOCDIR@
 CGLOBJDIR = @CGLOBJDIR@
 CGLSRCDIR = @CGLSRCDIR@
-CIA_CODE = @CIA_CODE@
 CLPDOCDIR = @CLPDOCDIR@
 CLPOBJDIR = @CLPOBJDIR@
 CLPSRCDIR = @CLPSRCDIR@
@@ -178,6 +167,7 @@ COIN_HAS_CPPAD_FALSE = @COIN_HAS_CPPAD_FALSE@
 COIN_HAS_CPPAD_TRUE = @COIN_HAS_CPPAD_TRUE@
 COIN_HAS_DYLP_FALSE = @COIN_HAS_DYLP_FALSE@
 COIN_HAS_DYLP_TRUE = @COIN_HAS_DYLP_TRUE@
+COIN_HAS_GAMSIO = @COIN_HAS_GAMSIO@
 COIN_HAS_GAMSIO_FALSE = @COIN_HAS_GAMSIO_FALSE@
 COIN_HAS_GAMSIO_TRUE = @COIN_HAS_GAMSIO_TRUE@
 COIN_HAS_GAMSLINKS_FALSE = @COIN_HAS_GAMSLINKS_FALSE@
@@ -232,13 +222,17 @@ FFLAGS = @FFLAGS@
 FLIBS = @FLIBS@
 FORTRAN_NAMEMANGLING_CFLAG = @FORTRAN_NAMEMANGLING_CFLAG@
 GAMSIO_ADDLIBS = @GAMSIO_ADDLIBS@
+GAMSIO_CIA = @GAMSIO_CIA@
 GAMSIO_CODE = @GAMSIO_CODE@
 GAMSIO_CPPFLAGS = @GAMSIO_CPPFLAGS@
+GAMSIO_IS_DARWIN_FALSE = @GAMSIO_IS_DARWIN_FALSE@
+GAMSIO_IS_DARWIN_TRUE = @GAMSIO_IS_DARWIN_TRUE@
 GAMSIO_IS_UNIX_FALSE = @GAMSIO_IS_UNIX_FALSE@
 GAMSIO_IS_UNIX_TRUE = @GAMSIO_IS_UNIX_TRUE@
 GAMSIO_IS_WINDOWS_FALSE = @GAMSIO_IS_WINDOWS_FALSE@
 GAMSIO_IS_WINDOWS_TRUE = @GAMSIO_IS_WINDOWS_TRUE@
 GAMSIO_LIBS = @GAMSIO_LIBS@
+GAMSIO_OBJDIR = @GAMSIO_OBJDIR@
 GAMSLINKSDOCDIR = @GAMSLINKSDOCDIR@
 GAMSLINKSOBJDIR = @GAMSLINKSOBJDIR@
 GAMSLINKSSRCDIR = @GAMSLINKSSRCDIR@
@@ -353,7 +347,6 @@ coin_build_dylp = @coin_build_dylp@
 coin_build_glpk = @coin_build_glpk@
 coin_build_symphony = @coin_build_symphony@
 coin_build_vol = @coin_build_vol@
-coin_has_gamsio = @coin_has_gamsio@
 datadir = @datadir@
 exec_prefix = @exec_prefix@
 gamslinks_build_bonmin = @gamslinks_build_bonmin@
@@ -388,15 +381,13 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = $(am__append_2)
+EXTRA_DIST = $(am__append_1)
 lib_LTLIBRARIES = libGamsIO.la libSmagIO.la
 libGamsIO_la_SOURCES = \
   GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsOptions.cpp GamsDictionary.cpp GamsBCH.cpp GamsHandlerIOLib.cpp
 
 libGamsIO_la_LDFLAGS = 
-libGamsIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la \
-  $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsGDX.la
-
+libGamsIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 
 #TODO: put also GamsBCH and GamsDictionary into SmagIO lib, once we got required gams libs separated from ciolib
 #we do not add SmagJournal to SmagIO to avoid dependence on Ipopt
@@ -404,17 +395,18 @@ libSmagIO_la_SOURCES = \
   GamsOptions.cpp GamsMessageHandler.cpp SmagExtra.c GamsHandlerSmag.cpp
 
 libSmagIO_la_LDFLAGS = 
-libSmagIO_la_LIBADD = $(GAMSLINKSOBJDIR)/../ThirdParty/GAMSIO/libGamsOptions.la
+libSmagIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = ../../inc/config_gamslinks.h \
   GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsDictionary.hpp GamsBCH.hpp GamsHandler.hpp GamsHandlerIOLib.hpp \
   SmagJournal.hpp GamsHandlerSmag.hpp
 
-AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) $(FORTRAN_NAMEMANGLING_CFLAG) \
-	-I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) \
-	$(COINUTILSSRCDIR)/src` -I`$(CYGPATH_W) \
-	$(COINUTILSOBJDIR)/inc` -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
-	-I`$(CYGPATH_W) $(OSIOBJDIR)/inc` $(am__append_1)
+AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) $(FORTRAN_NAMEMANGLING_CFLAG) -I`$(CYGPATH_W) $(srcdir)/..` \
+ -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
+ -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
+ -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
+ -I`$(CYGPATH_W) $(OSIOBJDIR)/inc`
+
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
 ########################################################################
@@ -422,7 +414,7 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 ########################################################################
 
 # Files that are generated and should be cleaned with make distclean
-DISTCLEANFILES = $(am__append_3) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: all-am

@@ -35,3 +35,4 @@ off some compiler warnings by adding
 ADD_CXXFLAGS="-Wno-unknown-pragmas -Wno-long-long"
 
 to your configure call.
+If you use the GNU compiler, then this is already taken care of.

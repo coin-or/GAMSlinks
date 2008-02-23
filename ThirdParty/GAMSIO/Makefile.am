@@ -1,15 +1,14 @@
-# Copyright (C) GAMS Development 2006
+# Copyright (C) 2006-2008 GAMS Development and others 
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
 ## $Id$
 #
 # Author: Stefan Vigerske
-# Template from: Andreas Waechter
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = get.LX3 get.LEI get.DII get.VIS get.SIG FILES INSTALL.GAMSIO LICENSE
+EXTRA_DIST = get.LX3 get.LEI get.DII get.VIS get.SIG get.GAMSIO FILES INSTALL.GAMSIO LICENSE
 
 noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la
 
@@ -28,7 +27,7 @@ if GAMSIO_IS_UNIX
 gdx2gams_LDFLAGS += -ldl
 endif
 
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -D$(CIA_CODE)
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/$(GAMSIO_CODE)` -D$(GAMSIO_CIA)
 
 ########################################################################
 #                           Extra Targets                              #

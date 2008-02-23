@@ -471,7 +471,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS F77 ADD_FFLAGS DBG_FFLAGS OPT_FFLAGS FFLAGS ac_ct_F77 MPIF77 FLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR GAMSLINKSDOCDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE CGLSRCDIR CGLOBJDIR CGLDOCDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COINUTILSDOCDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR OSIDOCDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR CLPDOCDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE VOLSRCDIR VOLOBJDIR VOLDOCDIR COIN_HAS_VOL_TRUE COIN_HAS_VOL_FALSE DYLPSRCDIR DYLPOBJDIR DYLPDOCDIR COIN_HAS_DYLP_TRUE COIN_HAS_DYLP_FALSE SYMPHONYSRCDIR SYMPHONYOBJDIR SYMPHONYDOCDIR COIN_HAS_SYMPHONY_TRUE COIN_HAS_SYMPHONY_FALSE CBCSRCDIR CBCOBJDIR CBCDOCDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR IPOPTDOCDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR BONMINDOCDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE CPPADSRCDIR CPPADOBJDIR CPPADDOCDIR COIN_HAS_CPPAD_TRUE COIN_HAS_CPPAD_FALSE OSSRCDIR OSOBJDIR OSDOCDIR COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE SCIPINCDIR SCIPLIB COIN_HAS_SCIP_TRUE COIN_HAS_SCIP_FALSE SCIPOBJDIR COIN_BUILD_SCIP_TRUE COIN_BUILD_SCIP_FALSE gamspath COIN_HAS_GAMSSYSTEM_TRUE COIN_HAS_GAMSSYSTEM_FALSE COIN_HAS_GAMSIO_TRUE COIN_HAS_GAMSIO_FALSE coin_has_gamsio GAMS_PATH GAMSIO_CPPFLAGS GAMSIO_ADDLIBS GAMSIO_LIBS SMAG_LIBS GAMSIO_CODE CIA_CODE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE FORTRAN_NAMEMANGLING_CFLAG COIN_OS_SOLVER_TRUE COIN_OS_SOLVER_FALSE coin_build_clp coin_build_cbc coin_build_glpk coin_build_dylp coin_build_symphony coin_build_vol gamslinks_build_ipopt GAMSLINKS_BUILD_IPOPT_TRUE GAMSLINKS_BUILD_IPOPT_FALSE GAMSLINKS_BUILD_GAMSIO_TRUE GAMSLINKS_BUILD_GAMSIO_FALSE gamslinks_build_glpk GAMSLINKS_BUILD_GLPK_TRUE GAMSLINKS_BUILD_GLPK_FALSE gamslinks_build_cbc GAMSLINKS_BUILD_CBC_TRUE GAMSLINKS_BUILD_CBC_FALSE gamslinks_build_bonmin GAMSLINKS_BUILD_BONMIN_TRUE GAMSLINKS_BUILD_BONMIN_FALSE gamslinks_build_osi GAMSLINKS_BUILD_OSI_TRUE GAMSLINKS_BUILD_OSI_FALSE GAMSLINKS_BUILD_OS_TRUE GAMSLINKS_BUILD_OS_FALSE gamslinks_build_scip GAMSLINKS_BUILD_SCIP_TRUE GAMSLINKS_BUILD_SCIP_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS F77 ADD_FFLAGS DBG_FFLAGS OPT_FFLAGS FFLAGS ac_ct_F77 MPIF77 FLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR GAMSLINKSDOCDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE CGLSRCDIR CGLOBJDIR CGLDOCDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COINUTILSDOCDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR OSIDOCDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR CLPDOCDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE VOLSRCDIR VOLOBJDIR VOLDOCDIR COIN_HAS_VOL_TRUE COIN_HAS_VOL_FALSE DYLPSRCDIR DYLPOBJDIR DYLPDOCDIR COIN_HAS_DYLP_TRUE COIN_HAS_DYLP_FALSE SYMPHONYSRCDIR SYMPHONYOBJDIR SYMPHONYDOCDIR COIN_HAS_SYMPHONY_TRUE COIN_HAS_SYMPHONY_FALSE CBCSRCDIR CBCOBJDIR CBCDOCDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR IPOPTDOCDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR BONMINDOCDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE CPPADSRCDIR CPPADOBJDIR CPPADDOCDIR COIN_HAS_CPPAD_TRUE COIN_HAS_CPPAD_FALSE OSSRCDIR OSOBJDIR OSDOCDIR COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE SCIPINCDIR SCIPLIB COIN_HAS_SCIP_TRUE COIN_HAS_SCIP_FALSE SCIPOBJDIR COIN_BUILD_SCIP_TRUE COIN_BUILD_SCIP_FALSE COIN_OS_SOLVER_TRUE COIN_OS_SOLVER_FALSE gamspath COIN_HAS_GAMSSYSTEM_TRUE COIN_HAS_GAMSSYSTEM_FALSE GAMS_PATH GAMSIO_CODE GAMSIO_CIA GAMSIO_IS_DARWIN_TRUE GAMSIO_IS_DARWIN_FALSE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE COIN_HAS_GAMSIO_TRUE COIN_HAS_GAMSIO_FALSE COIN_HAS_GAMSIO GAMSIO_CPPFLAGS GAMSIO_ADDLIBS GAMSIO_LIBS SMAG_LIBS GAMSIO_OBJDIR FORTRAN_NAMEMANGLING_CFLAG coin_build_clp coin_build_cbc coin_build_glpk coin_build_dylp coin_build_symphony coin_build_vol gamslinks_build_ipopt GAMSLINKS_BUILD_IPOPT_TRUE GAMSLINKS_BUILD_IPOPT_FALSE GAMSLINKS_BUILD_GAMSIO_TRUE GAMSLINKS_BUILD_GAMSIO_FALSE gamslinks_build_glpk GAMSLINKS_BUILD_GLPK_TRUE GAMSLINKS_BUILD_GLPK_FALSE gamslinks_build_cbc GAMSLINKS_BUILD_CBC_TRUE GAMSLINKS_BUILD_CBC_FALSE gamslinks_build_bonmin GAMSLINKS_BUILD_BONMIN_TRUE GAMSLINKS_BUILD_BONMIN_FALSE gamslinks_build_osi GAMSLINKS_BUILD_OSI_TRUE GAMSLINKS_BUILD_OSI_FALSE GAMSLINKS_BUILD_OS_TRUE GAMSLINKS_BUILD_OS_FALSE gamslinks_build_scip GAMSLINKS_BUILD_SCIP_TRUE GAMSLINKS_BUILD_SCIP_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1093,9 +1093,6 @@ if test -n "$ac_init_help"; then
 Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
-  --enable-debug          compile all projects with debug options tests
-  --enable-debug-gamslinks
-                          compile this project (GAMSlinks) with debug options
   --enable-doscompile     Under Cygwin, compile so that executables run under
                           DOS. Set to mingw to use gcc/g++/ld with
                           -mno-cygwin. Set to msvc to use cl/link (or
@@ -1122,11 +1119,6 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-gamslinks-verbosity
-                          specify the debug verbosity level for project
-                          GAMSlinks
-  --with-gamslinks-checklevel
-                          specify the sanity check level for project GAMSlinks
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-pic              try to use only PIC/non-PIC objects [default=use
                           both]
@@ -1137,11 +1129,9 @@ Optional Packages:
   --with-scip-incdir specify the header file directory for library Scip
   --with-scip-lib specify the flags used to link with the library Scip
   --with-gamssystem       specify directory of GAMS distribution
-  --with-gamsio-code      specify the GAMS I/O code used to identify the GAMS
-                          I/O libraries types
+  --with-gamsio-code      specify the build architecture to identify which
+                          build of the GAMS I/O library to use
   --with-ifort-libdir     specify directory of Intel Fortran libraries
-  --with-gamsio           specify directory of GAMS I/O libraries and header
-                          files
 
 Some influential environment variables:
   CDEFS       Additional -D flags to be used when compiling C code.
@@ -1736,100 +1726,7 @@ coin_projectdir=yes
 
 
 # Check if user wants to produce debugging code
-
-echo "$as_me:$LINENO: checking whether we want to compile in debug mode" >&5
-echo $ECHO_N "checking whether we want to compile in debug mode... $ECHO_C" >&6
-
-# Check whether --enable-debug or --disable-debug was given.
-if test "${enable_debug+set}" = set; then
-  enableval="$enable_debug"
-  case "${enableval}" in
-   yes) coin_debug_compile=true
-        if test "${enable_shared+set}" = set; then :; else
-          enable_shared=no
-        fi
-        ;;
-   no)  coin_debug_compile=false
-        ;;
-   *) { { echo "$as_me:$LINENO: error: bad value ${enableval} for --enable-debug" >&5
-echo "$as_me: error: bad value ${enableval} for --enable-debug" >&2;}
-   { (exit 1); exit 1; }; }
-        ;;
-esac
-else
-  coin_debug_compile=false
-fi;
-
-# Check whether --enable-debug-gamslinks or --disable-debug-gamslinks was given.
-if test "${enable_debug_gamslinks+set}" = set; then
-  enableval="$enable_debug_gamslinks"
-  case "${enableval}" in
-    yes) coin_debug_compile=true
-         enable_shared=no
-         ;;
-    no)  coin_debug_compile=false
-         ;;
-    *) { { echo "$as_me:$LINENO: error: bad value ${enableval} for --enable-debug-gamslinks" >&5
-echo "$as_me: error: bad value ${enableval} for --enable-debug-gamslinks" >&2;}
-   { (exit 1); exit 1; }; }
-         ;;
- esac
-else
-  :
-fi;
-
- # m4_ifvaln([GAMSlinks],
-
-if test $coin_debug_compile = true; then
-  echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-
-# Check whether --with-gamslinks-verbosity or --without-gamslinks-verbosity was given.
-if test "${with_gamslinks_verbosity+set}" = set; then
-  withval="$with_gamslinks_verbosity"
-  if test "$withval" = yes; then
-                withval=1
-              fi
-              coin_gamslinks_verbosity=$withval
-else
-  coin_gamslinks_verbosity=0
-fi;
-
-cat >>confdefs.h <<_ACEOF
-#define COIN_GAMSLINKS_VERBOSITY $coin_gamslinks_verbosity
-_ACEOF
-
-
-
-# Check whether --with-gamslinks-checklevel or --without-gamslinks-checklevel was given.
-if test "${with_gamslinks_checklevel+set}" = set; then
-  withval="$with_gamslinks_checklevel"
-  if test "$withval" = yes; then
-                withval=1
-              fi
-              coin_gamslinks_checklevel=$withval
-else
-  coin_gamslinks_checklevel=0
-fi;
-
-cat >>confdefs.h <<_ACEOF
-#define COIN_GAMSLINKS_CHECKLEVEL $coin_gamslinks_checklevel
-_ACEOF
-
-
-# We use the following variable to have a string with the upper case
-# version of the project name
-COIN_PRJCT=GAMSLINKS
-
-
- # m4_ifvaln([GAMSlinks],
-
-
+# AC_COIN_DEBUG_COMPILE(GAMSlinks)
 
 # We need egrep and ln -s somewhere
 echo "$as_me:$LINENO: checking for egrep" >&5
@@ -4035,7 +3932,6 @@ case "$CXX" in
   ;;
 esac
 
-
 # Get the C++ runtime libraries in case we want to link with a C or
 # Fortran compiler
 ac_ext=cc
@@ -4330,7 +4226,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:4333:" \
+echo "$as_me:4229:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4896,7 +4792,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_verb"
-(eval echo $as_me:4899: \"$ac_link\") >&5
+(eval echo $as_me:4795: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -4974,7 +4870,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_cv_prog_f77_v"
-(eval echo $as_me:4977: \"$ac_link\") >&5
+(eval echo $as_me:4873: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -7421,7 +7317,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7424 "configure"' > conftest.$ac_ext
+  echo '#line 7320 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9401,11 +9297,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9404: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9300: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9408: \$? = $ac_status" >&5
+   echo "$as_me:9304: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9669,11 +9565,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9672: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9568: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9676: \$? = $ac_status" >&5
+   echo "$as_me:9572: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9773,11 +9669,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9776: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9672: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9780: \$? = $ac_status" >&5
+   echo "$as_me:9676: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12190,7 +12086,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12193 "configure"
+#line 12089 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12290,7 +12186,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12293 "configure"
+#line 12189 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14650,11 +14546,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14653: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14549: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14657: \$? = $ac_status" >&5
+   echo "$as_me:14553: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14754,11 +14650,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14757: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14653: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14761: \$? = $ac_status" >&5
+   echo "$as_me:14657: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16324,11 +16220,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16327: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16223: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16331: \$? = $ac_status" >&5
+   echo "$as_me:16227: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16428,11 +16324,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16431: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16327: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16435: \$? = $ac_status" >&5
+   echo "$as_me:16331: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18635,11 +18531,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18638: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18534: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18642: \$? = $ac_status" >&5
+   echo "$as_me:18538: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18903,11 +18799,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18906: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18802: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18910: \$? = $ac_status" >&5
+   echo "$as_me:18806: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19007,11 +18903,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19010: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18906: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19014: \$? = $ac_status" >&5
+   echo "$as_me:18910: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -21910,9 +21806,6 @@ LT_LDFLAGS=
 
 #END
 }
-
-# A Fix for the AIX compiler
-#AM_CONDITIONAL([AIX_FIX_COMPILER_BUG], test "x$AIX_FIX_COMPILER_BUG" != x)
 
 #############################################################################
 #                              COIN components                              #
@@ -25636,9 +25529,57 @@ fi
 
 
 
-###############
-# GAMS SYSTEM #
-###############
+# including scip.h gives some warnings that result in errors if -pedantic-errors is used
+# thus, we disable these warnings if SCIP is used
+if test "x$coin_has_scip" = xtrue ; then
+  case "$CC" in
+    gcc* | */gcc*)
+      CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas -Wno-long-long"
+    ;;
+  esac
+fi
+
+
+########################
+# OS Solver Interfaces #
+########################
+
+#if enable-os-solver is set, then we link the Gams/OS binary with all available coin solvers that have an OS interface and allow a "local" solve
+echo "$as_me:$LINENO: checking whether to include solvers into GamsOS binary" >&5
+echo $ECHO_N "checking whether to include solvers into GamsOS binary... $ECHO_C" >&6
+# Check whether --enable-os-solver or --disable-os-solver was given.
+if test "${enable_os_solver+set}" = set; then
+  enableval="$enable_os_solver"
+  os_solver=yes
+
+cat >>confdefs.h <<\_ACEOF
+#define COIN_OS_SOLVER 1
+_ACEOF
+
+else
+  os_solver=no
+fi;
+
+
+
+if test x"$os_solver" = xyes; then
+  COIN_OS_SOLVER_TRUE=
+  COIN_OS_SOLVER_FALSE='#'
+else
+  COIN_OS_SOLVER_TRUE='#'
+  COIN_OS_SOLVER_FALSE=
+fi
+
+echo "$as_me:$LINENO: result: $os_solver" >&5
+echo "${ECHO_T}$os_solver" >&6
+
+####################################
+# GAMS system and GAMS I/O LIBRARY #
+####################################
+
+
+
+#check whether we have a GAMS system available
 
 GAMS_PATH=UNAVAILABLE
 
@@ -25713,11 +25654,6 @@ fi
    GAMS_PATH=${gamspath/%gams/}
 
 fi;
-#if test x"$GAMS_PATH" != xUNAVAILABLE; then
-#	AC_MSG_NOTICE([found GAMS system at $GAMS_PATH])
-#else
-#	AC_MSG_RESULT([no GAMS system available])
-#fi
 
 
 if test $GAMS_PATH != UNAVAILABLE; then
@@ -25729,13 +25665,13 @@ else
 fi
 
 
-####################
-# GAMS I/O LIBRARY #
-####################
+if test $GAMS_PATH = UNAVAILABLE; then
+  { echo "$as_me:$LINENO: no GAMS system found, tests will not work" >&5
+echo "$as_me: no GAMS system found, tests will not work" >&6;}
+fi
 
-# This macro checks for a library containing the GAMS I/O library.
-# It defines the makefile conditional and preprocessor macro
-# COIN_HAS_GAMSIO, if GAMS I/O is available.
+
+#check on which architecture we are running
 
 GAMSIO_CODE=unsupportedarchitecture
 
@@ -25772,23 +25708,23 @@ fi;
 case $GAMSIO_CODE in
   LEI)
       gamsio_system=Linux
-      CIA_CODE=LEX
+      GAMSIO_CIA=CIA_LEX
     ;;
   LX3)
       gamsio_system=Linux
-      CIA_CODE=LNX
+      GAMSIO_CIA=CIA_LNX
     ;;
   VIS)
       gamsio_system=Windows
-      CIA_CODE=WIN
+      GAMSIO_CIA=CIA_WIN
     ;;
   DII)
       gamsio_system=Darwin
-      CIA_CODE=DAR
+      GAMSIO_CIA=CIA_DAR
     ;;
   SIG)
       gamsio_system=Solaris
-      CIA_CODE=SIS
+      GAMSIO_CIA=CIA_SIS
     ;;
   *)
       { { echo "$as_me:$LINENO: error: GAMS I/O libraries with system code $GAMSIO_CODE not supported." >&5
@@ -25796,7 +25732,89 @@ echo "$as_me: error: GAMS I/O libraries with system code $GAMSIO_CODE not suppor
    { (exit 1); exit 1; }; }
 esac
 
-#Intel Fortran libraries (required for Linux systems when not compiling with Intel compiler)
+
+
+
+
+if test x"$gamsio_system" = xDarwin; then
+  GAMSIO_IS_DARWIN_TRUE=
+  GAMSIO_IS_DARWIN_FALSE='#'
+else
+  GAMSIO_IS_DARWIN_TRUE='#'
+  GAMSIO_IS_DARWIN_FALSE=
+fi
+
+
+
+if test x"$gamsio_system" != xWindows; then
+  GAMSIO_IS_UNIX_TRUE=
+  GAMSIO_IS_UNIX_FALSE='#'
+else
+  GAMSIO_IS_UNIX_TRUE='#'
+  GAMSIO_IS_UNIX_FALSE=
+fi
+
+
+
+if test x"$gamsio_system" = xWindows; then
+  GAMSIO_IS_WINDOWS_TRUE=
+  GAMSIO_IS_WINDOWS_FALSE='#'
+else
+  GAMSIO_IS_WINDOWS_TRUE='#'
+  GAMSIO_IS_WINDOWS_FALSE=
+fi
+
+
+# check whether we have the GAMS I/O libraries that we need
+
+if test "$PACKAGE_NAME" = ThirdPartyGAMSIO; then
+  gamsio_objdir=.
+else
+  gamsio_objdir=../ThirdParty/GAMSIO
+fi
+gamsio_srcdir=`$CYGPATH_W $abs_source_dir/$gamsio_objdir/$GAMSIO_CODE | sed -e sX\\\\\\\\X/Xg`
+gamsio_objdir=`cd $gamsio_objdir; pwd`
+gamsio_objdir=`$CYGPATH_W $gamsio_objdir`
+as_ac_File=`echo "ac_cv_file_$gamsio_srcdir/iolib.h" | $as_tr_sh`
+echo "$as_me:$LINENO: checking for $gamsio_srcdir/iolib.h" >&5
+echo $ECHO_N "checking for $gamsio_srcdir/iolib.h... $ECHO_C" >&6
+if eval "test \"\${$as_ac_File+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  test "$cross_compiling" = yes &&
+  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+   { (exit 1); exit 1; }; }
+if test -r "$gamsio_srcdir/iolib.h"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
+if test `eval echo '${'$as_ac_File'}'` = yes; then
+  coin_has_gamsio=yes
+else
+
+  coin_has_gamsio=no
+	{ echo "$as_me:$LINENO: WARNING: no GAMS I/O libraries in ThirdParty/GAMSIO/$GAMSIO_CODE found. You can download them by calling $abs_source_dir/../ThirdParty/GAMSIO/get.$GAMSIO_CODE." >&5
+echo "$as_me: WARNING: no GAMS I/O libraries in ThirdParty/GAMSIO/$GAMSIO_CODE found. You can download them by calling $abs_source_dir/../ThirdParty/GAMSIO/get.$GAMSIO_CODE." >&2;}
+
+fi
+
+
+
+if test $coin_has_gamsio = no; then
+  { { echo "$as_me:$LINENO: error: need GAMS I/O libraries to build GAMSlinks" >&5
+echo "$as_me: error: need GAMS I/O libraries to build GAMSlinks" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+
+# check whether the Intel Fortran Compiler libraries are available
+# these are required to link with a non-Intel compiler Intel-compiler-compiled GAMSIO libraries
+
 IFORT_LIBS=
 if test x"$gamsio_system" = xLinux || test x"$gamsio_system" = xDarwin; then
 	case "$CXX" in
@@ -25890,81 +25908,41 @@ fi;
 	esac
 fi
 
-coin_gamsioobjdir=../ThirdParty/GAMSIO/$GAMSIO_CODE
-coin_gamsiosrcdir=`$CYGPATH_W $abs_source_dir/$coin_gamsioobjdir | sed -e sX\\\\\\\\X/Xg`
+# setting up linker flags
 
-#if user provided GAMS I/O libraries, use this one, otherwise check ThirdParty/GAMSIO directory
-
-# Check whether --with-gamsio or --without-gamsio was given.
-if test "${with_gamsio+set}" = set; then
-  withval="$with_gamsio"
-  use_gamsio=$withval
-else
-  as_ac_File=`echo "ac_cv_file_$coin_gamsiosrcdir/iolib.h" | $as_tr_sh`
-echo "$as_me:$LINENO: checking for $coin_gamsiosrcdir/iolib.h" >&5
-echo $ECHO_N "checking for $coin_gamsiosrcdir/iolib.h... $ECHO_C" >&6
-if eval "test \"\${$as_ac_File+set}\" = set"; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  test "$cross_compiling" = yes &&
-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
-   { (exit 1); exit 1; }; }
-if test -r "$coin_gamsiosrcdir/iolib.h"; then
-  eval "$as_ac_File=yes"
-else
-  eval "$as_ac_File=no"
-fi
-fi
-echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
-echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
-if test `eval echo '${'$as_ac_File'}'` = yes; then
-  use_gamsio=$coin_gamsiosrcdir
-else
-  use_gamsio=
-fi
-
-fi;
-
-if test x"$use_gamsio" = x; then
-  coin_has_gamsio=no
-	{ { echo "$as_me:$LINENO: error: no GAMS I/O libraries found. Either provide their path with the option --with-gamsio or download them by calling $abs_source_dir/../ThirdParty/GAMSIO/get.$GAMSIO_CODE." >&5
-echo "$as_me: error: no GAMS I/O libraries found. Either provide their path with the option --with-gamsio or download them by calling $abs_source_dir/../ThirdParty/GAMSIO/get.$GAMSIO_CODE." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-
-# Check if GAMS I/O libs work
-echo "$as_me:$LINENO: checking whether GAMS I/O libraries at $use_gamsio work" >&5
-echo $ECHO_N "checking whether GAMS I/O libraries at $use_gamsio work... $ECHO_C" >&6
 case $GAMSIO_CODE in
   LX3)
-      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
-      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
+      GAMSIO_LIBS="$gamsio_srcdir/iolib.a $gamsio_srcdir/nliolib.a $gamsio_srcdir/clicelib.a $gamsio_srcdir/gclib.a"
+      SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libg2d.a"
       GAMSIO_ADDLIBS="-ldl $IFORT_LIBS"
     ;;
   LEI)
-      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
-      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
+      GAMSIO_LIBS="$gamsio_srcdir/iolib.a $gamsio_srcdir/nliolib.a $gamsio_srcdir/clicelib.a $gamsio_srcdir/gclib.a"
+      SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libg2d.a"
       GAMSIO_ADDLIBS="-ldl $IFORT_LIBS"
     ;;
   VIS)
-      GAMSIO_LIBS="$use_gamsio/iolib.lib $use_gamsio/nliolib.lib $use_gamsio/clicelib.lib $use_gamsio/gclib.lib"
-      SMAG_LIBS="$use_gamsio/clicelib.lib $use_gamsio/smag.lib $use_gamsio/gclib.lib $use_gamsio/g2d.lib"
+      GAMSIO_LIBS="$gamsio_srcdir/iolib.lib $gamsio_srcdir/nliolib.lib $gamsio_srcdir/clicelib.lib $gamsio_srcdir/gclib.lib"
+      SMAG_LIBS="$gamsio_srcdir/clicelib.lib $gamsio_srcdir/smag.lib $gamsio_srcdir/gclib.lib $gamsio_srcdir/g2d.lib"
       GAMSIO_ADDLIBS=""
     ;;
   DII)
-      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
-      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
+      GAMSIO_LIBS="$gamsio_srcdir/iolib.a $gamsio_srcdir/nliolib.a $gamsio_srcdir/clicelib.a $gamsio_srcdir/gclib.a"
+      SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libg2d.a"
       GAMSIO_ADDLIBS="-ldl -lSystemStubs $IFORT_LIBS"
     ;;
   SIG)
-      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
-      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
+      GAMSIO_LIBS="$gamsio_srcdir/iolib.a $gamsio_srcdir/nliolib.a $gamsio_srcdir/clicelib.a $gamsio_srcdir/gclib.a"
+      SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libg2d.a"
       GAMSIO_ADDLIBS=""
     ;;
 esac
 
-GAMSIO_CPPFLAGS="-I$use_gamsio"
+# check whether we can use the iolib
+
+echo "$as_me:$LINENO: checking whether GAMS I/O libraries at $gamsio_srcdir work" >&5
+echo $ECHO_N "checking whether GAMS I/O libraries at $gamsio_srcdir work... $ECHO_C" >&6
+GAMSIO_CPPFLAGS="-I$gamsio_srcdir"
 LIBS="$GAMSIO_LIBS $GAMSIO_ADDLIBS $LIBS"
 CPPFLAGS_save=$CPPFLAGS
 CPPFLAGS="$GAMSIO_CPPFLAGS $CPPFLAGS"
@@ -26025,16 +26003,18 @@ sed 's/^/| /' conftest.$ac_ext >&5
 
 echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
-   { { echo "$as_me:$LINENO: error: GAMS I/O library $use_gamsio does not work" >&5
-echo "$as_me: error: GAMS I/O library $use_gamsio does not work" >&2;}
+   { { echo "$as_me:$LINENO: error: GAMS I/O library at $gamsio_src does not work" >&5
+echo "$as_me: error: GAMS I/O library at $gamsio_src does not work" >&2;}
    { (exit 1); exit 1; }; }
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
 
+# write out compiler, linker, Makefile... flags
 
 
-if test x"$use_gamsio" != x; then
+
+if test "$coin_has_gamsio" = yes; then
   COIN_HAS_GAMSIO_TRUE=
   COIN_HAS_GAMSIO_FALSE='#'
 else
@@ -26043,42 +26023,22 @@ else
 fi
 
 
-coin_has_gamsio=yes
-
 cat >>confdefs.h <<\_ACEOF
 #define COIN_HAS_GAMSIO 1
 _ACEOF
 
+COIN_HAS_GAMSIO=yes
 
 
 
 
 
+GAMSIO_OBJDIR=$gamsio_objdir
 
 
+# define the fortran name mangling scheme as used in the GAMS I/O libs
+# this is needed to use the g2dexports.h in SmagExtra.c
 
-
-
-if test x"$gamsio_system" != xWindows; then
-  GAMSIO_IS_UNIX_TRUE=
-  GAMSIO_IS_UNIX_FALSE='#'
-else
-  GAMSIO_IS_UNIX_TRUE='#'
-  GAMSIO_IS_UNIX_FALSE=
-fi
-
-
-
-if test x"$gamsio_system" = xWindows; then
-  GAMSIO_IS_WINDOWS_TRUE=
-  GAMSIO_IS_WINDOWS_FALSE='#'
-else
-  GAMSIO_IS_WINDOWS_TRUE='#'
-  GAMSIO_IS_WINDOWS_FALSE=
-fi
-
-
-#to use the g2dexports.h in SmagExtra.c, we need to define the fortran name mangling scheme
 case $ac_cv_f77_mangling in
   "lower case, no underscore"*)
     FORTRAN_NAMEMANGLING_CFLAG="-DFNAME_LCASE_NODECOR"
@@ -26100,38 +26060,7 @@ echo "$as_me: error: \"cannot handle name mangling scheme '$ac_cv_f77_mangling'.
 esac
 
 
-########################
-# OS Solver Interfaces #
-########################
 
-#if enable-os-solver is set, then we link the Gams/OS binary with all available coin solvers that have an OS interface and allow a "local" solve
-echo "$as_me:$LINENO: checking whether to include solvers into GamsOS binary" >&5
-echo $ECHO_N "checking whether to include solvers into GamsOS binary... $ECHO_C" >&6
-# Check whether --enable-os-solver or --disable-os-solver was given.
-if test "${enable_os_solver+set}" = set; then
-  enableval="$enable_os_solver"
-  os_solver=yes
-
-cat >>confdefs.h <<\_ACEOF
-#define COIN_OS_SOLVER 1
-_ACEOF
-
-else
-  os_solver=no
-fi;
-
-
-
-if test x"$os_solver" = xyes; then
-  COIN_OS_SOLVER_TRUE=
-  COIN_OS_SOLVER_FALSE='#'
-else
-  COIN_OS_SOLVER_TRUE='#'
-  COIN_OS_SOLVER_FALSE=
-fi
-
-echo "$as_me:$LINENO: result: $os_solver" >&5
-echo "${ECHO_T}$os_solver" >&6
 
 #################################################################################
 # Check which OSI solvers we build and which interfaces we can (and want) build #
@@ -26838,6 +26767,13 @@ echo "$as_me: error: conditional \"COIN_BUILD_SCIP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${COIN_OS_SOLVER_TRUE}" && test -z "${COIN_OS_SOLVER_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COIN_OS_SOLVER\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COIN_OS_SOLVER\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${COIN_HAS_GAMSSYSTEM_TRUE}" && test -z "${COIN_HAS_GAMSSYSTEM_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_GAMSSYSTEM\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -26845,10 +26781,10 @@ echo "$as_me: error: conditional \"COIN_HAS_GAMSSYSTEM\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
-if test -z "${COIN_HAS_GAMSIO_TRUE}" && test -z "${COIN_HAS_GAMSIO_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_GAMSIO\" was never defined.
+if test -z "${GAMSIO_IS_DARWIN_TRUE}" && test -z "${GAMSIO_IS_DARWIN_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"GAMSIO_IS_DARWIN\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"COIN_HAS_GAMSIO\" was never defined.
+echo "$as_me: error: conditional \"GAMSIO_IS_DARWIN\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -26866,10 +26802,10 @@ echo "$as_me: error: conditional \"GAMSIO_IS_WINDOWS\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
-if test -z "${COIN_OS_SOLVER_TRUE}" && test -z "${COIN_OS_SOLVER_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"COIN_OS_SOLVER\" was never defined.
+if test -z "${COIN_HAS_GAMSIO_TRUE}" && test -z "${COIN_HAS_GAMSIO_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_GAMSIO\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"COIN_OS_SOLVER\" was never defined.
+echo "$as_me: error: conditional \"COIN_HAS_GAMSIO\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -27657,26 +27593,29 @@ s,@COIN_HAS_SCIP_FALSE@,$COIN_HAS_SCIP_FALSE,;t t
 s,@SCIPOBJDIR@,$SCIPOBJDIR,;t t
 s,@COIN_BUILD_SCIP_TRUE@,$COIN_BUILD_SCIP_TRUE,;t t
 s,@COIN_BUILD_SCIP_FALSE@,$COIN_BUILD_SCIP_FALSE,;t t
+s,@COIN_OS_SOLVER_TRUE@,$COIN_OS_SOLVER_TRUE,;t t
+s,@COIN_OS_SOLVER_FALSE@,$COIN_OS_SOLVER_FALSE,;t t
 s,@gamspath@,$gamspath,;t t
 s,@COIN_HAS_GAMSSYSTEM_TRUE@,$COIN_HAS_GAMSSYSTEM_TRUE,;t t
 s,@COIN_HAS_GAMSSYSTEM_FALSE@,$COIN_HAS_GAMSSYSTEM_FALSE,;t t
-s,@COIN_HAS_GAMSIO_TRUE@,$COIN_HAS_GAMSIO_TRUE,;t t
-s,@COIN_HAS_GAMSIO_FALSE@,$COIN_HAS_GAMSIO_FALSE,;t t
-s,@coin_has_gamsio@,$coin_has_gamsio,;t t
 s,@GAMS_PATH@,$GAMS_PATH,;t t
-s,@GAMSIO_CPPFLAGS@,$GAMSIO_CPPFLAGS,;t t
-s,@GAMSIO_ADDLIBS@,$GAMSIO_ADDLIBS,;t t
-s,@GAMSIO_LIBS@,$GAMSIO_LIBS,;t t
-s,@SMAG_LIBS@,$SMAG_LIBS,;t t
 s,@GAMSIO_CODE@,$GAMSIO_CODE,;t t
-s,@CIA_CODE@,$CIA_CODE,;t t
+s,@GAMSIO_CIA@,$GAMSIO_CIA,;t t
+s,@GAMSIO_IS_DARWIN_TRUE@,$GAMSIO_IS_DARWIN_TRUE,;t t
+s,@GAMSIO_IS_DARWIN_FALSE@,$GAMSIO_IS_DARWIN_FALSE,;t t
 s,@GAMSIO_IS_UNIX_TRUE@,$GAMSIO_IS_UNIX_TRUE,;t t
 s,@GAMSIO_IS_UNIX_FALSE@,$GAMSIO_IS_UNIX_FALSE,;t t
 s,@GAMSIO_IS_WINDOWS_TRUE@,$GAMSIO_IS_WINDOWS_TRUE,;t t
 s,@GAMSIO_IS_WINDOWS_FALSE@,$GAMSIO_IS_WINDOWS_FALSE,;t t
+s,@COIN_HAS_GAMSIO_TRUE@,$COIN_HAS_GAMSIO_TRUE,;t t
+s,@COIN_HAS_GAMSIO_FALSE@,$COIN_HAS_GAMSIO_FALSE,;t t
+s,@COIN_HAS_GAMSIO@,$COIN_HAS_GAMSIO,;t t
+s,@GAMSIO_CPPFLAGS@,$GAMSIO_CPPFLAGS,;t t
+s,@GAMSIO_ADDLIBS@,$GAMSIO_ADDLIBS,;t t
+s,@GAMSIO_LIBS@,$GAMSIO_LIBS,;t t
+s,@SMAG_LIBS@,$SMAG_LIBS,;t t
+s,@GAMSIO_OBJDIR@,$GAMSIO_OBJDIR,;t t
 s,@FORTRAN_NAMEMANGLING_CFLAG@,$FORTRAN_NAMEMANGLING_CFLAG,;t t
-s,@COIN_OS_SOLVER_TRUE@,$COIN_OS_SOLVER_TRUE,;t t
-s,@COIN_OS_SOLVER_FALSE@,$COIN_OS_SOLVER_FALSE,;t t
 s,@coin_build_clp@,$coin_build_clp,;t t
 s,@coin_build_cbc@,$coin_build_cbc,;t t
 s,@coin_build_glpk@,$coin_build_glpk,;t t

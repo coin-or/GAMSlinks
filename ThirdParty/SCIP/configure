@@ -1689,7 +1689,7 @@ build_os=`echo $ac_cv_build | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 
 
 coin_skip_warn_cflags=yes
-#coin_skip_warn_cxxflags=yes
+coin_skip_warn_cxxflags=yes
 
 # Check if user wants to produce debugging code
 # AC_COIN_DEBUG_COMPILE(SCIP)

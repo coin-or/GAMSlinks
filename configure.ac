@@ -1,4 +1,4 @@
-# Copyright (C) GAMS Development 2006, 2007
+# Copyright (C) 2006-2008 GAMS Development and others
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 
@@ -14,7 +14,7 @@ AC_PREREQ(2.59)
 
 AC_INIT([GAMSlinks],[0.3],[https://projects.coin-or.org/GAMSlinks/newticket])
 
-AC_COPYRIGHT([Copyright (C) GAMS Development 2006-2007
+AC_COPYRIGHT([Copyright (C) 2006-2008 GAMS Development and others
 All Rights Reserved.
 This file is part of the open source package Coin which is distributed
 under the Common Public License.])
@@ -47,18 +47,16 @@ AC_COIN_THIRDPARTY_SUBDIRS([Blas],[ThirdParty/Blas],[daxpy.f])
 AC_COIN_THIRDPARTY_SUBDIRS([Lapack],[ThirdParty/Lapack],[LAPACK/SRC/dlarf.f])
 AC_COIN_THIRDPARTY_SUBDIRS([HSL],[ThirdParty/HSL],[configure.ac])
 AC_COIN_THIRDPARTY_SUBDIRS([Mumps],[ThirdParty/Mumps],[MUMPS/src/dmumps_part1.F])
-#AC_COIN_THIRDPARTY_SUBDIRS([Scip],[ThirdParty/SCIP],[scip/src/scip/scip.h])
 
 #############################################################################
 #                  Check which subprojects are there                        #
 #############################################################################
 
+#we want SCIP to be build after CoinUtils and Clp in order to use them there 
+
 AC_COIN_MAIN_SUBDIRS(CoinUtils)
 AC_COIN_MAIN_SUBDIRS(Clp)
-
 AC_COIN_THIRDPARTY_SUBDIRS([Scip],[ThirdParty/SCIP],[scip/src/scip/scip.h])
-
-
 AC_COIN_MAIN_SUBDIRS(DyLP)
 AC_COIN_MAIN_SUBDIRS(Vol)
 AC_COIN_MAIN_SUBDIRS(Cgl)
@@ -67,10 +65,8 @@ AC_COIN_MAIN_SUBDIRS(SYMPHONY)
 AC_COIN_MAIN_SUBDIRS(Cbc)
 AC_COIN_MAIN_SUBDIRS(Ipopt)
 AC_COIN_MAIN_SUBDIRS(Bonmin)
-
 AC_COIN_MAIN_SUBDIRS(cppad)
 AC_COIN_MAIN_SUBDIRS(OS)
-
 AC_COIN_MAIN_SUBDIRS(GAMSlinks)
 
 ##############################################################################

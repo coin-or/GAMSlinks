@@ -1,3 +1,11 @@
+# Copyright (C) 2008 GAMS Development and others 
+# All Rights Reserved.
+# This file is distributed under the Common Public License.
+#
+## $Id$
+#
+# Author: Stefan Vigerske
+
 ###########################################################################
 #                             COIN_HAS_SCIP                               #
 ###########################################################################
@@ -8,7 +16,7 @@
 # a preexisting library (this allows the use of any scip version, if the user
 # is fussy). The macro then checks for ThirdParty/SCIP.
 #
-# This macro will define the following variables for Glpk:
+# This macro will define the following variables:
 #   coin_has_scip	true or false
 #   SCIPLIB		    link flags for SCIP if library is user supplied
 #   SCIPINCDIR		location of SCIP include files

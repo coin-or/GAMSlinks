@@ -38,7 +38,7 @@ AC_COIN_PROJECTDIR_INIT
 AC_CANONICAL_BUILD
 
 coin_skip_warn_cflags=yes
-#coin_skip_warn_cxxflags=yes
+coin_skip_warn_cxxflags=yes
 
 # Check if user wants to produce debugging code
 # AC_COIN_DEBUG_COMPILE(SCIP)

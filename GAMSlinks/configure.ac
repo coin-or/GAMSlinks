@@ -1,4 +1,4 @@
-# Copyright (C) GAMS Development 2006-2008
+# Copyright (C) 2006-2008 GAMS Development and others
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -43,7 +43,7 @@ AC_CANONICAL_BUILD
 AC_COIN_PROJECTDIR_INIT
 
 # Check if user wants to produce debugging code
-AC_COIN_DEBUG_COMPILE(GAMSlinks)
+# AC_COIN_DEBUG_COMPILE(GAMSlinks)
 
 # We need egrep and ln -s somewhere
 AC_PROG_EGREP
@@ -61,7 +61,6 @@ case "$CXX" in
   ;;
 esac
 
-
 # Get the C++ runtime libraries in case we want to link with a C or
 # Fortran compiler
 AC_COIN_CXXLIBS
@@ -77,9 +76,6 @@ fi
 
 # Initialize automake and libtool
 AC_COIN_INIT_AUTO_TOOLS
-
-# A Fix for the AIX compiler
-#AM_CONDITIONAL([AIX_FIX_COMPILER_BUG], test "x$AIX_FIX_COMPILER_BUG" != x)
 
 #############################################################################
 #                              COIN components                              #
@@ -154,197 +150,16 @@ AC_COIN_HAS_GLPK(Glpk)
 
 AC_COIN_HAS_SCIP
 
-###############
-# GAMS SYSTEM #
-###############
-
-GAMS_PATH=UNAVAILABLE
-AC_ARG_WITH([gamssystem],
-  AC_HELP_STRING([--with-gamssystem],[specify directory of GAMS distribution]),
-  AC_CHECK_FILE([$withval/gams],[GAMS_PATH=$withval],[GAMS_PATH=UNAVAILABLE]),
-  [AC_PATH_PROG(gamspath, [gams], UNAVAILABLE,,)
-   GAMS_PATH=${gamspath/%gams/}
-  ])
-#if test x"$GAMS_PATH" != xUNAVAILABLE; then
-#	AC_MSG_NOTICE([found GAMS system at $GAMS_PATH])
-#else
-#	AC_MSG_RESULT([no GAMS system available])
-#fi
-AM_CONDITIONAL([COIN_HAS_GAMSSYSTEM], [test $GAMS_PATH != UNAVAILABLE])
-
-####################
-# GAMS I/O LIBRARY #
-####################
-
-# This macro checks for a library containing the GAMS I/O library.
-# It defines the makefile conditional and preprocessor macro
-# COIN_HAS_GAMSIO, if GAMS I/O is available.
-
-GAMSIO_CODE=unsupportedarchitecture
-
-AC_ARG_WITH([gamsio-code],
-  AC_HELP_STRING([--with-gamsio-code],[specify the GAMS I/O code used to identify the GAMS I/O libraries types]),
-  [GAMSIO_CODE=$withval],
-  [case $build in
-      x86_64-*-linux-*)
-        GAMSIO_CODE=LEI
-      ;;
-      i?86-*-linux-*)
-        GAMSIO_CODE=LX3
-      ;;
-      *-cygwin* | *-mingw*)
-        GAMSIO_CODE=VIS
-      ;;
-      i?86-*-darwin*)
-        GAMSIO_CODE=DII
-      ;;
-      i?86-*-solaris*)
-        GAMSIO_CODE=SIG
-      ;;
-      *)
-        AC_MSG_ERROR([Build type $build not supported by GAMS I/O libraries.])
-  esac]
-)
-
-case $GAMSIO_CODE in
-  LEI)
-      gamsio_system=Linux
-      CIA_CODE=LEX
+# including scip.h gives some warnings that result in errors if -pedantic-errors is used
+# thus, we disable these warnings if SCIP is used
+if test "x$coin_has_scip" = xtrue ; then
+  case "$CC" in
+    gcc* | */gcc*)
+      CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas -Wno-long-long"
     ;;
-  LX3)
-      gamsio_system=Linux
-      CIA_CODE=LNX
-    ;;
-  VIS)
-      gamsio_system=Windows
-      CIA_CODE=WIN
-    ;;
-  DII)
-      gamsio_system=Darwin
-      CIA_CODE=DAR
-    ;;
-  SIG)
-      gamsio_system=Solaris
-      CIA_CODE=SIS
-    ;;
-  *)
-      AC_MSG_ERROR([GAMS I/O libraries with system code $GAMSIO_CODE not supported.])
-esac
-
-#Intel Fortran libraries (required for Linux systems when not compiling with Intel compiler)
-IFORT_LIBS=
-if test x"$gamsio_system" = xLinux || test x"$gamsio_system" = xDarwin; then
-	case "$CXX" in
-		icpc* | */icpc*)
-			;;
-		*)
-		  AC_ARG_WITH([ifort-libdir],
-        AC_HELP_STRING([--with-ifort-libdir],[specify directory of Intel Fortran libraries]),
-        AC_CHECK_FILE([$withval/libifcore.so],[IFORT_LIBS="-L$withval"],
-          AC_CHECK_FILE([$withval/libifcore.a],[IFORT_LIBS="-L$withval"],
-            AC_MSG_WARN([Path for Intel Fortran Libraries given by --with-ifort-libdir but no libifcore.so or libifcore.a found. GAMS I/O libraries might fail to link.])        
-        )),
-        [if test x"$GAMS_PATH" != xUNAVAILABLE; then
-          AC_CHECK_FILE([$GAMS_PATH/libifcore.so],[IFORT_LIBS="-L$GAMS_PATH"],)
-         else
-          AC_MSG_WARN([Path for Intel Fortran Libraries not given by --with-ifort-libdir and no GAMS system available. GAMS I/O libraries might fail to link.])
-         fi
-        ])
-      IFORT_LIBS="$IFORT_LIBS -lifcore -limf -lirc"
-	esac
+  esac
 fi
 
-coin_gamsioobjdir=../ThirdParty/GAMSIO/$GAMSIO_CODE
-coin_gamsiosrcdir=`$CYGPATH_W $abs_source_dir/$coin_gamsioobjdir | sed -e sX\\\\\\\\X/Xg`
-
-#if user provided GAMS I/O libraries, use this one, otherwise check ThirdParty/GAMSIO directory
-AC_ARG_WITH([gamsio],
-  AC_HELP_STRING([--with-gamsio],[specify directory of GAMS I/O libraries and header files]),
-  [use_gamsio=$withval],
-  [AC_CHECK_FILE([$coin_gamsiosrcdir/iolib.h],[use_gamsio=$coin_gamsiosrcdir],[use_gamsio=])])
-
-if test x"$use_gamsio" = x; then
-  coin_has_gamsio=no
-	AC_MSG_ERROR([no GAMS I/O libraries found. Either provide their path with the option --with-gamsio or download them by calling $abs_source_dir/../ThirdParty/GAMSIO/get.$GAMSIO_CODE.])
-fi
-
-# Check if GAMS I/O libs work
-AC_MSG_CHECKING([whether GAMS I/O libraries at $use_gamsio work])
-case $GAMSIO_CODE in
-  LX3)
-      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
-      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
-      GAMSIO_ADDLIBS="-ldl $IFORT_LIBS"
-    ;;
-  LEI)
-      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
-      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
-      GAMSIO_ADDLIBS="-ldl $IFORT_LIBS"
-    ;;
-  VIS)
-      GAMSIO_LIBS="$use_gamsio/iolib.lib $use_gamsio/nliolib.lib $use_gamsio/clicelib.lib $use_gamsio/gclib.lib"
-      SMAG_LIBS="$use_gamsio/clicelib.lib $use_gamsio/smag.lib $use_gamsio/gclib.lib $use_gamsio/g2d.lib"
-      GAMSIO_ADDLIBS=""
-    ;;
-  DII)
-      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
-      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
-      GAMSIO_ADDLIBS="-ldl -lSystemStubs $IFORT_LIBS"
-    ;;
-  SIG)
-      GAMSIO_LIBS="$use_gamsio/iolib.a $use_gamsio/nliolib.a $use_gamsio/clicelib.a $use_gamsio/gclib.a"
-      SMAG_LIBS="$use_gamsio/clicelib.a $use_gamsio/libsmag.a $use_gamsio/gclib.a $use_gamsio/libg2d.a"
-      GAMSIO_ADDLIBS=""
-    ;;
-esac
-
-GAMSIO_CPPFLAGS="-I$use_gamsio"
-LIBS="$GAMSIO_LIBS $GAMSIO_ADDLIBS $LIBS"
-CPPFLAGS_save=$CPPFLAGS
-CPPFLAGS="$GAMSIO_CPPFLAGS $CPPFLAGS"
-AC_TRY_LINK([
-#include <cstdio>
-#include "iolib.h"], [gfinit()],
-  [AC_MSG_RESULT([yes])
-   LIBS=$LIBS_without_ADDLIBS
-   CPPFLAGS=$CPPFLAGS_save],
-  [AC_MSG_RESULT([no])
-   AC_MSG_ERROR([GAMS I/O library $use_gamsio does not work])])
-
-AM_CONDITIONAL([COIN_HAS_GAMSIO],[test x"$use_gamsio" != x])
-
-coin_has_gamsio=yes
-AC_DEFINE([COIN_HAS_GAMSIO],[1],[If defined, the GAMS I/O Library is available.])
-AC_SUBST(coin_has_gamsio)
-AC_SUBST(GAMS_PATH)
-AC_SUBST(GAMSIO_CPPFLAGS)
-AC_SUBST(GAMSIO_ADDLIBS)
-AC_SUBST(GAMSIO_LIBS)
-AC_SUBST(SMAG_LIBS)
-AC_SUBST(GAMSIO_CODE)
-AC_SUBST(CIA_CODE)
-AM_CONDITIONAL([GAMSIO_IS_UNIX],[test x"$gamsio_system" != xWindows])
-AM_CONDITIONAL([GAMSIO_IS_WINDOWS],[test x"$gamsio_system" = xWindows])
-
-#to use the g2dexports.h in SmagExtra.c, we need to define the fortran name mangling scheme 
-case $ac_cv_f77_mangling in
-  "lower case, no underscore"*)
-    FORTRAN_NAMEMANGLING_CFLAG="-DFNAME_LCASE_NODECOR"
-  ;;
-  "lower case, underscore"*)
-    FORTRAN_NAMEMANGLING_CFLAG="-DFNAME_LCASE_DECOR"
-  ;;
-  "upper case, no underscore"*)
-    FORTRAN_NAMEMANGLING_CFLAG="-DFNAME_UCASE_NODECOR"
-  ;;
-  "upper case, underscore"*)
-    FORTRAN_NAMEMANGLING_CFLAG="-DFNAME_UCASE_DECOR"
-  ;;
-  *)
-    AC_MSG_ERROR("cannot handle name mangling scheme '$ac_cv_f77_mangling'. Compilation of SmagExtra.c will probably fail.")
-  ;;
-esac
-AC_SUBST(FORTRAN_NAMEMANGLING_CFLAG)
 
 ########################
 # OS Solver Interfaces #
@@ -360,6 +175,16 @@ AC_ARG_ENABLE(os-solver,
   
 AM_CONDITIONAL(COIN_OS_SOLVER, [test x"$os_solver" = xyes])
 AC_MSG_RESULT([$os_solver])
+
+####################################
+# GAMS system and GAMS I/O LIBRARY #
+####################################
+
+AC_COIN_HAVE_GAMS
+if test $coin_has_gamsio = no; then
+  AC_MSG_ERROR([need GAMS I/O libraries to build GAMSlinks])
+fi
+AC_COIN_USE_GAMS
 
 #################################################################################
 # Check which OSI solvers we build and which interfaces we can (and want) build #
