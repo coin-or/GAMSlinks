@@ -246,3 +246,43 @@ esac
 AC_SUBST(FORTRAN_NAMEMANGLING_CFLAG)
 
 ]) # end of COIN_USE_GAMS
+
+
+#######################################################################
+#                     COIN_GAMSCPLEX_LICENCE                          #
+#######################################################################
+
+# This macro assumes that COIN_USE_GAMS was run before and that CPLEX is available.
+# It defines the following variables:
+#
+# COIN_HAS_GAMSCPLEXLICENCE   AC_DEFINE to indicate whether a GAMS/CPLEX licence library is available
+# COIN_HAS_GAMSCPLEXLICENCE   AM_CONDITIONAL to indicate whether a GAMS/CPLEX licence library is available
+# coin_has_gamscplexlicence   shell variable that indicates whether a GAMS/CPLEX licence library is available (value is yes or no)
+#
+# Further, the path to the gams/cplex licence library is added to GAMSIO_LIBS.
+
+AC_DEFUN([AC_COIN_GAMSCPLEX_LICENCE],[
+
+AC_LANG_PUSH(C)						
+	
+AC_MSG_CHECKING([whether GAMS/CPLEX licence library is present and working])
+coin_save_libs=$LIBS
+coin_save_cppflags=$CPPFLAGS
+CPPFLAGS="$GAMSIO_CPPFLAGS $CPPFLAGS"
+LIBS="$gamsio_srcdir/libgamscplexlice.a $LIBS $CPXLIB $GAMSIO_LIBS"
+AC_TRY_LINK([#include "gamscplexlice.h"], [gamscplexlice(0,0,0,0,0,0,0,0,0,0,0,0,0)],
+  [AC_MSG_RESULT([yes])
+   coin_has_gamscplexlice=yes
+   GAMSIO_LIBS="$gamsio_srcdir/libgamscplexlice.a $GAMSIO_LIBS"
+	 AC_DEFINE([COIN_HAS_GAMSCPLEXLICE],[1],[If defined, the GAMS/CPLEX licence library is available.])
+  ],
+ 	[AC_MSG_RESULT([no])
+   coin_has_gamscplexlice=no
+])
+LIBS=$coin_save_libs
+CPPFLAGS=$coin_save_cppflags
+AC_LANG_POP(C)
+
+AM_CONDITIONAL([COIN_HAS_GAMSCPLEXLICENCE],[test "$coin_has_gamscplexlice" = yes])
+
+]) # end of AC_COIN_GAMSCPLEX_LICENCE
