@@ -23,6 +23,11 @@ set g Glpk Option Groups /
       tol_integer            integer feasibility tolerance
       backtracking           backtracking heuristic
       presolve               LP presolver
+      cuts                   turning on or off all cut generators
+      covercuts              cover cuts
+      cliquecuts             clique cuts
+      gomorycuts             gomorys mixed-integer cuts
+      mircuts                mixed-integer rounding cuts
       reslim_fixedrun        resource limit for solve with fixed discrete variables
       noiterlim              turn off iteration limit
       names                  indicates whether row and column names should be given to glpk
@@ -51,6 +56,11 @@ general.(
   tol_integer     .r.(def 1e-5)
   backtracking    .s.(def bestprojection)
   presolve        .b.(def 1)
+  cuts            .i.(def 0, lo '-1', up 1)
+  covercuts       .b.(def 1)
+  cliquecuts      .b.(def 1)
+  gomorycuts      .b.(def 1)
+  mircuts         .b.(def 0)
   reslim_fixedrun .r.(def 1000)
   noiterlim       .b.(def 0)
   names           .b.(def 0)
@@ -82,6 +92,11 @@ $onempty
   backtracking.(  depthfirst       
                   breadthfirst     
                   bestprojection   )
+  cuts.(          '-1', 0, 1)
+  cliquecuts.(    0, 1)
+  covercuts.(     0, 1)
+  gomorycuts.(    0, 1)
+  mircuts.(       0, 1)
   presolve.(      0, 1 )
   noiterlim.(     0, 1 )
  /
@@ -95,5 +110,5 @@ $offempty
 *                     cutoff     'GAMS cutoff'
                    /
 $onempty
- oep(o) enum options for documentation only / presolve, noiterlim /;
+ oep(o) enum options for documentation only / presolve, noiterlim, cuts, cliquecuts, covercuts, gomorycuts, mircuts /;
 $offempty

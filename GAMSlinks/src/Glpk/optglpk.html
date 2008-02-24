@@ -23,15 +23,30 @@ complete <a href="docs/solvers/coin.pdf">GLPK manual</a>.
 <tr><td><a href="#backtracking">
 backtracking</a></td>
 <td>backtracking heuristic</td></tr>
+<tr><td><a href="#cliquecuts">
+cliquecuts</a></td>
+<td>clique cuts</td></tr>
+<tr><td><a href="#covercuts">
+covercuts</a></td>
+<td>cover cuts</td></tr>
+<tr><td><a href="#cuts">
+cuts</a></td>
+<td>turning on or off all cut generators</td></tr>
 <tr><td><a href="#factorization">
 factorization</a></td>
 <td>basis factorization method</td></tr>
+<tr><td><a href="#gomorycuts">
+gomorycuts</a></td>
+<td>gomorys mixed-integer cuts</td></tr>
 <tr><td><a href="#initbasis">
 initbasis</a></td>
 <td>method for initial basis</td></tr>
 <tr><td><a href="#iterlim">
 iterlim</a></td>
 <td>iteration limit</td></tr>
+<tr><td><a href="#mircuts">
+mircuts</a></td>
+<td>mixed-integer rounding cuts</td></tr>
 <tr><td><a href="#names">
 names</a></td>
 <td>indicates whether row and column names should be given to glpk</td></tr>
@@ -89,6 +104,50 @@ Let GLPK use a breadth first search.</td></tr>
 Let GLPK use a best projection heuristic.</td></tr>
 </table>
 
+<h4><a name="cliquecuts">
+cliquecuts</a>
+<i> (integer)</i> clique cuts</h4><p>
+
+Whether to enable clique cuts.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turn off clique cuts</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turn on clique cuts</td></tr>
+</table>
+
+<h4><a name="covercuts">
+covercuts</a>
+<i> (integer)</i> cover cuts</h4><p>
+
+Whether to enable cover cuts.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turn off cover cuts</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turn on cover cuts</td></tr>
+</table>
+
+<h4><a name="cuts">
+cuts</a>
+<i> (integer)</i> turning on or off all cut generators</h4><p>
+
+Determines which cuts generator to use: none, all, or user-defined
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>-1</td><td>.
+Turn off all cut generators</td></tr>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turn on or off each cut generators separately</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turn on all cut generators</td></tr>
+</table>
+
 <h4><a name="factorization">
 factorization</a>
 <i> (string)</i> basis factorization method</h4><p>
@@ -107,6 +166,20 @@ This method is slower than Forrest-Tomlin, but more stable.</td></tr>
 <tr valign="top"><td width=20 align=right>givens</td><td>.
 Does a LU factorization followed by a Schur complement and Givens rotation updates.
 This method is slower than Forrest-Tomlin, but more stable.</td></tr>
+</table>
+
+<h4><a name="gomorycuts">
+gomorycuts</a>
+<i> (integer)</i> gomorys mixed-integer cuts</h4><p>
+
+Whether to enable Gomorys mixed-integer linear cuts.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turn off gomory cuts</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turn on gomory cuts</td></tr>
 </table>
 
 <h4><a name="initbasis">
@@ -134,6 +207,20 @@ Maximum number of simplex iterations.
 You can remove the limit on the simplex iterations by setting the <a href="#noiterlim">noiterlim option</a>.
 
 <br><i>(default = GAMS iterlim)</i>
+
+<h4><a name="mircuts">
+mircuts</a>
+<i> (integer)</i> mixed-integer rounding cuts</h4><p>
+
+Whether to enable mixed-integer rounding cuts.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turn off mir cuts</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turn on mir cuts</td></tr>
+</table>
 
 <h4><a name="names">
 names</a>

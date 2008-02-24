@@ -136,6 +136,70 @@ presolve.1
 Turns on the LP presolver.
 
 
+cuts
+Determines which cuts generator to use: none, all, or user-defined
+
+
+cuts.'-1'
+Turn off all cut generators
+
+
+cuts.1
+Turn on all cut generators
+
+
+cuts.0
+Turn on or off each cut generators separately
+
+
+gomorycuts
+Whether to enable Gomorys mixed-integer linear cuts.
+
+
+gomorycuts.0
+Turn off gomory cuts
+
+
+gomorycuts.1
+Turn on gomory cuts
+
+
+covercuts
+Whether to enable cover cuts.
+
+
+covercuts.0
+Turn off cover cuts
+
+
+covercuts.1
+Turn on cover cuts
+
+
+cliquecuts
+Whether to enable clique cuts.
+
+
+cliquecuts.0
+Turn off clique cuts
+
+
+cliquecuts.1
+Turn on clique cuts
+
+
+mircuts
+Whether to enable mixed-integer rounding cuts.
+
+
+mircuts.0
+Turn off mir cuts
+
+
+mircuts.1
+Turn on mir cuts
+
+
 reslim_fixedrun
 Maximum time in seconds for solving the MIP with fixed discrete variables.
 

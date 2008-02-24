@@ -29,6 +29,14 @@ backtracking enumstr 0 "bestprojection" 1 1 backtracking heuristic
  "breadthfirst" 1
  "bestprojection" 1
 presolve boolean 0 1 1 1 LP presolver
+cuts integer 0 0 -1 1 1 1 turning on or off all cut generators
+ -1 1
+ 0 1
+ 1 1
+covercuts boolean 0 1 1 1 cover cuts
+cliquecuts boolean 0 1 1 1 clique cuts
+gomorycuts boolean 0 1 1 1 gomorys mixed-integer cuts
+mircuts boolean 0 0 1 1 mixed-integer rounding cuts
 reslim_fixedrun double 0 1000 0 maxdouble 1 1 resource limit for solve with fixed discrete variables
 noiterlim boolean 0 0 1 1 turn off iteration limit
 names boolean 0 0 1 1 indicates whether row and column names should be given to glpk

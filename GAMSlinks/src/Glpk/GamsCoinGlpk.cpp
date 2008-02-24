@@ -385,19 +385,19 @@ void setupParametersMIP(GamsOptions& opt, CoinMessageHandler& myout, OsiGlpkSolv
 	else if	(strcmp(buffer, "bestprojection")==0)
 		lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 2);
 
-	// cutindicator overwritten by OsiGlpkSolverInterface
-//		int cutindicator=0;
-//		switch (gm.optGetInteger("cuts")) {
-//			case -1 : break; // no cuts
-//			case  1 : cutindicator=LPX_C_ALL; break; // all cuts
-//			case  0 : // user defined cut selection
-//				if (gm.optGetBool("covercuts")) cutindicator|=LPX_C_COVER;
-//				if (gm.optGetBool("cliquecuts")) cutindicator|=LPX_C_CLIQUE;
-//				if (gm.optGetBool("gomorycuts")) cutindicator|=LPX_C_GOMORY;
-//				break;
-//			default: ;
-//		};
-//		lpx_set_int_parm(glpk_model, LPX_K_USECUTS, cutindicator);
+	int cutindicator=0;
+	switch (opt.getInteger("cuts")) {
+		case -1 : break; // no cuts
+		case  1 : cutindicator=LPX_C_ALL; break; // all cuts
+		case  0 : // user defined cut selection
+			if (opt.getBool("covercuts")) cutindicator|=LPX_C_COVER;
+			if (opt.getBool("cliquecuts")) cutindicator|=LPX_C_CLIQUE;
+			if (opt.getBool("gomorycuts")) cutindicator|=LPX_C_GOMORY;
+			if (opt.getBool("mircuts")) cutindicator|=LPX_C_MIR;
+			break;
+		default: ;
+	};
+	lpx_set_int_parm(glpk_model, LPX_K_USECUTS, cutindicator);
 
 	// cutoff do not seem to work in Branch&Bound
 //		if (gm.optDefined("cutoff")) {
