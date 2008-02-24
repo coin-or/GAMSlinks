@@ -133,7 +133,9 @@ const char* GamsHandlerSmag::getSystemDir() const {
 }
 
 bool GamsHandlerSmag::isDictionaryWritten() const {
-	return false; // TODO: have not found this in smag yet
+	// TODO: have not found this in smag
+	// using this as an approximation
+	return smag->gms.dictFileName!=NULL; 
 }
 
 const char* GamsHandlerSmag::dictionaryFile() const {

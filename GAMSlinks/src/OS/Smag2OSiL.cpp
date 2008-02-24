@@ -1,12 +1,14 @@
-// Copyright (C) GAMS Development 2007
+// Copyright (C) 2007-2008 GAMS Development and others
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
 // $Id$
 //
-// Authors: Stefan Vigerske
+// Author: Stefan Vigerske
 
 #include "Smag2OSiL.hpp"
+#include "GamsDictionary.hpp"
+#include "GamsHandlerSmag.hpp"
 
 extern "C" {
 #include "SmagExtra.h"
@@ -23,12 +25,20 @@ Smag2OSiL::~Smag2OSiL() {
 bool Smag2OSiL::createOSInstance() {
 	osinstance = new OSInstance();  
 	int i, j;
+	char buffer[255];
+	
+	GamsHandlerSmag gamshandler(smag);
+	GamsDictionary dict(gamshandler);
+	dict.readDictionary();
 
 	// TODO: put model name
 	osinstance->setInstanceDescription("Generated from GAMS smag problem");
 	
 	osinstance->setVariableNumber(smagColCount(smag));
 	char* var_types=new char[smagColCount(smag)];
+	std::string* varnames=NULL;
+	if (dict.haveNames())
+		varnames=new std::string[smagColCount(smag)];
 	for(i = 0; i < smagColCount(smag); ++i) {
 		switch (smag->colType[i]) {
 			case SMAG_VAR_CONT:
@@ -47,11 +57,14 @@ bool Smag2OSiL::createOSInstance() {
 				return false;
 			}
 		}
+		if (dict.haveNames() && dict.getColName(i, buffer, 256))
+			varnames[i]=buffer;
 	}
-	// TODO: variable names
-	if (!osinstance->setVariables(smagColCount(smag), NULL, smag->colLB, smag->colUB, var_types, smag->colLev, NULL))
+	
+	if (!osinstance->setVariables(smagColCount(smag), varnames, smag->colLB, smag->colUB, var_types, smag->colLev, NULL))
 		return false;
 	delete[] var_types;
+	delete[] varnames;
 
 	// TODO: would be 0 for model type CNS
 	osinstance->setObjectiveNumber(1);
@@ -93,7 +106,8 @@ bool Smag2OSiL::createOSInstance() {
 				smagStdOutputFlush(smag, SMAG_ALLMASK);
 				return false;
 		}
-		if (!osinstance->addConstraint(i, "", lb, ub, 0.)) // TODO: constraint names
+		std::string conname(dict.haveNames() ? dict.getRowName(i, buffer, 255) : NULL); 
+		if (!osinstance->addConstraint(i, conname, lb, ub, 0.))
 			return false;
 	}
 

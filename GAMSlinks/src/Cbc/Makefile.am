@@ -1,11 +1,10 @@
-# Copyright (C) GAMS Development 2006
+# Copyright (C) 2006-2008 GAMS Development and others
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
 ## $Id$
 #
 # Author: Stefan Vigerske
-# Template from: Andreas Waechter
 
 AUTOMAKE_OPTIONS = foreign
 

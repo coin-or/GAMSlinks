@@ -1,10 +1,10 @@
-// Copyright (C) GAMS Development 2007
+// Copyright (C) 2007-2008 GAMS Development and others
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
 // $Id$
 //
-// Authors: Stefan Vigerske
+// Author: Stefan Vigerske
 
 #ifndef SMAG2OSIL_HPP_
 #define SMAG2OSIL_HPP_

@@ -11,7 +11,9 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmsip_nt.cmd gmsip_us.run install/gmsip_nt.dat install/gmsip_un.dat
 
 bin_PROGRAMS = GamsIpopt
-GamsIpopt_SOURCES = GamsIpopt.cpp SmagNLP.cpp ../GamsIO/SmagJournal.cpp
+
+#SmagExtra needed because it defined stricmp that is currently required by bch.o
+GamsIpopt_SOURCES = GamsIpopt.cpp SmagNLP.cpp ../GamsIO/SmagJournal.cpp ../GamsIO/SmagExtra.c
 
 includeipoptdir = $(includedir)/ipopt
 includeipopt_HEADERS = \
@@ -25,7 +27,8 @@ includeipopt_HEADERS = \
   $(IPOPTSRCDIR)/src/LinAlg/IpCompoundVector.hpp \
   $(IPOPTSRCDIR)/src/Algorithm/IpTimingStatistics.hpp
 
-AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
+#FORTRAN_NAMEMANGLING_CFLAG required to compile SmagExtra.c
+AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) $(FORTRAN_NAMEMANGLING_CFLAG) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(srcdir)/../GamsIO` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
@@ -36,7 +39,8 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/LinearSolverLoader` \
  -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
 
-GamsIpopt_LDADD = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
+#GamsGDX required for bch.o
+GamsIpopt_LDADD = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 
 GamsIpopt_DEPENDENCIES = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(SMAG_LIBS)
 

@@ -148,3 +148,21 @@ int smagSingleHessians(smagHandle_t prob, int* hesRowIdx, int* hesColIdx, double
 
   return numErr;
 }
+
+/* bch.o uses a reference to stricmp which is defined in iolib.
+ * Since we do not like to link to iolib, we define our own stricmp function here.
+ * Either we use strcasecmp, if available, or we use gcdstricmp from GAMS dictread.o 
+ */
+#ifndef HAVE_STRICMP
+#ifdef HAVE_STRCASECMP
+#include <strings.h>
+int stricmp(const char* s1, const char* s2) {
+	return strcasecmp(s1, s2);
+}
+#else
+int gdcstricmp(const char* s1, const char* s2);
+int stricmp(const char* s1, const char* s2) {
+	return gcdstricmp(s1, s2);
+}
+#endif
+#endif

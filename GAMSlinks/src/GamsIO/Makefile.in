@@ -84,9 +84,10 @@ am_libGamsIO_la_OBJECTS = GamsModel.lo GamsFinalize.lo \
 	GamsMessageHandler.lo GamsOptions.lo GamsDictionary.lo \
 	GamsBCH.lo GamsHandlerIOLib.lo
 libGamsIO_la_OBJECTS = $(am_libGamsIO_la_OBJECTS)
-libSmagIO_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsOptions.la
+libSmagIO_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsOptions.la \
+	$(GAMSIO_OBJDIR)/libGamsGDX.la
 am_libSmagIO_la_OBJECTS = GamsOptions.lo GamsMessageHandler.lo \
-	SmagExtra.lo GamsHandlerSmag.lo
+	SmagExtra.lo GamsHandlerSmag.lo GamsBCH.lo GamsDictionary.lo
 libSmagIO_la_OBJECTS = $(am_libSmagIO_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -233,6 +234,8 @@ GAMSIO_IS_WINDOWS_FALSE = @GAMSIO_IS_WINDOWS_FALSE@
 GAMSIO_IS_WINDOWS_TRUE = @GAMSIO_IS_WINDOWS_TRUE@
 GAMSIO_LIBS = @GAMSIO_LIBS@
 GAMSIO_OBJDIR = @GAMSIO_OBJDIR@
+GAMSIO_PRESENT_FALSE = @GAMSIO_PRESENT_FALSE@
+GAMSIO_PRESENT_TRUE = @GAMSIO_PRESENT_TRUE@
 GAMSLINKSDOCDIR = @GAMSLINKSDOCDIR@
 GAMSLINKSOBJDIR = @GAMSLINKSOBJDIR@
 GAMSLINKSSRCDIR = @GAMSLINKSSRCDIR@
@@ -389,13 +392,12 @@ libGamsIO_la_SOURCES = \
 libGamsIO_la_LDFLAGS = 
 libGamsIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 
-#TODO: put also GamsBCH and GamsDictionary into SmagIO lib, once we got required gams libs separated from ciolib
 #we do not add SmagJournal to SmagIO to avoid dependence on Ipopt
 libSmagIO_la_SOURCES = \
-  GamsOptions.cpp GamsMessageHandler.cpp SmagExtra.c GamsHandlerSmag.cpp
+  GamsOptions.cpp GamsMessageHandler.cpp SmagExtra.c GamsHandlerSmag.cpp GamsBCH.cpp GamsDictionary.cpp
 
 libSmagIO_la_LDFLAGS = 
-libSmagIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la
+libSmagIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = ../../inc/config_gamslinks.h \
   GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsDictionary.hpp GamsBCH.hpp GamsHandler.hpp GamsHandlerIOLib.hpp \

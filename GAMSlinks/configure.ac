@@ -130,6 +130,12 @@ AC_CHECK_DECL([va_copy],[AC_DEFINE([HAVE_VA_COPY],[1],
 # endif
 #endif])
 
+##########################
+# stricmp and strcasecmp #
+##########################
+
+AC_CHECK_FUNCS([stricmp strcasecmp],[break],,)
+
 ##########################################################################
 
 # Additional libraries and packages

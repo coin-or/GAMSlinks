@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id: GamsCoinScip.cpp 337 2008-02-12 19:38:07Z stefan $
+// $Id$
 //
 // Author: Stefan Vigerske
 
@@ -39,6 +39,8 @@
 #endif
 
 #include "smag.h"
+#include "GamsDictionary.hpp"
+#include "GamsHandlerSmag.hpp"
 
 extern "C" {
 #include "scip/scip.h"
@@ -186,6 +188,7 @@ int main (int argc, const char *argv[]) {
   
 	SCIP_LPI* lpi=NULL;
 	double lpsolve_starttime=smagGetCPUTime(prob);
+	//TODO: there could be a parameter to disable solve of fixed LP
   if ((!prob->gms.nbin && !prob->gms.numint) || solstatus.colval) { // if we have an LP or got a mip feasible point, solve (fixed) LP
   	scipret = SCIPlpiCreate(&lpi, "gamsproblem", smagMinim(prob)==-1 ? SCIP_OBJSEN_MAXIMIZE : SCIP_OBJSEN_MINIMIZE);
   	checkScipReturn(prob, scipret);
@@ -241,6 +244,12 @@ int main (int argc, const char *argv[]) {
 SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 	SCIP_CALL( SCIPcreateProb(scip, "gamsmodel", NULL, NULL, NULL, NULL, NULL, NULL) );
 	
+	GamsHandlerSmag gamshandler(prob);
+	GamsDictionary dict(gamshandler);
+	dict.readDictionary(); //TODO?: make this parameter dependent...
+	
+	char buffer[256];
+	
 	vars=new SCIP_VAR*[smagColCount(prob)];
 	
 	double minprior=0;
@@ -277,8 +286,10 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 			obj_coeff=og->dfdj;
 			og=og->next;
 		}
-		//TODO: variable names
-		SCIP_CALL( SCIPcreateVar(scip, vars+i, NULL /*varname*/, prob->colLB[i], prob->colUB[i], obj_coeff, vartype, TRUE, FALSE, NULL, NULL, NULL, NULL) );
+		char* varname=NULL;
+		if (dict.haveNames())
+			varname=dict.getColName(i, buffer, 256);
+		SCIP_CALL( SCIPcreateVar(scip, vars+i, varname, prob->colLB[i], prob->colUB[i], obj_coeff, vartype, TRUE, FALSE, NULL, NULL, NULL, NULL) );
 		SCIP_CALL( SCIPaddVar(scip, vars[i]) );
 
 		if (prob->gms.priots && minprior<maxprior) {
@@ -321,8 +332,10 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 		
     SCIP_CONS* con;
 
-		//TODO: constraint names
-		SCIP_CALL( SCIPcreateConsLinear(scip, &con, "gamscon" /*conname*/, ncoef, con_vars, con_coef, lb, ub,
+		const char* conname="gamscon";
+		if (dict.haveNames())
+			conname=dict.getRowName(i, buffer, 256);
+		SCIP_CALL( SCIPcreateConsLinear(scip, &con, conname, ncoef, con_vars, con_coef, lb, ub,
 				TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE, FALSE) );
 		
 		SCIP_CALL( SCIPaddCons(scip, con) );
@@ -358,7 +371,8 @@ SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
 }
 
 SCIP_RETCODE checkMIPsolve(smagHandle_t prob, SCIP* scip, SCIP_VAR** vars, SolveStatus& solstatus) {
-//	SCIP_CALL( SCIPprintStatus(scip, NULL) );
+	if (prob->fpStatus)
+		SCIP_CALL( SCIPprintStatistics(scip, prob->fpStatus) );
 
 	SCIP_STATUS status = SCIPgetStatus(scip);
 	int nrsol = SCIPgetNSols(scip);
@@ -690,8 +704,14 @@ void printWarningError(SCIP_MESSAGEHDLR* messagehdlr, FILE* file, const char* ms
 	smagStdOutputFlush(messagehdlr->messagehdlrdata->smag, SMAG_ALLMASK);
 }
 
+/* info messages normally go to logfile
+ * except if the file argument is explicitely set to the status file, then they will go to status and list file
+ */
 void printInfoDialog(SCIP_MESSAGEHDLR* messagehdlr, FILE* file, const char* msg) {
-	smagStdOutputPrint(messagehdlr->messagehdlrdata->smag, SMAG_LOGMASK, msg);
+	if (file && file==messagehdlr->messagehdlrdata->smag->fpStatus)
+		smagStdOutputPrint(messagehdlr->messagehdlrdata->smag, SMAG_STATUSMASK | SMAG_LISTMASK, msg);
+	else
+		smagStdOutputPrint(messagehdlr->messagehdlrdata->smag, SMAG_LOGMASK, msg);
 }
 
 void checkScipReturn(smagHandle_t prob, SCIP_RETCODE scipret) {

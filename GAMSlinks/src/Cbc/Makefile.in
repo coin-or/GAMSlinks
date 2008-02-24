@@ -14,13 +14,12 @@
 
 @SET_MAKE@
 
-# Copyright (C) GAMS Development 2006
+# Copyright (C) 2006-2008 GAMS Development and others
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
 #
 # Author: Stefan Vigerske
-# Template from: Andreas Waechter
 
 # Copyright (C) 2006, 2007 International Business Machines and others.
 # All Rights Reserved.
@@ -210,6 +209,8 @@ GAMSIO_IS_WINDOWS_FALSE = @GAMSIO_IS_WINDOWS_FALSE@
 GAMSIO_IS_WINDOWS_TRUE = @GAMSIO_IS_WINDOWS_TRUE@
 GAMSIO_LIBS = @GAMSIO_LIBS@
 GAMSIO_OBJDIR = @GAMSIO_OBJDIR@
+GAMSIO_PRESENT_FALSE = @GAMSIO_PRESENT_FALSE@
+GAMSIO_PRESENT_TRUE = @GAMSIO_PRESENT_TRUE@
 GAMSLINKSDOCDIR = @GAMSLINKSDOCDIR@
 GAMSLINKSOBJDIR = @GAMSLINKSOBJDIR@
 GAMSLINKSSRCDIR = @GAMSLINKSSRCDIR@

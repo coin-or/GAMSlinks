@@ -74,10 +74,18 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includeipoptdir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_GamsIpopt_OBJECTS = GamsIpopt.$(OBJEXT) SmagNLP.$(OBJEXT) \
-	SmagJournal.$(OBJEXT)
+	SmagJournal.$(OBJEXT) SmagExtra.$(OBJEXT)
 GamsIpopt_OBJECTS = $(am_GamsIpopt_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
@@ -219,6 +227,8 @@ GAMSIO_IS_WINDOWS_FALSE = @GAMSIO_IS_WINDOWS_FALSE@
 GAMSIO_IS_WINDOWS_TRUE = @GAMSIO_IS_WINDOWS_TRUE@
 GAMSIO_LIBS = @GAMSIO_LIBS@
 GAMSIO_OBJDIR = @GAMSIO_OBJDIR@
+GAMSIO_PRESENT_FALSE = @GAMSIO_PRESENT_FALSE@
+GAMSIO_PRESENT_TRUE = @GAMSIO_PRESENT_TRUE@
 GAMSLINKSDOCDIR = @GAMSLINKSDOCDIR@
 GAMSLINKSOBJDIR = @GAMSLINKSOBJDIR@
 GAMSLINKSSRCDIR = @GAMSLINKSSRCDIR@
@@ -370,7 +380,9 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmsip_nt.cmd gmsip_us.run install/gmsip_nt.dat \
 	install/gmsip_un.dat $(am__append_1)
-GamsIpopt_SOURCES = GamsIpopt.cpp SmagNLP.cpp ../GamsIO/SmagJournal.cpp
+
+#SmagExtra needed because it defined stricmp that is currently required by bch.o
+GamsIpopt_SOURCES = GamsIpopt.cpp SmagNLP.cpp ../GamsIO/SmagJournal.cpp ../GamsIO/SmagExtra.c
 includeipoptdir = $(includedir)/ipopt
 includeipopt_HEADERS = \
   $(IPOPTSRCDIR)/src/Algorithm/IpIpoptCalculatedQuantities.hpp \
@@ -383,7 +395,9 @@ includeipopt_HEADERS = \
   $(IPOPTSRCDIR)/src/LinAlg/IpCompoundVector.hpp \
   $(IPOPTSRCDIR)/src/Algorithm/IpTimingStatistics.hpp
 
-AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
+
+#FORTRAN_NAMEMANGLING_CFLAG required to compile SmagExtra.c
+AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) $(FORTRAN_NAMEMANGLING_CFLAG) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(srcdir)/../GamsIO` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
@@ -394,7 +408,9 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/LinearSolverLoader` \
  -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
 
-GamsIpopt_LDADD = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
+
+#GamsGDX required for bch.o
+GamsIpopt_LDADD = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 GamsIpopt_DEPENDENCIES = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(SMAG_LIBS)
 GamsIpopt_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
@@ -404,7 +420,7 @@ DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .lo .o .obj
+.SUFFIXES: .c .cpp .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../../BuildTools/Makemain.inc $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -473,8 +489,44 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsIpopt.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagExtra.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagJournal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagNLP.Po@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	if $(LTCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Plo"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+SmagExtra.o: ../GamsIO/SmagExtra.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT SmagExtra.o -MD -MP -MF "$(DEPDIR)/SmagExtra.Tpo" -c -o SmagExtra.o `test -f '../GamsIO/SmagExtra.c' || echo '$(srcdir)/'`../GamsIO/SmagExtra.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/SmagExtra.Tpo" "$(DEPDIR)/SmagExtra.Po"; else rm -f "$(DEPDIR)/SmagExtra.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../GamsIO/SmagExtra.c' object='SmagExtra.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o SmagExtra.o `test -f '../GamsIO/SmagExtra.c' || echo '$(srcdir)/'`../GamsIO/SmagExtra.c
+
+SmagExtra.obj: ../GamsIO/SmagExtra.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT SmagExtra.obj -MD -MP -MF "$(DEPDIR)/SmagExtra.Tpo" -c -o SmagExtra.obj `if test -f '../GamsIO/SmagExtra.c'; then $(CYGPATH_W) '../GamsIO/SmagExtra.c'; else $(CYGPATH_W) '$(srcdir)/../GamsIO/SmagExtra.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/SmagExtra.Tpo" "$(DEPDIR)/SmagExtra.Po"; else rm -f "$(DEPDIR)/SmagExtra.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../GamsIO/SmagExtra.c' object='SmagExtra.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o SmagExtra.obj `if test -f '../GamsIO/SmagExtra.c'; then $(CYGPATH_W) '../GamsIO/SmagExtra.c'; else $(CYGPATH_W) '$(srcdir)/../GamsIO/SmagExtra.c'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
