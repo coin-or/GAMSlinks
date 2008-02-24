@@ -619,6 +619,10 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 	// workaround bug in scip: negate return of SCIPlpiIsPrimalFeasible
 	if (lpi && !SCIPlpiIsPrimalFeasible(lpi)) { // read solution from lpi object
 		
+		/** Translating marginal values and basis status from Clp or SCIPlpi to the GAMS world is a bit tricky.
+		 * By trial-and-error I found that inverting the sign on the marginal values in case the problem was a maximization problem seem to do the right thing.
+		 */    
+		
 		collev = new double[smagColCount(prob)];
 		SCIPlpiGetSol(lpi, &solstatus.optval, collev, rowmarg, rowlev, colmarg);
 		
@@ -627,6 +631,7 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 		SCIPlpiGetBase(lpi, cstat, rstat);
 		
 		for (int i=0; i<smagColCount(prob); ++i) {
+			if (smagMinim(prob)==-1) colmarg[i]*=-1;
 			if (prob->colType[i]!=SMAG_VAR_CONT)
 				colbasstat[i] = SMAG_BASSTAT_SUPERBASIC;
 			else switch(cstat[i]) {
@@ -640,6 +645,7 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 		}
 		
 		for (int i=0; i<smagRowCount(prob); ++i) {
+			if (smagMinim(prob)==-1) rowmarg[i]*=-1;
 			switch(rstat[i]) {
 				case SCIP_BASESTAT_LOWER: rowbasstat[i] = SMAG_BASSTAT_NBLOWER; break;
 				case SCIP_BASESTAT_UPPER: rowbasstat[i] = SMAG_BASSTAT_NBUPPER; break;

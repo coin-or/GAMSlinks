@@ -68,11 +68,11 @@ public:
 	 */
 	virtual bool translateFromGamsSpaceCol(const int* indices_, int* indices, int nr) const=0;
 	/** Translates given column index into the original gams space.
-	 * @Return -1 if failure, the column index in gams space otherwise.
+	 * @return -1 if failure, the column index in gams space otherwise.
 	 */
 	virtual int translateToGamsSpaceCol(int colindex) const=0;
 	/** Translates given row index into the original gams space.
-	 * @Return -1 if failure, the row index in gams space otherwise.
+	 * @return -1 if failure, the row index in gams space otherwise.
 	 */
 	virtual int translateToGamsSpaceRow(int rowindex) const=0;
 	

@@ -29,7 +29,7 @@ public:
 	/** Constructor for GamsOptions class.
 	 * Initialization of options handle.
 	 * Reading of the file "<systemdir>/opt<solvername>.def" to learn which options are supported.
-	 * @param systemdir The name of the GAMS system directory (where the opt...def-file is located).
+	 * @param gams_ A GAMS handler to get access to the system directory name and other stuff.
 	 * @param solvername The name of your solver.
 	 */
 	GamsOptions(GamsHandler& gams_, const char* solvername);

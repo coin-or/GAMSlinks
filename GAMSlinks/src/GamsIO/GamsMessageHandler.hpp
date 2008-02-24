@@ -22,7 +22,7 @@ class GamsMessageHandler : public CoinMessageHandler {
 public:
 
 	/** Constructor.
-	 * @param GMptr The GamsModel required for printing.
+	 * @param gams_ A GAMS handler to access the GAMS status- and logfile.
 	 */  
   GamsMessageHandler(GamsHandler& gams_);
 

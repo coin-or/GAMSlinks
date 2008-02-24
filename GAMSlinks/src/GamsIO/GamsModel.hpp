@@ -1,10 +1,10 @@
-// Copyright (C) GAMS Development 2006
+// Copyright (C) 2006-2008 GAMS Development and others
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
 // $Id$
 //
-// Authors:  Michael Bussieck, Stefan Vigerske
+// Authors: Michael Bussieck, Stefan Vigerske
 
 #ifndef __GAMSMODEL_HPP__
 #define __GAMSMODEL_HPP__
@@ -235,13 +235,6 @@ public:
    * In GAMS, you can specify scaling parameters with the .scale suffix.
    */ 
   inline double *ColScale()     { return ColScale_; }
-	/** The name of a column.
-	    @param colnr column index
-			@param buffer a buffer for writing the name in
-			@param bufLen length of the buffer
-      @return buffer on success, NULL on failure
-	*/
-//	char          *ColName(int colnr, char *buffer, int bufLen);
 
 	/** The sense of the rows.
 	 * RowSense[i] is
@@ -268,13 +261,6 @@ public:
    * In GAMS, you can specify scaling parameters with the .scale suffix.
    */
   inline double *RowScale()     { return RowScale_; }
-	/** The name of a row.
-	    @param rownr row index
-			@param buffer a buffer for writing the name in
-			@param bufLen length of the buffer
-      @return buffer on success, NULL on failure
-	*/
-//	char          *RowName(int rownr, char *buffer, int bufLen);
 
 	/** The coefficients of the objective function (dense format).
 	 */
@@ -478,10 +464,6 @@ private:
 
   SolverStatus SolverStatus_;
   ModelStatus ModelStatus_;
-
-public: // TODO, just temporarily
-//  struct dictRec* dict; // handle for dictionary  
-//	char* ConstructName(char* buffer, int bufLen, int lSym, int* uelIndices, int nIndices);
 };
 
 #endif // __GAMSMODEL_HPP__
