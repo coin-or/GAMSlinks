@@ -233,7 +233,7 @@ int main (int argc, const char *argv[]) {
   
   BMScheckEmptyMemory();
   
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "GAMS/SCIP finished.\n");
+	smagStdOutputPrint(prob, SMAG_LOGMASK, "GAMS/SCIP finished.\n");
 	smagStdOutputStop(prob, buffer, sizeof(buffer));
 	smagClose(prob);
 	smagCloseLog(prob);
@@ -577,7 +577,7 @@ SCIP_RETCODE checkLPsolve(smagHandle_t prob, SCIP_LPI* lpi, SolveStatus& solstat
 		solstatus.solver_status = 13;
 		solstatus.model_status = primalfeasible ? 7 : 6; // intermediate nonopt. or infeas.
 		smagStdOutputPrint(prob, SMAG_LOGMASK, "Status unknown.\n");
-		if (smagColCount(prob)==0) { // claim that an empty problem was solved to optimality
+		if ((smagColCount(prob)==0 || smagRowCount(prob)==0) && primalfeasible) { // claim that a more-or-less empty problem was solved to optimality
 			solstatus.solver_status = 1;
 			solstatus.model_status = 1;
 		}
