@@ -300,7 +300,7 @@ AC_MSG_CHECKING([whether GAMS/CPLEX licence library is present and working])
 coin_save_libs=$LIBS
 coin_save_cppflags=$CPPFLAGS
 CPPFLAGS="$GAMSIO_CPPFLAGS $CPPFLAGS"
-LIBS="$gamsio_srcdir/libgamscplexlice.a $LIBS $CPXLIB $GAMSIO_LIBS"
+LIBS="$gamsio_srcdir/libgamscplexlice.a $LIBS $CPXLIB $GAMSIO_LIBS $GAMSIO_ADDLIBS"
 AC_TRY_LINK([#include "gamscplexlice.h"], [gamscplexlice(0,0,0,0,0,0,0,0,0,0,0,0,0)],
   [AC_MSG_RESULT([yes])
    coin_has_gamscplexlice=yes

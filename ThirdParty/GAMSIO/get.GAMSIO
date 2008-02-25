@@ -31,7 +31,7 @@ cd ..
 }
 
 echo " "
-echo "Running script for downloading the GAMS I/O libraries for Linux 64-bit platform"
+echo "Running script for downloading the GAMS I/O libraries"
 
 wgetcmd=wget
 wgetcount=`which wget 2>/dev/null | wc -w`
