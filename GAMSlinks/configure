@@ -25649,7 +25649,7 @@ fi
 # thus, we disable these warnings if SCIP is used
 if test "x$coin_has_scip" = xtrue ; then
   case "$CC" in
-    gcc* | */gcc*)
+    *gcc* )
       CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas -Wno-long-long"
     ;;
   esac
@@ -25820,7 +25820,7 @@ else
       i?86-*-linux-*)
         case "$F77" in
           *gfortran* )
-            GAMSIO_CODE=LEI
+            GAMSIO_CODE=LNX
             ;;
           *)
             GAMSIO_CODE=LX3

@@ -160,7 +160,7 @@ AC_COIN_HAS_SCIP
 # thus, we disable these warnings if SCIP is used
 if test "x$coin_has_scip" = xtrue ; then
   case "$CC" in
-    gcc* | */gcc*)
+    *gcc* )
       CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas -Wno-long-long"
     ;;
   esac

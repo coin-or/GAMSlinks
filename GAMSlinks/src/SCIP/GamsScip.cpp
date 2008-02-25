@@ -116,7 +116,6 @@ int main (int argc, const char *argv[]) {
  
   smagReadModelStats (prob);
   smagSetObjFlavor (prob, OBJ_FUNCTION);
-  smagSetSqueezeFreeRows (prob, 1);	/* don't show me =n= rows */
 
   if (prob->gms.nsos1 || prob->gms.nsos2) {
   	smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Special ordered sets (SOS) not supported by SCIP.\n");
@@ -152,6 +151,7 @@ int main (int argc, const char *argv[]) {
   	scipret = SCIPcreate(&scip);
   	checkScipReturn(prob, scipret);
 
+  	smagSetSqueezeFreeRows (prob, 1);	/* don't show me =n= rows */
   	smagSetInf (prob, SCIPinfinity(scip));
   	smagReadModel (prob);
 
@@ -194,6 +194,7 @@ int main (int argc, const char *argv[]) {
   	checkScipReturn(prob, scipret);
 
   	if (!prob->gms.nbin && !prob->gms.numint) {
+  		// here we allow =n= rows in order to get the lp11 test passed 
   		smagSetInf (prob, SCIPlpiInfinity(lpi));
   		smagReadModel (prob);
   	}
@@ -519,7 +520,7 @@ SCIP_RETCODE setupLP(smagHandle_t prob, SCIP_LPI* lpi, double* colval) {
   delete[] rowstarts;
   delete[] colindexes;
   
-  if (ncols==0) {
+  if (ncols==0) { // if no columns, add a "fake" one to prevent Clp from crashing
   	double zero=0.;
   	int zeroint=0;
   	SCIPlpiAddCols(lpi, 1, &zero, &zero, &zero, NULL, 0, &zeroint, NULL, NULL);
@@ -620,8 +621,8 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 	if (lpi && !SCIPlpiIsPrimalFeasible(lpi)) { // read solution from lpi object
 		
 		/** Translating marginal values and basis status from Clp or SCIPlpi to the GAMS world is a bit tricky.
-		 * By trial-and-error I found that inverting the sign on the marginal values in case the problem was a maximization problem seem to do the right thing.
-		 */    
+		 * By trial-and-error I found that inverting the sign on the marginal values in case the problem is a maximization problem seem to do the right thing (= passes the GAMS tests).
+		 */
 		
 		collev = new double[smagColCount(prob)];
 		SCIPlpiGetSol(lpi, &solstatus.optval, collev, rowmarg, rowlev, colmarg);
