@@ -54,7 +54,7 @@ AC_ARG_WITH([gamsio-code],
   [case $build in
       x86_64-*-linux-*)
         case "$F77" in
-          gfortran* | */gfortran* )
+          *gfortran* )
             GAMSIO_CODE=LEG
             ;;
           *)
@@ -71,7 +71,7 @@ AC_ARG_WITH([gamsio-code],
       ;;
       i?86-*-linux-*)
         case "$F77" in
-          gfortran* | */gfortran* )
+          *gfortran* )
             GAMSIO_CODE=LEI
             ;;
           *)

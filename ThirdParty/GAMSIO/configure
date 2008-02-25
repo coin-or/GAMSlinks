@@ -19794,7 +19794,7 @@ else
   case $build in
       x86_64-*-linux-*)
         case "$F77" in
-          gfortran* | */gfortran* )
+          *gfortran* )
             GAMSIO_CODE=LEG
             ;;
           *)
@@ -19811,7 +19811,7 @@ else
       ;;
       i?86-*-linux-*)
         case "$F77" in
-          gfortran* | */gfortran* )
+          *gfortran* )
             GAMSIO_CODE=LEI
             ;;
           *)
