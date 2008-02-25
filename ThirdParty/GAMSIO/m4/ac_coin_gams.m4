@@ -72,7 +72,7 @@ AC_ARG_WITH([gamsio-code],
       i?86-*-linux-*)
         case "$F77" in
           *gfortran* )
-            GAMSIO_CODE=LEI
+            GAMSIO_CODE=LNX
             ;;
           *)
             GAMSIO_CODE=LX3
