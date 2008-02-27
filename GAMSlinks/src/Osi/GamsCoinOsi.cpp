@@ -203,7 +203,7 @@ try {
 #if COIN_HAS_DYLP
 	if (!solver && strcmp(buffer, "dylp")==0) {
 		solver=new OsiDylpSolverInterface();
-		swapRowStatus=true;
+		swapRowStatus=false;
 	}
 #endif
 #if COIN_HAS_SYMPHONY
