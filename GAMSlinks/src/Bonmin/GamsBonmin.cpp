@@ -7,6 +7,8 @@
 // Author: Stefan Vigerske
 
 #include "GAMSlinksConfig.h"
+// to be sure to get (or not get) HAVE_M??? and HAVE_PARDISO defined
+#include "IpoptConfig.h"
 
 #ifdef HAVE_CSTDIO
 #include <cstdio>
@@ -18,6 +20,7 @@
 #endif
 #endif
 
+//TODO: use some configure stuff here...
 #if defined(_WIN32)
 # define snprintf _snprintf
 #endif
@@ -34,8 +37,13 @@
 #include "SmagNLP.hpp"
 
 extern "C" {
+#if not (defined(HAVE_MA27) && defined(HAVE_MA28) && defined(HAVE_MA57) && defined(HAVE_MC19))
+#define HAVE_HSL_LOADER
 #include "HSLLoader.h"
+#endif
+#ifndef HAVE_PARDISO
 #include "PardisoLoader.h"
+#endif
 }
 
 using namespace Ipopt;
@@ -86,13 +94,17 @@ int main (int argc, char* argv[]) {
 	else
 		solve_nlp(prob);
 
+#ifdef HAVE_HSL_LOADER
   if (LSL_isHSLLoaded())
   	if (LSL_unloadHSL()!=0)
   		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to unload HSL library.\n");
+#endif
+#ifndef HAVE_PARDISO
   if (LSL_isPardisoLoaded())
   	if (LSL_unloadPardisoLib()!=0)
   		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to unload Pardiso library.\n");
-	
+#endif
+  
 	smagStdOutputStop(prob, buffer, sizeof(buffer));
 	smagClose(prob);
 
@@ -122,6 +134,7 @@ void solve_minlp(smagHandle_t prob) {
 	bonmin_setup.setOptionsAndJournalist(roptions, options, journalist);
   bonmin_setup.registerOptions();
 
+#ifdef HAVE_HSL_LOADER
 	// add option to specify path to hsl library
   bonmin_setup.roptions()->AddStringOption1("hsl_library", // name
 			"path and filename of HSL library for dynamic load",  // short description
@@ -131,6 +144,8 @@ void solve_minlp(smagHandle_t prob) {
 			"Specify the path to a library that contains HSL routines and can be load via dynamic linking."
 			"Note, that you still need to specify to use the corresponding routines (ma27, ...) by setting the corresponding options (linear_solver, ...)."
 	);
+#endif
+#ifndef HAVE_PARDISO
 	// add option to specify path to pardiso library
   bonmin_setup.roptions()->AddStringOption1("pardiso_library", // name
 			"path and filename of Pardiso library for dynamic load",  // short description
@@ -140,6 +155,7 @@ void solve_minlp(smagHandle_t prob) {
 			"Specify the path to a Pardiso library that and can be load via dynamic linking."
 			"Note, that you still need to specify to pardiso as linear_solver."
 	);
+#endif
   
 	// Change some options
 	bonmin_setup.options()->SetNumericValue("bound_relax_factor", 0);
@@ -178,6 +194,7 @@ void solve_minlp(smagHandle_t prob) {
 	}
 
 	std::string libpath;
+#ifdef HAVE_HSL_LOADER
 	if (bonmin_setup.options()->GetStringValue("hsl_library", libpath, "")) {
 		char buffer[512];
 		if (LSL_loadHSL(libpath.c_str(), buffer, 512)!=0) {
@@ -188,6 +205,8 @@ void solve_minlp(smagHandle_t prob) {
 		  return;
 		}
 	}
+#endif
+#ifndef HAVE_PARDISO
 	if (bonmin_setup.options()->GetStringValue("pardiso_library", libpath, "")) {
 		char buffer[512];
 		if (LSL_loadPardisoLib(libpath.c_str(), buffer, 512)!=0) {
@@ -198,6 +217,7 @@ void solve_minlp(smagHandle_t prob) {
 		  return;
 		}
 	}
+#endif
 
 	bonmin_setup.options()->GetNumericValue("diverging_iterates_tol", mysmagminlp->div_iter_tol, "");
 //	// or should we also check the tolerance for acceptable points?
@@ -403,6 +423,7 @@ void solve_nlp(smagHandle_t prob) {
 
 //	OsiTMINLPInterface::registerOptions(app->RegOptions());
 
+#ifdef HAVE_HSL_LOADER
 	// add option to specify path to hsl library
 	roptions->AddStringOption1("hsl_library", // name
 			"path and filename of HSL library for dynamic load",  // short description
@@ -412,6 +433,8 @@ void solve_nlp(smagHandle_t prob) {
 			"Specify the path to a library that contains HSL routines and can be load via dynamic linking."
 			"Note, that you still need to specify to use the corresponding routines (ma27, ...) by setting the corresponding options (linear_solver, ...)."
 	);
+#endif
+#ifndef HAVE_PARDISO
 	// add option to specify path to pardiso library
   roptions->AddStringOption1("pardiso_library", // name
 			"path and filename of Pardiso library for dynamic load",  // short description
@@ -421,6 +444,7 @@ void solve_nlp(smagHandle_t prob) {
 			"Specify the path to a Pardiso library that and can be load via dynamic linking."
 			"Note, that you still need to specify to pardiso as linear_solver."
 	);
+#endif
 
 	// Change some options
   app->Options()->SetNumericValue("bound_relax_factor", 0);
@@ -437,6 +461,7 @@ void solve_nlp(smagHandle_t prob) {
 		app->Initialize("");
 
 	std::string libpath;
+#ifdef HAVE_HSL_LOADER
 	if (app->Options()->GetStringValue("hsl_library", libpath, "")) {
 		char buffer[512];
 		if (LSL_loadHSL(libpath.c_str(), buffer, 512)!=0) {
@@ -447,6 +472,8 @@ void solve_nlp(smagHandle_t prob) {
 		  return;
 		}
 	}
+#endif
+#ifndef HAVE_PARDISO
 	if (app->Options()->GetStringValue("pardiso_library", libpath, "")) {
 		char buffer[512];
 		if (LSL_loadPardisoLib(libpath.c_str(), buffer, 512)!=0) {
@@ -457,6 +484,7 @@ void solve_nlp(smagHandle_t prob) {
 		  return;
 		}
 	}
+#endif
 
 	app->Options()->GetNumericValue("diverging_iterates_tol", mysmagnlp->div_iter_tol, "");
 	// or should we also check the tolerance for acceptable points?
