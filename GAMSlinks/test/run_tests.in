@@ -131,7 +131,6 @@ if test @gamslinks_build_scip@ = 1 ; then
   skiplist="$skiplist skip('Scip','sl4sos1a')=yes;"
   skiplist="$skiplist skip('Scip','semicon1')=yes;"
   skiplist="$skiplist skip('Scip','sl4scon1')=yes;"
-  stdskiplist="$stdskiplist slvstdskip('Scip')=yes;"  #do not complain about output to stdout currently
   testlist[${#testlist[@]}]="--solver scip --suite lp"
   testlist[${#testlist[@]}]="--solver scip --suite mip user1=rmip=scip"
 fi

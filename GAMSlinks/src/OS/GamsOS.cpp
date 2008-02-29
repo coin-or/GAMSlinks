@@ -233,6 +233,7 @@ void localSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std
 	
 	smagStdOutputPrint(prob, SMAG_ALLMASK, "Solving the instance...\n\n");
 	try {
+		solver->buildSolverInstance();
 		solver->solve();
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "\nDone solving the instance.\n");		
 
