@@ -526,18 +526,18 @@ SCIP_RETCODE setupLP(smagHandle_t prob, SCIP_LPI* lpi, double* colval) {
   	SCIPlpiAddCols(lpi, 1, &zero, &zero, &zero, NULL, 0, &zeroint, NULL, NULL);
   }
   
-  //TODO: redirect output
-	
 	return SCIP_OKAY;
 }
 
 SCIP_RETCODE setupLPParameters(smagHandle_t prob, SCIP_LPI* lpi) {
-	SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, TRUE);
+	// if output to screen (lo=1) or stdout (lo=3), then we allow Clp output (which will go to stdout)
+	if (prob->logOption==1 || prob->logOption==3)
+		SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, TRUE);
+	else // otherwise we turn it "really" off (changed lpi_clp.cpp:2673 from 0 to -1)
+		SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, FALSE);
 
 	SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPITLIM, prob->gms.itnlim);
 	SCIPlpiSetRealpar(lpi, SCIP_LPPAR_LPTILIM, prob->gms.reslim);
-
-	// TODO: read parameter file ?
 
 	return SCIP_OKAY;
 }
