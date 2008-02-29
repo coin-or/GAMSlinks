@@ -610,8 +610,17 @@ Reference: H. Marchand and L. A. Wolsey, Aggregation and Mixed Integer Rounding 
 names</a>
 <i> (integer)</i> specifies whether variable and equation names should be given to CBC</h4><p>
 
+This option causes GAMS names for the variables and equations to be loaded into Cbc.
+These names will then be used for error messages, log entries, and so forth.
+Turing names off may help if memory is very tight.
 
 <br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Do not load variable and equation names.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Load variable and equation names.</td></tr>
+</table>
 
 <h4><a name="nodelim">
 nodelim</a>

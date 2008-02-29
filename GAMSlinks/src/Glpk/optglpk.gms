@@ -99,8 +99,10 @@ $onempty
   covercuts.(     0, 1)
   gomorycuts.(    0, 1)
   mircuts.(       0, 1)
-  presolve.(      0, 1 )
-  noiterlim.(     0, 1 )
+  presolve.(      0, 1)
+  solvefinal.(    0, 1)
+  names.(         0, 1)
+  noiterlim.(     0, 1)
  /
 $offempty
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
@@ -112,5 +114,5 @@ $offempty
 *                     cutoff     'GAMS cutoff'
                    /
 $onempty
- oep(o) enum options for documentation only / presolve, noiterlim, cuts, cliquecuts, covercuts, gomorycuts, mircuts /;
+ oep(o) enum options for documentation only / presolve, noiterlim, names, solvefinal, cuts, cliquecuts, covercuts, gomorycuts, mircuts /;
 $offempty

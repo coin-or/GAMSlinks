@@ -229,8 +229,17 @@ Turn on mir cuts</td></tr>
 names</a>
 <i> (integer)</i> indicates whether row and column names should be given to glpk</h4><p>
 
+This option causes GAMS names for the variables and equations to be loaded into Glpk.
+These names will then be used for error messages, log entries, and so forth.
+Turing names off may help if memory is very tight.
 
 <br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Do not load variable and equation names.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Load variable and equation names.</td></tr>
+</table>
 
 <h4><a name="noiterlim">
 noiterlim</a>
@@ -295,7 +304,8 @@ Maximum time in seconds.
 reslim_fixedrun</a>
 <i> (real)</i> resource limit for solve with fixed discrete variables</h4><p>
 
-Maximum time in seconds for solving the MIP with fixed discrete variables.
+Maximum time in seconds for solving the MIP with fixed discrete variablesal solve o Without the nal solve no proper marginal values are
+available and only zeros are returned to GAMS..
 
 <br><i>(default = 1000)</i>
 
@@ -322,8 +332,17 @@ Let GLPK use first a geometric mean scaling, then an equilibrium scaling.</td></
 solvefinal</a>
 <i> (integer)</i> switch to solve the problem with fixed discrete variables</h4><p>
 
+Sometimes the solution process after the branch-and-cut that solves the problem with fixed discrete variables takes a long time and the user is interested in the primal values of the solution only.
+In these cases, this option can be used to turn this final solve off.
+Without the final solve no proper marginal values are available and only zeros are returned to GAMS.
 
 <br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Do not solve the fixed problem</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Solve the fixed problem and return duals</td></tr>
+</table>
 
 <h4><a name="startalg">
 startalg</a>

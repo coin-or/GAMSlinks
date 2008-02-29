@@ -200,8 +200,23 @@ mircuts.1
 Turn on mir cuts
 
 
+solvefinal
+Sometimes the solution process after the branch-and-cut that solves the problem with fixed discrete variables takes a long time and the user is interested in the primal values of the solution only.
+In these cases, this option can be used to turn this final solve off.
+Without the final solve no proper marginal values are available and only zeros are returned to GAMS.
+
+
+solvefinal.0
+Do not solve the fixed problem
+
+
+solvefinal.1
+Solve the fixed problem and return duals
+
+
 reslim_fixedrun
-Maximum time in seconds for solving the MIP with fixed discrete variables.
+Maximum time in seconds for solving the MIP with fixed discrete variablesal solve o Without the nal solve no proper marginal values are
+available and only zeros are returned to GAMS..
 
 
 reslim
@@ -223,6 +238,20 @@ Keeps simplex iteration limit.
 
 noiterlim.1
 Turns off simplex iteration limit.
+
+
+names
+This option causes GAMS names for the variables and equations to be loaded into Glpk.
+These names will then be used for error messages, log entries, and so forth.
+Turing names off may help if memory is very tight.
+
+
+names.0
+Do not load variable and equation names.
+
+
+names.1
+Load variable and equation names.
 
 
 writemps

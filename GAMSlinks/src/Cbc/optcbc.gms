@@ -254,6 +254,7 @@ bch.(
    nodestrategy.(   hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth )
    preprocess.(     off, on, equal, equalall, sos, trysos )
    printfrequency.(  0 )
+   names.(           0, 1)
  /
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /
@@ -268,5 +269,5 @@ bch.(
                      increment  'GAMS cheat'
                      cut_passes_root '100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop in the objective function value is small) if it has less than 5000 columns, and 20 passes otherwise.'
                    /
- oep(o) / crossover, perturbation, presolve,
+ oep(o) / crossover, perturbation, presolve, names,
     heuristics, combinesolutions, feaspump, localtreesearch, rins, roundingheuristic /;

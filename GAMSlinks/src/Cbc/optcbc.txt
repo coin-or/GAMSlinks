@@ -658,3 +658,16 @@ Turns the rounding heuristic off.
 roundingheuristic.1
 Turns the rounding heuristic on.
 
+
+names
+This option causes GAMS names for the variables and equations to be loaded into Cbc.
+These names will then be used for error messages, log entries, and so forth.
+Turing names off may help if memory is very tight.
+
+
+names.0
+Do not load variable and equation names.
+
+
+names.1
+Load variable and equation names.
