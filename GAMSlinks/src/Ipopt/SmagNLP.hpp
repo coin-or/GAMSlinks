@@ -13,6 +13,8 @@
 
 #include "IpTNLP.hpp"
 
+//#include "IpIpoptApplication.hpp"
+
 // smag.h will try to include stdio.h and stdarg.h
 // so we include cstdio and cstdarg before if we know that we have them
 #ifdef HAVE_CSTDIO
@@ -100,6 +102,9 @@ public:
 	double div_iter_tol;
 	double scaled_conviol_tol;
 	double unscaled_conviol_tol;
+	
+//	IpoptApplication* ipopt_app;
+	
 private:
   smagHandle_t prob;
   double clockStart;

@@ -211,6 +211,7 @@ int main (int argc, const char *argv[]) {
   }
 
   bool mipoptimal=false;
+  bool solvefinal=opt.getBool("solvefinal");
 	myout.setCurrentDetail(2);
 	gm.PrintOut(GamsModel::StatusMask, "=2"); // turn off copying into .lst file
 	myout << CoinMessageNewline << CoinMessageEol;
@@ -228,30 +229,41 @@ int main (int argc, const char *argv[]) {
 		myout << "Starting GLPK Branch and Bound... " << CoinMessageEol;
 		solver.branchAndBound();
 		mipoptimal=solver.isProvenOptimal();
+		
+		if (solvefinal) {
+			int mipstat = lpx_mip_status(glpk_model);
+			if (!solver.isIterationLimitReached()
+					&& !solver.isTimeLimitReached()
+					&& (mipstat == LPX_I_FEAS || mipstat == LPX_I_OPT)) {
+				double objvalue=solver.getObjValue();
+				double* colLevelsav=CoinCopyOfArray(solver.getColSolution(), gm.nCols());
+//				const double *colLevel=solver.getColSolution();
+//				double *colLevelsav = new double[gm.nCols()];
+//				for (j=0; j<gm.nCols(); j++) colLevelsav[j] = solver.getColSolution()[j];
 
-		int mipstat = lpx_mip_status(glpk_model);
-		if (!solver.isIterationLimitReached()
-				&& !solver.isTimeLimitReached()
-				&& (mipstat == LPX_I_FEAS || mipstat == LPX_I_OPT)) {
-			const double *colLevel=solver.getColSolution();
-			// We are loosing colLevel after a call to lpx_set_* when using the Visual compiler. So we save the levels.
-			double *colLevelsav = new double[gm.nCols()];
-			for (j=0; j<gm.nCols(); j++) colLevelsav[j] = colLevel[j];
+				// No iteration limit for fixed run and special time limit
+				lpx_set_real_parm(glpk_model, LPX_K_TMLIM, opt.getDouble("reslim_fixedrun"));
+				lpx_set_int_parm(glpk_model, LPX_K_ITLIM, -1);
 
-			// No iteration limit for fixed run and special time limit
-			lpx_set_real_parm(glpk_model, LPX_K_TMLIM, opt.getDouble("reslim_fixedrun"));
-			lpx_set_int_parm(glpk_model, LPX_K_ITLIM, -1);
+				for (j=0; j<gm.nCols(); j++)
+					if (discVar[j])
+						solver.setColBounds(j,colLevelsav[j],colLevelsav[j]);
 
-			for (j=0; j<gm.nCols(); j++)
-				if (discVar[j])
-					solver.setColBounds(j,colLevelsav[j],colLevelsav[j]);
-			delete[] colLevelsav;
-
-			solver.setHintParam(OsiDoReducePrint, true, OsiHintTry); // loglevel 1
-			myout << "\nSolving fixed problem... " << CoinMessageEol;
-			solver.resolve();
-			if (!solver.isProvenOptimal())
-				myout << "Problems solving fixed problem. No solution returned." << CoinMessageEol;
+				solver.setHintParam(OsiDoReducePrint, true, OsiHintTry); // loglevel 1
+				myout << "\nSolving fixed problem... " << CoinMessageEol;
+				solver.resolve();
+				if (!solver.isProvenOptimal()) {
+					myout << "Problems solving fixed problem. We will return only primal column values." << CoinMessageEol;
+					gm.setResUsed(gm.SecondsSinceStart());
+					gm.setObjVal(objvalue);
+					gm.setStatus(GamsModel::NormalCompletion, mipoptimal ? GamsModel::Optimal : GamsModel::IntegerSolution);
+					gm.setSolution(colLevelsav, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+					return EXIT_SUCCESS;
+				}
+				delete[] colLevelsav;
+			}
+		} else {
+			myout << "\nSolving fixed problem skipped." << CoinMessageEol;
 		}
 	}
 
@@ -277,7 +289,7 @@ int main (int argc, const char *argv[]) {
 			myout << "Time limit exceeded.";
 			gm.setStatus(GamsModel::ResourceInterrupt,GamsModel::NoSolutionReturned);	
 		}
-	} else if (solver.isProvenOptimal()) { // LP or fixed LP was solved to optimality
+	} else if (solver.isProvenOptimal() || (!solvefinal && solver.isFeasible())) { // LP or fixed LP was solved to optimality or MIP was solved to feasibility
 		if (!gm.isLP() && !mipoptimal) { 
 			myout << "Integer Solution.";
 			gm.setStatus(GamsModel::NormalCompletion,GamsModel::IntegerSolution);	
@@ -317,12 +329,17 @@ int main (int argc, const char *argv[]) {
 	// We write a solution if model was declared optimal or feasible.
 	if (GamsModel::Optimal==gm.getModelStatus() || 
 			GamsModel::IntegerSolution==gm.getModelStatus()) {
-		GamsWriteSolutionOsi(&gm, &myout, &solver, true);
+		if (solvefinal) {
+			GamsWriteSolutionOsi(&gm, &myout, &solver, true);
+		} else {
+			myout << "Writing primal solution. Objective:" << gm.getObjVal() << "Time:" << gm.SecondsSinceStart() << "s\n " << CoinMessageEol;
+			gm.setSolution(solver.getColSolution(), NULL, NULL, NULL, solver.getRowActivity(), NULL, NULL, NULL);  
+		}
 	}	else {
 		gm.setSolution(); // Need this to trigger the write of GAMS solution file
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 void setupParameters(GamsOptions& opt, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model) {

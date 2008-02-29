@@ -76,6 +76,8 @@ int main (int argc, char* argv[]) {
   SmartPtr<TNLP> smagnlp = mysmagnlp;
   // Create a new instance of IpoptApplication (use a SmartPtr, not raw)
   SmartPtr<IpoptApplication> app = new IpoptApplication(false);
+  
+//  mysmagnlp->ipopt_app = GetRawPtr(app);
 
  	SmartPtr<Journal> smag_jrnl=new SmagJournal(prob, "console", J_ITERSUMMARY);
 	smag_jrnl->SetPrintLevel(J_DBG, J_NONE);

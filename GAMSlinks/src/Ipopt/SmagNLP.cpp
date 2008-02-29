@@ -9,6 +9,8 @@
 #include "SmagNLP.hpp"
 #include "IpIpoptCalculatedQuantities.hpp"
 
+//#include "IpTNLPAdapter.hpp"
+
 #include <memory.h>
 
 using namespace Ipopt;
@@ -404,6 +406,17 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
   } // switch
 
   if (write_solution) {
+/*  	SmartPtr<const Vector> curr_c=cq->curr_c();
+  	SmartPtr<const Vector> curr_d_minus_s=cq->curr_d_minus_s();
+  	
+  	TNLPAdapter* tnlp_adapter=dynamic_cast<TNLPAdapter*>(GetRawPtr(ipopt_app->nlp_adapter_));
+
+  	double* scaled_g = new double[smagRowCount(prob)];
+  	tnlp_adapter->ResortG(*curr_c, *curr_d_minus_s, scaled_g);
+
+  	for (Index i=0; i<smagRowCount(prob); ++i)
+  		std::cout << "row " << i << " infeas.: " << scaled_g[i] << std::endl;
+*/  	
 		unsigned char* colBasStat=new unsigned char[n];
 		unsigned char* colIndic=new unsigned char[n];
 		double* colMarg=new double[n];
@@ -419,7 +432,10 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 		unsigned char* rowIndic=new unsigned char[m];
     for (Index i = 0;  i < m;  i++) {
 			rowBasStat[i]=SMAG_BASSTAT_SUPERBASIC;
-			rowIndic[i]=SMAG_RCINDIC_OK; // TODO: not ok, if over the bounds
+//			if (fabs(scaled_g[i]) < scaled_conviol_tol)
+				rowIndic[i]=SMAG_RCINDIC_OK; // TODO: not ok, if over the bounds
+//			else
+//				rowIndic[i]=SMAG_RCINDIC_INFEAS;
       negLambda[i] = -lambda[i] * isMin;
     }
     smagSetObjEst(prob, obj_value*isMin);
