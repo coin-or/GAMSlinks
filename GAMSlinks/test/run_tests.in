@@ -61,8 +61,6 @@ if test @gamslinks_build_glpk@ = 1 ; then
 fi
 if test @gamslinks_build_cbc@ = 1 ; then
   solvers="$solvers , Cbc"
-  skiplist="$skiplist skip('Cbc','semicon1')=yes;"
-  skiplist="$skiplist skip('Cbc','sl4scon1')=yes;"
   testlist[${#testlist[@]}]="--solver cbc --suite lp"
   testlist[${#testlist[@]}]="--solver cbc --suite mip user1=rmip=cbc"
 fi

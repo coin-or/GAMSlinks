@@ -1,10 +1,10 @@
-// Copyright (C) GAMS Development 2006
+// Copyright (C) 2006-2008 GAMS Development and others
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
 // $Id$
 //
-// Authors:  Michael Bussieck, Stefan Vigerske
+// Authors: Michael Bussieck, Stefan Vigerske
 
 #include "GAMSlinksConfig.h"
 
@@ -124,13 +124,7 @@ int main (int argc, const char *argv[]) {
 		if (gm.nSOS2()) myout << gm.nSOS2() << "SOS of type 2.";
 		myout << CoinMessageEol;
 	}
-//	if (gm.nSemiContinuous()) {
-//		myout << "CBC does not handle semicontinuous variables correct (yet). Exiting..." << CoinMessageEol;
-//		gm.setStatus(GamsModel::CapabilityProblems, GamsModel::ErrorNoSolution);
-//		gm.setSolution();
-//		exit(EXIT_FAILURE);
-//	}
-	
+
 	gm.TimerStart();
 	
 	GamsDictionary gamsdict(gamshandler);

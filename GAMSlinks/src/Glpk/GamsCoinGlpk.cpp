@@ -1,10 +1,10 @@
-// Copyright (C) GAMS Development 2006
+// Copyright (C) 2006-2008 GAMS Development and others
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
 // $Id$
 //
-// Authors:  Michael Bussieck, Stefan Vigerske
+// Authors: Michael Bussieck, Stefan Vigerske
 
 #include "GAMSlinksConfig.h"
 
@@ -194,7 +194,7 @@ int main (int argc, const char *argv[]) {
 	}
 	
 	setupParameters(opt, myout, solver, glpk_model);
-//TODO	setupStartPoint(gm, myout, solver);
+//	setupStartPoint(gm, myout, solver);
 
 	// from glpsol: if scaling is turned on and presolve is off (or interior point is used), then do scaling 
   if (lpx_get_int_parm(glpk_model, LPX_K_SCALE) && !lpx_get_int_parm(glpk_model, LPX_K_PRESOL))
