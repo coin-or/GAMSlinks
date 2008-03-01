@@ -18,7 +18,7 @@ SCIPDIR = @SCIPDIR@
 
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)`
 
-AM_CPPFLAGS += -Wall -Wno-unknown-pragmas -DHAVE_CONFIG_H
+AM_CPPFLAGS += @EXTRAFLAGS@ -DHAVE_CONFIG_H
 
 nodist_libcoinscip_la_SOURCES = \
       $(SCIPDIR)/src/scip/branch.c \

@@ -63,6 +63,29 @@ AC_COIN_HAS_SCIP
 rm -f $MAKEOKFILE
 if test x"$use_thirdpartyscip" = xbuild ; then
   touch $MAKEOKFILE
+  
+  EXTRAFLAGS=
+  case "$CC" in
+    *gcc* )
+      EXTRAFLAGS="-Wall -Wno-unknown-pragmas -Wno-strict-aliasing -Wno-missing-declarations -Wno-missing-prototypes"
+      ;;
+    *icl* )
+      EXTRAFLAGS="-W3"
+      ;;
+  esac
+  
+  AC_CHECK_MEMBER(struct sigaction.sa_handler,,
+    [EXTRAFLAGS="$EXTRAFLAGS -DNO_SIGACTION"],
+    [#include <signal.h>])
+    
+  AC_CHECK_FUNC(rand_r,,
+    [EXTRAFLAGS="$EXTRAFLAGS -DNO_RAND_R"])
+    
+  AC_CHECK_FUNC(strtok_r,,
+    [EXTRAFLAGS="$EXTRAFLAGS -DNO_STRTOK_R"])
+    
+  AC_SUBST(EXTRAFLAGS)
+  
 else
   if test x$coin_has_scip = xtrue ; then
     AC_MSG_NOTICE([The SCIP sources don't need to be compiled])
