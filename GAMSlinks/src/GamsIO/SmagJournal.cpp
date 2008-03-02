@@ -8,9 +8,12 @@
 
 #include "SmagJournal.hpp"
 
-#if defined(_WIN32)
-# define vsnprintf _vsnprintf
-# define  snprintf  _snprintf
+#ifndef HAVE_VSNPRINTF
+#ifdef HAVE__VSNPRINTF
+#define vsnprintf _vsnprintf
+#else
+#define NOVSNPRINTF
+#endif
 #endif
 
 #if defined(NOVSNPRINTF)

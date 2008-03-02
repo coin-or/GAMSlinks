@@ -130,12 +130,13 @@ AC_CHECK_DECL([va_copy],[AC_DEFINE([HAVE_VA_COPY],[1],
 # endif
 #endif])
 
-####################################
-# stricmp and strcasecmp; snprintf #
-####################################
+###############################################
+# stricmp and strcasecmp; snprintf; vsnprintf #
+###############################################
 
 AC_CHECK_FUNCS([stricmp strcasecmp],[break],,)
 AC_CHECK_FUNCS([snprintf _snprintf],[break],,)
+AC_CHECK_FUNCS([vsnprintf _vsnprintf],[break],,)
 
 ##########################################################################
 

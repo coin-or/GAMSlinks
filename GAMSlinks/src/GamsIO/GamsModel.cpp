@@ -48,10 +48,6 @@
 #include "iolib.h"
 #include "dict.h"
 
-#if defined(_WIN32)
-# define snprintf _snprintf
-#endif
-
 static cntrec cntinfo;          /* control file information */
 
 GamsModel::GamsModel(const char *cntrfile)

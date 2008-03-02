@@ -34,6 +34,8 @@ public:
 	 * @return 0 if no solution, 1 if valid solution with better objective value than one passed in 
 	 */
 	int solution(double &objectiveValue, double *newSolution);
+	
+	using CbcHeuristic::solution;
 };
 
 #endif /*GAMSHEURISTIC_HPP_*/

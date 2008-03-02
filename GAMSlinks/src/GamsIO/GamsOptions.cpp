@@ -40,10 +40,6 @@ extern "C" {
 #include "optcc.h"
 }
 
-#if defined(_WIN32)
-# define snprintf _snprintf
-#endif
-
 //GamsOptions::GamsOptions(const char* systemdir, const char* solvername)
 GamsOptions::GamsOptions(GamsHandler& gams_, const char* solvername)
 : gams(gams_), optionshandle(NULL)
