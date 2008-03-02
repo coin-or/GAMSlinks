@@ -200,7 +200,7 @@ case "$GAMSIO_CODE" in
 	;;
 esac
 
-# setting up linker flags
+# setting up linker and compiler flags
 
 case $GAMSIO_CODE in
   LNX | LEG | LX3 | LEI)
@@ -225,14 +225,21 @@ case $GAMSIO_CODE in
     ;;
 esac
 
+GAMSIO_CPPFLAGS="-I$gamsio_srcdir"
+
 # check whether we can use the iolib
 
-AC_MSG_CHECKING([whether GAMS I/O libraries at $gamsio_srcdir work])
-GAMSIO_CPPFLAGS="-I$gamsio_srcdir"
-LIBS="$GAMSIO_LIBS $GAMSIO_ADDLIBS $LIBS"
-CPPFLAGS_save=$CPPFLAGS
-CPPFLAGS="$GAMSIO_CPPFLAGS $CPPFLAGS"
-AC_TRY_LINK([
+AC_ARG_ENABLE(gamsio-libcheck,
+  AS_HELP_STRING([--enable-gamsio-libcheck],[use disable-gamsio-libcheck to skip the link check at configuration time]),
+  [gamsio_libcheck=$enableval],
+  [gamsio_libcheck=yes])
+
+if test x$gamsio_libcheck != xno; then
+  AC_MSG_CHECKING([whether GAMS I/O libraries at $gamsio_srcdir work])
+  LIBS="$GAMSIO_LIBS $GAMSIO_ADDLIBS $LIBS"
+  CPPFLAGS_save=$CPPFLAGS
+  CPPFLAGS="$GAMSIO_CPPFLAGS $CPPFLAGS"
+  AC_TRY_LINK([
 #include <cstdio>
 #include "iolib.h"], [gfinit()],
   [AC_MSG_RESULT([yes])
@@ -240,6 +247,9 @@ AC_TRY_LINK([
    CPPFLAGS=$CPPFLAGS_save],
   [AC_MSG_RESULT([no])
    AC_MSG_ERROR([GAMS I/O library at $gamsio_src does not work])])
+else
+  AC_MSG_NOTICE([link check on GAMS I/O libraries skipped])
+fi
 
 # write out compiler, linker, Makefile... flags
 
