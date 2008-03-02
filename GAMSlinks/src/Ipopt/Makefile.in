@@ -55,7 +55,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = GamsIpopt$(EXEEXT)
-DIST_COMMON = $(includeipopt_HEADERS) \
+DIST_COMMON = $(includecoin_HEADERS) \
 	$(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 @HAVE_EXTERNALS_TRUE@am__append_1 = Externals
@@ -70,7 +70,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/inc/config_gamslinks.h
 CONFIG_CLEAN_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includeipoptdir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includecoindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_GamsIpopt_OBJECTS = GamsIpopt.$(OBJEXT) SmagNLP.$(OBJEXT) \
@@ -102,8 +102,8 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-includeipoptHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(includeipopt_HEADERS)
+includecoinHEADERS_INSTALL = $(INSTALL_HEADER)
+HEADERS = $(includecoin_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -383,8 +383,8 @@ EXTRA_DIST = gmsip_nt.cmd gmsip_us.run install/gmsip_nt.dat \
 
 #SmagExtra needed because it defined stricmp that is currently required by bch.o
 GamsIpopt_SOURCES = GamsIpopt.cpp SmagNLP.cpp ../GamsIO/SmagJournal.cpp ../GamsIO/SmagExtra.c
-includeipoptdir = $(includedir)/ipopt
-includeipopt_HEADERS = \
+includecoindir = $(includedir)/coin
+includecoin_HEADERS = \
   $(IPOPTSRCDIR)/src/Algorithm/IpIpoptCalculatedQuantities.hpp \
   $(IPOPTSRCDIR)/src/Algorithm/IpIpoptNLP.hpp \
   $(IPOPTSRCDIR)/src/Algorithm/IpNLPScaling.hpp \
@@ -572,22 +572,22 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
-install-includeipoptHEADERS: $(includeipopt_HEADERS)
+install-includecoinHEADERS: $(includecoin_HEADERS)
 	@$(NORMAL_INSTALL)
-	test -z "$(includeipoptdir)" || $(mkdir_p) "$(DESTDIR)$(includeipoptdir)"
-	@list='$(includeipopt_HEADERS)'; for p in $$list; do \
+	test -z "$(includecoindir)" || $(mkdir_p) "$(DESTDIR)$(includecoindir)"
+	@list='$(includecoin_HEADERS)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f=$(am__strip_dir) \
-	  echo " $(includeipoptHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(includeipoptdir)/$$f'"; \
-	  $(includeipoptHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(includeipoptdir)/$$f"; \
+	  echo " $(includecoinHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(includecoindir)/$$f'"; \
+	  $(includecoinHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(includecoindir)/$$f"; \
 	done
 
-uninstall-includeipoptHEADERS:
+uninstall-includecoinHEADERS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(includeipopt_HEADERS)'; for p in $$list; do \
+	@list='$(includecoin_HEADERS)'; for p in $$list; do \
 	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(includeipoptdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(includeipoptdir)/$$f"; \
+	  echo " rm -f '$(DESTDIR)$(includecoindir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(includecoindir)/$$f"; \
 	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -670,7 +670,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includeipoptdir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includecoindir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -719,7 +719,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-includeipoptHEADERS
+install-data-am: install-includecoinHEADERS
 
 install-exec-am: install-binPROGRAMS install-exec-local
 
@@ -747,7 +747,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-includeipoptHEADERS \
+uninstall-am: uninstall-binPROGRAMS uninstall-includecoinHEADERS \
 	uninstall-info-am uninstall-local
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
@@ -755,14 +755,13 @@ uninstall-am: uninstall-binPROGRAMS uninstall-includeipoptHEADERS \
 	distclean-generic distclean-libtool distclean-tags distdir dvi \
 	dvi-am html html-am info info-am install install-am \
 	install-binPROGRAMS install-data install-data-am install-exec \
-	install-exec-am install-exec-local install-includeipoptHEADERS \
+	install-exec-am install-exec-local install-includecoinHEADERS \
 	install-info install-info-am install-man install-strip \
 	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-binPROGRAMS \
-	uninstall-includeipoptHEADERS uninstall-info-am \
-	uninstall-local
+	uninstall-includecoinHEADERS uninstall-info-am uninstall-local
 
 
 @GAMSIO_IS_UNIX_TRUE@install-exec-local: install-binPROGRAMS

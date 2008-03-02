@@ -37,8 +37,22 @@
 #include "SmagNLP.hpp"
 
 extern "C" {
-#if not (defined(HAVE_MA27) && defined(HAVE_MA28) && defined(HAVE_MA57) && defined(HAVE_MC19))
+#ifndef HAVE_MA27
 #define HAVE_HSL_LOADER
+#else
+# ifndef HAVE_MA28
+# define HAVE_HSL_LOADER
+# else
+#  ifndef HAVE_MA57
+#  define HAVE_HSL_LOADER
+#  else
+#   ifndef HAVE_MC19
+#   define HAVE_HSL_LOADER
+#   endif
+#  endif
+# endif
+#endif
+#ifdef HAVE_HSL_LOADER
 #include "HSLLoader.h"
 #endif
 #ifndef HAVE_PARDISO

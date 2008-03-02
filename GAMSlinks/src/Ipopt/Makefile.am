@@ -15,8 +15,8 @@ bin_PROGRAMS = GamsIpopt
 #SmagExtra needed because it defined stricmp that is currently required by bch.o
 GamsIpopt_SOURCES = GamsIpopt.cpp SmagNLP.cpp ../GamsIO/SmagJournal.cpp ../GamsIO/SmagExtra.c
 
-includeipoptdir = $(includedir)/ipopt
-includeipopt_HEADERS = \
+includecoindir = $(includedir)/coin
+includecoin_HEADERS = \
   $(IPOPTSRCDIR)/src/Algorithm/IpIpoptCalculatedQuantities.hpp \
   $(IPOPTSRCDIR)/src/Algorithm/IpIpoptNLP.hpp \
   $(IPOPTSRCDIR)/src/Algorithm/IpNLPScaling.hpp \
