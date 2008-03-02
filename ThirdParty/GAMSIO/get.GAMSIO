@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This script downloads the GAMS I/O libraries from the GAMS server.
 # It takes as argument one or several build types in lowercase for which libaries should be downloaded.
@@ -21,10 +21,11 @@ echo "Downloading the ${sys} libraries into directory ${sysdir} from www.gams.co
 $wgetcmd http://www.gams.com/~svigerske/${sys}_latest.tgz
 
 echo "Unpacking the libraries..."
-tar xzf ${sys}_latest.tgz
+gunzip ${sys}_latest.tgz
+tar xf ${sys}_latest.tar
 
-echo "Deleting the tgz file..."
-rm -f ${sys}_latest.tgz
+echo "Deleting the tar file..."
+rm -f ${sys}_latest.tar
 
 cd ..
 
@@ -64,7 +65,6 @@ case "$uname" in
     ;;
   Linux*x86_64*)
     echo "This seem to be a Linux 64bit machine, downloading leg, lei, lnx, and lx3 builds."
-    echo ""
     download leg
     download lei
     download lnx
@@ -72,22 +72,18 @@ case "$uname" in
     ;;
   Darwin*i?86*)
     echo "This seem to be a Darwin machine, downloading dii build."
-    echo ""
     download dii
     ;;
   SunOS*i?86*)
     echo "This seem to be a Solaris machine, downloading sig build."
-    echo ""
     download sig
     ;;
   MINGW* | CYGWIN*)
     echo "This seem to be a Windows machine, downloading vis build."
-    echo ""
     download vis
     ;;
   *)
     echo "Cannot determine build type, downloading all builds. uname -sp output: $uname"
-    echo ""
     download dii
     download lnx
     download leg
