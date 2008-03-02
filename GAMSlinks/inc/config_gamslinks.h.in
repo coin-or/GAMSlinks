@@ -104,6 +104,9 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
+/* Define to 1 if you have the `snprintf' function. */
+#undef HAVE_SNPRINTF
+
 /* Define to 1 if you have the <stdarg.h> header file. */
 #undef HAVE_STDARG_H
 
@@ -139,6 +142,9 @@
 
 /* Define to 1 if va_copy is avaliable */
 #undef HAVE_VA_COPY
+
+/* Define to 1 if you have the `_snprintf' function. */
+#undef HAVE__SNPRINTF
 
 /* Name of package */
 #undef PACKAGE
