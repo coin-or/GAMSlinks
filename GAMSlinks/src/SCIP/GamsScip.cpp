@@ -104,13 +104,8 @@ int main (int argc, const char *argv[]) {
   if (smagStdOutputStart(prob, SMAG_STATUS_OVERWRITE_IFDUMMY, buffer, sizeof(buffer)))
   	fprintf(stderr, "Warning: Error opening GAMS output files .. continuing anyhow\t%s\n", buffer);
 
-  sprintf(buffer, "\nGAMS/%s (SCIP library %g.%d)\nwritten by Tobias Achterberg, Timo Berthold, Thorsten Koch, Alexander Martin, Kati Wolter\n\n", 
-#ifdef GAMS_BUILD
-  "CoinSCIP"
-#else
-  "SCIP"
-#endif
-  , SCIPversion(), SCIPsubversion());
+  
+  sprintf(buffer, "\nGAMS/SCIP version %.2f [LP solver: %s]\n%s\n\n", SCIPversion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
 	smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
  
@@ -362,6 +357,7 @@ SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/time", prob->gms.reslim) );
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/gap", prob->gms.optcr) );
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/absgap", prob->gms.optca) );
+	SCIP_CALL( SCIPsetIntParam(scip, "display/width", 80) );	
 	
 	//TODO: cutoff
 	
