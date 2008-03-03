@@ -78,9 +78,13 @@ case "$uname" in
     echo "This seem to be a Solaris machine, downloading sig build."
     download sig
     ;;
-  MINGW* | CYGWIN*)
-    echo "This seem to be a Windows machine, downloading vis build."
+  MINGW32* | CYGWIN*)
+    echo "This seem to be a Windows 32 bit machine, downloading vis build."
     download vis
+    ;;
+  MINGW64*)
+    echo "This seem to be a Windows 64 bit machine, downloading wei build."
+    download wei
     ;;
   *)
     echo "Cannot determine build type, downloading all builds. uname -sp output: $uname"
@@ -91,6 +95,7 @@ case "$uname" in
     download lx3
     download sig
     download vis
+    donwload wei
     ;;
 esac
 fi

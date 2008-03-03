@@ -19827,8 +19827,11 @@ else
 #            ;;
 #        esac
       ;;
-      *-cygwin* | *-mingw*)
+      *-cygwin* | *-mingw32*)
         GAMSIO_CODE=VIS
+      ;;
+      *-mingw64*)
+        GAMSIO_CODE=WEI
       ;;
       i?86-*-darwin*)
         GAMSIO_CODE=DII
@@ -19853,7 +19856,7 @@ case $GAMSIO_CODE in
       gamsio_system=Linux
       GAMSIO_CIA=CIA_LNX
     ;;
-  VIS)
+  VIS | WEI)
       gamsio_system=Windows
       GAMSIO_CIA=CIA_WIN
     ;;
