@@ -33,11 +33,11 @@ AC_ARG_WITH([gamssystem],
   AC_HELP_STRING([--with-gamssystem],[specify directory of GAMS distribution]),
   AC_CHECK_FILE([$withval/gams],[GAMS_PATH=$withval],[GAMS_PATH=UNAVAILABLE]),
   [AC_PATH_PROG(gamspath, [gams], UNAVAILABLE,,)
-   GAMS_PATH=${gamspath/%gams/}
+   GAMS_PATH="${gamspath/%gams/}"
   ])
-AM_CONDITIONAL([COIN_HAS_GAMSSYSTEM], [test $GAMS_PATH != UNAVAILABLE])
+AM_CONDITIONAL([COIN_HAS_GAMSSYSTEM], [test "$GAMS_PATH" != UNAVAILABLE])
 AC_SUBST(GAMS_PATH)
-if test $GAMS_PATH = UNAVAILABLE; then
+if test "$GAMS_PATH" = UNAVAILABLE; then
   AC_MSG_NOTICE([no GAMS system found, tests will not work])
 fi
 
@@ -61,13 +61,6 @@ AC_ARG_WITH([gamsio-code],
             GAMSIO_CODE=LEI
             ;;
         esac
-#          icpc* | */icpc* | icc* | */icc* | icl* | */icl* )
-#            GAMSIO_CODE=LEI
-#            ;;
-#          *)
-#            GAMSIO_CODE=LEG
-#            ;;
-#        esac
       ;;
       i?86-*-linux-*)
         case "$F77" in
@@ -78,14 +71,6 @@ AC_ARG_WITH([gamsio-code],
             GAMSIO_CODE=LX3
             ;;
         esac
-#        case "$CC" in 
-#          icpc* | */icpc* | icc* | */icc* | icl* | */icl* )
-#            GAMSIO_CODE=LX3
-#            ;;
-#          *)
-#            GAMSIO_CODE=LNX
-#            ;;
-#        esac
       ;;
       *-cygwin* | *-mingw32*)
         GAMSIO_CODE=VIS

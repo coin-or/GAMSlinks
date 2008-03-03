@@ -25992,12 +25992,12 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-   GAMS_PATH=${gamspath/%gams/}
+   GAMS_PATH="${gamspath/%gams/}"
 
 fi;
 
 
-if test $GAMS_PATH != UNAVAILABLE; then
+if test "$GAMS_PATH" != UNAVAILABLE; then
   COIN_HAS_GAMSSYSTEM_TRUE=
   COIN_HAS_GAMSSYSTEM_FALSE='#'
 else
@@ -26006,7 +26006,7 @@ else
 fi
 
 
-if test $GAMS_PATH = UNAVAILABLE; then
+if test "$GAMS_PATH" = UNAVAILABLE; then
   { echo "$as_me:$LINENO: no GAMS system found, tests will not work" >&5
 echo "$as_me: no GAMS system found, tests will not work" >&6;}
 fi
@@ -26034,13 +26034,6 @@ else
             GAMSIO_CODE=LEI
             ;;
         esac
-#          icpc* | */icpc* | icc* | */icc* | icl* | */icl* )
-#            GAMSIO_CODE=LEI
-#            ;;
-#          *)
-#            GAMSIO_CODE=LEG
-#            ;;
-#        esac
       ;;
       i?86-*-linux-*)
         case "$F77" in
@@ -26051,14 +26044,6 @@ else
             GAMSIO_CODE=LX3
             ;;
         esac
-#        case "$CC" in
-#          icpc* | */icpc* | icc* | */icc* | icl* | */icl* )
-#            GAMSIO_CODE=LX3
-#            ;;
-#          *)
-#            GAMSIO_CODE=LNX
-#            ;;
-#        esac
       ;;
       *-cygwin* | *-mingw32*)
         GAMSIO_CODE=VIS
