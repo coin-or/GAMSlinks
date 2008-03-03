@@ -124,6 +124,40 @@ bool SMAG_NLP::get_starting_point (Index n, bool init_x, Number* x,
 	}
   return true;
 } // get_starting_point
+#if 0
+bool SMAG_NLP::get_scaling_parameters(Number &obj_scaling,
+		bool &use_x_scaling, Index n, Number *x_scaling,
+		bool &use_g_scaling, Index m, Number *g_scaling) {
+	if (!prob->gms.iscopt) { // scale option set? 
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Ipopt asks for user scaling parameters, but GAMS scaling option is not set.\nTry adding <model>.scaleopt = 1; in your GAMS model.\n");
+		return false;
+	}
+	
+	bool got_scale_by_zero = (prob->objScale==0.);
+	obj_scaling = 1./prob->objScale;
+	
+	bool all_one=true;
+	for (Index i=0; (!got_scale_by_zero) && i<n; ++i) {
+		x_scaling[i] = 1./prob->colScale[i];
+		all_one &= (prob->colScale[i]==1.);
+	}
+	use_x_scaling=!all_one;
+	
+	all_one=false;
+	for (Index j=0; (!got_scale_by_zero) && j<m; ++j) {
+		g_scaling[j] = 1./prob->rowScale[j];
+		all_one &= (prob->rowScale[j]==1.);
+	}
+	use_g_scaling=!all_one;
+	
+	if (got_scale_by_zero) {
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Found scale attribute 0. for a variable or constraint. User-scaling turned off.\n");
+		return false;
+	}
+	
+	return true;
+}
+#endif
 
 // returns the variables linearity
 bool SMAG_NLP::get_variables_linearity(Index n, LinearityType* var_types) {

@@ -187,6 +187,8 @@ void solve_minlp(smagHandle_t prob) {
 
 	if ((prob->modType==procQCP || prob->modType==procMIQCP || prob->modType==procRMIQCP) && prob->rowCountNL==0)
 		bonmin_setup.options()->SetStringValue("hessian_constant", "yes"); 
+	if (prob->gms.iscopt)
+		bonmin_setup.options()->SetStringValue("nlp_scaling_method", "user-scaling");
 
 	try {
 		if (prob->gms.useopt)
@@ -468,6 +470,8 @@ void solve_nlp(smagHandle_t prob) {
  	app->Options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false);
 	if ((prob->modType==procQCP || prob->modType==procMIQCP || prob->modType==procRMIQCP) && prob->rowCountNL==0)
 		app->Options()->SetStringValue("hessian_constant", "yes"); 
+	if (prob->gms.iscopt)
+		app->Options()->SetStringValue("nlp_scaling_method", "user-scaling");
 
 	if (prob->gms.useopt)
 		app->Initialize(prob->gms.optFileName);

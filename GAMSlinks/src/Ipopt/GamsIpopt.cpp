@@ -79,9 +79,9 @@ int main (int argc, char* argv[]) {
   smagReadModel (prob);
 
 #ifdef GAMS_BUILD
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinIpopt NLP Solver (IPOPT Library 3.3, using MUMPS Library 4.7.3)\nwritten by A. Waechter\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinIpopt NLP Solver (IPOPT Library 3.4dev, using MUMPS Library 4.7.3)\nwritten by A. Waechter\n");
 #else
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Ipopt NLP Solver (IPOPT Library 3.3)\nwritten by A. Waechter\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Ipopt NLP Solver (IPOPT Library 3.4dev)\nwritten by A. Waechter\n");
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 
@@ -109,7 +109,9 @@ int main (int argc, char* argv[]) {
 // 	}
 // if we have linear rows and a quadratic objective, then the hessian of the lag. is constant, and Ipopt can make use of this  
 	if ((prob->modType==procQCP || prob->modType==procRMIQCP) && prob->rowCountNL==0)
-		app->Options()->SetStringValue("hessian_constant", "yes"); 
+		app->Options()->SetStringValue("hessian_constant", "yes");
+	if (prob->gms.iscopt)
+		app->Options()->SetStringValue("nlp_scaling_method", "user-scaling");
 
 #ifdef HAVE_HSL_LOADER
 	// add option to specify path to hsl library
