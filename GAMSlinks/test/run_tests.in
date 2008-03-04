@@ -11,7 +11,7 @@ srcdir="@srcdir@"
 gamspath="@GAMS_PATH@"
 cia=`echo @GAMSIO_CIA@ | cut -c 5-`
 
-if test x$gamspath = xUNAVAILABLE; then
+if test "x$gamspath" = xUNAVAILABLE; then
   echo "No GAMS system available."
   echo "Please download demo system from www.gams.com, rerun configure, install the solvers, and try again."
   exit 1
@@ -21,14 +21,14 @@ fi
 
 #echo " "
 echo Getting quality tests driver from GAMS test library...
-$gamspath/testlib quality
+"$gamspath/testlib" quality
 
 if test ! -e quality.gms ; then
   echo "Failed to obtain quality.gms from GAMS test library."
   exit 1
 fi
 
-if test -e $gamspath/gamslice.txt ; then
+if test -e "$gamspath/gamslice.txt" ; then
   echo "Found GAMS licence file. We will run all tests."
   demoparam=
 else
@@ -152,7 +152,7 @@ testfailed=0
 for (( i=0 ; i<${#testlist[@]} ; i++ )) ; do
   echo "Run quality test $(($i+1)) of ${#testlist[@]} with options " ${testlist[$i]} 
 
-	if $gamspath/gams quality_coin.gms ${testlist[$i]} $demoparam lo=2 logfile=quality_test_$i.log ; then
+	if "$gamspath"/gams quality_coin.gms ${testlist[$i]} $demoparam lo=2 logfile=quality_test_$i.log ; then
 		echo "Test " ${testlist[$i]} " passed."
 	else
 		testfailed=1
