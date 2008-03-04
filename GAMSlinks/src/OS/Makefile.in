@@ -384,12 +384,12 @@ IPOPTSRCDIR = @IPOPTSRCDIR@
 LDFLAGS = @LDFLAGS@
 LIBEXT = @LIBEXT@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@ `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt \
-	$(OSOBJDIR)/os_addlibs.txt \
+LIBS = @LIBS@ `cat $(OSOBJDIR)/os_addlibs.txt \
 	$(GAMSLINKSOBJDIR)/smagio_addlibs.txt` $(am__append_7) \
 	$(am__append_14) $(am__append_18) $(am__append_22) \
 	$(am__append_26) $(am__append_30) $(am__append_34) \
-	$(am__append_38)
+	$(am__append_38) `cat \
+	$(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
 LN_S = @LN_S@

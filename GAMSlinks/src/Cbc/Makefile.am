@@ -60,7 +60,7 @@ GamsCoinCbc_DEPENDENCIES = \
  $(CLPOBJDIR)/src/libClp.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la
 
-LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt $(GAMSLINKSOBJDIR)/gamsio_addlibs.txt`
+LIBS += `cat $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt $(GAMSLINKSOBJDIR)/gamsio_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
 GamsCoinCbc_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
  

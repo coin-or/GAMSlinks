@@ -50,7 +50,7 @@ GamsOS_DEPENDENCIES += \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
  ../GamsIO/libSmagIO.la $(SMAG_LIBS)
 
-LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(OSOBJDIR)/os_addlibs.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
+LIBS += `cat $(OSOBJDIR)/os_addlibs.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
 
 if COIN_OS_SOLVER
 
@@ -182,6 +182,7 @@ endif
 
 GamsOS_LDADD += \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la
+LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
 GamsOS_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 

@@ -40,7 +40,7 @@ GamsScip_DEPENDENCIES += \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(CLPOBJDIR)/src/libClp.la
 
-LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
+LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
 GamsScip_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 

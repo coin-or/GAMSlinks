@@ -278,12 +278,11 @@ IPOPTSRCDIR = @IPOPTSRCDIR@
 LDFLAGS = @LDFLAGS@
 LIBEXT = @LIBEXT@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@ $(am__append_4) `cat \
-	$(COINUTILSOBJDIR)/coinutils_addlibs.txt \
-	$(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt \
-	$(CBCOBJDIR)/cbc_addlibs.txt \
+LIBS = @LIBS@ $(am__append_4) `cat $(CGLOBJDIR)/cgl_addlibs.txt \
+	$(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt \
 	$(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt \
-	$(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
+	$(GAMSLINKSOBJDIR)/smagio_addlibs.txt \
+	$(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
 LN_S = @LN_S@

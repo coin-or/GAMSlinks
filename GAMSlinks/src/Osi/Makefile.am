@@ -29,7 +29,7 @@ GamsCoinOsi_LDADD = \
 GamsCoinOsi_DEPENDENCIES = \
  ../GamsIO/libGamsIO.la $(GAMSIO_LIBS)
 
-LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(GAMSLINKSOBJDIR)/gamsio_addlibs.txt`
+LIBS += `cat $(OSIOBJDIR)/osi_addlibs.txt $(GAMSLINKSOBJDIR)/gamsio_addlibs.txt`
 
 if COIN_HAS_CBC
   AM_CPPFLAGS += \
@@ -152,6 +152,7 @@ GamsCoinOsi_DEPENDENCIES += $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(OSIOBJDIR)/src/libOsi.la
 GamsCoinOsi_LDADD += $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(OSIOBJDIR)/src/libOsi.la
+LIBS+=`cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
 GamsCoinOsi_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
  

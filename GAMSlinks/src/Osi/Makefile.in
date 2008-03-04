@@ -383,11 +383,11 @@ IPOPTSRCDIR = @IPOPTSRCDIR@
 LDFLAGS = @LDFLAGS@
 LIBEXT = @LIBEXT@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@ `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt \
-	$(OSIOBJDIR)/osi_addlibs.txt \
+LIBS = @LIBS@ `cat $(OSIOBJDIR)/osi_addlibs.txt \
 	$(GAMSLINKSOBJDIR)/gamsio_addlibs.txt` $(am__append_4) \
 	$(am__append_8) $(am__append_15) $(am__append_19) \
-	$(am__append_23) $(am__append_27)
+	$(am__append_23) $(am__append_27) `cat \
+	$(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
 LN_S = @LN_S@

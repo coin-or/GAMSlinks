@@ -129,7 +129,7 @@ else
 fi
 gamsio_srcdir=`$CYGPATH_W $abs_source_dir/$gamsio_objdir/$GAMSIO_CODE | sed -e sX\\\\\\\\X/Xg`
 gamsio_objdir=`cd $gamsio_objdir; pwd`
-gamsio_objdir=`$CYGPATH_W $gamsio_objdir`
+gamsio_objdir=`$CYGPATH_W $gamsio_objdir | sed -e sX\\\\\\\\X/Xg`
 AC_CHECK_FILE([$gamsio_srcdir/iolib.h],[coin_has_gamsio=yes],[
   coin_has_gamsio=no
 	AC_MSG_WARN([no GAMS I/O libraries in ThirdParty/GAMSIO/$GAMSIO_CODE found. You can download them by calling get.GAMSIO $GAMSIO_CODE.])

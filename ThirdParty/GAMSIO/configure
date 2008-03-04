@@ -19901,7 +19901,7 @@ else
 fi
 gamsio_srcdir=`$CYGPATH_W $abs_source_dir/$gamsio_objdir/$GAMSIO_CODE | sed -e sX\\\\\\\\X/Xg`
 gamsio_objdir=`cd $gamsio_objdir; pwd`
-gamsio_objdir=`$CYGPATH_W $gamsio_objdir`
+gamsio_objdir=`$CYGPATH_W $gamsio_objdir | sed -e sX\\\\\\\\X/Xg`
 as_ac_File=`echo "ac_cv_file_$gamsio_srcdir/iolib.h" | $as_tr_sh`
 echo "$as_me:$LINENO: checking for $gamsio_srcdir/iolib.h" >&5
 echo $ECHO_N "checking for $gamsio_srcdir/iolib.h... $ECHO_C" >&6

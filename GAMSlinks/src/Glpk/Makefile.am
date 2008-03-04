@@ -39,7 +39,7 @@ GamsCoinGlpk_DEPENDENCIES = \
  $(OSIOBJDIR)/src/libOsi.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la 
 
-LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(GAMSLINKSOBJDIR)/gamsio_addlibs.txt`
+LIBS += `cat $(OSIOBJDIR)/osi_addlibs.txt $(GAMSLINKSOBJDIR)/gamsio_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
 GamsCoinGlpk_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 
