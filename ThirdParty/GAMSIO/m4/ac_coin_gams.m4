@@ -100,7 +100,7 @@ case $GAMSIO_CODE in
     ;;
   VIS | WEI)
       gamsio_system=Windows
-      GAMSIO_CIA=CIA_WIN
+      GAMSIO_CIA=CIA_WEX
     ;;
   DII)
       gamsio_system=Darwin

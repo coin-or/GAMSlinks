@@ -836,8 +836,8 @@ unitTest: test
 
 @COIN_HAS_GAMSSYSTEM_TRUE@gams-install: install
 @COIN_HAS_GAMSSYSTEM_TRUE@	echo "Installation of solvers in GAMS distribution at @GAMS_PATH@."
-@COIN_HAS_GAMSSYSTEM_TRUE@	cp $(DESTDIR)$(bindir)/gms*_.zip @GAMS_PATH@
-@COIN_HAS_GAMSSYSTEM_TRUE@	cd @GAMS_PATH@; ./gamsinst -a
+@COIN_HAS_GAMSSYSTEM_TRUE@	cp $(DESTDIR)$(bindir)/gms*_.zip "@GAMS_PATH@"
+@COIN_HAS_GAMSSYSTEM_TRUE@	cd "@GAMS_PATH@"; ./gamsinst -a
 @COIN_HAS_GAMSSYSTEM_FALSE@gams-install: 
 @COIN_HAS_GAMSSYSTEM_FALSE@	echo "Installation of solvers in GAMS distribution fails because path of GAMS system not known."
 @COIN_HAS_GAMSSYSTEM_FALSE@	exit 1
