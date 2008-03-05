@@ -120,7 +120,7 @@ int main (int argc, const char *argv[]) {
 	if (gm.nSemiContinuous()) myout << "                   " << gm.nSemiContinuous() << "variables are semicontinuous or semiinteger." << CoinMessageEol;
 	if (gm.nSOS1() || gm.nSOS2()) {
 		myout << "                   ";
-		if (gm.nSOS1()) myout << gm.nSOS1() << "SOS of type 1.";
+		if (gm.nSOS1()) myout << gm.nSOS1() << "SOS of type 1. ";
 		if (gm.nSOS2()) myout << gm.nSOS2() << "SOS of type 2.";
 		myout << CoinMessageEol;
 	}

@@ -363,6 +363,14 @@ SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
 	
   if (prob->gms.useopt)
   	SCIP_CALL( SCIPreadParams(scip, prob->gms.optFileName) );
+  if (prob->gms.useopt) {
+  	SCIP_RETCODE ret = SCIPreadParams(scip, prob->gms.optFileName);
+  	if (ret != SCIP_OKAY ) {
+  		char buffer[255];
+  		snprintf(buffer, 255, "WARNING: Reading of optionfile %s failed with error %d ! We continue.\n", prob->gms.optFileName, ret);
+  		smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+  	}
+  }
 
 	return SCIP_OKAY;
 }
