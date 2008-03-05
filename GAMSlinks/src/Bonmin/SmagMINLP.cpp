@@ -164,7 +164,7 @@ bool SMAG_MINLP::get_variables_types(Index n, VariableType* var_types) {
 			default: {
 				smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Semicontinuous and semiinteger variables are not supported yet. Exiting ...\n"); 			
 	      smagStdOutputFlush(prob, SMAG_ALLMASK);
-			  smagReportSolBrief(prob, 13, 6);
+			  smagReportSolBrief(prob, 14, 6);
   	    exit (EXIT_FAILURE);
 			}
 		}

@@ -20,11 +20,6 @@
 #endif
 #endif
 
-//TODO: use some configure stuff here...
-#if defined(_WIN32)
-# define snprintf _snprintf
-#endif
-
 #include "SmagMINLP.hpp"
 #include "SmagJournal.hpp"
 #include "GamsHandlerSmag.hpp"

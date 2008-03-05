@@ -102,7 +102,7 @@ int main (int argc, const char *argv[]) {
 	if (gm.nSOS1() || gm.nSOS2() || gm.nSemiContinuous()) {
 		myout << "GLPK cannot handle special ordered sets (SOS) or semicontinuous variables" << CoinMessageEol;
 		myout << "Exiting ..." << CoinMessageEol;
-		gm.setStatus(GamsModel::CapabilityProblems, GamsModel::ErrorNoSolution);
+		gm.setStatus(GamsModel::CapabilityProblems, GamsModel::NoSolutionReturned);
 		gm.setSolution();
 		exit(EXIT_FAILURE);
 	}
@@ -194,7 +194,7 @@ int main (int argc, const char *argv[]) {
 	}
 	
 	setupParameters(opt, myout, solver, glpk_model);
-//	setupStartPoint(gm, myout, solver);
+//TODO	setupStartPoint(gm, myout, solver);
 
 	// from glpsol: if scaling is turned on and presolve is off (or interior point is used), then do scaling 
   if (lpx_get_int_parm(glpk_model, LPX_K_SCALE) && !lpx_get_int_parm(glpk_model, LPX_K_PRESOL))

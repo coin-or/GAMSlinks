@@ -66,8 +66,6 @@ if test @gamslinks_build_cbc@ = 1 ; then
 fi
 if test @gamslinks_build_bonmin@ = 1 ; then
   solvers="$solvers , Bonmin"
-  skiplist="$skiplist skip('Bonmin','sos1a')=yes;"
-  skiplist="$skiplist skip('Bonmin','sl4sos1a')=yes;"
   skiplist="$skiplist skip('Bonmin','semicon1')=yes;"
   skiplist="$skiplist skip('Bonmin','sl4scon1')=yes;"
   skiplist="$skiplist skip('Bonmin','lp03')=yes;"

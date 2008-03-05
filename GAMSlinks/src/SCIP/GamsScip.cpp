@@ -115,13 +115,13 @@ int main (int argc, const char *argv[]) {
   if (prob->gms.nsos1 || prob->gms.nsos2) {
   	smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Special ordered sets (SOS) not supported by SCIP.\n");
   	smagStdOutputFlush(prob, SMAG_ALLMASK);
-		smagReportSolBrief(prob, 13, 6); // error; capability problems
+		smagReportSolBrief(prob, 14, 6); // no solution; capability problems
 		exit(EXIT_FAILURE);
   }
   if (prob->gms.nsemi || prob->gms.nsemii) {
   	smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Semicontinuous and semiinteger variables not supported by SCIP.\n");
   	smagStdOutputFlush(prob, SMAG_ALLMASK);
-		smagReportSolBrief(prob, 13, 6); // error; capability problems  	
+		smagReportSolBrief(prob, 14, 6); // no solution; capability problems  	
 		exit(EXIT_FAILURE);
   }
   
