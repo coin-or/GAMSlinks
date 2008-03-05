@@ -56,9 +56,13 @@ void SMAG_MINLP::setupPrioritiesSOS() {
 	}
 
 	sosinfo.num=prob->gms.nosos1+prob->gms.nosos2; // number of sos
-	if (!sosinfo.num) return;
-	sosinfo.types=new char[sosinfo.num]; // types of sos
 	sosinfo.numNz=prob->gms.nsos1+prob->gms.nsos2; // number of variables in sos
+	if (!sosinfo.num || !sosinfo.numNz) {
+		sosinfo.num=0;
+		sosinfo.numNz=0;
+		return;
+	}
+	sosinfo.types=new char[sosinfo.num]; // types of sos
 	// collects for each sos the variables which are in there
 	std::vector<std::list<int> > sosvar(sosinfo.num);  
 	for (Index i=0; i<smagColCount(prob); ++i) {
