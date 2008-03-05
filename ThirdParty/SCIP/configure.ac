@@ -102,4 +102,7 @@ AC_SUBST(SCIPDIR)
 
 AC_CONFIG_FILES([Makefile])
 
+#dummy header file to get -DHAVE_CONFIG flag for Clp
+AC_CONFIG_HEADER([config_scip.h])
+
 AC_COIN_FINALIZE
