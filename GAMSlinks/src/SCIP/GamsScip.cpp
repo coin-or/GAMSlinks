@@ -38,6 +38,8 @@
 #endif
 #endif
 
+#include <cerrno>
+
 #include "smag.h"
 #include "GamsDictionary.hpp"
 #include "GamsHandlerSmag.hpp"
@@ -328,10 +330,10 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 		
     SCIP_CONS* con;
 
-		const char* conname="gamscon";
+		const char* conname=NULL;
 		if (dict.haveNames())
 			conname=dict.getRowName(i, buffer, 256);
-		SCIP_CALL( SCIPcreateConsLinear(scip, &con, conname, ncoef, con_vars, con_coef, lb, ub,
+		SCIP_CALL( SCIPcreateConsLinear(scip, &con, conname ? conname : "noname", ncoef, con_vars, con_coef, lb, ub,
 				TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE, FALSE) );
 		
 		SCIP_CALL( SCIPaddCons(scip, con) );
@@ -353,6 +355,13 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 }
 
 SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
+	char buffer[512];
+	if (prob->gms.optca >= prob->inf) {
+		prob->gms.optca=0.999*prob->inf;
+		snprintf(buffer, 512, "Value for optca equal or larger than SCIPs value of infinity. Reduced to %g.\n", prob->gms.optca);
+		smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+	}
+	
 	SCIP_CALL( SCIPsetLongintParam(scip, "limits/nodes", prob->gms.nodlim ? prob->gms.nodlim : prob->gms.itnlim) );
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/time", prob->gms.reslim) );
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/gap", prob->gms.optcr) );
@@ -361,13 +370,22 @@ SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
 	
 	//TODO: cutoff
 	
-  if (prob->gms.useopt)
-  	SCIP_CALL( SCIPreadParams(scip, prob->gms.optFileName) );
+  if (prob->gms.useopt) {
+  	// try to open file; if we let SCIP do it and there is no option file, then it might print to stderr
+  	FILE* optfile = fopen("prob->gms.optFileName", "r");
+  	if (optfile==NULL) {
+  		snprintf(buffer, 512, "WARNING: Opening optionfile %s failed with the following error: %s \nWe continue without optionfile.\n", prob->gms.optFileName, strerror(errno));
+  		smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+  		prob->gms.useopt=0;
+  	} else {
+  		fclose(optfile);
+  	}
+  }
+  
   if (prob->gms.useopt) {
   	SCIP_RETCODE ret = SCIPreadParams(scip, prob->gms.optFileName);
   	if (ret != SCIP_OKAY ) {
-  		char buffer[255];
-  		snprintf(buffer, 255, "WARNING: Reading of optionfile %s failed with error %d ! We continue.\n", prob->gms.optFileName, ret);
+  		snprintf(buffer, 512, "WARNING: Reading of optionfile %s failed with error %d ! We continue.\n", prob->gms.optFileName, ret);
   		smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
   	}
   }
