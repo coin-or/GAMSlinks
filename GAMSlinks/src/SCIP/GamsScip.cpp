@@ -38,6 +38,15 @@
 #endif
 #endif
 
+// workaround missing errno symbol in gams build for vis
+#ifdef GAMS_BUILD
+#ifdef VIS
+extern "C" {
+	int errno=-1;
+}
+#endif
+#endif
+
 #include <cerrno>
 
 #include "smag.h"
@@ -358,7 +367,7 @@ SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
 	char buffer[512];
 	if (prob->gms.optca >= prob->inf) {
 		prob->gms.optca=0.999*prob->inf;
-		snprintf(buffer, 512, "Value for optca equal or larger than SCIPs value of infinity. Reduced to %g.\n", prob->gms.optca);
+		snprintf(buffer, 512, "Value for optca greater or equal than value for infinity. Reduced to %g.\n", prob->gms.optca);
 		smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
 	}
 	
