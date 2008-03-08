@@ -224,7 +224,7 @@ usercutnewint</a></td>
 <td>Calls the cut generator if the solver found a new integer feasible solution</td></tr>
 <tr><td><a href="#usergdxin">
 usergdxin</a></td>
-<td>The name of the GDX file read back into Cplex</td></tr>
+<td>The name of the GDX file read back into CBC</td></tr>
 <tr><td><a href="#usergdxname">
 usergdxname</a></td>
 <td>The name of the GDX file exported from the solver with the solution at the node</td></tr>
@@ -254,10 +254,10 @@ userheurnewint</a></td>
 <td>Calls the heuristic if the solver found a new integer feasible solution</td></tr>
 <tr><td><a href="#userheurobjfirst">
 userheurobjfirst</a></td>
-<td>***</td></tr>
+<td>Calls the heuristic if the LP value of the node is closer to the best bound than the current incumbent</td></tr>
 <tr><td><a href="#userjobid">
 userjobid</a></td>
-<td>Postfixes lf, o on call adds --userjobid to the call. Postfixes gdxname, gdxnameinc and gdxin</td></tr>
+<td>Postfixes gdxname, gdxnameinc, and gdxin</td></tr>
 <tr><td><a href="#userkeep">
 userkeep</a></td>
 <td>Calls gamskeep instead of gams</td></tr></table>
@@ -612,7 +612,7 @@ names</a>
 
 This option causes GAMS names for the variables and equations to be loaded into Cbc.
 These names will then be used for error messages, log entries, and so forth.
-Turing names off may help if memory is very tight.
+Turning names off may help if memory is very tight.
 
 <br><i>(default = 0)</i>
 <table>
@@ -1014,12 +1014,14 @@ Reference: S. Dash, and O. Guenluek, Valid Inequalities Based on Simple Mixed-in
 usercutcall</a>
 <i> (string)</i> The GAMS command line to call the cut generator</h4><p>
 
+The GAMS command line (minus the gams executable name) to call the cut generator.
 
 
 <h4><a name="usercutfirst">
 usercutfirst</a>
 <i> (integer)</i> Calls the cut generator for the first n nodes</h4><p>
 
+Calls the cut generator for the first n nodes.
 
 <br><i>(default = 10)</i>
 
@@ -1027,6 +1029,7 @@ usercutfirst</a>
 usercutfreq</a>
 <i> (integer)</i> Determines the frequency of the cut generator model calls</h4><p>
 
+Determines the frequency of the cut generator model calls.
 
 <br><i>(default = 10)</i>
 
@@ -1034,6 +1037,8 @@ usercutfreq</a>
 usercutinterval</a>
 <i> (integer)</i> Determines the interval when to apply the multiplier for the frequency of the cut generator model calls</h4><p>
 
+Determines the interval when to apply the multiplier for the frequency of the cut generator model calls.
+See userheurinterval for details.
 
 <br><i>(default = 100)</i>
 
@@ -1041,6 +1046,7 @@ usercutinterval</a>
 usercutmult</a>
 <i> (integer)</i> Determines the multiplier for the frequency of the cut generator model calls</h4><p>
 
+Determines the multiplier for the frequency of the cut generator model calls.
 
 <br><i>(default = 2)</i>
 
@@ -1048,13 +1054,21 @@ usercutmult</a>
 usercutnewint</a>
 <i> (integer)</i> Calls the cut generator if the solver found a new integer feasible solution</h4><p>
 
+Calls the cut generator if the solver found a new integer feasible solution.
 
 <br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Do not call cut generator because a new integer feasible solution is found.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Let CBC call the cut generator if a new integer feasible solution is found.</td></tr>
+</table>
 
 <h4><a name="usergdxin">
 usergdxin</a>
-<i> (string)</i> The name of the GDX file read back into Cplex</h4><p>
+<i> (string)</i> The name of the GDX file read back into CBC</h4><p>
 
+The name of the GDX file read back into CBC.
 
 <br><i>(default = bchin.gdx)</i>
 
@@ -1062,6 +1076,7 @@ usergdxin</a>
 usergdxname</a>
 <i> (string)</i> The name of the GDX file exported from the solver with the solution at the node</h4><p>
 
+The name of the GDX file exported from the solver with the solution at the node.
 
 <br><i>(default = bchout.gdx)</i>
 
@@ -1069,6 +1084,7 @@ usergdxname</a>
 usergdxnameinc</a>
 <i> (string)</i> The name of the GDX file exported from the solver with the incumbent solution</h4><p>
 
+The name of the GDX file exported from the solver with the incumbent solution.
 
 <br><i>(default = bchout_i.gdx)</i>
 
@@ -1076,18 +1092,21 @@ usergdxnameinc</a>
 usergdxprefix</a>
 <i> (string)</i> Prefixes usergdxin, usergdxname, and usergdxnameinc</h4><p>
 
+Prefixes to use for usergdxin, usergdxname, and usergdxnameinc.
 
 
 <h4><a name="userheurcall">
 userheurcall</a>
 <i> (string)</i> The GAMS command line to call the heuristic</h4><p>
 
+The GAMS command line (minus the gams executable name) to call the heuristic.
 
 
 <h4><a name="userheurfirst">
 userheurfirst</a>
 <i> (integer)</i> Calls the heuristic for the first n nodes</h4><p>
 
+Calls the heuristic for the first n nodes.
 
 <br><i>(default = 10)</i>
 
@@ -1095,6 +1114,7 @@ userheurfirst</a>
 userheurfreq</a>
 <i> (integer)</i> Determines the frequency of the heuristic model calls</h4><p>
 
+Determines the frequency of the heuristic model calls.
 
 <br><i>(default = 10)</i>
 
@@ -1102,6 +1122,11 @@ userheurfreq</a>
 userheurinterval</a>
 <i> (integer)</i> Determines the interval when to apply the multiplier for the frequency of the heuristic model calls</h4><p>
 
+Determines the interval when to apply the multiplier for the frequency of the heuristic model calls.
+For example, for the first 100 (userheurinterval) nodes, the solver call every 10th (userheurfreq) node
+the heuristic.
+After 100 nodes, the frequency gets multiplied by 10 (uerheurmult), so that for the next 100 node the solver calls the heuristic every 20th node.
+For nodes 200-300, the heuristic get called every 40th node, for nodes 300-400 every 80th node and after node 400 every 100th node.
 
 <br><i>(default = 100)</i>
 
@@ -1109,6 +1134,7 @@ userheurinterval</a>
 userheurmult</a>
 <i> (integer)</i> Determines the multiplier for the frequency of the heuristic model calls</h4><p>
 
+Determines the multiplier for the frequency of the heuristic model calls.
 
 <br><i>(default = 2)</i>
 
@@ -1116,26 +1142,36 @@ userheurmult</a>
 userheurnewint</a>
 <i> (integer)</i> Calls the heuristic if the solver found a new integer feasible solution</h4><p>
 
+Calls the heuristic if the solver found a new integer feasible solution.
 
 <br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Do not call heuristic because a new integer feasible solution is found.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Let CBC call the heuristic if a new integer feasible solution is found.</td></tr>
+</table>
 
 <h4><a name="userheurobjfirst">
 userheurobjfirst</a>
-<i> (integer)</i> ***</h4><p>
+<i> (integer)</i> Calls the heuristic if the LP value of the node is closer to the best bound than the current incumbent</h4><p>
 
+Similar to userheurfirst but only calls the heuristic if the relaxed objective value promises a significant improvement of the current incumbent, i.e. the LP value of the node has to be closer to the best bound than the current incumbent.
 
 <br><i>(default = 0)</i>
 
 <h4><a name="userjobid">
 userjobid</a>
-<i> (string)</i> Postfixes lf, o on call adds --userjobid to the call. Postfixes gdxname, gdxnameinc and gdxin</h4><p>
+<i> (string)</i> Postfixes gdxname, gdxnameinc, and gdxin</h4><p>
 
+Postfixes to use for gdxname, gdxnameinc, and gdxin.
 
 
 <h4><a name="userkeep">
 userkeep</a>
 <i> (integer)</i> Calls gamskeep instead of gams</h4><p>
 
+Calls gamskeep instead of gams
 
 <br><i>(default = 0)</i>
 

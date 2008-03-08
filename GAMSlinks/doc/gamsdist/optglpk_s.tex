@@ -1,7 +1,7 @@
 \subsection{Summary of CoinGlpk Options}
 
-Among the following Glpk options, only the GAMS parameters \hyperlink{glpkreslim}{reslim} and \hyperlink{glpkiterlim}{iterlim} are currently supported in CoinGlpk.
-Note, that the options optcr and optca to set the MIP gap tolerances are currently not supported.
+Among the following Glpk options, only the GAMS parameters \hyperlink{glpkreslim}{reslim}, \hyperlink{glpkiterlim}{iterlim}, and \hyperlink{glpkoptcr}{optcr} are currently supported in CoinGlpk.
+Note, that the option optca to set the absolute MIP gap is currently not supported.
 
 \begin{tabbing}
 \hspace {1.0in} \= \\
@@ -25,10 +25,24 @@ Note, that the options optcr and optca to set the MIP gap tolerances are current
 {backtracking} \> backtracking heuristic \\
 \hyperlink{glpkpresolve}
 {presolve} \> LP presolver \\
+\hyperlink{glpkcuts}
+{cuts} \> turning on or off all cut generators \\
+\hyperlink{glpkcovercuts}
+{covercuts} \> cover cuts \\
+\hyperlink{glpkcliquecuts}
+{cliquecuts} \> clique cuts \\
+\hyperlink{glpkgomorycuts}
+{gomorycuts} \> gomorys mixed-integer cuts \\
+\hyperlink{glpkmircuts}
+{mircuts} \> mixed-integer rounding cuts \\
 \hyperlink{reslim_fixedrun}
 {reslim\_fixedrun} \> resource limit for solve with fixed discrete variables \\
 \hyperlink{noiterlim}
 {noiterlim} \> turn off iteration limit \\
+\hyperlink{glpknames}
+{names} \> indicates whether row and column names should be given to glpk \\
+\hyperlink{glpksolvefinal}
+{solvefinal} \> switch for solve of the problem with fixed discrete variables \\
 \hyperlink{glpkreslim}
 {reslim} \> resource limit \\
 \hyperlink{glpkiterlim}

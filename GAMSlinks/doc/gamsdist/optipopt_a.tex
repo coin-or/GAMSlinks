@@ -182,9 +182,7 @@ internally by Ipopt but the unscaled objective is
 reported in the console output. If additional
 scaling parameters are computed (e.g.
 user-scaling or gradient-based), both factors are
-multiplied. If this value is chosen to be
-negative, Ipopt will maximize the objective
-function instead of minimizing it. The valid range for this real option is 
+multiplied. The valid range for this real option is 
 ${\tt -inf} <  {\tt obj\_scaling\_factor } <  {\tt +inf}$
 and its default value is $1$.
 
@@ -192,8 +190,9 @@ and its default value is $1$.
 \paragraph{nlp\_scaling\_method:} Select the technique used for scaling the NLP. $\;$ \\
  Selects the technique used for scaling the
 problem internally before it is solved. For
-user-scaling, the parameters come from the NLP.
-The default value for this string option is ``gradient-based''.
+user-scaling, the parameters come from the values of the .scale suffix in GAMS.
+The default value for this string option is ``gradient-based'' if scaleopt is 0 (default).
+If the user provides variable or equation scaling values in GAMS and sets $<$model$>$.scaleopt to 1, then the default for this parameter is ``user-scaling''.
 \\ 
 Possible values:
 \begin{itemize}
@@ -201,6 +200,8 @@ Possible values:
    \item user-scaling: scaling parameters will come from the user
    \item gradient-based: scale the problem so the maximum gradient at
 the starting point is scaling\_max\_gradient
+   \item equilibration-based: scale the problem so that first derivatives are
+of order 1 at random points (only available with MC19)
 \end{itemize}
 
 \paragraph{nlp\_scaling\_max\_gradient:} Maximum gradient after NLP scaling. $\;$ \\
@@ -234,6 +235,7 @@ Possible values:
 \begin{itemize}
 \item none:                    don't check; no extra work at beginning
 \item mumps:                   use MUMPS
+\item ma28:                     use MA28
 \end{itemize}
 
 \paragraph{dependency\_detection\_with\_rhs:} Indicates if the right hand sides of the constraints should be considered during dependency detection. $\;$ \\
@@ -1239,6 +1241,55 @@ Possible values:
 
 \subsubsection{Linear solver}
 
+\paragraph{linear\_solver:} Linear solver used for step computations. $\;$ \\
+ Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions).
+Note, you need to provide an extra shared library to use MA27, MA57, or PARDISO, see \hyperlink{ipoptlinearsolver}{Section \ref{ipoptlinearsolver}}.
+The default value for this string option is ``mumps''.
+\\
+Possible values:
+\begin{itemize}
+   \item ma27: use the Harwell routine MA27
+   \item ma57: use the Harwell routine MA57
+   \item pardiso: use the Pardiso package
+%    \item wsmp: use WSMP package
+%    \item taucs: use TAUCS package (not yet working)
+   \item mumps: use MUMPS package
+%    \item custom: use custom linear solver
+\end{itemize}
+
+\paragraph{hsl\_library:} Path and filename of HSL library for dynamic load. $\;$ \\
+Specify the path to a library that contains HSL routines and can be load via dynamic linking, see also \hyperlink{ipoptlinearsolver}{Section \ref{ipoptlinearsolver}}.
+
+\paragraph{pardiso\_library:} Path and filename of PARDISO library for dynamic load. $\;$ \\
+Specify the path to a PARDISO library that and can be load via dynamic linking, see also \hyperlink{ipoptlinearsolver}{Section \ref{ipoptlinearsolver}}.
+
+\paragraph{linear\_system\_scaling:} Method for scaling the linear system. $\;$ \\
+ Determines the method used to compute symmetric scaling factors for the augmented system (see also the ``linear\_scaling\_on\_demand'' option).
+This scaling is independent of the NLP problem scaling.
+By default, MC19 is only used if MA27 or MA57 are selected as linear solvers.
+% This option is only available if Ipopt has been compiled with MC19.
+The default value for this string option is ``mc19''.
+\\
+Possible values:
+\begin{itemize}
+   \item none: no scaling will be performed
+   \item mc19: use the Harwell routine MC19
+\end{itemize}
+
+\paragraph{linear\_scaling\_on\_demand:} Flag indicating that linear scaling is only done if it seems required. $\;$ \\
+ This option is only important if a linear scaling method (e.g., mc19) is used.
+If you choose ``no'', then the scaling factors are computed for every linear system from the start.
+This can be quite expensive.
+Choosing ``yes'' means that the algorithm will start the scaling method only when the solutions to the linear system seem not good, and then use it until the end.
+The default value for this string option is ``yes''.
+\\
+Possible values:
+\begin{itemize}
+   \item no: Always scale the linear system.
+   \item yes: Start using linear system scaling if solutions
+seem not good.
+\end{itemize}
+
 \paragraph{fast\_step\_computation:} Indicates if the linear system should be solved quickly. $\;$ \\
  If set to yes, the algorithm assumes that the
 linear system that is solved to obtain the search
@@ -1299,6 +1350,9 @@ aborted. The valid range for this real option is
 $0 <  {\tt residual\_improvement\_factor } <  {\tt +inf}$
 and its default value is $1$.
 
+
+\subsubsection{MUMPS Linear Solver}
+
 \paragraph{mumps\_pivtol:} Pivot tolerance for the linear solver MUMPS. \\
 A smaller number pivots for sparsity, a larger number pivots for stability.
 The valid range for this real option is
@@ -1342,6 +1396,72 @@ threshold for a pivot to be considered zero.
 This is CNTL(3) in MUMPS. The valid range for this real option is 
 ${\tt -inf} <  {\tt mumps\_dep\_tol } <  {\tt +inf}$
 and its default value is $-1$.
+
+\subsubsection{PARDISO Linear Solver}
+
+\paragraph{pardiso\_matching\_strategy:} Matching strategy to be used by Pardiso $\;$ \\
+This is IPAR(13) in Pardiso manual.
+The default value for this string option is ``complete+2x2''.
+\\
+Possible values:
+\begin{itemize}
+   \item complete: Match complete (IPAR(13)=1)
+   \item complete+2x2: Match complete+2x2 (IPAR(13)=2)
+   \item constraints: Match constraints (IPAR(13)=3)
+\end{itemize}
+
+\paragraph{pardiso\_out\_of\_core\_power:} Enables out-of-core variant of Pardiso $\;$ \\
+Setting this option to a positive integer $k$ makes Pardiso work in the out-of-core variant where the factor is split in $2^k$ subdomains.
+This is IPARM(50) in the Pardiso manual.
+The valid range for this integer option is $0 \le {\tt pardiso\_out\_of\_core\_power } <  {\tt +inf}$ and its default value is $0$.
+
+\subsubsection{MA27 Linear Solver}
+
+\paragraph{ma27\_pivtol:} Pivot tolerance for the linear solver MA27. $\;$ \\
+A smaller number pivots for sparsity, a larger number pivots for stability.
+The valid range for this real option is $0 <  {\tt ma27\_pivtol } <  1$ and its default value is $10^{-8}$.
+
+
+\paragraph{ma27\_pivtolmax:} Maximum pivot tolerance for the linear solver MA27. $\;$ \\
+Ipopt may increase pivtol as high as pivtolmax to get a more accurate solution to the linear
+system.
+The valid range for this real option is $0 <  {\tt ma27\_pivtolmax } <  1$ and its default value is $0.0001$.
+
+
+\paragraph{ma27\_liw\_init\_factor:} Integer workspace memory for MA27. $\;$ \\
+The initial integer workspace memory = liw\_init\_factor $*$ memory required by unfactored system.
+Ipopt will increase the workspace size by meminc\_factor if required.
+The default value for this real option is $5$ and its valid range is $1 \le {\tt ma27\_liw\_init\_factor } <  {\tt +inf}$.
+
+
+\paragraph{ma27\_la\_init\_factor:} Real workspace memory for MA27. $\;$ \\
+The initial real workspace memory = la\_init\_factor $*$ memory required by unfactored system. 
+Ipopt will increase the workspace size by meminc\_factor if required.
+The valid range for this real option is $1 \le {\tt ma27\_la\_init\_factor } <  {\tt +inf}$ and its default value is $5$.
+
+
+\paragraph{ma27\_meminc\_factor:} Increment factor for workspace size for MA27. $\;$ \\
+If the integer or real workspace is not large enough, Ipopt will increase its size by this factor.
+The valid range for this real option is $1 \le {\tt ma27\_meminc\_factor } <  {\tt +inf}$ and its default value is $10$.
+
+\subsubsection{MA57 Linear Solver}
+
+\paragraph{ma57\_pivtol:} Pivot tolerance for the linear solver MA57. $\;$ \\
+A smaller number pivots for sparsity, a larger number pivots for stability.
+The valid range for this real option is $0 <  {\tt ma57\_pivtol } <  1$ and its default value is $10^{-8}$.
+
+
+\paragraph{ma57\_pivtolmax:} Maximum pivot tolerance for the linear solver MA57. $\;$ \\
+Ipopt may increase pivtol as high as ma57\_pivtolmax to get a more accurate solution to the linear system.
+The valid range for this real option is $0 <  {\tt ma57\_pivtolmax } <  1$ and its default value is $0.0001$.
+
+
+\paragraph{ma57\_pre\_alloc:} Safety factor for work space memory allocation for the linear solver MA57. $\;$ \\
+If 1 is chosen, the suggested amount of work space is used.
+However, choosing a larger number might avoid reallocation if the suggest values do not suffice.
+The valid range for this real option is $1 \le {\tt ma57\_pre\_alloc } <  {\tt +inf}$ and its default value is $3$.
+
+
 
 \subsubsection{Hessian perturbation}
 

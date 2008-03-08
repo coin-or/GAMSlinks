@@ -75,7 +75,7 @@ set g Cbc Option Groups /
       usercutinterval  Determines the interval when to apply the multiplier for the frequency of the cut generator model calls
       usercutmult      Determines the multiplier for the frequency of the cut generator model calls
       usercutnewint    Calls the cut generator if the solver found a new integer feasible solution
-      usergdxin        The name of the GDX file read back into Cplex
+      usergdxin        The name of the GDX file read back into CBC
       usergdxname      The name of the GDX file exported from the solver with the solution at the node
       usergdxnameinc   The name of the GDX file exported from the solver with the incumbent solution
       usergdxprefix   'Prefixes usergdxin, usergdxname, and usergdxnameinc'
@@ -85,10 +85,10 @@ set g Cbc Option Groups /
       userheurinterval Determines the interval when to apply the multiplier for the frequency of the heuristic model calls
       userheurmult     Determines the multiplier for the frequency of the heuristic model calls
       userheurnewint   Calls the heuristic if the solver found a new integer feasible solution
-      userheurobjfirst '***'
+      userheurobjfirst 'Calls the heuristic if the LP value of the node is closer to the best bound than the current incumbent'
 *      userincbcall     The GAMS command line to call the incumbent checking program
 *      userincbicall    The GAMS command line to call the incumbent reporting program
-      userjobid        'Postfixes lf, o on call adds --userjobid to the call. Postfixes gdxname, gdxnameinc and gdxin'
+      userjobid        'Postfixes gdxname, gdxnameinc, and gdxin'
       userkeep         Calls gamskeep instead of gams
 * GAMS options
       reslim                 resource limit
@@ -255,6 +255,8 @@ bch.(
    preprocess.(     off, on, equal, equalall, sos, trysos )
    printfrequency.(  0 )
    names.(           0, 1)
+   usercutnewint.(   0, 1)
+   userheurnewint.(   0, 1)
  /
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /
@@ -270,4 +272,5 @@ bch.(
                      cut_passes_root '100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop in the objective function value is small) if it has less than 5000 columns, and 20 passes otherwise.'
                    /
  oep(o) / crossover, perturbation, presolve, names,
-    heuristics, combinesolutions, feaspump, localtreesearch, rins, roundingheuristic /;
+    heuristics, combinesolutions, feaspump, localtreesearch, rins, roundingheuristic,
+    usercutnewint, userheurnewint /;

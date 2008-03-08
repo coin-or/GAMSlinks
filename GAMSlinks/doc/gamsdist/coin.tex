@@ -31,22 +31,23 @@ COIN-OR (\textbf{CO}mputational \textbf{IN}frastructure for \textbf{O}perations 
 One of the projects hosted at COIN-OR is the GAMSlinks project (\texttt{https://projects.coin-or.org/GAMSlinks}).
 It is dedicated to the development of interfaces between GAMS and open source solvers.
 Some of these links and solvers have also found their way into the regular GAMS distribution.
-They are currently available for Linux (32 and 64 bit), Windows (32 bit), Sun Solaris (Intel 64 bit), and Darwin (Intel 32 bit) systems.
+They are currently available for Linux (32 and 64 bit), Windows (32 and 64 bit), Sun Solaris (Intel 64 bit), and Darwin (Intel 32 bit) systems.
+With the availability of source code for the GAMSlinks the user is not limited to the out of the box solvers that come with a regular GAMS distribution, but can extend and build these interfaces by themselves.
 
-
-As of GAMS Distribution 22.6, available solvers include:
+As of GAMS Distribution 22.7, available solvers include:
 \begin{itemize}
 \item CoinBonmin 0.9: Basic Open-source Nonlinear Mixed Integer programming\\
 (model types: LP, RMIP, MIP, DNLP, NLP, RMINLP, MINLP, QCP, RMIQCP, MIQCP)
 \item CoinCbc 2.0: COIN-OR Branch and Cut\\
 (model types: LP, MIP, RMIP)
-\item CoinGlpk 4.24: Gnu Linear Programming Kit\\
+\item CoinGlpk 4.26: Gnu Linear Programming Kit\\
 (model types: LP, MIP, RMIP)
-\item CoinIpopt 3.3: Interior Point Optimizer\\
+\item CoinIpopt 3.4: Interior Point Optimizer\\
 (model types: LP, RMIP, DNLP, NLP, RMINLP, QCP, RMIQCP)
+\item CoinScip 1.00: Solving Constrained Integer Programs\\
+(model types: LP, MIP, RMIP)
 \end{itemize}
 
-With the availability of source code for the GAMS/COIN-OR links the user is not limited to the out of the box GAMS/COIN-OR solvers that come with a regular GAMS distribution.
 % The open source concept opens new possibilities for our advanced users:
 % 
 % \begin{itemize}
@@ -69,27 +70,27 @@ The COIN-OR project leader for Bonmin is Pierre Bonami.
 
 Bonmin implements five different algorithms:
 \begin{itemize}
-\item {B-BB}: a simple branch-and-bound algorithm based on solving a continuous nonlinear program at each node of the search tree and branching on variables
+\item {B-BB}: a simple branch-and-bound algorithm based on solving a continuous nonlinear program at each node of the search tree and branching on variables (default)
 \item {B-OA}: an outer-approximation based decomposition algorithm
 \item {B-QG}: an outer-approximation based branch-and-cut algorithm (by Queseda and Grossmann)
-\item {B-Hyb}: a hybrid outer-approximation/nonlinear programming based branch-and-cut algorithm (default)
+\item {B-Hyb}: a hybrid outer-approximation/nonlinear programming based branch-and-cut algorithm
 \item {B-Ecp}: an ECP cuts based branch-and-cut algorithm a la FilMINT
 \end{itemize}
 The algorithms are exact when the problem is convex, otherwise they are heuristics.
 
 For convex MINLPs, experiments on a reasonably large test set of problems have shown that B-Hyp is the algorithm of choice (it solved most of the problems in 3 hours of computing time).
-Therefore, it is the default algorithm in Bonmin.
 Nevertheless, there are cases where B-OA is much faster than B-Hyb and others where B-BB is interesting.
 B-QG corresponds mainly to a specific parameter setting of B-Hyb where some features are disabled.
 B-Ecp has just been added to Bonmin and is still experimental.
 For nonconvex MINLPs, it is strongly recommend to use B-BB, even though it is only a heuristic for such problems too.
+% Therefore, it is the default algorithm in Bonmin.
 
 For more information we refer to
 \begin{itemize}
 \item the Bonmin web site \texttt{https://projects.coin-or.org/Bonmin} and
 \item the paper P. Bonami, L.T. Biegler, A.R. Conn, G. Cornuejols, I.E. Grossmann, C.D. Laird, J. Lee, A. Lodi, F. Margot, N.Sawaya and A. W\"achter, An Algorithmic Framework for Convex Mixed Integer Nonlinear Programs, \emph{IBM Research Report} RC23771, Oct. 2005.
 \end{itemize}
-Most of the Bonmin documentation in the section was copied from the Bonmin manual available on the Bonmin web site.
+Most of the Bonmin documentation in the section is taken from the Bonmin manual available on the Bonmin web site.
 
 \subsection{Model requirements}
 
@@ -118,7 +119,7 @@ Specifying \texttt{optfile=1} let Gams/CoinBonmin read \texttt{coinbonmin.opt}, 
 The format of the option file is the same as for Ipopt (see Section \ref{sub:ipoptoptionspec}).
 
 The most important option in Bonmin is the choice of the solution algorithm.
-This can be set by using the option named \texttt{bonmin.algorithm} which can be set to \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, \texttt{B-Hyb}, or \texttt{B-Ecp} (its default value is \texttt{B-Hyb}).
+This can be set by using the option named \texttt{bonmin.algorithm} which can be set to \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, \texttt{B-Hyb}, or \texttt{B-Ecp} (its default value is \texttt{B-BB}).
 Depending on the value of this option, certain other options may be available or not.
 
 In the context of outer approximation decomposition, several options are available for configuring the MIP subsolver CBC.
@@ -156,7 +157,7 @@ Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Algorithm choice}\\
 \hline
-algorithm& S& B\-Hyb& +& +& +& +\\
+algorithm& S& B-BB& +& +& +& +\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Branch-and-bound}\\
 \hline
@@ -292,6 +293,8 @@ detect infeasible problems faster.
 \end{itemize}
 
 \section{CoinCbc}
+\label{sec:coincbc}
+\hypertarget{sec:coincbc}{}
 
 GAMS/CoinCBC brings the open source LP/MIP solver CBC from the COIN-OR foundation to the broad audience of GAMS users.
 
@@ -309,7 +312,7 @@ Most of the CBC documentation in the section was copied from the help in the CBC
 \subsection{Model requirements}
 
 The CBC link in GAMS supports continuous, binary, integer, semicontinuous, semiinteger variables, special ordered sets of type 1 and 2, and branching priorities (see chapter 17.1 of the GAMS User's Guide).
-Quadratic objective functions are not supported yet.
+% Quadratic objective functions are not supported yet.
 
 \subsection{Usage of CoinCbc}
 
@@ -340,6 +343,10 @@ Following is an example options file coincbc.opt.
 \end{verbatim}
 It will cause CoinCBC to use cut generators only in the root node and turns off the perturbation of the LP relaxation.
 
+GAMS/CoinCbc now support the GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
+The GAMS BCH facility automates all major steps necessary to define, execute, and control the use of user defined routines within the framework of general purpose MIP codes.
+Currently supported are user defined cut generators and heuristics.
+Please see the BCH documentation at \texttt{http://www.gams.com/docs/bch.htm} for further information.
 
 % \subsection{CoinCbc output}
 % \subsection{Some CoinCbc features}
@@ -361,12 +368,12 @@ For more information we refer to
 \item the Glpk web site \texttt{http://www.gnu.org/software/glpk/glpk.html} and
 \item the Osi web site \texttt{https://projects.coin-or.org/Osi}.
 \end{itemize}
-Most of the Glpk documentation in the section was copied from the help in the Glpk manual.
+Most of the Glpk documentation in the section was taken from the Glpk manual.
 
 \subsection{Model requirements}
 
 Glpk supports continuous, binary, and integer variables, but no special ordered sets, semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide).
-Also quadratic objective functions and branching priorities are not supported.
+Also branching priorities are not supported.
 
 \subsection{Usage of CoinGlpk}
 
@@ -399,18 +406,18 @@ GAMS/CoinIpopt brings the open source NLP solver Ipopt from the COIN-OR foundati
 
 Ipopt (\textbf{I}nterior \textbf{P}oint \textbf{Opt}imizer) is an open-source solver for large-scale nonlinear programming.
 The code has been written primarily by Andreas W\"achter, who is the COIN-OR project leader for Ipopt.
-GAMS/CoinIpopt uses MUMPS (\texttt{http://graal.ens-lyon.fr/MUMPS}) as linear solver.
 
 For more information we refer to
 \begin{itemize}
 \item the Ipopt web site \texttt{https://projects.coin-or.org/Ipopt} and
 \item the \emph{implementation paper} A. W\"achter and L. T. Biegler, On the Implementation of a Primal-Dual Interior Point Filter Line Search Algorithm for Large-Scale Nonlinear Programming, \emph{Mathematical Programming} 106(1), pp. 25-57, 2006.
 \end{itemize}
-Most of the Ipopt documentation in the section was copied from the Ipopt manual available on the Ipopt web site.
+Most of the Ipopt documentation in the section was taken from the Ipopt manual available on the Ipopt web site.
 
 \subsection{Model requirements}
 
 Ipopt can handle nonlinear programming models which functions can be nonconvex, but should be twice continuously differentiable.
+GAMS/CoinIpopt now supports user-defined scalings of variables and equations using the .scale suffix and scaleopt option (see chapter 17.2 of the GAMS User's Guide).
 
 \subsection{Usage of CoinIpopt}
 
@@ -421,6 +428,48 @@ The following statement can be used inside your GAMS program to specify using Co
 
 The above statement should appear before the Solve statement.
 If CoinIpopt was specified as the default solver during GAMS installation, the above statement is not necessary.
+
+\subsection{The linear solver in Ipopt}
+\label{ipoptlinearsolver}
+\hypertarget{ipoptlinearsolver}{}
+
+The performance and robustness of Ipopt on larger models heavily relies on the used solver for sparse symmetric indefinite linear systems.
+GAMS/CoinIpopt includes the multifrontal massively parallel sparse direct solver MUMPS (\texttt{http://graal.ens-lyon.fr/MUMPS}).
+The user can provide the Parallel Sparse Direct Solver PARDISO or routines from the Harwell Subroutine Library (HSL) as shared (or dynamic) libraries to replace MUMPS.
+
+\subsubsection{Using Harwell Subroutine Library routines with GAMS/CoinIpopt}
+
+If you have routines from the HSL available and want Gams/CoinIpopt to use them, you can provide them in a shared library.
+GAMS/CoinIpopt can use MA27, MA28, MA57, and MC19.
+By telling Ipopt to use one of these routines (see options linear\_solver, linear\_system\_scaling, nlp\_scaling\_method, dependency\_detector) GAMS/CoinIpopt attempts to load the required routines from the library libhsl.so (Unix-Systems), libhsl.dylib (MacOS X), or libhsl.dll (Windows).
+You can also specify the path and name for this library with the option hsl\_library.
+
+For example,
+\begin{verbatim}
+ linear_solver ma27
+ hsl_library /my/path/to/the/hsllib/myhsllib.so
+\end{verbatim}
+tells Ipopt to use the linear solver MA27 from the HSL library \verb=myhsllib.so= under the specified path.
+
+The HSL routines MA27, MA28, and MC19 are available at \texttt{http://www.cse.clrc.ac.uk/nag/hsl}.
+Note that it is your responsibility to ensure that you are entitled to download and use these routines!
+You can build a shared library using the ThirdParty/HSL project at COIN-OR.
+
+\subsubsection{Using PARDISO routines with GAMS/CoinIpopt}
+
+If you have the linear solver PARDISO available, then you can tell Gams/CoinIpopt to use by setting the linear\_solver option to pardiso.
+GAMS/CoinIpopt then attempts to load the library libpardiso.so (Unix-Systems), libpardiso.dylib (MacOS X), or libpardiso.dll (Windows).
+You can also specify the path and name for this library with the option pardiso\_library.
+
+For example,
+\begin{verbatim}
+ linear_solver pardiso
+ pardiso_library /my/path/to/the/pardisolib/mypardisolib.so
+\end{verbatim}
+tells Ipopt to use the linear solver PARDISO from the library \verb=mypardisolib.so= under the specified path.
+
+PARDISO is available as compiled shared library for several platforms at \texttt{http://www.pardiso-project.org}.
+Note that it is your responsibility to ensure that you are entitled to download and use this package!
 
 \subsection{Output}
 
@@ -571,5 +620,54 @@ You can set them either on the command line, e.g. \verb+iterlim=500+, or inside 
 \subsection{Detailed Description of CoinIpopt Options}
 \label{sub:ipoptoptions}
 \input{optipopt_a}
+
+
+\section{CoinScip}
+
+GAMS/CoinScip brings the MIP solver from the Constrained Integer Programming framework SCIP to the broad audience of academic GAMS users.
+
+The code is developed at the Konrad-Zuse-Zentrum f\"ur Informationstechnik Berlin (ZIB) and has been written primarily by T. Achterberg.
+It is distributed under the ZIB Academic License.
+
+For more information we refer to
+\begin{itemize}
+\item the SCIP web site \texttt{http://scip.zib.de} and
+\item the Ph.D. thesis ``Constraint Integer Programming'' by Tobias Achterberg, Berlin 2007.
+\end{itemize}
+
+GAMS/CoinScip uses the COIN-OR linear solver CLP from J.J. Forrest as LP solver, see \hyperlink{sec:coincbc}{Section \ref{sec:coincbc}}.
+
+\subsection{Model requirements}
+
+SCIP supports continuous, binary, and integer variables, but no special ordered sets, semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide).
+Branching priorities are supported.
+
+\subsection{Usage of CoinScip}
+
+The following statement can be used inside your GAMS program to specify using CoinScip
+\begin{verbatim}
+  Option MIP = CoinScip;     { or LP or RMIP }
+\end{verbatim}
+
+The above statement should appear before the Solve statement.
+If CoinScip was specified as the default solver during GAMS installation, the above statement is not necessary.
+
+\subsection{Specification of CoinScip Options}
+
+GAMS/CoinScip currently supports the GAMS parameters reslim, iterlim, nodlim, optcr, and optca.
+
+Further, for a MIP solve the user can specify options by a SCIP options file.
+A SCIP options file consists of one option or comment per line.
+A pound sign (\#) at the beginning of a line causes the entire line to be ignored.
+Otherwise, the line will be interpreted as an option name and value separated by an equal sign (=) and any amount of white space (blanks or tabs).
+An example options file coinscip.opt is:
+\begin{verbatim}
+  separating/maxrounds = 0
+  separating/maxroundsroot = 0
+\end{verbatim}
+It will cause CoinScip to turn off all cut generators.
+
+CoinScip supports a large set of options.\\
+You can obtain some sample option files at \texttt{http://www.gams.com/$\sim$svigerske/scip}.
 
 \chapterend

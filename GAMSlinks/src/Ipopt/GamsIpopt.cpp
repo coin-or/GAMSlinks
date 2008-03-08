@@ -127,11 +127,11 @@ int main (int argc, char* argv[]) {
 #ifndef HAVE_PARDISO
 	// add option to specify path to pardiso library
 	app->RegOptions()->AddStringOption1("pardiso_library", // name
-			"path and filename of Pardiso library for dynamic load",  // short description
+			"path and filename of PARDISO library for dynamic load",  // short description
 			"", // default value 
 			"*", // setting1
 			"", // description1
-			"Specify the path to a Pardiso library that and can be load via dynamic linking."
+			"Specify the path to a PARDISO library that and can be load via dynamic linking."
 			"Note, that you still need to specify to pardiso as linear_solver."
 	);
 #endif

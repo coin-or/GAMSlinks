@@ -134,6 +134,74 @@ Turns off the LP presolver.
 Turns on the LP presolver.
 \end{itemize}
 
+\item[\label{glpkcuts}\hypertarget{glpkcuts}
+{\textbf{cuts (\slshape{integer})}}]\hspace{1.0in}
+
+Determines which cuts generator to use: none, all, or user-defined
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[-1] .
+Turn off all cut generators
+\item[0] .
+Turn on or off each cut generators separately
+\item[1] .
+Turn on all cut generators
+\end{itemize}
+
+\item[\label{glpkcovercuts}\hypertarget{glpkcovercuts}
+{\textbf{covercuts (\slshape{integer})}}]\hspace{1.0in}
+
+Whether to enable cover cuts.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] .
+Turn off cover cuts
+\item[1] .
+Turn on cover cuts
+\end{itemize}
+
+\item[\label{glpkcliquecuts}\hypertarget{glpkcliquecuts}
+{\textbf{cliquecuts (\slshape{integer})}}]\hspace{1.0in}
+
+Whether to enable clique cuts.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] .
+Turn off clique cuts
+\item[1] .
+Turn on clique cuts
+\end{itemize}
+
+\item[\label{glpkgomorycuts}\hypertarget{glpkgomorycuts}
+{\textbf{gomorycuts (\slshape{integer})}}]\hspace{1.0in}
+
+Whether to enable Gomorys mixed-integer linear cuts.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] .
+Turn off gomory cuts
+\item[1] .
+Turn on gomory cuts
+\end{itemize}
+
+\item[\label{glpkmircuts}\hypertarget{glpkmircuts}
+{\textbf{mircuts (\slshape{integer})}}]\hspace{1.0in}
+
+Whether to enable mixed-integer rounding cuts.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] .
+Turn off mir cuts
+\item[1] .
+Turn on mir cuts
+\end{itemize}
+
+
 \item[\label{reslim_fixedrun}\hypertarget{reslim_fixedrun}
 {\textbf{reslim\_fixedrun (\slshape{real})}}]\hspace{1.0in}
 
@@ -153,6 +221,36 @@ You can remove the limit on the simplex iterations by setting the \hyperlink{noi
 Keeps simplex iteration limit.
 \item[1] 
 Turns off simplex iteration limit.
+\end{itemize}
+
+\item[\label{glpknames}\hypertarget{glpknames}
+{\textbf{names (\slshape{integer})}}]\hspace{1.0in}
+
+This option causes GAMS names for the variables and equations to be loaded into Glpk.
+These names will then be used for error messages, log entries, and so forth.
+Turing names off may help if memory is very tight.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] .
+Do not load variable and equation names.
+\item[1] .
+Load variable and equation names.
+\end{itemize}
+
+\item[\label{glpksolvefinal}\hypertarget{glpksolvefinal}
+{\textbf{solvefinal (\slshape{integer})}}]\hspace{1.0in}
+
+Sometimes the solution process after the branch-and-cut that solves the problem with fixed discrete variables takes a long time and the user is interested in the primal values of the solution only.
+In these cases, this option can be used to turn this final solve off.
+Without the final solve no proper marginal values are available and only zeros are returned to GAMS.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] .
+Do not solve the fixed problem
+\item[1] .
+Solve the fixed problem and return duals
 \end{itemize}
 
 \item[\label{glpkreslim}\hypertarget{glpkreslim}
