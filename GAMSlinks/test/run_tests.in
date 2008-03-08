@@ -105,12 +105,11 @@ if test @gamslinks_build_osi@ = 1 ; then
 
   if test @coin_build_dylp@ = 1 ; then
     echo "solver dylp" > osi.op4
+# dylp is currently skipped because lp11 fails
     # lp03 fail because it reports all variables are free in row sum(i,x(i))=0 (DyLP ticket 11)
     # unfortunately, this skips to lp03 test for all osi solver
 #    skiplist="$skiplist skip('Osi','lp03')=yes;"
 #    skiplist="$skiplist skip('Osi','sl4lp03')=yes;"
-# dylp is currently skipped:
-# lp01, lp11, and lp12 fail because DyLP does not like problems like min 0 s.t. x = 0, or min 0 s.t. nothing (DyLP ticket 10)
 #    testlist[${#testlist[@]}]="--solver osi --suite lp user1=\"optdir=`pwd` optfile=4\""
   fi
 
