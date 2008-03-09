@@ -43,7 +43,7 @@ AC_CANONICAL_BUILD
 AC_COIN_PROJECTDIR_INIT
 
 # Check if user wants to produce debugging code
-# AC_COIN_DEBUG_COMPILE(GAMSlinks)
+AC_COIN_DEBUG_COMPILE(GAMSlinks)
 
 # We need egrep and ln -s somewhere
 AC_PROG_EGREP

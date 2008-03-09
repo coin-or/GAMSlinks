@@ -46,6 +46,9 @@ coin_skip_warn_cflags=yes
 # retrieved by svn if they are not there yet.
 AC_COIN_PROJECTDIR_INIT
 
+# Check if user wants to produce debugging code
+AC_COIN_DEBUG_COMPILE(GAMSIO)
+
 # We need egrep and ln -s somewhere
 #AC_PROG_EGREP
 #AC_PROG_LN_S

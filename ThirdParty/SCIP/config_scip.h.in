@@ -3,6 +3,12 @@
 /* Define to 1 if package is available */
 #undef COIN_HAS_SCIP
 
+/* Define to the debug sanity check level (0 is no test) */
+#undef COIN_SCIP_CHECKLEVEL
+
+/* Define to the debug verbosity level (0 is no output) */
+#undef COIN_SCIP_VERBOSITY
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 

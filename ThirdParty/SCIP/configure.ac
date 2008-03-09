@@ -41,7 +41,7 @@ coin_skip_warn_cflags=yes
 coin_skip_warn_cxxflags=yes
 
 # Check if user wants to produce debugging code
-# AC_COIN_DEBUG_COMPILE(SCIP)
+AC_COIN_DEBUG_COMPILE(SCIP)
 
 # Get the name of the C compiler and appropriate compiler options
 AC_COIN_PROG_CC

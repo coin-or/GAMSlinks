@@ -1,5 +1,11 @@
 /* inc/config_gamslinks.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define to the debug sanity check level (0 is no test) */
+#undef COIN_GAMSLINKS_CHECKLEVEL
+
+/* Define to the debug verbosity level (0 is no output) */
+#undef COIN_GAMSLINKS_VERBOSITY
+
 /* Define to 1 if the Bonmin package is used */
 #undef COIN_HAS_BONMIN
 
