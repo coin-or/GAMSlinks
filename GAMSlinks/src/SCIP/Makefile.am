@@ -51,7 +51,7 @@ DISTCLEANFILES = gmssc_.zip
 if GAMSIO_IS_UNIX
 install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsScip gmssc_ux.out
-	zip gmssc_.zip gmssc_ux.out gmssc_us.run optscip.def install/gmssc_un.dat
+	zip gmssc_.zip gmssc_ux.out gmssc_us.run install/gmssc_un.dat
 	$(install_sh_DATA) gmssc_.zip $(DESTDIR)$(bindir)/gmssc_.zip
 	rm -f gmssc_ux.out
 endif
@@ -59,7 +59,7 @@ endif
 if GAMSIO_IS_WINDOWS
 install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsScip.exe gmssc_nx.exe
-	zip gmssc_.zip gmssc_nx.exe gmssc_nt.cmd optscip.def install/gmssc_nt.dat
+	zip gmssc_.zip gmssc_nx.exe gmssc_nt.cmd install/gmssc_nt.dat
 	$(install_sh_DATA) gmssc_.zip $(DESTDIR)$(bindir)/gmssc_.zip
 	rm -f gmssc_nx.exe
 endif

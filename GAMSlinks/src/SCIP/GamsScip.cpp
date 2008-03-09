@@ -482,8 +482,8 @@ SCIP_RETCODE checkMIPsolve(smagHandle_t prob, SCIP* scip, SCIP_VAR** vars, Solve
 //  	SCIP_CALL( SCIPprintBestSol(scip, NULL, FALSE) );
 		SCIP_SOL* sol=SCIPgetBestSol(scip);
 		solstatus.colval = new double[smagColCount(prob)];
-//		printf("nr vars in SCIP: %d\n", SCIPgetNVars(scip));
-		assert(SCIPgetNVars(scip)==smagColCount(prob));
+//		printf("nr vars in SCIP: %d\t in SMAG: %d\n", SCIPgetNVars(scip), smagColCount(prob));
+//		assert(SCIPgetNVars(scip)==smagColCount(prob));
 		for (int i=0; i<smagColCount(prob); ++i) {
 //			printf("value variable %d is %g\n", i, SCIPgetSolVal(scip, sol, vars[i]));
 			solstatus.colval[i]=SCIPgetSolVal(scip, sol, vars[i]);
@@ -766,7 +766,7 @@ void checkScipReturn(smagHandle_t prob, SCIP_RETCODE scipret) {
 	smagClose(prob);
 	smagCloseLog(prob);
 
-  exit(EXIT_FAILURE);
+  exit(EXIT_SUCCESS); // well, not really a success, but DICOPT does not like returns <> 0
 }
 
 // SOLVER STATUS CODE  	DESCRIPTION
