@@ -1,0 +1,15 @@
+Index: Ipopt/src/Interfaces/IpIpoptApplication.cpp
+===================================================================
+--- Ipopt/src/Interfaces/IpIpoptApplication.cpp	(Revision 1186)
++++ Ipopt/src/Interfaces/IpIpoptApplication.cpp	(Arbeitskopie)
+@@ -650,6 +650,10 @@
+                      "\nNumber of Iterations....: %d\n",
+                      p2ip_data->iter_count());
+ 
++      if (!IsValid(p2ip_data->curr())) {
++      	THROW_EXCEPTION(LOCALLY_INFEASIBLE, "There are no free variables and the problem is infeasible.");
++      }
++      
+       if (status!=INVALID_NUMBER_DETECTED) {
+         jnlst_->Printf(J_SUMMARY, J_SOLUTION,
+                        "\n                                   (scaled)                 (unscaled)\n");

@@ -1,0 +1,22 @@
+Index: Clp/src/ClpSimplex.cpp
+===================================================================
+--- Clp/src/ClpSimplex.cpp	(Revision 1171)
++++ Clp/src/ClpSimplex.cpp	(Arbeitskopie)
+@@ -8846,6 +8846,8 @@
+     lowerValue=-COIN_DBL_MAX;
+   if (columnLower_[elementIndex] != lowerValue) {
+     columnLower_[elementIndex] = lowerValue;
++    if (columnLowerWork_==NULL)
++      whatsChanged_ &= ~1;
+     if ((whatsChanged_&1)!=0) {
+       // work arrays exist - update as well
+       whatsChanged_ &= ~128;
+@@ -8865,6 +8867,8 @@
+   //CoinAssert (upperValue>=lowerValue);
+   if (columnUpper_[elementIndex] != upperValue) {
+     columnUpper_[elementIndex] = upperValue;
++    if (columnUpperWork_==NULL)
++      whatsChanged_ &= ~1;
+     if ((whatsChanged_&1)!=0) {
+       // work arrays exist - update as well
+       whatsChanged_ &= ~256;
