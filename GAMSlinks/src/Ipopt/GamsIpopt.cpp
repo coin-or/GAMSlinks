@@ -197,8 +197,9 @@ int main (int argc, char* argv[]) {
 		case Not_Enough_Degrees_Of_Freedom:
 			smagReportSolBrief(prob, 13, 10);
 			break;
-		case Invalid_Problem_Definition:
-			smagReportSolBrief(prob, 13, 9);
+		case Invalid_Problem_Definition: // with the dirty patch this probably means infeasible - no solution
+			smagReportSolBrief(prob, 19, 1); // infeasible - no sol.; normal completion
+//			smagReportSolBrief(prob, 13, 9);
 			break;
 		case Invalid_Option:
 			smagReportSolBrief(prob, 13, 9);
