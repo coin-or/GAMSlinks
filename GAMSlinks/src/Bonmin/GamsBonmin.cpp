@@ -20,6 +20,15 @@
 #endif
 #endif
 
+// workaround missing errno symbol in gams build for vis
+#ifdef GAMS_BUILD
+#ifdef VIS
+extern "C" {
+	int errno=-1;
+}
+#endif
+#endif
+
 #include "SmagMINLP.hpp"
 #include "SmagJournal.hpp"
 #include "GamsHandlerSmag.hpp"

@@ -84,13 +84,14 @@ void checkScipReturn(smagHandle_t prob, SCIP_RETCODE scipret);
 
 SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars);
 SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip);
+SCIP_RETCODE setupMIPStart(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars);
 SCIP_RETCODE checkMIPsolve(smagHandle_t prob, SCIP* scip, SCIP_VAR** vars, SolveStatus& solstatus);
 
 SCIP_RETCODE setupLP(smagHandle_t prob, SCIP_LPI* lpi, double* colval);
 SCIP_RETCODE setupLPParameters(smagHandle_t prob, SCIP_LPI* lpi);
 SCIP_RETCODE checkLPsolve(smagHandle_t prob, SCIP_LPI* lpi, SolveStatus& solstatus);
 
-SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* lpi);
+SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* lpi, SCIP_Bool solve_final);
 
 int main (int argc, const char *argv[]) {
 #if defined(_MSC_VER)
@@ -138,7 +139,8 @@ int main (int argc, const char *argv[]) {
   
   SCIP_RETCODE scipret;
 
-	SCIP_Bool solvelp=TRUE;
+	SCIP_Bool solvelp = TRUE;
+	SCIP_Bool solvefinal = TRUE;
 
   SolveStatus solstatus;
   solstatus.colval=NULL;
@@ -170,7 +172,6 @@ int main (int argc, const char *argv[]) {
   	scipret = setupMIPParameters(prob, scip);
   	checkScipReturn(prob, scipret);
   	
-  	SCIP_Bool solvefinal;
 		scipret = SCIPgetBoolParam(scip, "gams/solvefinal", &solvefinal);
 		checkScipReturn(prob, scipret);
 
@@ -179,8 +180,17 @@ int main (int argc, const char *argv[]) {
   	scipret = setupMIP(prob, scip, mip_vars);
   	checkScipReturn(prob, scipret);
   	
-//  	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nStarting MIP solve...\n");
-//  	smagStdOutputFlush(prob, SMAG_LOGMASK);
+  	SCIP_Bool mipstart;
+  	scipret = SCIPgetBoolParam(scip, "gams/mipstart", &mipstart);
+  	checkScipReturn(prob, scipret);
+  	
+  	if (mipstart) {  		
+  		scipret = setupMIPStart(prob, scip, mip_vars);
+  		checkScipReturn(prob, scipret);
+  	}
+  	
+  	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nStarting MIP solve...\n");
+  	smagStdOutputFlush(prob, SMAG_LOGMASK);
 
   	scipret = SCIPsolve(scip);
   	checkScipReturn(prob, scipret);
@@ -197,11 +207,8 @@ int main (int argc, const char *argv[]) {
   	scipret = SCIPfreeMessagehdlr(&messagehdlr);
   	checkScipReturn(prob, scipret);
   	
-  	if (!solstatus.colval) { // disable LP solve if solving MIP did not give feasible point
-  		solvelp=FALSE;
-  	} else { // check if user wants to disable LP solve
-  		solvelp=solvefinal;
-  	}
+  	// we disable the LP solve if we do not have a MIP feasible point or the user wants so
+  	solvelp = (!solstatus.colval) || solvefinal;
   }
 
 	SCIP_LPI* lpi=NULL;
@@ -239,7 +246,7 @@ int main (int argc, const char *argv[]) {
   	checkScipReturn(prob, scipret);
 	}
   
-  scipret = writeSolution(prob, solstatus, lpi);
+  scipret = writeSolution(prob, solstatus, lpi, solvefinal);
 	checkScipReturn(prob, scipret);
 
   if (lpi) {
@@ -367,11 +374,8 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 
 	}
 
-	if (smagMinim(prob)==-1) {
+	if (smagMinim(prob)==-1)
 		SCIP_CALL( SCIPsetObjsense(scip, SCIP_OBJSENSE_MAXIMIZE) );
-	}
-	
-	// TODO: read starting point
 	
 	delete[] con_vars;
 	delete[] con_coef;
@@ -397,6 +401,7 @@ SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
 
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/names", "whether the gams dictionary should be read and col/row names be given to scip", NULL, FALSE, FALSE, NULL, NULL) );
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/solvefinal", "whether the problem should be solved with fixed discrete variables to get dual values", NULL, FALSE, TRUE, NULL, NULL) );
+	SCIP_CALL( SCIPaddBoolParam(scip, "gams/mipstart", "whether to try initial point as first primal solution", NULL, FALSE, TRUE, NULL, NULL) );
 	
   if (prob->gms.useopt) {
   	// try to open file; if we let SCIP do it and there is no option file, then it might print to stderr
@@ -415,10 +420,33 @@ SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
   	if (ret != SCIP_OKAY ) {
   		snprintf(buffer, 512, "WARNING: Reading of optionfile %s failed with error %d ! We continue.\n", prob->gms.optFileName, ret);
   		smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+  	} else {
+  		snprintf(buffer, 512, "Optionfile %s successfully read.\n", prob->gms.optFileName);
+  		smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
   	}
   }
 
 	return SCIP_OKAY;
+}
+
+SCIP_RETCODE setupMIPStart(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
+	SCIP_CALL( SCIPtransformProb(scip) );
+	
+	SCIP_SOL* sol;
+	SCIP_CALL( SCIPcreateOrigSol(scip, &sol, NULL) );
+	
+	SCIP_CALL( SCIPsetSolVals(scip, sol, smagColCount(prob), vars, prob->colLev) );
+	
+	SCIP_Bool stored;
+	SCIP_CALL( SCIPtrySol(scip, sol, TRUE, TRUE, TRUE, &stored) );
+	
+	if (stored)
+		smagStdOutputPrint(prob, SMAG_LOGMASK, "Feasible initial solution used to setup primal bound.\n");
+/*	else
+		smagStdOutputPrint(prob, SMAG_LOGMASK, "Initial solution not feasible.");
+*/		
+	
+	SCIP_CALL( SCIPclearSol(scip, sol) );
 }
 
 SCIP_RETCODE checkMIPsolve(smagHandle_t prob, SCIP* scip, SCIP_VAR** vars, SolveStatus& solstatus) {
@@ -651,7 +679,7 @@ SCIP_RETCODE checkLPsolve(smagHandle_t prob, SCIP_LPI* lpi, SolveStatus& solstat
 	return SCIP_OKAY;
 }
 
-SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* lpi) {
+SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* lpi, SCIP_Bool solve_final) {
 	if (!lpi && !solstatus.colval) { // no LP solved and no MIP feasible solution
 	  smagReportSolStats(prob, solstatus.model_status, solstatus.solver_status,
 	  		solstatus.nodenum, solstatus.time, prob->gms.valna, 0);
@@ -711,7 +739,10 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 		delete[] rstat;		
 		
 	} else { // do not have full LP solution in lpi
-  	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nSolving fixed LP failed. Only primal solution values will be available.\n");
+		if (solve_final)
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "\nSolving fixed LP failed. Only primal solution values will be available.\n");
+		else
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "\nSolving fixed LP disabled. Only primal solution values will be available.\n");
 		memset(rowmarg, 0, smagRowCount(prob)*sizeof(double));
 		for (int i=0; i<smagRowCount(prob); ++i) {
 			rowbasstat[i]=SMAG_BASSTAT_SUPERBASIC;
