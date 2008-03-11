@@ -494,7 +494,7 @@ uninstall-am: uninstall-info-am
 
 test:
 	chmod u+x ./run_tests
-	./run_tests
+	sh -c ./run_tests
 
 unitTest: test
 

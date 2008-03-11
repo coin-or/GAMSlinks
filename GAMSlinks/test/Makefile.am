@@ -10,7 +10,7 @@ AUTOMAKE_OPTIONS = foreign
 
 test:
 	chmod u+x ./run_tests
-	./run_tests
+	sh -c ./run_tests
 
 unitTest: test
 
