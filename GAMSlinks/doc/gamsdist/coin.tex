@@ -660,14 +660,23 @@ Further, for a MIP solve the user can specify options by a SCIP options file.
 A SCIP options file consists of one option or comment per line.
 A pound sign (\#) at the beginning of a line causes the entire line to be ignored.
 Otherwise, the line will be interpreted as an option name and value separated by an equal sign (=) and any amount of white space (blanks or tabs).
-An example options file coinscip.opt is:
+
+SCIP supports a large set of options.
+Sample option files can be obtained from
+\begin{verbatim}
+     http://www.gams.com/~svigerske/scip
+\end{verbatim}
+An small example for a coinscip.opt file is:
 \begin{verbatim}
   separating/maxrounds = 0
   separating/maxroundsroot = 0
+  gams/names = TRUE
+  gams/solvefinal = FALSE
+  gams/mipstart = FALSE
 \end{verbatim}
-It will cause CoinScip to turn off all cut generators.
+It will cause SCIP to turn off all cut generators.
+Further, GAMS will give row and column names to SCIP which are then used for debugging output,
+the final solve of the MIP with fixed discrete variables to obtain dual values is skipped, and it does not try to use the initial column levels as a first solution point.
 
-CoinScip supports a large set of options.\\
-You can obtain some sample option files at \texttt{http://www.gams.com/$\sim$svigerske/scip}.
 
 \chapterend

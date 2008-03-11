@@ -146,7 +146,6 @@ ThirdParty/SCIP/config_scip.h.in -text
 ThirdParty/SCIP/configure -text
 ThirdParty/SCIP/configure.ac -text
 ThirdParty/SCIP/m4/ac_coin_scip.m4 -text
-/bonmin.patch -text
 /clp.patch -text
 /compile -text
 /config.guess -text
