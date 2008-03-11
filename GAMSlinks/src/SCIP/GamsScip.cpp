@@ -137,7 +137,9 @@ int main (int argc, const char *argv[]) {
   }
   
   SCIP_RETCODE scipret;
- 
+
+	SCIP_Bool solvelp=TRUE;
+
   SolveStatus solstatus;
   solstatus.colval=NULL;
   
@@ -165,14 +167,18 @@ int main (int argc, const char *argv[]) {
   	scipret = SCIPincludeDefaultPlugins(scip);
   	checkScipReturn(prob, scipret);
 
+  	scipret = setupMIPParameters(prob, scip);
+  	checkScipReturn(prob, scipret);
+  	
+  	SCIP_Bool solvefinal;
+		scipret = SCIPgetBoolParam(scip, "gams/solvefinal", &solvefinal);
+		checkScipReturn(prob, scipret);
+
   	SCIP_VAR** mip_vars=NULL;
 
   	scipret = setupMIP(prob, scip, mip_vars);
   	checkScipReturn(prob, scipret);
   	
-  	scipret = setupMIPParameters(prob, scip);
-  	checkScipReturn(prob, scipret);
-
 //  	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nStarting MIP solve...\n");
 //  	smagStdOutputFlush(prob, SMAG_LOGMASK);
 
@@ -190,12 +196,17 @@ int main (int argc, const char *argv[]) {
 
   	scipret = SCIPfreeMessagehdlr(&messagehdlr);
   	checkScipReturn(prob, scipret);
+  	
+  	if (!solstatus.colval) { // disable LP solve if solving MIP did not give feasible point
+  		solvelp=FALSE;
+  	} else { // check if user wants to disable LP solve
+  		solvelp=solvefinal;
+  	}
   }
-  
+
 	SCIP_LPI* lpi=NULL;
 	double lpsolve_starttime=smagGetCPUTime(prob);
-	//TODO: there could be a parameter to disable solve of fixed LP
-  if ((!prob->gms.nbin && !prob->gms.numint) || solstatus.colval) { // if we have an LP or got a mip feasible point, solve (fixed) LP
+  if (solvelp) { // if we have an LP or got a mip feasible point and user did not disable fixed LP solve, solve (fixed) LP
   	scipret = SCIPlpiCreate(&lpi, "gamsproblem", smagMinim(prob)==-1 ? SCIP_OBJSEN_MAXIMIZE : SCIP_OBJSEN_MINIMIZE);
   	checkScipReturn(prob, scipret);
 
@@ -253,7 +264,10 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 	
 	GamsHandlerSmag gamshandler(prob);
 	GamsDictionary dict(gamshandler);
-	dict.readDictionary(); //TODO?: make this parameter dependent...
+	SCIP_Bool read_dict=FALSE;
+	SCIP_CALL( SCIPgetBoolParam(scip, "gams/names", &read_dict) );
+	if (read_dict)
+		dict.readDictionary();
 	
 	char buffer[256];
 	
@@ -357,6 +371,8 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 		SCIP_CALL( SCIPsetObjsense(scip, SCIP_OBJSENSE_MAXIMIZE) );
 	}
 	
+	// TODO: read starting point
+	
 	delete[] con_vars;
 	delete[] con_coef;
 	
@@ -378,10 +394,13 @@ SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
 	SCIP_CALL( SCIPsetIntParam(scip, "display/width", 80) );	
 	
 	//TODO: cutoff
+
+	SCIP_CALL( SCIPaddBoolParam(scip, "gams/names", "whether the gams dictionary should be read and col/row names be given to scip", NULL, FALSE, FALSE, NULL, NULL) );
+	SCIP_CALL( SCIPaddBoolParam(scip, "gams/solvefinal", "whether the problem should be solved with fixed discrete variables to get dual values", NULL, FALSE, TRUE, NULL, NULL) );
 	
   if (prob->gms.useopt) {
   	// try to open file; if we let SCIP do it and there is no option file, then it might print to stderr
-  	FILE* optfile = fopen("prob->gms.optFileName", "r");
+  	FILE* optfile = fopen(prob->gms.optFileName, "r");
   	if (optfile==NULL) {
   		snprintf(buffer, 512, "WARNING: Opening optionfile %s failed with the following error: %s \nWe continue without optionfile.\n", prob->gms.optFileName, strerror(errno));
   		smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
