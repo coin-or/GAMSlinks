@@ -34,7 +34,17 @@
 #ifdef HAVE_STDIO_H
 #include <string.h>
 #else
-#error "don't have header file for stdio"
+#error "don't have header file for string"
+#endif
+#endif
+
+#ifdef HAVE_CERRNO
+#include <cerrno>
+#else
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#else
+#error "don't have header file for errno"
 #endif
 #endif
 
@@ -46,8 +56,6 @@ extern "C" {
 }
 #endif
 #endif
-
-#include <cerrno>
 
 #ifdef GAMS_BUILD
 #include "gmspal.h"
@@ -674,7 +682,7 @@ SCIP_RETCODE checkLPsolve(smagHandle_t prob, SCIP_LPI* lpi, SolveStatus& solstat
 		smagStdOutputPrint(prob, SMAG_LOGMASK, "Problem is unbounded.\n");
 	} else if (SCIPlpiIsPrimalInfeasible(lpi)) {
 		solstatus.solver_status = 1; // normal completion
-		solstatus.model_status = 4; // infeasible
+		solstatus.model_status = 19; // infeasible - no solution
 		smagStdOutputPrint(prob, SMAG_LOGMASK, "Problem is infeasible.\n");
 	} else if (SCIPlpiIsOptimal(lpi)) {
 		solstatus.solver_status = 1; // normal completion
