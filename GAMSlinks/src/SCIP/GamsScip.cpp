@@ -151,6 +151,13 @@ int main (int argc, const char *argv[]) {
       }
     }
   }
+#else
+/*  if (prob->gms.nrows>300 || prob->gms.ncols>300 || prob->gms.nnz>2000 || prob->gms.ndisc>50) {
+    smagStdOutputPrint(prob, SMAG_ALLMASK, "\n*** Use of CoinScip limited to academic users.\n");
+    smagReportSolBrief(prob, 11, 7); // license error
+    exit(EXIT_FAILURE);
+  }
+*/
 #endif
   
   smagSetObjFlavor (prob, OBJ_FUNCTION);
@@ -713,7 +720,8 @@ SCIP_RETCODE checkLPsolve(smagHandle_t prob, SCIP_LPI* lpi, SolveStatus& solstat
 }
 
 SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* lpi, SCIP_Bool solve_final) {
-	if (!lpi && !solstatus.colval) { // no LP solved and no MIP feasible solution
+	// (no MIP feasible solution) and (no LP solved or LP infeasible) 
+	if (!solstatus.colval && (!lpi || SCIPlpiIsPrimalFeasible(lpi))) {
 	  smagReportSolStats(prob, solstatus.model_status, solstatus.solver_status,
 	  		solstatus.nodenum, solstatus.time, prob->gms.valna, 0);
 	  return SCIP_OKAY;		
@@ -782,7 +790,7 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 			rowindic[i]=SMAG_RCINDIC_OK;
 		}
 
-		if (!solstatus.colval) {
+		if (!solstatus.colval) { // we should have colval here, otherwise we had returned in the first lines of this routine already 
   		memset(rowlev, 0, smagRowCount(prob)*sizeof(double));
 			collev=new double[smagColCount(prob)];
 			memset(collev, 0, smagColCount(prob)*sizeof(double));
