@@ -49,6 +49,9 @@ extern "C" {
 
 #include <cerrno>
 
+#ifdef GAMS_BUILD
+#include "gmspal.h"
+#endif
 #include "smag.h"
 #include "GamsDictionary.hpp"
 #include "GamsHandlerSmag.hpp"
@@ -122,6 +125,34 @@ int main (int argc, const char *argv[]) {
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
  
   smagReadModelStats (prob);
+
+#ifdef GAMS_BUILD
+#define SKIPCHECK
+#include "cmagic2.h"
+  {
+    int isDemo, isAcademic;
+    char msg[256];
+
+    licenseRegisterGAMS(1, prob->gms.lice1);
+    licenseRegisterGAMS(2, prob->gms.lice2);
+    licenseRegisterGAMS(3, prob->gms.lice3);
+    licenseRegisterGAMS(4, prob->gms.lice4);
+    licenseRegisterGAMS(5, prob->gms.lice5);
+
+    if (licenseCheck (prob->gms.nrows, prob->gms.ncols, prob->gms.nnz, prob->gms.nlnz, prob->gms.ndisc)) {
+      if (!licenseQueryOption("GAMS","ACADEMIC", &isAcademic))
+        isAcademic = 0;
+      if (!isAcademic) {
+        while (licenseGetMessage(msg, sizeof(msg)))
+          smagStdOutputPrint(prob, SMAG_ALLMASK, msg);
+        smagStdOutputPrint(prob, SMAG_ALLMASK, "\n*** Use of CoinScip limited to academic users.\n*** Please contact pfetsch@zib.de to arrange for a license.\n");
+        smagReportSolBrief(prob, 11, 7); // license error
+        exit(EXIT_FAILURE);
+      }
+    }
+  }
+#endif
+  
   smagSetObjFlavor (prob, OBJ_FUNCTION);
 
   if (prob->gms.nsos1 || prob->gms.nsos2) {
@@ -447,6 +478,8 @@ SCIP_RETCODE setupMIPStart(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 */		
 	
 	SCIP_CALL( SCIPclearSol(scip, sol) );
+	
+	return SCIP_OKAY;
 }
 
 SCIP_RETCODE checkMIPsolve(smagHandle_t prob, SCIP* scip, SCIP_VAR** vars, SolveStatus& solstatus) {
