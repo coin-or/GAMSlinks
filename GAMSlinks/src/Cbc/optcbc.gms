@@ -271,6 +271,6 @@ bch.(
                      increment  'GAMS cheat'
                      cut_passes_root '100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop in the objective function value is small) if it has less than 5000 columns, and 20 passes otherwise.'
                    /
- oep(o) / crossover, perturbation, presolve, names,
+ oep(o) / crossover, perturbation, presolve, names, printfrequency,
     heuristics, combinesolutions, feaspump, localtreesearch, rins, roundingheuristic,
     usercutnewint, userheurnewint /;
