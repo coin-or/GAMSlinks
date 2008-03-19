@@ -9,7 +9,8 @@
 #include "SmagNLP.hpp"
 #include "IpIpoptCalculatedQuantities.hpp"
 
-//#include "IpTNLPAdapter.hpp"
+#include "IpTNLPAdapter.hpp"
+#include "IpOrigIpoptNLP.hpp"
 
 #include <memory.h>
 
@@ -440,23 +441,67 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
   } // switch
 
   if (write_solution) {
-/*  	SmartPtr<const Vector> curr_c=cq->curr_c();
-  	SmartPtr<const Vector> curr_d_minus_s=cq->curr_d_minus_s();
-  	
-  	TNLPAdapter* tnlp_adapter=dynamic_cast<TNLPAdapter*>(GetRawPtr(ipopt_app->nlp_adapter_));
+  	double* scaled_viol=NULL;
+  	double* compl_xL = NULL;
+  	double* compl_xU = NULL;
+  	double* compl_gL = NULL;
+  	double* compl_gU = NULL;
+  	//  	1. Use IpoptCalculatedQuantities::GetIpoptNLP() to get a pointer to an Ipopt::IpoptNLP.
+  	//  	2. Cast this Ipopt::IpoptNLP to an Ipopt::OrigIpoptNLP
+  	//  	3. Use Ipopt::OrigIpoptNLP::nlp() to get the Ipopt::NLP
+  	//  	4. This Ipopt::NLP is actually the TNLPAdapter
+  	TNLPAdapter* tnlp_adapter=NULL;
+  	OrigIpoptNLP* orignlp=NULL;
+  	if (cq)
+  		orignlp=dynamic_cast<OrigIpoptNLP*>(GetRawPtr(cq->GetIpoptNLP()));
+  	if (orignlp)
+  		tnlp_adapter=dynamic_cast<TNLPAdapter*>(GetRawPtr(orignlp->nlp()));
+  		
+  	if (tnlp_adapter) {
+  		scaled_viol = new double[smagRowCount(prob)];
+  		tnlp_adapter->ResortG(*cq->curr_c(), *cq->curr_d_minus_s(), scaled_viol);
+  		
+    	SmartPtr<Vector> dummy=cq->curr_c()->MakeNew();
+    	dummy->Set(0.);
+    	compl_xL = new double[smagColCount(prob)];
+    	compl_xU = new double[smagColCount(prob)];
+    	compl_gL = new double[smagRowCount(prob)];
+    	compl_gU = new double[smagRowCount(prob)];
 
-  	double* scaled_g = new double[smagRowCount(prob)];
-  	tnlp_adapter->ResortG(*curr_c, *curr_d_minus_s, scaled_g);
+    	if (cq->curr_compl_x_L()->Dim())
+    		tnlp_adapter->ResortX(*cq->curr_compl_x_L(), compl_xL);
+    	else
+    	  memset(compl_xL, 0, n*sizeof(double));
+    	if (cq->curr_compl_x_U()->Dim())
+    		tnlp_adapter->ResortX(*cq->curr_compl_x_U(), compl_xU);
+    	else
+    	  memset(compl_xU, 0, n*sizeof(double));
+    	if (cq->curr_compl_s_L()->Dim())
+    		tnlp_adapter->ResortG(*dummy, *cq->curr_compl_s_L(), compl_gL);
+    	else
+    	  memset(compl_gL, 0, m*sizeof(double));
+    	if (cq->curr_compl_s_U()->Dim())
+    		tnlp_adapter->ResortG(*dummy, *cq->curr_compl_s_U(), compl_gU);
+    	else
+    		memset(compl_gU, 0, m*sizeof(double));
 
-  	for (Index i=0; i<smagRowCount(prob); ++i)
-  		std::cout << "row " << i << " infeas.: " << scaled_g[i] << std::endl;
-*/  	
+//    	for (Index i=0; i<smagRowCount(prob); ++i)
+//    		std::cout << "row " << i << " infeas.: " << scaled_viol[i] << std::endl;
+//    	for (Index i=0; i<smagColCount(prob); ++i)
+//    		std::cout << "col " << i << " compl.: " << compl_xL[i] << '\t' << compl_xU[i] << std::endl;
+//    	for (Index i=0; i<smagRowCount(prob); ++i)
+//    		std::cout << "row " << i << " compl.: " << compl_gL[i] << '\t' << compl_gU[i] << std::endl;
+  	}
+
 		unsigned char* colBasStat=new unsigned char[n];
 		unsigned char* colIndic=new unsigned char[n];
 		double* colMarg=new double[n];
 		for (Index i=0; i<n; ++i) {
 			colBasStat[i]=SMAG_BASSTAT_SUPERBASIC;
-			colIndic[i]=SMAG_RCINDIC_OK;
+			if (prob->colLB[i]!=prob->colUB[i] && compl_xL && (fabs(compl_xL[i])>scaled_conviol_tol || fabs(compl_xU[i])>scaled_conviol_tol))
+				colIndic[i]=SMAG_RCINDIC_NONOPT;
+			else
+				colIndic[i]=SMAG_RCINDIC_OK;
 			// if, e.g., x_i has no lower bound, then the dual z_L[i] is -infinity
 			colMarg[i]=0;
 			if (z_L[i]>-prob->inf) colMarg[i]+=isMin*z_L[i];
@@ -466,10 +511,12 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 		unsigned char* rowIndic=new unsigned char[m];
     for (Index i = 0;  i < m;  i++) {
 			rowBasStat[i]=SMAG_BASSTAT_SUPERBASIC;
-//			if (fabs(scaled_g[i]) < scaled_conviol_tol)
-				rowIndic[i]=SMAG_RCINDIC_OK; // TODO: not ok, if over the bounds
-//			else
-//				rowIndic[i]=SMAG_RCINDIC_INFEAS;
+			if (scaled_viol && fabs(scaled_viol[i]) > scaled_conviol_tol)
+				rowIndic[i]=SMAG_RCINDIC_INFEAS;
+			else if (compl_gL && (fabs(compl_gL[i]) > scaled_conviol_tol || fabs(compl_gU[i]) > scaled_conviol_tol))
+				rowIndic[i]=SMAG_RCINDIC_NONOPT;
+			else
+				rowIndic[i]=SMAG_RCINDIC_OK;
       negLambda[i] = -lambda[i] * isMin;
     }
     smagSetObjEst(prob, obj_value*isMin);
@@ -478,6 +525,11 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 			g, negLambda, rowBasStat, rowIndic,
 			x, colMarg, colBasStat, colIndic);
 
+		delete[] scaled_viol;
+  	delete[] compl_xL;
+  	delete[] compl_xU;
+  	delete[] compl_gL;
+  	delete[] compl_gU;
 		delete[] colBasStat;
 		delete[] colIndic;
 		delete[] colMarg;
