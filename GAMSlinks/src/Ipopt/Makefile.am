@@ -25,7 +25,9 @@ includecoin_HEADERS = \
   $(IPOPTSRCDIR)/src/Algorithm/IpIpoptData.hpp \
   $(IPOPTSRCDIR)/src/Algorithm/IpIteratesVector.hpp \
   $(IPOPTSRCDIR)/src/LinAlg/IpCompoundVector.hpp \
-  $(IPOPTSRCDIR)/src/Algorithm/IpTimingStatistics.hpp
+  $(IPOPTSRCDIR)/src/Algorithm/IpTimingStatistics.hpp \
+  $(IPOPTSRCDIR)/src/Interfaces/IpTNLPAdapter.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpOrigIpoptNLP.hpp
 
 #FORTRAN_NAMEMANGLING_CFLAG required to compile SmagExtra.c
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) $(FORTRAN_NAMEMANGLING_CFLAG) \

@@ -12,7 +12,22 @@
 #include "IpTNLPAdapter.hpp"
 #include "IpOrigIpoptNLP.hpp"
 
-#include <memory.h>
+// for memset
+#ifdef HAVE_CSTRING
+#include <cstring>
+#else
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+#endif
+// for fabs
+#ifdef HAVE_CMATH
+#include <cmath>
+#else
+#ifdef HAVE_MATH_H
+#include <math.h>
+#endif
+#endif
 
 using namespace Ipopt;
 

@@ -393,7 +393,9 @@ includecoin_HEADERS = \
   $(IPOPTSRCDIR)/src/Algorithm/IpIpoptData.hpp \
   $(IPOPTSRCDIR)/src/Algorithm/IpIteratesVector.hpp \
   $(IPOPTSRCDIR)/src/LinAlg/IpCompoundVector.hpp \
-  $(IPOPTSRCDIR)/src/Algorithm/IpTimingStatistics.hpp
+  $(IPOPTSRCDIR)/src/Algorithm/IpTimingStatistics.hpp \
+  $(IPOPTSRCDIR)/src/Interfaces/IpTNLPAdapter.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpOrigIpoptNLP.hpp
 
 
 #FORTRAN_NAMEMANGLING_CFLAG required to compile SmagExtra.c
@@ -639,7 +641,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/$(IPOPTSRCDIR)/src/Algorithm $(distdir)/$(IPOPTSRCDIR)/src/LinAlg $(distdir)/../../../BuildTools $(distdir)/install
+	$(mkdir_p) $(distdir)/$(IPOPTSRCDIR)/src/Algorithm $(distdir)/$(IPOPTSRCDIR)/src/Interfaces $(distdir)/$(IPOPTSRCDIR)/src/LinAlg $(distdir)/../../../BuildTools $(distdir)/install
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

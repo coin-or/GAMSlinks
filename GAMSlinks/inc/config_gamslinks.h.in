@@ -86,6 +86,9 @@
 /* Define to 1 if you have the <climits> header file. */
 #undef HAVE_CLIMITS
 
+/* Define to 1 if you have the <cmath> header file. */
+#undef HAVE_CMATH
+
 /* Define to 1 if you have the <cstdarg> header file. */
 #undef HAVE_CSTDARG
 
@@ -112,6 +115,9 @@
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
+
+/* Define to 1 if you have the <math.h> header file. */
+#undef HAVE_MATH_H
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
