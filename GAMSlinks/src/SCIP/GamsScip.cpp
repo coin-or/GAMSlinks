@@ -604,9 +604,6 @@ SCIP_RETCODE setupLP(smagHandle_t prob, SCIP_LPI* lpi, double* colval) {
 	for (smagObjGradRec_t* og = prob->objGrad; og; og=og->next)
 		objcoef[og->j]=og->dfdj;
 	
-	int* beg=new int[ncols+1]; // dummy as workaround of scip bug
-	memset(beg, 0, ncols*sizeof(int));
-	
 	double* collb=NULL;
 	double* colub=NULL;
 	if (colval) {
@@ -619,10 +616,9 @@ SCIP_RETCODE setupLP(smagHandle_t prob, SCIP_LPI* lpi, double* colval) {
 				collb[i]=colub[i]=colval[i];
 	}
 	
-	SCIPlpiAddCols(lpi, smagColCount(prob), objcoef, collb ? collb : prob->colLB, colub ? colub : prob->colUB, NULL, 0, beg, NULL, NULL);
+	SCIPlpiAddCols(lpi, smagColCount(prob), objcoef, collb ? collb : prob->colLB, colub ? colub : prob->colUB, NULL, 0, NULL, NULL, NULL);
 	
 	delete[] objcoef;
-	delete[] beg;
 	delete[] collb;
 	delete[] colub;
 	
@@ -670,10 +666,7 @@ SCIP_RETCODE setupLPParameters(smagHandle_t prob, SCIP_LPI* lpi) {
 
 SCIP_RETCODE checkLPsolve(smagHandle_t prob, SCIP_LPI* lpi, SolveStatus& solstatus) {
 	SCIP_Bool primalfeasible=SCIPlpiIsPrimalFeasible(lpi);
-	
-	// workaround bug in scip
-	primalfeasible = !primalfeasible;
-	
+
 	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nSolution status: ");
 	
 	if (SCIPlpiIsPrimalUnbounded(lpi)) {
@@ -729,7 +722,7 @@ SCIP_RETCODE checkLPsolve(smagHandle_t prob, SCIP_LPI* lpi, SolveStatus& solstat
 
 SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* lpi, SCIP_Bool solve_final) {
 	// (no MIP feasible solution) and (no LP solved or LP infeasible) 
-	if (!solstatus.colval && (!lpi || SCIPlpiIsPrimalFeasible(lpi))) {
+	if (!solstatus.colval && (!lpi || !SCIPlpiIsPrimalFeasible(lpi))) {
 	  smagReportSolStats(prob, solstatus.model_status, solstatus.solver_status,
 	  		solstatus.nodenum, solstatus.time, prob->gms.valna, 0);
 	  return SCIP_OKAY;		
@@ -744,8 +737,7 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 	unsigned char* colbasstat = new unsigned char[smagColCount(prob)];
 	unsigned char* colindic = new unsigned char[smagColCount(prob)];
 	
-	// workaround bug in scip: negate return of SCIPlpiIsPrimalFeasible
-	if (lpi && !SCIPlpiIsPrimalFeasible(lpi)) { // read solution from lpi object
+	if (lpi && SCIPlpiIsPrimalFeasible(lpi)) { // read solution from lpi object
 		
 		/** Translating marginal values and basis status from Clp or SCIPlpi to the GAMS world is a bit tricky.
 		 * By trial-and-error I found that inverting the sign on the marginal values in case the problem is a maximization problem seem to do the right thing (= passes the GAMS tests).
