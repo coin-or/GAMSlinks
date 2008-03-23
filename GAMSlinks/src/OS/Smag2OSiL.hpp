@@ -79,7 +79,9 @@ private:
 
 	OSnLNode* parseGamsInstructions(unsigned int* instr, int num_instr, double* constants);
 	
-	bool getQuadraticTerms();
+	bool setupQuadraticTerms();
+	
+	bool setupTimeDomain();
 };
 
 #endif /*SMAG2OSIL_HPP_*/

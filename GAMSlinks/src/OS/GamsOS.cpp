@@ -159,9 +159,6 @@ std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) 
 			return "ipopt";
 #endif
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: No NLP solver with OS interface available.\n");
-      smagStdOutputFlush(prob, SMAG_ALLMASK);
-		  smagReportSolBrief(prob, 13, 6);
-	    exit (EXIT_FAILURE);
 		}
 	} else if (isdiscrete) { // MIP
 #ifdef COIN_HAS_CBC
@@ -171,9 +168,6 @@ std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) 
 		return "symphony";
 #endif
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: No MIP solver with OS interface available.\n");
-    smagStdOutputFlush(prob, SMAG_ALLMASK);
-	  smagReportSolBrief(prob, 13, 6);
-    exit (EXIT_FAILURE);
 	} else { // LP
 #ifdef COIN_HAS_CLP
 		return "clp";
@@ -185,12 +179,9 @@ std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) 
 		return "vol";
 #endif
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: No LP solver with OS interface available.\n");
-    smagStdOutputFlush(prob, SMAG_ALLMASK);
-	  smagReportSolBrief(prob, 13, 6);
-    exit (EXIT_FAILURE);
 	}
 
-	return "error"; // should never reach this point of code
+	return "error";
 }
 
 void localSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std::string& osol) {
@@ -204,6 +195,10 @@ void localSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std
 				osinstance->getNumberOfNonlinearExpressions() || osinstance->getNumberOfQuadraticTerms(),
 				osinstance->getNumberOfBinaryVariables() || osinstance->getNumberOfIntegerVariables(),
 				prob);
+		if (solvername.find("error")!=std::string::npos) {
+		  smagReportSolBrief(prob, 13, 6);
+	    exit (EXIT_FAILURE);
+		}
 	}
 
 	DefaultSolver* solver=NULL;

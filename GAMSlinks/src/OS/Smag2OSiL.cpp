@@ -31,14 +31,17 @@ bool Smag2OSiL::createOSInstance() {
 	GamsDictionary dict(gamshandler);
 	dict.readDictionary();
 
-	// TODO: put model name
+	// unfortunately, we do not know the model name
 	osinstance->setInstanceDescription("Generated from GAMS smag problem");
 	
 	osinstance->setVariableNumber(smagColCount(smag));
 	char* var_types=new char[smagColCount(smag)];
 	std::string* varnames=NULL;
-	if (dict.haveNames())
+	std::string* vartext=NULL;
+	if (dict.haveNames()) {
 		varnames=new std::string[smagColCount(smag)];
+		vartext=new std::string[smagColCount(smag)];
+	}
 	for(i = 0; i < smagColCount(smag); ++i) {
 		switch (smag->colType[i]) {
 			case SMAG_VAR_CONT:
@@ -59,36 +62,47 @@ bool Smag2OSiL::createOSInstance() {
 		}
 		if (dict.haveNames() && dict.getColName(i, buffer, 256))
 			varnames[i]=buffer;
+		if (dict.haveNames() && dict.getColText(i, buffer, 256))
+			vartext[i]=buffer;
 	}
 	
-	if (!osinstance->setVariables(smagColCount(smag), varnames, smag->colLB, smag->colUB, var_types, smag->colLev, NULL))
+	// store the descriptive text of a variables in the initString argument to have it stored somewhere 
+	if (!osinstance->setVariables(smagColCount(smag), varnames, smag->colLB, smag->colUB, var_types, smag->colLev, vartext))
 		return false;
 	delete[] var_types;
 	delete[] varnames;
+	delete[] vartext;
 
-	// TODO: would be 0 for model type CNS
-	osinstance->setObjectiveNumber(1);
+	if (smag->gObjRow<0) { // we seem to have no objective, i.e., a CNS model
+		osinstance->setObjectiveNumber(0);
+	} else { // setup objective
+		osinstance->setObjectiveNumber(1);
 	
-	SparseVector* objectiveCoefficients = new SparseVector(smagObjColCount(smag));
-	j=0;
-  for (smagObjGradRec_t* og = smag->objGrad;  og;  og = og->next, ++j) {
-  	objectiveCoefficients->indexes[j] = og->j;
-  	objectiveCoefficients->values[j] = og->dfdj;
-  }
+		SparseVector* objectiveCoefficients = new SparseVector(smagObjColCount(smag));
+		j=0;
+		for (smagObjGradRec_t* og = smag->objGrad;  og;  og = og->next, ++j) {
+			objectiveCoefficients->indexes[j] = og->j;
+			objectiveCoefficients->values[j] = og->dfdj;
+		}
 
-	if (!osinstance->addObjective(-1, "",
-		smagMinim(smag)==1 ? "min" : "max",
-		smag->gms.grhs[smag->gms.slplro-1]*smag->gObjFactor,
-		1., objectiveCoefficients)) {
+		std::string objname;
+		if (dict.haveNames() && dict.getObjName(buffer, 256))
+			objname=buffer;
+
+		if (!osinstance->addObjective(-1, objname,
+				smagMinim(smag)==1 ? "min" : "max",
+						smag->gms.grhs[smag->gms.slplro-1]*smag->gObjFactor,
+						1., objectiveCoefficients)) {
+			delete objectiveCoefficients;
+			return false;
+		}
 		delete objectiveCoefficients;
-		return false;
 	}
-	delete objectiveCoefficients;
 	
 	osinstance->setConstraintNumber(smagRowCount(smag));
 
 	double lb, ub;
-	for (int i = 0;  i < smagRowCount(smag);  i++) {
+	for (i = 0;  i < smagRowCount(smag);  i++) {
 		switch (smag->rowType[i]) {
 			case SMAG_EQU_EQ:
 				lb = ub = smag->rowRHS[i];
@@ -131,9 +145,8 @@ bool Smag2OSiL::createOSInstance() {
 		rowstarts, 0, smagRowCount(smag)))
 		return false;
 
-	//TODO; if there are nonlinearities, we finish here, since they are not implemented yet
-	if (smagRowCountNL(smag) || smagObjColCountNL(smag)) {
-		if (!getQuadraticTerms()) return false; //TODO: should call this only if it is a QQP
+	if (smagColCountNL(smag)) {
+		if (!setupQuadraticTerms()) return false; //TODO: should call this only if it is a QQP
 		return true;
 	}
 	
@@ -170,7 +183,7 @@ bool Smag2OSiL::createOSInstance() {
 }
 
 
-bool Smag2OSiL::getQuadraticTerms() {
+bool Smag2OSiL::setupQuadraticTerms() {
 	int hesSize=(int)(smag->gms.workFactor * 10 * smag->gms.nnz);
 
 	int* hesRowIdx=new int[hesSize];
@@ -184,12 +197,33 @@ bool Smag2OSiL::getQuadraticTerms() {
 		smagStdOutputFlush(smag, SMAG_ALLMASK);
 		return false;
 	}
+	
+	// the real size of the hessian should be given in the end of the rowStart array 
+	hesSize=rowStart[smagRowCount(smag)+1];
+	
+	int* rowindices=new int[hesSize];
+	for (int j=0; j<smagRowCount(smag); ++j)
+		for (int i=rowStart[j]; i<rowStart[j+1]; ++i)
+			rowindices[i]=j;
+	for (int i=rowStart[smagRowCount(smag)]; i<rowStart[smagRowCount(smag)+1]; ++i)
+		rowindices[i]=-1;
+
+	// coefficients for diagonal elements need to be divided by two
+	for (int i=0; i<hesSize; ++i)
+		if (hesRowIdx[i]==hesColIdx[i]) hesValues[i]*=.5;
+	
+	if (!osinstance->setQuadraticTerms(hesSize, rowindices, hesRowIdx, hesColIdx, hesValues, 0, hesSize-1)) {
+		smagStdOutputPrint(smag, SMAG_ALLMASK, "Error setting quadratic terms in OSInstance. Exiting ...\n");
+		smagStdOutputFlush(smag, SMAG_ALLMASK);
+		return false;
+	}
 
 	delete[] hesRowIdx;
 	delete[] hesColIdx;
 	delete[] hesValues;
 	delete[] rowStart;
-	
+	delete[] rowindices;
+
 	return true;
 }
 
@@ -227,4 +261,101 @@ OSnLNode* Smag2OSiL::parseGamsInstructions(unsigned int* instr, int num_instr, d
 */
 	
 	return NULL;
+}
+
+bool Smag2OSiL::setupTimeDomain() {
+	int* colTimeStage=new int[smagColCount(smag)];
+	int minStage=0;
+	int maxStage=0;
+	
+	// timestages in GAMS are stored in the scaling attribute, but only if the variable is continuous
+	// otherwise we assume they are stored in the branching priority attribute
+	for (int i=0; i<smagColCount(smag); ++i) {
+		if (smag->colType[i]!=SMAG_VAR_CONT)
+			colTimeStage[i]=(int)smag->colPriority[i];
+		else
+			colTimeStage[i]=(int)smag->colScale[i];
+		
+		if (i==0) minStage=maxStage=colTimeStage[i];
+		else if (minStage>colTimeStage[i]) minStage=colTimeStage[i];
+		else if (maxStage<colTimeStage[i]) maxStage=colTimeStage[i];
+	}
+	
+	if (minStage==maxStage) { // there seem to be only one stage, so we think that this is not a stochastic program
+		delete[] colTimeStage;
+		return true;
+	}
+	smagStdOutputPrint(smag, SMAG_LOGMASK, "Found stage information. Setting up TimeDomain.\n");
+	
+	TimeDomainInterval* interval=new TimeDomainInterval;
+	interval->intervalStart=minStage;
+	interval->intervalHorizon=maxStage;
+	
+	TimeDomainStages* stages=new TimeDomainStages;
+	stages->numberOfStages=maxStage-minStage+1;
+	stages->stage=new TimeDomainStage*[stages->numberOfStages];
+	
+	for (int i=0; i<stages->numberOfStages; ++i)
+		stages->stage[i]=new TimeDomainStage;
+	
+	// shift column timestages to start with 0; count number of variables per timestage
+	for (int i=0; i<smagColCount(smag); ++i) {
+		colTimeStage[i]-=minStage;
+		++stages->stage[colTimeStage[i]]->nvar;
+	}
+	maxStage-=minStage;
+
+	int* fillUp=new int[stages->numberOfStages]; // to remember how many items (vars or rows) we have put in the corresponding arrays at the stages already
+	
+	for (int i=0; i<stages->numberOfStages; ++i) { 	// initializes variables arrays
+		stages->stage[i]->variables=new int[stages->stage[i]->nvar];
+		fillUp[i]=0;
+	}
+	
+	for (int i=0; i<smagColCount(smag); ++i) // fill variables arrays
+		stages->stage[colTimeStage[i]]->variables[fillUp[colTimeStage[i]]++]=i;
+
+
+	// and now compute the timestages of the constraints
+	// we just say that a constraint is in stage t if it has a variable at stage t, but nothing at later ones
+	
+	int* rowTimeStage=new int[smagRowCount(smag)];
+	
+	for (int i=0; i<smagRowCount(smag); ++i) {
+		rowTimeStage[i]=0;
+		// rowTimeStage[i] is maximum of the colTimeStage's for all variables appearing in row i 
+		for (smagConGradRec_t* cGrad = smag->conGrad[i];  cGrad;  cGrad = cGrad->next)
+			if (rowTimeStage[i]<colTimeStage[cGrad->j])
+				rowTimeStage[i]=colTimeStage[cGrad->j];
+		++stages->stage[rowTimeStage[i]]->ncon;
+	}
+
+	for (int i=0; i<stages->numberOfStages; ++i) { 	// initializes variables arrays
+		stages->stage[i]->constraints=new int[stages->stage[i]->ncon];
+		fillUp[i]=0;
+	}
+	
+	for (int i=0; i<smagRowCount(smag); ++i) // fill constraints arrays
+		stages->stage[rowTimeStage[i]]->constraints[fillUp[rowTimeStage[i]]++]=i;
+
+	// and finally the timestage for the objective (if we have any)
+	if (smag->gObjRow>=0) {
+		int objTimeStage=0;
+		for (smagObjGradRec_t* oGrad = smag->objGrad; oGrad; oGrad = oGrad->next)
+			if (objTimeStage<colTimeStage[oGrad->j])
+				objTimeStage=colTimeStage[oGrad->j];
+		stages->stage[objTimeStage]->nobj=1;
+		stages->stage[objTimeStage]->objectives=new int[1];
+		stages->stage[objTimeStage]->objectives[0]=-1;
+	}
+
+	osinstance->instanceData->timeDomain=new TimeDomain;
+	osinstance->instanceData->timeDomain->stages=stages;
+	osinstance->instanceData->timeDomain->interval=interval;
+	
+	delete[] colTimeStage;
+	delete[] rowTimeStage;
+	delete[] fillUp;
+	
+	return true;
 }
