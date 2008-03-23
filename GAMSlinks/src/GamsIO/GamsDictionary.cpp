@@ -73,6 +73,78 @@ char* GamsDictionary::getColName(int colnr, char *buffer, int bufLen) {
   return constructName(buffer, bufLen, lSym, uelIndices, nIndices);
 }
 
+char* GamsDictionary::getObjName(char* buffer, int bufLen) {
+	if (!dict) return NULL;
+  int
+    uelIndices[10],
+    nIndices,
+    lSym;
+
+	int gobjrow=gams.getObjRow();
+	
+  if (gobjrow<0 || gobjrow >= gcdNRows(dict)) return NULL;
+  if (gcdRowUels(dict, gobjrow, &lSym, uelIndices, &nIndices) != 0) return NULL;
+  
+  return constructName(buffer, bufLen, lSym, uelIndices, nIndices); 
+}
+
+char* GamsDictionary::getColText(int colnr, char* buffer, int bufLen) {
+	if (!dict) return NULL;
+	char
+		quote;
+  int
+    uelIndices[10],
+    nIndices,
+    lSym;
+  
+  int gcolnr=gams.translateToGamsSpaceCol(colnr);
+
+  if (gcolnr < 0 || gcolnr >= gcdNCols(dict)) return NULL;
+  if (gcdColUels(dict, gcolnr, &lSym, uelIndices, &nIndices) != 0) return NULL;
+  
+	if (gcdSymText(dict, lSym, buffer, bufLen, &quote) == NULL) return NULL;
+	
+	return buffer;
+}
+
+char* GamsDictionary::getRowText(int rownr, char* buffer, int bufLen) {
+	if (!dict) return NULL;
+	char
+		quote;
+  int
+    uelIndices[10],
+    nIndices,
+    lSym;
+
+  int grownr=gams.translateToGamsSpaceRow(rownr);
+
+  if (grownr<0 || grownr >= gcdNRows(dict)) return NULL;
+  if (gcdRowUels(dict, grownr, &lSym, uelIndices, &nIndices) != 0) return NULL;
+
+	if (gcdSymText(dict, lSym, buffer, bufLen, &quote) == NULL) return NULL;
+
+	return buffer;
+}
+
+char* GamsDictionary::getObjText(char* buffer, int bufLen) {
+	if (!dict) return NULL;
+	char
+		quote;
+  int
+    uelIndices[10],
+    nIndices,
+    lSym;
+
+	int gobjrow=gams.getObjRow();
+
+  if (gobjrow<0 || gobjrow >= gcdNRows(dict)) return NULL;
+  if (gcdRowUels(dict, gobjrow, &lSym, uelIndices, &nIndices) != 0) return NULL;
+
+	if (gcdSymText(dict, lSym, buffer, bufLen, &quote) == NULL) return NULL;
+
+	return buffer;
+}
+
 char* GamsDictionary::constructName(char* buffer, int bufLen, int lSym, int* uelIndices, int nIndices) {
 	if (bufLen<=0)
 		return NULL;

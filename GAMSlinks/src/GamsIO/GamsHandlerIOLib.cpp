@@ -165,6 +165,9 @@ int GamsHandlerIOLib::getColCountGams() const {
 int GamsHandlerIOLib::getObjVariable() const {
 	return iolib.iobvar;
 }
+int GamsHandlerIOLib::getObjRow() const {
+	return is_reformulated ? iolib.slplro-1 : -1;
+}
 
 const char* GamsHandlerIOLib::getSystemDir() const {
 	return iolib.gsysdr;

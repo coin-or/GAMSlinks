@@ -94,6 +94,10 @@ public:
 	/** The index of the objective variable in the original gams space.
 	 */
 	virtual int getObjVariable() const=0;
+	/** The index of the objective row in the original gams space.
+	 * Returns -1 if the problem has not been reformulated and thus the objective has not been lifted.
+	 */
+	virtual int getObjRow() const=0;
 	
 	/** Path to GAMS system.
 	 */

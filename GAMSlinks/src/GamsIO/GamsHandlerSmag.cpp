@@ -128,6 +128,11 @@ int GamsHandlerSmag::getObjVariable() const {
 	return smag->gObjCol;
 }
 
+int GamsHandlerSmag::getObjRow() const {
+	if (smag->rowMapG2S[smag->gObjRow]==-1) return smag->gObjRow;
+	return -1;
+}
+
 const char* GamsHandlerSmag::getSystemDir() const {
 	return smag->gms.sysDir;
 }

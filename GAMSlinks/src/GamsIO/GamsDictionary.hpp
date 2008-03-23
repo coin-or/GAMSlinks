@@ -57,6 +57,36 @@ public:
       @return buffer on success, NULL on failure
 	*/
 	char* getRowName(int rownr, char *buffer, int bufLen);
+	
+	/** The name of the objective.
+			@param buffer a buffer for writing the name in
+			@param bufLen length of the buffer
+      @return buffer on success, NULL on failure
+	*/
+	char* getObjName(char* buffer, int bufLen);
+	
+	/** The descriptive text of a column.
+	    @param colnr col index
+			@param buffer a buffer for writing the name in
+			@param bufLen length of the buffer
+      @return buffer on success, NULL on failure
+	*/
+	char* getColText(int colnr, char* buffer, int bufLen);
+	
+	/** The descriptive text of a row.
+	    @param rownr row index
+			@param buffer a buffer for writing the name in
+			@param bufLen length of the buffer
+      @return buffer on success, NULL on failure
+	*/
+	char* getRowText(int rownr, char* buffer, int bufLen);
+
+	/** The descriptive text of the objective.
+			@param buffer a buffer for writing the name in
+			@param bufLen length of the buffer
+      @return buffer on success, NULL on failure
+	*/
+	char* getObjText(char* buffer, int bufLen);
 
 }; // class GamsDictionary
 

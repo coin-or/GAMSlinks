@@ -18,6 +18,7 @@
 /** Gives the structure of the Hessian of the objective and each constraint separately.
  * The user provides space to store the row/col indices and values of hessian entries.
  * The Hessians of all constraints and the objective are stored in one contiguous array.
+ * Only the values from the lower-left part of the Hessian are returned.
  * rowStart indicates where the entries for which constraint of the Hessian start. The entries for the objective are found at index rowstart[smagRowCount()].
  * That is, hesRowIdx[rowStart[connr]..rowStart[connr]-1] are the row indices of the elements in the Hessian of constraint connr if connr<smagRowCount() or the objective if connr==smagRowCount().
  * Similar for hesColIdx.

@@ -47,7 +47,8 @@ public:
 	
 	int getColCountGams() const;
 	int getObjVariable() const;
-	
+	int getObjRow() const;
+
 	const char* getSystemDir() const;
 
 	bool isDictionaryWritten() const;
