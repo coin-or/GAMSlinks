@@ -56,6 +56,10 @@ AC_COIN_DEBUG_COMPILE(GAMSIO)
 # Get the name of the C compiler and appropriate compiler options
 AC_COIN_PROG_CC
 
+# Even though we do not need to compile Fortran code here, we want to know the name of Fortran compiler,
+# so we can decide between LEI and LEG and LX3 and LNX, respectively. 
+AC_COIN_FIND_F77
+
 # Initialize automake and libtool
 AC_COIN_INIT_AUTO_TOOLS
 

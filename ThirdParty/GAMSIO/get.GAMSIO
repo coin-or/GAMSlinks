@@ -5,6 +5,8 @@
 # E.g., ./get.GAMSIO lx3 lei
 # If no parameters are given, the script tries to guess the build type according to the output of uname. 
 
+ver=latest
+
 function download() {
 
 echo ""
@@ -15,17 +17,17 @@ sysdir=`echo ${sys} | sed -e y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUV
 
 mkdir -p ${sysdir}
 cd ${sysdir}
-rm -f ${sys}_latest.tgz
+rm -f ${sys}_${ver}.tgz
 
 echo "Downloading the ${sys} libraries into directory ${sysdir} from www.gams.com..."
-$wgetcmd http://www.gams.com/~svigerske/${sys}_latest.tgz
+$wgetcmd http://www.gams.com/~svigerske/${sys}_${ver}.tgz
 
 echo "Unpacking the libraries..."
-gunzip ${sys}_latest.tgz
-tar xf ${sys}_latest.tar
+gunzip ${sys}_${ver}.tgz
+tar xf ${sys}_${ver}.tar
 
 echo "Deleting the tar file..."
-rm -f ${sys}_latest.tar
+rm -f ${sys}_${ver}.tar
 
 cd ..
 
