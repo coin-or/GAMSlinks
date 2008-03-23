@@ -232,7 +232,7 @@ bool SMAG_MINLP::get_starting_point (Index n, bool init_x, Number* x,
 	}
   return true;
 } // get_starting_point
-#if 0
+
 bool SMAG_MINLP::get_scaling_parameters(Number &obj_scaling,
 		bool &use_x_scaling, Index n, Number *x_scaling,
 		bool &use_g_scaling, Index m, Number *g_scaling) {
@@ -265,7 +265,6 @@ bool SMAG_MINLP::get_scaling_parameters(Number &obj_scaling,
 	
 	return true;
 }
-#endif
 
 // returns the value of the objective function
 bool SMAG_MINLP::eval_f (Index n, const Number* x, bool new_x, Number& obj_value) {

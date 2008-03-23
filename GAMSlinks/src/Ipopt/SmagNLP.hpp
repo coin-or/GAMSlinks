@@ -13,8 +13,6 @@
 
 #include "IpTNLP.hpp"
 
-//#include "IpIpoptApplication.hpp"
-
 // smag.h will try to include stdio.h and stdarg.h
 // so we include cstdio and cstdarg before if we know that we have them
 #ifdef HAVE_CSTDIO
@@ -52,11 +50,11 @@ public:
                                   bool init_z, Number* z_L, Number* z_U,
                                   Index m, bool init_lambda,
                                   Number* lambda);
-#if 0
+
   virtual bool get_scaling_parameters(Number &obj_scaling,
   		bool &use_x_scaling, Index n, Number *x_scaling,
   		bool &use_g_scaling, Index m, Number *g_scaling);
-#endif
+
   /** Method to return the variables linearity. */
   virtual bool get_variables_linearity(Index n, LinearityType* var_types);
 

@@ -1,0 +1,73 @@
+--- scip/src/scip/lpi_clp.cpp	2008-03-09 14:20:26.000000000 +0100
++++ scip.0319/lpi_clp.cpp	2008-03-23 15:26:18.000000000 +0100
+@@ -275,6 +275,13 @@
+    return clpname;
+ }
+ 
++/** gets pointer for LP solver - use only with great care */
++void* SCIPgetSolverPointer(
++   SCIP_LPI*             lpi                 /**< pointer to an LP interface structure */
++   )
++{
++   return (void*) lpi->clp;
++}
+ /**@} */
+ 
+ 
+@@ -469,15 +476,23 @@
+    assert(nnonz == 0 || beg != 0);
+    assert(nnonz == 0 || ind != 0);
+    assert(nnonz == 0 || val != 0);
++   assert(nnonz >= 0);
++   assert(ncols >= 0);
+ 
+    invalidateSolution(lpi);
+ 
+    // store number of columns for later
+    int numCols = lpi->clp->getNumCols(); 
+ 
+-   // copy beg-array
++   // copy beg-array (if not 0)
+    int* mybeg = new int [ncols+1];
+-   memcpy((void *) mybeg, beg, ncols * sizeof(int));
++   if ( nnonz == 0 )
++   {
++      for (int j = 0; j < ncols; ++j)
++	 mybeg[j] = 0;
++   }
++   else
++      memcpy((void *) mybeg, beg, ncols * sizeof(int));
+    mybeg[ncols] = nnonz;   // add additional entry at end
+ 
+    // add columns
+@@ -639,7 +654,7 @@
+    int                   lastrow             /**< last row to be deleted */
+    )
+ {
+-   SCIPdebugMessage("calling SCIPlpiDelRows()\n");
++   SCIPdebugMessage("calling SCIPlpiDelRows() (number: %d)\n", lastrow-firstrow+1);
+ 
+    assert(lpi != 0);
+    assert(lpi->clp != 0);
+@@ -1722,7 +1737,7 @@
+    assert(lpi != 0);
+    assert(lpi->clp != 0);
+ 
+-   return (! lpi->clp->primalFeasible() );
++   return ( lpi->clp->primalFeasible() );
+ }
+ 
+ 
+@@ -1841,9 +1856,11 @@
+        2 - scaled problem optimal - unscaled problem has primal infeasibilities
+        3 - scaled problem optimal - unscaled problem has dual infeasibilities
+        4 - scaled problem optimal - unscaled problem has primal and dual infeasibilities
++       6 - failed due to empty problem check 
+        100 up - translation of enum from ClpEventHandler
+    */
+-   return( (lpi->clp->status() <= 2) && (! lpi->clp->isAbandoned()) && (lpi->clp->secondaryStatus() <= 1) );
++   SCIPdebugMessage("status: %d   secondary: %d\n", lpi->clp->status(), lpi->clp->secondaryStatus());
++   return( (lpi->clp->status() <= 2) && (! lpi->clp->isAbandoned()) && (lpi->clp->secondaryStatus() <= 1 || lpi->clp->secondaryStatus() == 6) );
+ }
+ 
+ 

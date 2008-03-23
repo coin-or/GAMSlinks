@@ -140,7 +140,7 @@ bool SMAG_NLP::get_starting_point (Index n, bool init_x, Number* x,
 	}
   return true;
 } // get_starting_point
-#if 0
+
 bool SMAG_NLP::get_scaling_parameters(Number &obj_scaling,
 		bool &use_x_scaling, Index n, Number *x_scaling,
 		bool &use_g_scaling, Index m, Number *g_scaling) {
@@ -173,7 +173,6 @@ bool SMAG_NLP::get_scaling_parameters(Number &obj_scaling,
 	
 	return true;
 }
-#endif
 
 // returns the variables linearity
 bool SMAG_NLP::get_variables_linearity(Index n, LinearityType* var_types) {
