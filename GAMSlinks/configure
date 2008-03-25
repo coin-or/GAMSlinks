@@ -27059,8 +27059,8 @@ case $GAMSIO_CODE in
       GAMSIO_ADDLIBS="-ldl -lSystemStubs $IFORT_LIBS"
     ;;
   VIS | WEI)
-      GAMSIO_LIBS="$gamsio_srcdir/iolib.lib $gamsio_srcdir/nliolib.lib $gamsio_srcdir/clicelib.lib $gamsio_srcdir/gclib.lib $gamsio_srcdir/libf90pallib.lib"
-      SMAG_LIBS="$gamsio_srcdir/clicelib.lib $gamsio_srcdir/smag.lib $gamsio_srcdir/gclib.lib $gamsio_srcdir/libf90pallib.lib $gamsio_srcdir/g2d.lib $gamsio_srcdir/dictread.obj $gamsio_srcdir/dictfunc.obj $gamsio_srcdir/bch.obj"
+      GAMSIO_LIBS="$gamsio_srcdir/iolib.lib $gamsio_srcdir/nliolib.lib $gamsio_srcdir/clicelib.lib $gamsio_srcdir/gclib.lib $gamsio_srcdir/f90pallib.lib"
+      SMAG_LIBS="$gamsio_srcdir/clicelib.lib $gamsio_srcdir/smag.lib $gamsio_srcdir/gclib.lib $gamsio_srcdir/f90pallib.lib $gamsio_srcdir/g2d.lib $gamsio_srcdir/dictread.obj $gamsio_srcdir/dictfunc.obj $gamsio_srcdir/bch.obj"
       GAMSIO_ADDLIBS=""
     ;;
 esac

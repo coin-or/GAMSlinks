@@ -81,8 +81,9 @@ case "$uname" in
     download sig
     ;;
   MINGW32* | CYGWIN*)
-    echo "This seem to be a Windows 32 bit machine, downloading vis build."
+    echo "This seem to be a Windows machine, downloading vis and wei build."
     download vis
+    download wei
     ;;
   MINGW64*)
     echo "This seem to be a Windows 64 bit machine, downloading wei build."
