@@ -1,11 +1,12 @@
---- scip/src/scip/lpi_clp.cpp	2008-03-09 14:20:26.000000000 +0100
-+++ scip.0319/lpi_clp.cpp	2008-03-23 15:26:18.000000000 +0100
+diff -Naur scip.orig/lpi_clp.cpp scip.0326/lpi_clp.cpp
+--- scip.orig/lpi_clp.cpp	2008-03-26 20:44:33.000000000 +0100
++++ scip/lpi_clp.cpp		2008-03-26 20:43:15.000000000 +0100
 @@ -275,6 +275,13 @@
     return clpname;
  }
  
 +/** gets pointer for LP solver - use only with great care */
-+void* SCIPgetSolverPointer(
++void* SCIPlpiGetSolverPointer(
 +   SCIP_LPI*             lpi                 /**< pointer to an LP interface structure */
 +   )
 +{
@@ -69,5 +70,44 @@
 +   SCIPdebugMessage("status: %d   secondary: %d\n", lpi->clp->status(), lpi->clp->secondaryStatus());
 +   return( (lpi->clp->status() <= 2) && (! lpi->clp->isAbandoned()) && (lpi->clp->secondaryStatus() <= 1 || lpi->clp->secondaryStatus() == 6) );
  }
+ 
+ 
+@@ -1978,6 +1995,8 @@
+    assert(ray != 0);
+ 
+    const double* clpray = lpi->clp->unboundedRay();
++   if ( clpray == 0 )
++      return SCIP_LPERROR;
+    memcpy((void *) ray, clpray, lpi->clp->numberColumns() * sizeof(double));
+    delete [] clpray;
+    
+@@ -1997,6 +2016,8 @@
+    assert(dualfarkas != 0);
+ 
+    const double* dualray = lpi->clp->infeasibilityRay();
++   if ( dualray == 0 )
++      return SCIP_LPERROR;
+    memcpy((void *) dualfarkas, dualray, lpi->clp->numberRows() * sizeof(double));
+    delete [] dualray;
+    
+diff -Naur scip.orig/lpi.h scip.0326/lpi.h
+--- scip.orig/lpi.h	2008-03-26 20:44:33.000000000 +0100
++++ scip.0326/lpi.h	2008-03-26 20:43:15.000000000 +0100
+@@ -47,6 +47,17 @@
+    void
+    );
+ 
++/** gets pointer for LP solver - use only with great care 
++ *
++ *  The behavior of this function depends on the solver and its use is
++ *  therefore only recommended if you really know what you are
++ *  doing. In general, it returns a pointer to the LP solver object.
++ */
++extern
++void* SCIPlpiGetSolverPointer(
++   SCIP_LPI*             lpi                 /**< pointer to an LP interface structure */
++   );
++
+ /**@} */
  
  
