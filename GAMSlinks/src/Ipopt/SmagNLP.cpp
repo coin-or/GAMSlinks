@@ -482,22 +482,17 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
     	compl_gL = new double[smagRowCount(prob)];
     	compl_gU = new double[smagRowCount(prob)];
 
-    	if (cq->curr_compl_x_L()->Dim())
-    		tnlp_adapter->ResortX(*cq->curr_compl_x_L(), compl_xL);
-    	else
-    	  memset(compl_xL, 0, n*sizeof(double));
-    	if (cq->curr_compl_x_U()->Dim())
-    		tnlp_adapter->ResortX(*cq->curr_compl_x_U(), compl_xU);
-    	else
-    	  memset(compl_xU, 0, n*sizeof(double));
+  	  memset(compl_xL, 0, n*sizeof(double));
+  	  memset(compl_xU, 0, n*sizeof(double));
+  	  memset(compl_gL, 0, m*sizeof(double));
+  	  memset(compl_gU, 0, m*sizeof(double));
+
+  	  if (cq->curr_compl_x_L()->Dim() && cq->curr_compl_x_U()->Dim())
+  	  	tnlp_adapter->ResortBnds(*cq->curr_compl_x_L(), compl_xL, *cq->curr_compl_x_U(), compl_xU);
     	if (cq->curr_compl_s_L()->Dim())
     		tnlp_adapter->ResortG(*dummy, *cq->curr_compl_s_L(), compl_gL);
-    	else
-    	  memset(compl_gL, 0, m*sizeof(double));
     	if (cq->curr_compl_s_U()->Dim())
     		tnlp_adapter->ResortG(*dummy, *cq->curr_compl_s_U(), compl_gU);
-    	else
-    		memset(compl_gU, 0, m*sizeof(double));
 
 //    	for (Index i=0; i<smagRowCount(prob); ++i)
 //    		std::cout << "row " << i << " infeas.: " << scaled_viol[i] << std::endl;
