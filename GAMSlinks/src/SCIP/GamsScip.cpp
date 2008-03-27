@@ -242,9 +242,11 @@ int main (int argc, const char *argv[]) {
   	checkScipReturn(prob, scipret);
   	//  SCIP_CALL( SCIPprintStatistics(scip, NULL) );
 
+//  	SCIPwriteMIP(scip, "troublemip.lp", FALSE, TRUE);
+  	
   	scipret = checkMIPsolve(prob, scip, mip_vars, solstatus);
   	checkScipReturn(prob, scipret);
-
+  	
   	delete[] mip_vars;
 
     scipret = SCIPfree(&scip);
@@ -409,7 +411,11 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 		const char* conname=NULL;
 		if (dict.haveNames())
 			conname=dict.getRowName(i, buffer, 256);
-		SCIP_CALL( SCIPcreateConsLinear(scip, &con, conname ? conname : "noname", ncoef, con_vars, con_coef, lb, ub,
+/*		if (!conname) {
+			sprintf(buffer, "con%d", i);
+			conname=buffer;
+		}
+*/		SCIP_CALL( SCIPcreateConsLinear(scip, &con, conname ? conname : "noname", ncoef, con_vars, con_coef, lb, ub,
 				TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE, FALSE) );
 		
 		SCIP_CALL( SCIPaddCons(scip, con) );
@@ -441,7 +447,10 @@ SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/time", prob->gms.reslim) );
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/gap", prob->gms.optcr) );
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/absgap", prob->gms.optca) );
-	SCIP_CALL( SCIPsetIntParam(scip, "display/width", 80) );	
+	SCIP_CALL( SCIPsetIntParam(scip, "display/width", 80) );
+	
+	SCIPchgFeastol(scip, 1e-7);
+	SCIPchgDualfeastol(scip, 1e-7);
 	
 	//TODO: cutoff
 
