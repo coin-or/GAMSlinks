@@ -9,3 +9,5 @@ ThirdParty/GAMSIO/WIS
 ThirdParty/GAMSIO/acinclude.m4
 ThirdParty/GAMSIO/aclocal.m4
 ThirdParty/GAMSIO/autom4te.cache
+ThirdParty/SCIP/scip
+doxydoc/html
