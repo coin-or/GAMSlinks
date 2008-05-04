@@ -28,10 +28,10 @@
 #endif
 #endif
 
-#ifdef HAVE_CSTDIO
+#ifdef HAVE_CSTRING
 #include <cstring>
 #else
-#ifdef HAVE_STDIO_H
+#ifdef HAVE_STRING_H
 #include <string.h>
 #else
 #error "don't have header file for string"
@@ -63,12 +63,17 @@ extern "C" {
 #include "smag.h"
 #include "GamsDictionary.hpp"
 #include "GamsHandlerSmag.hpp"
+extern "C" {
+#include "gdxcc.h"
+}
 
 extern "C" {
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
 #include "scip/cons_linear.h"
 }
+
+#include "ScipBCH.hpp"
 
 // statistics and primal solution about mip or lp solve
 typedef struct {
@@ -91,9 +96,10 @@ struct SCIP_MessagehdlrData
 
 void printWarningError(SCIP_MESSAGEHDLR* messagehdlr, FILE* file, const char* msg);
 void printInfoDialog(SCIP_MESSAGEHDLR* messagehdlr, FILE* file, const char* msg);
-void checkScipReturn(smagHandle_t prob, SCIP_RETCODE scipret);
 
-SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars);
+SCIP_RETCODE runSCIP(smagHandle_t prob);
+
+SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionary& dict, SCIP* scip, SCIP_VAR**& vars);
 SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip);
 SCIP_RETCODE setupMIPStart(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars);
 SCIP_RETCODE checkMIPsolve(smagHandle_t prob, SCIP* scip, SCIP_VAR** vars, SolveStatus& solstatus);
@@ -183,128 +189,15 @@ int main (int argc, const char *argv[]) {
 		exit(EXIT_FAILURE);
   }
   
-  SCIP_RETCODE scipret;
-
-	SCIP_Bool solvelp = TRUE;
-	SCIP_Bool solvefinal = TRUE;
-
-  SolveStatus solstatus;
-  solstatus.colval=NULL;
+  SCIP_RETCODE scipret = runSCIP(prob);
   
-  if (prob->gms.nbin || prob->gms.numint) { // if discrete var, do SCIP
-    SCIP_MESSAGEHDLR* messagehdlr=NULL;
-    SCIP_MESSAGEHDLRDATA messagehdlrdata;
-    messagehdlrdata.smag=prob;
-    
-    scipret = SCIPcreateMessagehdlr(&messagehdlr, TRUE, printWarningError, printWarningError, printInfoDialog, printInfoDialog, &messagehdlrdata);
-    checkScipReturn(prob, scipret);
-  	scipret = SCIPsetMessagehdlr(messagehdlr);
-  	checkScipReturn(prob, scipret);
+	if (scipret != SCIP_OKAY) {
+		snprintf(buffer, 512, "Error %d in call of SCIP function\n", scipret);
+		smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+		smagStdOutputFlush(prob, SMAG_ALLMASK);
 
-  	// have to put this here already, because we need the value for infinity
-  	SCIP* scip = NULL;
-  	// initialize SCIP
-  	scipret = SCIPcreate(&scip);
-  	checkScipReturn(prob, scipret);
-
-  	smagSetSqueezeFreeRows (prob, 1);	/* don't show me =n= rows */
-  	smagSetInf (prob, SCIPinfinity(scip));
-  	smagReadModel (prob);
-
-  	/* include default SCIP plugins */
-  	scipret = SCIPincludeDefaultPlugins(scip);
-  	checkScipReturn(prob, scipret);
-
-  	scipret = setupMIPParameters(prob, scip);
-  	checkScipReturn(prob, scipret);
-  	
-		scipret = SCIPgetBoolParam(scip, "gams/solvefinal", &solvefinal);
-		checkScipReturn(prob, scipret);
-
-  	SCIP_VAR** mip_vars=NULL;
-
-  	scipret = setupMIP(prob, scip, mip_vars);
-  	checkScipReturn(prob, scipret);
-  	
-  	SCIP_Bool mipstart;
-  	scipret = SCIPgetBoolParam(scip, "gams/mipstart", &mipstart);
-  	checkScipReturn(prob, scipret);
-  	
-  	if (mipstart) {  		
-  		scipret = setupMIPStart(prob, scip, mip_vars);
-  		checkScipReturn(prob, scipret);
-  	}
-  	
-  	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nStarting MIP solve...\n");
-  	smagStdOutputFlush(prob, SMAG_LOGMASK);
-
-  	scipret = SCIPsolve(scip);
-  	checkScipReturn(prob, scipret);
-  	//  SCIP_CALL( SCIPprintStatistics(scip, NULL) );
-
-//  	SCIPwriteMIP(scip, "troublemip.lp", FALSE, TRUE);
-  	
-  	scipret = checkMIPsolve(prob, scip, mip_vars, solstatus);
-  	checkScipReturn(prob, scipret);
-  	
-  	delete[] mip_vars;
-
-    scipret = SCIPfree(&scip);
-  	checkScipReturn(prob, scipret);
-
-  	scipret = SCIPfreeMessagehdlr(&messagehdlr);
-  	checkScipReturn(prob, scipret);
-  	
-  	// we disable the LP solve if we do not have a MIP feasible point or the user wants so
-  	solvelp = (!solstatus.colval) || solvefinal;
-  }
-
-	SCIP_LPI* lpi=NULL;
-	double lpsolve_starttime=smagGetCPUTime(prob);
-  if (solvelp) { // if we have an LP or got a mip feasible point and user did not disable fixed LP solve, solve (fixed) LP
-  	scipret = SCIPlpiCreate(&lpi, "gamsproblem", smagMinim(prob)==-1 ? SCIP_OBJSEN_MAXIMIZE : SCIP_OBJSEN_MINIMIZE);
-  	checkScipReturn(prob, scipret);
-
-  	if (!prob->gms.nbin && !prob->gms.numint) {
-  		// here we allow =n= rows in order to get the lp11 test passed 
-  		smagSetInf (prob, SCIPlpiInfinity(lpi));
-  		smagReadModel (prob);
-  	}
-  	
-  	scipret = setupLP(prob, lpi, solstatus.colval);
-  	checkScipReturn(prob, scipret);
-
-  	if (!prob->gms.nbin && !prob->gms.numint) {
-  		scipret = setupLPParameters(prob, lpi);
-    	checkScipReturn(prob, scipret);
-    	smagStdOutputPrint(prob, SMAG_LOGMASK, "Starting LP solve...\n");
-  	} else {
-    	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nSolving LP with fixed discrete variables...\n");
-  	}
-  	smagStdOutputFlush(prob, SMAG_LOGMASK);
-
-  	scipret = SCIPlpiSolveDual(lpi);
-  	checkScipReturn(prob, scipret);
-  }
-
-	// if problem was an LP, get gams status and statistics
-	if (!prob->gms.nbin && !prob->gms.numint) {
-		solstatus.time=smagGetCPUTime(prob)-lpsolve_starttime;
-		scipret = checkLPsolve(prob, lpi, solstatus);
-  	checkScipReturn(prob, scipret);
+		smagReportSolBrief(prob, 13, 13);
 	}
-  
-  scipret = writeSolution(prob, solstatus, lpi, solvefinal);
-	checkScipReturn(prob, scipret);
-
-  if (lpi) {
-  	scipret = SCIPlpiFree(&lpi);
-  	checkScipReturn(prob, scipret);
-  }
-  
-  delete[] solstatus.colval;
-  
-  BMScheckEmptyMemory();
   
 	smagStdOutputPrint(prob, SMAG_LOGMASK, "GAMS/SCIP finished.\n");
 	smagStdOutputStop(prob, buffer, sizeof(buffer));
@@ -314,15 +207,147 @@ int main (int argc, const char *argv[]) {
   return EXIT_SUCCESS;
 }
 
-SCIP_RETCODE setupMIP(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
+
+SCIP_RETCODE runSCIP(smagHandle_t prob) {
+	SCIP_Bool solvelp = TRUE;
+	SCIP_Bool solvefinal = TRUE;
+
+  SolveStatus solstatus;
+  solstatus.colval=NULL;
+  
+  if (prob->gms.nbin || prob->gms.numint) { // if discrete var, do SCIP
+  	GamsHandlerSmag gamshandler(prob);
+  	GamsDictionary dict(gamshandler);
+  	
+  	SCIP_MESSAGEHDLR* messagehdlr=NULL;
+    SCIP_MESSAGEHDLRDATA messagehdlrdata;
+    messagehdlrdata.smag=prob;
+    
+    SCIP_CALL( SCIPcreateMessagehdlr(&messagehdlr, TRUE, printWarningError, printWarningError, printInfoDialog, printInfoDialog, &messagehdlrdata) );
+  	SCIP_CALL( SCIPsetMessagehdlr(messagehdlr) );
+
+  	// have to put this here already, because we need the value for infinity
+  	SCIP* scip = NULL;
+  	// initialize SCIP
+  	SCIP_CALL( SCIPcreate(&scip) );
+
+  	smagSetSqueezeFreeRows (prob, 1);	/* don't show me =n= rows */
+  	smagSetInf (prob, SCIPinfinity(scip));
+  	smagReadModel (prob);
+
+  	/* include default SCIP plugins */
+  	SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
+
+  	SCIP_CALL( setupMIPParameters(prob, scip) );
+  	
+		SCIP_CALL( SCIPgetBoolParam(scip, "gams/solvefinal", &solvefinal) );
+
+  	char buffer[512];
+  	SCIP_CALL( SCIPgetStringParam(scip, "gams/usercutcall", (char**)&buffer) );
+  	if (!*buffer)
+    	SCIP_CALL( SCIPgetStringParam(scip, "gams/userheurcall", (char**)&buffer) );
+
+  	GamsBCH* bch=NULL;
+  	gdxHandle_t gdxhandle=NULL;
+  	if (*buffer) {
+  		char buffer[512];
+  		if (!gdxCreate(&gdxhandle, buffer, sizeof(buffer))) {
+  			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+  			smagStdOutputFlush(prob, SMAG_ALLMASK);
+  			return SCIP_ERROR;
+  		}
+  		BCHsetup(bch, prob, gamshandler, dict, scip);
+  	}
+
+  	SCIP_VAR** mip_vars=NULL;
+  	SCIP_CALL( setupMIP(prob, gamshandler, dict, scip, mip_vars) );
+  	
+  	SCIP_Bool mipstart;
+  	SCIP_CALL( SCIPgetBoolParam(scip, "gams/mipstart", &mipstart) );
+  	if (mipstart) {
+  		SCIP_CALL( setupMIPStart(prob, scip, mip_vars) );
+  	}
+  	
+  	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nStarting MIP solve...\n");
+  	smagStdOutputFlush(prob, SMAG_LOGMASK);
+
+  	SCIP_CALL( SCIPsolve(scip) );
+  	//  SCIP_CALL( SCIPprintStatistics(scip, NULL) );
+
+//  	SCIPwriteMIP(scip, "troublemip.lp", FALSE, TRUE);
+  	
+  	SCIP_CALL( checkMIPsolve(prob, scip, mip_vars, solstatus) );
+  	
+  	delete[] mip_vars;
+
+    SCIP_CALL( SCIPfree(&scip) );
+  	SCIP_CALL( SCIPfreeMessagehdlr(&messagehdlr) );
+  	
+  	// we disable the LP solve if we do not have a MIP feasible point or the user wants so
+  	solvelp = (!solstatus.colval) || solvefinal;
+  	
+  	delete bch;
+  	if (gdxhandle) {
+  		gdxClose(gdxhandle);
+  		gdxFree(&gdxhandle);
+  		gdxLibraryUnload();
+  	}
+  }
+
+	SCIP_LPI* lpi=NULL;
+	double lpsolve_starttime=smagGetCPUTime(prob);
+  if (solvelp) { // if we have an LP or got a mip feasible point and user did not disable fixed LP solve, solve (fixed) LP
+  	SCIP_CALL( SCIPlpiCreate(&lpi, "gamsproblem", smagMinim(prob)==-1 ? SCIP_OBJSEN_MAXIMIZE : SCIP_OBJSEN_MINIMIZE) );
+
+  	if (!prob->gms.nbin && !prob->gms.numint) {
+  		// here we allow =n= rows in order to get the lp11 test passed 
+  		smagSetInf (prob, SCIPlpiInfinity(lpi));
+  		smagReadModel (prob);
+  	}
+  	
+  	SCIP_CALL( setupLP(prob, lpi, solstatus.colval) );
+
+  	if (!prob->gms.nbin && !prob->gms.numint) {
+  		SCIP_CALL( setupLPParameters(prob, lpi) );
+    	smagStdOutputPrint(prob, SMAG_LOGMASK, "Starting LP solve...\n");
+  	} else {
+    	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nSolving LP with fixed discrete variables...\n");
+  	}
+  	smagStdOutputFlush(prob, SMAG_LOGMASK);
+
+  	SCIP_CALL( SCIPlpiSolveDual(lpi) );
+  }
+
+	// if problem was an LP, get gams status and statistics
+	if (!prob->gms.nbin && !prob->gms.numint) {
+		solstatus.time=smagGetCPUTime(prob)-lpsolve_starttime;
+		SCIP_CALL( checkLPsolve(prob, lpi, solstatus) );
+	}
+  
+  SCIP_CALL( writeSolution(prob, solstatus, lpi, solvefinal) );
+
+  if (lpi) {
+  	SCIP_CALL( SCIPlpiFree(&lpi) );
+  }
+  
+  delete[] solstatus.colval;
+  
+  BMScheckEmptyMemory();
+	
+  return SCIP_OKAY;
+}
+
+SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionary& dict, SCIP* scip, SCIP_VAR**& vars) {
 	SCIP_CALL( SCIPcreateProb(scip, "gamsmodel", NULL, NULL, NULL, NULL, NULL, NULL) );
 	
-	GamsHandlerSmag gamshandler(prob);
-	GamsDictionary dict(gamshandler);
-	SCIP_Bool read_dict=FALSE;
-	SCIP_CALL( SCIPgetBoolParam(scip, "gams/names", &read_dict) );
-	if (read_dict)
-		dict.readDictionary();
+//	GamsHandlerSmag gamshandler(prob);
+//	GamsDictionary dict(gamshandler);
+	if (!dict.haveNames()) {
+		SCIP_Bool read_dict=FALSE;
+		SCIP_CALL( SCIPgetBoolParam(scip, "gams/names", &read_dict) );
+		if (read_dict)
+			dict.readDictionary();
+	}
 	
 	char buffer[256];
 	
@@ -457,6 +482,8 @@ SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/names", "whether the gams dictionary should be read and col/row names be given to scip", NULL, FALSE, FALSE, NULL, NULL) );
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/solvefinal", "whether the problem should be solved with fixed discrete variables to get dual values", NULL, FALSE, TRUE, NULL, NULL) );
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/mipstart", "whether to try initial point as first primal solution", NULL, FALSE, TRUE, NULL, NULL) );
+	
+	SCIP_CALL( BCHaddParam(scip) );
 	
   if (prob->gms.useopt) {
   	// try to open file; if we let SCIP do it and there is no option file, then it might print to stderr
@@ -850,23 +877,6 @@ void printInfoDialog(SCIP_MESSAGEHDLR* messagehdlr, FILE* file, const char* msg)
 		smagStdOutputPrint(messagehdlr->messagehdlrdata->smag, SMAG_STATUSMASK | SMAG_LISTMASK, msg);
 	else
 		smagStdOutputPrint(messagehdlr->messagehdlrdata->smag, SMAG_LOGMASK, msg);
-}
-
-void checkScipReturn(smagHandle_t prob, SCIP_RETCODE scipret) {
-	if (scipret==SCIP_OKAY)
-		return;
-
-	char buffer[256];
-	snprintf(buffer, 256, "Error %d in call of SCIP function\n", scipret);
-	smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
-	smagStdOutputFlush(prob, SMAG_ALLMASK);
-
-  smagReportSolBrief(prob, 13, 13);
-	smagStdOutputStop(prob, buffer, sizeof(buffer));
-	smagClose(prob);
-	smagCloseLog(prob);
-
-  exit(EXIT_SUCCESS); // well, not really a success, but DICOPT does not like returns <> 0
 }
 
 // SOLVER STATUS CODE  	DESCRIPTION

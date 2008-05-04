@@ -189,7 +189,7 @@ int main (int argc, const char *argv[]) {
 			exit(EXIT_FAILURE);
 		}
 		
-		bch=new GamsBCH(gamshandler, opt, gamsdict);
+		bch=new GamsBCH(gamshandler, gamsdict, opt);
 		bch->setGlobalBounds(gm.ColLb(), gm.ColUb());
 
 		if (opt.isDefined("usercutcall")) {

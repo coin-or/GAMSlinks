@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development 2007
+// Copyright (C) GAMS Development 2007-2008
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -51,8 +51,14 @@ extern "C" {
 #include "bch.h"
 }
 
-GamsBCH::GamsBCH(GamsHandler& gams_, GamsOptions& opt_, GamsDictionary& gamsdict)
-: gams(gams_), opt(opt_), dict(gamsdict.dict)
+GamsBCH::GamsBCH(GamsHandler& gams_, GamsDictionary& gamsdict, GamsOptions& opt)
+: gams(gams_), dict(gamsdict.dict)
+{ init();
+  setupParameters(opt);
+}
+
+GamsBCH::GamsBCH(GamsHandler& gams_, GamsDictionary& gamsdict)
+: gams(gams_), dict(gamsdict.dict)
 { init();
 }
 
@@ -66,8 +72,6 @@ GamsBCH::~GamsBCH() {
 }
 
 void GamsBCH::init() {
-  char buffer[256];
-  
   if (!dict) {
   	gams.print(GamsHandler::AllMask, "GamsBCH: Do not have GAMS dictionary. Initialization failed.\n");
   	return;
@@ -82,67 +86,136 @@ void GamsBCH::init() {
 //  cbinfo.incbcall   = (char *) malloc(1024*sizeof(char));
 //  cbinfo.incbicall  = (char *) malloc(1024*sizeof(char));
 	
-  char gdxprefix[256];
-  if (opt.isDefined("usergdxprefix"))
-  	opt.getString("usergdxprefix", gdxprefix);
-  else *gdxprefix=0;
-  
-  if (opt.isDefined("userjobid"))
-  	opt.getString("userjobid", userjobid);
-  else *userjobid=0;
-  
-  opt.getString("usergdxname", buffer);
-  // remove ".gdx" suffix, if exists
-  int len=strlen(buffer);
-  if (len>4 && strncmp(buffer+(len-4), ".gdx", 4)==0)
-  	buffer[len-4]=0;
-  snprintf(gdxname, 1024, "%s%s%s.gdx", gdxprefix, buffer, userjobid);
-  
-  opt.getString("usergdxnameinc", buffer);
-  len=strlen(buffer);
-  if (len>4 && strncmp(buffer+(len-4), ".gdx", 4)==0)
-  	buffer[len-4]=0;
-  snprintf(gdxnameinc, 1024, "%s%s%s.gdx", gdxprefix, buffer, userjobid);
-  
-  opt.getString("usergdxin", buffer);
-  len=strlen(buffer);
-  if (len>4 && strncmp(buffer+(len-4), ".gdx", 4)==0)
-  	buffer[len-4]=0;
-  snprintf(usergdxin, 1024, "%s%s%s.gdx", gdxprefix, buffer, userjobid);
-  
-  opt.getString("usercutcall", cutcall);
-  len=strlen(cutcall);
-  if (*userjobid)
-  	snprintf(cutcall+len, 1024-len, " --userjobid=%s", userjobid);
-
-  userkeep=opt.getBool("userkeep");
-
-  cutfreq=opt.getInteger("usercutfreq");
-  cutinterval=opt.getInteger("usercutinterval");
-  cutmult=opt.getInteger("usercutmult");
-  cutfirst=opt.getInteger("usercutfirst");
-  cutnewint=opt.getBool("usercutnewint");
-
-  opt.getString("userheurcall", heurcall);
-  len=strlen(heurcall);
-  if (*userjobid)
-  	snprintf(heurcall+len, 1024-len, " --userjobid=%s", userjobid);
-
-  heurfreq=opt.getInteger("userheurfreq");
-  heurinterval=opt.getInteger("userheurinterval");
-  heurmult=opt.getInteger("userheurmult");
-  heurfirst=opt.getInteger("userheurfirst");
-  heurnewint=opt.getInteger("userheurnewint");
-  heurobjfirst=opt.getInteger("userheurobjfirst");
-	
   ncalls=0;
   have_incumbent=false;
   new_incumbent=false;
 	
   bchSlvSetInf(gams.getPInfinity(), gams.getMInfinity());
+  
+  *userjobid=0;
 
   gams.print(GamsHandler::StatusMask, "GamsBCH initialized.\n");
 }
+
+void GamsBCH::set_userjobid(const char* userjobid_) {
+	strncpy(userjobid, userjobid_, sizeof(userjobid));
+}
+
+void GamsBCH::set_usergdxname(char* usergdxname, const char* usergdxprefix /* = NULL */) {
+  // remove ".gdx" suffix, if exists
+  int len=strlen(usergdxname);
+  if (len>4 && strncmp(usergdxname+(len-4), ".gdx", 4)==0)
+  	usergdxname[len-4]=0;
+  if (usergdxprefix)
+  	snprintf(gdxname, sizeof(gdxname), "%s%s%s.gdx", usergdxprefix, usergdxname, userjobid);
+  else
+  	snprintf(gdxname, sizeof(gdxname), "%s%s.gdx", usergdxname, userjobid);
+}
+
+void GamsBCH::set_usergdxnameinc(char* usergdxnameinc, const char* usergdxprefix /* = NULL */) {
+	int len=strlen(usergdxnameinc);
+  if (len>4 && strncmp(usergdxnameinc+(len-4), ".gdx", 4)==0)
+  	usergdxnameinc[len-4]=0;
+  if (usergdxprefix)
+  	snprintf(gdxnameinc, sizeof(gdxnameinc), "%s%s%s.gdx", usergdxprefix, usergdxnameinc, userjobid);
+  else
+  	snprintf(gdxnameinc, sizeof(gdxnameinc), "%s%s.gdx", usergdxnameinc, userjobid);
+}
+
+void GamsBCH::set_usergdxin(char* usergdxin_, const char* usergdxprefix /* = NULL */) {
+	int len=strlen(usergdxin_);
+  if (len>4 && strncmp(usergdxin_+(len-4), ".gdx", 4)==0)
+  	usergdxin_[len-4]=0;
+  if (usergdxprefix)
+  	snprintf(usergdxin, sizeof(usergdxin), "%s%s%s.gdx", usergdxprefix, usergdxin_, userjobid);
+  else
+  	snprintf(usergdxin, sizeof(usergdxin), "%s%s.gdx", usergdxin_, userjobid);
+}
+
+void GamsBCH::set_usercutcall(const char* usercutcall) {
+  if (*userjobid)
+  	snprintf(cutcall, sizeof(cutcall), "%s --userjobid=%s", usercutcall, userjobid);
+  else
+  	strncpy(cutcall, usercutcall, sizeof(cutcall));
+}
+
+
+void GamsBCH::set_userheurcall(const char* userheurcall) {
+  if (*userjobid)
+  	snprintf(heurcall, sizeof(heurcall), "%s --userjobid=%s", userheurcall, userjobid);
+  else
+  	strncpy(heurcall, userheurcall, sizeof(heurcall));
+}
+
+
+void GamsBCH::setupParameters(GamsOptions& opt) {
+  char buffer[256];
+  char gdxprefix[256];
+  if (opt.isDefined("usergdxprefix"))
+  	opt.getString("usergdxprefix", gdxprefix);
+  else *gdxprefix=0;
+  
+  if (opt.isDefined("userjobid")) {
+  	opt.getString("userjobid", buffer);
+  	set_userjobid(buffer);
+  }
+  
+  opt.getString("usergdxname", buffer);
+  set_usergdxname(buffer, gdxprefix);
+  
+  opt.getString("usergdxnameinc", buffer);
+  set_usergdxnameinc(buffer, gdxprefix);
+  
+  opt.getString("usergdxin", buffer);
+  set_usergdxin(buffer, gdxprefix);
+  
+  set_userkeep(opt.getBool("userkeep"));
+
+  opt.getString("usercutcall", buffer);
+  set_usercutcall(buffer);
+
+  set_usercutfreq(opt.getInteger("usercutfreq"));
+  set_usercutinterval(opt.getInteger("usercutinterval"));
+  set_usercutmult(opt.getInteger("usercutmult"));
+  set_usercutfirst(opt.getInteger("usercutfirst"));
+  set_usercutnewint(opt.getBool("usercutnewint"));
+
+  opt.getString("userheurcall", buffer);
+  set_userheurcall(buffer);
+
+  set_userheurfreq(opt.getInteger("userheurfreq"));
+  set_userheurinterval(opt.getInteger("userheurinterval"));
+  set_userheurmult(opt.getInteger("userheurmult"));
+  set_userheurfirst(opt.getInteger("userheurfirst"));
+  set_userheurnewint(opt.getBool("userheurnewint"));
+  set_userheurobjfirst(opt.getInteger("userheurobjfirst"));
+}
+
+void GamsBCH::printParameters() const {
+	char buffer[1050];
+
+	sprintf(buffer, "userkeep: %d\n", (int)userkeep); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "heurfreq: %d\n", heurfreq); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "heurinterval: %d\n", heurinterval); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "heurmult: %d\n", heurmult); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "heurfirst: %d\n", heurfirst); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "heurnewint: %d\n", (int)heurnewint); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "heurobjfirst: %d\n", heurobjfirst); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "heurcall: %s\n", heurcall); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "cutcall: %s\n", cutcall); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "cutfreq: %d\n", cutfreq); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "cutinterval: %d\n", cutinterval); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "cutmult: %d\n", cutmult); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "cutfirst: %d\n", cutfirst); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "cutnewint: %d\n", (int)cutnewint); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "userjobid: %s\n", userjobid); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "gdxname: %s\n", gdxname); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "gdxnameinc: %s\n", gdxnameinc); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "usergdxin: %s\n", usergdxin); gams.print(GamsHandler::LogMask, buffer);
+	
+	gams.flush(GamsHandler::AllMask);
+}
+
 
 GamsBCH::Cut::Cut()
 : lb(0.), ub(0.), nnz(-1), indices(NULL), coeff(NULL)

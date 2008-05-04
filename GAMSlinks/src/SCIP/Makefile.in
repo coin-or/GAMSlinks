@@ -71,7 +71,7 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_GamsScip_OBJECTS = GamsScip.$(OBJEXT)
+am_GamsScip_OBJECTS = GamsScip.$(OBJEXT) ScipBCH.$(OBJEXT)
 GamsScip_OBJECTS = $(am_GamsScip_OBJECTS)
 am__DEPENDENCIES_1 =
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
@@ -363,7 +363,7 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmssc_nt.cmd gmssc_us.run install/gmssc_nt.dat \
 	install/gmssc_un.dat $(am__append_1)
-GamsScip_SOURCES = GamsScip.cpp
+GamsScip_SOURCES = GamsScip.cpp ScipBCH.cpp
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(srcdir)/../GamsIO` \
@@ -467,6 +467,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsScip.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScipBCH.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

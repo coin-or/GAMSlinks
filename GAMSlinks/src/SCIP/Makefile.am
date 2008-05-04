@@ -11,7 +11,7 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmssc_nt.cmd gmssc_us.run install/gmssc_nt.dat install/gmssc_un.dat
 
 bin_PROGRAMS = GamsScip
-GamsScip_SOURCES = GamsScip.cpp
+GamsScip_SOURCES = GamsScip.cpp ScipBCH.cpp
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \

@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development 2007
+// Copyright (C) GAMS Development 2007-2008
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -43,7 +43,6 @@ public:
 	
 private:
 	GamsHandler& gams;
-	GamsOptions& opt;
 
 	struct dictRec* dict;
 	
@@ -70,7 +69,7 @@ private:
   int       heurinterval;
   int       heurmult;
   int       heurfirst;      /* heuristic at first nodes */
-  int       heurnewint;     /* heuristic if new incumbent */
+  bool      heurnewint;     /* heuristic if new incumbent */
   int       heurobjfirst;   /* heurisitc at first nodes if node obj is good */
   char      heurcall[1024];      /* command line minus gams for the heuristic */
 
@@ -93,10 +92,35 @@ private:
 	int       ncalls;
 
 	void init();
+public:
+	GamsBCH(GamsHandler& gams_, GamsDictionary& gamsdict, GamsOptions& opt);
+	GamsBCH(GamsHandler& gams_, GamsDictionary& gamsdict);
 	
-public:	
-	GamsBCH(GamsHandler& gams_, GamsOptions& opt_, GamsDictionary& gamsdict);
+	void setupParameters(GamsOptions& opt);
 
+	void set_userjobid(const char* userjobid); // should be called before other parameter set methods
+	void set_usergdxname(char* usergdxname, const char* usergdxprefix = NULL);
+	void set_usergdxnameinc(char* usergdxnameinc, const char* usergdxprefix = NULL);
+	void set_usergdxin(char* usergdxin_, const char* usergdxprefix = NULL);
+	void set_userkeep(bool userkeep_) { userkeep = userkeep_; }
+
+	void set_usercutcall(const char* usercutcall);
+	void set_usercutfreq(int usercutfreq) { cutfreq=usercutfreq; }
+	void set_usercutinterval(int usercutinterval) { cutinterval=usercutinterval; }
+	void set_usercutmult(int usercutmult) { cutmult=usercutmult; }
+	void set_usercutfirst(int usercutfirst) { cutfirst=usercutfirst; }
+	void set_usercutnewint(bool usercutnewint) { cutnewint=usercutnewint; }
+
+	void set_userheurcall(const char* userheurcall);
+	void set_userheurfreq(int userheurfreq) { heurfreq=userheurfreq; }
+	void set_userheurinterval(int userheurinterval) { heurinterval=userheurinterval; }
+	void set_userheurmult(int userheurmult) { heurmult=userheurmult; }
+	void set_userheurfirst(int userheurfirst) { heurfirst=userheurfirst; }
+	void set_userheurnewint(bool userheurnewint) { heurnewint=userheurnewint; }
+	void set_userheurobjfirst(int userheurobjfirst) { heurobjfirst=userheurobjfirst; }
+	
+	void printParameters() const;
+	
 	~GamsBCH();
 	
 	/** You should call this method after the constructor.

@@ -118,6 +118,8 @@ GAMSlinks/src/Osi/optosi.gms -text
 GAMSlinks/src/SCIP/GamsScip.cpp -text
 GAMSlinks/src/SCIP/Makefile.am -text
 GAMSlinks/src/SCIP/Makefile.in -text
+GAMSlinks/src/SCIP/ScipBCH.cpp -text
+GAMSlinks/src/SCIP/ScipBCH.hpp -text
 GAMSlinks/src/SCIP/gmssc_nt.cmd -text
 GAMSlinks/src/SCIP/gmssc_us.run -text
 GAMSlinks/src/SCIP/install/gmssc_nt.dat -text
