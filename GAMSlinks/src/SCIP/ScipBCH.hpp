@@ -24,7 +24,10 @@ SCIP_RETCODE BCHaddParam(SCIP* scip);
 /** Setup BCH routines for SCIP.
  * Reads parameters, initialize GamsBCH object, and adds cut generator and heuristic callbacks to scip.
  */
-SCIP_RETCODE BCHsetup(GamsBCH*& bch, smagHandle_t prob, GamsHandler& gamshandler, GamsDictionary& gamsdict, SCIP* scip);
+SCIP_RETCODE BCHsetup(SCIP* scip, SCIP_VAR*** vars, smagHandle_t prob, GamsHandler& gamshandler, GamsDictionary& gamsdict, GamsBCH*& bch, void*& bchdata);
 
+/** Cleans up memory allocated by BCH routines.
+ */
+SCIP_RETCODE BCHcleanup(smagHandle_t prob, GamsBCH*& bch, void*& bchdata);
 
 #endif /*SCIPBCH_HPP_*/

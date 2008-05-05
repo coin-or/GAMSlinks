@@ -247,7 +247,10 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	if (!*buffer)
     	SCIP_CALL( SCIPgetStringParam(scip, "gams/userheurcall", (char**)&buffer) );
 
+  	SCIP_VAR** mip_vars=NULL;
+
   	GamsBCH* bch=NULL;
+  	void* bchdata=NULL;
   	gdxHandle_t gdxhandle=NULL;
   	if (*buffer) {
   		char buffer[512];
@@ -256,10 +259,9 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   			smagStdOutputFlush(prob, SMAG_ALLMASK);
   			return SCIP_ERROR;
   		}
-  		BCHsetup(bch, prob, gamshandler, dict, scip);
+  		BCHsetup(scip, &mip_vars, prob, gamshandler, dict, bch, bchdata);
   	}
 
-  	SCIP_VAR** mip_vars=NULL;
   	SCIP_CALL( setupMIP(prob, gamshandler, dict, scip, mip_vars) );
   	
   	SCIP_Bool mipstart;
@@ -286,7 +288,7 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	// we disable the LP solve if we do not have a MIP feasible point or the user wants so
   	solvelp = (!solstatus.colval) || solvefinal;
   	
-  	delete bch;
+  	BCHcleanup(prob, bch, bchdata);
   	if (gdxhandle) {
   		gdxClose(gdxhandle);
   		gdxFree(&gdxhandle);

@@ -260,9 +260,9 @@ bool GamsBCH::doCuts() {
 bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
 	cuts.clear();
 	
-//	printf("node relax. opt.val.: %g\n", node_x[iolib.iobvar]);
+//	printf("node relax. opt.val.: %g\n", node_x[gams.getObjVariable()]);
 //	printf("node relax. solution: ");
-//	for (int i=0; i<iolib.ncols; ++i) printf("%g ", node_x[i]);
+//	for (int i=0; i<gams.getColCountGams(); ++i) printf("%g ", node_x[i]);
 //	printf("\n");
 	if (bchWriteSol(gdxname, dict, gams.getColCountGams(), node_lb, node_x, node_ub, NULL)) {
 		gams.print(GamsHandler::AllMask, "GamsBCH: Could not write node solution to GDX file.\n");
@@ -291,7 +291,7 @@ bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
     return false;
   }
 	
-	int ncuts =- 1; // indicate that we want the number of cuts
+	int ncuts = -1; // indicate that we want the number of cuts
   if (bchGetCutCtrlInfo(usergdxin, &ncuts, NULL, NULL)) {
 		gams.print(GamsHandler::AllMask, "GamsBCH: Could not extract NUMCUTS from GDX file.\n");
 		return false;
@@ -302,7 +302,7 @@ bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
 		return true;
   }
   
-  int nnz;
+  int nnz = 0;
   int* cutNnz = new int[ncuts];
   if (bchGetCutCtrlInfo(usergdxin, &ncuts, &nnz, cutNnz)) {
     gams.print(GamsHandler::AllMask, "GamsBCH: Could not extract ***_C nonzeros from GDX file.\n");

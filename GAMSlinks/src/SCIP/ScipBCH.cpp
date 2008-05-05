@@ -60,15 +60,37 @@ extern "C" {
 #endif
 }
 
-/** Callback routine for cutting plane generation.
+/** Data of separator.
+ * Also used by event handler.
  */
-SCIP_DECL_SEPAEXECLP(sepaExeclpBCH);
-
 struct SCIP_SepaData {
 	GamsBCH* bch;
 	smagHandle_t smag;
+	SCIP_VAR*** vars;
+	
+	/** Scratch space to store node solution.
+	 */
+	double* x;
+	/** Scratch space to store node lower bound.
+	 */
+	double* lb;
+	/** Scratch space to store node upper bound.
+	 */
+	double* ub;
 };
 
+/** Destructor of cutting plane generator.
+ */
+//SCIP_DECL_SEPAFREE(sepaFreeBCH);
+/** Initialization of cutting plane generator.
+ */
+SCIP_DECL_SEPAINIT(sepaInitBCH);
+/** Deinitialization of cutting plane generator.
+ */
+SCIP_DECL_SEPAEXIT(sepaExitBCH);
+/** Callback routine for cutting plane generation to cut off an LP solution.
+ */
+SCIP_DECL_SEPAEXECLP(sepaExeclpBCH);
 
 /** Initialization of event handler.
  */
@@ -80,18 +102,14 @@ SCIP_DECL_EVENTEXIT(eventExitNewInc);
  */
 SCIP_DECL_EVENTEXEC(eventExecNewInc);
 
-struct SCIP_EventhdlrData {
-	GamsBCH* bch;
-	smagHandle_t smag;
-};
-
 SCIP_RETCODE BCHaddParam(SCIP* scip) {
 	SCIP_CALL( SCIPaddStringParam(scip, "gams/usercutcall", "The GAMS command line to call the cut generator", NULL, FALSE, "", NULL, NULL) );
 	SCIP_CALL( SCIPaddIntParam(scip, "gams/usercutfirst", "Calls the cut generator for the first n nodes", NULL, FALSE, 10, 0, INT_MAX, NULL, NULL) );
 	SCIP_CALL( SCIPaddIntParam(scip, "gams/usercutfreq", "Determines the frequency of the cut generator model calls", NULL, FALSE, 10, 0, INT_MAX, NULL, NULL) );
 	SCIP_CALL( SCIPaddIntParam(scip, "gams/usercutinterval", "Determines the interval when to apply the multiplier for the frequency of the cut generator model calls", NULL, FALSE, 100, 0, INT_MAX, NULL, NULL) );
 	SCIP_CALL( SCIPaddIntParam(scip, "gams/usercutmult", "Determines the multiplier for the frequency of the cut generator model calls", NULL, FALSE, 2, 0, INT_MAX, NULL, NULL) );
-	SCIP_CALL( SCIPaddBoolParam(scip, "gams/usercutnewint", "Calls the cut generator if the solver found a new integer feasible solution", NULL, FALSE, TRUE, NULL, NULL) );
+	SCIP_CALL( SCIPaddBoolParam(scip, "gams/usercutnewint", "Calls the cut generator if the solver found a new integer feasible solution", NULL, FALSE, FALSE, NULL, NULL) );
+	SCIP_CALL( SCIPaddRealParam(scip, "gams/usercutpriority", "The priority of the cut generator in SCIP", NULL, FALSE, 0., -SCIPinfinity(scip), SCIPinfinity(scip), NULL, NULL) );
 	SCIP_CALL( SCIPaddStringParam(scip, "gams/usergdxin", "The name of the GDX file read back into SCIP", NULL, FALSE, "bchin.gdx", NULL, NULL) );
 	SCIP_CALL( SCIPaddStringParam(scip, "gams/usergdxname", "The name of the GDX file exported from the solver with the solution at the node", NULL, FALSE, "bchout.gdx", NULL, NULL) );
 	SCIP_CALL( SCIPaddStringParam(scip, "gams/usergdxnameinc", "The name of the GDX file exported from the solver with the incumbent solution", NULL, FALSE, "bchout_i.gdx", NULL, NULL) );
@@ -101,7 +119,7 @@ SCIP_RETCODE BCHaddParam(SCIP* scip) {
 	SCIP_CALL( SCIPaddIntParam(scip, "gams/userheurfreq", "Determines the frequency of the heuristic model calls", NULL, FALSE, 10, 0, INT_MAX, NULL, NULL) );
 	SCIP_CALL( SCIPaddIntParam(scip, "gams/userheurinterval", "Determines the interval when to apply the multiplier for the frequency of the heuristic model calls", NULL, FALSE, 100, 0, INT_MAX, NULL, NULL) );
 	SCIP_CALL( SCIPaddIntParam(scip, "gams/userheurmult", "Determines the multiplier for the frequency of the heuristic model calls", NULL, FALSE, 2, 0, INT_MAX, NULL, NULL) );
-	SCIP_CALL( SCIPaddBoolParam(scip, "gams/userheurnewint", "Calls the heuristic if the solver found a new integer feasible solution", NULL, FALSE, TRUE, NULL, NULL) );
+	SCIP_CALL( SCIPaddBoolParam(scip, "gams/userheurnewint", "Calls the heuristic if the solver found a new integer feasible solution", NULL, FALSE, FALSE, NULL, NULL) );
 	SCIP_CALL( SCIPaddIntParam(scip, "gams/userheurobjfirst", "Calls the heuristic if the LP value of the node is closer to the best bound than the current incumbent", NULL, FALSE, 0, 0, INT_MAX, NULL, NULL) );
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/userkeep", "Calls gamskeep instead of gams", NULL, FALSE, FALSE, NULL, NULL) );
 	SCIP_CALL( SCIPaddStringParam(scip, "gams/userjobid", "Postfixes gdxname, gdxnameinc, and gdxin", NULL, FALSE, "", NULL, NULL) );	
@@ -112,7 +130,9 @@ SCIP_RETCODE BCHaddParam(SCIP* scip) {
 	return SCIP_OKAY;
 }
 
-SCIP_RETCODE BCHsetup(GamsBCH*& bch, smagHandle_t prob, GamsHandler& gamshandler, GamsDictionary& gamsdict, SCIP* scip) {
+SCIP_RETCODE BCHsetup(SCIP* scip, SCIP_VAR*** vars, smagHandle_t prob, GamsHandler& gamshandler, GamsDictionary& gamsdict, GamsBCH*& bch, void*& bchdata) {
+	bch = NULL;
+	bchdata = NULL;
 	if (!gamsdict.haveNames() && !gamsdict.readDictionary()) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Need dictionary to enable BCH.");
 		smagStdOutputFlush(prob, SMAG_ALLMASK);
@@ -121,30 +141,31 @@ SCIP_RETCODE BCHsetup(GamsBCH*& bch, smagHandle_t prob, GamsHandler& gamshandler
 
 	bch=new GamsBCH(gamshandler, gamsdict);
 
-	char* buffer = new char[1024];
+	char* s = NULL;
 	SCIP_Bool b;
 	int i;
 	
 	bool have_cutcall, have_heurcall;
+	double cutpriority;
 	
-	char* gdxprefix = new char[1024];
-	SCIP_CALL( SCIPgetStringParam(scip, "gams/usergdxprefix", &gdxprefix) ); // TODO: SCIP seem to overwrite *gdxprefix with an own pointer
+	char* gdxprefix = NULL; //new char[1024];
+	SCIP_CALL( SCIPgetStringParam(scip, "gams/usergdxprefix", &gdxprefix) );
 
-	SCIP_CALL( SCIPgetStringParam(scip, "gams/userjobid", &buffer) );
-	bch->set_userjobid(buffer);
+	SCIP_CALL( SCIPgetStringParam(scip, "gams/userjobid", &s) );
+	bch->set_userjobid(s);
 	
-	SCIP_CALL( SCIPgetStringParam(scip, "gams/usergdxname", &buffer) );
-	bch->set_usergdxname(buffer, gdxprefix);
-	SCIP_CALL( SCIPgetStringParam(scip, "gams/usergdxnameinc", &buffer) );
-	bch->set_usergdxnameinc(buffer, gdxprefix);
-	SCIP_CALL( SCIPgetStringParam(scip, "gams/usergdxin", &buffer) );
-	bch->set_usergdxin(buffer, gdxprefix);
+	SCIP_CALL( SCIPgetStringParam(scip, "gams/usergdxname", &s) );
+	bch->set_usergdxname(s, gdxprefix);
+	SCIP_CALL( SCIPgetStringParam(scip, "gams/usergdxnameinc", &s) );
+	bch->set_usergdxnameinc(s, gdxprefix);
+	SCIP_CALL( SCIPgetStringParam(scip, "gams/usergdxin", &s) );
+	bch->set_usergdxin(s, gdxprefix);
 	SCIP_CALL( SCIPgetBoolParam(scip, "gams/userkeep", &b) );
 	bch->set_userkeep(b);
 
-	SCIP_CALL( SCIPgetStringParam(scip, "gams/usercutcall", &buffer) );
-	bch->set_usercutcall(buffer);
-	have_cutcall=*buffer;
+	SCIP_CALL( SCIPgetStringParam(scip, "gams/usercutcall", &s) );
+	bch->set_usercutcall(s);
+	have_cutcall=*s;
 	SCIP_CALL( SCIPgetIntParam(scip, "gams/usercutfreq", &i) );
 	bch->set_usercutfreq(i);
 	SCIP_CALL( SCIPgetIntParam(scip, "gams/usercutinterval", &i) );
@@ -155,10 +176,11 @@ SCIP_RETCODE BCHsetup(GamsBCH*& bch, smagHandle_t prob, GamsHandler& gamshandler
 	bch->set_usercutfirst(i);
 	SCIP_CALL( SCIPgetBoolParam(scip, "gams/usercutnewint", &b) );
 	bch->set_usercutnewint(b);
+	SCIP_CALL( SCIPgetRealParam(scip, "gams/usercutpriority", &cutpriority) );
 
-	SCIP_CALL( SCIPgetStringParam(scip, "gams/userheurcall", &buffer) );
-	bch->set_userheurcall(buffer);
-	have_heurcall=*buffer;
+	SCIP_CALL( SCIPgetStringParam(scip, "gams/userheurcall", &s) );
+	bch->set_userheurcall(s);
+	have_heurcall=*s;
 	SCIP_CALL( SCIPgetIntParam(scip, "gams/userheurfreq", &i) );
 	bch->set_userheurfreq(i);
 	SCIP_CALL( SCIPgetIntParam(scip, "gams/userheurinterval", &i) );
@@ -172,42 +194,31 @@ SCIP_RETCODE BCHsetup(GamsBCH*& bch, smagHandle_t prob, GamsHandler& gamshandler
 	SCIP_CALL( SCIPgetIntParam(scip, "gams/userheurobjfirst", &i) );
 	bch->set_userheurobjfirst(i);
 	
-	delete[] gdxprefix;
-	delete[] buffer;
-	
-	bch->printParameters();
+//	bch->printParameters();
 	
 	bch->setGlobalBounds(prob->colLB, prob->colUB);
 
-#define sepaFreeXxx NULL
-#define sepaInitXxx NULL
-#define sepaExitXxx NULL
-#define sepaInitsolXxx NULL
-#define sepaExitsolXxx NULL
-#define sepaExecsolXxx NULL
+	SCIP_SEPADATA* sepadata;
+  SCIP_CALL( SCIPallocMemory(scip, &sepadata) );
+  sepadata->bch=bch;
+  sepadata->smag=prob;
+  sepadata->vars=vars;
+  sepadata->x=NULL;
+  sepadata->lb=NULL;
+  sepadata->ub=NULL;
+  
+  bchdata = sepadata;
 	
 	if (have_cutcall) {
-	  SCIP_SEPADATA* sepadata;
-	  SCIP_CALL( SCIPallocMemory(scip, &sepadata) );
-	  sepadata->bch=bch;
-	  sepadata->smag=prob;
-		SCIP_CALL( SCIPincludeSepa(scip, "GamsBCH", "Gams BCH cut generator", 0 /*priority*/, 1 /* frequency */, 1.0 /* maxdistance to dual bound */, FALSE /* delayed */,
-			         sepaFreeXxx, sepaInitXxx, sepaExitXxx, 
-			         sepaInitsolXxx, sepaExitsolXxx,
-			         sepaExeclpBCH, sepaExecsolXxx,
-			         sepadata) );
+	  // if the user wants the cutgenerator called  only (?) when new primal points are found, then we use only callback routines to initialize/deinitialize the sepadata
+	  // the call of the cutgenerator is then done by the new-incumbent event handler
+  	SCIP_CALL( SCIPincludeSepa(scip, "GamsBCH", "Gams BCH cut generator", cutpriority /*priority*/, 1 /* frequency */, 1.0 /* maxdistance to dual bound */, FALSE /* delayed */,
+ 			NULL, sepaInitBCH, sepaExitBCH, NULL, NULL, bch->get_usercutnewint() ? NULL : sepaExeclpBCH, NULL, sepadata) );
 	}
 
-	SCIP_EVENTHDLRDATA* eventhdlrdata = new SCIP_EVENTHDLRDATA;
-	eventhdlrdata->bch = bch;
-	eventhdlrdata->smag = prob;
-	
-	SCIP_CALL( SCIPincludeEventhdlr(scip, "GamsBCH", "Gams BCH incumbent updater", NULL, eventInitNewInc, eventExitNewInc, NULL, NULL, NULL, eventExecNewInc, eventhdlrdata) );
+	SCIP_CALL( SCIPincludeEventhdlr(scip, "GamsBCH", "Gams BCH incumbent updater", NULL, eventInitNewInc, eventExitNewInc, NULL, NULL, NULL, eventExecNewInc, (SCIP_EVENTHDLRDATA*)sepadata) );
+
 /*
-	if (opt.isDefined("usercutcall")) {
-		GamsCutGenerator gamscutgen(*bch, preprocessedmodel);
-		model.addCutGenerator(&gamscutgen, 1, "GamsBCH", true, opt.getBool("usercutnewint"));
-	}
 	if (opt.isDefined("userheurcall")) {
 		GamsHeuristic gamsheu(*bch);
 		model.addHeuristic(&gamsheu, "GamsBCH");
@@ -216,25 +227,22 @@ SCIP_RETCODE BCHsetup(GamsBCH*& bch, smagHandle_t prob, GamsHandler& gamshandler
 	return SCIP_OKAY;
 }
 
-SCIP_DECL_SEPAEXECLP(sepaExeclpBCH) {
-  SCIP_SEPADATA* sepadata = SCIPsepaGetData(sepa);
-  assert(sepadata != NULL);
+SCIP_RETCODE BCHcleanup(smagHandle_t prob, GamsBCH*& bch, void*& bchdata) {
+  if (bchdata) SCIPfreeMemory(scip, &bchdata);
+	delete bch;
+}
 
+SCIP_RETCODE BCHgenerateCuts(SCIP* scip, SCIP_SEPADATA* sepadata, SCIP_RESULT* result) {
   *result = SCIP_DIDNOTRUN;
 
   if (!sepadata->bch->doCuts())
 		return SCIP_OKAY;
   
   int n = smagColCount(sepadata->smag);
-  double* x  = new double[n];
-  double* lb = new double[n];
-  double* ub = new double[n];
-	double objval; 
-	
-	SCIP_VAR** origvars = NULL;
-	int norigvars;
-	SCIP_CALL( SCIPgetOrigVarsData(scip, &origvars, &norigvars, NULL, NULL, NULL, NULL) );
-	assert(norigvars == n);
+  double*  x = sepadata->x;
+  double* lb = sepadata->lb;
+  double* ub = sepadata->ub;
+	SCIP_VAR** origvars = *sepadata->vars;
 
 //	SCIP_VAR** transvars = new SCIP_VAR*[n];
 //	SCIPgetTransformedVars(scip, norigvars, origvars, transvars);
@@ -250,24 +258,15 @@ SCIP_DECL_SEPAEXECLP(sepaExeclpBCH) {
 		SCIP_CALL( SCIPsetSolVal(scip, sol, transvars[i], SCIPvarGetLPSol(transvars[i])) );
 //		printf("%g ", SCIPvarGetLPSol(transvars[i]));
 	}
-	
-//	SCIP_CALL( SCIPcreateLPSol(scip, &sol, NULL) );
 	SCIP_CALL( SCIPsolRetransform (sol, scip->set, scip->stat, scip->origprob) );
 
-	for (int i=0; i<norigvars; ++i) {
-//		printf("value variable %d is %g\n", i, SCIPgetSolVal(scip, sol, origvars[i]));
+	for (int i=0; i<n; ++i)
 		x[i] = SCIPgetSolVal(scip, sol, origvars[i]);
-//		if (SCIPvarGetLPSol(transvars[i]))
-//			printf("%d: %g -> %g\n", i, SCIPvarGetLPSol(transvars[i]), x[i]);
-	}
-//	objval = sol->obj;
-//	double objoffset = sepadata->smag->gms.grhs[sepadata->smag->gms.slplro-1] * sepadata->smag->gObjFactor;
-//	objval -= objoffset;
-	
+	double objval;
 	smagEvalObjFunc(sepadata->smag, x, &objval);
 
 	// transform local node bounds back into original space
-	for (int i=0; i<norigvars; ++i) {
+	for (int i=0; i<n; ++i) {
 		SCIP_VAR* var = origvars[i];
 		switch (SCIPvarGetStatus(var)) {
 			case SCIP_VARSTATUS_ORIGINAL: // variable belongs to original problem
@@ -324,7 +323,7 @@ SCIP_DECL_SEPAEXECLP(sepaExeclpBCH) {
 				double offset = SCIPvarGetNegationConstant(var);
 				SCIP_Var* tvar = SCIPvarGetNegationVar(var);
 				double tlb = SCIPvarGetLbLocal(tvar);
-				double tub = SCIPvarGetLbLocal(tvar);
+				double tub = SCIPvarGetUbLocal(tvar);
 				if (SCIPisInfinity(scip, -tlb)) // lower bound in transformed problem is -infty -> upper bound is +infty
 					ub[i] = SCIPinfinity(scip);
 				else
@@ -339,10 +338,12 @@ SCIP_DECL_SEPAEXECLP(sepaExeclpBCH) {
 				return SCIP_ERROR;
 			}
 		}
+		assert(lb[i]>=sepadata->smag->colLB[i]);
+		assert(ub[i]<=sepadata->smag->colUB[i]);
 	}
 	
 //	for (int i=0; i<norigvars; ++i)
-//		printf("node values: \tlb: %g \tval: %g \tub: %g\n", lb[i], x[i], ub[i]);
+//		printf("node values: \tlb: %g \tval: %g \tub: %g\t\torig lb: %g \torig ub: %g\n", lb[i], x[i], ub[i], sepadata->smag->colLB[i], sepadata->smag->colUB[i]);
 	
 	sepadata->bch->setNodeSolution(x, objval, lb, ub);
 
@@ -350,7 +351,6 @@ SCIP_DECL_SEPAEXECLP(sepaExeclpBCH) {
 	if (!sepadata->bch->generateCuts(cuts)) {
 		smagStdOutputPrint(sepadata->smag, SMAG_ALLMASK, "GamsBCH: Generation of cuts failed!\n");
 		*result = SCIP_DIDNOTFIND;
-		// TODO: memory leak x, lb, ub
 		return SCIP_OKAY;
 	}
 	
@@ -417,50 +417,92 @@ SCIP_DECL_SEPAEXECLP(sepaExeclpBCH) {
 	
 	if (cuts.size())
 		*result = SCIP_SEPARATED;
+
+	return SCIP_OKAY;
+}
+
+SCIP_DECL_SEPAINIT(sepaInitBCH) {
+//	printf("SEPAINIT\n");
+  SCIP_SEPADATA* sepadata = SCIPsepaGetData(sepa);
+  assert(sepadata != NULL);
+  assert(sepadata->bch != NULL);
+  assert(sepadata->smag != NULL);
+  assert(sepadata->vars != NULL);
+  assert(sepadata->lb == NULL);
+  assert(sepadata->ub == NULL);
+
+  int n = smagColCount(sepadata->smag);
+  if (!sepadata->x) sepadata->x  = new double[n];
+  sepadata->lb = new double[n];
+  sepadata->ub = new double[n];
+
+  return SCIP_OKAY;
+}
+
+SCIP_DECL_SEPAEXIT(sepaExitBCH) {
+//	printf("SEPAEXIT\n");
+  SCIP_SEPADATA* sepadata = SCIPsepaGetData(sepa);
+  assert(sepadata->lb != NULL);
+  assert(sepadata->ub != NULL);
 	
-	delete[] x;
-	delete[] lb;
-	delete[] ub;
-	
-//	char buffer[128];
-//	sprintf(buffer, "GamsBCH: Generated %d cuts!\n", (int)cuts.size());
-//	smagStdOutputPrint(sepadata->smag, SMAG_LOGMASK, buffer);
-	
-   return SCIP_OKAY;
+  delete[] sepadata->x;  sepadata->x  = NULL;
+  delete[] sepadata->lb; sepadata->lb = NULL;
+  delete[] sepadata->ub; sepadata->ub = NULL;
+
+  return SCIP_OKAY;
+}
+
+SCIP_DECL_SEPAEXECLP(sepaExeclpBCH) {
+//	printf("sepaExeclpBCH\n");
+  return BCHgenerateCuts(scip, SCIPsepaGetData(sepa), result);
 }
 
 SCIP_DECL_EVENTINIT(eventInitNewInc) {
+	SCIP_SEPADATA* data = (SCIP_SEPADATA*)SCIPeventhdlrGetData(eventhdlr);
+  assert(sepadata != NULL);
+  assert(sepadata->bch != NULL);
+  assert(sepadata->smag != NULL);
+  assert(sepadata->vars != NULL);
+  
+  if (!data->x) data->x = new double[smagColCount(data->smag)];
+
 	SCIP_CALL( SCIPcatchEvent(scip, SCIP_EVENTTYPE_BESTSOLFOUND, eventhdlr, NULL, NULL) );
+
 	return SCIP_OKAY;
 }
 
 SCIP_DECL_EVENTEXIT(eventExitNewInc) {
+	SCIP_SEPADATA* data = (SCIP_SEPADATA*)SCIPeventhdlrGetData(eventhdlr);
+
+	delete[] data->x; data->x = NULL;
+	
 	SCIP_CALL( SCIPdropEvent(scip, SCIP_EVENTTYPE_BESTSOLFOUND, eventhdlr, NULL, -1) );
+
 	return SCIP_OKAY;
 }
 
 SCIP_DECL_EVENTEXEC(eventExecNewInc) {
-	SCIP_EVENTHDLRDATA* data = SCIPeventhdlrGetData(eventhdlr);
+	SCIP_SEPADATA* data = (SCIP_SEPADATA*)SCIPeventhdlrGetData(eventhdlr);
 	assert(data);
+	assert(data->x);
 	
 	int n = smagColCount(data->smag);
-	
-	SCIP_VAR** origvars = NULL;
-	int norigvars;
-	SCIP_CALL( SCIPgetOrigVarsData(scip, &origvars, &norigvars, NULL, NULL, NULL, NULL) );
-	assert(norigvars == n);
+	SCIP_VAR** origvars = *data->vars;
 
 	SCIP_SOL* sol = SCIPeventGetSol(event);
 	assert(sol);
 	
-	double* x = new double[n];
 	for (int i=0; i<n; ++i)
-		x[i] = SCIPsolGetVal(sol, scip->set, scip->stat, origvars[i]);
+		data->x[i] = SCIPsolGetVal(sol, scip->set, scip->stat, origvars[i]);
+	double objval;
+	smagEvalObjFunc(data->smag, data->x, &objval);
 	
-	data->bch->setIncumbentSolution(x, sol->obj);
-//	printf("updated to sol with val %g\n", sol->obj);
-	
-	delete[] x;
+	data->bch->setIncumbentSolution(data->x, objval);
+
+	if (data->bch->get_usercutnewint() && *data->bch->get_usercutcall()) {
+		SCIP_RESULT result;
+		BCHgenerateCuts(scip, data, &result);
+	}
 	
 	return SCIP_OKAY;
 }

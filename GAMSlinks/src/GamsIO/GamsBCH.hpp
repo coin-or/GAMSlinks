@@ -118,7 +118,10 @@ public:
 	void set_userheurfirst(int userheurfirst) { heurfirst=userheurfirst; }
 	void set_userheurnewint(bool userheurnewint) { heurnewint=userheurnewint; }
 	void set_userheurobjfirst(int userheurobjfirst) { heurobjfirst=userheurobjfirst; }
-	
+
+	const char* get_usercutcall() { return cutcall; }
+	bool get_usercutnewint() const { return cutnewint; }
+
 	void printParameters() const;
 	
 	~GamsBCH();
