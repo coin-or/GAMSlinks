@@ -244,9 +244,9 @@ void GamsBCH::setIncumbentSolution(const double* x_, double objval_) {
 		new_incumbent=true;
 		incumbent_value=objval_;
 
-		char buffer[255];
-		snprintf(buffer, 255, "GamsBCH: updated incumbent solution to objvalue %g\n", objval_);
-		gams.print(GamsHandler::LogMask, buffer);
+//		char buffer[255];
+//		snprintf(buffer, 255, "GamsBCH: updated incumbent solution to objvalue %g\n", objval_);
+//		gams.print(GamsHandler::LogMask, buffer);
 	}
 }
 
@@ -259,58 +259,61 @@ bool GamsBCH::doCuts() {
 
 bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
 	cuts.clear();
+
+	char buffer[1024];
+	sprintf(buffer, "GamsBCH call %d: ", ncalls);
+	gams.print(GamsHandler::LogMask, buffer);
 	
 //	printf("node relax. opt.val.: %g\n", node_x[gams.getObjVariable()]);
 //	printf("node relax. solution: ");
 //	for (int i=0; i<gams.getColCountGams(); ++i) printf("%g ", node_x[i]);
 //	printf("\n");
 	if (bchWriteSol(gdxname, dict, gams.getColCountGams(), node_lb, node_x, node_ub, NULL)) {
-		gams.print(GamsHandler::AllMask, "GamsBCH: Could not write node solution to GDX file.\n");
+		gams.print(GamsHandler::AllMask, "Could not write node solution to GDX file.\n");
 		return false;
 	}
 	
 	if (new_incumbent) {
     if (bchWriteSol(gdxnameinc, dict, gams.getColCountGams(), global_lb, incumbent, global_ub, NULL)) {
-      gams.print(GamsHandler::AllMask, "GamsBCH: Could not write incumbent solution to GDX file.\n");
+      gams.print(GamsHandler::AllMask, "Could not write incumbent solution to GDX file.\n");
       return false;
     }
     new_incumbent=false;
 	}
 
 //	gm.PrintOut(GamsModel::LogMask, "GamsBCH: Spawn GAMS cutgenerator.");
-	char command[1024];
-	snprintf(command, 1024, "%s --ncalls %d", cutcall, ncalls++);
-	int rcode = bchRunGAMS(command, usergdxin, userkeep, userjobid);
+	snprintf(buffer, 1024, "%s --ncalls %d", cutcall, ncalls++);
+	int rcode = bchRunGAMS(buffer, usergdxin, userkeep, userjobid);
 	
 	if (rcode > 0) {
-		gams.print(GamsHandler::AllMask, "GamsBCH: Could not spawn GAMS cutgenerator.\n");
+		gams.print(GamsHandler::AllMask, "Could not spawn GAMS cutgenerator.\n");
 		return false;
-	} else if (rcode < 0) {
-//		gm.PrintOut(GamsModel::AllMask, "GamsBCH: GAMS cutgenerator returned with negative return code.");
-		// what is the error in this case?
+	} else if (rcode < 0) { // not necessarily a failure; just an 'abort' in the cutgenerator model
+		sprintf(buffer, "Cut generator failed with return code %d.\n", rcode);
+		gams.print(GamsHandler::LogMask, buffer);
     return false;
   }
 	
 	int ncuts = -1; // indicate that we want the number of cuts
   if (bchGetCutCtrlInfo(usergdxin, &ncuts, NULL, NULL)) {
-		gams.print(GamsHandler::AllMask, "GamsBCH: Could not extract NUMCUTS from GDX file.\n");
+		gams.print(GamsHandler::AllMask, "Could not extract NUMCUTS from GDX file.\n");
 		return false;
   }
   
   if (ncuts==0) {
-		gams.print(GamsHandler::LogMask, "GamsBCH: No cuts found.\n");
+		gams.print(GamsHandler::LogMask, "No cuts found.\n");
 		return true;
   }
   
   int nnz = 0;
   int* cutNnz = new int[ncuts];
   if (bchGetCutCtrlInfo(usergdxin, &ncuts, &nnz, cutNnz)) {
-    gams.print(GamsHandler::AllMask, "GamsBCH: Could not extract ***_C nonzeros from GDX file.\n");
+    gams.print(GamsHandler::AllMask, "Could not extract ***_C nonzeros from GDX file.\n");
     delete[] cutNnz;
     return false;
   }
-  sprintf(command, "GamsBCH call %d: Got %d cuts with %d nonzeros.\n", ncalls, ncuts, nnz);
-	gams.print(GamsHandler::LogMask, command);
+  sprintf(buffer, "Got %d %s.\n", ncuts, ncuts==1 ? "cut" : "cuts");
+	gams.print(GamsHandler::LogMask, buffer);
 
   int* cutsense  = new int[ncuts];
   int* cutbeg    = new int[ncuts+1];
@@ -394,35 +397,39 @@ bool GamsBCH::doHeuristic(double bestbnd, double curobj) {
 }
 
 bool GamsBCH::runHeuristic(double* x, double& objvalue) {
+	char buffer[1024];
+  sprintf(buffer, "GamsBCH call %d: ", ncalls);
+	gams.print(GamsHandler::LogMask, buffer);
+
 	if (bchWriteSol(gdxname, dict, gams.getColCountGams(), node_lb, node_x, node_ub, NULL)) {
-		gams.print(GamsHandler::AllMask, "GamsBCH: Could not write node solution to GDX file.\n");
+		gams.print(GamsHandler::AllMask, "Could not write node solution to GDX file.\n");
 		return false;
 	}
 	
 	if (new_incumbent) {
     if (bchWriteSol(gdxnameinc, dict, gams.getColCountGams(), global_lb, incumbent, global_ub, NULL)) {
-      gams.print(GamsHandler::AllMask, "GamsBCH: Could not write incumbent solution to GDX file.\n");
+      gams.print(GamsHandler::AllMask, "Could not write incumbent solution to GDX file.\n");
       return false;
     }
     new_incumbent=false;
 	}
 
-	char command[1024];
-	snprintf(command, 1024, "%s --ncalls %d", heurcall, ncalls++);
-	int rcode = bchRunGAMS(command, usergdxin, userkeep, userjobid);
+	snprintf(buffer, 1024, "%s --ncalls %d", heurcall, ncalls++);
+	int rcode = bchRunGAMS(buffer, usergdxin, userkeep, userjobid);
 	
 	if (rcode > 0) {
-		gams.print(GamsHandler::AllMask, "GamsBCH: Could not spawn GAMS cutgenerator.\n");
+		gams.print(GamsHandler::AllMask, "Could not spawn GAMS cutgenerator.\n");
 		return false;
-	} else if (rcode < 0) {
-		// what is the error in this case?
+	} else if (rcode < 0) { // not necessarily a failure; just an 'abort' in the heuristic model
+		sprintf(buffer, "Heuristic failed with return code %d.\n", rcode);
+		gams.print(GamsHandler::LogMask, buffer);
     return false;
   }
 	
 	// initialize storage with global lower bound
 	double* newx=	CoinCopyOfArray(global_lb, gams.getColCountGams());
 	if (bchReadSolGDX(usergdxin, dict, gams.getColCountGams(), newx)) {
-		gams.print(GamsHandler::AllMask, "GamsBCH: Could not read solution GDX file.");
+		gams.print(GamsHandler::AllMask, "Could not read solution GDX file.");
 		delete[] newx;
 		return false;
 	}
@@ -431,8 +438,8 @@ bool GamsBCH::runHeuristic(double* x, double& objvalue) {
 		gams.translateFromGamsSpaceX(newx, x);
 		objvalue=newx[gams.getObjVariable()];
 
-	  sprintf(command, "GamsBCH call %d: Got new incumbent with objvalue %g.\n", ncalls, objvalue);
-		gams.print(GamsHandler::AllMask, command);
+	  sprintf(buffer, "Got new incumbent solution with objective value %g.\n", objvalue);
+		gams.print(GamsHandler::AllMask, buffer);
 
 		delete[] newx;
 		return true;

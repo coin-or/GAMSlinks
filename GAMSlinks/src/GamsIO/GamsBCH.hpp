@@ -122,6 +122,9 @@ public:
 	const char* get_usercutcall() { return cutcall; }
 	bool get_usercutnewint() const { return cutnewint; }
 
+	const char* get_userheurcall() { return heurcall; }
+	bool get_userheurnewint() const { return heurnewint; }
+
 	void printParameters() const;
 	
 	~GamsBCH();

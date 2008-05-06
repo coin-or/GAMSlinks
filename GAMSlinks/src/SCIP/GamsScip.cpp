@@ -259,7 +259,7 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   			smagStdOutputFlush(prob, SMAG_ALLMASK);
   			return SCIP_ERROR;
   		}
-  		BCHsetup(scip, &mip_vars, prob, gamshandler, dict, bch, bchdata);
+  		SCIP_CALL( BCHsetup(scip, &mip_vars, prob, gamshandler, dict, bch, bchdata) );
   	}
 
   	SCIP_CALL( setupMIP(prob, gamshandler, dict, scip, mip_vars) );
@@ -288,7 +288,7 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	// we disable the LP solve if we do not have a MIP feasible point or the user wants so
   	solvelp = (!solstatus.colval) || solvefinal;
   	
-  	BCHcleanup(prob, bch, bchdata);
+  	SCIP_CALL( BCHcleanup(prob, bch, bchdata) );
   	if (gdxhandle) {
   		gdxClose(gdxhandle);
   		gdxFree(&gdxhandle);
@@ -363,6 +363,11 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 		for (int i=0; i<smagColCount(prob); ++i)
 			if (prob->colPriority[i]<minprior) minprior=prob->colPriority[i];
 			else if (prob->colPriority[i]>maxprior) maxprior=prob->colPriority[i];
+	}
+
+	if (prob->gms.grhs[prob->gms.slplro-1]) {
+		sprintf(buffer, "Note: Constant %d in objective function is ignored during SCIP run.\n", prob->gms.grhs[prob->gms.slplro-1] * prob->gObjFactor);
+		smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
 	}
 
 	smagObjGradRec_t* og = prob->objGrad;
