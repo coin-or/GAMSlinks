@@ -266,9 +266,8 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	
   	SCIP_Bool mipstart;
   	SCIP_CALL( SCIPgetBoolParam(scip, "gams/mipstart", &mipstart) );
-  	if (mipstart) {
+  	if (mipstart)
   		SCIP_CALL( setupMIPStart(prob, scip, mip_vars) );
-  	}
   	
   	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nStarting MIP solve...\n");
   	smagStdOutputFlush(prob, SMAG_LOGMASK);
@@ -527,15 +526,13 @@ SCIP_RETCODE setupMIPStart(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 	SCIP_CALL( SCIPsetSolVals(scip, sol, smagColCount(prob), vars, prob->colLev) );
 	
 	SCIP_Bool stored;
-	SCIP_CALL( SCIPtrySol(scip, sol, TRUE, TRUE, TRUE, &stored) );
+	SCIP_CALL( SCIPtrySolFree(scip, &sol, TRUE, TRUE, TRUE, &stored) );
 	
 	if (stored)
-		smagStdOutputPrint(prob, SMAG_LOGMASK, "Feasible initial solution used to setup primal bound.\n");
+		smagStdOutputPrint(prob, SMAG_LOGMASK, "Feasible initial solution used to initialize primal bound.\n");
 /*	else
 		smagStdOutputPrint(prob, SMAG_LOGMASK, "Initial solution not feasible.");
 */		
-	
-	SCIP_CALL( SCIPclearSol(scip, sol) );
 	
 	return SCIP_OKAY;
 }

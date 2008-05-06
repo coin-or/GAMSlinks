@@ -444,6 +444,9 @@ bool GamsBCH::runHeuristic(double* x, double& objvalue) {
 		delete[] newx;
 		return true;
 	} else {
+	  sprintf(buffer, "Got nonimproving solution with objective value %g.\n", newx[gams.getObjVariable()]);
+		gams.print(GamsHandler::AllMask, buffer);
+
 		delete[] newx;
 		return false;
 	}

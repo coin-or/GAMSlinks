@@ -542,7 +542,7 @@ SCIP_DECL_EVENTEXEC(eventExecNewInc) {
 		SCIP_RESULT result;
 		SCIP_CALL( BCHgenerateCuts(scip, data, &result) );
 	}
-	if (data->bch->get_userheurnewint() && *data->bch->get_userheurcall()) {
+	if (data->bch->get_userheurnewint() && *data->bch->get_userheurcall() && SCIPsolGetHeur(sol)!=data->heur) {
 		SCIP_RESULT result;
 		SCIP_CALL( BCHrunHeuristic(scip, data, data->heur, &result) );
 	}
