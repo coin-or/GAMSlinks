@@ -86,7 +86,10 @@ void GamsBCH::init() {
 //  cbinfo.incbcall   = (char *) malloc(1024*sizeof(char));
 //  cbinfo.incbicall  = (char *) malloc(1024*sizeof(char));
 	
-  ncalls=0;
+  ncalls = 0;
+  ncuts = 0;
+  nsols = 0;
+  loglevel = 1;
   have_incumbent=false;
   new_incumbent=false;
 	
@@ -94,7 +97,7 @@ void GamsBCH::init() {
   
   *userjobid=0;
 
-  gams.print(GamsHandler::StatusMask, "GamsBCH initialized.\n");
+  gams.print(GamsHandler::LogMask, "GamsBCH initialized.\n");
 }
 
 void GamsBCH::set_userjobid(const char* userjobid_) {
@@ -261,8 +264,10 @@ bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
 	cuts.clear();
 
 	char buffer[1024];
-	sprintf(buffer, "GamsBCH call %d: ", ncalls);
-	gams.print(GamsHandler::LogMask, buffer);
+	if (loglevel) {
+		sprintf(buffer, "GamsBCH call %d: ", ncalls);
+		gams.print(GamsHandler::LogMask, buffer);
+	}
 	
 //	printf("node relax. opt.val.: %g\n", node_x[gams.getObjVariable()]);
 //	printf("node relax. solution: ");
@@ -289,8 +294,10 @@ bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
 		gams.print(GamsHandler::AllMask, "Could not spawn GAMS cutgenerator.\n");
 		return false;
 	} else if (rcode < 0) { // not necessarily a failure; just an 'abort' in the cutgenerator model
-		sprintf(buffer, "Cut generator failed with return code %d.\n", rcode);
-		gams.print(GamsHandler::LogMask, buffer);
+		if (loglevel) {
+			sprintf(buffer, "Cut generator failed with return code %d.\n", rcode);
+			gams.print(GamsHandler::LogMask, buffer);
+		}
     return false;
   }
 	
@@ -301,7 +308,8 @@ bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
   }
   
   if (ncuts==0) {
-		gams.print(GamsHandler::LogMask, "No cuts found.\n");
+  	if (loglevel)
+  		gams.print(GamsHandler::LogMask, "No cuts found.\n");
 		return true;
   }
   
@@ -312,8 +320,12 @@ bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
     delete[] cutNnz;
     return false;
   }
-  sprintf(buffer, "Got %d %s.\n", ncuts, ncuts==1 ? "cut" : "cuts");
-	gams.print(GamsHandler::LogMask, buffer);
+  if (loglevel) {
+  	sprintf(buffer, "Got %d %s.\n", ncuts, ncuts==1 ? "cut" : "cuts");
+  	gams.print(GamsHandler::LogMask, buffer);
+  }
+	
+	this->ncuts += ncuts;
 
   int* cutsense  = new int[ncuts];
   int* cutbeg    = new int[ncuts+1];
@@ -398,8 +410,11 @@ bool GamsBCH::doHeuristic(double bestbnd, double curobj) {
 
 bool GamsBCH::runHeuristic(double* x, double& objvalue) {
 	char buffer[1024];
-  sprintf(buffer, "GamsBCH call %d: ", ncalls);
-	gams.print(GamsHandler::LogMask, buffer);
+
+	if (loglevel) {
+		sprintf(buffer, "GamsBCH call %d: ", ncalls);
+		gams.print(GamsHandler::LogMask, buffer);
+	}
 
 	if (bchWriteSol(gdxname, dict, gams.getColCountGams(), node_lb, node_x, node_ub, NULL)) {
 		gams.print(GamsHandler::AllMask, "Could not write node solution to GDX file.\n");
@@ -421,8 +436,10 @@ bool GamsBCH::runHeuristic(double* x, double& objvalue) {
 		gams.print(GamsHandler::AllMask, "Could not spawn GAMS cutgenerator.\n");
 		return false;
 	} else if (rcode < 0) { // not necessarily a failure; just an 'abort' in the heuristic model
-		sprintf(buffer, "Heuristic failed with return code %d.\n", rcode);
-		gams.print(GamsHandler::LogMask, buffer);
+		if (loglevel) {
+			sprintf(buffer, "Heuristic failed with return code %d.\n", rcode);
+			gams.print(GamsHandler::LogMask, buffer);
+		}
     return false;
   }
 	
@@ -434,18 +451,23 @@ bool GamsBCH::runHeuristic(double* x, double& objvalue) {
 		return false;
 	}
 	
+	++nsols;
 	if (!have_incumbent || gams.getObjSense()*(incumbent_value-newx[gams.getObjVariable()])>1e-6) {
 		gams.translateFromGamsSpaceX(newx, x);
 		objvalue=newx[gams.getObjVariable()];
 
-	  sprintf(buffer, "Got new incumbent solution with objective value %g.\n", objvalue);
-		gams.print(GamsHandler::AllMask, buffer);
+		if (loglevel) {
+			sprintf(buffer, "Got new incumbent solution with objective value %g.\n", objvalue);
+			gams.print(GamsHandler::AllMask, buffer);
+		}
 
 		delete[] newx;
 		return true;
 	} else {
-	  sprintf(buffer, "Got nonimproving solution with objective value %g.\n", newx[gams.getObjVariable()]);
-		gams.print(GamsHandler::AllMask, buffer);
+		if (loglevel) {
+			sprintf(buffer, "Got nonimproving solution with objective value %g.\n", newx[gams.getObjVariable()]);
+			gams.print(GamsHandler::AllMask, buffer);
+		}
 
 		delete[] newx;
 		return false;

@@ -89,7 +89,11 @@ private:
   char      gdxnameinc[1024];    /* GDX file name for incumbent read by the GAMS models */
   char      usergdxin[1024];     /* GDX file name for reading stuff back */
 	
-	int       ncalls;
+	int       ncalls; /* number of BCH calls performed */
+	int       ncuts;  /* number of cuts received */
+	int       nsols;  /* number of primal solutions received */
+	
+	int       loglevel; /* amount of output printed by GamsBCH class */
 
 	void init();
 public:
@@ -124,6 +128,21 @@ public:
 
 	const char* get_userheurcall() { return heurcall; }
 	bool get_userheurnewint() const { return heurnewint; }
+	
+	/** Level of output created by GamsBCH handler.
+	 * @param loglevel_ 0 turns off all output, 1 prints a status line for each BCH call, 2 might print more.
+	 */
+	void setLogLevel(int loglevel_) { loglevel=loglevel_; }
+	
+	/** Accumulated number of BCH calls.
+	 */
+	int getNumCalls() const { return ncalls; }
+	/** Accumulated number of created cuts.
+	 */
+	int getNumCuts() const { return ncuts; }
+	/** Accumulated number of solutions.
+	 */
+	int getNumSols() const { return nsols; }
 
 	void printParameters() const;
 	

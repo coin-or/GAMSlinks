@@ -83,12 +83,6 @@ struct SCIP_SepaData {
 	SCIP_HEUR* heur;
 };
 
-/** Initialization of cutting plane generator.
- */
-SCIP_DECL_SEPAINIT(sepaInitBCH);
-/** Deinitialization of cutting plane generator.
- */
-SCIP_DECL_SEPAEXIT(sepaExitBCH);
 /** Callback routine for cutting plane generation to cut off an LP solution.
  */
 SCIP_DECL_SEPAEXECLP(sepaExeclpBCH);
@@ -113,6 +107,9 @@ SCIP_DECL_HEUREXIT(heurExitBCH);
  */
 SCIP_DECL_HEUREXEC(heurExecBCH);
 
+/** Callback routine for output into display column.
+ */ 
+SCIP_DECL_DISPOUTPUT(dispOutputBCH);
 
 SCIP_RETCODE BCHaddParam(SCIP* scip) {
 	SCIP_CALL( SCIPaddStringParam(scip, "gams/usercutcall", "The GAMS command line to call the cut generator", NULL, FALSE, "", NULL, NULL) );
@@ -212,34 +209,49 @@ SCIP_RETCODE BCHsetup(SCIP* scip, SCIP_VAR*** vars, smagHandle_t prob, GamsHandl
 	
 	bch->setGlobalBounds(prob->colLB, prob->colUB);
 
-	SCIP_SEPADATA* sepadata;
-  SCIP_CALL( SCIPallocMemory(scip, &sepadata) );
+	SCIP_SEPADATA* sepadata = new SCIP_SEPADATA;
   sepadata->bch=bch;
   sepadata->smag=prob;
   sepadata->vars=vars;
-  sepadata->x=NULL;
-  sepadata->lb=NULL;
-  sepadata->ub=NULL;
-  sepadata->heur=NULL;
+  sepadata->heur = NULL;
+  int n = smagColCount(sepadata->smag);
+  sepadata->x  = new double[n];
+  sepadata->lb = new double[n];
+  sepadata->ub = new double[n];
   
   bchdata = sepadata;
 	
 	if (have_cutcall) {
   	SCIP_CALL( SCIPincludeSepa(scip, "GamsBCH", "Gams BCH cut generator", cutpriority /*priority*/, 1 /* frequency */, 1.0 /* maxdistance to dual bound */, FALSE /* delayed */,
- 			NULL, sepaInitBCH, sepaExitBCH, NULL, NULL, sepaExeclpBCH, NULL, sepadata) );
+ 			NULL, NULL, NULL, NULL, NULL, sepaExeclpBCH, NULL, sepadata) );
 	}
 	if (have_heurcall) {
 		SCIP_CALL( SCIPincludeHeur(scip, "GamsBCH", "GAMS BCH heuristic", 'G', heurpriority /* priority */, 1 /* frequency */, 1 /* frequency offset */, -1 /* maxdepth */, SCIP_HEURTIMING_AFTERLPLOOP /* timingmask */,
 			NULL, heurInitBCH, heurExitBCH, NULL, NULL, heurExecBCH, (SCIP_HEURDATA*)sepadata) );
 	}
+	
 	SCIP_CALL( SCIPincludeEventhdlr(scip, "GamsBCH", "Gams BCH incumbent updater", NULL, eventInitNewInc, eventExitNewInc, NULL, NULL, NULL, eventExecNewInc, (SCIP_EVENTHDLRDATA*)sepadata) );
 
+	const char* dispheader;
+	if (have_cutcall && !have_heurcall) {
+		dispheader = " BCH cuts";
+	} else if (have_heurcall && !have_cutcall) {
+		dispheader = " BCH sols";
+	} else { // have both heuristic and cut callbacks
+		dispheader = " BCH cut sol";
+	}
+		
+	SCIP_CALL( SCIPincludeDisp(scip, "GamsBCH", "Gams BCH display column", dispheader, SCIP_DISPSTATUS_ON,
+			NULL, NULL, NULL, NULL, NULL, dispOutputBCH, (SCIP_DISPDATA*)sepadata, strlen(dispheader) /* width */, 110000 /* priority */, 30100 /* rel. position */, TRUE) );
+
+	bch->setLogLevel(0);
+	
 	return SCIP_OKAY;
 }
 
 SCIP_RETCODE BCHcleanup(smagHandle_t prob, GamsBCH*& bch, void*& bchdata) {
-  if (bchdata) SCIPfreeMemory(scip, &bchdata);
-	delete bch;
+	delete (SCIP_SEPADATA*)bchdata; bchdata = NULL;
+	delete bch; bch = NULL;
 	
 	return SCIP_OKAY;
 }
@@ -464,59 +476,17 @@ SCIP_RETCODE BCHrunHeuristic(SCIP* scip, SCIP_SEPADATA* data, SCIP_HEUR* heur, S
 	return SCIP_OKAY;
 }
 
-SCIP_DECL_SEPAINIT(sepaInitBCH) {
-//	printf("SEPAINIT\n");
-  SCIP_SEPADATA* sepadata = SCIPsepaGetData(sepa);
-  assert(sepadata != NULL);
-  assert(sepadata->bch != NULL);
-  assert(sepadata->smag != NULL);
-  assert(sepadata->vars != NULL);
-
-  int n = smagColCount(sepadata->smag);
-  if (!sepadata->x) sepadata->x  = new double[n];
-  if (!sepadata->lb) sepadata->lb = new double[n];
-  if (!sepadata->ub) sepadata->ub = new double[n];
-
-  return SCIP_OKAY;
-}
-
-SCIP_DECL_SEPAEXIT(sepaExitBCH) {
-//	printf("SEPAEXIT\n");
-  SCIP_SEPADATA* sepadata = SCIPsepaGetData(sepa);
-	
-  delete[] sepadata->x;  sepadata->x  = NULL;
-  delete[] sepadata->lb; sepadata->lb = NULL;
-  delete[] sepadata->ub; sepadata->ub = NULL;
-
-  return SCIP_OKAY;
-}
-
 SCIP_DECL_SEPAEXECLP(sepaExeclpBCH) {
-//	printf("sepaExeclpBCH\n");
   return BCHgenerateCuts(scip, SCIPsepaGetData(sepa), result);
 }
 
 SCIP_DECL_EVENTINIT(eventInitNewInc) {
-	SCIP_SEPADATA* data = (SCIP_SEPADATA*)SCIPeventhdlrGetData(eventhdlr);
-  assert(sepadata != NULL);
-  assert(sepadata->bch != NULL);
-  assert(sepadata->smag != NULL);
-  assert(sepadata->vars != NULL);
-  
-  if (!data->x) data->x = new double[smagColCount(data->smag)];
-
 	SCIP_CALL( SCIPcatchEvent(scip, SCIP_EVENTTYPE_BESTSOLFOUND, eventhdlr, NULL, NULL) );
-
 	return SCIP_OKAY;
 }
 
 SCIP_DECL_EVENTEXIT(eventExitNewInc) {
-	SCIP_SEPADATA* data = (SCIP_SEPADATA*)SCIPeventhdlrGetData(eventhdlr);
-
-	delete[] data->x; data->x = NULL;
-	
 	SCIP_CALL( SCIPdropEvent(scip, SCIP_EVENTTYPE_BESTSOLFOUND, eventhdlr, NULL, -1) );
-
 	return SCIP_OKAY;
 }
 
@@ -542,7 +512,7 @@ SCIP_DECL_EVENTEXEC(eventExecNewInc) {
 		SCIP_RESULT result;
 		SCIP_CALL( BCHgenerateCuts(scip, data, &result) );
 	}
-	if (data->bch->get_userheurnewint() && *data->bch->get_userheurcall() && SCIPsolGetHeur(sol)!=data->heur) {
+	if (data->heur && data->bch->get_userheurnewint() && SCIPsolGetHeur(sol)!=data->heur) {
 		SCIP_RESULT result;
 		SCIP_CALL( BCHrunHeuristic(scip, data, data->heur, &result) );
 	}
@@ -554,15 +524,8 @@ SCIP_DECL_EVENTEXEC(eventExecNewInc) {
  */
 SCIP_DECL_HEURINIT(heurInitBCH) {
 	SCIP_SEPADATA* data = (SCIP_SEPADATA*)SCIPheurGetData(heur);
-  assert(sepadata != NULL);
-  assert(sepadata->bch != NULL);
-  assert(sepadata->smag != NULL);
-  assert(sepadata->vars != NULL);
-  
-  int n=smagColCount(data->smag);
-  if (!data->x) data->x = new double[n];
-  if (!data->lb) data->lb = new double[n];
-  if (!data->ub) data->ub = new double[n];
+	assert(data != NULL);
+
   data->heur = heur;
   
   return SCIP_OKAY;
@@ -573,7 +536,7 @@ SCIP_DECL_HEURINIT(heurInitBCH) {
 SCIP_DECL_HEUREXIT(heurExitBCH) {
 	SCIP_SEPADATA* data = (SCIP_SEPADATA*)SCIPheurGetData(heur);
 
-	delete[] data->x; data->x = NULL;
+	data->heur = NULL;
 
 	return SCIP_OKAY;
 }
@@ -587,3 +550,17 @@ SCIP_DECL_HEUREXEC(heurExecBCH) {
 	return BCHrunHeuristic(scip, data, heur, result);
 }
 
+SCIP_DECL_DISPOUTPUT(dispOutputBCH) {
+	SCIP_SEPADATA* data = (SCIP_SEPADATA*)SCIPdispGetData(disp);
+	assert(data != NULL);
+	
+	if (!data->heur) { // only cutcallback   " BCH cuts"
+	  SCIPinfoMessage(scip, file, "%4d %4d", data->bch->getNumCalls(), data->bch->getNumCuts());
+	} else if (!*data->bch->get_usercutcall()) { // only heuristic   " BCH sols"
+	  SCIPinfoMessage(scip, file, "%4d %4d", data->bch->getNumCalls(), data->bch->getNumSols());
+	} else { // have both heuristic and cut callbacks " BCH cut sol"
+	  SCIPinfoMessage(scip, file, "%4d %3d %3d", data->bch->getNumCalls(), data->bch->getNumCuts(), data->bch->getNumSols());
+	}
+	
+	return SCIP_OKAY;
+}
