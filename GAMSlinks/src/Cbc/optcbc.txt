@@ -254,6 +254,19 @@ tol_integer
 For an optimal solution, no integer variable may be farther than this from an integer value.
 
 
+mipstart
+This option controls the use of advanced starting values for mixed integer programs.
+A setting of 1 indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.
+
+
+mipstart.0
+Do not use the initial variable levels.
+
+
+mipstart.1
+Try to use the initial variable levels as a MIP starting solution.
+
+
 sollim
 A limit on number of feasible solutions that CBC should find for a MIP.
 
@@ -685,7 +698,7 @@ userheurinterval
 Determines the interval when to apply the multiplier for the frequency of the heuristic model calls.
 For example, for the first 100 (userheurinterval) nodes, the solver call every 10th (userheurfreq) node
 the heuristic.
-After 100 nodes, the frequency gets multiplied by 10 (uerheurmult), so that for the next 100 node the solver calls the heuristic every 20th node.
+After 100 nodes, the frequency gets multiplied by 10 (userheurmult), so that for the next 100 node the solver calls the heuristic every 20th node.
 For nodes 200-300, the heuristic get called every 40th node, for nodes 300-400 every 80th node and after node 400 every 100th node.
 
 
@@ -694,7 +707,7 @@ Calls the heuristic for the first n nodes.
 
 
 userheurobjfirst
-Similar to userheurfirst but only calls the heuristic if the relaxed objective value promises a significant improvement of the current incumbent, i.e. the LP value of the node has to be closer to the best bound than the current incumbent.
+Similar to userheurfirst but only calls the heuristic if the relaxed objective value promises a significant improvement of the current incumbent, i.e., the LP value of the node has to be closer to the best bound than the current incumbent.
 
 
 userheurnewint

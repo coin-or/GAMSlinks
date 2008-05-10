@@ -343,7 +343,7 @@ Following is an example options file coincbc.opt.
 \end{verbatim}
 It will cause CoinCBC to use cut generators only in the root node and turns off the perturbation of the LP relaxation.
 
-GAMS/CoinCbc now support the GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
+GAMS/CoinCBC now support the GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
 The GAMS BCH facility automates all major steps necessary to define, execute, and control the use of user defined routines within the framework of general purpose MIP codes.
 Currently supported are user defined cut generators and heuristics.
 Please see the BCH documentation at \texttt{http://www.gams.com/docs/bch.htm} for further information.
@@ -652,6 +652,11 @@ The following statement can be used inside your GAMS program to specify using Co
 The above statement should appear before the Solve statement.
 If CoinScip was specified as the default solver during GAMS installation, the above statement is not necessary.
 
+GAMS/CoinScip now support the GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
+The GAMS BCH facility automates all major steps necessary to define, execute, and control the use of user defined routines within the framework of general purpose MIP codes.
+Currently supported are user defined cut generators and heuristics and the incumbent reporting callback.
+Please see the BCH documentation at \texttt{http://www.gams.com/docs/bch.htm} for further information.
+
 \subsection{Specification of CoinScip Options}
 
 GAMS/CoinScip currently supports the GAMS parameters reslim, iterlim, nodlim, optcr, and optca.
@@ -661,22 +666,216 @@ A SCIP options file consists of one option or comment per line.
 A pound sign (\#) at the beginning of a line causes the entire line to be ignored.
 Otherwise, the line will be interpreted as an option name and value separated by an equal sign (=) and any amount of white space (blanks or tabs).
 
+A small example for a coinscip.opt file is:
+\begin{verbatim}
+  separating/maxrounds = 0
+  separating/maxroundsroot = 0
+  gams/solvefinal = FALSE
+\end{verbatim}
+It will cause SCIP to turn off all cut generators and the final solve of the MIP with fixed discrete variables is skipped.
+
+\subsection{Description of CoinScip options}
+
 SCIP supports a large set of options.
 Sample option files can be obtained from
 \begin{verbatim}
      http://www.gams.com/~svigerske/scip
 \end{verbatim}
-An small example for a coinscip.opt file is:
-\begin{verbatim}
-  separating/maxrounds = 0
-  separating/maxroundsroot = 0
-  gams/names = TRUE
-  gams/solvefinal = FALSE
-  gams/mipstart = FALSE
-\end{verbatim}
-It will cause SCIP to turn off all cut generators.
-Further, GAMS will give row and column names to SCIP which are then used for debugging output,
-the final solve of the MIP with fixed discrete variables to obtain dual values is skipped, and it does not try to use the initial column levels as a first solution point.
 
+Further, there is a set of options that are specific to the GAMS/CoinScip interface, most of them for control of the GAMS BCH facility.
+
+%   gams/names = TRUE
+%   gams/mipstart = FALSE
+
+% Further, GAMS will give row and column names to SCIP which are then used for debugging output, the final solve of the MIP with fixed discrete variables to obtain dual values is skipped, and it does not try to use the initial column levels as a first solution point.
+
+\begin{description}
+\item[\label{scipnames}\hypertarget{scipnames}
+{\textbf{gams/names (\slshape{integer})}}]\hspace{1.0in}
+
+This option causes GAMS names for the variables and equations to be loaded into SCIP.
+These names will then be used for error messages, log entries, and so forth.
+Turning names off may help if memory is very tight.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] Do not load variable and equation names.
+\item[1] Load variable and equation names.
+\end{itemize}
+
+
+\item[\label{scipsolvefinal}\hypertarget{scipsolvefinal}
+{\textbf{gams/solvefinal (\slshape{integer})}}]\hspace{1.0in}
+
+Sometimes the solution process after the branch-and-cut that solves the problem with fixed discrete variables takes a long time and the user is interested in the primal values of the solution only.
+In these cases, this option can be used to turn this final solve off.
+Without the final solve no proper marginal values are available and only zeros are returned to GAMS.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] Do not solve the fixed problem.
+\item[1] Solve the fixed problem and return duals.
+\end{itemize}
+
+
+\item[\label{scipmipstart}\hypertarget{scipmipstart}
+{\textbf{gams/mipstart (\slshape{integer})}}]\hspace{1.0in}
+
+This option controls the use of advanced starting values for mixed integer programs.
+A setting of 1 indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] Do not use the initial variable levels.
+\item[1] Try to use the initial variable levels as a MIP starting solution.
+\end{itemize}
+
+
+\item[\label{scipusercutcall}\hypertarget{scipusercutcall}
+{\textbf{gams/usercutcall (\slshape{string})}}]\hspace{1.0in}
+
+The GAMS command line (minus the gams executable name) to call the cut generator.
+
+
+\item[\label{scipusercutfirst}\hypertarget{scipusercutfirst}
+{\textbf{gams/usercutfirst (\slshape{integer})}}]\hspace{1.0in}
+
+Calls the cut generator for the first $n$ nodes.
+
+\textsl{(default = 10)}
+
+\item[\label{scipusercutfreq}\hypertarget{scipusercutfreq}
+{\textbf{gams/usercutfreq (\slshape{integer})}}]\hspace{1.0in}
+
+Determines the frequency of the cut generator model calls.
+
+\textsl{(default = 10)}
+
+\item[\label{scipusercutinterval}\hypertarget{scipusercutinterval}
+{\textbf{gams/usercutinterval (\slshape{integer})}}]\hspace{1.0in}
+
+Determines the interval when to apply the multiplier for the frequency of the cut generator model calls.
+See gams/userheurinterval for details.
+
+\textsl{(default = 100)}
+
+\item[\label{scipusercutmult}\hypertarget{scipusercutmult}
+{\textbf{gams/usercutmult (\slshape{integer})}}]\hspace{1.0in}
+
+Determines the multiplier for the frequency of the cut generator model calls.
+
+\textsl{(default = 2)}
+
+\item[\label{scipusercutnewint}\hypertarget{scipusercutnewint}
+{\textbf{gams/usercutnewint (\slshape{integer})}}]\hspace{1.0in}
+
+Calls the cut generator if the solver found a new integer feasible solution.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] .
+Do not call cut generator because a new integer feasible solution is found.
+\item[1] .
+Let SCIP call the cut generator if a new integer feasible solution is found.
+\end{itemize}
+
+\item[\label{scipusergdxin}\hypertarget{scipusergdxin}
+{\textbf{gams/usergdxin (\slshape{string})}}]\hspace{1.0in}
+
+The name of the GDX file read back into SCIP.
+
+\textsl{(default =} \verb=bchin.gdx=)
+
+\item[\label{scipusergdxname}\hypertarget{scipusergdxname}
+{\textbf{gams/usergdxname (\slshape{string})}}]\hspace{1.0in}
+
+The name of the GDX file exported from the solver with the solution at the node.
+
+\textsl{(default =} \verb=bchout.gdx=)
+
+\item[\label{scipusergdxnameinc}\hypertarget{scipusergdxnameinc}
+{\textbf{gams/usergdxnameinc (\slshape{string})}}]\hspace{1.0in}
+
+The name of the GDX file exported from the solver with the incumbent solution.
+
+\textsl{(default =} \verb=bchout_i.gdx=)
+
+\item[\label{scipusergdxprefix}\hypertarget{scipusergdxprefix}
+{\textbf{gams/usergdxprefix (\slshape{string})}}]\hspace{1.0in}
+
+Prefixes to use for gams/usergdxin, gams/usergdxname, and gams/usergdxnameinc.
+
+
+\item[\label{scipuserheurcall}\hypertarget{scipuserheurcall}
+{\textbf{gams/userheurcall (\slshape{string})}}]\hspace{1.0in}
+
+The GAMS command line (minus the gams executable name) to call the heuristic.
+
+
+\item[\label{scipuserheurfirst}\hypertarget{scipuserheurfirst}
+{\textbf{gams/userheurfirst (\slshape{integer})}}]\hspace{1.0in}
+
+Calls the heuristic for the first $n$ nodes.
+
+\textsl{(default = 10)}
+
+\item[\label{scipuserheurfreq}\hypertarget{scipuserheurfreq}
+{\textbf{gams/userheurfreq (\slshape{integer})}}]\hspace{1.0in}
+
+Determines the frequency of the heuristic model calls.
+
+\textsl{(default = 10)}
+
+\item[\label{scipuserheurinterval}\hypertarget{scipuserheurinterval}
+{\textbf{gams/userheurinterval (\slshape{integer})}}]\hspace{1.0in}
+
+Determines the interval when to apply the multiplier for the frequency of the heuristic model calls.
+For example, for the first 100 (gams/userheurinterval) nodes, the solver call every 10th (gams/userheurfreq) node the heuristic.
+After 100 nodes, the frequency gets multiplied by 10 (gams/userheurmult), so that for the next 100 node the solver calls the heuristic every 20th node.
+For nodes 200-300, the heuristic get called every 40th node, for nodes 300-400 every 80th node and after node 400 every 100th node.
+
+\textsl{(default = 100)}
+
+\item[\label{scipuserheurmult}\hypertarget{scipuserheurmult}
+{\textbf{gams/userheurmult (\slshape{integer})}}]\hspace{1.0in}
+
+Determines the multiplier for the frequency of the heuristic model calls.
+
+\textsl{(default = 2)}
+
+\item[\label{scipuserheurnewint}\hypertarget{scipuserheurnewint}
+{\textbf{gams/userheurnewint (\slshape{integer})}}]\hspace{1.0in}
+
+Calls the heuristic if the solver found a new integer feasible solution.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] .
+Do not call heuristic because a new integer feasible solution is found.
+\item[1] .
+Let SCIP call the heuristic if a new integer feasible solution is found.
+\end{itemize}
+
+\item[\label{scipuserheurobjfirst}\hypertarget{scipuserheurobjfirst}
+{\textbf{gams/userheurobjfirst (\slshape{integer})}}]\hspace{1.0in}
+
+Similar to gams/userheurfirst but only calls the heuristic if the relaxed objective value promises a significant improvement of the current incumbent, i.e., the LP value of the node has to be closer to the best bound than the current incumbent.
+
+\textsl{(default = 0)}
+
+\item[\label{scipuserjobid}\hypertarget{scipuserjobid}
+{\textbf{gams/userjobid (\slshape{string})}}]\hspace{1.0in}
+
+Postfixes to use for gams/gdxname, gams/gdxnameinc, and gams/gdxin.
+
+
+\item[\label{scipuserkeep}\hypertarget{scipuserkeep}
+{\textbf{gams/userkeep (\slshape{integer})}}]\hspace{1.0in}
+
+Calls gamskeep instead of gams
+
+\textsl{(default = 0)}
+
+\end{description}
 
 \chapterend

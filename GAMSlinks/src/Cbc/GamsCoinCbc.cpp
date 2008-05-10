@@ -56,22 +56,23 @@ extern "C" {
 
 void setupProblem(GamsModel& gm, GamsDictionary& gamsdict, OsiClpSolverInterface& solver);
 void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model);
-void setupStartingPoint(GamsModel& gm, CbcModel& model);
+void setupStartingPoint(GamsModel& gm, GamsOptions& opt, CbcModel& model);
 void setupParameters(GamsModel& gm, GamsOptions& opt, CbcModel& model);
 void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myout, std::list<std::string>& par_list);
 
-///* Meaning of whereFrom:
-//   1 after initial solve by dualsimplex etc
-//   2 after preprocessing
-//   3 just before branchAndBound (so user can override)
-//   4 just after branchAndBound (before postprocessing)
-//   5 after postprocessing
-//   6 after a user called heuristic phase
-//*/
+/* Meaning of whereFrom:
+   1 after initial solve by dualsimplex etc
+   2 after preprocessing
+   3 just before branchAndBound (so user can override)
+   4 just after branchAndBound (before postprocessing)
+   5 after postprocessing
+   6 after a user called heuristic phase
+*/
 CbcModel* preprocessedmodel=NULL;
 int gamsCallBack(CbcModel* currentSolver, int whereFrom) {
-//	printf("Got callback from %d with current solver %d\n", whereFrom, (int)currentSolver);
+	printf("Got callback from %d with current solver %p\n", whereFrom, (void*)currentSolver);
 	if (whereFrom==3) preprocessedmodel=currentSolver;
+	
 	return 0;
 }
 
@@ -159,7 +160,7 @@ int main (int argc, const char *argv[]) {
 
 	if (gm.nCols()) {
 		setupPrioritiesSOSSemiCon(gm, model);
-		setupStartingPoint(gm, model);
+		setupStartingPoint(gm, opt, model);
 	}
 	if (opt.isDefined("usercutcall") || opt.isDefined("userheurcall")) { //TODO: avoid this
 		opt.setString("preprocess", "off");
@@ -437,7 +438,7 @@ void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model) {
 }
 
 
-void setupStartingPoint(GamsModel& gm, CbcModel& model) {
+void setupStartingPoint(GamsModel& gm, GamsOptions& opt, CbcModel& model) {
   // starting point
   model.solver()->setColSolution(gm.ColLevel());
   model.solver()->setRowPrice(gm.RowMargin());
@@ -471,6 +472,11 @@ void setupStartingPoint(GamsModel& gm, CbcModel& model) {
 
 	delete[] cstat;
 	delete[] rstat;
+	
+//	if (!gm.isLP() && opt.getBool("mipstart")) {
+//		double objval=0.; // TODO
+//		model.setBestSolution(CBC_SOLUTION, objval, gm.ColLevel(), false);
+//	}
 }
 
 void setupParameters(GamsModel& gm, GamsOptions& opt, CbcModel& model) {

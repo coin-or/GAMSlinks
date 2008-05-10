@@ -38,6 +38,7 @@ set g Cbc Option Groups /
       tol_presolve           tolerance used in presolve
       startalg               LP solver for root node
 *MIP options
+      mipstart               whether it should be tried to use the initial variable levels as initial MIP solution
       tol_integer            tolerance for integrality
       sollim                 limit on number of solutions
       strongbranching        strong branching
@@ -134,6 +135,7 @@ lpoptions.(
   startalg             .s.(def dual)
 )
 mipgeneral.(
+  mipstart             .b.(def 1)
   tol_integer          .r.(def 1e-6)
   sollim               .i.(def -1, lo -1, up 2147483647)
   strongbranching      .i.(def 5, lo 0, up 999999)
@@ -229,6 +231,7 @@ bch.(
    startalg.(       primal  
                     dual    
                     barrier  )
+   mipstart.(       0, 1 )
    sollim.(         '-1')
    cutdepth.(       '-1')
    cuts.(           off, on, root, ifmove, forceon )
@@ -271,6 +274,6 @@ bch.(
                      increment  'GAMS cheat'
                      cut_passes_root '100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop in the objective function value is small) if it has less than 5000 columns, and 20 passes otherwise.'
                    /
- oep(o) / crossover, perturbation, presolve, names, printfrequency,
+ oep(o) / mipstart, crossover, perturbation, presolve, names, printfrequency,
     heuristics, combinesolutions, feaspump, localtreesearch, rins, roundingheuristic,
     usercutnewint, userheurnewint /;
