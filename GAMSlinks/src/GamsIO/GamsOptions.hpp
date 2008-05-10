@@ -41,7 +41,11 @@ public:
 	 */
 	bool readOptionsFile(const char* optfilename); 
 
-	/** Check whether the user specified some option.
+	/** Checks whether an option exists.
+	 * @return True, if the option exists, i.e., defined in the options definition file. False otherwise.
+	 */
+	bool isKnown(const char* optname);
+	/** Checks whether the user specified some option.
 	 * @param optname The name of the option.
 	 * @return True, if the option had been specified in the option file.
 	 */

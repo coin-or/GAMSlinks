@@ -96,6 +96,12 @@ bool GamsOptions::readOptionsFile(const char* optfilename) {
 	}
 }
 
+bool GamsOptions::isKnown(const char* optname) {
+	assert(optionshandle!=NULL);
+	int i, refNum;
+  return optFindStr(optionshandle, optname, &i, &refNum);
+}
+
 bool GamsOptions::isDefined(const char *optname) {
 	assert(optionshandle!=NULL);
   int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType;

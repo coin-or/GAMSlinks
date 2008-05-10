@@ -83,8 +83,6 @@ void GamsBCH::init() {
 	incumbent=new double[gams.getColCountGams()];
 	global_lb=new double[gams.getColCountGams()];
 	global_ub=new double[gams.getColCountGams()];
-//  cbinfo.incbcall   = (char *) malloc(1024*sizeof(char));
-//  cbinfo.incbicall  = (char *) malloc(1024*sizeof(char));
 	
   ncalls = 0;
   ncuts = 0;
@@ -96,6 +94,10 @@ void GamsBCH::init() {
   bchSlvSetInf(gams.getPInfinity(), gams.getMInfinity());
   
   *userjobid=0;
+  *cutcall=0;
+  *heurcall=0;
+  *incbcall=0;
+  *incbicall=0;
 
   gams.print(GamsHandler::LogMask, "GamsBCH initialized.\n");
 }
@@ -150,6 +152,19 @@ void GamsBCH::set_userheurcall(const char* userheurcall) {
   	strncpy(heurcall, userheurcall, sizeof(heurcall));
 }
 
+void GamsBCH::set_userincbcall(const char* userincbcall) {
+  if (*userjobid)
+  	snprintf(incbcall, sizeof(incbcall), "%s --userjobid=%s", userincbcall, userjobid);
+  else
+  	strncpy(incbcall, userincbcall, sizeof(incbcall));
+}
+
+void GamsBCH::set_userincbicall(const char* userincbicall) {
+  if (*userjobid)
+  	snprintf(incbicall, sizeof(incbicall), "%s --userjobid=%s", userincbicall, userjobid);
+  else
+  	strncpy(incbicall, userincbicall, sizeof(incbicall));
+}
 
 void GamsBCH::setupParameters(GamsOptions& opt) {
   char buffer[256];
@@ -174,24 +189,38 @@ void GamsBCH::setupParameters(GamsOptions& opt) {
   
   set_userkeep(opt.getBool("userkeep"));
 
-  opt.getString("usercutcall", buffer);
-  set_usercutcall(buffer);
+  if (opt.isKnown("usercutcall")) {
+  	opt.getString("usercutcall", buffer);
+  	set_usercutcall(buffer);
 
-  set_usercutfreq(opt.getInteger("usercutfreq"));
-  set_usercutinterval(opt.getInteger("usercutinterval"));
-  set_usercutmult(opt.getInteger("usercutmult"));
-  set_usercutfirst(opt.getInteger("usercutfirst"));
-  set_usercutnewint(opt.getBool("usercutnewint"));
+  	set_usercutfreq(opt.getInteger("usercutfreq"));
+  	set_usercutinterval(opt.getInteger("usercutinterval"));
+  	set_usercutmult(opt.getInteger("usercutmult"));
+  	set_usercutfirst(opt.getInteger("usercutfirst"));
+  	set_usercutnewint(opt.getBool("usercutnewint"));
+  }
 
-  opt.getString("userheurcall", buffer);
-  set_userheurcall(buffer);
+  if (opt.isKnown("userheurcall")) {
+  	opt.getString("userheurcall", buffer);
+  	set_userheurcall(buffer);
 
-  set_userheurfreq(opt.getInteger("userheurfreq"));
-  set_userheurinterval(opt.getInteger("userheurinterval"));
-  set_userheurmult(opt.getInteger("userheurmult"));
-  set_userheurfirst(opt.getInteger("userheurfirst"));
-  set_userheurnewint(opt.getBool("userheurnewint"));
-  set_userheurobjfirst(opt.getInteger("userheurobjfirst"));
+  	set_userheurfreq(opt.getInteger("userheurfreq"));
+  	set_userheurinterval(opt.getInteger("userheurinterval"));
+  	set_userheurmult(opt.getInteger("userheurmult"));
+  	set_userheurfirst(opt.getInteger("userheurfirst"));
+  	set_userheurnewint(opt.getBool("userheurnewint"));
+  	set_userheurobjfirst(opt.getInteger("userheurobjfirst"));
+  }
+  
+  if (opt.isKnown("userincbcall")) {
+  	opt.getString("userincbcall", buffer);
+  	set_userincbcall(buffer);
+  }
+  
+  if (opt.isKnown("userincbicall")) {
+  	opt.getString("userincbicall", buffer);
+  	set_userincbicall(buffer);
+  }
 }
 
 void GamsBCH::printParameters() const {
@@ -211,6 +240,8 @@ void GamsBCH::printParameters() const {
 	sprintf(buffer, "cutmult: %d\n", cutmult); gams.print(GamsHandler::LogMask, buffer);
 	sprintf(buffer, "cutfirst: %d\n", cutfirst); gams.print(GamsHandler::LogMask, buffer);
 	sprintf(buffer, "cutnewint: %d\n", (int)cutnewint); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "incbcall: %s\n", incbcall); gams.print(GamsHandler::LogMask, buffer);
+	sprintf(buffer, "incbicall: %s\n", incbicall); gams.print(GamsHandler::LogMask, buffer);
 	sprintf(buffer, "userjobid: %s\n", userjobid); gams.print(GamsHandler::LogMask, buffer);
 	sprintf(buffer, "gdxname: %s\n", gdxname); gams.print(GamsHandler::LogMask, buffer);
 	sprintf(buffer, "gdxnameinc: %s\n", gdxnameinc); gams.print(GamsHandler::LogMask, buffer);
@@ -240,17 +271,70 @@ void GamsBCH::setGlobalBounds(const double* lb_, const double* ub_) {
 	gams.translateToGamsSpaceUB(ub_, global_ub);	
 }
 
-void GamsBCH::setIncumbentSolution(const double* x_, double objval_) {
+bool GamsBCH::setIncumbentSolution(const double* x_, double objval_) {
 	if (!have_incumbent || (objval_!=incumbent_value)) {
 		gams.translateToGamsSpaceX(x_, objval_, incumbent);
 		have_incumbent=true;
 		new_incumbent=true;
 		incumbent_value=objval_;
+		
+		if (*incbcall || *incbicall)
+			if (reportIncumbent()==2) // return false if an incumbent checker rejects the solution
+				return false;
 
 //		char buffer[255];
 //		snprintf(buffer, 255, "GamsBCH: updated incumbent solution to objvalue %g\n", objval_);
 //		gams.print(GamsHandler::LogMask, buffer);
 	}
+	return true;
+}
+
+int GamsBCH::reportIncumbent() {
+	if (!new_incumbent) return 1;
+	
+  if (bchWriteSol(gdxnameinc, dict, gams.getColCountGams(), global_lb, incumbent, global_ub, NULL)) {
+    gams.print(GamsHandler::AllMask, "Could not write incumbent solution to GDX file.\n");
+    return 0;
+  }
+  new_incumbent=false;
+  
+  if (*incbicall) { // incumbent reporter
+  	char buffer[1024];
+  	snprintf(buffer, 1024, "%s --ncalls %d", incbicall, ncalls++);
+  	int rcode = bchRunGAMS(buffer, usergdxin, userkeep, userjobid);
+  	
+  	if (rcode > 0) {
+  		gams.print(GamsHandler::AllMask, "Could not spawn GAMS incumbent reporter.\n");
+  		return -2;
+  	} else if (rcode < 0) { // not necessarily a failure; just an 'abort' in the incumbent report model
+  		if (loglevel) {
+  			sprintf(buffer, "GAMS incumbent reported failed with return code %d.\n", rcode);
+  			gams.print(GamsHandler::LogMask, buffer);
+  		}
+      return -2;
+    }
+  }
+  
+  if (*incbcall) { // incumbent checker
+  	char buffer[1024];
+  	snprintf(buffer, 1024, "%s --ncalls %d", incbcall, ncalls++);
+  	int rcode = bchRunGAMS(buffer, usergdxin, userkeep, userjobid);
+  	
+  	if (rcode > 0) {
+  		gams.print(GamsHandler::AllMask, "Could not spawn GAMS incumbent checker.\n");
+  		return -3;
+  	} else if (rcode < 0) { // acceptance of incumbent
+  		if (loglevel)
+  			gams.print(GamsHandler::AllMask, "GAMS incumbent checker accepts solution.\n");
+      return 1;
+    } else { // rejection of incumbent
+  		if (loglevel)
+  			gams.print(GamsHandler::AllMask, "GAMS incumbent checker rejects solution.\n");
+    	return 2;
+    }
+  }
+  
+  return 1;
 }
 
 bool GamsBCH::doCuts() {
@@ -278,13 +362,15 @@ bool GamsBCH::generateCuts(std::vector<Cut>& cuts) {
 		return false;
 	}
 	
-	if (new_incumbent) {
-    if (bchWriteSol(gdxnameinc, dict, gams.getColCountGams(), global_lb, incumbent, global_ub, NULL)) {
-      gams.print(GamsHandler::AllMask, "Could not write incumbent solution to GDX file.\n");
-      return false;
-    }
-    new_incumbent=false;
-	}
+	if (reportIncumbent()==-1) // abort if writing the incumbent failed 
+		return false;
+//	if (new_incumbent) {
+//    if (bchWriteSol(gdxnameinc, dict, gams.getColCountGams(), global_lb, incumbent, global_ub, NULL)) {
+//      gams.print(GamsHandler::AllMask, "Could not write incumbent solution to GDX file.\n");
+//      return false;
+//    }
+//    new_incumbent=false;
+//	}
 
 //	gm.PrintOut(GamsModel::LogMask, "GamsBCH: Spawn GAMS cutgenerator.");
 	snprintf(buffer, 1024, "%s --ncalls %d", cutcall, ncalls++);
@@ -421,13 +507,15 @@ bool GamsBCH::runHeuristic(double* x, double& objvalue) {
 		return false;
 	}
 	
-	if (new_incumbent) {
-    if (bchWriteSol(gdxnameinc, dict, gams.getColCountGams(), global_lb, incumbent, global_ub, NULL)) {
-      gams.print(GamsHandler::AllMask, "Could not write incumbent solution to GDX file.\n");
-      return false;
-    }
-    new_incumbent=false;
-	}
+	if (!reportIncumbent()) // abort if writing the incumbent failed
+		return false;
+//	if (new_incumbent) {
+//    if (bchWriteSol(gdxnameinc, dict, gams.getColCountGams(), global_lb, incumbent, global_ub, NULL)) {
+//      gams.print(GamsHandler::AllMask, "Could not write incumbent solution to GDX file.\n");
+//      return false;
+//    }
+//    new_incumbent=false;
+//	}
 
 	snprintf(buffer, 1024, "%s --ncalls %d", heurcall, ncalls++);
 	int rcode = bchRunGAMS(buffer, usergdxin, userkeep, userjobid);

@@ -131,11 +131,10 @@ SCIP_RETCODE BCHaddParam(SCIP* scip) {
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/userheurnewint", "Calls the heuristic if the solver found a new integer feasible solution", NULL, FALSE, FALSE, NULL, NULL) );
 	SCIP_CALL( SCIPaddIntParam(scip, "gams/userheurobjfirst", "Calls the heuristic if the LP value of the node is closer to the best bound than the current incumbent", NULL, FALSE, 0, 0, INT_MAX, NULL, NULL) );
 	SCIP_CALL( SCIPaddIntParam(scip, "gams/userheurpriority", "The priority of the heuristic in SCIP", NULL, FALSE, 0, -INT_MAX, INT_MAX, NULL, NULL) );
+//	SCIP_CALL( SCIPaddStringParam(scip, "gams/userincbcall", "The GAMS command line to call the incumbent checker", NULL, FALSE, "", NULL, NULL) );
+	SCIP_CALL( SCIPaddStringParam(scip, "gams/userincbicall", "The GAMS command line to call the incumbent reporter", NULL, FALSE, "", NULL, NULL) );
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/userkeep", "Calls gamskeep instead of gams", NULL, FALSE, FALSE, NULL, NULL) );
 	SCIP_CALL( SCIPaddStringParam(scip, "gams/userjobid", "Postfixes gdxname, gdxnameinc, and gdxin", NULL, FALSE, "", NULL, NULL) );	
-
-//  userincbcall     .s.(def '')   The GAMS command line to call the incumbent checking program
-//  userincbicall    .s.(def '')   The GAMS command line to call the incumbent reporting program
 	
 	return SCIP_OKAY;
 }
@@ -155,7 +154,7 @@ SCIP_RETCODE BCHsetup(SCIP* scip, SCIP_VAR*** vars, smagHandle_t prob, GamsHandl
 	SCIP_Bool b;
 	int i;
 	
-	bool have_cutcall, have_heurcall;
+	bool have_cutcall, have_heurcall, /* have_incbcall, */ have_incbicall;
 	int cutpriority, heurpriority;
 	
 	char* gdxprefix = NULL; //new char[1024];
@@ -204,9 +203,17 @@ SCIP_RETCODE BCHsetup(SCIP* scip, SCIP_VAR*** vars, smagHandle_t prob, GamsHandl
 	SCIP_CALL( SCIPgetIntParam(scip, "gams/userheurobjfirst", &i) );
 	bch->set_userheurobjfirst(i);
 	SCIP_CALL( SCIPgetIntParam(scip, "gams/userheurpriority", &heurpriority) );
-	
+
+//	SCIP_CALL( SCIPgetStringParam(scip, "gams/userincbcall", &s) );
+//	bch->set_userincbcall(s);
+//	have_incbcall=*s;
+	SCIP_CALL( SCIPgetStringParam(scip, "gams/userincbicall", &s) );
+	bch->set_userincbicall(s);
+	have_incbicall=*s;
+
 //	bch->printParameters();
 	
+	// could be moved into eventInitNewInc so that we can report global bounds after preprocessing
 	bch->setGlobalBounds(prob->colLB, prob->colUB);
 
 	SCIP_SEPADATA* sepadata = new SCIP_SEPADATA;
@@ -237,8 +244,10 @@ SCIP_RETCODE BCHsetup(SCIP* scip, SCIP_VAR*** vars, smagHandle_t prob, GamsHandl
 		dispheader = " BCH cuts";
 	} else if (have_heurcall && !have_cutcall) {
 		dispheader = " BCH sols";
-	} else { // have both heuristic and cut callbacks
+	} else if (have_cutcall && have_heurcall) {
 		dispheader = " BCH cut sol";
+	} else { // have only incumbent reporter or checker
+		dispheader = " BCH";		
 	}
 		
 	SCIP_CALL( SCIPincludeDisp(scip, "GamsBCH", "Gams BCH display column", dispheader, SCIP_DISPSTATUS_ON,
@@ -506,7 +515,11 @@ SCIP_DECL_EVENTEXEC(eventExecNewInc) {
 	double objval;
 	smagEvalObjFunc(data->smag, data->x, &objval);
 	
-	data->bch->setIncumbentSolution(data->x, objval);
+	bool accepted=data->bch->setIncumbentSolution(data->x, objval);
+	
+	if (!accepted){ // reject solution
+		// TODO
+	}
 
 	if (data->bch->get_usercutnewint() && *data->bch->get_usercutcall()) {
 		SCIP_RESULT result;
@@ -554,12 +567,16 @@ SCIP_DECL_DISPOUTPUT(dispOutputBCH) {
 	SCIP_SEPADATA* data = (SCIP_SEPADATA*)SCIPdispGetData(disp);
 	assert(data != NULL);
 	
+	bool have_cutcall=*data->bch->get_usercutcall();
+	
 	if (!data->heur) { // only cutcallback   " BCH cuts"
 	  SCIPinfoMessage(scip, file, "%4d %4d", data->bch->getNumCalls(), data->bch->getNumCuts());
-	} else if (!*data->bch->get_usercutcall()) { // only heuristic   " BCH sols"
+	} else if (!have_cutcall) { // only heuristic   " BCH sols"
 	  SCIPinfoMessage(scip, file, "%4d %4d", data->bch->getNumCalls(), data->bch->getNumSols());
-	} else { // have both heuristic and cut callbacks " BCH cut sol"
+	} else if (data->heur && have_cutcall) { // have both heuristic and cut callbacks " BCH cut sol"
 	  SCIPinfoMessage(scip, file, "%4d %3d %3d", data->bch->getNumCalls(), data->bch->getNumCuts(), data->bch->getNumSols());
+	} else { // have only incumbent reporter or checker   " BCH"
+	  SCIPinfoMessage(scip, file, "%4d", data->bch->getNumCalls());
 	}
 	
 	return SCIP_OKAY;

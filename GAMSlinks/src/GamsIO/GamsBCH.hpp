@@ -80,8 +80,8 @@ private:
   int       cutfirst;       /* cuts at first nodes */
   bool      cutnewint;      /* cuts if new incumbent */
 
-//  char      *incbcall;      /* command line minus gams for the incumbent callback */
-//  char      *incbicall;     /* command line minus gams for the information incumbent callback */
+  char      incbcall[1024];      /* command line minus gams for the incumbent checking callback */
+  char      incbicall[1024];     /* command line minus gams for the incumbent reporting callback */
 
   char      userjobid[1024];     /* jobid added to gdxname, gdxnameinc, usergdxin, adds --userjobid to the calls and o and lf */
 
@@ -96,6 +96,12 @@ private:
 	int       loglevel; /* amount of output printed by GamsBCH class */
 
 	void init();
+	
+	/** Writes the incumbent to the file specified in gdxnameinc and calls the incumbent reporting callback, if specified.
+	 * Does nothing if there is no new incumbent.
+	 * @return >0 on success, <0 on failure: -1 if writing the incumbent failed, -2 if the incumbent reporter failed, -3 if the incumbent checker failed; 1 if the incumbent is accepted, 2 if the incumbent is rejected 
+	 */
+	int reportIncumbent();
 public:
 	GamsBCH(GamsHandler& gams_, GamsDictionary& gamsdict, GamsOptions& opt);
 	GamsBCH(GamsHandler& gams_, GamsDictionary& gamsdict);
@@ -122,6 +128,9 @@ public:
 	void set_userheurfirst(int userheurfirst) { heurfirst=userheurfirst; }
 	void set_userheurnewint(bool userheurnewint) { heurnewint=userheurnewint; }
 	void set_userheurobjfirst(int userheurobjfirst) { heurobjfirst=userheurobjfirst; }
+	
+	void set_userincbcall(const char* userincbcall);
+	void set_userincbicall(const char* userincbicall);
 
 	const char* get_usercutcall() { return cutcall; }
 	bool get_usercutnewint() const { return cutnewint; }
@@ -160,8 +169,10 @@ public:
 	/** Informs BCH about the current incumbent.
 	 * Should be called before generateCuts() and runHeuristics().
 	 * Checks whether the objective value changed, and does nothing if its the same.
+	 * If it does and an incumbent reporter or checking program is specified, calls reportIncumbent()
+	 * @return True if there is no incumbent checker or if the incumbent checker accepts the solution. False if an incumbent checker rejects the solution.
 	 */
-	void setIncumbentSolution(const double* x_, double objval_);
+	bool setIncumbentSolution(const double* x_, double objval_);
 	
 	/** Returns true if generateCuts should be called, otherwise false.
 	 * You should call this method before generateCuts().

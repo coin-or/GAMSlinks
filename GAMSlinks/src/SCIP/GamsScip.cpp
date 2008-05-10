@@ -239,17 +239,21 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	
 		SCIP_CALL( SCIPgetBoolParam(scip, "gams/solvefinal", &solvefinal) );
 
-  	char buffer[512];
-  	SCIP_CALL( SCIPgetStringParam(scip, "gams/usercutcall", (char**)&buffer) );
-  	if (!*buffer)
-    	SCIP_CALL( SCIPgetStringParam(scip, "gams/userheurcall", (char**)&buffer) );
+  	char* dobch;
+  	SCIP_CALL( SCIPgetStringParam(scip, "gams/usercutcall", &dobch) );
+  	if (!*dobch)
+    	SCIP_CALL( SCIPgetStringParam(scip, "gams/userheurcall", &dobch) );
+//  	if (!*dobch)
+//    	SCIP_CALL( SCIPgetStringParam(scip, "gams/userincbcall", &dobch) );
+  	if (!*dobch)
+    	SCIP_CALL( SCIPgetStringParam(scip, "gams/userincbicall", &dobch) );
 
   	SCIP_VAR** mip_vars=NULL;
 
   	GamsBCH* bch=NULL;
   	void* bchdata=NULL;
   	gdxHandle_t gdxhandle=NULL;
-  	if (*buffer) {
+  	if (*dobch) {
   		char buffer[512];
   		if (!gdxCreate(&gdxhandle, buffer, sizeof(buffer))) {
   			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
@@ -259,7 +263,7 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   		SCIP_CALL( BCHsetup(scip, &mip_vars, prob, gamshandler, dict, bch, bchdata) );
   	}
 
-  	/* include default SCIP plugins, need to come after BCH setup because of its display column */
+  	/* include default SCIP plugins, documentation says it needs to come after BCH setup because of its display column */
   	SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
 
   	SCIP_CALL( setupMIP(prob, gamshandler, dict, scip, mip_vars) );
@@ -365,7 +369,7 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 	}
 
 	if (prob->gms.grhs[prob->gms.slplro-1]) {
-		sprintf(buffer, "Note: Constant %d in objective function is ignored during SCIP run.\n", prob->gms.grhs[prob->gms.slplro-1] * prob->gObjFactor);
+		sprintf(buffer, "Note: Constant %g in objective function is ignored during SCIP run.\n", prob->gms.grhs[prob->gms.slplro-1] * prob->gObjFactor);
 		smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
 	}
 
