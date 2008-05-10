@@ -235,6 +235,10 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	smagSetInf (prob, SCIPinfinity(scip));
   	smagReadModel (prob);
 
+  	/* include default SCIP plugins, documentation says it needs to come after BCH setup because of its display column;
+  	 * on the other hand the plugins should be included (and their parameters registered) before the option file read */
+  	SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
+
   	SCIP_CALL( setupMIPParameters(prob, scip) );
   	
 		SCIP_CALL( SCIPgetBoolParam(scip, "gams/solvefinal", &solvefinal) );
@@ -262,9 +266,6 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   		}
   		SCIP_CALL( BCHsetup(scip, &mip_vars, prob, gamshandler, dict, bch, bchdata) );
   	}
-
-  	/* include default SCIP plugins, documentation says it needs to come after BCH setup because of its display column */
-  	SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
 
   	SCIP_CALL( setupMIP(prob, gamshandler, dict, scip, mip_vars) );
   	
