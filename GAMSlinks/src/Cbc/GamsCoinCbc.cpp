@@ -70,7 +70,7 @@ void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myo
 */
 CbcModel* preprocessedmodel=NULL;
 int gamsCallBack(CbcModel* currentSolver, int whereFrom) {
-	printf("Got callback from %d with current solver %p\n", whereFrom, (void*)currentSolver);
+//	printf("Got callback from %d with current solver %p\n", whereFrom, (void*)currentSolver);
 	if (whereFrom==3) preprocessedmodel=currentSolver;
 	
 	return 0;
