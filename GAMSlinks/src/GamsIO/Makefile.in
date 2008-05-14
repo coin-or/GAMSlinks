@@ -82,12 +82,13 @@ libGamsIO_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsOptions.la \
 	$(GAMSIO_OBJDIR)/libGamsGDX.la
 am_libGamsIO_la_OBJECTS = GamsModel.lo GamsFinalize.lo \
 	GamsMessageHandler.lo GamsOptions.lo GamsDictionary.lo \
-	GamsBCH.lo GamsHandlerIOLib.lo
+	GamsBCH.lo GamsHandlerIOLib.lo GamsGDX.lo
 libGamsIO_la_OBJECTS = $(am_libGamsIO_la_OBJECTS)
 libSmagIO_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsOptions.la \
 	$(GAMSIO_OBJDIR)/libGamsGDX.la
 am_libSmagIO_la_OBJECTS = GamsOptions.lo GamsMessageHandler.lo \
-	SmagExtra.lo GamsHandlerSmag.lo GamsBCH.lo GamsDictionary.lo
+	SmagExtra.lo GamsHandlerSmag.lo GamsBCH.lo GamsDictionary.lo \
+	GamsGDX.lo
 libSmagIO_la_OBJECTS = $(am_libSmagIO_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -387,14 +388,14 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = $(am__append_1)
 lib_LTLIBRARIES = libGamsIO.la libSmagIO.la
 libGamsIO_la_SOURCES = \
-  GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsOptions.cpp GamsDictionary.cpp GamsBCH.cpp GamsHandlerIOLib.cpp
+  GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsOptions.cpp GamsDictionary.cpp GamsBCH.cpp GamsHandlerIOLib.cpp GamsGDX.cpp
 
 libGamsIO_la_LDFLAGS = 
 libGamsIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 
 #we do not add SmagJournal to SmagIO to avoid dependence on Ipopt
 libSmagIO_la_SOURCES = \
-  GamsOptions.cpp GamsMessageHandler.cpp SmagExtra.c GamsHandlerSmag.cpp GamsBCH.cpp GamsDictionary.cpp
+  GamsOptions.cpp GamsMessageHandler.cpp SmagExtra.c GamsHandlerSmag.cpp GamsBCH.cpp GamsDictionary.cpp GamsGDX.cpp
 
 libSmagIO_la_LDFLAGS = 
 libSmagIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGDX.la
@@ -493,6 +494,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsBCH.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsDictionary.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsFinalize.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsGDX.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsHandlerIOLib.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsHandlerSmag.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@

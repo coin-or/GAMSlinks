@@ -16,11 +16,13 @@
 extern "C" struct dictRec;
 
 class GamsBCH;
+class GamsGDX;
 
 /** Class to provide access to a GAMS dictionary.
  */
 class GamsDictionary {
 	friend class GamsBCH;
+	friend class GamsGDX;
 private:
 	GamsHandler& gams;
 	
@@ -41,7 +43,7 @@ public:
 	/** Indicates whether a dictionary has been successfully read.
 	 */
 	bool haveNames() { return dict; }
-
+	
 	/** The name of a column.
 	    @param colnr column index
 			@param buffer a buffer for writing the name in

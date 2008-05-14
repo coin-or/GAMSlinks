@@ -11,6 +11,16 @@
 
 #include "GamsHandler.hpp"
 
+#ifdef HAVE_CSTDLIB
+#include <cstdlib>
+#else
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#else
+#error "don't have header file for stdlib"
+#endif
+#endif
+
 struct smagRec;
 
 /** Forwards requests for output and point transformations to the GAMS I/O library smag.
@@ -22,9 +32,11 @@ private:
 	static inline int translateMask(const PrintMask& mask);
 	
 public:
-	GamsHandlerSmag(smagRec* smag_) : smag(smag_) { }
+	GamsHandlerSmag(smagRec* smag_ = NULL) : smag(smag_) { }
 	
 	~GamsHandlerSmag() { }
+	
+	void setSmag(smagRec* smag_) { smag=smag_; }
 	
 	void print(PrintMask mask, const char* msg) const;
 	
