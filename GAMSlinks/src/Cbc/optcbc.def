@@ -45,7 +45,7 @@ startalg enumstr 0 "dual" 1 2 LP solver for root node
  "primal" 1
  "dual" 1
  "barrier" 1
-mipstart boolean 0 1 1 3 whether it should be tried to use the initial variable levels as initial MIP solution
+mipstart boolean 0 0 1 3 whether it should be tried to use the initial variable levels as initial MIP solution
 tol_integer double 0 1e-6 0 maxdouble 1 3 tolerance for integrality
 sollim enumint 0 -1 1 3 limit on number of solutions
  -1 1

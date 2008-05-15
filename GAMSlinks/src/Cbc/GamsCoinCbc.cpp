@@ -259,8 +259,15 @@ int main (int argc, const char *argv[]) {
 		gm.setStatus(GamsModel::NormalCompletion, GamsModel::InfeasibleNoSolution);
 		myout << "Model infeasible." << CoinMessageEol;
 	} else {
-		gm.setStatus(GamsModel::ErrorSystemFailure,GamsModel::ErrorNoSolution);	
-		myout << "Model status unkown." << CoinMessageEol;
+		if (model.bestSolution()) {
+			write_solution=true;
+			gm.setStatus(GamsModel::TerminatedBySolver, GamsModel::IntegerSolution);
+			myout << "Model status unknown, but have feasible solution.";
+		} else {
+			gm.setStatus(GamsModel::TerminatedBySolver, GamsModel::ErrorNoSolution);
+			myout << "Model status unknown, No feasible solution found.";
+		}
+		 myout << "CBC primary status:" << model.status() << "secondary status:" << model.secondaryStatus() << CoinMessageEol;
 	}
 
 	gm.setIterUsed(model.getIterationCount());
@@ -473,10 +480,13 @@ void setupStartingPoint(GamsModel& gm, GamsOptions& opt, CbcModel& model) {
 	delete[] cstat;
 	delete[] rstat;
 	
-//	if (!gm.isLP() && opt.getBool("mipstart")) {
-//		double objval=0.; // TODO
-//		model.setBestSolution(CBC_SOLUTION, objval, gm.ColLevel(), false);
-//	}
+	if (!gm.isLP() && opt.getBool("mipstart")) {
+		double objval=0.;
+		for (int i=0; i<gm.nCols(); ++i)
+			objval += gm.ObjCoef()[i]*gm.ColLevel()[i];
+		gm.PrintOut(GamsModel::LogMask, "Letting CBC try user-given column levels as initial MIP solution:");
+		model.setBestSolution(gm.ColLevel(), gm.nCols(), objval, true);
+	}
 }
 
 void setupParameters(GamsModel& gm, GamsOptions& opt, CbcModel& model) {

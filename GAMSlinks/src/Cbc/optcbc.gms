@@ -135,7 +135,7 @@ lpoptions.(
   startalg             .s.(def dual)
 )
 mipgeneral.(
-  mipstart             .b.(def 1)
+  mipstart             .b.(def 0)
   tol_integer          .r.(def 1e-6)
   sollim               .i.(def -1, lo -1, up 2147483647)
   strongbranching      .i.(def 5, lo 0, up 999999)
