@@ -107,10 +107,10 @@ int main (int argc, const char *argv[]) {
 	myout.setCurrentDetail(1);
 	gm.PrintOut(GamsModel::StatusMask, "=1"); // turn on copying into .lst file
 #ifdef GAMS_BUILD	
-	myout << "\nGAMS/CoinCbc 2.0 LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
+	myout << "\nGAMS/CoinCbc 2.1 LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
 	GamsOptions opt(gamshandler, "coincbc");
 #else
-	myout << "\nGAMS/Cbc 2.0 LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
+	myout << "\nGAMS/Cbc 2.1 LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
 	GamsOptions opt(gamshandler, "cbc");
 #endif
 	opt.readOptionsFile(gm.getOptionfile());
@@ -268,6 +268,7 @@ int main (int argc, const char *argv[]) {
 			myout << "Model status unknown, No feasible solution found.";
 		}
 		 myout << "CBC primary status:" << model.status() << "secondary status:" << model.secondaryStatus() << CoinMessageEol;
+//		 myout << "CBC number of nodes:" << model.getNodeCount() << " max: " << model.getIntParam(CbcModel::CbcMaxNumNode) << CoinMessageEol;
 	}
 
 	gm.setIterUsed(model.getIterationCount());
