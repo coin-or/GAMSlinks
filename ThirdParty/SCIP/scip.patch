@@ -1,6 +1,6 @@
 diff -Naur scip.orig/lpi_clp.cpp scip.0326/lpi_clp.cpp
 --- scip.orig/lpi_clp.cpp	2008-03-26 20:44:33.000000000 +0100
-+++ scip/lpi_clp.cpp		2008-03-26 20:43:15.000000000 +0100
++++ scip/src/scip/lpi_clp.cpp		2008-03-26 20:43:15.000000000 +0100
 @@ -275,6 +275,13 @@
     return clpname;
  }
@@ -92,7 +92,7 @@ diff -Naur scip.orig/lpi_clp.cpp scip.0326/lpi_clp.cpp
     
 diff -Naur scip.orig/lpi.h scip.0326/lpi.h
 --- scip.orig/lpi.h	2008-03-26 20:44:33.000000000 +0100
-+++ scip.0326/lpi.h	2008-03-26 20:43:15.000000000 +0100
++++ scip/src/scip/lpi.h	2008-03-26 20:43:15.000000000 +0100
 @@ -47,6 +47,17 @@
     void
     );
