@@ -84,7 +84,12 @@ if test @gamslinks_build_osi@ = 1 ; then
   skiplist="$skiplist skip('Osi','semicon1')=yes;"
   skiplist="$skiplist skip('Osi','sl4scon1')=yes;"
   
-  stdskiplist="$stdskiplist slvstdskip('Osi')=yes;"
+  #in GAMS 22.7 on, slvstdskip has been renamed to slvstdoutskip
+  if grep -q slvstdskip quality.gms ; then
+    stdskiplist="$stdskiplist slvstdskip('Osi')=yes;"
+  else
+    stdskiplist="$stdskiplist slvstdoutskip('Osi')=yes;"
+  fi
  
   if test @coin_build_clp@ = 1 ; then
     echo "solver clp" > osi.opt
@@ -132,7 +137,9 @@ fi
 
 
 echo "Patch quality test driver to get COIN solvers and skip list in." 
-#we add our solvers to the list of master solvers and put our skiplist somewhere (in front of skip('convert',mdl)=yes)
+#We add our solvers to the list of master solvers,
+#put our solver-model skiplist somewhere (in front of skip('convert',mdl)=yes), and
+#put our skiplist for stdout tests somewhere (in front of set slvtest).
 sed -e "/master set of solvers/s/\/;\$/$solvers \/;/" \
     -e "/^skip('convert'/s/^/$skiplist /" \
     -e "/^set slvtest/s/^/$stdskiplist /" \
