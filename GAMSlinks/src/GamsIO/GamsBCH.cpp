@@ -106,35 +106,35 @@ void GamsBCH::set_userjobid(const char* userjobid_) {
 	strncpy(userjobid, userjobid_, sizeof(userjobid));
 }
 
-void GamsBCH::set_usergdxname(char* usergdxname, const char* usergdxprefix /* = NULL */) {
+void GamsBCH::set_usergdxname(const char* usergdxname, const char* usergdxprefix /* = NULL */) {
   // remove ".gdx" suffix, if exists
   int len=strlen(usergdxname);
   if (len>4 && strncmp(usergdxname+(len-4), ".gdx", 4)==0)
-  	usergdxname[len-4]=0;
+  	len-=4;
   if (usergdxprefix)
-  	snprintf(gdxname, sizeof(gdxname), "%s%s%s.gdx", usergdxprefix, usergdxname, userjobid);
+  	snprintf(gdxname, sizeof(gdxname), "%s%.*s%s.gdx", usergdxprefix, len, usergdxname, userjobid);
   else
-  	snprintf(gdxname, sizeof(gdxname), "%s%s.gdx", usergdxname, userjobid);
+  	snprintf(gdxname, sizeof(gdxname), "%.*s%s.gdx", len, usergdxname, userjobid);
 }
 
-void GamsBCH::set_usergdxnameinc(char* usergdxnameinc, const char* usergdxprefix /* = NULL */) {
+void GamsBCH::set_usergdxnameinc(const char* usergdxnameinc, const char* usergdxprefix /* = NULL */) {
 	int len=strlen(usergdxnameinc);
   if (len>4 && strncmp(usergdxnameinc+(len-4), ".gdx", 4)==0)
-  	usergdxnameinc[len-4]=0;
+  	len-=4;
   if (usergdxprefix)
-  	snprintf(gdxnameinc, sizeof(gdxnameinc), "%s%s%s.gdx", usergdxprefix, usergdxnameinc, userjobid);
+  	snprintf(gdxnameinc, sizeof(gdxnameinc), "%s%.*s%s.gdx", usergdxprefix, len, usergdxnameinc, userjobid);
   else
-  	snprintf(gdxnameinc, sizeof(gdxnameinc), "%s%s.gdx", usergdxnameinc, userjobid);
+  	snprintf(gdxnameinc, sizeof(gdxnameinc), "%.*s%s.gdx", len, usergdxnameinc, userjobid);
 }
 
-void GamsBCH::set_usergdxin(char* usergdxin_, const char* usergdxprefix /* = NULL */) {
+void GamsBCH::set_usergdxin(const char* usergdxin_, const char* usergdxprefix /* = NULL */) {
 	int len=strlen(usergdxin_);
   if (len>4 && strncmp(usergdxin_+(len-4), ".gdx", 4)==0)
-  	usergdxin_[len-4]=0;
+  	len-=4;
   if (usergdxprefix)
-  	snprintf(usergdxin, sizeof(usergdxin), "%s%s%s.gdx", usergdxprefix, usergdxin_, userjobid);
+  	snprintf(usergdxin, sizeof(usergdxin), "%s%.*s%s.gdx", usergdxprefix, len, usergdxin_, userjobid);
   else
-  	snprintf(usergdxin, sizeof(usergdxin), "%s%s.gdx", usergdxin_, userjobid);
+  	snprintf(usergdxin, sizeof(usergdxin), "%.*s%s.gdx", len, usergdxin_, userjobid);
 }
 
 void GamsBCH::set_usercutcall(const char* usercutcall) {

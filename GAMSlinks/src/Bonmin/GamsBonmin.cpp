@@ -33,6 +33,9 @@ extern "C" {
 #include "SmagJournal.hpp"
 #include "GamsHandlerSmag.hpp"
 #include "GamsMessageHandler.hpp"
+#include "GamsDictionary.hpp"
+#include "GamsBCH.hpp"
+#include "GamsHeuristic.hpp"
 #include "BonBonminSetup.hpp"
 #include "BonCbc.hpp"
 
@@ -70,6 +73,8 @@ void solve_minlp(smagHandle_t);
 void solve_nlp(smagHandle_t);
 void write_solution(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int iterations);
 void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int iterations);
+void BCHsetupOptions(Bonmin::RegisteredOptions& regopt);
+void BCHinit(BonminSetup& bonmin_setup, GamsHandlerSmag& gamshandler, GamsDictionary*& dict, GamsBCH*& bch);
 
 int main (int argc, char* argv[]) {
 #if defined(_MSC_VER)
@@ -175,6 +180,9 @@ void solve_minlp(smagHandle_t prob) {
 	);
 #endif
   
+  // add options specific to BCH heuristic callback
+  BCHsetupOptions(*bonmin_setup.roptions());
+  
 	// Change some options
 	bonmin_setup.options()->SetNumericValue("bound_relax_factor", 0);
 	bonmin_setup.options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false);
@@ -264,13 +272,22 @@ void solve_minlp(smagHandle_t prob) {
 			return;
 		}
 	}
+	
+	GamsHandlerSmag gamshandler(prob);
+	GamsDictionary* dict = NULL;
+	GamsBCH* bch = NULL;
+	
+	bonmin_setup.options()->GetStringValue("userheurcall", parvalue, "");
+	if (!parvalue.empty()) {
+		BCHinit(bonmin_setup, gamshandler, dict, bch);
+		if (bch)
+			bch->setGlobalBounds(prob->colLB, prob->colUB);
+	}
+	
+	GamsMessageHandler messagehandler(gamshandler);
 
 	// the easiest would be to call bonmin_setup.initializeBonmin(smagminlp), but then we cannot set the message handler
 	// so we do the following
-//	bonmin_setup.use(smagminlp); // this initialize the OsiTMINLPInterface
-	GamsHandlerSmag gamshandler(prob);
-	GamsMessageHandler messagehandler(gamshandler);
-//	SmagMessageHandler smagmessagehandler(prob);
 	try {
 	{
 		OsiTMINLPInterface first_osi_tminlp;
@@ -347,6 +364,9 @@ void solve_minlp(smagHandle_t prob) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Unknown exception thrown.\n");
 		smagReportSolBrief(prob, 13, 13);
 	}
+	
+	delete dict;
+	delete bch;
 } // solve_minlp()
 
 /** Processes Ipopt solution and calls method to report the solution.
@@ -566,6 +586,93 @@ void solve_nlp(smagHandle_t prob) {
 			break;
 	}
 } // solve_nlp()
+
+void BCHsetupOptions(Bonmin::RegisteredOptions& regopt) {
+  regopt.AddStringOption1("usergdxin",
+  		"The name of the GDX file read back into Bonmin.", "bchin.gdx",
+  		"*", "name of GDX file", "");
+  regopt.AddStringOption1("usergdxname",
+  		"The name of the GDX file exported from the solver with the solution at the node.", "bchout.gdx",
+  		"*", "name of GDX file", "");
+  regopt.AddStringOption1("usergdxnameinc",
+  		"The name of the GDX file exported from the solver with the incumbent solution.", "bchout_i.gdx",
+  		"*", "name of GDX file", "");
+  regopt.AddStringOption1("usergdxprefix",
+  		"Prefixes usergdxin, usergdxname, and usergdxnameinc.", "",
+  		"*", "the prefix", "");
+  regopt.AddStringOption1("userheurcall",
+  		"The GAMS command line to call the heuristic.", "",
+  		"*", "GAMS command line", "");
+  regopt.AddLowerBoundedIntegerOption("userheurfirst",
+  		"Calls the heuristic for the first n nodes.",
+  		0, 10, "");
+  regopt.AddLowerBoundedIntegerOption("userheurfreq",
+  		"Determines the frequency of the heuristic model calls.",
+  		0, 10, "");
+  regopt.AddLowerBoundedIntegerOption("userheurinterval",
+  		"Determines the interval when to apply the multiplier for the frequency of the heuristic model calls.",
+  		0, 100, "");
+  regopt.AddLowerBoundedIntegerOption("userheurmult",
+  		"Determines the multiplier for the frequency of the heuristic model calls.",
+  		0, 2, "");
+  regopt.AddBoundedIntegerOption("userheurnewint",
+  		"Calls the heuristic if the solver found a new integer feasible solution.",
+  		0, 1, 1, "");
+  regopt.AddLowerBoundedIntegerOption("userheurobjfirst",
+  		"Calls the heuristic if the LP value of the node is closer to the best bound than the current incumbent.",
+  		0, 0, "");
+  regopt.AddBoundedIntegerOption("userkeep",
+  		"Calls gamskeep instead of gams.",
+  		0, 1, 0, "");
+  regopt.AddStringOption1("userjobid",
+  		"Postfixes gdxname, gdxnameinc, and gdxin.", "",
+  		"*", "the postfix", "");	
+} // BCHsetupOptions
+
+void BCHinit(BonminSetup& bonmin_setup, GamsHandlerSmag& gamshandler, GamsDictionary*& dict, GamsBCH*& bch) {
+	dict = new GamsDictionary(gamshandler);
+	dict->readDictionary();
+	if (!dict->haveNames()) {
+		gamshandler.print(GamsHandler::AllMask, "Error reading dictionary file. Cannot use BCH without dictionary.\n");
+		return;
+	}
+	bch = new GamsBCH(gamshandler, *dict);
+	
+	std::string s;
+	int i;
+	
+	std::string gdxprefix;
+	bonmin_setup.options()->GetStringValue("usergdxprefix", gdxprefix, "");
+
+	bonmin_setup.options()->GetStringValue("userjobid", s, "");
+	bch->set_userjobid(s.c_str());
+	
+	bonmin_setup.options()->GetStringValue("usergdxname", s, "");
+	bch->set_usergdxname(s.c_str(), gdxprefix.c_str());
+	bonmin_setup.options()->GetStringValue("usergdxnameinc", s, "");
+	bch->set_usergdxnameinc(s.c_str(), gdxprefix.c_str());
+	bonmin_setup.options()->GetStringValue("usergdxin", s, "");
+	bch->set_usergdxin(s.c_str(), gdxprefix.c_str());
+	bonmin_setup.options()->GetIntegerValue("userkeep", i, "");
+	bch->set_userkeep(i);
+
+	bonmin_setup.options()->GetStringValue("userheurcall", s, "");
+	bch->set_userheurcall(s.c_str());
+	bonmin_setup.options()->GetIntegerValue("userheurfreq", i, "");
+	bch->set_userheurfreq(i);
+	bonmin_setup.options()->GetIntegerValue("userheurinterval", i, "");
+	bch->set_userheurinterval(i);
+	bonmin_setup.options()->GetIntegerValue("userheurmult", i, "");
+	bch->set_userheurmult(i);
+	bonmin_setup.options()->GetIntegerValue("userheurfirst", i, "");
+	bch->set_userheurfirst(i);
+	bonmin_setup.options()->GetIntegerValue("userheurnewint", i, "");
+	bch->set_userheurnewint(i);
+	bonmin_setup.options()->GetIntegerValue("userheurobjfirst", i, "");
+	bch->set_userheurobjfirst(i);
+
+	bonmin_setup.heuristics().push_back(new GamsHeuristic(*bch)); //TODO do I need to delete my heuristic again?
+}
 
 // enum ApplicationReturnStatus
 //   {

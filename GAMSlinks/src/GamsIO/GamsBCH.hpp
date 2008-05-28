@@ -109,9 +109,9 @@ public:
 	void setupParameters(GamsOptions& opt);
 
 	void set_userjobid(const char* userjobid); // should be called before other parameter set methods
-	void set_usergdxname(char* usergdxname, const char* usergdxprefix = NULL);
-	void set_usergdxnameinc(char* usergdxnameinc, const char* usergdxprefix = NULL);
-	void set_usergdxin(char* usergdxin_, const char* usergdxprefix = NULL);
+	void set_usergdxname(const char* usergdxname, const char* usergdxprefix = NULL);
+	void set_usergdxnameinc(const char* usergdxnameinc, const char* usergdxprefix = NULL);
+	void set_usergdxin(const char* usergdxin_, const char* usergdxprefix = NULL);
 	void set_userkeep(bool userkeep_) { userkeep = userkeep_; }
 
 	void set_usercutcall(const char* usercutcall);
