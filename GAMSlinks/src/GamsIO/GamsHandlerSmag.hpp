@@ -57,6 +57,7 @@ public:
 
 	int getObjSense() const;
 	
+	int getColCount() const;
 	int getColCountGams() const;
 	int getObjVariable() const;
 	int getObjRow() const;

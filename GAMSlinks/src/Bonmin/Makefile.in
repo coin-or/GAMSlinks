@@ -93,7 +93,7 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_GamsBonmin_OBJECTS = GamsBonmin.$(OBJEXT) SmagMINLP.$(OBJEXT) \
 	SmagNLP.$(OBJEXT) SmagJournal.$(OBJEXT) \
-	GamsHeuristic.$(OBJEXT)
+	GamsHeuristic.$(OBJEXT) GamsCutGenerator.$(OBJEXT)
 GamsBonmin_OBJECTS = $(am_GamsBonmin_OBJECTS)
 @COIN_HAS_CLP_TRUE@am__DEPENDENCIES_1 =  \
 @COIN_HAS_CLP_TRUE@	$(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
@@ -399,7 +399,7 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmsbm_nt.cmd gmsbm_us.run install/gmsbm_nt.dat \
 	install/gmsbm_un.dat $(am__append_8)
-GamsBonmin_SOURCES = GamsBonmin.cpp SmagMINLP.cpp SmagMINLP.hpp ../Ipopt/SmagNLP.cpp ../GamsIO/SmagJournal.cpp ../Cbc/GamsHeuristic.cpp
+GamsBonmin_SOURCES = GamsBonmin.cpp SmagMINLP.cpp SmagMINLP.hpp ../Ipopt/SmagNLP.cpp ../GamsIO/SmagJournal.cpp ../Cbc/GamsHeuristic.cpp ../Cbc/GamsCutGenerator.cpp
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	-I`$(CYGPATH_W) $(srcdir)/../GamsIO` -I`$(CYGPATH_W) \
 	$(srcdir)/../Ipopt` -I`$(CYGPATH_W) $(srcdir)/../Cbc` \
@@ -521,6 +521,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsBonmin.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCutGenerator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsHeuristic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagJournal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagMINLP.Po@am__quote@
@@ -588,6 +589,20 @@ GamsHeuristic.obj: ../Cbc/GamsHeuristic.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../Cbc/GamsHeuristic.cpp' object='GamsHeuristic.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GamsHeuristic.obj `if test -f '../Cbc/GamsHeuristic.cpp'; then $(CYGPATH_W) '../Cbc/GamsHeuristic.cpp'; else $(CYGPATH_W) '$(srcdir)/../Cbc/GamsHeuristic.cpp'; fi`
+
+GamsCutGenerator.o: ../Cbc/GamsCutGenerator.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GamsCutGenerator.o -MD -MP -MF "$(DEPDIR)/GamsCutGenerator.Tpo" -c -o GamsCutGenerator.o `test -f '../Cbc/GamsCutGenerator.cpp' || echo '$(srcdir)/'`../Cbc/GamsCutGenerator.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/GamsCutGenerator.Tpo" "$(DEPDIR)/GamsCutGenerator.Po"; else rm -f "$(DEPDIR)/GamsCutGenerator.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../Cbc/GamsCutGenerator.cpp' object='GamsCutGenerator.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GamsCutGenerator.o `test -f '../Cbc/GamsCutGenerator.cpp' || echo '$(srcdir)/'`../Cbc/GamsCutGenerator.cpp
+
+GamsCutGenerator.obj: ../Cbc/GamsCutGenerator.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GamsCutGenerator.obj -MD -MP -MF "$(DEPDIR)/GamsCutGenerator.Tpo" -c -o GamsCutGenerator.obj `if test -f '../Cbc/GamsCutGenerator.cpp'; then $(CYGPATH_W) '../Cbc/GamsCutGenerator.cpp'; else $(CYGPATH_W) '$(srcdir)/../Cbc/GamsCutGenerator.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/GamsCutGenerator.Tpo" "$(DEPDIR)/GamsCutGenerator.Po"; else rm -f "$(DEPDIR)/GamsCutGenerator.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../Cbc/GamsCutGenerator.cpp' object='GamsCutGenerator.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GamsCutGenerator.obj `if test -f '../Cbc/GamsCutGenerator.cpp'; then $(CYGPATH_W) '../Cbc/GamsCutGenerator.cpp'; else $(CYGPATH_W) '$(srcdir)/../Cbc/GamsCutGenerator.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

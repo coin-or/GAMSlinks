@@ -19,8 +19,10 @@ CglCutGenerator* GamsCutGenerator::clone() const {
 void GamsCutGenerator::generateCuts(const OsiSolverInterface &si, OsiCuts &cs, const CglTreeInfo info) const {
 	if (modelptr && modelptr->bestSolution()) 
 		bch.setIncumbentSolution(modelptr->bestSolution(), modelptr->getObjValue());
-	
+
 	if (!bch.doCuts()) return; // skip cut generation
+	
+	assert(si.getNumCols()==bch.getNumCols());
 
 	bch.setNodeSolution(si.getColSolution(), si.getObjValue(), si.getColLower(), si.getColUpper());
 

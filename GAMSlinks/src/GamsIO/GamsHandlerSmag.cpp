@@ -120,6 +120,10 @@ int GamsHandlerSmag::getObjSense() const {
 	return smag->minim;
 }
 
+int GamsHandlerSmag::getColCount() const {
+	return smagColCount(smag);
+}
+
 int GamsHandlerSmag::getColCountGams() const {
 	return smag->gms.ncols;
 }

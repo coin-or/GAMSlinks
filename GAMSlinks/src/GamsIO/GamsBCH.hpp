@@ -152,6 +152,11 @@ public:
 	/** Accumulated number of solutions.
 	 */
 	int getNumSols() const { return nsols; }
+	
+	/** The number of columns expected by GamsBCH.
+	 * For debugging purposes.
+	 */
+	int getNumCols() const { return gams.getColCount(); }
 
 	void printParameters() const;
 	

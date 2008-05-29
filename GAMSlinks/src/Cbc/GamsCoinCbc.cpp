@@ -195,7 +195,6 @@ int main (int argc, const char *argv[]) {
 
 		if (opt.isDefined("usercutcall")) {
 			GamsCutGenerator gamscutgen(*bch, preprocessedmodel);
-			// TODO: check arguments and try to map to gams parameters
 			model.addCutGenerator(&gamscutgen, 1, "GamsBCH", true, opt.getBool("usercutnewint"));
 		}
 		if (opt.isDefined("userheurcall")) {

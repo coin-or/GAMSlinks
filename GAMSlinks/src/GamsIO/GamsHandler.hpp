@@ -88,6 +88,9 @@ public:
 	 */
 	virtual int getObjSense() const=0;
 	
+	/** The number of columns in the possibly transformed problem space.
+	 */
+	virtual int getColCount() const=0;
 	/** The number of columns in the original gams space.
 	 */
 	virtual int getColCountGams() const=0;

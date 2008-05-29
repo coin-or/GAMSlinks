@@ -158,6 +158,10 @@ int GamsHandlerIOLib::getObjSense() const {
 	return (0 == iolib.idir) ? 1 : -1;
 }
 
+int GamsHandlerIOLib::getColCount() const {
+	return iolib.ncols - (is_reformulated ? 1 : 0);
+}
+
 int GamsHandlerIOLib::getColCountGams() const {
 	return iolib.ncols;
 }

@@ -36,6 +36,7 @@ extern "C" {
 #include "GamsDictionary.hpp"
 #include "GamsBCH.hpp"
 #include "GamsHeuristic.hpp"
+#include "GamsCutGenerator.hpp"
 #include "BonBonminSetup.hpp"
 #include "BonCbc.hpp"
 
@@ -74,7 +75,7 @@ void solve_nlp(smagHandle_t);
 void write_solution(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int iterations);
 void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int iterations);
 void BCHsetupOptions(Bonmin::RegisteredOptions& regopt);
-void BCHinit(BonminSetup& bonmin_setup, GamsHandlerSmag& gamshandler, GamsDictionary*& dict, GamsBCH*& bch);
+void BCHinit(BonminSetup& bonmin_setup, GamsHandlerSmag& gamshandler, GamsDictionary*& dict, GamsBCH*& bch, CbcModel*& modelptr);
 
 int main (int argc, char* argv[]) {
 #if defined(_MSC_VER)
@@ -274,29 +275,27 @@ void solve_minlp(smagHandle_t prob) {
 	}
 	
 	GamsHandlerSmag gamshandler(prob);
+	GamsMessageHandler messagehandler(gamshandler);
 	GamsDictionary* dict = NULL;
 	GamsBCH* bch = NULL;
+	CbcModel* modelptr = NULL;
 	
-	bonmin_setup.options()->GetStringValue("userheurcall", parvalue, "");
-	if (!parvalue.empty()) {
-		BCHinit(bonmin_setup, gamshandler, dict, bch);
-		if (bch)
-			bch->setGlobalBounds(prob->colLB, prob->colUB);
-	}
-	
-	GamsMessageHandler messagehandler(gamshandler);
+	BCHinit(bonmin_setup, gamshandler, dict, bch, modelptr);
+	if (bch)
+		bch->setGlobalBounds(prob->colLB, prob->colUB);
 
 	// the easiest would be to call bonmin_setup.initializeBonmin(smagminlp), but then we cannot set the message handler
 	// so we do the following
 	try {
-	{
-		OsiTMINLPInterface first_osi_tminlp;
-		first_osi_tminlp.initialize(roptions, options, journalist, smagminlp);
-		first_osi_tminlp.passInMessageHandler(&messagehandler);
-		bonmin_setup.initialize(first_osi_tminlp); // this will clone first_osi_tminlp
-	}
+		{
+			OsiTMINLPInterface first_osi_tminlp;
+			first_osi_tminlp.initialize(roptions, options, journalist, smagminlp);
+			first_osi_tminlp.passInMessageHandler(&messagehandler);
+			bonmin_setup.initialize(first_osi_tminlp); // this will clone first_osi_tminlp
+		}
 
 		Bab bb;
+		modelptr = &bb.model();
 
 		mysmagminlp->clock_start=smagGetCPUTime(prob);
 		bb(bonmin_setup); //process parameters and do branch and bound
@@ -600,6 +599,24 @@ void BCHsetupOptions(Bonmin::RegisteredOptions& regopt) {
   regopt.AddStringOption1("usergdxprefix",
   		"Prefixes usergdxin, usergdxname, and usergdxnameinc.", "",
   		"*", "the prefix", "");
+  regopt.AddStringOption1("usercutcall",
+  		"The GAMS command line to call the cut generator.", "",
+  		"*", "GAMS command line", "");
+  regopt.AddLowerBoundedIntegerOption("usercutfirst",
+  		"Calls the cut generator for the first n nodes.",
+  		0, 10, "");
+  regopt.AddLowerBoundedIntegerOption("usercutfreq",
+  		"Determines the frequency of the cut generator model calls.",
+  		0, 10, "");
+  regopt.AddLowerBoundedIntegerOption("usercutinterval",
+  		"Determines the interval when to apply the multiplier for the frequency of the cut generator model calls.",
+  		0, 100, "");
+  regopt.AddLowerBoundedIntegerOption("usercutmult",
+  		"Determines the multiplier for the frequency of the cut generator model calls.",
+  		0, 2, "");
+  regopt.AddBoundedIntegerOption("usercutnewint",
+  		"Calls the cut generator if the solver found a new integer feasible solution.",
+  		0, 1, 0, "");
   regopt.AddStringOption1("userheurcall",
   		"The GAMS command line to call the heuristic.", "",
   		"*", "GAMS command line", "");
@@ -617,7 +634,7 @@ void BCHsetupOptions(Bonmin::RegisteredOptions& regopt) {
   		0, 2, "");
   regopt.AddBoundedIntegerOption("userheurnewint",
   		"Calls the heuristic if the solver found a new integer feasible solution.",
-  		0, 1, 1, "");
+  		0, 1, 0, "");
   regopt.AddLowerBoundedIntegerOption("userheurobjfirst",
   		"Calls the heuristic if the LP value of the node is closer to the best bound than the current incumbent.",
   		0, 0, "");
@@ -629,7 +646,18 @@ void BCHsetupOptions(Bonmin::RegisteredOptions& regopt) {
   		"*", "the postfix", "");	
 } // BCHsetupOptions
 
-void BCHinit(BonminSetup& bonmin_setup, GamsHandlerSmag& gamshandler, GamsDictionary*& dict, GamsBCH*& bch) {
+void BCHinit(BonminSetup& bonmin_setup, GamsHandlerSmag& gamshandler, GamsDictionary*& dict, GamsBCH*& bch, CbcModel*& modelptr) {
+	std::string s;
+	int i;
+	bool have_cutcall, have_heurcall;
+
+	bonmin_setup.options()->GetStringValue("usercutcall", s, "");
+	have_cutcall = !s.empty();
+	bonmin_setup.options()->GetStringValue("userheurcall", s, "");
+	have_heurcall = !s.empty();
+	
+	if (!have_cutcall && !have_heurcall) return;
+
 	dict = new GamsDictionary(gamshandler);
 	dict->readDictionary();
 	if (!dict->haveNames()) {
@@ -637,10 +665,7 @@ void BCHinit(BonminSetup& bonmin_setup, GamsHandlerSmag& gamshandler, GamsDictio
 		return;
 	}
 	bch = new GamsBCH(gamshandler, *dict);
-	
-	std::string s;
-	int i;
-	
+
 	std::string gdxprefix;
 	bonmin_setup.options()->GetStringValue("usergdxprefix", gdxprefix, "");
 
@@ -656,22 +681,57 @@ void BCHinit(BonminSetup& bonmin_setup, GamsHandlerSmag& gamshandler, GamsDictio
 	bonmin_setup.options()->GetIntegerValue("userkeep", i, "");
 	bch->set_userkeep(i);
 
-	bonmin_setup.options()->GetStringValue("userheurcall", s, "");
-	bch->set_userheurcall(s.c_str());
-	bonmin_setup.options()->GetIntegerValue("userheurfreq", i, "");
-	bch->set_userheurfreq(i);
-	bonmin_setup.options()->GetIntegerValue("userheurinterval", i, "");
-	bch->set_userheurinterval(i);
-	bonmin_setup.options()->GetIntegerValue("userheurmult", i, "");
-	bch->set_userheurmult(i);
-	bonmin_setup.options()->GetIntegerValue("userheurfirst", i, "");
-	bch->set_userheurfirst(i);
-	bonmin_setup.options()->GetIntegerValue("userheurnewint", i, "");
-	bch->set_userheurnewint(i);
-	bonmin_setup.options()->GetIntegerValue("userheurobjfirst", i, "");
-	bch->set_userheurobjfirst(i);
+	bool cutnewint = false;
+	if (have_cutcall) {
+		bonmin_setup.options()->GetStringValue("usercutcall", s, "");
+		bch->set_usercutcall(s.c_str());
+		bonmin_setup.options()->GetIntegerValue("usercutfreq", i, "");
+		bch->set_usercutfreq(i);
+		bonmin_setup.options()->GetIntegerValue("usercutinterval", i, "");
+		bch->set_usercutinterval(i);
+		bonmin_setup.options()->GetIntegerValue("usercutmult", i, "");
+		bch->set_usercutmult(i);
+		bonmin_setup.options()->GetIntegerValue("usercutfirst", i, "");
+		bch->set_usercutfirst(i);
+		bonmin_setup.options()->GetIntegerValue("usercutnewint", i, "");
+		bch->set_usercutnewint(i);
+		cutnewint = i;
+	}
+	
+	if (have_heurcall) {
+		bonmin_setup.options()->GetStringValue("userheurcall", s, "");
+		bch->set_userheurcall(s.c_str());
+		bonmin_setup.options()->GetIntegerValue("userheurfreq", i, "");
+		bch->set_userheurfreq(i);
+		bonmin_setup.options()->GetIntegerValue("userheurinterval", i, "");
+		bch->set_userheurinterval(i);
+		bonmin_setup.options()->GetIntegerValue("userheurmult", i, "");
+		bch->set_userheurmult(i);
+		bonmin_setup.options()->GetIntegerValue("userheurfirst", i, "");
+		bch->set_userheurfirst(i);
+		bonmin_setup.options()->GetIntegerValue("userheurnewint", i, "");
+		bch->set_userheurnewint(i);
+		bonmin_setup.options()->GetIntegerValue("userheurobjfirst", i, "");
+		bch->set_userheurobjfirst(i);
+	}
 
-	bonmin_setup.heuristics().push_back(new GamsHeuristic(*bch)); //TODO do I need to delete my heuristic again?
+	if (have_heurcall)
+		bonmin_setup.heuristics().push_back(new GamsHeuristic(*bch)); // BabSetupBase takes care of deleting this one
+	
+	if (have_cutcall) {
+		bonmin_setup.cutGenerators().push_back(BabSetupBase::CuttingMethod());
+		BabSetupBase::CuttingMethod& cutmeth(bonmin_setup.cutGenerators().back());
+		cutmeth.frequency = 1;
+		cutmeth.id = "GamsBCH";
+		cutmeth.cgl = new GamsCutGenerator(*bch, modelptr);
+		cutmeth.atSolution = cutnewint;
+		
+		bonmin_setup.options()->GetStringValue("bonmin.algorithm", s, "");
+		if (s=="B-BB") {
+			gamshandler.print(GamsHandler::AllMask, "Cut generators not supported by Branch & Bound algorithm (B-BB). Changing to Hybrid algorithm (B-Hyb).\n");
+			bonmin_setup.options()->SetStringValue("bonmin.algorithm", "B-Hyb");
+		}
+	}
 }
 
 // enum ApplicationReturnStatus
