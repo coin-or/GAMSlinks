@@ -14,6 +14,9 @@
 
 #include "smag.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /** Gives the structure of the Hessian of the objective and each constraint separately.
  * The user provides space to store the row/col indices and values of hessian entries.
@@ -34,5 +37,19 @@
  */ 
 int smagSingleHessians(smagHandle_t prob, int* hesRowIdx, int* hesColIdx, double* hesValue, int hesSize, int* rowStart);
 
+/** Computes the directional derivative of the objective function.
+ * Given a vector x and a direction d, computes the function value f(x) and the product <grad f(x), d>.
+ * @param prob Pointer to smag structure.
+ * @param x Array of length smagColCount(prob) containing the point where f(x) is evaluated.
+ * @param d Array of length smagColCount(prob) containing the direction in which the derivative is computed.
+ * @param f Storage for function value.
+ * @param df_d Storage for directional derivative.
+ * @return 0 on success, nonzero on failure.
+ */
+int smagEvalObjGradProd(smagHandle_t prob, double* x, double* d, double* f, double* df_d);
+
+#if defined(__cplusplus)
+} /* extern "C" */
+#endif
 
 #endif /*SMAGEXTRA_H_*/

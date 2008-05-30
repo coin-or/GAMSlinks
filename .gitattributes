@@ -128,6 +128,7 @@ GAMSlinks/src/SCIP/install/gmssc_nt.dat -text
 GAMSlinks/src/SCIP/install/gmssc_un.dat -text
 GAMSlinks/test/Makefile.am -text
 GAMSlinks/test/Makefile.in -text
+GAMSlinks/test/adbench.cpp -text
 GAMSlinks/test/run_tests.in -text
 /INSTALL -text
 /LICENSE -text

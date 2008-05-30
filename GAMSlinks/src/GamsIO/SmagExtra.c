@@ -10,6 +10,7 @@
 #include "SmagExtra.h"
 
 #include <stdlib.h>
+#include <assert.h>
 
 #include "g2dexports.h"
 
@@ -149,9 +150,66 @@ int smagSingleHessians(smagHandle_t prob, int* hesRowIdx, int* hesColIdx, double
   return numErr;
 }
 
+int smagEvalObjGradProd(smagHandle_t prob, double* x, double* d, double* f, double* df_d) {
+  gmsCFRec_t *gms;
+  smagObjGradRec_t *og;
+  strippedNLdata_t *snl;
+  double* x_, *d_;
+  int* S2G_;
+  int gi, sj;
+  int numErr;
+
+  assert(x);
+  assert(d);
+  gms = &prob->gms;
+  snl = &prob->snlData;
+
+  if (0 == prob->objColCountNL) { /* linear objective */
+    *f = 0;
+    *df_d = 0;
+    for (og = prob->objGrad;  og;  og = og->next) {
+      *f += og->dfdj * x[og->j];
+      *df_d += og->dfdj * d[og->j];
+    }
+    *f -= gms->grhs[gms->slplro-1] * prob->gObjFactor;
+    return 0;
+  }
+
+  /* transform x and d into original gams space, storing in prob->gx and snl->dfdx */
+  x_ = x;
+  d_ = d;
+  S2G_ = prob->colMapS2G;
+  for (sj = prob->colCount; sj; --sj, ++x_, ++d_, ++S2G_) {
+    prob->gx[*S2G_] = *x_;
+    snl->dfdx[*S2G_] = *d_; /* we just capture this memory for the next G2D call to avoid an extra allocation/free */
+  }
+
+  numErr = 0;
+  gi = prob->gObjRow;
+  
+  G2DGRADVPRODEVALX (prob->gx, snl->dfdx, f, df_d,
+  		snl->instr + snl->startIdx[gi] - 1, snl->numInstr + gi, snl->nlCons, &numErr);
+
+  if (numErr)
+    return numErr;
+
+  *f *= prob->gObjFactor;
+  *df_d *= prob->gObjFactor;
+  for (og = prob->objGrad;  og;  og = og->next) {
+    if (1==og->degree) {		/* linear term  in f(x) */
+      *f += og->dfdj * x[og->j];
+      *df_d += og->dfdj * d[og->j];
+    }
+  }
+
+  *f -= gms->grhs[gms->slplro-1] * prob->gObjFactor;
+    
+  return 0;
+}
+
 #ifndef DONT_DEFINE_STRICMP
 /* bch.o uses a reference to stricmp which is defined in iolib.
- * Since we do not like to link to iolib, we define our own stricmp function here.
+ * Since we usually do not like to link to iolib, we define our own stricmp function here.
  * Either we use strcasecmp, if available, or we use gcdstricmp from GAMS dictread.o 
  */
 #ifndef HAVE_STRICMP
