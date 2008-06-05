@@ -413,9 +413,13 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 		}
 	}
 	
-	// overestimate on max. nr. of nonzero in a row (prob->gms.maxcol does not seem to work)
-	SCIP_VAR** con_vars=new SCIP_VAR*[smagColCount(prob)];
-	SCIP_Real* con_coef=new SCIP_Real[smagColCount(prob)];
+	int maxrowlen=0;
+	for (int i=0; i<smagRowCount(prob); ++i)
+		if (prob->rowLen[i]>maxrowlen)
+			maxrowlen = prob->rowLen[i];
+	
+	SCIP_VAR** con_vars=new SCIP_VAR*[maxrowlen];
+	SCIP_Real* con_coef=new SCIP_Real[maxrowlen];
 	for (int i=0; i<smagRowCount(prob); ++i) {
 		double lb,ub;
 		switch (prob->rowType[i]) {
@@ -488,7 +492,7 @@ SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
 	SCIPchgFeastol(scip, 1e-7);
 	SCIPchgDualfeastol(scip, 1e-7);
 	
-	//TODO: cutoff
+	//TODO: cutoff (does not seem to be supported by SCIP yet)
 
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/names", "whether the gams dictionary should be read and col/row names be given to scip", NULL, FALSE, FALSE, NULL, NULL) );
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/solvefinal", "whether the problem should be solved with fixed discrete variables to get dual values", NULL, FALSE, TRUE, NULL, NULL) );
