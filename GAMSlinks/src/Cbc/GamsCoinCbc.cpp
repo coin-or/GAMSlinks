@@ -423,17 +423,33 @@ void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model) {
 		points[1]=0.;
 		for (i=0; i<gm.nCols(); ++i) {
 			if (!gm.ColSemiContinuous()[i]) continue;
+			if (gm.ColLb()[i]==0.) continue; // just a normal (maybe integer) variable
+			if (gm.ColDisc()[i] && gm.ColLb()[i]==1.) continue; // this is just an integer variable 
 			
-			points[2]=gm.ColLb()[i];
-			points[3]=gm.ColUb()[i];			
-			if (gm.ColLb()[i]==gm.ColUb()[i]) // var. can be only 0 or ColLb()[i]
-				objects[object_nr]=new CbcLotsize(&model, i, 2, points+1, false);
-			else // var. can be 0 or in the range between low and upper 
-				objects[object_nr]=new CbcLotsize(&model, i, 2, points, true);
+			if (gm.ColDisc()[i] && gm.ColUb()[i]<=1000) { // model lotsize for discrete variable as a set of integer values
+				int len = (int)(gm.ColUb()[i]-gm.ColLb()[i]+2);
+				double* points2 = new double[len];
+				points2[0]=0.;
+				int j=1;
+				for (int p=(int)gm.ColLb()[i]; p<=gm.ColUb()[i]; ++p, ++j)
+					points2[j] = (double)p;
+				objects[object_nr]=new CbcLotsize(&model, i, len, points2, false);
+				delete[] points2;
 				
+			} else { // lotsize for continuous variable or integer with large upper bounds
+				if (gm.ColUb()[i]>1000)
+					gm.PrintOut(GamsModel::AllMask, "Warning: Support of semiinteger variables with an upper bound larger than 1000 is experimental.\n");
+				points[2]=gm.ColLb()[i];
+				points[3]=gm.ColUb()[i];			
+				if (gm.ColLb()[i]==gm.ColUb()[i]) // var. can be only 0 or ColLb()[i]
+					objects[object_nr]=new CbcLotsize(&model, i, 2, points+1, false);
+				else // var. can be 0 or in the range between low and upper 
+					objects[object_nr]=new CbcLotsize(&model, i, 2, points, true);
+			}
+
 			if (gm.getPriorityOption() && minprior!=maxprior)
 				objects[object_nr]->setPriority(1+(int)(999*(gm.ColPriority()[i]-minprior)/(maxprior-minprior)));
-				
+
 			++object_nr;
 		}
 		assert(object_nr==gm.nSemiContinuous());

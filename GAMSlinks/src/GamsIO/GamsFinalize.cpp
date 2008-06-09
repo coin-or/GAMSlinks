@@ -127,7 +127,8 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 		solver->getBasisStatus(colBasis, rowBasis);
 		// translate from OSI codes to GAMS codes
 		for (int j=0; j<gm->nCols(); j++) {
-			if (discVar[j] || gm->SOSIndicator()[j] || gm->ColSemiContinuous()[j])
+			// in case that we have semicontinuous variables, duals also of continuous variables might be wrong, so we set all to superbasic
+			if (discVar[j] || gm->SOSIndicator()[j] || gm->nSemiContinuous())
 				colBasis[j]=GamsModel::SuperBasic;
 			else switch (colBasis[j]) {
 				case 3: colBasis[j]=GamsModel::NonBasicLower; break;
@@ -154,7 +155,8 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 //			*myout << "Have warm start basis." << CoinMessageEol;
 			for (int j=0; j<gm->nCols(); j++) {
 //				*myout << "col " << j << ": " << wsb->getStructStatus(j) << '\t' << colLevel[j] << CoinMessageEol;
-				if (discVar[j] || gm->SOSIndicator()[j] || gm->ColSemiContinuous()[j])
+				// in case that we have semicontinuous variables, duals also of continuous variables might be wrong, so we set all to superbasic
+				if (discVar[j] || gm->SOSIndicator()[j] || gm->nSemiContinuous())
 					colBasis[j]=GamsModel::SuperBasic;
 				else switch (wsb->getStructStatus(j)) {
 					case CoinWarmStartBasis::basic: colBasis[j]=GamsModel::Basic; break;
