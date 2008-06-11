@@ -59,7 +59,7 @@ GamsModel::GamsModel(const char *cntrfile)
   // Sizes for memory allocation
   nCols_ = iolib.ncols;
   if (iolib.modin == PROC_MIP) {
-  	nDCols_ = iolib.ndisc+iolib.nsemii;
+  	nDCols_ = iolib.ndisc-iolib.nsemi; // count of discrete columns seem to include semiint and semicol
 	  nSOS1_ = iolib.nosos1;
   	nSOS2_ = iolib.nosos2;
 	  nSemiCon_ = iolib.nsemi+iolib.nsemii;
@@ -239,7 +239,6 @@ void GamsModel::readMatrix() {
     }
   }
 
-//  nDCols_ = 0;
   for (j=0, jp=0, kp=0; j<nCols_; ++j) {
     cioReadCol (&colRec);
     nzcol = colRec.idata[1];
@@ -258,6 +257,18 @@ void GamsModel::readMatrix() {
       ColMargin_[jp] = colRec.cdata[5];
       ColScale_[jp] = colRec.cdata[6];
       
+      // change type of trivial semicon/semiint variables to continuous/integer
+      if (colRec.idata[3] == VARSEMICON && ColLb_[jp]==0.) {
+      	colRec.idata[3] = VARCON;
+      	--nSemiCon_;
+        PrintOut(LogMask, "Warning: Changed semicontinuous variable with lower bound 0. to continuous variable.");
+      }
+      if (colRec.idata[3]==VARSEMIINT && (ColLb_[jp]==0. || ColLb_[jp]==1.)) {
+      	colRec.idata[3] = VARINT;
+      	--nSemiCon_;
+        PrintOut(LogMask, "Warning: Changed semiinteger variable with lower bound 0. or 1. to continuous variable.");
+      }
+      
       ColBasis_[jp] = colRec.idata[2];
       switch (colRec.idata[3]) {	/* variable type */
       case VARCON:
@@ -270,7 +281,6 @@ void GamsModel::readMatrix() {
         ColDisc_[jp]=true;
 				ColSemiCon_[jp]=false;
         SOSIndicator_[jp]=0;
-//        nDCols_++;
         break;
       case VARSOS1:
         ColDisc_[jp]=false;
@@ -291,7 +301,6 @@ void GamsModel::readMatrix() {
         ColDisc_[jp]=true;
 				ColSemiCon_[jp]=true;
         SOSIndicator_[jp]=0;
-//        nDCols_++;
         break;
       default:
         PrintOut(AllMask, "\n*** Unhandled column type. Allowed column types: continuous, binary, integer, sos1, sos2, semicontinuous, semiinteger\n");

@@ -324,7 +324,7 @@ void setupProblem(GamsModel& gm, GamsDictionary& gamsdict, OsiClpSolverInterface
 	// Cbc thinks in terms of lotsize objects, and for those the lower bound has to be 0
 	if (gm.nSemiContinuous())
 		for (int j=0; j<gm.nCols(); ++j)
-			if (gm.ColSemiContinuous()[j]) solver.setColLower(j, 0.);		
+			if (gm.ColSemiContinuous()[j]) solver.setColLower(j, 0.);
 
 	if (!gm.nCols()) {
 		gm.PrintOut(GamsModel::LogMask, "Problem has no columns. Adding fake column...\n");
@@ -423,8 +423,6 @@ void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model) {
 		points[1]=0.;
 		for (i=0; i<gm.nCols(); ++i) {
 			if (!gm.ColSemiContinuous()[i]) continue;
-			if (gm.ColLb()[i]==0.) continue; // just a normal (maybe integer) variable
-			if (gm.ColDisc()[i] && gm.ColLb()[i]==1.) continue; // this is just an integer variable 
 			
 			if (gm.ColDisc()[i] && gm.ColUb()[i]<=1000) { // model lotsize for discrete variable as a set of integer values
 				int len = (int)(gm.ColUb()[i]-gm.ColLb()[i]+2);
@@ -1010,11 +1008,11 @@ void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myo
 		} else {
 			myout << "Value " << value << " not supported for option 'coststrategy'. Ignoring this option" << CoinMessageEol;
 		} 
-	} else if (gm.nSemiContinuous()) {
+	} /* else if (gm.nSemiContinuous()) {
 		myout << "CBC integer preprocessing does not handle semicontinuous variables correct (yet), thus we switch it off." << CoinMessageEol;
 		par_list.push_back("-preprocess");
 		par_list.push_back("off");
-	}
+	} */
 	
 	if (opt.isDefined("increment")) {
 		par_list.push_back("-increment");
