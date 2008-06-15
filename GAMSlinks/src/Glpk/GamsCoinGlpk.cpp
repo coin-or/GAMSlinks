@@ -338,6 +338,9 @@ int main (int argc, const char *argv[]) {
 	// We write a solution if model was declared optimal or feasible.
 	if (GamsModel::Optimal==gm.getModelStatus() || 
 			GamsModel::IntegerSolution==gm.getModelStatus()) {
+		snprintf(buffer, 255, "Best solution: %20.10g   (%d iterations, %g seconds)", gm.getObjVal(), solver.getIterationCount(), gm.SecondsSinceStart());
+		gm.PrintOut(GamsModel::AllMask, buffer);
+
 		if (solvefinal) {
 			GamsWriteSolutionOsi(&gm, &myout, &solver, true);
 		} else {

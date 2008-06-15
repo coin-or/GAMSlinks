@@ -305,12 +305,12 @@ void solve_minlp(smagHandle_t prob) {
 			smagSetObjEst(prob, best_bound);
 		smagSetNodUsd(prob, bb.numNodes());
 
+		OsiTMINLPInterface osi_tminlp(*bonmin_setup.nonlinearSolver());
 		if (bb.bestSolution()) {
 			char buf[100];
 			snprintf(buf, 100, "\nBonmin finished. Found feasible point. Objective function = %f.\n", bb.bestObj());
 			smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
 
-			OsiTMINLPInterface osi_tminlp(*bonmin_setup.nonlinearSolver());
 			bool has_free_var=false;
 			for (Index i=0; i<smagColCount(prob); ++i)
 				if (prob->colType[i]!=SMAG_VAR_CONT)
@@ -345,6 +345,22 @@ void solve_minlp(smagHandle_t prob) {
 		} else {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "\nBonmin finished. No feasible point found.\n");
 			smagReportSolBrief(prob, mysmagminlp->model_status, mysmagminlp->solver_status);
+		}
+
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "\n");
+		char buf[1024];
+		if (bb.bestSolution()) {
+			snprintf(buf, 1024, "MINLP solution: %20.10g   (%d nodes)\n", smagMinim(prob)*osi_tminlp.getObjValue(), bb.numNodes());
+			smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
+		}
+		if (best_bound>-1e200 && best_bound<1e200) {
+			snprintf(buf, 1024, "Best possible: %21.10g\n", smagMinim(prob)*best_bound);
+			smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
+
+			if (bb.bestSolution()) {
+				snprintf(buf, 1024, "Absolute gap: %22.10g\nRelative gap: %22.10g\n", CoinAbs(osi_tminlp.getObjValue()-best_bound), CoinAbs(osi_tminlp.getObjValue()-best_bound)/CoinMax(CoinAbs(best_bound), 1.));
+				smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
+			}
 		}
   } catch(CoinError &error) {
   	char buf[1024];

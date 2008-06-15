@@ -231,7 +231,7 @@ int main (int argc, const char *argv[]) {
 		write_solution=true;
 		if (opt.getDouble("optca")>0 || opt.getDouble("optcr")>0) {
 			gm.setStatus(GamsModel::NormalCompletion, GamsModel::IntegerSolution);
-			myout << "Solved optimal (within gap tolerances: absolute =" << opt.getDouble("optca") << "relative =" << opt.getDouble("optcr") << ")." << CoinMessageEol;
+			myout << "Solved to optimality (within gap tolerances)." << CoinMessageEol;
 		} else {
 			gm.setStatus(GamsModel::NormalCompletion, GamsModel::Optimal);
 			myout << "Solved to optimality." << CoinMessageEol;
@@ -278,6 +278,19 @@ int main (int argc, const char *argv[]) {
 		GamsWriteSolutionOsi(&gm, &myout, model.solver(), true);
 	} else { // trigger the write of GAMS solution file
 		gm.setSolution();
+	}
+
+	if (model.bestSolution()) {
+		snprintf(buffer, 255, "MIP solution: %21.10g   (%d nodes, %g seconds)", model.getObjValue(), model.getNodeCount(), gm.SecondsSinceStart());
+		gm.PrintOut(GamsModel::AllMask, buffer);
+	}
+	snprintf(buffer, 255, "Best possible: %20.10g", model.getBestPossibleObjValue());
+	gm.PrintOut(GamsModel::AllMask, buffer);
+	if (model.bestSolution()) {
+		snprintf(buffer, 255, "Absolute gap: %21.5g   (absolute tolerance optca: %g)", CoinAbs(model.getObjValue()-model.getBestPossibleObjValue()), opt.getDouble("optca"));
+		gm.PrintOut(GamsModel::AllMask, buffer);
+		snprintf(buffer, 255, "Relative gap: %21.5g   (relative tolerance optcr: %g)", CoinAbs(model.getObjValue()-model.getBestPossibleObjValue())/CoinMax(CoinAbs(model.getBestPossibleObjValue()), 1.), opt.getDouble("optcr"));
+		gm.PrintOut(GamsModel::AllMask, buffer);
 	}
 
 	delete bch;

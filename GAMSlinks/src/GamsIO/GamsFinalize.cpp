@@ -89,6 +89,8 @@ void GamsFinalizeOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInterfac
 	// We write a solution if model was declared optimal.
 	if (GamsModel::Optimal==gm->getModelStatus() || 
 			GamsModel::IntegerSolution==gm->getModelStatus()) {
+		(*myout) << "Writing solution. Objective:" << solver->getObjValue()
+						 << "Time:" << gm->SecondsSinceStart() << "s\n " << CoinMessageEol;
 		GamsWriteSolutionOsi(gm, myout, solver, swapRowStatus);
 	}	else {
 		gm->setSolution(); // Need this to trigger the write of GAMS solution file
@@ -118,9 +120,6 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 	assert(rowLevel);
 
 	gm->setObjVal(solver->getObjValue());
-
-	(*myout) << "Writing solution. Objective:" << gm->getObjVal()
-					 << "Time:" << gm->SecondsSinceStart() << "s\n " << CoinMessageEol;
 					 
 	if (solver->optimalBasisIsAvailable()) {
 //		*myout << "Have optimal basis." << CoinMessageEol;
