@@ -350,7 +350,7 @@ void solve_minlp(smagHandle_t prob) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "\n");
 		char buf[1024];
 		if (bb.bestSolution()) {
-			snprintf(buf, 1024, "MINLP solution: %20.10g   (%d nodes)\n", smagMinim(prob)*osi_tminlp.getObjValue(), bb.numNodes());
+			snprintf(buf, 1024, "MINLP solution: %20.10g   (%d nodes, %g seconds)\n", smagMinim(prob)*osi_tminlp.getObjValue(), bb.numNodes(), smagGetCPUTime(prob)-mysmagminlp->clock_start);
 			smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
 		}
 		if (best_bound>-1e200 && best_bound<1e200) {
@@ -358,7 +358,7 @@ void solve_minlp(smagHandle_t prob) {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
 
 			if (bb.bestSolution()) {
-				snprintf(buf, 1024, "Absolute gap: %22.10g\nRelative gap: %22.10g\n", CoinAbs(osi_tminlp.getObjValue()-best_bound), CoinAbs(osi_tminlp.getObjValue()-best_bound)/CoinMax(CoinAbs(best_bound), 1.));
+				snprintf(buf, 1024, "Absolute gap: %22.5g\nRelative gap: %22.5g\n", CoinAbs(osi_tminlp.getObjValue()-best_bound), CoinAbs(osi_tminlp.getObjValue()-best_bound)/CoinMax(CoinAbs(best_bound), 1.));
 				smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
 			}
 		}
