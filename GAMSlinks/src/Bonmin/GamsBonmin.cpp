@@ -202,7 +202,11 @@ void solve_minlp(smagHandle_t prob) {
 		bonmin_setup.options()->SetStringValue("hessian_constant", "yes"); 
 	if (prob->gms.iscopt)
 		bonmin_setup.options()->SetStringValue("nlp_scaling_method", "user-scaling");
-
+	if (prob->gms.nosos1 || prob->gms.nosos2) { // strong branching not compatible with sos in 0.99
+		smagStdOutputPrint(prob, SMAG_LOGMASK, "Found SOS constraints: Changing default variable selection rule to most-fractional.\n");
+		bonmin_setup.options()->SetStringValue("bonmin.variable_selection", "most-fractional");
+	}
+	
 	try {
 		if (prob->gms.useopt)
 			bonmin_setup.readOptionsFile(prob->gms.optFileName);
@@ -354,11 +358,11 @@ void solve_minlp(smagHandle_t prob) {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
 		}
 		if (best_bound>-1e200 && best_bound<1e200) {
-			snprintf(buf, 1024, "Best possible: %21.10g\n", smagMinim(prob)*best_bound);
+			snprintf(buf, 1024, "Best possible: %21.10g\n", best_bound);
 			smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
 
 			if (bb.bestSolution()) {
-				snprintf(buf, 1024, "Absolute gap: %22.5g\nRelative gap: %22.5g\n", CoinAbs(osi_tminlp.getObjValue()-best_bound), CoinAbs(osi_tminlp.getObjValue()-best_bound)/CoinMax(CoinAbs(best_bound), 1.));
+				snprintf(buf, 1024, "Absolute gap: %22.5g\nRelative gap: %22.5g\n", CoinAbs(smagMinim(prob)*osi_tminlp.getObjValue()-best_bound), CoinAbs(smagMinim(prob)*osi_tminlp.getObjValue()-best_bound)/CoinMax(CoinAbs(best_bound), 1.));
 				smagStdOutputPrint(prob, SMAG_ALLMASK, buf);
 			}
 		}
