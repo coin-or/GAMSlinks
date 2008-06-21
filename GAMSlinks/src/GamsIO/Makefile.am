@@ -18,7 +18,7 @@ libGamsIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGam
 
 #we do not add SmagJournal to SmagIO to avoid dependence on Ipopt
 libSmagIO_la_SOURCES = \
-  GamsOptions.cpp GamsMessageHandler.cpp SmagExtra.c GamsHandlerSmag.cpp GamsBCH.cpp GamsDictionary.cpp GamsGDX.cpp
+  GamsOptions.cpp GamsMessageHandler.cpp SmagExtra.c GamsHandlerSmag.cpp GamsBCH.cpp GamsDictionary.cpp GamsGDX.cpp GamsNLinstr.c
 libSmagIO_la_LDFLAGS =
 libSmagIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 

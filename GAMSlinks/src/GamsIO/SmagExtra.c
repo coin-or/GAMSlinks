@@ -1,4 +1,4 @@
-/* Copyright (C) 2008
+/* Copyright (C) 2008 GAMS Development and others
  All Rights Reserved.
  This code is published under the Common Public License.
 

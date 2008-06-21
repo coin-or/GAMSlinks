@@ -63,6 +63,8 @@ GAMSlinks/src/GamsIO/GamsMessageHandler.cpp -text
 GAMSlinks/src/GamsIO/GamsMessageHandler.hpp -text
 GAMSlinks/src/GamsIO/GamsModel.cpp -text
 GAMSlinks/src/GamsIO/GamsModel.hpp -text
+GAMSlinks/src/GamsIO/GamsNLinstr.c -text
+GAMSlinks/src/GamsIO/GamsNLinstr.h -text
 GAMSlinks/src/GamsIO/GamsOptions.cpp -text
 GAMSlinks/src/GamsIO/GamsOptions.hpp -text
 GAMSlinks/src/GamsIO/Makefile.am -text

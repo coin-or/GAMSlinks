@@ -9,10 +9,10 @@
 #include "Smag2OSiL.hpp"
 #include "GamsDictionary.hpp"
 #include "GamsHandlerSmag.hpp"
-
-extern "C" {
+#include "GamsNLinstr.h"
 #include "SmagExtra.h"
-}
+
+#include "CoinHelperFunctions.hpp"
 
 Smag2OSiL::Smag2OSiL(smagHandle_t smag_)
 : osinstance(NULL), smag(smag_)
@@ -72,17 +72,20 @@ bool Smag2OSiL::createOSInstance() {
 	delete[] var_types;
 	delete[] varnames;
 	delete[] vartext;
-
+	
 	if (smag->gObjRow<0) { // we seem to have no objective, i.e., a CNS model
 		osinstance->setObjectiveNumber(0);
 	} else { // setup objective
 		osinstance->setObjectiveNumber(1);
 	
-		SparseVector* objectiveCoefficients = new SparseVector(smagObjColCount(smag));
+		SparseVector* objectiveCoefficients = new SparseVector(smagObjColCount(smag)-smagObjColCountNL(smag));
 		j=0;
-		for (smagObjGradRec_t* og = smag->objGrad;  og;  og = og->next, ++j) {
+		for (smagObjGradRec_t* og = smag->objGrad;  og;  og = og->next) {
+			if (og->degree>1) continue; // skip nonlinear terms
 			objectiveCoefficients->indexes[j] = og->j;
 			objectiveCoefficients->values[j] = og->dfdj;
+			j++;
+		  assert(j<=smagObjColCount(smag)-smagObjColCountNL(smag));
 		}
 
 		std::string objname;
@@ -91,12 +94,15 @@ bool Smag2OSiL::createOSInstance() {
 
 		if (!osinstance->addObjective(-1, objname,
 				smagMinim(smag)==1 ? "min" : "max",
-						smag->gms.grhs[smag->gms.slplro-1]*smag->gObjFactor,
+						-smag->gms.grhs[smag->gms.slplro-1]*smag->gObjFactor,
 						1., objectiveCoefficients)) {
 			delete objectiveCoefficients;
 			return false;
 		}
 		delete objectiveCoefficients;
+		
+		if (smagObjColCountNL(smag))
+			++osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions;
 	}
 	
 	osinstance->setConstraintNumber(smagRowCount(smag));
@@ -131,35 +137,54 @@ bool Smag2OSiL::createOSInstance() {
 	j = 0;
   for (i = 0;  i < smagRowCount(smag);  ++i) {
   	rowstarts[i]=j;
-    for (smagConGradRec_t* cGrad = smag->conGrad[i];  cGrad;  cGrad = cGrad->next, ++j) {
+    for (smagConGradRec_t* cGrad = smag->conGrad[i];  cGrad;  cGrad = cGrad->next) {
+    	if (cGrad->degree>1) continue; // skip nonlinear variables
     	values[j]=cGrad->dcdj;
     	colindexes[j]=cGrad->j;
+    	j++;
     }
+    
+    if (smag->snlData.numInstr && smag->snlData.numInstr[smag->rowMapS2G[i]])
+    	++osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions;
   }
-  assert(j==smagNZCount(smag));
+  assert(j<=smagNZCount(smag));
   rowstarts[smagRowCount(smag)]=j;
 
-	if (!osinstance->setLinearConstraintCoefficients(smagNZCount(smag), false, 
-		values, 0, smagNZCount(smag)-1,
-		colindexes, 0, smagNZCount(smag)-1,
+	if (!osinstance->setLinearConstraintCoefficients(j, false, 
+		values, 0, j-1,
+		colindexes, 0, j-1,
 		rowstarts, 0, smagRowCount(smag)))
 		return false;
 
-	if (smagColCountNL(smag)) {
-		if (!setupQuadraticTerms()) return false; //TODO: should call this only if it is a QQP
+	if (!smagColCountNL(smag)) // everything linear -> finished
 		return true;
-	}
+	
+	//TODO: if model is quadratic (QCP or MIQCP), call setupQuadraticTerms() ?
 	
 	//nonlinear stuff
-	osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions = 
-		smagRowCountNL(smag) + (smagObjColCountNL(smag)>0 ? 1 : 0);
-	osinstance->instanceData->nonlinearExpressions->nl = new Nl*[osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions];
+	osinstance->instanceData->nonlinearExpressions->nl = CoinCopyOfArrayOrZero((Nl**)NULL, osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
 	int iNLidx = 0;
 		
 	strippedNLdata_t *snl=&smag->snlData;
+	assert(snl->numInstr);
 	OSnLNode* nl;
 	if (smagObjColCountNL(smag)>0) {
+		std::clog << "parsing nonlinear objective instructions" << std::endl;
 		nl=parseGamsInstructions(snl->instr+snl->startIdx[smag->gObjRow]-1, snl->numInstr[smag->gObjRow], snl->nlCons);
+		if (!nl) return false;
+		if (smag->gObjFactor == -1.) {
+			OSnLNode* negnode = new OSnLNodeNegate;
+			negnode->m_mChildren[0] = nl;
+			nl = negnode;
+		} else if (smag->gObjFactor != 1.) {
+			OSnLNodeNumber* numbernode = new OSnLNodeNumber();
+			numbernode->value = smag->gObjFactor;
+			OSnLNodeTimes* timesnode = new OSnLNodeTimes();
+			timesnode->m_mChildren[0] = nl;
+			timesnode->m_mChildren[1] = numbernode;
+			nl = timesnode;
+		}
+		assert(iNLidx < osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
 		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx] = new Nl();
 		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx]->idx = -1;
 		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx]->osExpressionTree = new OSExpressionTree();
@@ -168,16 +193,20 @@ bool Smag2OSiL::createOSInstance() {
 	}
 
 	for (i=0; i<smagRowCount(smag); ++i) {
-		if (!smag->snlData.numInstr || smag->snlData.numInstr[i]==0) continue;
-		nl=parseGamsInstructions(snl->instr+snl->startIdx[smag->rowMapS2G[i]]-1, snl->numInstr[smag->rowMapS2G[i]], snl->nlCons);
+		if (!smag->snlData.numInstr[smag->rowMapS2G[i]]) continue;
+		std::clog << "parsing " << smag->snlData.numInstr[smag->rowMapS2G[i]] << " nonlinear instructions of constraint " << osinstance->getConstraintNames()[i] << std::endl;
+		nl = parseGamsInstructions(snl->instr+snl->startIdx[smag->rowMapS2G[i]]-1, snl->numInstr[smag->rowMapS2G[i]], snl->nlCons);
+		if (!nl) return false;
+		assert(iNLidx < osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
 		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx] = new Nl();
 		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx]->idx = i; // correct that this is the con. number?
 		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx]->osExpressionTree = new OSExpressionTree();
 		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx]->osExpressionTree->m_treeRoot = nl;
 		++iNLidx;
 	}
+	assert(iNLidx == osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
 
-	// TODO: separate quadratic terms from expression trees
+	// TODO: separate quadratic terms from expression trees?
 
 	return true;
 }
@@ -227,40 +256,297 @@ bool Smag2OSiL::setupQuadraticTerms() {
 	return true;
 }
 
-//#include "GamsNLcodes.hpp"
-
 OSnLNode* Smag2OSiL::parseGamsInstructions(unsigned int* instr, int num_instr, double* constants) {
 	std::vector<OSnLNode*> nlNodeVec;
-	nlNodeVec.reserve(num_instr);
 
-	//TODO
-/* the following code from OS/examples/../instanceGenerator.cpp shows how to generate a nl instruction in postfix format and use a OS method to create a corresponding expression tree
-	// the objective function nonlinear term abs( x0 + 1)
-	OSnLNode *nlNodePoint;
-	OSnLNodeVariable *nlNodeVariablePoint;
-	OSnLNodeNumber *nlNodeNumberPoint;
-	OSnLNodeMax *nlNodeMaxPoint;
-	// create a variable nl node for x0
-	nlNodeVariablePoint = new OSnLNodeVariable();
-	nlNodeVariablePoint->idx=0;
-	nlNodeVec.push_back( nlNodeVariablePoint);
-	// create the nl node for number 1
-	nlNodeNumberPoint = new OSnLNodeNumber(); 
-	nlNodeNumberPoint->value = 1.0;
-	nlNodeVec.push_back( nlNodeNumberPoint);
-	// create the nl node for +
-	nlNodePoint = new OSnLNodePlus();
-	nlNodeVec.push_back( nlNodePoint);
-	// create the nl node for max
-	nlNodePoint = new OSnLNodeAbs();
-	nlNodeVec.push_back( nlNodePoint);
-
-	// the vectors are in postfix format
-	// now the expression tree
-	return nlNodeVec[0]->createExpressionTreeFromPostfix(nlNodeVec);
-*/
+//	for (int i=0; i<num_instr; ++i)
+//		std::clog << i << '\t' << GamsOpCodeName[getInstrOpCode(instr[i])] << '\t' << getInstrAddress(instr[i]) << std::endl;
 	
-	return NULL;
+	// reorder instructions such that there are no PushS, Popup, or Swap left
+	reorderInstr(instr, num_instr);
+	
+	nlNodeVec.reserve(num_instr);
+	
+	for (int i=0; i<num_instr; ++i) {
+		GamsOpCode opcode = getInstrOpCode(instr[i]);
+		int address = getInstrAddress(instr[i]);
+		
+		std::clog << '\t' << GamsOpCodeName[opcode] << ": ";
+		switch(opcode) {
+			case nlNoOp : { // no operation
+				std::clog << "ignored" << std::endl;
+			} break;
+			case nlPushV : { // push variable
+				address = smag->colMapG2S[address];
+				std::clog << "push variable " << osinstance->getVariableNames()[address] << std::endl;
+				OSnLNodeVariable *nlNode = new OSnLNodeVariable();
+				nlNode->idx=address;
+				nlNodeVec.push_back( nlNode );
+			} break;
+			case nlPushI : { // push constant
+				std::clog << "push constant " << constants[address] << std::endl;
+				OSnLNodeNumber *nlNode = new OSnLNodeNumber();
+				nlNode->value = constants[address];
+				nlNodeVec.push_back( nlNode );
+			} break;
+			case nlStore: { // store row
+				std::clog << "ignored" << std::endl;
+			} break;
+			case nlAdd : { // add
+				std::clog << "add" << std::endl;
+				nlNodeVec.push_back( new OSnLNodePlus() );
+			} break;
+			case nlAddV: { // add variable
+				address = smag->colMapG2S[address];
+				std::clog << "add variable " << osinstance->getVariableNames()[address] << std::endl;
+				OSnLNodeVariable *nlNode = new OSnLNodeVariable();
+				nlNode->idx=address;
+				nlNodeVec.push_back( nlNode );
+				nlNodeVec.push_back( new OSnLNodePlus() );
+			} break;
+			case nlAddI: { // add immediate
+				std::clog << "add constant " << constants[address] << std::endl;
+				OSnLNodeNumber *nlNode = new OSnLNodeNumber();
+				nlNode->value = constants[address];
+				nlNodeVec.push_back( nlNode );
+				nlNodeVec.push_back( new OSnLNodePlus() );
+			} break;
+			case nlSub: { // minus
+				std::clog << "minus" << std::endl;
+				nlNodeVec.push_back( new OSnLNodeMinus() );
+			} break;
+			case nlSubV: { // subtract variable
+				address = smag->colMapG2S[address];
+				std::clog << "substract variable " << osinstance->getVariableNames()[address] << std::endl;
+				OSnLNodeVariable *nlNode = new OSnLNodeVariable();
+				nlNode->idx=address;
+				nlNodeVec.push_back( nlNode );
+				nlNodeVec.push_back( new OSnLNodeMinus() );
+			} break;
+			case nlSubI: { // subtract immediate
+				std::clog << "substract constant " << constants[address] << std::endl;
+				OSnLNodeNumber *nlNode = new OSnLNodeNumber();
+				nlNode->value = constants[address];
+				nlNodeVec.push_back( nlNode );
+				nlNodeVec.push_back( new OSnLNodeMinus() );
+			} break;
+			case nlMul: { // multiply
+				std::clog << "multiply" << std::endl;
+				nlNodeVec.push_back( new OSnLNodeTimes() );				
+			} break;
+			case nlMulV: { // multiply variable
+				address = smag->colMapG2S[address];
+				std::clog << "multiply variable " << osinstance->getVariableNames()[address] << std::endl;
+				OSnLNodeVariable *nlNode = new OSnLNodeVariable();
+				nlNode->idx=address;
+				nlNodeVec.push_back( nlNode );
+				nlNodeVec.push_back( new OSnLNodeTimes() );
+			} break;
+			case nlMulI: { // multiply immediate
+				std::clog << "multiply constant " << constants[address] << std::endl;
+				OSnLNodeNumber *nlNode = new OSnLNodeNumber();
+				nlNode->value = constants[address];
+				nlNodeVec.push_back( nlNode );
+				nlNodeVec.push_back( new OSnLNodeTimes() );
+			} break;
+			case nlDiv: { // divide
+				std::clog << "divide" << std::endl;
+				nlNodeVec.push_back( new OSnLNodeDivide() );				
+			} break;
+			case nlDivV: { // divide variable
+				address = smag->colMapG2S[address];
+				std::clog << "divide variable " << osinstance->getVariableNames()[address] << std::endl;
+				OSnLNodeVariable *nlNode = new OSnLNodeVariable();
+				nlNode->idx=address;
+				nlNodeVec.push_back( nlNode );
+				nlNodeVec.push_back( new OSnLNodeDivide() );
+			} break;
+			case nlDivI: { // divide immediate
+				std::clog << "divide constant " << constants[address] << std::endl;
+				OSnLNodeNumber *nlNode = new OSnLNodeNumber();
+				nlNode->value = constants[address];
+				nlNodeVec.push_back( nlNode );
+				nlNodeVec.push_back( new OSnLNodeDivide() );
+			} break;
+			case nlUMin: { // unary minus
+				std::clog << "negate" << std::endl;
+				nlNodeVec.push_back( new OSnLNodeNegate() );				
+			} break;
+			case nlUMinV: { // unary minus variable
+				address = smag->colMapG2S[address];
+				std::clog << "push negated variable " << osinstance->getVariableNames()[address] << std::endl;
+				OSnLNodeVariable *nlNode = new OSnLNodeVariable();
+				nlNode->idx = address;
+				nlNode->coef = -1.;
+				nlNodeVec.push_back( nlNode );
+			} break;
+			case nlCallArg1 :
+			case nlCallArg2 :
+			case nlCallArgN : {
+				std::clog << "call function ";
+				GamsFuncCode func = GamsFuncCode(address+1); // here the shift by one was not a good idea
+				switch (func) {
+					case fnmin : {
+						std::clog << "min" << std::endl;
+						nlNodeVec.push_back( new OSnLNodeMin() );
+					} break;
+					case fnmax : {
+						std::clog << "max" << std::endl;
+						nlNodeVec.push_back( new OSnLNodeMax() );
+					} break;
+					case fnsqr : {
+						std::clog << "square" << std::endl;
+						nlNodeVec.push_back( new OSnLNodeSquare() );
+					} break;
+					case fnexp:
+					case fnslexp:
+					case fnsqexp: {
+						std::clog << "exp" << std::endl;
+						nlNodeVec.push_back( new OSnLNodeExp() );
+					} break;
+					case fnlog : {
+						std::clog << "ln" << std::endl;
+						nlNodeVec.push_back( new OSnLNodeLn() );
+					} break;
+					case fnlog10:
+					case fnsllog10:
+					case fnsqlog10: {
+						std::clog << "log10 = ln * 1/ln(10)" << std::endl;
+						nlNodeVec.push_back( new OSnLNodeLn() );
+						OSnLNodeNumber *nlNode = new OSnLNodeNumber();
+						nlNode->value = 1./log(10.);
+						nlNodeVec.push_back( nlNode );
+						nlNodeVec.push_back( new OSnLNodeTimes() );
+					} break;
+					case fnlog2 : {
+						std::clog << "log2 = ln * 1/ln(2)" << std::endl;
+						nlNodeVec.push_back( new OSnLNodeLn() );
+						OSnLNodeNumber *nlNode = new OSnLNodeNumber();
+						nlNode->value = 1./log(2.);
+						nlNodeVec.push_back( nlNode );
+						nlNodeVec.push_back( new OSnLNodeTimes() );
+					} break;
+					case fnsqrt: {
+						std::clog << "sqrt" << std::endl;
+						nlNodeVec.push_back( new OSnLNodeSqrt() );
+					} break;
+					case fnabs: {
+						std::clog << "abs" << std::endl;
+						nlNodeVec.push_back( new OSnLNodeAbs() );						
+					} break;
+					case fncos: {
+						std::clog << "cos" << std::endl;
+						nlNodeVec.push_back( new OSnLNodeCos() );						
+					} break;
+					case fnsin: {
+						std::clog << "sin" << std::endl;
+						nlNodeVec.push_back( new OSnLNodeSin() );						
+					} break;
+					case fnpower:
+					case fnrpower: // x ^ y
+					case fncvpower: // constant ^ x
+					case fnvcpower: { // x ^ constant {
+						std::clog << "power" << std::endl;
+						nlNodeVec.push_back( new OSnLNodePower() );						
+					} break;
+					case fnpi: {
+						std::clog << "pi" << std::endl;
+						nlNodeVec.push_back( new OSnLNodePI() );
+					} break;
+					case fndiv:
+					case fndiv0: {
+						nlNodeVec.push_back( new OSnLNodeDivide() );
+					} break;
+					case fnslrec: // 1/x
+					case fnsqrec: { // 1/x
+						std::clog << "divide" << std::endl;
+						nlNodeVec.push_back( new OSnLNodeLn() );
+						OSnLNodeNumber *nlNode = new OSnLNodeNumber();
+						nlNode->value = 1.;
+						nlNodeVec.push_back( nlNode );
+						nlNodeVec.push_back( new OSnLNodeDivide() );
+					} break;
+					case fnceil: case fnfloor: case fnround:
+					case fnmod: case fntrunc: case fnsign:
+					case fnarctan: case fnerrf: case fndunfm:
+					case fndnorm: case fnerror: case fnfrac: case fnerrorl:
+			    case fnfact /* factorial */: 
+			    case fnunfmi /* uniform random number */:
+			    case fnncpf /* fischer: sqrt(x1^2+x2^2+2*x3) */:
+			    case fnncpcm /* chen-mangasarian: x1-x3*ln(1+exp((x1-x2)/x3))*/:
+			    case fnentropy /* x*ln(x) */: case fnsigmoid /* 1/(1+exp(-x)) */:
+			    case fnboolnot: case fnbooland:
+			    case fnboolor: case fnboolxor: case fnboolimp:
+			    case fnbooleqv: case fnrelopeq: case fnrelopgt:
+			    case fnrelopge: case fnreloplt: case fnrelople:
+			    case fnrelopne: case fnifthen:
+			    case fnedist /* euclidian distance */:
+			    case fncentropy /* x*ln((x+d)/(y+d))*/:
+			    case fngamma: case fnloggamma: case fnbeta:
+			    case fnlogbeta: case fngammareg: case fnbetareg:
+			    case fnsinh: case fncosh: case fntanh:
+			    case fnsignpower /* sign(x)*abs(x)^c */:
+			    case fnncpvusin /* veelken-ulbrich */:
+			    case fnncpvupow /* veelken-ulbrich */:
+			    case fnbinomial:
+			    case fntan: case fnarccos:
+			    case fnarcsin: case fnarctan2 /* arctan(x2/x1) */:
+			    case fnpoly: /* simple polynomial */
+					default : {
+						std::cerr << "nr. " << func << " - unsuppored. Error." << std::endl;
+						return NULL;
+					}				
+				}
+			} break;
+			case nlMulIAdd: {
+				std::clog << "multiply constant " << constants[address] << " and add " << std::endl;
+				OSnLNodeNumber *nlNode = new OSnLNodeNumber();
+				nlNode->value = constants[address];
+				nlNodeVec.push_back( nlNode );
+				nlNodeVec.push_back( new OSnLNodeTimes() );
+				nlNodeVec.push_back( new OSnLNodePlus() );
+			} break;
+			case nlFuncArgN : {
+				std::clog << "ignored" << std::endl;
+			} break;
+			case nlArg: {
+				std::clog << "ignored" << std::endl;
+			} break;
+			case nlHeader: { // header
+				std::clog << "ignored" << std::endl;
+			} break;
+			case nlPushZero: {
+				std::clog << "push constant zero" << std::endl;
+				nlNodeVec.push_back( new OSnLNodeNumber() );
+			} break;
+			case nlStoreS: { // store scaled row
+				std::clog << "ignored" << std::endl;
+			} break;
+			// the following three should have been taken out by reorderInstr above; the remaining ones seem to be unused by now
+			case nlPushS: // duplicate value from address levels down on top of stack
+			case nlPopup: // duplicate value from this level to at address levels down and pop entries in between
+			case nlSwap: // swap two positions on top of stack
+			case nlAddL: // add local
+			case nlSubL: // subtract local
+			case nlMulL: // multiply local
+			case nlDivL: // divide local
+			case nlPushL: // push local
+			case nlPopL: // pop local
+			case nlPopDeriv: // pop derivative
+			case nlUMinL: // push umin local
+			case nlPopDerivS: // store scaled gradient
+			case nlEquScale: // equation scale
+			case nlEnd: // end of instruction list
+			default: {
+				std::cerr << "not supported - Error." << std::endl;
+				return NULL;
+			}
+		}
+	}
+
+	if (!nlNodeVec.size()) return NULL;	
+	// the vector is in postfix format - create expression tree and return it
+	return nlNodeVec[0]->createExpressionTreeFromPostfix(nlNodeVec);
 }
 
 bool Smag2OSiL::setupTimeDomain() {
