@@ -115,7 +115,7 @@ void reorderInstr(unsigned int* instr, int num_instr) {
 	instrpos[0] = 0;
 
 	for (k=1; k<num_instr; ++k) {
-		enum GamsOpCode opcode = getInstrOpCode(instr[k]);
+		GamsOpCode opcode = getInstrOpCode(instr[k]);
 		switch (opcode) {
 			case nlUMinV:
 			case nlPushV:

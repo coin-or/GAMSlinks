@@ -24,7 +24,7 @@ extern "C" {
 
 /** The opcodes of GAMS nonlinear expressions.
  */
-enum GamsOpCode {
+typedef enum GamsOpCode_ {
 	nlNoOp     =  0, /* no operation */
 	nlPushV    =  1, /* push variable */
 	nlPushI    =  2, /* push immediate (constant) */
@@ -88,7 +88,7 @@ enum GamsOpCode {
 	nlInvoc    = 60, 
 	nlStackIn  = 61,
 	MAXINS     = 62
-};
+} GamsOpCode;
 
 /** Names of GAMS nonlinear expressions for printing.
  */
@@ -96,7 +96,7 @@ extern const char* GamsOpCodeName[MAXINS];
 
 /** The codes of GAMS nonlinear functions.
  */
-enum GamsFuncCode {fnmapval=0,fnceil,fnfloor,fnround,
+typedef enum GamsFuncCode_ {fnmapval=0,fnceil,fnfloor,fnround,
     fnmod,fntrunc,fnsign,fnmin,
     fnmax,fnsqr,fnexp,fnlog,
     fnlog10,fnsqrt,fnabs,fncos,
@@ -128,15 +128,15 @@ enum GamsFuncCode {fnmapval=0,fnceil,fnfloor,fnround,
     fnarcsin,fnarctan2,fnsleep,fnheapf,
     fncohandle,fngamsrel,fnpoly,
     fnlicensestatus,fnlicenselevel,fnheaplimit,
-    fndummy};
+    fndummy} GamsFuncCode;
 
 
 /** Gives the opcode of a GAMS nonlinear instruction.
  */
-inline enum GamsOpCode getInstrOpCode(unsigned int instr) {
+inline GamsOpCode getInstrOpCode(unsigned int instr) {
 	int iinstr = instr>>26;
 /*	assert(iinstr < MAXINS); */
-	return (enum GamsOpCode)iinstr;
+	return (GamsOpCode)iinstr;
 }
 
 /** Gives the address in a GAMS nonlinear instruction.
