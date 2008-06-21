@@ -133,18 +133,12 @@ typedef enum GamsFuncCode_ {fnmapval=0,fnceil,fnfloor,fnround,
 
 /** Gives the opcode of a GAMS nonlinear instruction.
  */
-inline GamsOpCode getInstrOpCode(unsigned int instr) {
-	int iinstr = instr>>26;
-/*	assert(iinstr < MAXINS); */
-	return (GamsOpCode)iinstr;
-}
+GamsOpCode getInstrOpCode(unsigned int instr);
 
 /** Gives the address in a GAMS nonlinear instruction.
  * The address will be 0-based.
  */
-inline int getInstrAddress(unsigned int instr) {
-	return (instr & 67108863)-1;
-}
+int getInstrAddress(unsigned int instr);
 
 /** Reorders instructions such that they do not contain PushS, Popup, or Swap anymore.
  */

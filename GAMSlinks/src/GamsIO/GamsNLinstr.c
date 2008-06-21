@@ -81,6 +81,20 @@ const char* GamsOpCodeName[MAXINS] = {
 	"nlStackIn"
 };
 
+/** Gives the opcode of a GAMS nonlinear instruction.
+ */
+GamsOpCode getInstrOpCode(unsigned int instr) {
+	int iinstr = instr>>26;
+/*	assert(iinstr < MAXINS); */
+	return (GamsOpCode)iinstr;
+}
+
+/** Gives the address in a GAMS nonlinear instruction.
+ * The address will be 0-based.
+ */
+int getInstrAddress(unsigned int instr) {
+	return (instr & 67108863)-1;
+}
 
 void swapInstr(unsigned int* instr, int len1, int len2) {
 	int moves = len1+len2;
