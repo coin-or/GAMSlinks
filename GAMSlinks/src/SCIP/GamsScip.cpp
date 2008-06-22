@@ -6,6 +6,15 @@
 //
 // Author: Stefan Vigerske
 
+// workaround missing errno symbol in gams build for vis
+#ifdef GAMS_BUILD
+#ifdef VIS
+extern "C" {
+	int errno=-1;
+}
+#endif
+#endif
+
 #include "GAMSlinksConfig.h"
 
 #ifdef HAVE_CSTDLIB
@@ -45,15 +54,6 @@
 #include <errno.h>
 #else
 #error "don't have header file for errno"
-#endif
-#endif
-
-// workaround missing errno symbol in gams build for vis
-#ifdef GAMS_BUILD
-#ifdef VIS
-extern "C" {
-	int errno=-1;
-}
 #endif
 #endif
 

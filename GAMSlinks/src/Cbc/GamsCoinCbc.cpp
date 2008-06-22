@@ -6,6 +6,15 @@
 //
 // Authors: Michael Bussieck, Stefan Vigerske
 
+// workaround missing errno symbol in gams build for vis
+#ifdef GAMS_BUILD
+#ifdef VIS
+extern "C" {
+	int errno=-1;
+}
+#endif
+#endif
+
 #include "GAMSlinksConfig.h"
 
 #ifdef HAVE_CSTDIO
@@ -17,16 +26,6 @@
 #error "don't have header file for stdio"
 #endif
 #endif
-
-// workaround missing errno symbol in gams build for vis
-#ifdef GAMS_BUILD
-#ifdef VIS
-extern "C" {
-	int errno=-1;
-}
-#endif
-#endif
-
 
 // some STD templates to simplify Johns parameter handling for us
 #include <list>
