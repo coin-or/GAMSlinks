@@ -29,8 +29,8 @@ includecoin_HEADERS = \
   $(IPOPTSRCDIR)/src/Interfaces/IpTNLPAdapter.hpp \
   $(IPOPTSRCDIR)/src/Algorithm/IpOrigIpoptNLP.hpp
 
-#FORTRAN_NAMEMANGLING_CFLAG required to compile SmagExtra.c
-AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) $(FORTRAN_NAMEMANGLING_CFLAG) \
+#FORTRAN_NAMEMANGLING_CFLAG and GAMSIO_CODE required to compile SmagExtra.c properly
+AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) $(FORTRAN_NAMEMANGLING_CFLAG) -D$(GAMSIO_CODE) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(srcdir)/../GamsIO` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
