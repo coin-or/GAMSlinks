@@ -31,10 +31,10 @@
 #endif
 #endif
 
-#include "OSInstance.h"
-#include "OSnLNode.h"
+class OSInstance;
+class OSnLNode;
 
-#include "smag.h"
+struct smagRec;
 
 /*! \class Smag2OSiL
  *  \brief The Smag2OSiL  Class.
@@ -50,32 +50,25 @@ class Smag2OSiL
 {
 public:
 	/** Constructor */
-	Smag2OSiL(smagHandle_t smag_);
+	Smag2OSiL(struct smagRec* smag_);
 
 	/** Destructor */
 	~Smag2OSiL();
 	
-   	/**
-   	 * create an OSInstance from the GAMS smag instance representation
-   	 * 
-   	 * @return whether the instance is created successfully. 
-   	 */
+ 	/**
+ 	 * create an OSInstance from the GAMS smag instance representation
+ 	 * 
+ 	 * @return whether the instance is created successfully. 
+ 	 */
 	bool createOSInstance();
-	
-   	/**
-   	 * parse an nl tree structure holding a nonlinear expression
-   	 * 
-   	 * @return the AMPL nonlinear structure as an OSnLNode. 
-   	 */
-//	OSnLNode* walkTree(expr *e);
-	
+
 	/** osinstance is a pointer to the OSInstance object that gets
 	 * created from the instance represented in SMAG format
 	 */
 	OSInstance *osinstance;
 	
 private:
-	smagHandle_t smag;
+	struct smagRec* smag;
 
 	OSnLNode* parseGamsInstructions(unsigned int* instr, int num_instr, double* constants);
 	

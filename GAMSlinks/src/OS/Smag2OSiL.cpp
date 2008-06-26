@@ -12,7 +12,10 @@
 #include "GamsNLinstr.h"
 #include "SmagExtra.h"
 
+#include "OSInstance.h"
 #include "CoinHelperFunctions.hpp"
+
+#include "smag.h"
 
 Smag2OSiL::Smag2OSiL(smagHandle_t smag_)
 : osinstance(NULL), smag(smag_)
@@ -155,6 +158,9 @@ bool Smag2OSiL::createOSInstance() {
 		colindexes, 0, j-1,
 		rowstarts, 0, smagRowCount(smag)))
 		return false;
+	
+	if (!setupTimeDomain())
+		return false;
 
 	if (!smagColCountNL(smag)) // everything linear -> finished
 		return true;
@@ -207,7 +213,7 @@ bool Smag2OSiL::createOSInstance() {
 	assert(iNLidx == osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
 
 	// TODO: separate quadratic terms from expression trees?
-
+	
 	return true;
 }
 
@@ -543,7 +549,7 @@ OSnLNode* Smag2OSiL::parseGamsInstructions(unsigned int* instr, int num_instr, d
 			}
 		}
 	}
-
+	
 	if (!nlNodeVec.size()) return NULL;	
 	// the vector is in postfix format - create expression tree and return it
 	return nlNodeVec[0]->createExpressionTreeFromPostfix(nlNodeVec);
