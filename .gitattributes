@@ -73,6 +73,7 @@ GAMSlinks/src/GamsIO/SmagExtra.c -text
 GAMSlinks/src/GamsIO/SmagExtra.h -text
 GAMSlinks/src/GamsIO/SmagJournal.cpp -text
 GAMSlinks/src/GamsIO/SmagJournal.hpp -text
+GAMSlinks/src/GamsIO/SmagStricmp.c -text
 GAMSlinks/src/Glpk/GamsCoinGlpk.cpp -text
 GAMSlinks/src/Glpk/Makefile.am -text
 GAMSlinks/src/Glpk/Makefile.in -text

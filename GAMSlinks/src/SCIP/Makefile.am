@@ -23,10 +23,10 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(SCIPINCDIR)`
 
 if COIN_BUILD_SCIP
-GamsScip_LDADD = $(SCIPOBJDIR)/libcoinscip.la
-GamsScip_DEPENDENCIES = $(SCIPOBJDIR)/libcoinscip.la
+GamsScip_LDADD = $(SCIPOBJDIR)/libcoinscip.la ../GamsIO/libSmagStricmp.la
+GamsScip_DEPENDENCIES = $(SCIPOBJDIR)/libcoinscip.la ../GamsIO/libSmagStricmp.la
 else
-GamsScip_LDADD = $(SCIPLIB)
+GamsScip_LDADD = $(SCIPLIB) ../GamsIO/libSmagStricmp.la
 GamsScip_DEPENDENCIES =
 endif 
 

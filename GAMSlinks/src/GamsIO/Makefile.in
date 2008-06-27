@@ -90,6 +90,9 @@ am_libSmagIO_la_OBJECTS = GamsOptions.lo GamsMessageHandler.lo \
 	SmagExtra.lo GamsHandlerSmag.lo GamsBCH.lo GamsDictionary.lo \
 	GamsGDX.lo GamsNLinstr.lo
 libSmagIO_la_OBJECTS = $(am_libSmagIO_la_OBJECTS)
+libSmagStricmp_la_LIBADD =
+am_libSmagStricmp_la_OBJECTS = SmagStricmp.lo
+libSmagStricmp_la_OBJECTS = $(am_libSmagStricmp_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -108,8 +111,10 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libGamsIO_la_SOURCES) $(libSmagIO_la_SOURCES)
-DIST_SOURCES = $(libGamsIO_la_SOURCES) $(libSmagIO_la_SOURCES)
+SOURCES = $(libGamsIO_la_SOURCES) $(libSmagIO_la_SOURCES) \
+	$(libSmagStricmp_la_SOURCES)
+DIST_SOURCES = $(libGamsIO_la_SOURCES) $(libSmagIO_la_SOURCES) \
+	$(libSmagStricmp_la_SOURCES)
 includecoinHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(includecoin_HEADERS)
 ETAGS = etags
@@ -386,7 +391,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = $(am__append_1)
-lib_LTLIBRARIES = libGamsIO.la libSmagIO.la
+lib_LTLIBRARIES = libGamsIO.la libSmagIO.la libSmagStricmp.la
 libGamsIO_la_SOURCES = \
   GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsOptions.cpp GamsDictionary.cpp GamsBCH.cpp GamsHandlerIOLib.cpp GamsGDX.cpp
 
@@ -399,6 +404,7 @@ libSmagIO_la_SOURCES = \
 
 libSmagIO_la_LDFLAGS = 
 libSmagIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGDX.la
+libSmagStricmp_la_SOURCES = SmagStricmp.c
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = ../../inc/config_gamslinks.h \
   GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsDictionary.hpp GamsBCH.hpp GamsHandler.hpp GamsHandlerIOLib.hpp \
@@ -484,6 +490,8 @@ libGamsIO.la: $(libGamsIO_la_OBJECTS) $(libGamsIO_la_DEPENDENCIES)
 	$(CXXLINK) -rpath $(libdir) $(libGamsIO_la_LDFLAGS) $(libGamsIO_la_OBJECTS) $(libGamsIO_la_LIBADD) $(LIBS)
 libSmagIO.la: $(libSmagIO_la_OBJECTS) $(libSmagIO_la_DEPENDENCIES) 
 	$(CXXLINK) -rpath $(libdir) $(libSmagIO_la_LDFLAGS) $(libSmagIO_la_OBJECTS) $(libSmagIO_la_LIBADD) $(LIBS)
+libSmagStricmp.la: $(libSmagStricmp_la_OBJECTS) $(libSmagStricmp_la_DEPENDENCIES) 
+	$(LINK) -rpath $(libdir) $(libSmagStricmp_la_LDFLAGS) $(libSmagStricmp_la_OBJECTS) $(libSmagStricmp_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -502,6 +510,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsNLinstr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOptions.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagExtra.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SmagStricmp.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

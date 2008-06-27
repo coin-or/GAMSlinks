@@ -508,7 +508,8 @@ EXTRA_DIST = gmsos_nt.cmd gmsos_us.run install/gmsos_nt.dat \
 GamsOS_SOURCES = GamsOS.cpp Smag2OSiL.cpp OSrL2Smag.cpp
 
 # end of check for COIN_OS_SOLVER
-GamsOS_LDADD = ../GamsIO/libSmagIO.la $(am__append_2) \
+GamsOS_LDADD = ../GamsIO/libSmagIO.la ../GamsIO/libSmagStricmp.la \
+	$(am__append_2) \
 	$(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
 	$(OSOBJDIR)/src/OSParsers/libOSParsers.la \
 	$(OSOBJDIR)/src/OSUtils/libOSUtils.la \
@@ -517,7 +518,8 @@ GamsOS_LDADD = ../GamsIO/libSmagIO.la $(am__append_2) \
 	$(am__append_16) $(am__append_20) $(am__append_24) \
 	$(am__append_28) $(am__append_32) $(am__append_36) \
 	$(COINUTILSOBJDIR)/src/libCoinUtils.la
-GamsOS_DEPENDENCIES = $(am__append_3) \
+GamsOS_DEPENDENCIES = ../GamsIO/libSmagIO.la \
+	../GamsIO/libSmagStricmp.la $(am__append_3) \
 	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
 	$(OSOBJDIR)/src/OSUtils/libOSUtils.la \
 	$(OSOBJDIR)/src/OSAgent/libOSAgent.la \

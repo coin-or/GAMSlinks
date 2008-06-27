@@ -430,7 +430,7 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	$(BONMINSRCDIR)/src/Interfaces` -I`$(CYGPATH_W) \
 	$(BONMINSRCDIR)/src/CbcBonmin` -I`$(CYGPATH_W) \
 	$(BONMINOBJDIR)/inc` $(am__append_1) $(am__append_5)
-GamsBonmin_LDADD = ../GamsIO/libSmagIO.la \
+GamsBonmin_LDADD = ../GamsIO/libSmagIO.la ../GamsIO/libSmagStricmp.la \
 	$(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
 	$(CBCOBJDIR)/src/libCbc.la $(CGLOBJDIR)/src/libCgl.la \
 	$(OSIOBJDIR)/src/libOsi.la \
@@ -438,6 +438,7 @@ GamsBonmin_LDADD = ../GamsIO/libSmagIO.la \
 	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(am__append_2) \
 	$(am__append_6)
 GamsBonmin_DEPENDENCIES = ../GamsIO/libSmagIO.la $(SMAG_LIBS) \
+	../GamsIO/libSmagStricmp.la \
 	$(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
 	$(CBCOBJDIR)/src/libCbc.la $(CGLOBJDIR)/src/libCgl.la \
 	$(OSIOBJDIR)/src/libOsi.la \

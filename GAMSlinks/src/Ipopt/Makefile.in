@@ -412,8 +412,8 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) $(FORTRAN_NAMEMANGLING_CFLAG) -D$(GAMSIO_CODE) 
 
 
 #GamsGDX required for bch.o
-GamsIpopt_LDADD = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(GAMSIO_OBJDIR)/libGamsGDX.la
-GamsIpopt_DEPENDENCIES = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(SMAG_LIBS)
+GamsIpopt_LDADD = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(GAMSIO_OBJDIR)/libGamsGDX.la ../GamsIO/libSmagStricmp.la
+GamsIpopt_DEPENDENCIES = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(SMAG_LIBS) ../GamsIO/libSmagStricmp.la
 GamsIpopt_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DISTCLEANFILES = gmsip_.zip $(am__append_2) $(VPATH_DISTCLEANFILES)

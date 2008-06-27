@@ -49,7 +49,7 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/CbcBonmin` \
  -I`$(CYGPATH_W) $(BONMINOBJDIR)/inc`
 
-GamsBonmin_LDADD = ../GamsIO/libSmagIO.la \
+GamsBonmin_LDADD = ../GamsIO/libSmagIO.la ../GamsIO/libSmagStricmp.la \
  $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \
@@ -57,7 +57,7 @@ GamsBonmin_LDADD = ../GamsIO/libSmagIO.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 
-GamsBonmin_DEPENDENCIES = ../GamsIO/libSmagIO.la $(SMAG_LIBS) \
+GamsBonmin_DEPENDENCIES = ../GamsIO/libSmagIO.la $(SMAG_LIBS) ../GamsIO/libSmagStricmp.la \
  $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \

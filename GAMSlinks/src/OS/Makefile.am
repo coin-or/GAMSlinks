@@ -12,8 +12,8 @@ EXTRA_DIST = gmsos_nt.cmd gmsos_us.run install/gmsos_nt.dat install/gmsos_un.dat
 
 bin_PROGRAMS = GamsOS
 GamsOS_SOURCES = GamsOS.cpp Smag2OSiL.cpp OSrL2Smag.cpp
-GamsOS_LDADD = ../GamsIO/libSmagIO.la
-GamsOS_DEPENDENCIES =
+GamsOS_LDADD = ../GamsIO/libSmagIO.la ../GamsIO/libSmagStricmp.la
+GamsOS_DEPENDENCIES = ../GamsIO/libSmagIO.la ../GamsIO/libSmagStricmp.la
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
