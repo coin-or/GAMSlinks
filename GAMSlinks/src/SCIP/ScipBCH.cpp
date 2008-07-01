@@ -462,7 +462,7 @@ SCIP_RETCODE BCHgenerateCuts(SCIP* scip, SCIP_SEPADATA* sepadata, SCIP_RESULT* r
 SCIP_RETCODE BCHrunHeuristic(SCIP* scip, SCIP_SEPADATA* data, SCIP_HEUR* heur, SCIP_RESULT* result) {
 	*result = SCIP_DIDNOTRUN;
 	
-	double objoffset = data->smag->gms.grhs[data->smag->gms.slplro-1] * data->smag->gObjFactor;
+	double objoffset = data->smag->niceObjRow ? data->smag->gms.grhs[data->smag->gms.slplro-1] * data->smag->gObjFactor : 0;
 	
 	if (!data->bch->doHeuristic(SCIPgetPrimalbound(scip)-objoffset, SCIPgetLocalDualbound(scip)-objoffset)) 
 		return SCIP_OKAY;

@@ -360,7 +360,7 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 			else if (prob->colPriority[i]>maxprior) maxprior=prob->colPriority[i];
 	}
 
-	if (prob->gms.grhs[prob->gms.slplro-1]) {
+	if (prob->niceObjRow && prob->gms.grhs[prob->gms.slplro-1]) {
 		sprintf(buffer, "Note: Constant %g in objective function is ignored during SCIP run.\n", prob->gms.grhs[prob->gms.slplro-1] * prob->gObjFactor);
 		smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
 	}
@@ -844,7 +844,7 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 		}
 	}
 	
-	double objoffset = prob->gms.grhs[prob->gms.slplro-1] * prob->gObjFactor;
+	double objoffset = prob->niceObjRow ? prob->gms.grhs[prob->gms.slplro-1] * prob->gObjFactor : 0;
 	solstatus.optval -= objoffset;
 	if (solstatus.objest != prob->gms.valna)
 		solstatus.objest -= objoffset;
