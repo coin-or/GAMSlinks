@@ -34,11 +34,11 @@ Some of these links and solvers have also found their way into the regular GAMS 
 They are currently available for Linux (32 and 64 bit), Windows (32 and 64 bit), Sun Solaris (Intel 64 bit), and Darwin (Intel 32 bit) systems.
 With the availability of source code for the GAMSlinks the user is not limited to the out of the box solvers that come with a regular GAMS distribution, but can extend and build these interfaces by themselves.
 
-As of GAMS Distribution 22.7, available solvers include:
+As of GAMS Distribution 22.8, available solvers include:
 \begin{itemize}
-\item CoinBonmin 0.9: Basic Open-source Nonlinear Mixed Integer programming\\
+\item CoinBonmin 0.99: Basic Open-source Nonlinear Mixed Integer programming\\
 (model types: LP, RMIP, MIP, DNLP, NLP, RMINLP, MINLP, QCP, RMIQCP, MIQCP)
-\item CoinCbc 2.0: COIN-OR Branch and Cut\\
+\item CoinCbc 2.1: COIN-OR Branch and Cut\\
 (model types: LP, MIP, RMIP)
 \item CoinGlpk 4.26: Gnu Linear Programming Kit\\
 (model types: LP, MIP, RMIP)
@@ -205,6 +205,12 @@ ecp\_rel\_tol& F& 0& --& --& --& +\\
 ecp\_rel\_tol\_strong& F& 0.1& +& +& +& +\\
 filmint\_ecp\_cuts& I& 0& --& --& --& +\\
 \hline
+\end{tabular}
+
+\begin{tabular}{|l|r|r|r|r|r|r|}\hline
+Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
+\hline
+\hline
 \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Output}\\
 \hline
 bb\_log\_interval& I& 100& +& --& +& +\\
@@ -215,12 +221,6 @@ nlp\_log\_level& I& 1& +& +& +& +\\
 oa\_cuts\_log\_level& I& 0& --& +& +& +\\
 oa\_log\_frequency& F& 100& +& +& +& +\\
 oa\_log\_level& I& 1& +& +& +& +\\
-\hline
-\end{tabular}
-
-\begin{tabular}{|l|r|r|r|r|r|r|}\hline
-Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
-\hline
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{NLP interface}\\
 \hline
