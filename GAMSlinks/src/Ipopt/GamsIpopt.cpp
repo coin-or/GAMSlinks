@@ -50,6 +50,8 @@ extern "C" {
 
 using namespace Ipopt;
 
+void printOptions(const SmartPtr<Journalist>& jnlst, const SmartPtr<RegisteredOptions>& regoptions);
+
 int main (int argc, char* argv[]) {
 #if defined(_MSC_VER)
   /* Prevents hanging "Application Error, Click OK" Windows in case something bad happens */
@@ -113,15 +115,17 @@ int main (int argc, char* argv[]) {
 	if (prob->gms.iscopt)
 		app->Options()->SetStringValue("nlp_scaling_method", "user-scaling");
 
+
+	app->RegOptions()->SetRegisteringCategory("Linear Solver");
 #ifdef HAVE_HSL_LOADER
 	// add option to specify path to hsl library
 	app->RegOptions()->AddStringOption1("hsl_library", // name
 			"path and filename of HSL library for dynamic load",  // short description
 			"", // default value 
 			"*", // setting1
-			"", // description1
-			"Specify the path to a library that contains HSL routines and can be load via dynamic linking."
-			"Note, that you still need to specify to use the corresponding routines (ma27, ...) by setting the corresponding options (linear_solver, ...)."
+			"path (incl. filename) of HSL library", // description1
+			"Specify the path to a library that contains HSL routines and can be load via dynamic linking. "
+			"Note, that you still need to specify to use the corresponding routines (ma27, ...) by setting the corresponding options, e.g., ``linear_solver''."
 	);
 #endif
 #ifndef HAVE_PARDISO
@@ -130,11 +134,12 @@ int main (int argc, char* argv[]) {
 			"path and filename of PARDISO library for dynamic load",  // short description
 			"", // default value 
 			"*", // setting1
-			"", // description1
-			"Specify the path to a PARDISO library that and can be load via dynamic linking."
+			"path (incl. filename) of Pardiso library", // description1
+			"Specify the path to a PARDISO library that and can be load via dynamic linking. "
 			"Note, that you still need to specify to pardiso as linear_solver."
 	);
 #endif
+//	printOptions(app->Jnlst(), app->RegOptions());
 	
 	if (prob->gms.useopt)
 		app->Initialize(prob->gms.optFileName);
@@ -239,6 +244,52 @@ int main (int argc, char* argv[]) {
 
   return EXIT_SUCCESS;
 } // main
+
+void printOptions(const SmartPtr<Journalist>& jnlst, const SmartPtr<RegisteredOptions>& regoptions) {
+  const RegisteredOptions::RegOptionsList& optionlist(regoptions->RegisteredOptionsList());
+  
+  // options sorted by category
+  std::map<std::string, std::list<SmartPtr<RegisteredOption> > > opts;
+  
+  for (RegisteredOptions::RegOptionsList::const_iterator it(optionlist.begin()); it!=optionlist.end(); ++it) {
+//  	jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "%s %s\n", it->first.c_str(), it->second->RegisteringCategory().c_str());
+  	
+  	if (it->second->RegisteringCategory().empty()) continue;
+  	if (it->second->RegisteringCategory()=="Uncategorized") continue;
+  	if (it->second->RegisteringCategory()=="Undocumented") continue;
+  	if (it->second->RegisteringCategory()=="Derivative Checker") continue;
+  	
+  	if (it->second->RegisteringCategory()=="Line search") {
+  		opts["Line Search"].push_back(it->second);
+  	} else {
+  		opts[it->second->RegisteringCategory()].push_back(it->second);
+  	}
+  	
+  }
+
+  for (std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ!=opts.end(); ++it_categ) {
+  	std::string category(it_categ->first);
+//  	jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "category %s:\n", it_categ->first.c_str());
+    jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "\\subsubsection{%s}\n", category.c_str());
+    for (std::string::size_type spacepos = category.find(' '); spacepos != std::string::npos; spacepos = category.find(' '))
+    	category[spacepos]='_';
+    jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "\\label{sec:%s}\n\n", category.c_str());
+
+  	for (std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt!=it_categ->second.end(); ++it_opt) {
+  		if ((*it_opt)->Name()=="option_file_name") continue;
+  		if ((*it_opt)->Name()=="hessian_constant") continue;
+  		if ((*it_opt)->Name()=="jac_c_constant") continue;
+  		if ((*it_opt)->Name()=="jac_d_constant") continue;
+  		if ((*it_opt)->Name()=="nlp_lower_bound_inf") continue;
+  		if ((*it_opt)->Name()=="nlp_upper_bound_inf") continue;
+  		if ((*it_opt)->Name()=="num_linear_variables") continue;
+  		if ((*it_opt)->Name()=="corrector_compl_avrg_red_fact") continue;
+  		if ((*it_opt)->Name()=="corrector_type") continue;
+//    	jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "   %s\n", (*it_opt)->Name().c_str());
+  		(*it_opt)->OutputLatexDescription(*jnlst);
+  	}
+  }
+}
 
 
 // enum ApplicationReturnStatus

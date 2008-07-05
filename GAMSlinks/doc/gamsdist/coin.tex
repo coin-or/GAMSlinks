@@ -109,10 +109,15 @@ The following statement can be used inside your GAMS program to specify using Co
 The above statement should appear before the Solve statement.
 If CoinBonmin was specified as the default solver during GAMS installation, the above statement is not necessary.
 
+GAMS/CoinBonmin now support the GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
+The GAMS BCH facility automates all major steps necessary to define, execute, and control the use of user defined routines within the framework of general purpose MIP and MINLP codes.
+Currently supported are user defined cut generators and heuristics, where cut generator cannot be used in Bonmins pure B\&B algorithm (B-BB).
+Please see the BCH documentation at \texttt{http://www.gams.com/docs/bch.htm} for further information.
+
 \subsection{Specification of CoinBonmin Options}
 \label{sub:bonminoptionspec}
 
-A Bonmin option file contains both Ipopt and Bonmin options, for clarity all Bonmin options should be preceded with the prefix ``\texttt{bonmin.}''.
+A Bonmin option file contains both Ipopt and Bonmin options, for clarity all Bonmin options should be preceded with the prefix ``\texttt{bonmin.}'', except those corresponding to the BCH facility.
 %Bonmin has many options that can be adjusted for the algorithm (see Section \ref{sub:bonminoptions}).
 The scheme to name option files is the same as for all other GAMS solvers.
 Specifying \texttt{optfile=1} let Gams/CoinBonmin read \texttt{coinbonmin.opt}, \texttt{optfile=2} corresponds to \texttt{coinbonmin.op2}, and so on.
@@ -129,13 +134,14 @@ Their name coincide with Bonmins options, except that the ``\texttt{bonmin.}'' p
 
 An example of a \texttt{bonmin.opt} file is the following:
 \begin{verbatim}
-   bonmin.algorithm B-Hyb
-   bonmin.oa_log_level 4
-   bonmin.milp_subsolver Cbc_Par
-   milp_sub.cover_cuts 0
-   print_level 6
+   bonmin.algorithm       B-Hyb
+   bonmin.oa_log_level    4
+   bonmin.milp_subsolver  Cbc_Par
+   milp_sub.cover_cuts    0
+   print_level            6
+   userheurcall           "bchheur.gms reslim 10"
 \end{verbatim}
-This sets the algorithm to be used to the hybrid algorithm, the level of outer approximation related output to $4$, the print level for \texttt{Ipopt} to $6$, the MIP subsolver for outer approximation to a parameterized version of CBC, and switches off cover cutting planes for the MIP subsolver.
+This sets the algorithm to be used to the hybrid algorithm, the level of outer approximation related output to $4$, the MIP subsolver for outer approximation to a parameterized version of CBC, switches off cover cutting planes for the MIP subsolver, sets the print level for \texttt{Ipopt} to $6$, and let Bonmin call a user defined heuristic specified in the model \texttt{bchheur.gms} with a timelimit of 10 seconds.
 
 GAMS/CoinBonmin understands currently the following GAMS parameters: reslim (time limit), iterlim (iteration limit), nodlim (node limit), cutoff, optca (absolute gap tolerance), and optcr (relative gap tolerance).
 You can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your GAMS program, e.g. \verb+Option nodlim=1000;+.
@@ -159,51 +165,42 @@ Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
 \hline
 algorithm& S& B-BB& +& +& +& +\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Branch-and-bound}\\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Output}\\
 \hline
-allowable\_fraction\_gap& F& optrc (0.1)& +& +& +& +\\
-allowable\_gap& F& optca (0)& +& +& +& +\\
+bb\_log\_interval& I& 100& +&--& +& +\\
+bb\_log\_level& I& 1& +&--& +& +\\
+lp\_log\_level& I& 0&--&--& +& +\\
+milp\_log\_level& I& 0&--& +&--& +\\
+nlp\_log\_level& I& 1& +& +& +& +\\
+oa\_cuts\_log\_level& I& 0&--& +& +& +\\
+oa\_log\_frequency& F& 100& +& +& +& +\\
+oa\_log\_level& I& 1& +& +& +& +\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Branch-and-bound options}\\
+\hline
+allowable\_fraction\_gap& F& optcr ($0.1$)& +& +& +& +\\
+allowable\_gap& F& optca ($0$)& +& +& +& +\\
 cutoff& F& cutoff or $10^{100}$& +& +& +& +\\
 cutoff\_decr& F& $10^{-5}$& +& +& +& +\\
 integer\_tolerance& F& $10^{-6}$& +& +& +& +\\
 iteration\_limit& I& $\infty$& +& +& +& +\\
 nlp\_failure\_behavior& S& stop& +& +& +& +\\
-node\_comparison$^*$& S& dynamic& +& +& +& +\\
-node\_limit& I& nodlim or iterlim (10000)& +& +& +& +\\
-num\_cut\_passes& I& 1& --& +& +& +\\
-num\_cut\_passes\_at\_root& I& 20& --& +& +& +\\
-number\_before\_trust$^*$& I& 8& +& +& +& +\\
-number\_strong\_branch$^*$& I& 20& +& +& +& +\\
+node\_comparison& S& dynamic& +& +& +& +\\
+node\_limit& I& nodlim or iterlim ($10000$)& +& +& +& +\\
+num\_cut\_passes& I& 1&--& +& +& +\\
+num\_cut\_passes\_at\_root& I& 20&--& +& +& +\\
+number\_before\_trust& I& 8& +& +& +& +\\
+number\_strong\_branch& I& 20& +& +& +& +\\
 solution\_limit& I& $\infty$& +& +& +& +\\
-% sos\_constraints& S& enable& +& --& +& +\\
-time\_limit& F& reslim (1000)& +& +& +& +\\
-tree\_search\_strategy& S& top\-node& +& +& +& +\\
-varselect\_stra& S& strong\-branching& +& +& +& +\\
+time\_limit& F& reslim ($1000$)& +& +& +& +\\
+tree\_search\_strategy& S& topnode& +& +& +& +\\
+variable\_selection& S& strongbranching& +& +& +& +\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Outer Approximation decomposition}\\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Diving options}\\
 \hline
-milp\_subsolver& S& Cbc\_D& --& +& --& +\\
-oa\_dec\_time\_limit& F& 30& +& +& +& +\\
-\hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Outer Approximation cuts}\\
-\hline
-add\_only\_violated\_oa& S& no& --& +& +& +\\
-cut\_strengthening\_type& S& none& --& +& +& +\\
-disjunctive\_cut\_type& S& none& --& +& +& +\\
-oa\_cuts\_scope& S& global& --& +& +& +\\
-tiny\_element& F& $10^{-8}$& --& +& +& +\\
-very\_tiny\_element& F& $10^{-7}$& --& +& +& +\\
-\hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Ecp based strong branching}\\
-\hline
-ecp\_abs\_tol& F& $10^{-6}$& --& --& --& +\\
-ecp\_abs\_tol\_strong& F& $10^{-6}$& +& +& +& +\\
-ecp\_max\_rounds& I& 5& --& --& --& +\\
-ecp\_max\_rounds\_strong& I& 5& +& +& +& +\\
-ecp\_propability\_factor& F& 1000& --& --& --& +\\
-ecp\_rel\_tol& F& 0& --& --& --& +\\
-ecp\_rel\_tol\_strong& F& 0.1& +& +& +& +\\
-filmint\_ecp\_cuts& I& 0& --& --& --& +\\
+max\_backtracks\_in\_dive& I& 5& +& +& +& +\\
+max\_dive\_depth& I& $\infty$& +& +& +& +\\
+stop\_diving\_on\_cutoff& S& no& +& +& +& +\\
 \hline
 \end{tabular}
 
@@ -211,66 +208,112 @@ filmint\_ecp\_cuts& I& 0& --& --& --& +\\
 Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
 \hline
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Output}\\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{ECP based strong branching}\\
 \hline
-bb\_log\_interval& I& 100& +& --& +& +\\
-bb\_log\_level& I& 1& +& --& +& +\\
-lp\_log\_level& I& 0& --& --& +& +\\
-milp\_log\_level& I& 0& --& +& --& +\\
-nlp\_log\_level& I& 1& +& +& +& +\\
-oa\_cuts\_log\_level& I& 0& --& +& +& +\\
-oa\_log\_frequency& F& 100& +& +& +& +\\
-oa\_log\_level& I& 1& +& +& +& +\\
+ecp\_abs\_tol\_strong& F& $10^{-6}$& +& +& +& +\\
+ecp\_max\_rounds\_strong& I& 0& +& +& +& +\\
+ecp\_rel\_tol\_strong& F& 0.1& +& +& +& +\\
+lp\_strong\_warmstart\_method& S& Basis& +& +& +& +\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{ECP cuts generation}\\
+\hline
+ecp\_abs\_tol& F& $10^{-6}$&--&--&--& +\\
+ecp\_max\_rounds& I& 5&--&--&--& +\\
+ecp\_propability\_factor& F& 1000&--&--&--& +\\
+ecp\_rel\_tol& F& 0&--&--&--& +\\
+filmint\_ecp\_cuts& I& 0&--&--&--& +\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{GAMS Branch Cut and Heuristic Facility}\\
+\hline
+usercutcall& S& none& --& +& +& +\\
+usercutfirst& I& 10& --& +& +& +\\
+usercutfreq& I& 10& --& +& +& +\\
+usercutinterval& I& 100& --& +& +& +\\
+usercutmult& I& 2& --& +& +& +\\
+usercutnewint& I& 0& --& +& +& +\\
+usergdxin& S& bchin.gdx& +& +& +& +\\
+usergdxname& S& bchout.gdx& +& +& +& +\\
+usergdxnameinc& S& bchout\_i.gdx& +& +& +& +\\
+usergdxprefix& S&none & +& +& +& +\\
+userheurcall& S& none& +& +& +& +\\
+userheurfirst& I& 10& +& +& +& +\\
+userheurfreq& I& 10& +& +& +& +\\
+userheurinterval& I& 100& +& +& +& +\\
+userheurmult& I& 2& +& +& +& +\\
+userheurnewint& I& 0& +& +& +& +\\
+userheurobjfirst& I& 0& +& +& +& +\\
+userjobid& S& none& +& +& +& +\\
+userkeep& I& 0& +& +& +& +\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{MILP cutting planes in hybrid algorithm}\\
+\hline
+2mir\_cuts& I& 0&--& +&--& +\\
+Gomory\_cuts& I& \-5&--& +&--& +\\
+clique\_cuts& I& \-5&--& +&--& +\\
+cover\_cuts& I& \-5&--& +&--& +\\
+flow\_covers\_cuts& I& \-5&--& +&--& +\\
+lift\_and\_project\_cuts& I& 0&--& +&--& +\\
+mir\_cuts& I& \-5&--& +&--& +\\
+probing\_cuts& I& \-5&--& +&--& +\\
+reduce\_and\_split\_cuts& I& 0&--& +&--& +\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{NLP interface}\\
 \hline
-nlp\_solve\_frequency& I& 10& --& --& --& +\\
-nlp\_solve\_max\_depth& I& 10& --& --& --& +\\
-% file\_solution& S& no& +& +& +& +\\
-% nlp\_solver& S& Ipopt& +& +& +& +\\
-warm\_start& S& none& +& --& --& --\\
+warm\_start& S& none& +&--&--&--\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{MIP cutting planes}\\
-\hline
-2mir\_cuts& I& 0& --& +& --& +\\
-Gomory\_cuts$^*$& I& \-5& --& +& --& +\\
-clique\_cuts& I& \-5& --& +& --& +\\
-cover\_cuts$^*$& I& \-5& --& +& --& +\\
-flow\_covers\_cuts& I& \-5& --& +& --& +\\
-lift\_and\_project\_cuts& I& 0& --& +& --& +\\
-mir\_cuts$^*$& I& \-5& --& +& --& +\\
-probing\_cuts& I& \-5& --& +& --& +\\
-reduce\_and\_split\_cuts& I& 0& --& +& --& +\\
-\hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Options for non-convex problems}\\
-\hline
-max\_consecutive\_infeasible& I& 0& +& +& +& +\\
-num\_resolve\_at\_infeasibles& I& 0& +& --& --& --\\
-num\_resolve\_at\_node& I& 0& +& --& --& --\\
-num\_resolve\_at\_root& I& 0& +& --& --& --\\
-\hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Robustness}\\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{NLP solution robustness}\\
 \hline
 max\_consecutive\_failures& I& 10& +& +& +& +\\
-max\_random\_point\_radius& F& 100000& +& --& --& --\\
+max\_random\_point\_radius& F& 100000& +&--&--&--\\
 num\_iterations\_suspect& I& \-1& +& +& +& +\\
 num\_retry\_unsolved\_random\_point& I& 0& +& +& +& +\\
-random\_point\_perturbation\_interval& F& 1& +& --& --& --\\
-random\_point\_type& S& Jon& +& --& --& --\\
+random\_point\_perturbation\_interval& F& 1& +&--&--&--\\
+random\_point\_type& S& Jon& +&--&--&--\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Diving}\\
+\end{tabular}
+
+\begin{tabular}{|l|r|r|r|r|r|r|}\hline
+Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
 \hline
-max\_backtracks\_in\_dive& I& 5& +& +& +& +\\
-max\_dive\_depth& I& $\infty$& +& +& +& +\\
-stop\_diving\_on\_cutoff& S& no& +& +& +& +\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Experimental options}\\
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{NLP solves in hybrid algorithm}\\
 \hline
+nlp\_solve\_frequency& I& 10&--&--&--& +\\
+nlp\_solve\_max\_depth& I& 10&--&--&--& +\\
+nlp\_solves\_per\_depth& F& $10^{30}$&--&--&--& +\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Nonconvex problems}\\
+\hline
+max\_consecutive\_infeasible& I& 0& +& +& +& +\\
+num\_resolve\_at\_infeasibles& I& 0& +&--&--&--\\
+num\_resolve\_at\_node& I& 0& +&--&--&--\\
+num\_resolve\_at\_root& I& 0& +&--&--&--\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Outer Approximation decomposition}\\
+\hline
+milp\_subsolver& S& Cbc\_D&--& +&--& +\\
+oa\_dec\_time\_limit& F& 30& +& +& +& +\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Outer Approximation cuts generation}\\
+\hline
+add\_only\_violated\_oa& S& no&--& +& +& +\\
+cut\_strengthening\_type& S& none&--& +& +& +\\
+disjunctive\_cut\_type& S& none&--& +& +& +\\
+oa\_cuts\_scope& S& global&--& +& +& +\\
+tiny\_element& F& $10^{-8}$&--& +& +& +\\
+very\_tiny\_element& F& $10^{-17}$&--& +& +& +\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Strong branching setup}\\
+\hline
+candidate\_sort\_criterion& S& best\-ps\-cost& +& +& +& +\\
 maxmin\_crit\_have\_sol& F& 0.1& +& +& +& +\\
 maxmin\_crit\_no\_sol& F& 0.7& +& +& +& +\\
+min\_number\_strong\_branch& I& 0& +& +& +& +\\
 number\_before\_trust\_list& I& 0& +& +& +& +\\
+number\_look\_ahead& I& 0& +& +& +& +\\
 number\_strong\_branch\_root& I& $\infty$& +& +& +& +\\
 setup\_pseudo\_frac& F& 0.5& +& +& +& +\\
+trust\_strong\_branching\_for\_pseudo\_cost& S& yes& +& +& +& +\\
 \hline
 \end{tabular}
 \end{center}

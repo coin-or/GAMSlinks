@@ -67,6 +67,7 @@ void write_solution(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model
 void write_solution_nodual(smagHandle_t prob, OsiTMINLPInterface& osi_tminlp, int model_status, int solver_status, double resuse, int domviol, int iterations);
 void BCHsetupOptions(Bonmin::RegisteredOptions& regopt);
 void BCHinit(BonminSetup& bonmin_setup, GamsHandlerSmag& gamshandler, GamsDictionary*& dict, GamsBCH*& bch, CbcModel*& modelptr);
+void printOptions(const SmartPtr<Journalist>& jnlst, const SmartPtr<Bonmin::RegisteredOptions>& regoptions);
 
 int main (int argc, char* argv[]) {
 #if defined(_MSC_VER)
@@ -149,15 +150,16 @@ void solve_minlp(smagHandle_t prob) {
 	bonmin_setup.setOptionsAndJournalist(roptions, options, journalist);
   bonmin_setup.registerOptions();
 
+	roptions->SetRegisteringCategory("Linear Solver", Bonmin::RegisteredOptions::IpoptCategory);
 #ifdef HAVE_HSL_LOADER
 	// add option to specify path to hsl library
   bonmin_setup.roptions()->AddStringOption1("hsl_library", // name
 			"path and filename of HSL library for dynamic load",  // short description
 			"", // default value 
 			"*", // setting1
-			"", // description1
-			"Specify the path to a library that contains HSL routines and can be load via dynamic linking."
-			"Note, that you still need to specify to use the corresponding routines (ma27, ...) by setting the corresponding options (linear_solver, ...)."
+			"path (incl. filename) of HSL library", // description1
+			"Specify the path to a library that contains HSL routines and can be load via dynamic linking. "
+			"Note, that you still need to specify to use the corresponding routines (ma27, ...) by setting the corresponding options, e.g., ``linear_solver''."
 	);
 #endif
 #ifndef HAVE_PARDISO
@@ -166,14 +168,15 @@ void solve_minlp(smagHandle_t prob) {
 			"path and filename of Pardiso library for dynamic load",  // short description
 			"", // default value 
 			"*", // setting1
-			"", // description1
-			"Specify the path to a Pardiso library that and can be load via dynamic linking."
+			"path (incl. filename) of Pardiso library", // description1
+			"Specify the path to a Pardiso library that and can be load via dynamic linking. "
 			"Note, that you still need to specify to pardiso as linear_solver."
 	);
 #endif
   
   // add options specific to BCH heuristic callback
   BCHsetupOptions(*bonmin_setup.roptions());
+//  printOptions(journalist, bonmin_setup.roptions());
   
 	// Change some options
 	bonmin_setup.options()->SetNumericValue("bound_relax_factor", 0);
@@ -469,6 +472,7 @@ void solve_nlp(smagHandle_t prob) {
 
 //	OsiTMINLPInterface::registerOptions(app->RegOptions());
 
+	roptions->SetRegisteringCategory("Linear Solver", Bonmin::RegisteredOptions::IpoptCategory);
 #ifdef HAVE_HSL_LOADER
 	// add option to specify path to hsl library
 	roptions->AddStringOption1("hsl_library", // name
@@ -594,6 +598,7 @@ void solve_nlp(smagHandle_t prob) {
 } // solve_nlp()
 
 void BCHsetupOptions(Bonmin::RegisteredOptions& regopt) {
+	regopt.SetRegisteringCategory("GAMS Branch Cut and Heuristic Facility", Bonmin::RegisteredOptions::BonminCategory);
   regopt.AddStringOption1("usergdxin",
   		"The name of the GDX file read back into Bonmin.", "bchin.gdx",
   		"*", "name of GDX file", "");
@@ -609,21 +614,27 @@ void BCHsetupOptions(Bonmin::RegisteredOptions& regopt) {
   regopt.AddStringOption1("usercutcall",
   		"The GAMS command line to call the cut generator.", "",
   		"*", "GAMS command line", "");
+  regopt.setOptionExtraInfo("usercutcall", 1 << Bonmin::RegisteredOptions::validInHybrid | 1 << Bonmin::RegisteredOptions::validInQG | 1 << Bonmin::RegisteredOptions::validInOA);
   regopt.AddLowerBoundedIntegerOption("usercutfirst",
   		"Calls the cut generator for the first n nodes.",
   		0, 10, "");
+  regopt.setOptionExtraInfo("usercutfirst", 1 << Bonmin::RegisteredOptions::validInHybrid | 1 << Bonmin::RegisteredOptions::validInQG | 1 << Bonmin::RegisteredOptions::validInOA);
   regopt.AddLowerBoundedIntegerOption("usercutfreq",
   		"Determines the frequency of the cut generator model calls.",
   		0, 10, "");
+  regopt.setOptionExtraInfo("usercutfreq", 1 << Bonmin::RegisteredOptions::validInHybrid | 1 << Bonmin::RegisteredOptions::validInQG | 1 << Bonmin::RegisteredOptions::validInOA);
   regopt.AddLowerBoundedIntegerOption("usercutinterval",
   		"Determines the interval when to apply the multiplier for the frequency of the cut generator model calls.",
   		0, 100, "");
+  regopt.setOptionExtraInfo("usercutinterval", 1 << Bonmin::RegisteredOptions::validInHybrid | 1 << Bonmin::RegisteredOptions::validInQG | 1 << Bonmin::RegisteredOptions::validInOA);
   regopt.AddLowerBoundedIntegerOption("usercutmult",
   		"Determines the multiplier for the frequency of the cut generator model calls.",
   		0, 2, "");
+  regopt.setOptionExtraInfo("usercutmult", 1 << Bonmin::RegisteredOptions::validInHybrid | 1 << Bonmin::RegisteredOptions::validInQG | 1 << Bonmin::RegisteredOptions::validInOA);
   regopt.AddBoundedIntegerOption("usercutnewint",
   		"Calls the cut generator if the solver found a new integer feasible solution.",
   		0, 1, 0, "");
+  regopt.setOptionExtraInfo("usercutnewint", 1 << Bonmin::RegisteredOptions::validInHybrid | 1 << Bonmin::RegisteredOptions::validInQG | 1 << Bonmin::RegisteredOptions::validInOA);
   regopt.AddStringOption1("userheurcall",
   		"The GAMS command line to call the heuristic.", "",
   		"*", "GAMS command line", "");
@@ -739,6 +750,75 @@ void BCHinit(BonminSetup& bonmin_setup, GamsHandlerSmag& gamshandler, GamsDictio
 			bonmin_setup.options()->SetStringValue("bonmin.algorithm", "B-Hyb");
 		}
 	}
+}
+
+#include <fstream>
+
+void printOptions(const SmartPtr<Journalist>& jnlst, const SmartPtr<Bonmin::RegisteredOptions>& regoptions) {
+  const Bonmin::RegisteredOptions::RegOptionsList& optionlist(regoptions->RegisteredOptionsList());
+  
+  std::ofstream tabfile("bonmin_options_table.tex");
+  regoptions->writeLatexOptionsTable(tabfile, Bonmin::RegisteredOptions::BonminCategory);
+  
+  // options sorted by category
+  std::map<std::string, std::list<SmartPtr<RegisteredOption> > > opts;
+  
+  for (Bonmin::RegisteredOptions::RegOptionsList::const_iterator it(optionlist.begin()); it!=optionlist.end(); ++it) {
+//  	jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "%s %s %d\n", it->first.c_str(), it->second->RegisteringCategory().c_str(), regoptions->categoriesInfo(it->second->RegisteringCategory()));
+
+  	std::string category(it->second->RegisteringCategory());
+
+  	if (category.empty()) continue;
+  	//TODO (uses currently private method): skip ipopt options 
+//  	if (regoptions->categoriesInfo(category)==Bonmin::RegisteredOptions::IpoptCategory) continue;
+  	
+		if (it->second->Name()=="nlp_solver" ||
+				it->second->Name()=="file_solution" ||
+				it->second->Name()=="sos_constraints")
+			continue;
+
+  	if (category=="Bonmin ecp based strong branching")
+  		category="ECP based strong branching";
+  	if (category=="MILP cutting planes in hybrid")
+  		category+=" algorithm (B-Hyb)";
+  	if (category=="Nlp solution robustness")
+  		category="NLP solution robustness";
+  	if (category=="Nlp solve options in B-Hyb")
+  		category="NLP solves in hybrid algorithm (B-Hyb)";
+  	if (category=="Options for MILP subsolver in OA decomposition" || category=="Options for OA decomposition")
+  		category="Outer Approximation Decomposition (B-OA)";
+  	if (category=="Options for ecp cuts generation")
+  		category="ECP cuts generation";
+  	if (category=="Options for non-convex problems")
+  		category="Nonconvex problems";
+  	if (category=="Output ond log-levels ptions")
+  		category="Output";
+  	if (category=="nlp interface option")
+  		category="NLP interface";
+
+		if (it->second->Name()=="oa_cuts_log_level" || 
+				it->second->Name()=="nlp_log_level" || 
+				it->second->Name()=="milp_log_level" ||
+				it->second->Name()=="oa_log_level" ||
+				it->second->Name()=="oa_log_frequency")
+			category="Output";		
+
+		opts[category].push_back(it->second);
+  }
+
+  for (std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ!=opts.end(); ++it_categ) {
+  	std::string category(it_categ->first);
+//  	jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "category %s:\n", it_categ->first.c_str());
+    jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "\\subsubsection{%s}\n", category.c_str());
+    for (std::string::size_type spacepos = category.find(' '); spacepos != std::string::npos; spacepos = category.find(' '))
+    	category[spacepos]='_';
+    jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "\\label{sec:%s}\n\n", category.c_str());
+
+  	for (std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt!=it_categ->second.end(); ++it_opt) {
+//    	jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "   %s\n", (*it_opt)->Name().c_str());
+  		(*it_opt)->OutputLatexDescription(*jnlst);
+  	}
+  }
 }
 
 // enum ApplicationReturnStatus
