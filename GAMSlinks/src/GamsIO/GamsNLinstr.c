@@ -153,7 +153,7 @@ void reorderInstr(unsigned int* instr, int num_instr) {
 			case nlSwap: {
 				swapInstr(instr+instrpos[stacklen-2], instrpos[stacklen-1]-instrpos[stacklen-2], instrpos[stacklen]-instrpos[stacklen-1]);
 				instrpos[stacklen-1] = instrpos[stacklen-2] - instrpos[stacklen-1] + instrpos[stacklen];
-				instr[k] = ((unsigned int)nlNoOp)<<26; /* should be just zero */
+				instr[k] = ((unsigned int)nlArg)<<26; /* nlNoop should be just zero, but confused g2dHesRowStruct, so we take nlArg */
 			} break;
 			case nlPushS: {
 				int len = getInstrAddress(instr[k])+1;
@@ -166,15 +166,15 @@ void reorderInstr(unsigned int* instr, int num_instr) {
 				for (j = stacklen-len+1; j<=stacklen; ++j)
 					instrpos[j] -= pushshift;
 				--instrpos[stacklen];
-				instr[k-1] = ((unsigned int)nlNoOp)<<26;
-				instr[k] = ((unsigned int)nlNoOp)<<26;
+				instr[k-1] = ((unsigned int)nlArg)<<26;
+				instr[k] = ((unsigned int)nlArg)<<26;
 /*				for (int i=0; i<=stacklen; ++i) std::clog << i << '\t' << instrpos[i] << std::endl;
 				for (int i=0; i<num_instr; ++i) std::clog << i << '\t' << GamsOpCodeName[getInstrOpCode(instr[i])] << std::endl;
 */				++stacklen;
 			} break;
 			case nlPopup: {
 				stacklen -= getInstrAddress(instr[k])+1;
-				instr[k] = ((unsigned int)nlNoOp)<<26;
+				instr[k] = ((unsigned int)nlArg)<<26;
 			} break;
 			default: ;
 		}
