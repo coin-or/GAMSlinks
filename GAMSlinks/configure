@@ -27579,6 +27579,26 @@ if test $coin_vpath_config = yes; then
 fi
 
 
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files examples/adbench/gmsad_us.run"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files examples/adbench/gmsad_nt.cmd"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files examples/adbench/install/gmsad_un.dat"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files examples/adbench/install/gmsad_nt.dat"
+fi
+
+
 ############
 # END PART #
 ############
@@ -27590,7 +27610,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-                                                                                                                                            ac_config_files="$ac_config_files Makefile gamsio_addlibs.txt smagio_addlibs.txt src/Makefile src/GamsIO/Makefile src/Cbc/Makefile src/Glpk/Makefile src/Osi/Makefile src/Ipopt/Makefile src/Bonmin/Makefile src/OS/Makefile src/SCIP/Makefile test/Makefile test/run_tests"
+                                                                                                                                                      ac_config_files="$ac_config_files Makefile gamsio_addlibs.txt smagio_addlibs.txt src/Makefile src/GamsIO/Makefile src/Cbc/Makefile src/Glpk/Makefile src/Osi/Makefile src/Ipopt/Makefile src/Bonmin/Makefile src/OS/Makefile src/SCIP/Makefile test/Makefile test/run_tests examples/adbench/Makefile"
 
 
           ac_config_headers="$ac_config_headers inc/config_gamslinks.h"
@@ -28482,6 +28502,7 @@ do
   "src/SCIP/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/SCIP/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   "test/run_tests" ) CONFIG_FILES="$CONFIG_FILES test/run_tests" ;;
+  "examples/adbench/Makefile" ) CONFIG_FILES="$CONFIG_FILES examples/adbench/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "inc/config_gamslinks.h" ) CONFIG_HEADERS="$CONFIG_HEADERS inc/config_gamslinks.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5

@@ -1,0 +1,8 @@
+id           ADBENCH
+license_id   00 01 02
+capabilities QCP RMIQCP MIQCP NLP RMINLP MINLP
+file_type    2112
+dictionary_file 4
+run_file     gmsad_us.run
+exe_file     gmsad_ux.out
+special      2

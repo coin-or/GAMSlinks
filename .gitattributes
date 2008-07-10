@@ -16,6 +16,13 @@ GAMSlinks/doc/gamsdist/optcbc_s.tex -text
 GAMSlinks/doc/gamsdist/optglpk_a.tex -text
 GAMSlinks/doc/gamsdist/optglpk_s.tex -text
 GAMSlinks/doc/gamsdist/optipopt_a.tex -text
+GAMSlinks/examples/adbench/Makefile.am -text
+GAMSlinks/examples/adbench/Makefile.in -text
+GAMSlinks/examples/adbench/adbench.cpp -text
+GAMSlinks/examples/adbench/gmsad_nt.cmd -text
+GAMSlinks/examples/adbench/gmsad_us.run -text
+GAMSlinks/examples/adbench/install/gmsad_nt.dat -text
+GAMSlinks/examples/adbench/install/gmsad_un.dat -text
 GAMSlinks/gamsio_addlibs.txt.in -text
 GAMSlinks/inc/config_gamslinks.h.in -text
 GAMSlinks/m4/ac_coin_gams.m4 -text
@@ -131,7 +138,6 @@ GAMSlinks/src/SCIP/install/gmssc_nt.dat -text
 GAMSlinks/src/SCIP/install/gmssc_un.dat -text
 GAMSlinks/test/Makefile.am -text
 GAMSlinks/test/Makefile.in -text
-GAMSlinks/test/adbench.cpp -text
 GAMSlinks/test/run_tests.in -text
 /INSTALL -text
 /LICENSE -text
