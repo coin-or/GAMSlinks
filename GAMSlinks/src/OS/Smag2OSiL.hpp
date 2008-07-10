@@ -67,6 +67,12 @@ public:
 	 */
 	OSInstance *osinstance;
 	
+	/** If you set this flag to true, then the instructions in SMAG are not touched by parseGamsInstructions().
+	 * Reordering is then done on a copy of the instruction list.
+	 * The default is currently true, because the gradient evaluation by G2D seem to be failing on a reordered instructions list.
+	 */
+	bool keep_original_instr;
+	
 private:
 	struct smagRec* smag;
 

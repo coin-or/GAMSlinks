@@ -18,7 +18,7 @@
 #include "smag.h"
 
 Smag2OSiL::Smag2OSiL(smagHandle_t smag_)
-: osinstance(NULL), smag(smag_)
+: osinstance(NULL), keep_original_instr(true), smag(smag_)
 { }
 
 Smag2OSiL::~Smag2OSiL() {
@@ -262,7 +262,7 @@ bool Smag2OSiL::setupQuadraticTerms() {
 	return true;
 }
 
-OSnLNode* Smag2OSiL::parseGamsInstructions(unsigned int* instr, int num_instr, double* constants) {
+OSnLNode* Smag2OSiL::parseGamsInstructions(unsigned int* instr_, int num_instr, double* constants) {
 	std::vector<OSnLNode*> nlNodeVec;
 	
 	const bool debugoutput = false;
@@ -270,9 +270,11 @@ OSnLNode* Smag2OSiL::parseGamsInstructions(unsigned int* instr, int num_instr, d
 //	for (int i=0; i<num_instr; ++i)
 //		std::clog << i << '\t' << GamsOpCodeName[getInstrOpCode(instr[i])] << '\t' << getInstrAddress(instr[i]) << std::endl;
 	
+	unsigned int* instr = keep_original_instr ? CoinCopyOfArray(instr_, num_instr) : instr_;
+	
 	// reorder instructions such that there are no PushS, Popup, or Swap left
 	reorderInstr(instr, num_instr);
-	
+
 	nlNodeVec.reserve(num_instr);
 	
 	for (int i=0; i<num_instr; ++i) {
@@ -552,6 +554,9 @@ OSnLNode* Smag2OSiL::parseGamsInstructions(unsigned int* instr, int num_instr, d
 		}
 	}
 	
+	if (keep_original_instr)
+		delete[] instr;
+	
 	if (!nlNodeVec.size()) return NULL;	
 	// the vector is in postfix format - create expression tree and return it
 	return nlNodeVec[0]->createExpressionTreeFromPostfix(nlNodeVec);
@@ -561,7 +566,7 @@ bool Smag2OSiL::setupTimeDomain() {
 	int* colTimeStage=new int[smagColCount(smag)];
 	int minStage=0;
 	int maxStage=0;
-	
+
 	// timestages in GAMS are stored in the scaling attribute, but only if the variable is continuous
 	// otherwise we assume they are stored in the branching priority attribute
 	for (int i=0; i<smagColCount(smag); ++i) {
