@@ -22,7 +22,13 @@ OSrL2Smag::~OSrL2Smag() {
 
 void OSrL2Smag::writeSolution(OSResult& osresult) {
 	int solver_status, model_status;
-	if (osresult.getGeneralStatusType()=="error") {
+	if (osresult.resultHeader == NULL) {
+		solver_status=10; // error solver failure
+		model_status=13; // error no solution
+		smagReportSolBrief(smag, model_status, solver_status);
+		smagStdOutputPrint(smag, SMAG_ALLMASK, "Error: OS result does not have header.\n");
+		return;
+	} else if (osresult.getGeneralStatusType()=="error") {
 		solver_status=10; // error solver failure
 		model_status=13; // error no solution
 		smagReportSolBrief(smag, model_status, solver_status);
@@ -141,8 +147,9 @@ void OSrL2Smag::writeSolution(OSResult& osresult) {
 
 void OSrL2Smag::writeSolution(std::string& osrl) {
 	OSResult* osresult=NULL;
+	OSrLReader osrl_reader;
 	try {
-		osresult=OSrLReader().readOSrL(osrl);
+		osresult=osrl_reader.readOSrL(osrl);
 	} catch(const ErrorClass& error) {
 		smagStdOutputPrint(smag, SMAG_ALLMASK, "Error parsing the OS result string:\n");
 		smagStdOutputPrint(smag, SMAG_ALLMASK, error.errormsg.c_str());
@@ -150,10 +157,8 @@ void OSrL2Smag::writeSolution(std::string& osrl) {
 		smagReportSolBrief(smag, 13, 13);
 		return;
 	}
-	if (osresult) {
+	if (osresult)
 		writeSolution(*osresult);
-		delete osresult;
-	}
 }
 
 
