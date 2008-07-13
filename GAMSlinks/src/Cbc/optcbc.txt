@@ -380,6 +380,15 @@ preprocess.trysos
 This option is similar to sos, but allows any number integer variables to be outside of the sets.
 
 
+threads
+The option controls the multithreading feature of CBC.
+To use multiple threads, set the number of threads you want.
+It may be better to use one or two more than number of available CPUs.
+If the value is 100+n, then n threads are used in sub-trees.
+If the value is 200+n, then n threads are used for root cuts.
+If the value is 300+n, then n threads are used for both.
+
+
 printfrequency
 Controls the number of nodes that are evaluated between status prints.
 

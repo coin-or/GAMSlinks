@@ -186,6 +186,14 @@ AC_ARG_ENABLE(os-solver,
 AM_CONDITIONAL(COIN_OS_SOLVER, [test x"$os_solver" = xyes])
 AC_MSG_RESULT([$os_solver])
 
+################
+# CBC parallel #
+################
+
+AC_ARG_ENABLE([cbc-parallel],,
+  AC_DEFINE([CBC_THREAD],[1],[Define to 1 if the SMP version of CBC is compiled])
+)
+
 ####################################
 # GAMS system and GAMS I/O LIBRARY #
 ####################################

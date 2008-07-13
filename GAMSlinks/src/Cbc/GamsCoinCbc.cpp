@@ -1023,6 +1023,20 @@ void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myo
 		par_list.push_back(buffer);
 	}
 	
+	if (opt.isDefined("threads")) {
+#ifdef CBC_THREAD
+		if (opt.getInteger("threads")>1 && (opt.isDefined("usercutcall") || opt.isDefined("userheurcall"))) {
+			myout << "Cannot use BCH in multithread mode. Option threads ignored." << CoinMessageEol;
+		} else {
+			par_list.push_back("-threads");
+			sprintf(buffer, "%d", opt.getInteger("threads"));
+			par_list.push_back(buffer);
+		}
+#else
+		myout << "Warning: CBC has not been compiled with multithreading support. Option threads ignored." << CoinMessageEol;
+#endif
+	}
+	
 	// special options set by user and passed unseen to CBC
 	if (opt.isDefined("special")) {
 		char longbuffer[10000];

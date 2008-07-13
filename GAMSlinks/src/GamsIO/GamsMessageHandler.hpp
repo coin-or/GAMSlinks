@@ -16,6 +16,10 @@
 
 #include "GamsHandler.hpp"
 
+#ifdef CBC_THREAD
+#include <pthread.h>
+#endif
+
 /** A COIN-OR message handler that writes into the GAMS status- and logfile.
  */
 class GamsMessageHandler : public CoinMessageHandler {
@@ -25,6 +29,8 @@ public:
 	 * @param gams_ A GAMS handler to access the GAMS status- and logfile.
 	 */  
   GamsMessageHandler(GamsHandler& gams_);
+
+  ~GamsMessageHandler();
 
 	/** Sets the number of spaces to remove at the front of a message.
 	 */
@@ -50,6 +56,9 @@ public:
 private:
 	GamsHandler& gams;
   int rmlblanks_;
+#ifdef CBC_THREAD
+  pthread_mutex_t print_mutex;
+#endif
 };
 
 #endif // GamsMessageHandler_H

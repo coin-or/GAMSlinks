@@ -37,6 +37,7 @@ set g Cbc Option Groups /
       tol_primal             primal feasibility tolerance
       tol_presolve           tolerance used in presolve
       startalg               LP solver for root node
+      threads                number of threads to use (available on Unix variants only)
 *MIP options
       mipstart               whether it should be tried to use the initial variable levels as initial MIP solution
       tol_integer            tolerance for integrality
@@ -143,6 +144,7 @@ mipgeneral.(
   coststrategy         .s.(def off)
   nodestrategy         .s.(def fewest)
   preprocess           .s.(def on)
+  threads              .i.(def 1, lo 0)
   printfrequency       .i.(def 0)
   increment            .r.(def 0)
   nodelim              .i.(def maxint)

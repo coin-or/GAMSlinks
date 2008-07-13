@@ -29,7 +29,17 @@
 
 GamsMessageHandler::GamsMessageHandler(GamsHandler& gams_)
 : gams(gams_), rmlblanks_(1) 
-{ }
+{ 
+#ifdef CBC_THREAD
+	pthread_mutex_init(&print_mutex, NULL);
+#endif
+}
+
+GamsMessageHandler::~GamsMessageHandler() {
+#ifdef CBC_THREAD
+	pthread_mutex_destroy(&print_mutex);
+#endif
+}
 
 void GamsMessageHandler::setCurrentDetail(int detail) {
 	currentMessage_.setDetail(detail);
@@ -41,7 +51,10 @@ int GamsMessageHandler::getCurrentDetail() const {
 
 // Print message, return 0 normally
 int GamsMessageHandler::print() {
-  const char *messageOut = messageBuffer();
+#ifdef CBC_THREAD
+	pthread_mutex_lock(&print_mutex);
+#endif
+	const char *messageOut = messageBuffer();
   int i=rmlblanks_;
 
   // white space at the beginning
@@ -53,5 +66,8 @@ int GamsMessageHandler::print() {
   else
   	gams.println(currentMessage_.detail() < 2 ? GamsHandler::AllMask : GamsHandler::LogMask, messageOut);
 
-  return 0;
+#ifdef CBC_THREAD
+	pthread_mutex_unlock(&print_mutex);
+#endif
+	return 0;
 }
