@@ -143,6 +143,7 @@ int main (int argc, char* argv[]) {
 		localSolve(prob, opt, smagosil.osinstance, osol);
 	}
 	
+	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nGams/OS finished.\n");
 	smagStdOutputStop(prob, buffer, sizeof(buffer));
 	smagClose(prob);
 
@@ -261,7 +262,7 @@ void remoteSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, st
 		solverInput += buffer;
 		solverInput += "</other>";
 		osol.insert(iStringpos, solverInput);
-		std::clog << "OSoL: " << osol;
+//		std::clog << "OSoL: " << osol;
 	}
 
 	try {
