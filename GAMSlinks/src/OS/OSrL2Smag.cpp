@@ -33,11 +33,11 @@ void OSrL2Smag::writeSolution(OSResult& osresult) {
 		model_status=13; // error no solution
 		smagReportSolBrief(smag, model_status, solver_status);
 		smagStdOutputPrint(smag, SMAG_ALLMASK, "Error: OS result reports error: ");
-		smagStdOutputPrint(smag, SMAG_ALLMASK, osresult.getGeneralStatusDescription().c_str());
+		smagStdOutputPrintLn(smag, SMAG_ALLMASK, osresult.getGeneralMessage().c_str());
 		return;
 	} else if (osresult.getGeneralStatusType()=="warning") {
 		smagStdOutputPrint(smag, SMAG_ALLMASK, "Warning: OS result reports warning: ");
-		smagStdOutputPrint(smag, SMAG_ALLMASK, osresult.getGeneralStatusDescription().c_str());
+		smagStdOutputPrint(smag, SMAG_ALLMASK, osresult.getGeneralMessage().c_str());
 	}
 
 	solver_status=1; // normal completion
