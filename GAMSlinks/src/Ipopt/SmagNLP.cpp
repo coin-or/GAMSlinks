@@ -57,7 +57,7 @@ bool SMAG_NLP::get_nlp_info (Index& n, Index& m, Index& nnz_jac_g,
   n = smagColCount (prob);
   m = smagRowCount (prob);
   nnz_jac_g = smagNZCount (prob); // Jacobian nonzeros
-  nnz_h_lag = prob->hesData->lowTriNZ;
+  nnz_h_lag = prob->hesData ? prob->hesData->lowTriNZ : 0;
   index_style = TNLP::C_STYLE; // 0-based
 
   return true;
@@ -80,7 +80,15 @@ bool SMAG_NLP::get_bounds_info (Index n, Number* x_l, Number* x_u,
   }
 
   for (int i = 0;  i < m;  i++) {
-    switch (prob->rowType[i]) {
+  	g_l[i] = prob->rowLB[i];
+  	g_u[i] = prob->rowUB[i];
+  	if (prob->rowType[i] > SMAG_EQU_XE) {
+      smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Unknown SMAG row type. Exiting ...\n");
+      smagStdOutputFlush(prob, SMAG_ALLMASK);
+      return false;
+  	}
+#if 0
+  	switch (prob->rowType[i]) {
     case SMAG_EQU_EQ:
       g_l[i] = g_u[i] = prob->rowRHS[i];
       break;
@@ -92,11 +100,17 @@ bool SMAG_NLP::get_bounds_info (Index n, Number* x_l, Number* x_u,
       g_l[i] = prob->rowRHS[i];
       g_u[i] = prob->inf;
       break;
+    case SMAG_EQU_XE:
+      g_l[i] = prob->rowRHS[i];
+      g_u[i] = prob->rowRHS[i];
+      break;
     default:
       smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Unknown SMAG row type. Exiting ...\n");
       smagStdOutputFlush(prob, SMAG_ALLMASK);
-      exit (EXIT_FAILURE);
+      return false;
+//      exit (EXIT_FAILURE);
 		} /* switch (rowType) */
+#endif
   }
 
   return true;
