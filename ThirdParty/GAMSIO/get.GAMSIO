@@ -73,8 +73,9 @@ case "$uname" in
     download lx3
     ;;
   Darwin*i?86*)
-    echo "This seem to be a Darwin machine, downloading dii build."
+    echo "This seem to be a Darwin machine, downloading dii and dig build."
     download dii
+    download dig
     ;;
   SunOS*i?86*)
     echo "This seem to be a Solaris machine, downloading sig build."

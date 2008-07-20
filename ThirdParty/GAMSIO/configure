@@ -19992,7 +19992,14 @@ else
         GAMSIO_CODE=WEI
       ;;
       i?86-*-darwin*)
-        GAMSIO_CODE=DII
+        case "$F77" in
+          *gfortran* )
+            GAMSIO_CODE=DIG
+            ;;
+          *)
+            GAMSIO_CODE=DII
+            ;;
+        esac
       ;;
       i?86-*-solaris*)
         GAMSIO_CODE=SIG
@@ -20018,7 +20025,7 @@ case $GAMSIO_CODE in
       gamsio_system=Windows
       GAMSIO_CIA=CIA_WEX
     ;;
-  DII)
+  DII | DIG)
       gamsio_system=Darwin
       GAMSIO_CIA=CIA_DAR
     ;;

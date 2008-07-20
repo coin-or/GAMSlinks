@@ -79,7 +79,14 @@ AC_ARG_WITH([gamsio-code],
         GAMSIO_CODE=WEI
       ;;
       i?86-*-darwin*)
-        GAMSIO_CODE=DII
+        case "$F77" in
+          *gfortran* )
+            GAMSIO_CODE=DIG
+            ;;
+          *)
+            GAMSIO_CODE=DII
+            ;;
+        esac
       ;;
       i?86-*-solaris*)
         GAMSIO_CODE=SIG
@@ -102,7 +109,7 @@ case $GAMSIO_CODE in
       gamsio_system=Windows
       GAMSIO_CIA=CIA_WEX
     ;;
-  DII)
+  DII | DIG)
       gamsio_system=Darwin
       GAMSIO_CIA=CIA_DAR
     ;;
@@ -201,7 +208,7 @@ case $GAMSIO_CODE in
       SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libf90pallib.a $gamsio_srcdir/libg2d.a $gamsio_srcdir/dictread.o $gamsio_srcdir/dictfunc.o $gamsio_srcdir/bch.o"
       GAMSIO_ADDLIBS=""
     ;;
-  DII)
+  DII | DIG)
       GAMSIO_LIBS="$gamsio_srcdir/iolib.a $gamsio_srcdir/nliolib.a $gamsio_srcdir/clicelib.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libf90pallib.a"
       SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libf90pallib.a $gamsio_srcdir/libg2d.a $gamsio_srcdir/dictread.o $gamsio_srcdir/dictfunc.o $gamsio_srcdir/bch.o"
       GAMSIO_ADDLIBS="-ldl -lSystemStubs $IFORT_LIBS"
