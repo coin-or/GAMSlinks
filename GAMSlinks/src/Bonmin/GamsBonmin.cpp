@@ -733,8 +733,12 @@ void BCHinit(BonminSetup& bonmin_setup, GamsHandlerSmag& gamshandler, GamsDictio
 		bch->set_userheurobjfirst(i);
 	}
 
-	if (have_heurcall)
-		bonmin_setup.heuristics().push_back(new GamsHeuristic(*bch)); // BabSetupBase takes care of deleting this one
+	if (have_heurcall) {
+		bonmin_setup.heuristics().push_back(BabSetupBase::HeuristicMethod());
+		BabSetupBase::HeuristicMethod& heurmeth(bonmin_setup.heuristics().back());
+		heurmeth.heuristic = new GamsHeuristic(*bch); // BabSetupBase takes care of deleting this one I hope
+		heurmeth.id = "GamsBCH";
+	}
 	
 	if (have_cutcall) {
 		bonmin_setup.cutGenerators().push_back(BabSetupBase::CuttingMethod());
