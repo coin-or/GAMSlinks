@@ -43,6 +43,7 @@ extern "C" {
 
 #include "OsiClpSolverInterface.hpp"
 #include "CoinHelperFunctions.hpp"
+#include "CoinTime.hpp"
 
 void setupProblem(GamsModel& gm, GamsDictionary& gamsdict, OsiClpSolverInterface& solver);
 void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model);
@@ -91,7 +92,7 @@ int main (int argc, const char *argv[]) {
 	GamsMessageHandler myout(gamshandler), slvout(gamshandler);
 	slvout.setPrefix(0);
 	solver.passInMessageHandler(&slvout);
-	solver.getModelPtr()->passInMessageHandler(&slvout);
+//	solver.getModelPtr()->passInMessageHandler(&slvout);
 	solver.setHintParam(OsiDoReducePrint,true,OsiHintTry);
 
 	myout.setCurrentDetail(1);
@@ -127,6 +128,7 @@ int main (int argc, const char *argv[]) {
 	}
 
 	gm.TimerStart();
+	CoinWallclockTime(); // start wallclock timer
 	
 	GamsDictionary gamsdict(gamshandler);
 	if (opt.getBool("names"))
@@ -261,7 +263,10 @@ int main (int argc, const char *argv[]) {
 	}
 
 	gm.setIterUsed(model.getIterationCount());
-	gm.setResUsed(gm.SecondsSinceStart());
+	if (opt.getInteger("threads")>1)
+		gm.setResUsed(CoinWallclockTime());
+	else
+		gm.setResUsed(gm.SecondsSinceStart());
 	gm.setObjBound(model.getBestPossibleObjValue());
 	gm.setNodesUsed(model.getNodeCount());
 	if (write_solution) {
@@ -271,7 +276,10 @@ int main (int argc, const char *argv[]) {
 	}
 
 	if (model.bestSolution()) {
-		snprintf(buffer, 255, "MIP solution: %21.10g   (%d nodes, %g seconds)", model.getObjValue(), model.getNodeCount(), gm.SecondsSinceStart());
+		if (opt.getInteger("threads")>1)
+			snprintf(buffer, 255, "MIP solution: %21.10g   (%d nodes, %g CPU seconds, %.2f wall clock seconds)", model.getObjValue(), model.getNodeCount(), gm.SecondsSinceStart(), CoinWallclockTime());
+		else
+			snprintf(buffer, 255, "MIP solution: %21.10g   (%d nodes, %g seconds)", model.getObjValue(), model.getNodeCount(), gm.SecondsSinceStart());
 		gm.PrintOut(GamsModel::AllMask, buffer);
 	}
 	snprintf(buffer, 255, "Best possible: %20.10g", model.getBestPossibleObjValue());
