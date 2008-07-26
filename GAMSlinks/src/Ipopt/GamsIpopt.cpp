@@ -101,19 +101,19 @@ int main (int argc, char* argv[]) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT output.\n");
 
 	// Change some options
-  app->Options()->SetNumericValue("bound_relax_factor", 0);
-	app->Options()->SetIntegerValue("max_iter", prob->gms.itnlim);
-  app->Options()->SetStringValue("mu_strategy", "adaptive");
- 	app->Options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false);
- 	app->Options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false);
+  app->Options()->SetNumericValue("bound_relax_factor", 0, true, true);
+	app->Options()->SetIntegerValue("max_iter", prob->gms.itnlim, true, true);
+  app->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
+ 	app->Options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false, true);
+ 	app->Options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false, true);
 // 	if (smagColCountNL(prob)==0) { // LP
 //		app->Options()->SetStringValue("mehrotra_algorithm", "yes");
 // 	}
 // if we have linear rows and a quadratic objective, then the hessian of the lag. is constant, and Ipopt can make use of this  
 	if ((prob->modType==procQCP || prob->modType==procRMIQCP) && prob->rowCountNL==0)
-		app->Options()->SetStringValue("hessian_constant", "yes");
+		app->Options()->SetStringValue("hessian_constant", "yes", true, true);
 	if (prob->gms.iscopt)
-		app->Options()->SetStringValue("nlp_scaling_method", "user-scaling");
+		app->Options()->SetStringValue("nlp_scaling_method", "user-scaling", true, true);
 
 
 	app->RegOptions()->SetRegisteringCategory("Linear Solver");
@@ -141,10 +141,12 @@ int main (int argc, char* argv[]) {
 #endif
 //	printOptions(app->Jnlst(), app->RegOptions());
 	
-	if (prob->gms.useopt)
+	if (prob->gms.useopt) {
+	 	app->Options()->SetStringValue("print_user_options", "yes", true, true);
 		app->Initialize(prob->gms.optFileName);
-	else
+	} else {
 		app->Initialize("");
+	}
 
 	app->Options()->GetNumericValue("diverging_iterates_tol", mysmagnlp->div_iter_tol, "");
 	// or should we also check the tolerance for acceptable points?

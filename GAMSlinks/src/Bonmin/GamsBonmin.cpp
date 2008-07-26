@@ -179,29 +179,31 @@ void solve_minlp(smagHandle_t prob) {
 //  printOptions(journalist, bonmin_setup.roptions());
   
 	// Change some options
-	bonmin_setup.options()->SetNumericValue("bound_relax_factor", 0);
-	bonmin_setup.options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false);
-	bonmin_setup.options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false);
+	bonmin_setup.options()->SetNumericValue("bound_relax_factor", 0, true, true);
+	bonmin_setup.options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false, true);
+	bonmin_setup.options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false, true);
 	if (prob->gms.icutof)
-		bonmin_setup.options()->SetNumericValue("bonmin.cutoff", prob->gms.cutoff);
-	bonmin_setup.options()->SetNumericValue("bonmin.allowable_gap", prob->gms.optca);
-	bonmin_setup.options()->SetNumericValue("bonmin.allowable_fraction_gap", prob->gms.optcr);
+		bonmin_setup.options()->SetNumericValue("bonmin.cutoff", prob->gms.cutoff, true, true);
+	bonmin_setup.options()->SetNumericValue("bonmin.allowable_gap", prob->gms.optca, true, true);
+	bonmin_setup.options()->SetNumericValue("bonmin.allowable_fraction_gap", prob->gms.optcr, true, true);
 	if (prob->gms.nodlim)
-		bonmin_setup.options()->SetIntegerValue("bonmin.node_limit", prob->gms.nodlim);
+		bonmin_setup.options()->SetIntegerValue("bonmin.node_limit", prob->gms.nodlim, true, true);
 	else
-		bonmin_setup.options()->SetIntegerValue("bonmin.node_limit", prob->gms.itnlim);
-	bonmin_setup.options()->SetNumericValue("bonmin.time_limit", prob->gms.reslim);
+		bonmin_setup.options()->SetIntegerValue("bonmin.node_limit", prob->gms.itnlim, true, true);
+	bonmin_setup.options()->SetNumericValue("bonmin.time_limit", prob->gms.reslim, true, true);
 
 	if ((prob->modType==procQCP || prob->modType==procMIQCP || prob->modType==procRMIQCP) && prob->rowCountNL==0)
-		bonmin_setup.options()->SetStringValue("hessian_constant", "yes"); 
+		bonmin_setup.options()->SetStringValue("hessian_constant", "yes", true, true); 
 	if (prob->gms.iscopt)
-		bonmin_setup.options()->SetStringValue("nlp_scaling_method", "user-scaling");
+		bonmin_setup.options()->SetStringValue("nlp_scaling_method", "user-scaling", true, true);
 	
 	try {
-		if (prob->gms.useopt)
+		if (prob->gms.useopt) {
+		 	bonmin_setup.options()->SetStringValue("bonmin.print_user_options", "yes", true, true);
 			bonmin_setup.readOptionsFile(prob->gms.optFileName);
-		else // need to let Bonmin read something, otherwise it will try to read its default option file bonmin.opt
+		}	else { // need to let Bonmin read something, otherwise it will try to read its default option file bonmin.opt
 			bonmin_setup.readOptionsString(std::string());
+		}
 	} catch (IpoptException error) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, error.Message().c_str());
 	  smagReportSolBrief(prob, 13, 13);
@@ -497,20 +499,22 @@ void solve_nlp(smagHandle_t prob) {
 #endif
 
 	// Change some options
-  app->Options()->SetNumericValue("bound_relax_factor", 0);
-	app->Options()->SetIntegerValue("max_iter", prob->gms.itnlim);
-  app->Options()->SetStringValue("mu_strategy", "adaptive");
- 	app->Options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false);
- 	app->Options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false);
+  app->Options()->SetNumericValue("bound_relax_factor", 0, true, true);
+	app->Options()->SetIntegerValue("max_iter", prob->gms.itnlim, true, true);
+  app->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
+ 	app->Options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false, true);
+ 	app->Options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false, true);
 	if ((prob->modType==procQCP || prob->modType==procMIQCP || prob->modType==procRMIQCP) && prob->rowCountNL==0)
-		app->Options()->SetStringValue("hessian_constant", "yes"); 
+		app->Options()->SetStringValue("hessian_constant", "yes", true, true); 
 	if (prob->gms.iscopt)
-		app->Options()->SetStringValue("nlp_scaling_method", "user-scaling");
+		app->Options()->SetStringValue("nlp_scaling_method", "user-scaling", true, true);
 
-	if (prob->gms.useopt)
+	if (prob->gms.useopt) {
+	 	app->Options()->SetStringValue("print_user_options", "yes", true, true);
 		app->Initialize(prob->gms.optFileName);
-	else
+	} else {
 		app->Initialize("");
+	}
 
 	std::string libpath;
 #ifdef HAVE_HSL_LOADER
