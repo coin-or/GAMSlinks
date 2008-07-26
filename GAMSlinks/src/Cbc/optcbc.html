@@ -984,10 +984,10 @@ If a variable is branched on many times then the previous average up and down co
 threads</a>
 <i> (integer)</i> number of threads to use (available on Unix variants only)</h4><p>
 
-The option controls the multithreading feature of CBC.
+This option controls the multithreading feature of CBC.
 A number between 1 and 100 sets the number of threads used for parallel branch and bound.
 A number 100+n with n between 1 and 100 says that n threads are used to parallelize the branch and bound, but also heuristics such as RINS which do branch and bound on a reduced model also use threads.
-A number 200+n with n between 1 and 100 says that n threads are used to parallelize the branch and bound, but also the cut generators at the root node (i.e. before threads are useful) are run in parallel.
+A number 200+n with n between 1 and 100 says that n threads are used to parallelize the branch and bound, but also the cut generators at the root node (i.e., before threads are useful) are run in parallel.
 A number 300+n with n between 1 and 100 combines the 100+n and 200+n options.
 Thus, n threads are used to parallelize the branch and bound, but also heuristics use threads and the cut generators at the root node are run in parallel.
 The 100+n, 200+n, and 300+n options are experimental.
