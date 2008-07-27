@@ -148,6 +148,14 @@ if COIN_HAS_CBC
   LIBS += `cat $(CGLOBJDIR)/cgl_addlibs.txt`
 endif
 
+if COIN_HAS_CPX
+  AM_CPPFLAGS += \
+	-I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCpx` \
+	-I`$(CYGPATH_W) $(CPXINCDIR)`
+  GamsCoinOsi_LDADD += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
+  GamsCoinOsi_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
+endif
+
 GamsCoinOsi_DEPENDENCIES += $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(OSIOBJDIR)/src/libOsi.la
 GamsCoinOsi_LDADD += $(COINUTILSOBJDIR)/src/libCoinUtils.la \

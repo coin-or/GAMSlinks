@@ -194,6 +194,12 @@ AC_ARG_ENABLE([cbc-parallel],,
   AC_DEFINE([CBC_THREAD],[1],[Define to 1 if the SMP version of CBC is compiled])
 )
 
+######################
+# CPLEX for Gams/OSI #
+######################
+
+AC_COIN_HAS_USER_LIBRARY([Cplex],[CPX],[cplex.h],[CPXgetstat])
+
 ####################################
 # GAMS system and GAMS I/O LIBRARY #
 ####################################
@@ -294,7 +300,7 @@ AC_SUBST(gamslinks_build_bonmin)
 AM_CONDITIONAL([GAMSLINKS_BUILD_BONMIN],[test $gamslinks_build_bonmin = 1])
 
 if test $gamslinks_build_gamsio = 1 &&
-   ( test $coin_build_dylp = 1 || test $coin_build_symphony = 1 || test $coin_build_vol = 1 ) ; then
+   ( test $coin_build_dylp = 1 || test $coin_build_symphony = 1 || test $coin_build_vol = 1 || test $coin_has_cplex = true ) ; then
   gamslinks_build_osi=1
 else
   gamslinks_build_osi=0

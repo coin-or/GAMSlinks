@@ -177,6 +177,14 @@ if COIN_HAS_IPOPT
   LIBS += `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
 endif
 
+if COIN_HAS_CPX
+  AM_CPPFLAGS += \
+	-I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCpx` \
+	-I`$(CYGPATH_W) $(CPXINCDIR)`
+  GamsOS_LDADD += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
+  GamsOS_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
+endif
+
 # end of check for COIN_OS_SOLVER
 endif
 

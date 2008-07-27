@@ -74,10 +74,16 @@ bin_PROGRAMS = GamsBonmin$(EXEEXT)
 
 @COIN_HAS_GLPK_TRUE@am__append_6 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 @COIN_HAS_GLPK_TRUE@am__append_7 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+@COIN_HAS_CPX_TRUE@am__append_8 = \
+@COIN_HAS_CPX_TRUE@	-I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCpx` \
+@COIN_HAS_CPX_TRUE@	-I`$(CYGPATH_W) $(CPXINCDIR)`
+
+@COIN_HAS_CPX_TRUE@am__append_9 = $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
+@COIN_HAS_CPX_TRUE@am__append_10 = $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
 DIST_COMMON = $(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_8 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_9 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_11 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_12 = .Externals-stamp
 subdir = src/Bonmin
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
@@ -100,6 +106,10 @@ GamsBonmin_OBJECTS = $(am_GamsBonmin_OBJECTS)
 @COIN_HAS_CLP_TRUE@	$(CLPOBJDIR)/src/libClp.la
 @COIN_HAS_GLPK_TRUE@am__DEPENDENCIES_2 =  \
 @COIN_HAS_GLPK_TRUE@	$(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+am__DEPENDENCIES_3 =
+@COIN_HAS_CPX_TRUE@am__DEPENDENCIES_4 =  \
+@COIN_HAS_CPX_TRUE@	$(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la \
+@COIN_HAS_CPX_TRUE@	$(am__DEPENDENCIES_3)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -175,6 +185,8 @@ COIN_HAS_COINUTILS_FALSE = @COIN_HAS_COINUTILS_FALSE@
 COIN_HAS_COINUTILS_TRUE = @COIN_HAS_COINUTILS_TRUE@
 COIN_HAS_CPPAD_FALSE = @COIN_HAS_CPPAD_FALSE@
 COIN_HAS_CPPAD_TRUE = @COIN_HAS_CPPAD_TRUE@
+COIN_HAS_CPX_FALSE = @COIN_HAS_CPX_FALSE@
+COIN_HAS_CPX_TRUE = @COIN_HAS_CPX_TRUE@
 COIN_HAS_DYLP_FALSE = @COIN_HAS_DYLP_FALSE@
 COIN_HAS_DYLP_TRUE = @COIN_HAS_DYLP_TRUE@
 COIN_HAS_GAMSIO = @COIN_HAS_GAMSIO@
@@ -205,6 +217,8 @@ CPPADDOCDIR = @CPPADDOCDIR@
 CPPADOBJDIR = @CPPADOBJDIR@
 CPPADSRCDIR = @CPPADSRCDIR@
 CPPFLAGS = @CPPFLAGS@
+CPXINCDIR = @CPXINCDIR@
+CPXLIB = @CPXLIB@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEFS = @CXXDEFS@
@@ -398,7 +412,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmsbm_nt.cmd gmsbm_us.run install/gmsbm_nt.dat \
-	install/gmsbm_un.dat $(am__append_8)
+	install/gmsbm_un.dat $(am__append_11)
 GamsBonmin_SOURCES = GamsBonmin.cpp SmagMINLP.cpp SmagMINLP.hpp ../Ipopt/SmagNLP.cpp ../GamsIO/SmagJournal.cpp ../Cbc/GamsHeuristic.cpp ../Cbc/GamsCutGenerator.cpp
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	-I`$(CYGPATH_W) $(srcdir)/../GamsIO` -I`$(CYGPATH_W) \
@@ -429,14 +443,15 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	$(BONMINSRCDIR)/src/Algorithms` -I`$(CYGPATH_W) \
 	$(BONMINSRCDIR)/src/Interfaces` -I`$(CYGPATH_W) \
 	$(BONMINSRCDIR)/src/CbcBonmin` -I`$(CYGPATH_W) \
-	$(BONMINOBJDIR)/inc` $(am__append_1) $(am__append_5)
+	$(BONMINOBJDIR)/inc` $(am__append_1) $(am__append_5) \
+	$(am__append_8)
 GamsBonmin_LDADD = ../GamsIO/libSmagIO.la ../GamsIO/libSmagStricmp.la \
 	$(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
 	$(CBCOBJDIR)/src/libCbc.la $(CGLOBJDIR)/src/libCgl.la \
 	$(OSIOBJDIR)/src/libOsi.la \
 	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
 	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(am__append_2) \
-	$(am__append_6)
+	$(am__append_6) $(am__append_9)
 GamsBonmin_DEPENDENCIES = ../GamsIO/libSmagIO.la $(SMAG_LIBS) \
 	../GamsIO/libSmagStricmp.la \
 	$(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la \
@@ -444,10 +459,10 @@ GamsBonmin_DEPENDENCIES = ../GamsIO/libSmagIO.la $(SMAG_LIBS) \
 	$(OSIOBJDIR)/src/libOsi.la \
 	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
 	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la $(am__append_3) \
-	$(am__append_7)
+	$(am__append_7) $(am__append_10)
 GamsBonmin_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
-DISTCLEANFILES = gmsbm_.zip $(am__append_9) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = gmsbm_.zip $(am__append_12) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: all-am

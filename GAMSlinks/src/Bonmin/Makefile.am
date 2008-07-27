@@ -87,6 +87,14 @@ if COIN_HAS_GLPK
   GamsBonmin_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 endif
 
+if COIN_HAS_CPX
+  AM_CPPFLAGS += \
+	-I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCpx` \
+	-I`$(CYGPATH_W) $(CPXINCDIR)`
+  GamsBonmin_LDADD += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
+  GamsBonmin_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
+endif
+
 LIBS += `cat $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
 GamsBonmin_LDFLAGS = $(ADDLIBS) -rpath $(libdir)

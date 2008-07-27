@@ -27,6 +27,9 @@
 /* Define to 1 if the cppad package is used */
 #undef COIN_HAS_CPPAD
 
+/* Define to 1 if the Cplex package is available */
+#undef COIN_HAS_CPX
+
 /* Define to 1 if the DyLP package is used */
 #undef COIN_HAS_DYLP
 

@@ -59,6 +59,12 @@
 #if COIN_HAS_SYMPHONY
 #include "OsiSymSolverInterface.hpp"
 #endif
+#if COIN_HAS_CPX
+#include "OsiCpxSolverInterface.hpp"
+extern "C" {
+#include "gamscplexlice.h"
+}
+#endif
 
 // GAMS
 #include "GamsModel.hpp"
@@ -147,11 +153,15 @@ int main (int argc, const char *argv[]) {
 #else
 #if COIN_HAS_GLPK
 		opt.setString("solver", "symphony");
+#else
+#if COIN_HAS_CPX
+		opt.setString("solver", "cplex");
 #else //wow, when will a user get to here?
 		myout << "Error: solver parameter not set and no solver available. Aborting!" << CoinMessageEol;
 		gm.setStatus(ErrorSystemFailure, ErrorNoSolution);
 		gm.setSolution();
 		exit(EXIT_FAILURE);
+#endif
 #endif
 #endif
 #endif
@@ -209,6 +219,16 @@ try {
 #if COIN_HAS_SYMPHONY
 	if (!solver && strcmp(buffer, "symphony")==0) {
 		solver=new OsiSymSolverInterface();
+		solver_can_mips=true;
+	}
+#endif
+#if COIN_HAS_CPX
+	if (!solver && strcmp(buffer, "cplex")==0) {
+	  licenseInit_t initType = GAMS;
+		if (gamscplexlice(0, 0, 0, 0, 0, 1, &initType, NULL, NULL, NULL, NULL, NULL, NULL)) {
+			myout << "Could not initialize CPLEX license." << CoinMessageEol;
+	  }
+		solver=new OsiCpxSolverInterface();
 		solver_can_mips=true;
 	}
 #endif
