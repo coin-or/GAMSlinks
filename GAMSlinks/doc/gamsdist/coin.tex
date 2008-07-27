@@ -743,10 +743,10 @@ This option causes GAMS names for the variables and equations to be loaded into 
 These names will then be used for error messages, log entries, and so forth.
 Turning names off may help if memory is very tight.
 
-\textsl{(default = 0)}
+\textsl{(default = FALSE)}
 \begin{itemize}
-\item[0] Do not load variable and equation names.
-\item[1] Load variable and equation names.
+\item[FALSE] Do not load variable and equation names.
+\item[TRUE] Load variable and equation names.
 \end{itemize}
 
 
@@ -757,10 +757,10 @@ Sometimes the solution process after the branch-and-cut that solves the problem 
 In these cases, this option can be used to turn this final solve off.
 Without the final solve no proper marginal values are available and only zeros are returned to GAMS.
 
-\textsl{(default = 1)}
+\textsl{(default = TRUE)}
 \begin{itemize}
-\item[0] Do not solve the fixed problem.
-\item[1] Solve the fixed problem and return duals.
+\item[FALSE] Do not solve the fixed problem.
+\item[TRUE] Solve the fixed problem and return duals.
 \end{itemize}
 
 
@@ -768,12 +768,27 @@ Without the final solve no proper marginal values are available and only zeros a
 {\textbf{gams/mipstart (\slshape{integer})}}]\hspace{1.0in}
 
 This option controls the use of advanced starting values for mixed integer programs.
-A setting of 1 indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.
+A setting of TRUE indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.
 
-\textsl{(default = 1)}
+\textsl{(default = TRUE)}
 \begin{itemize}
-\item[0] Do not use the initial variable levels.
-\item[1] Try to use the initial variable levels as a MIP starting solution.
+\item[FALSE] Do not use the initial variable levels.
+\item[TRUE] Try to use the initial variable levels as a MIP starting solution.
+\end{itemize}
+
+
+\item[\label{scipprintstat}\hypertarget{scipprintstat}
+{\textbf{gams/print\_statistics (\slshape{integer})}}]\hspace{1.0in}
+
+This option controls the printing of solve statistics after a MIP solve.
+Turning on this option indicates that statistics like the number of
+generated cuts of each type or the calls of heuristics are printed after the
+MIP solve.
+
+\textsl{(default = FALSE)}
+\begin{itemize}
+\item[FALSE] Do not print statistics.
+\item[TRUE] Print statistics.
 \end{itemize}
 
 
@@ -817,12 +832,10 @@ Determines the multiplier for the frequency of the cut generator model calls.
 
 Calls the cut generator if the solver found a new integer feasible solution.
 
-\textsl{(default = 1)}
+\textsl{(default = TRUE)}
 \begin{itemize}
-\item[0] .
-Do not call cut generator because a new integer feasible solution is found.
-\item[1] .
-Let SCIP call the cut generator if a new integer feasible solution is found.
+\item[FALSE] Do not call cut generator because a new integer feasible solution is found.
+\item[TRUE] Let SCIP call the cut generator if a new integer feasible solution is found.
 \end{itemize}
 
 \item[\label{scipusergdxin}\hypertarget{scipusergdxin}
@@ -894,12 +907,10 @@ Determines the multiplier for the frequency of the heuristic model calls.
 
 Calls the heuristic if the solver found a new integer feasible solution.
 
-\textsl{(default = 1)}
+\textsl{(default = TRUE)}
 \begin{itemize}
-\item[0] .
-Do not call heuristic because a new integer feasible solution is found.
-\item[1] .
-Let SCIP call the heuristic if a new integer feasible solution is found.
+\item[FALSE] Do not call heuristic because a new integer feasible solution is found.
+\item[TRUE] Let SCIP call the heuristic if a new integer feasible solution is found.
 \end{itemize}
 
 \item[\label{scipuserheurobjfirst}\hypertarget{scipuserheurobjfirst}
@@ -907,7 +918,7 @@ Let SCIP call the heuristic if a new integer feasible solution is found.
 
 Similar to gams/userheurfirst but only calls the heuristic if the relaxed objective value promises a significant improvement of the current incumbent, i.e., the LP value of the node has to be closer to the best bound than the current incumbent.
 
-\textsl{(default = 0)}
+\textsl{(default = FALSE)}
 
 \item[\label{scipuserjobid}\hypertarget{scipuserjobid}
 {\textbf{gams/userjobid (\slshape{string})}}]\hspace{1.0in}
@@ -920,7 +931,7 @@ Postfixes to use for gams/gdxname, gams/gdxnameinc, and gams/gdxin.
 
 Calls gamskeep instead of gams
 
-\textsl{(default = 0)}
+\textsl{(default = FALSE)}
 
 \end{description}
 
