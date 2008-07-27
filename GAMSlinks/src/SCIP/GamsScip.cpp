@@ -488,6 +488,7 @@ SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/names", "whether the gams dictionary should be read and col/row names be given to scip", NULL, FALSE, FALSE, NULL, NULL) );
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/solvefinal", "whether the problem should be solved with fixed discrete variables to get dual values", NULL, FALSE, TRUE, NULL, NULL) );
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/mipstart", "whether to try initial point as first primal solution", NULL, FALSE, TRUE, NULL, NULL) );
+	SCIP_CALL( SCIPaddBoolParam(scip, "gams/print_statistics", "whether to print statistics on a MIP solve", NULL, FALSE, FALSE, NULL, NULL) );
 	
 	SCIP_CALL( BCHaddParam(scip) );
 	
@@ -538,8 +539,12 @@ SCIP_RETCODE setupMIPStart(smagHandle_t prob, SCIP* scip, SCIP_VAR**& vars) {
 }
 
 SCIP_RETCODE checkMIPsolve(smagHandle_t prob, SCIP* scip, SCIP_VAR** vars, SolveStatus& solstatus) {
-	if (prob->fpStatus)
-		SCIP_CALL( SCIPprintStatistics(scip, prob->fpStatus) );
+	SCIP_Bool printstat;
+	SCIP_CALL( SCIPgetBoolParam(scip, "gams/print_statistics", &printstat) );
+	if (printstat) {
+		smagStdOutputPrint(prob, SMAG_LOGMASK, "\n");
+		SCIP_CALL( SCIPprintStatistics(scip, NULL) );
+	}
 
 	SCIP_STATUS status = SCIPgetStatus(scip);
 	int nrsol = SCIPgetNSols(scip);
