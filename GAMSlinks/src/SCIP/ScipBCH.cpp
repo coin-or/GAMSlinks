@@ -452,6 +452,8 @@ SCIP_RETCODE BCHgenerateCuts(SCIP* scip, SCIP_SEPADATA* sepadata, SCIP_RESULT* r
 		
 //		SCIP_CALL( SCIPprintRow(scip, row, stdout) );
 		SCIP_CALL( SCIPaddCut(scip, NULL, row, TRUE /* forcecut */) );
+
+		SCIP_CALL( SCIPreleaseRow (scip, &row) );
 	}
 
 	*result = SCIP_SEPARATED;
