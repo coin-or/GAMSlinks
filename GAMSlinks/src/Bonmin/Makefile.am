@@ -54,7 +54,6 @@ GamsBonmin_LDADD = ../GamsIO/libSmagIO.la ../GamsIO/libSmagStricmp.la \
  $(CBCOBJDIR)/src/libCbc.la \
  $(CGLOBJDIR)/src/libCgl.la \
  $(OSIOBJDIR)/src/libOsi.la \
- $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 
 GamsBonmin_DEPENDENCIES = ../GamsIO/libSmagIO.la $(SMAG_LIBS) ../GamsIO/libSmagStricmp.la \
@@ -94,6 +93,9 @@ if COIN_HAS_CPX
   GamsBonmin_LDADD += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
   GamsBonmin_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
 endif
+
+# put it here so that it comes after OsiClp
+GamsBonmin_LDADD += $(COINUTILSOBJDIR)/src/libCoinUtils.la
 
 LIBS += `cat $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
