@@ -220,6 +220,12 @@ case $GAMSIO_CODE in
     ;;
 esac
 
+case "$F77" in
+  *gfortran* )
+    GAMSIO_ADDLIBS="$GAMSIO_ADDLIBS $FLIBS"
+  ;;
+esac
+
 GAMSIO_CPPFLAGS="-I$gamsio_srcdir"
 
 # check whether we can use the iolib
