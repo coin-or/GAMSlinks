@@ -115,30 +115,18 @@ bool SMAG_MINLP::get_bounds_info (Index n, Number* x_l, Number* x_u,
   // if a variable or constraint has NO lower or upper bound, it is set to +/-prob->inf.
   // In the main program we told IPOPT to use this value to represent infinity.
 
-  for (Index j = 0;  j < n;  j++) {
-    x_l[j] = prob->colLB[j];
-    x_u[j] = prob->colUB[j];
-  }
+  memcpy(x_l, prob->colLB, n*sizeof(double));
+  memcpy(x_u, prob->colUB, n*sizeof(double));
+  memcpy(g_l, prob->rowLB, m*sizeof(double));
+  memcpy(g_u, prob->rowUB, m*sizeof(double));
 
-  for (int i = 0;  i < m;  i++) {
-    switch (prob->rowType[i]) {
-    case SMAG_EQU_EQ:
-      g_l[i] = g_u[i] = prob->rowRHS[i];
-      break;
-    case SMAG_EQU_LT:
-      g_u[i] = prob->rowRHS[i];
-      g_l[i] = -prob->inf;
-      break;
-    case SMAG_EQU_GT:
-      g_l[i] = prob->rowRHS[i];
-      g_u[i] = prob->inf;
-      break;
-    default:
-      smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Unknown SMAG row type. Exiting ...\n");
-      smagStdOutputFlush(prob, SMAG_ALLMASK);
-      exit (EXIT_FAILURE);
-		} /* switch (rowType) */
-  }
+  //  for (int i = 0;  i < m;  i++) {
+  //  	if (prob->rowType[i] > SMAG_EQU_XE) {
+  //      smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Unknown SMAG row type. Exiting ...\n");
+  //      smagStdOutputFlush(prob, SMAG_ALLMASK);
+  //      return false;
+  //  	}
+  //  }
 
   return true;
 } // get_bounds_info
