@@ -112,7 +112,7 @@ int smagSingleHessians(smagHandle_t prob, int* hesRowIdx, int* hesColIdx, double
     			&extraMemMax);
     }
 
-  	for (j = 1; j; j = hesRowNX[j-1]) { /* hesRowNX is 1-based, so now is also j */
+  	for (j = hesHeadPtr; j; j = hesRowNX[j-1]) { /* hesRowNX is 1-based, so now is also j */
   		/* printf("%d: col %d \t row %d", j, hesRowCL[j-1], hesRowRW[j-1]);
   		if (hesValue!=NULL) printf("\t val %g\n", hesRowVal[j-1]);
   		else printf("\n");
