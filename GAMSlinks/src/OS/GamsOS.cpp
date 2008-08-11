@@ -52,6 +52,8 @@
 #endif
 #endif
 
+extern "C" char G2DMATHNEW_exceptmsg[256]; // for Kipp too
+
 void localSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std::string& osol);
 void remoteSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std::string& osol);
 void processResult(smagHandle_t prob, GamsOptions& opt, string* osrl, OSResult* osresult);
@@ -148,12 +150,13 @@ int main (int argc, char* argv[]) {
 	smagStdOutputStop(prob, buffer, sizeof(buffer));
 	smagClose(prob);
 
-  return EXIT_SUCCESS;
-  
   // for Kipp
-  smagHessInit(prob);
+//  smagHessInit(prob);
   GamsDictionary dict(gamshandler);
-  GamsBCH(gamshandler, dict);
+  GamsBCH(gamshandler, dict);	
+  sprintf(G2DMATHNEW_exceptmsg, "hello kipp");
+  
+  return EXIT_SUCCESS;
 } // main
 
 #ifdef COIN_OS_SOLVER
