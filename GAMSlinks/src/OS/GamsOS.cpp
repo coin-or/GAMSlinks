@@ -36,6 +36,7 @@
 #include "OSrL2Smag.hpp"
 #include "GamsHandlerSmag.hpp"
 #include "GamsOptions.hpp"
+#include "GamsBCH.hpp" // for Kipp
 
 #include "OSiLWriter.h"
 #include "OSrLWriter.h"
@@ -148,6 +149,11 @@ int main (int argc, char* argv[]) {
 	smagClose(prob);
 
   return EXIT_SUCCESS;
+  
+  // for Kipp
+  smagHessInit(prob);
+  GamsDictionary dict(gamshandler);
+  GamsBCH(gamshandler, dict);
 } // main
 
 #ifdef COIN_OS_SOLVER
