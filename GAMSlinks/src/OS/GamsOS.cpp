@@ -85,9 +85,9 @@ int main (int argc, char* argv[]) {
   smagReadModel (prob);
 
 #ifdef GAMS_BUILD
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinOS (OS Library trunk)\nwritten by Jun Ma, Kipp Martin, ...\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinOS (OS Library 1.1)\nwritten by Jun Ma, Kipp Martin, ...\n");
 #else
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/OS (OS Library trunk)\nwritten by Jun Ma, Kipp Martin, ...\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/OS (OS Library 1.1)\nwritten by Jun Ma, Kipp Martin, ...\n");
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 	
