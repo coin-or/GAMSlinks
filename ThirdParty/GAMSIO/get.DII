@@ -28,7 +28,7 @@ rm -f $FILES
 echo "Downloading the libraries from www.gams.com..."
 for file in $FILES
 do
-	wget http://www.gams.com/~svigerske/$file
+	wget http://www.gams.com/~svigerske/stable-0.3/$file
 done
 
 echo "Unpacking the libraries..."
