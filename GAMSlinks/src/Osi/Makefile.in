@@ -529,14 +529,13 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 GamsCoinOsi_LDADD = ../GamsIO/libGamsIO.la $(am__append_2) \
 	$(am__append_6) $(am__append_10) $(am__append_13) \
 	$(am__append_17) $(am__append_21) $(am__append_25) \
-	$(am__append_29) $(COINUTILSOBJDIR)/src/libCoinUtils.la \
-	$(OSIOBJDIR)/src/libOsi.la
+	$(am__append_29) $(OSIOBJDIR)/src/libOsi.la \
+	$(COINUTILSOBJDIR)/src/libCoinUtils.la
 GamsCoinOsi_DEPENDENCIES = ../GamsIO/libGamsIO.la $(GAMSIO_LIBS) \
 	$(am__append_3) $(am__append_7) $(am__append_11) \
 	$(am__append_14) $(am__append_18) $(am__append_22) \
-	$(am__append_26) $(am__append_30) \
-	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
-	$(OSIOBJDIR)/src/libOsi.la
+	$(am__append_26) $(am__append_30) $(OSIOBJDIR)/src/libOsi.la \
+	$(COINUTILSOBJDIR)/src/libCoinUtils.la
 GamsCoinOsi_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DISTCLEANFILES = gmsosi_.zip $(am__append_32) $(VPATH_DISTCLEANFILES)

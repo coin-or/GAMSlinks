@@ -156,10 +156,9 @@ if COIN_HAS_CPX
   GamsCoinOsi_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
 endif
 
-GamsCoinOsi_DEPENDENCIES += $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- $(OSIOBJDIR)/src/libOsi.la
-GamsCoinOsi_LDADD += $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- $(OSIOBJDIR)/src/libOsi.la
+GamsCoinOsi_DEPENDENCIES += $(OSIOBJDIR)/src/libOsi.la $(COINUTILSOBJDIR)/src/libCoinUtils.la
+GamsCoinOsi_LDADD += $(OSIOBJDIR)/src/libOsi.la $(COINUTILSOBJDIR)/src/libCoinUtils.la
+ 
 LIBS+=`cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
 GamsCoinOsi_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
