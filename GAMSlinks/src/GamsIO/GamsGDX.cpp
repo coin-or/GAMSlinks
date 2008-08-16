@@ -109,7 +109,7 @@ bool GamsGDX::writePoint(const double* x, const double* rc, double objval, const
 	if (errornr) { reportError(errornr); return false;	}
 
   int uelIndices[CIO_MAX_INDEX_DIM], symIndex, symDim, oldSym=-1;
-  char symName[CIO_UEL_IDENT_SIZE], indexName[CIO_UEL_IDENT_SIZE], quote;
+  char symName[CIO_UEL_IDENT_SIZE], quote;
   gdxStrIndex_t Indices;
   gdxStrIndexPtrs_t IndicesPtr;
   gdxValues_t Values;
@@ -157,7 +157,7 @@ bool GamsGDX::writePoint(const double* x, const double* rc, double objval, const
 //    if (NULL != lb) Values[GMS_VAL_LOWER   ] = lb[i];
 //    if (NULL != ub) Values[GMS_VAL_UPPER   ] = ub[i];
 
-		if (!gdxDataWriteStr(gdx, (const char**)IndicesPtr, Values)) {
+		if (!gdxDataWriteStr(gdx, const_cast<const char**>(IndicesPtr), Values)) {
 			gams.print(GamsHandler::AllMask, "Error in gdxDataWriteStr for symbol ");
 			gams.println(GamsHandler::AllMask, symName);
 			return false;
