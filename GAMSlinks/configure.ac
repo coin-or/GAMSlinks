@@ -12,7 +12,7 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([GAMSlinks],[0.3],[https://projects.coin-or.org/GAMSlinks/newticket])
+AC_INIT([GAMSlinks],[0.4],[https://projects.coin-or.org/GAMSlinks/newticket])
 
 AC_COPYRIGHT([Copyright (C) 2006-2008 GAMS Development and others 
 All Rights Reserved.
@@ -54,12 +54,6 @@ AC_COIN_PROG_CC
 
 # Get the name of the C++ compiler and appropriate compiler options
 AC_COIN_PROG_CXX
-
-case "$CXX" in
-  cl* | */cl*)
-    CXXFLAGS=`echo $CXXFLAGS | sed -e 's/-MTd//g' -e 's/-MT//g'`
-  ;;
-esac
 
 # Get the C++ runtime libraries in case we want to link with a C or
 # Fortran compiler

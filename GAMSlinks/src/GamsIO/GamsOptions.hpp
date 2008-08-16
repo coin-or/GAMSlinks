@@ -34,6 +34,8 @@ public:
 	 */
 	GamsOptions(GamsHandler& gams_, const char* solvername);
 	
+	/** Destructor.
+	 */
 	~GamsOptions();
 	
 	/** Reads an options file.
@@ -90,8 +92,6 @@ public:
 	 * @param sval The value to set.
 	 */
 	void setString(const char *optname, const char *sval);
-	
-	
 };
 
 #endif /*GAMSOPTIONS_HPP_*/

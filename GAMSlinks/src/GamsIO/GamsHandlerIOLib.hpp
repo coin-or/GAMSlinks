@@ -18,6 +18,9 @@ private:
 	bool is_reformulated;
 	
 public:
+	/** Constructor.
+	 * @param is_reformulated_ Whether we should assume that the objective row had been moved into the objective function and the objective variable been eliminated.
+	 */
 	GamsHandlerIOLib(bool is_reformulated_) : is_reformulated(is_reformulated_) { }
 	
 	void print(PrintMask mask, const char* msg) const;

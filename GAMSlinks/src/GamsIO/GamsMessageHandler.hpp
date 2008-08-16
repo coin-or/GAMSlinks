@@ -20,16 +20,18 @@
 #include <pthread.h>
 #endif
 
-/** A COIN-OR message handler that writes into the GAMS status- and logfile.
+/** A CoinUtils message handler that writes into the GAMS status- and logfile.
+ * Thread safe if CBC_THREAD is defined.
  */
 class GamsMessageHandler : public CoinMessageHandler {
 public:
-
 	/** Constructor.
 	 * @param gams_ A GAMS handler to access the GAMS status- and logfile.
 	 */  
   GamsMessageHandler(GamsHandler& gams_);
 
+  /** Destructor.
+   */
   ~GamsMessageHandler();
 
 	/** Sets the number of spaces to remove at the front of a message.
@@ -37,20 +39,25 @@ public:
   inline void setRemoveLBlanks(int rm) { rmlblanks_ = rm; }
   
   /** Sets the detail level of the current message.
+   * @param detail Detail level.
    */
   void setCurrentDetail(int detail);
 
   /** Returns the detail level of the current message.
+   * @return Detail level.
    */
   int getCurrentDetail() const;
 
 	/** Prints the message from the message buffer.
 	 * Removes at most rmlblanks_ from the beginning and all newlines at the end of the message buffer.
 	 * If currentMessage().detail() is smaller then 2, the message is written to logfile and statusfile, otherwise it is written only to the logfile.
-	 * If the pointer to the GamsModel is not set, the output goes to standard out. 
-	 */  
+	 * If the pointer to the GamsModel is not set, the output goes to standard out.
+	 * @return Zero. 
+	 */
   int print();
   
+  /** Creates a copy of this message handler.
+   */
   CoinMessageHandler* clone() const { return new GamsMessageHandler(gams); }
 
 private:

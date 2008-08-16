@@ -1,4 +1,4 @@
-These directories contain links between the GAMS modeling system (http://www.gams.com) and some COIN-OR solvers.
+These directories contain links between the GAMS modeling system (http://www.gams.com) and some open source solvers.
 
 For requirements and installation instruction see the file INSTALL in the GAMSlinks base directory.
 For information on how to use the installed solvers in GAMS and which parameters are supported, see the COIN-OR solver documentation part from the GAMS solver manuals, located in doc/gamsdist (compile ind_coin.tex with pdflatex).
@@ -12,6 +12,8 @@ Currently for the following solvers links are available:
 * Ipopt:  Interior Point Optimizer
 * Bonmin: Basic open-source nonlinear mixed-integer programming
 * Osi:    LP and MIP solvers with a COIN-OR/OSI interface (this link has not been tested much)
+* OS:     Optimization Services (call a remote Optimization Server or use solvers linked to OS locally)
+* SCIP:   MIP solver of the Branch and Cut Framework from Zuse-Institut Berlin
 
 There are known to work under Linux (32 and 64 bit), Windows (32 bit), Solaris Intel (64 bit), and Intel Darwin.
 
@@ -19,7 +21,14 @@ There are known to work under Linux (32 and 64 bit), Windows (32 bit), Solaris I
 
 The GAMS/COIN-OR solvers implement a subset of all possible GAMS parameters.
 Not all bells and whistles of regular GAMS solvers are part of the interfaces yet.
-For nonstandard solver parameters that can be set, see the documentation in doc/gamsdist or src/Cbc/optcbc.gms, src/Glpk/optglpk.gms, and the IPOPT and Bonmin documentation.
+For nonstandard solver parameters that can be set, see
+- the documentation in doc/gamsdist
+- src/Glpk/optglpk.gms,
+- src/Cbc/optcbc.gms,
+- the IPOPT documentation,
+- the Bonmin documentation,
+- src/Osi/optosi.gms,
+- src/OS/optosi.gms.
 
 For GAMS/OSI, only a few options are available, see src/Osi/optosi.gms.
 The most important option is "solver". It determines which solver that had been linked into GAMS/OSI will be used.
@@ -27,36 +36,4 @@ If all so-far supported solvers have been linked with GAMS/OSI, then the availab
 
 === Tests ===
 
-The directory test contains a script that tests Cbc, Glpk, Ipopt, and Bonmin on the models
-* trnsport (small LP)
-* thai (small MIP)
-* abel (small NLP)
-from the GAMS model library.
-The models are chosen such that they can also be run with a gams demo licence.
-A test is passed when the optimal value found by Cbc or Glpk coincides with the one from CPLEX (within a gap tolerance of 1%).
-For Ipopt and Bonmin a test is passed when the optimal value is within a tolerance of 1% of the known optimum.
-
-If you have installed Cbc, Glpk, Ipopt, or Bonmin in your GAMS system, then you can also use the GAMS test library to run a set of tests.
-For that, follow the following steps:
-1. Get the quality tests:
-	testlib quality  (where the program testlib is located in your GAMS system directory)
-2. Add the COIN-OR solvers to the set of "master solvers" by changing line 125 of quality.gms to
-	SET solver 'master set of solvers' / system.solverNames , Glpk , Cbc, Ipopt, Bonmin /;
-3. Let him skip the tests that check for the correct handling of SOS and semicontinuous variables
-   (Glpk does not support both, for Cbc the dual variables when using semicontinuous variables are not correct) by adding around line 412:
-	skip("cbc","semicon1")=yes;
-	skip("cbc","sl4scon1")=yes;
-	skip("glpk","sos1a")=yes;
-	skip("glpk","sl4sos1a")=yes;
-	skip("glpk","semicon1")=yes;
-	skip("glpk","sl4scon1")=yes;
-4. Run the tests (for the solvers you have installed):
-	gams quality --suite lp --solver cbc
-	gams quality --suite lp --solver glpk
-	gams quality --suite mip --solver cbc
-	gams quality --suite mip --solver glpk
-	gams quality --suite nlp --solver ipopt
-	gams quality --suite qcp --solver ipopt
-	gams quality --suite miqcp --solver bonmin
-	At the end of output you should see something like "Congratulations!  All ... tests passed.".
-	Otherwise it will report how many tests failed.	
+The directory test contains a script that tests Cbc, Glpk, Ipopt, Bonmin, Osi, and SCIP on small testsuites from the GAMS test model library (testlib).

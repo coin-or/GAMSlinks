@@ -31,8 +31,13 @@ private:
 	char* constructName(char* buffer, int bufLen, int lSym, int* uelIndices, int nIndices);
 
 public:
+	/** Constructor.
+	 * @param gams_ A GamsHandler that gives access to the GAMS dictionary file.
+	 */
 	GamsDictionary(GamsHandler& gams_);
 	
+	/** Destructor.
+	 */
 	~GamsDictionary();
 	
 	/** Reads the GAMS dictionary.

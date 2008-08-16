@@ -20,7 +20,6 @@
 #include "GamsDictionary.hpp"
 
 /** Interface to GAMS BCH facility.
- * To use this interface, it is assumed that you have initialized the GDX I/O library (use gdxGetReady or gdxCreate).
  */
 class GamsBCH {
 public:
@@ -28,16 +27,23 @@ public:
 	 */
 	class Cut {
 	public:
+		/** Lower bound of cut. */
 		double lb;
+		/** Upper bound of cut. */
 		double ub;
+		/** Number of nonzero coefficients. */
 		int nnz;
+		/** Indices of nonzero coefficients. */
 		int* indices;
+		/** Nonzero coefficients. */
 		double* coeff;
 		
 		/** Constructor.
 		 * Initializes lb and ub to 0! indices and coeff are set to NULL, nnz to -1.
 		 */
 		Cut();
+		/** Destructor.
+		 */
 		~Cut();
 	};
 	
@@ -103,12 +109,32 @@ private:
 	 */
 	int reportIncumbent();
 public:
+	/** Constructor that also reads the BCH parameters from a GamsOptions object.
+	 * @param gams_ A GAMS handler.
+	 * @param gamsdict A GAMS dictionary.
+	 * @param opt A GAMS options object.
+	 */
 	GamsBCH(GamsHandler& gams_, GamsDictionary& gamsdict, GamsOptions& opt);
+	/** Constructor that initialize BCH data only.
+	 * Parameters need to be set by the user using the set_... methods below.
+	 * @param gams_ A GAMS handler.
+	 * @param gamsdict A GAMS dictionary.
+	 */
 	GamsBCH(GamsHandler& gams_, GamsDictionary& gamsdict);
 	
+	/** Destructor.
+	 */
+	~GamsBCH();
+	
+	/** Reads the BCH parameters from a GamsOptions object.
+	 * @param opt A GAMS options object.
+	 */
 	void setupParameters(GamsOptions& opt);
 
-	void set_userjobid(const char* userjobid); // should be called before other parameter set methods
+	/** Sets the users job id.
+	 * If used, then it must be called before the other parameter set methods.
+	 */
+	void set_userjobid(const char* userjobid);
 	void set_usergdxname(const char* usergdxname, const char* usergdxprefix = NULL);
 	void set_usergdxnameinc(const char* usergdxnameinc, const char* usergdxprefix = NULL);
 	void set_usergdxin(const char* usergdxin_, const char* usergdxprefix = NULL);
@@ -159,8 +185,6 @@ public:
 	int getNumCols() const { return gams.getColCount(); }
 
 	void printParameters() const;
-	
-	~GamsBCH();
 	
 	/** You should call this method after the constructor.
 	 */

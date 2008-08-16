@@ -11,7 +11,7 @@
 
 #include "GAMSlinksConfig.h"
 
-/** Forwards requests for output and point transformations to a GAMS I/O library.
+/** Forwards requests for output, point transformations, dictionary files, and other things to a GAMS I/O library.
  * The use of this class is to provide a uniformed interface to some operations for different GAMS I/O libraries (iolib and smag).
  * It is not meant to become a layer that allows an exchangable use of smag and iolib.  
  */
@@ -29,8 +29,12 @@ public:
 	
 	
 public:
+	/** Constructor.
+	 */
 	GamsHandler() { }
 	
+	/** Destructor.
+	 */
 	virtual ~GamsHandler() { }
 	
 	/** Prints the given message into the GAMS output channels (log and/or status file).
@@ -106,8 +110,17 @@ public:
 	 */
 	virtual const char* getSystemDir() const=0;
 	
+	/** Indicates whether GAMS has written a dictionary file.
+	 * @return True if dictionary file had been written, False else. 
+	 */
 	virtual bool isDictionaryWritten() const=0;
+	/** Gives the name of a dictionary file, if any.
+	 * @return Name of dictionary file, or NULL if none. 
+	 */
 	virtual const char* dictionaryFile() const=0;
+	/** Gives the dictionary version.
+	 * @return Version of dictionary. 
+	 */
 	virtual int dictionaryVersion() const=0;
 }; // class GamsHandler
 

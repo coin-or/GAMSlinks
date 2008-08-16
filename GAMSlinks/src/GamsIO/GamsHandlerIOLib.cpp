@@ -183,7 +183,6 @@ bool GamsHandlerIOLib::isDictionaryWritten() const {
 
 const char* GamsHandlerIOLib::dictionaryFile() const {
 	return iolib.flndic;
-
 }
 
 int GamsHandlerIOLib::dictionaryVersion() const {

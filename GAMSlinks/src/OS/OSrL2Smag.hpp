@@ -31,37 +31,34 @@
 #endif
 #endif
 
-//#include "OSInstance.h"
-//#include "OSnLNode.h"
+struct smagRec;
+class OSResult;
 
-#include "OSResult.h"
-
-#include "smag.h"
-
-/*! \class OSrL2Smag
- *  \brief The OSrL2Smag  Class.
- * 
- * @author Stefan Vigerske
- * 
- * \remarks
- * the OSrL2Smag class is used for reading an optimization result
- * and writing it into a gams solution file using the smag i/o.
- * 
+/** Reads an optimization result and writes it into a gams solution file using the SMAG I/O library.
  */
 class OSrL2Smag {
 public:
-	/** Constructor */
-	OSrL2Smag(smagHandle_t smag_);
+	/** Constructor.
+	 * @param smag_ SMAG handler.
+	 */
+	OSrL2Smag(struct smagRec* smag_);
 
-	/** Destructor */
-	~OSrL2Smag();
+	/** Destructor.
+	 */
+	~OSrL2Smag() {}
 	
+	/** Writes a GAMS solution file with the result given as OSResult object.
+	 * @param osresult Optimization result as object.
+	 */ 
 	void writeSolution(OSResult& osresult);
 
+	/** Writes a GAMS solution file with the result given as osrl string.
+	 * @param osrl Optimization result as string.
+	 */ 
 	void writeSolution(std::string& osrl);
 
 private:
-	smagHandle_t smag;
+	struct smagRec* smag;
 };
 
 

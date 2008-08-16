@@ -15,12 +15,11 @@
 
 extern "C" struct dictRec;
 
-/** Representation of a mixed-integer linear GAMS model.
- * This class is a layer between the GAMS I/O libraries and the GAMS-interfaces to COIN-OR LP and MIP solvers.
+/** Representation of a mixed-integer linear GAMS model read in from GAMS iolib.
+ * This class is a layer between the GAMS I/O libraries and the GAMS-interfaces to (OSI-compatible) LP and MIP solvers.
  */ 
 class GamsModel  {
 public:
-
 	/** Basis status indicator used in GAMS.
 	 */ 
   enum  BasisStatus { 

@@ -37,7 +37,7 @@ extern "C" {
  */ 
 int smagSingleHessians(smagHandle_t prob, int* hesRowIdx, int* hesColIdx, double* hesValue, int hesSize, int* rowStart);
 
-/** Computes the directional derivative of the objective function.
+/** EXPERIMENTAL FUNCTION: Computes the directional derivative of the objective function.
  * Given a vector x and a direction d, computes the function value f(x) and the product <grad f(x), d>.
  * @param prob Pointer to smag structure.
  * @param x Array of length smagColCount(prob) containing the point where f(x) is evaluated.

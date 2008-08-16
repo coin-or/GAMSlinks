@@ -23,11 +23,17 @@ into
 
 Optionally, you can put a symbolic link named scip to your scip sources.
 
+To have the SCIP/CLP interface work properly, you need to apply the patch scip.patch in this directory by calling
+
+    patch -p0 < scip.patch
+
+
 Finally you add the line
 
 #include <limits.h>
 
 at the beginning of scip/src/tclique/tclique_branch.c .
+
 
 To compile the GAMS/SCIP interface, you currently might need to switch
 off some compiler warnings by adding

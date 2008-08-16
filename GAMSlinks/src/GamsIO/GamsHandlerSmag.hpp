@@ -32,10 +32,14 @@ private:
 	static inline int translateMask(const PrintMask& mask);
 	
 public:
+	/** Constructor.
+	 * @param smag_ The SMAG handler. If NULL, then you need to set one later via setSmag().
+	 */
 	GamsHandlerSmag(smagRec* smag_ = NULL) : smag(smag_) { }
 	
-	~GamsHandlerSmag() { }
-	
+	/** Sets SMAG Handler.
+	 * @param smag_ Sets the SMAG handler.
+	 */
 	void setSmag(smagRec* smag_) { smag=smag_; }
 	
 	void print(PrintMask mask, const char* msg) const;

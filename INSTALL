@@ -1,12 +1,12 @@
 = Main installation steps =
 
  1. Install a GAMS system, if you do not have one.
- 2. Apply a patch for the OsiGlpkSolverInterface to fix some minor bugs and add additional optional features.
- 3. Download the GAMS I/O libraries for your system.
- 4. Download additional COIN-OR solvers that are not included by default.
- 5. Download and install Glpk, if you want to use the GAMS/GLPK link.
- 6. Download and install Lapack, Blas, and HSL or MUMPS, if you want to use the GAMS/IPOPT or GAMS/Bonmin link.
- 7. Modify the site script for the configure call of the GAMSlinks project.
+ 2. Download the GAMS I/O libraries for your system.
+ 3. Download additional COIN-OR solvers that are not included by default.
+ 4. Download and install Glpk, if you want to use the GAMS/GLPK link.
+ 5. Download and install Lapack, Blas, and HSL or MUMPS, if you want to use the GAMS/IPOPT or GAMS/Bonmin link.
+ 6. Download and install SCIP, if you want to use the GAMS/SCIP link.
+ 7. Setup the site script for the configure call of the GAMSlinks project.
  8. Call configure, make, and make install.
  9. Install the GAMS/COIN-OR links in your GAMS system.
 10. Troubleshooting?
@@ -15,10 +15,8 @@
 
 == 1. Installation of a GAMS system ==
 
-To use the COIN-OR/GAMS links, you need a GAMS system.
-It is recommended to have at least version 22.3.
-To build the links on Linux, also some libraries from the Intel Fortran Compiler are required.
-Since they are included into a GAMS system, it suffices to have a GAMS system reachable.
+While it is possible to build the solvers with GAMS links without having a GAMS system available, a GAMS system will be needed to use them.
+It is recommended to have at least version 22.6.
 
 You can download a GAMS demonstration system at http://www.gams.com/download.
 The demonstrations limits are:
@@ -27,32 +25,29 @@ The demonstrations limits are:
  * Number of nonzero elements: 2000 (of which 1000 nonlinear)
  * Number of discrete variables: 50 (including semi continuous, semi integer and member of SOS-Sets)
 
-== 2. Apply patch file for OsiGlpk ==
-
-In the base directory of the GAMSlinks package, you will find a patch file.
-This patch fixes some minor bugs in the OsiGlpkSolverInterface and adds additional routines to get more information about GLPKs status at termination.
-If you do not apply this patch, GAMS/GLPK will also work, but the GAMS model status code might be set wrong.
-Apply this patch by typing
->  patch -p0 < osiglpk.patch
-in the GAMSlinks base directory.
-
-== 3. Installation of GAMS I/O libraries ==
+== 2. Installation of GAMS I/O libraries ==
 
 The GAMSlinks use a set of GAMS I/O library to read an optimization model, write a solution file, and handle option files.
 
 The directory ThirdParty/GAMSIO contains scripts that downloads (precompiled) GAMS I/O libraries.
 According to the kind of system you use, you have to choose a script with the correct acronym.
 Currently available are:
- * LX3: Linux systems on a 32-bit Intel or AMD CPU.
- * LEI: Linux systems on a 64-bit Intel or AMD CPU.
+ * LNX: AMD or Intel-based 32-bit (x86_32) Linux systems with gcc/gfortran compilers
+ * LX3: AMD or Intel-based 32-bit (x86_32) Linux systems without gfortran
+ * LEG: AMD or Intel-based 64-bit (x86_64) Linux systems with gcc/gfortran compilers
+ * LEI: AMD or Intel-based 64-bit (x86_64) Linux systems without gfortran
  * SIG: Solaris 10.0 or higher systems on a 64-bit Intel or AMD CPU.
- * DII: Darwin systems on Intel CPU.
- * VIS: Windows XP, Windows Server 2003, and compatible on AMD- or Intel-based (x86) architectures.
+ * DIG: Macintosh Intel-based systems (x86_32, Darwin) with the gcc/gfortran compilers
+ * DII: Macintosh Intel-based systems (x86_32, Darwin) without gfortran
+ * VIS: Windows XP, Windows Server 2003, and compatible on AMD- or Intel-based architectures (x86_32) with cl 13.10 (VS2003) and Compaq Fortran compiler
+ * WEI: Windows Server 2003 64bit and compatible on AMD- or Intel-based (x86_64) architectures with Intel compilers 
+ 
+The VIS build is not suggested since the required compilers are very old and known to fail on compiling COIN-OR solvers!
 
-== 4. Download additional COIN-OR solvers ==
+== 3. Download additional COIN-OR solvers ==
 
-Using the GAMS/OSI link, additional solvers which provide a COIN-OR OSI (Open Solver Interface) can be easily connected to GAMS.
-Currently, the build system and the OSI link are prepared to compile with support for the COIN-OR solvers SYMPHONY, DyLP, and Vol.
+By using the GAMS/OSI link, additional solvers which provide a COIN-OR OSI (Open Solver Interface) can be easily connected to GAMS.
+Currently, the build system and the OSI link are prepared to compile with support for CPLEX and the COIN-OR solvers SYMPHONY, DyLP, and Vol.
 
 To activate them, you only need to provide the corresponding solver.
 If you have obtained the GAMSlinks system via subversion (svn), then the easiest way to do this is by opening the file Externals from the GAMSlinks base directory in your favorite editor,
@@ -60,21 +55,24 @@ uncommenting the line that corresponds to the solver(s) you want to use, and to 
  svn propset svn:externals -F Externals .
  svn update
 
-== 5. GNU Linear Programming Toolkit (GLPK) ==
+== 4. GNU Linear Programming Toolkit (GLPK) ==
 
 In the directory ThirdParty/Glpk you find the script get.Glpk that downloads the GNU Linear Programming Toolkit (http://www.gnu.org/software/glpk/glpk.html).
 Just run it or read the instructions in ThirdParty/Glpk/INSTALL.Glpk.
+Note: It is YOUR RESPONSIBILITY to ensure that you are entitled to download and use this third party package.
 
-== 6. Installation of Lapack, Blas, HSL, and MUMPS ==
+== 5. Installation of Lapack, Blas, HSL, and MUMPS ==
 
 Ipopt and Bonmin require some further third party packages.
-For Lapack and Blas you find download scripts in the directories ThirdParty/Lapack and ThirdParty/Blas.
-If you want Ipopt to use the HSL routines as linear solver, you have to go to the HSL web site (http://hsl.rl.ac.uk/archive/hslarchive.html),
-obtain the source code for MA27, and put it into the directory ThirdParty/HSL.
-Note that these routines are freely available for non-commercial, academic use, but it is your responsibility to investigate the licensing of all third party code.
-Alternatively, you can use the MUMPS (http://graal.ens-lyon.fr/MUMPS/index.html) routines as linear solver. A download script for them is available at ThirdParty/Mumps.
+For Lapack, Blas, and Mumps you find download scripts in the directories ThirdParty/Lapack, ThirdParty/Blas, and ThirdParty/Mumps.
+Please read also the instructions at http://www.coin-or.org/Ipopt/documentation/node14.html regarding Ipopts requirements of external codes.
 
-For more information we refer to the corresponding part of the Ipopt documentation (http://www.coin-or.org/Ipopt/documentation/node13.html).
+== 6. Solving Constrained Integer Programs (SCIP) ==
+
+In the directory ThirdParty/SCIP you find instructions INSTALL.SCIP on how to obtain and prepare SCIP for the build of a GAMS/SCIP interface.
+SCIP can be obtained from the SCIP website http://scip.zib.de, it is free for academic use only.
+Note: It is YOUR RESPONSIBILITY to ensure that you are entitled to download and use this third party package.
+      Please read the SCIP licence terms at http://scip.zib.de/licence.shtml
 
 == 7. Setup configure call ==
 
@@ -83,19 +81,25 @@ We suggest to compile the code in a different place than the one where the sourc
 You should consider whether you need to the following options of the configure script (either as arguments in your configure call or by setting up a site-file):
 
  * When a GAMS system is in the search path, it will automatically be found by the GAMSlinks configure script.
-   Otherwise if you work under Linux you have to provide a path with the --with-gamssystem option.
+   Alternatively you can provide a path with the --with-gamssystem option.
    
- * If you do not install the GAMS I/O libraries in ThirdParty/GAMSIO, you can use the option --gams-io to set the path of the GAMS I/O libraries.
+ * If you want to use the GAMS I/O libraries of the types LX3, LEI, or DII without having the Intel Fortran Compiler present,
+   you have to either have a GAMS system available at build time or provide a directory with the Intel Fortran Compiler libraries with the --with-fort-libdir option.
+   In the former case, the libraries of the Intel Fortran Compiler as they are distributed with a GAMS system are used (this option might not work for DII).
+   For the latter case, the necessary libraries for some platforms are also available at http://www.gams.com/~svigerske/intel.
+   
+ * If you need to overwrite the automatically determined system code, then you can do this with the --with-gamsio-code option.
+   This is necessary, for example, when you want to compile 32-bit libraries on a 64-bit machine.
+   In this case, you would give the additional argument --with-gamsio-code=LNX (or LX3) to configure.
 
- * To compile 32-bit libraries on a 64-bit machine you might need to overwrite the GAMS I/O code that the configure scripts automatically determine.
-   This can be done with the option --with-gamsio-code, e.g., --with-gamsio-code=LX3 to use the 32-bit Linux libraries.
-
- * If you compile under Linux, and do not have the GAMS system or Intel Fortran Compiler libraries in your path, you can give the path to the Intel Fortran Compiler libraries with the --with-fort-libdir option.
+ * By default, the Gams/OS link does not include the OS interfaces to COIN-OR solver into its binary.
+   Thus, only remote solves are possible.
+   To include also the OS solver interfaces, you can specify the argument --enable-os-solver.
 
 When compiling under Windows with the Microsoft C-compiler, you might need to set also the following variables:
 
  * Unfortunately, while the GAMS I/O libraries are compiled with the Microsoft C-compiler and linked against LIBC, the COIN-OR buildsystem links by default against LIBCMT when compiling with the Microsoft compiler (cl).
-   In this case you need to change the compiler flags that are used when COIN-OR packages are compiled:
+   Therefore it is required to change the compiler flags that are used for the COIN-OR packages:
    ADD_CXXFLAGS="-nologo -EHsc -GR"
    DBG_CXXFLAGS=" "
    OPT_CXXFLAGS="-O2 -DNDEBUG"
@@ -115,13 +119,16 @@ This should setup the Makefiles, compile all COIN-OR packages and install binari
 
 == 9. Install COIN-OR solvers in your GAMS system ==
 
-The make install call also created the files gmscc_.zip, gmscg_.zip, gmsip_.zip, gmsbm_.zip, and (optional) gmsosi_.zip which contain GAMS/Cbc, GAMS/GLPK, GAMS/Ipopt, GAMS/Bonmin, and (optional) GAMS/Osi.
-To install them in your GAMS system, you copy these files into the GAMS system directory and call gamsinst there.
+The make install call also created the files gmscc_.zip, gmscg_.zip, gmsip_.zip, gmsbm_.zip, gmsosi_.zip, gmsos_.zip, gmssc_.zip
+which contain GAMS/Cbc, GAMS/GLPK, GAMS/Ipopt, GAMS/Bonmin, GAMS/Osi, GAMS/OS, and GAMS/SCIP.
+To install them in your GAMS system, you can copy these files into the GAMS system directory and call gamsinst there.
 gamsinst will then unpack the files and makes GAMS aware about the new solvers.
+Alternatively, if the GAMSlinks build system knows the location of your GAMS distribution,
+then you can do a "make gams-install". This will copy the files and call gamsinst for you.
 
-To use the solvers under GAMS, you give the arguments MIP=Cbc, MIP=Glpk, NLP=Ipopt, MINLP=Bonmin, or LP=OSI to your gams call.
-Note, that CoinCbc, CoinGlpk, CoinIpopt, and CoinBonmin are already available with newer GAMS distributions.
-This are the COIN-OR solvers as they are shipped within the GAMS distribution, not the one that you have just compiled.
+To use the solvers under GAMS, you give the arguments MIP=Cbc, MIP=Glpk, NLP=Ipopt, MINLP=Bonmin, LP=OSI, MIP=OS, or MIP=SCIP to your gams call.
+Note, that CoinCbc, CoinGlpk, CoinIpopt, CoinBonmin, and CoinScip are already available with newer GAMS distributions.
+These are the COIN-OR solvers as they are shipped within the GAMS distribution, not the one that you have just compiled.
 
 == 10. Troubleshooting ==
 

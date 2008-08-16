@@ -6,19 +6,27 @@
 //
 // Authors: Stefan Vigerske
 
+#include "OSResult.h"
 #include "OSrL2Smag.hpp"
 #include "OSrLReader.h"
 #include "OSErrorClass.h"
 #include "CoinHelperFunctions.hpp"
 
+#ifdef HAVE_CSTRING
 #include <cstring>
+#else
+#ifdef HAVE_STRING_H
+#include <string.h>
+#else
+#error "don't have header file for string"
+#endif
+#endif
+
+#include "smag.h"
 
 OSrL2Smag::OSrL2Smag(smagHandle_t smag_)
 : smag(smag_)
 { }
-
-OSrL2Smag::~OSrL2Smag() {
-}
 
 void OSrL2Smag::writeSolution(OSResult& osresult) {
 	int solver_status, model_status;

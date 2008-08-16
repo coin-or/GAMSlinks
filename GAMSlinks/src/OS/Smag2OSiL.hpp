@@ -36,34 +36,27 @@ class OSnLNode;
 
 struct smagRec;
 
-/*! \class Smag2OSiL
- *  \brief The Smag2OSiL  Class.
- * 
- * @author Stefan Vigerske
- * 
- * \remarks
- * the Smag2OSiL class is used for reading an instance
- * in GAMS Smag format and creating an OSInstance object in OSiL format
- * 
+/** Creating a OSInstance from a GAMS model read with the SMAG I/O library.
+ * The Smag2OSiL class is used for reading an instance in GAMS Smag format and creating an OSInstance object in OSiL format.
  */
 class Smag2OSiL
 {
 public:
-	/** Constructor */
+	/** Constructor.
+	 * @param smag_ A SMAG handler.
+	 */
 	Smag2OSiL(struct smagRec* smag_);
 
-	/** Destructor */
+	/** Destructor.
+	 */
 	~Smag2OSiL();
 	
- 	/**
- 	 * create an OSInstance from the GAMS smag instance representation
- 	 * 
+ 	/** Creates an OSInstance from the GAMS smag instance representation
  	 * @return whether the instance is created successfully. 
  	 */
 	bool createOSInstance();
 
-	/** osinstance is a pointer to the OSInstance object that gets
-	 * created from the instance represented in SMAG format
+	/** osinstance is a pointer to the OSInstance object that gets created from the instance represented in SMAG format.
 	 */
 	OSInstance *osinstance;
 	
