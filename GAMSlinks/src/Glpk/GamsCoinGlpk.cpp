@@ -30,14 +30,12 @@
 #include "GamsDictionary.hpp"
 #include "GamsOptions.hpp"
 
+// for printme, needed as long as GamsModel::PrintOut adds newlines and CoinMessageHandler adds spaces to messages
+#include "iolib.h"
+
 int printme(void* info, const char* msg) {
-	GamsMessageHandler* myout=(GamsMessageHandler*)info;
-	assert(myout);
-
-	*myout << msg;
-	if (*msg && msg[strlen(msg)-1]=='\n')
-		*myout << CoinMessageEol; // this will make the message handler actually print the message
-
+	if (gfiolog)
+    fprintf(gfiolog, msg);
 	return 1;
 }
 
@@ -88,7 +86,7 @@ int main (int argc, const char *argv[]) {
 	GamsMessageHandler myout(gamshandler), slvout(gamshandler);
 	slvout.setPrefix(0);
 
-	glp_term_hook(printme, &slvout);
+	glp_term_hook(printme, NULL);
 	solver.passInMessageHandler(&slvout);
 	myout.setCurrentDetail(1);
 	gm.PrintOut(GamsModel::StatusMask, "=1"); // turn on copying into .lst file

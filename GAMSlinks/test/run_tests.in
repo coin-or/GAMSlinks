@@ -63,8 +63,8 @@ if test @gamslinks_build_cbc@ = 1 ; then
   solvers="$solvers , Cbc"
   testlist[${#testlist[@]}]="--solver cbc --suite lp"
   testlist[${#testlist[@]}]="--solver cbc --suite mip user1=rmip=cbc"
-  skiplist="$skiplist skip('Cbc','semicon1')=yes;"
-  skiplist="$skiplist skip('Cbc','sl4scon1')=yes;"
+  skiplist="$skiplist skip('Cbc','lp03')=yes;"
+  skiplist="$skiplist skip('Cbc','sl4lp03')=yes;"
 fi
 if test @gamslinks_build_bonmin@ = 1 ; then
   solvers="$solvers , Bonmin"
@@ -75,7 +75,7 @@ if test @gamslinks_build_bonmin@ = 1 ; then
   skiplist="$skiplist skip('Bonmin','lp10')=yes;"
   skiplist="$skiplist skip('Bonmin','sl4lp10')=yes;"
   testlist[${#testlist[@]}]="--solver bonmin --suite lp"
-  testlist[${#testlist[@]}]="--solver bonmin --suite mip user1=rmip=bonmin"
+  testlist[${#testlist[@]}]="--solver bonmin --suite mip user1=\"--MIPMCHECKS=0 rmip=bonmin\""
   testlist[${#testlist[@]}]="--solver bonmin --suite nlp"
   testlist[${#testlist[@]}]="--solver bonmin --suite qcp"
 fi
@@ -85,8 +85,12 @@ if test @gamslinks_build_osi@ = 1 ; then
   skiplist="$skiplist skip('Osi','sl4sos1a')=yes;"
   skiplist="$skiplist skip('Osi','semicon1')=yes;"
   skiplist="$skiplist skip('Osi','sl4scon1')=yes;"
+  if grep -q sos2a quality.gms ; then
+    skiplist="$skiplist skip('Osi','sos2a')=yes;"
+    skiplist="$skiplist skip('Osi','semiint1')=yes;"
+  fi
   
-  #in GAMS 22.7 on, slvstdskip has been renamed to slvstdoutskip
+  #from GAMS 22.7 on, slvstdskip has been renamed to slvstdoutskip
   if grep -q slvstdskip quality.gms ; then
     stdskiplist="$stdskiplist slvstdskip('Osi')=yes;"
   else
@@ -112,9 +116,9 @@ if test @gamslinks_build_osi@ = 1 ; then
 
   if test @coin_build_dylp@ = 1 ; then
     echo "solver dylp" > osi.op4
-# dylp is currently skipped because lp11 fails
+# dylp is currently skipped because lp10 fails
     # lp03 fail because it reports all variables are free in row sum(i,x(i))=0 (DyLP ticket 11)
-    # unfortunately, this skips to lp03 test for all osi solver
+    # unfortunately, this skips the lp03 test for all osi solver
 #    skiplist="$skiplist skip('Osi','lp03')=yes;"
 #    skiplist="$skiplist skip('Osi','sl4lp03')=yes;"
 #    testlist[${#testlist[@]}]="--solver osi --suite lp user1=\"optdir=`pwd` optfile=4\""
@@ -144,6 +148,7 @@ echo "Patch quality test driver to get COIN solvers and skip list in."
 #put our skiplist for stdout tests somewhere (in front of set slvtest).
 sed -e "/master set of solvers/s/\/;\$/$solvers \/;/" \
     -e "/^skip('convert'/s/^/$skiplist /" \
+    -e "/^set slvstderrskip/s/^/$stdskiplist /" \
     -e "/^set slvtest/s/^/$stdskiplist /" \
     quality.gms > quality_coin.gms
 echo ""
