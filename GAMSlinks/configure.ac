@@ -358,10 +358,6 @@ AC_COIN_VPATH_LINK(src/SCIP/gmssc_us.run)
 AC_COIN_VPATH_LINK(src/SCIP/gmssc_nt.cmd)
 AC_COIN_VPATH_LINK(src/SCIP/install/gmssc_un.dat)
 AC_COIN_VPATH_LINK(src/SCIP/install/gmssc_nt.dat)
-AC_COIN_VPATH_LINK(examples/adbench/gmsad_us.run)
-AC_COIN_VPATH_LINK(examples/adbench/gmsad_nt.cmd)
-AC_COIN_VPATH_LINK(examples/adbench/install/gmsad_un.dat)
-AC_COIN_VPATH_LINK(examples/adbench/install/gmsad_nt.dat)
 
 ############
 # END PART #
@@ -381,7 +377,6 @@ AC_CONFIG_FILES([Makefile
                  src/OS/Makefile
                  src/SCIP/Makefile
                  test/Makefile test/run_tests
-                 examples/adbench/Makefile
                 ])
 
 AC_CONFIG_HEADER([inc/config_gamslinks.h])
