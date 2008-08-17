@@ -29,8 +29,7 @@ The demonstrations limits are:
 
 The GAMSlinks use a set of GAMS I/O library to read an optimization model, write a solution file, and handle option files.
 
-The directory ThirdParty/GAMSIO contains scripts that downloads (precompiled) GAMS I/O libraries.
-According to the kind of system you use, you have to choose a script with the correct acronym.
+The directory ThirdParty/GAMSIO contains a script that downloads (precompiled) GAMS I/O libraries.
 Currently available are:
  * LNX: AMD or Intel-based 32-bit (x86_32) Linux systems with gcc/gfortran compilers
  * LX3: AMD or Intel-based 32-bit (x86_32) Linux systems without gfortran
@@ -69,7 +68,7 @@ Please read also the instructions at http://www.coin-or.org/Ipopt/documentation/
 
 == 6. Solving Constrained Integer Programs (SCIP) ==
 
-In the directory ThirdParty/SCIP you find instructions INSTALL.SCIP on how to obtain and prepare SCIP for the build of a GAMS/SCIP interface.
+In the directory ThirdParty/SCIP you find the file {{{INSTALL.SCIP}}} with instructions on how to obtain and prepare SCIP for the build of a GAMS/SCIP interface.
 SCIP can be obtained from the SCIP website http://scip.zib.de, it is free for academic use only.
 Note: It is YOUR RESPONSIBILITY to ensure that you are entitled to download and use this third party package.
       Please read the SCIP licence terms at http://scip.zib.de/licence.shtml
@@ -88,7 +87,7 @@ You should consider whether you need to the following options of the configure s
    In the former case, the libraries of the Intel Fortran Compiler as they are distributed with a GAMS system are used (this option might not work for DII).
    For the latter case, the necessary libraries for some platforms are also available at http://www.gams.com/~svigerske/intel.
    
- * If you need to overwrite the automatically determined system code, then you can do this with the --with-gamsio-code option.
+ * If you need to overwrite the automatically determined GAMS system code, then you can do this with the --with-gamsio-code option.
    This is necessary, for example, when you want to compile 32-bit libraries on a 64-bit machine.
    In this case, you would give the additional argument --with-gamsio-code=LNX (or LX3) to configure.
 
@@ -96,15 +95,15 @@ You should consider whether you need to the following options of the configure s
    Thus, only remote solves are possible.
    To include also the OS solver interfaces, you can specify the argument --enable-os-solver.
 
-When compiling under Windows with the Microsoft C-compiler, you might need to set also the following variables:
+When compiling under Windows with the Microsoft compiler, you might need to set also the following variables:
 
- * Unfortunately, while the GAMS I/O libraries are compiled with the Microsoft C-compiler and linked against LIBC, the COIN-OR buildsystem links by default against LIBCMT when compiling with the Microsoft compiler (cl).
+ * Unfortunately, while the GAMS I/O libraries are compiled with the Microsoft compiler and linked against LIBC, the COIN-OR buildsystem links by default against LIBCMT when compiling with the Microsoft compiler (cl).
    Therefore it is required to change the compiler flags that are used for the COIN-OR packages:
    ADD_CXXFLAGS="-nologo -EHsc -GR"
    DBG_CXXFLAGS=" "
    OPT_CXXFLAGS="-O2 -DNDEBUG"
 
- * MAKE is the name of the make program to use. For me, I had to set it to gmake.
+ * MAKE is the name of the make program to use. For me, I had to set it to gmake:
    MAKE=gmake
 
 == 8. Configure and make COIN-OR/GAMS links ==
@@ -117,7 +116,7 @@ That is, you just call
 
 This should setup the Makefiles, compile all COIN-OR packages and install binaries for the COIN-OR/GAMS links in the subdirectory bin.
 
-== 9. Install COIN-OR solvers in your GAMS system ==
+== 9. Installation of COIN-OR solvers in your GAMS system ==
 
 The make install call also created the files gmscc_.zip, gmscg_.zip, gmsip_.zip, gmsbm_.zip, gmsosi_.zip, gmsos_.zip, gmssc_.zip
 which contain GAMS/Cbc, GAMS/GLPK, GAMS/Ipopt, GAMS/Bonmin, GAMS/Osi, GAMS/OS, and GAMS/SCIP.

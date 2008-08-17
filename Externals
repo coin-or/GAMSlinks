@@ -8,7 +8,7 @@ Ipopt         https://projects.coin-or.org/svn/Ipopt/stable/3.4/Ipopt
 Bonmin        https://projects.coin-or.org/svn/Bonmin/stable/0.99/Bonmin
 cppad         https://projects.coin-or.org/svn/CppAD/stable/20080306
 OS            https://projects.coin-or.org/svn/OS/stable/1.1/OS
-ThirdParty/HSL https://projects.coin-or.org/svn/BuildTools/ThirdParty/HSL/stable/1.0
+ThirdParty/HSL https://projects.coin-or.org/svn/BuildTools/ThirdParty/HSL/stable/1.1
 ThirdParty/Blas https://projects.coin-or.org/svn/BuildTools/ThirdParty/Blas/stable/1.0
 ThirdParty/Glpk https://projects.coin-or.org/svn/BuildTools/ThirdParty/Glpk/stable/1.4
 ThirdParty/Lapack https://projects.coin-or.org/svn/BuildTools/ThirdParty/Lapack/stable/1.0
