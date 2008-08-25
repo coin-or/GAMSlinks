@@ -50,6 +50,19 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@SCIPDEVVERSION_TRUE@am__append_1 = \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_countsols.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_indicator.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_sos1.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_sos2.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_ccg.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_cip.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_opb.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_ppm.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_rlp.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_sos.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/sepa_mcf.c
+
 DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../BuildTools/Makemain.inc \
 	$(srcdir)/../../config.guess $(srcdir)/../../config.sub \
@@ -57,8 +70,8 @@ DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../ltmain.sh $(srcdir)/../../missing \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config_scip.h.in $(top_srcdir)/configure
-@HAVE_EXTERNALS_TRUE@am__append_1 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_2 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_3 = .Externals-stamp
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_scip.m4 \
@@ -72,6 +85,11 @@ CONFIG_HEADER = config_scip.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libcoinscip_la_LIBADD =
+@SCIPDEVVERSION_TRUE@am__objects_1 = cons_countsols.lo \
+@SCIPDEVVERSION_TRUE@	cons_indicator.lo cons_sos1.lo \
+@SCIPDEVVERSION_TRUE@	cons_sos2.lo reader_ccg.lo reader_cip.lo \
+@SCIPDEVVERSION_TRUE@	reader_opb.lo reader_ppm.lo reader_rlp.lo \
+@SCIPDEVVERSION_TRUE@	reader_sos.lo sepa_mcf.lo
 nodist_libcoinscip_la_OBJECTS = branch.lo buffer.lo clock.lo \
 	conflict.lo cons.lo cutpool.lo debug.lo dialog.lo disp.lo \
 	event.lo fileio.lo heur.lo history.lo implics.lo interrupt.lo \
@@ -104,8 +122,8 @@ nodist_libcoinscip_la_OBJECTS = branch.lo buffer.lo clock.lo \
 	reader_zpl.lo sepa_clique.lo sepa_cmir.lo sepa_flowcover.lo \
 	sepa_gomory.lo sepa_impliedbounds.lo sepa_intobj.lo \
 	sepa_redcost.lo sepa_strongcg.lo tclique_branch.lo \
-	tclique_coloring.lo tclique_graph.lo lpi_clp.lo bitencode.lo \
-	memory.lo message.lo
+	tclique_coloring.lo tclique_graph.lo $(am__objects_1) \
+	lpi_clp.lo bitencode.lo memory.lo message.lo
 libcoinscip_la_OBJECTS = $(nodist_libcoinscip_la_OBJECTS)
 @COIN_BUILD_SCIP_TRUE@am_libcoinscip_la_rpath =
 depcomp = $(SHELL) $(top_srcdir)/../../depcomp
@@ -221,6 +239,8 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
 RPATH_FLAGS = @RPATH_FLAGS@
+SCIPDEVVERSION_FALSE = @SCIPDEVVERSION_FALSE@
+SCIPDEVVERSION_TRUE = @SCIPDEVVERSION_TRUE@
 SCIPDIR = @SCIPDIR@
 SCIPINCDIR = @SCIPINCDIR@
 SCIPLIB = @SCIPLIB@
@@ -284,26 +304,13 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = INSTALL.SCIP $(am__append_1)
+EXTRA_DIST = INSTALL.SCIP $(am__append_2)
 @COIN_BUILD_SCIP_FALSE@noinst_LTLIBRARIES = 
 @COIN_BUILD_SCIP_TRUE@noinst_LTLIBRARIES = libcoinscip.la
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)` @EXTRAFLAGS@ \
 	-DHAVE_CONFIG_H -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
 	-I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` -I`$(CYGPATH_W) \
 	$(CLPSRCDIR)/src` -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
-
-#nodist_libcoinscip_la_SOURCES += \
-#			$(SCIPDIR)/src/scip/cons_countsols.c \
-#			$(SCIPDIR)/src/scip/cons_indicator.c \
-#			$(SCIPDIR)/src/scip/cons_sos1.c \
-#			$(SCIPDIR)/src/scip/cons_sos2.c \
-#			$(SCIPDIR)/src/scip/reader_ccg.c \
-#			$(SCIPDIR)/src/scip/reader_cip.c \
-#			$(SCIPDIR)/src/scip/reader_opb.c \
-#			$(SCIPDIR)/src/scip/reader_ppm.c \
-#			$(SCIPDIR)/src/scip/reader_rlp.c \
-#			$(SCIPDIR)/src/scip/reader_sos.c \
-#			$(SCIPDIR)/src/scip/sepa_mcf.c
 
 #nodist_libcoinscip_la_SOURCES += \
 #      $(SCIPDIR)/src/objscip/objbranchrule.cpp \
@@ -421,7 +428,7 @@ nodist_libcoinscip_la_SOURCES = $(SCIPDIR)/src/scip/branch.c \
 	$(SCIPDIR)/src/scip/sepa_strongcg.c \
 	$(SCIPDIR)/src/tclique/tclique_branch.c \
 	$(SCIPDIR)/src/tclique/tclique_coloring.c \
-	$(SCIPDIR)/src/tclique/tclique_graph.c \
+	$(SCIPDIR)/src/tclique/tclique_graph.c $(am__append_1) \
 	$(SCIPDIR)/src/scip/lpi_clp.cpp \
 	$(SCIPDIR)/src/scip/bitencode.c \
 	$(SCIPDIR)/src/blockmemshell/memory.c \
@@ -438,7 +445,7 @@ libcoinscip_la_LDFLAGS = $(LT_LDFLAGS)
 ########################################################################
 
 # Files that are generated and should be cleaned with make distclean
-DISTCLEANFILES = $(MAKEOKFILE) $(am__append_2) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(MAKEOKFILE) $(am__append_3) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: config_scip.h
@@ -532,7 +539,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_binpack.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_bounddisjunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_conjunction.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_countsols.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_eqknapsack.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_indicator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_integral.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_invarknapsack.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_knapsack.Plo@am__quote@
@@ -540,6 +549,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_logicor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_or.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_setppc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_sos1.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_sos2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_varbound.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_xor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cutpool.Plo@am__quote@
@@ -605,11 +616,17 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prop_pseudoobj.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prop_rootredcost.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_ccg.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_cip.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_cnf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_fix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_lp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_mps.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_opb.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_ppm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_rlp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_sol.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_sos.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_zpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/relax.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/retcode.Plo@am__quote@
@@ -623,6 +640,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_gomory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_impliedbounds.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_intobj.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_mcf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_redcost.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_strongcg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepastore.Plo@am__quote@
@@ -1483,6 +1501,83 @@ tclique_graph.lo: $(SCIPDIR)/src/tclique/tclique_graph.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/tclique/tclique_graph.c' object='tclique_graph.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tclique_graph.lo `test -f '$(SCIPDIR)/src/tclique/tclique_graph.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/tclique/tclique_graph.c
+
+cons_countsols.lo: $(SCIPDIR)/src/scip/cons_countsols.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_countsols.lo -MD -MP -MF "$(DEPDIR)/cons_countsols.Tpo" -c -o cons_countsols.lo `test -f '$(SCIPDIR)/src/scip/cons_countsols.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_countsols.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_countsols.Tpo" "$(DEPDIR)/cons_countsols.Plo"; else rm -f "$(DEPDIR)/cons_countsols.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_countsols.c' object='cons_countsols.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_countsols.lo `test -f '$(SCIPDIR)/src/scip/cons_countsols.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_countsols.c
+
+cons_indicator.lo: $(SCIPDIR)/src/scip/cons_indicator.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_indicator.lo -MD -MP -MF "$(DEPDIR)/cons_indicator.Tpo" -c -o cons_indicator.lo `test -f '$(SCIPDIR)/src/scip/cons_indicator.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_indicator.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_indicator.Tpo" "$(DEPDIR)/cons_indicator.Plo"; else rm -f "$(DEPDIR)/cons_indicator.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_indicator.c' object='cons_indicator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_indicator.lo `test -f '$(SCIPDIR)/src/scip/cons_indicator.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_indicator.c
+
+cons_sos1.lo: $(SCIPDIR)/src/scip/cons_sos1.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_sos1.lo -MD -MP -MF "$(DEPDIR)/cons_sos1.Tpo" -c -o cons_sos1.lo `test -f '$(SCIPDIR)/src/scip/cons_sos1.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_sos1.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_sos1.Tpo" "$(DEPDIR)/cons_sos1.Plo"; else rm -f "$(DEPDIR)/cons_sos1.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_sos1.c' object='cons_sos1.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_sos1.lo `test -f '$(SCIPDIR)/src/scip/cons_sos1.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_sos1.c
+
+cons_sos2.lo: $(SCIPDIR)/src/scip/cons_sos2.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_sos2.lo -MD -MP -MF "$(DEPDIR)/cons_sos2.Tpo" -c -o cons_sos2.lo `test -f '$(SCIPDIR)/src/scip/cons_sos2.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_sos2.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_sos2.Tpo" "$(DEPDIR)/cons_sos2.Plo"; else rm -f "$(DEPDIR)/cons_sos2.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_sos2.c' object='cons_sos2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_sos2.lo `test -f '$(SCIPDIR)/src/scip/cons_sos2.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_sos2.c
+
+reader_ccg.lo: $(SCIPDIR)/src/scip/reader_ccg.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_ccg.lo -MD -MP -MF "$(DEPDIR)/reader_ccg.Tpo" -c -o reader_ccg.lo `test -f '$(SCIPDIR)/src/scip/reader_ccg.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_ccg.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_ccg.Tpo" "$(DEPDIR)/reader_ccg.Plo"; else rm -f "$(DEPDIR)/reader_ccg.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_ccg.c' object='reader_ccg.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_ccg.lo `test -f '$(SCIPDIR)/src/scip/reader_ccg.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_ccg.c
+
+reader_cip.lo: $(SCIPDIR)/src/scip/reader_cip.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_cip.lo -MD -MP -MF "$(DEPDIR)/reader_cip.Tpo" -c -o reader_cip.lo `test -f '$(SCIPDIR)/src/scip/reader_cip.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_cip.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_cip.Tpo" "$(DEPDIR)/reader_cip.Plo"; else rm -f "$(DEPDIR)/reader_cip.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_cip.c' object='reader_cip.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_cip.lo `test -f '$(SCIPDIR)/src/scip/reader_cip.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_cip.c
+
+reader_opb.lo: $(SCIPDIR)/src/scip/reader_opb.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_opb.lo -MD -MP -MF "$(DEPDIR)/reader_opb.Tpo" -c -o reader_opb.lo `test -f '$(SCIPDIR)/src/scip/reader_opb.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_opb.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_opb.Tpo" "$(DEPDIR)/reader_opb.Plo"; else rm -f "$(DEPDIR)/reader_opb.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_opb.c' object='reader_opb.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_opb.lo `test -f '$(SCIPDIR)/src/scip/reader_opb.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_opb.c
+
+reader_ppm.lo: $(SCIPDIR)/src/scip/reader_ppm.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_ppm.lo -MD -MP -MF "$(DEPDIR)/reader_ppm.Tpo" -c -o reader_ppm.lo `test -f '$(SCIPDIR)/src/scip/reader_ppm.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_ppm.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_ppm.Tpo" "$(DEPDIR)/reader_ppm.Plo"; else rm -f "$(DEPDIR)/reader_ppm.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_ppm.c' object='reader_ppm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_ppm.lo `test -f '$(SCIPDIR)/src/scip/reader_ppm.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_ppm.c
+
+reader_rlp.lo: $(SCIPDIR)/src/scip/reader_rlp.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_rlp.lo -MD -MP -MF "$(DEPDIR)/reader_rlp.Tpo" -c -o reader_rlp.lo `test -f '$(SCIPDIR)/src/scip/reader_rlp.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_rlp.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_rlp.Tpo" "$(DEPDIR)/reader_rlp.Plo"; else rm -f "$(DEPDIR)/reader_rlp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_rlp.c' object='reader_rlp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_rlp.lo `test -f '$(SCIPDIR)/src/scip/reader_rlp.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_rlp.c
+
+reader_sos.lo: $(SCIPDIR)/src/scip/reader_sos.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_sos.lo -MD -MP -MF "$(DEPDIR)/reader_sos.Tpo" -c -o reader_sos.lo `test -f '$(SCIPDIR)/src/scip/reader_sos.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_sos.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_sos.Tpo" "$(DEPDIR)/reader_sos.Plo"; else rm -f "$(DEPDIR)/reader_sos.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_sos.c' object='reader_sos.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_sos.lo `test -f '$(SCIPDIR)/src/scip/reader_sos.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_sos.c
+
+sepa_mcf.lo: $(SCIPDIR)/src/scip/sepa_mcf.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sepa_mcf.lo -MD -MP -MF "$(DEPDIR)/sepa_mcf.Tpo" -c -o sepa_mcf.lo `test -f '$(SCIPDIR)/src/scip/sepa_mcf.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_mcf.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/sepa_mcf.Tpo" "$(DEPDIR)/sepa_mcf.Plo"; else rm -f "$(DEPDIR)/sepa_mcf.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/sepa_mcf.c' object='sepa_mcf.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sepa_mcf.lo `test -f '$(SCIPDIR)/src/scip/sepa_mcf.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_mcf.c
 
 bitencode.lo: $(SCIPDIR)/src/scip/bitencode.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bitencode.lo -MD -MP -MF "$(DEPDIR)/bitencode.Tpo" -c -o bitencode.lo `test -f '$(SCIPDIR)/src/scip/bitencode.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/bitencode.c; \
