@@ -37,6 +37,7 @@ AC_COIN_PROJECTDIR_INIT
 # Get the system type
 AC_CANONICAL_BUILD
 
+#hope we can take this out soon
 coin_skip_warn_cflags=yes
 coin_skip_warn_cxxflags=yes
 
@@ -65,14 +66,17 @@ if test x"$use_thirdpartyscip" = xbuild ; then
   touch $MAKEOKFILE
   
   EXTRAFLAGS=
-  case "$CC" in
-    *gcc* )
-      EXTRAFLAGS="-Wall -Wno-unknown-pragmas -Wno-strict-aliasing -Wno-missing-declarations -Wno-missing-prototypes"
-      ;;
-    *icl* )
-      EXTRAFLAGS="-W3"
-      ;;
-  esac
+#  case "$CC" in
+#    *gcc* )
+#      EXTRAFLAGS="-Wall -Wno-unknown-pragmas -Wno-strict-aliasing -Wno-missing-declarations -Wno-missing-prototypes"
+#      ;;
+#    *icl* )
+#      EXTRAFLAGS="-W3"
+#      ;;
+#  esac
+  if test "$GCC" = "yes"; then
+    EXTRAFLAGS="-Wno-long-long -Wno-strict-aliasing"
+  fi
   
   AC_CHECK_MEMBER(struct sigaction.sa_handler,,
     [EXTRAFLAGS="$EXTRAFLAGS -DNO_SIGACTION"],
@@ -83,8 +87,8 @@ if test x"$use_thirdpartyscip" = xbuild ; then
     
   AC_CHECK_FUNC(strtok_r,,
     [EXTRAFLAGS="$EXTRAFLAGS -DNO_STRTOK_R"])
-    
-  AC_SUBST(EXTRAFLAGS)
+ 
+  CFLAGS="$CFLAGS $EXTRAFLAGS"
   
   AC_MSG_CHECKING([SCIP version])
   majorver=`awk '/define SCIP_VERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
@@ -110,8 +114,5 @@ SCIPDIR=scip
 AC_SUBST(SCIPDIR)
 
 AC_CONFIG_FILES([Makefile])
-
-#dummy header file to get -DHAVE_CONFIG flag for Clp
-AC_CONFIG_HEADER([config_scip.h])
 
 AC_COIN_FINALIZE

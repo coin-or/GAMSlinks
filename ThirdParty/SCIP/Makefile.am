@@ -1,4 +1,4 @@
-# Copyright (C) 2007 Stefan Vigerske
+# Copyright (C) 2008 Stefan Vigerske
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 
@@ -17,8 +17,6 @@ endif
 SCIPDIR = @SCIPDIR@
 
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)`
-
-AM_CPPFLAGS += @EXTRAFLAGS@ -DHAVE_CONFIG_H
 
 nodist_libcoinscip_la_SOURCES = \
       $(SCIPDIR)/src/scip/branch.c \
@@ -196,6 +194,11 @@ AM_CPPFLAGS += \
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)`
 
 libcoinscip_la_LDFLAGS = $(LT_LDFLAGS)
+
+# a lot of effort just to get -DHAVE_CONFIG_H into the compiler flags
+lpi_clp.lo: $(SCIPDIR)/src/scip/lpi_clp.cpp
+	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT lpi_clp.lo -MD -MP -MF "$(DEPDIR)/lpi_clp.Tpo" -c -o lpi_clp.lo `test -f '$(SCIPDIR)/src/scip/lpi_clp.cpp' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/lpi_clp.cpp; \
+  then mv -f "$(DEPDIR)/lpi_clp.Tpo" "$(DEPDIR)/lpi_clp.Plo"; else rm -f "$(DEPDIR)/lpi_clp.Tpo"; exit 1; fi
 
 ########################################################################
 #                         Maintainer Stuff                             #
