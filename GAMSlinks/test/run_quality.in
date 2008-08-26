@@ -182,4 +182,11 @@ for (( i=0 ; i<${#testlist[@]} ; i++ )) ; do
 	
 done
 
+if test $testfailed = 0 ;
+then
+  echo "All quality tests passed."
+else
+  echo "There were failed quality tests."
+fi
+
 exit $testfailed
