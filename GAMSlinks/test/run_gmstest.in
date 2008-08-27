@@ -35,10 +35,10 @@ fi
 
 if test -e "$gamspath/gamslice.txt" ; then
   echo "Found GAMS licence file. We will run all tests."
-  demoparam=
+  demoparam=1
 else
   echo "Did not found GAMS licence file. We will run only tests that can be run in demomode."
-  demoparam="--DEMOSIZE=1" 
+  demoparam="not big(s)" 
 fi
 
 
@@ -102,7 +102,7 @@ notest('271') = yes;
 file drive / coin_gmstest.inc   /; drive.lcase=1;
 put drive '*   GAMSLib Start';
 loop(t,
-loop(sm(s,m)\$((not big(s)) and (not notest(s)) and ts(t,s)),
+loop(sm(s,m)\$(($demoparam) and (not notest(s)) and ts(t,s)),
 loop(SolverNames\$(SMP(SolverNames, t)),
     put / '\$call gamslib -q ' m.tl
         / '\$log  ===> executing  ' m.tl:0'.gms on ' SolverNames.tl:0

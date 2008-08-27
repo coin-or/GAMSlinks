@@ -197,8 +197,7 @@ libcoinscip_la_LDFLAGS = $(LT_LDFLAGS)
 
 # a lot of effort just to get -DHAVE_CONFIG_H into the compiler flags
 lpi_clp.lo: $(SCIPDIR)/src/scip/lpi_clp.cpp
-	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT lpi_clp.lo -MD -MP -MF "$(DEPDIR)/lpi_clp.Tpo" -c -o lpi_clp.lo `test -f '$(SCIPDIR)/src/scip/lpi_clp.cpp' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/lpi_clp.cpp; \
-  then mv -f "$(DEPDIR)/lpi_clp.Tpo" "$(DEPDIR)/lpi_clp.Plo"; else rm -f "$(DEPDIR)/lpi_clp.Tpo"; exit 1; fi
+	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 ########################################################################
 #                         Maintainer Stuff                             #
