@@ -100,7 +100,9 @@ alias(t,tt);
 *skip QP7 and EMFL because of conic equations
 notest('271') = yes;
 notest('273') = yes;
-*skip bchmknap because it does not know about BCH in our solvers
+*skip bchfcnet, bchoil, and bchmknap because it does not know about BCH in our solvers
+notest('287') = yes;
+notest('288') = yes;
 notest('289') = yes;
 *skip logmip tests because they do not even compile
 notest(s)\$(ord(s)>=332 and ord(s)<=337) = yes;
