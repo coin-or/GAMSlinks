@@ -495,7 +495,7 @@ void SMAG_MINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const N
     	if (x) {
 	    	model_status=7; // intermediate nonoptimal
     	} else {
-    		model_status=13; // error - no solution
+    		model_status=14; // no solution returned
     	}
   	} break;
   	case TMINLP::MINLP_ERROR: {

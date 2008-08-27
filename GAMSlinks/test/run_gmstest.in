@@ -97,7 +97,18 @@ Sets SolverNames   / $solvers /
 $SMP
 alias(t,tt);
 
+*skip QP7 and EMFL because of conic equations
 notest('271') = yes;
+notest('273') = yes;
+*skip bchmknap because it does not know about BCH in our solvers
+notest('289') = yes;
+*skip logmip tests because they do not even compile
+notest('332') = yes;
+notest('333') = yes;
+notest('334') = yes;
+notest('335') = yes;
+notest('336') = yes;
+notest('337') = yes;
 
 file drive / coin_gmstest.inc   /; drive.lcase=1;
 put drive '*   GAMSLib Start';
