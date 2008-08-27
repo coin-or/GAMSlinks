@@ -107,7 +107,7 @@ loop(SolverNames\$(SMP(SolverNames, t)),
     put / '\$call gamslib -q ' m.tl
         / '\$log  ===> executing  ' m.tl:0'.gms on ' SolverNames.tl:0
     put / '\$echo JobStart ' m.tl:0 ' >> coin_gmstest.txt'
-        / '\$call gams ' m.tl:0 '.gms jt=' m.tl:0 ' trace coin_gmstest.txt lo 2 lf=' m.tl:0 '.' SolverNames.tl:0 '.log';
+        / '\$call gams ' m.tl:0 '.gms jt=' m.tl:0 ' trace coin_gmstest.txt lo 2 lf=' m.tl:0 '.' SolverNames.tl:0 '.log reslim=60';
     loop(tt\$SMP(SolverNames,tt), put ' ' tt.tl:0 '=' SolverNames.tl:0)
     put /;
 )));
