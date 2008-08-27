@@ -66,17 +66,14 @@ if test x"$use_thirdpartyscip" = xbuild ; then
   touch $MAKEOKFILE
   
   EXTRAFLAGS=
-#  case "$CC" in
-#    *gcc* )
-#      EXTRAFLAGS="-Wall -Wno-unknown-pragmas -Wno-strict-aliasing -Wno-missing-declarations -Wno-missing-prototypes"
-#      ;;
+  case "$CC" in
+    *gcc* )
+      EXTRAFLAGS="-Wno-long-long -Wno-strict-aliasing"
+    ;;
 #    *icl* )
 #      EXTRAFLAGS="-W3"
-#      ;;
-#  esac
-  if test "$GCC" = "yes"; then
-    EXTRAFLAGS="-Wno-long-long -Wno-strict-aliasing"
-  fi
+#    ;;
+  esac
   
   AC_CHECK_MEMBER(struct sigaction.sa_handler,,
     [EXTRAFLAGS="$EXTRAFLAGS -DNO_SIGACTION"],

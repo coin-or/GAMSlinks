@@ -20599,17 +20599,14 @@ if test x"$use_thirdpartyscip" = xbuild ; then
   touch $MAKEOKFILE
 
   EXTRAFLAGS=
-#  case "$CC" in
-#    *gcc* )
-#      EXTRAFLAGS="-Wall -Wno-unknown-pragmas -Wno-strict-aliasing -Wno-missing-declarations -Wno-missing-prototypes"
-#      ;;
+  case "$CC" in
+    *gcc* )
+      EXTRAFLAGS="-Wno-long-long -Wno-strict-aliasing"
+    ;;
 #    *icl* )
 #      EXTRAFLAGS="-W3"
-#      ;;
-#  esac
-  if test "$GCC" = "yes"; then
-    EXTRAFLAGS="-Wno-long-long -Wno-strict-aliasing"
-  fi
+#    ;;
+  esac
 
   echo "$as_me:$LINENO: checking for struct sigaction.sa_handler" >&5
 echo $ECHO_N "checking for struct sigaction.sa_handler... $ECHO_C" >&6
