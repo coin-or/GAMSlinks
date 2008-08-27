@@ -241,6 +241,7 @@ int main (int argc, char* argv[]) {
   		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to unload Pardiso library.\n");
 #endif
 	
+	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nGAMS/Ipopt finished.\n");
 	smagStdOutputStop(prob, buffer, sizeof(buffer));
 	smagClose(prob);
 

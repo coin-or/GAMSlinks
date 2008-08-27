@@ -20916,6 +20916,7 @@ fi
 
 
   CFLAGS="$CFLAGS $EXTRAFLAGS"
+  CXXFLAGS="$CXXFLAGS $EXTRAFLAGS"
 
   echo "$as_me:$LINENO: checking SCIP version" >&5
 echo $ECHO_N "checking SCIP version... $ECHO_C" >&6

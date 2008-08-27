@@ -17,6 +17,9 @@ test:
 
 unitTest: test
 
+clean-local:
+	rm -rf gmstest quality
+
 .PHONY: test unitTest
 
 DISTCLEANFILES = 

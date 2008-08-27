@@ -89,6 +89,7 @@ if test x"$use_thirdpartyscip" = xbuild ; then
     [EXTRAFLAGS="$EXTRAFLAGS -DNO_STRTOK_R"])
  
   CFLAGS="$CFLAGS $EXTRAFLAGS"
+  CXXFLAGS="$CXXFLAGS $EXTRAFLAGS"
   
   AC_MSG_CHECKING([SCIP version])
   majorver=`awk '/define SCIP_VERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`

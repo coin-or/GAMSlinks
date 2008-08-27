@@ -121,6 +121,7 @@ int main (int argc, char* argv[]) {
   		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to unload Pardiso library.\n");
 #endif
   
+	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nGAMS/Bonmin finished.\n");
 	smagStdOutputStop(prob, buffer, sizeof(buffer));
 	smagClose(prob);
 
@@ -777,8 +778,8 @@ void printOptions(const SmartPtr<Journalist>& jnlst, const SmartPtr<Bonmin::Regi
   	std::string category(it->second->RegisteringCategory());
 
   	if (category.empty()) continue;
-  	//TODO (uses currently private method): skip ipopt options 
-//  	if (regoptions->categoriesInfo(category)==Bonmin::RegisteredOptions::IpoptCategory) continue;
+  	// skip ipopt options 
+  	if (regoptions->categoriesInfo(category)==Bonmin::RegisteredOptions::IpoptCategory) continue;
   	
 		if (it->second->Name()=="nlp_solver" ||
 				it->second->Name()=="file_solution" ||

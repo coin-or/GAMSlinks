@@ -19,6 +19,11 @@ else
   echo "Using GAMS system at " $gamspath
 fi
 
+# clear up previous test, create new directory, and go there
+rm -rf quality
+mkdir -p quality
+cd quality
+
 #echo " "
 echo Getting quality tests driver from GAMS test library...
 "$gamspath/testlib" quality
@@ -158,10 +163,6 @@ sed -e "/master set of solvers/s/\/;\$/$solvers \/;/" \
     -e "/^set slvtest/s/^/$stdskiplist /" \
     quality.gms > quality_coin.gms
 echo ""
-
-#remove all log or failure files
-rm -f quality_test_*.log failures_qa*.gms testlib.*
-rm -rf ${cia}_qa_* failed_test_* onetest*
 
 #indicates whether there was a failed test, also return code of this script
 testfailed=0
