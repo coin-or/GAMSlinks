@@ -97,7 +97,7 @@ Sets SolverNames   / $solvers /
 $SMP
 alias(t,tt);
 
-notest('qp7') = yes;
+notest('271') = yes;
 
 file drive / coin_gmstest.inc   /; drive.lcase=1;
 put drive '*   GAMSLib Start';

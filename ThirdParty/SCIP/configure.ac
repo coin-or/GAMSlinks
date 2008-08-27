@@ -38,8 +38,8 @@ AC_COIN_PROJECTDIR_INIT
 AC_CANONICAL_BUILD
 
 #hope we can take this out soon
-coin_skip_warn_cflags=yes
-coin_skip_warn_cxxflags=yes
+#coin_skip_warn_cflags=yes
+#coin_skip_warn_cxxflags=yes
 
 # Check if user wants to produce debugging code
 AC_COIN_DEBUG_COMPILE(SCIP)
@@ -99,6 +99,11 @@ if test x"$use_thirdpartyscip" = xbuild ; then
   fi
   AM_CONDITIONAL(SCIPDEVVERSION, [test x$minorver = x8])
   
+  if test x$minorver = x0 ; then
+    CFLAGS=`echo $CFLAGS | sed -e 's/-pedantic-errors//'`
+    CXXFLAGS=`echo $CXXFLAGS | sed -e 's/-pedantic-errors//'`
+  fi
+  
 else
   if test x$coin_has_scip = xtrue ; then
     AC_MSG_NOTICE([The SCIP sources don't need to be compiled])
@@ -115,4 +120,7 @@ AC_SUBST(SCIPDIR)
 
 AC_CONFIG_FILES([Makefile])
 
+#dummy header file to avoid many extra compiler flags
+AC_CONFIG_HEADER([config_scip.h])
+ 
 AC_COIN_FINALIZE
