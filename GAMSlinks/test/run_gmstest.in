@@ -103,7 +103,7 @@ notest('273') = yes;
 *skip bchmknap because it does not know about BCH in our solvers
 notest('289') = yes;
 *skip logmip tests because they do not even compile
-notest(s)$(ord(s)>=332 and ord(s)<=337) = yes;
+notest(s)\$(ord(s)>=332 and ord(s)<=337) = yes;
 
 file drive / coin_gmstest.inc   /; drive.lcase=1;
 put drive '*   GAMSLib Start';
