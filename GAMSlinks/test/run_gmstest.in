@@ -74,7 +74,7 @@ if test @gamslinks_build_bonmin@ = 1 ; then
   SMP="$SMP SMP('Bonmin', 'LP') = yes;"
 #  SMP="$SMP SMP('Bonmin', 'MIP') = yes;"
   SMP="$SMP SMP('Bonmin', 'RMIP') = yes;"
-  SMP="$SMP SMP('Bonmin', 'NLP') = yes;"
+#  SMP="$SMP SMP('Bonmin', 'NLP') = yes;"
   SMP="$SMP SMP('Bonmin', 'MINLP') = yes;"
   SMP="$SMP SMP('Bonmin', 'RMINLP') = yes;"
   SMP="$SMP SMP('Bonmin', 'QCP') = yes;"
