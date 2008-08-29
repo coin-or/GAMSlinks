@@ -35,7 +35,7 @@ fi
 
 if test -e "$gamspath/gamslice.txt" ; then
   echo "Found GAMS licence file. We will run all tests."
-  demoparam=1
+  demoparam="not big(s)"
 else
   echo "Did not found GAMS licence file. We will run only tests that can be run in demomode."
   demoparam="not big(s)" 
