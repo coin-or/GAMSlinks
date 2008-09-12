@@ -54,6 +54,13 @@
 #endif
 #endif
 
+#ifdef USE_UNUSED_SYMBOLS
+extern "C" {
+	double slvminf = 1;
+	unsigned char G2DMATHNEW_exceptmsg[256] = "hack";
+}
+#endif
+
 void localSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std::string& osol);
 void remoteSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std::string& osol);
 void processResult(smagHandle_t prob, GamsOptions& opt, string* osrl, OSResult* osresult);
