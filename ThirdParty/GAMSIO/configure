@@ -20028,7 +20028,11 @@ case $GAMSIO_CODE in
       gamsio_system=Linux
       GAMSIO_CIA=CIA_LNX
     ;;
-  VIS | WEI)
+  VIS)
+      gamsio_system=Windows
+      GAMSIO_CIA=CIA_WIN
+    ;;
+  WEI)
       gamsio_system=Windows
       GAMSIO_CIA=CIA_WEX
     ;;
