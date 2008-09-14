@@ -49,6 +49,16 @@
 #ifdef COIN_HAS_IPOPT
 #include "OSIpoptSolver.h"
 #endif
+#ifdef COIN_HAS_IPOPT
+#include "OSBonminSolver.h"
+#endif
+#endif
+
+#ifdef USE_UNUSED_SYMBOLS
+extern "C" {
+	double slvminf = 1;
+	unsigned char G2DMATHNEW_exceptmsg[256] = "hack";
+}
 #endif
 
 void localSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std::string& osol);
@@ -154,6 +164,9 @@ int main (int argc, char* argv[]) {
 std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) {
 	if (isnonlinear) { // (MI)NLP
 		if (isdiscrete) { // MINLP
+#ifdef COIN_HAS_BONMIN
+			return "bonmin";
+#endif
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: No MINLP solver with OS interface available.\n");
 		} else { // NLP
 #ifdef COIN_HAS_IPOPT
@@ -165,6 +178,12 @@ std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) 
 #ifdef COIN_HAS_CBC
 		return "cbc";
 #endif
+#ifdef COIN_HAS_CPX
+		return "cplex";
+#endif
+#ifdef COIN_HAS_GLPK
+		return "glpk";
+#endif
 #ifdef COIN_HAS_SYMPHONY
 		return "symphony";
 #endif
@@ -173,8 +192,17 @@ std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) 
 #ifdef COIN_HAS_CLP
 		return "clp";
 #endif
+#ifdef COIN_HAS_CPX
+		return "cplex";
+#endif
+#ifdef COIN_HAS_GLPK
+		return "glpk";
+#endif
 #ifdef COIN_HAS_DYLP
 		return "dylp";
+#endif
+#ifdef COIN_HAS_IPOPT
+		return "ipopt";
 #endif
 #ifdef COIN_HAS_VOL
 		return "vol";
@@ -212,7 +240,16 @@ void localSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std
 		smagReportSolBrief(prob, 13, 6);
 		exit (EXIT_FAILURE);
 #endif
-	} else {
+	} if (solvername.find("bonmin")!=std::string::npos) {
+#ifdef COIN_HAS_BONMIN
+		solver=new BonminSolver();
+#else
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Bonmin not available.\n");
+		smagStdOutputFlush(prob, SMAG_ALLMASK);
+		smagReportSolBrief(prob, 13, 6);
+		exit (EXIT_FAILURE);
+#endif
+	}	else {
 #ifdef COIN_HAS_OSI
 		solver=new CoinSolver();
 #else

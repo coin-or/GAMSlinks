@@ -19,6 +19,11 @@ else
   echo "Using GAMS system at " $gamspath
 fi
 
+# clear up previous test, create new directory, and go there
+rm -rf quality
+mkdir -p quality
+cd quality
+
 #echo " "
 echo Getting quality tests driver from GAMS test library...
 "$gamspath/testlib" quality
@@ -137,6 +142,12 @@ if test @gamslinks_build_scip@ = 1 ; then
   skiplist="$skiplist skip('Scip','sl4sos1a')=yes;"
   skiplist="$skiplist skip('Scip','semicon1')=yes;"
   skiplist="$skiplist skip('Scip','sl4scon1')=yes;"
+  #for the moment, we better skip the test of output to stdout
+  if grep -q slvstdskip quality.gms ; then
+    stdskiplist="$stdskiplist slvstdskip('Scip')=yes;"
+  else
+    stdskiplist="$stdskiplist slvstdoutskip('Scip')=yes;"
+  fi
   testlist[${#testlist[@]}]="--solver scip --suite lp"
   testlist[${#testlist[@]}]="--solver scip --suite mip user1=rmip=scip"
 fi
@@ -152,10 +163,6 @@ sed -e "/master set of solvers/s/\/;\$/$solvers \/;/" \
     -e "/^set slvtest/s/^/$stdskiplist /" \
     quality.gms > quality_coin.gms
 echo ""
-
-#remove all log or failure files
-rm -f quality_test_*.log failures_qa*.gms testlib.*
-rm -rf ${cia}_qa_* failed_test_* onetest*
 
 #indicates whether there was a failed test, also return code of this script
 testfailed=0
@@ -175,5 +182,12 @@ for (( i=0 ; i<${#testlist[@]} ; i++ )) ; do
 	echo ""
 	
 done
+
+if test $testfailed = 0 ;
+then
+  echo "All quality tests passed."
+else
+  echo "There were failed quality tests."
+fi
 
 exit $testfailed

@@ -1,4 +1,4 @@
-# Copyright (C) GAMS Development 2007
+# Copyright (C) GAMS Development 2007-2008
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -54,6 +54,32 @@ LIBS += `cat $(OSOBJDIR)/os_addlibs.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
 
 if COIN_OS_SOLVER
 
+if COIN_HAS_BONMIN
+  AM_CPPFLAGS += \
+	 -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Interfaces` \
+	 -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms` \
+	 -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/CbcBonmin` \
+	 -I`$(CYGPATH_W) $(BONMINOBJDIR)/inc`
+  GamsOS_LDADD += \
+	 $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
+  GamsOS_DEPENDENCIES += \
+	 $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
+endif
+
+if COIN_HAS_CBC
+  AM_CPPFLAGS += \
+   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCbc` \
+   -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
+   -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
+  GamsOS_LDADD += \
+   $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
+   $(CBCOBJDIR)/src/libCbc.la
+  GamsOS_DEPENDENCIES += \
+   $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
+   $(CBCOBJDIR)/src/libCbc.la
+  LIBS += `cat $(CBCOBJDIR)/cbc_addlibs.txt`
+endif
+
 if COIN_HAS_CLP
   AM_CPPFLAGS += \
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiClp` \
@@ -74,20 +100,6 @@ if COIN_HAS_GLPK
    -I`$(CYGPATH_W) $(GLPKINCDIR)`
   GamsOS_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
   GamsOS_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
-endif
-
-if COIN_HAS_CBC
-  AM_CPPFLAGS += \
-   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCbc` \
-   -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
-   -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
-  GamsOS_LDADD += \
-   $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
-   $(CBCOBJDIR)/src/libCbc.la
-  GamsOS_DEPENDENCIES += \
-   $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
-   $(CBCOBJDIR)/src/libCbc.la
-  LIBS += `cat $(CBCOBJDIR)/cbc_addlibs.txt`
 endif
 
 if COIN_HAS_DYLP

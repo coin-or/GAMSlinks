@@ -11,10 +11,14 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST =
 
 test:
-	chmod u+x ./run_tests
-	sh -c ./run_tests
+	chmod u+x ./run_quality ./run_gmstest
+	sh -c ./run_quality
+	sh -c ./run_gmstest
 
 unitTest: test
+
+clean-local:
+	rm -rf gmstest quality
 
 .PHONY: test unitTest
 

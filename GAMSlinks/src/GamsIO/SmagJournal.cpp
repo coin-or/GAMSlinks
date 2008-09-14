@@ -18,7 +18,7 @@
 
 #if defined(NOVSNPRINTF)
 # define VSNPRINTF fakevsnprintf
-static char        hugeBufVSN[4096];
+static char        hugeBufVSN[10020];
 static int
 fakevsnprintf(char *str, size_t size, const char *format, va_list ap) {
   /* this better not overflow! */
@@ -37,7 +37,7 @@ fakevsnprintf(char *str, size_t size, const char *format, va_list ap) {
 
 
 void SmagJournal::PrintfImpl(EJournalCategory category, EJournalLevel level, const char* pformat, va_list ap) {
-  char outBuf[1024];
+  static char outBuf[10000];
 
 #ifdef HAVE_VA_COPY
 	va_list apcopy;

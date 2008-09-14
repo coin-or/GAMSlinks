@@ -376,7 +376,7 @@ AC_CONFIG_FILES([Makefile
                  src/Bonmin/Makefile
                  src/OS/Makefile
                  src/SCIP/Makefile
-                 test/Makefile test/run_tests
+                 test/Makefile test/run_quality test/run_gmstest
                 ])
 
 AC_CONFIG_HEADER([inc/config_gamslinks.h])

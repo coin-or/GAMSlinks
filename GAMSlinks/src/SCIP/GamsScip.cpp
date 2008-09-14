@@ -125,7 +125,7 @@ int main (int argc, const char *argv[]) {
   	fprintf(stderr, "Warning: Error opening GAMS output files .. continuing anyhow\t%s\n", buffer);
 
   
-  sprintf(buffer, "\nSCIP version %.2f [LP solver: %s]\n%s\n\n", SCIPversion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
+  sprintf(buffer, "\nSCIP version %.2f.%d [LP solver: %s]\n%s\n\n", SCIPversion(), SCIPsubversion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
 	smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
  
@@ -796,7 +796,9 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 		SCIPlpiGetBase(lpi, cstat, rstat);
 		
 		for (int i=0; i<smagColCount(prob); ++i) {
+#if SCIP_SUBVERSION == 0
 			if (smagMinim(prob)==-1) colmarg[i]*=-1;
+#endif
 			if (prob->colType[i]!=SMAG_VAR_CONT)
 				colbasstat[i] = SMAG_BASSTAT_SUPERBASIC;
 			else switch(cstat[i]) {
@@ -810,7 +812,9 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 		}
 		
 		for (int i=0; i<smagRowCount(prob); ++i) {
+#if SCIP_SUBVERSION == 0
 			if (smagMinim(prob)==-1) rowmarg[i]*=-1;
+#endif
 			switch(rstat[i]) {
 				case SCIP_BASESTAT_LOWER: rowbasstat[i] = SMAG_BASSTAT_NBLOWER; break;
 				case SCIP_BASESTAT_UPPER: rowbasstat[i] = SMAG_BASSTAT_NBUPPER; break;

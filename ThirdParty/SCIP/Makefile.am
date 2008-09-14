@@ -1,4 +1,4 @@
-# Copyright (C) 2007 Stefan Vigerske
+# Copyright (C) 2008 Stefan Vigerske
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 
@@ -17,8 +17,6 @@ endif
 SCIPDIR = @SCIPDIR@
 
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)`
-
-AM_CPPFLAGS += @EXTRAFLAGS@ -DHAVE_CONFIG_H
 
 nodist_libcoinscip_la_SOURCES = \
       $(SCIPDIR)/src/scip/branch.c \
@@ -140,18 +138,20 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/tclique/tclique_coloring.c \
 			$(SCIPDIR)/src/tclique/tclique_graph.c
 
-#nodist_libcoinscip_la_SOURCES += \
-#			$(SCIPDIR)/src/scip/cons_countsols.c \
-#			$(SCIPDIR)/src/scip/cons_indicator.c \
-#			$(SCIPDIR)/src/scip/cons_sos1.c \
-#			$(SCIPDIR)/src/scip/cons_sos2.c \
-#			$(SCIPDIR)/src/scip/reader_ccg.c \
-#			$(SCIPDIR)/src/scip/reader_cip.c \
-#			$(SCIPDIR)/src/scip/reader_opb.c \
-#			$(SCIPDIR)/src/scip/reader_ppm.c \
-#			$(SCIPDIR)/src/scip/reader_rlp.c \
-#			$(SCIPDIR)/src/scip/reader_sos.c \
-#			$(SCIPDIR)/src/scip/sepa_mcf.c
+if SCIPDEVVERSION
+nodist_libcoinscip_la_SOURCES += \
+			$(SCIPDIR)/src/scip/cons_countsols.c \
+			$(SCIPDIR)/src/scip/cons_indicator.c \
+			$(SCIPDIR)/src/scip/cons_sos1.c \
+			$(SCIPDIR)/src/scip/cons_sos2.c \
+			$(SCIPDIR)/src/scip/reader_ccg.c \
+			$(SCIPDIR)/src/scip/reader_cip.c \
+			$(SCIPDIR)/src/scip/reader_opb.c \
+			$(SCIPDIR)/src/scip/reader_ppm.c \
+			$(SCIPDIR)/src/scip/reader_rlp.c \
+			$(SCIPDIR)/src/scip/reader_sos.c \
+			$(SCIPDIR)/src/scip/sepa_mcf.c
+endif
 
 #nodist_libcoinscip_la_SOURCES += \
 #      $(SCIPDIR)/src/objscip/objbranchrule.cpp \
@@ -194,6 +194,10 @@ AM_CPPFLAGS += \
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)`
 
 libcoinscip_la_LDFLAGS = $(LT_LDFLAGS)
+
+# a lot of effort just to get -DHAVE_CONFIG_H into the compiler flags
+lpi_clp.lo: $(SCIPDIR)/src/scip/lpi_clp.cpp
+	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 ########################################################################
 #                         Maintainer Stuff                             #

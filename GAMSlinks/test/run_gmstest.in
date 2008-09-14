@@ -1,0 +1,146 @@
+#!/bin/bash
+# Copyright (C) 2008 GAMS Development and others
+# All Rights Reserved.
+# This file is distributed under the Common Public License.
+#
+## $Id$
+#
+# Author: Stefan Vigerske
+
+srcdir="@srcdir@"
+gamspath="@GAMS_PATH@"
+cia=`echo @GAMSIO_CIA@ | cut -c 5-`
+
+if test "x$gamspath" = xUNAVAILABLE; then
+  echo "No GAMS system available."
+  echo "Please download demo system from www.gams.com, rerun configure, install the solvers, and try again."
+  exit 1
+else
+  echo "Using GAMS system at " $gamspath
+fi
+
+# clear up previous test, create new directory, and go there
+rm -rf gmstest
+mkdir -p gmstest
+cd gmstest
+
+#echo " "
+echo Getting gmstest tests driver from GAMS model library...
+"$gamspath/gamslib" gmstest
+
+if test ! -e gmstest.gms ; then
+  echo "Failed to obtain gmstest.gms from GAMS test library."
+  exit 1
+fi
+
+if test -e "$gamspath/gamslice.txt" ; then
+  echo "Found GAMS licence file. We will run all tests."
+  demoparam="not big(s)"
+else
+  echo "Did not found GAMS licence file. We will run only tests that can be run in demomode."
+  demoparam="not big(s)" 
+fi
+
+
+solvers="'dummy'"
+SMP=
+skiplist=
+if test @gamslinks_build_ipopt@ = 1 ; then
+  solvers="$solvers , 'Ipopt'"
+  SMP="$SMP SMP('Ipopt', 'LP') = yes;"
+  SMP="$SMP SMP('Ipopt', 'QCP') = yes;"
+  SMP="$SMP SMP('Ipopt', 'NLP') = yes;"
+  SMP="$SMP SMP('Ipopt', 'RMIP') = yes;"
+  SMP="$SMP SMP('Ipopt', 'RMIQCP') = yes;"
+  SMP="$SMP SMP('Ipopt', 'RMINLP') = yes;"
+
+fi
+if test @gamslinks_build_glpk@ = 1 ; then
+  solvers="$solvers , 'Glpk'"
+  SMP="$SMP SMP('Glpk', 'LP') = yes;"
+  SMP="$SMP SMP('Glpk', 'MIP') = yes;"
+  SMP="$SMP SMP('Glpk', 'RMIP') = yes;"
+  
+fi
+if test @gamslinks_build_cbc@ = 1 ; then
+  solvers="$solvers , 'Cbc'"
+  SMP="$SMP SMP('Cbc', 'LP') = yes;"
+  SMP="$SMP SMP('Cbc', 'MIP') = yes;"
+  SMP="$SMP SMP('Cbc', 'RMIP') = yes;"
+  
+fi
+if test @gamslinks_build_bonmin@ = 1 ; then
+  solvers="$solvers , 'Bonmin'"
+  SMP="$SMP SMP('Bonmin', 'LP') = yes;"
+#  SMP="$SMP SMP('Bonmin', 'MIP') = yes;"
+  SMP="$SMP SMP('Bonmin', 'RMIP') = yes;"
+#  SMP="$SMP SMP('Bonmin', 'NLP') = yes;"
+  SMP="$SMP SMP('Bonmin', 'MINLP') = yes;"
+  SMP="$SMP SMP('Bonmin', 'RMINLP') = yes;"
+  SMP="$SMP SMP('Bonmin', 'QCP') = yes;"
+  SMP="$SMP SMP('Bonmin', 'MIQCP') = yes;"
+  SMP="$SMP SMP('Bonmin', 'RMIQCP') = yes;"
+fi
+
+if test @gamslinks_build_scip@ = 1 ; then
+  solvers="$solvers , 'Scip'"
+  SMP="$SMP SMP('Scip', 'LP') = yes;"
+  SMP="$SMP SMP('Scip', 'MIP') = yes;"
+  SMP="$SMP SMP('Scip', 'RMIP') = yes;"
+fi
+
+# create driver generator
+tee > coin_gmstest.set <<EOF 
+\$include gamsmod.inc
+Sets SolverNames   / $solvers /
+     SMP(SolverNames,t);
+$SMP
+alias(t,tt);
+
+*skip QP7 and EMFL because of conic equations
+notest('271') = yes;
+notest('273') = yes;
+*skip bchfcnet, bchoil, and bchmknap because it does not know about BCH in our solvers
+notest('287') = yes;
+notest('288') = yes;
+notest('289') = yes;
+*skip logmip tests because they do not even compile
+notest(s)\$(ord(s)>=332 and ord(s)<=337) = yes;
+
+file drive / coin_gmstest.inc   /; drive.lcase=1;
+put drive '*   GAMSLib Start';
+loop(t,
+loop(sm(s,m)\$(($demoparam) and (not notest(s)) and ts(t,s)),
+loop(SolverNames\$(SMP(SolverNames, t)),
+    put / '\$call gamslib -q ' m.tl
+        / '\$log  ===> executing  ' m.tl:0'.gms on ' SolverNames.tl:0
+    put / '\$echo JobStart ' m.tl:0 ' >> coin_gmstest.txt'
+        / '\$call gams ' m.tl:0 '.gms jt=' m.tl:0 ' trace coin_gmstest.txt lo 2 lf=' m.tl:0 '.' SolverNames.tl:0 '.log reslim=60';
+    loop(tt\$SMP(SolverNames,tt), put ' ' tt.tl:0 '=' SolverNames.tl:0)
+    put /;
+)));
+putclose /'*   GAMSLib End';
+EOF
+
+echo "Generating test driver"
+"$gamspath/gams" coin_gmstest.set lo=2
+
+echo "Starting tests"
+"$gamspath/gams" coin_gmstest.inc lo=2
+
+echo "Generating test report"
+"$gamspath/gams" coin_gmstest.txt a=gt ps=0 pw=255 o=coin_gmstest.rep lo=2
+
+
+numerror=`sed -n -e 's/.*Error Records = \([0-9]*\),.*/\1/p' coin_gmstest.sum`
+echo "Number of errors: $numerror"
+
+if test "x$numerror" != x0 ; 
+then
+  echo "There were failed gmstest tests. Test Summary:"
+  cat coin_gmstest.sum 1>&2
+else
+  echo "All gmstest tests passed."
+fi
+
+exit $numerror

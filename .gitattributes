@@ -131,7 +131,8 @@ GAMSlinks/src/SCIP/install/gmssc_nt.dat -text
 GAMSlinks/src/SCIP/install/gmssc_un.dat -text
 GAMSlinks/test/Makefile.am -text
 GAMSlinks/test/Makefile.in -text
-GAMSlinks/test/run_tests.in -text
+GAMSlinks/test/run_gmstest.in -text
+GAMSlinks/test/run_quality.in -text
 /INSTALL -text
 /LICENSE -text
 /Makefile.am -text

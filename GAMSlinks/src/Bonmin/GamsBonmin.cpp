@@ -98,7 +98,7 @@ int main (int argc, char* argv[]) {
   smagReadModel (prob);
 
 #ifdef GAMS_BUILD
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinBonmin MINLP Solver (Bonmin Library 0.99, using MUMPS Library 4.7.3)\nwritten by P. Bonami\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinBonmin MINLP Solver (Bonmin Library 0.99)\nwritten by P. Bonami\n");
 #else
 	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Bonmin MINLP Solver (Bonmin Library 0.99)\nwritten by P. Bonami\n");
 #endif
@@ -121,6 +121,7 @@ int main (int argc, char* argv[]) {
   		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to unload Pardiso library.\n");
 #endif
   
+	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nGAMS/Bonmin finished.\n");
 	smagStdOutputStop(prob, buffer, sizeof(buffer));
 	smagClose(prob);
 
@@ -777,8 +778,8 @@ void printOptions(const SmartPtr<Journalist>& jnlst, const SmartPtr<Bonmin::Regi
   	std::string category(it->second->RegisteringCategory());
 
   	if (category.empty()) continue;
-  	//TODO (uses currently private method): skip ipopt options 
-//  	if (regoptions->categoriesInfo(category)==Bonmin::RegisteredOptions::IpoptCategory) continue;
+  	// skip ipopt options 
+  	if (regoptions->categoriesInfo(category)==Bonmin::RegisteredOptions::IpoptCategory) continue;
   	
 		if (it->second->Name()=="nlp_solver" ||
 				it->second->Name()=="file_solution" ||

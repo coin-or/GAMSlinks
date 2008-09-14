@@ -493,9 +493,9 @@ void SMAG_MINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const N
 				smagStdOutputPrint(prob, SMAG_ALLMASK, "Iteration (nr. of nodes) limit exceeded.\n");
 			}			
     	if (x) {
-	    	model_status=7; // intermediate nonoptimal
+	    	model_status=8; // integer feasible solution
     	} else {
-    		model_status=13; // error - no solution
+    		model_status=14; // no solution returned
     	}
   	} break;
   	case TMINLP::MINLP_ERROR: {

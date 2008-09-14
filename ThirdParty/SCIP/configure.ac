@@ -37,8 +37,9 @@ AC_COIN_PROJECTDIR_INIT
 # Get the system type
 AC_CANONICAL_BUILD
 
-coin_skip_warn_cflags=yes
-coin_skip_warn_cxxflags=yes
+#hope we can take this out soon
+#coin_skip_warn_cflags=yes
+#coin_skip_warn_cxxflags=yes
 
 # Check if user wants to produce debugging code
 AC_COIN_DEBUG_COMPILE(SCIP)
@@ -67,11 +68,11 @@ if test x"$use_thirdpartyscip" = xbuild ; then
   EXTRAFLAGS=
   case "$CC" in
     *gcc* )
-      EXTRAFLAGS="-Wall -Wno-unknown-pragmas -Wno-strict-aliasing -Wno-missing-declarations -Wno-missing-prototypes"
-      ;;
-    *icl* )
-      EXTRAFLAGS="-W3"
-      ;;
+      EXTRAFLAGS="-Wno-long-long -Wno-strict-aliasing"
+    ;;
+#    *icl* )
+#      EXTRAFLAGS="-W3"
+#    ;;
   esac
   
   AC_CHECK_MEMBER(struct sigaction.sa_handler,,
@@ -83,8 +84,23 @@ if test x"$use_thirdpartyscip" = xbuild ; then
     
   AC_CHECK_FUNC(strtok_r,,
     [EXTRAFLAGS="$EXTRAFLAGS -DNO_STRTOK_R"])
-    
-  AC_SUBST(EXTRAFLAGS)
+ 
+  CFLAGS="$CFLAGS $EXTRAFLAGS"
+  CXXFLAGS="$CXXFLAGS $EXTRAFLAGS"
+  
+  AC_MSG_CHECKING([SCIP version])
+  majorver=`awk '/define SCIP_VERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
+  minorver=`awk '/define SCIP_SUBVERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
+  AC_MSG_RESULT([${majorver}.${minorver}])
+  if test x$majorver != x100 || ( test x$minorver != x0 && test x$minorver != x8 ) ; then
+    AC_MSG_ERROR(["Incorrect SCIP version. This build system is made for SCIP 1.00.0 or SCIP 1.00.8."])
+  fi
+  AM_CONDITIONAL(SCIPDEVVERSION, [test x$minorver = x8])
+  
+  if test x$minorver = x0 ; then
+    CFLAGS=`echo $CFLAGS | sed -e 's/-pedantic-errors//'`
+    CXXFLAGS=`echo $CXXFLAGS | sed -e 's/-pedantic-errors//'`
+  fi
   
 else
   if test x$coin_has_scip = xtrue ; then
@@ -102,7 +118,7 @@ AC_SUBST(SCIPDIR)
 
 AC_CONFIG_FILES([Makefile])
 
-#dummy header file to get -DHAVE_CONFIG flag for Clp
+#dummy header file to avoid many extra compiler flags
 AC_CONFIG_HEADER([config_scip.h])
-
+ 
 AC_COIN_FINALIZE
