@@ -240,7 +240,7 @@ void localSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std
 		smagReportSolBrief(prob, 13, 6);
 		exit (EXIT_FAILURE);
 #endif
-	} if (solvername.find("bonmin")!=std::string::npos) {
+	} else if (solvername.find("bonmin")!=std::string::npos) {
 #ifdef COIN_HAS_BONMIN
 		solver=new BonminSolver();
 #else
