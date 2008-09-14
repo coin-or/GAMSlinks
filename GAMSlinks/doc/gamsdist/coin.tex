@@ -38,11 +38,11 @@ As of the upcoming GAMS Distribution, available solvers include:
 \begin{itemize}
 \item CoinBonmin 0.99: Basic Open-source Nonlinear Mixed Integer programming\\
 (model types: LP, RMIP, MIP, DNLP, NLP, RMINLP, MINLP, QCP, RMIQCP, MIQCP)
-\item CoinCbc 2.1: COIN-OR Branch and Cut\\
+\item CoinCbc 2.2: COIN-OR Branch and Cut\\
 (model types: LP, MIP, RMIP)
-\item CoinGlpk 4.30: Gnu Linear Programming Kit\\
+\item CoinGlpk 4.31: Gnu Linear Programming Kit\\
 (model types: LP, MIP, RMIP)
-\item CoinIpopt 3.4: Interior Point Optimizer\\
+\item CoinIpopt 3.5: Interior Point Optimizer\\
 (model types: LP, RMIP, DNLP, NLP, RMINLP, QCP, RMIQCP)
 \item CoinScip 1.00: Solving Constrained Integer Programs\\
 (model types: LP, MIP, RMIP)
@@ -64,7 +64,7 @@ For more information see the COIN-OR/GAMSlinks web site at
 
 GAMS/CoinBonmin brings the open source MINLP solver Bonmin from the COIN-OR foundation to the broad audience of GAMS users.
 
-Bonmin (\textbf{B}asic \textbf{O}pen-source \textbf{N}onlinear \textbf{M}ixed \textbf{In}teger programming) 0.9 is an open-source solver for mixed-integer nonlinear programming (MINLPs), whereof some parts are still experimental.
+Bonmin (\textbf{B}asic \textbf{O}pen-source \textbf{N}onlinear \textbf{M}ixed \textbf{In}teger programming) 0.99 is an open-source solver for mixed-integer nonlinear programming (MINLPs), whereof some parts are still experimental.
 The code is developed in a joined project of IBM and the Carnegie Mellon University.
 The COIN-OR project leader for Bonmin is Pierre Bonami.
 
@@ -82,7 +82,7 @@ For convex MINLPs, experiments on a reasonably large test set of problems have s
 Nevertheless, there are cases where B-OA is much faster than B-Hyb and others where B-BB is interesting.
 B-QG corresponds mainly to a specific parameter setting of B-Hyb where some features are disabled.
 B-Ecp has just been added to Bonmin and is still experimental.
-For nonconvex MINLPs, it is strongly recommend to use B-BB, even though it is only a heuristic for such problems too.
+For nonconvex MINLPs, it is strongly recommend to use B-BB, even though it is still a heuristic for such problems too.
 % Therefore, it is the default algorithm in Bonmin.
 
 For more information we refer to
@@ -477,7 +477,7 @@ If CoinIpopt was specified as the default solver during GAMS installation, the a
 \hypertarget{ipoptlinearsolver}{}
 
 The performance and robustness of Ipopt on larger models heavily relies on the used solver for sparse symmetric indefinite linear systems.
-GAMS/CoinIpopt includes the multifrontal massively parallel sparse direct solver MUMPS (\texttt{http://graal.ens-lyon.fr/MUMPS}).
+GAMS/CoinIpopt includes the multifrontal massively parallel sparse direct solver MUMPS 4.8.1 (\texttt{http://graal.ens-lyon.fr/MUMPS}).
 The user can provide the Parallel Sparse Direct Solver PARDISO or routines from the Harwell Subroutine Library (HSL) as shared (or dynamic) libraries to replace MUMPS.
 
 \subsubsection{Using Harwell Subroutine Library routines with GAMS/CoinIpopt}
