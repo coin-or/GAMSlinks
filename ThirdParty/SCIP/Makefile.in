@@ -55,6 +55,7 @@ host_triplet = @host@
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_indicator.c \
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_sos1.c \
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_sos2.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/heur_dins.c \
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_ccg.c \
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_cip.c \
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_opb.c \
@@ -87,9 +88,9 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 libcoinscip_la_LIBADD =
 @SCIPDEVVERSION_TRUE@am__objects_1 = cons_countsols.lo \
 @SCIPDEVVERSION_TRUE@	cons_indicator.lo cons_sos1.lo \
-@SCIPDEVVERSION_TRUE@	cons_sos2.lo reader_ccg.lo reader_cip.lo \
-@SCIPDEVVERSION_TRUE@	reader_opb.lo reader_ppm.lo reader_rlp.lo \
-@SCIPDEVVERSION_TRUE@	reader_sos.lo sepa_mcf.lo
+@SCIPDEVVERSION_TRUE@	cons_sos2.lo heur_dins.lo reader_ccg.lo \
+@SCIPDEVVERSION_TRUE@	reader_cip.lo reader_opb.lo reader_ppm.lo \
+@SCIPDEVVERSION_TRUE@	reader_rlp.lo reader_sos.lo sepa_mcf.lo
 nodist_libcoinscip_la_OBJECTS = branch.lo buffer.lo clock.lo \
 	conflict.lo cons.lo cutpool.lo debug.lo dialog.lo disp.lo \
 	event.lo fileio.lo heur.lo history.lo implics.lo interrupt.lo \
@@ -564,6 +565,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_actconsdiving.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_coefdiving.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_crossover.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_dins.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_feaspump.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_fixandinfer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_fracdiving.Plo@am__quote@
@@ -1528,6 +1530,13 @@ cons_sos2.lo: $(SCIPDIR)/src/scip/cons_sos2.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_sos2.c' object='cons_sos2.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_sos2.lo `test -f '$(SCIPDIR)/src/scip/cons_sos2.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_sos2.c
+
+heur_dins.lo: $(SCIPDIR)/src/scip/heur_dins.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT heur_dins.lo -MD -MP -MF "$(DEPDIR)/heur_dins.Tpo" -c -o heur_dins.lo `test -f '$(SCIPDIR)/src/scip/heur_dins.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_dins.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/heur_dins.Tpo" "$(DEPDIR)/heur_dins.Plo"; else rm -f "$(DEPDIR)/heur_dins.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/heur_dins.c' object='heur_dins.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o heur_dins.lo `test -f '$(SCIPDIR)/src/scip/heur_dins.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_dins.c
 
 reader_ccg.lo: $(SCIPDIR)/src/scip/reader_ccg.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_ccg.lo -MD -MP -MF "$(DEPDIR)/reader_ccg.Tpo" -c -o reader_ccg.lo `test -f '$(SCIPDIR)/src/scip/reader_ccg.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_ccg.c; \

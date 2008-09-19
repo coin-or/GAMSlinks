@@ -144,6 +144,7 @@ nodist_libcoinscip_la_SOURCES += \
 			$(SCIPDIR)/src/scip/cons_indicator.c \
 			$(SCIPDIR)/src/scip/cons_sos1.c \
 			$(SCIPDIR)/src/scip/cons_sos2.c \
+			$(SCIPDIR)/src/scip/heur_dins.c \
 			$(SCIPDIR)/src/scip/reader_ccg.c \
 			$(SCIPDIR)/src/scip/reader_cip.c \
 			$(SCIPDIR)/src/scip/reader_opb.c \
