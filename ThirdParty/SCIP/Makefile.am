@@ -151,7 +151,9 @@ nodist_libcoinscip_la_SOURCES += \
 			$(SCIPDIR)/src/scip/reader_ppm.c \
 			$(SCIPDIR)/src/scip/reader_rlp.c \
 			$(SCIPDIR)/src/scip/reader_sos.c \
-			$(SCIPDIR)/src/scip/sepa_mcf.c
+			$(SCIPDIR)/src/scip/sepa_mcf.c \
+			$(SCIPDIR)/src/scip/sepa_zerohalf.c \
+			$(SCIPDIR)/src/scip/presol_boundshift.c
 endif
 
 #nodist_libcoinscip_la_SOURCES += \

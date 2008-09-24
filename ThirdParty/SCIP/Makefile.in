@@ -62,7 +62,9 @@ host_triplet = @host@
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_ppm.c \
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_rlp.c \
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_sos.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/sepa_mcf.c
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/sepa_mcf.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/sepa_zerohalf.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/presol_boundshift.c
 
 DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../BuildTools/Makemain.inc \
@@ -90,7 +92,8 @@ libcoinscip_la_LIBADD =
 @SCIPDEVVERSION_TRUE@	cons_indicator.lo cons_sos1.lo \
 @SCIPDEVVERSION_TRUE@	cons_sos2.lo heur_dins.lo reader_ccg.lo \
 @SCIPDEVVERSION_TRUE@	reader_cip.lo reader_opb.lo reader_ppm.lo \
-@SCIPDEVVERSION_TRUE@	reader_rlp.lo reader_sos.lo sepa_mcf.lo
+@SCIPDEVVERSION_TRUE@	reader_rlp.lo reader_sos.lo sepa_mcf.lo \
+@SCIPDEVVERSION_TRUE@	sepa_zerohalf.lo presol_boundshift.lo
 nodist_libcoinscip_la_OBJECTS = branch.lo buffer.lo clock.lo \
 	conflict.lo cons.lo cutpool.lo debug.lo dialog.lo disp.lo \
 	event.lo fileio.lo heur.lo history.lo implics.lo interrupt.lo \
@@ -604,6 +607,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nodesel_restartdfs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/paramset.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/presol.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/presol_boundshift.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/presol_dualfix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/presol_implics.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/presol_inttobinary.Plo@am__quote@
@@ -644,6 +648,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_mcf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_redcost.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_strongcg.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_zerohalf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepastore.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/set.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sol.Plo@am__quote@
@@ -1586,6 +1591,20 @@ sepa_mcf.lo: $(SCIPDIR)/src/scip/sepa_mcf.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/sepa_mcf.c' object='sepa_mcf.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sepa_mcf.lo `test -f '$(SCIPDIR)/src/scip/sepa_mcf.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_mcf.c
+
+sepa_zerohalf.lo: $(SCIPDIR)/src/scip/sepa_zerohalf.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sepa_zerohalf.lo -MD -MP -MF "$(DEPDIR)/sepa_zerohalf.Tpo" -c -o sepa_zerohalf.lo `test -f '$(SCIPDIR)/src/scip/sepa_zerohalf.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_zerohalf.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/sepa_zerohalf.Tpo" "$(DEPDIR)/sepa_zerohalf.Plo"; else rm -f "$(DEPDIR)/sepa_zerohalf.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/sepa_zerohalf.c' object='sepa_zerohalf.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sepa_zerohalf.lo `test -f '$(SCIPDIR)/src/scip/sepa_zerohalf.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_zerohalf.c
+
+presol_boundshift.lo: $(SCIPDIR)/src/scip/presol_boundshift.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT presol_boundshift.lo -MD -MP -MF "$(DEPDIR)/presol_boundshift.Tpo" -c -o presol_boundshift.lo `test -f '$(SCIPDIR)/src/scip/presol_boundshift.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/presol_boundshift.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/presol_boundshift.Tpo" "$(DEPDIR)/presol_boundshift.Plo"; else rm -f "$(DEPDIR)/presol_boundshift.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/presol_boundshift.c' object='presol_boundshift.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o presol_boundshift.lo `test -f '$(SCIPDIR)/src/scip/presol_boundshift.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/presol_boundshift.c
 
 bitencode.lo: $(SCIPDIR)/src/scip/bitencode.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bitencode.lo -MD -MP -MF "$(DEPDIR)/bitencode.Tpo" -c -o bitencode.lo `test -f '$(SCIPDIR)/src/scip/bitencode.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/bitencode.c; \
