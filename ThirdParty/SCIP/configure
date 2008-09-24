@@ -20921,14 +20921,14 @@ echo $ECHO_N "checking SCIP version... $ECHO_C" >&6
   minorver=`awk '/define SCIP_SUBVERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
   echo "$as_me:$LINENO: result: ${majorver}.${minorver}" >&5
 echo "${ECHO_T}${majorver}.${minorver}" >&6
-  if test x$majorver != x100 || ( test x$minorver != x0 && test x$minorver != x9 ) ; then
-    { { echo "$as_me:$LINENO: error: \"Incorrect SCIP version. This build system is made for SCIP 1.00.0 or SCIP 1.00.9.\"" >&5
-echo "$as_me: error: \"Incorrect SCIP version. This build system is made for SCIP 1.00.0 or SCIP 1.00.9.\"" >&2;}
+  if (test x$majorver != x100 && test x$majorver != x110) || (test x$minorver != x0 ) ; then
+    { { echo "$as_me:$LINENO: error: \"Incorrect SCIP version. This build system is made for SCIP 1.00.0 or SCIP 1.10.0.\"" >&5
+echo "$as_me: error: \"Incorrect SCIP version. This build system is made for SCIP 1.00.0 or SCIP 1.10.0.\"" >&2;}
    { (exit 1); exit 1; }; }
   fi
 
 
-if test x$minorver = x9; then
+if test x$majorver = x110; then
   SCIPDEVVERSION_TRUE=
   SCIPDEVVERSION_FALSE='#'
 else
