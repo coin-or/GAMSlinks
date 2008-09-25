@@ -84,6 +84,9 @@ if test x"$use_thirdpartyscip" = xbuild ; then
     
   AC_CHECK_FUNC(strtok_r,,
     [EXTRAFLAGS="$EXTRAFLAGS -DNO_STRTOK_R"])
+
+  AC_CHECK_FUNC(strerror_r,,
+    [EXTRAFLAGS="$EXTRAFLAGS -DNO_STRERROR_R"])
  
   CFLAGS="$CFLAGS $EXTRAFLAGS"
   CXXFLAGS="$CXXFLAGS $EXTRAFLAGS"
