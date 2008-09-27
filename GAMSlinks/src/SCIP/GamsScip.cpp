@@ -796,7 +796,7 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 		SCIPlpiGetBase(lpi, cstat, rstat);
 		
 		for (int i=0; i<smagColCount(prob); ++i) {
-#if SCIP_SUBVERSION == 0
+#if SCIP_VERSION == 100
 			if (smagMinim(prob)==-1) colmarg[i]*=-1;
 #endif
 			if (prob->colType[i]!=SMAG_VAR_CONT)
@@ -812,7 +812,7 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 		}
 		
 		for (int i=0; i<smagRowCount(prob); ++i) {
-#if SCIP_SUBVERSION == 0
+#if SCIP_VERSION == 100
 			if (smagMinim(prob)==-1) rowmarg[i]*=-1;
 #endif
 			switch(rstat[i]) {
