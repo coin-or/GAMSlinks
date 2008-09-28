@@ -10,7 +10,7 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST =
 
-lib_LTLIBRARIES = libGamsIO.la libSmagIO.la libSmagStricmp.la
+lib_LTLIBRARIES = libGamsIO.la libSmagIO.la libSmagStricmp.la libGmoIO.la
 libGamsIO_la_SOURCES = \
   GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsOptions.cpp GamsDictionary.cpp GamsBCH.cpp GamsHandlerIOLib.cpp GamsGDX.cpp
 libGamsIO_la_LDFLAGS =
@@ -23,6 +23,10 @@ libSmagIO_la_LDFLAGS =
 libSmagIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 
 libSmagStricmp_la_SOURCES = SmagStricmp.c
+
+libGmoIO_la_SOURCES = GamsHandlerGmo.cpp GamsOptions.cpp
+libGmoIO_la_LDFLAGS =
+libGmoIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGMO.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = ../../inc/config_gamslinks.h \

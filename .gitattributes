@@ -57,11 +57,15 @@ GAMSlinks/src/GamsIO/GamsBCH.cpp -text
 GAMSlinks/src/GamsIO/GamsBCH.hpp -text
 GAMSlinks/src/GamsIO/GamsDictionary.cpp -text
 GAMSlinks/src/GamsIO/GamsDictionary.hpp -text
+GAMSlinks/src/GamsIO/GamsDictionary2.cpp -text
+GAMSlinks/src/GamsIO/GamsDictionary2.hpp -text
 GAMSlinks/src/GamsIO/GamsFinalize.cpp -text
 GAMSlinks/src/GamsIO/GamsFinalize.hpp -text
 GAMSlinks/src/GamsIO/GamsGDX.cpp -text
 GAMSlinks/src/GamsIO/GamsGDX.hpp -text
 GAMSlinks/src/GamsIO/GamsHandler.hpp -text
+GAMSlinks/src/GamsIO/GamsHandlerGmo.cpp -text
+GAMSlinks/src/GamsIO/GamsHandlerGmo.hpp -text
 GAMSlinks/src/GamsIO/GamsHandlerIOLib.cpp -text
 GAMSlinks/src/GamsIO/GamsHandlerIOLib.hpp -text
 GAMSlinks/src/GamsIO/GamsHandlerSmag.cpp -text
