@@ -10,10 +10,15 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = gmsos_nt.cmd gmsos_us.run install/gmsos_nt.dat install/gmsos_un.dat
 
-bin_PROGRAMS = GamsOS
-GamsOS_SOURCES = GamsOS.cpp Smag2OSiL.cpp OSrL2Smag.cpp
-GamsOS_LDADD = ../GamsIO/libSmagIO.la ../GamsIO/libSmagStricmp.la
+bin_PROGRAMS = GamsOS GamsOS2
+
+GamsOS_SOURCES      = GamsOS.cpp Smag2OSiL.cpp OSrL2Smag.cpp
+GamsOS_LDADD        = ../GamsIO/libSmagIO.la ../GamsIO/libSmagStricmp.la
 GamsOS_DEPENDENCIES = ../GamsIO/libSmagIO.la ../GamsIO/libSmagStricmp.la
+
+GamsOS2_SOURCES      = GamsOSmain.cpp GamsOS2.cpp GMO2OSiL.cpp OSrL2GMO.cpp
+GamsOS2_LDADD        = ../GamsIO/libGmoIO.la ../GamsIO/libSmagStricmp.la
+GamsOS2_DEPENDENCIES = ../GamsIO/libGmoIO.la ../GamsIO/libSmagStricmp.la
 
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
@@ -31,16 +36,22 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
 #OSSolverInterface.la need to come before OSCommonInterfaces.la
 if COIN_OS_SOLVER
   AM_CPPFLAGS += -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSSolverInterfaces`
-  GamsOS_LDADD += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
-  GamsOS_DEPENDENCIES += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
+  GamsOS_LDADD  += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
+  GamsOS2_LDADD += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
+  GamsOS_DEPENDENCIES  += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
+  GamsOS2_DEPENDENCIES += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
 endif
 
 GamsOS_LDADD += \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
  $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
  $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
- $(OSOBJDIR)/src/OSAgent/libOSAgent.la \
- ../GamsIO/libSmagIO.la
+ $(OSOBJDIR)/src/OSAgent/libOSAgent.la
+GamsOS2_LDADD += \
+ $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
+ $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
+ $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
+ $(OSOBJDIR)/src/OSAgent/libOSAgent.la
  
 GamsOS_DEPENDENCIES += \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
@@ -49,8 +60,15 @@ GamsOS_DEPENDENCIES += \
  $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
  ../GamsIO/libSmagIO.la $(SMAG_LIBS)
+GamsOS2_DEPENDENCIES += \
+ $(COINUTILSOBJDIR)/src/libCoinUtils.la \
+ $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
+ $(OSOBJDIR)/src/OSAgent/libOSAgent.la \
+ $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
+ $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
+ ../GamsIO/libSmagIO.la $(SMAG_LIBS)
 
-LIBS += `cat $(OSOBJDIR)/os_addlibs.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
+LIBS += `cat $(OSOBJDIR)/os_addlibs.txt`
 
 if COIN_OS_SOLVER
 
@@ -60,10 +78,10 @@ if COIN_HAS_BONMIN
 	 -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms` \
 	 -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/CbcBonmin` \
 	 -I`$(CYGPATH_W) $(BONMINOBJDIR)/inc`
-  GamsOS_LDADD += \
-	 $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
-  GamsOS_DEPENDENCIES += \
-	 $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
+  GamsOS_LDADD  += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
+  GamsOS2_LDADD += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
+  GamsOS_DEPENDENCIES  += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
+  GamsOS2_DEPENDENCIES += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
 endif
 
 if COIN_HAS_CBC
@@ -71,12 +89,10 @@ if COIN_HAS_CBC
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCbc` \
    -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
    -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
-  GamsOS_LDADD += \
-   $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
-   $(CBCOBJDIR)/src/libCbc.la
-  GamsOS_DEPENDENCIES += \
-   $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
-   $(CBCOBJDIR)/src/libCbc.la
+  GamsOS_LDADD  += $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la
+  GamsOS2_LDADD += $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la
+  GamsOS_DEPENDENCIES  += $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la
+  GamsOS2_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la
   LIBS += `cat $(CBCOBJDIR)/cbc_addlibs.txt`
 endif
 
@@ -85,12 +101,10 @@ if COIN_HAS_CLP
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiClp` \
    -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
    -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
-  GamsOS_LDADD += \
-   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
-   $(CLPOBJDIR)/src/libClp.la
-  GamsOS_DEPENDENCIES += \
-   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
-   $(CLPOBJDIR)/src/libClp.la
+  GamsOS_LDADD  += $(OSIOBJDIR)/src/OsiClp/libOsiClp.la $(CLPOBJDIR)/src/libClp.la
+  GamsOS2_LDADD += $(OSIOBJDIR)/src/OsiClp/libOsiClp.la $(CLPOBJDIR)/src/libClp.la
+  GamsOS_DEPENDENCIES  += $(OSIOBJDIR)/src/OsiClp/libOsiClp.la $(CLPOBJDIR)/src/libClp.la
+  GamsOS2_DEPENDENCIES += $(OSIOBJDIR)/src/OsiClp/libOsiClp.la $(CLPOBJDIR)/src/libClp.la
   LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt`
 endif
 
@@ -98,8 +112,10 @@ if COIN_HAS_GLPK
   AM_CPPFLAGS += \
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
    -I`$(CYGPATH_W) $(GLPKINCDIR)`
-  GamsOS_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
-  GamsOS_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+  GamsOS_LDADD  += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+  GamsOS2_LDADD += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+  GamsOS_DEPENDENCIES  += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+  GamsOS2_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 endif
 
 if COIN_HAS_DYLP
@@ -108,12 +124,10 @@ if COIN_HAS_DYLP
    -I`$(CYGPATH_W) $(DYLPSRCDIR)/src/Dylp` \
    -I`$(CYGPATH_W) $(DYLPSRCDIR)/src/DylpStdLib` \
    -I`$(CYGPATH_W) $(DYLPOBJDIR)/inc`
-  GamsOS_LDADD += \
-    $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la \
-    $(DYLPOBJDIR)/src/Dylp/libDylp.la
-  GamsOS_DEPENDENCIES += \
-    $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la \
-    $(DYLPOBJDIR)/src/Dylp/libDylp.la
+  GamsOS_LDADD  += $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la $(DYLPOBJDIR)/src/Dylp/libDylp.la
+  GamsOS2_LDADD += $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la $(DYLPOBJDIR)/src/Dylp/libDylp.la
+  GamsOS_DEPENDENCIES  += $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la $(DYLPOBJDIR)/src/Dylp/libDylp.la
+  GamsOS2_DEPENDENCIES += $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la $(DYLPOBJDIR)/src/Dylp/libDylp.la
   LIBS += `cat $(DYLPOBJDIR)/dylp_addlibs.txt`
 endif  
 
@@ -121,12 +135,10 @@ if COIN_HAS_VOL
   AM_CPPFLAGS += \
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiVol` \
    -I`$(CYGPATH_W) $(VOLSRCDIR)/src`
-  GamsOS_LDADD += \
-    $(OSIOBJDIR)/src/OsiVol/libOsiVol.la \
-    $(VOLOBJDIR)/src/libVol.la
-  GamsOS_DEPENDENCIES += \
-    $(OSIOBJDIR)/src/OsiVol/libOsiVol.la \
-    $(VOLOBJDIR)/src/libVol.la
+  GamsOS_LDADD  += $(OSIOBJDIR)/src/OsiVol/libOsiVol.la $(VOLOBJDIR)/src/libVol.la
+  GamsOS2_LDADD += $(OSIOBJDIR)/src/OsiVol/libOsiVol.la $(VOLOBJDIR)/src/libVol.la
+  GamsOS_DEPENDENCIES  += $(OSIOBJDIR)/src/OsiVol/libOsiVol.la $(VOLOBJDIR)/src/libVol.la
+  GamsOS2_DEPENDENCIES += $(OSIOBJDIR)/src/OsiVol/libOsiVol.la $(VOLOBJDIR)/src/libVol.la
   LIBS += `cat $(VOLOBJDIR)/vol_addlibs.txt`
 endif
 
@@ -134,12 +146,10 @@ if COIN_HAS_SYMPHONY
   AM_CPPFLAGS += \
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiSym` \
    -I`$(CYGPATH_W) $(SYMPHONYSRCDIR)/include`
-  GamsOS_LDADD += \
-    $(OSIOBJDIR)/src/OsiSym/libOsiSym.la \
-    $(SYMPHONYOBJDIR)/src/libSym.la
-  GamsOS_DEPENDENCIES += \
-    $(OSIOBJDIR)/src/OsiSym/libOsiSym.la \
-    $(SYMPHONYOBJDIR)/src/libSym.la
+  GamsOS_LDADD  += $(OSIOBJDIR)/src/OsiSym/libOsiSym.la $(SYMPHONYOBJDIR)/src/libSym.la
+  GamsOS2_LDADD += $(OSIOBJDIR)/src/OsiSym/libOsiSym.la $(SYMPHONYOBJDIR)/src/libSym.la
+  GamsOS_DEPENDENCIES  += $(OSIOBJDIR)/src/OsiSym/libOsiSym.la $(SYMPHONYOBJDIR)/src/libSym.la
+  GamsOS2_DEPENDENCIES += $(OSIOBJDIR)/src/OsiSym/libOsiSym.la $(SYMPHONYOBJDIR)/src/libSym.la
   LIBS += `cat $(SYMPHONYOBJDIR)/sym_addlibs.txt`
 endif
 
@@ -158,8 +168,10 @@ if COIN_HAS_CGL
    -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglRedSplit` \
    -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglTwomir` \
    -I`$(CYGPATH_W) $(CGLOBJDIR)/inc` 
-  GamsOS_LDADD += $(CGLOBJDIR)/src/libCgl.la
-  GamsOS_DEPENDENCIES += $(CGLOBJDIR)/src/libCgl.la
+  GamsOS_LDADD  += $(CGLOBJDIR)/src/libCgl.la
+  GamsOS2_LDADD += $(CGLOBJDIR)/src/libCgl.la
+  GamsOS_DEPENDENCIES  += $(CGLOBJDIR)/src/libCgl.la
+  GamsOS2_DEPENDENCIES += $(CGLOBJDIR)/src/libCgl.la
   LIBS += `cat $(CGLOBJDIR)/cgl_addlibs.txt`
 endif
 
@@ -167,10 +179,10 @@ if COIN_HAS_OSI
   AM_CPPFLAGS += \
    -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
    -I`$(CYGPATH_W) $(OSIOBJDIR)/inc`
-  GamsOS_LDADD += \
-   $(OSIOBJDIR)/src/libOsi.la
-  GamsOS_DEPENDENCIES += \
-   $(OSIOBJDIR)/src/libOsi.la
+  GamsOS_LDADD  += $(OSIOBJDIR)/src/libOsi.la
+  GamsOS2_LDADD += $(OSIOBJDIR)/src/libOsi.la
+  GamsOS_DEPENDENCIES  += $(OSIOBJDIR)/src/libOsi.la
+  GamsOS2_DEPENDENCIES += $(OSIOBJDIR)/src/libOsi.la
   LIBS += `cat $(OSIOBJDIR)/osi_addlibs.txt`
 endif
 
@@ -182,10 +194,10 @@ if COIN_HAS_IPOPT
    -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Algorithm` \
    -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/CGPenalty` \
    -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
-  GamsOS_LDADD += \
-   $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
-  GamsOS_DEPENDENCIES += \
-   $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
+  GamsOS_LDADD  += $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
+  GamsOS2_LDADD += $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
+  GamsOS_DEPENDENCIES  += $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
+  GamsOS2_DEPENDENCIES += $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
   LIBS += `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
 endif
 
@@ -193,18 +205,24 @@ if COIN_HAS_CPX
   AM_CPPFLAGS += \
 	-I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCpx` \
 	-I`$(CYGPATH_W) $(CPXINCDIR)`
-  GamsOS_LDADD += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
-  GamsOS_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
+  GamsOS_LDADD  += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
+  GamsOS2_LDADD += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
+  GamsOS_DEPENDENCIES  += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
+  GamsOS2_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
 endif
 
 # end of check for COIN_OS_SOLVER
 endif
 
-GamsOS_LDADD += \
- $(COINUTILSOBJDIR)/src/libCoinUtils.la
+GamsOS_LDADD  += $(COINUTILSOBJDIR)/src/libCoinUtils.la
+GamsOS2_LDADD += $(COINUTILSOBJDIR)/src/libCoinUtils.la
 LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
-GamsOS_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
+#TODO: this is actually only needed for GamsOS, but not for GamsOS2
+#unfortunately adding this to LDFLAGS does not give the right order of linker arguments in a debug build
+LIBS += `cat $(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
+GamsOS_LDFLAGS  = $(ADDLIBS) -rpath $(libdir)
+GamsOS2_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
