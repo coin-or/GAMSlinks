@@ -76,10 +76,18 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
 mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
+libGamsDict_la_LIBADD =
+nodist_libGamsDict_la_OBJECTS = gcdcc.lo
+libGamsDict_la_OBJECTS = $(nodist_libGamsDict_la_OBJECTS)
+@GAMSIO_PRESENT_TRUE@am_libGamsDict_la_rpath =
 libGamsGDX_la_LIBADD =
 nodist_libGamsGDX_la_OBJECTS = gdxcc.lo
 libGamsGDX_la_OBJECTS = $(nodist_libGamsGDX_la_OBJECTS)
 @GAMSIO_PRESENT_TRUE@am_libGamsGDX_la_rpath =
+libGamsGMO_la_LIBADD =
+nodist_libGamsGMO_la_OBJECTS = gmocc.lo
+libGamsGMO_la_OBJECTS = $(nodist_libGamsGMO_la_OBJECTS)
+@GAMSIO_PRESENT_TRUE@am_libGamsGMO_la_rpath =
 libGamsOptions_la_LIBADD =
 nodist_libGamsOptions_la_OBJECTS = optcc.lo
 libGamsOptions_la_OBJECTS = $(nodist_libGamsOptions_la_OBJECTS)
@@ -98,7 +106,9 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(nodist_libGamsGDX_la_SOURCES) \
+SOURCES = $(nodist_libGamsDict_la_SOURCES) \
+	$(nodist_libGamsGDX_la_SOURCES) \
+	$(nodist_libGamsGMO_la_SOURCES) \
 	$(nodist_libGamsOptions_la_SOURCES) $(gdx2gams_SOURCES)
 DIST_SOURCES = $(gdx2gams_SOURCES)
 ETAGS = etags
@@ -257,11 +267,15 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = get.GAMSIO INSTALL.GAMSIO LICENSE $(am__append_2)
-@GAMSIO_PRESENT_TRUE@noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la
+@GAMSIO_PRESENT_TRUE@noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la libGamsGMO.la libGamsDict.la
 nodist_libGamsOptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
 libGamsOptions_la_LDFLAGS = 
 nodist_libGamsGDX_la_SOURCES = $(GAMSIO_CODE)/gdxcc.c
 libGamsGDX_la_LDFLAGS = 
+nodist_libGamsGMO_la_SOURCES = $(GAMSIO_CODE)/gmocc.c
+libGamsGMO_la_LDFLAGS = 
+nodist_libGamsDict_la_SOURCES = $(GAMSIO_CODE)/gcdcc.c
+libGamsDict_la_LDFLAGS = 
 gdx2gams_SOURCES = gdx2gams.c
 gdx2gams_LDFLAGS = gdxcc.lo $(am__append_1)
 gdx2gams_DEPENDENCIES = gdxcc.lo
@@ -320,8 +334,12 @@ clean-noinstLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
+libGamsDict.la: $(libGamsDict_la_OBJECTS) $(libGamsDict_la_DEPENDENCIES) 
+	$(LINK) $(am_libGamsDict_la_rpath) $(libGamsDict_la_LDFLAGS) $(libGamsDict_la_OBJECTS) $(libGamsDict_la_LIBADD) $(LIBS)
 libGamsGDX.la: $(libGamsGDX_la_OBJECTS) $(libGamsGDX_la_DEPENDENCIES) 
 	$(LINK) $(am_libGamsGDX_la_rpath) $(libGamsGDX_la_LDFLAGS) $(libGamsGDX_la_OBJECTS) $(libGamsGDX_la_LIBADD) $(LIBS)
+libGamsGMO.la: $(libGamsGMO_la_OBJECTS) $(libGamsGMO_la_DEPENDENCIES) 
+	$(LINK) $(am_libGamsGMO_la_rpath) $(libGamsGMO_la_LDFLAGS) $(libGamsGMO_la_OBJECTS) $(libGamsGMO_la_LIBADD) $(LIBS)
 libGamsOptions.la: $(libGamsOptions_la_OBJECTS) $(libGamsOptions_la_DEPENDENCIES) 
 	$(LINK) $(am_libGamsOptions_la_rpath) $(libGamsOptions_la_LDFLAGS) $(libGamsOptions_la_OBJECTS) $(libGamsOptions_la_LIBADD) $(LIBS)
 
@@ -341,8 +359,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gcdcc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdx2gams.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdxcc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmocc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optcc.Plo@am__quote@
 
 .c.o:
@@ -366,12 +386,26 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
+gcdcc.lo: $(GAMSIO_CODE)/gcdcc.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gcdcc.lo -MD -MP -MF "$(DEPDIR)/gcdcc.Tpo" -c -o gcdcc.lo `test -f '$(GAMSIO_CODE)/gcdcc.c' || echo '$(srcdir)/'`$(GAMSIO_CODE)/gcdcc.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/gcdcc.Tpo" "$(DEPDIR)/gcdcc.Plo"; else rm -f "$(DEPDIR)/gcdcc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMSIO_CODE)/gcdcc.c' object='gcdcc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gcdcc.lo `test -f '$(GAMSIO_CODE)/gcdcc.c' || echo '$(srcdir)/'`$(GAMSIO_CODE)/gcdcc.c
+
 gdxcc.lo: $(GAMSIO_CODE)/gdxcc.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gdxcc.lo -MD -MP -MF "$(DEPDIR)/gdxcc.Tpo" -c -o gdxcc.lo `test -f '$(GAMSIO_CODE)/gdxcc.c' || echo '$(srcdir)/'`$(GAMSIO_CODE)/gdxcc.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/gdxcc.Tpo" "$(DEPDIR)/gdxcc.Plo"; else rm -f "$(DEPDIR)/gdxcc.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMSIO_CODE)/gdxcc.c' object='gdxcc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gdxcc.lo `test -f '$(GAMSIO_CODE)/gdxcc.c' || echo '$(srcdir)/'`$(GAMSIO_CODE)/gdxcc.c
+
+gmocc.lo: $(GAMSIO_CODE)/gmocc.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gmocc.lo -MD -MP -MF "$(DEPDIR)/gmocc.Tpo" -c -o gmocc.lo `test -f '$(GAMSIO_CODE)/gmocc.c' || echo '$(srcdir)/'`$(GAMSIO_CODE)/gmocc.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/gmocc.Tpo" "$(DEPDIR)/gmocc.Plo"; else rm -f "$(DEPDIR)/gmocc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMSIO_CODE)/gmocc.c' object='gmocc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gmocc.lo `test -f '$(GAMSIO_CODE)/gmocc.c' || echo '$(srcdir)/'`$(GAMSIO_CODE)/gmocc.c
 
 optcc.lo: $(GAMSIO_CODE)/optcc.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT optcc.lo -MD -MP -MF "$(DEPDIR)/optcc.Tpo" -c -o optcc.lo `test -f '$(GAMSIO_CODE)/optcc.c' || echo '$(srcdir)/'`$(GAMSIO_CODE)/optcc.c; \

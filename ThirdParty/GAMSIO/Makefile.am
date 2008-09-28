@@ -11,14 +11,20 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = get.GAMSIO INSTALL.GAMSIO LICENSE
 
 if GAMSIO_PRESENT
-noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la
+noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la libGamsGMO.la libGamsDict.la
 endif
 
 nodist_libGamsOptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
-libGamsOptions_la_LDFLAGS = 
+libGamsOptions_la_LDFLAGS =
 
 nodist_libGamsGDX_la_SOURCES = $(GAMSIO_CODE)/gdxcc.c
 libGamsGDX_la_LDFLAGS =
+
+nodist_libGamsGMO_la_SOURCES = $(GAMSIO_CODE)/gmocc.c
+libGamsGMO_la_LDFLAGS =
+
+nodist_libGamsDict_la_SOURCES = $(GAMSIO_CODE)/gcdcc.c
+libGamsDict_la_LDFLAGS =
 
 if GAMSIO_PRESENT
 noinst_PROGRAMS = gdx2gams
