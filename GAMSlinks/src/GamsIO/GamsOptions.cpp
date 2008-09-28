@@ -71,6 +71,7 @@ GamsOptions::GamsOptions(GamsHandler& gams_, const char* solvername)
 
 GamsOptions::~GamsOptions() {
 	if (optionshandle) optFree(&optionshandle);
+	optLibraryUnload();
 }
 
 bool GamsOptions::readOptionsFile(const char* optfilename) {
