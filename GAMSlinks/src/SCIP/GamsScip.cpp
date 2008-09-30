@@ -62,6 +62,10 @@ extern "C" {
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
 #include "scip/cons_linear.h"
+#if SCIP_VERSION == 110
+#include "scip/cons_sos1.h"
+#include "scip/cons_sos2.h"
+#endif
 }
 
 #include "ScipBCH.hpp"
@@ -167,12 +171,14 @@ int main (int argc, const char *argv[]) {
   
   smagSetObjFlavor (prob, OBJ_FUNCTION);
 
+#if SCIP_VERSION == 100
   if (prob->gms.nsos1 || prob->gms.nsos2) {
   	smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Special ordered sets (SOS) not supported by SCIP.\n");
   	smagStdOutputFlush(prob, SMAG_ALLMASK);
 		smagReportSolBrief(prob, 14, 6); // no solution; capability problems
 		exit(EXIT_FAILURE);
   }
+#endif
   if (prob->gms.nsemi || prob->gms.nsemii) {
   	smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Semicontinuous and semiinteger variables not supported by SCIP.\n");
   	smagStdOutputFlush(prob, SMAG_ALLMASK);
@@ -206,7 +212,7 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   SolveStatus solstatus;
   solstatus.colval=NULL;
   
-  if (prob->gms.nbin || prob->gms.numint) { // if discrete var, do SCIP
+  if (prob->gms.nbin || prob->gms.numint || prob->gms.nsos1 || prob->gms.nsos2) { // if discrete var, do SCIP
   	GamsHandlerSmag gamshandler(prob);
   	GamsDictionary dict(gamshandler);
   	
@@ -264,14 +270,15 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	SCIP_CALL( SCIPgetBoolParam(scip, "gams/mipstart", &mipstart) );
   	if (mipstart)
   		SCIP_CALL( setupMIPStart(prob, scip, mip_vars) );
+
+//  	SCIP_CALL( SCIPwriteMIP(scip, "troublemip.lp", FALSE, TRUE) );
+//  	SCIP_CALL( SCIPprintOrigProblem(scip, NULL, NULL, TRUE) );
   	
   	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nStarting MIP solve...\n");
   	smagStdOutputFlush(prob, SMAG_LOGMASK);
 
   	SCIP_CALL( SCIPsolve(scip) );
   	//  SCIP_CALL( SCIPprintStatistics(scip, NULL) );
-
-//  	SCIPwriteMIP(scip, "troublemip.lp", FALSE, TRUE);
   	
   	SCIP_CALL( checkMIPsolve(prob, scip, mip_vars, solstatus) );
   	
@@ -281,7 +288,7 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	SCIP_CALL( SCIPfreeMessagehdlr(&messagehdlr) );
   	
   	// we disable the LP solve if we do not have a MIP feasible point or the user wants so
-  	solvelp = (!solstatus.colval) || solvefinal;
+  	solvelp = solstatus.colval && solvefinal;
   	
   	SCIP_CALL( BCHcleanup(prob, bch, bchdata) );
   	if (gdxhandle) {
@@ -296,7 +303,7 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   if (solvelp) { // if we have an LP or got a mip feasible point and user did not disable fixed LP solve, solve (fixed) LP
   	SCIP_CALL( SCIPlpiCreate(&lpi, "gamsproblem", smagMinim(prob)==-1 ? SCIP_OBJSEN_MAXIMIZE : SCIP_OBJSEN_MINIMIZE) );
 
-  	if (!prob->gms.nbin && !prob->gms.numint) {
+  	if (!prob->gms.nbin && !prob->gms.numint && !prob->gms.nosos1 && !prob->gms.nosos2) {
   		// here we allow =n= rows in order to get the lp11 test passed 
   		smagSetInf (prob, SCIPlpiInfinity(lpi));
   		smagReadModel (prob);
@@ -316,7 +323,7 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   }
 
 	// if problem was an LP, get gams status and statistics
-	if (!prob->gms.nbin && !prob->gms.numint) {
+	if (!prob->gms.nbin && !prob->gms.numint && !prob->gms.nosos1 && !prob->gms.nosos2) {
 		solstatus.time=smagGetCPUTime(prob)-lpsolve_starttime;
 		SCIP_CALL( checkLPsolve(prob, lpi, solstatus) );
 	}
@@ -370,6 +377,10 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 		SCIP_VARTYPE vartype;
 		switch (prob->colType[i]) {
 			case SMAG_VAR_CONT:
+#if SCIP_VERSION == 110
+			case SMAG_VAR_SOS1:
+			case SMAG_VAR_SOS2:
+#endif
 				vartype=SCIP_VARTYPE_CONTINUOUS;
 				break;
 			case SMAG_VAR_BINARY:
@@ -411,6 +422,7 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 	
 	SCIP_VAR** con_vars=new SCIP_VAR*[maxrowlen];
 	SCIP_Real* con_coef=new SCIP_Real[maxrowlen];
+  SCIP_CONS* con;
 	for (int i=0; i<smagRowCount(prob); ++i) {
 		double lb,ub;
 		switch (prob->rowType[i]) {
@@ -437,8 +449,6 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
     	con_vars[ncoef]=vars[cGrad->j];
     }
 		
-    SCIP_CONS* con;
-
 		const char* conname=NULL;
 		if (dict.haveNames())
 			conname=dict.getRowName(i, buffer, 256);
@@ -456,6 +466,44 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 		SCIP_CALL( SCIPreleaseCons(scip, &con) );
 
 	}
+	
+#if SCIP_VERSION == 110
+	SCIP_VAR** sos = new SCIP_VAR*[MAX(prob->gms.nsos1, prob->gms.nsos2)];
+	for (int i = 0; i < prob->gms.nosos1 + prob->gms.nosos2; ++i)
+	{
+		int n = 0;
+		int sostype = 0;
+		for (int j = 0; j < smagColCount(prob); ++j)
+		{
+			if (prob->colType[j] != SMAG_VAR_SOS1 && prob->colType[j] != SMAG_VAR_SOS2)
+				continue;
+			if (prob->colSOS[j] == i+1)
+			{
+				assert(n < MAX(prob->gms.nsos1, prob->gms.nsos2));
+				sos[n] = vars[j];
+				sostype = prob->colType[j] == SMAG_VAR_SOS1 ? 1 : 2;
+				n++;
+			}
+		}
+		if (sostype == 1)
+		{
+			SCIP_CALL( SCIPcreateConsSOS1(scip, &con, "sos", n, sos, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
+		}
+		else if (sostype == 2)
+		{
+			SCIP_CALL( SCIPcreateConsSOS2(scip, &con, "sos", n, sos, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
+		}
+		else
+		{
+			SCIPerrorMessage("SOS type %d not supported.\n", sostype);
+			return SCIP_ERROR;
+		}
+		SCIP_CALL( SCIPaddCons(scip, con) );
+//		SCIP_CALL( SCIPprintCons(scip, con, NULL) );
+		SCIP_CALL( SCIPreleaseCons(scip, &con) );
+	}
+	delete[] sos;
+#endif
 
 	if (smagMinim(prob)==-1)
 		SCIP_CALL( SCIPsetObjsense(scip, SCIP_OBJSENSE_MAXIMIZE) );
