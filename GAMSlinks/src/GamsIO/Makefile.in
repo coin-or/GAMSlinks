@@ -86,7 +86,8 @@ am_libGamsIO_la_OBJECTS = GamsModel.lo GamsFinalize.lo \
 libGamsIO_la_OBJECTS = $(am_libGamsIO_la_OBJECTS)
 libGmoIO_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsOptions.la \
 	$(GAMSIO_OBJDIR)/libGamsGMO.la $(GAMSIO_OBJDIR)/libGamsGDX.la
-am_libGmoIO_la_OBJECTS = GamsHandlerGmo.lo GamsOptions.lo
+am_libGmoIO_la_OBJECTS = GamsHandlerGmo.lo GamsOptions.lo \
+	GamsNLinstr.lo
 libGmoIO_la_OBJECTS = $(am_libGmoIO_la_OBJECTS)
 libSmagIO_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsOptions.la \
 	$(GAMSIO_OBJDIR)/libGamsGDX.la
@@ -413,7 +414,7 @@ libSmagIO_la_SOURCES = \
 libSmagIO_la_LDFLAGS = 
 libSmagIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 libSmagStricmp_la_SOURCES = SmagStricmp.c
-libGmoIO_la_SOURCES = GamsHandlerGmo.cpp GamsOptions.cpp
+libGmoIO_la_SOURCES = GamsHandlerGmo.cpp GamsOptions.cpp GamsNLinstr.c
 libGmoIO_la_LDFLAGS = 
 libGmoIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGMO.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 includecoindir = $(includedir)/coin

@@ -24,7 +24,7 @@ libSmagIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGam
 
 libSmagStricmp_la_SOURCES = SmagStricmp.c
 
-libGmoIO_la_SOURCES = GamsHandlerGmo.cpp GamsOptions.cpp
+libGmoIO_la_SOURCES = GamsHandlerGmo.cpp GamsOptions.cpp GamsNLinstr.c
 libGmoIO_la_LDFLAGS =
 libGmoIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGMO.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 

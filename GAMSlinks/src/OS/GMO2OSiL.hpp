@@ -48,7 +48,7 @@ public:
 private:
 	struct gmoRec* gmo;
 
-//	OSnLNode* parseGamsInstructions(unsigned int* instr, int num_instr, double* constants);
+	OSnLNode* parseGamsInstructions(int codelen, int* opcodes, int* fields, int constantlen, double* constants);
 	
 //	bool setupQuadraticTerms();
 //	
