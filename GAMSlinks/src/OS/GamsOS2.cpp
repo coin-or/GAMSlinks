@@ -28,8 +28,8 @@
 #include "GMO2OSiL.hpp"
 #include "OSrL2GMO.hpp"
 
-#include <ifstream>
-#include <ostream>
+#include <fstream>
+#include <iostream>
 
 GamsOS::GamsOS(gmoHandle_t gmo_)
 : gmo(gmo_), gamshandler(gmo_),
