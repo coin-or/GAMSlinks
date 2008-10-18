@@ -150,7 +150,7 @@ if test @gamslinks_build_scip@ = 1 ; then
     stdskiplist="$stdskiplist slvstdoutskip('Scip')=yes;"
   fi
   testlist[${#testlist[@]}]="--solver scip --suite lp"
-  testlist[${#testlist[@]}]="--solver scip --suite mip user1=rmip=scip"
+  testlist[${#testlist[@]}]="--solver scip --suite mip user1=\"--MIPMCHECKS=0 rmip=scip\""
 fi
 
 
