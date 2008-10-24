@@ -37,10 +37,6 @@ AC_COIN_PROJECTDIR_INIT
 # Get the system type
 AC_CANONICAL_BUILD
 
-#hope we can take this out soon
-#coin_skip_warn_cflags=yes
-#coin_skip_warn_cxxflags=yes
-
 # Check if user wants to produce debugging code
 AC_COIN_DEBUG_COMPILE(SCIP)
 
@@ -66,14 +62,6 @@ if test x"$use_thirdpartyscip" = xbuild ; then
   touch $MAKEOKFILE
   
   EXTRAFLAGS=
-  case "$CC" in
-    *gcc* )
-      EXTRAFLAGS="-Wno-long-long -Wno-strict-aliasing"
-    ;;
-#    *icl* )
-#      EXTRAFLAGS="-W3"
-#    ;;
-  esac
   
   AC_CHECK_MEMBER(struct sigaction.sa_handler,,
     [EXTRAFLAGS="$EXTRAFLAGS -DNO_SIGACTION"],
@@ -95,10 +83,10 @@ if test x"$use_thirdpartyscip" = xbuild ; then
   majorver=`awk '/define SCIP_VERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
   minorver=`awk '/define SCIP_SUBVERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
   AC_MSG_RESULT([${majorver}.${minorver}])
-  if (test x$majorver != x100 && test x$majorver != x110) || (test x$minorver != x0 ) ; then
-    AC_MSG_ERROR(["Incorrect SCIP version. This build system is made for SCIP 1.00.0 or SCIP 1.10.0."])
+  if (test x$majorver != x110) ; then
+    AC_MSG_ERROR(["Incorrect SCIP version. This build system is made for SCIP >= 1.10.0."])
   fi
-  AM_CONDITIONAL(SCIPDEVVERSION, [test x$majorver = x110])
+  AM_CONDITIONAL(SCIPDEVVERSION, [test x$minorver = x0])
   
   if test x$minorver = x0 ; then
     CFLAGS=`echo $CFLAGS | sed -e 's/-pedantic-errors//'`
