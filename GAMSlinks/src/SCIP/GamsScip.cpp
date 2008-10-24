@@ -125,7 +125,7 @@ int main (int argc, const char *argv[]) {
   if (smagStdOutputStart(prob, SMAG_STATUS_OVERWRITE_IFDUMMY, buffer, sizeof(buffer)))
   	fprintf(stderr, "Warning: Error opening GAMS output files .. continuing anyhow\t%s\n", buffer);
 
-  sprintf(buffer, "\nSCIP version %.2f.%d [LP solver: %s]\n%s\n\n", SCIPversion(), SCIPsubversion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
+  sprintf(buffer, "\nSCIP version %d.%d.%d [LP solver: %s]\n%s\n\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
 	smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
  
@@ -261,7 +261,7 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	if (mipstart)
   		SCIP_CALL( setupMIPStart(prob, scip, mip_vars) );
 
-//  	SCIP_CALL( SCIPprintOrigProblem(scip, NULL, NULL, TRUE) );
+//  	SCIP_CALL( SCIPprintOrigProblem(scip, NULL, "mps", TRUE) );
   	
   	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nStarting MIP solve...\n");
   	smagStdOutputFlush(prob, SMAG_LOGMASK);
@@ -347,9 +347,12 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 	if (prob->gms.priots && smagColCount(prob)>0) { // compute range of given priorities
 		minprior=prob->colPriority[0];
 		maxprior=prob->colPriority[0];
-		for (int i=0; i<smagColCount(prob); ++i)
+		for (int i=0; i<smagColCount(prob); ++i) {
+			if (prob->colType[i] == SMAG_VAR_CONT)
+				continue;
 			if (prob->colPriority[i]<minprior) minprior=prob->colPriority[i];
 			else if (prob->colPriority[i]>maxprior) maxprior=prob->colPriority[i];
+		}
 	}
 
 	if (prob->niceObjRow && prob->gms.grhs[prob->gms.slplro-1]) {
@@ -388,12 +391,12 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 			varname=dict.getColName(i, buffer, 256);
 		SCIP_CALL( SCIPcreateVar(scip, vars+i, varname, prob->colLB[i], prob->colUB[i], obj_coeff, vartype, TRUE, FALSE, NULL, NULL, NULL, NULL) );
 		SCIP_CALL( SCIPaddVar(scip, vars[i]) );
-
-		if (prob->gms.priots && minprior<maxprior) {
+		
+		if (prob->gms.priots && minprior<maxprior && prob->colType[i] != SMAG_VAR_CONT) {
 			// in GAMS: higher priorities are given by smaller .prior values
 			// in SCIP: variables with higher branch priority are always preferred to variables with lower priority in selection of branching variable
 			// thus, we scale the values from GAMS to lie between 0 (lowest prior) and 1000 (highest prior) 
-			int branchpriority = (int)(1000./(maxprior-minprior)*(maxprior-prob->colPriority[i]));		
+			int branchpriority = (int)(1000./(maxprior-minprior)*(maxprior-prob->colPriority[i]));
 			SCIP_CALL( SCIPchgVarBranchPriority(scip, vars[i], branchpriority) );
 		}
 	}
@@ -634,7 +637,7 @@ SCIP_RETCODE checkMIPsolve(smagHandle_t prob, SCIP* scip, SCIP_VAR** vars, Solve
 	}
 
 	solstatus.objest=SCIPgetDualbound(scip);
-	solstatus.nodenum=SCIPgetNNodes(scip);
+	solstatus.nodenum=(int)SCIPgetNNodes(scip);
 	solstatus.iterations=solstatus.nodenum;
 	solstatus.time=SCIPgetTotalTime(scip);
 
