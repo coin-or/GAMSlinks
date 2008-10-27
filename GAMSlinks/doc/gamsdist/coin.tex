@@ -36,15 +36,15 @@ With the availability of source code for the GAMSlinks the user is not limited t
 
 As of the upcoming GAMS Distribution, available solvers include:
 \begin{itemize}
-\item CoinBonmin 0.99: Basic Open-source Nonlinear Mixed Integer programming\\
+\item CoinBonmin 0.100: Basic Open-source Nonlinear Mixed Integer programming\\
 (model types: LP, RMIP, MIP, DNLP, NLP, RMINLP, MINLP, QCP, RMIQCP, MIQCP)
 \item CoinCbc 2.2: COIN-OR Branch and Cut\\
 (model types: LP, MIP, RMIP)
-\item CoinGlpk 4.31: Gnu Linear Programming Kit\\
+\item CoinGlpk 4.32: Gnu Linear Programming Kit\\
 (model types: LP, MIP, RMIP)
 \item CoinIpopt 3.5: Interior Point Optimizer\\
 (model types: LP, RMIP, DNLP, NLP, RMINLP, QCP, RMIQCP)
-\item CoinScip 1.00: Solving Constrained Integer Programs\\
+\item CoinScip 1.1.0: Solving Constrained Integer Programs\\
 (model types: LP, MIP, RMIP)
 \end{itemize}
 
@@ -64,7 +64,7 @@ For more information see the COIN-OR/GAMSlinks web site at
 
 GAMS/CoinBonmin brings the open source MINLP solver Bonmin from the COIN-OR foundation to the broad audience of GAMS users.
 
-Bonmin (\textbf{B}asic \textbf{O}pen-source \textbf{N}onlinear \textbf{M}ixed \textbf{In}teger programming) 0.99 is an open-source solver for mixed-integer nonlinear programming (MINLPs), whereof some parts are still experimental.
+Bonmin (\textbf{B}asic \textbf{O}pen-source \textbf{N}onlinear \textbf{M}ixed \textbf{In}teger programming) is an open-source solver for mixed-integer nonlinear programming (MINLPs), whereof some parts are still experimental.
 The code is developed in a joined project of IBM and the Carnegie Mellon University.
 The COIN-OR project leader for Bonmin is Pierre Bonami.
 
@@ -477,7 +477,7 @@ If CoinIpopt was specified as the default solver during GAMS installation, the a
 \hypertarget{ipoptlinearsolver}{}
 
 The performance and robustness of Ipopt on larger models heavily relies on the used solver for sparse symmetric indefinite linear systems.
-GAMS/CoinIpopt includes the multifrontal massively parallel sparse direct solver MUMPS 4.8.1 (\texttt{http://graal.ens-lyon.fr/MUMPS}).
+GAMS/CoinIpopt includes the sparse solver MUMPS 4.8.3 (\url{http://graal.ens-lyon.fr/MUMPS}).
 The user can provide the Parallel Sparse Direct Solver PARDISO or routines from the Harwell Subroutine Library (HSL) as shared (or dynamic) libraries to replace MUMPS.
 
 \subsubsection{Using Harwell Subroutine Library routines with GAMS/CoinIpopt}
@@ -682,7 +682,7 @@ GAMS/CoinScip uses the COIN-OR linear solver CLP from J.J. Forrest as LP solver,
 
 \subsection{Model requirements}
 
-SCIP supports continuous, binary, and integer variables, but no special ordered sets, semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide).
+SCIP supports continuous, binary, and integer variables, special ordered sets, but no semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide).
 Branching priorities are supported.
 
 \subsection{Usage of CoinScip}
@@ -730,7 +730,7 @@ It causes GAMS/CoinScip to turn off all cut generators, to skip the final solve 
 SCIP supports a large set of options.
 Sample option files can be obtained from
 \begin{verbatim}
-     http://www.gams.com/~svigerske/scip
+     http://www.gams.com/~svigerske/scip1.1
 \end{verbatim}
 
 Further, there is a set of options that are specific to the GAMS/CoinScip interface, most of them for control of the GAMS BCH facility.
