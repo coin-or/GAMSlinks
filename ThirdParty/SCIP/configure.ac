@@ -91,6 +91,15 @@ if test x"$use_thirdpartyscip" = xbuild ; then
   if test x$minorver = x0 ; then
     CFLAGS=`echo $CFLAGS | sed -e 's/-pedantic-errors//'`
     CXXFLAGS=`echo $CXXFLAGS | sed -e 's/-pedantic-errors//'`
+  else
+    # SCIP uses long long that result in errors if -pedantic-errors is used
+    # thus, we disable this warning
+    case "$CC" in
+      *gcc* )
+      	CFLAGS="$CFLAGS -Wno-long-long -Wno-overlength-strings"
+      	CXXFLAGS="$CXXFLAGS -Wno-long-long -Wno-overlength-strings"
+      ;;
+   esac
   fi
   
 else
