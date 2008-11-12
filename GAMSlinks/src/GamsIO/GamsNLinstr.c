@@ -125,7 +125,7 @@ void swapInstr(unsigned int* instr, int len1, int len2) {
 void reorderInstr(unsigned int* instr, int num_instr) {
 	int stacklen = 0;
 	int j,k;
-	int* instrpos = malloc(sizeof(int)*num_instr);
+	int* instrpos = (int*)malloc(sizeof(int)*num_instr);
 	instrpos[0] = 0;
 
 	for (k=1; k<num_instr; ++k) {

@@ -7,7 +7,7 @@
 // Author: Stefan Vigerske
 
 
-#include "GamsDictionary.hpp"
+#include "GamsDictionary2.hpp"
 
 #ifdef HAVE_CSTDLIB
 #include <cstdlib>
