@@ -109,6 +109,8 @@ GAMSlinks/src/Makefile.am -text
 GAMSlinks/src/Makefile.in -text
 GAMSlinks/src/OS/GMO2OSiL.cpp -text
 GAMSlinks/src/OS/GMO2OSiL.hpp -text
+GAMSlinks/src/OS/GMOSolver.cpp -text
+GAMSlinks/src/OS/GMOSolver.hpp -text
 GAMSlinks/src/OS/GamsOS.cpp -text
 GAMSlinks/src/OS/GamsOS2.cpp -text
 GAMSlinks/src/OS/GamsOS2.hpp -text

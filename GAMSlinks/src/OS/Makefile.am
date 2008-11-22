@@ -20,6 +20,10 @@ GamsOS2_SOURCES      = GamsOSmain.cpp GamsOS2.cpp GMO2OSiL.cpp OSrL2GMO.cpp
 GamsOS2_LDADD        = ../GamsIO/libGmoIO.la ../GamsIO/libSmagStricmp.la
 GamsOS2_DEPENDENCIES = ../GamsIO/libGmoIO.la ../GamsIO/libSmagStricmp.la
 
+#GamsOS2_SOURCES      += GMOSolver.cpp
+#GamsOS2_LDADD        += $(GAMSIO_OBJDIR)/libGamsSolver.la
+#GamsOS2_DEPENDENCIES += $(GAMSIO_OBJDIR)/libGamsSolver.la
+
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(srcdir)/../GamsIO` \
@@ -52,7 +56,7 @@ GamsOS2_LDADD += \
  $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
  $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
  $(OSOBJDIR)/src/OSAgent/libOSAgent.la
- 
+
 GamsOS_DEPENDENCIES += \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
  $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
@@ -211,18 +215,18 @@ if COIN_HAS_CPX
   GamsOS2_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
 endif
 
-# end of check for COIN_OS_SOLVER
+# end if COIN_OS_SOLVER
 endif
 
-GamsOS_LDADD  += $(COINUTILSOBJDIR)/src/libCoinUtils.la
-GamsOS2_LDADD += $(COINUTILSOBJDIR)/src/libCoinUtils.la
+GamsOS_LDADD   += $(COINUTILSOBJDIR)/src/libCoinUtils.la
+GamsOS2_LDADD  += $(COINUTILSOBJDIR)/src/libCoinUtils.la
 LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
 #TODO: this is actually only needed for GamsOS, but not for GamsOS2
 #unfortunately adding this to LDFLAGS does not give the right order of linker arguments in a debug build
 LIBS += `cat $(GAMSLINKSOBJDIR)/smagio_addlibs.txt`
-GamsOS_LDFLAGS  = $(ADDLIBS) -rpath $(libdir)
-GamsOS2_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
+GamsOS_LDFLAGS   = $(ADDLIBS) -rpath $(libdir)
+GamsOS2_LDFLAGS  = $(ADDLIBS) -rpath $(libdir)
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 

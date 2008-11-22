@@ -14,6 +14,9 @@
 #include "OSSolverAgent.h"
 #ifdef COIN_OS_SOLVER
 #include "OSDefaultSolver.h"
+#ifdef GMODEVELOP
+#include "GMOSolver.hpp"
+#endif
 #ifdef COIN_HAS_OSI
 #include "OSCoinSolver.h"
 #endif
@@ -45,8 +48,8 @@ bool GamsOS::execute() {
 	
 	gmoMinfSet(gmo, -OSDBL_MAX);
 	gmoPinfSet(gmo,  OSDBL_MAX);
-	gmoObjStyleSet(gmo, ObjType_Fun);
 	gmoObjReformSet(gmo, 1);
+	gmoObjStyleSet(gmo, ObjType_Fun);
   gmoIndexBaseSet(gmo, 0);
 
 	if (gmoOptFile(gmo)) {
@@ -194,7 +197,11 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 		gmoSolveStatSet(gmo, SolveStat_Capability);
 		return false;
 #endif
-	}	else {
+#ifdef GMODEVELOP
+	}	else if (solvername.find("gmo") != std::string::npos) {
+		solver = new GMOSolver();
+#endif
+	} else {
 #ifdef COIN_HAS_OSI
 		solver = new CoinSolver();
 #else

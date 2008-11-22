@@ -521,7 +521,7 @@ EXTRA_DIST = gmsos_nt.cmd gmsos_us.run install/gmsos_nt.dat \
 	install/gmsos_un.dat $(am__append_69)
 GamsOS_SOURCES = GamsOS.cpp Smag2OSiL.cpp OSrL2Smag.cpp
 
-# end of check for COIN_OS_SOLVER
+# end if COIN_OS_SOLVER
 GamsOS_LDADD = ../GamsIO/libSmagIO.la ../GamsIO/libSmagStricmp.la \
 	$(am__append_2) \
 	$(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
@@ -567,6 +567,10 @@ GamsOS2_DEPENDENCIES = ../GamsIO/libGmoIO.la \
 	$(am__append_32) $(am__append_38) $(am__append_44) \
 	$(am__append_50) $(am__append_56) $(am__append_62) \
 	$(am__append_68)
+
+#GamsOS2_SOURCES      += GMOSolver.cpp
+#GamsOS2_LDADD        += $(GAMSIO_OBJDIR)/libGamsSolver.la
+#GamsOS2_DEPENDENCIES += $(GAMSIO_OBJDIR)/libGamsSolver.la
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	-I`$(CYGPATH_W) $(srcdir)/../GamsIO` -I`$(CYGPATH_W) \
 	$(COINUTILSSRCDIR)/src` -I`$(CYGPATH_W) \

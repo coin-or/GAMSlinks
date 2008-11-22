@@ -101,6 +101,7 @@ bool GMO2OSiL::createOSInstance() {
 		int* nlflag = new int[gmoObjNZ(gmo)];
 		int* dummy  = new int[gmoObjNZ(gmo)];
 		
+		if (gmoObjNZ(gmo)) nlflag[0] = 0; // workaround for gmo bug
 		gmoGetObjSparse(gmo, colidx, val, nlflag, dummy, dummy);
 		for (i = 0, j = 0; i < gmoObjNZ(gmo); ++i) {
 			if (nlflag[i]) continue;
@@ -109,6 +110,7 @@ bool GMO2OSiL::createOSInstance() {
 			j++;
 		  assert(j <= gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
 		}
+	  assert(j == gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
 		
 		delete[] colidx;
 		delete[] val;
@@ -118,7 +120,7 @@ bool GMO2OSiL::createOSInstance() {
 		std::string objname;
 //		if (dict.haveNames() && dict.getObjName(buffer, 256))
 //			objname=buffer;
-
+//		std::cout << "gmo obj con: " << gmoObjConst(gmo) << std::endl;
 		if (!osinstance->addObjective(-1, objname, gmoSense(gmo)==Obj_Min ? "min" : "max", gmoObjConst(gmo), 1., objectiveCoefficients)) {
 			delete objectiveCoefficients;
 			return false;
@@ -158,19 +160,38 @@ bool GMO2OSiL::createOSInstance() {
 			return false;
 	}
 	
-	double* values  = new double[gmoNZ(gmo)];
+	int nz = gmoNZ(gmo);
+	double* values  = new double[nz];
 	int* colstarts  = new int[gmoN(gmo)+1];
-	int* rowindexes = new int[gmoNZ(gmo)];
-	int* nlflags    = new int[gmoNZ(gmo)];
+	int* rowindexes = new int[nz];
+	int* nlflags    = new int[nz];
 	
 	gmoGetMatrixCol(gmo, colstarts, rowindexes, values, nlflags);
-	for (i = 0; i < gmoNZ(gmo); ++i)
-		if (nlflags[i]) values[i] = 0.;
-	colstarts[gmoN(gmo)] = gmoNZ(gmo);
+//	for (i = 0; i < gmoNZ(gmo); ++i)
+//		if (nlflags[i]) values[i] = 0.;
+	colstarts[gmoN(gmo)] = nz;
 	
-	if (!osinstance->setLinearConstraintCoefficients(gmoNZ(gmo), true, 
-		values, 0, gmoNZ(gmo)-1,
-		rowindexes, 0, gmoNZ(gmo)-1,
+	int shift = 0;
+	for (int col = 0; col < gmoN(gmo); ++col) {
+		colstarts[col+1] -= shift;
+		int k = colstarts[col];
+		while (k < colstarts[col+1]) {
+			values[k] = values[k+shift];
+			rowindexes[k] = rowindexes[k+shift];
+			if (nlflags[k+shift]) {
+				++shift;
+				--colstarts[col+1];
+			} else {
+				++k;
+			}
+		}
+	}
+	nz -= shift;
+	
+	
+	if (!osinstance->setLinearConstraintCoefficients(nz, true, 
+		values, 0, nz-1,
+		rowindexes, 0, nz-1,
 		colstarts, 0, gmoN(gmo))) {
 		delete[] nlflags;
 		return false;
@@ -203,7 +224,7 @@ bool GMO2OSiL::createOSInstance() {
 	if (gmoObjNLNZ(gmo)) {
 		std::clog << "parsing nonlinear objective instructions" << std::endl;
 		gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
-		codelen--;
+//		codelen--;
 		
 //		for (int i=0; i<codelen; ++i)
 //			std::clog << opcodes[i+1] << ' ';
@@ -211,18 +232,21 @@ bool GMO2OSiL::createOSInstance() {
 		
 		nl = parseGamsInstructions(codelen, opcodes, fields, constantlen, constants);
 		if (!nl) return false;
-//		if (smag->gObjFactor == -1.) {
+		
+		double objjacval = gmoObjJacVal(gmo);
+		std::clog << "obj jac val: " << objjacval << std::endl;
+		if (objjacval == 1.) { // scale by -1/objjacval = negate
 			OSnLNode* negnode = new OSnLNodeNegate;
 			negnode->m_mChildren[0] = nl;
 			nl = negnode;
-//		} else if (smag->gObjFactor != 1.) {
-//			OSnLNodeNumber* numbernode = new OSnLNodeNumber();
-//			numbernode->value = smag->gObjFactor;
-//			OSnLNodeTimes* timesnode = new OSnLNodeTimes();
-//			timesnode->m_mChildren[0] = nl;
-//			timesnode->m_mChildren[1] = numbernode;
-//			nl = timesnode;
-//		}
+		} else if (objjacval != -1.) { // scale by -1/objjacval
+			OSnLNodeNumber* numbernode = new OSnLNodeNumber();
+			numbernode->value = -1/objjacval;
+			OSnLNodeTimes* timesnode = new OSnLNodeTimes();
+			timesnode->m_mChildren[0] = nl;
+			timesnode->m_mChildren[1] = numbernode;
+			nl = timesnode;
+		}
 		assert(iNLidx < osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
 		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx] = new Nl();
 		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx]->idx = -1;
@@ -235,7 +259,7 @@ bool GMO2OSiL::createOSInstance() {
 		if (gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields)) {
 			std::clog << "got nonzero return at constraint " << i << std::endl;
 		}
-		codelen--;
+//		codelen--;
 		if (!codelen) continue;
 		std::clog << "parsing " << codelen << " nonlinear instructions of constraint " << osinstance->getConstraintNames()[i] << std::endl;
 		nl = parseGamsInstructions(codelen, opcodes, fields, constantlen, constants);
@@ -267,14 +291,14 @@ OSnLNode* GMO2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* fields
 	nlNodeVec.reserve(codelen);
 	
 	for (int i=0; i<codelen; ++i) {
-		GamsOpCode opcode = (GamsOpCode)opcodes[i+1];
-		int address = fields[i+1]-1;
+		GamsOpCode opcode = (GamsOpCode)opcodes[i];
+		int address = fields[i]-1;
 
 		if (debugoutput) std::clog << '\t' << GamsOpCodeName[opcode] << ": ";
-		if (opcode == nlStore) {
-			std::clog << "stop" << std::endl;
-			break;
-		}
+//		if (opcode == nlStore) {
+//			std::clog << "stop" << std::endl;
+//			break;
+//		}
 		switch(opcode) {
 			case nlNoOp : { // no operation
 				if (debugoutput) std::clog << "ignored" << std::endl;
