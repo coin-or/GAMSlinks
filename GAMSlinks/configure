@@ -27860,7 +27860,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-                                                                                                                                                                ac_config_files="$ac_config_files Makefile gamsio_addlibs.txt smagio_addlibs.txt src/Makefile src/GamsIO/Makefile src/Cbc/Makefile src/Glpk/Makefile src/Osi/Makefile src/Ipopt/Makefile src/Bonmin/Makefile src/OS/Makefile src/SCIP/Makefile test/Makefile test/run_quality test/run_gmstest examples/adbench/Makefile"
+                                                                                                                                                                          ac_config_files="$ac_config_files Makefile gamsio_addlibs.txt smagio_addlibs.txt src/Makefile src/GamsIO/Makefile src/Cbc/Makefile src/Glpk/Makefile src/Osi/Makefile src/Ipopt/Makefile src/Bonmin/Makefile src/OS/Makefile src/SCIP/Makefile test/Makefile test/run_quality test/run_gmstest examples/adbench/Makefile examples/osil2gms/Makefile"
 
 
           ac_config_headers="$ac_config_headers inc/config_gamslinks.h"
@@ -28761,6 +28761,7 @@ do
   "test/run_quality" ) CONFIG_FILES="$CONFIG_FILES test/run_quality" ;;
   "test/run_gmstest" ) CONFIG_FILES="$CONFIG_FILES test/run_gmstest" ;;
   "examples/adbench/Makefile" ) CONFIG_FILES="$CONFIG_FILES examples/adbench/Makefile" ;;
+  "examples/osil2gms/Makefile" ) CONFIG_FILES="$CONFIG_FILES examples/osil2gms/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "inc/config_gamslinks.h" ) CONFIG_HEADERS="$CONFIG_HEADERS inc/config_gamslinks.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5

@@ -381,6 +381,7 @@ AC_CONFIG_FILES([Makefile
                  src/SCIP/Makefile
                  test/Makefile test/run_quality test/run_gmstest
                  examples/adbench/Makefile
+                 examples/osil2gms/Makefile
                 ])
 
 AC_CONFIG_HEADER([inc/config_gamslinks.h])

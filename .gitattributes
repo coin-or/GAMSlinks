@@ -23,6 +23,9 @@ GAMSlinks/examples/adbench/gmsad_nt.cmd -text
 GAMSlinks/examples/adbench/gmsad_us.run -text
 GAMSlinks/examples/adbench/install/gmsad_nt.dat -text
 GAMSlinks/examples/adbench/install/gmsad_un.dat -text
+GAMSlinks/examples/osil2gms/Makefile.am -text
+GAMSlinks/examples/osil2gms/Makefile.in -text
+GAMSlinks/examples/osil2gms/osil2gms.cpp -text
 GAMSlinks/gamsio_addlibs.txt.in -text
 GAMSlinks/inc/config_gamslinks.h.in -text
 GAMSlinks/m4/ac_coin_gams.m4 -text
