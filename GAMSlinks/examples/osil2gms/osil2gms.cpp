@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id: GamsOS2.cpp 576 2008-09-30 13:23:51Z stefan $
+// $Id$
 //
 // Author: Lutz Westermann
 

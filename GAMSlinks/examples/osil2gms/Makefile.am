@@ -2,7 +2,7 @@
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
-## $Id: Makefile.am 572 2008-09-28 14:23:23Z stefan $
+## $Id$
 #
 # Author: Stefan Vigerske
 
@@ -10,11 +10,15 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST =
 
-bin_PROGRAMS = osil2gms
+bin_PROGRAMS = osil2gms osrl2trace
 
 osil2gms_SOURCES      = osil2gms.cpp
 osil2gms_LDADD        =
 osil2gms_DEPENDENCIES =
+
+osrl2trace_SOURCES      = osrl2trace.cpp 
+osrl2trace_LDADD        =
+osrl2trace_DEPENDENCIES =
 
 AM_CPPFLAGS = \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
@@ -30,8 +34,16 @@ osil2gms_LDADD += \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
  $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
  $(OSOBJDIR)/src/OSUtils/libOSUtils.la
+osrl2trace_LDADD += \
+ $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
+ $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
+ $(OSOBJDIR)/src/OSUtils/libOSUtils.la
  
 osil2gms_DEPENDENCIES += \
+ $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
+ $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
+ $(OSOBJDIR)/src/OSUtils/libOSUtils.la
+osrl2trace_DEPENDENCIES += \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
  $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
  $(OSOBJDIR)/src/OSUtils/libOSUtils.la
@@ -39,9 +51,11 @@ osil2gms_DEPENDENCIES += \
 LIBS += `cat $(OSOBJDIR)/os_addlibs.txt`
 
 osil2gms_LDADD += $(COINUTILSOBJDIR)/src/libCoinUtils.la
+osrl2trace_LDADD += $(COINUTILSOBJDIR)/src/libCoinUtils.la
 LIBS += `cat $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
 osil2gms_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
+osrl2trace_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 

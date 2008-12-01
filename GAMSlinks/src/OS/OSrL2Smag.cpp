@@ -91,6 +91,11 @@ void OSrL2Smag::writeSolution(OSResult& osresult) {
 		smagReportSolBrief(smag, 13, 13);
 		return;
 	}
+	
+	if (!osresult.getSolutionNumber()) {
+		smagReportSolBrief(smag, model_status, solver_status);
+		return;
+	}
 
 	OptimizationSolution* sol=osresult.resultData->optimization->solution[0];
 

@@ -53,7 +53,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = osil2gms$(EXEEXT)
+bin_PROGRAMS = osil2gms$(EXEEXT) osrl2trace$(EXEEXT)
 DIST_COMMON = $(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 @HAVE_EXTERNALS_TRUE@am__append_1 = Externals
@@ -73,6 +73,8 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_osil2gms_OBJECTS = osil2gms.$(OBJEXT)
 osil2gms_OBJECTS = $(am_osil2gms_OBJECTS)
+am_osrl2trace_OBJECTS = osrl2trace.$(OBJEXT)
+osrl2trace_OBJECTS = $(am_osrl2trace_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -83,8 +85,8 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(osil2gms_SOURCES)
-DIST_SOURCES = $(osil2gms_SOURCES)
+SOURCES = $(osil2gms_SOURCES) $(osrl2trace_SOURCES)
+DIST_SOURCES = $(osil2gms_SOURCES) $(osrl2trace_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -374,6 +376,16 @@ osil2gms_DEPENDENCIES =  \
 	$(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
 	$(OSOBJDIR)/src/OSParsers/libOSParsers.la \
 	$(OSOBJDIR)/src/OSUtils/libOSUtils.la
+osrl2trace_SOURCES = osrl2trace.cpp 
+osrl2trace_LDADD =  \
+	$(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
+	$(OSOBJDIR)/src/OSParsers/libOSParsers.la \
+	$(OSOBJDIR)/src/OSUtils/libOSUtils.la \
+	$(COINUTILSOBJDIR)/src/libCoinUtils.la
+osrl2trace_DEPENDENCIES =  \
+	$(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
+	$(OSOBJDIR)/src/OSParsers/libOSParsers.la \
+	$(OSOBJDIR)/src/OSUtils/libOSUtils.la
 AM_CPPFLAGS = \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
@@ -385,6 +397,7 @@ AM_CPPFLAGS = \
  -I`$(CYGPATH_W) $(CPPADSRCDIR)`
 
 osil2gms_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
+osrl2trace_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
@@ -453,6 +466,9 @@ clean-binPROGRAMS:
 osil2gms$(EXEEXT): $(osil2gms_OBJECTS) $(osil2gms_DEPENDENCIES) 
 	@rm -f osil2gms$(EXEEXT)
 	$(CXXLINK) $(osil2gms_LDFLAGS) $(osil2gms_OBJECTS) $(osil2gms_LDADD) $(LIBS)
+osrl2trace$(EXEEXT): $(osrl2trace_OBJECTS) $(osrl2trace_DEPENDENCIES) 
+	@rm -f osrl2trace$(EXEEXT)
+	$(CXXLINK) $(osrl2trace_LDFLAGS) $(osrl2trace_OBJECTS) $(osrl2trace_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -461,6 +477,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osil2gms.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osrl2trace.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
