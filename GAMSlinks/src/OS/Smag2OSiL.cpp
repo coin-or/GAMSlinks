@@ -159,8 +159,8 @@ bool Smag2OSiL::createOSInstance() {
 		rowstarts, 0, smagRowCount(smag)))
 		return false;
 	
-	if (!setupTimeDomain())
-		return false;
+//	if (!setupTimeDomain())
+//		return false;
 
 	if (!smagColCountNL(smag)) // everything linear -> finished
 		return true;
@@ -562,6 +562,7 @@ OSnLNode* Smag2OSiL::parseGamsInstructions(unsigned int* instr_, int num_instr, 
 	return nlNodeVec[0]->createExpressionTreeFromPostfix(nlNodeVec);
 }
 
+#if 0
 bool Smag2OSiL::setupTimeDomain() {
 	int* colTimeStage=new int[smagColCount(smag)];
 	int minStage=0;
@@ -658,3 +659,4 @@ bool Smag2OSiL::setupTimeDomain() {
 	
 	return true;
 }
+#endif

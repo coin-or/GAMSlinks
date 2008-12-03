@@ -73,7 +73,7 @@ private:
 	
 	bool setupQuadraticTerms();
 	
-	bool setupTimeDomain();
+//	bool setupTimeDomain();
 };
 
 #endif /*SMAG2OSIL_HPP_*/

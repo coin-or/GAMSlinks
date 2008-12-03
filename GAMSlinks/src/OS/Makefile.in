@@ -76,10 +76,10 @@ bin_PROGRAMS = GamsOS$(EXEEXT) GamsOS2$(EXEEXT)
 @COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@   -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
 @COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@   -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
 
-@COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@am__append_12 = $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la
-@COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@am__append_13 = $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la
-@COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@am__append_14 = $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la
-@COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@am__append_15 = $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la
+@COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@am__append_12 = $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la $(CBCOBJDIR)/src/libCbcSolver.la
+@COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@am__append_13 = $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la $(CBCOBJDIR)/src/libCbcSolver.la
+@COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@am__append_14 = $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la $(CBCOBJDIR)/src/libCbcSolver.la
+@COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@am__append_15 = $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la $(CBCOBJDIR)/src/libCbcSolver.la
 @COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@am__append_16 = `cat $(CBCOBJDIR)/cbc_addlibs.txt`
 @COIN_HAS_CLP_TRUE@@COIN_OS_SOLVER_TRUE@am__append_17 = \
 @COIN_HAS_CLP_TRUE@@COIN_OS_SOLVER_TRUE@   -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiClp` \
@@ -201,7 +201,8 @@ GamsOS_OBJECTS = $(am_GamsOS_OBJECTS)
 @COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_1 = $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
 @COIN_HAS_BONMIN_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_2 = $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
 @COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_3 = $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
-@COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@	$(CBCOBJDIR)/src/libCbc.la
+@COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@	$(CBCOBJDIR)/src/libCbc.la \
+@COIN_HAS_CBC_TRUE@@COIN_OS_SOLVER_TRUE@	$(CBCOBJDIR)/src/libCbcSolver.la
 @COIN_HAS_CLP_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_4 = $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
 @COIN_HAS_CLP_TRUE@@COIN_OS_SOLVER_TRUE@	$(CLPOBJDIR)/src/libClp.la
 @COIN_HAS_GLPK_TRUE@@COIN_OS_SOLVER_TRUE@am__DEPENDENCIES_5 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la

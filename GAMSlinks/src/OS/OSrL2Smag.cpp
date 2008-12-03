@@ -110,12 +110,13 @@ void OSrL2Smag::writeSolution(OSResult& osresult) {
 	double* rowMarg=CoinCopyOfArray((double*)NULL, smagRowCount(smag), SMAG_DBL_NA);
 	
 	//TODO: add some checks that we do not write over the length of our arrays
-	
-	if (sol->constraints && sol->constraints->values) // set row levels, if available
-		for (std::vector<ConValue*>::iterator it(sol->constraints->values->con.begin());
-		it!=sol->constraints->values->con.end(); ++it) {
-			rowLev[(*it)->idx]=(*it)->value;
-		}
+
+	//TODO
+//	if (sol->constraints && sol->constraints->values) // set row levels, if available
+//		for (std::vector<ConValue*>::iterator it(sol->constraints->values->con.begin());
+//		it!=sol->constraints->values->con.end(); ++it) {
+//			rowLev[(*it)->idx]=(*it)->value;
+//		}
 	if (sol->constraints && sol->constraints->dualValues) // set row dual values, if available
 		for (std::vector<DualVarValue*>::iterator it(sol->constraints->dualValues->con.begin());
 		it!=sol->constraints->dualValues->con.end(); ++it) {
@@ -127,7 +128,7 @@ void OSrL2Smag::writeSolution(OSResult& osresult) {
 			colLev[(*it)->idx]=(*it)->value;
 		}
 	if (sol->variables)
-		for (int i=0; i<sol->variables->numberOfOtherVariableResult; ++i) {
+		for (int i=0; i<sol->variables->numberOfOtherVariableResults; ++i) {
 			if (sol->variables->other[i]->name=="reduced costs") {
 				for (std::vector<OtherVarResult*>::const_iterator it(sol->variables->other[i]->var.begin());
 				it!=sol->variables->other[i]->var.end(); ++it) {

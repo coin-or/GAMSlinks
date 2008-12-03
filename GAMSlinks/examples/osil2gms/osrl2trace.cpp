@@ -15,6 +15,7 @@
 using namespace std;
 
 //#include "OSInstance.h"
+#include "OSiLReader.h"
 #include "OSrLReader.h"
 //#include "OSCommonUtil.h"
 
@@ -30,38 +31,62 @@ typedef struct {
 	
 } tracerecord;
 
-void fillTraceRecord(tracerecord& record, OSResult& result);
-void writeTraceRecord(tracerecord& record);
+void fillTraceRecord(tracerecord& record, OSInstance& instance, OSResult& result);
+void writeTraceRecord(tracerecord& record, ostream& out);
+string getModelType(OSInstance& instance);
 
 int main(int argc, char** argv) {
-  if(argc != 2) {
-     cout << "usage: " << argv[0] << " <osrlfile.osrl>" << endl;
+  if(argc < 3 || argc>4) {
+     cout << "usage: " << argv[0] << " <osilfile.osil> <osrlfile.osrl> [tracefile.trc]" << endl;
      return EXIT_FAILURE;
   }
-  ifstream osrlfile(argv[1]);
+  ifstream osilfile(argv[1]);
+  if (!osilfile.good()) {
+    cerr << "Cannot open file " << argv[1] << endl;
+    return EXIT_FAILURE;
+	}
+  ifstream osrlfile(argv[2]);
   if(!osrlfile.good()) {
-     cout << "Cannot open file " << argv[1] << endl;
-     return EXIT_FAILURE;
+  	cerr << "Cannot open file " << argv[2] << endl;
+  	return EXIT_FAILURE;
   }
+  
+  stringbuf osilstringbuf;
+  osilfile.get(osilstringbuf, '\0');
+  OSiLReader osilreader;
+  OSInstance* osinstance = osilreader.readOSiL(osilstringbuf.str());
   
   stringbuf osrlstringbuf;
   osrlfile.get(osrlstringbuf, '\0');
-//  osrlstringbuf << '\0';
-//  cout << osrlstringbuf.str();
-	
-	OSrLReader reader;
-	OSResult* osresult = reader.readOSrL(osrlstringbuf.str());
+	OSrLReader osrlreader;
+	OSResult* osresult = osrlreader.readOSrL(osrlstringbuf.str());
 	
 	tracerecord record;
 	
-	fillTraceRecord(record, *osresult);
+	fillTraceRecord(record, *osinstance, *osresult);
 	
-	writeTraceRecord(record);
+	if (argc==4) {
+		ofstream tracefile(argv[3], ios_base::out | ios_base::app);
+		if (!tracefile.good()) {
+			cerr << "Cannot open file " << argv[3] << " for writing." << endl;
+			return EXIT_FAILURE;
+		}
+		if (tracefile.tellp()==0) {
+			tracefile << "* Trace Record Definition" << endl
+			          << "* InputFileName,ModelType,SolverName,Direction,ModelStatus,SolverStatus,ObjectiveValue,SolverTime" << endl
+			          ;
+		}
+		writeTraceRecord(record, tracefile);
+		
+	} else {
+		
+		writeTraceRecord(record, cout);
+	}
 	
 	return EXIT_SUCCESS;
 }
 
-void fillTraceRecord(tracerecord& record, OSResult& result) {
+void fillTraceRecord(tracerecord& record, OSInstance& instance, OSResult& result) {
 	record.instancename = "NA";
 	record.modeltype = "NA";
 	record.solvername = "NA";
@@ -77,10 +102,37 @@ void fillTraceRecord(tracerecord& record, OSResult& result) {
 		return;
 	}
 	
+	if (result.getInstanceName().length() && instance.getInstanceName().length()) {
+		if (result.getInstanceName().length() != instance.getInstanceName().length()) {
+			cerr << "Error: Instance name in OSInstance an OSResult do not match." << endl;
+			exit(EXIT_FAILURE);
+		}
+	}	
 	if (result.getInstanceName().length())
 		record.instancename = result.getInstanceName();
-	if (result.getServiceName().length())
-		record.solvername = result.getServiceName();
+	
+	record.modeltype = getModelType(instance);
+	
+	if (result.getServiceName().length()) {
+		string::size_type pos = result.getServiceName().find("Solved with Coin Solver: ");
+		if (pos == 0) {
+			record.solvername = string(result.getServiceName(), 25);
+		} else if (result.getServiceName().find("LINDO") != string::npos)
+			record.solvername = "LindoSolver";
+		else if (result.getServiceName().find("Knitro") != string::npos)
+			record.solvername = "Knitro";
+		else if (result.getServiceName().find("Bonmin") != string::npos)
+			record.solvername = "Bonmin";
+		else if (result.getServiceName().find("Couenne") != string::npos)
+			record.solvername = "Couenne";
+		else if (result.getServiceName().find("Ipopt") != string::npos)
+			record.solvername = "Ipopt";
+		else
+			record.solvername = result.getServiceName();
+	}
+	
+	if (instance.getObjectiveNumber())
+		record.direction = instance.getObjectiveMaxOrMins()[0] == "min" ? 0 : 1;
 	
 	if (result.getGeneralStatusType()=="error") {
 		record.solver_status = 10; // error solver failure
@@ -126,12 +178,18 @@ void fillTraceRecord(tracerecord& record, OSResult& result) {
 			record.obj_value = sol->objectives->values->obj[0]->value;
 	}
 	
+	const char* timestr = result.resultHeader->time.c_str();
+	char* endptr;
+	record.solvertime = strtod(timestr, &endptr);
+	if (endptr == timestr || *endptr != '\0') // error in conversion, or string is empty
+		record.solvertime = 0;
+	
 //	cout << "time: " << result.resultHeader->time << endl;
 	
 }
 
-void writeTraceRecord(tracerecord& record) {
-	cout
+void writeTraceRecord(tracerecord& record, ostream& out) {
+	out
 		<< record.instancename << ','
 		<< record.modeltype << ','
 		<< record.solvername << ','
@@ -141,4 +199,24 @@ void writeTraceRecord(tracerecord& record) {
 		<< record.obj_value << ','
 		<< record.solvertime
 		<< endl;
+}
+
+string getModelType(OSInstance& instance) {
+	bool isnonlinear = instance.getNumberOfNonlinearExpressions() || instance.getNumberOfQuadraticTerms();
+	bool isdiscrete = instance.getNumberOfBinaryVariables() || instance.getNumberOfIntegerVariables();
+	
+	//TODO recognize MIQCP, QCP, DNLP, CNS
+	
+	if (isnonlinear)
+		if (isdiscrete)
+			return "MINLP";
+		else
+			return "NLP";
+	else
+		if (isdiscrete)
+			return "MIP";
+		else
+			return "LP";
+	
+	return "NA";
 }

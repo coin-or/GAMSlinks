@@ -104,10 +104,11 @@ void OSrL2GMO::writeSolution(OSResult& osresult) {
 	double* rowLev  = CoinCopyOfArray((double*)NULL, gmoM(gmo), SMAG_DBL_NA);
 	double* rowMarg = CoinCopyOfArray((double*)NULL, gmoM(gmo), SMAG_DBL_NA);
 	
-	if (sol->constraints && sol->constraints->values) // set row levels, if available
-		for (std::vector<ConValue*>::iterator it(sol->constraints->values->con.begin());
-		it!=sol->constraints->values->con.end(); ++it)
-			rowLev[(*it)->idx]=(*it)->value;
+	//TODO
+//	if (sol->constraints && sol->constraints->values) // set row levels, if available
+//		for (std::vector<ConValue*>::iterator it(sol->constraints->values->con.begin());
+//		it!=sol->constraints->values->con.end(); ++it)
+//			rowLev[(*it)->idx]=(*it)->value;
 	if (sol->constraints && sol->constraints->dualValues) // set row dual values, if available
 		for (std::vector<DualVarValue*>::iterator it(sol->constraints->dualValues->con.begin());
 		it!=sol->constraints->dualValues->con.end(); ++it)
@@ -117,7 +118,7 @@ void OSrL2GMO::writeSolution(OSResult& osresult) {
 		it!=sol->variables->values->var.end(); ++it)
 			colLev[(*it)->idx]=(*it)->value;
 	if (sol->variables)
-		for (int i=0; i<sol->variables->numberOfOtherVariableResult; ++i) {
+		for (int i=0; i<sol->variables->numberOfOtherVariableResults; ++i) {
 			if (sol->variables->other[i]->name=="reduced costs") {
 				for (std::vector<OtherVarResult*>::const_iterator it(sol->variables->other[i]->var.begin());
 				it!=sol->variables->other[i]->var.end(); ++it)

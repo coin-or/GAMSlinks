@@ -7,7 +7,7 @@ Cbc           https://projects.coin-or.org/svn/Cbc/stable/2.2/Cbc
 Ipopt         https://projects.coin-or.org/svn/Ipopt/stable/3.5/Ipopt
 Bonmin        https://projects.coin-or.org/svn/Bonmin/stable/1.0/Bonmin
 cppad         https://projects.coin-or.org/svn/CppAD/stable/20080919
-OS            https://projects.coin-or.org/svn/OS/stable/1.1/OS
+OS            https://projects.coin-or.org/svn/OS/trunk/OS
 ThirdParty/HSL https://projects.coin-or.org/svn/BuildTools/ThirdParty/HSL/stable/1.1
 ThirdParty/Blas https://projects.coin-or.org/svn/BuildTools/ThirdParty/Blas/stable/1.0
 ThirdParty/Glpk https://projects.coin-or.org/svn/BuildTools/ThirdParty/Glpk/trunk
