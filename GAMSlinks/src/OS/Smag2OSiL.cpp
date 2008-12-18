@@ -40,10 +40,10 @@ bool Smag2OSiL::createOSInstance() {
 	osinstance->setVariableNumber(smagColCount(smag));
 	char* var_types=new char[smagColCount(smag)];
 	std::string* varnames=NULL;
-	std::string* vartext=NULL;
+//	std::string* vartext=NULL;
 	if (dict.haveNames()) {
 		varnames=new std::string[smagColCount(smag)];
-		vartext=new std::string[smagColCount(smag)];
+//		vartext=new std::string[smagColCount(smag)];
 	}
 	for(i = 0; i < smagColCount(smag); ++i) {
 		switch (smag->colType[i]) {
@@ -65,16 +65,16 @@ bool Smag2OSiL::createOSInstance() {
 		}
 		if (dict.haveNames() && dict.getColName(i, buffer, 256))
 			varnames[i]=buffer;
-		if (dict.haveNames() && dict.getColText(i, buffer, 256))
-			vartext[i]=buffer;
+//		if (dict.haveNames() && dict.getColText(i, buffer, 256))
+//			vartext[i]=buffer;
 	}
 	
 	// store the descriptive text of a variables in the initString argument to have it stored somewhere 
-	if (!osinstance->setVariables(smagColCount(smag), varnames, smag->colLB, smag->colUB, var_types, smag->colLev, vartext))
+	if (!osinstance->setVariables(smagColCount(smag), varnames, smag->colLB, smag->colUB, var_types))
 		return false;
 	delete[] var_types;
 	delete[] varnames;
-	delete[] vartext;
+//	delete[] vartext;
 	
 	if (smag->gObjRow<0) { // we seem to have no objective, i.e., a CNS model
 		osinstance->setObjectiveNumber(0);

@@ -41,7 +41,7 @@ bool GMO2OSiL::createOSInstance() {
 	osinstance->setVariableNumber(gmoN(gmo));
 	char* var_types = new char[gmoN(gmo)];
 	std::string* varnames = NULL;
-	std::string* vartext = NULL;
+//	std::string* vartext = NULL;
 //	if (dict.haveNames()) {
 		varnames=new std::string[gmoN(gmo)];
 //		vartext=new std::string[smagColCount(smag)];
@@ -73,21 +73,21 @@ bool GMO2OSiL::createOSInstance() {
 	
 	double* varlow = new double[gmoN(gmo)];
 	double* varup  = new double[gmoN(gmo)];
-	double* varlev = new double[gmoN(gmo)];
+//	double* varlev = new double[gmoN(gmo)];
 	
 	gmoGetVarLower(gmo, varlow);
 	gmoGetVarUpper(gmo, varup);
-	gmoGetVarL(gmo, varlev);
+//	gmoGetVarL(gmo, varlev);
 
 	// store the descriptive text of a variables in the initString argument to have it stored somewhere
-	if (!osinstance->setVariables(gmoN(gmo), varnames, varlow, varup, var_types, varlev, vartext))
+	if (!osinstance->setVariables(gmoN(gmo), varnames, varlow, varup, var_types))
 		return false;
 	delete[] var_types;
 	delete[] varnames;
-	delete[] vartext;
+//	delete[] vartext;
 	delete[] varlow;
 	delete[] varup;
-	delete[] varlev;
+//	delete[] varlev;
 	
 	if (gmoModelType(gmo) == Proc_cns) { // no objective in constraint satisfaction models
 		osinstance->setObjectiveNumber(0);
