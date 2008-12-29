@@ -59,7 +59,7 @@ void OSrL2Smag::writeSolution(OSResult& osresult) {
 	} else if (osresult.getSolutionStatusType(0)=="locallyOptimal") {
 		model_status=2;	// locally optimal
 	} else if (osresult.getSolutionStatusType(0)=="optimal") {
-		model_status=2;	// locally optimal
+		model_status=1;	// optimal
 	} else if (osresult.getSolutionStatusType(0)=="bestSoFar") {
 		model_status=7;	// intermediate nonoptimal (or should we report integer solution if integer var.?)
 	} else if (osresult.getSolutionStatusType(0)=="feasible") {
@@ -111,21 +111,17 @@ void OSrL2Smag::writeSolution(OSResult& osresult) {
 	
 	//TODO: add some checks that we do not write over the length of our arrays
 
-	//TODO
-//	if (sol->constraints && sol->constraints->values) // set row levels, if available
-//		for (std::vector<ConValue*>::iterator it(sol->constraints->values->con.begin());
-//		it!=sol->constraints->values->con.end(); ++it) {
-//			rowLev[(*it)->idx]=(*it)->value;
-//		}
+	if (sol->variables && sol->variables->values) { // set var values, if available
+		for (std::vector<VarValue*>::const_iterator it(sol->variables->values->var.begin());
+			it!=sol->variables->values->var.end(); ++it)
+			colLev[(*it)->idx]=(*it)->value;
+		smagEvalConFunc(smag, colLev, rowLev);
+	}
+		
 	if (sol->constraints && sol->constraints->dualValues) // set row dual values, if available
 		for (std::vector<DualVarValue*>::iterator it(sol->constraints->dualValues->con.begin());
 		it!=sol->constraints->dualValues->con.end(); ++it) {
 			rowMarg[(*it)->idx]=(*it)->value; // what are it->lbValue and it->ubValue ?
-		}
-	if (sol->variables && sol->variables->values) // set var values, if available
-		for (std::vector<VarValue*>::const_iterator it(sol->variables->values->var.begin());
-		it!=sol->variables->values->var.end(); ++it) {
-			colLev[(*it)->idx]=(*it)->value;
 		}
 	if (sol->variables)
 		for (int i=0; i<sol->variables->numberOfOtherVariableResults; ++i) {

@@ -58,7 +58,7 @@ void OSrL2GMO::writeSolution(OSResult& osresult) {
 	} else if (osresult.getSolutionStatusType(0) == "locallyOptimal") {
 		gmoModelStatSet(gmo, ModelStat_OptimalLocal);
 	} else if (osresult.getSolutionStatusType(0) == "optimal") {
-		gmoModelStatSet(gmo, ModelStat_OptimalLocal);
+		gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
 	} else if (osresult.getSolutionStatusType(0) == "bestSoFar") {
 		gmoModelStatSet(gmo, ModelStat_NonOptimalIntermed);	// or should we report integer solution if integer var.?
 	} else if (osresult.getSolutionStatusType(0) == "feasible") {
