@@ -37,6 +37,7 @@
 #include "GamsHandlerSmag.hpp"
 #include "GamsOptions.hpp"
 
+#include "CoinError.hpp"
 #include "OSiLWriter.h"
 #include "OSrLWriter.h"
 #include "OSErrorClass.h"
@@ -66,10 +67,7 @@ void remoteSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, st
 void processResult(smagHandle_t prob, GamsOptions& opt, string* osrl, OSResult* osresult);
 
 int main (int argc, char* argv[]) {
-#if defined(_MSC_VER)
-  /* Prevents hanging "Application Error, Click OK" Windows in case something bad happens */
-  { UINT oldMode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX); }
-#endif
+	WindowsErrorPopupBlocker();
   smagHandle_t prob;
 
   if (argc == 1) {

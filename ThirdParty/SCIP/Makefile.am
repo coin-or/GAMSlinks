@@ -6,7 +6,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = INSTALL.SCIP
+EXTRA_DIST =
 
 if COIN_BUILD_SCIP
   noinst_LTLIBRARIES = libcoinscip.la
@@ -20,6 +20,7 @@ AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)`
 
 nodist_libcoinscip_la_SOURCES = \
       $(SCIPDIR)/src/scip/branch.c \
+      $(SCIPDIR)/src/scip/bitencode.c \
 			$(SCIPDIR)/src/scip/buffer.c \
 			$(SCIPDIR)/src/scip/clock.c \
 			$(SCIPDIR)/src/scip/conflict.c \
@@ -37,6 +38,7 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/scip/intervalarith.c \
 			$(SCIPDIR)/src/scip/lp.c \
 			$(SCIPDIR)/src/scip/mem.c \
+      $(SCIPDIR)/src/scip/message.c \
 			$(SCIPDIR)/src/scip/misc.c \
 			$(SCIPDIR)/src/scip/nodesel.c \
 			$(SCIPDIR)/src/scip/paramset.c \
@@ -83,6 +85,10 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/scip/cons_setppc.c \
 			$(SCIPDIR)/src/scip/cons_varbound.c \
 			$(SCIPDIR)/src/scip/cons_xor.c \
+			$(SCIPDIR)/src/scip/cons_countsols.c \
+			$(SCIPDIR)/src/scip/cons_indicator.c \
+			$(SCIPDIR)/src/scip/cons_sos1.c \
+			$(SCIPDIR)/src/scip/cons_sos2.c \
 			$(SCIPDIR)/src/scip/dialog_default.c \
 			$(SCIPDIR)/src/scip/disp_default.c \
 			$(SCIPDIR)/src/scip/heur_actconsdiving.c \
@@ -108,6 +114,7 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/scip/heur_shifting.c \
 			$(SCIPDIR)/src/scip/heur_simplerounding.c \
 			$(SCIPDIR)/src/scip/heur_veclendiving.c \
+			$(SCIPDIR)/src/scip/heur_dins.c \
 			$(SCIPDIR)/src/scip/nodesel_bfs.c \
 			$(SCIPDIR)/src/scip/nodesel_dfs.c \
 			$(SCIPDIR)/src/scip/nodesel_estimate.c \
@@ -118,6 +125,7 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/scip/presol_inttobinary.c \
 			$(SCIPDIR)/src/scip/presol_probing.c \
 			$(SCIPDIR)/src/scip/presol_trivial.c \
+			$(SCIPDIR)/src/scip/presol_boundshift.c \
 			$(SCIPDIR)/src/scip/prop_pseudoobj.c \
 			$(SCIPDIR)/src/scip/prop_rootredcost.c \
 			$(SCIPDIR)/src/scip/reader_cnf.c \
@@ -126,6 +134,12 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/scip/reader_mps.c \
 			$(SCIPDIR)/src/scip/reader_sol.c \
 			$(SCIPDIR)/src/scip/reader_zpl.c \
+			$(SCIPDIR)/src/scip/reader_ccg.c \
+			$(SCIPDIR)/src/scip/reader_cip.c \
+			$(SCIPDIR)/src/scip/reader_opb.c \
+			$(SCIPDIR)/src/scip/reader_ppm.c \
+			$(SCIPDIR)/src/scip/reader_rlp.c \
+			$(SCIPDIR)/src/scip/reader_sos.c \
 			$(SCIPDIR)/src/scip/sepa_clique.c \
 			$(SCIPDIR)/src/scip/sepa_cmir.c \
 			$(SCIPDIR)/src/scip/sepa_flowcover.c \
@@ -134,27 +148,16 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/scip/sepa_intobj.c \
 			$(SCIPDIR)/src/scip/sepa_redcost.c \
 			$(SCIPDIR)/src/scip/sepa_strongcg.c \
-			$(SCIPDIR)/src/tclique/tclique_branch.c \
-			$(SCIPDIR)/src/tclique/tclique_coloring.c \
-			$(SCIPDIR)/src/tclique/tclique_graph.c
-
-if SCIPDEVVERSION
-nodist_libcoinscip_la_SOURCES += \
-			$(SCIPDIR)/src/scip/cons_countsols.c \
-			$(SCIPDIR)/src/scip/cons_indicator.c \
-			$(SCIPDIR)/src/scip/cons_sos1.c \
-			$(SCIPDIR)/src/scip/cons_sos2.c \
-			$(SCIPDIR)/src/scip/heur_dins.c \
-			$(SCIPDIR)/src/scip/reader_ccg.c \
-			$(SCIPDIR)/src/scip/reader_cip.c \
-			$(SCIPDIR)/src/scip/reader_opb.c \
-			$(SCIPDIR)/src/scip/reader_ppm.c \
-			$(SCIPDIR)/src/scip/reader_rlp.c \
-			$(SCIPDIR)/src/scip/reader_sos.c \
 			$(SCIPDIR)/src/scip/sepa_mcf.c \
 			$(SCIPDIR)/src/scip/sepa_zerohalf.c \
-			$(SCIPDIR)/src/scip/presol_boundshift.c
-endif
+			$(SCIPDIR)/src/tclique/tclique_branch.c \
+			$(SCIPDIR)/src/tclique/tclique_coloring.c \
+			$(SCIPDIR)/src/tclique/tclique_graph.c \
+      $(SCIPDIR)/src/blockmemshell/memory.c
+
+#if SCIPDEVVERSION
+#nodist_libcoinscip_la_SOURCES += 
+#endif
 
 #nodist_libcoinscip_la_SOURCES += \
 #      $(SCIPDIR)/src/objscip/objbranchrule.cpp \
@@ -176,11 +179,7 @@ endif
 
 
 #add CLP as linear solver
-nodist_libcoinscip_la_SOURCES += \
-  $(SCIPDIR)/src/scip/lpi_clp.cpp \
-  $(SCIPDIR)/src/scip/bitencode.c \
-  $(SCIPDIR)/src/blockmemshell/memory.c \
-  $(SCIPDIR)/src/scip/message.c
+nodist_libcoinscip_la_SOURCES += $(SCIPDIR)/src/scip/lpi_clp.cpp
 
 COINUTILSSRCDIR=$(srcdir)/../../CoinUtils
 COINUTILSOBJDIR=../../CoinUtils
@@ -197,10 +196,6 @@ AM_CPPFLAGS += \
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)`
 
 libcoinscip_la_LDFLAGS = $(LT_LDFLAGS)
-
-# a lot of effort just to get -DHAVE_CONFIG_H into the compiler flags
-lpi_clp.lo: $(SCIPDIR)/src/scip/lpi_clp.cpp
-	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 ########################################################################
 #                         Maintainer Stuff                             #

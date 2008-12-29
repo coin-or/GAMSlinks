@@ -50,22 +50,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@SCIPDEVVERSION_TRUE@am__append_1 = \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_countsols.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_indicator.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_sos1.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_sos2.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/heur_dins.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_ccg.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_cip.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_opb.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_ppm.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_rlp.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_sos.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/sepa_mcf.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/sepa_zerohalf.c \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/presol_boundshift.c
-
 DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../BuildTools/Makemain.inc \
 	$(srcdir)/../../config.guess $(srcdir)/../../config.sub \
@@ -73,8 +57,8 @@ DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../ltmain.sh $(srcdir)/../../missing \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config_scip.h.in $(top_srcdir)/configure
-@HAVE_EXTERNALS_TRUE@am__append_2 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_3 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_1 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_scip.m4 \
@@ -88,46 +72,43 @@ CONFIG_HEADER = config_scip.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libcoinscip_la_LIBADD =
-@SCIPDEVVERSION_TRUE@am__objects_1 = cons_countsols.lo \
-@SCIPDEVVERSION_TRUE@	cons_indicator.lo cons_sos1.lo \
-@SCIPDEVVERSION_TRUE@	cons_sos2.lo heur_dins.lo reader_ccg.lo \
-@SCIPDEVVERSION_TRUE@	reader_cip.lo reader_opb.lo reader_ppm.lo \
-@SCIPDEVVERSION_TRUE@	reader_rlp.lo reader_sos.lo sepa_mcf.lo \
-@SCIPDEVVERSION_TRUE@	sepa_zerohalf.lo presol_boundshift.lo
-nodist_libcoinscip_la_OBJECTS = branch.lo buffer.lo clock.lo \
-	conflict.lo cons.lo cutpool.lo debug.lo dialog.lo disp.lo \
-	event.lo fileio.lo heur.lo history.lo implics.lo interrupt.lo \
-	intervalarith.lo lp.lo mem.lo misc.lo nodesel.lo paramset.lo \
-	presol.lo pricestore.lo pricer.lo primal.lo prob.lo prop.lo \
-	reader.lo relax.lo retcode.lo scip.lo scipdefplugins.lo \
-	scipshell.lo sepa.lo sepastore.lo set.lo sol.lo solve.lo \
-	stat.lo tree.lo var.lo vbc.lo branch_allfullstrong.lo \
-	branch_fullstrong.lo branch_inference.lo branch_mostinf.lo \
-	branch_leastinf.lo branch_pscost.lo branch_random.lo \
-	branch_relpscost.lo cons_and.lo cons_binpack.lo \
-	cons_bounddisjunction.lo cons_conjunction.lo \
-	cons_eqknapsack.lo cons_integral.lo cons_invarknapsack.lo \
-	cons_knapsack.lo cons_linear.lo cons_logicor.lo cons_or.lo \
-	cons_setppc.lo cons_varbound.lo cons_xor.lo dialog_default.lo \
-	disp_default.lo heur_actconsdiving.lo heur_coefdiving.lo \
-	heur_crossover.lo heur_feaspump.lo heur_fixandinfer.lo \
-	heur_fracdiving.lo heur_guideddiving.lo heur_intdiving.lo \
-	heur_intshifting.lo heur_linesearchdiving.lo \
-	heur_localbranching.lo heur_mutation.lo \
-	heur_objpscostdiving.lo heur_octane.lo heur_oneopt.lo \
-	heur_pscostdiving.lo heur_rens.lo heur_rins.lo \
+nodist_libcoinscip_la_OBJECTS = branch.lo bitencode.lo buffer.lo \
+	clock.lo conflict.lo cons.lo cutpool.lo debug.lo dialog.lo \
+	disp.lo event.lo fileio.lo heur.lo history.lo implics.lo \
+	interrupt.lo intervalarith.lo lp.lo mem.lo message.lo misc.lo \
+	nodesel.lo paramset.lo presol.lo pricestore.lo pricer.lo \
+	primal.lo prob.lo prop.lo reader.lo relax.lo retcode.lo \
+	scip.lo scipdefplugins.lo scipshell.lo sepa.lo sepastore.lo \
+	set.lo sol.lo solve.lo stat.lo tree.lo var.lo vbc.lo \
+	branch_allfullstrong.lo branch_fullstrong.lo \
+	branch_inference.lo branch_mostinf.lo branch_leastinf.lo \
+	branch_pscost.lo branch_random.lo branch_relpscost.lo \
+	cons_and.lo cons_binpack.lo cons_bounddisjunction.lo \
+	cons_conjunction.lo cons_eqknapsack.lo cons_integral.lo \
+	cons_invarknapsack.lo cons_knapsack.lo cons_linear.lo \
+	cons_logicor.lo cons_or.lo cons_setppc.lo cons_varbound.lo \
+	cons_xor.lo cons_countsols.lo cons_indicator.lo cons_sos1.lo \
+	cons_sos2.lo dialog_default.lo disp_default.lo \
+	heur_actconsdiving.lo heur_coefdiving.lo heur_crossover.lo \
+	heur_feaspump.lo heur_fixandinfer.lo heur_fracdiving.lo \
+	heur_guideddiving.lo heur_intdiving.lo heur_intshifting.lo \
+	heur_linesearchdiving.lo heur_localbranching.lo \
+	heur_mutation.lo heur_objpscostdiving.lo heur_octane.lo \
+	heur_oneopt.lo heur_pscostdiving.lo heur_rens.lo heur_rins.lo \
 	heur_rootsoldiving.lo heur_rounding.lo heur_shifting.lo \
-	heur_simplerounding.lo heur_veclendiving.lo nodesel_bfs.lo \
-	nodesel_dfs.lo nodesel_estimate.lo nodesel_hybridestim.lo \
-	nodesel_restartdfs.lo presol_dualfix.lo presol_implics.lo \
-	presol_inttobinary.lo presol_probing.lo presol_trivial.lo \
-	prop_pseudoobj.lo prop_rootredcost.lo reader_cnf.lo \
-	reader_fix.lo reader_lp.lo reader_mps.lo reader_sol.lo \
-	reader_zpl.lo sepa_clique.lo sepa_cmir.lo sepa_flowcover.lo \
+	heur_simplerounding.lo heur_veclendiving.lo heur_dins.lo \
+	nodesel_bfs.lo nodesel_dfs.lo nodesel_estimate.lo \
+	nodesel_hybridestim.lo nodesel_restartdfs.lo presol_dualfix.lo \
+	presol_implics.lo presol_inttobinary.lo presol_probing.lo \
+	presol_trivial.lo presol_boundshift.lo prop_pseudoobj.lo \
+	prop_rootredcost.lo reader_cnf.lo reader_fix.lo reader_lp.lo \
+	reader_mps.lo reader_sol.lo reader_zpl.lo reader_ccg.lo \
+	reader_cip.lo reader_opb.lo reader_ppm.lo reader_rlp.lo \
+	reader_sos.lo sepa_clique.lo sepa_cmir.lo sepa_flowcover.lo \
 	sepa_gomory.lo sepa_impliedbounds.lo sepa_intobj.lo \
-	sepa_redcost.lo sepa_strongcg.lo tclique_branch.lo \
-	tclique_coloring.lo tclique_graph.lo $(am__objects_1) \
-	lpi_clp.lo bitencode.lo memory.lo message.lo
+	sepa_redcost.lo sepa_strongcg.lo sepa_mcf.lo sepa_zerohalf.lo \
+	tclique_branch.lo tclique_coloring.lo tclique_graph.lo \
+	memory.lo lpi_clp.lo
 libcoinscip_la_OBJECTS = $(nodist_libcoinscip_la_OBJECTS)
 @COIN_BUILD_SCIP_TRUE@am_libcoinscip_la_rpath =
 depcomp = $(SHELL) $(top_srcdir)/../../depcomp
@@ -307,13 +288,17 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = INSTALL.SCIP $(am__append_2)
+EXTRA_DIST = $(am__append_1)
 @COIN_BUILD_SCIP_FALSE@noinst_LTLIBRARIES = 
 @COIN_BUILD_SCIP_TRUE@noinst_LTLIBRARIES = libcoinscip.la
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)` -I`$(CYGPATH_W) \
 	$(COINUTILSSRCDIR)/src` -I`$(CYGPATH_W) \
 	$(COINUTILSOBJDIR)/inc` -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
 	-I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
+
+#if SCIPDEVVERSION
+#nodist_libcoinscip_la_SOURCES += 
+#endif
 
 #nodist_libcoinscip_la_SOURCES += \
 #      $(SCIPDIR)/src/objscip/objbranchrule.cpp \
@@ -335,21 +320,23 @@ AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)` -I`$(CYGPATH_W) \
 
 #add CLP as linear solver
 nodist_libcoinscip_la_SOURCES = $(SCIPDIR)/src/scip/branch.c \
-	$(SCIPDIR)/src/scip/buffer.c $(SCIPDIR)/src/scip/clock.c \
-	$(SCIPDIR)/src/scip/conflict.c $(SCIPDIR)/src/scip/cons.c \
-	$(SCIPDIR)/src/scip/cutpool.c $(SCIPDIR)/src/scip/debug.c \
-	$(SCIPDIR)/src/scip/dialog.c $(SCIPDIR)/src/scip/disp.c \
-	$(SCIPDIR)/src/scip/event.c $(SCIPDIR)/src/scip/fileio.c \
-	$(SCIPDIR)/src/scip/heur.c $(SCIPDIR)/src/scip/history.c \
-	$(SCIPDIR)/src/scip/implics.c $(SCIPDIR)/src/scip/interrupt.c \
+	$(SCIPDIR)/src/scip/bitencode.c $(SCIPDIR)/src/scip/buffer.c \
+	$(SCIPDIR)/src/scip/clock.c $(SCIPDIR)/src/scip/conflict.c \
+	$(SCIPDIR)/src/scip/cons.c $(SCIPDIR)/src/scip/cutpool.c \
+	$(SCIPDIR)/src/scip/debug.c $(SCIPDIR)/src/scip/dialog.c \
+	$(SCIPDIR)/src/scip/disp.c $(SCIPDIR)/src/scip/event.c \
+	$(SCIPDIR)/src/scip/fileio.c $(SCIPDIR)/src/scip/heur.c \
+	$(SCIPDIR)/src/scip/history.c $(SCIPDIR)/src/scip/implics.c \
+	$(SCIPDIR)/src/scip/interrupt.c \
 	$(SCIPDIR)/src/scip/intervalarith.c $(SCIPDIR)/src/scip/lp.c \
-	$(SCIPDIR)/src/scip/mem.c $(SCIPDIR)/src/scip/misc.c \
-	$(SCIPDIR)/src/scip/nodesel.c $(SCIPDIR)/src/scip/paramset.c \
-	$(SCIPDIR)/src/scip/presol.c $(SCIPDIR)/src/scip/pricestore.c \
-	$(SCIPDIR)/src/scip/pricer.c $(SCIPDIR)/src/scip/primal.c \
-	$(SCIPDIR)/src/scip/prob.c $(SCIPDIR)/src/scip/prop.c \
-	$(SCIPDIR)/src/scip/reader.c $(SCIPDIR)/src/scip/relax.c \
-	$(SCIPDIR)/src/scip/retcode.c $(SCIPDIR)/src/scip/scip.c \
+	$(SCIPDIR)/src/scip/mem.c $(SCIPDIR)/src/scip/message.c \
+	$(SCIPDIR)/src/scip/misc.c $(SCIPDIR)/src/scip/nodesel.c \
+	$(SCIPDIR)/src/scip/paramset.c $(SCIPDIR)/src/scip/presol.c \
+	$(SCIPDIR)/src/scip/pricestore.c $(SCIPDIR)/src/scip/pricer.c \
+	$(SCIPDIR)/src/scip/primal.c $(SCIPDIR)/src/scip/prob.c \
+	$(SCIPDIR)/src/scip/prop.c $(SCIPDIR)/src/scip/reader.c \
+	$(SCIPDIR)/src/scip/relax.c $(SCIPDIR)/src/scip/retcode.c \
+	$(SCIPDIR)/src/scip/scip.c \
 	$(SCIPDIR)/src/scip/scipdefplugins.c \
 	$(SCIPDIR)/src/scip/scipshell.c $(SCIPDIR)/src/scip/sepa.c \
 	$(SCIPDIR)/src/scip/sepastore.c $(SCIPDIR)/src/scip/set.c \
@@ -378,6 +365,10 @@ nodist_libcoinscip_la_SOURCES = $(SCIPDIR)/src/scip/branch.c \
 	$(SCIPDIR)/src/scip/cons_setppc.c \
 	$(SCIPDIR)/src/scip/cons_varbound.c \
 	$(SCIPDIR)/src/scip/cons_xor.c \
+	$(SCIPDIR)/src/scip/cons_countsols.c \
+	$(SCIPDIR)/src/scip/cons_indicator.c \
+	$(SCIPDIR)/src/scip/cons_sos1.c \
+	$(SCIPDIR)/src/scip/cons_sos2.c \
 	$(SCIPDIR)/src/scip/dialog_default.c \
 	$(SCIPDIR)/src/scip/disp_default.c \
 	$(SCIPDIR)/src/scip/heur_actconsdiving.c \
@@ -403,6 +394,7 @@ nodist_libcoinscip_la_SOURCES = $(SCIPDIR)/src/scip/branch.c \
 	$(SCIPDIR)/src/scip/heur_shifting.c \
 	$(SCIPDIR)/src/scip/heur_simplerounding.c \
 	$(SCIPDIR)/src/scip/heur_veclendiving.c \
+	$(SCIPDIR)/src/scip/heur_dins.c \
 	$(SCIPDIR)/src/scip/nodesel_bfs.c \
 	$(SCIPDIR)/src/scip/nodesel_dfs.c \
 	$(SCIPDIR)/src/scip/nodesel_estimate.c \
@@ -413,6 +405,7 @@ nodist_libcoinscip_la_SOURCES = $(SCIPDIR)/src/scip/branch.c \
 	$(SCIPDIR)/src/scip/presol_inttobinary.c \
 	$(SCIPDIR)/src/scip/presol_probing.c \
 	$(SCIPDIR)/src/scip/presol_trivial.c \
+	$(SCIPDIR)/src/scip/presol_boundshift.c \
 	$(SCIPDIR)/src/scip/prop_pseudoobj.c \
 	$(SCIPDIR)/src/scip/prop_rootredcost.c \
 	$(SCIPDIR)/src/scip/reader_cnf.c \
@@ -421,6 +414,12 @@ nodist_libcoinscip_la_SOURCES = $(SCIPDIR)/src/scip/branch.c \
 	$(SCIPDIR)/src/scip/reader_mps.c \
 	$(SCIPDIR)/src/scip/reader_sol.c \
 	$(SCIPDIR)/src/scip/reader_zpl.c \
+	$(SCIPDIR)/src/scip/reader_ccg.c \
+	$(SCIPDIR)/src/scip/reader_cip.c \
+	$(SCIPDIR)/src/scip/reader_opb.c \
+	$(SCIPDIR)/src/scip/reader_ppm.c \
+	$(SCIPDIR)/src/scip/reader_rlp.c \
+	$(SCIPDIR)/src/scip/reader_sos.c \
 	$(SCIPDIR)/src/scip/sepa_clique.c \
 	$(SCIPDIR)/src/scip/sepa_cmir.c \
 	$(SCIPDIR)/src/scip/sepa_flowcover.c \
@@ -429,13 +428,13 @@ nodist_libcoinscip_la_SOURCES = $(SCIPDIR)/src/scip/branch.c \
 	$(SCIPDIR)/src/scip/sepa_intobj.c \
 	$(SCIPDIR)/src/scip/sepa_redcost.c \
 	$(SCIPDIR)/src/scip/sepa_strongcg.c \
+	$(SCIPDIR)/src/scip/sepa_mcf.c \
+	$(SCIPDIR)/src/scip/sepa_zerohalf.c \
 	$(SCIPDIR)/src/tclique/tclique_branch.c \
 	$(SCIPDIR)/src/tclique/tclique_coloring.c \
-	$(SCIPDIR)/src/tclique/tclique_graph.c $(am__append_1) \
-	$(SCIPDIR)/src/scip/lpi_clp.cpp \
-	$(SCIPDIR)/src/scip/bitencode.c \
+	$(SCIPDIR)/src/tclique/tclique_graph.c \
 	$(SCIPDIR)/src/blockmemshell/memory.c \
-	$(SCIPDIR)/src/scip/message.c
+	$(SCIPDIR)/src/scip/lpi_clp.cpp
 COINUTILSSRCDIR = $(srcdir)/../../CoinUtils
 COINUTILSOBJDIR = ../../CoinUtils
 CLPSRCDIR = $(srcdir)/../../Clp
@@ -448,7 +447,7 @@ libcoinscip_la_LDFLAGS = $(LT_LDFLAGS)
 ########################################################################
 
 # Files that are generated and should be cleaned with make distclean
-DISTCLEANFILES = $(MAKEOKFILE) $(am__append_3) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(MAKEOKFILE) $(am__append_2) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: config_scip.h
@@ -689,6 +688,13 @@ branch.lo: $(SCIPDIR)/src/scip/branch.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o branch.lo `test -f '$(SCIPDIR)/src/scip/branch.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/branch.c
 
+bitencode.lo: $(SCIPDIR)/src/scip/bitencode.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bitencode.lo -MD -MP -MF "$(DEPDIR)/bitencode.Tpo" -c -o bitencode.lo `test -f '$(SCIPDIR)/src/scip/bitencode.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/bitencode.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/bitencode.Tpo" "$(DEPDIR)/bitencode.Plo"; else rm -f "$(DEPDIR)/bitencode.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/bitencode.c' object='bitencode.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bitencode.lo `test -f '$(SCIPDIR)/src/scip/bitencode.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/bitencode.c
+
 buffer.lo: $(SCIPDIR)/src/scip/buffer.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT buffer.lo -MD -MP -MF "$(DEPDIR)/buffer.Tpo" -c -o buffer.lo `test -f '$(SCIPDIR)/src/scip/buffer.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/buffer.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/buffer.Tpo" "$(DEPDIR)/buffer.Plo"; else rm -f "$(DEPDIR)/buffer.Tpo"; exit 1; fi
@@ -807,6 +813,13 @@ mem.lo: $(SCIPDIR)/src/scip/mem.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/mem.c' object='mem.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o mem.lo `test -f '$(SCIPDIR)/src/scip/mem.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/mem.c
+
+message.lo: $(SCIPDIR)/src/scip/message.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT message.lo -MD -MP -MF "$(DEPDIR)/message.Tpo" -c -o message.lo `test -f '$(SCIPDIR)/src/scip/message.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/message.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/message.Tpo" "$(DEPDIR)/message.Plo"; else rm -f "$(DEPDIR)/message.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/message.c' object='message.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o message.lo `test -f '$(SCIPDIR)/src/scip/message.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/message.c
 
 misc.lo: $(SCIPDIR)/src/scip/misc.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT misc.lo -MD -MP -MF "$(DEPDIR)/misc.Tpo" -c -o misc.lo `test -f '$(SCIPDIR)/src/scip/misc.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/misc.c; \
@@ -1130,6 +1143,34 @@ cons_xor.lo: $(SCIPDIR)/src/scip/cons_xor.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_xor.lo `test -f '$(SCIPDIR)/src/scip/cons_xor.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_xor.c
 
+cons_countsols.lo: $(SCIPDIR)/src/scip/cons_countsols.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_countsols.lo -MD -MP -MF "$(DEPDIR)/cons_countsols.Tpo" -c -o cons_countsols.lo `test -f '$(SCIPDIR)/src/scip/cons_countsols.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_countsols.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_countsols.Tpo" "$(DEPDIR)/cons_countsols.Plo"; else rm -f "$(DEPDIR)/cons_countsols.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_countsols.c' object='cons_countsols.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_countsols.lo `test -f '$(SCIPDIR)/src/scip/cons_countsols.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_countsols.c
+
+cons_indicator.lo: $(SCIPDIR)/src/scip/cons_indicator.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_indicator.lo -MD -MP -MF "$(DEPDIR)/cons_indicator.Tpo" -c -o cons_indicator.lo `test -f '$(SCIPDIR)/src/scip/cons_indicator.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_indicator.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_indicator.Tpo" "$(DEPDIR)/cons_indicator.Plo"; else rm -f "$(DEPDIR)/cons_indicator.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_indicator.c' object='cons_indicator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_indicator.lo `test -f '$(SCIPDIR)/src/scip/cons_indicator.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_indicator.c
+
+cons_sos1.lo: $(SCIPDIR)/src/scip/cons_sos1.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_sos1.lo -MD -MP -MF "$(DEPDIR)/cons_sos1.Tpo" -c -o cons_sos1.lo `test -f '$(SCIPDIR)/src/scip/cons_sos1.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_sos1.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_sos1.Tpo" "$(DEPDIR)/cons_sos1.Plo"; else rm -f "$(DEPDIR)/cons_sos1.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_sos1.c' object='cons_sos1.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_sos1.lo `test -f '$(SCIPDIR)/src/scip/cons_sos1.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_sos1.c
+
+cons_sos2.lo: $(SCIPDIR)/src/scip/cons_sos2.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_sos2.lo -MD -MP -MF "$(DEPDIR)/cons_sos2.Tpo" -c -o cons_sos2.lo `test -f '$(SCIPDIR)/src/scip/cons_sos2.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_sos2.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_sos2.Tpo" "$(DEPDIR)/cons_sos2.Plo"; else rm -f "$(DEPDIR)/cons_sos2.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_sos2.c' object='cons_sos2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_sos2.lo `test -f '$(SCIPDIR)/src/scip/cons_sos2.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_sos2.c
+
 dialog_default.lo: $(SCIPDIR)/src/scip/dialog_default.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dialog_default.lo -MD -MP -MF "$(DEPDIR)/dialog_default.Tpo" -c -o dialog_default.lo `test -f '$(SCIPDIR)/src/scip/dialog_default.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/dialog_default.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/dialog_default.Tpo" "$(DEPDIR)/dialog_default.Plo"; else rm -f "$(DEPDIR)/dialog_default.Tpo"; exit 1; fi
@@ -1305,6 +1346,13 @@ heur_veclendiving.lo: $(SCIPDIR)/src/scip/heur_veclendiving.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o heur_veclendiving.lo `test -f '$(SCIPDIR)/src/scip/heur_veclendiving.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_veclendiving.c
 
+heur_dins.lo: $(SCIPDIR)/src/scip/heur_dins.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT heur_dins.lo -MD -MP -MF "$(DEPDIR)/heur_dins.Tpo" -c -o heur_dins.lo `test -f '$(SCIPDIR)/src/scip/heur_dins.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_dins.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/heur_dins.Tpo" "$(DEPDIR)/heur_dins.Plo"; else rm -f "$(DEPDIR)/heur_dins.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/heur_dins.c' object='heur_dins.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o heur_dins.lo `test -f '$(SCIPDIR)/src/scip/heur_dins.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_dins.c
+
 nodesel_bfs.lo: $(SCIPDIR)/src/scip/nodesel_bfs.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT nodesel_bfs.lo -MD -MP -MF "$(DEPDIR)/nodesel_bfs.Tpo" -c -o nodesel_bfs.lo `test -f '$(SCIPDIR)/src/scip/nodesel_bfs.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/nodesel_bfs.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/nodesel_bfs.Tpo" "$(DEPDIR)/nodesel_bfs.Plo"; else rm -f "$(DEPDIR)/nodesel_bfs.Tpo"; exit 1; fi
@@ -1375,6 +1423,13 @@ presol_trivial.lo: $(SCIPDIR)/src/scip/presol_trivial.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o presol_trivial.lo `test -f '$(SCIPDIR)/src/scip/presol_trivial.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/presol_trivial.c
 
+presol_boundshift.lo: $(SCIPDIR)/src/scip/presol_boundshift.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT presol_boundshift.lo -MD -MP -MF "$(DEPDIR)/presol_boundshift.Tpo" -c -o presol_boundshift.lo `test -f '$(SCIPDIR)/src/scip/presol_boundshift.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/presol_boundshift.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/presol_boundshift.Tpo" "$(DEPDIR)/presol_boundshift.Plo"; else rm -f "$(DEPDIR)/presol_boundshift.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/presol_boundshift.c' object='presol_boundshift.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o presol_boundshift.lo `test -f '$(SCIPDIR)/src/scip/presol_boundshift.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/presol_boundshift.c
+
 prop_pseudoobj.lo: $(SCIPDIR)/src/scip/prop_pseudoobj.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT prop_pseudoobj.lo -MD -MP -MF "$(DEPDIR)/prop_pseudoobj.Tpo" -c -o prop_pseudoobj.lo `test -f '$(SCIPDIR)/src/scip/prop_pseudoobj.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/prop_pseudoobj.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/prop_pseudoobj.Tpo" "$(DEPDIR)/prop_pseudoobj.Plo"; else rm -f "$(DEPDIR)/prop_pseudoobj.Tpo"; exit 1; fi
@@ -1430,6 +1485,48 @@ reader_zpl.lo: $(SCIPDIR)/src/scip/reader_zpl.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_zpl.c' object='reader_zpl.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_zpl.lo `test -f '$(SCIPDIR)/src/scip/reader_zpl.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_zpl.c
+
+reader_ccg.lo: $(SCIPDIR)/src/scip/reader_ccg.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_ccg.lo -MD -MP -MF "$(DEPDIR)/reader_ccg.Tpo" -c -o reader_ccg.lo `test -f '$(SCIPDIR)/src/scip/reader_ccg.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_ccg.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_ccg.Tpo" "$(DEPDIR)/reader_ccg.Plo"; else rm -f "$(DEPDIR)/reader_ccg.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_ccg.c' object='reader_ccg.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_ccg.lo `test -f '$(SCIPDIR)/src/scip/reader_ccg.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_ccg.c
+
+reader_cip.lo: $(SCIPDIR)/src/scip/reader_cip.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_cip.lo -MD -MP -MF "$(DEPDIR)/reader_cip.Tpo" -c -o reader_cip.lo `test -f '$(SCIPDIR)/src/scip/reader_cip.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_cip.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_cip.Tpo" "$(DEPDIR)/reader_cip.Plo"; else rm -f "$(DEPDIR)/reader_cip.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_cip.c' object='reader_cip.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_cip.lo `test -f '$(SCIPDIR)/src/scip/reader_cip.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_cip.c
+
+reader_opb.lo: $(SCIPDIR)/src/scip/reader_opb.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_opb.lo -MD -MP -MF "$(DEPDIR)/reader_opb.Tpo" -c -o reader_opb.lo `test -f '$(SCIPDIR)/src/scip/reader_opb.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_opb.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_opb.Tpo" "$(DEPDIR)/reader_opb.Plo"; else rm -f "$(DEPDIR)/reader_opb.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_opb.c' object='reader_opb.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_opb.lo `test -f '$(SCIPDIR)/src/scip/reader_opb.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_opb.c
+
+reader_ppm.lo: $(SCIPDIR)/src/scip/reader_ppm.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_ppm.lo -MD -MP -MF "$(DEPDIR)/reader_ppm.Tpo" -c -o reader_ppm.lo `test -f '$(SCIPDIR)/src/scip/reader_ppm.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_ppm.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_ppm.Tpo" "$(DEPDIR)/reader_ppm.Plo"; else rm -f "$(DEPDIR)/reader_ppm.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_ppm.c' object='reader_ppm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_ppm.lo `test -f '$(SCIPDIR)/src/scip/reader_ppm.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_ppm.c
+
+reader_rlp.lo: $(SCIPDIR)/src/scip/reader_rlp.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_rlp.lo -MD -MP -MF "$(DEPDIR)/reader_rlp.Tpo" -c -o reader_rlp.lo `test -f '$(SCIPDIR)/src/scip/reader_rlp.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_rlp.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_rlp.Tpo" "$(DEPDIR)/reader_rlp.Plo"; else rm -f "$(DEPDIR)/reader_rlp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_rlp.c' object='reader_rlp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_rlp.lo `test -f '$(SCIPDIR)/src/scip/reader_rlp.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_rlp.c
+
+reader_sos.lo: $(SCIPDIR)/src/scip/reader_sos.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_sos.lo -MD -MP -MF "$(DEPDIR)/reader_sos.Tpo" -c -o reader_sos.lo `test -f '$(SCIPDIR)/src/scip/reader_sos.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_sos.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_sos.Tpo" "$(DEPDIR)/reader_sos.Plo"; else rm -f "$(DEPDIR)/reader_sos.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_sos.c' object='reader_sos.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_sos.lo `test -f '$(SCIPDIR)/src/scip/reader_sos.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_sos.c
 
 sepa_clique.lo: $(SCIPDIR)/src/scip/sepa_clique.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sepa_clique.lo -MD -MP -MF "$(DEPDIR)/sepa_clique.Tpo" -c -o sepa_clique.lo `test -f '$(SCIPDIR)/src/scip/sepa_clique.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_clique.c; \
@@ -1487,6 +1584,20 @@ sepa_strongcg.lo: $(SCIPDIR)/src/scip/sepa_strongcg.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sepa_strongcg.lo `test -f '$(SCIPDIR)/src/scip/sepa_strongcg.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_strongcg.c
 
+sepa_mcf.lo: $(SCIPDIR)/src/scip/sepa_mcf.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sepa_mcf.lo -MD -MP -MF "$(DEPDIR)/sepa_mcf.Tpo" -c -o sepa_mcf.lo `test -f '$(SCIPDIR)/src/scip/sepa_mcf.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_mcf.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/sepa_mcf.Tpo" "$(DEPDIR)/sepa_mcf.Plo"; else rm -f "$(DEPDIR)/sepa_mcf.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/sepa_mcf.c' object='sepa_mcf.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sepa_mcf.lo `test -f '$(SCIPDIR)/src/scip/sepa_mcf.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_mcf.c
+
+sepa_zerohalf.lo: $(SCIPDIR)/src/scip/sepa_zerohalf.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sepa_zerohalf.lo -MD -MP -MF "$(DEPDIR)/sepa_zerohalf.Tpo" -c -o sepa_zerohalf.lo `test -f '$(SCIPDIR)/src/scip/sepa_zerohalf.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_zerohalf.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/sepa_zerohalf.Tpo" "$(DEPDIR)/sepa_zerohalf.Plo"; else rm -f "$(DEPDIR)/sepa_zerohalf.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/sepa_zerohalf.c' object='sepa_zerohalf.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sepa_zerohalf.lo `test -f '$(SCIPDIR)/src/scip/sepa_zerohalf.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_zerohalf.c
+
 tclique_branch.lo: $(SCIPDIR)/src/tclique/tclique_branch.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tclique_branch.lo -MD -MP -MF "$(DEPDIR)/tclique_branch.Tpo" -c -o tclique_branch.lo `test -f '$(SCIPDIR)/src/tclique/tclique_branch.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/tclique/tclique_branch.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/tclique_branch.Tpo" "$(DEPDIR)/tclique_branch.Plo"; else rm -f "$(DEPDIR)/tclique_branch.Tpo"; exit 1; fi
@@ -1508,124 +1619,12 @@ tclique_graph.lo: $(SCIPDIR)/src/tclique/tclique_graph.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tclique_graph.lo `test -f '$(SCIPDIR)/src/tclique/tclique_graph.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/tclique/tclique_graph.c
 
-cons_countsols.lo: $(SCIPDIR)/src/scip/cons_countsols.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_countsols.lo -MD -MP -MF "$(DEPDIR)/cons_countsols.Tpo" -c -o cons_countsols.lo `test -f '$(SCIPDIR)/src/scip/cons_countsols.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_countsols.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_countsols.Tpo" "$(DEPDIR)/cons_countsols.Plo"; else rm -f "$(DEPDIR)/cons_countsols.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_countsols.c' object='cons_countsols.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_countsols.lo `test -f '$(SCIPDIR)/src/scip/cons_countsols.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_countsols.c
-
-cons_indicator.lo: $(SCIPDIR)/src/scip/cons_indicator.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_indicator.lo -MD -MP -MF "$(DEPDIR)/cons_indicator.Tpo" -c -o cons_indicator.lo `test -f '$(SCIPDIR)/src/scip/cons_indicator.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_indicator.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_indicator.Tpo" "$(DEPDIR)/cons_indicator.Plo"; else rm -f "$(DEPDIR)/cons_indicator.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_indicator.c' object='cons_indicator.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_indicator.lo `test -f '$(SCIPDIR)/src/scip/cons_indicator.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_indicator.c
-
-cons_sos1.lo: $(SCIPDIR)/src/scip/cons_sos1.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_sos1.lo -MD -MP -MF "$(DEPDIR)/cons_sos1.Tpo" -c -o cons_sos1.lo `test -f '$(SCIPDIR)/src/scip/cons_sos1.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_sos1.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_sos1.Tpo" "$(DEPDIR)/cons_sos1.Plo"; else rm -f "$(DEPDIR)/cons_sos1.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_sos1.c' object='cons_sos1.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_sos1.lo `test -f '$(SCIPDIR)/src/scip/cons_sos1.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_sos1.c
-
-cons_sos2.lo: $(SCIPDIR)/src/scip/cons_sos2.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_sos2.lo -MD -MP -MF "$(DEPDIR)/cons_sos2.Tpo" -c -o cons_sos2.lo `test -f '$(SCIPDIR)/src/scip/cons_sos2.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_sos2.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_sos2.Tpo" "$(DEPDIR)/cons_sos2.Plo"; else rm -f "$(DEPDIR)/cons_sos2.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_sos2.c' object='cons_sos2.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_sos2.lo `test -f '$(SCIPDIR)/src/scip/cons_sos2.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_sos2.c
-
-heur_dins.lo: $(SCIPDIR)/src/scip/heur_dins.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT heur_dins.lo -MD -MP -MF "$(DEPDIR)/heur_dins.Tpo" -c -o heur_dins.lo `test -f '$(SCIPDIR)/src/scip/heur_dins.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_dins.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/heur_dins.Tpo" "$(DEPDIR)/heur_dins.Plo"; else rm -f "$(DEPDIR)/heur_dins.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/heur_dins.c' object='heur_dins.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o heur_dins.lo `test -f '$(SCIPDIR)/src/scip/heur_dins.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_dins.c
-
-reader_ccg.lo: $(SCIPDIR)/src/scip/reader_ccg.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_ccg.lo -MD -MP -MF "$(DEPDIR)/reader_ccg.Tpo" -c -o reader_ccg.lo `test -f '$(SCIPDIR)/src/scip/reader_ccg.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_ccg.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_ccg.Tpo" "$(DEPDIR)/reader_ccg.Plo"; else rm -f "$(DEPDIR)/reader_ccg.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_ccg.c' object='reader_ccg.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_ccg.lo `test -f '$(SCIPDIR)/src/scip/reader_ccg.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_ccg.c
-
-reader_cip.lo: $(SCIPDIR)/src/scip/reader_cip.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_cip.lo -MD -MP -MF "$(DEPDIR)/reader_cip.Tpo" -c -o reader_cip.lo `test -f '$(SCIPDIR)/src/scip/reader_cip.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_cip.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_cip.Tpo" "$(DEPDIR)/reader_cip.Plo"; else rm -f "$(DEPDIR)/reader_cip.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_cip.c' object='reader_cip.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_cip.lo `test -f '$(SCIPDIR)/src/scip/reader_cip.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_cip.c
-
-reader_opb.lo: $(SCIPDIR)/src/scip/reader_opb.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_opb.lo -MD -MP -MF "$(DEPDIR)/reader_opb.Tpo" -c -o reader_opb.lo `test -f '$(SCIPDIR)/src/scip/reader_opb.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_opb.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_opb.Tpo" "$(DEPDIR)/reader_opb.Plo"; else rm -f "$(DEPDIR)/reader_opb.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_opb.c' object='reader_opb.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_opb.lo `test -f '$(SCIPDIR)/src/scip/reader_opb.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_opb.c
-
-reader_ppm.lo: $(SCIPDIR)/src/scip/reader_ppm.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_ppm.lo -MD -MP -MF "$(DEPDIR)/reader_ppm.Tpo" -c -o reader_ppm.lo `test -f '$(SCIPDIR)/src/scip/reader_ppm.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_ppm.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_ppm.Tpo" "$(DEPDIR)/reader_ppm.Plo"; else rm -f "$(DEPDIR)/reader_ppm.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_ppm.c' object='reader_ppm.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_ppm.lo `test -f '$(SCIPDIR)/src/scip/reader_ppm.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_ppm.c
-
-reader_rlp.lo: $(SCIPDIR)/src/scip/reader_rlp.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_rlp.lo -MD -MP -MF "$(DEPDIR)/reader_rlp.Tpo" -c -o reader_rlp.lo `test -f '$(SCIPDIR)/src/scip/reader_rlp.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_rlp.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_rlp.Tpo" "$(DEPDIR)/reader_rlp.Plo"; else rm -f "$(DEPDIR)/reader_rlp.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_rlp.c' object='reader_rlp.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_rlp.lo `test -f '$(SCIPDIR)/src/scip/reader_rlp.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_rlp.c
-
-reader_sos.lo: $(SCIPDIR)/src/scip/reader_sos.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_sos.lo -MD -MP -MF "$(DEPDIR)/reader_sos.Tpo" -c -o reader_sos.lo `test -f '$(SCIPDIR)/src/scip/reader_sos.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_sos.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_sos.Tpo" "$(DEPDIR)/reader_sos.Plo"; else rm -f "$(DEPDIR)/reader_sos.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/reader_sos.c' object='reader_sos.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_sos.lo `test -f '$(SCIPDIR)/src/scip/reader_sos.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_sos.c
-
-sepa_mcf.lo: $(SCIPDIR)/src/scip/sepa_mcf.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sepa_mcf.lo -MD -MP -MF "$(DEPDIR)/sepa_mcf.Tpo" -c -o sepa_mcf.lo `test -f '$(SCIPDIR)/src/scip/sepa_mcf.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_mcf.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/sepa_mcf.Tpo" "$(DEPDIR)/sepa_mcf.Plo"; else rm -f "$(DEPDIR)/sepa_mcf.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/sepa_mcf.c' object='sepa_mcf.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sepa_mcf.lo `test -f '$(SCIPDIR)/src/scip/sepa_mcf.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_mcf.c
-
-sepa_zerohalf.lo: $(SCIPDIR)/src/scip/sepa_zerohalf.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sepa_zerohalf.lo -MD -MP -MF "$(DEPDIR)/sepa_zerohalf.Tpo" -c -o sepa_zerohalf.lo `test -f '$(SCIPDIR)/src/scip/sepa_zerohalf.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_zerohalf.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/sepa_zerohalf.Tpo" "$(DEPDIR)/sepa_zerohalf.Plo"; else rm -f "$(DEPDIR)/sepa_zerohalf.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/sepa_zerohalf.c' object='sepa_zerohalf.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sepa_zerohalf.lo `test -f '$(SCIPDIR)/src/scip/sepa_zerohalf.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_zerohalf.c
-
-presol_boundshift.lo: $(SCIPDIR)/src/scip/presol_boundshift.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT presol_boundshift.lo -MD -MP -MF "$(DEPDIR)/presol_boundshift.Tpo" -c -o presol_boundshift.lo `test -f '$(SCIPDIR)/src/scip/presol_boundshift.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/presol_boundshift.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/presol_boundshift.Tpo" "$(DEPDIR)/presol_boundshift.Plo"; else rm -f "$(DEPDIR)/presol_boundshift.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/presol_boundshift.c' object='presol_boundshift.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o presol_boundshift.lo `test -f '$(SCIPDIR)/src/scip/presol_boundshift.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/presol_boundshift.c
-
-bitencode.lo: $(SCIPDIR)/src/scip/bitencode.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bitencode.lo -MD -MP -MF "$(DEPDIR)/bitencode.Tpo" -c -o bitencode.lo `test -f '$(SCIPDIR)/src/scip/bitencode.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/bitencode.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/bitencode.Tpo" "$(DEPDIR)/bitencode.Plo"; else rm -f "$(DEPDIR)/bitencode.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/bitencode.c' object='bitencode.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bitencode.lo `test -f '$(SCIPDIR)/src/scip/bitencode.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/bitencode.c
-
 memory.lo: $(SCIPDIR)/src/blockmemshell/memory.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT memory.lo -MD -MP -MF "$(DEPDIR)/memory.Tpo" -c -o memory.lo `test -f '$(SCIPDIR)/src/blockmemshell/memory.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/blockmemshell/memory.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/memory.Tpo" "$(DEPDIR)/memory.Plo"; else rm -f "$(DEPDIR)/memory.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/blockmemshell/memory.c' object='memory.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o memory.lo `test -f '$(SCIPDIR)/src/blockmemshell/memory.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/blockmemshell/memory.c
-
-message.lo: $(SCIPDIR)/src/scip/message.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT message.lo -MD -MP -MF "$(DEPDIR)/message.Tpo" -c -o message.lo `test -f '$(SCIPDIR)/src/scip/message.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/message.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/message.Tpo" "$(DEPDIR)/message.Plo"; else rm -f "$(DEPDIR)/message.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/message.c' object='message.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o message.lo `test -f '$(SCIPDIR)/src/scip/message.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/message.c
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -1647,6 +1646,13 @@ message.lo: $(SCIPDIR)/src/scip/message.c
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+lpi_clp.lo: $(SCIPDIR)/src/scip/lpi_clp.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT lpi_clp.lo -MD -MP -MF "$(DEPDIR)/lpi_clp.Tpo" -c -o lpi_clp.lo `test -f '$(SCIPDIR)/src/scip/lpi_clp.cpp' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/lpi_clp.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/lpi_clp.Tpo" "$(DEPDIR)/lpi_clp.Plo"; else rm -f "$(DEPDIR)/lpi_clp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(SCIPDIR)/src/scip/lpi_clp.cpp' object='lpi_clp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o lpi_clp.lo `test -f '$(SCIPDIR)/src/scip/lpi_clp.cpp' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/lpi_clp.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1930,10 +1936,6 @@ uninstall-am: uninstall-info-am
 	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am uninstall-info-am
 
-
-# a lot of effort just to get -DHAVE_CONFIG_H into the compiler flags
-lpi_clp.lo: $(SCIPDIR)/src/scip/lpi_clp.cpp
-	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 install-doc: $(DocFiles)
 	test -z "$(DocInstallDir)" || $(mkdir_p) "$(DESTDIR)$(DocInstallDir)"

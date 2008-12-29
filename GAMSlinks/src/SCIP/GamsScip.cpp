@@ -58,10 +58,14 @@ extern "C" {
 #include "gdxcc.h"
 }
 
+#include "CoinError.hpp"
+
 extern "C" {
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
 #include "scip/cons_linear.h"
+#include "scip/cons_sos1.h"
+#include "scip/cons_sos2.h"
 }
 
 #include "ScipBCH.hpp"
@@ -102,10 +106,7 @@ SCIP_RETCODE checkLPsolve(smagHandle_t prob, SCIP_LPI* lpi, SolveStatus& solstat
 SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* lpi, SCIP_Bool solve_final);
 
 int main (int argc, const char *argv[]) {
-#if defined(_MSC_VER)
-  /* Prevents hanging "Application Error, Click OK" Windows in case something bad happens */
-  { UINT oldMode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX); }
-#endif
+	WindowsErrorPopupBlocker();
   smagHandle_t prob;
 
 	if (argc==1) {
@@ -124,8 +125,7 @@ int main (int argc, const char *argv[]) {
   if (smagStdOutputStart(prob, SMAG_STATUS_OVERWRITE_IFDUMMY, buffer, sizeof(buffer)))
   	fprintf(stderr, "Warning: Error opening GAMS output files .. continuing anyhow\t%s\n", buffer);
 
-  
-  sprintf(buffer, "\nSCIP version %.2f.%d [LP solver: %s]\n%s\n\n", SCIPversion(), SCIPsubversion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
+  sprintf(buffer, "\nSCIP version %d.%d.%d [LP solver: %s]\n%s\n\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
 	smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
  
@@ -167,17 +167,11 @@ int main (int argc, const char *argv[]) {
   
   smagSetObjFlavor (prob, OBJ_FUNCTION);
 
-  if (prob->gms.nsos1 || prob->gms.nsos2) {
-  	smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Special ordered sets (SOS) not supported by SCIP.\n");
-  	smagStdOutputFlush(prob, SMAG_ALLMASK);
-		smagReportSolBrief(prob, 14, 6); // no solution; capability problems
-		exit(EXIT_FAILURE);
-  }
   if (prob->gms.nsemi || prob->gms.nsemii) {
   	smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Semicontinuous and semiinteger variables not supported by SCIP.\n");
   	smagStdOutputFlush(prob, SMAG_ALLMASK);
-		smagReportSolBrief(prob, 14, 6); // no solution; capability problems  	
-		exit(EXIT_FAILURE);
+		smagReportSolBrief(prob, 14, 6); // no solution; capability problems
+		return EXIT_SUCCESS;
   }
   
   SCIP_RETCODE scipret = runSCIP(prob);
@@ -206,7 +200,9 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   SolveStatus solstatus;
   solstatus.colval=NULL;
   
-  if (prob->gms.nbin || prob->gms.numint) { // if discrete var, do SCIP
+  bool islp = !prob->gms.nbin && !prob->gms.numint && !prob->gms.nsos1 && !prob->gms.nsos2;
+  
+  if (!islp) { // if not just LP, do SCIP
   	GamsHandlerSmag gamshandler(prob);
   	GamsDictionary dict(gamshandler);
   	
@@ -222,9 +218,9 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	// initialize SCIP
   	SCIP_CALL( SCIPcreate(&scip) );
 
-  	smagSetSqueezeFreeRows (prob, 1);	/* don't show me =n= rows */
-  	smagSetInf (prob, SCIPinfinity(scip));
-  	smagReadModel (prob);
+  	smagSetSqueezeFreeRows(prob, 1);	/* don't show me =n= rows */
+  	smagSetInf(prob, SCIPinfinity(scip));
+  	smagReadModel(prob);
 
   	/* include default SCIP plugins, documentation says it needs to come after BCH setup because of its display column;
   	 * on the other hand the plugins should be included (and their parameters registered) before the option file read */
@@ -264,14 +260,13 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	SCIP_CALL( SCIPgetBoolParam(scip, "gams/mipstart", &mipstart) );
   	if (mipstart)
   		SCIP_CALL( setupMIPStart(prob, scip, mip_vars) );
+
+//  	SCIP_CALL( SCIPprintOrigProblem(scip, NULL, "mps", TRUE) );
   	
   	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nStarting MIP solve...\n");
   	smagStdOutputFlush(prob, SMAG_LOGMASK);
 
   	SCIP_CALL( SCIPsolve(scip) );
-  	//  SCIP_CALL( SCIPprintStatistics(scip, NULL) );
-
-//  	SCIPwriteMIP(scip, "troublemip.lp", FALSE, TRUE);
   	
   	SCIP_CALL( checkMIPsolve(prob, scip, mip_vars, solstatus) );
   	
@@ -280,8 +275,8 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
     SCIP_CALL( SCIPfree(&scip) );
   	SCIP_CALL( SCIPfreeMessagehdlr(&messagehdlr) );
   	
-  	// we disable the LP solve if we do not have a MIP feasible point or the user wants so
-  	solvelp = (!solstatus.colval) || solvefinal;
+  	// we only solve the fixed MIP if we have a MIP feasible point and the user allows us
+  	solvelp = solstatus.colval && solvefinal;
   	
   	SCIP_CALL( BCHcleanup(prob, bch, bchdata) );
   	if (gdxhandle) {
@@ -296,7 +291,7 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   if (solvelp) { // if we have an LP or got a mip feasible point and user did not disable fixed LP solve, solve (fixed) LP
   	SCIP_CALL( SCIPlpiCreate(&lpi, "gamsproblem", smagMinim(prob)==-1 ? SCIP_OBJSEN_MAXIMIZE : SCIP_OBJSEN_MINIMIZE) );
 
-  	if (!prob->gms.nbin && !prob->gms.numint) {
+  	if (islp) {
   		// here we allow =n= rows in order to get the lp11 test passed 
   		smagSetInf (prob, SCIPlpiInfinity(lpi));
   		smagReadModel (prob);
@@ -304,7 +299,7 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	
   	SCIP_CALL( setupLP(prob, lpi, solstatus.colval) );
 
-  	if (!prob->gms.nbin && !prob->gms.numint) {
+  	if (islp) {
   		SCIP_CALL( setupLPParameters(prob, lpi) );
     	smagStdOutputPrint(prob, SMAG_LOGMASK, "Starting LP solve...\n");
   	} else {
@@ -316,16 +311,15 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   }
 
 	// if problem was an LP, get gams status and statistics
-	if (!prob->gms.nbin && !prob->gms.numint) {
-		solstatus.time=smagGetCPUTime(prob)-lpsolve_starttime;
+	if (islp) {
+		solstatus.time = smagGetCPUTime(prob)-lpsolve_starttime;
 		SCIP_CALL( checkLPsolve(prob, lpi, solstatus) );
 	}
   
   SCIP_CALL( writeSolution(prob, solstatus, lpi, solvefinal) );
 
-  if (lpi) {
+  if (lpi)
   	SCIP_CALL( SCIPlpiFree(&lpi) );
-  }
   
   delete[] solstatus.colval;
   
@@ -337,8 +331,6 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
 SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionary& dict, SCIP* scip, SCIP_VAR**& vars) {
 	SCIP_CALL( SCIPcreateProb(scip, "gamsmodel", NULL, NULL, NULL, NULL, NULL, NULL) );
 	
-//	GamsHandlerSmag gamshandler(prob);
-//	GamsDictionary dict(gamshandler);
 	if (!dict.haveNames()) {
 		SCIP_Bool read_dict=FALSE;
 		SCIP_CALL( SCIPgetBoolParam(scip, "gams/names", &read_dict) );
@@ -355,9 +347,12 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 	if (prob->gms.priots && smagColCount(prob)>0) { // compute range of given priorities
 		minprior=prob->colPriority[0];
 		maxprior=prob->colPriority[0];
-		for (int i=0; i<smagColCount(prob); ++i)
+		for (int i=0; i<smagColCount(prob); ++i) {
+			if (prob->colType[i] == SMAG_VAR_CONT)
+				continue;
 			if (prob->colPriority[i]<minprior) minprior=prob->colPriority[i];
 			else if (prob->colPriority[i]>maxprior) maxprior=prob->colPriority[i];
+		}
 	}
 
 	if (prob->niceObjRow && prob->gms.grhs[prob->gms.slplro-1]) {
@@ -370,6 +365,8 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 		SCIP_VARTYPE vartype;
 		switch (prob->colType[i]) {
 			case SMAG_VAR_CONT:
+			case SMAG_VAR_SOS1:
+			case SMAG_VAR_SOS2:
 				vartype=SCIP_VARTYPE_CONTINUOUS;
 				break;
 			case SMAG_VAR_BINARY:
@@ -379,7 +376,7 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 				vartype=SCIP_VARTYPE_INTEGER;
 				break;
 			default : {
-				smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: SOS, semicontinuous, and semiinteger variables not supported.\n"); 			
+				smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: semicontinuous and semiinteger variables not supported.\n");
 	      smagStdOutputFlush(prob, SMAG_ALLMASK);
 				return SCIP_READERROR;
 			}
@@ -394,12 +391,12 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 			varname=dict.getColName(i, buffer, 256);
 		SCIP_CALL( SCIPcreateVar(scip, vars+i, varname, prob->colLB[i], prob->colUB[i], obj_coeff, vartype, TRUE, FALSE, NULL, NULL, NULL, NULL) );
 		SCIP_CALL( SCIPaddVar(scip, vars[i]) );
-
-		if (prob->gms.priots && minprior<maxprior) {
+		
+		if (prob->gms.priots && minprior<maxprior && prob->colType[i] != SMAG_VAR_CONT) {
 			// in GAMS: higher priorities are given by smaller .prior values
 			// in SCIP: variables with higher branch priority are always preferred to variables with lower priority in selection of branching variable
 			// thus, we scale the values from GAMS to lie between 0 (lowest prior) and 1000 (highest prior) 
-			int branchpriority = (int)(1000./(maxprior-minprior)*(maxprior-prob->colPriority[i]));		
+			int branchpriority = (int)(1000./(maxprior-minprior)*(maxprior-prob->colPriority[i]));
 			SCIP_CALL( SCIPchgVarBranchPriority(scip, vars[i], branchpriority) );
 		}
 	}
@@ -411,6 +408,7 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 	
 	SCIP_VAR** con_vars=new SCIP_VAR*[maxrowlen];
 	SCIP_Real* con_coef=new SCIP_Real[maxrowlen];
+  SCIP_CONS* con;
 	for (int i=0; i<smagRowCount(prob); ++i) {
 		double lb,ub;
 		switch (prob->rowType[i]) {
@@ -437,16 +435,14 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
     	con_vars[ncoef]=vars[cGrad->j];
     }
 		
-    SCIP_CONS* con;
-
 		const char* conname=NULL;
 		if (dict.haveNames())
 			conname=dict.getRowName(i, buffer, 256);
-/*		if (!conname) {
+		if (!conname) {
 			sprintf(buffer, "con%d", i);
 			conname=buffer;
 		}
-*/		SCIP_CALL( SCIPcreateConsLinear(scip, &con, conname ? conname : "noname", ncoef, con_vars, con_coef, lb, ub,
+		SCIP_CALL( SCIPcreateConsLinear(scip, &con, conname, ncoef, con_vars, con_coef, lb, ub,
 				TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE, FALSE) );
 		
 		SCIP_CALL( SCIPaddCons(scip, con) );
@@ -454,7 +450,46 @@ SCIP_RETCODE setupMIP(smagHandle_t prob, GamsHandler& gamshandler, GamsDictionar
 //		SCIP_CALL( SCIPprintCons(scip, con, NULL) );
 
 		SCIP_CALL( SCIPreleaseCons(scip, &con) );
-
+	}
+	
+	if (prob->gms.nosos1 || prob->gms.nosos2)
+	{
+		SCIP_VAR** sos = new SCIP_VAR*[MAX(prob->gms.nsos1, prob->gms.nsos2)];
+		for (int i = 0; i < prob->gms.nosos1 + prob->gms.nosos2; ++i)
+		{
+			int n = 0;
+			int sostype = 0;
+			for (int j = 0; j < smagColCount(prob); ++j)
+			{
+				if (prob->colType[j] != SMAG_VAR_SOS1 && prob->colType[j] != SMAG_VAR_SOS2)
+					continue;
+				if (prob->colSOS[j] == i+1)
+				{
+					assert(n < MAX(prob->gms.nsos1, prob->gms.nsos2));
+					sos[n] = vars[j];
+					sostype = prob->colType[j] == SMAG_VAR_SOS1 ? 1 : 2;
+					n++;
+				}
+			}
+			sprintf(buffer, "sos%d", i);
+			if (sostype == 1)
+			{
+				SCIP_CALL( SCIPcreateConsSOS1(scip, &con, buffer, n, sos, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
+			}
+			else if (sostype == 2)
+			{
+				SCIP_CALL( SCIPcreateConsSOS2(scip, &con, buffer, n, sos, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
+			}
+			else
+			{
+				SCIPerrorMessage("SOS type %d not supported.\n", sostype);
+				return SCIP_ERROR;
+			}
+			SCIP_CALL( SCIPaddCons(scip, con) );
+			//		SCIP_CALL( SCIPprintCons(scip, con, NULL) );
+			SCIP_CALL( SCIPreleaseCons(scip, &con) );
+		}
+		delete[] sos;
 	}
 
 	if (smagMinim(prob)==-1)
@@ -491,19 +526,7 @@ SCIP_RETCODE setupMIPParameters(smagHandle_t prob, SCIP* scip) {
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/print_statistics", "whether to print statistics on a MIP solve", NULL, FALSE, FALSE, NULL, NULL) );
 	
 	SCIP_CALL( BCHaddParam(scip) );
-	
-  if (prob->gms.useopt) {
-  	// try to open file; if we let SCIP do it and there is no option file, then it might print to stderr
-  	FILE* optfile = fopen(prob->gms.optFileName, "r");
-  	if (optfile==NULL) {
-  		snprintf(buffer, 512, "WARNING: Opening optionfile %s failed with the following error: %s \nWe continue without optionfile.\n", prob->gms.optFileName, strerror(errno));
-  		smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
-  		prob->gms.useopt=0;
-  	} else {
-  		fclose(optfile);
-  	}
-  }
-  
+
   if (prob->gms.useopt) {
   	SCIP_RETCODE ret = SCIPreadParams(scip, prob->gms.optFileName);
   	if (ret != SCIP_OKAY ) {
@@ -614,7 +637,7 @@ SCIP_RETCODE checkMIPsolve(smagHandle_t prob, SCIP* scip, SCIP_VAR** vars, Solve
 	}
 
 	solstatus.objest=SCIPgetDualbound(scip);
-	solstatus.nodenum=SCIPgetNNodes(scip);
+	solstatus.nodenum=(int)SCIPgetNNodes(scip);
 	solstatus.iterations=solstatus.nodenum;
 	solstatus.time=SCIPgetTotalTime(scip);
 
@@ -772,7 +795,7 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 	  		solstatus.nodenum, solstatus.time, prob->gms.valna, 0);
 	  return SCIP_OKAY;		
 	}
-		
+
 	double* rowlev = new double[smagRowCount(prob)];
 	double* rowmarg = new double[smagRowCount(prob)];
 	unsigned char* rowbasstat = new unsigned char[smagRowCount(prob)];
@@ -783,11 +806,6 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 	unsigned char* colindic = new unsigned char[smagColCount(prob)];
 	
 	if (lpi && SCIPlpiIsPrimalFeasible(lpi)) { // read solution from lpi object
-		
-		/** Translating marginal values and basis status from Clp or SCIPlpi to the GAMS world is a bit tricky.
-		 * By trial-and-error I found that inverting the sign on the marginal values in case the problem is a maximization problem seem to do the right thing (= passes the GAMS tests).
-		 */
-		
 		collev = new double[smagColCount(prob)];
 		SCIPlpiGetSol(lpi, &solstatus.optval, collev, rowmarg, rowlev, colmarg);
 		
@@ -796,9 +814,6 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 		SCIPlpiGetBase(lpi, cstat, rstat);
 		
 		for (int i=0; i<smagColCount(prob); ++i) {
-#if SCIP_VERSION == 100
-			if (smagMinim(prob)==-1) colmarg[i]*=-1;
-#endif
 			if (prob->colType[i]!=SMAG_VAR_CONT)
 				colbasstat[i] = SMAG_BASSTAT_SUPERBASIC;
 			else switch(cstat[i]) {
@@ -812,9 +827,6 @@ SCIP_RETCODE writeSolution(smagHandle_t prob, SolveStatus& solstatus, SCIP_LPI* 
 		}
 		
 		for (int i=0; i<smagRowCount(prob); ++i) {
-#if SCIP_VERSION == 100
-			if (smagMinim(prob)==-1) rowmarg[i]*=-1;
-#endif
 			switch(rstat[i]) {
 				case SCIP_BASESTAT_LOWER: rowbasstat[i] = SMAG_BASSTAT_NBLOWER; break;
 				case SCIP_BASESTAT_UPPER: rowbasstat[i] = SMAG_BASSTAT_NBUPPER; break;

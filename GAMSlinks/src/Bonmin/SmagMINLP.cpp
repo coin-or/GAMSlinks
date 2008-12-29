@@ -40,6 +40,7 @@ void SMAG_MINLP::setupPrioritiesSOS() {
 	if (prob->gms.priots) {
 		// first check which range of priorities is given
 		for (int i=0; i<smagColCount(prob); ++i) {
+			if (prob->colType[i] == SMAG_VAR_CONT) continue;
 			if (prob->colPriority[i]<minprior) minprior=prob->colPriority[i];
 			if (prob->colPriority[i]>maxprior) maxprior=prob->colPriority[i];
 		}
@@ -47,10 +48,13 @@ void SMAG_MINLP::setupPrioritiesSOS() {
 			branchinginfo.size=smagColCount(prob);
 			branchinginfo.priorities=new int[branchinginfo.size];
 			for (int i=0; i<branchinginfo.size; ++i) {
-				// we map gams priorities into the range {1,..,1000}
-				// CBC: 1000 is standard priority and 1 is highest priority
-				// GAMS: 1 is standard priority for discrete variables, and as smaller the value as higher the priority
-				branchinginfo.priorities[i]=1+(int)(999*(prob->colPriority[i]-minprior)/(maxprior-minprior));
+				if (prob->colType[i] == SMAG_VAR_CONT)
+					branchinginfo.priorities[i] = 0;
+				else
+					// we map gams priorities into the range {1,..,1000}
+					// CBC: 1000 is standard priority and 1 is highest priority
+					// GAMS: 1 is standard priority for discrete variables, and as smaller the value as higher the priority
+					branchinginfo.priorities[i]=1+(int)(999*(prob->colPriority[i]-minprior)/(maxprior-minprior));
 			}
 		}
 	}

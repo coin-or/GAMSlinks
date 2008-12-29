@@ -12,39 +12,19 @@ http://scip.zib.de
 
 and unpack it in this directory:
 
-gunzip scip-1.00.tgz
-tar xf scip-1.00.tar
+gunzip scip-1.1.0.tgz
+tar xf scip-1.1.0.tar
+
+Further, download the bugfix for the SCIP/CLP interface from
+
+  http://scip.zib.de/download/bugfixes/scip-1.1.0/lpi_clp.cpp
+
+and put it into scip-1.1.0/src/scip (overwrite the original lpi_clp.cpp there).
 
 Then you need to rename the directory
-  scip-1.00
+  scip-1.1.0
 into
   scip
 .
 
 Optionally, you can put a symbolic link named scip to your scip sources.
-
-To have the SCIP/CLP interface work properly, you need to apply the patch scip.patch in this directory by calling
-
-    patch -p0 < scip.patch
-
-
-Finally you add the line
-
-#include <limits.h>
-
-at the beginning of scip/src/tclique/tclique_branch.c .
-
-
-To compile the GAMS/SCIP interface, you currently might need to switch
-off some compiler warnings by adding
-
-ADD_CXXFLAGS="-Wno-unknown-pragmas -Wno-long-long"
-
-to your configure call.
-If you use the GNU compiler, then this is already taken care of.
-For the Intel 9 compiler this seem to be not necessary.
-
-Compling in Windows with Intel compilers failed due to assert statements before local member declarations.
-In case you run into this trouble, remove the asserts at
-lp.c: lines 9321-9323, 12254-12256, 12423-12425
-scip.c: around lines 9314, 9447

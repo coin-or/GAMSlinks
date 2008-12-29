@@ -154,16 +154,15 @@ AC_COIN_HAS_GLPK(Glpk)
 
 AC_COIN_HAS_SCIP
 
-# including scip.h gives some warnings that result in errors if -pedantic-errors is used
-# thus, we disable these warnings if SCIP is used
+# including scip.h gives warnings about long long that result in errors if -pedantic-errors is used
+# thus, we disable this warning if SCIP is used
 if test "x$coin_has_scip" = xtrue ; then
   case "$CC" in
     *gcc* )
-      CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas -Wno-long-long"
+      CXXFLAGS="$CXXFLAGS -Wno-long-long"
     ;;
   esac
 fi
-
 
 ########################
 # OS Solver Interfaces #
@@ -311,7 +310,7 @@ else
 fi
 AM_CONDITIONAL([GAMSLINKS_BUILD_OS], [test $gamslinks_build_os = 1])
 
-if test $gamslinks_build_gamsio = 1 && test "x$coin_has_scip" = xtrue && test $coin_build_clp = 1 ; then
+if test $gamslinks_build_gamsio = 1 && test "x$coin_has_scip" = xtrue && (test $use_thirdpartyscip = 0 || test $coin_build_clp = 1) ; then
   gamslinks_build_scip=1
 else
   gamslinks_build_scip=0

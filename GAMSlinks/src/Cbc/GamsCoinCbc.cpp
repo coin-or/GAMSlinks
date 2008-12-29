@@ -369,6 +369,7 @@ void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model) {
 	if (gm.getPriorityOption()) {
 		// first check which range of priorities is given
 		for (int i=0; i<gm.nCols(); ++i) {
+			if (!gm.ColDisc()[i] && !gm.SOSIndicator()[i] && !gm.ColSemiContinuous()) continue;
 			if (gm.ColPriority()[i]<minprior) minprior=gm.ColPriority()[i];
 			if (gm.ColPriority()[i]>maxprior) maxprior=gm.ColPriority()[i];
 		}

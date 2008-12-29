@@ -21,6 +21,7 @@
 #include "OsiGlpkSolverInterface.hpp"
 #include "CoinPackedVector.hpp"
 #include "CoinHelperFunctions.hpp"
+#include "CoinError.hpp"
 
 // GAMS
 #include "GamsModel.hpp"
@@ -39,35 +40,16 @@ int printme(void* info, const char* msg) {
 	return 1;
 }
 
-#ifdef OGSI_HAVE_CALLBACK
-void glpk_callback(glp_tree* tree, void* info) {
-	double gap=glp_ios_mip_gap(tree);
-	if (gap<=*(double*)info) {
-		printf("interrupt because gap = %g <= %g = optcr\n", gap, *(double*)info);
-		glp_ios_terminate(tree);
-	}
-//	switch (glp_ios_reason(tree)) {
-//		case GLP_IBINGO:
-//		case GLP_IHEUR:
-//			
-//		
-//	}
-}
-#endif
-
 void setupParameters(GamsOptions& opt, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model);
 void setupParametersMIP(GamsOptions& opt, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver, LPX* glpk_model);
 void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInterface& solver);
 
 int main (int argc, const char *argv[]) {
-#if defined(_MSC_VER)
-  /* Prevents hanging "Application Error, Click OK" Windows in case something bad happens */
-  { UINT oldMode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX); }
-#endif
+	WindowsErrorPopupBlocker();
 
 	if (argc==1) {
 		fprintf(stderr, "usage: %s <control_file_name>\nexiting ...\n",  argv[0]);
-		exit(EXIT_FAILURE);
+		return EXIT_FAILURE;
 	}
 	int j;
 	char buffer[255];
@@ -220,10 +202,6 @@ int main (int argc, const char *argv[]) {
 
 	} else { // MIP
 		setupParametersMIP(opt, myout, solver, glpk_model);
-#ifdef OGSI_HAVE_CALLBACK
-		double optcr=gm.getOptCR();
-		solver.registerCallback(glpk_callback, (void*)&optcr);
-#endif
 		myout << "Starting GLPK Branch and Bound... " << CoinMessageEol;
 		solver.branchAndBound();
 		mipoptimal=solver.isProvenOptimal();
@@ -235,9 +213,6 @@ int main (int argc, const char *argv[]) {
 					&& (mipstat == LPX_I_FEAS || mipstat == LPX_I_OPT)) {
 				double objvalue=solver.getObjValue();
 				double* colLevelsav=CoinCopyOfArray(solver.getColSolution(), gm.nCols());
-//				const double *colLevel=solver.getColSolution();
-//				double *colLevelsav = new double[gm.nCols()];
-//				for (j=0; j<gm.nCols(); j++) colLevelsav[j] = solver.getColSolution()[j];
 
 				// No iteration limit for fixed run and special time limit
 				lpx_set_real_parm(glpk_model, LPX_K_TMLIM, opt.getDouble("reslim_fixedrun"));
