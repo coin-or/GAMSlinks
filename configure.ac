@@ -12,7 +12,7 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([GAMSlinks],[0.4.0],[https://projects.coin-or.org/GAMSlinks/newticket])
+AC_INIT([GAMSlinks],[0.4stable],[https://projects.coin-or.org/GAMSlinks/newticket])
 
 AC_COPYRIGHT([Copyright (C) 2006-2008 GAMS Development and others
 All Rights Reserved.
