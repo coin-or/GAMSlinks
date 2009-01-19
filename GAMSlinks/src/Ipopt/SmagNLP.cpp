@@ -367,13 +367,13 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 	  	write_solution=true; 
 			break;
 	  case LOCAL_INFEASIBILITY: 
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Local infeasible!!\n");
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "Local infeasible!\n");
 			model_status=smagColCountNL(prob) ? 5 : 4; // local infeasible for nlps, infeasible for lps
 			solver_status=1;
 			write_solution=true;
 	    break;
 	  case DIVERGING_ITERATES:
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Diverging iterates: we'll guess unbounded!!\n");
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "Diverging iterates: we'll guess unbounded!\n");
 			model_status=3;
 			solver_status=1;
 			write_solution=true;
@@ -381,10 +381,10 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 		case STOP_AT_TINY_STEP:
 	  case RESTORATION_FAILURE:
 			if (cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol) {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: we don't know about optimality, but we have feasibility!!\n");
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: we don't know about optimality, but we have feasibility!\n");
 				model_status=7; // intermediate nonoptimal
 			} else {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: point is not feasibile!!\n");
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Restoration failed or stop at tiny step: point is not feasibile!\n");
 				model_status=6; // intermediate infeasible
 			}
 			solver_status=4; // terminated by solver (normal completion not allowed by GAMS philosophy here: its not normal when it stops with an intermediate point)
@@ -392,10 +392,10 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 	    break;
 	  case MAXITER_EXCEEDED:
 			if (cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol) {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "Iteration limit exceeded!! Point is feasible.\n");
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Iteration limit exceeded! Point is feasible.\n");
 				model_status=7; // intermediate nonoptimal
 			} else {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "Iteration limit exceeded!! Point is not feasible.\n");
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Iteration limit exceeded! Point is not feasible.\n");
 				model_status=6; // intermediate infeasible
 			}
 			solver_status=2;
@@ -403,15 +403,15 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 			break;
 		case USER_REQUESTED_STOP:
 			if (domviollimit && domviolations>=domviollimit) {
-				smagStdOutputPrint(prob, SMAG_LOGMASK, "Domain violation limit exceeded!!\n");
+				smagStdOutputPrint(prob, SMAG_LOGMASK, "Domain violation limit exceeded!\n");
 				model_status=6; // intermediate infeasible
 				solver_status=5;
 			} else {
 				if (cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol) {
-					smagStdOutputPrint(prob, SMAG_LOGMASK, "Time limit exceeded!! Point is feasible.\n");
+					smagStdOutputPrint(prob, SMAG_LOGMASK, "Time limit exceeded! Point is feasible.\n");
 					model_status=7; // intermediate nonoptimal
 				} else {
-					smagStdOutputPrint(prob, SMAG_LOGMASK, "Time limit exceeded!! Point is not feasible.\n");
+					smagStdOutputPrint(prob, SMAG_LOGMASK, "Time limit exceeded! Point is not feasible.\n");
 					model_status=6; // intermediate infeasible
 				}
 				solver_status=3;
@@ -420,19 +420,24 @@ void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x,
 			break;
 		case ERROR_IN_STEP_COMPUTATION:
 		case TOO_FEW_DEGREES_OF_FREEDOM:
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Error in step compuation or too few degrees of freedom!!\n");
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "Error in step compuation or too few degrees of freedom!\n");
 			model_status=13;
 			solver_status=10;
 			break;
 		case INVALID_NUMBER_DETECTED:
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Invalid number detected!!\n");
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "Invalid number detected!\n");
 			model_status=13;
 			solver_status=13;
 			break;
 		case INTERNAL_ERROR:
-			smagStdOutputPrint(prob, SMAG_LOGMASK, "Internal error!!\n");
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "Internal error!\n");
 			model_status=13;
 			solver_status=11;
+			break;
+		case OUT_OF_MEMORY:
+			smagStdOutputPrint(prob, SMAG_LOGMASK, "Out of memory!\n");
+			model_status=13;
+			solver_status=3; // let's say resource interrupt
 			break;
 	  default:
 	  	char buffer[255];

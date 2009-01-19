@@ -40,7 +40,7 @@ As of the upcoming GAMS Distribution, available solvers include:
 (model types: LP, RMIP, MIP, DNLP, NLP, RMINLP, MINLP, QCP, RMIQCP, MIQCP)
 \item CoinCbc 2.2: COIN-OR Branch and Cut\\
 (model types: LP, MIP, RMIP)
-\item CoinGlpk 4.32: Gnu Linear Programming Kit\\
+\item CoinGlpk 4.35: Gnu Linear Programming Kit\\
 (model types: LP, MIP, RMIP)
 \item CoinIpopt 3.5: Interior Point Optimizer\\
 (model types: LP, RMIP, DNLP, NLP, RMINLP, QCP, RMIQCP)
@@ -434,9 +434,8 @@ Otherwise, the line will be interpreted as an option name and value separated by
 Following is an example options file coincbc.opt.
 \begin{verbatim}
   factorization givens
-  initbasis standard
 \end{verbatim}
-It will cause CoinGlpk to use Givens rotation updates for the factorization and to use a standard initial basis. (This option setting might help to avoid numerical difficulties in some cases.)
+It will cause CoinGlpk to use Givens rotation updates for the factorization. (This option setting might help to avoid numerical difficulties in some cases.)
 
 \input{optglpk_s}
 \input{optglpk_a}
