@@ -53,7 +53,7 @@ int main (int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
-  gmoSetIdent(gmo, "OSlink object");
+  gmoIdentSet(gmo, "OSlink object");
   
   // load control file
   if ((rc = gmoLoadInfoGms(gmo, argv[1]))) {

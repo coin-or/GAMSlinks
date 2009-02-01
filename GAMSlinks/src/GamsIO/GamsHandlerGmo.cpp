@@ -28,8 +28,18 @@ GamsHandlerGmo::~GamsHandlerGmo() {
 }
 
 void GamsHandlerGmo::print(PrintMask mask, const char* msg) const {
-	gmoLogStatnoNL(gmo, msg);
-	//TODO do not have gmoLognoNL or gmoStatnoNL yet
+	switch (mask) {
+		case GamsHandler::LogMask :
+			gmoLogPChar(gmo, msg);
+			break;
+		case GamsHandler::StatusMask :
+			gmoStatPChar(gmo, msg);
+			break;
+		case GamsHandler::AllMask:
+		default:
+			gmoLogStatPChar(gmo, msg);
+			break;
+	}
 }
 
 void GamsHandlerGmo::println(PrintMask mask, const char* msg) const {
@@ -100,33 +110,36 @@ int GamsHandlerGmo::getColCountGams() const {
 }
 
 int GamsHandlerGmo::getObjVariable() const {
-	int varnr;
-	gmoOptI(gmo, I_ObjVar, &varnr);
-	return varnr;
+	return gmoObjVar(gmo); //TODO this is not correct, wa?
+//	int varnr;
+//	gmoOptI(gmo, I_ObjVar, &varnr);
+//	return varnr;
 }
 int GamsHandlerGmo::getObjRow() const {
-	int rownr;
-	gmoOptI(gmo, I_ObjRow, &rownr);
-	return rownr;
+	println(GamsHandler::AllMask, "call of unimplemented method");
+	exit(EXIT_FAILURE);
+//	int rownr;
+//	gmoOptI(gmo, I_ObjRow, &rownr);
+//	return rownr;
 }
 
 const char* GamsHandlerGmo::getSystemDir() const {
 	if (!sysdir) sysdir = new char[1024];
-//	gmoGetNameSysDir(gmo, sysdir);
-	gmoOptS(gmo, S_NameSysDir, sysdir);
+	gmoNameSysDir(gmo, sysdir);
+//	gmoOptS(gmo, S_NameSysDir, sysdir);
 	return sysdir;
 }
 
 bool GamsHandlerGmo::isDictionaryWritten() const {
-//	return gmoDictionary(gmo);
-	int havedict;
-	gmoOptI(gmo, I_DictFile, &havedict);
-	return havedict;
+	return gmoDictionary(gmo);
+//	int havedict;
+//	gmoOptI(gmo, I_DictFile, &havedict);
+//	return havedict;
 }
 const char* GamsHandlerGmo::dictionaryFile() const {
 	if (!dictfile) dictfile = new char[1024];
-//	gmoGetNameDictFile(gmo, dictfile);
-	gmoOptS(gmo, S_NameDict, dictfile);
+	gmoNameDict(gmo, dictfile);
+//	gmoOptS(gmo, S_NameDict, dictfile);
 	return dictfile;
 }
 int GamsHandlerGmo::dictionaryVersion() const {

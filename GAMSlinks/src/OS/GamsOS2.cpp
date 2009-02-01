@@ -54,7 +54,7 @@ bool GamsOS::execute() {
 
 	if (gmoOptFile(gmo)) {
 		char optfilename[256];
-		gmoGetOptFile(gmo, optfilename);
+		gmoNameOptFile(gmo, optfilename);
 		gamsopt.readOptionsFile(optfilename);
 	}
 

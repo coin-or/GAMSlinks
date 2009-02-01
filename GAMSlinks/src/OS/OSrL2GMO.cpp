@@ -39,11 +39,11 @@ void OSrL2GMO::writeSolution(OSResult& osresult) {
 	} else if (osresult.getGeneralStatusType() == "error") {
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SolverErr);
-		gmoLogStatnoNL(gmo, "Error: OS result reports error: ");
+		gmoLogStatPChar(gmo, "Error: OS result reports error: ");
 		gmoLogStat(gmo, osresult.getGeneralMessage().c_str());
 		return;
 	} else if (osresult.getGeneralStatusType() == "warning") {
-		gmoLogStatnoNL(gmo, "Warning: OS result reports warning: ");
+		gmoLogStatPChar(gmo, "Warning: OS result reports warning: ");
 		gmoLogStat(gmo, osresult.getGeneralMessage().c_str());
 	}
 
