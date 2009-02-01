@@ -187,11 +187,12 @@ AC_ARG_ENABLE([cbc-parallel],,
   AC_DEFINE([CBC_THREAD],[1],[Define to 1 if the SMP version of CBC is compiled])
 )
 
-######################
-# CPLEX for Gams/OSI #
-######################
+#################################
+# CPLEX and SOPLEX for Gams/OSI #
+#################################
 
 AC_COIN_HAS_USER_LIBRARY([Cplex],[CPX],[cplex.h],[CPXgetstat])
+AC_COIN_HAS_USER_LIBRARY([Soplex],[SPX],[spxsolver.h])
 
 ####################################
 # GAMS system and GAMS I/O LIBRARY #

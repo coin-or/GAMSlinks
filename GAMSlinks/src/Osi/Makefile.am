@@ -156,6 +156,14 @@ if COIN_HAS_CPX
   GamsCoinOsi_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
 endif
 
+if COIN_HAS_SPX
+  AM_CPPFLAGS += \
+	-I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiSpx` \
+	-I`$(CYGPATH_W) $(SPXINCDIR)`
+  GamsCoinOsi_LDADD += $(OSIOBJDIR)/src/OsiSpx/libOsiSpx.la $(SPXLIB)
+  GamsCoinOsi_DEPENDENCIES += $(OSIOBJDIR)/src/OsiSpx/libOsiSpx.la
+endif
+
 GamsCoinOsi_DEPENDENCIES += $(OSIOBJDIR)/src/libOsi.la $(COINUTILSOBJDIR)/src/libCoinUtils.la
 GamsCoinOsi_LDADD += $(OSIOBJDIR)/src/libOsi.la $(COINUTILSOBJDIR)/src/libCoinUtils.la
  

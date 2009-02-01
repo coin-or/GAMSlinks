@@ -190,3 +190,4 @@ doxydoc/doxygen.conf -text
 /ltmain.sh -text
 /missing -text
 /osiglpk.patch -text
+/osispx.patch -text

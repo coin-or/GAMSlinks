@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development 2007
+// Copyright (C) GAMS Development 2007,2009
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -40,6 +40,7 @@
 
 #include "OsiSolverInterface.hpp"
 #include "CoinPackedVector.hpp"
+#include "CoinError.hpp"
 
 #if COIN_HAS_CLP
 #include "OsiClpSolverInterface.hpp"
@@ -64,6 +65,9 @@
 extern "C" {
 #include "gamscplexlice.h"
 }
+#endif
+#if COIN_HAS_SPX
+#include "OsiSpxSolverInterface.hpp"
 #endif
 
 // GAMS
@@ -92,10 +96,7 @@ void setupParametersMIP(GamsOptions& opt, CoinMessageHandler& myout, OsiSolverIn
 void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiSolverInterface& solver, bool swapRowStatus=false);
 
 int main (int argc, const char *argv[]) {
-#if defined(_MSC_VER)
-  /* Prevents hanging "Application Error, Click OK" Windows in case something bad happens */
-  { UINT oldMode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX); }
-#endif
+	WindowsErrorPopupBlocker();
 
 	if (argc==1) {
 		fprintf(stderr, "usage: %s <control_file_name>\nexiting ...\n",  argv[0]);
@@ -156,11 +157,15 @@ int main (int argc, const char *argv[]) {
 #else
 #if COIN_HAS_CPX
 		opt.setString("solver", "cplex");
+#else
+#if COIN_HAS_SPX
+		opt.setString("solver", "soplex");
 #else //wow, when will a user get to here?
 		myout << "Error: solver parameter not set and no solver available. Aborting!" << CoinMessageEol;
 		gm.setStatus(ErrorSystemFailure, ErrorNoSolution);
 		gm.setSolution();
 		exit(EXIT_FAILURE);
+#endif
 #endif
 #endif
 #endif
@@ -232,8 +237,13 @@ try {
 		solver_can_mips=true;
 	}
 #endif
+#if COIN_HAS_SPX
+	if (!solver && strcmp(buffer, "soplex")==0) {
+		solver=new OsiSpxSolverInterface();
+	}
+#endif
 	if (!solver) {
-		myout << "Solver " << buffer << " not recognized or not available." << CoinMessageEol;
+		myout << "Solver" << buffer << "not recognized or not available." << CoinMessageEol;
 		gm.setStatus(GamsModel::ErrorSystemFailure, GamsModel::ErrorNoSolution);
 		gm.setSolution();
 		exit(EXIT_FAILURE);
@@ -242,10 +252,10 @@ try {
 	std::string solver_name;
 	if (!solver->getStrParam(OsiSolverName, solver_name))
 		solver_name=buffer;
-	myout << "Using solver " << solver_name << '.' << CoinMessageEol;
+	myout << "Using solver" << solver_name << '.' << CoinMessageEol;
 
 	if (!gm.isLP() && !solver_can_mips) {
-		myout << "Solver " << solver_name << " cannot handle integer variables. Exiting..." << CoinMessageEol;
+		myout << "Solver" << solver_name << "cannot handle integer variables. Exiting..." << CoinMessageEol;
 		gm.setStatus(GamsModel::CapabilityProblems, GamsModel::ErrorNoSolution);
 		gm.setSolution();
 		exit(EXIT_FAILURE);

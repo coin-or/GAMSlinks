@@ -4,7 +4,7 @@ set g Glpk Option Groups /
         general        General Options
       /
     e / 0*100,
-        primal, dual, clp, cbc, glpk, volume, dylp, symphony /
+        primal, dual, clp, cbc, glpk, volume, dylp, symphony, cplex, soplex /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
     t / I Integer, R Real, S String, B Binary /
     o Options /

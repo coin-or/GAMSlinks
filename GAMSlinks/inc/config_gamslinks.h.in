@@ -54,6 +54,9 @@
 /* Define to 1 if package is available */
 #undef COIN_HAS_SCIP
 
+/* Define to 1 if the Soplex package is available */
+#undef COIN_HAS_SPX
+
 /* Define to 1 if the SYMPHONY package is used */
 #undef COIN_HAS_SYMPHONY
 

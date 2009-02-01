@@ -180,10 +180,16 @@ bin_PROGRAMS = GamsCoinOsi$(EXEEXT)
 
 @COIN_HAS_CPX_TRUE@am__append_29 = $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
 @COIN_HAS_CPX_TRUE@am__append_30 = $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
+@COIN_HAS_SPX_TRUE@am__append_31 = \
+@COIN_HAS_SPX_TRUE@	-I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiSpx` \
+@COIN_HAS_SPX_TRUE@	-I`$(CYGPATH_W) $(SPXINCDIR)`
+
+@COIN_HAS_SPX_TRUE@am__append_32 = $(OSIOBJDIR)/src/OsiSpx/libOsiSpx.la $(SPXLIB)
+@COIN_HAS_SPX_TRUE@am__append_33 = $(OSIOBJDIR)/src/OsiSpx/libOsiSpx.la
 DIST_COMMON = $(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_31 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_32 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_34 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_35 = .Externals-stamp
 subdir = src/Osi
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
@@ -222,6 +228,9 @@ am__DEPENDENCIES_8 =
 @COIN_HAS_CPX_TRUE@am__DEPENDENCIES_9 =  \
 @COIN_HAS_CPX_TRUE@	$(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la \
 @COIN_HAS_CPX_TRUE@	$(am__DEPENDENCIES_8)
+@COIN_HAS_SPX_TRUE@am__DEPENDENCIES_10 =  \
+@COIN_HAS_SPX_TRUE@	$(OSIOBJDIR)/src/OsiSpx/libOsiSpx.la \
+@COIN_HAS_SPX_TRUE@	$(am__DEPENDENCIES_8)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -310,6 +319,8 @@ COIN_HAS_OS_FALSE = @COIN_HAS_OS_FALSE@
 COIN_HAS_OS_TRUE = @COIN_HAS_OS_TRUE@
 COIN_HAS_SCIP_FALSE = @COIN_HAS_SCIP_FALSE@
 COIN_HAS_SCIP_TRUE = @COIN_HAS_SCIP_TRUE@
+COIN_HAS_SPX_FALSE = @COIN_HAS_SPX_FALSE@
+COIN_HAS_SPX_TRUE = @COIN_HAS_SPX_TRUE@
 COIN_HAS_SYMPHONY_FALSE = @COIN_HAS_SYMPHONY_FALSE@
 COIN_HAS_SYMPHONY_TRUE = @COIN_HAS_SYMPHONY_TRUE@
 COIN_HAS_VOL_FALSE = @COIN_HAS_VOL_FALSE@
@@ -439,6 +450,8 @@ SCIPOBJDIR = @SCIPOBJDIR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SMAG_LIBS = @SMAG_LIBS@
+SPXINCDIR = @SPXINCDIR@
+SPXLIB = @SPXLIB@
 STRIP = @STRIP@
 SYMPHONYDOCDIR = @SYMPHONYDOCDIR@
 SYMPHONYOBJDIR = @SYMPHONYOBJDIR@
@@ -516,7 +529,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = gmsosint.cmd gmsosius.run install/gmsosint.dat \
-	install/gmsosiun.dat $(am__append_31)
+	install/gmsosiun.dat $(am__append_34)
 GamsCoinOsi_SOURCES = GamsCoinOsi.cpp
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	-I`$(CYGPATH_W) $(srcdir)/../GamsIO` -I`$(CYGPATH_W) \
@@ -525,20 +538,21 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
 	-I`$(CYGPATH_W) $(OSIOBJDIR)/inc` $(am__append_1) \
 	$(am__append_5) $(am__append_9) $(am__append_12) \
 	$(am__append_16) $(am__append_20) $(am__append_24) \
-	$(am__append_28)
+	$(am__append_28) $(am__append_31)
 GamsCoinOsi_LDADD = ../GamsIO/libGamsIO.la $(am__append_2) \
 	$(am__append_6) $(am__append_10) $(am__append_13) \
 	$(am__append_17) $(am__append_21) $(am__append_25) \
-	$(am__append_29) $(OSIOBJDIR)/src/libOsi.la \
+	$(am__append_29) $(am__append_32) $(OSIOBJDIR)/src/libOsi.la \
 	$(COINUTILSOBJDIR)/src/libCoinUtils.la
 GamsCoinOsi_DEPENDENCIES = ../GamsIO/libGamsIO.la $(GAMSIO_LIBS) \
 	$(am__append_3) $(am__append_7) $(am__append_11) \
 	$(am__append_14) $(am__append_18) $(am__append_22) \
-	$(am__append_26) $(am__append_30) $(OSIOBJDIR)/src/libOsi.la \
+	$(am__append_26) $(am__append_30) $(am__append_33) \
+	$(OSIOBJDIR)/src/libOsi.la \
 	$(COINUTILSOBJDIR)/src/libCoinUtils.la
 GamsCoinOsi_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
-DISTCLEANFILES = gmsosi_.zip $(am__append_32) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = gmsosi_.zip $(am__append_35) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: all-am
