@@ -6,7 +6,7 @@ Osi           https://projects.coin-or.org/svn/Osi/stable/0.99/Osi
 Cbc           https://projects.coin-or.org/svn/Cbc/stable/2.2/Cbc
 Ipopt         https://projects.coin-or.org/svn/Ipopt/stable/3.5/Ipopt
 Bonmin        https://projects.coin-or.org/svn/Bonmin/stable/1.0/Bonmin
-cppad         https://projects.coin-or.org/svn/CppAD/stable/20080919
+cppad         https://projects.coin-or.org/svn/CppAD/stable/20090131
 OS            https://projects.coin-or.org/svn/OS/trunk/OS
 ThirdParty/HSL https://projects.coin-or.org/svn/BuildTools/ThirdParty/HSL/stable/1.1
 ThirdParty/Blas https://projects.coin-or.org/svn/BuildTools/ThirdParty/Blas/stable/1.0
@@ -17,3 +17,4 @@ ThirdParty/Mumps https://projects.coin-or.org/svn/BuildTools/ThirdParty/Mumps/st
 #SYMPHONY      https://projects.coin-or.org/svn/SYMPHONY/stable/5.2/SYMPHONY
 #DyLP          https://projects.coin-or.org/svn/DyLP/stable/1.4/DyLP
 #Vol           https://projects.coin-or.org/svn/Vol/stable/1.1/Vol
+#Couenne        https://projects.coin-or.org/svn/Couenne/trunk/Couenne

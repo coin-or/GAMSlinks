@@ -286,6 +286,7 @@ void solve_minlp(smagHandle_t prob) {
 	try {
 		{
 			OsiTMINLPInterface first_osi_tminlp;
+			//first_osi_tminlp.initialize(roptions, options, journalist, "bonmin.", smagminlp);
 			first_osi_tminlp.initialize(roptions, options, journalist, smagminlp);
 			first_osi_tminlp.passInMessageHandler(&messagehandler);
 			bonmin_setup.initialize(first_osi_tminlp); // this will clone first_osi_tminlp

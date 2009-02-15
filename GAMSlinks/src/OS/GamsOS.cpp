@@ -50,8 +50,11 @@
 #ifdef COIN_HAS_IPOPT
 #include "OSIpoptSolver.h"
 #endif
-#ifdef COIN_HAS_IPOPT
+#ifdef COIN_HAS_BONMIN
 #include "OSBonminSolver.h"
+#endif
+#ifdef COIN_HAS_COUENNE
+#include "OSCouenneSolver.h"
 #endif
 #endif
 
@@ -162,6 +165,9 @@ int main (int argc, char* argv[]) {
 std::string getSolverName(bool isnonlinear, bool isdiscrete, smagHandle_t prob) {
 	if (isnonlinear) { // (MI)NLP
 		if (isdiscrete) { // MINLP
+#ifdef COIN_HAS_COUENNE
+			return "couenne";
+#endif
 #ifdef COIN_HAS_BONMIN
 			return "bonmin";
 #endif
@@ -243,6 +249,15 @@ void localSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, std
 		solver=new BonminSolver();
 #else
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Bonmin not available.\n");
+		smagStdOutputFlush(prob, SMAG_ALLMASK);
+		smagReportSolBrief(prob, 13, 6);
+		exit (EXIT_FAILURE);
+#endif
+	} else if (solvername.find("couenne")!=std::string::npos) {
+#ifdef COIN_HAS_COUENNE
+		solver=new CouenneSolver();
+#else
+		smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: Couenne not available.\n");
 		smagStdOutputFlush(prob, SMAG_ALLMASK);
 		smagReportSolBrief(prob, 13, 6);
 		exit (EXIT_FAILURE);

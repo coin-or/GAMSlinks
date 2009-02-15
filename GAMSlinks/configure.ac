@@ -87,6 +87,7 @@ AC_COIN_HAS_PROJECT(Cbc)
 AC_COIN_HAS_PROJECT(Ipopt)
 AC_COIN_HAS_PROJECT(Bonmin)
 AC_COIN_HAS_PROJECT(cppad)
+AC_COIN_HAS_PROJECT(Couenne)
 AC_COIN_HAS_PROJECT(OS)
 
 ############################################################################
@@ -318,6 +319,15 @@ else
 fi
 AC_SUBST(gamslinks_build_scip)
 AM_CONDITIONAL([GAMSLINKS_BUILD_SCIP],[test $gamslinks_build_scip = 1])
+
+if test $gamslinks_build_cbc = 1 && test $gamslinks_build_ipopt = 1 && test $gamslinks_build_bonmin = 1 &&
+   test "x$coin_has_couenne" != xunavailable && test "x$coin_has_couenne" != xskipping ; then
+  gamslinks_build_couenne=1
+else
+  gamslinks_build_couenne=0
+fi
+AC_SUBST(gamslinks_build_couenne)
+AM_CONDITIONAL([GAMSLINKS_BUILD_COUENNE],[test $gamslinks_build_couenne = 1])
 
 ##############################################################################
 #                VPATH links for GAMS installation files                     #
