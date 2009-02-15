@@ -110,14 +110,13 @@ int GamsHandlerGmo::getColCountGams() const {
 }
 
 int GamsHandlerGmo::getObjVariable() const {
-	return gmoObjVar(gmo); //TODO this is not correct, wa?
+	return gmoObjVar(gmo);
 //	int varnr;
 //	gmoOptI(gmo, I_ObjVar, &varnr);
 //	return varnr;
 }
 int GamsHandlerGmo::getObjRow() const {
-	println(GamsHandler::AllMask, "call of unimplemented method");
-	exit(EXIT_FAILURE);
+	return gmoObjEqu(gmo);
 //	int rownr;
 //	gmoOptI(gmo, I_ObjRow, &rownr);
 //	return rownr;

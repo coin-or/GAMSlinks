@@ -1,0 +1,32 @@
+# Copyright (C) 2009 GAMS Development and others
+# All Rights Reserved.
+# This file is distributed under the Common Public License.
+#
+## $Id$
+#
+# Author: Stefan Vigerske
+
+AUTOMAKE_OPTIONS = foreign
+
+EXTRA_DIST =
+
+lib_LTLIBRARIES = libGamsUtils.la
+libGamsUtils_la_SOURCES = GamsDictionary.cpp GamsGDX.cpp GamsOptions.cpp
+libGamsUtils_la_LDFLAGS =
+libGamsUtils_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsGMO.la $(GAMSIO_OBJDIR)/libGamsDict.la $(GAMSIO_OBJDIR)/libGamsGDX.la $(GAMSIO_OBJDIR)/libGamsOptions.la
+
+includecoindir = $(includedir)/coin
+includecoin_HEADERS = GamsDictionary.hpp GamsGDX.hpp GamsOptions.hpp
+
+AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..`
+
+DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
+
+########################################################################
+#                         Maintainer Stuff                             #
+########################################################################
+
+# Files that are generated and should be cleaned with make distclean
+DISTCLEANFILES =
+
+include ../../../BuildTools/Makemain.inc

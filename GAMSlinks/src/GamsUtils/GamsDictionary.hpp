@@ -1,4 +1,4 @@
-// Copyright (C) 2008
+// Copyright (C) 2008-2009
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -11,21 +11,20 @@
 
 #include "GAMSlinksConfig.h"
 
-#include "GamsHandler.hpp"
-
-extern "C" struct gcdRec;
+struct gcdRec;
+struct gmoRec;
 
 class GamsBCH;
 class GamsGDX;
 
-/** Class to provide access to a GAMS dictionary.
+/** Wrapper class for GAMS dictionary handler.
+ * Provides some methods to simplify reading of column, row, and objective names.
  */
 class GamsDictionary {
 	friend class GamsBCH;
 	friend class GamsGDX;
 private:
-	GamsHandler& gams;
-	
+	struct gmoRec* gmo;
 	struct gcdRec* dict;
 	
 	bool have_dictread;
@@ -36,7 +35,7 @@ public:
 	/** Constructor.
 	 * @param gams_ A GamsHandler that gives access to the GAMS dictionary file.
 	 */
-	GamsDictionary(GamsHandler& gams_);
+	GamsDictionary(struct gmoRec* gmo_);
 	
 	/** Destructor.
 	 */
@@ -52,21 +51,37 @@ public:
 	bool haveNames() { return dict; }
 	
 	/** The name of a column.
-	    @param colnr column index
+	    @param colnr column index w.r.t. gmo model
 			@param buffer a buffer for writing the name in
 			@param bufLen length of the buffer
       @return buffer on success, NULL on failure
 	*/
 	char* getColName(int colnr, char *buffer, int bufLen);
 
+	/** The name of a column in the original model space.
+	    @param colnr column index w.r.t. model space
+			@param buffer a buffer for writing the name in
+			@param bufLen length of the buffer
+      @return buffer on success, NULL on failure
+	 */
+	char* getModelColName(int colnr, char *buffer, int bufLen);
+
 	/** The name of a row.
-	    @param rownr row index
+	    @param rownr row index w.r.t. gmo model
 			@param buffer a buffer for writing the name in
 			@param bufLen length of the buffer
       @return buffer on success, NULL on failure
 	*/
 	char* getRowName(int rownr, char *buffer, int bufLen);
-	
+
+	/** The name of a row in the original model space.
+	    @param rownr row index w.r.t. model space
+			@param buffer a buffer for writing the name in
+			@param bufLen length of the buffer
+      @return buffer on success, NULL on failure
+	*/
+	char* getModelRowName(int rownr, char *buffer, int bufLen);
+
 	/** The name of the objective.
 			@param buffer a buffer for writing the name in
 			@param bufLen length of the buffer

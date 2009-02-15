@@ -8,7 +8,7 @@
 # This configure script is free software; the Free Software Foundation
 # gives unlimited permission to copy, distribute and modify it.
 #
-# Copyright (C) 2006-2008 GAMS Development and others
+# Copyright (C) 2006-2009 GAMS Development and others
 # All Rights Reserved.
 # This file is part of the open source package Coin which is distributed
 # under the Common Public License.
@@ -1292,7 +1292,7 @@ Copyright (C) 2003 Free Software Foundation, Inc.
 This configure script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it.
 
-Copyright (C) 2006-2008 GAMS Development and others
+Copyright (C) 2006-2009 GAMS Development and others
 All Rights Reserved.
 This file is part of the open source package Coin which is distributed
 under the Common Public License.
@@ -28046,7 +28046,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-                                                                                                                                                                          ac_config_files="$ac_config_files Makefile gamsio_addlibs.txt smagio_addlibs.txt src/Makefile src/GamsIO/Makefile src/Cbc/Makefile src/Glpk/Makefile src/Osi/Makefile src/Ipopt/Makefile src/Bonmin/Makefile src/OS/Makefile src/SCIP/Makefile test/Makefile test/run_quality test/run_gmstest examples/adbench/Makefile examples/osil2gms/Makefile"
+                                                                                                                                                                                    ac_config_files="$ac_config_files Makefile gamsio_addlibs.txt smagio_addlibs.txt src/Makefile src/GamsIO/Makefile src/GamsUtils/Makefile src/Cbc/Makefile src/Glpk/Makefile src/Osi/Makefile src/Ipopt/Makefile src/Bonmin/Makefile src/OS/Makefile src/SCIP/Makefile test/Makefile test/run_quality test/run_gmstest examples/adbench/Makefile examples/osil2gms/Makefile"
 
 
           ac_config_headers="$ac_config_headers inc/config_gamslinks.h"
@@ -28957,6 +28957,7 @@ do
   "smagio_addlibs.txt" ) CONFIG_FILES="$CONFIG_FILES smagio_addlibs.txt" ;;
   "src/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
   "src/GamsIO/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/GamsIO/Makefile" ;;
+  "src/GamsUtils/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/GamsUtils/Makefile" ;;
   "src/Cbc/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Cbc/Makefile" ;;
   "src/Glpk/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Glpk/Makefile" ;;
   "src/Osi/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Osi/Makefile" ;;

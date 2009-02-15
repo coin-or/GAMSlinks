@@ -29,7 +29,7 @@ libGmoIO_la_LDFLAGS =
 libGmoIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGMO.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 
 includecoindir = $(includedir)/coin
-includecoin_HEADERS = ../../inc/config_gamslinks.h \
+includecoin_HEADERS = \
   GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsDictionary.hpp GamsBCH.hpp GamsHandler.hpp GamsHandlerIOLib.hpp \
   SmagJournal.hpp GamsHandlerSmag.hpp
 

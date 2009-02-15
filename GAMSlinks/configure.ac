@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2008 GAMS Development and others
+# Copyright (C) 2006-2009 GAMS Development and others
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -14,7 +14,7 @@ AC_PREREQ(2.59)
 
 AC_INIT([GAMSlinks],[0.4],[https://projects.coin-or.org/GAMSlinks/newticket])
 
-AC_COPYRIGHT([Copyright (C) 2006-2008 GAMS Development and others 
+AC_COPYRIGHT([Copyright (C) 2006-2009 GAMS Development and others 
 All Rights Reserved.
 This file is part of the open source package Coin which is distributed
 under the Common Public License.])
@@ -383,6 +383,7 @@ AC_CONFIG_FILES([Makefile
                  gamsio_addlibs.txt smagio_addlibs.txt
                  src/Makefile
                  src/GamsIO/Makefile
+                 src/GamsUtils/Makefile
                  src/Cbc/Makefile
                  src/Glpk/Makefile
                  src/Osi/Makefile

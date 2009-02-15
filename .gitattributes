@@ -61,8 +61,6 @@ GAMSlinks/src/GamsIO/GamsBCH.cpp -text
 GAMSlinks/src/GamsIO/GamsBCH.hpp -text
 GAMSlinks/src/GamsIO/GamsDictionary.cpp -text
 GAMSlinks/src/GamsIO/GamsDictionary.hpp -text
-GAMSlinks/src/GamsIO/GamsDictionary2.cpp -text
-GAMSlinks/src/GamsIO/GamsDictionary2.hpp -text
 GAMSlinks/src/GamsIO/GamsFinalize.cpp -text
 GAMSlinks/src/GamsIO/GamsFinalize.hpp -text
 GAMSlinks/src/GamsIO/GamsGDX.cpp -text
@@ -89,6 +87,14 @@ GAMSlinks/src/GamsIO/SmagExtra.h -text
 GAMSlinks/src/GamsIO/SmagJournal.cpp -text
 GAMSlinks/src/GamsIO/SmagJournal.hpp -text
 GAMSlinks/src/GamsIO/SmagStricmp.c -text
+GAMSlinks/src/GamsUtils/GamsDictionary.cpp -text
+GAMSlinks/src/GamsUtils/GamsDictionary.hpp -text
+GAMSlinks/src/GamsUtils/GamsGDX.cpp -text
+GAMSlinks/src/GamsUtils/GamsGDX.hpp -text
+GAMSlinks/src/GamsUtils/GamsOptions.cpp -text
+GAMSlinks/src/GamsUtils/GamsOptions.hpp -text
+GAMSlinks/src/GamsUtils/Makefile.am -text
+GAMSlinks/src/GamsUtils/Makefile.in -text
 GAMSlinks/src/Glpk/GamsCoinGlpk.cpp -text
 GAMSlinks/src/Glpk/Makefile.am -text
 GAMSlinks/src/Glpk/Makefile.in -text

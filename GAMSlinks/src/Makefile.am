@@ -9,7 +9,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = 
+SUBDIRS = GamsUtils
 if GAMSLINKS_BUILD_GAMSIO
   SUBDIRS += GamsIO
 endif
@@ -39,9 +39,10 @@ EXTRA_DIST =
 
 DISTCLEANFILES =
 
-ConfigHeader = GAMSlinksConfig.h
-
 includecoindir = $(includedir)/coin
+includecoin_HEADERS = ../inc/config_gamslinks.h
+
+ConfigHeader = GAMSlinksConfig.h
 
 install-exec-local:
 	echo "#ifndef HAVE_CONFIG_H" >bla
