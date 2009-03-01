@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2009
+// Copyright (C) GAMS Development and others 2008-2009
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -10,6 +10,15 @@
 #define GAMSDICTIONARY_HPP_
 
 #include "GAMSlinksConfig.h"
+#ifdef HAVE_CSTDLIB
+#include <cstdlib>
+#else
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#else
+#error "don't have header file for stdlib"
+#endif
+#endif
 
 struct gcdRec;
 struct gmoRec;
@@ -28,21 +37,34 @@ private:
 	struct gcdRec* dict;
 	
 	bool have_dictread;
+	bool dict_is_own;
+	
+	bool initGCD();
 	
 	char* constructName(char* buffer, int bufLen, int lSym, int* uelIndices, int nIndices);
 
 public:
 	/** Constructor.
-	 * @param gams_ A GamsHandler that gives access to the GAMS dictionary file.
+	 * @param gmo_ A Gams Modeling object handler, can be NULL and set later by setGMO.
+	 * @param opt_ An Gams dictionary file handler. If NULL and setGCD is not called, an own one will be created.
 	 */
-	GamsDictionary(struct gmoRec* gmo_);
+	GamsDictionary(struct gmoRec* gmo_ = NULL, struct gcdRec* dict_ = NULL);
 	
 	/** Destructor.
 	 */
 	~GamsDictionary();
 	
+	/** Sets the GMO handle to use.
+	 */
+	void setGMO(struct gmoRec* gmo_) { gmo = gmo_; }
+	
+	/** Sets a GCD handle to use.
+	 * If not set, an own gcd handle is created.
+	 */
+	void setGCD(struct gcdRec* gcd_);
+	
 	/** Reads the GAMS dictionary.
-	 * @return True if successfull, false otherwise.
+	 * @return True if successful, false otherwise.
 	 */
 	bool readDictionary();
 	

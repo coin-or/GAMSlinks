@@ -103,8 +103,8 @@ if COIN_HAS_CBC
    -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCbc` \
    -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
    -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
-  GamsOS_LDADD  += $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la $(CBCOBJDIR)/src/libCbcSolver.la
-  GamsOS2_LDADD += $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la $(CBCOBJDIR)/src/libCbcSolver.la
+  GamsOS_LDADD  += $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbcSolver.la $(CBCOBJDIR)/src/libCbc.la
+  GamsOS2_LDADD += $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbcSolver.la $(CBCOBJDIR)/src/libCbc.la
   GamsOS_DEPENDENCIES  += $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la $(CBCOBJDIR)/src/libCbcSolver.la
   GamsOS2_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la $(CBCOBJDIR)/src/libCbc.la $(CBCOBJDIR)/src/libCbcSolver.la
   LIBS += `cat $(CBCOBJDIR)/cbc_addlibs.txt`

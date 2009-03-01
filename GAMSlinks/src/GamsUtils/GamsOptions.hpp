@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development 2009
+// Copyright (C) GAMS Development and others 2009
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -10,6 +10,15 @@
 #define GAMSOPTIONS_HPP_
 
 #include "GAMSlinksConfig.h"
+#ifdef HAVE_CSTDLIB
+#include <cstdlib>
+#else
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#else
+#error "don't have header file for stdlib"
+#endif
+#endif
 
 struct gmoRec;
 struct optRec;
@@ -21,24 +30,32 @@ class GamsOptions {
 private:
 	struct gmoRec* gmo;
 	struct optRec* optionshandle; // handle for options
+	
+	bool opt_is_own;
+	
+	bool initOpt(const char* solvername);
 
 public:
 	/** Constructor for GamsOptions class.
 	 * Initialization of options handle.
 	 * Reading of the file "<systemdir>/opt<solvername>.def" to learn which options are supported.
-	 * @param gams_ A GAMS handler to get access to the system directory name and other stuff.
-	 * @param solvername The name of your solver.
+	 * @param gmo_ A Gams Modeling Object to get access to the system directory name and other stuff. Can be NULL and set later by setGMO. 
+	 * @param opt_ A Gams Optionfile handler. If NULL and setOpt is not called, an own one might be created. 
 	 */
-	GamsOptions(struct gmoRec* gmo_, const char* solvername);
+	GamsOptions(struct gmoRec* gmo_ = NULL, struct optRec* opt_ = NULL);
 	
 	/** Destructor.
 	 */
 	~GamsOptions();
 	
+	void setGMO(struct gmoRec* gmo_) { gmo = gmo_; }
+	void setOpt(struct optRec* opt_);
+	
 	/** Reads an options file.
+	 * @param solvername The name of your solver.
 	 * @param optfilename Giving NULL for optfilename will read nothing and returns true.
 	 */
-	bool readOptionsFile(const char* optfilename);
+	bool readOptionsFile(const char* solvername, const char* optfilename);
 
 	/** Checks whether an option exists.
 	 * @return True, if the option exists, i.e., defined in the options definition file. False otherwise.

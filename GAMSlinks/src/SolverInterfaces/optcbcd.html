@@ -1,0 +1,997 @@
+<html>
+<head>
+<title>CBCD Options</title>
+</head>
+<body>
+<h2>CBCD Options</h2>
+GAMS/CoinCBC brings the open source LP/MIP solver Cbc from the COIN-OR foundation to the broad audience of GAMS users.<BR>
+CBC (COIN-OR branch and cut) is an open-source mixed integer programming solver working with the COIN-OR LP solver CLP and the COIN-OR Cut generator libraries CGL.
+The code has been written primarily by John J. Forrest, who is the COIN-OR project leader for CBC.
+The GAMS interface for Cbc is maintained by Stefan Vigerske, Humboldt-University Berlin, in a separate COIN-OR project called GAMSLinks.<BR>
+For more information visit the web site for
+<a href="http://www.coin-or.org">COIN-OR</a>,
+<a href="https://projects.coin-or.org/Cbc">Cbc<a>,
+<a href="https://projects.coin-or.org/Cgl">Cgl<a>,
+<a href="https://projects.coin-or.org/Clp">Clp<a>, and
+<a href="https://projects.coin-or.org/GAMSlinks">GAMSlinks</a>.<BR>
+For documentation of GAMS parameters, see the <A href="http://www.gams.com/docs/parame.htm">GAMS parameters documentation</A>.<BR><BR>
+CBC implements a branch and cut algorithm.
+There are many parameters which can affect the performance.<BR>
+First just try with default settings and look carefully at the log file.<BR>
+Did cuts help? Did they take too long? Look at the output to see which cuts were effective and then do some tuning (see the option cuts).<BR>
+If the pre-processing reduced the size of the problem or strengthened many coefficients then it is probably wise to leave it on.<BR>
+Switch off heuristics which did not provide solutions.<BR>
+The other major area to look at is the search.
+Hopefully good solutions were obtained fairly early in the search so the important point is to select the best variable to branch on.
+See whether strong branching did a good job - or did it just take a lot of iterations.
+Adjust the options strongbranching and trustpseudocosts.
+<p>For more information about this solver please inspect the
+complete <a href="docs/solvers/coin.pdf">CBCD manual</a>.
+
+<h2>Summary of CBCD Options</h2>
+<table>
+<tr><th height=75 valign=bottom colspan=2 align=left><h3>General Options</h3></th></tr>
+<tr><td><a href="#iterlim">
+iterlim</a></td>
+<td>iteration limit</td></tr>
+<tr><td><a href="#names">
+names</a></td>
+<td>specifies whether variable and equation names should be given to CBC</td></tr>
+<tr><td><a href="#reslim">
+reslim</a></td>
+<td>resource limit</td></tr>
+<tr><td><a href="#special">
+special</a></td>
+<td>options passed unseen to CBC</td></tr>
+<tr><td><a href="#writemps">
+writemps</a></td>
+<td>create MPS file for problem</td></tr>
+<tr><th height=75 valign=bottom colspan=2 align=left><h3>LP Options</h3></th></tr>
+<tr><td><a href="#crash">
+crash</a></td>
+<td>use crash method to get dual feasible</td></tr>
+<tr><td><a href="#crossover">
+crossover</a></td>
+<td>crossover to simplex algorithm after barrier</td></tr>
+<tr><td><a href="#dualpivot">
+dualpivot</a></td>
+<td>dual pivot choice algorithm</td></tr>
+<tr><td><a href="#idiotcrash">
+idiotcrash</a></td>
+<td>idiot crash</td></tr>
+<tr><td><a href="#maxfactor">
+maxfactor</a></td>
+<td>maximum number of iterations between refactorizations</td></tr>
+<tr><td><a href="#perturbation">
+perturbation</a></td>
+<td>perturbation of problem</td></tr>
+<tr><td><a href="#presolve">
+presolve</a></td>
+<td>switch for initial presolve of LP</td></tr>
+<tr><td><a href="#primalpivot">
+primalpivot</a></td>
+<td>primal pivot choice algorithm</td></tr>
+<tr><td><a href="#scaling">
+scaling</a></td>
+<td>scaling method</td></tr>
+<tr><td><a href="#sifting">
+sifting</a></td>
+<td>synonym for sprint crash</td></tr>
+<tr><td><a href="#sprintcrash">
+sprintcrash</a></td>
+<td>sprint crash</td></tr>
+<tr><td><a href="#startalg">
+startalg</a></td>
+<td>LP solver for root node</td></tr>
+<tr><td><a href="#tol_dual">
+tol_dual</a></td>
+<td>dual feasibility tolerance</td></tr>
+<tr><td><a href="#tol_presolve">
+tol_presolve</a></td>
+<td>tolerance used in presolve</td></tr>
+<tr><td><a href="#tol_primal">
+tol_primal</a></td>
+<td>primal feasibility tolerance</td></tr>
+<tr><th height=75 valign=bottom colspan=2 align=left><h3>MIP Options</h3></th></tr>
+<tr><td><a href="#coststrategy">
+coststrategy</a></td>
+<td>how to use costs as priorities</td></tr>
+<tr><td><a href="#cutoff">
+cutoff</a></td>
+<td>cutoff for objective function value</td></tr>
+<tr><td><a href="#increment">
+increment</a></td>
+<td>increment of cutoff when new incumbent</td></tr>
+<tr><td><a href="#mipstart">
+mipstart</a></td>
+<td>whether it should be tried to use the initial variable levels as initial MIP solution</td></tr>
+<tr><td><a href="#nodelim">
+nodelim</a></td>
+<td>node limit</td></tr>
+<tr><td><a href="#nodestrategy">
+nodestrategy</a></td>
+<td>how to select nodes</td></tr>
+<tr><td><a href="#nodlim">
+nodlim</a></td>
+<td>node limit</td></tr>
+<tr><td><a href="#optca">
+optca</a></td>
+<td>absolute stopping tolerance</td></tr>
+<tr><td><a href="#optcr">
+optcr</a></td>
+<td>relative stopping tolerance</td></tr>
+<tr><td><a href="#preprocess">
+preprocess</a></td>
+<td>integer presolve</td></tr>
+<tr><td><a href="#printfrequency">
+printfrequency</a></td>
+<td>frequency of status prints</td></tr>
+<tr><td><a href="#sollim">
+sollim</a></td>
+<td>limit on number of solutions</td></tr>
+<tr><td><a href="#strongbranching">
+strongbranching</a></td>
+<td>strong branching</td></tr>
+<tr><td><a href="#threads">
+threads</a></td>
+<td>number of threads to use (available on Unix variants only)</td></tr>
+<tr><td><a href="#tol_integer">
+tol_integer</a></td>
+<td>tolerance for integrality</td></tr>
+<tr><td><a href="#trustpseudocosts">
+trustpseudocosts</a></td>
+<td>after howmany nodes we trust the pseudo costs</td></tr>
+<tr><th height=75 valign=bottom colspan=2 align=left><h3>MIP Options for Cutting Plane Generators</h3></th></tr>
+<tr><td><a href="#cliquecuts">
+cliquecuts</a></td>
+<td>Clique Cuts</td></tr>
+<tr><td><a href="#cutdepth">
+cutdepth</a></td>
+<td>depth in tree at which cuts are applied</td></tr>
+<tr><td><a href="#cuts">
+cuts</a></td>
+<td>global switch for cutgenerators</td></tr>
+<tr><td><a href="#cut_passes_root">
+cut_passes_root</a></td>
+<td>number of cut passes at root node</td></tr>
+<tr><td><a href="#cut_passes_tree">
+cut_passes_tree</a></td>
+<td>number of cut passes at nodes in the tree</td></tr>
+<tr><td><a href="#flowcovercuts">
+flowcovercuts</a></td>
+<td>Flow Cover Cuts</td></tr>
+<tr><td><a href="#gomorycuts">
+gomorycuts</a></td>
+<td>Gomory Cuts</td></tr>
+<tr><td><a href="#knapsackcuts">
+knapsackcuts</a></td>
+<td>Knapsack Cover Cuts</td></tr>
+<tr><td><a href="#liftandprojectcuts">
+liftandprojectcuts</a></td>
+<td>Lift and Project Cuts</td></tr>
+<tr><td><a href="#mircuts">
+mircuts</a></td>
+<td>Mixed Integer Rounding Cuts</td></tr>
+<tr><td><a href="#probingcuts">
+probingcuts</a></td>
+<td>Probing Cuts</td></tr>
+<tr><td><a href="#reduceandsplitcuts">
+reduceandsplitcuts</a></td>
+<td>Reduce and Split Cuts</td></tr>
+<tr><td><a href="#residualcapacitycuts">
+residualcapacitycuts</a></td>
+<td>Residual Capacity Cuts</td></tr>
+<tr><td><a href="#twomircuts">
+twomircuts</a></td>
+<td>Two Phase Mixed Integer Rounding Cuts</td></tr>
+<tr><th height=75 valign=bottom colspan=2 align=left><h3>MIP Options for Heuristics</h3></th></tr>
+<tr><td><a href="#combinesolutions">
+combinesolutions</a></td>
+<td>combine solutions heuristic</td></tr>
+<tr><td><a href="#feaspump">
+feaspump</a></td>
+<td>feasibility pump</td></tr>
+<tr><td><a href="#feaspump_passes">
+feaspump_passes</a></td>
+<td>number of feasibility passes</td></tr>
+<tr><td><a href="#greedyheuristic">
+greedyheuristic</a></td>
+<td>greedy heuristic</td></tr>
+<tr><td><a href="#heuristics">
+heuristics</a></td>
+<td>global switch for heuristics</td></tr>
+<tr><td><a href="#localtreesearch">
+localtreesearch</a></td>
+<td>local tree search heuristic</td></tr>
+<tr><td><a href="#rins">
+rins</a></td>
+<td>relaxed induced neighborhood search</td></tr>
+<tr><td><a href="#roundingheuristic">
+roundingheuristic</a></td>
+<td>rounding heuristic</td></tr></table>
+<h2>Detailed Descriptions of CBCD Options</h2>
+
+<h4><a name="cliquecuts">
+cliquecuts</a>
+<i> (string)</i> Clique Cuts</h4><p>
+
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglClique">clique cuts</a>.
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+Clique cuts are of the form "sum of a set of variables <= 1".<BR>
+Reference: M. Eso, Parallel branch and cut for set partitioning, Cornell University, 1999.
+
+<br><i>(default = ifmove)</i>
+
+<h4><a name="combinesolutions">
+combinesolutions</a>
+<i> (integer)</i> combine solutions heuristic</h4><p>
+
+This parameter control the use of a heuristic which does branch and cut on the given problem by just using variables which have appeared in one or more solutions.
+It is obviously only tried after two or more solutions.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the combine solutions heuristic off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the combine solutions heuristic on.</td></tr>
+</table>
+
+<h4><a name="coststrategy">
+coststrategy</a>
+<i> (string)</i> how to use costs as priorities</h4><p>
+
+This parameter influence the branching variable selection.<BR>
+If turned on, then the variables are sorted in order of their absolute costs, and branching is done first on variables with largest cost.
+This primitive strategy can be surprisingly effective.
+
+<br><i>(default = off)</i>
+<table>
+<tr valign="top"><td width=20 align=right>off</td><td>.
+Turns off a specific cost strategy.</td></tr>
+<tr valign="top"><td width=20 align=right>priorities</td><td>.
+Assigns highest priority to variables with largest absolute cost.</td></tr>
+<tr valign="top"><td width=20 align=right>columnorder</td><td>.
+Assigns the priorities 1, 2, 3,.. with respect to the column ordering.</td></tr>
+<tr valign="top"><td width=20 align=right>binaryfirst</td><td>.
+Handles two sets of priorities such that binary variables get high priority.</td></tr>
+<tr valign="top"><td width=20 align=right>binarylast</td><td>.
+Handles two sets of priorities such that binary variables get low priority.</td></tr>
+<tr valign="top"><td width=20 align=right>length</td><td>.
+Assigns high priority to variables that are at most nonzero.</td></tr>
+</table>
+
+<h4><a name="crash">
+crash</a>
+<i> (string)</i> use crash method to get dual feasible</h4><p>
+
+Determines whether CLP should use a crash algorithm to find a dual feasible basis.
+
+<br><i>(default = off)</i>
+<table>
+<tr valign="top"><td width=20 align=right>off</td><td>.
+Switch off the creation of dual feasible basis by the crash method.</td></tr>
+<tr valign="top"><td width=20 align=right>on</td><td>.
+Switch on the creation of dual feasible basis by the crash method.</td></tr>
+<tr valign="top"><td width=20 align=right>solow_halim</td><td>.
+Switch on a crash variant due to Solow and Halim.</td></tr>
+<tr valign="top"><td width=20 align=right>halim_solow</td><td>.
+Switch on a crash variant due to Solow and Halim with modifications of John J. Forrest.</td></tr>
+</table>
+
+<h4><a name="crossover">
+crossover</a>
+<i> (integer)</i> crossover to simplex algorithm after barrier</h4><p>
+
+Determines whether CLP should crossover to the simplex algorithm after the barrier algorithm finished.<BR>
+Interior point algorithms do not obtain a basic solution.
+This option will crossover to a basic solution suitable for ranging or branch and cut.
+With the current state of the quadratic solver it may be a good idea to switch off the crossover for quadratic problems (and maybe presolve as well).
+CLP does this.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turn off crossover to simplex algorithm after barrier algorithm finished.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turn on crossover to simplex algorithm after barrier algorithm finished.</td></tr>
+</table>
+
+<h4><a name="cutdepth">
+cutdepth</a>
+<i> (integer)</i> depth in tree at which cuts are applied</h4><p>
+
+If the depth in the tree is a multiple of cutdepth, then cut generators are applied.<BR>
+Cut generators may be off, on only at the root, on if they look useful, or on at some interval.
+Setting this option to a positive value K let CBC call a cutgenerator on a node whenever the depth in the tree is a multiple of K.
+
+<br><i>(default = -1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>-1</td><td>.
+Does not turn on cut generators because the depth of the tree is a multiple of a value.</td></tr>
+</table>
+
+<h4><a name="cutoff">
+cutoff</a>
+<i> (real)</i> cutoff for objective function value</h4><p>
+
+CBC stops if the objective function values exceeds (in case of maximization) or falls below (in case of minimization) this value.
+
+<br><i>(default = GAMS cutoff)</i>
+
+<h4><a name="cuts">
+cuts</a>
+<i> (string)</i> global switch for cutgenerators</h4><p>
+
+A global switch to turn on or off the cutgenerators.<BR>
+This can be used to switch on or off all default cut generators.
+Then you can set individual ones off or on using the specific options.
+
+<br><i>(default = on)</i>
+<table>
+<tr valign="top"><td width=20 align=right>off</td><td>.
+Turns off all cut generators.</td></tr>
+<tr valign="top"><td width=20 align=right>on</td><td>.
+Turns on all default cut generators and CBC will try them in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> on how to fine tune the behaviour).</td></tr>
+<tr valign="top"><td width=20 align=right>root</td><td>.
+Let CBC generate cuts only at the root node.</td></tr>
+<tr valign="top"><td width=20 align=right>ifmove</td><td>.
+Let CBC use cut generators in the tree if they look as if they are doing some good and moving the objective value.</td></tr>
+<tr valign="top"><td width=20 align=right>forceon</td><td>.
+Turns on all default cut generators and force CBC to use the cut generator at every node.</td></tr>
+</table>
+
+<h4><a name="cut_passes_root">
+cut_passes_root</a>
+<i> (integer)</i> number of cut passes at root node</h4><p>
+
+Determines the number of rounds that the cut generators are applied in the root node.<BR>
+A negative value -n means that n passes are also applied if the objective does not drop.
+
+<br><i>(default = 100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop in the objective function value is small) if it has less than 5000 columns, and 20 passes otherwise.)</i>
+
+<h4><a name="cut_passes_tree">
+cut_passes_tree</a>
+<i> (integer)</i> number of cut passes at nodes in the tree</h4><p>
+
+Determines the number of rounds that the cut generators are applied in the nodes of the tree other than the root node.<BR>
+A negative value -n means that n passes are also applied if the objective does not drop.
+
+<br><i>(default = 1)</i>
+
+<h4><a name="dualpivot">
+dualpivot</a>
+<i> (string)</i> dual pivot choice algorithm</h4><p>
+
+Choice of the pivoting strategy in the dual simplex algorithm.
+
+<br><i>(default = auto)</i>
+<table>
+<tr valign="top"><td width=20 align=right>auto</td><td>.
+Let CLP use a variant of the steepest choice method which starts like partial, i.e., scans only a subset of the primal infeasibilities,
+and later changes to full pricing when the factorization becomes denser.</td></tr>
+<tr valign="top"><td width=20 align=right>dantzig</td><td>.
+Let CLP use the pivoting strategy due to Dantzig.</td></tr>
+<tr valign="top"><td width=20 align=right>steepest</td><td>.
+Let CLP use the steepest choice method.</td></tr>
+<tr valign="top"><td width=20 align=right>partial</td><td>.
+Let CLP use a variant of the steepest choice method which scans only a subset of the primal infeasibilities to select the pivot step.</td></tr>
+</table>
+
+<h4><a name="feaspump">
+feaspump</a>
+<i> (integer)</i> feasibility pump</h4><p>
+
+This parameter control the use of the feasibility pump heuristic at the root.<BR>
+This is due to Fischetti and Lodi and uses a sequence of LPs to try and get an integer feasible solution.
+Some fine tuning is available by the <a href="#feaspump_passes">option feaspump_passes</a>.<BR>
+Reference: M. Fischetti, F. Glover, and A. Lodi, The feasibility pump, Math. Programming, 104 (2005), pp. 91-104.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the feasibility pump off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the feasiblity pump on.</td></tr>
+</table>
+
+<h4><a name="feaspump_passes">
+feaspump_passes</a>
+<i> (integer)</i> number of feasibility passes</h4><p>
+
+This fine tunes the feasibility pump heuristic by setting the number of passes.
+
+<br><i>(default = 20)</i>
+
+<h4><a name="flowcovercuts">
+flowcovercuts</a>
+<i> (string)</i> Flow Cover Cuts</h4><p>
+
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglFlowCover">flow cover cuts</a>.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+The flow cover cut generator generates lifted simple generalized flow cover inequalities.
+Since flow cover inequalities are generally not facet-defining, they are lifted to obtain stronger inequalities.
+Although flow cover inequalities requires a special problem structure to be generated, they are quite useful for solving general mixed integer linear programs.<BR>
+Reference: Z. Gu, G.L. Nemhauser, M.W.P. Savelsbergh, Lifted flow cover inequalities for mixed 0-1 integer programs, Math. Programming A 85 (1999) 439-467.
+
+<br><i>(default = ifmove)</i>
+
+<h4><a name="gomorycuts">
+gomorycuts</a>
+<i> (string)</i> Gomory Cuts</h4><p>
+
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglGomory">mixed-integer Gomory cuts</a>.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+Reference: Laurence A. Wolsey, Integer Programming, Wiley, John & Sons, (1998) 124-132.
+
+<br><i>(default = ifmove)</i>
+
+<h4><a name="greedyheuristic">
+greedyheuristic</a>
+<i> (string)</i> greedy heuristic</h4><p>
+
+This parameter control the use of a pair of greedy heuristic which will try to obtain a solution.
+It may just fix a percentage of variables and then try a small branch and cut run.
+
+<br><i>(default = on)</i>
+<table>
+<tr valign="top"><td width=20 align=right>off</td><td>.
+Turns off the greedy heuristic.</td></tr>
+<tr valign="top"><td width=20 align=right>on</td><td>.
+Turns on the greedy heuristic.</td></tr>
+<tr valign="top"><td width=20 align=right>root</td><td>.
+Turns on the greedy heuristic only for the root node.</td></tr>
+</table>
+
+<h4><a name="heuristics">
+heuristics</a>
+<i> (integer)</i> global switch for heuristics</h4><p>
+
+This parameter can be used to switch on or off all heuristics, except for the local tree search as it dramatically alters the search.
+Then you can set individual ones off or on.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns all MIP heuristics off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns all MIP heuristics on (except <a href="#localtreesearch">local tree search</a>).</td></tr>
+</table>
+
+<h4><a name="idiotcrash">
+idiotcrash</a>
+<i> (integer)</i> idiot crash</h4><p>
+
+This is a type of `crash' which works well on some homogeneous problems.
+It works best on problems with unit elements and right hand sides but will do something to any model.
+It should only be used before the primal simplex algorithm.<BR>
+A positive number determines the number of passes that idiotcrash is called.
+
+<br><i>(default = -1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>-1</td><td>.
+Let CLP decide by itself whether to use it.</td></tr>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Switch this method off.</td></tr>
+</table>
+
+<h4><a name="increment">
+increment</a>
+<i> (real)</i> increment of cutoff when new incumbent</h4><p>
+
+A valid solution must be at least this much better than last integer solution.<BR>
+If this option is not set then it CBC will try and work one out.
+E.g., if all objective coefficients are multiples of 0.01 and only integer variables have entries in objective then this can be set to 0.01.
+
+<br><i>(default = GAMS cheat)</i>
+
+<h4><a name="iterlim">
+iterlim</a>
+<i> (integer)</i> iteration limit</h4><p>
+
+For an LP, this is the maximum number of iterations to solve the LP.
+For a MIP, this option is ignored.
+
+<br><i>(default = GAMS iterlim)</i>
+
+<h4><a name="knapsackcuts">
+knapsackcuts</a>
+<i> (string)</i> Knapsack Cover Cuts</h4><p>
+
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglKnapsackCover">knapsack cover cuts</a>.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+The knapsack cover cut generator looks for a series of different types of minimal covers.
+If a minimal cover is found, it lifts the associated minimal cover inequality and adds the lifted cut to the cut set.<BR>
+Reference: S. Martello, and P. Toth, Knapsack Problems, Wiley, 1990, p30.
+
+<br><i>(default = ifmove)</i>
+
+<h4><a name="liftandprojectcuts">
+liftandprojectcuts</a>
+<i> (string)</i> Lift and Project Cuts</h4><p>
+
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglLandP">lift and project cuts</a>.
+They might be expensive to compute, thus they are switched off by default.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+Reference: E. Balas and M. Perregaard, A precise correspondence between lift-and-project cuts, simple disjunctive cuts, and mixed integer Gomory cuts for 0-1 programming. Math. Program., 94(203,Ser. B):221-245,2003.
+
+<br><i>(default = off)</i>
+
+<h4><a name="localtreesearch">
+localtreesearch</a>
+<i> (integer)</i> local tree search heuristic</h4><p>
+
+This parameter control the use of a local search algorithm when a solution is found.<BR>
+It is from Fischetti and Lodi and is not really a heuristic although it can be used as one (with limited functionality).
+This heuristic is not controlled by the <a href="#heuristics">option heuristics</a>.<BR>
+Reference: M. Fischetti and A. Lodi, Local Branching, Math. Programming B, 98 (2003), pp. 23-47.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the local tree search off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the local tree search on.</td></tr>
+</table>
+
+<h4><a name="maxfactor">
+maxfactor</a>
+<i> (integer)</i> maximum number of iterations between refactorizations</h4><p>
+
+Maximum number of iterations between refactorizations in CLP.<BR>
+If this is left at the default value of 200 then CLP will guess at a value to use.
+CLP may decide to refactorize earlier for accuracy.
+
+<br><i>(default = 200)</i>
+
+<h4><a name="mipstart">
+mipstart</a>
+<i> (integer)</i> whether it should be tried to use the initial variable levels as initial MIP solution</h4><p>
+
+This option controls the use of advanced starting values for mixed integer programs.
+A setting of 1 indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Do not use the initial variable levels.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Try to use the initial variable levels as a MIP starting solution.</td></tr>
+</table>
+
+<h4><a name="mircuts">
+mircuts</a>
+<i> (string)</i> Mixed Integer Rounding Cuts</h4><p>
+
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglMixedIntegerRounding2">mixed integer rounding cuts</a>.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+Reference: H. Marchand and L. A. Wolsey, Aggregation and Mixed Integer Rounding to Solve MIPs, Operations Research, 49(3), (2001).
+
+<br><i>(default = ifmove)</i>
+
+<h4><a name="names">
+names</a>
+<i> (integer)</i> specifies whether variable and equation names should be given to CBC</h4><p>
+
+This option causes GAMS names for the variables and equations to be loaded into Cbc.
+These names will then be used for error messages, log entries, and so forth.
+Turning names off may help if memory is very tight.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Do not load variable and equation names.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Load variable and equation names.</td></tr>
+</table>
+
+<h4><a name="nodelim">
+nodelim</a>
+<i> (integer)</i> node limit</h4><p>
+
+Maximum number of nodes that are considered in the Branch and Bound.
+
+<br><i>(default = GAMS nodlim)</i>
+
+<h4><a name="nodestrategy">
+nodestrategy</a>
+<i> (string)</i> how to select nodes</h4><p>
+
+This determines the strategy used to select the next node from the branch and cut tree.
+
+<br><i>(default = fewest)</i>
+<table>
+<tr valign="top"><td width=20 align=right>hybrid</td><td>.
+Let CBC do first a breath search on nodes with a small depth in the tree and then switch to choose nodes with fewest infeasibilities.</td></tr>
+<tr valign="top"><td width=20 align=right>fewest</td><td>.
+This will let CBC choose the node with the fewest infeasibilities.</td></tr>
+<tr valign="top"><td width=20 align=right>depth</td><td>.
+This will let CBC always choose the node deepest in tree.
+It gives minimum tree size but may take a long time to find the best solution.</td></tr>
+<tr valign="top"><td width=20 align=right>upfewest</td><td>.
+This will let CBC choose the node with the fewest infeasibilities and do up branches first.</td></tr>
+<tr valign="top"><td width=20 align=right>downfewest</td><td>.
+This will let CBC choose the node with the fewest infeasibilities and do down branches first.</td></tr>
+<tr valign="top"><td width=20 align=right>updepth</td><td>.
+This will let CBC choose the node deepest in tree and do up branches first.</td></tr>
+<tr valign="top"><td width=20 align=right>downdepth</td><td>.
+This will let CBC choose the node deepest in tree and do down branches first.</td></tr>
+</table>
+
+<h4><a name="nodlim">
+nodlim</a>
+<i> (integer)</i> node limit</h4><p>
+
+Maximum number of nodes that are considered in the Branch and Bound.
+This option is overwritten by nodelim, if set.
+
+<br><i>(default = GAMS nodlim)</i>
+
+<h4><a name="optca">
+optca</a>
+<i> (real)</i> absolute stopping tolerance</h4><p>
+
+Absolute optimality criterion for a MIP.
+CBC stops if the gap between the best known solution and the best possible solution is less than this value.
+
+<br><i>(default = GAMS optca)</i>
+
+<h4><a name="optcr">
+optcr</a>
+<i> (real)</i> relative stopping tolerance</h4><p>
+
+Relative optimality criterion for a MIP.
+CBC stops if the relative gap between the best known solution and the best possible solution is less than this value.
+
+<br><i>(default = GAMS optcr)</i>
+
+<h4><a name="perturbation">
+perturbation</a>
+<i> (integer)</i> perturbation of problem</h4><p>
+
+Determines whether CLP should perturb the problem before starting.
+Perturbation helps to stop cycling, but CLP uses other measures for this.
+However, large problems and especially ones with unit elements and unit right hand sides or costs benefit from perturbation.
+Normally CLP tries to be intelligent, but you can switch this off.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns off perturbation of LP.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns on perturbation of LP.</td></tr>
+</table>
+
+<h4><a name="preprocess">
+preprocess</a>
+<i> (string)</i> integer presolve</h4><p>
+
+This option controls the MIP specific presolve routines.
+They try to reduce the size of the model in a similar way to presolve and also try to strengthen the model.
+This can be very useful and is worth trying.
+
+<br><i>(default = on)</i>
+<table>
+<tr valign="top"><td width=20 align=right>off</td><td>.
+Turns off the presolve routines.</td></tr>
+<tr valign="top"><td width=20 align=right>on</td><td>.
+Turns on the presolve routines.</td></tr>
+<tr valign="top"><td width=20 align=right>equal</td><td>.
+Turns on the presolve routines and let CBC turn inequalities with more than 5 elements into equalities (cliques) by adding slack variables.</td></tr>
+<tr valign="top"><td width=20 align=right>equalall</td><td>.
+Turns on the presolve routines and let CBC turn all inequalities into equalities by adding slack variables.</td></tr>
+<tr valign="top"><td width=20 align=right>sos</td><td>.
+This option let CBC search for rows with upper bound 1 and where all nonzero coefficients are 1 and creates special ordered sets if the sets are not overlapping and all integer variables (except for at most one) are in the sets.</td></tr>
+<tr valign="top"><td width=20 align=right>trysos</td><td>.
+This option is similar to sos, but allows any number integer variables to be outside of the sets.</td></tr>
+</table>
+
+<h4><a name="presolve">
+presolve</a>
+<i> (integer)</i> switch for initial presolve of LP</h4><p>
+
+Presolve analyzes the model to find such things as redundant constraints, constraints which fix some variables, constraints which can be transformed into bounds, etc.
+For the initial solve of any problem this is worth doing unless you know that it will have no effect.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns off the initial presolve.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns on the initial presolve.</td></tr>
+</table>
+
+<h4><a name="primalpivot">
+primalpivot</a>
+<i> (string)</i> primal pivot choice algorithm</h4><p>
+
+Choice of the pivoting strategy in the primal simplex algorithm.
+
+<br><i>(default = auto)</i>
+<table>
+<tr valign="top"><td width=20 align=right>auto</td><td>.
+Let CLP use a variant of the exact devex method.</td></tr>
+<tr valign="top"><td width=20 align=right>dantzig</td><td>.
+Let CLP use the pivoting strategy due to Dantzig.</td></tr>
+<tr valign="top"><td width=20 align=right>steepest</td><td>.
+Let CLP use the steepest choice method.</td></tr>
+<tr valign="top"><td width=20 align=right>partial</td><td>.
+Let CLP use a variant of the exact devex method which scans only a subset of the primal infeasibilities to select the pivot step.</td></tr>
+<tr valign="top"><td width=20 align=right>exact</td><td>.
+Let CLP use the exact devex method.</td></tr>
+<tr valign="top"><td width=20 align=right>change</td><td>.
+Let CLP initially use Dantzig pivot method until the factorization becomes denser.</td></tr>
+</table>
+
+<h4><a name="printfrequency">
+printfrequency</a>
+<i> (integer)</i> frequency of status prints</h4><p>
+
+Controls the number of nodes that are evaluated between status prints.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Automatic choice, which is 100 for large problems and 1000 for small problems.</td></tr>
+</table>
+
+<h4><a name="probingcuts">
+probingcuts</a>
+<i> (string)</i> Probing Cuts</h4><p>
+
+Determines whether and when CBC should try to generate cuts based on <a href="https://projects.coin-or.org/Cgl/wiki/CglProbing">probing</a>.<BR>
+Additional to the values for the <a href="#cuts">option cuts</a> three more values are possible here.<BR>
+Reference: M. Savelsbergh, Preprocessing and Probing Techniques for Mixed Integer Programming Problems, ORSA Journal on Computing 6 (1994), 445.
+
+<br><i>(default = ifmove)</i>
+<table>
+<tr valign="top"><td width=20 align=right>off</td><td>.
+Turns off Probing.</td></tr>
+<tr valign="top"><td width=20 align=right>on</td><td>.
+Turns on Probing and CBC will try it in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> how to fine tune this behaviour).</td></tr>
+<tr valign="top"><td width=20 align=right>root</td><td>.
+Let CBC do Probing only at the root node.</td></tr>
+<tr valign="top"><td width=20 align=right>ifmove</td><td>.
+Let CBC do Probing in the tree if it looks as if it is doing some good and moves the objective value.</td></tr>
+<tr valign="top"><td width=20 align=right>forceon</td><td>.
+Turns on Probing and forces CBC to do Probing at every node.</td></tr>
+<tr valign="top"><td width=20 align=right>forceonbut</td><td>.
+Turns on Probing and forces CBC to call the cut generator at every node, but does only probing, not strengthening etc.</td></tr>
+<tr valign="top"><td width=20 align=right>forceonstrong</td><td>.
+If CBC is forced to turn Probing on at every node (by setting this option to force), but this generator produces no cuts, then it is actually turned on only weakly (i.e., just every now and then).
+Setting forceonstrong forces CBC strongly to do probing at every node.</td></tr>
+<tr valign="top"><td width=20 align=right>forceonbutstrong</td><td>.
+This is like forceonstrong, but does only probing (column fixing) and turns off row strengthening, so the matrix will not change inside the branch and bound.</td></tr>
+</table>
+
+<h4><a name="reduceandsplitcuts">
+reduceandsplitcuts</a>
+<i> (string)</i> Reduce and Split Cuts</h4><p>
+
+Determines whether and when CBC should try to generate reduced and split cuts.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+Reduce and split cuts are variants of Gomory cuts.
+Starting from the current optimal tableau, linear combinations of the rows of the current optimal simplex tableau are used for generating Gomory cuts.
+The choice of the linear combinations is driven by the objective of reducing the coefficients of the non basic continuous variables in the resulting row.<BR>
+Reference: K. Anderson, G. Cornuejols, and Yanjun Li, Reduce-and-Split Cuts: Improving the Performance of Mixed Integer Gomory Cuts, Management Science 51 (2005).
+
+<br><i>(default = off)</i>
+
+<h4><a name="residualcapacitycuts">
+residualcapacitycuts</a>
+<i> (string)</i> Residual Capacity Cuts</h4><p>
+
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglResidualCapacity">residual capacity cuts</a>.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+These inequalities are particularly useful for Network Design and Capacity Planning models.<BR>
+References:<BR>
+T.L. Magnanti, P. Mirchandani, and R. Vachani, The convex hull of two core capacitated network design problems, Math. Programming, 60 (1993), pp. 233-250.<BR>
+A. Atamturk and D. Rajan, On splittable and unsplittable flow capacitated network design arc-set polyhedra, Math. Programming, 92 (2002), pp. 315-333.
+
+<br><i>(default = off)</i>
+
+<h4><a name="reslim">
+reslim</a>
+<i> (real)</i> resource limit</h4><p>
+
+Maximum time in seconds.
+
+<br><i>(default = GAMS reslim)</i>
+
+<h4><a name="rins">
+rins</a>
+<i> (integer)</i> relaxed induced neighborhood search</h4><p>
+
+This parameter control the use of the relaxed induced neighborhood search heuristic.<BR>
+This heuristic compares the current solution with the best incumbent, fixes all discrete variables with the same value, presolves the problem, and does a branch and bound for 200 nodes.<BR>
+Reference: E. Danna, E. Rothberg, and C. Le Pape, Exploring relaxation induced neighborhoods to improve MIP solutions, Math. Programming, 102 (1) (2005), pp. 71-91.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the relaxed induced neighborhood search off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the relaxed induced neighborhood search on.</td></tr>
+</table>
+
+<h4><a name="roundingheuristic">
+roundingheuristic</a>
+<i> (integer)</i> rounding heuristic</h4><p>
+
+This parameter control the use of a simple (but effective) rounding heuristic at each node of tree.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the rounding heuristic off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the rounding heuristic on.</td></tr>
+</table>
+
+<h4><a name="scaling">
+scaling</a>
+<i> (string)</i> scaling method</h4><p>
+
+Scaling can help in solving problems which might otherwise fail because of lack of accuracy.
+It can also reduce the number of iterations.
+It is not applied if the range of elements is small.
+Both methods do several passes alternating between rows and columns using current scale factors from one and applying them to the other.
+
+<br><i>(default = auto)</i>
+<table>
+<tr valign="top"><td width=20 align=right>off</td><td>.
+Turns off scaling.</td></tr>
+<tr valign="top"><td width=20 align=right>auto</td><td>.
+Let CLP choose the scaling method automatically.
+It decides for one of these methods depending on which gives the better ratio of the largest element to the smallest one.</td></tr>
+<tr valign="top"><td width=20 align=right>equilibrium</td><td>.
+Let CLP use an equilibrium based scaling method which uses the largest scaled element.</td></tr>
+<tr valign="top"><td width=20 align=right>geometric</td><td>.
+Let CLP use a geometric based scaling method which uses the squareroot of the product of largest and smallest element.</td></tr>
+</table>
+
+<h4><a name="sifting">
+sifting</a>
+<i> (integer)</i> synonym for sprint crash</h4><p>
+
+Synonym for <a href="#sprintcrash">sprintcrash</a>.
+
+<br><i>(default = -1)</i>
+
+<h4><a name="sollim">
+sollim</a>
+<i> (integer)</i> limit on number of solutions</h4><p>
+
+A limit on number of feasible solutions that CBC should find for a MIP.
+
+<br><i>(default = -1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>-1</td><td>.
+No limit on the number of feasible solutions.</td></tr>
+</table>
+
+<h4><a name="special">
+special</a>
+<i> (string)</i> options passed unseen to CBC</h4><p>
+
+This parameter let you specify CBC options which are not supported by the GAMS/CoinCBC interface.<BR>
+The string value given to this parameter is split up into parts at each space and added to the array of parameters given to CBC (in front of the -solve command).
+Hence, you can use it like the command line parameters for the CBC standalone version.
+
+
+<h4><a name="sprintcrash">
+sprintcrash</a>
+<i> (integer)</i> sprint crash</h4><p>
+
+For long and thin problems this method may solve a series of small problems created by taking a subset of the columns.
+Cplex calls it `sifting'.
+A positive number determines the number of passes that sprintcrash is called.
+
+<br><i>(default = -1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>-1</td><td>.
+Let CLP decide by itself whether to use it.</td></tr>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Switch this method off.</td></tr>
+</table>
+
+<h4><a name="startalg">
+startalg</a>
+<i> (string)</i> LP solver for root node</h4><p>
+
+Determines the algorithm to use for an LP or the initial LP relaxation if the problem is a MIP.
+
+<br><i>(default = dual)</i>
+<table>
+<tr valign="top"><td width=20 align=right>primal</td><td>.
+Let CLP use the primal simplex algorithm.</td></tr>
+<tr valign="top"><td width=20 align=right>dual</td><td>.
+Let CLP use the dual simplex algorithm.</td></tr>
+<tr valign="top"><td width=20 align=right>barrier</td><td>.
+Let CLP use a primal dual predictor corrector algorithm.</td></tr>
+</table>
+
+<h4><a name="strongbranching">
+strongbranching</a>
+<i> (integer)</i> strong branching</h4><p>
+
+Determines the number of variables to look at in strong branching.<BR>
+In order to decide which variable to branch on, the code will choose up to this number of unsatisfied variables and try minimal up and down branches.
+The most effective one is chosen.
+If a variable is branched on many times then the previous average up and down costs may be used - see the <a href="#trustpseudocosts">option trustpseudocosts</a>.
+
+<br><i>(default = 5)</i>
+
+<h4><a name="threads">
+threads</a>
+<i> (integer)</i> number of threads to use (available on Unix variants only)</h4><p>
+
+This option controls the multithreading feature of CBC.
+A number between 1 and 100 sets the number of threads used for parallel branch and bound.
+A number 100+n with n between 1 and 100 says that n threads are used to parallelize the branch and bound, but also heuristics such as RINS which do branch and bound on a reduced model also use threads.
+A number 200+n with n between 1 and 100 says that n threads are used to parallelize the branch and bound, but also the cut generators at the root node (i.e., before threads are useful) are run in parallel.
+A number 300+n with n between 1 and 100 combines the 100+n and 200+n options.
+Thus, n threads are used to parallelize the branch and bound, but also heuristics use threads and the cut generators at the root node are run in parallel.
+The 100+n, 200+n, and 300+n options are experimental.
+
+<br><i>(default = 1)</i>
+
+<h4><a name="tol_dual">
+tol_dual</a>
+<i> (real)</i> dual feasibility tolerance</h4><p>
+
+The maximum amount the dual constraints can be violated and still be considered feasible.
+
+<br><i>(default = 1e-7)</i>
+
+<h4><a name="tol_integer">
+tol_integer</a>
+<i> (real)</i> tolerance for integrality</h4><p>
+
+For an optimal solution, no integer variable may be farther than this from an integer value.
+
+<br><i>(default = 1e-6)</i>
+
+<h4><a name="tol_presolve">
+tol_presolve</a>
+<i> (real)</i> tolerance used in presolve</h4><p>
+
+The tolerance used in presolve.
+
+<br><i>(default = 1e-8)</i>
+
+<h4><a name="tol_primal">
+tol_primal</a>
+<i> (real)</i> primal feasibility tolerance</h4><p>
+
+The maximum amount the primal constraints can be violated and still be considered feasible.
+
+<br><i>(default = 1e-7)</i>
+
+<h4><a name="trustpseudocosts">
+trustpseudocosts</a>
+<i> (integer)</i> after howmany nodes we trust the pseudo costs</h4><p>
+
+Using strong branching computes pseudo-costs.
+This parameter determines after how many branches for a variable we just trust the pseudo costs and do not do any more strong branching.
+
+<br><i>(default = 5)</i>
+
+<h4><a name="twomircuts">
+twomircuts</a>
+<i> (string)</i> Two Phase Mixed Integer Rounding Cuts</h4><p>
+
+Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglTwomir">two phase mixed integer rounding cuts</a>.<BR>
+See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
+Reference: S. Dash, and O. Guenluek, Valid Inequalities Based on Simple Mixed-integer Sets, to appear in Math. Programming.
+
+<br><i>(default = root)</i>
+
+<h4><a name="writemps">
+writemps</a>
+<i> (string)</i> create MPS file for problem</h4><p>
+
+Write the problem formulation in MPS format.
+The parameter value is the name of the MPS file.
+
+</body></html>

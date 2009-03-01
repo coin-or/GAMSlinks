@@ -9,7 +9,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = GamsUtils
+SUBDIRS = GamsUtils SolverInterfaces
 if GAMSLINKS_BUILD_GAMSIO
   SUBDIRS += GamsIO
 endif

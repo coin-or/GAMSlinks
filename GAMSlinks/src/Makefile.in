@@ -96,7 +96,8 @@ includecoinHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(includecoin_HEADERS)
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = GamsUtils GamsIO Cbc Glpk Ipopt Bonmin Osi OS SCIP
+DIST_SUBDIRS = GamsUtils SolverInterfaces GamsIO Cbc Glpk Ipopt Bonmin \
+	Osi OS SCIP
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ADDLIBS = @ADDLIBS@
@@ -252,6 +253,7 @@ GAMSLINKS_BUILD_OS_FALSE = @GAMSLINKS_BUILD_OS_FALSE@
 GAMSLINKS_BUILD_OS_TRUE = @GAMSLINKS_BUILD_OS_TRUE@
 GAMSLINKS_BUILD_SCIP_FALSE = @GAMSLINKS_BUILD_SCIP_FALSE@
 GAMSLINKS_BUILD_SCIP_TRUE = @GAMSLINKS_BUILD_SCIP_TRUE@
+GAMS_ADDLIBS = @GAMS_ADDLIBS@
 GAMS_PATH = @GAMS_PATH@
 GLPKINCDIR = @GLPKINCDIR@
 GLPKLIB = @GLPKLIB@
@@ -384,9 +386,9 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = GamsUtils $(am__append_1) $(am__append_2) $(am__append_3) \
-	$(am__append_4) $(am__append_5) $(am__append_6) \
-	$(am__append_7) $(am__append_8)
+SUBDIRS = GamsUtils SolverInterfaces $(am__append_1) $(am__append_2) \
+	$(am__append_3) $(am__append_4) $(am__append_5) \
+	$(am__append_6) $(am__append_7) $(am__append_8)
 EXTRA_DIST = $(am__append_9)
 DISTCLEANFILES = $(am__append_10) $(VPATH_DISTCLEANFILES)
 includecoindir = $(includedir)/coin

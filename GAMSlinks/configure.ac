@@ -336,6 +336,11 @@ AM_CONDITIONAL([GAMSLINKS_BUILD_COUENNE],[test $gamslinks_build_couenne = 1])
 # In case this is a VPATH configuration we need to make sure that the
 # GAMS solver installation files are available in the VPATH directory.
 
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmscbcus.run)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmscbcnt.cmd)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmscbcun.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmscbcnt.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/optcbcd.def)
 AC_COIN_VPATH_LINK(src/Cbc/gmscc_us.run)
 AC_COIN_VPATH_LINK(src/Cbc/gmscc_nt.cmd)
 AC_COIN_VPATH_LINK(src/Cbc/install/gmscc_un.dat)
@@ -380,7 +385,7 @@ AC_COIN_VPATH_LINK(examples/adbench/install/gmsad_nt.dat)
 AC_LANG_POP(C++)
 
 AC_CONFIG_FILES([Makefile
-                 gamsio_addlibs.txt smagio_addlibs.txt
+                 gamsio_addlibs.txt smagio_addlibs.txt gams_addlibs.txt
                  src/Makefile
                  src/GamsIO/Makefile
                  src/GamsUtils/Makefile
@@ -391,6 +396,7 @@ AC_CONFIG_FILES([Makefile
                  src/Bonmin/Makefile
                  src/OS/Makefile
                  src/SCIP/Makefile
+                 src/SolverInterfaces/Makefile
                  test/Makefile test/run_quality test/run_gmstest
                  examples/adbench/Makefile
                  examples/osil2gms/Makefile

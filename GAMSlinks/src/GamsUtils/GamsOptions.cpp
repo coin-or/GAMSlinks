@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development 2009
+// Copyright (C) GAMS Development and others 2009
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -53,15 +53,24 @@ extern "C" {
 #include "optcc.h"
 }
 
-GamsOptions::GamsOptions(struct gmoRec* gmo_, const char* solvername)
-: gmo(gmo_), optionshandle(NULL)
-{
+GamsOptions::GamsOptions(gmoHandle_t gmo_, optHandle_t opt_)
+: gmo(gmo_), optionshandle(opt_), opt_is_own(false)
+{ }
+
+GamsOptions::~GamsOptions() {
+	if (opt_is_own) {
+		if (optionshandle) optFree(&optionshandle);
+		optLibraryUnload(); // TODO what if someone else uses the options library?
+	}
+}
+
+bool GamsOptions::initOpt(const char* solvername) {
 	/* Get the Option File Handling set up */
 	char buffer[512];
 	if (!optCreate(&optionshandle, buffer, 512)) {
 		gmoLogStatPChar(gmo, "\n*** Could not create optionfile handle: "); 
 		gmoLogStat(gmo, buffer); 
-		exit(EXIT_FAILURE);
+		return false;
 	}
 
 	gmoNameSysDir(gmo, buffer);
@@ -69,7 +78,7 @@ GamsOptions::GamsOptions(struct gmoRec* gmo_, const char* solvername)
 	int len = strlen(buffer);
 	if (snprintf(buffer+len, 512-len, "opt%s.def", solvername) >= 512) {
 		gmoLogStatPChar(gmo, "\n*** Path to GAMS system directory too long.\n");
-		exit(EXIT_FAILURE);
+		return false;
 	}
 	
 	if (optReadDefinition(optionshandle, buffer)) {
@@ -79,18 +88,23 @@ GamsOptions::GamsOptions(struct gmoRec* gmo_, const char* solvername)
 			gmoLogStat(gmo, buffer);
 		}
 		optClearMessages(optionshandle);
-		exit(EXIT_FAILURE);
+		return false;
 	}
 	optEOLOnlySet(optionshandle, 1);
+	
+	opt_is_own = true;
+	return true;
 }
 
-GamsOptions::~GamsOptions() {
-	if (optionshandle) optFree(&optionshandle);
-	optLibraryUnload(); // TODO what if someone else uses the options library?
+void GamsOptions::setOpt(struct optRec* opt_) {
+	assert(!optionshandle);
+	opt_is_own = false;
+	
+	optionshandle = opt_;
 }
 
-bool GamsOptions::readOptionsFile(const char* optfilename) {
-	assert(optionshandle != NULL);
+bool GamsOptions::readOptionsFile(const char* solvername, const char* optfilename) {
+	if (!optionshandle && !initOpt(solvername)) return false; // initializing option file handling failed
 	if (optfilename == NULL) return true;
 	/* Read option file */
   optEchoSet(optionshandle, 1);

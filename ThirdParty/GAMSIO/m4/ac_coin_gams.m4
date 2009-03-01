@@ -1,4 +1,4 @@
-# Copyright (C) 2008 GAMS Development and others 
+# Copyright (C) GAMS Development and others 2008-2009 
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -166,6 +166,7 @@ AM_CONDITIONAL([GAMSIO_PRESENT], [test $coin_has_gamsio = yes])
 # GAMSIO_ADDLIBS       additional libraries needed to link with the GAMS I/O libraries
 # GAMSIO_LIBS          linker flags when "old-style" (ciolib) GAMS I/O libraries are used
 # SMAG_LIBS            linker flags when "new-style" (smag) GAMS I/O libraries are used
+# GAMS_ADDLIBS         additional libraries needed to link with the "very-new-style" dll-based GAMS I/O libraries (gmo, gcd, opt, gdx)
 # GAMSIO_OBJDIR        directory where compiled code from GAMS I/O library can be found (usually ThirdParty/GAMSIO) 
 #
 # FORTRAN_NAMEMANGLING_CFLAG   compiler flags to define name mangling scheme as used in the GAMS I/O libs 
@@ -206,21 +207,25 @@ case $GAMSIO_CODE in
       GAMSIO_LIBS="$gamsio_srcdir/iolib.a $gamsio_srcdir/nliolib.a $gamsio_srcdir/clicelib.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libf90pallib.a"
       SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libf90pallib.a $gamsio_srcdir/libg2d.a $gamsio_srcdir/dictread.o $gamsio_srcdir/dictfunc.o $gamsio_srcdir/bch.o"
       GAMSIO_ADDLIBS="-ldl $IFORT_LIBS"
+      GAMS_ADDLIBS="-ldl"
     ;;
   SIG)
       GAMSIO_LIBS="$gamsio_srcdir/iolib.a $gamsio_srcdir/nliolib.a $gamsio_srcdir/clicelib.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libf90pallib.a"
       SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libf90pallib.a $gamsio_srcdir/libg2d.a $gamsio_srcdir/dictread.o $gamsio_srcdir/dictfunc.o $gamsio_srcdir/bch.o"
       GAMSIO_ADDLIBS=""
+      GAMS_ADDLIBS="-ldl"
     ;;
   DII | DIG)
       GAMSIO_LIBS="$gamsio_srcdir/iolib.a $gamsio_srcdir/nliolib.a $gamsio_srcdir/clicelib.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libf90pallib.a"
       SMAG_LIBS="$gamsio_srcdir/clicelib.a $gamsio_srcdir/libsmag.a $gamsio_srcdir/gclib.a $gamsio_srcdir/libf90pallib.a $gamsio_srcdir/libg2d.a $gamsio_srcdir/dictread.o $gamsio_srcdir/dictfunc.o $gamsio_srcdir/bch.o"
       GAMSIO_ADDLIBS="-ldl -lSystemStubs $IFORT_LIBS"
+      GAMS_ADDLIBS="-ldl"
     ;;
   VIS | WEI)
       GAMSIO_LIBS="$gamsio_srcdir/iolib.lib $gamsio_srcdir/nliolib.lib $gamsio_srcdir/clicelib.lib $gamsio_srcdir/gclib.lib $gamsio_srcdir/f90pallib.lib"
       SMAG_LIBS="$gamsio_srcdir/clicelib.lib $gamsio_srcdir/smag.lib $gamsio_srcdir/gclib.lib $gamsio_srcdir/f90pallib.lib $gamsio_srcdir/g2d.lib $gamsio_srcdir/dictread.obj $gamsio_srcdir/dictfunc.obj $gamsio_srcdir/bch.obj"
       GAMSIO_ADDLIBS=""
+      GAMS_ADDLIBS="-ldl"
     ;;
 esac
 
@@ -266,6 +271,7 @@ AC_SUBST(GAMSIO_CPPFLAGS)
 AC_SUBST(GAMSIO_ADDLIBS)
 AC_SUBST(GAMSIO_LIBS)
 AC_SUBST(SMAG_LIBS)
+AC_SUBST(GAMS_ADDLIBS)
 GAMSIO_OBJDIR=$gamsio_objdir
 AC_SUBST(GAMSIO_OBJDIR)
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2008-2009
+// Copyright (C) GAMS Development and others 2008-2009
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -28,33 +28,57 @@
 #endif
 #endif
 
+#ifdef HAVE_CASSERT
+#include <cassert>
+#else
+#ifdef HAVE_ASSERT_H
+#include <assert.h>
+#else
+#error "don't have header file for assert"
+#endif
+#endif
+
 extern "C" {
 #include "gmocc.h"
 #include "gcdcc.h"
 }
 
-GamsDictionary::GamsDictionary(gmoHandle_t gmo_)
-: gmo(gmo_), dict(NULL), have_dictread(false)
-{
-	/* Get the Dictionary File Handling set up */
+GamsDictionary::GamsDictionary(gmoHandle_t gmo_, gcdHandle_t dict_)
+: gmo(gmo_), dict(dict_), have_dictread(dict_ ? true : false), dict_is_own(false)
+{ }
+
+GamsDictionary::~GamsDictionary() {
+	if (dict_is_own) {
+		// close dictionary
+		if (have_dictread) gcdClose(dict);
+		// free dictionary handler
+		if (dict) gcdFree(&dict);
+		// unload dictdll library
+		gcdLibraryUnload(); //TODO what if there are several dictionaries open?
+	}
+}
+
+void GamsDictionary::setGCD(struct gcdRec* gcd_) {
+	assert(!dict);
+	dict = gcd_;
+	dict_is_own = false;
+	have_dictread = true; // TODO there seem to be no function to get this info from gcd, so we assume a dictionary has been read
+}
+
+bool GamsDictionary::initGCD() {
+	assert(gmo);
+	// get the Dictionary File Handling set up
 	char buffer[512];
 	if (!gcdCreate(&dict, buffer, sizeof(buffer))) {
 		gmoLogStatPChar(gmo, "\n*** Could not load dictionary handler: ");
 		gmoLogStat(gmo, buffer); 
-		exit(EXIT_FAILURE);
+		return false;
 	}
-}
-
-GamsDictionary::~GamsDictionary() {
-	// close dictionary
-	if (have_dictread) gcdClose(dict);
-	// free dictionary handler
-	if (dict) gcdFree(&dict);
-	// unload dictdll library
-	gcdLibraryUnload(); //TODO what if there are several dictionaries open?
+	dict_is_own = true;
 }
 
 bool GamsDictionary::readDictionary() {
+	if (!dict && !initGCD()) return false; // error setting up dictionary file handling
 	if (have_dictread) return true; // dictionary open already
 	if (!gmoDictionary(gmo)) return false; // do not have dictionary file
 	
