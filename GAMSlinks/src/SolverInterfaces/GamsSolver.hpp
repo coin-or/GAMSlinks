@@ -29,7 +29,7 @@ public:
 	/** Indicates whether the solver interface and solver supports the modifyProblem call.
 	 * Default: no
 	 */
-	virtual int haveModifyProblem() { return 0; };
+	virtual int haveModifyProblem() { return 0; }
 	
 	/** Notify solver that the GMO object has been modified and changes should be passed forward to the solver.
 	 * Default: do nothing

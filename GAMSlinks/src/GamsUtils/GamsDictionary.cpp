@@ -75,6 +75,7 @@ bool GamsDictionary::initGCD() {
 		return false;
 	}
 	dict_is_own = true;
+	return true;
 }
 
 bool GamsDictionary::readDictionary() {
