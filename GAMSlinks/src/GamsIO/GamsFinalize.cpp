@@ -127,18 +127,33 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 		// translate from OSI codes to GAMS codes
 		for (int j=0; j<gm->nCols(); j++) {
 			// in case that we have semicontinuous variables, duals also of continuous variables might be wrong, so we set all to superbasic
+//			*myout << "status col" << j << colBasis[j] << "\t level:" << colLevel[j] << "\t margin:" << colMargin[j] << "\t lb:" << solver->getColLower()[j] << "\t" << gm->ColLb()[j] << "\t ub:" << solver->getColUpper()[j] << "\t" << gm->ColUb()[j] << CoinMessageEol;
 			if (discVar[j] || gm->SOSIndicator()[j] || gm->nSemiContinuous())
 				colBasis[j]=GamsModel::SuperBasic;
 			else switch (colBasis[j]) {
-				case 3: colBasis[j]=GamsModel::NonBasicLower; break;
-				case 2: colBasis[j]=GamsModel::NonBasicUpper; break;
-				case 1: colBasis[j]=GamsModel::Basic; break;
-				case 0: colBasis[j]=GamsModel::SuperBasic; break;
+				case 3:
+					// for the case that, e.g., Cbc solved a MIP with fixed bounds after bound tightening
+				  if (fabs(colLevel[j] - gm->ColLb()[j]) > 1e-6) {
+//						*myout << "change status of variable" << j << "from nonbasiclower to superbasic." << CoinMessageEol;
+						colBasis[j] = GamsModel::SuperBasic;
+				  } else
+						colBasis[j] = GamsModel::NonBasicLower;
+				  break;
+				case 2: 
+					// for the case that, e.g., Cbc solved a MIP with fixed bounds after bound tightening
+				  if (fabs(colLevel[j] - gm->ColUb()[j]) > 1e-6) {
+//						*myout << "change status of variable" << j << "from nonbasicupper to superbasic." << CoinMessageEol;
+						colBasis[j] = GamsModel::SuperBasic;
+				  } else
+						colBasis[j] = GamsModel::NonBasicUpper;
+				  break;
+				case 1: colBasis[j] = GamsModel::Basic; break;
+				case 0: colBasis[j] = GamsModel::SuperBasic; break;
 				default: (*myout) << "Column basis status " << colBasis[j] << " unknown!" << CoinMessageEol; exit(EXIT_FAILURE);
 			}
 		}
 		for (int i=0; i<gm->nRows(); ++i) { 
-//			*myout << "status row: " << rowBasis[i] << '\t' << rowLevel[i] << CoinMessageEol;
+//			*myout << "row" << i << "status:" << ":" << rowBasis[i] << "\tlevel:" << rowLevel[i] << "\tmargin:" << rowMargin[i] << "\tlb:" << solver->getRowLower()[i] << "\tub:" << solver->getRowUpper()[i] << "\trhs:" << gm->RowRhs()[i] << CoinMessageEol;
 			switch (rowBasis[i]) {
 				case 2: rowBasis[i]=swapRowStatus ? GamsModel::NonBasicUpper : GamsModel::NonBasicLower; break;
 				case 3: rowBasis[i]=swapRowStatus ? GamsModel::NonBasicLower : GamsModel::NonBasicUpper; break;
