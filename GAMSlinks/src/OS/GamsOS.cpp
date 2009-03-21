@@ -306,12 +306,11 @@ void remoteSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, st
 	char buffer[512];
 	
 	if (opt.isDefined("solver")) { // if a solver option was specified put that into osol
-		string::size_type iStringpos = osol.find("</osol");
-		std::string solverInput = "<other name=\"os_solver\">";
 		opt.getString("solver", buffer);
+		std::string solverInput = "<general><solverToInvoke>";
 		solverInput += buffer;
-		solverInput += "</other>";
-		osol.insert(iStringpos, solverInput);
+		solverInput += "</solverToInvoke></general>";
+		osol.insert(osol.find("</osol"), solverInput);
 //		std::clog << "OSoL: " << osol;
 	}
 
