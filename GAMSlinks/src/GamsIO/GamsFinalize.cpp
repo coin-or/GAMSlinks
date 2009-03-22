@@ -174,8 +174,8 @@ void GamsWriteSolutionOsi(GamsModel *gm, GamsMessageHandler *myout, OsiSolverInt
 					colBasis[j]=GamsModel::SuperBasic;
 				else switch (wsb->getStructStatus(j)) {
 					case CoinWarmStartBasis::basic: colBasis[j]=GamsModel::Basic; break;
-					case CoinWarmStartBasis::atLowerBound: colBasis[j]=GamsModel::NonBasicLower; break;
-					case CoinWarmStartBasis::atUpperBound: colBasis[j]=GamsModel::NonBasicUpper; break;
+					case CoinWarmStartBasis::atLowerBound: colBasis[j] = (fabs(colLevel[j] - gm->ColLb()[j]) > 1e-6) ? GamsModel::SuperBasic : GamsModel::NonBasicLower; break;
+					case CoinWarmStartBasis::atUpperBound: colBasis[j] = (fabs(colLevel[j] - gm->ColUb()[j]) > 1e-6) ? GamsModel::SuperBasic : GamsModel::NonBasicUpper; break;
 					case CoinWarmStartBasis::isFree: colBasis[j]=GamsModel::SuperBasic; break;
 					default: (*myout) << "Column basis status " << wsb->getStructStatus(j) << " unknown!" << CoinMessageEol; exit(0);
 				}

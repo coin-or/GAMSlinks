@@ -175,8 +175,40 @@ int GamsCbc::callSolver() {
 	
 	double end_time = CoinCpuTime();
 
+	double* varlow = NULL;
+	double* varup  = NULL;
+	if (!isLP() && model->bestSolution()) { // solve again with fixed noncontinuous variables and original bounds on continuous variables
+		//TODO parameter to turn this off or do only if cbc reduced bounds
+		gmoLog(gmo, "Resolve with fixed noncontinuous variables.");
+		varlow = new double[gmoN(gmo)];
+		varup  = new double[gmoN(gmo)];
+		gmoGetVarLower(gmo, varlow);
+		gmoGetVarUpper(gmo, varup);
+		for (int i = 0; i < gmoN(gmo); ++i)
+			if ((enum gmoVarType)gmoGetVarTypeOne(gmo, i) != var_X)
+				varlow[i] = varup[i] = model->bestSolution()[i];
+		model->solver()->setColLower(varlow);
+		model->solver()->setColUpper(varup);
+		
+		model->solver()->messageHandler()->setLogLevel(1);
+		model->solver()->resolve();
+		if (!model->solver()->isProvenOptimal()) {
+			gmoLog(gmo, "Resolve failed, values for dual variables will be unavailable.");
+			model->solver()->setColSolution(model->bestSolution());
+		}
+	}
+
 	writeSolution(end_time - start_time);
-	
+
+	if (!isLP() && model->bestSolution()) { // reset original bounds
+		gmoGetVarLower(gmo, varlow);
+		gmoGetVarUpper(gmo, varup);
+		model->solver()->setColLower(varlow);
+		model->solver()->setColUpper(varup);
+	}
+	delete[] varlow;
+	delete[] varup;
+
 	return 1;
 }
 
@@ -1132,7 +1164,7 @@ bool GamsCbc::writeSolution(double cputime) {
 	gmoSetHeadnTail(gmo, Tmipbest, model->getBestPossibleObjValue());
 	gmoSetHeadnTail(gmo, Tmipnod, model->getNodeCount());
 	
-	if (write_solution && !gamsOsiStoreSolution(gmo, *model->solver(), true))
+	if (write_solution && !gamsOsiStoreSolution(gmo, *model->solver(), false))
 		return false;
 
 	if (!isLP()) {
@@ -1167,4 +1199,5 @@ bool GamsCbc::isLP() {
 	gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);
 	if (nzSos)
 		return false;
+	return true;
 }

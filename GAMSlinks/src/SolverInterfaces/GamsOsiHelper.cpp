@@ -193,20 +193,21 @@ bool gamsOsiStoreSolution(struct gmoRec* gmo, const OsiSolverInterface& solver, 
 				if (gmoGetVarTypeOne(gmo, j) != var_X)
 					colBasis[j] = Bstat_Super;
 				else switch (wsb->getStructStatus(j)) {
-					case CoinWarmStartBasis::atLowerBound: colBasis[j] = Bstat_Lower; break;
-					case CoinWarmStartBasis::atUpperBound: colBasis[j] = Bstat_Upper; break;
+					case CoinWarmStartBasis::atLowerBound: colBasis[j] = (fabs(colLevel[j] - gmoGetVarLowerOne(gmo, j)) > 1e-6) ? Bstat_Super : Bstat_Lower; break; // change to super if value is not on bound as it should be
+					case CoinWarmStartBasis::atUpperBound: colBasis[j] = (fabs(colLevel[j] - gmoGetVarUpperOne(gmo, j)) > 1e-6) ? Bstat_Super : Bstat_Upper; break;
 					case CoinWarmStartBasis::basic:        colBasis[j] = Bstat_Basic; break;
 					case CoinWarmStartBasis::isFree:       colBasis[j] = Bstat_Super; break;
 					default: gmoLogStat(gmo, "Column basis status unknown!"); return false;
 				}
-			for (int j = 0; j < gmoM(gmo); ++j)
+			for (int j = 0; j < gmoM(gmo); ++j) {
 				switch (wsb->getArtifStatus(j)) {
-					case CoinWarmStartBasis::atLowerBound: rowBasis[j] = swapRowStatus ? Bstat_Upper : Bstat_Lower; break;
-					case CoinWarmStartBasis::atUpperBound: rowBasis[j] = swapRowStatus ? Bstat_Lower : Bstat_Upper; break;
+					case CoinWarmStartBasis::atLowerBound: rowBasis[j] = (!swapRowStatus) ? Bstat_Upper : Bstat_Lower; break; // for Cbc, the basis status seem to be flipped in CoinWarmStartBasis, but not in getBasisStatus
+					case CoinWarmStartBasis::atUpperBound: rowBasis[j] = (!swapRowStatus) ? Bstat_Lower : Bstat_Upper; break;
 					case CoinWarmStartBasis::basic:        rowBasis[j] = Bstat_Basic; break;
 					case CoinWarmStartBasis::isFree:       rowBasis[j] = Bstat_Super; break;
 					default: gmoLogStat(gmo, "Row basis status unknown!"); return false;
 				}
+			}
 			delete wsb;
 		} else {
 			CoinFillN(colBasis, gmoN(gmo), (int)Bstat_Super);

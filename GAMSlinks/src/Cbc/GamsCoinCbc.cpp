@@ -97,7 +97,7 @@ int main (int argc, const char *argv[]) {
 
 	myout.setCurrentDetail(1);
 	gm.PrintOut(GamsModel::StatusMask, "=1"); // turn on copying into .lst file
-#ifdef GAMS_BUILD	
+#ifdef GAMS_BUILD
 	myout << "\nGAMS/CoinCbc 2.2 LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
 	GamsOptions opt(gamshandler, "coincbc");
 #else
@@ -270,7 +270,7 @@ int main (int argc, const char *argv[]) {
 	gm.setObjBound(model.getBestPossibleObjValue());
 	gm.setNodesUsed(model.getNodeCount());
 	if (write_solution) {
-		GamsWriteSolutionOsi(&gm, &myout, model.solver(), true);
+		GamsWriteSolutionOsi(&gm, &myout, model.solver(), false);
 	} else { // trigger the write of GAMS solution file
 		gm.setSolution();
 	}
