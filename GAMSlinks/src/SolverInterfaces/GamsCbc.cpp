@@ -167,13 +167,14 @@ int GamsCbc::callSolver() {
 	//TODO? reset iteration and time counter in Cbc?
 	//TODO? was user allowed to change options between readyAPI and callSolver?
 
-	double start_time = CoinCpuTime();
-//	CoinWallclockTime(); // start wallclock timer
+	double start_cputime  = CoinCpuTime();
+	double start_walltime = CoinWallclockTime();
 	
 //	myout.setCurrentDetail(2);
 	CbcMain1(cbc_argc, const_cast<const char**>(cbc_args), *model);
 	
-	double end_time = CoinCpuTime();
+	double end_cputime  = CoinCpuTime();
+	double end_walltime = CoinWallclockTime();
 
 	double* varlow = NULL;
 	double* varup  = NULL;
@@ -198,7 +199,7 @@ int GamsCbc::callSolver() {
 		}
 	}
 
-	writeSolution(end_time - start_time);
+	writeSolution(end_cputime - start_cputime, end_walltime - start_walltime);
 
 	if (!isLP() && model->bestSolution()) { // reset original bounds
 		gmoGetVarLower(gmo, varlow);
@@ -1041,7 +1042,7 @@ bool GamsCbc::setupParameters() {
 	return true;
 }
 
-bool GamsCbc::writeSolution(double cputime) {
+bool GamsCbc::writeSolution(double cputime, double walltime) {
 	bool write_solution = false;
 	char buffer[255];
 	
@@ -1160,7 +1161,7 @@ bool GamsCbc::writeSolution(double cputime) {
 	}
 
 	gmoSetHeadnTail(gmo, Hiterused, model->getIterationCount());
-	gmoSetHeadnTail(gmo, HresUsed, cputime); // TODO give walltime if options.getInteger("threads") > 1
+	gmoSetHeadnTail(gmo, HresUsed, options.getInteger("threads") > 1 ? walltime : cputime);
 	gmoSetHeadnTail(gmo, Tmipbest, model->getBestPossibleObjValue());
 	gmoSetHeadnTail(gmo, Tmipnod, model->getNodeCount());
 	
@@ -1169,10 +1170,10 @@ bool GamsCbc::writeSolution(double cputime) {
 
 	if (!isLP()) {
 		if (model->bestSolution()) {
-			//		if (opt.getInteger("threads")>1)
-			//			snprintf(buffer, 255, "MIP solution: %21.10g   (%d nodes, %g CPU seconds, %.2f wall clock seconds)", model.getObjValue(), model.getNodeCount(), gm.SecondsSinceStart(), CoinWallclockTime());
-			//		else
-			snprintf(buffer, 255, "MIP solution: %21.10g   (%d nodes, %g seconds)", model->getObjValue(), model->getNodeCount(), cputime);
+			if (options.getInteger("threads") > 1)
+				snprintf(buffer, 255, "MIP solution: %21.10g   (%d nodes, %.2f CPU seconds, %.2f wall clock seconds)", model->getObjValue(), model->getNodeCount(), cputime, walltime);
+			else
+				snprintf(buffer, 255, "MIP solution: %21.10g   (%d nodes, %g seconds)", model->getObjValue(), model->getNodeCount(), cputime);
 			gmoLogStat(gmo, buffer);
 		}
 		snprintf(buffer, 255, "Best possible: %20.10g", model->getBestPossibleObjValue());
@@ -1200,4 +1201,8 @@ bool GamsCbc::isLP() {
 	if (nzSos)
 		return false;
 	return true;
+}
+
+GamsCbc* createNewGamsCbc() {
+	return new GamsCbc();
 }

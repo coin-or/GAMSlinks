@@ -66,25 +66,27 @@ int main(int argc, char** argv) {
   	return EXIT_FAILURE;
   }
   
-  GamsCbc cbc;
+  GamsSolver* cbc = createNewGamsCbc();
   gmoLogStat(gmo, "");
-	gmoLogStatPChar(gmo, cbc.getWelcomeMessage());
+	gmoLogStatPChar(gmo, cbc->getWelcomeMessage());
 	
   bool ok = true;
 	
-  if (!cbc.readyAPI(gmo, NULL, NULL)) {
+  if (!cbc->readyAPI(gmo, NULL, NULL)) {
   	gmoLogStat(gmo, "There was an error in setting up CBC.\n");
   	gmoSolveStatSet(gmo, SolveStat_SystemErr);
   	gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
   	ok = false;
   }
-  if (ok && !cbc.callSolver()) {
+  if (ok && !cbc->callSolver()) {
   	gmoLogStat(gmo, "There was an error in solving the model by CBC.\n");
   	gmoSolveStatSet(gmo, SolveStat_SystemErr);
   	gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
   	ok = false;
   }
 	gmoUnloadSolutionGms(gmo);
+	
+	delete cbc;
 
 // 	gmoLogStat(gmo, "CBC finished.");
   

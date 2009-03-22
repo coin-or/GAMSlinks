@@ -19,7 +19,7 @@ class CbcModel;
 class GamsMessageHandler;
 class OsiSolverInterface;
 
-class GamsCbc {
+class GamsCbc : public GamsSolver {
 private:
 	struct gmoRec* gmo;
 	
@@ -37,7 +37,7 @@ private:
 	bool setupPrioritiesSOSSemiCon();
 	bool setupStartingPoint();
 	bool setupParameters();
-	bool writeSolution(double cputime);
+	bool writeSolution(double cputime, double walltime);
 	
 	bool isLP();
 	
@@ -54,6 +54,9 @@ public:
 	int callSolver();
 	
 	const char* getWelcomeMessage() { return cbc_message; }
+
 }; // GamsCbc
+
+extern "C" GamsCbc* createNewGamsCbc();
 
 #endif /*GAMSCBC_HPP_*/
