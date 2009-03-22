@@ -121,15 +121,19 @@ int main (int argc, char* argv[]) {
 	if (opt.isDefined("writeosil")) {
 		OSiLWriter osilwriter;
 		char osilfilename[255];
-		std::ofstream osilfile(opt.getString("writeosil", osilfilename));
-		if (!osilfile.good()) {
-			snprintf(buffer, 255, "Error opening file %s for writing of instance in OSiL.\n", osilfilename);
-			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
-		} else {
-			snprintf(buffer, 255, "Writing instance in OSiL to %s.\n", osilfilename);
-			smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
-			osilfile << osilwriter.writeOSiL(smagosil.osinstance);
-		}
+		opt.getString("writeosil", osilfilename);
+		snprintf(buffer, 255, "Writing instance in OSiL to %s.\n", osilfilename);
+		smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+		FileUtil().writeFileFromString(osilfilename, osilwriter.writeOSiL(smagosil.osinstance));
+//		std::ofstream osilfile(opt.getString("writeosil", osilfilename));
+//		if (!osilfile.good()) {
+//			snprintf(buffer, 255, "Error opening file %s for writing of instance in OSiL.\n", osilfilename);
+//			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+//		} else {
+//			snprintf(buffer, 255, "Writing instance in OSiL to %s.\n", osilfilename);
+//			smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+//			osilfile << osilwriter.writeOSiL(smagosil.osinstance);
+//		}
 	}
 	
 	std::string osol;
@@ -357,17 +361,21 @@ void remoteSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, st
 
 			if (opt.isDefined("writeospl")) {
 				char osplfilename[255];
-				std::ofstream osplfile(opt.getString("writeospl", osplfilename));
-				if (!osplfile.good()) {
-					snprintf(buffer, 255, "Error opening file %s for writing knock result in OSpL.\n", osplfilename);
-					smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
-					smagReportSolBrief(prob, 13, 13);
-					return;
-				} else {
-					snprintf(buffer, 255, "Writing knock result in OSpL to %s.\n", osplfilename);
-					smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
-					osplfile << ospl;
-				}
+				opt.getString("writeospl", osplfilename);
+				snprintf(buffer, 255, "Writing knock result in OSpL to %s.\n", osplfilename);
+				smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+				FileUtil().writeFileFromString(osplfilename, ospl);
+//				std::ofstream osplfile(opt.getString("writeospl", osplfilename));
+//				if (!osplfile.good()) {
+//					snprintf(buffer, 255, "Error opening file %s for writing knock result in OSpL.\n", osplfilename);
+//					smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+//					smagReportSolBrief(prob, 13, 13);
+//					return;
+//				} else {
+//					snprintf(buffer, 255, "Writing knock result in OSpL to %s.\n", osplfilename);
+//					smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+//					osplfile << ospl;
+//				}
 			} else {
 				smagStdOutputPrint(prob, SMAG_ALLMASK, "Answer from knock:\n");
 				smagStdOutputPrint(prob, SMAG_ALLMASK, ospl.c_str());
@@ -379,17 +387,21 @@ void remoteSolve(smagHandle_t prob, GamsOptions& opt, OSInstance* osinstance, st
 
 			if (opt.isDefined("writeospl")) {
 				char osplfilename[255];
-				std::ofstream osplfile(opt.getString("writeospl", osplfilename));
-				if (!osplfile.good()) {
-					snprintf(buffer, 255, "Error opening file %s for writing kill result in OSpL.\n", osplfilename);
-					smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
-					smagReportSolBrief(prob, 13, 13);
-					return;
-				} else {
-					snprintf(buffer, 255, "Writing kill result in OSpL to %s.\n", osplfilename);
-					smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
-					osplfile << ospl;
-				}
+				opt.getString("writeospl", osplfilename);
+				snprintf(buffer, 255, "Writing knock result in OSpL to %s.\n", osplfilename);
+				smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+				FileUtil().writeFileFromString(osplfilename, ospl);
+//				std::ofstream osplfile(opt.getString("writeospl", osplfilename));
+//				if (!osplfile.good()) {
+//					snprintf(buffer, 255, "Error opening file %s for writing kill result in OSpL.\n", osplfilename);
+//					smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+//					smagReportSolBrief(prob, 13, 13);
+//					return;
+//				} else {
+//					snprintf(buffer, 255, "Writing kill result in OSpL to %s.\n", osplfilename);
+//					smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+//					osplfile << ospl;
+//				}
 			} else {
 				smagStdOutputPrint(prob, SMAG_ALLMASK, "Answer from kill:\n");
 				smagStdOutputPrint(prob, SMAG_ALLMASK, ospl.c_str());
@@ -428,18 +440,22 @@ void processResult(smagHandle_t prob, GamsOptions& opt, string* osrl, OSResult* 
 	assert(osrl || osresult);
 	if (opt.isDefined("writeosrl")) {
 		char osrlfilename[255], buffer[512];
-		std::ofstream osrlfile(opt.getString("writeosrl", osrlfilename));
-		if (!osrlfile.good()) {
-			snprintf(buffer, 255, "Error opening file %s for writing optimization results in OSrL.\n", osrlfilename);
-			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
-		} else {
-			snprintf(buffer, 255, "Writing result in OSrL to %s.\n", osrlfilename);
-			smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
-			if (osrl)
-				osrlfile << *osrl;
-			else
-				osrlfile << OSrLWriter().writeOSrL(osresult);
-		}
+		opt.getString("writeosrl", osrlfilename);
+		snprintf(buffer, 255, "Writing result in OSrL to %s.\n", osrlfilename);
+		smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+		FileUtil().writeFileFromString(osrlfilename, osrl ? *osrl : OSrLWriter().writeOSrL(osresult));
+//		std::ofstream osrlfile(opt.getString("writeosrl", osrlfilename));
+//		if (!osrlfile.good()) {
+//			snprintf(buffer, 255, "Error opening file %s for writing optimization results in OSrL.\n", osrlfilename);
+//			smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
+//		} else {
+//			snprintf(buffer, 255, "Writing result in OSrL to %s.\n", osrlfilename);
+//			smagStdOutputPrint(prob, SMAG_LOGMASK, buffer);
+//			if (osrl)
+//				osrlfile << *osrl;
+//			else
+//				osrlfile << OSrLWriter().writeOSrL(osresult);
+//		}
 	}
 
 	OSrL2Smag osrl2smag(prob);
