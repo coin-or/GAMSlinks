@@ -170,8 +170,8 @@ bool gamsOsiStoreSolution(struct gmoRec* gmo, const OsiSolverInterface& solver, 
 			if (gmoGetVarTypeOne(gmo, j) != var_X)
 				colBasis[j] = Bstat_Super;
 			else switch (colBasis[j]) {
-				case 3: colBasis[j] = Bstat_Lower; break;
-				case 2: colBasis[j] = Bstat_Upper; break;
+				case 3: colBasis[j] = (fabs(colLevel[j] - gmoGetVarLowerOne(gmo, j)) > 1e-6) ? Bstat_Super : Bstat_Lower; break; // change to super if value is not on bound as it should be
+				case 2: colBasis[j] = (fabs(colLevel[j] - gmoGetVarUpperOne(gmo, j)) > 1e-6) ? Bstat_Super : Bstat_Upper; break;
 				case 1: colBasis[j] = Bstat_Basic; break;
 				case 0: colBasis[j] = Bstat_Super; break;
 				default: gmoLogStat(gmo, "Column basis status unknown!"); return false;

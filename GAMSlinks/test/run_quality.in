@@ -70,6 +70,12 @@ if test @gamslinks_build_cbc@ = 1 ; then
   testlist[${#testlist[@]}]="--solver cbc --suite mip user1=rmip=cbc"
   skiplist="$skiplist skip('Cbc','lp03')=yes;"
   skiplist="$skiplist skip('Cbc','sl4lp03')=yes;"
+  
+  solvers="$solvers , Cbcd"
+  testlist[${#testlist[@]}]="--solver cbcd --suite lp"
+  testlist[${#testlist[@]}]="--solver cbcd --suite mip user1=rmip=cbcd"
+  skiplist="$skiplist skip('Cbcd','lp03')=yes;"
+  skiplist="$skiplist skip('Cbcd','sl4lp03')=yes;"
 fi
 if test @gamslinks_build_bonmin@ = 1 ; then
   solvers="$solvers , Bonmin"

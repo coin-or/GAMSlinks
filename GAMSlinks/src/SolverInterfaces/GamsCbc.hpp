@@ -39,6 +39,8 @@ private:
 	bool setupParameters();
 	bool writeSolution(double cputime);
 	
+	bool isLP();
+	
 public:
 	GamsCbc();
 	~GamsCbc();

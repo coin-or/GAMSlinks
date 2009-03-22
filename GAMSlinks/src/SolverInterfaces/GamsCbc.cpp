@@ -185,9 +185,9 @@ bool GamsCbc::setupProblem(OsiSolverInterface& solver) {
 		return false;
 
 	// Cbc thinks in terms of lotsize objects, and for those the lower bound has to be 0
-	//TODO do this only if there are semicontinuous variables
+	//TODO do this only if there are semicontinuous or semiinteger variables
 	for (int i = 0; i < gmoN(gmo); ++i)
-		if (gmoGetVarTypeOne(gmo, i) == var_SC)
+		if (gmoGetVarTypeOne(gmo, i) == var_SC || gmoGetVarTypeOne(gmo, i) == var_SI)
 			solver.setColLower(i, 0.);
 
 	if (!gmoN(gmo)) {
@@ -335,29 +335,62 @@ bool GamsCbc::setupPrioritiesSOSSemiCon() {
 bool GamsCbc::setupStartingPoint() {
 	double* varlevel = NULL;
 	if (gmoHaveBasis(gmo)) {
-		varlevel = new double[gmoN(gmo)];
+		varlevel         = new double[gmoN(gmo)];
 		double* rowprice = new double[gmoM(gmo)];
 		int* cstat       = new int[gmoN(gmo)];
 		int* rstat       = new int[gmoM(gmo)];
 
 		gmoGetVarL(gmo, varlevel);
 		gmoGetEquM(gmo, rowprice);
+		
+	  int nbas = 0;
 		for (int j = 0; j < gmoN(gmo); ++j) {
 			switch (gmoGetVarBasOne(gmo, j)) {
-				case Bstat_Lower: cstat[j] = 3; break;
-				case Bstat_Upper: cstat[j] = 2; break;
-				case Bstat_Basic: cstat[j] = 1; break;
-				case Bstat_Super: cstat[j] = 0; break;
-				default: cstat[j] = 0;
+				case 0: // this seem to mean that variable should be basic
+					if (++nbas <= gmoM(gmo))
+						cstat[j] = 1; // basic
+					else if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
+						cstat[j] = 0; // superbasic = free
+					else if (fabs(gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j)))
+						cstat[j] = 3; // nonbasic at lower bound
+					else
+						cstat[j] = 2; // nonbasic at upper bound
+					break;
+				case 1:
+					if (fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
+						cstat[j] = 3; // nonbasic at lower bound
+					else
+						cstat[j] = 2; // nonbasic at upper bound
+					break;
+				default:
+					gmoLogStat(gmo, "Error: invalid basis indicator for column.");
+					delete[] cstat;
+					delete[] rstat;
+					delete[] rowprice;
+					delete[] varlevel;
+					return false;
 			}
 		}
-		for (int j = 0; j < gmoM(gmo); ++j) {
+		
+		nbas = 0;
+		for (int j = 0; j< gmoM(gmo); ++j) {
 			switch (gmoGetEquBasOne(gmo, j)) {
-				case Bstat_Lower: rstat[j] = 2; break;
-				case Bstat_Upper: rstat[j] = 3; break;
-				case Bstat_Basic: rstat[j] = 1; break;
-				case Bstat_Super: rstat[j] = 0; break;
-				default: rstat[j]=0;
+				case 0:
+					if (++nbas < gmoM(gmo))
+						rstat[j] = 1; // basic
+					else
+						rstat[j] = 2; // nonbasic at upper bound (flipped for cbc)
+					break;
+				case 1:
+					rstat[j] = 2; // nonbasic at upper bound (flipped for cbc)
+					break;
+				default:
+					gmoLogStat(gmo, "Error: invalid basis indicator for row.");
+					delete[] cstat;
+					delete[] rstat;
+					delete[] rowprice;
+					delete[] varlevel;
+					return false;
 			}
 		}
 
@@ -366,6 +399,10 @@ bool GamsCbc::setupStartingPoint() {
 		// this call initializes ClpSimplex data structures, which can produce an error if CLP does not like the model
 		if (model->solver()->setBasisStatus(cstat, rstat)) {
 			gmoLogStat(gmo, "Failed to set initial basis. Probably CLP abandoned the model. Exiting ...");
+			delete[] varlevel;
+			delete[] rowprice;
+			delete[] cstat;
+			delete[] rstat;
 			return false;
 		}
 
@@ -401,7 +438,7 @@ bool GamsCbc::setupParameters() {
 	model->solver()->setDblParam(OsiDualTolerance,   options.getDouble("tol_dual"));
 	
 	// iteration limit only for LPs
-	if (gmoModelType(gmo) == Proc_lp || gmoModelType(gmo) == Proc_rmip)
+	if (isLP())
 		model->solver()->setIntParam(OsiMaxNumIteration, options.getInteger("iterlim"));
 
 	// MIP parameters
@@ -954,7 +991,7 @@ bool GamsCbc::setupParameters() {
 		} else {
 			gmoLogStat(gmo, "Unsupported value for option 'startalg'. Ignoring this option");
 		}
-		if (gmoModelType(gmo) != Proc_lp && gmoModelType(gmo) != Proc_rmip)
+		if (!isLP())
 			par_list.push_back("-solve");
 	} else
 		par_list.push_back("-solve"); 
@@ -977,66 +1014,117 @@ bool GamsCbc::writeSolution(double cputime) {
 	char buffer[255];
 	
 	gmoLogStat(gmo, "");
-	if (model->solver()->isProvenDualInfeasible()) {
-		gmoSolveStatSet(gmo, SolveStat_Normal);
-		gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
-		gmoLogStat(gmo, "Model unbounded.");
-		
-	} else if (model->isAbandoned()) {
-		gmoSolveStatSet(gmo, SolveStat_SolverErr);
-		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-		gmoLogStat(gmo, "Model abandoned.");
-		
-	} else if (model->isProvenOptimal()) {
-		write_solution = true;
-		gmoSolveStatSet(gmo, SolveStat_Normal);
-		if (options.getDouble("optca") > 0 || options.getDouble("optcr") > 0) {
-			gmoModelStatSet(gmo, ModelStat_Integer);
-			gmoLogStat(gmo, "Solved to optimality (within gap tolerances optca and optcr).");
-		} else {
+	if (isLP()) { // if Cbc solved an LP, the solution status is not correctly stored in the CbcModel, we have to look into the solver
+		if (model->solver()->isProvenDualInfeasible()) {
+			gmoSolveStatSet(gmo, SolveStat_Normal);
+			gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
+			gmoLogStat(gmo, "Model unbounded.");
+
+		} else if (model->solver()->isProvenPrimalInfeasible()) {
+			gmoSolveStatSet(gmo, SolveStat_Normal);
+			gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+			gmoLogStat(gmo, "Model infeasible.");
+
+		} else if (model->solver()->isAbandoned()) {
+			gmoSolveStatSet(gmo, SolveStat_SolverErr);
+			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+			gmoLogStat(gmo, "Model abandoned.");
+
+		} else if (model->solver()->isProvenOptimal()) {
+			write_solution = true;
+			gmoSolveStatSet(gmo, SolveStat_Normal);
 			gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
 			gmoLogStat(gmo, "Solved to optimality.");
-		}
-		
-	} else if (model->isNodeLimitReached()) {
-		gmoSolveStatSet(gmo, SolveStat_Iteration);
-		if (model->bestSolution()) {
-			write_solution = true;
-			gmoModelStatSet(gmo, ModelStat_Integer);
-			gmoLogStat(gmo, "Node limit reached. Have feasible solution.");
-		} else {
+
+		} else if (model->isSecondsLimitReached()) {
+			gmoSolveStatSet(gmo, SolveStat_Resource);
 			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-			gmoLogStat(gmo, "Node limit reached. No feasible solution found.");
-		}
-		
-	} else if (model->isSecondsLimitReached()) {
-		gmoSolveStatSet(gmo, SolveStat_Resource);
-		if (model->bestSolution()) {
-			write_solution = true;
-			gmoModelStatSet(gmo, ModelStat_Integer);
-			gmoLogStat(gmo, "Time limit reached. Have feasible solution.");
-		} else {
+			gmoLogStat(gmo, "Time limit reached.");
+			
+		} else if (model->solver()->isIterationLimitReached()) {
+			gmoSolveStatSet(gmo, SolveStat_Iteration);
 			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-			gmoLogStat(gmo, "Time limit reached. No feasible solution found.");
-		}
-		
-	} else if (model->isProvenInfeasible()) {
-		gmoSolveStatSet(gmo, SolveStat_Normal);
-		gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
-		gmoLogStat(gmo, "Model infeasible.");
-		
-	} else {
-		gmoSolveStatSet(gmo, SolveStat_Solver);
-		if (model->bestSolution()) {
-			write_solution = true;
-			gmoModelStatSet(gmo, ModelStat_Integer);
-			gmoLogStat(gmo, "Model status unknown, but have feasible solution.");
+			gmoLogStat(gmo, "Iteration limit reached.");
+			
+		} else if (model->solver()->isPrimalObjectiveLimitReached()) {
+			gmoSolveStatSet(gmo, SolveStat_Solver);
+			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+			gmoLogStat(gmo, "Primal objective limit reached.");
+
+		} else if (model->solver()->isDualObjectiveLimitReached()) {
+			gmoSolveStatSet(gmo, SolveStat_Solver);
+			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+			gmoLogStat(gmo, "Dual objective limit reached.");
+
 		} else {
+			gmoSolveStatSet(gmo, SolveStat_Solver);
 			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 			gmoLogStat(gmo, "Model status unknown, no feasible solution found.");
+			gmoLogStat(gmo, buffer);
 		}
-		sprintf(buffer, "CBC primary status: %d secondary status: %d\n", model->status(), model->secondaryStatus());
-		gmoLogStat(gmo, buffer);
+		
+	} else { // solved a MIP
+		if (model->solver()->isProvenDualInfeasible()) {
+			gmoSolveStatSet(gmo, SolveStat_Normal);
+			gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
+			gmoLogStat(gmo, "Model unbounded.");
+
+		} else if (model->isAbandoned()) {
+			gmoSolveStatSet(gmo, SolveStat_SolverErr);
+			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+			gmoLogStat(gmo, "Model abandoned.");
+
+		} else if (model->isProvenOptimal()) {
+			write_solution = true;
+			gmoSolveStatSet(gmo, SolveStat_Normal);
+			if (options.getDouble("optca") > 0 || options.getDouble("optcr") > 0) {
+				gmoModelStatSet(gmo, ModelStat_Integer);
+				gmoLogStat(gmo, "Solved to optimality (within gap tolerances optca and optcr).");
+			} else {
+				gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
+				gmoLogStat(gmo, "Solved to optimality.");
+			}
+
+		} else if (model->isNodeLimitReached()) {
+			gmoSolveStatSet(gmo, SolveStat_Iteration);
+			if (model->bestSolution()) {
+				write_solution = true;
+				gmoModelStatSet(gmo, ModelStat_Integer);
+				gmoLogStat(gmo, "Node limit reached. Have feasible solution.");
+			} else {
+				gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+				gmoLogStat(gmo, "Node limit reached. No feasible solution found.");
+			}
+
+		} else if (model->isSecondsLimitReached()) {
+			gmoSolveStatSet(gmo, SolveStat_Resource);
+			if (model->bestSolution()) {
+				write_solution = true;
+				gmoModelStatSet(gmo, ModelStat_Integer);
+				gmoLogStat(gmo, "Time limit reached. Have feasible solution.");
+			} else {
+				gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+				gmoLogStat(gmo, "Time limit reached. No feasible solution found.");
+			}
+
+		} else if (model->isProvenInfeasible()) {
+			gmoSolveStatSet(gmo, SolveStat_Normal);
+			gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+			gmoLogStat(gmo, "Model infeasible.");
+
+		} else {
+			gmoSolveStatSet(gmo, SolveStat_Solver);
+			if (model->bestSolution()) {
+				write_solution = true;
+				gmoModelStatSet(gmo, ModelStat_Integer);
+				gmoLogStat(gmo, "Model status unknown, but have feasible solution.");
+			} else {
+				gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+				gmoLogStat(gmo, "Model status unknown, no feasible solution found.");
+			}
+			sprintf(buffer, "CBC primary status: %d secondary status: %d\n", model->status(), model->secondaryStatus());
+			gmoLogStat(gmo, buffer);
+		}
 	}
 
 	gmoSetHeadnTail(gmo, Hiterused, model->getIterationCount());
@@ -1047,7 +1135,7 @@ bool GamsCbc::writeSolution(double cputime) {
 	if (write_solution && !gamsOsiStoreSolution(gmo, *model->solver(), true))
 		return false;
 
-	if (gmoModelType(gmo) != Proc_lp && gmoModelType(gmo) != Proc_rmip) {
+	if (!isLP()) {
 		if (model->bestSolution()) {
 			//		if (opt.getInteger("threads")>1)
 			//			snprintf(buffer, 255, "MIP solution: %21.10g   (%d nodes, %g CPU seconds, %.2f wall clock seconds)", model.getObjValue(), model.getNodeCount(), gm.SecondsSinceStart(), CoinWallclockTime());
@@ -1066,4 +1154,17 @@ bool GamsCbc::writeSolution(double cputime) {
 	}
 	
 	return true;
+}
+
+bool GamsCbc::isLP() {
+	if (gmoModelType(gmo) == Proc_lp)
+		return true;
+	if (gmoModelType(gmo) == Proc_rmip)
+		return true;
+	if (gmoNDisc(gmo)) // TODO does semicontinuous variables count as discrete?
+		return false;
+	int numSos1, numSos2, nzSos;
+	gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);
+	if (nzSos)
+		return false;
 }

@@ -68,6 +68,10 @@ if test @gamslinks_build_cbc@ = 1 ; then
   SMP="$SMP SMP('Cbc', 'MIP') = yes;"
   SMP="$SMP SMP('Cbc', 'RMIP') = yes;"
   
+  solvers="$solvers , 'Cbcd'"
+  SMP="$SMP SMP('Cbcd', 'LP') = yes;"
+  SMP="$SMP SMP('Cbcd', 'MIP') = yes;"
+  SMP="$SMP SMP('Cbcd', 'RMIP') = yes;"
 fi
 if test @gamslinks_build_bonmin@ = 1 ; then
   solvers="$solvers , 'Bonmin'"
@@ -97,6 +101,8 @@ Sets SolverNames   / $solvers /
 $SMP
 alias(t,tt);
 
+*skip FARM because it uses DECIS which writes to stdout - always
+notest('199') = yes;
 *skip QP7 and EMFL because of conic equations
 notest('271') = yes;
 notest('273') = yes;
