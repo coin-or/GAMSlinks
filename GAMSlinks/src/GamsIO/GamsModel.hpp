@@ -222,7 +222,7 @@ public:
 	/** Initial marginals and storage for the solution values of the dual variables corresponding to the column bound constraints (reduced costs).
 	 */
   inline double *ColMargin()    { return ColMargin_; }
-	/** Initial basis status and storage for the solution basis status of the columns.
+	/** Initial basis status (0 for basic variables and 1 for nonbasics) and storage for the solution basis status (see enum BasisStatus) of the columns.
 	 */
   inline int    *ColBasis()     { return ColBasis_; }
   /** Branching priorities of columns.
@@ -253,7 +253,7 @@ public:
 	/** Initial marginals and storage for the solution values of the dual variables corresponding to the rows (row prices).
 	 */
   inline double *RowMargin()    { return RowMargin_; }
-	/** Initial basis status and storage for the solution basis status of the rows.
+	/** Initial basis status (0 for basic variables and 1 for nonbasics) and storage for the solution basis status (see enum BasisStatus) of the rows.
 	 */
   inline int    *RowBasis()     { return RowBasis_; }
   /** Scaling parameters for rows.

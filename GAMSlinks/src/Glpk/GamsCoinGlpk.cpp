@@ -174,7 +174,6 @@ int main (int argc, const char *argv[]) {
 	}
 	
 	setupParameters(opt, myout, solver, glpk_model);
-//TODO	setupStartPoint(gm, myout, solver);
 
 	// from glpsol: if scaling is turned on and presolve is off (or interior point is used), then do scaling 
   if (lpx_get_int_parm(glpk_model, LPX_K_SCALE) && !lpx_get_int_parm(glpk_model, LPX_K_PRESOL))
@@ -188,6 +187,8 @@ int main (int argc, const char *argv[]) {
 			lpx_adv_basis(glpk_model);
 		else if (strcmp(buffer, "bixby")==0)
 			lpx_cpx_basis(glpk_model);
+		else if (strcmp(buffer, "user")==0)
+			setupStartPoint(gm, myout, solver);
   }
 
   bool mipoptimal=false;
@@ -416,25 +417,48 @@ void setupStartPoint(GamsModel& gm, CoinMessageHandler& myout, OsiGlpkSolverInte
 //   solver.setRowPrice(gm.RowMargin()); // no useful implementation in OsiGLPK yet
   CoinWarmStartBasis warmstart;
   warmstart.setSize(solver.getNumCols(), solver.getNumRows());
-	for (int j=0; j<gm.nCols(); ++j) {
+  int nbas = 0;
+	for (int j = 0; j < gm.nCols(); ++j) {
 		switch (gm.ColBasis()[j]) {
-			case GamsModel::NonBasicLower : warmstart.setStructStatus(j, CoinWarmStartBasis::atLowerBound); break;
-			case GamsModel::NonBasicUpper : warmstart.setStructStatus(j, CoinWarmStartBasis::atUpperBound); break;
-			case GamsModel::Basic : warmstart.setStructStatus(j, CoinWarmStartBasis::basic); break;
-			case GamsModel::SuperBasic : warmstart.setStructStatus(j, CoinWarmStartBasis::isFree); break;
-			default: warmstart.setStructStatus(j, CoinWarmStartBasis::isFree);
-				myout << "Column basis status " << gm.ColBasis()[j] << " unknown!" << CoinMessageEol;
+			case 0: // this seem to mean that variable should be basic
+				if (++nbas <= gm.nRows())
+					warmstart.setStructStatus(j, CoinWarmStartBasis::basic);
+				else if (gm.ColLb()[j] <= gm.getMInfinity() && gm.ColUb()[j] >= gm.getPInfinity())
+					warmstart.setStructStatus(j, CoinWarmStartBasis::isFree);
+				else if (fabs(gm.ColLb()[j]) < fabs(gm.ColUb()[j]))
+					warmstart.setStructStatus(j, CoinWarmStartBasis::atLowerBound);
+				else
+					warmstart.setStructStatus(j, CoinWarmStartBasis::atUpperBound);
+				break;
+			case 1:
+				if (fabs(gm.ColLevel()[j] - gm.ColLb()[j]) < fabs(gm.ColUb()[j] - gm.ColLevel()[j]))
+					warmstart.setStructStatus(j, CoinWarmStartBasis::atLowerBound);
+				else
+					warmstart.setStructStatus(j, CoinWarmStartBasis::atUpperBound);
+				break;
+			default:
+				myout << "error: invalid basis indicator: got" << gm.ColBasis()[j] << "for column" << j << CoinMessageEol;
+				warmstart.setStructStatus(j, CoinWarmStartBasis::isFree);
 		}
 	}
-	for (int j=0; j<gm.nRows(); ++j) {
+	
+	nbas = 0;
+	for (int j = 0; j < gm.nRows(); ++j) {
 		switch (gm.RowBasis()[j]) {
-			case GamsModel::NonBasicLower : warmstart.setArtifStatus(j, CoinWarmStartBasis::atUpperBound); break;
-			case GamsModel::NonBasicUpper : warmstart.setArtifStatus(j, CoinWarmStartBasis::atLowerBound); break;
-			case GamsModel::Basic : warmstart.setArtifStatus(j, CoinWarmStartBasis::basic); break;
-			case GamsModel::SuperBasic : warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
-			default: warmstart.setArtifStatus(j, CoinWarmStartBasis::isFree); break;
-				myout << "Row basis status " << gm.RowBasis()[j] << " unknown!" << CoinMessageEol;
+			case 0:
+				if (++nbas < gm.nRows())
+					warmstart.setArtifStatus(j, CoinWarmStartBasis::basic);
+				else
+					warmstart.setArtifStatus(j, CoinWarmStartBasis::atUpperBound);
+				break;
+			case 1:
+				warmstart.setArtifStatus(j, CoinWarmStartBasis::atUpperBound);
+				break;
+			default:
+				printf("error: invalid basis indicator: got %d for row %d\n", gm.RowBasis()[j], j);
+				warmstart.setArtifStatus(j, CoinWarmStartBasis::atUpperBound);
 		}
 	}
+	
 	solver.setWarmStart(&warmstart);
 }

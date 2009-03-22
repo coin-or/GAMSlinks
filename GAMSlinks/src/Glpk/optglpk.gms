@@ -8,7 +8,7 @@ set g Glpk Option Groups /
         off, equilibrium, mean, meanequilibrium,
         textbook, steepestedge,
         forresttomlin, bartelsgolub, givens,
-        standard, advanced, bixby,
+        standard, advanced, bixby, user,
         depthfirst, breadthfirst, bestprojection /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
     t / I Integer, R Real, S String, B Binary /
@@ -90,7 +90,8 @@ $onempty
                   givens           )
   initbasis.(     standard
                   advanced
-                  bixby            )
+                  bixby            
+                  user             )
   backtracking.(  depthfirst       
                   breadthfirst     
                   bestprojection   )

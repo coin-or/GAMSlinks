@@ -93,6 +93,11 @@ initbasis.bixby
 Uses Bixby's initial basis.
 
 
+initbasis.user
+Uses basis provided by GAMS.
+Note that a feasible basis need to be given, otherwise Glpk will fail.
+
+
 tol_dual
 Absolute tolerance used to check if the current basis solution is dual feasible.
 (Glpk manual: Do not change this parameter without detailed understanding its purpose.)

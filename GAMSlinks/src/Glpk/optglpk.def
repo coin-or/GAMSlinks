@@ -21,6 +21,7 @@ initbasis enumstr 0 "advanced" 1 1 method for initial basis
  "standard" 1
  "advanced" 1
  "bixby" 1
+ "user" 1
 tol_dual double 0 1e-7 0 maxdouble 1 1 dual feasibility tolerance
 tol_primal double 0 1e-7 0 maxdouble 1 1 primal feasibility tolerance
 tol_integer double 0 1e-5 0 maxdouble 1 1 integer feasibility tolerance

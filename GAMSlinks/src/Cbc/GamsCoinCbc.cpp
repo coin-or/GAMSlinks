@@ -475,24 +475,48 @@ void setupStartingPoint(GamsModel& gm, GamsOptions& opt, CbcModel& model) {
   // starting point
   model.solver()->setColSolution(gm.ColLevel());
   model.solver()->setRowPrice(gm.RowMargin());
-  int* cstat=new int[gm.nCols()];
-  int* rstat=new int[gm.nRows()];
+  int* cstat = new int[gm.nCols()];
+  int* rstat = new int[gm.nRows()];
+  int nbas = 0;
 	for (int j=0; j<gm.nCols(); ++j) {
 		switch (gm.ColBasis()[j]) {
-			case GamsModel::NonBasicLower : cstat[j]=3; break;
-			case GamsModel::NonBasicUpper : cstat[j]=2; break;
-			case GamsModel::Basic : cstat[j]=1; break;
-			case GamsModel::SuperBasic : cstat[j]=0; break;
-			default: cstat[j]=0;
+			case 0: // this seem to mean that variable should be basic
+				if (++nbas <= gm.nRows())
+					cstat[j] = 1; // basic
+				else if (gm.ColLb()[j] <= gm.getMInfinity() && gm.ColUb()[j] >= gm.getPInfinity())
+					cstat[j] = 0; // superbasic = free
+				else if (fabs(gm.ColLb()[j]) < fabs(gm.ColUb()[j]))
+					cstat[j] = 3; // nonbasic at lower bound
+				else
+					cstat[j] = 2; // nonbasic at upper bound
+				break;
+			case 1:
+				if (fabs(gm.ColLevel()[j] - gm.ColLb()[j]) < fabs(gm.ColUb()[j] - gm.ColLevel()[j]))
+					cstat[j] = 3; // nonbasic at lower bound
+				else
+					cstat[j] = 2; // nonbasic at upper bound
+				break;
+			default:
+				gm.PrintOut(GamsModel::AllMask, "Error: invalid basis indicator for column\n");
+				cstat[j] = 0; // free
 		}
 	}
+	
+	nbas = 0;
 	for (int j=0; j<gm.nRows(); ++j) {
 		switch (gm.RowBasis()[j]) {
-			case GamsModel::NonBasicLower : rstat[j]=2; break;
-			case GamsModel::NonBasicUpper : rstat[j]=3; break;
-			case GamsModel::Basic : rstat[j]=1; break;
-			case GamsModel::SuperBasic : rstat[j]=0; break;
-			default: rstat[j]=0;
+			case 0:
+				if (++nbas < gm.nRows())
+					rstat[j] = 1; // basic
+				else
+					rstat[j] = 2; // nonbasic at upper bound (flipped for cbc)
+				break;
+			case 1:
+				rstat[j] = 2; // nonbasic at upper bound (flipped for cbc)
+				break;
+			default:
+				gm.PrintOut(GamsModel::AllMask, "Error: invalid basis indicator for row\n");
+				rstat[j] = 2; // nonbasic at upper bound (flipped for cbc)
 		}
 	}
 	// this call initializes ClpSimplex data structures, which can produce an error if CLP does not like the model
