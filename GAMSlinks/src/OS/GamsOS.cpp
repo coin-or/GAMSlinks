@@ -42,6 +42,7 @@
 #include "OSrLWriter.h"
 #include "OSErrorClass.h"
 #include "OSSolverAgent.h"
+#include "OSFileUtil.h"
 #ifdef COIN_OS_SOLVER
 #include "OSDefaultSolver.h"
 #ifdef COIN_HAS_OSI
