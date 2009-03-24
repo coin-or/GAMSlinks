@@ -37,10 +37,14 @@ int main(int argc, char** argv) {
   char msg[256];
   int rc;
 
-  // initialize GMO
-  if (!gmoCreateD(&gmo, "/home/stefan/work/coin/GAMSlinks-trunk/ThirdParty/GAMSIO/LEG", msg, sizeof(msg))) {
-  	fprintf(stderr, "%s\n",msg);
-    return EXIT_FAILURE;
+  // initialize GMO:
+  // first try path where GAMS I/O libraries were during compilation (the gmo library there should be the correct version)
+  // if that fails, try using some global search path, so it should take the one from the gams installation (hope it is update enough) 
+  if (!gmoCreateD(&gmo, GAMSIO_PATH, msg, sizeof(msg))) {
+  	if (!gmoCreate(&gmo, msg, sizeof(msg))) {
+  		fprintf(stderr, "%s\n",msg);
+  		return EXIT_FAILURE;
+  	}
   }
 
   gmoIdentSet(gmo, "CBClink object");

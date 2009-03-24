@@ -27700,6 +27700,11 @@ esac
 
 
 
+cat >>confdefs.h <<_ACEOF
+#define GAMSIO_PATH "$gamsio_srcdir"
+_ACEOF
+
+
 #################################################################################
 # Check which OSI solvers we build and which interfaces we can (and want) build #
 #################################################################################

@@ -204,6 +204,7 @@ if test $coin_has_gamsio = no; then
   AC_MSG_ERROR([need GAMS I/O libraries to build GAMSlinks])
 fi
 AC_COIN_USE_GAMS
+AC_DEFINE_UNQUOTED([GAMSIO_PATH],["$gamsio_srcdir"],[The path of the GAMS I/O libraries])
 
 #################################################################################
 # Check which OSI solvers we build and which interfaces we can (and want) build #
