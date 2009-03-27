@@ -441,6 +441,10 @@ bool GamsModel::getPriorityOption() {
 	return iolib.priots;
 }
 
+bool GamsModel::getIgnoreBasis() {
+	return iolib.ignbas;
+}
+
 void GamsModel::setStatus(const SolverStatus& newSolverStatus, 
                           const ModelStatus& newModelStatus) {
   if (newSolverStatus > SolverStatusNotSet && 

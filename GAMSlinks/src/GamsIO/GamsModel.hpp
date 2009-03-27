@@ -390,7 +390,7 @@ public:
 	/** GAMS Parameter: A new valid solution must be at least this much better than incumbent integer solution (for MIPs).
 	 */
   double getCheat();   
-  /** GAMS Parmeter: Implied upper/lower bound on objective function. 
+  /** GAMS Parameter: Implied upper/lower bound on objective function. 
    */
   double getCutOff();
   /** GAMS Option: If set, then the solver should use the scaling parameters in ColScale() and RowScale().
@@ -399,6 +399,9 @@ public:
   /** GAMS Option: If set, then the solver should use the branching priorities in ColPriority().
    */
   bool getPriorityOption();
+  /** GAMS Parameter: Whether to ignore initial basis given by GAMS. 
+   */
+  bool getIgnoreBasis();
 
 	/** The name of the option file.
 	 * @return The name of the option file, or NULL if no optionfile should be read.
