@@ -73,7 +73,7 @@ void SMAG_MINLP::setupPrioritiesSOS() {
 		if ((prob->colType[i]!=SMAG_VAR_SOS1) && (prob->colType[i]!=SMAG_VAR_SOS2))
 			continue; 
 		sosvar.at(prob->colSOS[i]-1).push_back(i);
-		sosinfo.types[prob->colSOS[i]-1]=(prob->colType[i]==SMAG_VAR_SOS1 ? '1' : '2');
+		sosinfo.types[prob->colSOS[i]-1]=(prob->colType[i]==SMAG_VAR_SOS1 ? 1 : 2);
 	}
 	
 	sosinfo.indices=new int[sosinfo.numNz];
