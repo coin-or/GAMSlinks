@@ -24,6 +24,8 @@
 #include "SmagNLP.hpp"
 #include "SmagJournal.hpp"
 
+#include "IpIpoptData.hpp"
+
 extern "C" {
 #ifndef HAVE_MA27
 #define HAVE_HSL_LOADER
@@ -47,6 +49,9 @@ extern "C" {
 #include "PardisoLoader.h"
 #endif
 }
+
+#include <fstream>
+#include <ostream>
 
 using namespace Ipopt;
 
@@ -240,6 +245,18 @@ int main (int argc, char* argv[]) {
   	if (LSL_unloadPardisoLib()!=0)
   		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to unload Pardiso library.\n");
 #endif
+  
+  if (mysmagnlp->ip_data) {
+  	std::ofstream timedat("rtext.txt");
+  	TimingStatistics& tstat(mysmagnlp->ip_data->TimingStats());
+  	
+  	double linsolvertime = tstat.PDSystemSolverTotal().TotalTime();
+  	double tottime = tstat.OverallAlgorithm().TotalTime();
+  	
+  	timedat << linsolvertime << ',' << linsolvertime/tottime;
+
+  	timedat.close();
+  }
 	
 	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nGAMS/Ipopt finished.\n");
 	smagStdOutputStop(prob, buffer, sizeof(buffer));

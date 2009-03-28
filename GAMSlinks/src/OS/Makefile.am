@@ -240,14 +240,14 @@ GamsOS2_LDFLAGS  = $(ADDLIBS) -rpath $(libdir)
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
-DISTCLEANFILES = gmsos_.zip
+DISTCLEANFILES =
 
 if GAMSIO_IS_UNIX
 install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsOS gmsos_ux.out
 	zip gmsos_.zip gmsos_ux.out gmsos_us.run optos.def install/gmsos_un.dat
 	$(install_sh_DATA) gmsos_.zip $(DESTDIR)$(bindir)/gmsos_.zip
-	rm -f gmsos_ux.out
+	rm -f gmsos_ux.out gmsos_.zip
 endif
 
 if GAMSIO_IS_WINDOWS
@@ -255,7 +255,7 @@ install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsOS.exe gmsos_nx.exe
 	zip gmsos_.zip gmsos_nx.exe gmsos_nt.cmd optos.def install/gmsos_nt.dat
 	$(install_sh_DATA) gmsos_.zip $(DESTDIR)$(bindir)/gmsos_.zip
-	rm -f gmsos_nx.exe
+	rm -f gmsos_nx.exe gmsos_.zip
 endif
 
 uninstall-local:

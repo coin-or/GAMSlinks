@@ -173,14 +173,14 @@ GamsCoinOsi_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
  
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
-DISTCLEANFILES = gmsosi_.zip
+DISTCLEANFILES =
 
 if GAMSIO_IS_UNIX
 install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsCoinOsi gmsosiux.out
 	zip gmsosi_.zip gmsosiux.out gmsosius.run install/gmsosiun.dat optosi.def
 	$(install_sh_DATA) gmsosi_.zip $(DESTDIR)$(bindir)/gmsosi_.zip
-	rm -f gmsosiux.out
+	rm -f gmsosiux.out gmsosi_.zip
 endif
 
 if GAMSIO_IS_WINDOWS
@@ -188,7 +188,7 @@ install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsCoinOsi.exe gmsosinx.exe
 	zip gmsosi_.zip gmsosinx.exe gmsosint.cmd install/gmsosint.dat optosi.def
 	$(install_sh_DATA) gmsosi_.zip $(DESTDIR)$(bindir)/gmsosi_.zip
-	rm -f gmsosinx.exe
+	rm -f gmsosinx.exe gmsosi_.zip
 endif
 
 uninstall-local:

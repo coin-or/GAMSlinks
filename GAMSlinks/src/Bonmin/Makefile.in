@@ -343,6 +343,7 @@ SCIPINCDIR = @SCIPINCDIR@
 SCIPLIB = @SCIPLIB@
 SCIPOBJDIR = @SCIPOBJDIR@
 SET_MAKE = @SET_MAKE@
+SHAREDLIBEXT = @SHAREDLIBEXT@
 SHELL = @SHELL@
 SMAG_LIBS = @SMAG_LIBS@
 SPXINCDIR = @SPXINCDIR@
@@ -477,7 +478,7 @@ GamsBonmin_DEPENDENCIES = ../GamsIO/libSmagIO.la $(SMAG_LIBS) \
 	$(am__append_7) $(am__append_10)
 GamsBonmin_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
-DISTCLEANFILES = gmsbm_.zip $(am__append_12) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(am__append_12) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: all-am
@@ -822,13 +823,13 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 @GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsBonmin gmsbm_ux.out
 @GAMSIO_IS_UNIX_TRUE@	zip gmsbm_.zip gmsbm_ux.out gmsbm_us.run install/gmsbm_un.dat
 @GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmsbm_.zip $(DESTDIR)$(bindir)/gmsbm_.zip
-@GAMSIO_IS_UNIX_TRUE@	rm -f gmsbm_ux.out
+@GAMSIO_IS_UNIX_TRUE@	rm -f gmsbm_ux.out gmsbm_.zip
 
 @GAMSIO_IS_WINDOWS_TRUE@install-exec-local: install-binPROGRAMS
 @GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/GamsBonmin.exe gmsbm_nx.exe
 @GAMSIO_IS_WINDOWS_TRUE@	zip gmsbm_.zip gmsbm_nx.exe gmsbm_nt.cmd install/gmsbm_nt.dat
 @GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmsbm_.zip $(DESTDIR)$(bindir)/gmsbm_.zip
-@GAMSIO_IS_WINDOWS_TRUE@	rm -f gmsbm_nx.exe
+@GAMSIO_IS_WINDOWS_TRUE@	rm -f gmsbm_nx.exe gmsbm_.zip
 
 uninstall-local:
 	rm -f $(DESTDIR)$(bindir)/gmsbm_.zip

@@ -105,6 +105,8 @@ public:
 	double scaled_conviol_tol;
 	double unscaled_conviol_tol;
 	
+	IpoptData* ip_data;
+	
 //	IpoptApplication* ipopt_app;
 	
 private:

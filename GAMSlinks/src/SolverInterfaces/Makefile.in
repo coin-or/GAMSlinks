@@ -88,7 +88,8 @@ host_triplet = @host@
 @GAMSLINKS_BUILD_CBC_TRUE@ $(OSIOBJDIR)/src/libOsi.la \
 @GAMSLINKS_BUILD_CBC_TRUE@ $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
 @GAMSLINKS_BUILD_CBC_TRUE@ $(CLPOBJDIR)/src/libClp.la \
-@GAMSLINKS_BUILD_CBC_TRUE@ $(COINUTILSOBJDIR)/src/libCoinUtils.la
+@GAMSLINKS_BUILD_CBC_TRUE@ $(COINUTILSOBJDIR)/src/libCoinUtils.la \
+@GAMSLINKS_BUILD_CBC_TRUE@ `cat $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
 @GAMSLINKS_BUILD_CBC_TRUE@am__append_4 = \
 @GAMSLINKS_BUILD_CBC_TRUE@ $(CBCOBJDIR)/src/libCbcSolver.la \
@@ -101,10 +102,10 @@ host_triplet = @host@
 
 @GAMSIO_IS_UNIX_FALSE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@bin_PROGRAMS = gmscbcnx$(EXEEXT)
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@bin_PROGRAMS = gmscbcux.out$(EXEEXT)
-@GAMSLINKS_BUILD_CBC_TRUE@am__append_5 = optcbcd.def optcbcd.gms optcbcd.txt gmscbcnt.cmd gmscbcus.run install/gmscbcnt.dat install/gmscbcun.dat
-@GAMSLINKS_BUILD_CBC_TRUE@am__append_6 = gmscbc_.zip
-@GAMSLINKS_BUILD_CBC_TRUE@am__append_7 = installcbc
-@GAMSLINKS_BUILD_CBC_TRUE@am__append_8 = uninstallcbc
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__append_5 = gmscbcux.out gmscbcus.run install/gmscbcun.dat
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__append_6 = gmscbcnx.exe gmscbcnt.cmd install/gmscbcnt.dat
+@GAMSLINKS_BUILD_CBC_TRUE@am__append_7 = optcbcd.def
+@GAMSLINKS_BUILD_CBC_TRUE@am__append_8 = optcbcd.def optcbcd.gms optcbcd.txt gmscbcnt.cmd gmscbcus.run install/gmscbcnt.dat install/gmscbcun.dat
 DIST_COMMON = $(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 @HAVE_EXTERNALS_TRUE@am__append_9 = Externals
@@ -135,7 +136,12 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 @GAMSLINKS_BUILD_CBC_TRUE@	$(OSIOBJDIR)/src/libOsi.la \
 @GAMSLINKS_BUILD_CBC_TRUE@	$(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
 @GAMSLINKS_BUILD_CBC_TRUE@	$(CLPOBJDIR)/src/libClp.la \
-@GAMSLINKS_BUILD_CBC_TRUE@	$(COINUTILSOBJDIR)/src/libCoinUtils.la
+@GAMSLINKS_BUILD_CBC_TRUE@	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
+@GAMSLINKS_BUILD_CBC_TRUE@	`cat $(CGLOBJDIR)/cgl_addlibs.txt \
+@GAMSLINKS_BUILD_CBC_TRUE@	$(OSIOBJDIR)/osi_addlibs.txt \
+@GAMSLINKS_BUILD_CBC_TRUE@	$(CBCOBJDIR)/cbc_addlibs.txt \
+@GAMSLINKS_BUILD_CBC_TRUE@	$(CLPOBJDIR)/clp_addlibs.txt \
+@GAMSLINKS_BUILD_CBC_TRUE@	$(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 am__libGamsCoin_la_SOURCES_DIST = GamsCbc.cpp GamsOsiHelper.cpp \
 	GamsMessageHandler.cpp
 @GAMSLINKS_BUILD_CBC_TRUE@am__objects_1 = GamsCbc.lo GamsOsiHelper.lo \
@@ -144,17 +150,27 @@ am_libGamsCoin_la_OBJECTS = $(am__objects_1)
 libGamsCoin_la_OBJECTS = $(am_libGamsCoin_la_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am__gmscbcnx_SOURCES_DIST = gmscbc.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am_gmscbcnx_OBJECTS = gmscbc.$(OBJEXT)
+am__gmscbcnx_SOURCES_DIST = gmscbc.cpp ../GamsUtils/GamsLibLoader.c
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am_gmscbcnx_OBJECTS = gmscbc.$(OBJEXT) \
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	GamsLibLoader.$(OBJEXT)
 gmscbcnx_OBJECTS = $(am_gmscbcnx_OBJECTS)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_DEPENDENCIES = libGamsCoin.la
-am__gmscbcux_out_SOURCES_DIST = gmscbc.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am_gmscbcux_out_OBJECTS = gmscbc.$(OBJEXT)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsGMO.la
+am__gmscbcux_out_SOURCES_DIST = gmscbc.cpp \
+	../GamsUtils/GamsLibLoader.c
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am_gmscbcux_out_OBJECTS = gmscbc.$(OBJEXT) \
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	GamsLibLoader.$(OBJEXT)
 gmscbcux_out_OBJECTS = $(am_gmscbcux_out_OBJECTS)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_DEPENDENCIES =  \
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	libGamsCoin.la
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsGMO.la
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
@@ -340,11 +356,7 @@ IPOPTSRCDIR = @IPOPTSRCDIR@
 LDFLAGS = @LDFLAGS@
 LIBEXT = @LIBEXT@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@ `cat $(CGLOBJDIR)/cgl_addlibs.txt \
-	$(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt \
-	$(CLPOBJDIR)/clp_addlibs.txt \
-	$(COINUTILSOBJDIR)/coinutils_addlibs.txt \
-	$(GAMSLINKSOBJDIR)/gams_addlibs.txt`
+LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
 LN_S = @LN_S@
@@ -380,6 +392,7 @@ SCIPINCDIR = @SCIPINCDIR@
 SCIPLIB = @SCIPLIB@
 SCIPOBJDIR = @SCIPOBJDIR@
 SET_MAKE = @SET_MAKE@
+SHAREDLIBEXT = @SHAREDLIBEXT@
 SHELL = @SHELL@
 SMAG_LIBS = @SMAG_LIBS@
 SPXINCDIR = @SPXINCDIR@
@@ -461,30 +474,29 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = $(am__append_5) $(am__append_9)
-DISTCLEANFILES = $(am__append_6) $(am__append_10) \
-	$(VPATH_DISTCLEANFILES)
+EXTRA_DIST = $(am__append_8) $(am__append_9)
+DISTCLEANFILES = gmscoin_.zip $(am__append_10) $(VPATH_DISTCLEANFILES)
 lib_LTLIBRARIES = libGamsCoin.la
 libGamsCoin_la_SOURCES = $(am__append_1)
 libGamsCoin_la_LIBADD = $(am__append_3) ../GamsUtils/libGamsUtils.la
 libGamsCoin_la_DEPENDENCIES = $(am__append_4) \
 	../GamsUtils/libGamsUtils.la
+libGamsCoin_la_LDFLAGS = -export-dynamic
 AM_CPPFLAGS = $(am__append_2)
-installgoals = $(am__append_7)
-uninstallgoals = $(am__append_8)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_SOURCES = gmscbc.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_LDADD = libGamsCoin.la
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_SOURCES = gmscbc.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_LDADD = libGamsCoin.la
+gamsinstallfiles = $(am__append_5) $(am__append_6) $(am__append_7)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt`
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_SOURCES = gmscbc.cpp ../GamsUtils/GamsLibLoader.c
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_LDADD = $(GAMSIO_OBJDIR)/libGamsGMO.la
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt`
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_SOURCES = gmscbc.cpp ../GamsUtils/GamsLibLoader.c
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_LDADD = $(GAMSIO_OBJDIR)/libGamsGMO.la
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .lo .o .obj
+.SUFFIXES: .c .cpp .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../../BuildTools/Makemain.inc $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -585,9 +597,45 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCbc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsLibLoader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmscbc.Po@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	if $(LTCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Plo"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+GamsLibLoader.o: ../GamsUtils/GamsLibLoader.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT GamsLibLoader.o -MD -MP -MF "$(DEPDIR)/GamsLibLoader.Tpo" -c -o GamsLibLoader.o `test -f '../GamsUtils/GamsLibLoader.c' || echo '$(srcdir)/'`../GamsUtils/GamsLibLoader.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/GamsLibLoader.Tpo" "$(DEPDIR)/GamsLibLoader.Po"; else rm -f "$(DEPDIR)/GamsLibLoader.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../GamsUtils/GamsLibLoader.c' object='GamsLibLoader.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o GamsLibLoader.o `test -f '../GamsUtils/GamsLibLoader.c' || echo '$(srcdir)/'`../GamsUtils/GamsLibLoader.c
+
+GamsLibLoader.obj: ../GamsUtils/GamsLibLoader.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT GamsLibLoader.obj -MD -MP -MF "$(DEPDIR)/GamsLibLoader.Tpo" -c -o GamsLibLoader.obj `if test -f '../GamsUtils/GamsLibLoader.c'; then $(CYGPATH_W) '../GamsUtils/GamsLibLoader.c'; else $(CYGPATH_W) '$(srcdir)/../GamsUtils/GamsLibLoader.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/GamsLibLoader.Tpo" "$(DEPDIR)/GamsLibLoader.Po"; else rm -f "$(DEPDIR)/GamsLibLoader.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../GamsUtils/GamsLibLoader.c' object='GamsLibLoader.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o GamsLibLoader.obj `if test -f '../GamsUtils/GamsLibLoader.c'; then $(CYGPATH_W) '../GamsUtils/GamsLibLoader.c'; else $(CYGPATH_W) '$(srcdir)/../GamsUtils/GamsLibLoader.c'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -798,24 +846,14 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
 	uninstall-info-am uninstall-libLTLIBRARIES uninstall-local
 
 
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@installcbc:
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	ln -sf $(DESTDIR)$(bindir)/gmscbcux.out gmscbcux.out
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	zip gmscbc_.zip gmscbcux.out gmscbcus.run optcbcd.def install/gmscbcun.dat
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	$(install_sh_DATA) gmscbc_.zip $(DESTDIR)$(bindir)/gmscbc_.zip
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	rm -f gmscbcux.out
+install-exec-local: install-binPROGRAMS install-libLTLIBRARIES
+	test -e libGamsCoin.$(SHAREDLIBEXT) || ln -sf $(DESTDIR)$(libdir)/libGamsCoin.$(SHAREDLIBEXT) libGamsCoin.$(SHAREDLIBEXT)
+	zip gmscoin_.zip $(gamsinstallfiles) libGamsCoin.$(SHAREDLIBEXT)
+	$(install_sh_DATA) gmscoin_.zip $(DESTDIR)$(bindir)/gmscoin_.zip
+	rm -f gmscoin_.zip
 
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@installcbc:
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	ln -sf $(DESTDIR)$(bindir)/gmscbcnx.exe gmscbcnx.exe
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	zip gmscbc_.zip gmscbcnx.exe gmscbcnt.cmd optcbcd.def install/gmscbcnt.dat
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	$(install_sh_DATA) gmscbc_.zip $(DESTDIR)$(bindir)/gmscbc_.zip
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	rm -f gmscbcnx.exe
-
-@GAMSLINKS_BUILD_CBC_TRUE@uninstallcbc:
-@GAMSLINKS_BUILD_CBC_TRUE@	rm -f $(DESTDIR)$(bindir)/gmscbc_.zip
-
-install-exec-local: install-binPROGRAMS $(installgoals)
-
-uninstall-local: $(uninstallgoals)
+uninstall-local:
+	rm -f $(DESTDIR)$(bindir)/gmscoin_.zip
 
 install-doc: $(DocFiles)
 	test -z "$(DocInstallDir)" || $(mkdir_p) "$(DESTDIR)$(DocInstallDir)"

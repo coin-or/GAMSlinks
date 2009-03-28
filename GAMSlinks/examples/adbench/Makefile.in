@@ -345,6 +345,7 @@ SCIPINCDIR = @SCIPINCDIR@
 SCIPLIB = @SCIPLIB@
 SCIPOBJDIR = @SCIPOBJDIR@
 SET_MAKE = @SET_MAKE@
+SHAREDLIBEXT = @SHAREDLIBEXT@
 SHELL = @SHELL@
 SMAG_LIBS = @SMAG_LIBS@
 SPXINCDIR = @SPXINCDIR@
@@ -773,13 +774,13 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local
 @GAMSIO_IS_UNIX_TRUE@	ln -sf $(DESTDIR)$(bindir)/adbench gmsad_ux.out
 @GAMSIO_IS_UNIX_TRUE@	zip gmsad_.zip gmsad_ux.out gmsad_us.run install/gmsad_un.dat
 @GAMSIO_IS_UNIX_TRUE@	$(install_sh_DATA) gmsad_.zip $(DESTDIR)$(bindir)/gmsad_.zip
-@GAMSIO_IS_UNIX_TRUE@	rm -f gmsad_ux.out
+@GAMSIO_IS_UNIX_TRUE@	rm -f gmsad_ux.out gmsad_.zip
 
 @GAMSIO_IS_WINDOWS_TRUE@install-exec-local: install-binPROGRAMS
 @GAMSIO_IS_WINDOWS_TRUE@	ln -sf $(DESTDIR)$(bindir)/adbench.exe gmsad_nx.exe
 @GAMSIO_IS_WINDOWS_TRUE@	zip gmsad_.zip gmsad_nx.exe gmsad_nt.cmd install/gmsad_nt.dat
 @GAMSIO_IS_WINDOWS_TRUE@	$(install_sh_DATA) gmsad_.zip $(DESTDIR)$(bindir)/gmsad_.zip
-@GAMSIO_IS_WINDOWS_TRUE@	rm -f gmsad_nx.exe  
+@GAMSIO_IS_WINDOWS_TRUE@	rm -f gmsad_nx.exe gmsad_.zip
 
 uninstall-local:
 	rm -f $(DESTDIR)$(bindir)/gmsad_.zip

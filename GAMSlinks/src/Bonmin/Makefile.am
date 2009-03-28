@@ -103,14 +103,14 @@ GamsBonmin_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
  
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
-DISTCLEANFILES = gmsbm_.zip
+DISTCLEANFILES =
 
 if GAMSIO_IS_UNIX
 install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsBonmin gmsbm_ux.out
 	zip gmsbm_.zip gmsbm_ux.out gmsbm_us.run install/gmsbm_un.dat
 	$(install_sh_DATA) gmsbm_.zip $(DESTDIR)$(bindir)/gmsbm_.zip
-	rm -f gmsbm_ux.out
+	rm -f gmsbm_ux.out gmsbm_.zip
 endif
 
 if GAMSIO_IS_WINDOWS
@@ -118,7 +118,7 @@ install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsBonmin.exe gmsbm_nx.exe
 	zip gmsbm_.zip gmsbm_nx.exe gmsbm_nt.cmd install/gmsbm_nt.dat
 	$(install_sh_DATA) gmsbm_.zip $(DESTDIR)$(bindir)/gmsbm_.zip
-	rm -f gmsbm_nx.exe
+	rm -f gmsbm_nx.exe gmsbm_.zip
 endif
 	
 uninstall-local:

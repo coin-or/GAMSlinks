@@ -92,6 +92,8 @@ GAMSlinks/src/GamsUtils/GamsDictionary.cpp -text
 GAMSlinks/src/GamsUtils/GamsDictionary.hpp -text
 GAMSlinks/src/GamsUtils/GamsGDX.cpp -text
 GAMSlinks/src/GamsUtils/GamsGDX.hpp -text
+GAMSlinks/src/GamsUtils/GamsLibLoader.c -text
+GAMSlinks/src/GamsUtils/GamsLibLoader.h -text
 GAMSlinks/src/GamsUtils/GamsOptions.cpp -text
 GAMSlinks/src/GamsUtils/GamsOptions.hpp -text
 GAMSlinks/src/GamsUtils/Makefile.am -text
@@ -172,6 +174,7 @@ GAMSlinks/src/SolverInterfaces/Makefile.in -text
 GAMSlinks/src/SolverInterfaces/gmscbc.cpp -text
 GAMSlinks/src/SolverInterfaces/gmscbcnt.cmd -text
 GAMSlinks/src/SolverInterfaces/gmscbcus.run -text
+GAMSlinks/src/SolverInterfaces/gmsmain.cpp -text
 GAMSlinks/src/SolverInterfaces/install/gmscbcnt.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmscbcun.dat -text
 GAMSlinks/src/SolverInterfaces/optcbcd.def -text

@@ -52,14 +52,14 @@ GamsIpopt_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
-DISTCLEANFILES = gmsip_.zip
+DISTCLEANFILES =
 
 if GAMSIO_IS_UNIX
 install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsIpopt gmsip_ux.out
 	zip gmsip_.zip gmsip_ux.out gmsip_us.run install/gmsip_un.dat
 	$(install_sh_DATA) gmsip_.zip $(DESTDIR)$(bindir)/gmsip_.zip
-	rm -f gmsip_ux.out
+	rm -f gmsip_ux.out gmsip_.zip
 endif
 
 if GAMSIO_IS_WINDOWS
@@ -67,7 +67,7 @@ install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsIpopt.exe gmsip_nx.exe
 	zip gmsip_.zip gmsip_nx.exe gmsip_nt.cmd install/gmsip_nt.dat
 	$(install_sh_DATA) gmsip_.zip $(DESTDIR)$(bindir)/gmsip_.zip
-	rm -f gmsip_nx.exe
+	rm -f gmsip_nx.exe gmsip_.zip
 endif
 
 uninstall-local:

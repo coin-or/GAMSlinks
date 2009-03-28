@@ -141,7 +141,8 @@ AC_CHECK_FUNCS([vsnprintf _vsnprintf],[break],,)
 
 # We need to restore the value of LIBS before those test, otherwise libtool
 # will hick-up
-LIBS_without_ADDLIBS="$LIBS"
+LIBS_save="$LIBS"
+ADDLIBS_save="$ADDLIBS"
 
 ################
 # GLPK LIBRARY #
@@ -195,6 +196,9 @@ AC_ARG_ENABLE([cbc-parallel],,
 AC_COIN_HAS_USER_LIBRARY([Cplex],[CPX],[cplex.h],[CPXgetstat])
 AC_COIN_HAS_USER_LIBRARY([Soplex],[SPX],[spxsolver.h])
 
+LIBS=${LIBS_save}
+ADDLIBS=${ADDLIBS_save}
+
 ####################################
 # GAMS system and GAMS I/O LIBRARY #
 ####################################
@@ -205,6 +209,34 @@ if test $coin_has_gamsio = no; then
 fi
 AC_COIN_USE_GAMS
 AC_DEFINE_UNQUOTED([GAMSIO_PATH],["$gamsio_srcdir"],[The path of the GAMS I/O libraries])
+
+########################################################################
+##                 dynamic library loader stuff                       ##
+########################################################################
+
+AC_LANG_PUSH(C)
+AC_COIN_CHECK_HEADER([windows.h])
+AC_COIN_CHECK_HEADER([dlfcn.h])
+AC_CHECK_LIB(dl,[dlopen],[ADDLIBS="$ADDLIBS -ldl"],[])
+
+case $build in
+  *-cygwin* |  *-mingw*)
+     AC_DEFINE([SHAREDLIBEXT], ["dll"], [Set to extension for shared libraries in quotes.])
+     SHAREDLIBEXT="dll"
+     # Take -pedantic-errors out of CFLAGS
+     #AC_MSG_NOTICE([Removing flag -pedantic-errors from CFLAGS])
+     #CFLAGS=`echo $CFLAGS | sed -e s/-pedantic-errors//`
+     ;;
+  *-darwin*)
+     AC_DEFINE([SHAREDLIBEXT], ["dylib"], [Set to extension for shared libraries in quotes.])
+     SHAREDLIBEXT="dylib"
+     ;;
+  *)
+     AC_DEFINE([SHAREDLIBEXT], ["so"], [Set to extension for shared libraries in quotes.])
+     SHAREDLIBEXT="so"
+esac
+AC_SUBST(SHAREDLIBEXT)
+AC_LANG_POP(C)
 
 #################################################################################
 # Check which OSI solvers we build and which interfaces we can (and want) build #

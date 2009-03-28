@@ -69,7 +69,7 @@ install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/adbench gmsad_ux.out
 	zip gmsad_.zip gmsad_ux.out gmsad_us.run install/gmsad_un.dat
 	$(install_sh_DATA) gmsad_.zip $(DESTDIR)$(bindir)/gmsad_.zip
-	rm -f gmsad_ux.out
+	rm -f gmsad_ux.out gmsad_.zip
 endif
 
 if GAMSIO_IS_WINDOWS
@@ -77,7 +77,7 @@ install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/adbench.exe gmsad_nx.exe
 	zip gmsad_.zip gmsad_nx.exe gmsad_nt.cmd install/gmsad_nt.dat
 	$(install_sh_DATA) gmsad_.zip $(DESTDIR)$(bindir)/gmsad_.zip
-	rm -f gmsad_nx.exe  
+	rm -f gmsad_nx.exe gmsad_.zip
 endif
 
 uninstall-local:

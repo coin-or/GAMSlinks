@@ -34,7 +34,7 @@ using namespace Ipopt;
 // constructor
 SMAG_NLP::SMAG_NLP (smagHandle_t prob)
 : div_iter_tol(1E+20), scaled_conviol_tol(1E-8), unscaled_conviol_tol(1E-4),
-  domviolations(0)
+  ip_data(NULL), domviolations(0)
 {
   this->prob = prob;
   negLambda = new double[smagRowCount(prob)];
@@ -355,6 +355,8 @@ bool SMAG_NLP::intermediate_callback (AlgorithmMode mode, Index iter, Number obj
 
 void SMAG_NLP::finalize_solution (SolverReturn status, Index n, const Number *x, const Number *z_L, const Number *z_U,
 		   Index m, const Number *g, const Number *lambda, Number obj_value, const IpoptData* data, IpoptCalculatedQuantities* cq) {
+	ip_data = const_cast<IpoptData*>(data);
+
 	int model_status;
 	int solver_status;
 	bool write_solution=false;

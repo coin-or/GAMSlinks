@@ -46,14 +46,14 @@ GamsScip_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
-DISTCLEANFILES = gmssc_.zip
+DISTCLEANFILES =
 
 if GAMSIO_IS_UNIX
 install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsScip gmssc_ux.out
 	zip gmssc_.zip gmssc_ux.out gmssc_us.run install/gmssc_un.dat
 	$(install_sh_DATA) gmssc_.zip $(DESTDIR)$(bindir)/gmssc_.zip
-	rm -f gmssc_ux.out
+	rm -f gmssc_ux.out gmssc_.zip
 endif
 
 if GAMSIO_IS_WINDOWS
@@ -61,7 +61,7 @@ install-exec-local: install-binPROGRAMS
 	ln -sf $(DESTDIR)$(bindir)/GamsScip.exe gmssc_nx.exe
 	zip gmssc_.zip gmssc_nx.exe gmssc_nt.cmd install/gmssc_nt.dat
 	$(install_sh_DATA) gmssc_.zip $(DESTDIR)$(bindir)/gmssc_.zip
-	rm -f gmssc_nx.exe
+	rm -f gmssc_nx.exe gmssc_.zip
 endif
 
 uninstall-local:

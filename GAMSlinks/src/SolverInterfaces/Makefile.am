@@ -11,15 +11,15 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST     =
 DISTCLEANFILES =
 
-lib_LTLIBRARIES          = libGamsCoin.la
+lib_LTLIBRARIES             = libGamsCoin.la
 libGamsCoin_la_SOURCES      =
 libGamsCoin_la_LIBADD       =
 libGamsCoin_la_DEPENDENCIES =
+libGamsCoin_la_LDFLAGS      =
 
 AM_CPPFLAGS =
 
-installgoals   =
-uninstallgoals =
+gamsinstallfiles =
 
 if GAMSLINKS_BUILD_CBC
 libGamsCoin_la_SOURCES += GamsCbc.cpp GamsOsiHelper.cpp GamsMessageHandler.cpp
@@ -57,7 +57,8 @@ libGamsCoin_la_LIBADD += \
  $(OSIOBJDIR)/src/libOsi.la \
  $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
  $(CLPOBJDIR)/src/libClp.la \
- $(COINUTILSOBJDIR)/src/libCoinUtils.la
+ $(COINUTILSOBJDIR)/src/libCoinUtils.la \
+ `cat $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
  
 libGamsCoin_la_DEPENDENCIES += \
  $(CBCOBJDIR)/src/libCbcSolver.la \
@@ -69,51 +70,40 @@ libGamsCoin_la_DEPENDENCIES += \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la
 
 if GAMSIO_IS_UNIX
-bin_PROGRAMS = gmscbcux.out
-gmscbcux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
-gmscbcux_out_SOURCES = gmscbc.cpp
-gmscbcux_out_LDADD = libGamsCoin.la
-
-installcbc:
-	ln -sf $(DESTDIR)$(bindir)/gmscbcux.out gmscbcux.out
-	zip gmscbc_.zip gmscbcux.out gmscbcus.run optcbcd.def install/gmscbcun.dat
-	$(install_sh_DATA) gmscbc_.zip $(DESTDIR)$(bindir)/gmscbc_.zip
-	rm -f gmscbcux.out
+bin_PROGRAMS         = gmscbcux.out
+gmscbcux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt`
+gmscbcux_out_SOURCES = gmscbc.cpp ../GamsUtils/GamsLibLoader.c
+gmscbcux_out_LDADD   = $(GAMSIO_OBJDIR)/libGamsGMO.la
+gamsinstallfiles    += gmscbcux.out gmscbcus.run install/gmscbcun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
-bin_PROGRAMS = gmscbcnx
-gmscbcnx_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
-gmscbcnx_SOURCES = gmscbc.cpp
-gmscbcnx_LDADD   = libGamsCoin.la
-
-installcbc:
-	ln -sf $(DESTDIR)$(bindir)/gmscbcnx.exe gmscbcnx.exe
-	zip gmscbc_.zip gmscbcnx.exe gmscbcnt.cmd optcbcd.def install/gmscbcnt.dat
-	$(install_sh_DATA) gmscbc_.zip $(DESTDIR)$(bindir)/gmscbc_.zip
-	rm -f gmscbcnx.exe
+bin_PROGRAMS      = gmscbcnx
+gmscbcnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt`
+gmscbcnx_SOURCES  = gmscbc.cpp ../GamsUtils/GamsLibLoader.c
+gmscbcnx_LDADD    = $(GAMSIO_OBJDIR)/libGamsGMO.la
+gamsinstallfiles += gmscbcnx.exe gmscbcnt.cmd install/gmscbcnt.dat
 endif
 
-uninstallcbc:
-	rm -f $(DESTDIR)$(bindir)/gmscbc_.zip
-
-EXTRA_DIST     += optcbcd.def optcbcd.gms optcbcd.txt gmscbcnt.cmd gmscbcus.run install/gmscbcnt.dat install/gmscbcun.dat
-DISTCLEANFILES += gmscbc_.zip
-
-installgoals   += installcbc
-uninstallgoals += uninstallcbc
-
+gamsinstallfiles += optcbcd.def
+EXTRA_DIST       += optcbcd.def optcbcd.gms optcbcd.txt gmscbcnt.cmd gmscbcus.run install/gmscbcnt.dat install/gmscbcun.dat
 endif
 
 libGamsCoin_la_LIBADD       += ../GamsUtils/libGamsUtils.la
 libGamsCoin_la_DEPENDENCIES += ../GamsUtils/libGamsUtils.la
+libGamsCoin_la_LDFLAGS      += -export-dynamic
 
-LIBS += `cat $(CGLOBJDIR)/cgl_addlibs.txt $(OSIOBJDIR)/osi_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(GAMSLINKSOBJDIR)/gams_addlibs.txt`
+install-exec-local: install-binPROGRAMS install-libLTLIBRARIES
+	test -e libGamsCoin.$(SHAREDLIBEXT) || ln -sf $(DESTDIR)$(libdir)/libGamsCoin.$(SHAREDLIBEXT) libGamsCoin.$(SHAREDLIBEXT)
+	zip gmscoin_.zip $(gamsinstallfiles) libGamsCoin.$(SHAREDLIBEXT)
+	$(install_sh_DATA) gmscoin_.zip $(DESTDIR)$(bindir)/gmscoin_.zip
+	rm -f gmscoin_.zip
+
+uninstall-local:
+	rm -f $(DESTDIR)$(bindir)/gmscoin_.zip
+
+DISTCLEANFILES += gmscoin_.zip
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
-
-install-exec-local: install-binPROGRAMS $(installgoals)
-
-uninstall-local: $(uninstallgoals)
 
 include ../../../BuildTools/Makemain.inc
