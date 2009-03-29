@@ -16,7 +16,8 @@
 #include "GAMSlinksConfig.h"
 #include "GamsSolver.hpp"
 extern "C" {
-#include "GamsLibLoader.h"
+#include <ltdl.h>
+//#include "GamsLibLoader.h"
 }
 
 #ifdef HAVE_CSTDLIB
@@ -51,7 +52,8 @@ int main(int argc, char** argv) {
 #ifdef HAVE_WINDOWS_H
   SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
 #endif
-	
+  LTDL_SET_PRELOADED_SYMBOLS();
+  
   if (argc == 1) {
   	fprintf(stderr, "usage: %s <control_file_name>\nexiting ...\n", argv[0]);
     return EXIT_FAILURE;
@@ -94,7 +96,15 @@ int main(int argc, char** argv) {
   	return EXIT_FAILURE;
   }
   
-  soHandle_t coinlib = GamsLL_loadLib("libGamsCoin." SHAREDLIBEXT, msg, sizeof(msg));
+  if ((rc = lt_dlinit())) {
+  	gmoLogStat(gmo, "Could not initialize dynamic library loader.");
+    gmoCloseGms(gmo);
+    gmoFree(&gmo);
+  	return EXIT_FAILURE;
+  }
+  
+  lt_dlhandle coinlib = lt_dlopenext("libGamsCoin");
+//  soHandle_t coinlib = GamsLL_loadLib("libGamsCoin." SHAREDLIBEXT, msg, sizeof(msg));
   if (!coinlib) {
   	gmoLogStat(gmo, "Could not load GamsCoin library.");
   	gmoLogStat(gmo, msg);
@@ -103,7 +113,8 @@ int main(int argc, char** argv) {
   	return EXIT_FAILURE;  	
   }
   
-  createNewGamsSolver_t createsolver = (createNewGamsSolver_t)GamsLL_loadSym(coinlib, CREATEFUNCNAME, msg, sizeof(msg));
+  //createNewGamsSolver_t createsolver = (createNewGamsSolver_t)GamsLL_loadSym(coinlib, CREATEFUNCNAME, msg, sizeof(msg));
+  createNewGamsSolver_t createsolver = (createNewGamsSolver_t) lt_dlsym(coinlib, CREATEFUNCNAME);
   if (!createsolver) {
   	gmoLogStat(gmo, "Could not load " CREATEFUNCNAME " symbol from GamsCoin library.");
   	gmoLogStat(gmo, msg);

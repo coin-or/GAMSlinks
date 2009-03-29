@@ -48,6 +48,9 @@
 /* Define to 1 if the Ipopt package is used */
 #undef COIN_HAS_IPOPT
 
+/* Define to 1 if the libltdl package is used */
+#undef COIN_HAS_LIBLTDL
+
 /* Define to 1 if the OS package is used */
 #undef COIN_HAS_OS
 
@@ -205,9 +208,6 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
-
-/* Set to extension for shared libraries in quotes. */
-#undef SHAREDLIBEXT
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS

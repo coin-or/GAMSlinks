@@ -72,10 +72,11 @@ fi
 AC_COIN_INIT_AUTO_TOOLS
 
 #############################################################################
-#                              COIN components                              #
+#                      COIN-OR and other components                         #
 #############################################################################
 
 AC_COIN_HAS_PROJECT(GAMSlinks)
+AC_COIN_HAS_PROJECT(libltdl)
 AC_COIN_HAS_PROJECT(Cgl)
 AC_COIN_HAS_PROJECT(CoinUtils)
 AC_COIN_HAS_PROJECT(Osi)
@@ -112,6 +113,7 @@ AC_COIN_CHECK_CXX_CHEADER(limits)
 AC_COIN_CHECK_CXX_CHEADER(ctype)
 AC_COIN_CHECK_CXX_CHEADER(errno)
 AC_COIN_CHECK_CXX_CHEADER(math)
+AC_COIN_CHECK_HEADER([windows.h])
 
 ###########
 # va_copy #
@@ -210,37 +212,9 @@ fi
 AC_COIN_USE_GAMS
 AC_DEFINE_UNQUOTED([GAMSIO_PATH],["$gamsio_srcdir"],[The path of the GAMS I/O libraries])
 
-########################################################################
-##                 dynamic library loader stuff                       ##
-########################################################################
-
-AC_LANG_PUSH(C)
-AC_COIN_CHECK_HEADER([windows.h])
-AC_COIN_CHECK_HEADER([dlfcn.h])
-AC_CHECK_LIB(dl,[dlopen],[ADDLIBS="$ADDLIBS -ldl"],[])
-
-case $build in
-  *-cygwin* |  *-mingw*)
-     AC_DEFINE([SHAREDLIBEXT], ["dll"], [Set to extension for shared libraries in quotes.])
-     SHAREDLIBEXT="dll"
-     # Take -pedantic-errors out of CFLAGS
-     #AC_MSG_NOTICE([Removing flag -pedantic-errors from CFLAGS])
-     #CFLAGS=`echo $CFLAGS | sed -e s/-pedantic-errors//`
-     ;;
-  *-darwin*)
-     AC_DEFINE([SHAREDLIBEXT], ["dylib"], [Set to extension for shared libraries in quotes.])
-     SHAREDLIBEXT="dylib"
-     ;;
-  *)
-     AC_DEFINE([SHAREDLIBEXT], ["so"], [Set to extension for shared libraries in quotes.])
-     SHAREDLIBEXT="so"
-esac
-AC_SUBST(SHAREDLIBEXT)
-AC_LANG_POP(C)
-
-#################################################################################
-# Check which OSI solvers we build and which interfaces we can (and want) build #
-#################################################################################
+#############################################################################
+# Check which solvers we build and which interfaces we can (and want) build #
+#############################################################################
 
 if test "x$coin_has_clp" != xunavailable && test "x$coin_has_clp" != skipping ; then
   coin_build_clp=1

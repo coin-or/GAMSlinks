@@ -13,9 +13,9 @@ DISTCLEANFILES =
 
 lib_LTLIBRARIES             = libGamsCoin.la
 libGamsCoin_la_SOURCES      =
-libGamsCoin_la_LIBADD       =
-libGamsCoin_la_DEPENDENCIES =
-libGamsCoin_la_LDFLAGS      =
+libGamsCoin_la_LIBADD       = ../GamsUtils/libGamsUtils.la
+libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la
+libGamsCoin_la_LDFLAGS      = -module -no-undefined
 
 AM_CPPFLAGS =
 
@@ -27,6 +27,7 @@ libGamsCoin_la_SOURCES += GamsCbc.cpp GamsOsiHelper.cpp GamsMessageHandler.cpp
 AM_CPPFLAGS += $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
  -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` \
+ -I`$(CYGPATH_W) $(LIBLTDLSRCDIR)` \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src` \
@@ -71,17 +72,17 @@ libGamsCoin_la_DEPENDENCIES += \
 
 if GAMSIO_IS_UNIX
 bin_PROGRAMS         = gmscbcux.out
-gmscbcux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt`
-gmscbcux_out_SOURCES = gmscbc.cpp ../GamsUtils/GamsLibLoader.c
-gmscbcux_out_LDADD   = $(GAMSIO_OBJDIR)/libGamsGMO.la
+gmscbcux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+gmscbcux_out_SOURCES = gmscbc.cpp
+gmscbcux_out_LDADD   = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
 gamsinstallfiles    += gmscbcux.out gmscbcus.run install/gmscbcun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
 bin_PROGRAMS      = gmscbcnx
-gmscbcnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt`
-gmscbcnx_SOURCES  = gmscbc.cpp ../GamsUtils/GamsLibLoader.c
-gmscbcnx_LDADD    = $(GAMSIO_OBJDIR)/libGamsGMO.la
+gmscbcnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+gmscbcnx_SOURCES  = gmscbc.cpp
+gmscbcnx_LDADD    = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
 gamsinstallfiles += gmscbcnx.exe gmscbcnt.cmd install/gmscbcnt.dat
 endif
 
@@ -89,20 +90,18 @@ gamsinstallfiles += optcbcd.def
 EXTRA_DIST       += optcbcd.def optcbcd.gms optcbcd.txt gmscbcnt.cmd gmscbcus.run install/gmscbcnt.dat install/gmscbcun.dat
 endif
 
-libGamsCoin_la_LIBADD       += ../GamsUtils/libGamsUtils.la
-libGamsCoin_la_DEPENDENCIES += ../GamsUtils/libGamsUtils.la
-libGamsCoin_la_LDFLAGS      += -export-dynamic
-
+#ltdl need the GamsCoin.la present for preloading, so we need to install one for debug and static builds
+#on the other hand, for shared library builds, only no or the libGamsCoin.la from the lib dir can be used
 install-exec-local: install-binPROGRAMS install-libLTLIBRARIES
-	test -e libGamsCoin.$(SHAREDLIBEXT) || ln -sf $(DESTDIR)$(libdir)/libGamsCoin.$(SHAREDLIBEXT) libGamsCoin.$(SHAREDLIBEXT)
-	zip gmscoin_.zip $(gamsinstallfiles) libGamsCoin.$(SHAREDLIBEXT)
+	mv libGamsCoin.la libGamsCoin.la.save
+	cp $(DESTDIR)$(libdir)/libGamsCoin.la libGamsCoin.la
+	zip gmscoin_.zip $(gamsinstallfiles) libGamsCoin.la
 	$(install_sh_DATA) gmscoin_.zip $(DESTDIR)$(bindir)/gmscoin_.zip
 	rm -f gmscoin_.zip
+	mv -f libGamsCoin.la.save libGamsCoin.la
 
 uninstall-local:
 	rm -f $(DESTDIR)$(bindir)/gmscoin_.zip
-
-DISTCLEANFILES += gmscoin_.zip
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 

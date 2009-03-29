@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2008 GAMS Development and others
+# Copyright (C) 2006-2009 GAMS Development and others
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 
@@ -35,7 +35,11 @@ AC_PREFIX_DEFAULT([`pwd`])
 #              Create the libtool script for the subdirectories             #
 #############################################################################
 
+AC_LIBTOOL_DLOPEN
+AC_LIBLTDL_CONVENIENCE
 AC_COIN_CREATE_LIBTOOL
+
+AC_CONFIG_SUBDIRS(libltdl)
 
 #############################################################################
 #             Check which ThirdParty sources are available                  #
