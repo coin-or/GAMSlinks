@@ -15,10 +15,7 @@
 
 #include "GAMSlinksConfig.h"
 #include "GamsSolver.hpp"
-extern "C" {
 #include <ltdl.h>
-//#include "GamsLibLoader.h"
-}
 
 #ifdef HAVE_CSTDLIB
 #include <cstdlib>
@@ -104,26 +101,25 @@ int main(int argc, char** argv) {
   }
   
   lt_dlhandle coinlib = lt_dlopenext("libGamsCoin");
-//  soHandle_t coinlib = GamsLL_loadLib("libGamsCoin." SHAREDLIBEXT, msg, sizeof(msg));
   if (!coinlib) {
   	gmoLogStat(gmo, "Could not load GamsCoin library.");
-  	gmoLogStat(gmo, msg);
+  	gmoLogStat(gmo, lt_dlerror());
   	gmoCloseGms(gmo);
   	gmoFree(&gmo);
   	return EXIT_FAILURE;  	
   }
   
-  //createNewGamsSolver_t createsolver = (createNewGamsSolver_t)GamsLL_loadSym(coinlib, CREATEFUNCNAME, msg, sizeof(msg));
-  createNewGamsSolver_t createsolver = (createNewGamsSolver_t) lt_dlsym(coinlib, CREATEFUNCNAME);
+  createNewGamsSolver_t* createsolver = (createNewGamsSolver_t*) lt_dlsym(coinlib, CREATEFUNCNAME);
   if (!createsolver) {
   	gmoLogStat(gmo, "Could not load " CREATEFUNCNAME " symbol from GamsCoin library.");
-  	gmoLogStat(gmo, msg);
+  	gmoLogStat(gmo, lt_dlerror());
   	gmoCloseGms(gmo);
   	gmoFree(&gmo);
+  	lt_dlclose(coinlib);
   	return EXIT_FAILURE;  	
   }
   
-  GamsSolver* solver = createsolver();
+  GamsSolver* solver = (*createsolver)();
   gmoLogStat(gmo, "");
 	gmoLogStatPChar(gmo, solver->getWelcomeMessage());
 	
@@ -153,6 +149,9 @@ int main(int argc, char** argv) {
   gmoFree(&gmo);
   //unload gmo library
   gmoLibraryUnload();
-	
+
+	lt_dlclose(coinlib);
+	lt_dlexit();
+
 	return EXIT_SUCCESS;
 }

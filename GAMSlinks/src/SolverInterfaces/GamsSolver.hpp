@@ -47,6 +47,6 @@ public:
 	
 }; // class GamsSolver
 
-typedef GamsSolver* (*createNewGamsSolver_t)(void);
+typedef GamsSolver* createNewGamsSolver_t(void);
 
 #endif /*GAMSSOLVER_HPP_*/
