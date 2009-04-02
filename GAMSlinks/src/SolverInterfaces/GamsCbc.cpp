@@ -7,6 +7,7 @@
 // Author: Stefan Vigerske
 
 #include "GamsCbc.hpp"
+#include "GamsCbc.h"
 
 #ifdef HAVE_CSTDLIB
 #include <cstdlib>
@@ -1205,4 +1206,37 @@ bool GamsCbc::isLP() {
 
 GamsCbc* createNewGamsCbc() {
 	return new GamsCbc();
+}
+
+int cbcCallSolver(cbcRec_t *Cptr) {
+	assert(Cptr != NULL);
+	return ((GamsCbc*)Cptr)->callSolver();
+}
+
+int cbcModifyProblem(cbcRec_t *Cptr) {
+	assert(Cptr != NULL);
+	return ((GamsCbc*)Cptr)->modifyProblem();
+}
+
+int cbcHaveModifyProblem(cbcRec_t *Cptr) {
+	assert(Cptr != NULL);
+	return ((GamsCbc*)Cptr)->haveModifyProblem();
+}
+
+int cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr) {
+	assert(Cptr != NULL);
+	return ((GamsCbc*)Cptr)->readyAPI(Gptr, Optr, Dptr);
+}
+
+void cbcFree(cbcRec_t **Cptr) {
+	assert(Cptr != NULL);
+	delete (GamsCbc*)*Cptr;
+	*Cptr = NULL;
+}
+
+void cbcCreate(cbcRec_t **Cptr, char *msgBuf, int msgBufLen) {
+	assert(Cptr != NULL);
+	*Cptr = (cbcRec_t*) new GamsCbc();
+	if (msgBufLen && msgBuf)
+		msgBuf[0] = 0;
 }

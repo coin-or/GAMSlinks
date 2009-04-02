@@ -163,6 +163,7 @@ GAMSlinks/src/SCIP/gmssc_us.run -text
 GAMSlinks/src/SCIP/install/gmssc_nt.dat -text
 GAMSlinks/src/SCIP/install/gmssc_un.dat -text
 GAMSlinks/src/SolverInterfaces/GamsCbc.cpp -text
+GAMSlinks/src/SolverInterfaces/GamsCbc.h -text
 GAMSlinks/src/SolverInterfaces/GamsCbc.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsMessageHandler.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsMessageHandler.hpp -text
