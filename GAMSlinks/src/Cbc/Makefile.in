@@ -54,10 +54,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = GamsCoinCbc$(EXEEXT)
+@COIN_HAS_CPX_TRUE@am__append_1 = $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
+@COIN_HAS_CPX_TRUE@am__append_2 = $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
 DIST_COMMON = $(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_1 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_3 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_4 = .Externals-stamp
 subdir = src/Cbc
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
@@ -74,6 +76,10 @@ PROGRAMS = $(bin_PROGRAMS)
 am_GamsCoinCbc_OBJECTS = GamsCoinCbc.$(OBJEXT) \
 	GamsCutGenerator.$(OBJEXT) GamsHeuristic.$(OBJEXT)
 GamsCoinCbc_OBJECTS = $(am_GamsCoinCbc_OBJECTS)
+am__DEPENDENCIES_1 =
+@COIN_HAS_CPX_TRUE@am__DEPENDENCIES_2 =  \
+@COIN_HAS_CPX_TRUE@	$(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la \
+@COIN_HAS_CPX_TRUE@	$(am__DEPENDENCIES_1)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -387,7 +393,7 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = optcbc.def optcbc.gms optcbc.txt gmscc_nt.cmd \
 	gmscc_us.run install/gmscc_nt.dat install/gmscc_un.dat \
-	$(am__append_1)
+	$(am__append_3)
 GamsCoinCbc_SOURCES = GamsCoinCbc.cpp GamsCutGenerator.cpp GamsHeuristic.cpp
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(srcdir)/..` \
@@ -415,29 +421,22 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
  -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
  -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
 
-GamsCoinCbc_LDADD = \
- $(CBCOBJDIR)/src/libCbcSolver.la \
- $(CBCOBJDIR)/src/libCbc.la \
- $(CGLOBJDIR)/src/libCgl.la \
- $(OSIOBJDIR)/src/libOsi.la \
- $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
- $(CLPOBJDIR)/src/libClp.la \
- $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- ../GamsIO/libGamsIO.la
-
-GamsCoinCbc_DEPENDENCIES = \
- ../GamsIO/libGamsIO.la $(GAMSIO_LIBS) \
- $(CBCOBJDIR)/src/libCbcSolver.la \
- $(CBCOBJDIR)/src/libCbc.la \
- $(CGLOBJDIR)/src/libCgl.la \
- $(OSIOBJDIR)/src/libOsi.la \
- $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
- $(CLPOBJDIR)/src/libClp.la \
- $(COINUTILSOBJDIR)/src/libCoinUtils.la
-
+GamsCoinCbc_LDADD = $(CBCOBJDIR)/src/libCbcSolver.la \
+	$(CBCOBJDIR)/src/libCbc.la $(CGLOBJDIR)/src/libCgl.la \
+	$(OSIOBJDIR)/src/libOsi.la \
+	$(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
+	$(CLPOBJDIR)/src/libClp.la \
+	$(COINUTILSOBJDIR)/src/libCoinUtils.la ../GamsIO/libGamsIO.la \
+	$(am__append_1)
+GamsCoinCbc_DEPENDENCIES = ../GamsIO/libGamsIO.la $(GAMSIO_LIBS) \
+	$(CBCOBJDIR)/src/libCbcSolver.la $(CBCOBJDIR)/src/libCbc.la \
+	$(CGLOBJDIR)/src/libCgl.la $(OSIOBJDIR)/src/libOsi.la \
+	$(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
+	$(CLPOBJDIR)/src/libClp.la \
+	$(COINUTILSOBJDIR)/src/libCoinUtils.la $(am__append_2)
 GamsCoinCbc_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
-DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(am__append_4) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: all-am

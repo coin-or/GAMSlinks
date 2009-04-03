@@ -69,6 +69,11 @@ libGamsCoin_la_DEPENDENCIES += \
  $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
  $(CLPOBJDIR)/src/libClp.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la
+ 
+if COIN_HAS_CPX
+  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
+  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
+endif
 
 if GAMSIO_IS_UNIX
 bin_PROGRAMS         = gmscbcux.out
