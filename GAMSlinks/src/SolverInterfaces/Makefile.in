@@ -32,6 +32,7 @@
 ########################################################################
 
 
+
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -54,11 +55,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+bin_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
+	$(am__EXEEXT_4)
 @GAMSLINKS_BUILD_CBC_TRUE@am__append_1 = GamsCbc.cpp GamsOsiHelper.cpp GamsMessageHandler.cpp
-@GAMSLINKS_BUILD_CBC_TRUE@am__append_2 = $(GAMSIO_CPPFLAGS) \
-@GAMSLINKS_BUILD_CBC_TRUE@ -I`$(CYGPATH_W) $(srcdir)/..` \
-@GAMSLINKS_BUILD_CBC_TRUE@ -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` \
-@GAMSLINKS_BUILD_CBC_TRUE@ -I`$(CYGPATH_W) $(LIBLTDLSRCDIR)` \
+@GAMSLINKS_BUILD_CBC_TRUE@am__append_2 = \
 @GAMSLINKS_BUILD_CBC_TRUE@ -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
 @GAMSLINKS_BUILD_CBC_TRUE@ -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
 @GAMSLINKS_BUILD_CBC_TRUE@ -I`$(CYGPATH_W) $(CGLSRCDIR)/src` \
@@ -103,16 +103,35 @@ host_triplet = @host@
 
 @COIN_HAS_CPX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__append_5 = $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
 @COIN_HAS_CPX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__append_6 = $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
-@GAMSIO_IS_UNIX_FALSE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@bin_PROGRAMS = gmscbcnx$(EXEEXT)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@bin_PROGRAMS = gmscbcux.out$(EXEEXT)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__append_7 = gmscbcux.out gmscbcus.run install/gmscbcun.dat
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__append_8 = gmscbcnx.exe gmscbcnt.cmd install/gmscbcnt.dat
-@GAMSLINKS_BUILD_CBC_TRUE@am__append_9 = optcbcd.def
-@GAMSLINKS_BUILD_CBC_TRUE@am__append_10 = optcbcd.def optcbcd.gms optcbcd.txt gmscbcnt.cmd gmscbcus.run install/gmscbcnt.dat install/gmscbcun.dat
-DIST_COMMON = $(srcdir)/../../../BuildTools/Makemain.inc \
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__append_7 = gmscbcux.out
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__append_8 = gmscbcux.out gmscbcus.run install/gmscbcun.dat
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__append_9 = gmscbcnx
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__append_10 = gmscbcnx.exe gmscbcnt.cmd install/gmscbcnt.dat
+@GAMSLINKS_BUILD_CBC_TRUE@am__append_11 = optcbcd.def
+@GAMSLINKS_BUILD_CBC_TRUE@am__append_12 = optcbcd.def optcbcd.gms optcbcd.txt gmscbcnt.cmd gmscbcus.run install/gmscbcnt.dat install/gmscbcun.dat
+@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_13 = GamsIpopt.cpp GamsNLP.cpp GamsJournal.cpp
+@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_14 = \
+@GAMSLINKS_BUILD_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
+@GAMSLINKS_BUILD_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` \
+@GAMSLINKS_BUILD_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \
+@GAMSLINKS_BUILD_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Algorithm` \
+@GAMSLINKS_BUILD_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/CGPenalty` \
+@GAMSLINKS_BUILD_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/LinearSolverLoader` \
+@GAMSLINKS_BUILD_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
+
+@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_15 = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
+@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_16 = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_17 = gmsipdux.out
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_18 = gmsipdux.out gmsipdus.run install/gmsipdun.dat
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_19 = gmsipdnx
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_20 = gmsipdnx.exe gmsipdnt.cmd install/gmsipdnt.dat
+@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_21 = 
+@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_22 = gmsipdnt.cmd gmsipdus.run install/gmsipdnt.dat install/gmsipdun.dat
+DIST_COMMON = $(am__includecoin_HEADERS_DIST) \
+	$(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_11 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_12 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_23 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_24 = .Externals-stamp
 subdir = src/SolverInterfaces
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
@@ -129,7 +148,8 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
+	"$(DESTDIR)$(includecoindir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 @GAMSLINKS_BUILD_CBC_TRUE@am__DEPENDENCIES_1 =  \
@@ -148,12 +168,22 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_2 =
 @COIN_HAS_CPX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__DEPENDENCIES_3 = $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la \
 @COIN_HAS_CPX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	$(am__DEPENDENCIES_2)
+@GAMSLINKS_BUILD_IPOPT_TRUE@am__DEPENDENCIES_4 = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la \
+@GAMSLINKS_BUILD_IPOPT_TRUE@	`cat \
+@GAMSLINKS_BUILD_IPOPT_TRUE@	$(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
 am__libGamsCoin_la_SOURCES_DIST = GamsCbc.cpp GamsOsiHelper.cpp \
-	GamsMessageHandler.cpp
+	GamsMessageHandler.cpp GamsIpopt.cpp GamsNLP.cpp \
+	GamsJournal.cpp
 @GAMSLINKS_BUILD_CBC_TRUE@am__objects_1 = GamsCbc.lo GamsOsiHelper.lo \
 @GAMSLINKS_BUILD_CBC_TRUE@	GamsMessageHandler.lo
-am_libGamsCoin_la_OBJECTS = $(am__objects_1)
+@GAMSLINKS_BUILD_IPOPT_TRUE@am__objects_2 = GamsIpopt.lo GamsNLP.lo \
+@GAMSLINKS_BUILD_IPOPT_TRUE@	GamsJournal.lo
+am_libGamsCoin_la_OBJECTS = $(am__objects_1) $(am__objects_2)
 libGamsCoin_la_OBJECTS = $(am_libGamsCoin_la_OBJECTS)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__EXEEXT_1 = gmscbcux.out$(EXEEXT)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__EXEEXT_2 = gmscbcnx$(EXEEXT)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__EXEEXT_3 = gmsipdux.out$(EXEEXT)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__EXEEXT_4 = gmsipdnx$(EXEEXT)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am__gmscbcnx_SOURCES_DIST = gmscbc.cpp
@@ -166,6 +196,16 @@ am__gmscbcux_out_SOURCES_DIST = gmscbc.cpp
 gmscbcux_out_OBJECTS = $(am_gmscbcux_out_OBJECTS)
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsGMO.la \
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
+am__gmsipdnx_SOURCES_DIST = gmsipd.cpp
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am_gmsipdnx_OBJECTS = gmsipd.$(OBJEXT)
+gmsipdnx_OBJECTS = $(am_gmsipdnx_OBJECTS)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsGMO.la \
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
+am__gmsipdux_out_SOURCES_DIST = gmsipd.cpp
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am_gmsipdux_out_OBJECTS = gmsipd.$(OBJEXT)
+gmsipdux_out_OBJECTS = $(am_gmsipdux_out_OBJECTS)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsGMO.la \
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -177,9 +217,25 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libGamsCoin_la_SOURCES) $(gmscbcnx_SOURCES) \
-	$(gmscbcux_out_SOURCES)
+	$(gmscbcux_out_SOURCES) $(gmsipdnx_SOURCES) \
+	$(gmsipdux_out_SOURCES)
 DIST_SOURCES = $(am__libGamsCoin_la_SOURCES_DIST) \
-	$(am__gmscbcnx_SOURCES_DIST) $(am__gmscbcux_out_SOURCES_DIST)
+	$(am__gmscbcnx_SOURCES_DIST) $(am__gmscbcux_out_SOURCES_DIST) \
+	$(am__gmsipdnx_SOURCES_DIST) $(am__gmsipdux_out_SOURCES_DIST)
+am__includecoin_HEADERS_DIST =  \
+	$(IPOPTSRCDIR)/src/Algorithm/IpIpoptCalculatedQuantities.hpp \
+	$(IPOPTSRCDIR)/src/Algorithm/IpIpoptNLP.hpp \
+	$(IPOPTSRCDIR)/src/Algorithm/IpNLPScaling.hpp \
+	$(IPOPTSRCDIR)/src/LinAlg/IpScaledMatrix.hpp \
+	$(IPOPTSRCDIR)/src/LinAlg/IpSymScaledMatrix.hpp \
+	$(IPOPTSRCDIR)/src/Algorithm/IpIpoptData.hpp \
+	$(IPOPTSRCDIR)/src/Algorithm/IpIteratesVector.hpp \
+	$(IPOPTSRCDIR)/src/LinAlg/IpCompoundVector.hpp \
+	$(IPOPTSRCDIR)/src/Algorithm/IpTimingStatistics.hpp \
+	$(IPOPTSRCDIR)/src/Interfaces/IpTNLPAdapter.hpp \
+	$(IPOPTSRCDIR)/src/Algorithm/IpOrigIpoptNLP.hpp
+includecoinHEADERS_INSTALL = $(INSTALL_HEADER)
+HEADERS = $(includecoin_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -475,23 +531,46 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = $(am__append_10) $(am__append_11)
-DISTCLEANFILES = $(am__append_12) $(VPATH_DISTCLEANFILES)
+EXTRA_DIST = $(am__append_12) $(am__append_22) $(am__append_23)
+DISTCLEANFILES = $(am__append_24) $(VPATH_DISTCLEANFILES)
 lib_LTLIBRARIES = libGamsCoin.la
-libGamsCoin_la_SOURCES = $(am__append_1)
+libGamsCoin_la_SOURCES = $(am__append_1) $(am__append_13)
 libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la $(am__append_3) \
-	$(am__append_5)
+	$(am__append_5) $(am__append_15)
 libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la \
-	$(am__append_4) $(am__append_6)
+	$(am__append_4) $(am__append_6) $(am__append_16)
 libGamsCoin_la_LDFLAGS = -module -no-undefined
-AM_CPPFLAGS = $(am__append_2)
-gamsinstallfiles = $(am__append_7) $(am__append_8) $(am__append_9)
+AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
+	-I`$(CYGPATH_W) $(srcdir)/../GamsUtils` -I`$(CYGPATH_W) \
+	$(LIBLTDLSRCDIR)` $(am__append_2) $(am__append_14)
+gamsinstallfiles = $(am__append_8) $(am__append_10) $(am__append_11) \
+	$(am__append_18) $(am__append_20) $(am__append_21)
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_SOURCES = gmscbc.cpp
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_LDADD = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_SOURCES = gmscbc.cpp
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_LDADD = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
+@GAMSLINKS_BUILD_IPOPT_TRUE@includecoindir = $(includedir)/coin
+@GAMSLINKS_BUILD_IPOPT_TRUE@includecoin_HEADERS = \
+@GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/Algorithm/IpIpoptCalculatedQuantities.hpp \
+@GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/Algorithm/IpIpoptNLP.hpp \
+@GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/Algorithm/IpNLPScaling.hpp \
+@GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/LinAlg/IpScaledMatrix.hpp \
+@GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/LinAlg/IpSymScaledMatrix.hpp \
+@GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/Algorithm/IpIpoptData.hpp \
+@GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/Algorithm/IpIteratesVector.hpp \
+@GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/LinAlg/IpCompoundVector.hpp \
+@GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/Algorithm/IpTimingStatistics.hpp \
+@GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/Interfaces/IpTNLPAdapter.hpp \
+@GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/Algorithm/IpOrigIpoptNLP.hpp
+
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_SOURCES = gmsipd.cpp
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_LDADD = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_SOURCES = gmsipd.cpp
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_LDADD = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
@@ -591,6 +670,12 @@ gmscbcnx$(EXEEXT): $(gmscbcnx_OBJECTS) $(gmscbcnx_DEPENDENCIES)
 gmscbcux.out$(EXEEXT): $(gmscbcux_out_OBJECTS) $(gmscbcux_out_DEPENDENCIES) 
 	@rm -f gmscbcux.out$(EXEEXT)
 	$(CXXLINK) $(gmscbcux_out_LDFLAGS) $(gmscbcux_out_OBJECTS) $(gmscbcux_out_LDADD) $(LIBS)
+gmsipdnx$(EXEEXT): $(gmsipdnx_OBJECTS) $(gmsipdnx_DEPENDENCIES) 
+	@rm -f gmsipdnx$(EXEEXT)
+	$(CXXLINK) $(gmsipdnx_LDFLAGS) $(gmsipdnx_OBJECTS) $(gmsipdnx_LDADD) $(LIBS)
+gmsipdux.out$(EXEEXT): $(gmsipdux_out_OBJECTS) $(gmsipdux_out_DEPENDENCIES) 
+	@rm -f gmsipdux.out$(EXEEXT)
+	$(CXXLINK) $(gmsipdux_out_LDFLAGS) $(gmsipdux_out_OBJECTS) $(gmsipdux_out_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -599,9 +684,13 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCbc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsIpopt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsJournal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsNLP.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmscbc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsipd.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -633,6 +722,23 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
+install-includecoinHEADERS: $(includecoin_HEADERS)
+	@$(NORMAL_INSTALL)
+	test -z "$(includecoindir)" || $(mkdir_p) "$(DESTDIR)$(includecoindir)"
+	@list='$(includecoin_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(includecoinHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(includecoindir)/$$f'"; \
+	  $(includecoinHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(includecoindir)/$$f"; \
+	done
+
+uninstall-includecoinHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(includecoin_HEADERS)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(includecoindir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(includecoindir)/$$f"; \
+	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -683,7 +789,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/../../../BuildTools $(distdir)/install
+	$(mkdir_p) $(distdir)/$(IPOPTSRCDIR)/src/Algorithm $(distdir)/$(IPOPTSRCDIR)/src/Interfaces $(distdir)/$(IPOPTSRCDIR)/src/LinAlg $(distdir)/../../../BuildTools $(distdir)/install
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -712,11 +818,11 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(HEADERS)
 install-binPROGRAMS: install-libLTLIBRARIES
 
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includecoindir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -765,7 +871,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-includecoinHEADERS
 
 install-exec-am: install-binPROGRAMS install-exec-local \
 	install-libLTLIBRARIES
@@ -794,8 +900,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
-	uninstall-libLTLIBRARIES uninstall-local
+uninstall-am: uninstall-binPROGRAMS uninstall-includecoinHEADERS \
+	uninstall-info-am uninstall-libLTLIBRARIES uninstall-local
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
 	clean-generic clean-libLTLIBRARIES clean-libtool ctags \
@@ -803,12 +909,13 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-binPROGRAMS \
 	install-data install-data-am install-exec install-exec-am \
-	install-exec-local install-info install-info-am \
-	install-libLTLIBRARIES install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-binPROGRAMS \
+	install-exec-local install-includecoinHEADERS install-info \
+	install-info-am install-libLTLIBRARIES install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-includecoinHEADERS \
 	uninstall-info-am uninstall-libLTLIBRARIES uninstall-local
 
 

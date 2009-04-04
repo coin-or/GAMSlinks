@@ -11,23 +11,24 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST     =
 DISTCLEANFILES =
 
+bin_PROGRAMS   =
 lib_LTLIBRARIES             = libGamsCoin.la
 libGamsCoin_la_SOURCES      =
 libGamsCoin_la_LIBADD       = ../GamsUtils/libGamsUtils.la
 libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la
 libGamsCoin_la_LDFLAGS      = -module -no-undefined
 
-AM_CPPFLAGS =
+AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
+ -I`$(CYGPATH_W) $(srcdir)/..` \
+ -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` \
+ -I`$(CYGPATH_W) $(LIBLTDLSRCDIR)`
 
 gamsinstallfiles =
 
 if GAMSLINKS_BUILD_CBC
 libGamsCoin_la_SOURCES += GamsCbc.cpp GamsOsiHelper.cpp GamsMessageHandler.cpp
 
-AM_CPPFLAGS += $(GAMSIO_CPPFLAGS) \
- -I`$(CYGPATH_W) $(srcdir)/..` \
- -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` \
- -I`$(CYGPATH_W) $(LIBLTDLSRCDIR)` \
+AM_CPPFLAGS += \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src` \
@@ -76,7 +77,7 @@ if COIN_HAS_CPX
 endif
 
 if GAMSIO_IS_UNIX
-bin_PROGRAMS         = gmscbcux.out
+bin_PROGRAMS        += gmscbcux.out
 gmscbcux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 gmscbcux_out_SOURCES = gmscbc.cpp
 gmscbcux_out_LDADD   = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
@@ -84,7 +85,7 @@ gamsinstallfiles    += gmscbcux.out gmscbcus.run install/gmscbcun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
-bin_PROGRAMS      = gmscbcnx
+bin_PROGRAMS     += gmscbcnx
 gmscbcnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 gmscbcnx_SOURCES  = gmscbc.cpp
 gmscbcnx_LDADD    = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
@@ -93,6 +94,56 @@ endif
 
 gamsinstallfiles += optcbcd.def
 EXTRA_DIST       += optcbcd.def optcbcd.gms optcbcd.txt gmscbcnt.cmd gmscbcus.run install/gmscbcnt.dat install/gmscbcun.dat
+endif
+
+if GAMSLINKS_BUILD_IPOPT
+libGamsCoin_la_SOURCES += GamsIpopt.cpp GamsNLP.cpp GamsJournal.cpp
+
+includecoindir = $(includedir)/coin
+includecoin_HEADERS = \
+  $(IPOPTSRCDIR)/src/Algorithm/IpIpoptCalculatedQuantities.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpIpoptNLP.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpNLPScaling.hpp \
+  $(IPOPTSRCDIR)/src/LinAlg/IpScaledMatrix.hpp \
+  $(IPOPTSRCDIR)/src/LinAlg/IpSymScaledMatrix.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpIpoptData.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpIteratesVector.hpp \
+  $(IPOPTSRCDIR)/src/LinAlg/IpCompoundVector.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpTimingStatistics.hpp \
+  $(IPOPTSRCDIR)/src/Interfaces/IpTNLPAdapter.hpp \
+  $(IPOPTSRCDIR)/src/Algorithm/IpOrigIpoptNLP.hpp
+
+AM_CPPFLAGS += \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Algorithm` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/CGPenalty` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/LinearSolverLoader` \
+ -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
+
+libGamsCoin_la_LIBADD       += $(IPOPTOBJDIR)/src/Interfaces/libipopt.la `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
+libGamsCoin_la_DEPENDENCIES += $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
+
+if GAMSIO_IS_UNIX
+bin_PROGRAMS        += gmsipdux.out
+gmsipdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+gmsipdux_out_SOURCES = gmsipd.cpp
+gmsipdux_out_LDADD   = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
+gamsinstallfiles    += gmsipdux.out gmsipdus.run install/gmsipdun.dat
+endif
+
+if GAMSIO_IS_WINDOWS
+bin_PROGRAMS     += gmsipdnx
+gmsipdnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+gmsipdnx_SOURCES  = gmsipd.cpp
+gmsipdnx_LDADD    = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
+gamsinstallfiles += gmsipdnx.exe gmsipdnt.cmd install/gmsipdnt.dat
+endif
+
+gamsinstallfiles += 
+EXTRA_DIST       += gmsipdnt.cmd gmsipdus.run install/gmsipdnt.dat install/gmsipdun.dat
+
 endif
 
 #ltdl need the GamsCoin.la present for preloading, so we need to install one for debug and static builds

@@ -54,14 +54,22 @@ if test @gamslinks_build_ipopt@ = 1 ; then
   SMP="$SMP SMP('Ipopt', 'RMIQCP') = yes;"
   SMP="$SMP SMP('Ipopt', 'RMINLP') = yes;"
 
+  solvers="$solvers , 'IpoptD'"
+  SMP="$SMP SMP('IpoptD', 'LP') = yes;"
+  SMP="$SMP SMP('IpoptD', 'QCP') = yes;"
+  SMP="$SMP SMP('IpoptD', 'NLP') = yes;"
+  SMP="$SMP SMP('IpoptD', 'RMIP') = yes;"
+  SMP="$SMP SMP('IpoptD', 'RMIQCP') = yes;"
+  SMP="$SMP SMP('IpoptD', 'RMINLP') = yes;"
 fi
+
 if test @gamslinks_build_glpk@ = 1 ; then
   solvers="$solvers , 'Glpk'"
   SMP="$SMP SMP('Glpk', 'LP') = yes;"
   SMP="$SMP SMP('Glpk', 'MIP') = yes;"
   SMP="$SMP SMP('Glpk', 'RMIP') = yes;"
-  
 fi
+
 if test @gamslinks_build_cbc@ = 1 ; then
   solvers="$solvers , 'Cbc'"
   SMP="$SMP SMP('Cbc', 'LP') = yes;"
@@ -73,6 +81,7 @@ if test @gamslinks_build_cbc@ = 1 ; then
   SMP="$SMP SMP('Cbcd', 'MIP') = yes;"
   SMP="$SMP SMP('Cbcd', 'RMIP') = yes;"
 fi
+
 if test @gamslinks_build_bonmin@ = 1 ; then
   solvers="$solvers , 'Bonmin'"
   SMP="$SMP SMP('Bonmin', 'LP') = yes;"

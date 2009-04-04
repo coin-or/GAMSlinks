@@ -1225,6 +1225,8 @@ int cbcHaveModifyProblem(cbcRec_t *Cptr) {
 
 int cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr) {
 	assert(Cptr != NULL);
+	if (Gptr)
+		gmoLogStatPChar(Gptr, ((GamsCbc*)Cptr)->getWelcomeMessage());
 	return ((GamsCbc*)Cptr)->readyAPI(Gptr, Optr, Dptr);
 }
 
