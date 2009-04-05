@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2008 GAMS Development and others
+// Copyright (C) GAMS Development and others 2007-2009
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -6,56 +6,47 @@
 //
 // Author: Stefan Vigerske
 
-#include "GMO2OSiL.hpp"
+#include "Gams2OSiL.hpp"
 #include "GamsNLinstr.h"
 
 #include "OSInstance.h"
 #include "CoinHelperFunctions.hpp"
 
-extern "C" {
 #include "gmocc.h"
-}
 
 #include <sstream>
 
-GMO2OSiL::GMO2OSiL(gmoHandle_t gmo_)
-: osinstance(NULL), gmo(gmo_)
+Gams2OSiL::Gams2OSiL(gmoHandle_t gmo_, struct gcdRec* dict_)
+: gmo(gmo_), dict(gmo_, dict_), osinstance(NULL)
 { }
 
-GMO2OSiL::~GMO2OSiL() {
+Gams2OSiL::~Gams2OSiL() {
 	delete osinstance;
 }
 
-bool GMO2OSiL::createOSInstance() {
-	osinstance = new OSInstance();  
+bool Gams2OSiL::createOSInstance() {
+	osinstance = new OSInstance();
 	int i, j;
-//	char buffer[255];
-	
-//	GamsHandlerSmag gamshandler(smag);
-//	GamsDictionary dict(gamshandler);
-//	dict.readDictionary();
+	char buffer[255];
+
+	dict.readDictionary(); // try reading dictionary if available and not done already
 
 	// unfortunately, we do not know the model name
 	osinstance->setInstanceDescription("Generated from GAMS GMO problem");
-	
 	osinstance->setVariableNumber(gmoN(gmo));
-	char* var_types = new char[gmoN(gmo)];
-	std::string* varnames = NULL;
-//	std::string* vartext = NULL;
-//	if (dict.haveNames()) {
-		varnames=new std::string[gmoN(gmo)];
-//		vartext=new std::string[smagColCount(smag)];
-//	}
+	
+	char*        vartypes = new char[gmoN(gmo)];
+	std::string* varnames = new std::string[gmoN(gmo)];
 	for(i = 0; i < gmoN(gmo); ++i) {
 		switch (gmoGetVarTypeOne(gmo, i)) {
 			case var_X:
-				var_types[i]='C';
+				vartypes[i] = 'C';
 				break;
 			case var_B:
-				var_types[i]='B';
+				vartypes[i] = 'B';
 				break;
 			case var_I:
-				var_types[i]='I';
+				vartypes[i] = 'I';
 				break;
 			default : {
 				// TODO: how to represent semicontinuous var. and SOS in OSiL ? 
@@ -63,31 +54,26 @@ bool GMO2OSiL::createOSInstance() {
 				return false;
 			}
 		}
-		std::stringstream strstr; strstr << "x" << i << std::ends;
-		varnames[i] = strstr.str();
-//		if (dict.haveNames() && dict.getColName(i, buffer, 256))
-//			varnames[i]=buffer;
-//		if (dict.haveNames() && dict.getColText(i, buffer, 256))
-//			vartext[i]=buffer;
+		if (dict.haveNames() && dict.getColName(i, buffer, 256)) {
+			varnames[i] = buffer;
+		} else {
+			std::stringstream strstr; strstr << "x" << i << std::ends;
+			varnames[i] = strstr.str();
+		}
 	}
 	
 	double* varlow = new double[gmoN(gmo)];
 	double* varup  = new double[gmoN(gmo)];
-//	double* varlev = new double[gmoN(gmo)];
-	
 	gmoGetVarLower(gmo, varlow);
 	gmoGetVarUpper(gmo, varup);
-//	gmoGetVarL(gmo, varlev);
 
-	// store the descriptive text of a variables in the initString argument to have it stored somewhere
-	if (!osinstance->setVariables(gmoN(gmo), varnames, varlow, varup, var_types))
+	if (!osinstance->setVariables(gmoN(gmo), varnames, varlow, varup, vartypes))
 		return false;
-	delete[] var_types;
+	
+	delete[] vartypes;
 	delete[] varnames;
-//	delete[] vartext;
 	delete[] varlow;
 	delete[] varup;
-//	delete[] varlev;
 	
 	if (gmoModelType(gmo) == Proc_cns) { // no objective in constraint satisfaction models
 		osinstance->setObjectiveNumber(0);
@@ -106,7 +92,7 @@ bool GMO2OSiL::createOSInstance() {
 		for (i = 0, j = 0; i < gmoObjNZ(gmo); ++i) {
 			if (nlflag[i]) continue;
 			objectiveCoefficients->indexes[j] = colidx[i];
-			objectiveCoefficients->values[j] = val[i];
+			objectiveCoefficients->values[j]  = val[i];
 			j++;
 		  assert(j <= gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
 		}
@@ -118,15 +104,14 @@ bool GMO2OSiL::createOSInstance() {
 		delete[] dummy;
 
 		std::string objname;
-//		if (dict.haveNames() && dict.getObjName(buffer, 256))
-//			objname=buffer;
+		if (dict.haveNames() && dict.getObjName(buffer, 256))
+			objname = buffer;
 //		std::cout << "gmo obj con: " << gmoObjConst(gmo) << std::endl;
-		if (!osinstance->addObjective(-1, objname, gmoSense(gmo)==Obj_Min ? "min" : "max", gmoObjConst(gmo), 1., objectiveCoefficients)) {
+		if (!osinstance->addObjective(-1, objname, gmoSense(gmo) == Obj_Min ? "min" : "max", gmoObjConst(gmo), 1., objectiveCoefficients)) {
 			delete objectiveCoefficients;
 			return false;
 		}
 		delete objectiveCoefficients;
-		
 	}
 	
 	osinstance->setConstraintNumber(gmoM(gmo));
@@ -153,9 +138,13 @@ bool GMO2OSiL::createOSInstance() {
 				gmoLogStat(gmo, "Error: Unknown row type. Exiting ...");
 				return false;
 		}
-//		std::string conname(dict.haveNames() ? dict.getRowName(i, buffer, 255) : NULL); 
-		std::stringstream strstr; strstr << "e" << i << std::ends;
-		std::string conname = strstr.str();
+		std::string conname;
+		if (dict.haveNames() && dict.getRowName(i, buffer, 255)) {
+			conname = buffer;
+		} else {
+			std::stringstream strstr; strstr << "e" << i << std::ends;
+			conname = strstr.str();
+		}
 		if (!osinstance->addConstraint(i, conname, lb, ub, 0.))
 			return false;
 	}
@@ -188,7 +177,6 @@ bool GMO2OSiL::createOSInstance() {
 	}
 	nz -= shift;
 	
-	
 	if (!osinstance->setLinearConstraintCoefficients(nz, true, 
 		values, 0, nz-1,
 		rowindexes, 0, nz-1,
@@ -201,34 +189,22 @@ bool GMO2OSiL::createOSInstance() {
 	delete[] nlflags;
 
 	if (!gmoObjNLNZ(gmo) && !gmoNLNZ(gmo)) // everything linear -> finished
-//	if (!gmoNLN(gmo)) // everything linear -> finished
 		return true;
 
-#ifdef GMODEVELOP
 	osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions = gmoNLM(gmo) + (gmoObjNLNZ(gmo) ? 1 : 0);
 	osinstance->instanceData->nonlinearExpressions->nl = CoinCopyOfArrayOrZero((Nl**)NULL, osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
 	int iNLidx = 0;
 	
 	int* opcodes = new int[gmoMaxSingleFNL(gmo)+1];
-	int* fields = new int[gmoMaxSingleFNL(gmo)+1];
+	int* fields  = new int[gmoMaxSingleFNL(gmo)+1];
 	int constantlen = gmoNLConst(gmo);
 	double* constants = (double*)gmoPPool(gmo);
 	int codelen;
 	
-//	for (int i=0; i<gmoMaxSingleFNL(gmo); ++i) {
-//		opcodes[i] = 42;
-//		fields[i] = 42;
-//	}
-
 	OSnLNode* nl;
 	if (gmoObjNLNZ(gmo)) {
 		std::clog << "parsing nonlinear objective instructions" << std::endl;
 		gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
-//		codelen--;
-		
-//		for (int i=0; i<codelen; ++i)
-//			std::clog << opcodes[i+1] << ' ';
-//		std::clog << std::endl;
 		
 		nl = parseGamsInstructions(codelen, opcodes, fields, constantlen, constants);
 		if (!nl) return false;
@@ -248,42 +224,43 @@ bool GMO2OSiL::createOSInstance() {
 			nl = timesnode;
 		}
 		assert(iNLidx < osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
-		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx] = new Nl();
-		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx]->idx = -1;
-		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx]->osExpressionTree = new OSExpressionTree();
-		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx]->osExpressionTree->m_treeRoot = nl;
+		osinstance->instanceData->nonlinearExpressions->nl[iNLidx] = new Nl();
+		osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->idx = -1;
+		osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree = new OSExpressionTree();
+		osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree->m_treeRoot = nl;
 		++iNLidx;
 	}
 
-	for (i=0; i<gmoM(gmo); ++i) {
+	for (i = 0; i < gmoM(gmo); ++i) {
 		if (gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields)) {
 			std::clog << "got nonzero return at constraint " << i << std::endl;
 		}
-//		codelen--;
 		if (!codelen) continue;
 		std::clog << "parsing " << codelen << " nonlinear instructions of constraint " << osinstance->getConstraintNames()[i] << std::endl;
 		nl = parseGamsInstructions(codelen, opcodes, fields, constantlen, constants);
 		if (!nl) return false;
 		assert(iNLidx < osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
-		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx] = new Nl();
-		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx]->idx = i; // correct that this is the con. number?
-		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx]->osExpressionTree = new OSExpressionTree();
-		osinstance->instanceData->nonlinearExpressions->nl[ iNLidx]->osExpressionTree->m_treeRoot = nl;
+		osinstance->instanceData->nonlinearExpressions->nl[iNLidx] = new Nl();
+		osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->idx = i; // correct that this is the con. number?
+		osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree = new OSExpressionTree();
+		osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree->m_treeRoot = nl;
 		++iNLidx;
 	}
 	assert(iNLidx == osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
 	
 	return true;
-#endif	
-	
-	return false;
 }
 
+OSInstance* Gams2OSiL::takeOverOSInstance() {
+	OSInstance* osinst = osinstance;
+	osinstance = NULL;
+	return osinst;
+}
 
-OSnLNode* GMO2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* fields, int constantlen, double* constants) {
+OSnLNode* Gams2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* fields, int constantlen, double* constants) {
 	std::vector<OSnLNode*> nlNodeVec;
 	
-	const bool debugoutput = true;
+	const bool debugoutput = false;
 
 //	for (int i=0; i<codelen; ++i)
 //		std::clog << i << '\t' << GamsOpCodeName[opcodes[i+1]] << '\t' << fields[i+1] << std::endl;

@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development 2008
+// Copyright (C) GAMS Development and others 2009
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -6,34 +6,27 @@
 //
 // Authors:  Stefan Vigerske
 
-#ifndef GAMSOS2_HPP_
-#define GAMSOS2_HPP_
+#ifndef GAMSOS_HPP_
+#define GAMSOS_HPP_
 
 #include "GAMSlinksConfig.h"
-
+#include "GamsSolver.hpp"
+#include "GamsOptions.hpp"
 #include <string>
 
 class OSInstance;
 class OSResult;
 
-extern "C" {
-#include "gmocc.h"
-}
-
-#include "GamsHandlerGmo.hpp"
-#include "GamsOptions.hpp"
-
 /* Interface between a GAMS model in form of a Gams Modeling Object (GMO) and Optimization Services (OS) routines.
  */
-class GamsOS {
+class GamsOS : public GamsSolver {
 private:
-	/** Handle for GMO.
-	 */
-	gmoHandle_t gmo;
+	struct gmoRec* gmo;
 	
-	GamsHandlerGmo gamshandler;
-	GamsOptions gamsopt;
+	char           os_message[100];
 	
+	GamsOptions    gamsopt;
+	OSInstance*    osinstance;
 
 	std::string getSolverName(bool isnonlinear, bool isdiscrete);
 	bool localSolve(OSInstance* osinstance, std::string& osol);
@@ -41,13 +34,19 @@ private:
 	bool processResult(std::string* osrl, OSResult* osresult);
 
 public:
-	GamsOS(gmoHandle_t gmo_);
+	GamsOS();
 
-	/** "Executes" the GMO/OS link.
-	 * @return True on success, False on failure.
-	 */
-  bool execute();
+	int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct gcdRec* gcd);
 	
+//	int haveModifyProblem();
+	
+//	int modifyProblem();
+	
+	int callSolver();
+	
+	const char* getWelcomeMessage() { return os_message; }	
 };
 
-#endif /*GAMSOS2_HPP_*/
+extern "C" GamsOS* createNewGamsOS();
+
+#endif /*GAMSOS_HPP_*/

@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development 2008
+// Copyright (C) GAMS Development and others 2008-2009
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -6,26 +6,29 @@
 //
 // Authors: Stefan Vigerske
 
-#ifndef OSRL2GMO_HPP_
-#define OSRL2GMO_HPP_
+#ifndef OSRL2GAMS_HPP_
+#define OSRL2GAMS_HPP_
 
 #include "GAMSlinksConfig.h"
 
 class OSResult;
-extern "C" struct gmoRec;
+struct gmoRec;
 
 /** Reads an optimization result and stores result and solution in a Gams Modeling Object.
  */
-class OSrL2GMO {
+class OSrL2Gams {
+private:
+	struct gmoRec* gmo;
+
 public:
 	/** Constructor.
 	 * @param gmo_ GMO handler.
 	 */
-	OSrL2GMO(struct gmoRec* gmo_);
+	OSrL2Gams(struct gmoRec* gmo_);
 
 	/** Destructor.
 	 */
-	~OSrL2GMO() {}
+	~OSrL2Gams() {}
 	
 	/** Writes a solution into a GMO with the result given as OSResult object.
 	 * @param osresult Optimization result as object.
@@ -36,10 +39,6 @@ public:
 	 * @param osrl Optimization result as string.
 	 */ 
 	void writeSolution(std::string& osrl);
-
-private:
-	struct gmoRec* gmo;
 };
 
-
-#endif /*OSRL2GMO_HPP_*/
+#endif /*OSRL2GAMS_HPP_*/

@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2006-2008 GAMS Development and others
+# Copyright (C) 2006-2009 GAMS Development and others
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -84,11 +84,6 @@ am_libGamsIO_la_OBJECTS = GamsModel.lo GamsFinalize.lo \
 	GamsMessageHandler.lo GamsOptions.lo GamsDictionary.lo \
 	GamsBCH.lo GamsHandlerIOLib.lo GamsGDX.lo
 libGamsIO_la_OBJECTS = $(am_libGamsIO_la_OBJECTS)
-libGmoIO_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsOptions.la \
-	$(GAMSIO_OBJDIR)/libGamsGMO.la $(GAMSIO_OBJDIR)/libGamsGDX.la
-am_libGmoIO_la_OBJECTS = GamsHandlerGmo.lo GamsOptions.lo \
-	GamsNLinstr.lo
-libGmoIO_la_OBJECTS = $(am_libGmoIO_la_OBJECTS)
 libSmagIO_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsOptions.la \
 	$(GAMSIO_OBJDIR)/libGamsGDX.la
 am_libSmagIO_la_OBJECTS = GamsOptions.lo GamsMessageHandler.lo \
@@ -116,10 +111,10 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libGamsIO_la_SOURCES) $(libGmoIO_la_SOURCES) \
-	$(libSmagIO_la_SOURCES) $(libSmagStricmp_la_SOURCES)
-DIST_SOURCES = $(libGamsIO_la_SOURCES) $(libGmoIO_la_SOURCES) \
-	$(libSmagIO_la_SOURCES) $(libSmagStricmp_la_SOURCES)
+SOURCES = $(libGamsIO_la_SOURCES) $(libSmagIO_la_SOURCES) \
+	$(libSmagStricmp_la_SOURCES)
+DIST_SOURCES = $(libGamsIO_la_SOURCES) $(libSmagIO_la_SOURCES) \
+	$(libSmagStricmp_la_SOURCES)
 includecoinHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(includecoin_HEADERS)
 ETAGS = etags
@@ -418,7 +413,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = $(am__append_1)
-lib_LTLIBRARIES = libGamsIO.la libSmagIO.la libSmagStricmp.la libGmoIO.la
+lib_LTLIBRARIES = libGamsIO.la libSmagIO.la libSmagStricmp.la
 libGamsIO_la_SOURCES = \
   GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsOptions.cpp GamsDictionary.cpp GamsBCH.cpp GamsHandlerIOLib.cpp GamsGDX.cpp
 
@@ -432,9 +427,10 @@ libSmagIO_la_SOURCES = \
 libSmagIO_la_LDFLAGS = 
 libSmagIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 libSmagStricmp_la_SOURCES = SmagStricmp.c
-libGmoIO_la_SOURCES = GamsHandlerGmo.cpp GamsOptions.cpp GamsNLinstr.c
-libGmoIO_la_LDFLAGS = 
-libGmoIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGMO.la $(GAMSIO_OBJDIR)/libGamsGDX.la
+
+#libGmoIO_la_SOURCES = GamsHandlerGmo.cpp GamsOptions.cpp GamsNLinstr.c
+#libGmoIO_la_LDFLAGS =
+#libGmoIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGMO.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = \
   GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsDictionary.hpp GamsBCH.hpp GamsHandler.hpp GamsHandlerIOLib.hpp \
@@ -518,8 +514,6 @@ clean-libLTLIBRARIES:
 	done
 libGamsIO.la: $(libGamsIO_la_OBJECTS) $(libGamsIO_la_DEPENDENCIES) 
 	$(CXXLINK) -rpath $(libdir) $(libGamsIO_la_LDFLAGS) $(libGamsIO_la_OBJECTS) $(libGamsIO_la_LIBADD) $(LIBS)
-libGmoIO.la: $(libGmoIO_la_OBJECTS) $(libGmoIO_la_DEPENDENCIES) 
-	$(CXXLINK) -rpath $(libdir) $(libGmoIO_la_LDFLAGS) $(libGmoIO_la_OBJECTS) $(libGmoIO_la_LIBADD) $(LIBS)
 libSmagIO.la: $(libSmagIO_la_OBJECTS) $(libSmagIO_la_DEPENDENCIES) 
 	$(CXXLINK) -rpath $(libdir) $(libSmagIO_la_LDFLAGS) $(libSmagIO_la_OBJECTS) $(libSmagIO_la_LIBADD) $(LIBS)
 libSmagStricmp.la: $(libSmagStricmp_la_OBJECTS) $(libSmagStricmp_la_DEPENDENCIES) 
@@ -535,7 +529,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsDictionary.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsFinalize.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsGDX.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsHandlerGmo.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsHandlerIOLib.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsHandlerSmag.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@

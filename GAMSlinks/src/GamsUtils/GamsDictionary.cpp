@@ -52,7 +52,7 @@ GamsDictionary::~GamsDictionary() {
 		// close dictionary
 		if (have_dictread) gcdClose(dict);
 		// free dictionary handler
-		if (dict) gcdFree(&dict);
+//TODO		if (dict) gcdFree(&dict);
 		// unload dictdll library
 		gcdLibraryUnload(); //TODO what if there are several dictionaries open?
 	}
@@ -199,7 +199,7 @@ char* GamsDictionary::constructName(char* buffer, int bufLen, int symIndex, int*
 	
   if (gcdSymName(dict, symIndex, symName, GMS_UEL_IDENT_SIZE) == NULL)
   	return NULL;
-  
+
   len = strlen(symName);
 
   strncpy(buffer, symName, len < bufLen ? bufLen : len);
@@ -227,8 +227,8 @@ char* GamsDictionary::constructName(char* buffer, int bufLen, int symIndex, int*
     	buffer[pos++] = '*';
     	break;
     }
-        
-    strncpy(buffer, strIndexPtrs[k], len);
+
+    strncpy(buffer+pos, strIndexPtrs[k], len);
     pos += len;
     if (' ' != quote) {
     	buffer[pos++] = quote;

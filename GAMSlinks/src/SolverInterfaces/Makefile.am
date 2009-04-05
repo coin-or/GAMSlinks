@@ -146,6 +146,101 @@ EXTRA_DIST       += gmsipdnt.cmd gmsipdus.run install/gmsipdnt.dat install/gmsip
 
 endif
 
+if GAMSLINKS_BUILD_BONMIN
+AM_CPPFLAGS += \
+ -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms` \
+ -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Interfaces` \
+ -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/CbcBonmin` \
+ -I`$(CYGPATH_W) $(BONMINOBJDIR)/inc`
+
+libGamsCoin_la_LIBADD       += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
+libGamsCoin_la_DEPENDENCIES += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
+
+endif
+
+if GAMSLINKS_BUILD_GLPK
+AM_CPPFLAGS += \
+ -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
+ -I`$(CYGPATH_W) $(GLPKINCDIR)`
+libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+endif
+
+if GAMSLINKS_BUILD_OS
+libGamsCoin_la_SOURCES += GamsOS.cpp Gams2OSiL.cpp OSrL2Gams.cpp
+
+AM_CPPFLAGS += \
+ -I`$(CYGPATH_W) $(OSSRCDIR)/src` \
+ -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSCommonInterfaces` \
+ -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSUtils` \
+ -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSAgent` \
+ -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSParsers` \
+ -I`$(CYGPATH_W) $(OSOBJDIR)/inc` \
+ -I`$(CYGPATH_W) $(CPPADSRCDIR)`
+
+#OSSolverInterface.la need to come before OSCommonInterfaces.la
+if COIN_OS_SOLVER
+  AM_CPPFLAGS   += -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSSolverInterfaces`
+  libGamsCoin_la_LIBADD       += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
+  libGamsCoin_la_DEPENDENCIES += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
+endif
+
+libGamsCoin_la_LIBADD += \
+ $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
+ $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
+ $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
+ $(OSOBJDIR)/src/OSAgent/libOSAgent.la \
+ `cat $(OSOBJDIR)/os_addlibs.txt`
+
+libGamsCoin_la_DEPENDENCIES += \
+ $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
+ $(OSOBJDIR)/src/OSAgent/libOSAgent.la \
+ $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
+ $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la
+
+if COIN_OS_SOLVER
+if COIN_HAS_CPX
+  #might be duplicated if GAMSLINKS_BUILD_CBC is true
+  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
+  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
+endif
+
+if COIN_HAS_DYLP
+  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la $(DYLPOBJDIR)/src/Dylp/libDylp.la `cat $(DYLPOBJDIR)/dylp_addlibs.txt`
+  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la $(DYLPOBJDIR)/src/Dylp/libDylp.la
+endif  
+
+if COIN_HAS_VOL
+  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiVol/libOsiVol.la $(VOLOBJDIR)/src/libVol.la `cat $(VOLOBJDIR)/vol_addlibs.txt`
+  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiVol/libOsiVol.la $(VOLOBJDIR)/src/libVol.la
+endif
+
+if COIN_HAS_SYMPHONY
+  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiSym/libOsiSym.la $(SYMPHONYOBJDIR)/src/libSym.la `cat $(SYMPHONYOBJDIR)/sym_addlibs.txt`
+  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiSym/libOsiSym.la $(SYMPHONYOBJDIR)/src/libSym.la
+endif
+endif
+
+if GAMSIO_IS_UNIX
+bin_PROGRAMS        += gmsosdux.out
+gmsosdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+gmsosdux_out_SOURCES = gmsosd.cpp
+gmsosdux_out_LDADD   = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
+gamsinstallfiles    += gmsosdux.out gmsosdus.run install/gmsosdun.dat
+endif
+
+if GAMSIO_IS_WINDOWS
+bin_PROGRAMS     += gmsosdnx
+gmsosdnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+gmsosdnx_SOURCES  = gmsosd.cpp
+gmsosdnx_LDADD    = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
+gamsinstallfiles += gmsosdnx.exe gmsosdnt.cmd install/gmsosdnt.dat
+endif
+
+gamsinstallfiles += optosd.def
+EXTRA_DIST       += optosd.def optosd.gms optosd.txt gmsosdnt.cmd gmsosdus.run install/gmsosdnt.dat install/gmsosdun.dat
+endif
+
 #ltdl need the GamsCoin.la present for preloading, so we need to install one for debug and static builds
 #on the other hand, for shared library builds, only no or the libGamsCoin.la from the lib dir can be used
 install-exec-local: install-binPROGRAMS install-libLTLIBRARIES

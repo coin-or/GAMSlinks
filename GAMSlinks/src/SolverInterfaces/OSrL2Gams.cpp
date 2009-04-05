@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development 2008
+// Copyright (C) GAMS Development and others 2008-2009
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -7,7 +7,7 @@
 // Authors: Stefan Vigerske
 
 #include "OSResult.h"
-#include "OSrL2GMO.hpp"
+#include "OSrL2Gams.hpp"
 #include "OSrLReader.h"
 #include "OSErrorClass.h"
 #include "CoinHelperFunctions.hpp"
@@ -22,15 +22,13 @@
 #endif
 #endif
 
-extern "C" {
 #include "gmocc.h"
-}
 
-OSrL2GMO::OSrL2GMO(gmoHandle_t gmo_)
+OSrL2Gams::OSrL2Gams(gmoHandle_t gmo_)
 : gmo(gmo_)
 { }
 
-void OSrL2GMO::writeSolution(OSResult& osresult) {
+void OSrL2Gams::writeSolution(OSResult& osresult) {
 	if (osresult.resultHeader == NULL) {
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SolverErr);
@@ -142,7 +140,7 @@ void OSrL2GMO::writeSolution(OSResult& osresult) {
 		gmoSetHeadnTail(gmo, HobjVal, sol->objectives->values->obj[0]->value);
 }
 
-void OSrL2GMO::writeSolution(std::string& osrl) {
+void OSrL2Gams::writeSolution(std::string& osrl) {
 	OSResult* osresult = NULL;
 	OSrLReader osrl_reader;
 	try {

@@ -1,0 +1,103 @@
+<html>
+<head>
+<title>OSD Options</title>
+</head>
+<body>
+<h2>OSD Options</h2>
+GAMS/OS brings the open source Optimization Services project to the broad audience of GAMS users.
+The code has been written primarily by Jun Ma and Kipp Martin.
+The GAMS interface for OS is maintained by Stefan Vigerske, Humboldt University, in a COIN-OR project called GAMSlinks.
+For more information visit the web site for
+<a href="http://www.coin-or.org">COIN-OR</a>,
+<a href="https://projects.coin-or.org/OS">OS<a>, and
+<a href="https://projects.coin-or.org/GAMSlinks">GAMSlinks</a>.<BR>
+For documentation of GAMS parameters, see the <A href="http://www.gams.com/docs/parame.htm">GAMS parameters documentation</A>.
+<p>For more information about this solver please inspect the
+complete <a href="docs/solvers/coin.pdf">OSD manual</a>.
+
+<h2>Summary of OSD Options</h2>
+<table>
+<tr><th height=75 valign=bottom colspan=2 align=left><h3>General Options</h3></th></tr>
+<tr><td><a href="#readosol">
+readosol</a></td>
+<td>read the solver options from an OSoL file</td></tr>
+<tr><td><a href="#readospl">
+readospl</a></td>
+<td>read knock request as OSpL file</td></tr>
+<tr><td><a href="#service">
+service</a></td>
+<td>address of an Optimization Services Agent for a remote solve</td></tr>
+<tr><td><a href="#service_method">
+service_method</a></td>
+<td>method of an OS Agent to call</td></tr>
+<tr><td><a href="#solver">
+solver</a></td>
+<td>specification of a solver</td></tr>
+<tr><td><a href="#writeosil">
+writeosil</a></td>
+<td>write the problem instance as OSiL file</td></tr>
+<tr><td><a href="#writeospl">
+writeospl</a></td>
+<td>write knock or kill reply into OSpL file</td></tr>
+<tr><td><a href="#writeosrl">
+writeosrl</a></td>
+<td>write the optimization result as OSrL file</td></tr></table>
+<h2>Detailed Descriptions of OSD Options</h2>
+
+<h4><a name="readosol">
+readosol</a>
+<i> (string)</i> read the solver options from an OSoL file</h4><p>
+
+
+
+<h4><a name="readospl">
+readospl</a>
+<i> (string)</i> read knock request as OSpL file</h4><p>
+
+
+
+<h4><a name="service">
+service</a>
+<i> (string)</i> address of an Optimization Services Agent for a remote solve</h4><p>
+
+
+
+<h4><a name="service_method">
+service_method</a>
+<i> (string)</i> method of an OS Agent to call</h4><p>
+
+
+<br><i>(default = solve)</i>
+<table>
+<tr valign="top"><td width=20 align=right>solve</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>getJobID</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>knock</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>kill</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>send</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>retrieve</td><td></td></tr>
+</table>
+
+<h4><a name="solver">
+solver</a>
+<i> (string)</i> specification of a solver</h4><p>
+
+
+
+<h4><a name="writeosil">
+writeosil</a>
+<i> (string)</i> write the problem instance as OSiL file</h4><p>
+
+
+
+<h4><a name="writeospl">
+writeospl</a>
+<i> (string)</i> write knock or kill reply into OSpL file</h4><p>
+
+
+
+<h4><a name="writeosrl">
+writeosrl</a>
+<i> (string)</i> write the optimization result as OSrL file</h4><p>
+
+
+</body></html>

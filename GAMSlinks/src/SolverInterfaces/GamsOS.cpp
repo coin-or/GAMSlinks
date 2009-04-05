@@ -1,4 +1,4 @@
-// Copyright (C) 2008 GAMS Development and others
+// Copyright (C) GAMS Development and others 2008-2009
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -6,7 +6,8 @@
 //
 // Author: Stefan Vigerske
 
-#include "GamsOS2.hpp"
+#include "GamsOS.hpp"
+#include "GamsOS.h"
 
 #include "OSiLWriter.h"
 #include "OSrLWriter.h"
@@ -28,22 +29,28 @@
 #endif
 #endif
 
-#include "GMO2OSiL.hpp"
-#include "OSrL2GMO.hpp"
+#include "Gams2OSiL.hpp"
+#include "OSrL2Gams.hpp"
 
+#include "gmocc.h"
+
+#include <string>
 #include <fstream>
 #include <iostream>
 
-GamsOS::GamsOS(gmoHandle_t gmo_)
-: gmo(gmo_), gamshandler(gmo_),
+GamsOS::GamsOS()
+: gmo(NULL), osinstance(NULL)
+{
 #ifdef GAMS_BUILD
-  gamsopt(gamshandler, "coinos")
+	strcpy(os_message, "GAMS/CoinOS (OS Library trunk)\nwritten by J. Ma, K. Martin, H. Gassmann\n");
 #else
-  gamsopt(gamshandler, "os")
+	strcpy(os_message, "GAMS/OSD (OS Library trunk)\nwritten by J. Ma, K. Martin, H. Gassmann\n");
 #endif
-{ }
+}
 
-bool GamsOS::execute() {
+int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct gcdRec* gcd) {
+	gmo = gmo_;
+	assert(gmo);
 	char buffer[255];
 	
 	gmoMinfSet(gmo, -OSDBL_MAX);
@@ -52,17 +59,26 @@ bool GamsOS::execute() {
 	gmoObjStyleSet(gmo, ObjType_Fun);
   gmoIndexBaseSet(gmo, 0);
 
-	if (gmoOptFile(gmo)) {
-		char optfilename[256];
-		gmoNameOptFile(gmo, optfilename);
-		gamsopt.readOptionsFile(optfilename);
+	gamsopt.setGMO(gmo);
+	if (opt) {
+		gamsopt.setOpt(opt);
+	} else {
+		char buffer[1024];
+		gmoNameOptFile(gmo, buffer);
+#ifdef GAMS_BUILD	
+		gamsopt.readOptionsFile("coinos", gmoOptFile(gmo) ? buffer : NULL);
+#else
+		gamsopt.readOptionsFile("osd",    gmoOptFile(gmo) ? buffer : NULL);
+#endif
 	}
 
-	GMO2OSiL gmoosil(gmo);
+	Gams2OSiL gmoosil(gmo, gcd);
 	if (!gmoosil.createOSInstance()) {
 		gmoLogStat(gmo, "Creation of OSInstance failed.");
 		return false;
 	}
+	
+	osinstance = gmoosil.takeOverOSInstance();
 	
 	if (gamsopt.isDefined("writeosil")) {
 		OSiLWriter osilwriter;
@@ -76,37 +92,39 @@ bool GamsOS::execute() {
 			snprintf(buffer, sizeof(buffer), "Writing instance in OSiL to %s.", osilfilename);
 			buffer[sizeof(buffer)-1]=0;
 			gmoLogStat(gmo, buffer);
-			osilfile << osilwriter.writeOSiL(gmoosil.osinstance);
+			osilfile << osilwriter.writeOSiL(osinstance); //TODO fix
 		}
 	}
-	
+		
+	return 1;
+}
+
+int GamsOS::callSolver() {
 	std::string osol;
 	if (gamsopt.isDefined("readosol")) {
 		char osolfilename[255], buffer[512];
 		std::ifstream osolfile(gamsopt.getString("readosol", osolfilename));
 		if (!osolfile.good()) {
-			snprintf(buffer, 255, "Error opening file %s for reading solver options in OSoL.", osolfilename);
+			snprintf(buffer, 512, "Error opening file %s for reading solver options in OSoL.", osolfilename);
 			gmoLogStat(gmo, buffer);
 		} else {
-			snprintf(buffer, 255, "Reading solver options in OSoL from %s.", osolfilename);
+			snprintf(buffer, 512, "Reading solver options in OSoL from %s.", osolfilename);
 			gmoLogStat(gmo, buffer);
 			std::getline(osolfile, osol, '\0');
 		}
 	} else { // just give an "empty" xml file
-		osol = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <osol xmlns=\"os.optimizationservices.org\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"os.optimizationservices.org http://www.optimizationservices.org/schemas/OSoL.xsd\"><other> </other></osol>";
+		osol = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <osol xmlns=\"os.optimizationservices.org\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"os.optimizationservices.org http://www.optimizationservices.org/schemas/OSoL.xsd\"></osol>";
 	}
-
+	
 	bool success;
 	
-	if (gamsopt.isDefined("service")) {
-		success = remoteSolve(gmoosil.osinstance, osol);
-	} else {
-		success = localSolve(gmoosil.osinstance, osol);
-	}
+	if (gamsopt.isDefined("service"))
+		success = remoteSolve(osinstance, osol);
+	else
+		success = localSolve(osinstance, osol);
 
 	return success;
 }
-
 
 #ifdef COIN_OS_SOLVER
 std::string GamsOS::getSolverName(bool isnonlinear, bool isdiscrete) {
@@ -235,7 +253,7 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 	
 	delete solver;
 	return true;
-} // localSolve
+}
 #else
 
 bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
@@ -244,7 +262,6 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 	gmoSolveStatSet(gmo, SolveStat_Capability);
 	return false;
 }
-
 #endif
 
 bool GamsOS::remoteSolve(OSInstance* osinstance, std::string& osol) {
@@ -404,13 +421,51 @@ bool GamsOS::processResult(std::string* osrl, OSResult* osresult) {
 				osrlfile << OSrLWriter().writeOSrL(osresult);
 		}
 	}
-	
 
-	OSrL2GMO osrl2gmo(gmo);
+	OSrL2Gams osrl2gmo(gmo);
 	if (osresult)
 		osrl2gmo.writeSolution(*osresult);
 	else
 		osrl2gmo.writeSolution(*osrl);
 
 	return true;
+}
+
+GamsOS* createNewGamsOS() {
+	return new GamsOS();
+}
+
+int os_CallSolver(os_Rec_t *Cptr) {
+	assert(Cptr != NULL);
+	return ((GamsOS*)Cptr)->callSolver();
+}
+
+int os_ModifyProblem(os_Rec_t *Cptr) {
+	assert(Cptr != NULL);
+	return ((GamsOS*)Cptr)->modifyProblem();
+}
+
+int os_HaveModifyProblem(os_Rec_t *Cptr) {
+	assert(Cptr != NULL);
+	return ((GamsOS*)Cptr)->haveModifyProblem();
+}
+
+int os_ReadyAPI(os_Rec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr) {
+	assert(Cptr != NULL);
+	if (Gptr)
+		gmoLogStatPChar(Gptr, ((GamsOS*)Cptr)->getWelcomeMessage());
+	return ((GamsOS*)Cptr)->readyAPI(Gptr, Optr, Dptr);
+}
+
+void os_Free(os_Rec_t **Cptr) {
+	assert(Cptr != NULL);
+	delete (GamsOS*)*Cptr;
+	*Cptr = NULL;
+}
+
+void os_Create(os_Rec_t **Cptr, char *msgBuf, int msgBufLen) {
+	assert(Cptr != NULL);
+	*Cptr = (os_Rec_t*) new GamsOS();
+	if (msgBufLen && msgBuf)
+		msgBuf[0] = 0;
 }
