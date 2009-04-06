@@ -154,7 +154,7 @@ bool GamsNLP::get_variables_linearity(Index n, LinearityType* var_types) {
 	int jnz, jnlnz, jobjnz;
 	for (int i = 0; i < n; ++i) {
 		gmoGetColStat(gmo, i, &jnz, &jnlnz, &jobjnz);
-		if (jnlnz || (jobjnz && gmoObjNLNZ(gmo))) //TODO do not know whether variables are nonlinear in objective
+		if (jnlnz || (jobjnz == 1)) // jobjnz is -1 if linear in obj, +1 if nonlinear in obj, and 0 if not there
 			var_types[i] = NON_LINEAR;
 		else
 			var_types[i] = LINEAR;

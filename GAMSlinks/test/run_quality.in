@@ -60,6 +60,7 @@ if test @gamslinks_build_ipopt@ = 1 ; then
   skiplist="$skiplist skip('IpoptD','sl4lp03')=yes;"
   skiplist="$skiplist skip('IpoptD','lp10')=yes;"
   skiplist="$skiplist skip('IpoptD','sl4lp10')=yes;"
+  skiplist="$skiplist skip('IpoptD','lp13')=yes;"
   testlist[${#testlist[@]}]="--solver ipoptd --suite lp"
   testlist[${#testlist[@]}]="--solver ipoptd --suite nlp"
   testlist[${#testlist[@]}]="--solver ipoptd --suite qcp"
