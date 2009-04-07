@@ -47,6 +47,7 @@ GamsNLP::GamsNLP (gmoHandle_t gmo_)
 GamsNLP::~GamsNLP() {
 	delete[] iRow;
 	delete[] jCol;
+	delete[] grad;
 }
 
 bool GamsNLP::get_nlp_info(Index& n, Index& m, Index& jac_nnz, Index& nnz_h_lag, TNLP::IndexStyleEnum &index_style) {
@@ -280,24 +281,27 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
     memcpy(this->iRow, iRow, nele_jac * sizeof(int));
     memcpy(this->jCol, jCol, nele_jac * sizeof(int));
 
+    delete[] grad;
+    grad = new double[n];
+
   } else { // return the values of the jacobian
     assert(NULL != x);
     assert(NULL == iRow);
     assert(NULL == jCol);
     assert(NULL != this->iRow);
     assert(NULL != this->jCol);
+  	assert(NULL != grad);
   	
   	if (new_x)
   		gmoEvalNewPoint(gmo, x);
   	
-  	double* grad = new double[n];
   	double val;
   	double gx;
   	int nerror;
     int k = 0;
     
   	for (int rownr = 0; rownr < m; ++rownr) {
-  		nerror = gmoEvalGrad(gmo, rownr, x, &val, grad, &gx); // TODO how to get sparse gradient or jac from GMO?
+  		nerror = gmoEvalGrad(gmo, rownr, x, &val, grad, &gx);
       if (nerror < 0) {
   			char buffer[255];  	
   	  	sprintf(buffer, "Error detected in evaluation of gradient for constraint %d!\nnerror = %d\nExiting from subroutine - eval_jac_g\n", rownr, nerror); 
@@ -306,7 +310,6 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
       }
       if (nerror > 0) {
   			++domviolations;
-  			delete[] grad;
         return false;
       }
       
@@ -314,7 +317,6 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
       	values[k] = grad[this->jCol[k]];
     }
     assert(k == nele_jac);
-		delete[] grad;
   }
 
   return true;

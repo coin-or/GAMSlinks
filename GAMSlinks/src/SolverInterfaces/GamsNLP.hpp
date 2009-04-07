@@ -27,6 +27,7 @@ private:
 	
 	int* iRow;
 	int* jCol;
+	double* grad;
 
 public:
 	double div_iter_tol;
