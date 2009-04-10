@@ -32,6 +32,6 @@
 
 typedef struct gmoRec* gmoHandle_t;
 typedef struct optRec* optHandle_t;
-typedef struct gcdRec* gcdHandle_t;
+typedef struct dctRec* dctHandle_t;
 
 #endif /*GAMSSOLVER_H_*/

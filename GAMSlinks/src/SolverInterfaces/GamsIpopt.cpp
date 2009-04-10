@@ -271,7 +271,7 @@ DllExport int STDCALL ipoHaveModifyProblem(ipoRec_t *Cptr) {
 	return ((GamsIpopt*)Cptr)->haveModifyProblem();
 }
 
-DllExport int STDCALL ipoReadyAPI(ipoRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr) {
+DllExport int STDCALL ipoReadyAPI(ipoRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, dctHandle_t Dptr) {
 	assert(Cptr != NULL);
 	assert(Gptr != NULL);
 	char msg[256];

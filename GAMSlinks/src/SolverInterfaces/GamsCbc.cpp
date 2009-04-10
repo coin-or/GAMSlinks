@@ -70,7 +70,7 @@ GamsCbc::~GamsCbc() {
 	delete[] cbc_args;
 }
 
-int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct gcdRec* gcd) {
+int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* gcd) {
 	gmo = gmo_;
 	assert(gmo);
 	assert(!model);
@@ -1229,7 +1229,7 @@ DllExport int STDCALL cbcHaveModifyProblem(cbcRec_t *Cptr) {
 	return ((GamsCbc*)Cptr)->haveModifyProblem();
 }
 
-DllExport int STDCALL cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr) {
+DllExport int STDCALL cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, dctHandle_t Dptr) {
 	assert(Cptr != NULL);
 	assert(Gptr != NULL);
 	char msg[256];
