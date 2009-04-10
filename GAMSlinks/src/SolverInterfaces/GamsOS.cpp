@@ -57,6 +57,12 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* gcd
 	assert(gmo);
 	char buffer[255];
 	
+	char msg[256];
+	if (!gmoGetReady(msg, sizeof(msg))) {
+		printf("Error loading GMO library: %s\n", msg);
+		return 1;
+	}
+	
 	gmoMinfSet(gmo, -OSDBL_MAX);
 	gmoPinfSet(gmo,  OSDBL_MAX);
 	gmoObjReformSet(gmo, 1);

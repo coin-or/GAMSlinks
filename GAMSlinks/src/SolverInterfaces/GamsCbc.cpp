@@ -76,8 +76,10 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* gc
 	assert(!model);
 	
 	char msg[256];
-	if (!gmoGetReady(msg, sizeof(msg)))
+	if (!gmoGetReady(msg, sizeof(msg))) {
+		printf("Error loading GMO library: %s\n", msg);
 		return 1;
+	}
 	
 	options.setGMO(gmo);
 	if (opt) {

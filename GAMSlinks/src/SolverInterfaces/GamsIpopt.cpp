@@ -83,6 +83,12 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* 
 	assert(gmo);
 	assert(IsNull(ipopt));
 
+	char msg[256];
+	if (!gmoGetReady(msg, sizeof(msg))) {
+		printf("Error loading GMO library: %s\n", msg);
+		return 1;
+	}
+
 	gmoObjStyleSet(gmo, ObjType_Fun);
 	gmoObjReformSet(gmo, 1);
  	gmoIndexBaseSet(gmo, 0);
