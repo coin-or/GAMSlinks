@@ -9,21 +9,20 @@
 #ifndef GAMSIPOPT_H_
 #define GAMSIPOPT_H_
 
+#include "GamsSolver.h"
+
 typedef void ipoRec_t;
-typedef struct gmoRec* gmoHandle_t;
-typedef struct optRec* optHandle_t;
-typedef struct gcdRec* gcdHandle_t;
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-  int    ipoCallSolver(ipoRec_t *Cptr);
-  int    ipoModifyProblem(ipoRec_t *Cptr);
-  int    ipoHaveModifyProblem(ipoRec_t *Cptr);
-  int    ipoReadyAPI(ipoRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr);
-  void   ipoFree(ipoRec_t **Cptr);
-  void   ipoCreate(ipoRec_t **Cptr, char *msgBuf, int msgBufLen);
+	DllExport int  STDCALL ipoCallSolver(ipoRec_t *Cptr);
+	DllExport int  STDCALL ipoModifyProblem(ipoRec_t *Cptr);
+	DllExport int  STDCALL ipoHaveModifyProblem(ipoRec_t *Cptr);
+	DllExport int  STDCALL ipoReadyAPI(ipoRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr);
+	DllExport void STDCALL ipoFree(ipoRec_t **Cptr);
+	DllExport void STDCALL ipoCreate(ipoRec_t **Cptr, char *msgBuf, int msgBufLen);
 
 #if defined(__cplusplus)
 }

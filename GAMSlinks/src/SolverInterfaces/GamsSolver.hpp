@@ -10,10 +10,7 @@
 #define GAMSSOLVER_HPP_
 
 #include "GAMSlinksConfig.h"
-
-struct gmoRec;
-struct gcdRec;
-struct optRec;
+#include "GamsSolver.h"
 
 /** An abstract interface to a solver that takes Gams Modeling Objects (GMO) as input.
  */
@@ -24,7 +21,7 @@ public:
 	/** Initialization of solver interface and solver.
 	 * Loads problem into solver.
 	 */
-	virtual int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct gcdRec* gcd) = 0;
+	virtual int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct dctRec* gcd) = 0;
 	
 	/** Indicates whether the solver interface and solver supports the modifyProblem call.
 	 * Default: no

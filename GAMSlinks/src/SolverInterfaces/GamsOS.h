@@ -9,21 +9,20 @@
 #ifndef GAMSOS_H_
 #define GAMSOS_H_
 
+#include "GamsSolver.h"
+
 typedef void os_Rec_t;
-typedef struct gmoRec* gmoHandle_t;
-typedef struct optRec* optHandle_t;
-typedef struct gcdRec* gcdHandle_t;
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-  int    os_CallSolver(os_Rec_t *Cptr);
-  int    os_ModifyProblem(os_Rec_t *Cptr);
-  int    os_HaveModifyProblem(os_Rec_t *Cptr);
-  int    os_ReadyAPI(os_Rec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr);
-  void   os_Free(os_Rec_t **Cptr);
-  void   os_Create(os_Rec_t **Cptr, char *msgBuf, int msgBufLen);
+  DllExport int  STDCALL os_CallSolver(os_Rec_t *Cptr);
+  DllExport int  STDCALL os_ModifyProblem(os_Rec_t *Cptr);
+  DllExport int  STDCALL os_HaveModifyProblem(os_Rec_t *Cptr);
+  DllExport int  STDCALL os_ReadyAPI(os_Rec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, dctHandle_t Dptr);
+  DllExport void STDCALL os_Free(os_Rec_t **Cptr);
+  DllExport void STDCALL os_Create(os_Rec_t **Cptr, char *msgBuf, int msgBufLen);
 
 #if defined(__cplusplus)
 }

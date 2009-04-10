@@ -58,7 +58,11 @@ extern "C" {
 }
 
 // GAMS
+#ifdef GAMS_BUILD
+#include "gmomcc.h"
+#else
 #include "gmocc.h"
+#endif
 
 using namespace Ipopt;
 
@@ -74,7 +78,7 @@ GamsIpopt::GamsIpopt()
 
 GamsIpopt::~GamsIpopt() { }
 
-int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct gcdRec* gcd) {
+int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* gcd) {
 	gmo = gmo_;
 	assert(gmo);
 	assert(IsNull(ipopt));
@@ -177,7 +181,7 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct gcdRec* 
 	}
 #endif
 		
-	return 1;
+	return 0;
 }
 
 int GamsIpopt::callSolver() {
@@ -245,42 +249,45 @@ int GamsIpopt::callSolver() {
   		gmoLogStat(gmo, "Failed to unload Pardiso library.");
 #endif
 
-	return 1;
+	return 0;
 }
 
-GamsIpopt* createNewGamsIpopt() {
+DllExport GamsIpopt* STDCALL createNewGamsIpopt() {
 	return new GamsIpopt();
 }
 
-int ipoCallSolver(ipoRec_t *Cptr) {
+DllExport int STDCALL ipoCallSolver(ipoRec_t *Cptr) {
 	assert(Cptr != NULL);
 	return ((GamsIpopt*)Cptr)->callSolver();
 }
 
-int ipoModifyProblem(ipoRec_t *Cptr) {
+DllExport int STDCALL ipoModifyProblem(ipoRec_t *Cptr) {
 	assert(Cptr != NULL);
 	return ((GamsIpopt*)Cptr)->modifyProblem();
 }
 
-int ipoHaveModifyProblem(ipoRec_t *Cptr) {
+DllExport int STDCALL ipoHaveModifyProblem(ipoRec_t *Cptr) {
 	assert(Cptr != NULL);
 	return ((GamsIpopt*)Cptr)->haveModifyProblem();
 }
 
-int ipoReadyAPI(ipoRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr) {
+DllExport int STDCALL ipoReadyAPI(ipoRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr) {
 	assert(Cptr != NULL);
-	if (Gptr)
-		gmoLogStatPChar(Gptr, ((GamsIpopt*)Cptr)->getWelcomeMessage());
+	assert(Gptr != NULL);
+	char msg[256];
+	if (!gmoGetReady(msg, sizeof(msg)))
+		return 1;
+	gmoLogStatPChar(Gptr, ((GamsIpopt*)Cptr)->getWelcomeMessage());
 	return ((GamsIpopt*)Cptr)->readyAPI(Gptr, Optr, Dptr);
 }
 
-void ipoFree(ipoRec_t **Cptr) {
+DllExport void STDCALL ipoFree(ipoRec_t **Cptr) {
 	assert(Cptr != NULL);
 	delete (GamsIpopt*)*Cptr;
 	*Cptr = NULL;
 }
 
-void ipoCreate(ipoRec_t **Cptr, char *msgBuf, int msgBufLen) {
+DllExport void STDCALL ipoCreate(ipoRec_t **Cptr, char *msgBuf, int msgBufLen) {
 	assert(Cptr != NULL);
 	*Cptr = (ipoRec_t*) new GamsIpopt();
 	if (msgBufLen && msgBuf)

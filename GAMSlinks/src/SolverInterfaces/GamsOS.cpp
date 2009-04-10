@@ -32,7 +32,11 @@
 #include "Gams2OSiL.hpp"
 #include "OSrL2Gams.hpp"
 
+#ifdef GAMS_BUILD
+#include "gmomcc.h"
+#else
 #include "gmocc.h"
+#endif
 
 #include <string>
 #include <fstream>
@@ -48,7 +52,7 @@ GamsOS::GamsOS()
 #endif
 }
 
-int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct gcdRec* gcd) {
+int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* gcd) {
 	gmo = gmo_;
 	assert(gmo);
 	char buffer[255];
@@ -96,7 +100,7 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct gcdRec* gcd
 		}
 	}
 		
-	return 1;
+	return 0;
 }
 
 int GamsOS::callSolver() {
@@ -116,14 +120,14 @@ int GamsOS::callSolver() {
 		osol = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <osol xmlns=\"os.optimizationservices.org\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"os.optimizationservices.org http://www.optimizationservices.org/schemas/OSoL.xsd\"></osol>";
 	}
 	
-	bool success;
+	bool fail;
 	
 	if (gamsopt.isDefined("service"))
-		success = remoteSolve(osinstance, osol);
+		fail = !remoteSolve(osinstance, osol);
 	else
-		success = localSolve(osinstance, osol);
+		fail = !localSolve(osinstance, osol);
 
-	return success;
+	return fail;
 }
 
 #ifdef COIN_OS_SOLVER
@@ -431,39 +435,42 @@ bool GamsOS::processResult(std::string* osrl, OSResult* osresult) {
 	return true;
 }
 
-GamsOS* createNewGamsOS() {
+DllExport GamsOS* STDCALL createNewGamsOS() {
 	return new GamsOS();
 }
 
-int os_CallSolver(os_Rec_t *Cptr) {
+DllExport int STDCALL os_CallSolver(os_Rec_t *Cptr) {
 	assert(Cptr != NULL);
 	return ((GamsOS*)Cptr)->callSolver();
 }
 
-int os_ModifyProblem(os_Rec_t *Cptr) {
+DllExport int STDCALL os_ModifyProblem(os_Rec_t *Cptr) {
 	assert(Cptr != NULL);
 	return ((GamsOS*)Cptr)->modifyProblem();
 }
 
-int os_HaveModifyProblem(os_Rec_t *Cptr) {
+DllExport int STDCALL os_HaveModifyProblem(os_Rec_t *Cptr) {
 	assert(Cptr != NULL);
 	return ((GamsOS*)Cptr)->haveModifyProblem();
 }
 
-int os_ReadyAPI(os_Rec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr) {
+DllExport int STDCALL os_ReadyAPI(os_Rec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, dctHandle_t Dptr) {
 	assert(Cptr != NULL);
-	if (Gptr)
-		gmoLogStatPChar(Gptr, ((GamsOS*)Cptr)->getWelcomeMessage());
+	assert(Gptr != NULL);
+	char msg[256];
+	if (!gmoGetReady(msg, sizeof(msg)))
+		return 1;
+	gmoLogStatPChar(Gptr, ((GamsOS*)Cptr)->getWelcomeMessage());
 	return ((GamsOS*)Cptr)->readyAPI(Gptr, Optr, Dptr);
 }
 
-void os_Free(os_Rec_t **Cptr) {
+DllExport void STDCALL os_Free(os_Rec_t **Cptr) {
 	assert(Cptr != NULL);
 	delete (GamsOS*)*Cptr;
 	*Cptr = NULL;
 }
 
-void os_Create(os_Rec_t **Cptr, char *msgBuf, int msgBufLen) {
+DllExport void STDCALL os_Create(os_Rec_t **Cptr, char *msgBuf, int msgBufLen) {
 	assert(Cptr != NULL);
 	*Cptr = (os_Rec_t*) new GamsOS();
 	if (msgBufLen && msgBuf)

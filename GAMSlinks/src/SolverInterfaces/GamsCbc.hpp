@@ -45,7 +45,7 @@ public:
 	GamsCbc();
 	~GamsCbc();
 	
-	int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct gcdRec* gcd);
+	int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct dctRec* gcd);
 	
 //	int haveModifyProblem();
 	
@@ -57,6 +57,6 @@ public:
 
 }; // GamsCbc
 
-extern "C" GamsCbc* createNewGamsCbc();
+extern "C" DllExport GamsCbc* STDCALL createNewGamsCbc();
 
 #endif /*GAMSCBC_HPP_*/

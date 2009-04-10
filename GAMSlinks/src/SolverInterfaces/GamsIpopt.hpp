@@ -29,7 +29,7 @@ public:
 	GamsIpopt();
 	~GamsIpopt();
 	
-	int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct gcdRec* gcd);
+	int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct dctRec* gcd);
 	
 //	int haveModifyProblem();
 	
@@ -41,6 +41,6 @@ public:
 
 }; // GamsIpopt
 
-extern "C" GamsIpopt* createNewGamsIpopt();
+extern "C" DllExport GamsIpopt* STDCALL createNewGamsIpopt();
 
 #endif /*GAMSIPOPT_HPP_*/

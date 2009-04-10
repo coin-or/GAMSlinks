@@ -29,7 +29,7 @@ private:
 	OSInstance *osinstance;
 public:
 
-	Gams2OSiL(struct gmoRec* gmo_, struct gcdRec* dict_);
+	Gams2OSiL(struct gmoRec* gmo_, struct dctRec* dict_);
 
 	~Gams2OSiL();
 	

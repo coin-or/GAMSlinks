@@ -13,7 +13,6 @@
 
 class GamsDictionary;
 struct gmoRec;
-struct gcdRec;
 struct gdxRec;
 
 /** Wrapper class for GAMS data exchange (GDX) file handler.

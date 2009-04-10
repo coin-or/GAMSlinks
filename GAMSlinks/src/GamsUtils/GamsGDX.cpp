@@ -39,11 +39,14 @@
 #endif
 #endif
 
-extern "C" {
-#include "gdxcc.h"
-#include "gcdcc.h"
+#ifdef GAMS_BUILD
+#include "gmomcc.h"
+#include "dctmcc.h"
+#else
 #include "gmocc.h"
-}
+#include "gcdcc.h"
+#endif
+#include "gdxcc.h"
 
 GamsGDX::GamsGDX(struct gmoRec* gmo_, GamsDictionary& dictionary)
 : gmo(gmo_), dict(dictionary), gdx(NULL)

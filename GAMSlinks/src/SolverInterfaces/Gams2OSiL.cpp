@@ -12,11 +12,15 @@
 #include "OSInstance.h"
 #include "CoinHelperFunctions.hpp"
 
+#ifdef GAMS_BUILD
+#include "gmomcc.h"
+#else
 #include "gmocc.h"
+#endif
 
 #include <sstream>
 
-Gams2OSiL::Gams2OSiL(gmoHandle_t gmo_, struct gcdRec* dict_)
+Gams2OSiL::Gams2OSiL(gmoHandle_t gmo_, struct dctRec* dict_)
 : gmo(gmo_), dict(gmo_, dict_), osinstance(NULL)
 { }
 

@@ -36,7 +36,7 @@ private:
 public:
 	GamsOS();
 
-	int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct gcdRec* gcd);
+	int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct dctRec* gcd);
 	
 //	int haveModifyProblem();
 	
@@ -47,6 +47,6 @@ public:
 	const char* getWelcomeMessage() { return os_message; }	
 };
 
-extern "C" GamsOS* createNewGamsOS();
+extern "C" DllExport GamsOS* STDCALL createNewGamsOS();
 
 #endif /*GAMSOS_HPP_*/

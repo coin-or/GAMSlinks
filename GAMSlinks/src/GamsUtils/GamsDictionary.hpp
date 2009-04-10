@@ -20,7 +20,11 @@
 #endif
 #endif
 
-struct gcdRec;
+#ifndef GAMS_BUILD
+#define dctRec gcdRec
+#endif
+
+struct dctRec;
 struct gmoRec;
 
 class GamsBCH;
@@ -34,7 +38,7 @@ class GamsDictionary {
 	friend class GamsGDX;
 private:
 	struct gmoRec* gmo;
-	struct gcdRec* dict;
+	struct dctRec* dict;
 	
 	bool have_dictread;
 	bool dict_is_own;
@@ -48,7 +52,7 @@ public:
 	 * @param gmo_ A Gams Modeling object handler, can be NULL and set later by setGMO.
 	 * @param opt_ An Gams dictionary file handler. If NULL and setGCD is not called, an own one will be created.
 	 */
-	GamsDictionary(struct gmoRec* gmo_ = NULL, struct gcdRec* dict_ = NULL);
+	GamsDictionary(struct gmoRec* gmo_ = NULL, struct dctRec* dict_ = NULL);
 	
 	/** Destructor.
 	 */
@@ -61,7 +65,7 @@ public:
 	/** Sets a GCD handle to use.
 	 * If not set, an own gcd handle is created.
 	 */
-	void setGCD(struct gcdRec* gcd_);
+	void setGCD(struct dctRec* gcd_);
 	
 	/** Reads the GAMS dictionary.
 	 * @return True if successful, false otherwise.

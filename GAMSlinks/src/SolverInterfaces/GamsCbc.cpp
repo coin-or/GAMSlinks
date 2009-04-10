@@ -34,9 +34,11 @@
 #include <string>
 
 // GAMS
-extern "C" {
+#ifdef GAMS_BUILD
+#include "gmomcc.h"
+#else
 #include "gmocc.h"
-}
+#endif
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
 
@@ -54,9 +56,9 @@ GamsCbc::GamsCbc()
 : gmo(NULL), msghandler(NULL), model(NULL), cbc_argc(0), cbc_args(NULL)
 {
 #ifdef GAMS_BUILD
-	strcpy(cbc_message, "GAMS/CoinCbcD (CBC Library 2.2)\nwritten by J. Forrest\n");
+	strcpy(cbc_message, "GAMS/CoinCbcD (CBC Library 2.3pre)\nwritten by J. Forrest\n");
 #else
-	strcpy(cbc_message, "GAMS/CbcD (CBC Library 2.2)\nwritten by J. Forrest\n");
+	strcpy(cbc_message, "GAMS/CbcD (CBC Library 2.3pre)\nwritten by J. Forrest\n");
 #endif
 }
 
@@ -73,6 +75,10 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct gcdRec* gc
 	assert(gmo);
 	assert(!model);
 	
+	char msg[256];
+	if (!gmoGetReady(msg, sizeof(msg)))
+		return 1;
+	
 	options.setGMO(gmo);
 	if (opt) {
 		options.setOpt(opt);
@@ -80,9 +86,9 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct gcdRec* gc
 		char buffer[1024];
 		gmoNameOptFile(gmo, buffer);
 #ifdef GAMS_BUILD	
-		options.readOptionsFile("coincbcd", gmoOptFile(gmo) ? buffer : NULL);
+		options.readOptionsFile("coincbc", gmoOptFile(gmo) ? buffer : NULL);
 #else
-		options.readOptionsFile("cbcd",     gmoOptFile(gmo) ? buffer : NULL);
+		options.readOptionsFile("cbcd",    gmoOptFile(gmo) ? buffer : NULL);
 #endif
 	}
 	if (!options.isDefined("reslim"))  options.setDouble ("reslim",  gmoResLim(gmo));
@@ -150,7 +156,7 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct gcdRec* gc
 		return -1;
 	}
 
-	return 1;
+	return 0;
 }
 	
 //int GamsCbc::haveModifyProblem() {
@@ -211,7 +217,7 @@ int GamsCbc::callSolver() {
 	delete[] varlow;
 	delete[] varup;
 
-	return 1;
+	return 0;
 }
 
 bool GamsCbc::setupProblem(OsiSolverInterface& solver) {
@@ -1204,39 +1210,42 @@ bool GamsCbc::isLP() {
 	return true;
 }
 
-GamsCbc* createNewGamsCbc() {
+DllExport GamsCbc* STDCALL createNewGamsCbc() {
 	return new GamsCbc();
 }
 
-int cbcCallSolver(cbcRec_t *Cptr) {
+DllExport int STDCALL cbcCallSolver(cbcRec_t *Cptr) {
 	assert(Cptr != NULL);
 	return ((GamsCbc*)Cptr)->callSolver();
 }
 
-int cbcModifyProblem(cbcRec_t *Cptr) {
+DllExport int STDCALL cbcModifyProblem(cbcRec_t *Cptr) {
 	assert(Cptr != NULL);
 	return ((GamsCbc*)Cptr)->modifyProblem();
 }
 
-int cbcHaveModifyProblem(cbcRec_t *Cptr) {
+DllExport int STDCALL cbcHaveModifyProblem(cbcRec_t *Cptr) {
 	assert(Cptr != NULL);
 	return ((GamsCbc*)Cptr)->haveModifyProblem();
 }
 
-int cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr) {
+DllExport int STDCALL cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr) {
 	assert(Cptr != NULL);
-	if (Gptr)
-		gmoLogStatPChar(Gptr, ((GamsCbc*)Cptr)->getWelcomeMessage());
+	assert(Gptr != NULL);
+	char msg[256];
+	if (!gmoGetReady(msg, sizeof(msg)))
+		return 1;
+	gmoLogStatPChar(Gptr, ((GamsCbc*)Cptr)->getWelcomeMessage());
 	return ((GamsCbc*)Cptr)->readyAPI(Gptr, Optr, Dptr);
 }
 
-void cbcFree(cbcRec_t **Cptr) {
+DllExport void STDCALL cbcFree(cbcRec_t **Cptr) {
 	assert(Cptr != NULL);
 	delete (GamsCbc*)*Cptr;
 	*Cptr = NULL;
 }
 
-void cbcCreate(cbcRec_t **Cptr, char *msgBuf, int msgBufLen) {
+DllExport void STDCALL cbcCreate(cbcRec_t **Cptr, char *msgBuf, int msgBufLen) {
 	assert(Cptr != NULL);
 	*Cptr = (cbcRec_t*) new GamsCbc();
 	if (msgBufLen && msgBuf)

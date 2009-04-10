@@ -28,9 +28,11 @@
 #endif
 #endif
 
-extern "C" {
+#ifdef GAMS_BUILD
+#include "gmomcc.h"
+#else
 #include "gmocc.h"
-}
+#endif
 
 GamsMessageHandler::GamsMessageHandler(gmoHandle_t gmo_)
 : gmo(gmo_)

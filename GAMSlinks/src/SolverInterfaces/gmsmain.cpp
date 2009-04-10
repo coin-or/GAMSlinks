@@ -41,9 +41,7 @@
 #include <windows.h>
 #endif
 
-extern "C" {
 #include "gmocc.h"
-}
 
 int main(int argc, char** argv) {
 #ifdef HAVE_WINDOWS_H
@@ -125,13 +123,13 @@ int main(int argc, char** argv) {
 	
   bool ok = true;
 	
-  if (!solver->readyAPI(gmo, NULL, NULL)) {
+  if (solver->readyAPI(gmo, NULL, NULL) != 0) {
   	gmoLogStat(gmo, "There was an error in setting up " SOLVERNAME ".\n");
   	gmoSolveStatSet(gmo, SolveStat_SystemErr);
   	gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
   	ok = false;
   }
-  if (ok && !solver->callSolver()) {
+  if (ok && solver->callSolver() != 0) {
   	gmoLogStat(gmo, "There was an error in solving the model.\n");
   	gmoSolveStatSet(gmo, SolveStat_SystemErr);
   	gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);

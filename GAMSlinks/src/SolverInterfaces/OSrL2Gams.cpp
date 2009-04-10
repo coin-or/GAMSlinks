@@ -22,7 +22,11 @@
 #endif
 #endif
 
+#ifdef GAMS_BUILD
+#include "gmomcc.h"
+#else
 #include "gmocc.h"
+#endif
 
 OSrL2Gams::OSrL2Gams(gmoHandle_t gmo_)
 : gmo(gmo_)

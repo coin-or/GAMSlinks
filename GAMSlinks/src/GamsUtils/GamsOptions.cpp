@@ -48,10 +48,12 @@
 #endif
 #endif
 
-extern "C" {
+#ifdef GAMS_BUILD
+#include "gmomcc.h"
+#else
 #include "gmocc.h"
+#endif
 #include "optcc.h"
-}
 
 GamsOptions::GamsOptions(gmoHandle_t gmo_, optHandle_t opt_)
 : gmo(gmo_), optionshandle(opt_), opt_is_own(false)
@@ -98,8 +100,15 @@ bool GamsOptions::initOpt(const char* solvername) {
 
 void GamsOptions::setOpt(struct optRec* opt_) {
 	assert(!optionshandle);
-	opt_is_own = false;
+
+	char buffer[512];
+	if (!optGetReady(buffer, 512)) {
+		gmoLogStatPChar(gmo, "\n*** Could not load optionfile library: "); 
+		gmoLogStat(gmo, buffer);
+		return;
+	}
 	
+	opt_is_own = false;
 	optionshandle = opt_;
 }
 

@@ -22,9 +22,11 @@
 #include "CoinWarmStartBasis.hpp"
 #include "OsiSolverInterface.hpp"
 
-extern "C" {
+#ifdef GAMS_BUILD
+#include "gmomcc.h"
+#else
 #include "gmocc.h"
-}
+#endif
 
 bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 	switch (gmoSense(gmo)) {

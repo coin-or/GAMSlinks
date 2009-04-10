@@ -9,21 +9,20 @@
 #ifndef GAMSCBC_H_
 #define GAMSCBC_H_
 
+#include "GamsSolver.h"
+
 typedef void cbcRec_t;
-typedef struct gmoRec* gmoHandle_t;
-typedef struct optRec* optHandle_t;
-typedef struct gcdRec* gcdHandle_t;
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-  int    cbcCallSolver(cbcRec_t *Cptr);
-  int    cbcModifyProblem(cbcRec_t *Cptr);
-  int    cbcHaveModifyProblem(cbcRec_t *Cptr);
-  int    cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, gcdHandle_t Dptr);
-  void   cbcFree(cbcRec_t **Cptr);
-  void   cbcCreate(cbcRec_t **Cptr, char *msgBuf, int msgBufLen);
+	DllExport int  STDCALL cbcCallSolver(cbcRec_t *Cptr);
+	DllExport int  STDCALL cbcModifyProblem(cbcRec_t *Cptr);
+	DllExport int  STDCALL cbcHaveModifyProblem(cbcRec_t *Cptr);
+	DllExport int  STDCALL cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, dctHandle_t Dptr);
+	DllExport void STDCALL cbcFree(cbcRec_t **Cptr);
+	DllExport void STDCALL cbcCreate(cbcRec_t **Cptr, char *msgBuf, int msgBufLen);
 
 #if defined(__cplusplus)
 }
