@@ -54,11 +54,13 @@
 #include "smag.h"
 #include "GamsDictionary.hpp"
 #include "GamsHandlerSmag.hpp"
+#include "GamsMessageHandler.hpp"
 extern "C" {
 #include "gdxcc.h"
 }
 
 #include "CoinError.hpp"
+#include "ClpSimplex.hpp" // for passing in message handler
 
 extern "C" {
 #include "scip/scip.h"
@@ -199,11 +201,13 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
 
   SolveStatus solstatus;
   solstatus.colval=NULL;
+
+  GamsHandlerSmag gamshandler(prob);
+	GamsMessageHandler messagehandler(gamshandler);
   
   bool islp = !prob->gms.nbin && !prob->gms.numint && !prob->gms.nsos1 && !prob->gms.nsos2;
   
   if (!islp) { // if not just LP, do SCIP
-  	GamsHandlerSmag gamshandler(prob);
   	GamsDictionary dict(gamshandler);
   	
   	SCIP_MESSAGEHDLR* messagehdlr=NULL;
@@ -261,6 +265,14 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	if (mipstart)
   		SCIP_CALL( setupMIPStart(prob, scip, mip_vars) );
 
+  	if (strncmp(SCIPlpiGetSolverName(), "Clp", 3) == 0)
+  	{
+  		SCIP_LPI* lpi;
+  		SCIPgetLPI(scip, &lpi);
+  		if (lpi)
+  			((ClpSimplex*)SCIPlpiGetSolverPointer(lpi))->passInMessageHandler(&messagehandler);
+  	}
+
 //  	SCIP_CALL( SCIPprintOrigProblem(scip, NULL, "mps", TRUE) );
   	
   	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nStarting MIP solve...\n");
@@ -290,6 +302,10 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
 	double lpsolve_starttime=smagGetCPUTime(prob);
   if (solvelp) { // if we have an LP or got a mip feasible point and user did not disable fixed LP solve, solve (fixed) LP
   	SCIP_CALL( SCIPlpiCreate(&lpi, "gamsproblem", smagMinim(prob)==-1 ? SCIP_OBJSEN_MAXIMIZE : SCIP_OBJSEN_MINIMIZE) );
+  	if (strncmp(SCIPlpiGetSolverName(), "Clp", 3) == 0)
+  	{
+  		((ClpSimplex*)SCIPlpiGetSolverPointer(lpi))->passInMessageHandler(&messagehandler);
+  	}
 
   	if (islp) {
   		// here we allow =n= rows in order to get the lp11 test passed 
@@ -720,12 +736,7 @@ SCIP_RETCODE setupLP(smagHandle_t prob, SCIP_LPI* lpi, double* colval) {
 }
 
 SCIP_RETCODE setupLPParameters(smagHandle_t prob, SCIP_LPI* lpi) {
-	// if output to screen (lo=1) or stdout (lo=3), then we allow Clp output (which will go to stdout)
-	if (prob->logOption==1 || prob->logOption==3)
-		SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, TRUE);
-	else // otherwise we turn it "really" off (changed lpi_clp.cpp:2673 from 0 to -1)
-		SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, FALSE);
-
+	SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, TRUE);
 	SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPITLIM, prob->gms.itnlim);
 	SCIPlpiSetRealpar(lpi, SCIP_LPPAR_LPTILIM, prob->gms.reslim);
 
