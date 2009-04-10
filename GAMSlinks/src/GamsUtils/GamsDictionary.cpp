@@ -220,7 +220,7 @@ char* GamsDictionary::constructName(char* buffer, int bufLen, int symIndex, int*
     if (gcdUelLabel(dict, uelIndices[k], &quote, strIndexPtrs[k], GMS_UEL_IDENT_SIZE) == NULL)
     	return NULL;
 
-    if (' ' != quote) *buffer++ = quote;
+    if (' ' != quote) buffer[pos++] = quote;
     
     len = strlen(strIndexPtrs[k]);
     if (pos+len >= bufLen-1) {
