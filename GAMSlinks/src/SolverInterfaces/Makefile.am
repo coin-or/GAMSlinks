@@ -11,7 +11,7 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST     =
 DISTCLEANFILES =
 
-bin_PROGRAMS   =
+noinst_PROGRAMS             =
 lib_LTLIBRARIES             = libGamsCoin.la
 libGamsCoin_la_SOURCES      =
 libGamsCoin_la_LIBADD       = ../GamsUtils/libGamsUtils.la
@@ -77,7 +77,7 @@ if COIN_HAS_CPX
 endif
 
 if GAMSIO_IS_UNIX
-bin_PROGRAMS        += gmscbcux.out
+noinst_PROGRAMS     += gmscbcux.out
 gmscbcux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 gmscbcux_out_SOURCES = gmscbc.cpp
 gmscbcux_out_LDADD   = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
@@ -85,7 +85,7 @@ gamsinstallfiles    += gmscbcux.out gmscbcus.run install/gmscbcun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
-bin_PROGRAMS     += gmscbcnx
+noinst_PROGRAMS  += gmscbcnx
 gmscbcnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 gmscbcnx_SOURCES  = gmscbc.cpp
 gmscbcnx_LDADD    = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
@@ -126,7 +126,7 @@ libGamsCoin_la_LIBADD       += $(IPOPTOBJDIR)/src/Interfaces/libipopt.la `cat $(
 libGamsCoin_la_DEPENDENCIES += $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 
 if GAMSIO_IS_UNIX
-bin_PROGRAMS        += gmsipdux.out
+noinst_PROGRAMS     += gmsipdux.out
 gmsipdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 gmsipdux_out_SOURCES = gmsipd.cpp
 gmsipdux_out_LDADD   = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
@@ -134,7 +134,7 @@ gamsinstallfiles    += gmsipdux.out gmsipdus.run install/gmsipdun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
-bin_PROGRAMS     += gmsipdnx
+noinst_PROGRAMS  += gmsipdnx
 gmsipdnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 gmsipdnx_SOURCES  = gmsipd.cpp
 gmsipdnx_LDADD    = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
@@ -158,7 +158,7 @@ libGamsCoin_la_LIBADD       += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
 libGamsCoin_la_DEPENDENCIES += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
 
 if GAMSIO_IS_UNIX
-bin_PROGRAMS        += gmsbmdux.out
+noinst_PROGRAMS     += gmsbmdux.out
 gmsbmdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 gmsbmdux_out_SOURCES = gmsbmd.cpp
 gmsbmdux_out_LDADD   = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
@@ -166,7 +166,7 @@ gamsinstallfiles    += gmsbmdux.out gmsbmdus.run install/gmsbmdun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
-bin_PROGRAMS     += gmsbmdnx
+noinst_PROGRAMS  += gmsbmdnx
 gmsbmdnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 gmsbmdnx_SOURCES  = gmsbmd.cpp
 gmsbmdnx_LDADD    = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
@@ -241,7 +241,7 @@ endif
 endif
 
 if GAMSIO_IS_UNIX
-bin_PROGRAMS        += gmsosdux.out
+noinst_PROGRAMS     += gmsosdux.out
 gmsosdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 gmsosdux_out_SOURCES = gmsosd.cpp
 gmsosdux_out_LDADD   = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
@@ -249,7 +249,7 @@ gamsinstallfiles    += gmsosdux.out gmsosdus.run install/gmsosdun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
-bin_PROGRAMS     += gmsosdnx
+noinst_PROGRAMS  += gmsosdnx
 gmsosdnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 gmsosdnx_SOURCES  = gmsosd.cpp
 gmsosdnx_LDADD    = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
@@ -262,7 +262,7 @@ endif
 
 #ltdl need the GamsCoin.la present for preloading, so we need to install one for debug and static builds
 #on the other hand, for shared library builds, only no or the libGamsCoin.la from the lib dir can be used
-install-exec-local: install-binPROGRAMS install-libLTLIBRARIES
+install-exec-local: install-libLTLIBRARIES
 	mv libGamsCoin.la libGamsCoin.la.save
 	cp $(DESTDIR)$(libdir)/libGamsCoin.la libGamsCoin.la
 	zip gmscoin_.zip $(gamsinstallfiles) libGamsCoin.la
