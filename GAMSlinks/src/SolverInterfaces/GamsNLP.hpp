@@ -14,19 +14,20 @@
 #include "IpTNLP.hpp"
 
 struct gmoRec;
+class GamsMINLP;
 
 /** A TNLP for Ipopt that uses GMO to interface the problem formulation.
  */
 class GamsNLP : public Ipopt::TNLP {
+	friend class GamsMINLP;
 private:
 	struct gmoRec* gmo;
 
 	double timelimit;
 	long int domviollimit;
-	long int domviolations;
 	
-	int* iRow;
-	int* jCol;
+	int* iRowStart;
+	int* jCol;	
 	double* grad;
 
 public:
@@ -34,6 +35,7 @@ public:
 	double scaled_conviol_tol;
 	double unscaled_conviol_tol;
   double clockStart;
+	long int domviolations;
 
 	GamsNLP (struct gmoRec* gmo);
 

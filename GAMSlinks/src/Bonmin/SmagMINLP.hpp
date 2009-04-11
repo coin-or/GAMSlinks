@@ -26,7 +26,7 @@
 using namespace Ipopt;
 using namespace Bonmin;
 
-/** A TNLP for Ipopt that uses SMAG to interface the problem formulation.
+/** A TMINLP for Bonmin that uses SMAG to interface the problem formulation.
  */
 class SMAG_MINLP : public TMINLP {
 public:
@@ -39,12 +39,12 @@ public:
   virtual ~SMAG_MINLP();
 
   /** Method to return some info about the nlp */
-  virtual bool get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
-                            Index& nnz_h_lag, TNLP::IndexStyleEnum& index_style);
+  bool get_nlp_info(Ipopt::Index& n, Ipopt::Index& m, Ipopt::Index& nnz_jac_g,
+  		Ipopt::Index& nnz_h_lag, Ipopt::TNLP::IndexStyleEnum& Index_style);
 
   /** Method to return the bounds for my problem */
-  virtual bool get_bounds_info(Index n, Number* x_l, Number* x_u,
-                               Index m, Number* g_l, Number* g_u);
+  bool get_bounds_info(Ipopt::Index n, Ipopt::Number* x_l, Ipopt::Number* x_u,
+  		Ipopt::Index m, Ipopt::Number* g_l, Ipopt::Number* g_u);
 
   /** Pass the type of the variables (INTEGER, BINARY, CONTINUOUS) to the optimizer.
 	 * @param n size of var_types (has to be equal to the number of variables in the problem).

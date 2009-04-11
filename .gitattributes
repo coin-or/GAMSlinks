@@ -159,6 +159,9 @@ GAMSlinks/src/SCIP/install/gmssc_nt.dat -text
 GAMSlinks/src/SCIP/install/gmssc_un.dat -text
 GAMSlinks/src/SolverInterfaces/Gams2OSiL.cpp -text
 GAMSlinks/src/SolverInterfaces/Gams2OSiL.hpp -text
+GAMSlinks/src/SolverInterfaces/GamsBonmin.cpp -text
+GAMSlinks/src/SolverInterfaces/GamsBonmin.h -text
+GAMSlinks/src/SolverInterfaces/GamsBonmin.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsCbc.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsCbc.h -text
 GAMSlinks/src/SolverInterfaces/GamsCbc.hpp -text
@@ -167,6 +170,8 @@ GAMSlinks/src/SolverInterfaces/GamsIpopt.h -text
 GAMSlinks/src/SolverInterfaces/GamsIpopt.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsJournal.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsJournal.hpp -text
+GAMSlinks/src/SolverInterfaces/GamsMINLP.cpp -text
+GAMSlinks/src/SolverInterfaces/GamsMINLP.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsMessageHandler.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsMessageHandler.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsNLP.cpp -text
@@ -182,6 +187,9 @@ GAMSlinks/src/SolverInterfaces/Makefile.am -text
 GAMSlinks/src/SolverInterfaces/Makefile.in -text
 GAMSlinks/src/SolverInterfaces/OSrL2Gams.cpp -text
 GAMSlinks/src/SolverInterfaces/OSrL2Gams.hpp -text
+GAMSlinks/src/SolverInterfaces/gmsbmd.cpp -text
+GAMSlinks/src/SolverInterfaces/gmsbmdnt.cmd -text
+GAMSlinks/src/SolverInterfaces/gmsbmdus.run -text
 GAMSlinks/src/SolverInterfaces/gmscbc.cpp -text
 GAMSlinks/src/SolverInterfaces/gmscbcnt.cmd -text
 GAMSlinks/src/SolverInterfaces/gmscbcus.run -text
@@ -192,6 +200,8 @@ GAMSlinks/src/SolverInterfaces/gmsmain.cpp -text
 GAMSlinks/src/SolverInterfaces/gmsosd.cpp -text
 GAMSlinks/src/SolverInterfaces/gmsosdnt.cmd -text
 GAMSlinks/src/SolverInterfaces/gmsosdus.run -text
+GAMSlinks/src/SolverInterfaces/install/gmsbmdnt.dat -text
+GAMSlinks/src/SolverInterfaces/install/gmsbmdun.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmscbcnt.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmscbcun.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmsipdnt.dat -text

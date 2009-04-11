@@ -303,7 +303,7 @@ void solve_minlp(smagHandle_t prob) {
 			smagSetObjEst(prob, best_bound);
 		smagSetNodUsd(prob, bb.numNodes());
 
-		OsiTMINLPInterface osi_tminlp(*bonmin_setup.nonlinearSolver());
+		OsiTMINLPInterface& osi_tminlp(*bonmin_setup.nonlinearSolver());
 		if (bb.bestSolution()) {
 			char buf[100];
 			snprintf(buf, 100, "\nBonmin finished. Found feasible point. Objective function = %f.\n", bb.bestObj());

@@ -1,0 +1,24 @@
+*   special = yz : each decimal "bit" is a separate flag
+*              z : howExpected
+*                :   z = 0  ->   unexpected: treat as missing if not complete
+*                :   z = 1  ->     expected: warn if licensed and not complete
+*                :   z > 1  ->     expected: warn if not complete
+*             y  : howHidden
+*                :   y = 0  ->   not hidden
+*                :   y = 1  ->   should not be made default solver
+*                :   y > 1  ->   not shown as available
+*     for example, special = 20 is good for experimental stuff, as
+*     this will quietly ignore the solver if it isn't there and hide
+*     it from people who don't need to see it.
+
+
+* development stuff
+id		BONMIND
+full_name	GAMS/BONMIND
+license_id	FR
+capabilities	LP RMIP MIP NLP RMINLP DNLP MINLP QCP RMIQCP MIQCP
+file_type	112
+dictionary_file	0
+run_file	gmsbmdus.run
+exe_file	gmsbmdux.out
+special		2

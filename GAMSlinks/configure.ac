@@ -343,6 +343,10 @@ AM_CONDITIONAL([GAMSLINKS_BUILD_COUENNE],[test $gamslinks_build_couenne = 1])
 # In case this is a VPATH configuration we need to make sure that the
 # GAMS solver installation files are available in the VPATH directory.
 
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsbmdus.run)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsbmdnt.cmd)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsbmdun.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsbmdnt.dat)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/gmscbcus.run)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/gmscbcnt.cmd)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmscbcun.dat)

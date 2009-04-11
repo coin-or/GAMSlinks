@@ -38,8 +38,8 @@
 using namespace Ipopt;
 
 GamsNLP::GamsNLP (gmoHandle_t gmo_)
-: domviolations(0), iRow(NULL), jCol(NULL),
-  div_iter_tol(1E+20), scaled_conviol_tol(1E-8), unscaled_conviol_tol(1E-4)
+: iRowStart(NULL), jCol(NULL), grad(NULL),
+  div_iter_tol(1E+20), scaled_conviol_tol(1E-8), unscaled_conviol_tol(1E-4), domviolations(0)
 {
   gmo = gmo_;
   assert(gmo);
@@ -49,7 +49,7 @@ GamsNLP::GamsNLP (gmoHandle_t gmo_)
 }
 
 GamsNLP::~GamsNLP() {
-	delete[] iRow;
+	delete[] iRowStart;
 	delete[] jCol;
 	delete[] grad;
 }
@@ -264,27 +264,23 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
     assert(NULL != iRow);
     assert(NULL != jCol);
 
-    int*    rowstart  = new int[m+1];
+    delete[] iRowStart;
+    delete[] this->jCol;
+    iRowStart         = new int[m+1];
+    this->jCol        = new int[nele_jac];
     double* jacval    = new double[nele_jac];
     int*    nlflag    = new int[nele_jac];
-    gmoGetMatrixRow(gmo, rowstart, jCol, jacval, nlflag);
+    gmoGetMatrixRow(gmo, iRowStart, this->jCol, jacval, nlflag);
 
-    assert(rowstart[m] == nele_jac);
+    assert(iRowStart[m] == nele_jac);
     for (Index i = 0;  i < m;  ++i)
-    	for (int j = rowstart[i]; j < rowstart[i+1]; ++j)
+    	for (int j = iRowStart[i]; j < iRowStart[i+1]; ++j)
     		iRow[j] = i;
+    memcpy(jCol, this->jCol, nele_jac * sizeof(int));
     
-    delete[] rowstart;
     delete[] jacval;
     delete[] nlflag;
     
-    delete[] this->iRow;
-    delete[] this->jCol;
-    this->iRow = new int[nele_jac];
-    this->jCol = new int[nele_jac];
-    memcpy(this->iRow, iRow, nele_jac * sizeof(int));
-    memcpy(this->jCol, jCol, nele_jac * sizeof(int));
-
     delete[] grad;
     grad = new double[n];
 
@@ -292,7 +288,7 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
     assert(NULL != x);
     assert(NULL == iRow);
     assert(NULL == jCol);
-    assert(NULL != this->iRow);
+    assert(NULL != iRowStart);
     assert(NULL != this->jCol);
   	assert(NULL != grad);
   	
@@ -303,6 +299,7 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
   	double gx;
   	int nerror;
     int k = 0;
+    int next;
     
   	for (int rownr = 0; rownr < m; ++rownr) {
   		nerror = gmoEvalGrad(gmo, rownr, x, &val, grad, &gx);
@@ -316,9 +313,13 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
   			++domviolations;
         return false;
       }
-      
-      for (; k < nele_jac && this->iRow[k] == rownr; ++k)
+      assert(k == iRowStart[rownr]);
+      next = iRowStart[rownr+1];
+      for (; k < next; ++k)
       	values[k] = grad[this->jCol[k]];
+      
+//      for (; k < nele_jac && this->iRow[k] == rownr; ++k)
+//      	values[k] = grad[this->jCol[k]];
     }
     assert(k == nele_jac);
   }
@@ -527,8 +528,9 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
 			if (z_U[i] < gmoPinf(gmo)) colMarg[i] -= z_U[i];
 		}
 		
-		int* rowBasStat = new int[m];
-		int* rowIndic   = new int[m];
+		int* rowBasStat   = new int[m];
+		int* rowIndic     = new int[m];
+    double* negLambda = new double[m];
     for (Index i = 0;  i < m;  i++) {
 			rowBasStat[i] = Bstat_Super;
 			if (scaled_viol && fabs(scaled_viol[i]) > scaled_conviol_tol)
@@ -537,12 +539,9 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
 				rowIndic[i] = Cstat_NonOpt;
 			else
 				rowIndic[i] = Cstat_OK;
-    }
-    
-    double* negLambda = new double[m];
-    for (int i = 0; i < m; ++i)
     	negLambda[i] = -lambda[i];
-    
+    }
+        
   	gmoSetSolution8(gmo, x, colMarg, negLambda, g, colBasStat, colIndic, rowBasStat, rowIndic);
   	gmoSetHeadnTail(gmo, HobjVal, obj_value);
 

@@ -102,6 +102,19 @@ if test @gamslinks_build_bonmin@ = 1 ; then
   testlist[${#testlist[@]}]="--solver bonmin --suite mip user1=\"--MIPMCHECKS=0 rmip=bonmin\""
   testlist[${#testlist[@]}]="--solver bonmin --suite nlp"
   testlist[${#testlist[@]}]="--solver bonmin --suite qcp"
+
+  solvers="$solvers , BonminD"
+  skiplist="$skiplist skip('BonminD','semicon1')=yes;"
+  skiplist="$skiplist skip('BonminD','semiint1')=yes;"
+  skiplist="$skiplist skip('BonminD','sl4scon1')=yes;"
+  skiplist="$skiplist skip('BonminD','lp03')=yes;"
+  skiplist="$skiplist skip('BonminD','sl4lp03')=yes;"
+  skiplist="$skiplist skip('BonminD','lp10')=yes;"
+  skiplist="$skiplist skip('BonminD','sl4lp10')=yes;"
+  testlist[${#testlist[@]}]="--solver bonmind --suite lp"
+  testlist[${#testlist[@]}]="--solver bonmind --suite mip user1=\"--MIPMCHECKS=0 rmip=bonmind\""
+  testlist[${#testlist[@]}]="--solver bonmind --suite nlp"
+  testlist[${#testlist[@]}]="--solver bonmind --suite qcp"
 fi
 
 if test @gamslinks_build_osi@ = 1 ; then

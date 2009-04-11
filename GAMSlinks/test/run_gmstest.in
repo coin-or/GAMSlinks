@@ -93,6 +93,17 @@ if test @gamslinks_build_bonmin@ = 1 ; then
   SMP="$SMP SMP('Bonmin', 'QCP') = yes;"
   SMP="$SMP SMP('Bonmin', 'MIQCP') = yes;"
   SMP="$SMP SMP('Bonmin', 'RMIQCP') = yes;"
+
+  solvers="$solvers , 'BonminD'"
+  SMP="$SMP SMP('BonminD', 'LP') = yes;"
+#  SMP="$SMP SMP('BonminD', 'MIP') = yes;"
+  SMP="$SMP SMP('BonminD', 'RMIP') = yes;"
+#  SMP="$SMP SMP('BonminD', 'NLP') = yes;"
+  SMP="$SMP SMP('BonminD', 'MINLP') = yes;"
+  SMP="$SMP SMP('BonminD', 'RMINLP') = yes;"
+  SMP="$SMP SMP('BonminD', 'QCP') = yes;"
+  SMP="$SMP SMP('BonminD', 'MIQCP') = yes;"
+  SMP="$SMP SMP('BonminD', 'RMIQCP') = yes;"
 fi
 
 if test @gamslinks_build_scip@ = 1 ; then

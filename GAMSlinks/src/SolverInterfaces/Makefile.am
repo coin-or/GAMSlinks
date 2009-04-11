@@ -141,12 +141,13 @@ gmsipdnx_LDADD    = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
 gamsinstallfiles += gmsipdnx.exe gmsipdnt.cmd install/gmsipdnt.dat
 endif
 
-gamsinstallfiles += 
 EXTRA_DIST       += gmsipdnt.cmd gmsipdus.run install/gmsipdnt.dat install/gmsipdun.dat
 
 endif
 
 if GAMSLINKS_BUILD_BONMIN
+libGamsCoin_la_SOURCES += GamsBonmin.cpp GamsMINLP.cpp
+
 AM_CPPFLAGS += \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms` \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Interfaces` \
@@ -155,6 +156,24 @@ AM_CPPFLAGS += \
 
 libGamsCoin_la_LIBADD       += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
 libGamsCoin_la_DEPENDENCIES += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
+
+if GAMSIO_IS_UNIX
+bin_PROGRAMS        += gmsbmdux.out
+gmsbmdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+gmsbmdux_out_SOURCES = gmsbmd.cpp
+gmsbmdux_out_LDADD   = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
+gamsinstallfiles    += gmsbmdux.out gmsbmdus.run install/gmsbmdun.dat
+endif
+
+if GAMSIO_IS_WINDOWS
+bin_PROGRAMS     += gmsbmdnx
+gmsbmdnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+gmsbmdnx_SOURCES  = gmsbmd.cpp
+gmsbmdnx_LDADD    = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
+gamsinstallfiles += gmsbmdnx.exe gmsbmdnt.cmd install/gmsbmdnt.dat
+endif
+
+EXTRA_DIST       += gmsbmdnt.cmd gmsbmdus.run install/gmsbmdnt.dat install/gmsbmdun.dat
 
 endif
 
