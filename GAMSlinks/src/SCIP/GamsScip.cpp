@@ -204,6 +204,7 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
 
   GamsHandlerSmag gamshandler(prob);
 	GamsMessageHandler messagehandler(gamshandler);
+	messagehandler.setLogLevel(0);
   
   bool islp = !prob->gms.nbin && !prob->gms.numint && !prob->gms.nsos1 && !prob->gms.nsos2;
   
@@ -270,7 +271,9 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   		SCIP_LPI* lpi;
   		SCIPgetLPI(scip, &lpi);
   		if (lpi)
+  		{
   			((ClpSimplex*)SCIPlpiGetSolverPointer(lpi))->passInMessageHandler(&messagehandler);
+  		}
   	}
 
 //  	SCIP_CALL( SCIPprintOrigProblem(scip, NULL, "mps", TRUE) );

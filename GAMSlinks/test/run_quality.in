@@ -111,6 +111,7 @@ if test @gamslinks_build_bonmin@ = 1 ; then
   skiplist="$skiplist skip('BonminD','sl4lp03')=yes;"
   skiplist="$skiplist skip('BonminD','lp10')=yes;"
   skiplist="$skiplist skip('BonminD','sl4lp10')=yes;"
+  skiplist="$skiplist skip('BonminD','lp13')=yes;"
   testlist[${#testlist[@]}]="--solver bonmind --suite lp"
   testlist[${#testlist[@]}]="--solver bonmind --suite mip user1=\"--MIPMCHECKS=0 rmip=bonmind\""
   testlist[${#testlist[@]}]="--solver bonmind --suite nlp"
