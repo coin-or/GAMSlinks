@@ -125,14 +125,14 @@ int main(int argc, char** argv) {
 	
   if (solver->readyAPI(gmo, NULL, NULL) != 0) {
   	gmoLogStat(gmo, "There was an error in setting up " SOLVERNAME ".\n");
-  	gmoSolveStatSet(gmo, SolveStat_SystemErr);
-  	gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+//  	gmoSolveStatSet(gmo, SolveStat_SystemErr);
+//  	gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
   	ok = false;
   }
   if (ok && solver->callSolver() != 0) {
   	gmoLogStat(gmo, "There was an error in solving the model.\n");
-  	gmoSolveStatSet(gmo, SolveStat_SystemErr);
-  	gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+//  	gmoSolveStatSet(gmo, SolveStat_SystemErr);
+//  	gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
   	ok = false;
   }
 	gmoUnloadSolutionGms(gmo);

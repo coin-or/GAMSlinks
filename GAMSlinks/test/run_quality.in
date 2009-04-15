@@ -92,8 +92,6 @@ fi
 
 if test @gamslinks_build_bonmin@ = 1 ; then
   solvers="$solvers , Bonmin"
-  skiplist="$skiplist skip('Bonmin','semicon1')=yes;"
-  skiplist="$skiplist skip('Bonmin','sl4scon1')=yes;"
   skiplist="$skiplist skip('Bonmin','lp03')=yes;"
   skiplist="$skiplist skip('Bonmin','sl4lp03')=yes;"
   skiplist="$skiplist skip('Bonmin','lp10')=yes;"
@@ -104,9 +102,6 @@ if test @gamslinks_build_bonmin@ = 1 ; then
   testlist[${#testlist[@]}]="--solver bonmin --suite qcp"
 
   solvers="$solvers , BonminD"
-  skiplist="$skiplist skip('BonminD','semicon1')=yes;"
-  skiplist="$skiplist skip('BonminD','semiint1')=yes;"
-  skiplist="$skiplist skip('BonminD','sl4scon1')=yes;"
   skiplist="$skiplist skip('BonminD','lp03')=yes;"
   skiplist="$skiplist skip('BonminD','sl4lp03')=yes;"
   skiplist="$skiplist skip('BonminD','lp10')=yes;"

@@ -116,12 +116,16 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec*
  	
  	if (!gmoN(gmo)) {
  		gmoLogStat(gmo, "Error: Bonmin requires variables.");
+ 		gmoSolveStatSet(gmo, SolveStat_Capability);
+ 		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
  		return 1;
  	}
 
  	for (int i = 0; i < gmoN(gmo); ++i)
 		if (gmoGetVarTypeOne(gmo, i) == var_SC || gmoGetVarTypeOne(gmo, i) == var_SI) {
 			gmoLogStat(gmo, "Error: Semicontinuous and semiinteger variables not supported by Bonmin.");
+	 		gmoSolveStatSet(gmo, SolveStat_Capability);
+	 		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 			return 1;
 		}
  
