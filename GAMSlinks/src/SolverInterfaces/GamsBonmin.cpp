@@ -125,8 +125,6 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec*
 			return 1;
 		}
  
-  minlp = new GamsMINLP(gmo);
-
 	bonmin_setup = new BonminSetup();
 
 	// instead of initializeOptionsAndJournalist we do it our own way, so we can use the SmagJournal
@@ -173,8 +171,8 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec*
   
 	// Change some options
 	bonmin_setup->options()->SetNumericValue("bound_relax_factor", 0, true, true);
-	bonmin_setup->options()->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);
-	bonmin_setup->options()->SetNumericValue("nlp_upper_bound_inf", gmoPinf(gmo), false, true);
+//	bonmin_setup->options()->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);
+//	bonmin_setup->options()->SetNumericValue("nlp_upper_bound_inf", gmoPinf(gmo), false, true);
 	if (gmoUseCutOff(gmo))
 		bonmin_setup->options()->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == Obj_Min ? gmoCutOff(gmo) : -gmoCutOff(gmo), true, true);
 	bonmin_setup->options()->SetNumericValue("bonmin.allowable_gap", gmoOptCA(gmo), true, true);
@@ -227,6 +225,14 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec*
 		}
 	}
 #endif
+	
+	double ipoptinf;
+	bonmin_setup->options()->GetNumericValue("nlp_lower_bound_inf", ipoptinf, "");
+	gmoMinfSet(gmo, ipoptinf);
+	bonmin_setup->options()->GetNumericValue("nlp_upper_bound_inf", ipoptinf, "");
+	gmoPinfSet(gmo, ipoptinf);
+
+  minlp = new GamsMINLP(gmo);
 
 	bonmin_setup->options()->GetNumericValue("diverging_iterates_tol", minlp->nlp->div_iter_tol, "");
 //	// or should we also check the tolerance for acceptable points?

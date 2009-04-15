@@ -103,14 +103,11 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* 
 	if (!ipopt->Jnlst()->AddJournal(jrnl))
 		gmoLogStat(gmo, "Failed to register GamsJournal for IPOPT output.");
 
-	SmartPtr<GamsNLP> nlp_ = new GamsNLP(gmo);
-	nlp = GetRawPtr(nlp_);
- 	
   ipopt->Options()->SetNumericValue("bound_relax_factor", 0, true, true);
 	ipopt->Options()->SetIntegerValue("max_iter", gmoIterLim(gmo), true, true);
   ipopt->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
- 	ipopt->Options()->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);
- 	ipopt->Options()->SetNumericValue("nlp_upper_bound_inf", gmoPinf(gmo), false, true);
+// 	ipopt->Options()->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);
+// 	ipopt->Options()->SetNumericValue("nlp_upper_bound_inf", gmoPinf(gmo), false, true);
  	// if we have linear rows and a quadratic objective, then the hessian of the Lag.func. is constant, and Ipopt can make use of this
  	if (gmoNLM(gmo) == 0 && (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp))
  		ipopt->Options()->SetStringValue("hessian_constant", "yes", true, true);
@@ -149,6 +146,15 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* 
 	} else
 		ipopt->Initialize("");
 	
+	double ipoptinf;
+	ipopt->Options()->GetNumericValue("nlp_lower_bound_inf", ipoptinf, "");
+	gmoMinfSet(gmo, ipoptinf);
+	ipopt->Options()->GetNumericValue("nlp_upper_bound_inf", ipoptinf, "");
+	gmoPinfSet(gmo, ipoptinf);
+
+	SmartPtr<GamsNLP> nlp_ = new GamsNLP(gmo);
+	nlp = GetRawPtr(nlp_);
+
 	ipopt->Options()->GetNumericValue("diverging_iterates_tol", nlp_->div_iter_tol, "");
 	// or should we also check the tolerance for acceptable points?
 	ipopt->Options()->GetNumericValue("tol", nlp_->scaled_conviol_tol, "");
