@@ -13,6 +13,8 @@
 
 #include "GamsNLP.hpp"
 class GamsBonmin;
+class GamsCouenne;
+class GamsCouenneSetup;
 
 struct gmoRec;
 
@@ -22,9 +24,13 @@ struct gmoRec;
  */
 class GamsMINLP : public Bonmin::TMINLP {
 	friend class GamsBonmin;
+	friend class GamsCouenne;
+	friend class GamsCouenneSetup;
 private:
 	struct gmoRec* gmo;
   double isMin;
+  
+  bool in_couenne;
 
 	Bonmin::TMINLP::SosInfo sosinfo;
 	Bonmin::TMINLP::BranchingInfo branchinginfo;

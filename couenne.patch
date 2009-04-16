@@ -1,0 +1,20 @@
+Index: Couenne/src/problem/CouenneProblem.hpp
+===================================================================
+--- Couenne/src/problem/CouenneProblem.hpp	(revision 107)
++++ Couenne/src/problem/CouenneProblem.hpp	(working copy)
+@@ -523,13 +523,13 @@
+   void flattenMul (expression *mul, 
+ 		   CouNumber &coe, 
+ 		   std::map <int, CouNumber> &indices);
+-
++public:
+   /// clear all spurious variables pointers not referring to the variables_ vector
+   void realign ();
+ 
+   /// fill dependence_ structure
+   void fillDependence (Bonmin::BabSetupBase *base);
+-
++protected:
+   /// fill freeIntegers_ array
+   void fillIntegerRank () const;
+ 

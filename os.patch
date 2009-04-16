@@ -1,7 +1,7 @@
 Index: OS/configure
 ===================================================================
---- OS/configure	(Revision 2506)
-+++ OS/configure	(Arbeitskopie)
+--- OS/configure	(revision 2506)
++++ OS/configure	(working copy)
 @@ -24272,54 +24272,13 @@
  echo "$as_me:$LINENO: result: $coin_has_ipopt" >&5
  echo "${ECHO_T}$coin_has_ipopt" >&6
@@ -55,29 +55,32 @@ Index: OS/configure
 -
 -if test $coin_has_couenne != unavailable &&
 -                test $coin_has_couenne != skipping; then
-+if 0; then
++if test 0 == 1; then
    COIN_HAS_COUENNE_TRUE=
    COIN_HAS_COUENNE_FALSE='#'
  else
-@@ -24327,9 +24286,11 @@
+@@ -24327,9 +24286,14 @@
    COIN_HAS_COUENNE_FALSE=
  fi
  
 -echo "$as_me:$LINENO: result: $coin_has_couenne" >&5
 -echo "${ECHO_T}$coin_has_couenne" >&6
++if test 0 == 1 ; then
  
 +cat >>confdefs.h <<\_ACEOF
-+#define COIN_HAS_COUENNE 0
++#define COIN_HAS_COUENNE
 +_ACEOF
 +
++fi
++coin_has_couenne=unavailable
  echo "$as_me:$LINENO: checking for COIN project Bonmin" >&5
  echo $ECHO_N "checking for COIN project Bonmin... $ECHO_C" >&6
  
 Index: OS/configure.ac
 ===================================================================
---- OS/configure.ac	(Revision 2506)
-+++ OS/configure.ac	(Arbeitskopie)
-@@ -107,7 +107,12 @@
+--- OS/configure.ac	(revision 2506)
++++ OS/configure.ac	(working copy)
+@@ -107,7 +107,15 @@
  AC_COIN_HAS_PROJECT(DyLP)
  AC_COIN_HAS_PROJECT(Vol)
  AC_COIN_HAS_PROJECT(Ipopt)
@@ -86,8 +89,11 @@ Index: OS/configure.ac
 +AC_SUBST(COUENNESRCDIR)
 +AC_SUBST(COUENNEOBJDIR)
 +AC_SUBST(COUENNEDOCDIR)
-+AM_CONDITIONAL(COIN_HAS_COUENNE, 0)
-+AC_DEFINE(COIN_HAS_COUENNE, [0], [Define to 1 if the Couenne package is used])
++AM_CONDITIONAL(COIN_HAS_COUENNE, test 0 == 1)
++if test 0 == 1 ; then
++  AC_DEFINE(COIN_HAS_COUENNE, [], [Define to 1 if the Couenne package is used])
++fi
++coin_has_couenne=unavailable
  AC_COIN_HAS_PROJECT(Bonmin)
  AC_COIN_HAS_PROJECT(cppad)
  

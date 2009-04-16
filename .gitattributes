@@ -198,6 +198,9 @@ GAMSlinks/src/SolverInterfaces/gmsbmdus.run -text
 GAMSlinks/src/SolverInterfaces/gmscbc.cpp -text
 GAMSlinks/src/SolverInterfaces/gmscbcnt.cmd -text
 GAMSlinks/src/SolverInterfaces/gmscbcus.run -text
+GAMSlinks/src/SolverInterfaces/gmscou.cpp -text
+GAMSlinks/src/SolverInterfaces/gmscount.cmd -text
+GAMSlinks/src/SolverInterfaces/gmscouus.run -text
 GAMSlinks/src/SolverInterfaces/gmsipd.cpp -text
 GAMSlinks/src/SolverInterfaces/gmsipdnt.cmd -text
 GAMSlinks/src/SolverInterfaces/gmsipdus.run -text
@@ -209,6 +212,8 @@ GAMSlinks/src/SolverInterfaces/install/gmsbmdnt.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmsbmdun.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmscbcnt.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmscbcun.dat -text
+GAMSlinks/src/SolverInterfaces/install/gmscount.dat -text
+GAMSlinks/src/SolverInterfaces/install/gmscouun.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmsipdnt.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmsipdun.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmsosdnt.dat -text
@@ -252,6 +257,7 @@ ThirdParty/SCIP/m4/ac_coin_scip.m4 -text
 /config.sub -text
 /configure -text
 /configure.ac -text
+/couenne.patch -text
 /cppad.patch -text
 /depcomp -text
 doxydoc/doxygen.conf -text

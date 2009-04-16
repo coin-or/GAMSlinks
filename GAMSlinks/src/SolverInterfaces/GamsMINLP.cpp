@@ -20,7 +20,7 @@ using namespace Bonmin;
 
 // constructor
 GamsMINLP::	GamsMINLP(struct gmoRec* gmo_)
-: gmo(gmo_), hess_iRow(NULL), hess_jCol(NULL)
+: gmo(gmo_), in_couenne(false), hess_iRow(NULL), hess_jCol(NULL)
 {
 	assert(gmo);
 	switch (gmoSense(gmo)) {
@@ -272,7 +272,7 @@ void GamsMINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const Nu
   switch (status) {
   	case TMINLP::SUCCESS: {
     	if (x) {
-    		if (gmoOptCA(gmo) == 0 && gmoOptCR(gmo) == 0 && gmoNLNZ(gmo) == 0) // report optimal if optcr=optca=0 and model is a mip
+    		if (gmoOptCA(gmo) == 0 && gmoOptCR(gmo) == 0 && (in_couenne || gmoNLNZ(gmo) == 0)) // report optimal if optcr=optca=0 and we are running in couenne or model is a mip
     			model_status = ModelStat_OptimalGlobal; // optimal
     		else
     			model_status = ModelStat_OptimalLocal; // integer feasible solution

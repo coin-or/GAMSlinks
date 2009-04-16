@@ -360,6 +360,9 @@ int GamsBonmin::callSolver() {
 			gmoLogStat(gmo, "\nBonmin finished. No feasible point found.");
 			gmoSolveStatSet(gmo, minlp->solver_status);
 			gmoModelStatSet(gmo, minlp->model_status);
+			gmoSetHeadnTail(gmo, Hiterused, bb.iterationCount());
+			gmoSetHeadnTail(gmo, HdomUsed,  minlp->nlp->domviolations);
+			gmoSetHeadnTail(gmo, HresUsed,  gmoTimeDiffStart(gmo) - minlp->nlp->clockStart);
 		}
 
 		gmoLogStat(gmo, "");

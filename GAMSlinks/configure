@@ -28193,6 +28193,26 @@ fi
 
 
 if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/gmscouus.run"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/gmscount.cmd"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/install/gmscouun.dat"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/install/gmscount.dat"
+fi
+
+
+if test $coin_vpath_config = yes; then
   coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/gmsipdus.run"
 fi
 

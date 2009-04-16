@@ -185,6 +185,51 @@ libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 endif
 
+if GAMSLINKS_BUILD_COUENNE
+libGamsCoin_la_SOURCES += GamsCouenne.cpp GamsCouenneSetup.cpp
+
+AM_CPPFLAGS += \
+  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms/OaGenerators` \
+  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms/Branching` \
+  -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglLandP` \
+	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src/bound_tightening` \
+	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src/branch` \
+	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src/convex` \
+	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src/disjunctive` \
+	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src/expression` \
+  -I`$(CYGPATH_W) $(COUENNESRCDIR)/src/expression/operators` \
+  -I`$(CYGPATH_W) $(COUENNESRCDIR)/src/expression/simplify` \
+	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src/main` \
+	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src/problem` \
+	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src/readnl` \
+	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src/standardize` \
+	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src/util` \
+	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src` \
+	-I`$(CYGPATH_W) $(COUENNEOBJDIR)/inc`
+	
+libGamsCoin_la_LIBADD       += $(COUENNEOBJDIR)/src/libCouenne.la
+libGamsCoin_la_DEPENDENCIES += $(COUENNEOBJDIR)/src/libCouenne.la
+
+if GAMSIO_IS_UNIX
+noinst_PROGRAMS     += gmscouux.out
+gmscouux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+gmscouux_out_SOURCES = gmscou.cpp
+gmscouux_out_LDADD   = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
+gamsinstallfiles    += gmscouux.out gmscouus.run install/gmscouun.dat
+endif
+
+if GAMSIO_IS_WINDOWS
+noinst_PROGRAMS  += gmscounx
+gmscounx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+gmscounx_SOURCES  = gmscou.cpp
+gmscounx_LDADD    = $(GAMSIO_OBJDIR)/libGamsGMO.la $(LIBLTDLOBJDIR)/libltdlc.la
+gamsinstallfiles += gmscounx.exe gmscount.cmd install/gmscount.dat
+endif
+
+EXTRA_DIST       += gmscount.cmd gmscouus.run install/gmscount.dat install/gmscouun.dat
+
+endif
+
 if GAMSLINKS_BUILD_OS
 libGamsCoin_la_SOURCES += GamsOS.cpp Gams2OSiL.cpp OSrL2Gams.cpp
 
