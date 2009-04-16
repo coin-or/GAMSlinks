@@ -1,0 +1,93 @@
+Index: OS/configure
+===================================================================
+--- OS/configure	(Revision 2506)
++++ OS/configure	(Arbeitskopie)
+@@ -24272,54 +24272,13 @@
+ echo "$as_me:$LINENO: result: $coin_has_ipopt" >&5
+ echo "${ECHO_T}$coin_has_ipopt" >&6
+ 
+-echo "$as_me:$LINENO: checking for COIN project Couenne" >&5
+-echo $ECHO_N "checking for COIN project Couenne... $ECHO_C" >&6
++#AC_COIN_HAS_PROJECT(Couenne)
+ 
+-# First check, if the sub-project is actually available (ToDo: allow
+-# other locations)
+ 
+-coin_has_couenne=unavailable
+-if test x"$COIN_SKIP_PROJECTS" != x; then
+-  for dir in $COIN_SKIP_PROJECTS; do
+-    if test $dir = Couenne; then
+-      coin_has_couenne=skipping
+-    fi
+-  done
+-fi
+ 
+-if test $coin_has_couenne != skipping; then
+-  if test $PACKAGE_TARNAME = couenne; then
+-    coin_has_couenne=.
+-  else
+-    if test -d $srcdir/../Couenne; then
+-      coin_has_couenne=../Couenne
+-    fi
+-  fi
+-fi
+ 
+-if test $coin_has_couenne != unavailable &&
+-   test $coin_has_couenne != skipping; then
+-  # Set the #define if the component is available
+ 
+-cat >>confdefs.h <<\_ACEOF
+-#define COIN_HAS_COUENNE 1
+-_ACEOF
+-
+-
+-  # Set the variables for source and object code location
+-
+-  COUENNESRCDIR=`cd $srcdir/$coin_has_couenne; pwd`
+-
+-  COUENNEOBJDIR=`pwd`/$coin_has_couenne
+-
+-  COUENNEDOCDIR=$abs_lib_dir/../share/doc/coin/Couenne
+-fi
+-
+-  # Define the Makefile conditional
+-
+-
+-if test $coin_has_couenne != unavailable &&
+-                test $coin_has_couenne != skipping; then
++if 0; then
+   COIN_HAS_COUENNE_TRUE=
+   COIN_HAS_COUENNE_FALSE='#'
+ else
+@@ -24327,9 +24286,11 @@
+   COIN_HAS_COUENNE_FALSE=
+ fi
+ 
+-echo "$as_me:$LINENO: result: $coin_has_couenne" >&5
+-echo "${ECHO_T}$coin_has_couenne" >&6
+ 
++cat >>confdefs.h <<\_ACEOF
++#define COIN_HAS_COUENNE 0
++_ACEOF
++
+ echo "$as_me:$LINENO: checking for COIN project Bonmin" >&5
+ echo $ECHO_N "checking for COIN project Bonmin... $ECHO_C" >&6
+ 
+Index: OS/configure.ac
+===================================================================
+--- OS/configure.ac	(Revision 2506)
++++ OS/configure.ac	(Arbeitskopie)
+@@ -107,7 +107,12 @@
+ AC_COIN_HAS_PROJECT(DyLP)
+ AC_COIN_HAS_PROJECT(Vol)
+ AC_COIN_HAS_PROJECT(Ipopt)
+-AC_COIN_HAS_PROJECT(Couenne)
++#AC_COIN_HAS_PROJECT(Couenne)
++AC_SUBST(COUENNESRCDIR)
++AC_SUBST(COUENNEOBJDIR)
++AC_SUBST(COUENNEDOCDIR)
++AM_CONDITIONAL(COIN_HAS_COUENNE, 0)
++AC_DEFINE(COIN_HAS_COUENNE, [0], [Define to 1 if the Couenne package is used])
+ AC_COIN_HAS_PROJECT(Bonmin)
+ AC_COIN_HAS_PROJECT(cppad)
+ 

@@ -28,6 +28,10 @@
 #endif
 #endif
 
+#ifdef COIN_HAS_COUENNE
+#undef COIN_HAS_COUENNE
+#endif
+
 #include <iostream>
 #include <fstream>
 
