@@ -37,9 +37,47 @@
 #include "CglLandP.hpp"
 #include "CglRedSplit.hpp"
 
+// to be sure to get (or not get) HAVE_M??? and HAVE_PARDISO defined
+#include "IpoptConfig.h"
+
+extern "C" {
+#ifndef HAVE_MA27
+#define HAVE_HSL_LOADER
+#else
+# ifndef HAVE_MA28
+# define HAVE_HSL_LOADER
+# else
+#  ifndef HAVE_MA57
+#  define HAVE_HSL_LOADER
+#  else
+#   ifndef HAVE_MC19
+#   define HAVE_HSL_LOADER
+#   endif
+#  endif
+# endif
+#endif
+#ifdef HAVE_HSL_LOADER
+#include "HSLLoader.h"
+#endif
+#ifndef HAVE_PARDISO
+#include "PardisoLoader.h"
+#endif
+}
+
 #include "GamsMINLP.hpp"
 #include "GamsMessageHandler.hpp"
-  
+
+// GAMS
+#ifdef GAMS_BUILD
+#include "gmomcc.h"
+#else
+#include "gmocc.h"
+#endif
+
+using namespace Bonmin;
+using namespace Ipopt;
+
+
 GamsCouenneSetup::~GamsCouenneSetup(){
   //if (CouennePtr_)
   //delete CouennePtr_;

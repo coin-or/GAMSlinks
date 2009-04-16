@@ -246,6 +246,7 @@ ThirdParty/SCIP/config_scip.h.in -text
 ThirdParty/SCIP/configure -text
 ThirdParty/SCIP/configure.ac -text
 ThirdParty/SCIP/m4/ac_coin_scip.m4 -text
+/clp.patch -text
 /compile -text
 /config.guess -text
 /config.sub -text
@@ -274,5 +275,4 @@ libltdl/missing -text
 /ltmain.sh -text
 /missing -text
 /os.patch -text
-/osiglpk.patch -text
 /osispx.patch -text
