@@ -258,7 +258,6 @@ ThirdParty/SCIP/m4/ac_coin_scip.m4 -text
 /configure -text
 /configure.ac -text
 /couenne.patch -text
-/cppad.patch -text
 /depcomp -text
 doxydoc/doxygen.conf -text
 /install-sh -text
