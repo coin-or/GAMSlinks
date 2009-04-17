@@ -15,6 +15,7 @@
 
 class GamsMessageHandler;
 class GamsIpopt;
+class GamsCbc;
 namespace Bonmin {
 	class BonminSetup;
 	class OsiTMINLPInterface;
@@ -30,11 +31,13 @@ private:
 	Ipopt::SmartPtr<GamsMINLP> minlp;
 	Bonmin::BonminSetup*   bonmin_setup;
 	GamsIpopt*             gamsipopt;
+	GamsCbc*               gamscbc;
 
 	void writeSolution(Bonmin::OsiTMINLPInterface& osi_tminlp, int itercount);
 	void writeSolutionNoDual(Bonmin::OsiTMINLPInterface& osi_tminlp, int itercount);
 	
 	bool isNLP();
+	bool isMIP();
 
 public:
 	GamsBonmin();

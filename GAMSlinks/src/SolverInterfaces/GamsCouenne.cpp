@@ -10,6 +10,7 @@
 #include "GamsCouenne.h"
 #include "GamsMINLP.hpp"
 #include "GamsCouenneSetup.hpp"
+#include "GamsCbc.hpp"
 
 #include "BonCbc.hpp"
 
@@ -45,7 +46,7 @@ using namespace Ipopt;
 using namespace std;
 
 GamsCouenne::GamsCouenne()
-: gmo(NULL), couenne_setup(NULL)
+: gmo(NULL), couenne_setup(NULL), gamscbc(NULL)
 {
 #ifdef GAMS_BUILD
 	strcpy(couenne_message, "GAMS/CoinCouenne (Couenne Library 0.1)\nwritten by P. Belotti\n");
@@ -56,6 +57,7 @@ GamsCouenne::GamsCouenne()
 
 GamsCouenne::~GamsCouenne() {
 	delete couenne_setup;
+	delete gamscbc;
 }
 
 int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* gcd) {
@@ -76,6 +78,12 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec
 	gmoObjStyleSet(gmo, ObjType_Fun);
 	gmoObjReformSet(gmo, 1);
  	gmoIndexBaseSet(gmo, 0);
+
+ 	if (isMIP()) {
+ 		gmoLogStat(gmo, "Problem is linear. Passing over to Cbc.");
+ 		gamscbc = new GamsCbc();
+ 		return gamscbc->readyAPI(gmo, opt, gcd);
+ 	}
  	
  	if (!gmoN(gmo)) {
  		gmoLogStat(gmo, "Error: Bonmin requires variables.");
@@ -99,6 +107,13 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec
 }
 
 int GamsCouenne::callSolver() {
+	assert(gmo);
+	
+ 	if (isMIP()) {
+ 		assert(gamscbc);
+ 		return gamscbc->callSolver();
+ 	}
+	
 	assert(couenne_setup);
 	
 	try {
@@ -185,6 +200,10 @@ int GamsCouenne::callSolver() {
 	}
 	
 	return 0;
+}
+
+bool GamsCouenne::isMIP() {
+	return !gmoNLNZ(gmo) && !gmoObjNLNZ(gmo);
 }
 
 DllExport GamsCouenne* STDCALL createNewGamsCouenne() {

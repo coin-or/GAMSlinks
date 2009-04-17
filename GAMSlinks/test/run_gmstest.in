@@ -96,14 +96,27 @@ if test @gamslinks_build_bonmin@ = 1 ; then
 
   solvers="$solvers , 'BonminD'"
   SMP="$SMP SMP('BonminD', 'LP') = yes;"
-#  SMP="$SMP SMP('BonminD', 'MIP') = yes;"
+  SMP="$SMP SMP('BonminD', 'MIP') = yes;"
   SMP="$SMP SMP('BonminD', 'RMIP') = yes;"
-#  SMP="$SMP SMP('BonminD', 'NLP') = yes;"
+  SMP="$SMP SMP('BonminD', 'NLP') = yes;"
   SMP="$SMP SMP('BonminD', 'MINLP') = yes;"
   SMP="$SMP SMP('BonminD', 'RMINLP') = yes;"
   SMP="$SMP SMP('BonminD', 'QCP') = yes;"
   SMP="$SMP SMP('BonminD', 'MIQCP') = yes;"
   SMP="$SMP SMP('BonminD', 'RMIQCP') = yes;"
+fi
+
+if test @gamslinks_build_couenne@ = 1 ; then
+  solvers="$solvers , 'Couenne'"
+  SMP="$SMP SMP('Couenne', 'LP') = yes;"
+  SMP="$SMP SMP('Couenne', 'MIP') = yes;"
+  SMP="$SMP SMP('Couenne', 'RMIP') = yes;"
+  SMP="$SMP SMP('Couenne', 'NLP') = yes;"
+  SMP="$SMP SMP('Couenne', 'MINLP') = yes;"
+  SMP="$SMP SMP('Couenne', 'RMINLP') = yes;"
+  SMP="$SMP SMP('Couenne', 'QCP') = yes;"
+  SMP="$SMP SMP('Couenne', 'MIQCP') = yes;"
+  SMP="$SMP SMP('Couenne', 'RMIQCP') = yes;"
 fi
 
 if test @gamslinks_build_scip@ = 1 ; then

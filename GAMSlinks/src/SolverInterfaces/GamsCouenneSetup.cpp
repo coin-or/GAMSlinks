@@ -186,27 +186,16 @@ bool GamsCouenneSetup::InitializeCouenne(SmartPtr<GamsMINLP> minlp) {
 //	bonmin_setup.options()->GetNumericValue("tol", mysmagminlp->scaled_conviol_tol, "");
 //	bonmin_setup.options()->GetNumericValue("constr_viol_tol", mysmagminlp->unscaled_conviol_tol, "");
 
-	bool hessian_is_approx = false;
-	std::string parvalue;
-	options()->GetStringValue("hessian_approximation", parvalue, "");
-	if (parvalue == "exact") {
+	std::string s;
+	options()->GetStringValue("hessian_approximation", s, "");
+	if (s == "exact") {
 		int do2dir, dohess;
 		if (gmoHessLoad(gmo, 10, 10, &do2dir, &dohess) || !dohess) { // TODO make 10 (=conopt default for rvhess) a parameter
 			gmoLogStat(gmo, "Failed to initialize Hessian structure. We continue with a limited-memory Hessian approximation!");
 			options()->SetStringValue("hessian_approximation", "limited-memory");
-			hessian_is_approx = true;
 	  }
-	} else
-		hessian_is_approx = true;
-	
-	if (hessian_is_approx) { // check whether QP strong branching is enabled
-		options()->GetStringValue("varselect_stra", parvalue, "bonmin.");
-		if (parvalue == "qp-strong-branching") {
-			gmoLogStat(gmo, "Error: QP strong branching does not work when the Hessian is approximated. Aborting...");
-			return 1;
-		}
 	}
-
+	
   gatherParametersValues(options());
 
   /** Set the output level for the journalist for all Couenne
@@ -249,8 +238,10 @@ bool GamsCouenneSetup::InitializeCouenne(SmartPtr<GamsMINLP> minlp) {
   CouenneCutGenerator* couenneCg = new CouenneCutGenerator (ci, this, NULL, journalist());
   
   CouenneProblem * couenneProb = couenneCg->Problem();
-  if (!setupProblem(couenneProb))
+  if (!setupProblem(couenneProb)) {
+  	gmoLogStat(gmo, "Error setting up problem for Couenne.\n");
   	return false;
+  }
 
   Bonmin::BabInfo * extraStuff = new Bonmin::CouenneInfo(0);
   // as per instructions by John Forrest, to get changed bounds
@@ -282,8 +273,10 @@ bool GamsCouenneSetup::InitializeCouenne(SmartPtr<GamsMINLP> minlp) {
     heuristics_.push_back(h);
   }
 
-  if (extraStuff -> infeasibleNode ()){
-    std::cout<<"Initial linear relaxation constructed by Couenne is infeasible, exiting..." <<std::endl;
+  if (extraStuff->infeasibleNode()) {
+  	gmoLogStat(gmo, "Initial linear relaxation constructed by Couenne is infeasible.");
+		gmoSolveStatSet(gmo, SolveStat_Normal);
+		gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
     return false;
   }
 
@@ -292,7 +285,6 @@ bool GamsCouenneSetup::InitializeCouenne(SmartPtr<GamsMINLP> minlp) {
 
   // Add Couenne SOS ///////////////////////////////////////////////////////////////
 
-  std::string s;
   int nSOS = 0;
 
   // allocate sufficient space for both nonlinear variables and SOS's
@@ -1218,11 +1210,13 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 			    case fnbinomial:
 			    case fntan: case fnarccos:
 			    case fnarcsin: case fnarctan2 /* arctan(x2/x1) */:
-			    case fnpoly: /* simple polynomial */
+			    case fnpoly: /* simple polynomial TODO for qcp05 */
 					default : {
-						if (debugoutput) std::cerr << "nr. " << (int)func << " - unsuppored. Error." << std::endl;
+						char buffer[256];
+						sprintf(buffer, "Gams function code %d not supported.", opcode);
+						gmoLogStat(gmo, buffer);
 						return NULL;
-					}				
+					}
 				}
 			} break;
 			case nlMulIAdd: {
@@ -1266,7 +1260,9 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 			case nlEquScale: // equation scale
 			case nlEnd: // end of instruction list
 			default: {
-				std::cerr << "not supported - Error." << std::endl;
+				char buffer[256];
+				sprintf(buffer, "Gams instruction %d not supported.", opcode);
+				gmoLogStat(gmo, buffer);
 				return NULL;
 			}
 		}

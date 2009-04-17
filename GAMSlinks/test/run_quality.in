@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (C) 2008 GAMS Development and others
+# Copyright (C) GAMS Development and others 2008-2009
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -104,13 +104,23 @@ if test @gamslinks_build_bonmin@ = 1 ; then
   solvers="$solvers , BonminD"
   skiplist="$skiplist skip('BonminD','lp03')=yes;"
   skiplist="$skiplist skip('BonminD','sl4lp03')=yes;"
-  skiplist="$skiplist skip('BonminD','lp10')=yes;"
-  skiplist="$skiplist skip('BonminD','sl4lp10')=yes;"
-  skiplist="$skiplist skip('BonminD','lp13')=yes;"
   testlist[${#testlist[@]}]="--solver bonmind --suite lp"
-  testlist[${#testlist[@]}]="--solver bonmind --suite mip user1=\"--MIPMCHECKS=0 rmip=bonmind\""
+  testlist[${#testlist[@]}]="--solver bonmind --suite mip user1=rmip=bonmind"
   testlist[${#testlist[@]}]="--solver bonmind --suite nlp"
   testlist[${#testlist[@]}]="--solver bonmind --suite qcp"
+fi
+
+if test @gamslinks_build_couenne@ = 1 ; then
+  solvers="$solvers , Couenne"
+  skiplist="$skiplist skip('Couenne','lp03')=yes;"
+  skiplist="$skiplist skip('Couenne','sl4lp03')=yes;"
+  skiplist="$skiplist skip('Couenne','nlpqcp01')=yes;"
+  skiplist="$skiplist skip('Couenne','nlpqcp02')=yes;"
+  skiplist="$skiplist skip('Couenne','qcp05')=yes;"
+  testlist[${#testlist[@]}]="--solver couenne --suite lp"
+  testlist[${#testlist[@]}]="--solver couenne --suite mip user1=rmip=couenne"
+  testlist[${#testlist[@]}]="--solver couenne --suite nlp user1=\"--MCHECKS=0\""
+  testlist[${#testlist[@]}]="--solver couenne --suite qcp user1=\"--QPMCHECKS=0\""
 fi
 
 if test @gamslinks_build_osi@ = 1 ; then

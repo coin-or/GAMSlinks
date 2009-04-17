@@ -11,7 +11,8 @@
 #include "GamsMINLP.hpp"
 #include "GamsJournal.hpp"
 #include "GamsMessageHandler.hpp"
-#include "GamsIpopt.hpp" // in case we need to solve an LP or NLP
+#include "GamsIpopt.hpp" // in case we need to solve an NLP
+#include "GamsCbc.hpp"   // in case we need to solve an LP or MIP
 
 // to be sure to get (or not get) HAVE_M??? and HAVE_PARDISO defined
 #include "IpoptConfig.h"
@@ -74,7 +75,7 @@ using namespace Bonmin;
 using namespace Ipopt;
 
 GamsBonmin::GamsBonmin()
-: gmo(NULL), msghandler(NULL), bonmin_setup(NULL), gamsipopt(NULL)
+: gmo(NULL), msghandler(NULL), bonmin_setup(NULL), gamsipopt(NULL), gamscbc(NULL)
 {
 #ifdef GAMS_BUILD
 	strcpy(bonmin_message, "GAMS/CoinBonminD (Bonmin Library 1.0)\nwritten by P. Bonami\n");
@@ -87,6 +88,7 @@ GamsBonmin::~GamsBonmin() {
 	delete bonmin_setup;
 	delete msghandler;
 	delete gamsipopt;
+	delete gamscbc;
 }
 
 int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* gcd) {
@@ -107,6 +109,12 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec*
 	gmoObjStyleSet(gmo, ObjType_Fun);
 	gmoObjReformSet(gmo, 1);
  	gmoIndexBaseSet(gmo, 0);
+ 	
+ 	if (isMIP()) {
+ 		gmoLogStat(gmo, "Problem is linear. Passing over to Cbc.");
+ 		gamscbc = new GamsCbc();
+ 		return gamscbc->readyAPI(gmo, opt, gcd);
+ 	}
  	
  	if (isNLP()) {
  		gmoLogStat(gmo, "Problem is continuous. Passing over to Ipopt.");
@@ -300,6 +308,11 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec*
 int GamsBonmin::callSolver() {
 	assert(gmo);
 	
+	if (isMIP()) {
+		assert(gamscbc);
+		return gamscbc->callSolver();
+	}
+	
  	if (isNLP()) {
  		assert(gamsipopt);
  		return gamsipopt->callSolver();
@@ -485,6 +498,10 @@ bool GamsBonmin::isNLP() {
 	if (nzSos)
 		return false;
 	return true;
+}
+
+bool GamsBonmin::isMIP() {
+	return !gmoNLNZ(gmo) && !gmoObjNLNZ(gmo);
 }
 
 DllExport GamsBonmin* STDCALL createNewGamsBonmin() {

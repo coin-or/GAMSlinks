@@ -23,8 +23,7 @@ namespace Ipopt {
 	class Journalist;
 }
 class GamsCouenneSetup;
-//class CouenneProblem;
-//class expression;
+class GamsCbc;
 
 class GamsCouenne: public GamsSolver {
 private:
@@ -32,17 +31,12 @@ private:
 		
 	char           couenne_message[100];
 
-//	GamsMessageHandler*    msghandler;
 	Ipopt::SmartPtr<GamsMINLP> minlp;
 	GamsCouenneSetup*  couenne_setup;
-
-//	CouenneProblem* setupProblem(Ipopt::SmartPtr<Ipopt::Journalist>& journalist);
-//	expression* parseGamsInstructions(CouenneProblem* prob, int codelen, int* opcodes, int* fields, int constantlen, double* constants);
-//	bool initializeCouenne(CouenneInterface& ci);
-//	void writeSolution(Bonmin::OsiTMINLPInterface& osi_tminlp, int itercount);
-//	void writeSolutionNoDual(Bonmin::OsiTMINLPInterface& osi_tminlp, int itercount);
 	
-//	bool isNLP();
+	GamsCbc*       gamscbc;
+
+	bool isMIP();
 
 public:
 	GamsCouenne();
