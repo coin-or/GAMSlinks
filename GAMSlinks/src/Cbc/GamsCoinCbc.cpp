@@ -98,10 +98,10 @@ int main (int argc, const char *argv[]) {
 	myout.setCurrentDetail(1);
 	gm.PrintOut(GamsModel::StatusMask, "=1"); // turn on copying into .lst file
 #ifdef GAMS_BUILD
-	myout << "\nGAMS/CoinCbc 2.3pre LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
+	myout << "\nGAMS/CoinCbc 2.3 LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
 	GamsOptions opt(gamshandler, "coincbc");
 #else
-	myout << "\nGAMS/Cbc 2.3pre LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
+	myout << "\nGAMS/Cbc 2.3 LP/MIP Solver\nwritten by J. Forrest\n " << CoinMessageEol;
 	GamsOptions opt(gamshandler, "cbc");
 #endif
 	opt.readOptionsFile(gm.getOptionfile());

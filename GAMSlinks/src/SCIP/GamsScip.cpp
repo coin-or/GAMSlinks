@@ -320,6 +320,7 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
 
   	if (islp) {
   		SCIP_CALL( setupLPParameters(prob, lpi) );
+  		messagehandler.setLogLevel(1); // SCIP has set Clp's loglevel to 2, but then it might print to stdout
     	smagStdOutputPrint(prob, SMAG_LOGMASK, "Starting LP solve...\n");
   	} else {
     	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nSolving LP with fixed discrete variables...\n");

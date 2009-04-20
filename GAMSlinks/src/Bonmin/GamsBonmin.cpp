@@ -342,7 +342,8 @@ void solve_minlp(smagHandle_t prob) {
 			}
 		} else {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "\nBonmin finished. No feasible point found.\n");
-			smagReportSolBrief(prob, mysmagminlp->model_status, mysmagminlp->solver_status);
+			smagReportSolStats(prob, mysmagminlp->model_status, mysmagminlp->solver_status,
+					bb.iterationCount(), smagGetCPUTime(prob)-mysmagminlp->clock_start, SMAG_DBL_NA, mysmagminlp->domviolations);
 		}
 
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "\n");
