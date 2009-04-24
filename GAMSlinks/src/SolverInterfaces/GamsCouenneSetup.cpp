@@ -1216,7 +1216,7 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 								expression** monoms = new expression*[coeff.size()];
 								monoms[0] = coeff[0];
 								monoms[1] = new exprMul(coeff[1], var);
-								for (int i = 2; i < coeff.size(); ++i)
+								for (size_t i = 2; i < coeff.size(); ++i)
 									monoms[i] = new exprMul(coeff[i], new exprPow(var->clone(), new exprConst(i)));
 								exp = new exprSum(monoms, coeff.size());
 							}
