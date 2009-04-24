@@ -8,6 +8,17 @@
 
 #include "GamsCouenneSetup.hpp"
 
+// GAMS
+#ifdef GAMS_BUILD
+#include "gmomcc.h"
+#else
+#include "gmocc.h"
+#endif
+// gmo might include windows.h
+#ifdef CONST
+#undef CONST
+#endif
+
 #include "BonInitHeuristic.hpp"
 #include "BonNlpHeuristic.hpp"
 #include "BonCouenneInterface.hpp"
@@ -90,13 +101,6 @@ extern "C" {
 #include "GamsJournal.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsNLinstr.h"
-
-// GAMS
-#ifdef GAMS_BUILD
-#include "gmomcc.h"
-#else
-#include "gmocc.h"
-#endif
 
 using namespace Bonmin;
 using namespace Ipopt;

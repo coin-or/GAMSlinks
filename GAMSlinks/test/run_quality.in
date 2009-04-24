@@ -116,7 +116,6 @@ if test @gamslinks_build_couenne@ = 1 ; then
   skiplist="$skiplist skip('Couenne','sl4lp03')=yes;"
   skiplist="$skiplist skip('Couenne','nlpqcp01')=yes;"
   skiplist="$skiplist skip('Couenne','nlpqcp02')=yes;"
-  skiplist="$skiplist skip('Couenne','qcp05')=yes;"
   testlist[${#testlist[@]}]="--solver couenne --suite lp"
   testlist[${#testlist[@]}]="--solver couenne --suite mip user1=rmip=couenne"
   testlist[${#testlist[@]}]="--solver couenne --suite nlp user1=\"--MCHECKS=0\""
