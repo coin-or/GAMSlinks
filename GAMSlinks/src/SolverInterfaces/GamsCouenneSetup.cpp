@@ -929,6 +929,8 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 	const bool debugoutput = false;
 
 	list<expression*> stack;
+	
+	int nargs = -1;
 
 	for (int pos = 0; pos < codelen; ++pos)
 	{	
@@ -1185,6 +1187,38 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 						expression* term = stack.back(); stack.pop_back();
 						exp = new exprInv(term);
 					} break;
+			    case fnpoly: { /* simple polynomial */
+						if (debugoutput) std::clog << "polynom of degree " << nargs-1 << std::endl;
+						assert(nargs >= 0);
+						switch (nargs) {
+							case 0:
+								delete stack.back(); stack.pop_back(); // delete variable of polynom
+								exp = new exprConst(0.);
+								break;
+							case 1: // "constant" polynom
+								exp = stack.back(); stack.pop_back();
+								delete stack.back(); stack.pop_back(); // delete variable of polynom
+								break;
+							default: { // polynom is at least linear
+								std::vector<expression*> coeff(nargs);
+								while (nargs) {
+									assert(!stack.empty());
+									coeff[nargs-1] = stack.back();
+									stack.pop_back();
+									--nargs;
+								}
+								assert(!stack.empty());
+								expression* var = stack.back(); stack.pop_back();
+								expression** monoms = new expression*[coeff.size()];
+								monoms[0] = coeff[0];
+								monoms[1] = new exprMul(coeff[1], var);
+								for (int i = 2; i < coeff.size(); ++i)
+									monoms[i] = new exprMul(coeff[i], new exprPow(var->clone(), new exprConst(i)));
+								exp = new exprSum(monoms, coeff.size());
+							}
+						}
+						nargs = -1;
+			    } break;
 					case fnceil: case fnfloor: case fnround:
 					case fnmod: case fntrunc: case fnsign:
 					case fnarctan: case fnerrf: case fndunfm:
@@ -1210,10 +1244,9 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 			    case fnbinomial:
 			    case fntan: case fnarccos:
 			    case fnarcsin: case fnarctan2 /* arctan(x2/x1) */:
-			    case fnpoly: /* simple polynomial TODO for qcp05 */
 					default : {
 						char buffer[256];
-						sprintf(buffer, "Gams function code %d not supported.", opcode);
+						sprintf(buffer, "Gams function code %d not supported.", func);
 						gmoLogStat(gmo, buffer);
 						return NULL;
 					}
@@ -1229,7 +1262,8 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 				exp = new exprSum(term1, term2);				
 			} break;
 			case nlFuncArgN : {
-				if (debugoutput) std::clog << "ignored" << std::endl;
+				nargs = address;
+				if (debugoutput) std::clog << nargs << " arguments" << std::endl;
 			} break;
 			case nlArg: {
 				if (debugoutput) std::clog << "ignored" << std::endl;
