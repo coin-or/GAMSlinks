@@ -864,10 +864,57 @@ bool GamsCouenneSetup::setupProblem(CouenneProblem* prob) {
   prob->standardize();
 
   // clear all spurious variables pointers not referring to the variables_ vector
-  prob->realign();
+  // prob->realign();
+  // the following three loops are copied from the protected function CouenneProblem::realign():
+  // link variables to problem's domain
+  for (std::vector <exprVar *>::iterator i = prob->Variables().begin(); i != prob->Variables().end(); ++i) {
+    (*i)->linkDomain (prob->domain());
+    (*i)->realign (prob);
+    if ((*i)->Type() == AUX)
+      (*i)->Image()->realign(prob);
+  }
+  // link variables to problem's domain
+  for (int i = 0; i < prob->nObjs(); ++i) 
+    prob->Obj(i)->Body()->realign(prob);
+
+  // link variables to problem's domain
+  for (int i = 0; i < prob->nCons(); ++i) 
+    prob->Con(i)->Body()->realign(prob);
 
   // fill dependence_ structure
-  prob->fillDependence(this);
+  //  prob->fillDependence(this);
+  std::vector<std::set<int> >& dependence_(*const_cast<std::vector<std::set<int> >*>(&prob->Dependence()));
+  std::vector<CouenneObject>& objects_(*const_cast<std::vector<CouenneObject>*>(&prob->Objects()));
+  // the following code is copied from the protected function CouenneProblem::fillDependence():
+  for (int i = prob->nVars(); i--; )
+    dependence_.push_back(std::set<int>());
+
+  // empty object to fill space for linear-defined auxiliaries and for
+  // originals
+  CouenneObject nullObject;
+
+  for (std::vector <exprVar *>::iterator i = prob->Variables().begin(); i != prob->Variables().end(); ++i) {
+    if (((*i) -> Type () == AUX)                           // consider aux's only
+    		&& ((*i) -> Image () -> Linearity () > LINEAR)) {  // and nonlinear
+      // add object for this variable
+      objects_.push_back(CouenneObject(prob, *i, this, journalist()));
+
+      std::set<int> deplist;
+
+      // fill the set of independent variables on which the expression
+      // associated with *i depends; if empty (should not happen...), skip
+      if ((*i)->Image()->DepList(deplist, STOP_AT_AUX) == 0)
+      	continue;
+
+      // build dependence set for this variable
+      for (std::set<int>::iterator j = deplist.begin (); j != deplist.end (); ++j) {
+      	std::set <int> &obj = dependence_[*j];
+      	int ind = (*i)->Index();
+      	if (obj.find(ind) == obj.end())
+      		obj.insert(ind);
+      }
+    } else objects_.push_back (nullObject); // null object for original and linear auxiliaries
+  }
 
   // quadratic handling
   prob->fillQuadIndices();
