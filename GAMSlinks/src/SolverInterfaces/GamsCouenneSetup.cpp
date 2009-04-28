@@ -154,13 +154,13 @@ bool GamsCouenneSetup::InitializeCouenne(SmartPtr<GamsMINLP> minlp) {
 		}
 	} catch (IpoptException error) {
 		gmoLogStat(gmo, error.Message().c_str());
-	  return 1;
+	  return false;
 	} catch (std::bad_alloc) {
 		gmoLogStat(gmo, "Error: Not enough memory\n");
-		return -1;
+		return false;
 	} catch (...) {
 		gmoLogStat(gmo, "Error: Unknown exception thrown.\n");
-		return -1;
+		return false;
 	}
 
 	std::string libpath;
@@ -170,7 +170,7 @@ bool GamsCouenneSetup::InitializeCouenne(SmartPtr<GamsMINLP> minlp) {
 		if (LSL_loadHSL(libpath.c_str(), buffer, 512) != 0) {
 			gmoLogStatPChar(gmo, "Failed to load HSL library at user specified path: ");
 			gmoLogStat(gmo, buffer);
-		  return 1;
+		  return false;
 		}
 	}
 #endif
@@ -180,7 +180,7 @@ bool GamsCouenneSetup::InitializeCouenne(SmartPtr<GamsMINLP> minlp) {
 		if (LSL_loadPardisoLib(libpath.c_str(), buffer, 512) != 0) {
 			gmoLogStatPChar(gmo, "Failed to load Pardiso library at user specified path: ");
 			gmoLogStat(gmo, buffer);
-		  return 1;
+		  return false;
 		}
 	}
 #endif

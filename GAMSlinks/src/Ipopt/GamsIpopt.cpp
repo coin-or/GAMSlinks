@@ -10,6 +10,10 @@
 // to be sure to get (or not get) HAVE_M??? and HAVE_PARDISO defined
 #include "IpoptConfig.h"
 
+#if defined(_MSC_VER)
+#include <windows.h>
+#endif
+
 #ifdef HAVE_CSTDIO
 #include <cstdio>
 #else

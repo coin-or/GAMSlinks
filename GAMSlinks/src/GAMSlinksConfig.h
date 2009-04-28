@@ -20,10 +20,6 @@
 #ifndef __GAMSLINKSCONFIG_H__
 #define __GAMSLINKSCONFIG_H__
 
-#if defined(_MSC_VER)
-#include <windows.h>
-#endif
-
 #ifdef HAVE_CONFIG_H
 #include "config_gamslinks.h"
 
