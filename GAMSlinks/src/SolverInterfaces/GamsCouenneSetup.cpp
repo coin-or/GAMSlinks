@@ -842,8 +842,8 @@ bool GamsCouenneSetup::setupProblem(CouenneProblem* prob) {
   for (std::vector<exprVar*>::iterator it = prob->Variables().begin(); it != prob->Variables().end(); ++it)
     (*it)->linkDomain(prob->domain());
 
-//  if (prob->Jnlst()->ProduceOutput(Ipopt::J_SUMMARY, J_PROBLEM))
-//    prob->print();
+  if (prob->Jnlst()->ProduceOutput(Ipopt::J_SUMMARY, J_PROBLEM))
+    prob->print();
 
   // save -- for statistic purposes (and used indeed only there) -- number of original
   // constraints. Some of them will be deleted as definition of
