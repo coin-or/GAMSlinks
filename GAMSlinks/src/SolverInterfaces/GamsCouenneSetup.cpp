@@ -514,12 +514,12 @@ void GamsCouenneSetup::registerAllOptions(Ipopt::SmartPtr<Bonmin::RegisteredOpti
   roptions->AddBoundedIntegerOption(
     "problem_print_level",
     "Output level for problem manipulation code in Couenne",
-    -2, J_LAST_LEVEL-1, J_WARNING,
+    -2, J_LAST_LEVEL-1, J_STRONGWARNING,
     "");
   roptions->AddBoundedIntegerOption(
     "nlpheur_print_level",
     "Output level for NLP heuristic in Couenne",
-    -2, J_LAST_LEVEL-1, J_WARNING,
+    -2, J_LAST_LEVEL-1, J_STRONGWARNING,
     "");
 
 	roptions->SetRegisteringCategory("Linear Solver", Bonmin::RegisteredOptions::IpoptCategory);
