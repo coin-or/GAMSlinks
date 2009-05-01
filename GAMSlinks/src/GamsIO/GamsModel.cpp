@@ -506,7 +506,7 @@ void GamsModel::setSolution(const double *ColLevel, const double *ColMargin,
         gfwrow (level, marginal, basis, indicator);
       }
       if (i<nRows_) {
-        level = 0.0; marginal = 0.0; basis = SuperBasic; indicator = 0;
+        level = 0.0; marginal = 0.0; basis = SuperBasic; indicator = RowNormal;
         if (RowLevel != NULL)      level     = RowLevel_[i];
         if (RowMargin != NULL)     marginal  = RowMargin_[i];
         if (RowBasis != NULL)      basis     = RowBasis_[i];
@@ -523,7 +523,7 @@ void GamsModel::setSolution(const double *ColLevel, const double *ColMargin,
         gfwcol (level, marginal, basis, indicator);
       }
       if (j<nCols_) {
-        level = 0.0; marginal = 0.0; basis = 1; indicator = 0;
+        level = 0.0; marginal = 0.0; basis = SuperBasic; indicator = VarNormal;
         if (ColLevel != NULL)      level     = ColLevel_[j];
         if (ColMargin != NULL)     marginal  = ColMargin_[j];
         if (ColBasis != NULL)      basis     = ColBasis_[j];
