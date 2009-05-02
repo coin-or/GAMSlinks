@@ -684,8 +684,20 @@ void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myo
 		par_list.push_back(buffer);
 	}
 
+	if (opt.isDefined("passpresolve")) {
+		par_list.push_back("-passpresolve");
+		sprintf(buffer, "%d", opt.getInteger("passpresolve"));
+		par_list.push_back(buffer);
+	}
+
 	// MIP parameters
 	
+	if (opt.isDefined("strategy")) {
+		par_list.push_back("-strategy");
+		sprintf(buffer, "%d", opt.getInteger("strategy"));
+		par_list.push_back(buffer);
+	}
+
 	if (opt.isDefined("sollim")) {
 		par_list.push_back("-maxSolutions");
 		sprintf(buffer, "%d", opt.getInteger("sollim"));
@@ -937,6 +949,23 @@ void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myo
 			myout << "Value " << value << " not supported for option 'residualcapacitycuts'. Ignoring this option" << CoinMessageEol;
 		} 
 	}
+	
+//	if (opt.isDefined("zerohalfcuts")) {
+//		char* value=opt.getString("zerohalfcuts", buffer);
+//		if (!value) {
+//			myout << "Cannot read value for option 'zerohalfcuts'. Ignoring this option" << CoinMessageEol;
+//		} else if
+//		  ( strcmp(value, "off")==0 ||
+//		    strcmp(value, "on")==0 ||
+//		    strcmp(value, "root")==0 ||
+//		    strcmp(value, "ifmove")==0 ||
+//		    strcmp(value, "forceon")==0 ) {		   
+//			par_list.push_back("-zeroHalfCuts");
+//			par_list.push_back(value);
+//		} else {
+//			myout << "Value " << value << " not supported for option 'zerohalfcuts'. Ignoring this option" << CoinMessageEol;
+//		} 
+//	}
 
 	if (opt.isDefined("heuristics")) {
 		par_list.push_back("-heuristicsOnOff");
@@ -946,6 +975,40 @@ void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myo
 	if (opt.isDefined("combinesolutions")) {
 		par_list.push_back("-combineSolution");
 		par_list.push_back(opt.getBool("combinesolutions") ? "on" : "off");
+	}
+
+	if (opt.isDefined("dins")) {
+		par_list.push_back("-Dins");
+		par_list.push_back(opt.getBool("dins") ? "on" : "off");
+	}
+	
+	if (opt.isDefined("divingrandom")) {
+		par_list.push_back("-DivingSome");
+		par_list.push_back(opt.getBool("divingrandom") ? "on" : "off");
+	}
+	if (opt.isDefined("divingcoefficient")) {
+		par_list.push_back("-DivingCoefficient");
+		par_list.push_back(opt.getBool("divingcoefficient") ? "on" : "off");
+	}
+	if (opt.isDefined("divingfractional")) {
+		par_list.push_back("-DivingFractional");
+		par_list.push_back(opt.getBool("divingfractional") ? "on" : "off");
+	}
+	if (opt.isDefined("divingguided")) {
+		par_list.push_back("-DivingGuided");
+		par_list.push_back(opt.getBool("divingguided") ? "on" : "off");
+	}
+	if (opt.isDefined("divinglinesearch")) {
+		par_list.push_back("-DivingLineSearch");
+		par_list.push_back(opt.getBool("divinglinesearch") ? "on" : "off");
+	}
+	if (opt.isDefined("divingpseudocost")) {
+		par_list.push_back("-DivingPseudoCost");
+		par_list.push_back(opt.getBool("divingpseudocost") ? "on" : "off");
+	}
+	if (opt.isDefined("divingvectorlength")) {
+		par_list.push_back("-DivingVectorLength");
+		par_list.push_back(opt.getBool("divingvectorlength") ? "on" : "off");
 	}
 
 	if (opt.isDefined("feaspump")) {
@@ -979,6 +1042,26 @@ void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myo
 		par_list.push_back(opt.getBool("localtreesearch") ? "on" : "off");
 	}
 
+	if (opt.isDefined("naiveheuristics")) {
+		par_list.push_back("-naiveHeuristics");
+		par_list.push_back(opt.getBool("naiveheuristics") ? "on" : "off");
+	}
+	
+	if (opt.isDefined("pivotandfix")) {
+		par_list.push_back("-pivotAndFix");
+		par_list.push_back(opt.getBool("pivotandfix") ? "on" : "off");
+	}
+	
+	if (opt.isDefined("randomizedrounding")) {
+		par_list.push_back("-randomizedRounding");
+		par_list.push_back(opt.getBool("randomizedrounding") ? "on" : "off");
+	}
+
+	if (opt.isDefined("rens")) {
+		par_list.push_back("-Rens");
+		par_list.push_back(opt.getBool("rens") ? "on" : "off");
+	}
+
 	if (opt.isDefined("rins")) {
 		par_list.push_back("-Rins");
 		par_list.push_back(opt.getBool("rins") ? "on" : "off");
@@ -988,7 +1071,13 @@ void setupParameterList(GamsModel& gm, GamsOptions& opt, CoinMessageHandler& myo
 		par_list.push_back("-roundingHeuristic");
 		par_list.push_back(opt.getBool("roundingheuristic") ? "on" : "off");
 	}
-	
+
+	if (opt.isDefined("vubheuristic")) {
+		par_list.push_back("-vubheuristic");
+		sprintf(buffer, "%d", opt.getInteger("vubheuristic"));
+		par_list.push_back(buffer);
+	}
+
 	if (opt.isDefined("coststrategy")) {
 		char* value=opt.getString("coststrategy", buffer);
 		if (!value) {

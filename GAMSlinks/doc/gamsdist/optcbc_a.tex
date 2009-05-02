@@ -246,6 +246,16 @@ The tolerance used in presolve.
 
 \textsl{(default = 1e-8)}
 
+\item[\label{passpresolve}\hypertarget{passpresolve}
+{\textbf{passpresolve (\slshape{integer})}}]\hspace{1.0in}
+
+Normally Presolve does 5 passes but you may want to do less to make
+it more lightweight or do more if improvements are still being made.
+As Presolve will return if nothing is being taken out, you should
+not normally need to use this fine tuning.
+
+\textsl{(default = 5)}
+
 \item[\label{startalg}\hypertarget{startalg}
 {\textbf{startalg (\slshape{string})}}]\hspace{1.0in}
 
@@ -266,6 +276,37 @@ Let CLP use a primal dual predictor corrector algorithm.
 \subsubsection{MIP Options}
 
 \begin{description}
+
+\item[\label{mipstart}\hypertarget{mipstart}
+{\textbf{mipstart (\slshape{integer})}}]\hspace{1.0in}
+
+This option controls the use of advanced starting values for mixed integer programs.
+A setting of 1 indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] 
+Do not use the initial variable levels.
+\item[1] 
+Try to use the initial variable levels as a MIP starting solution.
+\end{itemize}
+
+\item[\label{strategy}\hypertarget{strategy}
+{\textbf{strategy (\slshape{integer})}}]\hspace{1.0in}
+
+Setting strategy to 1 (the default) uses Gomory cuts using tolerance of 0.01 at root,
+does a possible restart after 100 nodes if Cbc can fix many variables and activates
+a diving and RINS heuristic and makes feasibility pump more aggressive.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] 
+Use this setting for easy problems.
+\item[1] 
+This is the default setting.
+\item[2]
+Use this setting for difficult problems.
+\end{itemize}
 
 \item[\label{tol_integer}\hypertarget{tol_integer}
 {\textbf{tol\_integer (\slshape{real})}}]\hspace{1.0in}
@@ -383,6 +424,7 @@ A number between 1 and 100 sets the number of threads used for parallel branch a
 A number $100+n$ with $n$ between 1 and 100 says that $n$ threads are used to parallelize the branch and bound, but also heuristics such as RINS which do branch and bound on a reduced model also use threads.
 A number $200+n$ with $n$ between 1 and 100 says that $n$ threads are used to parallelize the branch and bound, but also the cut generators at the root node (i.e., before threads are useful) are run in parallel.
 A number $300+n$ with $n$ between 1 and 100 combines the $100+n$ and $200+n$ options.
+A number $400+n$ with $n$ between 1 and 100 says that $n$ threads are used in sub-trees.
 Thus, $n$ threads are used to parallelize the branch and bound, but also heuristics use threads and the cut generators at the root node are run in parallel.
 The $100+n$, $200+n$, and $300+n$ options are experimental.
 
@@ -688,6 +730,110 @@ Turns the combine solutions heuristic off.
 Turns the combine solutions heuristic on.
 \end{itemize}
 
+\item[\label{dins}\hypertarget{dins}
+{\textbf{dins (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter control the use of the distance induced neighborhood search heuristic.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] 
+Turns the distance induced neighborhood search off.
+\item[1] 
+Turns the distance induced neighborhood search on.
+\end{itemize}
+
+\item[\label{divingrandom}\hypertarget{divingrandom}
+{\textbf{divingrandom (\slshape{integer})}}]\hspace{1.0in}
+
+This switches on a random diving heuristic at various times.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] .
+Turns the random diving heuristics off.
+\item[1] .
+Turns the random diving heuristics on.
+\end{itemize}
+
+\item[\label{divingcoefficient}\hypertarget{divingcoefficient}
+{\textbf{divingcoefficient (\slshape{integer})}}]\hspace{1.0in}
+
+This switches on the coefficient diving heuristic.
+
+\textsl{(default = 1)}
+\begin{itemize}
+\item[0] .
+Turns the coefficient diving heuristics off.
+\item[1] .
+Turns the coefficient diving heuristics on.
+\end{itemize}
+
+\item[\label{divingfractional}\hypertarget{divingfractional}
+{\textbf{divingfractional (\slshape{integer})}}]\hspace{1.0in}
+
+This switches on the fractional diving heuristic.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] .
+Turns the fractional diving heuristics off.
+\item[1] .
+Turns the fractional diving heuristics on.
+\end{itemize}
+
+\item[\label{divingguided}\hypertarget{divingguided}
+{\textbf{divingguided (\slshape{integer})}}]\hspace{1.0in}
+
+This switches on the guided diving heuristic.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] .
+Turns the guided diving heuristics off.
+\item[1] .
+Turns the guided diving heuristics on.
+\end{itemize}
+
+\item[\label{divinglinesearch}\hypertarget{divinglinesearch}
+{\textbf{divinglinesearch (\slshape{integer})}}]\hspace{1.0in}
+
+This switches on the line search diving heuristic.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] .
+Turns the line search diving heuristics off.
+\item[1] .
+Turns the linesearch diving heuristics on.
+\end{itemize}
+
+\item[\label{divingpseudocost}\hypertarget{divingpseudocost}
+{\textbf{divingpseudocost (\slshape{integer})}}]\hspace{1.0in}
+
+This switches on the pseudo costs diving heuristic.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] .
+Turns the pseudo costs diving heuristics off.
+\item[1] .
+Turns the pseudo costs diving heuristics on.
+\end{itemize}
+
+\item[\label{divingvectorlength}\hypertarget{divingvectorlength}
+{\textbf{divingvectorlength (\slshape{integer})}}]\hspace{1.0in}
+
+This switches on the vector length diving heuristic.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] .
+Turns the vector length diving heuristics off.
+\item[1] .
+Turns the vector length diving heuristics on.
+\end{itemize}
+
 \item[\label{feaspump}\hypertarget{feaspump}
 {\textbf{feaspump (\slshape{integer})}}]\hspace{1.0in}
 
@@ -746,6 +892,58 @@ Turns the local tree search off.
 Turns the local tree search on.
 \end{itemize}
 
+\item[\label{naiveheuristics}\hypertarget{naiveheuristics}
+{\textbf{naiveheuristics (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter controls the use of some naive heuristics, e.g., fixing of all integers with costs to zero.<BR$>$
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] .
+Turns the naive heuristics off.
+\item[1] .
+Turns the naive heuristics on.
+\end{itemize}
+
+\item[\label{randomizedrounding}\hypertarget{randomizedrounding}
+{\textbf{randomizedrounding (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter controls the use of the randomized rounding heuristic.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] .
+Turns the randomized rounding heuristic off.
+\item[1] .
+Turns the randomized rounding heuristic on.
+\end{itemize}
+
+\item[\label{rens}\hypertarget{rens}
+{\textbf{rens (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter controls the use of the relaxation enforced neighborhood search heuristic.<BR$>$
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] .
+Turns the relaxation enforced neighborhood search off.
+\item[1] .
+Turns the relaxation enforced neighborhood search on.
+\end{itemize}
+
+\item[\label{pivotandfix}\hypertarget{pivotandfix}
+{\textbf{pivotandfix (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter controls the use of the pivot and fix heuristic.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] .
+Turns the naive pivot and fix heuristic off.
+\item[1] .
+Turns the naive pivot and fix heuristic on.
+\end{itemize}
+
 \item[\label{rins}\hypertarget{rins}
 {\textbf{rins (\slshape{integer})}}]\hspace{1.0in}
 
@@ -775,6 +973,14 @@ Turns the rounding heuristic off.
 \item[1] 
 Turns the rounding heuristic on.
 \end{itemize}
+
+\item[\label{vubheuristic}\hypertarget{vubheuristic}
+{\textbf{vubheuristic (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter control the use of the VUB heuristic.
+If it is set (between -2 and 20), Cbc will try  and fix some integer variables
+
+\textsl{(default = -1)}
 
 \end{description}
 

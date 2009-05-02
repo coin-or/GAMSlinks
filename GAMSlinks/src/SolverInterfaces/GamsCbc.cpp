@@ -618,8 +618,20 @@ bool GamsCbc::setupParameters() {
 		par_list.push_back(buffer);
 	}
 
+	if (options.isDefined("passpresolve")) {
+		par_list.push_back("-passpresolve");
+		sprintf(buffer, "%d", options.getInteger("passpresolve"));
+		par_list.push_back(buffer);
+	}
+
 	// MIP parameters
-	
+
+	if (options.isDefined("strategy")) {
+		par_list.push_back("-strategy");
+		sprintf(buffer, "%d", options.getInteger("strategy"));
+		par_list.push_back(buffer);
+	}
+
 	if (options.isDefined("sollim")) {
 		par_list.push_back("-maxSolutions");
 		sprintf(buffer, "%d", options.getInteger("sollim"));
@@ -882,6 +894,40 @@ bool GamsCbc::setupParameters() {
 		par_list.push_back(options.getBool("combinesolutions") ? "on" : "off");
 	}
 
+	if (options.isDefined("dins")) {
+		par_list.push_back("-Dins");
+		par_list.push_back(options.getBool("dins") ? "on" : "off");
+	}
+	
+	if (options.isDefined("divingrandom")) {
+		par_list.push_back("-DivingSome");
+		par_list.push_back(options.getBool("divingrandom") ? "on" : "off");
+	}
+	if (options.isDefined("divingcoefficient")) {
+		par_list.push_back("-DivingCoefficient");
+		par_list.push_back(options.getBool("divingcoefficient") ? "on" : "off");
+	}
+	if (options.isDefined("divingfractional")) {
+		par_list.push_back("-DivingFractional");
+		par_list.push_back(options.getBool("divingfractional") ? "on" : "off");
+	}
+	if (options.isDefined("divingguided")) {
+		par_list.push_back("-DivingGuided");
+		par_list.push_back(options.getBool("divingguided") ? "on" : "off");
+	}
+	if (options.isDefined("divinglinesearch")) {
+		par_list.push_back("-DivingLineSearch");
+		par_list.push_back(options.getBool("divinglinesearch") ? "on" : "off");
+	}
+	if (options.isDefined("divingpseudocost")) {
+		par_list.push_back("-DivingPseudoCost");
+		par_list.push_back(options.getBool("divingpseudocost") ? "on" : "off");
+	}
+	if (options.isDefined("divingvectorlength")) {
+		par_list.push_back("-DivingVectorLength");
+		par_list.push_back(options.getBool("divingvectorlength") ? "on" : "off");
+	}
+
 	if (options.isDefined("feaspump")) {
 		par_list.push_back("-feasibilityPump");
 		par_list.push_back(options.getBool("feaspump") ? "on" : "off");
@@ -913,6 +959,26 @@ bool GamsCbc::setupParameters() {
 		par_list.push_back(options.getBool("localtreesearch") ? "on" : "off");
 	}
 
+	if (options.isDefined("naiveheuristics")) {
+		par_list.push_back("-naiveHeuristics");
+		par_list.push_back(options.getBool("naiveheuristics") ? "on" : "off");
+	}
+	
+	if (options.isDefined("pivotandfix")) {
+		par_list.push_back("-pivotAndFix");
+		par_list.push_back(options.getBool("pivotandfix") ? "on" : "off");
+	}
+	
+	if (options.isDefined("randomizedrounding")) {
+		par_list.push_back("-randomizedRounding");
+		par_list.push_back(options.getBool("randomizedrounding") ? "on" : "off");
+	}
+
+	if (options.isDefined("rens")) {
+		par_list.push_back("-Rens");
+		par_list.push_back(options.getBool("rens") ? "on" : "off");
+	}
+
 	if (options.isDefined("rins")) {
 		par_list.push_back("-Rins");
 		par_list.push_back(options.getBool("rins") ? "on" : "off");
@@ -921,6 +987,12 @@ bool GamsCbc::setupParameters() {
 	if (options.isDefined("roundingheuristic")) {
 		par_list.push_back("-roundingHeuristic");
 		par_list.push_back(options.getBool("roundingheuristic") ? "on" : "off");
+	}
+
+	if (options.isDefined("vubheuristic")) {
+		par_list.push_back("-vubheuristic");
+		sprintf(buffer, "%d", options.getInteger("vubheuristic"));
+		par_list.push_back(buffer);
 	}
 	
 	if (options.isDefined("coststrategy")) {

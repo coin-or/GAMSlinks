@@ -529,8 +529,7 @@ Possible values:
  The initial real workspace memory =
 la\_init\_factor * memory required by unfactored
 system. Ipopt will increase the workspace size by
-meminc\_factor if required.  This option is only
-available if  Ipopt has been compiled with MA27. The valid range for this real option is 
+meminc\_factor if required. The valid range for this real option is 
 $1 \le {\tt ma27\_la\_init\_factor } <  {\tt +inf}$
 and its default value is $5$.
 
@@ -539,25 +538,21 @@ and its default value is $5$.
  The initial integer workspace memory =
 liw\_init\_factor * memory required by unfactored
 system. Ipopt will increase the workspace size by
-meminc\_factor if required.  This option is only
-available if Ipopt has been compiled with MA27. The valid range for this real option is 
-$1 \le {\tt ma27\_liw\_init\_factor } <  {\tt +inf}$
-and its default value is $5$.
+meminc\_factor if required.  The default value for this real option is $5$ and its valid range is
+$1 \le {\tt ma27\_liw\_init\_factor } <  {\tt +inf}$.
 
 
 \paragraph{ma27\_meminc\_factor:}\label{sec:ma27_meminc_factor} Increment factor for workspace size for MA27. $\;$ \\
  If the integer or real workspace is not large
 enough, Ipopt will increase its size by this
-factor.  This option is only available if Ipopt
-has been compiled with MA27. The valid range for this real option is 
+factor.  The valid range for this real option is 
 $1 \le {\tt ma27\_meminc\_factor } <  {\tt +inf}$
 and its default value is $10$.
 
 
 \paragraph{ma27\_pivtol:}\label{sec:ma27_pivtol} Pivot tolerance for the linear solver MA27. $\;$ \\
  A smaller number pivots for sparsity, a larger
-number pivots for stability.  This option is only
-available if Ipopt has been compiled with MA27. The valid range for this real option is 
+number pivots for stability. The valid range for this real option is 
 $0 <  {\tt ma27\_pivtol } <  1$
 and its default value is $1 \cdot 10^{-08}$.
 
@@ -565,8 +560,7 @@ and its default value is $1 \cdot 10^{-08}$.
 \paragraph{ma27\_pivtolmax:}\label{sec:ma27_pivtolmax} Maximum pivot tolerance for the linear solver MA27. $\;$ \\
  Ipopt may increase pivtol as high as pivtolmax to
 get a more accurate solution to the linear
-system.  This option is only available if Ipopt
-has been compiled with MA27. The valid range for this real option is 
+system. The valid range for this real option is 
 $0 <  {\tt ma27\_pivtolmax } <  1$
 and its default value is $0.0001$.
 
@@ -600,8 +594,7 @@ and its default value is $0.01$.
 
 \paragraph{ma57\_pivtol:}\label{sec:ma57_pivtol} Pivot tolerance for the linear solver MA57. $\;$ \\
  A smaller number pivots for sparsity, a larger
-number pivots for stability. This option is only
-available if Ipopt has been compiled with MA57. The valid range for this real option is 
+number pivots for stability. The valid range for this real option is 
 $0 <  {\tt ma57\_pivtol } <  1$
 and its default value is $1 \cdot 10^{-08}$.
 
@@ -609,8 +602,7 @@ and its default value is $1 \cdot 10^{-08}$.
 \paragraph{ma57\_pivtolmax:}\label{sec:ma57_pivtolmax} Maximum pivot tolerance for the linear solver MA57. $\;$ \\
  Ipopt may increase pivtol as high as
 ma57\_pivtolmax to get a more accurate solution
-to the linear system.  This option is only
-available if Ipopt has been compiled with MA57. The valid range for this real option is 
+to the linear system.  The valid range for this real option is 
 $0 <  {\tt ma57\_pivtolmax } <  1$
 and its default value is $0.0001$.
 
@@ -619,11 +611,16 @@ and its default value is $0.0001$.
  If 1 is chosen, the suggested amount of work
 space is used.  However, choosing a larger number
 might avoid reallocation if the suggest values do
-not suffice.  This option is only available if
-Ipopt has been compiled with MA57. The valid range for this real option is 
+not suffice.  The valid range for this real option is 
 $1 \le {\tt ma57\_pre\_alloc } <  {\tt +inf}$
 and its default value is $3$.
 
+
+\paragraph{ma57\_pivot\_order:}\label{sec:ma57_pivot_order} Controls pivot order in MA57. $\;$ \\
+This is INCTL(6) in MA57.
+The valid range for this integer option is 
+$0 <  {\tt ma57\_pivot\_order } <  5$
+and its default value is $5$.
 
 \subsubsection{Mumps Linear Solver}
 \label{sec:Mumps_Linear_Solver}
@@ -683,19 +680,31 @@ and its default value is $7$.
 \subsubsection{Pardiso Linear Solver}
 \label{sec:Pardiso_Linear_Solver}
 
+\paragraph{pardiso\_dropping\_schur\_exponent:}\label{sec:pardiso_dropping_schur_exponent}  $\;$ \\
+ The valid range for this integer option is
+${\tt -inf} <  {\tt pardiso\_dropping\_schur\_exponent } <  {\tt +inf}$
+and its default value is $-3$.
+
+\paragraph{pardiso\_dropping\_factor\_exponent:}\label{sec:pardiso_dropping_factor_exponent}  $\;$ \\
+ The valid range for this integer option is
+${\tt -inf} <  {\tt pardiso\_dropping\_factor\_exponent } <  {\tt +inf}$
+and its default value is $-3$.
+
+\paragraph{pardiso\_inverse\_norm\_factor:}\label{sec:pardiso_inverse_norm_factor}  $\;$ \\
+ The valid range for this integer option is
+${\tt -inf} <  {\tt pardiso\_inverse\_norm\_factor } <  {\tt +inf}$
+and its default value is $500$.
+
 \paragraph{pardiso\_iter\_tol\_exponent:}\label{sec:pardiso_iter_tol_exponent}  $\;$ \\
  The valid range for this integer option is
 ${\tt -inf} <  {\tt pardiso\_iter\_tol\_exponent } <  {\tt +inf}$
 and its default value is $-14$.
 
-
 \paragraph{pardiso\_iterative:}\label{sec:pardiso_iterative}  $\;$ \\
 The default value for this string option is "no".
 
 \paragraph{pardiso\_matching\_strategy:}\label{sec:pardiso_matching_strategy} Matching strategy to be used by Pardiso $\;$ \\
- This is IPAR(13) in Pardiso manual.  This option
-is only available if Ipopt has been compiled with
-Pardiso.
+ This is IPAR(13) in Pardiso manual.
 The default value for this string option is "complete+2x2".
 \\ 
 Possible values:
@@ -705,20 +714,28 @@ Possible values:
    \item constraints: Match constraints (IPAR(13)=3)
 \end{itemize}
 
+\paragraph{pardiso\_max\_iter:}\label{sec:pardiso_max_iter}  $\;$ \\
+ The valid range for this integer option is
+${\tt -inf} <  {\tt pardiso\_max\_iter } <  {\tt +inf}$
+and its default value is $500$.
+
+\paragraph{pardiso\_msglvl:}\label{sec:pardiso_msglvl} Pardiso message level $\;$ \\
+This determines the amount of analysis output from the Pardiso solver.
+This is MSGLVL in the Pardiso manual.
+ The valid range for this integer option is
+${\tt 0} <  {\tt pardiso\_msglvl } <  {\tt +inf}$
+and its default value is $0$.
+
 \paragraph{pardiso\_out\_of\_core\_power:}\label{sec:pardiso_out_of_core_power} Enables out-of-core variant of Pardiso $\;$ \\
  Setting this option to a positive integer k makes
 Pardiso work in the out-of-core variant where the
 factor is split in $2^k$ subdomains.  This is
-IPARM(50) in the Pardiso manual.  This option is
-only available if Ipopt has been compiled with
-Pardiso. The valid range for this integer option is
+IPARM(50) in the Pardiso manual. The valid range for this integer option is
 $0 \le {\tt pardiso\_out\_of\_core\_power } <  {\tt +inf}$
 and its default value is $0$.
 
 
 \paragraph{pardiso\_redo\_symbolic\_fact\_only\_if\_inertia\_wrong:}\label{sec:pardiso_redo_symbolic_fact_only_if_inertia_wrong} Toggle for handling case when elements were perturbed by Pardiso. $\;$ \\
- This option is only available if Ipopt has been
-compiled with Pardiso.
 The default value for this string option is "no".
 \\ 
 Possible values:
@@ -730,8 +747,6 @@ were perturbed if also the inertia was wrong
 \end{itemize}
 
 \paragraph{pardiso\_repeated\_perturbation\_means\_singular:}\label{sec:pardiso_repeated_perturbation_means_singular} Interpretation of perturbed elements. $\;$ \\
- This option is only available if Ipopt has been
-compiled with Pardiso.
 The default value for this string option is "no".
 \\ 
 Possible values:
@@ -889,7 +904,7 @@ The default value for this string option is "gradient-based".
 Possible values:
 \begin{itemize}
    \item none: no problem scaling will be performed
-   \item user-scaling: scaling parameters will come from the user
+%    \item user-scaling: scaling parameters will come from the user
    \item gradient-based: scale the problem so the maximum gradient at
 the starting point is scaling\_max\_gradient
    \item equilibration-based: scale the problem so that first derivatives are
@@ -1330,6 +1345,23 @@ Possible values:
    \item max-norm: use the infinity norm
 \end{itemize}
 
+\paragraph{corrector\_compl\_avrg\_red\_fact:}\label{sec:corrector_compl_avrg_red_fact}  Complementarity tolerance factor for accepting corrector step {\small (unsupported!)}.\\
+This option determines the factor by which complementarity is allowed to
+increase for a corrector step to be accepted.
+The valid range for this real option is 
+$0 <  {\tt corrector\_compl\_avrg\_red\_fact } <  {\tt +inf}$
+and its default value is $1$.
+
+\paragraph{corrector\_type:}\label{sec:corrector_type} The type of corrector steps that should be taken (unsupported!). $\;$ \\
+If "mu\_strategy" is "adaptive", this option determines what kind of corrector steps should be tried.
+The default value for this string option is "none".
+\\ 
+Possible values:
+\begin{itemize}
+   \item none: no corrector
+   \item affine: corrector step towards mu=0
+   \item primal-dual: corrector step towards current mu
+\end{itemize}
 
 \paragraph{delta:}\label{sec:delta} Multiplier for constraint violation in the switching rule. $\;$ \\
  (See Eqn. (19) in the implementation paper.) The valid range for this real option is 
@@ -1674,6 +1706,13 @@ at least the fraction given by this option. The valid range for this real option
 $0 \le {\tt required\_infeasibility\_reduction } <  1$
 and its default value is $0.9$.
 
+\paragraph{resto\_penalty\_parameter:}\label{sec:resto_penalty_parameter} 
+Penalty parameter in the restoration phase objective function. $\;$ \\
+This is the parameter rho in equation (31a) in the Ipopt implementation paper.
+The valid range for this real option is
+$0 \le {\tt resto\_penalty\_parameter } <  {\tt +inf}$
+and its default value is $1000$.
+
 
 \paragraph{soft\_resto\_pderror\_reduction\_factor:}\label{sec:soft_resto_pderror_reduction_factor} Required reduction in primal-dual error in the soft restoration phase. $\;$ \\
  The soft restoration phase attempts to reduce the
@@ -1945,18 +1984,18 @@ ${\tt -inf} <  {\tt warm\_start\_mult\_init\_max } <  {\tt +inf}$
 and its default value is $1 \cdot 10^{+06}$.
 
 
-\paragraph{warm\_start\_same\_structure:}\label{sec:warm_start_same_structure} Indicates whether a problem with a structure identical to the previous one is to be solved. $\;$ \\
- If "yes" is chosen, then the algorithm assumes
-that an NLP is now to be solved, whose structure
-is identical to one that already was considered
-(with the same NLP object).
-The default value for this string option is "no".
-\\ 
-Possible values:
-\begin{itemize}
-   \item no: Assume this is a new problem.
-   \item yes: Assume this is problem has known structure
-\end{itemize}
+% \paragraph{warm\_start\_same\_structure:}\label{sec:warm_start_same_structure} Indicates whether a problem with a structure identical to the previous one is to be solved. $\;$ \\
+%  If "yes" is chosen, then the algorithm assumes
+% that an NLP is now to be solved, whose structure
+% is identical to one that already was considered
+% (with the same NLP object).
+% The default value for this string option is "no".
+% \\ 
+% Possible values:
+% \begin{itemize}
+%    \item no: Assume this is a new problem.
+%    \item yes: Assume this is problem has known structure
+% \end{itemize}
 
 \paragraph{warm\_start\_slack\_bound\_frac:}\label{sec:warm_start_slack_bound_frac} same as slack\_bound\_frac for the regular initializer. $\;$ \\
  The valid range for this real option is 

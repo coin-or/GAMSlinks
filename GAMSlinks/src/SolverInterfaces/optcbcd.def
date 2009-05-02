@@ -38,6 +38,7 @@ scaling enumstr 0 "auto" 1 2 scaling method
  "equilibrium" 1
  "geometric" 1
 presolve boolean 0 1 1 2 switch for initial presolve of LP
+passpresolve integer 0 5 -200 100 1 2 how many passes to do in presolve
 tol_dual double 0 1e-7 0 maxdouble 1 2 dual feasibility tolerance
 tol_primal double 0 1e-7 0 maxdouble 1 2 primal feasibility tolerance
 tol_presolve double 0 1e-8 0 maxdouble 1 2 tolerance used in presolve
@@ -46,6 +47,10 @@ startalg enumstr 0 "dual" 1 2 LP solver for root node
  "dual" 1
  "barrier" 1
 threads integer 0 1 0 maxint 1 3 number of threads to use (available on Unix variants only)
+strategy enumint 0 1 1 3 switches on groups of features
+ 0 1
+ 1 1
+ 2 1
 mipstart boolean 0 0 1 3 whether it should be tried to use the initial variable levels as initial MIP solution
 tol_integer double 0 1e-6 0 maxdouble 1 3 tolerance for integrality
 sollim enumint 0 -1 1 3 limit on number of solutions
@@ -82,6 +87,14 @@ reduceandsplitcuts string 0 "off" 1 4 Reduce and Split Cuts
 residualcapacitycuts string 0 "off" 1 4 Residual Capacity Cuts
 heuristics boolean 0 1 1 5 global switch for heuristics
 combinesolutions boolean 0 1 1 5 combine solutions heuristic
+dins boolean 0 0 1 5 distance induced neighborhood search
+divingrandom boolean 0 0 1 5 turns on random diving heuristic
+divingcoefficient boolean 0 1 1 5 coefficient diving heuristic
+divingfractional boolean 0 0 1 5 fractional diving heuristic
+divingguided boolean 0 0 1 5 guided diving heuristic
+divinglinesearch boolean 0 0 1 5 line search diving heuristic
+divingpseudocost boolean 0 0 1 5 pseudo cost diving heuristic
+divingvectorlength boolean 0 0 1 5 vector length diving heuristic
 feaspump boolean 0 1 1 5 feasibility pump
 feaspump_passes integer 0 20 0 10000 1 5 number of feasibility passes
 greedyheuristic enumstr 0 "on" 1 5 greedy heuristic
@@ -89,8 +102,15 @@ greedyheuristic enumstr 0 "on" 1 5 greedy heuristic
  "on" 1
  "root" 1
 localtreesearch boolean 0 0 1 5 local tree search heuristic
+naiveheuristics boolean 0 0 1 5 naive heuristics
+pivotandfix boolean 0 0 1 5 pivot and fix heuristic
+randomizedrounding boolean 0 0 1 5 randomized rounding heuristis
+rens boolean 0 0 1 5 relaxation enforced neighborhood search
 rins boolean 0 0 1 5 relaxed induced neighborhood search
 roundingheuristic boolean 0 1 1 5 rounding heuristic
+vubheuristic enumint 0 0 1 5 VUB heuristic
+ 0 1
+ 1 1
 coststrategy enumstr 0 "off" 1 3 how to use costs as priorities
  "off" 1
  "priorities" 1

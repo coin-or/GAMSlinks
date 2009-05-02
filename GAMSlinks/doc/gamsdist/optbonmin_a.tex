@@ -495,10 +495,10 @@ $-100 \le {\tt mir\_cuts } <  {\tt +inf}$
 and its default value is $-5$.
 
 
-\paragraph{probing\_cuts:}\label{sec:probing_cuts} Frequency (in terms of nodes) for generating probing cuts in branch-and-cut $\;$ \\
-The valid range for this integer option is
-$-100 \le {\tt probing\_cuts } <  {\tt +inf}$
-and its default value is $-5$.
+% \paragraph{probing\_cuts:}\label{sec:probing_cuts} Frequency (in terms of nodes) for generating probing cuts in branch-and-cut $\;$ \\
+% The valid range for this integer option is
+% $-100 \le {\tt probing\_cuts } <  {\tt +inf}$
+% and its default value is $-5$.
 
 
 \paragraph{reduce\_and\_split\_cuts:}\label{sec:reduce_and_split_cuts} Frequency (in terms of nodes) for generating reduce-and-split cuts in branch-and-cut $\;$ \\
@@ -645,16 +645,16 @@ and its default value is $0$.
 \label{sec:Outer_Approximation_Decomposition_(B-OA)}
 
 \paragraph{milp\_subsolver:}\label{sec:milp_subsolver} Choose the subsolver to solve MILP sub-problems in OA decompositions. $\;$ \\
-  To use Cplex, a valid license is required and
-you should have compiled OsiCpx in COIN-OR  (see
-Osi documentation).
+%   To use Cplex, a valid license is required and
+% you should have compiled OsiCpx in COIN-OR  (see
+% Osi documentation).
 The default value for this string option is "Cbc\_D".
 \\ 
 Possible values:
 \begin{itemize}
    \item Cbc\_D: Coin Branch and Cut with its default
    \item Cbc\_Par: Coin Branch and Cut with passed parameters
-   \item Cplex: Ilog Cplex
+%    \item Cplex: Ilog Cplex
 \end{itemize}
 
 \paragraph{oa\_dec\_time\_limit:}\label{sec:oa_dec_time_limit} Specify the maximum number of seconds spent overall in OA decomposition iterations. $\;$ \\

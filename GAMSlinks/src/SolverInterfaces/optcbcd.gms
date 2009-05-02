@@ -33,12 +33,14 @@ set g Cbc Option Groups /
       perturbation           perturbation of problem
       scaling                scaling method
       presolve               switch for initial presolve of LP
+      passpresolve           how many passes to do in presolve
       tol_dual               dual feasibility tolerance
       tol_primal             primal feasibility tolerance
       tol_presolve           tolerance used in presolve
       startalg               LP solver for root node
       threads                number of threads to use (available on Unix variants only)
 *MIP options
+      strategy               switches on groups of features
       mipstart               whether it should be tried to use the initial variable levels as initial MIP solution
       tol_integer            tolerance for integrality
       sollim                 limit on number of solutions
@@ -58,14 +60,28 @@ set g Cbc Option Groups /
       probingcuts            Probing Cuts
       reduceandsplitcuts     Reduce and Split Cuts
       residualcapacitycuts   Residual Capacity Cuts
+*      zerohalfcuts           Zero-Half Cuts
       heuristics             global switch for heuristics
       combinesolutions       combine solutions heuristic
+      dins                   distance induced neighborhood search
+      divingrandom           turns on random diving heuristic
+      divingcoefficient      coefficient diving heuristic
+      divingfractional       fractional diving heuristic
+      divingguided           guided diving heuristic
+      divinglinesearch       line search diving heuristic
+      divingpseudocost       pseudo cost diving heuristic
+      divingvectorlength     vector length diving heuristic
       feaspump               feasibility pump      
       feaspump_passes        number of feasibility passes
       greedyheuristic        greedy heuristic
       localtreesearch        local tree search heuristic
+      naiveheuristics        naive heuristics
+      pivotandfix            pivot and fix heuristic
+      randomizedrounding     randomized rounding heuristis
+      rens                   relaxation enforced neighborhood search
       rins                   relaxed induced neighborhood search
       roundingheuristic      rounding heuristic
+      vubheuristic           VUB heuristic
       coststrategy           how to use costs as priorities
       nodestrategy           how to select nodes
       preprocess             integer presolve
@@ -135,10 +151,12 @@ lpoptions.(
   tol_dual             .r.(def 1e-7)
   tol_primal           .r.(def 1e-7)
   tol_presolve         .r.(def 1e-8)
+  passpresolve         .i.(def 5, lo -200, up 100)
   startalg             .s.(def dual)
 )
 mipgeneral.(
   mipstart             .b.(def 0)
+  strategy             .i.(def 1, lo 0, up 2)
   tol_integer          .r.(def 1e-6)
   sollim               .i.(def -1, lo -1, up 2147483647)
   strongbranching      .i.(def 5, lo 0, up 999999)
@@ -170,16 +188,30 @@ mipcuts.(
   probingcuts          .s.(def ifmove)
   reduceandsplitcuts   .s.(def off)
   residualcapacitycuts .s.(def off)
+*  zerohalfcuts         .s.(def off)
 )
 mipheu.(
   heuristics           .b.(def 1)
   combinesolutions     .b.(def 1)
+  dins                 .b.(def 0)
+  divingrandom         .b.(def 0)
+  divingcoefficient    .b.(def 1)
+  divingfractional     .b.(def 0)
+  divingguided         .b.(def 0)
+  divinglinesearch     .b.(def 0)
+  divingpseudocost     .b.(def 0)
+  divingvectorlength   .b.(def 0)
   feaspump             .b.(def 1)
   feaspump_passes      .i.(def 20, lo 0, up 10000)
   greedyheuristic      .s.(def on)
   localtreesearch      .b.(def 0)
+  naiveheuristics      .b.(def 0)
+  pivotandfix          .b.(def 0)
+  randomizedrounding   .b.(def 0)
+  rens                 .b.(def 0)
   rins                 .b.(def 0)
   roundingheuristic    .b.(def 1)
+  vubheuristic         .i.(lo -2, up 20)
 )
 $ontext
 bch.(
@@ -238,6 +270,7 @@ $offtext
                     dual    
                     barrier  )
    mipstart.(       0, 1 )
+   strategy.(       0, 1, 2 )
    sollim.(         '-1')
    cutdepth.(       '-1')
    cuts.(           off, on, root, ifmove, forceon )
@@ -254,20 +287,31 @@ $offtext
 *   residualcapacitycuts.( off, on, root, ifmove, forceon )
    heuristics.(     0, 1 )
    combinesolutions.( 0, 1 )
+   dins.(           0, 1 )
+   divingrandom.(   0, 1 )
+   divingcoefficient.(0, 1 )
+   divingfractional.(0, 1 )
+   divingguided.(   0, 1 )
+   divinglinesearch.( 0, 1 )
+   divingpseudocost.( 0, 1 )
+   divingvectorlength.( 0, 1 )
    feaspump.(       0, 1 )
    greedyheuristic.( off, on, root )
    localtreesearch.( 0, 1 )
+   naiveheuristics.( 0, 1 )
+   pivotandfix.(     0, 1 )
+   randomizedrounding.( 0, 1 )
+   rens.(           0, 1 )
    rins.(           0, 1 )
    roundingheuristic.( 0, 1 )
+   vubheuristic.(    0, 1 )
    coststrategy.(   off, priorities, columnorder, binaryfirst, binarylast, length )
    nodestrategy.(   hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth )
    preprocess.(     off, on, equal, equalall, sos, trysos )
    printfrequency.(  0 )
    names.(           0, 1)
-$ontext
-   usercutnewint.(   0, 1)
-   userheurnewint.(   0, 1)
-$offtext
+*   usercutnewint.(   0, 1)
+*   userheurnewint.(   0, 1)
  /
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /
@@ -283,8 +327,7 @@ $offtext
                      cut_passes_root '100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop in the objective function value is small) if it has less than 5000 columns, and 20 passes otherwise.'
                    /
  oep(o) / mipstart, crossover, perturbation, presolve, names, printfrequency,
-    heuristics, combinesolutions, feaspump, localtreesearch, rins, roundingheuristic
-$ontext
-    ,usercutnewint, userheurnewint
-$offtext
+    heuristics, combinesolutions, dins, divingrandom, divingcoefficient, divingfractional, divingguided, divinglinesearch, divingpseudocost, divingvectorlength,
+    feaspump, localtreesearch, naiveheuristics, pivotandfix, randomizedrounding, rens, rins, roundingheuristic
+*    ,usercutnewint, userheurnewint
     /;

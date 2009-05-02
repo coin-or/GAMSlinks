@@ -226,6 +226,13 @@ tol_presolve
 The tolerance used in presolve.
 
 
+passpresolve
+Normally Presolve does 5 passes but you may want to do less to make
+it more lightweight or do more if improvements are still being made.
+As Presolve will return if nothing is being taken out, you should
+not normally need to use this fine tuning.
+
+
 tol_dual
 The maximum amount the dual constraints can be violated and still be considered feasible.
 
@@ -252,6 +259,25 @@ Let CLP use a primal dual predictor corrector algorithm.
 
 tol_integer
 For an optimal solution, no integer variable may be farther than this from an integer value.
+
+
+strategy
+This turns on newer features.
+Setting strategy to 1 (the default) uses Gomory cuts using tolerance of 0.01 at root,
+does a possible restart after 100 nodes if Cbc can fix many variables and activates
+a diving and RINS heuristic and makes feasibility pump more aggressive.
+
+
+strategy.0
+Use this setting for easy problems.
+
+
+strategy.1
+This is the default setting.
+
+
+strategy.2
+Use this setting for difficult problems.
 
 
 mipstart
@@ -386,6 +412,7 @@ A number between 1 and 100 sets the number of threads used for parallel branch a
 A number 100+n with n between 1 and 100 says that n threads are used to parallelize the branch and bound, but also heuristics such as RINS which do branch and bound on a reduced model also use threads.
 A number 200+n with n between 1 and 100 says that n threads are used to parallelize the branch and bound, but also the cut generators at the root node (i.e., before threads are useful) are run in parallel.
 A number 300+n with n between 1 and 100 combines the 100+n and 200+n options.
+A number 400+n with n between 1 and 100 says that n threads are used in sub-trees.
 Thus, n threads are used to parallelize the branch and bound, but also heuristics use threads and the cut generators at the root node are run in parallel.
 The 100+n, 200+n, and 300+n options are experimental.
 
@@ -605,6 +632,102 @@ combinesolutions.1
 Turns the combine solutions heuristic on.
 
 
+dins
+This parameter control the use of the distance induced neighborhood search heuristic.<BR>
+
+
+dins.0
+Turns the distance induced neighborhood search off.
+
+
+dins.1
+Turns the distance induced neighborhood search on.
+
+
+divingrandom
+This switches on a random diving heuristic at various times.
+
+
+divingrandom.0
+Turns the random diving heuristics off.
+
+
+divingrandom.1
+Turns the random diving heuristics on.
+
+
+divingcoefficient
+This switches on the coefficient diving heuristic.
+
+
+divingcoefficient.0
+Turns the coefficient diving heuristics off.
+
+
+divingcoefficient.1
+Turns the coefficient diving heuristics on.
+
+
+divingfractional
+This switches on the fractional diving heuristic.
+
+
+divingfractional.0
+Turns the fractional diving heuristics off.
+
+
+divingfractional.1
+Turns the fractional diving heuristics on.
+
+
+divingguided
+This switches on the guided diving heuristic.
+
+
+divingguided.0
+Turns the guided diving heuristics off.
+
+
+divingguided.1
+Turns the guided diving heuristics on.
+
+
+divinglinesearch
+This switches on the line search diving heuristic.
+
+
+divinglinesearch.0
+Turns the line search diving heuristics off.
+
+
+divinglinesearch.1
+Turns the linesearch diving heuristics on.
+
+
+divingpseudocost
+This switches on the pseudo costs diving heuristic.
+
+
+divingpseudocost.0
+Turns the pseudo costs diving heuristics off.
+
+
+divingpseudocost.1
+Turns the pseudo costs diving heuristics on.
+
+
+divingvectorlength
+This switches on the vector length diving heuristic.
+
+
+divingvectorlength.0
+Turns the vector length diving heuristics off.
+
+
+divingvectorlength.1
+Turns the vector length diving heuristics on.
+
+
 feaspump
 This parameter control the use of the feasibility pump heuristic at the root.<BR>
 This is due to Fischetti and Lodi and uses a sequence of LPs to try and get an integer feasible solution.
@@ -656,8 +779,56 @@ localtreesearch.1
 Turns the local tree search on.
 
 
+naiveheuristics
+This parameter controls the use of some naive heuristics, e.g., fixing of all integers with costs to zero.
+
+
+naiveheuristics.0
+Turns the naive heuristics off.
+
+
+naiveheuristics.1
+Turns the naive heuristics on.
+
+
+pivotandfix
+This parameter controls the use of the pivot and fix heuristic.
+
+
+pivotandfix.0
+Turns the naive pivot and fix heuristic off.
+
+
+pivotandfix.1
+Turns the naive pivot and fix heuristic on.
+
+
+randomizedrounding
+This parameter controls the use of the randomized rounding heuristic.
+
+
+randomizedrounding.0
+Turns the randomized rounding heuristic off.
+
+
+randomizedrounding.1
+Turns the randomized rounding heuristic on.
+
+
+rens
+This parameter controls the use of the relaxation enforced neighborhood search heuristic.<BR>
+
+
+rens.0
+Turns the relaxation enforced neighborhood search off.
+
+
+rens.1
+Turns the relaxation enforced neighborhood search on.
+
+
 rins
-This parameter control the use of the relaxed induced neighborhood search heuristic.<BR>
+This parameter controls the use of the relaxed induced neighborhood search heuristic.<BR>
 This heuristic compares the current solution with the best incumbent, fixes all discrete variables with the same value, presolves the problem, and does a branch and bound for 200 nodes.<BR>
 Reference: E. Danna, E. Rothberg, and C. Le Pape, Exploring relaxation induced neighborhoods to improve MIP solutions, Math. Programming, 102 (1) (2005), pp. 71-91.
 
@@ -680,6 +851,10 @@ Turns the rounding heuristic off.
 
 roundingheuristic.1
 Turns the rounding heuristic on.
+
+
+vubheuristic
+If this option is set, Cbc will try and fix some integer variables.
 
 
 names

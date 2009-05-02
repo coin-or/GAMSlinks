@@ -51,6 +51,8 @@ Currently CoinCBC understands the following options:
 {tol\_primal} \> primal feasibility tolerance \\
 \hyperlink{tol_presolve}
 {tol\_presolve} \> tolerance used in presolve \\
+\hyperlink{passpresolve}
+{passpresolve} \> how many passes to do in presolve \\
 \hyperlink{startalg}
 {startalg} \> LP solver for root node
 \end{tabbing}
@@ -59,6 +61,10 @@ Currently CoinCBC understands the following options:
 \subsubsection{MIP Options}
 \begin{tabbing}
 \hspace {1.3in} \= \\
+\hyperlink{mipstart}
+{mipstart} \> whether it should be tried to use the initial variable levels as initial MIP solution \\
+\hyperlink{strategy}
+{strategy} \> switches on groups of features\\
 \hyperlink{tol_integer}
 {tol\_integer} \> tolerance for integrality \\
 \hyperlink{sollim}
@@ -133,6 +139,22 @@ Currently CoinCBC understands the following options:
 {heuristics} \> global switch for heuristics \\
 \hyperlink{combinesolutions}
 {combinesolutions} \> combine solutions heuristic \\
+\hyperlink{dins}
+{dins} \> distance induced neighborhood search \\
+\hyperlink{divingrandom}
+{divingrandom} \> turns on random diving heuristic \\
+\hyperlink{divingcoefficient}
+{divingcoefficient} \> coefficient diving heuristic \\
+\hyperlink{divingfractional}
+{divingfractional} \> fractional diving heuristic \\
+\hyperlink{divingguided}
+{divingguided} \> guided diving heuristic \\
+\hyperlink{divinglinesearch}
+{divinglinesearch} \> line search diving heuristic \\
+\hyperlink{divingpseudocost}
+{divingpseudocost} \> pseudo cost diving heuristic \\
+\hyperlink{divingvectorlength}
+{divingvectorlength} \> vector length diving heuristic \\
 \hyperlink{feaspump}
 {feaspump} \> feasibility pump \\
 \hyperlink{feaspump_passes}
@@ -141,10 +163,20 @@ Currently CoinCBC understands the following options:
 {greedyheuristic} \> greedy heuristic \\
 \hyperlink{localtreesearch}
 {localtreesearch} \> local tree search heuristic \\
+\hyperlink{naiveheuristics}
+{naiveheuristics} \> naive heuristics \\
+\hyperlink{pivotandfix}
+{pivotandfix} \> pivot and fix heuristic \\
+\hyperlink{randomizedrounding}
+{randomizedrounding} \> randomized rounding heuristis \\
+\hyperlink{rens}
+{rens} \> relaxation enforced neighborhood search \\
 \hyperlink{rins}
 {rins} \> relaxed induced neighborhood search \\
 \hyperlink{roundingheuristic}
-{roundingheuristic} \> rounding heuristic
+{roundingheuristic} \> rounding heuristic \\
+\hyperlink{vubheuristic}
+{vubheuristic} \> VUB heuristic
 \end{tabbing}
 
 \subsubsection{MIP Options for the GAMS Branch Cut and Heuristic Facility}

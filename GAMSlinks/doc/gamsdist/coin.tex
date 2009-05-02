@@ -31,18 +31,18 @@ COIN-OR (\textbf{CO}mputational \textbf{IN}frastructure for \textbf{O}perations 
 One of the projects hosted at COIN-OR is the GAMSlinks project (\texttt{https://projects.coin-or.org/GAMSlinks}).
 It is dedicated to the development of interfaces between GAMS and open source solvers.
 Some of these links and solvers have also found their way into the regular GAMS distribution.
-They are currently available for Linux (32 and 64 bit), Windows (32 and 64 bit), Sun Solaris (Intel 64 bit), and Darwin (Intel 32 bit) systems.
+They are currently available for Linux (32 and 64 bit), Windows (32 and 64 bit), Sun Solaris (Intel 64 bit), and Darwin (Intel 32 and 64 bit) systems.
 With the availability of source code for the GAMSlinks the user is not limited to the out of the box solvers that come with a regular GAMS distribution, but can extend and build these interfaces by themselves.
 
-As of the upcoming GAMS Distribution, available solvers include:
+Available solvers include:
 \begin{itemize}
 \item CoinBonmin 1.0: Basic Open-source Nonlinear Mixed Integer programming\\
 (model types: LP, RMIP, MIP, DNLP, NLP, RMINLP, MINLP, QCP, RMIQCP, MIQCP)
-\item CoinCbc 2.2: COIN-OR Branch and Cut\\
+\item CoinCbc 2.3: COIN-OR Branch and Cut\\
 (model types: LP, MIP, RMIP)
-\item CoinGlpk 4.35: Gnu Linear Programming Kit\\
+\item CoinGlpk 4.37: Gnu Linear Programming Kit\\
 (model types: LP, MIP, RMIP)
-\item CoinIpopt 3.5: Interior Point Optimizer\\
+\item CoinIpopt 3.6: Interior Point Optimizer\\
 (model types: LP, RMIP, DNLP, NLP, RMINLP, QCP, RMIQCP)
 \item CoinScip 1.1.0: Solving Constrained Integer Programs\\
 (model types: LP, MIP, RMIP)
@@ -254,7 +254,7 @@ cover\_cuts& I& \-5&--& +&--& +\\
 flow\_covers\_cuts& I& \-5&--& +&--& +\\
 lift\_and\_project\_cuts& I& 0&--& +&--& +\\
 mir\_cuts& I& \-5&--& +&--& +\\
-probing\_cuts& I& \-5&--& +&--& +\\
+% probing\_cuts& I& \-5&--& +&--& +\\
 reduce\_and\_split\_cuts& I& 0&--& +&--& +\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{NLP interface}\\
@@ -933,5 +933,11 @@ Calls gamskeep instead of gams
 \textsl{(default = FALSE)}
 
 \end{description}
+
+\section{CoinBonminD, CoinCbcD, CoinIpoptD}
+
+For Bonmin, Cbc, and Ipopt, experimental in-core communication links have been added.
+They offer in-core communication between GAMS and the solver, making potentially large model scratch files unnecessary.
+The current in-core communication links support all features of the traditional ones, except for branching priorities and the GAMS branch-cut-heuristic facility (BCH).
 
 \chapterend

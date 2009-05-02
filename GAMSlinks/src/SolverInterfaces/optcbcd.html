@@ -62,6 +62,9 @@ idiotcrash</a></td>
 <tr><td><a href="#maxfactor">
 maxfactor</a></td>
 <td>maximum number of iterations between refactorizations</td></tr>
+<tr><td><a href="#passpresolve">
+passpresolve</a></td>
+<td>how many passes to do in presolve</td></tr>
 <tr><td><a href="#perturbation">
 perturbation</a></td>
 <td>perturbation of problem</td></tr>
@@ -129,6 +132,9 @@ printfrequency</a></td>
 <tr><td><a href="#sollim">
 sollim</a></td>
 <td>limit on number of solutions</td></tr>
+<tr><td><a href="#strategy">
+strategy</a></td>
+<td>switches on groups of features</td></tr>
 <tr><td><a href="#strongbranching">
 strongbranching</a></td>
 <td>strong branching</td></tr>
@@ -188,6 +194,30 @@ twomircuts</a></td>
 <tr><td><a href="#combinesolutions">
 combinesolutions</a></td>
 <td>combine solutions heuristic</td></tr>
+<tr><td><a href="#dins">
+dins</a></td>
+<td>distance induced neighborhood search</td></tr>
+<tr><td><a href="#divingcoefficient">
+divingcoefficient</a></td>
+<td>coefficient diving heuristic</td></tr>
+<tr><td><a href="#divingfractional">
+divingfractional</a></td>
+<td>fractional diving heuristic</td></tr>
+<tr><td><a href="#divingguided">
+divingguided</a></td>
+<td>guided diving heuristic</td></tr>
+<tr><td><a href="#divinglinesearch">
+divinglinesearch</a></td>
+<td>line search diving heuristic</td></tr>
+<tr><td><a href="#divingpseudocost">
+divingpseudocost</a></td>
+<td>pseudo cost diving heuristic</td></tr>
+<tr><td><a href="#divingrandom">
+divingrandom</a></td>
+<td>turns on random diving heuristic</td></tr>
+<tr><td><a href="#divingvectorlength">
+divingvectorlength</a></td>
+<td>vector length diving heuristic</td></tr>
 <tr><td><a href="#feaspump">
 feaspump</a></td>
 <td>feasibility pump</td></tr>
@@ -203,12 +233,27 @@ heuristics</a></td>
 <tr><td><a href="#localtreesearch">
 localtreesearch</a></td>
 <td>local tree search heuristic</td></tr>
+<tr><td><a href="#naiveheuristics">
+naiveheuristics</a></td>
+<td>naive heuristics</td></tr>
+<tr><td><a href="#pivotandfix">
+pivotandfix</a></td>
+<td>pivot and fix heuristic</td></tr>
+<tr><td><a href="#randomizedrounding">
+randomizedrounding</a></td>
+<td>randomized rounding heuristis</td></tr>
+<tr><td><a href="#rens">
+rens</a></td>
+<td>relaxation enforced neighborhood search</td></tr>
 <tr><td><a href="#rins">
 rins</a></td>
 <td>relaxed induced neighborhood search</td></tr>
 <tr><td><a href="#roundingheuristic">
 roundingheuristic</a></td>
-<td>rounding heuristic</td></tr></table>
+<td>rounding heuristic</td></tr>
+<tr><td><a href="#vubheuristic">
+vubheuristic</a></td>
+<td>VUB heuristic</td></tr></table>
 <h2>Detailed Descriptions of CBCD Options</h2>
 
 <h4><a name="cliquecuts">
@@ -358,6 +403,118 @@ Determines the number of rounds that the cut generators are applied in the nodes
 A negative value -n means that n passes are also applied if the objective does not drop.
 
 <br><i>(default = 1)</i>
+
+<h4><a name="dins">
+dins</a>
+<i> (integer)</i> distance induced neighborhood search</h4><p>
+
+This parameter control the use of the distance induced neighborhood search heuristic.<BR>
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the distance induced neighborhood search off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the distance induced neighborhood search on.</td></tr>
+</table>
+
+<h4><a name="divingcoefficient">
+divingcoefficient</a>
+<i> (integer)</i> coefficient diving heuristic</h4><p>
+
+This switches on the coefficient diving heuristic.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the coefficient diving heuristics off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the coefficient diving heuristics on.</td></tr>
+</table>
+
+<h4><a name="divingfractional">
+divingfractional</a>
+<i> (integer)</i> fractional diving heuristic</h4><p>
+
+This switches on the fractional diving heuristic.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the fractional diving heuristics off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the fractional diving heuristics on.</td></tr>
+</table>
+
+<h4><a name="divingguided">
+divingguided</a>
+<i> (integer)</i> guided diving heuristic</h4><p>
+
+This switches on the guided diving heuristic.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the guided diving heuristics off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the guided diving heuristics on.</td></tr>
+</table>
+
+<h4><a name="divinglinesearch">
+divinglinesearch</a>
+<i> (integer)</i> line search diving heuristic</h4><p>
+
+This switches on the line search diving heuristic.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the line search diving heuristics off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the linesearch diving heuristics on.</td></tr>
+</table>
+
+<h4><a name="divingpseudocost">
+divingpseudocost</a>
+<i> (integer)</i> pseudo cost diving heuristic</h4><p>
+
+This switches on the pseudo costs diving heuristic.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the pseudo costs diving heuristics off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the pseudo costs diving heuristics on.</td></tr>
+</table>
+
+<h4><a name="divingrandom">
+divingrandom</a>
+<i> (integer)</i> turns on random diving heuristic</h4><p>
+
+This switches on a random diving heuristic at various times.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the random diving heuristics off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the random diving heuristics on.</td></tr>
+</table>
+
+<h4><a name="divingvectorlength">
+divingvectorlength</a>
+<i> (integer)</i> vector length diving heuristic</h4><p>
+
+This switches on the vector length diving heuristic.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the vector length diving heuristics off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the vector length diving heuristics on.</td></tr>
+</table>
 
 <h4><a name="dualpivot">
 dualpivot</a>
@@ -569,6 +726,20 @@ Reference: H. Marchand and L. A. Wolsey, Aggregation and Mixed Integer Rounding 
 
 <br><i>(default = ifmove)</i>
 
+<h4><a name="naiveheuristics">
+naiveheuristics</a>
+<i> (integer)</i> naive heuristics</h4><p>
+
+This parameter controls the use of some naive heuristics, e.g., fixing of all integers with costs to zero.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the naive heuristics off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the naive heuristics on.</td></tr>
+</table>
+
 <h4><a name="names">
 names</a>
 <i> (integer)</i> specifies whether variable and equation names should be given to CBC</h4><p>
@@ -645,6 +816,17 @@ CBC stops if the relative gap between the best known solution and the best possi
 
 <br><i>(default = GAMS optcr)</i>
 
+<h4><a name="passpresolve">
+passpresolve</a>
+<i> (integer)</i> how many passes to do in presolve</h4><p>
+
+Normally Presolve does 5 passes but you may want to do less to make
+it more lightweight or do more if improvements are still being made.
+As Presolve will return if nothing is being taken out, you should
+not normally need to use this fine tuning.
+
+<br><i>(default = 5)</i>
+
 <h4><a name="perturbation">
 perturbation</a>
 <i> (integer)</i> perturbation of problem</h4><p>
@@ -660,6 +842,20 @@ Normally CLP tries to be intelligent, but you can switch this off.
 Turns off perturbation of LP.</td></tr>
 <tr valign="top"><td width=20 align=right>1</td><td>.
 Turns on perturbation of LP.</td></tr>
+</table>
+
+<h4><a name="pivotandfix">
+pivotandfix</a>
+<i> (integer)</i> pivot and fix heuristic</h4><p>
+
+This parameter controls the use of the pivot and fix heuristic.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the naive pivot and fix heuristic off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the naive pivot and fix heuristic on.</td></tr>
 </table>
 
 <h4><a name="preprocess">
@@ -764,6 +960,20 @@ Setting forceonstrong forces CBC strongly to do probing at every node.</td></tr>
 This is like forceonstrong, but does only probing (column fixing) and turns off row strengthening, so the matrix will not change inside the branch and bound.</td></tr>
 </table>
 
+<h4><a name="randomizedrounding">
+randomizedrounding</a>
+<i> (integer)</i> randomized rounding heuristis</h4><p>
+
+This parameter controls the use of the randomized rounding heuristic.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the randomized rounding heuristic off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the randomized rounding heuristic on.</td></tr>
+</table>
+
 <h4><a name="reduceandsplitcuts">
 reduceandsplitcuts</a>
 <i> (string)</i> Reduce and Split Cuts</h4><p>
@@ -776,6 +986,20 @@ The choice of the linear combinations is driven by the objective of reducing the
 Reference: K. Anderson, G. Cornuejols, and Yanjun Li, Reduce-and-Split Cuts: Improving the Performance of Mixed Integer Gomory Cuts, Management Science 51 (2005).
 
 <br><i>(default = off)</i>
+
+<h4><a name="rens">
+rens</a>
+<i> (integer)</i> relaxation enforced neighborhood search</h4><p>
+
+This parameter controls the use of the relaxation enforced neighborhood search heuristic.<BR>
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns the relaxation enforced neighborhood search off.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns the relaxation enforced neighborhood search on.</td></tr>
+</table>
 
 <h4><a name="residualcapacitycuts">
 residualcapacitycuts</a>
@@ -802,7 +1026,7 @@ Maximum time in seconds.
 rins</a>
 <i> (integer)</i> relaxed induced neighborhood search</h4><p>
 
-This parameter control the use of the relaxed induced neighborhood search heuristic.<BR>
+This parameter controls the use of the relaxed induced neighborhood search heuristic.<BR>
 This heuristic compares the current solution with the best incumbent, fixes all discrete variables with the same value, presolves the problem, and does a branch and bound for 200 nodes.<BR>
 Reference: E. Danna, E. Rothberg, and C. Le Pape, Exploring relaxation induced neighborhoods to improve MIP solutions, Math. Programming, 102 (1) (2005), pp. 71-91.
 
@@ -911,6 +1135,25 @@ Let CLP use the dual simplex algorithm.</td></tr>
 Let CLP use a primal dual predictor corrector algorithm.</td></tr>
 </table>
 
+<h4><a name="strategy">
+strategy</a>
+<i> (integer)</i> switches on groups of features</h4><p>
+
+This turns on newer features.
+Setting strategy to 1 (the default) uses Gomory cuts using tolerance of 0.01 at root,
+does a possible restart after 100 nodes if Cbc can fix many variables and activates
+a diving and RINS heuristic and makes feasibility pump more aggressive.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Use this setting for easy problems.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+This is the default setting.</td></tr>
+<tr valign="top"><td width=20 align=right>2</td><td>.
+Use this setting for difficult problems.</td></tr>
+</table>
+
 <h4><a name="strongbranching">
 strongbranching</a>
 <i> (integer)</i> strong branching</h4><p>
@@ -931,6 +1174,7 @@ A number between 1 and 100 sets the number of threads used for parallel branch a
 A number 100+n with n between 1 and 100 says that n threads are used to parallelize the branch and bound, but also heuristics such as RINS which do branch and bound on a reduced model also use threads.
 A number 200+n with n between 1 and 100 says that n threads are used to parallelize the branch and bound, but also the cut generators at the root node (i.e., before threads are useful) are run in parallel.
 A number 300+n with n between 1 and 100 combines the 100+n and 200+n options.
+A number 400+n with n between 1 and 100 says that n threads are used in sub-trees.
 Thus, n threads are used to parallelize the branch and bound, but also heuristics use threads and the cut generators at the root node are run in parallel.
 The 100+n, 200+n, and 300+n options are experimental.
 
@@ -986,6 +1230,17 @@ See the <a href="#cuts">option cuts</a> for an explanation on the different valu
 Reference: S. Dash, and O. Guenluek, Valid Inequalities Based on Simple Mixed-integer Sets, to appear in Math. Programming.
 
 <br><i>(default = root)</i>
+
+<h4><a name="vubheuristic">
+vubheuristic</a>
+<i> (integer)</i> VUB heuristic</h4><p>
+
+If this option is set, Cbc will try and fix some integer variables.
+
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td></td></tr>
+</table>
 
 <h4><a name="writemps">
 writemps</a>
