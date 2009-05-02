@@ -1197,7 +1197,10 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 						
 						expression* term1 = stack.back(); stack.pop_back();
 						expression* term2 = stack.back(); stack.pop_back();
-						exp = new exprExp(new exprMul(new exprLog(term2), term1));
+						if (term1->Type() == CONST)
+							exp = new exprPow(term2, term1);
+						else
+							exp = new exprExp(new exprMul(new exprLog(term2), term1));
 					} break;
 					case fncvpower: { // constant ^ x
 						if (debugoutput) std::clog << "power" << std::endl;
