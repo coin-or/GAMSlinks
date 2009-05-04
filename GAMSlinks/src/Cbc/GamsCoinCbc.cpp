@@ -44,6 +44,7 @@ extern "C" {
 #include "OsiClpSolverInterface.hpp"
 #include "CoinHelperFunctions.hpp"
 #include "CoinTime.hpp"
+#include "CoinError.hpp"
 
 void setupProblem(GamsModel& gm, GamsDictionary& gamsdict, OsiClpSolverInterface& solver);
 void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model);
@@ -68,10 +69,7 @@ int gamsCallBack(CbcModel* currentSolver, int whereFrom) {
 }
 
 int main (int argc, const char *argv[]) {
-#if defined(_MSC_VER)
-  /* Prevents hanging "Application Error, Click OK" Windows in case something bad happens */
-  { UINT oldMode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX); }
-#endif
+	WindowsErrorPopupBlocker();
 
 	if (argc==1) {
 		fprintf(stderr, "usage: %s <control_file_name>\nexiting ...\n",  argv[0]);

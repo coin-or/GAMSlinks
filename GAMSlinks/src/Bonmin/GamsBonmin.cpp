@@ -30,6 +30,7 @@
 #include "GamsCutGenerator.hpp"
 #include "BonBonminSetup.hpp"
 #include "BonCbc.hpp"
+#include "CoinError.hpp"
 
 // in case that we have to solve an NLP only
 #include "IpIpoptApplication.hpp"
@@ -70,10 +71,7 @@ void BCHinit(BonminSetup& bonmin_setup, GamsHandlerSmag& gamshandler, GamsDictio
 void printOptions(const SmartPtr<Journalist>& jnlst, const SmartPtr<Bonmin::RegisteredOptions>& regoptions);
 
 int main (int argc, char* argv[]) {
-#if defined(_MSC_VER)
-  /* Prevents hanging "Application Error, Click OK" Windows in case something bad happens */
-  { UINT oldMode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX); }
-#endif
+	WindowsErrorPopupBlocker();
   smagHandle_t prob;
 
   if (argc < 2) {
