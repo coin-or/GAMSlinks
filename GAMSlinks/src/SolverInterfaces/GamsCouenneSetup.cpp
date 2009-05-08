@@ -999,7 +999,7 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 			case nlPushV : { // push variable
 				address = gmoGetjSolver(gmo, address);
 				if (debugoutput) std::clog << "push variable " << address << std::endl;
-				exp = prob->Variables()[address]->clone(prob->domain());
+				exp = new exprClone(prob->Variables()[address]);
 			} break;
 			case nlPushI : { // push constant
 				if (debugoutput) std::clog << "push constant " << constants[address] << std::endl;
@@ -1019,7 +1019,7 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 				if (debugoutput) std::clog << "add variable " << address << std::endl;
 				
 				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = prob->Variables()[address]->clone(prob->domain());
+				expression* term2 = new exprClone(prob->Variables()[address]);
 				exp = new exprSum(term1, term2);
 			} break;
 			case nlAddI: { // add immediate
@@ -1040,7 +1040,7 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 				if (debugoutput) std::clog << "substract variable " << address << std::endl;
 
 				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = prob->Variables()[address]->clone(prob->domain());
+				expression* term2 = new exprClone(prob->Variables()[address]);
 				exp = new exprSub(term1, term2);
 			} break;
 			case nlSubI: { // subtract immediate
@@ -1062,7 +1062,7 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 				if (debugoutput) std::clog << "multiply variable " << address << std::endl;
 				
 				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = prob->Variables()[address]->clone(prob->domain());
+				expression* term2 = new exprClone(prob->Variables()[address]);
 				exp = new exprMul(term1, term2);
 			} break;
 			case nlMulI: { // multiply immediate
@@ -1087,7 +1087,7 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 				if (debugoutput) std::clog << "divide variable " << address << std::endl;
 				
 				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = prob->Variables()[address]->clone(prob->domain());
+				expression* term2 = new exprClone(prob->Variables()[address]);
 				if (term1->Type() == CONST)
 					exp = new exprMul(term1, new exprInv(term2));
 				else
@@ -1110,7 +1110,7 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 				address = gmoGetjSolver(gmo, address);
 				if (debugoutput) std::clog << "push negated variable " << address << std::endl;
 
-				exp = new exprOpp(prob->Variables()[address]->clone(prob->domain()));
+				exp = new exprOpp(new exprClone(prob->Variables()[address]));
 			} break;
 			case nlCallArg1 :
 			case nlCallArg2 :
@@ -1267,7 +1267,7 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 								monoms[0] = coeff[0];
 								monoms[1] = new exprMul(coeff[1], var);
 								for (size_t i = 2; i < coeff.size(); ++i)
-									monoms[i] = new exprMul(coeff[i], new exprPow(var->clone(), new exprConst(i)));
+									monoms[i] = new exprMul(coeff[i], new exprPow(new exprClone(var), new exprConst(i)));
 								exp = new exprSum(monoms, coeff.size());
 							}
 						}
