@@ -141,6 +141,7 @@ bool GamsCouenneSetup::InitializeCouenne(SmartPtr<GamsMINLP> minlp) {
 	options()->SetNumericValue("bonmin.time_limit", gmoResLim(gmo), true, true);
   /** Change default value for failure behavior so that code doesn't crash when Ipopt does not solve a sub-problem.*/
   options()->SetStringValue("nlp_failure_behavior", "fathom", "bonmin.");
+  options()->SetStringValue("delete_redundant", "no", "couenne.");
 
 	if (gmoNLM(gmo) == 0  && (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp))
 		options()->SetStringValue("hessian_constant", "yes", true, true); 
