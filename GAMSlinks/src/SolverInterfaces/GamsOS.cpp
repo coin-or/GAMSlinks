@@ -46,9 +46,9 @@ GamsOS::GamsOS()
 : gmo(NULL), osinstance(NULL)
 {
 #ifdef GAMS_BUILD
-	strcpy(os_message, "GAMS/CoinOS (OS Library trunk)\nwritten by J. Ma, K. Martin, H. Gassmann\n");
+	strcpy(os_message, "GAMS/CoinOS (OS Library trunk)\nwritten by H. Gassmann, J. Ma, and K. Martin\n");
 #else
-	strcpy(os_message, "GAMS/OSD (OS Library trunk)\nwritten by J. Ma, K. Martin, H. Gassmann\n");
+	strcpy(os_message, "GAMS/OSD (OS Library trunk)\nwritten by H. Gassmann, J. Ma, and K. Martin\n");
 #endif
 }
 
