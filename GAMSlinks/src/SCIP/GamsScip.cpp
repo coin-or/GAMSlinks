@@ -327,7 +327,11 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   	}
   	smagStdOutputFlush(prob, SMAG_LOGMASK);
 
-  	SCIP_CALL( SCIPlpiSolveDual(lpi) );
+  	SCIP_RETCODE lpreturn = SCIPlpiSolveDual(lpi);
+  	if (!islp && lpreturn == SCIP_LPERROR) // catch hard lp failures in final lp solve
+  	 	SCIP_CALL( SCIPlpiFree(&lpi) );
+  	else
+  		SCIP_CALL( lpreturn );
   }
 
 	// if problem was an LP, get gams status and statistics
