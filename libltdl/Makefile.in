@@ -14,6 +14,16 @@
 
 @SET_MAKE@
 
+# Copyright (C) 2006, 2007 International Business Machines and others.
+# All Rights Reserved.
+# This file is distributed under the Common Public License.
+
+# Author:  Andreas Waechter           IBM    2006-04-13
+
+########################################################################
+#                    Documentation installation                        #
+########################################################################
+
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -38,11 +48,14 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = README $(am__configure_deps) $(am__include_HEADERS_DIST) \
-	$(am__noinst_HEADERS_DIST) $(srcdir)/../config.guess \
+	$(am__noinst_HEADERS_DIST) \
+	$(srcdir)/../BuildTools/Makemain.inc $(srcdir)/../config.guess \
 	$(srcdir)/../config.sub $(srcdir)/../install-sh \
 	$(srcdir)/../ltmain.sh $(srcdir)/../missing \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config-h.in $(top_srcdir)/configure COPYING.LIB
+@HAVE_EXTERNALS_TRUE@am__append_1 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -235,6 +248,8 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = no-dependencies foreign
+EXTRA_DIST = $(am__append_1)
+DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)
 @INSTALL_LTDL_TRUE@include_HEADERS = ltdl.h
 @INSTALL_LTDL_TRUE@lib_LTLIBRARIES = libltdl.la
 @INSTALL_LTDL_FALSE@noinst_HEADERS = ltdl.h
@@ -245,6 +260,8 @@ libltdl_la_LDFLAGS = -no-undefined -version-info 4:4:1
 libltdl_la_LIBADD = $(LIBADD_DL)
 libltdlc_la_SOURCES = ltdl.c
 libltdlc_la_LIBADD = $(LIBADD_DL)
+DocFiles = README AUTHORS LICENSE
+DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -252,7 +269,7 @@ all: config.h
 .SUFFIXES: .c .lo .o .obj
 am--refresh:
 	@:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../BuildTools/Makemain.inc $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -434,7 +451,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/..
+	$(mkdir_p) $(distdir)/.. $(distdir)/../BuildTools
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -586,6 +603,7 @@ clean-generic:
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -663,9 +681,56 @@ uninstall-am: uninstall-includeHEADERS uninstall-info-am \
 
 ltdl.lo: ltdl.h config.h
 
-$(libltdl_la_OBJECTS) $(libltdlc_la_OBJECTS): libtool
-libtool: $(LIBTOOL_DEPS)
-	$(SHELL) ./config.status --recheck
+install-doc: $(DocFiles)
+	test -z "$(DocInstallDir)" || $(mkdir_p) "$(DESTDIR)$(DocInstallDir)"
+	for file in $(DocFiles); do \
+	  if test -f "$$file"; then dir=; else dir="$(srcdir)/"; fi; \
+	  if test -f "$$dir$$file"; then $(INSTALL_DATA) "$$dir$$file" "$(DESTDIR)$(DocInstallDir)/$$file"; fi; \
+	done
+
+uninstall-doc:
+	for file in $(DocFiles); do \
+	  rm -f "$(DESTDIR)$(DocInstallDir)/$$file"; \
+	done
+
+########################################################################
+#                         Maintainer Stuff                             #
+########################################################################
+
+# Make sure acinclude is using most recent coin.m4
+@MAINTAINER_MODE_TRUE@$(srcdir)/acinclude.m4: $(BUILDTOOLSDIR)/coin.m4
+@MAINTAINER_MODE_TRUE@	cat $(LIBTOOLM4) $< > $@
+
+# Make sure the autotools scripts are up to date
+@MAINTAINER_MODE_TRUE@$(AUX_DIR)/install-sh: $(BUILDTOOLSDIR)/install-sh
+@MAINTAINER_MODE_TRUE@	cp $< $@
+
+@MAINTAINER_MODE_TRUE@$(AUX_DIR)/missing: $(BUILDTOOLSDIR)/missing
+@MAINTAINER_MODE_TRUE@	cp $< $@
+
+@MAINTAINER_MODE_TRUE@$(AUX_DIR)/config.guess: $(BUILDTOOLSDIR)/config.guess
+@MAINTAINER_MODE_TRUE@	cp $< $@
+
+@MAINTAINER_MODE_TRUE@$(AUX_DIR)/config.sub: $(BUILDTOOLSDIR)/config.sub
+@MAINTAINER_MODE_TRUE@	cp $< $@
+
+@MAINTAINER_MODE_TRUE@$(AUX_DIR)/depcomp: $(BUILDTOOLSDIR)/depcomp
+@MAINTAINER_MODE_TRUE@	cp $< $@
+
+@MAINTAINER_MODE_TRUE@$(AUX_DIR)/ltmain.sh: $(BUILDTOOLSDIR)/ltmain.sh
+@MAINTAINER_MODE_TRUE@	cp $< $@
+
+# Take care of updating externals (if Externals file exists)
+@HAVE_EXTERNALS_TRUE@@MAINTAINER_MODE_TRUE@$(top_builddir)/Makefile: .Externals-stamp
+
+@HAVE_EXTERNALS_TRUE@@MAINTAINER_MODE_TRUE@.Externals-stamp: $(srcdir)/Externals
+@HAVE_EXTERNALS_TRUE@@MAINTAINER_MODE_TRUE@	cd $(srcdir); svn propset svn:externals -F Externals .
+@HAVE_EXTERNALS_TRUE@@MAINTAINER_MODE_TRUE@	touch .Externals-stamp
+
+@HAVE_EXTERNALS_TRUE@@MAINTAINER_MODE_TRUE@update-externals: .Externals-stamp
+@HAVE_EXTERNALS_TRUE@@MAINTAINER_MODE_TRUE@	cd $(srcdir); svn update
+
+.PHONY: install-doc uninstall-doc update-externals
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

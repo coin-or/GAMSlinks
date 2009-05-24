@@ -1,6 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
 AUTOMAKE_OPTIONS = no-dependencies foreign
+EXTRA_DIST =
+DISTCLEANFILES =
 
 if INSTALL_LTDL
 include_HEADERS = ltdl.h
@@ -27,6 +29,4 @@ libltdlc_la_LIBADD = $(LIBADD_DL)
 ## Because we do not have automatic dependency tracking:
 ltdl.lo: ltdl.h config.h
 
-$(libltdl_la_OBJECTS) $(libltdlc_la_OBJECTS): libtool
-libtool: $(LIBTOOL_DEPS)
-	$(SHELL) ./config.status --recheck
+include ../BuildTools/Makemain.inc
