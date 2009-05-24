@@ -15,27 +15,43 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301  USA
+#
+# Modified to comply with COIN-OR build system
 
+AC_PREREQ(2.59)
 
-dnl FIXME: Is this really new enough?
-AC_PREREQ(2.50)
-
-
-## ------------------------ ##
-## Autoconf initialisation. ##
-## ------------------------ ##
 AC_INIT([libltdl], [1.2], [bug-libtool@gnu.org])
 AC_CONFIG_SRCDIR([ltdl.c])
+AC_PREFIX_DEFAULT([`pwd`])
 
+# Get the system type
+AC_CANONICAL_BUILD
+
+# If this project depends on external projects, the Externals file in
+# the source root directory contains definition of where to find those
+# externals.  The following macro ensures that those externals are
+# retrieved by svn if they are not there yet.
+AC_COIN_PROJECTDIR_INIT
+
+# Check if user wants to produce debugging code
+AC_COIN_DEBUG_COMPILE(libltdl)
+
+# Get the name of the C compiler and appropriate compiler options
+coin_skip_warn_cflags=yes
+AC_COIN_PROG_CC
+AC_C_CONST
+AC_C_INLINE
+
+# Initialize automake and libtool
+#AC_CONFIG_AUX_DIR([.])
+AC_COIN_INIT_AUTO_TOOLS
 
 ## ------------------------------- ##
 ## Libltdl specific configuration. ##
 ## ------------------------------- ##
 
-AC_CONFIG_AUX_DIR([.])
-
 if test -z "$enable_ltdl_install$enable_ltdl_convenience"; then
-  if test -f ${srcdir}/ltmain.sh; then
+  if test -f ${srcdir}/../ltmain.sh; then
     # if libltdl is libtoolized, it is assumed to be stand-alone and
     # installed unless the command line overrides it (tested above)
     enable_ltdl_install=yes
@@ -46,34 +62,11 @@ if test -z "$enable_ltdl_install$enable_ltdl_convenience"; then
   fi
 fi
 
-
-## ------------------------ ##
-## Automake Initialisation. ##
-## ------------------------ ##
-AM_INIT_AUTOMAKE(AC_PACKAGE_TARNAME, AC_PACKAGE_VERSION, -)
-AM_CONFIG_HEADER([config.h:config-h.in])
-
-
-## ------------------ ##
-## C compiler checks. ##
-## ------------------ ##
-AC_PROG_CC
-AC_C_CONST
-AC_C_INLINE
-
-
-## ----------------------- ##
-## Libtool initialisation. ##
-## ----------------------- ##
-AC_LIBTOOL_WIN32_DLL
-AC_PROG_LIBTOOL
-AC_SUBST([LIBTOOL_DEPS])
-
 AC_LIB_LTDL
-
 
 ## -------- ##
 ## Outputs. ##
 ## -------- ##
 AC_CONFIG_FILES([Makefile])
-AC_OUTPUT
+AM_CONFIG_HEADER([config.h:config-h.in])
+AC_COIN_FINALIZE
