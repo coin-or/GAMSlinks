@@ -25,6 +25,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          str.insert(pos, '+');
          walk(node->m_mChildren[1], str, pos);
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          break;
       }
       case OS_SUM : {
@@ -38,6 +39,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
                walk(node->m_mChildren[i], str, pos);
             }
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          }
          break;
       }
@@ -47,6 +49,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          str.insert(pos, '-');
          walk(node->m_mChildren[1], str, pos);
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          break;
       }
       case OS_NEGATE : {
@@ -56,6 +59,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          walk(node->m_mChildren[0], str, pos);
          str.insert(pos, ')');
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          break;
       }
       case OS_TIMES : {
@@ -64,6 +68,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          str.insert(pos, '*');
          walk(node->m_mChildren[1], str, pos);
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          break;
       }
       case OS_DIVIDE : {
@@ -72,6 +77,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          str.insert(pos, '/');
          walk(node->m_mChildren[1], str, pos);
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          break;
       }
       case OS_POWER : {
@@ -81,6 +87,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          str.insert(pos, '*');
          walk(node->m_mChildren[1], str, pos);
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          break;
       }
       case OS_PRODUCT : {
@@ -95,6 +102,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
             }
             str.insert(pos, ')');
          }
+         str.insert(pos, '\n');
          break;
       }
       case OS_ABS : {
@@ -104,6 +112,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          str.insert(pos, '(');
          walk(node->m_mChildren[0], str, pos);
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          break;
       }
       case OS_SQUARE : {
@@ -113,6 +122,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          str.insert(pos, '(');
          walk(node->m_mChildren[0], str, pos);
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          break;
       }
       case OS_SQRT : {
@@ -123,6 +133,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          str.insert(pos, '(');
          walk(node->m_mChildren[0], str, pos);
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          break;
       }
       case OS_LN : {
@@ -132,6 +143,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          str.insert(pos, '(');
          walk(node->m_mChildren[0], str, pos);
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          break;
       }
       case OS_EXP : {
@@ -141,6 +153,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          str.insert(pos, '(');
          walk(node->m_mChildren[0], str, pos);
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          break;
       }
       case OS_SIN : {
@@ -150,6 +163,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          str.insert(pos, '(');
          walk(node->m_mChildren[0], str, pos);
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          break;
       }
       case OS_COS : {
@@ -159,6 +173,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          str.insert(pos, '(');
          walk(node->m_mChildren[0], str, pos);
          str.insert(pos, ')');
+         str.insert(pos, '\n');
          break;
       }
       case OS_MIN : {
@@ -176,6 +191,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
             }
             str.insert(pos, ')');
          }
+         str.insert(pos, '\n');
          break;
       }
       case OS_MAX : {
@@ -193,6 +209,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
             }
             str.insert(pos, ')');
          }
+         str.insert(pos, '\n');
          break;
       }
       case OS_NUMBER : {
@@ -273,7 +290,7 @@ int main(int argc, char** argv) {
 
    conindex = new int[osinstance->getConstraintNumber() + 1];
 
-   if(osinstance->getNumberOfBinaryVariables() + osinstance->getNumberOfBinaryVariables() > 0) {
+   if(osinstance->getNumberOfBinaryVariables() + osinstance->getNumberOfIntegerVariables() > 0) {
       if(osinstance->getNumberOfNonlinearExpressions() > 0)
          mdlType = "MINLP";
       else
@@ -288,13 +305,13 @@ int main(int argc, char** argv) {
    out << "Equations eqObj";
    for(int j=0; j<osinstance->getConstraintNumber(); j++) {
       conindex[j] = 0;
-      out << ", eq" << j;
+      out << ", eq" << j << endl;
    }
    out << ";" << endl << endl;
 
    out << "Variables Obj";
    for(int i=0; i<osinstance->getVariableNumber(); i++)
-      if(varTypes[i] == 'C') out << ", x" << i;
+      if(varTypes[i] == 'C') out << ", x" << i << endl;
    out << ";" << endl << endl;
 
    if(osinstance->getNumberOfBinaryVariables() > 0) {
@@ -303,7 +320,7 @@ int main(int argc, char** argv) {
          if(varTypes[i] == 'B') {
             out << "x" << i;
             BinCnt++;
-            if(BinCnt != osinstance->getNumberOfBinaryVariables()) out << ", ";
+            if(BinCnt != osinstance->getNumberOfBinaryVariables()) out << ", " << endl;
          }
       out << ";" << endl << endl;
    }
@@ -313,8 +330,8 @@ int main(int argc, char** argv) {
       for(int i=0; i<osinstance->getVariableNumber(); i++)
          if(varTypes[i] == 'I') {
             out << "x" << i;
-            BinCnt++;
-            if(IntCnt != osinstance->getNumberOfIntegerVariables()) out << ", ";
+            IntCnt++;
+            if(IntCnt != osinstance->getNumberOfIntegerVariables()) out << ", " << endl;
          }
       out << ";" << endl << endl;
    }
@@ -322,7 +339,7 @@ int main(int argc, char** argv) {
    for(int i=0; i<osinstance->getVariableNumber(); i++) {
       nDefVar = 0;
       if(varTypes[i] == 'C' && varLB[i] != -OSDBL_MAX || varTypes[i] == 'B' && varLB[i] != 0) {
-         out <<  "x" << i << ".lo = " << varLB[i] << "; ";
+         out <<  "x" << i << ".lo = " << varLB[i] << "; " << endl;
          nDefVar = 1;
       }
 /* Initial values need to be reworked in OS Options
@@ -331,7 +348,7 @@ int main(int argc, char** argv) {
          nDefVar = 1;
       } */
       if(varTypes[i] == 'C' && varUB[i] != OSDBL_MAX || varTypes[i] == 'B' && varUB[i] != 1)  {
-         out << " x" << i << ".up = " << varUB[i] << ";";
+         out << " x" << i << ".up = " << varUB[i] << ";" << endl;
          nDefVar = 1;
       }
       if(nDefVar == 1) out << endl;
@@ -370,7 +387,7 @@ int main(int argc, char** argv) {
                if(osinstance->getLinearConstraintCoefficientsInRowMajor()->values[i] < 0) out << ")";
                out << " * ";
             }
-            out << "x" << osinstance->getLinearConstraintCoefficientsInRowMajor()->indexes[i];
+            out << "x" << osinstance->getLinearConstraintCoefficientsInRowMajor()->indexes[i] << endl;
          }
       } else {
          for(int i = 0; i < osinstance->getObjectiveCoefficients()[0]->number; i++) {
@@ -382,7 +399,7 @@ int main(int argc, char** argv) {
                if(osinstance->getObjectiveCoefficients()[0]->values[i] < 0) out << ")";
                out << " * ";
             }
-            out << "x" << osinstance->getObjectiveCoefficients()[0]->indexes[i];
+            out << "x" << osinstance->getObjectiveCoefficients()[0]->indexes[i] << endl;
          }
       }
 
@@ -407,7 +424,7 @@ int main(int argc, char** argv) {
             if(osinstance->getObjectiveCoefficients()[0]->values[i] < 0) out << ")";
             out << " * ";
          }
-         out << "x" << osinstance->getObjectiveCoefficients()[0]->indexes[i];
+         out << "x" << osinstance->getObjectiveCoefficients()[0]->indexes[i] << endl;
       }
       out << " + " << objCon[0] << " =E= OBJ;" << endl << endl;
    }
@@ -425,13 +442,20 @@ int main(int argc, char** argv) {
             if(osinstance->getLinearConstraintCoefficientsInRowMajor()->values[i] < 0) out << ")";
             out << " * ";
          }
-         out << "x" << osinstance->getLinearConstraintCoefficientsInRowMajor()->indexes[i];
+         out << "x" << osinstance->getLinearConstraintCoefficientsInRowMajor()->indexes[i] << endl;
       }
-      out << " =" << conTypes[j] <<"= ";
-      if(conTypes[j] == 'L')
-         out << conUB[j] << ";" << endl << endl;
-      else
-         out << conLB[j] << ";" << endl << endl;
+      switch (conTypes[j]) {
+      	case 'L':
+          out << " =L= " << conUB[j] << ";" << endl << endl; break;
+      	case 'E':
+      	case 'G':
+          out << " =" << conTypes[j] << "= " << conLB[j] << ";" << endl << endl; break;
+      	case 'N':
+      		out << " =N= " << conLB[j] << ";" << endl << endl; break;
+      	case 'R':
+      		cerr << "Ranged constraints not supported by GAMS. Aborting." << endl;
+      		return 1;
+      }
    }
 
    out << "Model m /all/;" << endl << endl;
