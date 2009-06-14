@@ -1,0 +1,26 @@
+* text=auto !eol
+/Externals -text
+GamsUtils/AUTHORS -text
+GamsUtils/LICENSE -text
+GamsUtils/Makefile.am -text
+GamsUtils/Makefile.in -text
+GamsUtils/README -text
+GamsUtils/configure -text
+GamsUtils/configure.ac -text
+GamsUtils/gamsutils_addlibs.txt.in -text
+GamsUtils/inc/config_gamslinks.h.in -text
+GamsUtils/m4/ac_coin_gams.m4 -text
+GamsUtils/src/GAMSlinksConfig.h -text
+/LICENSE -text
+/Makefile.am -text
+/Makefile.in -text
+/README -text
+/config.guess -text
+/config.sub -text
+/configure -text
+/configure.ac -text
+/depcomp -text
+doxydoc/doxygen.conf -text
+/install-sh -text
+/ltmain.sh -text
+/missing -text

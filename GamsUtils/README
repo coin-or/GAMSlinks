@@ -1,0 +1,4 @@
+These directories contain routines that aim on simplifying the communication with a GAMS (http://www.gams.com) system.
+
+For requirements and installation instruction see the file INSTALL in the GAMSlinks base directory.
+For license information see the file LICENSE.
