@@ -261,7 +261,7 @@ void solve_minlp(smagHandle_t prob) {
 		hessian_is_approx=true;
 	
 	if (hessian_is_approx) { // check whether QP strong branching is enabled
-		bonmin_setup.options()->GetStringValue("varselect_stra", parvalue, "bonmin.");
+		bonmin_setup.options()->GetStringValue("variable_selection", parvalue, "bonmin.");
 		if (parvalue=="qp-strong-branching") {
 			smagStdOutputPrint(prob, SMAG_ALLMASK, "Error: QP strong branching does not work when the Hessian is approximated. Aborting...\n");
 			smagReportSolBrief(prob, 13, 13);

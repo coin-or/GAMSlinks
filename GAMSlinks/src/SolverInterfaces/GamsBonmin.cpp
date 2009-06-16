@@ -265,7 +265,7 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec*
 		hessian_is_approx = true;
 	
 	if (hessian_is_approx) { // check whether QP strong branching is enabled
-		bonmin_setup->options()->GetStringValue("varselect_stra", parvalue, "bonmin.");
+		bonmin_setup->options()->GetStringValue("variable_selection", parvalue, "bonmin.");
 		if (parvalue == "qp-strong-branching") {
 			gmoLogStat(gmo, "Error: QP strong branching does not work when the Hessian is approximated. Aborting...");
 			return 1;
