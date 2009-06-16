@@ -195,7 +195,7 @@ bool GamsCouenneSetup::InitializeCouenne(SmartPtr<GamsMINLP> minlp) {
 	options()->GetStringValue("hessian_approximation", s, "");
 	if (s == "exact") {
 		int do2dir, dohess;
-		if (gmoHessLoad(gmo, 10, 10, &do2dir, &dohess) || !dohess) { // TODO make 10 (=conopt default for rvhess) a parameter
+		if (gmoHessLoad(gmo, 0, -1, &do2dir, &dohess) || !dohess) { // TODO make "-1" a parameter (like rvhess in CONOPT)
 			gmoLogStat(gmo, "Failed to initialize Hessian structure. We continue with a limited-memory Hessian approximation!");
 			options()->SetStringValue("hessian_approximation", "limited-memory");
 	  }
@@ -729,8 +729,13 @@ bool GamsCouenneSetup::setupProblem(CouenneProblem* prob) {
 	int* opcodes = new int[gmoMaxSingleFNL(gmo)+1];
 	int* fields  = new int[gmoMaxSingleFNL(gmo)+1];
 	int constantlen = gmoNLConst(gmo);
-	double* constants = (double*)gmoPPool(gmo);
+	double* constants = (double*)gmoPPool(gmo); //new double[gmoNLConst(gmo)];
 	int codelen;
+	
+//	memcpy(constants, gmoPPool(gmo), constantlen*sizeof(double));
+//	for (int i = 0; i < constantlen; ++i)
+//		if (fabs(constants[i]) < COUENNE_EPS)
+//			constants[i] = 0.;
 
 	exprGroup::lincoeff lin;
 	expression *body = NULL;
@@ -833,7 +838,7 @@ bool GamsCouenneSetup::setupProblem(CouenneProblem* prob) {
 	delete[] rowstarts;
 	delete[] colindexes;
 	delete[] nlflags;
-	
+//	delete[] constants;
 
 	// the rest is copied from the CouenneProblem constructor
 	
@@ -863,7 +868,7 @@ bool GamsCouenneSetup::setupProblem(CouenneProblem* prob) {
 
   // reformulation
   prob->standardize();
-
+  
   // clear all spurious variables pointers not referring to the variables_ vector
   // prob->realign();
   // the following three loops are copied from the protected function CouenneProblem::realign():
@@ -1314,7 +1319,7 @@ expression* GamsCouenneSetup::parseGamsInstructions(CouenneProblem* prob, int co
 				term1 = new exprMul(term1, new exprConst(constants[address]));
 				expression* term2 = stack.back(); stack.pop_back();
 				
-				exp = new exprSum(term1, term2);				
+				exp = new exprSum(term1, term2);
 			} break;
 			case nlFuncArgN : {
 				nargs = address;
