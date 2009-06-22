@@ -152,7 +152,7 @@ int main (int argc, const char *argv[]) {
       if (!isAcademic) {
         while (licenseGetMessage(msg, sizeof(msg)))
           smagStdOutputPrintLn(prob, SMAG_ALLMASK, msg);
-        smagStdOutputPrint(prob, SMAG_ALLMASK, "\n*** Use of CoinScip limited to academic users.\n*** Please contact pfetsch@zib.de to arrange for a license.\n");
+        smagStdOutputPrint(prob, SMAG_ALLMASK, "\n*** Use of SCIP is limited to academic users.\n*** Please contact heinz@zib.de to arrange for a license.\n");
         smagReportSolBrief(prob, 11, 7); // license error
         exit(EXIT_FAILURE);
       }
