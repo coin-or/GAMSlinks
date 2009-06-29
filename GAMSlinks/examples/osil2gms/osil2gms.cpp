@@ -306,6 +306,8 @@ int main(int argc, char** argv) {
    for(int j=0; j<osinstance->getConstraintNumber(); j++) {
       conindex[j] = 0;
       out << ", eq" << j << endl;
+      if (conTypes[j] == 'R')
+      	out << ", eq" << j << "RNG" << endl;
    }
    out << ";" << endl << endl;
 
@@ -404,13 +406,47 @@ int main(int argc, char** argv) {
       }
 
       if(connumber != -1) {
-         out << " =" << conTypes[connumber] <<"= ";
-         if(conTypes[connumber] == 'L')
-            out << conUB[connumber] << ";" << endl << endl;
-         else
-            out << conLB[connumber] << ";" << endl << endl;
+        switch (conTypes[connumber]) {
+        	case 'L':
+        	case 'R':
+            out << " =L= " << conUB[connumber] << ";" << endl << endl; break;
+        	case 'E':
+        	case 'G':
+            out << " =" << conTypes[connumber] << "= " << conLB[connumber] << ";" << endl << endl; break;
+        	case 'N':
+        		out << " =N= " << conLB[connumber] << ";" << endl << endl; break;
+        }
       } else
          out << " + " << objCon[0] << " =E= OBJ;" << endl << endl;
+      
+      if (conTypes[connumber] == 'R') {
+        int connumber = exptreeit->first;
+        OSExpressionTree* exptree = exptreeit->second;
+
+        assert(connumber != -1);
+
+        list<char> gms;
+        walk(exptree->m_treeRoot, gms, gms.begin());
+
+        string gmsstr(gms.begin(), gms.end());
+         out << "eq" << connumber << "RNG.. " << gmsstr;
+
+        for(int i = osinstance->getLinearConstraintCoefficientsInRowMajor()->starts[connumber];
+                i < osinstance->getLinearConstraintCoefficientsInRowMajor()->starts[connumber+1]; i++) {
+           if(osinstance->getLinearConstraintCoefficientsInRowMajor()->values[i] == 0) continue;
+           out << " + ";
+           if(osinstance->getLinearConstraintCoefficientsInRowMajor()->values[i] != 1) {
+              if(osinstance->getLinearConstraintCoefficientsInRowMajor()->values[i] < 0) out << "(";
+              out << osinstance->getLinearConstraintCoefficientsInRowMajor()->values[i];
+              if(osinstance->getLinearConstraintCoefficientsInRowMajor()->values[i] < 0) out << ")";
+              out << " * ";
+           }
+           out << "x" << osinstance->getLinearConstraintCoefficientsInRowMajor()->indexes[i] << endl;
+        }
+        
+        out << "=G= " << conLB[connumber] << ";" << endl;
+      	
+      }
    }
 
    if(conObj != 1) {
@@ -446,15 +482,32 @@ int main(int argc, char** argv) {
       }
       switch (conTypes[j]) {
       	case 'L':
+      	case 'R':
           out << " =L= " << conUB[j] << ";" << endl << endl; break;
       	case 'E':
       	case 'G':
           out << " =" << conTypes[j] << "= " << conLB[j] << ";" << endl << endl; break;
       	case 'N':
       		out << " =N= " << conLB[j] << ";" << endl << endl; break;
-      	case 'R':
-      		cerr << "Ranged constraints not supported by GAMS. Aborting." << endl;
-      		return 1;
+//      	case 'R':
+//      		cerr << "Ranged constraints not supported by GAMS. Aborting." << endl;
+//      		return 1;
+      }
+      if (conTypes[j] == 'R') {
+        out << "eq" << j << "RNG.. ";
+        for(int i = osinstance->getLinearConstraintCoefficientsInRowMajor()->starts[ j];
+                i < osinstance->getLinearConstraintCoefficientsInRowMajor()->starts[ j+1]; i++) {
+           if(osinstance->getLinearConstraintCoefficientsInRowMajor()->values[i] == 0) continue;
+           out << " + ";
+           if(osinstance->getLinearConstraintCoefficientsInRowMajor()->values[i] != 1) {
+              if(osinstance->getLinearConstraintCoefficientsInRowMajor()->values[i] < 0) out << "(";
+              out << osinstance->getLinearConstraintCoefficientsInRowMajor()->values[i];
+              if(osinstance->getLinearConstraintCoefficientsInRowMajor()->values[i] < 0) out << ")";
+              out << " * ";
+           }
+           out << "x" << osinstance->getLinearConstraintCoefficientsInRowMajor()->indexes[i] << endl;
+        }
+        out << "=G=" << conLB[j] << ";" << endl;
       }
    }
 
