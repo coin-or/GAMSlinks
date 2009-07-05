@@ -488,6 +488,9 @@ void SMAG_MINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const N
   	case TMINLP::INFEASIBLE: {
     	model_status=19; // infeasible - no solution
     } break;
+  	case TMINLP::CONTINUOUS_UNBOUNDED: {
+  		model_status=18; // unbounded - no solution
+  	} break;
   	case TMINLP::LIMIT_EXCEEDED: {
 			if (smagGetCPUTime(prob)-clock_start>=prob->gms.reslim) {
 				solver_status=3;

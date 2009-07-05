@@ -78,9 +78,9 @@ GamsBonmin::GamsBonmin()
 : gmo(NULL), msghandler(NULL), bonmin_setup(NULL), gamsipopt(NULL), gamscbc(NULL)
 {
 #ifdef GAMS_BUILD
-	strcpy(bonmin_message, "GAMS/CoinBonminD (Bonmin Library 1.0)\nwritten by P. Bonami\n");
+	strcpy(bonmin_message, "GAMS/CoinBonminD (Bonmin Library 1.1)\nwritten by P. Bonami\n");
 #else
-	strcpy(bonmin_message, "GAMS/BonminD (Bonmin Library 1.0)\nwritten by P. Bonami\n");
+	strcpy(bonmin_message, "GAMS/BonminD (Bonmin Library 1.1)\nwritten by P. Bonami\n");
 #endif
 }
 

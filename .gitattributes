@@ -271,5 +271,4 @@ libltdl/ltdl.c -text
 libltdl/ltdl.h -text
 /ltmain.sh -text
 /missing -text
-/os.patch -text
 /osispx.patch -text

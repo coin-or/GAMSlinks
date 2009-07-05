@@ -33,7 +33,7 @@ OSrL2Gams::OSrL2Gams(gmoHandle_t gmo_)
 { }
 
 void OSrL2Gams::writeSolution(OSResult& osresult) {
-	if (osresult.resultHeader == NULL) {
+	if (osresult.general == NULL) {
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SolverErr);
 		gmoLogStat(gmo, "Error: OS result does not have header.");
@@ -93,7 +93,7 @@ void OSrL2Gams::writeSolution(OSResult& osresult) {
 		return;
 	}
 
-	OptimizationSolution* sol = osresult.resultData->optimization->solution[0];
+	OptimizationSolution* sol = osresult.optimization->solution[0];
 
 #define SMAG_DBL_NA -1E20  // there is a gmoNAinteger, but no gmoNAdouble
 	int* colBasStat = CoinCopyOfArray((int*)NULL, gmoN(gmo), (int)Bstat_Super);

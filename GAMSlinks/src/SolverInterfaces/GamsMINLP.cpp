@@ -283,6 +283,9 @@ void GamsMINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const Nu
   	case TMINLP::INFEASIBLE: {
     	model_status = ModelStat_InfeasibleNoSolution; // infeasible - no solution
     } break;
+  	case TMINLP::CONTINUOUS_UNBOUNDED: {
+  		model_status = ModelStat_UnboundedNoSolution; // unbounded - no solution
+  	} break;
   	case TMINLP::LIMIT_EXCEEDED: {
 			if (gmoTimeDiffStart(gmo) - nlp->clockStart >= gmoResLim(gmo)) {
 				solver_status = SolveStat_Resource;

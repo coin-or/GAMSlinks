@@ -5,10 +5,10 @@ Clp           https://projects.coin-or.org/svn/Clp/stable/1.10/Clp
 Osi           https://projects.coin-or.org/svn/Osi/stable/0.100/Osi
 Cbc           https://projects.coin-or.org/svn/Cbc/stable/2.3/Cbc
 Ipopt         https://projects.coin-or.org/svn/Ipopt/stable/3.6/Ipopt
-Bonmin        https://projects.coin-or.org/svn/Bonmin/stable/1.0/Bonmin
-#Couenne        https://projects.coin-or.org/svn/Couenne/stable/0.1/Couenne
-cppad         https://projects.coin-or.org/svn/CppAD/stable/20090131
-OS -r2506     https://projects.coin-or.org/svn/OS/trunk/OS
+Bonmin        https://projects.coin-or.org/svn/Bonmin/stable/1.1/Bonmin
+Couenne        https://projects.coin-or.org/svn/Couenne/stable/0.2/Couenne
+cppad         https://projects.coin-or.org/svn/CppAD/stable/20090303
+OS            https://projects.coin-or.org/svn/OS/stable/2.0/OS
 ThirdParty/HSL https://projects.coin-or.org/svn/BuildTools/ThirdParty/HSL/stable/1.1
 ThirdParty/Blas https://projects.coin-or.org/svn/BuildTools/ThirdParty/Blas/stable/1.0
 ThirdParty/Glpk https://projects.coin-or.org/svn/BuildTools/ThirdParty/Glpk/trunk

@@ -247,6 +247,11 @@ if COIN_OS_SOLVER
   AM_CPPFLAGS   += -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSSolverInterfaces`
   libGamsCoin_la_LIBADD       += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
   libGamsCoin_la_DEPENDENCIES += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
+if COIN_HAS_COUENNE
+  libGamsCoin_la_LIBADD       += $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src/main/libBonCouenne.la
+  libGamsCoin_la_DEPENDENCIES += $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src/main/libBonCouenne.la
+endif
+
 endif
 
 libGamsCoin_la_LIBADD += \

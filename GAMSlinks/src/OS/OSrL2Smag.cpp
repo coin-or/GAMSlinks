@@ -30,7 +30,7 @@ OSrL2Smag::OSrL2Smag(smagHandle_t smag_)
 
 void OSrL2Smag::writeSolution(OSResult& osresult) {
 	int solver_status, model_status;
-	if (osresult.resultHeader == NULL) {
+	if (osresult.general == NULL) {
 		solver_status=10; // error solver failure
 		model_status=13; // error no solution
 		smagReportSolBrief(smag, model_status, solver_status);
@@ -97,7 +97,7 @@ void OSrL2Smag::writeSolution(OSResult& osresult) {
 		return;
 	}
 
-	OptimizationSolution* sol=osresult.resultData->optimization->solution[0];
+	OptimizationSolution* sol=osresult.optimization->solution[0];
 
 	unsigned char* colBasStat=CoinCopyOfArray((unsigned char*)NULL, smagColCount(smag), (unsigned char)SMAG_BASSTAT_SUPERBASIC);
 	unsigned char* colIndic=CoinCopyOfArray((unsigned char*)NULL, smagColCount(smag), (unsigned char)SMAG_RCINDIC_OK);
