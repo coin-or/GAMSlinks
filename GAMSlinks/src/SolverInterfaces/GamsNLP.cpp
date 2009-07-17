@@ -9,6 +9,7 @@
 #include "GamsNLP.hpp"
 #include "IpIpoptCalculatedQuantities.hpp"
 
+#include "IpIpoptData.hpp"
 #include "IpTNLPAdapter.hpp"
 #include "IpOrigIpoptNLP.hpp"
 
