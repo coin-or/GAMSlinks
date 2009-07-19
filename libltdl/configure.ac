@@ -62,6 +62,8 @@ if test -z "$enable_ltdl_install$enable_ltdl_convenience"; then
   fi
 fi
 
+LT_AC_PROG_SED
+AC_LIBTOOL_SYS_DYNAMIC_LINKER
 AC_LIB_LTDL
 
 ## -------- ##
