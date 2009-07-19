@@ -120,7 +120,7 @@ AC_COIN_CHECK_HEADER([windows.h])
 ###########
 
 AC_CHECK_DECL([va_copy],[AC_DEFINE([HAVE_VA_COPY],[1],
-                                   [Define to 1 if va_copy is avaliable])],,[
+                                   [Define to 1 if va_copy is available])],,[
 #ifdef HAVE_CSTDARG
 # include <cstdarg>
 #else
