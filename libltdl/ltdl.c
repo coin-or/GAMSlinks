@@ -1111,6 +1111,7 @@ sys_dl_open (loader_data, filename)
 
   if (!module)
     {
+  		fprintf(stderr, "error while dlopening %s: %s\n", filename, dlerror());
       LT_DLMUTEX_SETERROR (DLERROR (CANNOT_OPEN));
     }
 
