@@ -18,11 +18,15 @@
 class GamsMessageHandler;
 namespace Bonmin {
 	class OsiTMINLPInterface;
+	class RegisteredOptions;
 }
 namespace Ipopt {
 	class Journalist;
+	class OptionsList;
 }
-class GamsCouenneSetup;
+class CouenneProblem;
+class expression;
+//class GamsCouenneSetup;
 class GamsCbc;
 
 class GamsCouenne: public GamsSolver {
@@ -31,12 +35,19 @@ private:
 		
 	char           couenne_message[100];
 
+	Ipopt::SmartPtr<Ipopt::Journalist> jnlst;
+	Ipopt::SmartPtr<Bonmin::RegisteredOptions> roptions;
+	Ipopt::SmartPtr<Ipopt::OptionsList> options;
+	
 	Ipopt::SmartPtr<GamsMINLP> minlp;
-	GamsCouenneSetup*  couenne_setup;
+//	CouenneProblem*            problem;
+//	GamsCouenneSetup*  couenne_setup;
 	
 	GamsCbc*       gamscbc;
 
 	bool isMIP();
+  CouenneProblem* setupProblem();
+  expression* parseGamsInstructions(CouenneProblem* prob, int codelen, int* opcodes, int* fields, int constantlen, double* constants);
 
 public:
 	GamsCouenne();

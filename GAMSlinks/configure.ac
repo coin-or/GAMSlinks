@@ -329,7 +329,7 @@ AM_CONDITIONAL([GAMSLINKS_BUILD_SCIP],[test $gamslinks_build_scip = 1])
 
 if test $gamslinks_build_cbc = 1 && test $gamslinks_build_ipopt = 1 && test $gamslinks_build_bonmin = 1 &&
    test "x$coin_has_couenne" != xunavailable && test "x$coin_has_couenne" != xskipping ; then
-  gamslinks_build_couenne=0
+  gamslinks_build_couenne=1
 else
   gamslinks_build_couenne=0
 fi

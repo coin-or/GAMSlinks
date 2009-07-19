@@ -186,7 +186,7 @@ libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 endif
 
 if GAMSLINKS_BUILD_COUENNE
-libGamsCoin_la_SOURCES += GamsCouenne.cpp GamsCouenneSetup.cpp
+libGamsCoin_la_SOURCES += GamsCouenne.cpp
 
 AM_CPPFLAGS += \
   -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms/OaGenerators` \
@@ -207,8 +207,8 @@ AM_CPPFLAGS += \
 	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src` \
 	-I`$(CYGPATH_W) $(COUENNEOBJDIR)/inc`
 	
-libGamsCoin_la_LIBADD       += $(COUENNEOBJDIR)/src/libCouenne.la
-libGamsCoin_la_DEPENDENCIES += $(COUENNEOBJDIR)/src/libCouenne.la
+libGamsCoin_la_LIBADD       += $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src/main/libBonCouenne.la
+libGamsCoin_la_DEPENDENCIES += $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src/main/libBonCouenne.la
 
 if GAMSIO_IS_UNIX
 noinst_PROGRAMS     += gmscouux.out
@@ -247,11 +247,6 @@ if COIN_OS_SOLVER
   AM_CPPFLAGS   += -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSSolverInterfaces`
   libGamsCoin_la_LIBADD       += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
   libGamsCoin_la_DEPENDENCIES += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
-if COIN_HAS_COUENNE
-  libGamsCoin_la_LIBADD       += $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src/main/libBonCouenne.la
-  libGamsCoin_la_DEPENDENCIES += $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src/main/libBonCouenne.la
-endif
-
 endif
 
 libGamsCoin_la_LIBADD += \

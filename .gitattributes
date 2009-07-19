@@ -168,8 +168,6 @@ GAMSlinks/src/SolverInterfaces/GamsCbc.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsCouenne.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsCouenne.h -text
 GAMSlinks/src/SolverInterfaces/GamsCouenne.hpp -text
-GAMSlinks/src/SolverInterfaces/GamsCouenneSetup.cpp -text
-GAMSlinks/src/SolverInterfaces/GamsCouenneSetup.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsIpopt.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsIpopt.h -text
 GAMSlinks/src/SolverInterfaces/GamsIpopt.hpp -text
