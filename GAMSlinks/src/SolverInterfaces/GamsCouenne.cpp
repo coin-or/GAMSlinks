@@ -404,6 +404,14 @@ CouenneProblem* GamsCouenne::setupProblem() {
 	gmoGetVarLower(gmo, lb);
 	gmoGetVarUpper(gmo, ub);
 	
+	// translate from gmoM/Pinf to Couenne infinity
+	for (int i = 0; i < gmoN(gmo); ++i)	{
+		if (lb[i] <= gmoMinf(gmo))
+			lb[i] = -COUENNE_INFINITY;
+		if (ub[i] >= gmoPinf(gmo))
+			ub[i] =  COUENNE_INFINITY;
+	}
+	
 	prob->domain()->push(gmoN(gmo), x_, lb, ub);
 	
 	delete[] x_;
@@ -512,7 +520,7 @@ CouenneProblem* GamsCouenne::setupProblem() {
 				break;
 			case equ_N:
 				// TODO I doubt that adding a RNG constraint with -infty/infty bounds would work here
-				gmoLogStat(gmo, "Free constraints not supported by Gams/Couenne link yet.");
+				gmoLogStat(gmo, "Free constraints not supported by Gams/Couenne link yet. Constraint ignored.");
 				break;
 		}
 	}

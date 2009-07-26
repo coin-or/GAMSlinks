@@ -147,6 +147,11 @@ notest('289') = yes;
 notest(s)\$(ord(s)>=332 and ord(s)<=337) = yes;
 *skip ship because of couenne
 notest('22') = yes;
+*skip worst.111, procmean.301, mlbeta.302, mlgamma.303 because some functions in there are not supported by Couenne
+notest('111') = yes;
+notest('301') = yes;
+notest('302') = yes;
+notest('303') = yes;
 
 file drive / coin_gmstest.inc   /; drive.lcase=1;
 put drive '*   GAMSLib Start';
