@@ -22,11 +22,7 @@
 #include "CoinWarmStartBasis.hpp"
 #include "OsiSolverInterface.hpp"
 
-#ifdef GAMS_BUILD
 #include "gmomcc.h"
-#else
-#include "gmocc.h"
-#endif
 
 bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 	switch (gmoSense(gmo)) {
@@ -93,9 +89,6 @@ bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 			case equ_G: rowsense[i] = 'G'; break;
 			case equ_L: rowsense[i] = 'L'; break;
 			case equ_N: rowsense[i] = 'N'; break;
-			case equ_X:
-				gmoLogStat(gmo, "Error: External functions not supported by OSI.");
-				return false;
 			case equ_C:
 				gmoLogStat(gmo, "Error: Conic constraints not supported by OSI.");
 				return false;

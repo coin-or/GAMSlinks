@@ -12,11 +12,7 @@
 #include "OSInstance.h"
 #include "CoinHelperFunctions.hpp"
 
-#ifdef GAMS_BUILD
 #include "gmomcc.h"
-#else
-#include "gmocc.h"
-#endif
 
 #include <sstream>
 

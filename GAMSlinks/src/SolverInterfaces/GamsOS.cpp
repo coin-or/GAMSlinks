@@ -32,11 +32,7 @@
 #include "Gams2OSiL.hpp"
 #include "OSrL2Gams.hpp"
 
-#ifdef GAMS_BUILD
 #include "gmomcc.h"
-#else
-#include "gmocc.h"
-#endif
 
 #include <string>
 #include <fstream>

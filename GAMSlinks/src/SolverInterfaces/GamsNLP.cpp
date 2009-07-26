@@ -30,11 +30,7 @@
 #endif
 #endif
 
-#ifdef GAMS_BUILD
 #include "gmomcc.h"
-#else
-#include "gmocc.h"
-#endif
 
 using namespace Ipopt;
 
@@ -88,10 +84,6 @@ bool GamsNLP::get_bounds_info (Index n, Number* x_l, Number* x_u, Index m, Numbe
 			case equ_N: // free row
 				*g_l = gmoMinf(gmo);
 				*g_u = gmoPinf(gmo);
-				break;
-			case equ_X: // external function TODO: supported now?
-				gmoLogStat(gmo, "Error: External functions not supported yet.");
-				return false;
 				break;
 			case equ_C: // conic function
 				gmoLogStat(gmo, "Error: Conic constraints not supported.");

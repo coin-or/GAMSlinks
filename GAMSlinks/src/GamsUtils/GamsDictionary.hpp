@@ -20,10 +20,6 @@
 #endif
 #endif
 
-#ifndef GAMS_BUILD
-#define dctRec gcdRec
-#endif
-
 struct dctRec;
 struct gmoRec;
 

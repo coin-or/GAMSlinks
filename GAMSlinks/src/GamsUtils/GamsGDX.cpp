@@ -39,26 +39,21 @@
 #endif
 #endif
 
-#ifdef GAMS_BUILD
-#include "gmomcc.h"
-#include "dctmcc.h"
-#else
-#include "gmocc.h"
-#include "gcdcc.h"
-#endif
 #include "gdxcc.h"
+#include "dctmcc.h"
+#include "gmomcc.h"
 
 GamsGDX::GamsGDX(struct gmoRec* gmo_, GamsDictionary& dictionary)
 : gmo(gmo_), dict(dictionary), gdx(NULL)
 { }
-	
+
 GamsGDX::~GamsGDX() {
 	if (gdx) {
 		gdxFree(&gdx);
 		gdxLibraryUnload(); //TODO what if someone else uses GDX?
 	}
 }
-	
+
 void GamsGDX::reportError(int n) const {
 	char message[256];
 	if (!gdxErrorStr(gdx, n, message))
@@ -74,7 +69,7 @@ bool GamsGDX::init() {
 		gmoLogStat(gmo, errormsg);
 		return false;
 	}
-	
+
 	gdxSVals_t sVals;
 	gdxGetSpecialValues(gdx, sVals);
 	sVals[GMS_SVIDX_MINF] = gmoMinf(gmo);
@@ -97,7 +92,7 @@ bool GamsGDX::writePoint(const double* x, const double* rc, double objval, const
 		gmoLogStatPChar(gmo, "Error: No primal values given.\n");
 		return false;
 	}
-	
+
 	int errornr;
 	gdxOpenWrite(gdx, filename, "GamsGDX", &errornr);
 	if (errornr) { reportError(errornr); return false; }
@@ -111,15 +106,15 @@ bool GamsGDX::writePoint(const double* x, const double* rc, double objval, const
   gdxValues_t Values;
   GDXSTRINDEXPTRS_INIT(Indices, IndicesPtr);
   int colnr;
-  
+
 	for (int i = -1; i < gmoN(gmo); ++i) { // -1 stands for objective variable
 		colnr = i >= 0 ? gmoGetjModel(gmo, i) : gmoObjVar(gmo);
-  	if (gcdColUels(dict.dict, colnr, &symIndex, uelIndices, &symDim)) {
-  		gmoLogStatPChar(gmo, "Error in gcdColUels.\n");
+  	if (0==dctColUels(dict.dict, colnr, &symIndex, uelIndices, &symDim)) {
+  		gmoLogStatPChar(gmo, "Error in dctColUels.\n");
   		return false;
   	}
-	  if (!gcdSymName(dict.dict, symIndex, symName, GMS_UEL_IDENT_SIZE)) {
-	  	gmoLogStatPChar(gmo, "Error in gcdSymName.\n");
+	  if (dctSymName(dict.dict, symIndex, symName, GMS_UEL_IDENT_SIZE)) {
+	  	gmoLogStatPChar(gmo, "Error in dctSymName.\n");
 	  	return false;
 	  }
 
@@ -141,12 +136,12 @@ bool GamsGDX::writePoint(const double* x, const double* rc, double objval, const
 		}
 
 		for (int k = 0;  k < symDim;  k++) {
-    	if (!gcdUelLabel(dict.dict, uelIndices[k], &quote, IndicesPtr[k], GMS_UEL_IDENT_SIZE)) {
-    		gmoLogStatPChar(gmo, "Error in gcdUelLabel.\n");
+    	if (dctUelLabel(dict.dict, uelIndices[k], &quote, IndicesPtr[k], GMS_UEL_IDENT_SIZE)) {
+    		gmoLogStatPChar(gmo, "Error in dctUelLabel.\n");
 				return false;
 			}
 		}
-		
+
 		Values[GMS_VAL_SCALE] = 1.0;
 		if (i >= 0) {
 			Values[GMS_VAL_LEVEL] = x[i];
@@ -175,6 +170,6 @@ bool GamsGDX::writePoint(const double* x, const double* rc, double objval, const
 	}
 
   if ((errornr = gdxClose(gdx))) { reportError(errornr); return false; }
-	
+
 	return true;
 }

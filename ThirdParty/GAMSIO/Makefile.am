@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2008 GAMS Development and others 
+# Copyright (C) 2006-2009 GAMS Development and others 
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
@@ -11,7 +11,7 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = get.GAMSIO INSTALL.GAMSIO LICENSE
 
 if GAMSIO_PRESENT
-noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la libGamsGMO.la libGamsDict.la
+noinst_LTLIBRARIES = libGamsOptions.la libGamsGDX.la libGamsJoat.la
 endif
 
 nodist_libGamsOptions_la_SOURCES = $(GAMSIO_CODE)/optcc.c
@@ -20,11 +20,8 @@ libGamsOptions_la_LDFLAGS =
 nodist_libGamsGDX_la_SOURCES = $(GAMSIO_CODE)/gdxcc.c
 libGamsGDX_la_LDFLAGS =
 
-nodist_libGamsGMO_la_SOURCES = $(GAMSIO_CODE)/gmocc.c
-libGamsGMO_la_LDFLAGS =
-
-nodist_libGamsDict_la_SOURCES = $(GAMSIO_CODE)/gcdcc.c
-libGamsDict_la_LDFLAGS =
+nodist_libGamsJoat_la_SOURCES = $(GAMSIO_CODE)/gmomcc.c $(GAMSIO_CODE)/dctmcc.c
+libGamsJoat_la_LDFLAGS =
 
 if GAMSIO_PRESENT
 noinst_PROGRAMS = gdx2gams

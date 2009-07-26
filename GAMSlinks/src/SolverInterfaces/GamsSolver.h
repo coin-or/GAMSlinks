@@ -25,11 +25,6 @@
 # endif 
 #endif 
 
-#ifndef GAMS_BUILD
-#define dctRec      gcdRec
-#define dctHandle_t gcdHandle_t
-#endif
-
 typedef struct gmoRec* gmoHandle_t;
 typedef struct optRec* optHandle_t;
 typedef struct dctRec* dctHandle_t;

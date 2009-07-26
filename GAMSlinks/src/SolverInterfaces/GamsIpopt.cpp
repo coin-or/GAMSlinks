@@ -58,11 +58,7 @@ extern "C" {
 }
 
 // GAMS
-#ifdef GAMS_BUILD
 #include "gmomcc.h"
-#else
-#include "gmocc.h"
-#endif
 
 using namespace Ipopt;
 

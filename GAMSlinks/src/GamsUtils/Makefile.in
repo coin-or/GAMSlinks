@@ -78,8 +78,8 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includecoindir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libGamsUtils_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsGMO.la \
-	$(GAMSIO_OBJDIR)/libGamsDict.la $(GAMSIO_OBJDIR)/libGamsGDX.la \
+libGamsUtils_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsJoat.la \
+	$(GAMSIO_OBJDIR)/libGamsGDX.la \
 	$(GAMSIO_OBJDIR)/libGamsOptions.la
 am_libGamsUtils_la_OBJECTS = GamsDictionary.lo GamsGDX.lo \
 	GamsOptions.lo GamsNLinstr.lo
@@ -406,7 +406,7 @@ EXTRA_DIST = $(am__append_1)
 lib_LTLIBRARIES = libGamsUtils.la
 libGamsUtils_la_SOURCES = GamsDictionary.cpp GamsGDX.cpp GamsOptions.cpp GamsNLinstr.c
 libGamsUtils_la_LDFLAGS = 
-libGamsUtils_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsGMO.la $(GAMSIO_OBJDIR)/libGamsDict.la $(GAMSIO_OBJDIR)/libGamsGDX.la $(GAMSIO_OBJDIR)/libGamsOptions.la
+libGamsUtils_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(GAMSIO_OBJDIR)/libGamsGDX.la $(GAMSIO_OBJDIR)/libGamsOptions.la
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = GamsDictionary.hpp GamsGDX.hpp GamsOptions.hpp GamsNLinstr.h
 AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..`

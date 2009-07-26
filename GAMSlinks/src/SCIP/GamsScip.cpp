@@ -347,8 +347,6 @@ SCIP_RETCODE runSCIP(smagHandle_t prob) {
   
   delete[] solstatus.colval;
   
-  BMScheckEmptyMemory();
-	
   return SCIP_OKAY;
 }
 

@@ -34,11 +34,7 @@
 #include <string>
 
 // GAMS
-#ifdef GAMS_BUILD
 #include "gmomcc.h"
-#else
-#include "gmocc.h"
-#endif
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
 

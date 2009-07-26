@@ -91,6 +91,7 @@ case "$uname" in
   *)
     echo "Cannot determine build type, downloading all builds. uname -sp output: $uname"
     download dii
+    download dig
     download lnx
     download leg
     download lei

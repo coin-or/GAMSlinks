@@ -8,11 +8,7 @@
 
 #include "GamsJournal.hpp"
 
-#ifdef GAMS_BUILD
 #include "gmomcc.h"
-#else
-#include "gmocc.h"
-#endif
 
 #ifdef HAVE_CSTDIO
 #include <cstdio>

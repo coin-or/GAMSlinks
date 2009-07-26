@@ -30,11 +30,7 @@
 #endif
 
 // GAMS
-#ifdef GAMS_BUILD
 #include "gmomcc.h"
-#else
-#include "gmocc.h"
-#endif
 
 #include "GamsMINLP.hpp"
 #include "GamsJournal.hpp"

@@ -9,11 +9,7 @@
 #include "GamsMINLP.hpp"
 #include "IpIpoptCalculatedQuantities.hpp"
 
-#ifdef GAMS_BUILD
 #include "gmomcc.h"
-#else
-#include "gmocc.h"
-#endif
 
 using namespace Ipopt;
 using namespace Bonmin;

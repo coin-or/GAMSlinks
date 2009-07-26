@@ -41,7 +41,7 @@
 #include <windows.h>
 #endif
 
-#include "gmocc.h"
+#include "gmomcc.h"
 
 int main(int argc, char** argv) {
 #ifdef HAVE_WINDOWS_H
