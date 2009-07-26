@@ -184,6 +184,7 @@ GAMSlinks/src/SolverInterfaces/GamsOS.h -text
 GAMSlinks/src/SolverInterfaces/GamsOS.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsOsiHelper.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsOsiHelper.hpp -text
+GAMSlinks/src/SolverInterfaces/GamsSolver.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsSolver.h -text
 GAMSlinks/src/SolverInterfaces/GamsSolver.hpp -text
 GAMSlinks/src/SolverInterfaces/Makefile.am -text

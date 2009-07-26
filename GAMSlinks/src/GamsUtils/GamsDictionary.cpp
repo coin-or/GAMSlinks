@@ -42,30 +42,30 @@
 #include "dctmcc.h"
 
 GamsDictionary::GamsDictionary(gmoHandle_t gmo_, dctHandle_t dict_)
-: gmo(gmo_), dict(dict_), have_dictread(dict_ ? true : false), dict_is_own(false)
+: gmo(gmo_), dict(dict_), have_dictread(dict_ ? true : false), dict_is_own(false), need_unload_dct(false)
 { }
 
 GamsDictionary::~GamsDictionary() {
-	if (dict_is_own) {
-		// close dictionary
-		// if (have_dictread) dctClose(dict);
-		// free dictionary handler
-//TODO		if (dict) gcdFree(&dict);
-		// unload dictdll library
-		dctLibraryUnload(); //TODO what if there are several dictionaries open?
-	}
+	if (dict_is_own)
+		dctFree(&dict);
+	if (need_unload_dct)
+		dctLibraryUnload();
 }
 
-void GamsDictionary::setGCD(struct dctRec* gcd_) {
+void GamsDictionary::setDict(struct dctRec* dict_) {
   char msg[256];
 	assert(!dict);
-        assert(0==dctGetReady(msg, sizeof(msg)));
-	dict = gcd_;
+	if (!dctLibraryLoaded()) {
+		int ret = dctGetReady(msg, sizeof(msg));
+		assert(ret == 0);
+		need_unload_dct = true;
+	}
+	dict = dict_;
 	dict_is_own = false;
 	have_dictread = true; // TODO there seem to be no function to get this info from gcd, so we assume a dictionary has been read
 }
 
-bool GamsDictionary::initGCD() {
+bool GamsDictionary::initDict() {
 	assert(gmo);
 	// get the Dictionary File Handling set up
 	char buffer[512];
@@ -74,12 +74,13 @@ bool GamsDictionary::initGCD() {
 		gmoLogStat(gmo, buffer);
 		return false;
 	}
+	need_unload_dct = true;
 	dict_is_own = true;
 	return true;
 }
 
 bool GamsDictionary::readDictionary() {
-	if (!dict && !initGCD()) return false; // error setting up dictionary file handling
+	if (!dict && !initDict()) return false; // error setting up dictionary file handling
 	if (have_dictread) return true; // dictionary open already
 	if (!gmoDictionary(gmo)) return false; // do not have dictionary file
 

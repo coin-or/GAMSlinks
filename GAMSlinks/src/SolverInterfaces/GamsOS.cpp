@@ -48,19 +48,15 @@ GamsOS::GamsOS()
 #endif
 }
 
-int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* gcd) {
+GamsOS::~GamsOS() { }
+
+int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* dct) {
 	gmo = gmo_;
 	assert(gmo);
 	char buffer[255];
 	
-	char msg[256];
-#ifndef GAMS_BUILD
-  if (!gmoGetReadyD(GAMSIO_PATH, msg, sizeof(msg)))
-#endif
-  	if (!gmoGetReady(msg, sizeof(msg))) {
-  		fprintf(stderr, "Error loading GMO library: %s\n",msg);
-  		return 1;
-  	}
+	if (getGmoReady())
+		return 1;
 	
 	gmoMinfSet(gmo, -OSDBL_MAX);
 	gmoPinfSet(gmo,  OSDBL_MAX);
@@ -81,7 +77,7 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* gcd
 #endif
 	}
 
-	Gams2OSiL gmoosil(gmo, gcd);
+	Gams2OSiL gmoosil(gmo, dct);
 	if (!gmoosil.createOSInstance()) {
 		gmoLogStat(gmo, "Creation of OSInstance failed.");
 		return false;

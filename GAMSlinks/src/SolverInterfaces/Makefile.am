@@ -13,7 +13,7 @@ DISTCLEANFILES =
 
 noinst_PROGRAMS             =
 lib_LTLIBRARIES             = libGamsCoin.la
-libGamsCoin_la_SOURCES      =
+libGamsCoin_la_SOURCES      = GamsSolver.cpp
 libGamsCoin_la_LIBADD       = ../GamsUtils/libGamsUtils.la
 libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la
 libGamsCoin_la_LDFLAGS      = -module -no-undefined

@@ -284,10 +284,10 @@ am__DEPENDENCIES_2 =
 @COIN_HAS_SYMPHONY_TRUE@@COIN_OS_SOLVER_TRUE@@GAMSLINKS_BUILD_OS_TRUE@	$(SYMPHONYOBJDIR)/src/libSym.la \
 @COIN_HAS_SYMPHONY_TRUE@@COIN_OS_SOLVER_TRUE@@GAMSLINKS_BUILD_OS_TRUE@	`cat \
 @COIN_HAS_SYMPHONY_TRUE@@COIN_OS_SOLVER_TRUE@@GAMSLINKS_BUILD_OS_TRUE@	$(SYMPHONYOBJDIR)/sym_addlibs.txt`
-am__libGamsCoin_la_SOURCES_DIST = GamsCbc.cpp GamsOsiHelper.cpp \
-	GamsMessageHandler.cpp GamsIpopt.cpp GamsNLP.cpp \
-	GamsJournal.cpp GamsBonmin.cpp GamsMINLP.cpp GamsCouenne.cpp \
-	GamsOS.cpp Gams2OSiL.cpp OSrL2Gams.cpp
+am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp GamsCbc.cpp \
+	GamsOsiHelper.cpp GamsMessageHandler.cpp GamsIpopt.cpp \
+	GamsNLP.cpp GamsJournal.cpp GamsBonmin.cpp GamsMINLP.cpp \
+	GamsCouenne.cpp GamsOS.cpp Gams2OSiL.cpp OSrL2Gams.cpp
 @GAMSLINKS_BUILD_CBC_TRUE@am__objects_1 = GamsCbc.lo GamsOsiHelper.lo \
 @GAMSLINKS_BUILD_CBC_TRUE@	GamsMessageHandler.lo
 @GAMSLINKS_BUILD_IPOPT_TRUE@am__objects_2 = GamsIpopt.lo GamsNLP.lo \
@@ -297,8 +297,9 @@ am__libGamsCoin_la_SOURCES_DIST = GamsCbc.cpp GamsOsiHelper.cpp \
 @GAMSLINKS_BUILD_COUENNE_TRUE@am__objects_4 = GamsCouenne.lo
 @GAMSLINKS_BUILD_OS_TRUE@am__objects_5 = GamsOS.lo Gams2OSiL.lo \
 @GAMSLINKS_BUILD_OS_TRUE@	OSrL2Gams.lo
-am_libGamsCoin_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
-	$(am__objects_3) $(am__objects_4) $(am__objects_5)
+am_libGamsCoin_la_OBJECTS = GamsSolver.lo $(am__objects_1) \
+	$(am__objects_2) $(am__objects_3) $(am__objects_4) \
+	$(am__objects_5)
 libGamsCoin_la_OBJECTS = $(am_libGamsCoin_la_OBJECTS)
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__EXEEXT_1 = gmscbcux.out$(EXEEXT)
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__EXEEXT_2 = gmscbcnx$(EXEEXT)
@@ -697,8 +698,9 @@ EXTRA_DIST = $(am__append_12) $(am__append_21) $(am__append_30) \
 	$(am__append_42) $(am__append_63) $(am__append_64)
 DISTCLEANFILES = $(am__append_65) $(VPATH_DISTCLEANFILES)
 lib_LTLIBRARIES = libGamsCoin.la
-libGamsCoin_la_SOURCES = $(am__append_1) $(am__append_13) \
-	$(am__append_22) $(am__append_34) $(am__append_43)
+libGamsCoin_la_SOURCES = GamsSolver.cpp $(am__append_1) \
+	$(am__append_13) $(am__append_22) $(am__append_34) \
+	$(am__append_43)
 libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la $(am__append_3) \
 	$(am__append_5) $(am__append_15) $(am__append_24) \
 	$(am__append_32) $(am__append_36) $(am__append_46) \
@@ -883,6 +885,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsNLP.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOS.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSolver.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OSrL2Gams.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsbmd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmscbc.Po@am__quote@

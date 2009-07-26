@@ -35,6 +35,7 @@ private:
 
 public:
 	GamsOS();
+	~GamsOS();
 
 	int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct dctRec* gcd);
 	

@@ -15,8 +15,21 @@
 /** An abstract interface to a solver that takes Gams Modeling Objects (GMO) as input.
  */
 class GamsSolver {
+private:
+	bool need_unload_gmo;
 public:
-	virtual ~GamsSolver() { }
+	GamsSolver()
+	: need_unload_gmo(false)
+	{ }
+
+	/** Unloads GMO library, if we loaded it.
+	 */
+	virtual ~GamsSolver();
+	
+	/** Loads the GMO library, if not already loaded.
+	 * @return Nonzero on failure, 0 on success.
+	 */
+	int getGmoReady();
 	
 	/** Initialization of solver interface and solver.
 	 * Loads problem into solver.

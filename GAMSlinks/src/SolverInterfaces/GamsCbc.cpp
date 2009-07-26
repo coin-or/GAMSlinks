@@ -66,19 +66,13 @@ GamsCbc::~GamsCbc() {
 	delete[] cbc_args;
 }
 
-int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* gcd) {
+int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* dct) {
 	gmo = gmo_;
 	assert(gmo);
 	assert(!model);
 	
-	char msg[256];
-#ifndef GAMS_BUILD
-  if (!gmoGetReadyD(GAMSIO_PATH, msg, sizeof(msg)))
-#endif
-  	if (!gmoGetReady(msg, sizeof(msg))) {
-  		fprintf(stderr, "Error loading GMO library: %s\n",msg);
-  		return 1;
-  	}
+	if (getGmoReady())
+		return 1;
 	
 	options.setGMO(gmo);
 	if (opt) {
@@ -103,8 +97,8 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* gc
 
 	dict.setGMO(gmo);
 	if (options.getBool("names")) {
-		if (gcd)
-			dict.setGCD(gcd);
+		if (dct)
+			dict.setDict(dct);
 		else
 			dict.readDictionary();
 	}

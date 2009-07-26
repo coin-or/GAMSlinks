@@ -38,8 +38,9 @@ private:
 	
 	bool have_dictread;
 	bool dict_is_own;
+	bool need_unload_dct;
 	
-	bool initGCD();
+	bool initDict();
 	
 	char* constructName(char* buffer, int bufLen, int lSym, int* uelIndices, int nIndices);
 
@@ -61,7 +62,7 @@ public:
 	/** Sets a GCD handle to use.
 	 * If not set, an own gcd handle is created.
 	 */
-	void setGCD(struct dctRec* gcd_);
+	void setDict(struct dctRec* gcd_);
 	
 	/** Reads the GAMS dictionary.
 	 * @return True if successful, false otherwise.

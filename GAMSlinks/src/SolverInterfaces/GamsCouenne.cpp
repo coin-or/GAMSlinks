@@ -112,14 +112,8 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec
 	assert(gmo);
 	assert(IsNull(minlp));
 
-	char msg[256];
-#ifndef GAMS_BUILD
-  if (!gmoGetReadyD(GAMSIO_PATH, msg, sizeof(msg)))
-#endif
-  	if (!gmoGetReady(msg, sizeof(msg))) {
-  		fprintf(stderr, "Error loading GMO library: %s\n",msg);
-  		return 1;
-  	}
+	if (getGmoReady())
+		return 1;
 
 	gmoObjStyleSet(gmo, ObjType_Fun);
 	gmoObjReformSet(gmo, 1);
