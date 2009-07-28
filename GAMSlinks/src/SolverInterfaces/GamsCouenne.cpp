@@ -186,7 +186,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec
 	options->SetNumericValue("bonmin.time_limit", gmoResLim(gmo), true, true);
   options->SetIntegerValue("bonmin.problem_print_level", J_STRONGWARNING, true, true); /* so that Couenne does not print the whole problem before reformulation */
 
-  //TODO: still needed?  options->SetStringValue("delete_redundant", "no", "couenne.");
+    options->SetStringValue("delete_redundant", "no", "couenne."); // otherwise harker fails early
 
 	if (gmoNLM(gmo) == 0  && (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp))
 		options->SetStringValue("hessian_constant", "yes", true, true); 
