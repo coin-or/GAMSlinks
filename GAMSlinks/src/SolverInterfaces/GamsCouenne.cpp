@@ -186,7 +186,18 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec
 	options->SetNumericValue("bonmin.time_limit", gmoResLim(gmo), true, true);
   options->SetIntegerValue("bonmin.problem_print_level", J_STRONGWARNING, true, true); /* so that Couenne does not print the whole problem before reformulation */
 
-    options->SetStringValue("delete_redundant", "no", "couenne."); // otherwise harker fails early
+  // workaround for bug in couenne reformulation: if there are tiny constants, delete_redundant might setup a nonstandard reformulation (e.g., using x*x instead of x^2) 
+  // thus, we change the default of delete_redundant to off in this case
+  bool havetinyconst = false;
+	int constantlen = gmoNLConst(gmo);
+	double* constants = (double*)gmoPPool(gmo);
+	for (int i = 0; i < constantlen; ++i)
+		if (CoinAbs(constants[i]) < COUENNE_EPS) {
+			havetinyconst = true;
+			break;
+		}
+	if (havetinyconst)
+    options->SetStringValue("delete_redundant", "no", "couenne.");
 
 	if (gmoNLM(gmo) == 0  && (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp))
 		options->SetStringValue("hessian_constant", "yes", true, true); 
@@ -220,7 +231,8 @@ int GamsCouenne::callSolver() {
 			char buffer[1024];
 			gmoNameOptFile(gmo, buffer);
 			couenne.BabSetupBase::readOptionsFile(buffer);
-		}
+		} else // need to call readOptionsFile so that Couenne does not try reading couenne.opt later
+			couenne.BabSetupBase::readOptionsFile("");
 		
 		std::string libpath;
 	#ifdef HAVE_HSL_LOADER
