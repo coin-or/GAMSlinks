@@ -307,6 +307,7 @@ int GamsCouenne::callSolver() {
 			
 			delete[] negLambda;
 		} else {
+         gmoSetHeadnTail(gmo, HobjVal,   gmoPinf(gmo));
 			gmoLogStat(gmo, "\nCouenne finished. No feasible point found.");
 		}
 
