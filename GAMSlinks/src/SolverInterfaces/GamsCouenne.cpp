@@ -174,7 +174,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec
 #endif
 
 	// Change some options
-	options->SetNumericValue("bound_relax_factor", 0, true, true);
+//	options->SetNumericValue("bound_relax_factor", 0, true, true);
 	options->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);
 	options->SetNumericValue("nlp_upper_bound_inf", gmoPinf(gmo), false, true);
 	if (gmoUseCutOff(gmo))

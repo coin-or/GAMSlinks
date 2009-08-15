@@ -172,7 +172,7 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec*
 //  printOptions(journalist, bonmin_setup.roptions());
   
 	// Change some options
-	bonmin_setup->options()->SetNumericValue("bound_relax_factor", 0, true, true);
+//	bonmin_setup->options()->SetNumericValue("bound_relax_factor", 0, true, true);
 //	bonmin_setup->options()->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);
 //	bonmin_setup->options()->SetNumericValue("nlp_upper_bound_inf", gmoPinf(gmo), false, true);
 	if (gmoUseCutOff(gmo))

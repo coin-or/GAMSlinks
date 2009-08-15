@@ -93,7 +93,7 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* 
 	if (!ipopt->Jnlst()->AddJournal(jrnl))
 		gmoLogStat(gmo, "Failed to register GamsJournal for IPOPT output.");
 
-  ipopt->Options()->SetNumericValue("bound_relax_factor", 0, true, true);
+//  ipopt->Options()->SetNumericValue("bound_relax_factor", 0, true, true);
 	ipopt->Options()->SetIntegerValue("max_iter", gmoIterLim(gmo), true, true);
   ipopt->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
 // 	ipopt->Options()->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);
