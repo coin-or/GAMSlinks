@@ -61,6 +61,8 @@
 #include "exprSub.hpp"
 #include "exprSum.hpp"
 #include "exprVar.hpp"
+//#include "exprQuad.hpp"
+//#include "lqelems.hpp"
 
 // to be sure to get (or not get) HAVE_M??? and HAVE_PARDISO defined
 #include "IpoptConfig.h"
@@ -212,8 +214,14 @@ int GamsCouenne::callSolver() {
  		assert(gamscbc);
  		return gamscbc->callSolver();
  	}
+ 	
+	char buffer[1024];
 	
- 	CouenneProblem* problem = setupProblem();
+ 	CouenneProblem* problem;
+ 	if (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp)
+ 		problem = setupProblemMIQQP();
+ 	else
+ 		problem = setupProblem();
  	if (!problem) {
  		gmoLogStat(gmo, "Error in setting up problem for Couenne.\n");
  		return -1;
@@ -228,7 +236,6 @@ int GamsCouenne::callSolver() {
 		
 		if (gmoOptFile(gmo)) {
 			options->SetStringValue("print_user_options", "yes", true, true);
-			char buffer[1024];
 			gmoNameOptFile(gmo, buffer);
 			couenne.BabSetupBase::readOptionsFile(buffer);
 		} else // need to call readOptionsFile so that Couenne does not try reading couenne.opt later
@@ -237,8 +244,7 @@ int GamsCouenne::callSolver() {
 		std::string libpath;
 	#ifdef HAVE_HSL_LOADER
 		if (options->GetStringValue("hsl_library", libpath, "")) {
-			char buffer[512];
-			if (LSL_loadHSL(libpath.c_str(), buffer, 512) != 0) {
+			if (LSL_loadHSL(libpath.c_str(), buffer, 1024) != 0) {
 				gmoLogStatPChar(gmo, "Failed to load HSL library at user specified path: ");
 				gmoLogStat(gmo, buffer);
 			  return -1;
@@ -247,8 +253,7 @@ int GamsCouenne::callSolver() {
 	#endif
 	#ifndef HAVE_PARDISO
 		if (options->GetStringValue("pardiso_library", libpath, "")) {
-			char buffer[512];
-			if (LSL_loadPardisoLib(libpath.c_str(), buffer, 512) != 0) {
+			if (LSL_loadPardisoLib(libpath.c_str(), buffer, 1024) != 0) {
 				gmoLogStatPChar(gmo, "Failed to load Pardiso library at user specified path: ");
 				gmoLogStat(gmo, buffer);
 			  return -1;
@@ -275,7 +280,9 @@ int GamsCouenne::callSolver() {
 		ci->initialize(roptions, options, jnlst, GetRawPtr(minlp));
 		GamsMessageHandler* msghandler = new GamsMessageHandler(gmo);
 		ci->passInMessageHandler(msghandler);
-		
+
+		minlp->nlp->clockStart = gmoTimeDiffStart(gmo);
+
 		char** argv = NULL;
 		if (!couenne.InitializeCouenne(argv, problem, ci)) {
 			gmoLogStat(gmo, "Reformulation finds model infeasible.\n");
@@ -283,8 +290,22 @@ int GamsCouenne::callSolver() {
 			gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
 			return 0;
 		}
+		
+		double preprocessTime = gmoTimeDiffStart(gmo) - minlp->nlp->clockStart;
+		
+		snprintf(buffer, 1024, "Couenne initialized (%g seconds).", preprocessTime);
+		gmoLogStat(gmo, buffer);
+		
+		if (preprocessTime >= gmoResLim(gmo)) {
+			gmoLogStat(gmo, "Time is up.\n");
+			gmoSolveStatSet(gmo, SolveStat_Resource);
+			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+			return 0;
+		}
+		
+		options->SetNumericValue("bonmin.time_limit", gmoResLim(gmo) - preprocessTime, true, true);
+    couenne.setDoubleParameter(BabSetupBase::MaxTime, gmoResLim(gmo) - preprocessTime);
 				
-		minlp->nlp->clockStart = gmoTimeDiffStart(gmo);
 		bb(couenne); // do branch and bound
 		
 		double best_val = bb.model().getObjValue();
@@ -295,9 +316,8 @@ int GamsCouenne::callSolver() {
 		}
 
 		if (bb.bestSolution()) {
-			char buf[100];
-			snprintf(buf, 100, "\nCouenne finished. Found feasible point. Objective function value = %g.", best_val);
-			gmoLogStat(gmo, buf);
+			snprintf(buffer, 100, "\nCouenne finished. Found feasible point. Objective function value = %g.", best_val);
+			gmoLogStat(gmo, buffer);
 
 			double* negLambda = new double[gmoM(gmo)];
 			memset(negLambda, 0, gmoM(gmo)*sizeof(double));
@@ -321,18 +341,17 @@ int GamsCouenne::callSolver() {
 		gmoModelStatSet(gmo, minlp->model_status);
 
 		gmoLogStat(gmo, "");
-		char buf[1024];
 		if (bb.bestSolution()) {
-			snprintf(buf, 1024, "MINLP solution: %20.10g   (%d nodes, %g seconds)", best_val, bb.numNodes(), gmoTimeDiffStart(gmo) - minlp->nlp->clockStart);
-			gmoLogStat(gmo, buf);
+			snprintf(buffer, 1024, "MINLP solution: %20.10g   (%d nodes, %g seconds)", best_val, bb.numNodes(), gmoTimeDiffStart(gmo) - minlp->nlp->clockStart);
+			gmoLogStat(gmo, buffer);
 		}
 		if (best_bound > -1e200 && best_bound < 1e200) {
-			snprintf(buf, 1024, "Best possible: %21.10g\n", best_bound);
-			gmoLogStat(gmo, buf);
+			snprintf(buffer, 1024, "Best possible: %21.10g\n", best_bound);
+			gmoLogStat(gmo, buffer);
 
 			if (bb.bestSolution()) {
-				snprintf(buf, 1024, "Absolute gap: %22.5g\nRelative gap: %22.5g\n", CoinAbs(best_val-best_bound), CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.));
-				gmoLogStat(gmo, buf);
+				snprintf(buffer, 1024, "Absolute gap: %22.5g\nRelative gap: %22.5g\n", CoinAbs(best_val-best_bound), CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.));
+				gmoLogStat(gmo, buffer);
 			}
 		}
 		
@@ -342,16 +361,14 @@ int GamsCouenne::callSolver() {
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 	  return -1;
   } catch(CoinError &error) {
-  	char buf[1024];
-  	snprintf(buf, 1024, "%s::%s\n%s", error.className().c_str(), error.methodName().c_str(), error.message().c_str());
-		gmoLogStat(gmo, buf);
+  	snprintf(buffer, 1024, "%s::%s\n%s", error.className().c_str(), error.methodName().c_str(), error.message().c_str());
+		gmoLogStat(gmo, buffer);
 		gmoSolveStatSet(gmo, SolveStat_SolverErr);
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 	  return 1;
   } catch (TNLPSolver::UnsolvedError *E) { 	// there has been a failure to solve a problem with Ipopt.
-		char buf[1024];
-		snprintf(buf, 1024, "Error: %s exited with error %s", E->solverName().c_str(), E->errorName().c_str());
-		gmoLogStat(gmo, buf);
+		snprintf(buffer, 1024, "Error: %s exited with error %s", E->solverName().c_str(), E->errorName().c_str());
+		gmoLogStat(gmo, buffer);
 		gmoSolveStatSet(gmo, SolveStat_SolverErr);
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		return 1;
@@ -928,6 +945,251 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 
 	assert(stack.size() == 1);	
 	return stack.back();
+}
+
+CouenneProblem* GamsCouenne::setupProblemMIQQP() {
+//	printf("using MIQQP problem setup method\n");
+	
+	int do2dir, dohess;
+	if (gmoHessLoad(gmo, 0, -1, &do2dir, &dohess) || !dohess) {
+		gmoLogStat(gmo, "Failed to initialize Hessian structure. Trying usual setupProblem.");
+		return setupProblem();
+  }
+
+	CouenneProblem* prob = new CouenneProblem(NULL, NULL, jnlst);
+
+	//add variables
+	for (int i = 0; i < gmoN(gmo); ++i) {
+		switch (gmoGetVarTypeOne(gmo, i)) {
+			case var_X:
+				prob->addVariable(false, prob->domain());
+				break;
+			case var_B:
+			case var_I:
+				prob->addVariable(true, prob->domain());
+				break;
+			case var_S1:
+			case var_S2:
+		  	//TODO prob->addVariable(false, prob->domain());
+		  	gmoLogStat(gmo, "Special ordered sets not supported by Gams/Couenne link yet.");
+		  	return NULL;
+			case var_SC:
+			case var_SI:
+		  	gmoLogStat(gmo, "Semicontinuous and semiinteger variables not supported by Couenne.");
+		  	return NULL;
+			default:
+		  	gmoLogStat(gmo, "Unknown variable type.");
+		  	return NULL;
+		}
+	}
+	
+	// add variable bounds and initial values
+	CouNumber* x_ = new CouNumber[gmoN(gmo)];
+	CouNumber* lb = new CouNumber[gmoN(gmo)];
+	CouNumber* ub = new CouNumber[gmoN(gmo)];
+	
+	gmoGetVarL(gmo, x_);
+	gmoGetVarLower(gmo, lb);
+	gmoGetVarUpper(gmo, ub);
+	
+	// translate from gmoM/Pinf to Couenne infinity
+	for (int i = 0; i < gmoN(gmo); ++i)	{
+		if (lb[i] <= gmoMinf(gmo))
+			lb[i] = -COUENNE_INFINITY;
+		if (ub[i] >= gmoPinf(gmo))
+			ub[i] =  COUENNE_INFINITY;
+	}
+	
+	prob->domain()->push(gmoN(gmo), x_, lb, ub);
+	
+	delete[] x_;
+	delete[] lb;
+	delete[] ub;
+	
+	exprGroup::lincoeff lin;
+	expression *body = NULL;
+//	std::vector<quadElem> qcoeff;
+	
+  lin.reserve(gmoN(gmo));
+//  qcoeff.reserve(gmoHessLagNz(gmo));
+
+	double* null   = new double[gmoN(gmo)];
+	double* lambda = new double[gmoM(gmo)];
+	for (int i = 0; i < gmoN(gmo); ++i)
+		null[i] = 0.;
+	for (int i = 0; i < gmoM(gmo); ++i)
+		lambda[i] = 0.;
+	
+	double constant, dummy;
+	double* linear = new double[gmoN(gmo)];
+	int nerror;
+	
+	int* hess_iRow   = new int[gmoHessLagNz(gmo)];
+	int* hess_jCol   = new int[gmoHessLagNz(gmo)];
+	double* hess_val = new double[gmoHessLagNz(gmo)];
+	
+	gmoHessLagStruct(gmo, hess_iRow, hess_jCol);
+
+	// add objective function
+
+	double isMin = (gmoSense(gmo) == Obj_Min) ? 1 : -1;
+
+	memset(linear, 0, gmoN(gmo)*sizeof(double));
+	nerror = gmoEvalObjGrad(gmo, null, &constant, linear, &dummy);
+	assert(nerror == 0);
+
+	for (int i = 0; i < gmoN(gmo); ++i) {
+		if (!linear[i])
+			continue;
+		lin.push_back(pair<exprVar*, CouNumber>(prob->Var(i), isMin*linear[i]));
+	}
+  assert((int)lin.size() == gmoObjNZ(gmo));
+
+	if (gmoObjNLNZ(gmo)) {
+		memset(hess_val, 0, gmoHessLagNz(gmo)*sizeof(double));
+		nerror = gmoHessLagValue(gmo, null, lambda, hess_val, isMin, 0.);
+		if (nerror) {
+			gmoLogStat(gmo, "Error evaluation hessian of objective function.\n");
+			return NULL;
+		}
+		
+		int nzcount = 0;
+		for (int i = 0; i < gmoHessLagNz(gmo); ++i) {
+			if (hess_val[i])
+				++nzcount;
+		}
+
+		expression** summands = new expression*[nzcount];
+		int k = 0;
+		for (int i = 0; i < gmoHessLagNz(gmo); ++i) {
+			if (!hess_val[i])
+				continue;
+			double coeff = hess_val[i];
+			if (hess_iRow[i] == hess_jCol[i]) {
+				summands[k] = new exprPow(new exprClone(prob->Var(hess_iRow[i])), new exprConst(2.));
+				if (coeff != 2.)
+					summands[k] = new exprMul(new exprConst(coeff/2.), summands[k]);
+			} else if (coeff == 1.) {
+				summands[k] = new exprMul(new exprClone(prob->Var(hess_iRow[i])), new exprClone(prob->Var(hess_jCol[i])));
+			} else {
+				expression** prod = new expression*[3];
+				prod[0] = new exprConst(coeff);
+				prod[1] = new exprClone(prob->Var(hess_iRow[i]));
+				prod[2] = new exprClone(prob->Var(hess_jCol[i]));
+				summands[k] = new exprMul(prod, 3);
+			}
+			++k;
+		}
+		
+		body = new exprGroup(isMin*constant, lin, summands, nzcount);
+
+//		for (int i = 0; i < gmoHessLagNz(gmo); ++i) {
+//			if (!hess_val[i])
+//				continue;
+//			qcoeff.push_back(quadElem(prob->Var(hess_iRow[i]), prob->Var(hess_jCol[i]),
+//				(hess_iRow[i] == hess_jCol[i] ? 0.5 : 1) * 2 * hess_val[i]));
+//		}
+		
+//	  body = new exprQuad(isMin*constant, lin, qcoeff, NULL, 0);
+	} else {
+	  body = new exprGroup(isMin*constant, lin, NULL, 0);
+	}
+
+	prob->addObjective(body, "min");
+
+	// add constraints
+	
+	for (int i = 0; i < gmoM(gmo); ++i) {
+		lin.resize(0);
+//		qcoeff.clear();
+
+		memset(linear, 0, gmoN(gmo)*sizeof(double));
+		nerror = gmoEvalGrad(gmo, i, null, &constant, linear, &dummy);
+		assert(nerror == 0);
+
+		for (int j = 0; j < gmoN(gmo); ++j) {
+			if (!linear[j])
+				continue;
+			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(j), linear[j]));
+		}
+
+		if (gmoNLfunc(gmo, i)) {
+			lambda[i] = -1.;
+			memset(hess_val, 0, gmoHessLagNz(gmo)*sizeof(double));
+			nerror = gmoHessLagValue(gmo, null, lambda, hess_val, 0., 1.);
+			lambda[i] = 0.;
+			if (nerror) {
+				gmoLogStat(gmo, "Error evaluation hessian of constraint function.\n");
+				return NULL;
+			}
+
+			int nzcount = 0;
+			for (int j = 0; j < gmoHessLagNz(gmo); ++j) {
+				if (hess_val[j])
+					++nzcount;
+			}
+			
+			expression** summands = new expression*[nzcount];
+			int k = 0;
+			for (int j = 0; j < gmoHessLagNz(gmo); ++j) {
+				if (!hess_val[j])
+					continue;
+				double coeff = hess_val[j];
+				if (hess_iRow[j] == hess_jCol[j]) {
+					summands[k] = new exprPow(new exprClone(prob->Var(hess_iRow[j])), new exprConst(2.));
+					if (coeff != 2.)
+						summands[k] = new exprMul(new exprConst(coeff/2.), summands[k]);
+				} else if (coeff == 1.) {
+					summands[k] = new exprMul(new exprClone(prob->Var(hess_iRow[j])), new exprClone(prob->Var(hess_jCol[j])));
+				} else {
+					expression** prod = new expression*[3];
+					prod[0] = new exprConst(coeff);
+					prod[1] = new exprClone(prob->Var(hess_iRow[j]));
+					prod[2] = new exprClone(prob->Var(hess_jCol[j]));
+					summands[k] = new exprMul(prod, 3);
+				}
+				++k;
+			}
+			
+			body = new exprGroup(constant, lin, summands, nzcount);
+			
+//			for (int j = 0; j < gmoHessLagNz(gmo); ++j) {
+//				if (!hess_val[j])
+//					continue;
+//				qcoeff.push_back(quadElem(prob->Var(hess_iRow[j]), prob->Var(hess_jCol[j]),
+//					(hess_iRow[j] == hess_jCol[j] ? 0.5 : 1) * 2 * hess_val[j]));
+//			}
+//			
+//		  body = new exprQuad(constant, lin, qcoeff, NULL, 0);
+		} else {
+		  body = new exprGroup(constant, lin, NULL, 0);
+		}
+		
+		switch (gmoGetEquTypeOne(gmo, i)) {
+			case equ_E:
+				prob->addEQConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
+				break;
+			case equ_L:
+				prob->addLEConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
+				break;
+			case equ_G:
+				prob->addGEConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
+				break;
+			case equ_N:
+				// TODO I doubt that adding a RNG constraint with -infty/infty bounds would work here
+				gmoLogStat(gmo, "Free constraints not supported by Gams/Couenne link yet. Constraint ignored.");
+				break;
+		}
+	}
+	
+	delete[] null;
+	delete[] lambda;
+	delete[] linear;
+	delete[] hess_iRow;
+	delete[] hess_jCol;
+	delete[] hess_val;
+
+	return prob;
 }
 
 DllExport GamsCouenne* STDCALL createNewGamsCouenne() {
