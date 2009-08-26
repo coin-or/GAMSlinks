@@ -240,6 +240,7 @@ int GamsCouenne::callSolver() {
 			couenne.BabSetupBase::readOptionsFile(buffer);
 		} else // need to call readOptionsFile so that Couenne does not try reading couenne.opt later
 			couenne.BabSetupBase::readOptionsFile("");
+	   problem->initOptions(options);
 		
 		std::string libpath;
 	#ifdef HAVE_HSL_LOADER
