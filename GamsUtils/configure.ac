@@ -139,11 +139,13 @@ ADDLIBS_save="$ADDLIBS"
 ####################################
 
 AC_COIN_HAVE_GAMS
-if test $coin_has_gamsio = no; then
-  AC_MSG_ERROR([need GAMS I/O libraries to build GAMSlinks])
+if test $coin_has_gamsio != no ; then
+  AC_COIN_USE_GAMS
+else
+  AC_DEFINE(COIN_HAS_GAMSIO, [0])
+  AM_CONDITIONAL(COIN_HAS_GAMSIO, [test 0 = 1])
 fi
-AC_COIN_USE_GAMS
-AC_DEFINE_UNQUOTED([GAMSIO_PATH],["$gamsio_srcdir"],[The path of the GAMS I/O libraries])
+#AC_DEFINE_UNQUOTED([GAMSIO_PATH],["$gamsio_srcdir"],[The path of the GAMS I/O libraries])
 
 ##############################################################################
 #                VPATH links for GAMS installation files                     #

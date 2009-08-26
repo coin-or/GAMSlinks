@@ -23,14 +23,6 @@
 #ifdef HAVE_CONFIG_H
 #include "config_gamslinks.h"
 
-#ifndef HAVE_SNPRINTF
-#ifdef HAVE__SNPRINTF
-#define snprintf _snprintf
-#else
-#error "Do not have snprintf of _snprintf."
-#endif
-#endif
-
 /* undefine macros that could conflict with those in other config.h
    files */
 #undef PACKAGE
