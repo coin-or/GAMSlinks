@@ -48,6 +48,14 @@
 #endif
 #endif
 
+#ifndef HAVE_SNPRINTF
+#ifdef HAVE__SNPRINTF
+#define snprintf _snprintf
+#else
+#error "Do not have snprintf of _snprintf."
+#endif
+#endif
+
 #include "gmomcc.h"
 #include "optcc.h"
 
