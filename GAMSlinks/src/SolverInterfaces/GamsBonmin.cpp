@@ -179,7 +179,7 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 //  printOptions(journalist, bonmin_setup.roptions());
 
 	// Change some options
-//	bonmin_setup->options()->SetNumericValue("bound_relax_factor", 0, true, true);
+	bonmin_setup->options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
 //	bonmin_setup->options()->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);
 //	bonmin_setup->options()->SetNumericValue("nlp_upper_bound_inf", gmoPinf(gmo), false, true);
 	if (GMS_SV_NA != gevGetDblOpt(gev, gevCutOff))
@@ -270,7 +270,6 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	}
 
 	msghandler = new GamsMessageHandler(gev);
-//	GamsDictionary* dict = NULL;
 //	GamsBCH* bch = NULL;
 //	CbcModel* modelptr = NULL;
 
@@ -488,7 +487,7 @@ bool GamsBonmin::isNLP() {
 		case Proc_rminlp:
 			return true;
 	}
-	if (gmoNDisc(gmo)) // TODO does semicontinuous variables count as discrete?
+	if (gmoNDisc(gmo))
 		return false;
 	int numSos1, numSos2, nzSos;
 	gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);

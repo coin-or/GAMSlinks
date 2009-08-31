@@ -178,7 +178,7 @@ void solve_minlp(smagHandle_t prob) {
 //  printOptions(journalist, bonmin_setup.roptions());
   
 	// Change some options
-	bonmin_setup.options()->SetNumericValue("bound_relax_factor", 0, true, true);
+	bonmin_setup.options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
 	bonmin_setup.options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false, true);
 	bonmin_setup.options()->SetNumericValue("nlp_upper_bound_inf",  prob->inf, false, true);
 	if (prob->gms.icutof)

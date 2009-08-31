@@ -39,33 +39,31 @@ GamsMINLP::~GamsMINLP() {
 }
 
 void GamsMINLP::setupPrioritiesSOS() {
-#if 0 //TODO
 	// range of priority values
-	double minprior = prob->inf;
-	double maxprior = -prob->inf;
+	double minprior = gmoMinf(gmo);
+	double maxprior = gmoPinf(gmo);
 	// take care of integer variables branching priorities
-	if (prob->gms.priots) {
+	if (gmoPriorOpt(gmo)) {
 		// first check which range of priorities is given
-		for (int i=0; i<smagColCount(prob); ++i) {
-			if (prob->colType[i] == SMAG_VAR_CONT) continue;
-			if (prob->colPriority[i]<minprior) minprior=prob->colPriority[i];
-			if (prob->colPriority[i]>maxprior) maxprior=prob->colPriority[i];
+		for (int i = 0; i < gmoN(gmo); ++i) {
+			if (gmoGetVarTypeOne(gmo, i) == var_X) continue; // gams forbids branching priorities for continuous variables
+			if (gmoGetVarPriorOne(gmo,i) < minprior) minprior = gmoGetVarPriorOne(gmo,i);
+			if (gmoGetVarPriorOne(gmo,i) > maxprior) maxprior = gmoGetVarPriorOne(gmo,i);
 		}
 		if (minprior!=maxprior) {
-			branchinginfo.size=smagColCount(prob);
+			branchinginfo.size = gmoN(gmo);
 			branchinginfo.priorities=new int[branchinginfo.size];
-			for (int i=0; i<branchinginfo.size; ++i) {
-				if (prob->colType[i] == SMAG_VAR_CONT)
+			for (int i = 0; i < branchinginfo.size; ++i) {
+				if (gmoGetVarTypeOne(gmo, i) == var_X) //TODO are priorities now also allowed for continuous vars?
 					branchinginfo.priorities[i] = 0;
 				else
 					// we map gams priorities into the range {1,..,1000}
 					// CBC: 1000 is standard priority and 1 is highest priority
 					// GAMS: 1 is standard priority for discrete variables, and as smaller the value as higher the priority
-					branchinginfo.priorities[i]=1+(int)(999*(prob->colPriority[i]-minprior)/(maxprior-minprior));
+					branchinginfo.priorities[i] = 1+(int)(999*(gmoGetVarPriorOne(gmo,i)-minprior)/(maxprior-minprior));
 			}
 		}
 	}
-#endif
 
 	// Tell solver which variables belong to SOS of type 1 or 2
 	int numSos1, numSos2, nzSos, numSos;
@@ -258,9 +256,8 @@ const TMINLP::SosInfo* GamsMINLP::sosConstraints() const {
 }
 
 const TMINLP::BranchingInfo* GamsMINLP::branchingInfo() const {
-	//TODO
-//	if (prob->gms.priots)
-//		return &branchinginfo;
+	if (gmoPriorOpt(gmo))
+		return &branchinginfo;
 	return NULL;
 }
 

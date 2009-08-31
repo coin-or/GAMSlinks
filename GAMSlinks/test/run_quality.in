@@ -119,7 +119,7 @@ if test @gamslinks_build_couenne@ = 1 ; then
   testlist[${#testlist[@]}]="--solver couenne --suite lp"
   testlist[${#testlist[@]}]="--solver couenne --suite mip user1=rmip=couenne"
   testlist[${#testlist[@]}]="--solver couenne --suite nlp user1=\"--MCHECKS=0\""
-  testlist[${#testlist[@]}]="--solver couenne --suite qcp user1=\"--QPMCHECKS=0\""
+  testlist[${#testlist[@]}]="--solver couenne --suite qcp user1=\"--QPMCHECKS=0 reslim=60\""
 fi
 
 if test @gamslinks_build_osi@ = 1 ; then

@@ -182,7 +182,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #endif
 
 	// Change some options
-//	options->SetNumericValue("bound_relax_factor", 0, true, true);
+	options->SetNumericValue("bound_relax_factor", 1e-10, true, true);
   if (GMS_SV_NA != gevGetDblOpt(gev, gevCutOff)) 
   	options->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == Obj_Min ? gevGetDblOpt(gev, gevCutOff) : -gevGetDblOpt(gev, gevCutOff), true, true); 
   options->SetNumericValue("bonmin.allowable_gap", gevGetDblOpt(gev, gevOptCA), true, true); 
@@ -190,6 +190,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
  	if (gevGetIntOpt(gev, gevNodeLim))
  		options->SetIntegerValue("bonmin.node_limit", gevGetIntOpt(gev, gevNodeLim), true, true); 
  	options->SetNumericValue("bonmin.time_limit", gevGetDblOpt(gev, gevResLim), true, true); 
+ 	options->SetIntegerValue("bonmin.problem_print_level", J_STRONGWARNING, true, true); /* otherwise Couenne prints the problem to stdout */ 
 
   // workaround for bug in couenne reformulation: if there are tiny constants, delete_redundant might setup a nonstandard reformulation (e.g., using x*x instead of x^2) 
   // thus, we change the default of delete_redundant to off in this case
@@ -207,11 +208,12 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	if (gmoNLM(gmo) == 0  && (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp))
 		options->SetStringValue("hessian_constant", "yes", true, true); 
 	
- 	//TODO forbid that user changes these Ipopt options
   double ipoptinf;
  	options->GetNumericValue("nlp_lower_bound_inf", ipoptinf, "");
+ 	options->SetNumericValue("nlp_lower_bound_inf", ipoptinf, false, true); /* to disallow clobber */
  	gmoMinfSet(gmo, ipoptinf);
  	options->GetNumericValue("nlp_upper_bound_inf", ipoptinf, "");
+ 	options->SetNumericValue("nlp_upper_bound_inf", ipoptinf, false, true); /* to disallow clobber */
  	gmoPinfSet(gmo, ipoptinf);
 
  	return 0;
@@ -253,7 +255,7 @@ int GamsCouenne::callSolver() {
 	   problem->initOptions(options);
 		
 		std::string libpath;
-	#ifdef HAVE_HSL_LOADER
+#ifdef HAVE_HSL_LOADER
 		if (options->GetStringValue("hsl_library", libpath, "")) {
 			if (LSL_loadHSL(libpath.c_str(), buffer, 1024) != 0) {
 				gevLogStatPChar(gev, "Failed to load HSL library at user specified path: ");
@@ -261,8 +263,8 @@ int GamsCouenne::callSolver() {
 			  return -1;
 			}
 		}
-	#endif
-	#ifndef HAVE_PARDISO
+#endif
+#ifndef HAVE_PARDISO
 		if (options->GetStringValue("pardiso_library", libpath, "")) {
 			if (LSL_loadPardisoLib(libpath.c_str(), buffer, 1024) != 0) {
 				gevLogStatPChar(gev, "Failed to load Pardiso library at user specified path: ");
@@ -270,7 +272,7 @@ int GamsCouenne::callSolver() {
 			  return -1;
 			}
 		}
-	#endif
+#endif
 
 		options->GetNumericValue("diverging_iterates_tol", minlp->nlp->div_iter_tol, "");
 	//	// or should we also check the tolerance for acceptable points?

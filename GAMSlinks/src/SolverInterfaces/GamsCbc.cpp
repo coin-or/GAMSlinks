@@ -219,10 +219,10 @@ bool GamsCbc::setupProblem(OsiSolverInterface& solver) {
 		return false;
 
 	// Cbc thinks in terms of lotsize objects, and for those the lower bound has to be 0
-	//TODO do this only if there are semicontinuous or semiinteger variables
-	for (int i = 0; i < gmoN(gmo); ++i)
-		if (gmoGetVarTypeOne(gmo, i) == var_SC || gmoGetVarTypeOne(gmo, i) == var_SI)
-			solver.setColLower(i, 0.);
+	if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI))
+		for (int i = 0; i < gmoN(gmo); ++i)
+			if (gmoGetVarTypeOne(gmo, i) == var_SC || gmoGetVarTypeOne(gmo, i) == var_SI)
+				solver.setColLower(i, 0.);
 
 	if (!gmoN(gmo)) {
 		gevLog(gev, "Problem has no columns. Adding fake column...");
@@ -252,30 +252,31 @@ bool GamsCbc::setupProblem(OsiSolverInterface& solver) {
 bool GamsCbc::setupPrioritiesSOSSemiCon() {
 	assert(model);
 
-#if 0 //TODO gmo does not seem to have variable branching priorities yet
 	// range of priority values
 	double minprior =  model->solver()->getInfinity();
 	double maxprior = -model->solver()->getInfinity();
 	// take care of integer variable branching priorities
-	if (false) { //TODO get priority flag
+	if (gmoPriorOpt(gmo)) {
 		// first check which range of priorities is given
 		for (int i = 0; i < gmoN(gmo); ++i) {
-			if (gmoVarTypeOne(gmo, i) == var_X) continue; // gams forbids branching priorities for continuous variables
-			if (gm.ColPriority()[i] < minprior) minprior = gm.ColPriority()[i];
-			if (gm.ColPriority()[i] > maxprior) maxprior = gm.ColPriority()[i];
+			if (gmoGetVarTypeOne(gmo, i) == var_X) continue; // gams forbids branching priorities for continuous variables
+			if (gmoGetVarPriorOne(gmo,i) < minprior) minprior = gmoGetVarPriorOne(gmo,i);
+			if (gmoGetVarPriorOne(gmo,i) > maxprior) maxprior = gmoGetVarPriorOne(gmo,i);
 		}
 		if (minprior!=maxprior) {
-			int* cbcprior=new int[gm.nDCols()];
-			for (int i=0; i<gm.nDCols(); ++i) {
+			int* cbcprior = new int[gmoNDisc(gmo)];
+			int j = 0;
+			for (int i = 0; i < gmoN(gmo); ++i) {
+				if (gmoGetVarTypeOne(gmo, i) == var_X) continue; // gams forbids branching priorities for continuous variables
 				// we map gams priorities into the range {1,..,1000}
 				// (1000 is standard priority in Cbc, and 1 is highest priority)
-				cbcprior[i]=1+(int)(999*(gm.ColPriority()[i]-minprior)/(maxprior-minprior));
+				assert(j < gmoNDisc(gmo));
+				cbcprior[j++]=1+(int)(999*(gmoGetVarPriorOne(gmo,i)-minprior)/(maxprior-minprior));
 			}
-			model.passInPriorities(cbcprior, false);
+			model->passInPriorities(cbcprior, false);
 			delete[] cbcprior;
 		}
 	}
-#endif
 
 	// Tell solver which variables belong to SOS of type 1 or 2
 	int numSos1, numSos2, nzSos, numSos;
@@ -314,11 +315,7 @@ bool GamsCbc::setupPrioritiesSOSSemiCon() {
 		delete[] objects;
   }
 
-	int numSemi = 0; // number of semicontinuous and semiinteger variables
-	for (int i = 0; i < gmoN(gmo); ++i) // TODO there should be a gmo function to get this count
-		if (gmoGetVarTypeOne(gmo, i) == var_SC || gmoGetVarTypeOne(gmo, i) == var_SI)
-			++numSemi;
-
+	int numSemi = gmoGetVarTypeCnt(gmo, var_SC) + gmoGetVarTypeCnt(gmo, var_SI); // number of semicontinuous and semiinteger variables
   if (numSemi) {
 		CbcObject** objects = new CbcObject*[numSemi];
 		int object_nr = 0;
@@ -1267,7 +1264,7 @@ bool GamsCbc::isLP() {
 		return true;
 	if (gmoModelType(gmo) == Proc_rmip)
 		return true;
-	if (gmoNDisc(gmo)) // TODO does semicontinuous variables count as discrete?
+	if (gmoNDisc(gmo))
 		return false;
 	int numSos1, numSos2, nzSos;
 	gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);

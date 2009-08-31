@@ -67,9 +67,9 @@ GamsIpopt::GamsIpopt()
 : gmo(NULL), gev(NULL)
 {
 #ifdef GAMS_BUILD
-	strcpy(ipopt_message, "GAMS/CoinIpoptD (Ipopt Library 3.6)\nwritten by A. Waechter\n");
+	strcpy(ipopt_message, "GAMS/CoinIpoptD (Ipopt Library 3.7)\nwritten by A. Waechter\n");
 #else
-	strcpy(ipopt_message, "GAMS/IpoptD (Ipopt Library 3.6)\nwritten by A. Waechter\n");
+	strcpy(ipopt_message, "GAMS/IpoptD (Ipopt Library 3.7)\nwritten by A. Waechter\n");
 #endif
 }
 
@@ -99,7 +99,7 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	if (!ipopt->Jnlst()->AddJournal(jrnl))
 		gevLogStat(gev, "Failed to register GamsJournal for IPOPT output.");
 
-//  ipopt->Options()->SetNumericValue("bound_relax_factor", 0, true, true);
+  ipopt->Options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
 	ipopt->Options()->SetIntegerValue("max_iter", gevGetIntOpt(gev, gevIterLim), true, true);
   ipopt->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
 // 	ipopt->Options()->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);

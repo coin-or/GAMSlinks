@@ -90,9 +90,9 @@ int main (int argc, char* argv[]) {
   smagReadModel (prob);
 
 #ifdef GAMS_BUILD
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinIpopt NLP Solver (IPOPT Library 3.6)\nwritten by A. Waechter\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinIpopt NLP Solver (IPOPT Library 3.7)\nwritten by A. Waechter\n");
 #else
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Ipopt NLP Solver (IPOPT Library 3.6)\nwritten by A. Waechter\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Ipopt NLP Solver (IPOPT Library 3.7)\nwritten by A. Waechter\n");
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 
@@ -110,7 +110,7 @@ int main (int argc, char* argv[]) {
 		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to register SmagJournal for IPOPT output.\n");
 
 	// Change some options
-  app->Options()->SetNumericValue("bound_relax_factor", 0, true, true);
+  app->Options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
 	app->Options()->SetIntegerValue("max_iter", prob->gms.itnlim, true, true);
   app->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
  	app->Options()->SetNumericValue("nlp_lower_bound_inf", -prob->inf, false, true);
