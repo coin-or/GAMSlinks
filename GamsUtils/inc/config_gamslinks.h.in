@@ -6,9 +6,6 @@
 /* Define to the debug verbosity level (0 is no output) */
 #undef COIN_GAMSUTILS_VERBOSITY
 
-/* If defined, the GAMS I/O Library is available. */
-#undef COIN_HAS_GAMSIO
-
 /* Define to 1 if the GamsUtils package is used */
 #undef COIN_HAS_GAMSUTILS
 

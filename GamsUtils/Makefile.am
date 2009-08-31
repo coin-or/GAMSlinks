@@ -8,9 +8,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-if COIN_HAS_GAMSIO
 SUBDIRS = src/GamsUtils
-endif
 
 #if ALWAYS_FALSE
 #  SUBDIRS += test

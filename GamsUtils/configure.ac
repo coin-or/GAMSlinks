@@ -21,7 +21,7 @@ under the Common Public License.])
 
 # List one file in the package so that the configure script can test
 # whether the package is actually there
-AC_CONFIG_SRCDIR(src/GamsUtils/GamsDictionary.hpp)
+AC_CONFIG_SRCDIR(src/GamsUtils/GamsOptions.hpp)
 
 # Where should everything be installed by default?  Here, we want it
 # to be installed directly in 'bin', 'lib', 'include' subdirectories
@@ -35,6 +35,10 @@ AC_PREFIX_DEFAULT([`pwd`])
 
 # Get the system type
 AC_CANONICAL_BUILD
+
+#turn off warnings and pedantic mode since it seem to make trouble with gams *cc files
+#gcc 4.2.1 error: ISO C forbids conversion of object pointer to function pointer type
+coin_skip_warn_cflags=yes
 
 # If this project depends on external projects, the Externals file in
 # the source root directory contains definition of where to find those
@@ -138,13 +142,13 @@ ADDLIBS_save="$ADDLIBS"
 # GAMS system and GAMS I/O LIBRARY #
 ####################################
 
-AC_COIN_HAVE_GAMS
-if test $coin_has_gamsio != no ; then
-  AC_COIN_USE_GAMS
-else
-  AC_DEFINE(COIN_HAS_GAMSIO, [0])
-  AM_CONDITIONAL(COIN_HAS_GAMSIO, [test 0 = 1])
-fi
+#AC_COIN_HAVE_GAMS
+#if test $coin_has_gamsio != no ; then
+#  AC_COIN_USE_GAMS
+#else
+#  AC_DEFINE(COIN_HAS_GAMSIO, [0])
+#  AM_CONDITIONAL(COIN_HAS_GAMSIO, [test 0 = 1])
+#fi
 #AC_DEFINE_UNQUOTED([GAMSIO_PATH],["$gamsio_srcdir"],[The path of the GAMS I/O libraries])
 
 ##############################################################################
