@@ -100,6 +100,14 @@ GAMSlinks/src/GamsUtils/GamsOptions.cpp -text
 GAMSlinks/src/GamsUtils/GamsOptions.hpp -text
 GAMSlinks/src/GamsUtils/Makefile.am -text
 GAMSlinks/src/GamsUtils/Makefile.in -text
+GAMSlinks/src/GamsUtils/gdxcc.c -text
+GAMSlinks/src/GamsUtils/gdxcc.h -text
+GAMSlinks/src/GamsUtils/gevmcc.c -text
+GAMSlinks/src/GamsUtils/gevmcc.h -text
+GAMSlinks/src/GamsUtils/gmomcc.c -text
+GAMSlinks/src/GamsUtils/gmomcc.h -text
+GAMSlinks/src/GamsUtils/optcc.c -text
+GAMSlinks/src/GamsUtils/optcc.h -text
 GAMSlinks/src/Glpk/GamsCoinGlpk.cpp -text
 GAMSlinks/src/Glpk/Makefile.am -text
 GAMSlinks/src/Glpk/Makefile.in -text
