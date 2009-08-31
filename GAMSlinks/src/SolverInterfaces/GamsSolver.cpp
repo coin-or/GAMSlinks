@@ -29,28 +29,51 @@
 #endif
 
 #include "gmomcc.h"
+#include "gevmcc.h"
 
 GamsSolver::~GamsSolver() {
 	if (need_unload_gmo) {
 		assert(gmoLibraryLoaded());
 		gmoLibraryUnload();
 	}
+	if (need_unload_gev) {
+		assert(gevLibraryLoaded());
+		gevLibraryUnload();
+	}
 }
 
 int GamsSolver::getGmoReady() {
 	if (gmoLibraryLoaded())
 		return 0;
-	
+
 	char msg[256];
-#ifndef GAMS_BUILD
-  if (!gmoGetReadyD(GAMSIO_PATH, msg, sizeof(msg)))
-#endif
+//#ifndef GAMS_BUILD
+//  if (!gmoGetReadyD(GAMSIO_PATH, msg, sizeof(msg)))
+//#endif
   	if (!gmoGetReady(msg, sizeof(msg))) {
   		fprintf(stderr, "Error loading GMO library: %s\n",msg);
   		return 1;
   	}
-  
+
   need_unload_gmo = true;
-  
+
+  return 0;
+}
+
+int GamsSolver::getGevReady() {
+	if (gevLibraryLoaded())
+		return 0;
+
+	char msg[256];
+//#ifndef GAMS_BUILD
+//  if (!gevGetReadyD(GAMSIO_PATH, msg, sizeof(msg)))
+//#endif
+  	if (!gevGetReady(msg, sizeof(msg))) {
+  		fprintf(stderr, "Error loading GEV library: %s\n",msg);
+  		return 1;
+  	}
+
+  need_unload_gev = true;
+
   return 0;
 }

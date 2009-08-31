@@ -20,7 +20,7 @@ extern "C" {
 	DllExport int  STDCALL couCallSolver(couRec_t *Cptr);
 	DllExport int  STDCALL couModifyProblem(couRec_t *Cptr);
 	DllExport int  STDCALL couHaveModifyProblem(couRec_t *Cptr);
-	DllExport int  STDCALL couReadyAPI(couRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, dctHandle_t Dptr);
+	DllExport int  STDCALL couReadyAPI(couRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
 	DllExport void STDCALL couFree(couRec_t **Cptr);
 	DllExport void STDCALL couCreate(couRec_t **Cptr, char *msgBuf, int msgBufLen);
 

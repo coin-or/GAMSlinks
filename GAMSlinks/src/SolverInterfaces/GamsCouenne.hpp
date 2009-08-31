@@ -26,12 +26,12 @@ namespace Ipopt {
 }
 class CouenneProblem;
 class expression;
-//class GamsCouenneSetup;
 class GamsCbc;
 
 class GamsCouenne: public GamsSolver {
 private:
 	struct gmoRec* gmo;
+	struct gevRec* gev;
 		
 	char           couenne_message[100];
 
@@ -41,7 +41,6 @@ private:
 	
 	Ipopt::SmartPtr<GamsMINLP> minlp;
 //	CouenneProblem*            problem;
-//	GamsCouenneSetup*  couenne_setup;
 	
 	GamsCbc*       gamscbc;
 
@@ -54,7 +53,7 @@ public:
 	GamsCouenne();
 	~GamsCouenne();
 	
-	int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct dctRec* gcd);
+	int readyAPI(struct gmoRec* gmo, struct optRec* opt);
 	
 //	int haveModifyProblem();
 	

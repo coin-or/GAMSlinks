@@ -13,12 +13,14 @@
 
 class OSResult;
 struct gmoRec;
+struct gevRec;
 
 /** Reads an optimization result and stores result and solution in a Gams Modeling Object.
  */
 class OSrL2Gams {
 private:
 	struct gmoRec* gmo;
+	struct gevRec* gev;
 
 public:
 	/** Constructor.
@@ -29,15 +31,15 @@ public:
 	/** Destructor.
 	 */
 	~OSrL2Gams() {}
-	
+
 	/** Writes a solution into a GMO with the result given as OSResult object.
 	 * @param osresult Optimization result as object.
-	 */ 
+	 */
 	void writeSolution(OSResult& osresult);
 
 	/** Writes a solution into a GMO with the result given as osrl string.
 	 * @param osrl Optimization result as string.
-	 */ 
+	 */
 	void writeSolution(std::string& osrl);
 };
 

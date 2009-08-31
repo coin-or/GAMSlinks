@@ -19,24 +19,25 @@
 class GamsIpopt : public GamsSolver {
 private:
 	struct gmoRec* gmo;
-	
+	struct gevRec* gev;
+
 	char           ipopt_message[100];
-	
+
 	Ipopt::SmartPtr<Ipopt::IpoptApplication>  ipopt;
 	Ipopt::SmartPtr<Ipopt::TNLP>              nlp;
 
 public:
 	GamsIpopt();
 	~GamsIpopt();
-	
-	int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct dctRec* gcd);
-	
+
+	int readyAPI(struct gmoRec* gmo, struct optRec* opt);
+
 //	int haveModifyProblem();
-	
+
 //	int modifyProblem();
-	
+
 	int callSolver();
-	
+
 	const char* getWelcomeMessage() { return ipopt_message; }
 
 }; // GamsIpopt

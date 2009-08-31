@@ -28,13 +28,11 @@
 #endif
 #endif
 
-#include "gmomcc.h"
+#include "gevmcc.h"
 
-GamsMessageHandler::GamsMessageHandler(gmoHandle_t gmo_)
-: gmo(gmo_)
+GamsMessageHandler::GamsMessageHandler(gevHandle_t gev_)
+: gev(gev_)
 { }
-
-//GamsMessageHandler::~GamsMessageHandler() { }
 
 void GamsMessageHandler::setCurrentDetail(int detail) {
 	currentMessage_.setDetail(detail);
@@ -50,14 +48,14 @@ int GamsMessageHandler::print() {
 
   if (messageOut[strlen(messageOut)-1] == '\n')
   	if (currentMessage_.detail() < 2)
-  		gmoLogStatPChar(gmo, messageOut);
+  		gevLogStatPChar(gev, messageOut);
   	else
-  		gmoLogPChar(gmo, messageOut);
+  		gevLogPChar(gev, messageOut);
   else
   	if (currentMessage_.detail() < 2)
-  		gmoLogStat(gmo, messageOut);
+  		gevLogStat(gev, messageOut);
   	else
-  		gmoLog(gmo, messageOut);
+  		gevLog(gev, messageOut);
 
 	return 0;
 }

@@ -34,7 +34,9 @@
 #include <string>
 
 // GAMS
+#define GMS_SV_NA     2.0E300   /* not available/applicable */
 #include "gmomcc.h"
+#include "gevmcc.h"
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
 
@@ -49,7 +51,7 @@
 
 
 GamsCbc::GamsCbc()
-: gmo(NULL), msghandler(NULL), model(NULL), cbc_argc(0), cbc_args(NULL)
+: gmo(NULL), gev(NULL), msghandler(NULL), model(NULL), cbc_argc(0), cbc_args(NULL)
 {
 #ifdef GAMS_BUILD
 	strcpy(cbc_message, "GAMS/CoinCbcD (CBC Library 2.3)\nwritten by J. Forrest\n");
@@ -66,42 +68,39 @@ GamsCbc::~GamsCbc() {
 	delete[] cbc_args;
 }
 
-int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* dct) {
+int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gmo = gmo_;
 	assert(gmo);
 	assert(!model);
-	
+
 	if (getGmoReady())
 		return 1;
-	
+
+	if (getGevReady())
+		return 1;
+
+	gev = (gevRec*)gmoEnvironment(gmo);
+
 	options.setGMO(gmo);
 	if (opt) {
 		options.setOpt(opt);
 	} else {
 		char buffer[1024];
 		gmoNameOptFile(gmo, buffer);
-#ifdef GAMS_BUILD	
+#ifdef GAMS_BUILD
 		options.readOptionsFile("coincbc", gmoOptFile(gmo) ? buffer : NULL);
 #else
 		options.readOptionsFile("cbcd",    gmoOptFile(gmo) ? buffer : NULL);
 #endif
 	}
-	if (!options.isDefined("reslim"))  options.setDouble ("reslim",  gmoResLim(gmo));
-	if (!options.isDefined("iterlim")) options.setInteger("iterlim", gmoIterLim(gmo));
-	if (!options.isDefined("nodlim") && gmoNodeLim(gmo))  options.setInteger("nodlim", gmoNodeLim(gmo));
-	if (!options.isDefined("nodelim") && options.isDefined("nodlim")) options.setInteger("nodelim", options.getInteger("nodlim"));
-	if (!options.isDefined("optca"))   options.setDouble ("optca",   gmoOptCA(gmo));
-	if (!options.isDefined("optcr"))   options.setDouble ("optcr",   gmoOptCR(gmo));
-	if (!options.isDefined("cutoff")    && gmoUseCutOff(gmo)) options.setDouble("cutoff",    gmoCutOff(gmo));
-	if (!options.isDefined("increment") && gmoUseCheat (gmo)) options.setDouble("increment", gmoCheat (gmo));
-
-	dict.setGMO(gmo);
-	if (options.getBool("names")) {
-		if (dct)
-			dict.setDict(dct);
-		else
-			dict.readDictionary();
-	}
+	if (!options.isDefined("reslim"))  options.setDouble ("reslim",  gevGetDblOpt(gev, gevResLim));
+	if (!options.isDefined("iterlim")) options.setInteger("iterlim", gevGetIntOpt(gev, gevIterLim));
+	if (!options.isDefined("nodlim") && gevGetIntOpt(gev, gevNodeLim))  options.setInteger("nodlim", gevGetIntOpt(gev, gevNodeLim));
+	if (!options.isDefined("nodelim") && options.isDefined("nodlim"))   options.setInteger("nodelim", options.getInteger("nodlim"));
+	if (!options.isDefined("optca"))   options.setDouble ("optca",   gevGetDblOpt(gev, gevOptCA));
+	if (!options.isDefined("optcr"))   options.setDouble ("optcr",   gevGetDblOpt(gev, gevOptCR));
+	if (!options.isDefined("cutoff")    && GMS_SV_NA != gevGetDblOpt(gev, gevCutOff)) options.setDouble("cutoff",    gevGetDblOpt(gev, gevCutOff));
+	if (!options.isDefined("increment") && GMS_SV_NA != gevGetDblOpt(gev, gevCheat))  options.setDouble("increment", gevGetDblOpt(gev, gevCheat));
 
 	OsiClpSolverInterface solver;
 
@@ -110,13 +109,13 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* dc
 	gmoObjReformSet(gmo, 1);
 	gmoObjStyleSet(gmo, ObjType_Fun);
   gmoIndexBaseSet(gmo, 0);
-	
-	msghandler = new GamsMessageHandler(gmo);
+
+	msghandler = new GamsMessageHandler(gev);
 	solver.passInMessageHandler(msghandler);
 	solver.setHintParam(OsiDoReducePrint, true, OsiHintTry);
 
 	if (!setupProblem(solver)) {
-		gmoLogStat(gmo, "Error setting up problem...");
+		gevLogStat(gev, "Error setting up problem...");
 		return -1;
 	}
 
@@ -124,11 +123,11 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* dc
 	if (options.isDefined("writemps")) {
 		char buffer[1024];
 		options.getString("writemps", buffer);
-		gmoLogStatPChar(gmo, "\nWriting MPS file ");
-		gmoLogStat(gmo, buffer);
+		gevLogStatPChar(gev, "\nWriting MPS file ");
+		gevLogStat(gev, buffer);
   	solver.writeMps(buffer, "", (gmoSense(gmo) == Obj_Min) ? 1.0 : -1.0);
 	}
-	
+
 	model = new CbcModel(solver);
 	model->passInMessageHandler(msghandler);
 
@@ -138,43 +137,43 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* dc
 
 	if (gmoN(gmo)) {
 		if (!setupPrioritiesSOSSemiCon()) {
-			gmoLogStat(gmo, "Error setting up priorities, SOS, or semicontinuous variables.");
+			gevLogStat(gev, "Error setting up priorities, SOS, or semicontinuous variables.");
 			return -1;
 		}
 		if (!setupStartingPoint()) {
-			gmoLogStat(gmo, "Error setting up starting point.");
+			gevLogStat(gev, "Error setting up starting point.");
 			return -1;
 		}
 	}
 	if (!setupParameters()) {
-		gmoLogStat(gmo, "Error setting up CBC parameters.");
+		gevLogStat(gev, "Error setting up CBC parameters.");
 		return -1;
 	}
 
 	return 0;
 }
-	
+
 //int GamsCbc::haveModifyProblem() {
 //	return 0;
 //}
-//	
+//
 //int GamsCbc::modifyProblem() {
 //	assert(false);
 //	return -1;
 //}
-	
+
 int GamsCbc::callSolver() {
-	gmoLogStat(gmo, "\nCalling CBC main solution routine...");
-	
+	gevLogStat(gev, "\nCalling CBC main solution routine...");
+
 	//TODO? reset iteration and time counter in Cbc?
 	//TODO? was user allowed to change options between readyAPI and callSolver?
 
 	double start_cputime  = CoinCpuTime();
 	double start_walltime = CoinWallclockTime();
-	
+
 //	myout.setCurrentDetail(2);
 	CbcMain1(cbc_argc, const_cast<const char**>(cbc_args), *model);
-	
+
 	double end_cputime  = CoinCpuTime();
 	double end_walltime = CoinWallclockTime();
 
@@ -182,7 +181,7 @@ int GamsCbc::callSolver() {
 	double* varup  = NULL;
 	if (!isLP() && model->bestSolution()) { // solve again with fixed noncontinuous variables and original bounds on continuous variables
 		//TODO parameter to turn this off or do only if cbc reduced bounds
-		gmoLog(gmo, "Resolve with fixed noncontinuous variables.");
+		gevLog(gev, "Resolve with fixed noncontinuous variables.");
 		varlow = new double[gmoN(gmo)];
 		varup  = new double[gmoN(gmo)];
 		gmoGetVarLower(gmo, varlow);
@@ -192,11 +191,11 @@ int GamsCbc::callSolver() {
 				varlow[i] = varup[i] = model->bestSolution()[i];
 		model->solver()->setColLower(varlow);
 		model->solver()->setColUpper(varup);
-		
+
 		model->solver()->messageHandler()->setLogLevel(1);
 		model->solver()->resolve();
 		if (!model->solver()->isProvenOptimal()) {
-			gmoLog(gmo, "Resolve failed, values for dual variables will be unavailable.");
+			gevLog(gev, "Resolve failed, values for dual variables will be unavailable.");
 			model->solver()->setColSolution(model->bestSolution());
 		}
 	}
@@ -226,25 +225,25 @@ bool GamsCbc::setupProblem(OsiSolverInterface& solver) {
 			solver.setColLower(i, 0.);
 
 	if (!gmoN(gmo)) {
-		gmoLog(gmo, "Problem has no columns. Adding fake column...");
+		gevLog(gev, "Problem has no columns. Adding fake column...");
 		CoinPackedVector vec(0);
 		solver.addCol(vec, -solver.getInfinity(), solver.getInfinity(), 0.);
 	}
-	
-	if (dict.haveNames()) { // set variable and constraint names
+
+	if (gmoDict(gmo)) { // set variable and constraint names
 		solver.setIntParam(OsiNameDiscipline, 2);
-		char buffer[255];
+		char buffer[256];
 		std::string stbuffer;
-		for (int j = 0; j < gmoN(gmo); ++j)
-			if (dict.getColName(j, buffer, 255)) {
-				stbuffer = buffer;
-				solver.setColName(j, stbuffer);
-			}
-		for (int j = 0; j < gmoM(gmo); ++j)
-			if (dict.getRowName(j, buffer, 255)) {
-				stbuffer = buffer;
-				solver.setRowName(j, stbuffer);
-			}
+		for (int j = 0; j < gmoN(gmo); ++j) {
+			gmoGetVarNameOne(gmo, j, buffer);
+			stbuffer = buffer;
+			solver.setColName(j, stbuffer);
+		}
+		for (int j = 0; j < gmoM(gmo); ++j) {
+			gmoGetEquNameOne(gmo, j, buffer);
+			stbuffer = buffer;
+			solver.setRowName(j, stbuffer);
+		}
 	}
 
 	return true;
@@ -284,17 +283,17 @@ bool GamsCbc::setupPrioritiesSOSSemiCon() {
 	numSos = numSos1 + numSos2;
 	if (nzSos) {
 		CbcObject** objects = new CbcObject*[numSos];
-		
+
 		int* sostype = new int[numSos];
 		int* sosbeg  = new int[numSos+1];
 		int* sosind  = new int[nzSos];
 		double* soswt = new double[nzSos];
-		
+
 		gmoGetSosConstraints(gmo, sostype, sosbeg, sosind, soswt);
-		
+
 		int*    which   = new int[CoinMin(gmoN(gmo), nzSos)];
 		double* weights = new double[CoinMin(gmoN(gmo), nzSos)];
-		
+
 		for (int i = 0; i < numSos; ++i) {
 			int k = 0;
 			for (int j = sosbeg[i]; j < sosbeg[i+1]; ++j, ++k) {
@@ -305,21 +304,21 @@ bool GamsCbc::setupPrioritiesSOSSemiCon() {
 			objects[i] = new CbcSOS(model, k, which, weights, i, sostype[i]);
 			objects[i]->setPriority(gmoN(gmo)-k); // branch on long sets first
 		}
-		
+
 		delete[] which;
 		delete[] weights;
-		
+
 	  model->addObjects(numSos, objects);
 	  for (int i = 0; i < numSos; ++i)
 			delete objects[i];
 		delete[] objects;
   }
-	
+
 	int numSemi = 0; // number of semicontinuous and semiinteger variables
 	for (int i = 0; i < gmoN(gmo); ++i) // TODO there should be a gmo function to get this count
 		if (gmoGetVarTypeOne(gmo, i) == var_SC || gmoGetVarTypeOne(gmo, i) == var_SI)
 			++numSemi;
-  
+
   if (numSemi) {
 		CbcObject** objects = new CbcObject*[numSemi];
 		int object_nr = 0;
@@ -330,10 +329,10 @@ bool GamsCbc::setupPrioritiesSOSSemiCon() {
 			enum gmoVarType vartype = (enum gmoVarType)gmoGetVarTypeOne(gmo, i);
 			if (vartype != var_SC && vartype != var_SI)
 				continue;
-			
+
 			double varlb = gmoGetVarLowerOne(gmo, i);
 			double varub = gmoGetVarUpperOne(gmo, i);
-			
+
 			if (vartype == var_SI && varub - varlb <= 1000) { // model lotsize for discrete variable as a set of integer values
 				int len = (int)(varub - varlb + 2);
 				double* points2 = new double[len];
@@ -343,15 +342,15 @@ bool GamsCbc::setupPrioritiesSOSSemiCon() {
 					points2[j] = (double)p;
 				objects[object_nr] = new CbcLotsize(model, i, len, points2, false);
 				delete[] points2;
-				
+
 			} else { // lotsize for continuous variable or integer with large upper bounds
 				if (vartype == var_SI)
-					gmoLogStat(gmo, "Warning: Support of semiinteger variables with a range larger than 1000 is experimental.\n");
+					gevLogStat(gev, "Warning: Support of semiinteger variables with a range larger than 1000 is experimental.\n");
 				points[2] = varlb;
 				points[3] = varub;
 				if (varlb == varub) // var. can be only 0 or varlb
 					objects[object_nr] = new CbcLotsize(model, i, 2, points+1, false);
-				else // var. can be 0 or in the range between low and upper 
+				else // var. can be 0 or in the range between low and upper
 					objects[object_nr] = new CbcLotsize(model, i, 2, points,   true );
 			}
 
@@ -363,7 +362,7 @@ bool GamsCbc::setupPrioritiesSOSSemiCon() {
 			delete objects[i];
 		delete[] objects;
   }
-  
+
 	return true;
 }
 
@@ -377,7 +376,7 @@ bool GamsCbc::setupStartingPoint() {
 
 		gmoGetVarL(gmo, varlevel);
 		gmoGetEquM(gmo, rowprice);
-		
+
 	  int nbas = 0;
 		for (int j = 0; j < gmoN(gmo); ++j) {
 			switch (gmoGetVarBasOne(gmo, j)) {
@@ -398,7 +397,7 @@ bool GamsCbc::setupStartingPoint() {
 						cstat[j] = 2; // nonbasic at upper bound
 					break;
 				default:
-					gmoLogStat(gmo, "Error: invalid basis indicator for column.");
+					gevLogStat(gev, "Error: invalid basis indicator for column.");
 					delete[] cstat;
 					delete[] rstat;
 					delete[] rowprice;
@@ -406,7 +405,7 @@ bool GamsCbc::setupStartingPoint() {
 					return false;
 			}
 		}
-		
+
 		nbas = 0;
 		for (int j = 0; j< gmoM(gmo); ++j) {
 			switch (gmoGetEquBasOne(gmo, j)) {
@@ -420,7 +419,7 @@ bool GamsCbc::setupStartingPoint() {
 					rstat[j] = 2; // nonbasic at upper bound (flipped for cbc)
 					break;
 				default:
-					gmoLogStat(gmo, "Error: invalid basis indicator for row.");
+					gevLogStat(gev, "Error: invalid basis indicator for row.");
 					delete[] cstat;
 					delete[] rstat;
 					delete[] rowprice;
@@ -433,7 +432,7 @@ bool GamsCbc::setupStartingPoint() {
 		model->solver()->setRowPrice(rowprice);
 		// this call initializes ClpSimplex data structures, which can produce an error if CLP does not like the model
 		if (model->solver()->setBasisStatus(cstat, rstat)) {
-			gmoLogStat(gmo, "Failed to set initial basis. Probably CLP abandoned the model. Exiting ...");
+			gevLogStat(gev, "Failed to set initial basis. Probably CLP abandoned the model. Exiting ...");
 			delete[] varlevel;
 			delete[] rowprice;
 			delete[] cstat;
@@ -445,7 +444,7 @@ bool GamsCbc::setupStartingPoint() {
 		delete[] cstat;
 		delete[] rstat;
 	}
-	
+
 	if (gmoModelType(gmo) != Proc_lp && gmoModelType(gmo) != Proc_rmip && options.getBool("mipstart")) {
 		double objval = 0.;
 		if (!varlevel) {
@@ -455,23 +454,23 @@ bool GamsCbc::setupStartingPoint() {
 		const double* objcoeff = model->solver()->getObjCoefficients();
 		for (int i = 0; i < gmoN(gmo); ++i)
 			objval += objcoeff[i] * varlevel[i];
-		gmoLogPChar(gmo, "Letting CBC try user-given column levels as initial MIP solution:");
+		gevLogPChar(gev, "Letting CBC try user-given column levels as initial MIP solution:");
 		model->setBestSolution(varlevel, gmoN(gmo), objval, true);
 	}
-	
+
 	delete[] varlevel;
-	
+
 	return true;
 }
 
 bool GamsCbc::setupParameters() {
-	//note: does not seem to work via Osi: OsiDoPresolveInInitial, OsiDoDualInInitial  
+	//note: does not seem to work via Osi: OsiDoPresolveInInitial, OsiDoDualInInitial
 
 	// Some tolerances and limits
 	model->setDblParam(CbcModel::CbcMaximumSeconds,  options.getDouble("reslim"));
 	model->solver()->setDblParam(OsiPrimalTolerance, options.getDouble("tol_primal"));
 	model->solver()->setDblParam(OsiDualTolerance,   options.getDouble("tol_dual"));
-	
+
 	// iteration limit only for LPs
 	if (isLP())
 		model->solver()->setIntParam(OsiMaxNumIteration, options.getInteger("iterlim"));
@@ -485,13 +484,13 @@ bool GamsCbc::setupParameters() {
 		model->setCutoff(model->solver()->getObjSense() * options.getDouble("cutoff")); // Cbc assumes a minimization problem here
 	model->setPrintFrequency(options.getInteger("printfrequency"));
 //	model.solver()->setIntParam(OsiMaxNumIterationHotStart,100);
-	
+
 	std::list<std::string> par_list;
 
 	char buffer[255];
 
 	// LP parameters
-	
+
 	if (options.isDefined("idiotcrash")) {
 		par_list.push_back("-idiotCrash");
 		sprintf(buffer, "%d", options.getInteger("idiotcrash"));
@@ -511,7 +510,7 @@ bool GamsCbc::setupParameters() {
 	if (options.isDefined("crash")) {
 		char* value = options.getString("crash", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'crash'. Ignoring this option");
+			gevLogStat(gev, "Cannot read value for option 'crash'. Ignoring this option");
 		}	else {
 			if (strcmp(value, "off") == 0 || strcmp(value, "on") == 0) {
 				par_list.push_back("-crash");
@@ -523,9 +522,9 @@ bool GamsCbc::setupParameters() {
 				par_list.push_back("-crash");
 				par_list.push_back("ha");
 			} else {
-				gmoLogStat(gmo, "Unsupported value for option 'crash'. Ignoring this option");
-			} 
-		}				
+				gevLogStat(gev, "Unsupported value for option 'crash'. Ignoring this option");
+			}
+		}
 	}
 
 	if (options.isDefined("maxfactor")) {
@@ -542,16 +541,16 @@ bool GamsCbc::setupParameters() {
 	if (options.isDefined("dualpivot")) {
 		char* value = options.getString("dualpivot", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'dualpivot'. Ignoring this option");
+			gevLogStat(gev, "Cannot read value for option 'dualpivot'. Ignoring this option");
 		} else {
-			if (strcmp(value, "auto")     == 0 || 
-			    strcmp(value, "dantzig")  == 0 || 
+			if (strcmp(value, "auto")     == 0 ||
+			    strcmp(value, "dantzig")  == 0 ||
 			    strcmp(value, "partial")  == 0 ||
 					strcmp(value, "steepest") == 0) {
 				par_list.push_back("-dualPivot");
 				par_list.push_back(value);
 			} else {
-				gmoLogStat(gmo, "Unsupported value for option 'dualpivot'. Ignoring this option");
+				gevLogStat(gev, "Unsupported value for option 'dualpivot'. Ignoring this option");
 			}
 		}
 	}
@@ -559,11 +558,11 @@ bool GamsCbc::setupParameters() {
 	if (options.isDefined("primalpivot")) {
 		char* value = options.getString("primalpivot", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'primalpivot'. Ignoring this option");
+			gevLogStat(gev, "Cannot read value for option 'primalpivot'. Ignoring this option");
 		} else {
-			if (strcmp(value, "auto")     == 0 || 
-			    strcmp(value, "exact")    == 0 || 
-			    strcmp(value, "dantzig")  == 0 || 
+			if (strcmp(value, "auto")     == 0 ||
+			    strcmp(value, "exact")    == 0 ||
+			    strcmp(value, "dantzig")  == 0 ||
 			    strcmp(value, "partial")  == 0 ||
 					strcmp(value, "steepest") == 0 ||
 					strcmp(value, "change")   == 0 ||
@@ -571,31 +570,31 @@ bool GamsCbc::setupParameters() {
 				par_list.push_back("-primalPivot");
 				par_list.push_back(value);
 			} else {
-				gmoLogStat(gmo, "Unsupported value for option 'primalpivot'. Ignoring this option");
-			} 
-		}				
+				gevLogStat(gev, "Unsupported value for option 'primalpivot'. Ignoring this option");
+			}
+		}
 	}
-	
+
 	if (options.isDefined("perturbation")) {
 		par_list.push_back("-perturb");
 		par_list.push_back(options.getBool("perturbation") ? "on" : "off");
 	}
-	
+
 	if (options.isDefined("scaling")) {
 		char* value = options.getString("scaling", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'scaling'. Ignoring this option");
+			gevLogStat(gev, "Cannot read value for option 'scaling'. Ignoring this option");
 		} else if
-			(strcmp(value, "auto")        == 0 || 
-			 strcmp(value, "off")         == 0 || 
-			 strcmp(value, "equilibrium") == 0 || 
+			(strcmp(value, "auto")        == 0 ||
+			 strcmp(value, "off")         == 0 ||
+			 strcmp(value, "equilibrium") == 0 ||
 			 strcmp(value, "geometric")   == 0) {
 			par_list.push_back("-scaling");
 			par_list.push_back(value);
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'scaling'. Ignoring this option");
-		} 
-	}				
+			gevLogStat(gev, "Unsupported value for option 'scaling'. Ignoring this option");
+		}
+	}
 
 	if (options.isDefined("presolve")) {
 		par_list.push_back("-presolve");
@@ -633,7 +632,7 @@ bool GamsCbc::setupParameters() {
 		sprintf(buffer, "%d", options.getInteger("strongbranching"));
 		par_list.push_back(buffer);
 	}
-			
+
 	if (options.isDefined("trustpseudocosts")) {
 		par_list.push_back("-trustPseudoCosts");
 		sprintf(buffer, "%d", options.getInteger("trustpseudocosts"));
@@ -657,12 +656,12 @@ bool GamsCbc::setupParameters() {
 		sprintf(buffer, "%d", options.getInteger("cut_passes_tree"));
 		par_list.push_back(buffer);
 	}
-	
+
 	if (options.isDefined("cuts")) {
 		char* value = options.getString("cuts", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'cuts'. Ignoring this option");
-		} else if 
+			gevLogStat(gev, "Cannot read value for option 'cuts'. Ignoring this option");
+		} else if
 		   ( strcmp(value, "off")    == 0 ||
 		     strcmp(value, "on")     == 0 ||
 		     strcmp(value, "root")   == 0 ||
@@ -673,15 +672,15 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-cutsOnOff");
 			par_list.push_back("forceOn");
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'cuts'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'cuts'. Ignoring this option");
+		}
 	}
-	
+
 	if (options.isDefined("cliquecuts")) {
 		char* value = options.getString("cliquecuts", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'cliquecuts'. Ignoring this option");
-		} else if 
+			gevLogStat(gev, "Cannot read value for option 'cliquecuts'. Ignoring this option");
+		} else if
 		   ( strcmp(value, "off")    == 0 ||
 		     strcmp(value, "on")     == 0 ||
 		     strcmp(value, "root")   == 0 ||
@@ -692,15 +691,15 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-cliqueCuts");
 			par_list.push_back("forceOn");
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'cliquecuts'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'cliquecuts'. Ignoring this option");
+		}
 	}
 
 	if (options.isDefined("flowcovercuts")) {
 		char* value = options.getString("flowcovercuts", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'flowcovercuts'. Ignoring this option");
-		} else if 
+			gevLogStat(gev, "Cannot read value for option 'flowcovercuts'. Ignoring this option");
+		} else if
 		   ( strcmp(value, "off")    == 0 ||
 		     strcmp(value, "on")     == 0 ||
 		     strcmp(value, "root")   == 0 ||
@@ -711,15 +710,15 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-flowCoverCuts");
 			par_list.push_back("forceOn");
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'flowcovercuts'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'flowcovercuts'. Ignoring this option");
+		}
 	}
 
 	if (options.isDefined("gomorycuts")) {
 		char* value = options.getString("gomorycuts", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'gomorycuts'. Ignoring this option");
-		} else if 
+			gevLogStat(gev, "Cannot read value for option 'gomorycuts'. Ignoring this option");
+		} else if
 		   ( strcmp(value, "off")    == 0 ||
 		     strcmp(value, "on")     == 0 ||
 		     strcmp(value, "root")   == 0 ||
@@ -730,15 +729,15 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-gomoryCuts");
 			par_list.push_back("forceOn");
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'gomorycuts'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'gomorycuts'. Ignoring this option");
+		}
 	}
 
 	if (options.isDefined("knapsackcuts")) {
 		char* value = options.getString("knapsackcuts", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'knapsackcuts'. Ignoring this option");
-		} else if 
+			gevLogStat(gev, "Cannot read value for option 'knapsackcuts'. Ignoring this option");
+		} else if
 		   ( strcmp(value, "off")    == 0 ||
 		     strcmp(value, "on")     == 0 ||
 		     strcmp(value, "root")   == 0 ||
@@ -749,15 +748,15 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-knapsackCuts");
 			par_list.push_back("forceOn");
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'knapsackcuts'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'knapsackcuts'. Ignoring this option");
+		}
 	}
 
 	if (options.isDefined("liftandprojectcuts")) {
 		char* value = options.getString("liftandprojectcuts", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'liftandprojectcuts'. Ignoring this option");
-		} else if 
+			gevLogStat(gev, "Cannot read value for option 'liftandprojectcuts'. Ignoring this option");
+		} else if
 		   ( strcmp(value, "off")    == 0 ||
 		     strcmp(value, "on")     == 0 ||
 		     strcmp(value, "root")   == 0 ||
@@ -768,15 +767,15 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-liftAndProjectCuts");
 			par_list.push_back("forceOn");
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'liftandprojectcuts'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'liftandprojectcuts'. Ignoring this option");
+		}
 	}
 
 	if (options.isDefined("mircuts")) {
 		char* value = options.getString("mircuts", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'mircuts'. Ignoring this option");
-		} else if 
+			gevLogStat(gev, "Cannot read value for option 'mircuts'. Ignoring this option");
+		} else if
 		   ( strcmp(value, "off")    == 0 ||
 		     strcmp(value, "on")     == 0 ||
 		     strcmp(value, "root")   == 0 ||
@@ -787,15 +786,15 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-mixedIntegerRoundingCuts");
 			par_list.push_back("forceOn");
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'mircuts'. Ignoring this option");
+			gevLogStat(gev, "Unsupported value for option 'mircuts'. Ignoring this option");
 		}
 	}
 
 	if (options.isDefined("probingcuts")) {
 		char* value = options.getString("probingcuts", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'probingcuts'. Ignoring this option");
-		} else if 
+			gevLogStat(gev, "Cannot read value for option 'probingcuts'. Ignoring this option");
+		} else if
 		   ( strcmp(value, "off")    == 0 ||
 		     strcmp(value, "on")     == 0 ||
 		     strcmp(value, "root")   == 0 ||
@@ -815,15 +814,15 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-probingCuts");
 			par_list.push_back("forceOnButStrong");
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'probingcuts'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'probingcuts'. Ignoring this option");
+		}
 	}
 
 	if (options.isDefined("reduceandsplitcuts")) {
 		char* value = options.getString("reduceandsplitcuts", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'reduceandsplitcuts'. Ignoring this option");
-		} else if 
+			gevLogStat(gev, "Cannot read value for option 'reduceandsplitcuts'. Ignoring this option");
+		} else if
 		   ( strcmp(value, "off")    == 0 ||
 		     strcmp(value, "on")     == 0 ||
 		     strcmp(value, "root")   == 0 ||
@@ -834,15 +833,15 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-reduceAndSplitCuts");
 			par_list.push_back("forceOn");
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'reduceandsplitcuts'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'reduceandsplitcuts'. Ignoring this option");
+		}
 	}
 
 	if (options.isDefined("residualcapacitycuts")) {
 		char* value = options.getString("residualcapacitycuts", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'residualcapacitycuts'. Ignoring this option");
-		} else if 
+			gevLogStat(gev, "Cannot read value for option 'residualcapacitycuts'. Ignoring this option");
+		} else if
 		   ( strcmp(value, "off")    == 0 ||
 		     strcmp(value, "on")     == 0 ||
 		     strcmp(value, "root")   == 0 ||
@@ -853,32 +852,32 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-residualCapacityCuts");
 			par_list.push_back("forceOn");
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'residualcapacitycuts'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'residualcapacitycuts'. Ignoring this option");
+		}
 	}
 
 	if (options.isDefined("twomircuts")) {
 		char* value = options.getString("twomircuts", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'twomircuts'. Ignoring this option");
+			gevLogStat(gev, "Cannot read value for option 'twomircuts'. Ignoring this option");
 		} else if
 		  ( strcmp(value, "off")     == 0 ||
 		    strcmp(value, "on")      == 0 ||
 		    strcmp(value, "root")    == 0 ||
 		    strcmp(value, "ifmove")  == 0 ||
-		    strcmp(value, "forceon") == 0 ) {		   
+		    strcmp(value, "forceon") == 0 ) {
 			par_list.push_back("-twoMirCuts");
 			par_list.push_back(value);
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'twomircuts'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'twomircuts'. Ignoring this option");
+		}
 	}
 
 	if (options.isDefined("heuristics")) {
 		par_list.push_back("-heuristicsOnOff");
 		par_list.push_back(options.getBool("heuristics") ? "on" : "off");
 	}
-	
+
 	if (options.isDefined("combinesolutions")) {
 		par_list.push_back("-combineSolution");
 		par_list.push_back(options.getBool("combinesolutions") ? "on" : "off");
@@ -888,7 +887,7 @@ bool GamsCbc::setupParameters() {
 		par_list.push_back("-Dins");
 		par_list.push_back(options.getBool("dins") ? "on" : "off");
 	}
-	
+
 	if (options.isDefined("divingrandom")) {
 		par_list.push_back("-DivingSome");
 		par_list.push_back(options.getBool("divingrandom") ? "on" : "off");
@@ -932,16 +931,16 @@ bool GamsCbc::setupParameters() {
 	if (options.isDefined("greedyheuristic")) {
 		char* value = options.getString("greedyheuristic", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'greedyheuristic'. Ignoring this option");
-		} else if 
+			gevLogStat(gev, "Cannot read value for option 'greedyheuristic'. Ignoring this option");
+		} else if
 		   ( strcmp(value, "off")  == 0 ||
 		     strcmp(value, "on")   == 0 ||
 		     strcmp(value, "root") == 0 ) {
 			par_list.push_back("-greedyHeuristic");
 			par_list.push_back(value);
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'greedyheuristic'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'greedyheuristic'. Ignoring this option");
+		}
 	}
 
 	if (options.isDefined("localtreesearch")) {
@@ -953,12 +952,12 @@ bool GamsCbc::setupParameters() {
 		par_list.push_back("-naiveHeuristics");
 		par_list.push_back(options.getBool("naiveheuristics") ? "on" : "off");
 	}
-	
+
 	if (options.isDefined("pivotandfix")) {
 		par_list.push_back("-pivotAndFix");
 		par_list.push_back(options.getBool("pivotandfix") ? "on" : "off");
 	}
-	
+
 	if (options.isDefined("randomizedrounding")) {
 		par_list.push_back("-randomizedRounding");
 		par_list.push_back(options.getBool("randomizedrounding") ? "on" : "off");
@@ -984,12 +983,12 @@ bool GamsCbc::setupParameters() {
 		sprintf(buffer, "%d", options.getInteger("vubheuristic"));
 		par_list.push_back(buffer);
 	}
-	
+
 	if (options.isDefined("coststrategy")) {
 		char* value = options.getString("coststrategy", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'coststrategy'. Ignoring this option");
-		} else if 
+			gevLogStat(gev, "Cannot read value for option 'coststrategy'. Ignoring this option");
+		} else if
 		   ( strcmp(value, "off")         == 0 ||
 		     strcmp(value, "priorities")  == 0 ||
 		     strcmp(value, "length")      == 0 ||
@@ -1003,15 +1002,15 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-costStrategy");
 			par_list.push_back("01last");
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'coststrategy'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'coststrategy'. Ignoring this option");
+		}
 	}
-	
+
 	if (options.isDefined("nodestrategy")) {
 		char* value=options.getString("nodestrategy", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'nodestrategy'. Ignoring this option");
-		} else if 
+			gevLogStat(gev, "Cannot read value for option 'nodestrategy'. Ignoring this option");
+		} else if
 		   ( strcmp(value, "hybrid")     == 0 ||
 		     strcmp(value, "fewest")     == 0 ||
 		     strcmp(value, "depth")      == 0 ||
@@ -1022,14 +1021,14 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-nodeStrategy");
 			par_list.push_back(value);
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'nodestrategy'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'nodestrategy'. Ignoring this option");
+		}
 	}
 
 	if (options.isDefined("preprocess")) {
 		char* value = options.getString("preprocess", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'preprocess'. Ignoring this option");
+			gevLogStat(gev, "Cannot read value for option 'preprocess'. Ignoring this option");
 		} else if
 		  ( strcmp(value, "off")      == 0 ||
 		    strcmp(value, "on")       == 0 ||
@@ -1040,20 +1039,20 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-preprocess");
 			par_list.push_back(value);
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'coststrategy'. Ignoring this option");
-		} 
+			gevLogStat(gev, "Unsupported value for option 'coststrategy'. Ignoring this option");
+		}
 	} /* else if (gm.nSemiContinuous()) {
 		myout << "CBC integer preprocessing does not handle semicontinuous variables correct (yet), thus we switch it off." << CoinMessageEol;
 		par_list.push_back("-preprocess");
 		par_list.push_back("off");
 	} */
-	
+
 	if (options.isDefined("increment")) {
 		par_list.push_back("-increment");
 		sprintf(buffer, "%g", options.getDouble("increment"));
 		par_list.push_back(buffer);
 	}
-	
+
 	if (options.isDefined("threads")) {
 #ifdef CBC_THREAD
 //		if (options.getInteger("threads") > 1 && (options.isDefined("usercutcall") || options.isDefined("userheurcall"))) {  //TODO
@@ -1064,16 +1063,16 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back(buffer);
 //		}
 #else
-		gmoLogStat(gmo, "Warning: CBC has not been compiled with multithreading support. Option threads ignored.");
+		gevLogStat(gev, "Warning: CBC has not been compiled with multithreading support. Option threads ignored.");
 #endif
 	}
-	
+
 	// special options set by user and passed unseen to CBC
 	if (options.isDefined("special")) {
 		char longbuffer[10000];
 		char* value = options.getString("special", longbuffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'special'. Ignoring this option");
+			gevLogStat(gev, "Cannot read value for option 'special'. Ignoring this option");
 		} else {
 			char* tok = strtok(value, " ");
 			while (tok) {
@@ -1083,12 +1082,12 @@ bool GamsCbc::setupParameters() {
 		}
 	}
 
-	// algorithm for root node and solve command 
+	// algorithm for root node and solve command
 
 	if (options.isDefined("startalg")) {
 		char* value = options.getString("startalg", buffer);
 		if (!value) {
-			gmoLogStat(gmo, "Cannot read value for option 'startalg'. Ignoring this option");
+			gevLogStat(gev, "Cannot read value for option 'startalg'. Ignoring this option");
 		} else if (strcmp(value, "primal")  == 0) {
 			par_list.push_back("-primalSimplex");
 		} else if (strcmp(value, "dual")    == 0) {
@@ -1096,13 +1095,13 @@ bool GamsCbc::setupParameters() {
 		} else if (strcmp(value, "barrier") == 0) {
 			par_list.push_back("-barrier");
 		} else {
-			gmoLogStat(gmo, "Unsupported value for option 'startalg'. Ignoring this option");
+			gevLogStat(gev, "Unsupported value for option 'startalg'. Ignoring this option");
 		}
 		if (!isLP())
 			par_list.push_back("-solve");
 	} else
-		par_list.push_back("-solve"); 
-	
+		par_list.push_back("-solve");
+
 	int par_list_length = par_list.size();
 	assert(!cbc_args);
 	cbc_argc = par_list_length+2;
@@ -1112,84 +1111,84 @@ bool GamsCbc::setupParameters() {
 	for (std::list<std::string>::iterator it(par_list.begin()); it != par_list.end(); ++it, ++i)
 		cbc_args[i] = strdup(it->c_str());
 	cbc_args[i++] = strdup("-quit");
-	
+
 	return true;
 }
 
 bool GamsCbc::writeSolution(double cputime, double walltime) {
 	bool write_solution = false;
 	char buffer[255];
-	
-	gmoLogStat(gmo, "");
+
+	gevLogStat(gev, "");
 	if (isLP()) { // if Cbc solved an LP, the solution status is not correctly stored in the CbcModel, we have to look into the solver
 		if (model->solver()->isProvenDualInfeasible()) {
 			gmoSolveStatSet(gmo, SolveStat_Normal);
 			gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
-			gmoLogStat(gmo, "Model unbounded.");
+			gevLogStat(gev, "Model unbounded.");
 
 		} else if (model->solver()->isProvenPrimalInfeasible()) {
 			gmoSolveStatSet(gmo, SolveStat_Normal);
 			gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
-			gmoLogStat(gmo, "Model infeasible.");
+			gevLogStat(gev, "Model infeasible.");
 
 		} else if (model->solver()->isAbandoned()) {
 			gmoSolveStatSet(gmo, SolveStat_SolverErr);
 			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-			gmoLogStat(gmo, "Model abandoned.");
+			gevLogStat(gev, "Model abandoned.");
 
 		} else if (model->solver()->isProvenOptimal()) {
 			write_solution = true;
 			gmoSolveStatSet(gmo, SolveStat_Normal);
 			gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
-			gmoLogStat(gmo, "Solved to optimality.");
+			gevLogStat(gev, "Solved to optimality.");
 
 		} else if (model->isSecondsLimitReached()) {
 			gmoSolveStatSet(gmo, SolveStat_Resource);
 			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-			gmoLogStat(gmo, "Time limit reached.");
-			
+			gevLogStat(gev, "Time limit reached.");
+
 		} else if (model->solver()->isIterationLimitReached()) {
 			gmoSolveStatSet(gmo, SolveStat_Iteration);
 			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-			gmoLogStat(gmo, "Iteration limit reached.");
-			
+			gevLogStat(gev, "Iteration limit reached.");
+
 		} else if (model->solver()->isPrimalObjectiveLimitReached()) {
 			gmoSolveStatSet(gmo, SolveStat_Solver);
 			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-			gmoLogStat(gmo, "Primal objective limit reached.");
+			gevLogStat(gev, "Primal objective limit reached.");
 
 		} else if (model->solver()->isDualObjectiveLimitReached()) {
 			gmoSolveStatSet(gmo, SolveStat_Solver);
 			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-			gmoLogStat(gmo, "Dual objective limit reached.");
+			gevLogStat(gev, "Dual objective limit reached.");
 
 		} else {
 			gmoSolveStatSet(gmo, SolveStat_Solver);
 			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-			gmoLogStat(gmo, "Model status unknown, no feasible solution found.");
-			gmoLogStat(gmo, buffer);
+			gevLogStat(gev, "Model status unknown, no feasible solution found.");
+			gevLogStat(gev, buffer);
 		}
-		
+
 	} else { // solved a MIP
 		if (model->solver()->isProvenDualInfeasible()) {
 			gmoSolveStatSet(gmo, SolveStat_Normal);
 			gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
-			gmoLogStat(gmo, "Model unbounded.");
+			gevLogStat(gev, "Model unbounded.");
 
 		} else if (model->isAbandoned()) {
 			gmoSolveStatSet(gmo, SolveStat_SolverErr);
 			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-			gmoLogStat(gmo, "Model abandoned.");
+			gevLogStat(gev, "Model abandoned.");
 
 		} else if (model->isProvenOptimal()) {
 			write_solution = true;
 			gmoSolveStatSet(gmo, SolveStat_Normal);
 			if (options.getDouble("optca") > 0 || options.getDouble("optcr") > 0) {
 				gmoModelStatSet(gmo, ModelStat_Integer);
-				gmoLogStat(gmo, "Solved to optimality (within gap tolerances optca and optcr).");
+				gevLogStat(gev, "Solved to optimality (within gap tolerances optca and optcr).");
 			} else {
 				gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
-				gmoLogStat(gmo, "Solved to optimality.");
+				gevLogStat(gev, "Solved to optimality.");
 			}
 
 		} else if (model->isNodeLimitReached()) {
@@ -1197,10 +1196,10 @@ bool GamsCbc::writeSolution(double cputime, double walltime) {
 			if (model->bestSolution()) {
 				write_solution = true;
 				gmoModelStatSet(gmo, ModelStat_Integer);
-				gmoLogStat(gmo, "Node limit reached. Have feasible solution.");
+				gevLogStat(gev, "Node limit reached. Have feasible solution.");
 			} else {
 				gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-				gmoLogStat(gmo, "Node limit reached. No feasible solution found.");
+				gevLogStat(gev, "Node limit reached. No feasible solution found.");
 			}
 
 		} else if (model->isSecondsLimitReached()) {
@@ -1208,29 +1207,29 @@ bool GamsCbc::writeSolution(double cputime, double walltime) {
 			if (model->bestSolution()) {
 				write_solution = true;
 				gmoModelStatSet(gmo, ModelStat_Integer);
-				gmoLogStat(gmo, "Time limit reached. Have feasible solution.");
+				gevLogStat(gev, "Time limit reached. Have feasible solution.");
 			} else {
 				gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-				gmoLogStat(gmo, "Time limit reached. No feasible solution found.");
+				gevLogStat(gev, "Time limit reached. No feasible solution found.");
 			}
 
 		} else if (model->isProvenInfeasible()) {
 			gmoSolveStatSet(gmo, SolveStat_Normal);
 			gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
-			gmoLogStat(gmo, "Model infeasible.");
+			gevLogStat(gev, "Model infeasible.");
 
 		} else {
 			gmoSolveStatSet(gmo, SolveStat_Solver);
 			if (model->bestSolution()) {
 				write_solution = true;
 				gmoModelStatSet(gmo, ModelStat_Integer);
-				gmoLogStat(gmo, "Model status unknown, but have feasible solution.");
+				gevLogStat(gev, "Model status unknown, but have feasible solution.");
 			} else {
 				gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-				gmoLogStat(gmo, "Model status unknown, no feasible solution found.");
+				gevLogStat(gev, "Model status unknown, no feasible solution found.");
 			}
 			sprintf(buffer, "CBC primary status: %d secondary status: %d\n", model->status(), model->secondaryStatus());
-			gmoLogStat(gmo, buffer);
+			gevLogStat(gev, buffer);
 		}
 	}
 
@@ -1238,7 +1237,7 @@ bool GamsCbc::writeSolution(double cputime, double walltime) {
 	gmoSetHeadnTail(gmo, HresUsed, options.getInteger("threads") > 1 ? walltime : cputime);
 	gmoSetHeadnTail(gmo, Tmipbest, model->getBestPossibleObjValue());
 	gmoSetHeadnTail(gmo, Tmipnod, model->getNodeCount());
-	
+
 	if (write_solution && !gamsOsiStoreSolution(gmo, *model->solver(), false))
 		return false;
 
@@ -1248,18 +1247,18 @@ bool GamsCbc::writeSolution(double cputime, double walltime) {
 				snprintf(buffer, 255, "MIP solution: %21.10g   (%d nodes, %.2f CPU seconds, %.2f wall clock seconds)", model->getObjValue(), model->getNodeCount(), cputime, walltime);
 			else
 				snprintf(buffer, 255, "MIP solution: %21.10g   (%d nodes, %g seconds)", model->getObjValue(), model->getNodeCount(), cputime);
-			gmoLogStat(gmo, buffer);
+			gevLogStat(gev, buffer);
 		}
 		snprintf(buffer, 255, "Best possible: %20.10g", model->getBestPossibleObjValue());
-		gmoLogStat(gmo, buffer);
+		gevLogStat(gev, buffer);
 		if (model->bestSolution()) {
 			snprintf(buffer, 255, "Absolute gap: %21.5g   (absolute tolerance optca: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()), options.getDouble("optca"));
-			gmoLogStat(gmo, buffer);
+			gevLogStat(gev, buffer);
 			snprintf(buffer, 255, "Relative gap: %21.5g   (relative tolerance optcr: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()) / CoinMax(CoinAbs(model->getBestPossibleObjValue()), 1.), options.getDouble("optcr"));
-			gmoLogStat(gmo, buffer);
+			gevLogStat(gev, buffer);
 		}
 	}
-	
+
 	return true;
 }
 
@@ -1296,14 +1295,18 @@ DllExport int STDCALL cbcHaveModifyProblem(cbcRec_t *Cptr) {
 	return ((GamsCbc*)Cptr)->haveModifyProblem();
 }
 
-DllExport int STDCALL cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, dctHandle_t Dptr) {
+DllExport int STDCALL cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) {
+	gevHandle_t Eptr;
 	assert(Cptr != NULL);
 	assert(Gptr != NULL);
 	char msg[256];
 	if (!gmoGetReady(msg, sizeof(msg)))
 		return 1;
-	gmoLogStatPChar(Gptr, ((GamsCbc*)Cptr)->getWelcomeMessage());
-	return ((GamsCbc*)Cptr)->readyAPI(Gptr, Optr, Dptr);
+	if (!gevGetReady(msg, sizeof(msg)))
+		return 1;
+	Eptr = (gevHandle_t) gmoEnvironment(Gptr);
+	gevLogStatPChar(Eptr, ((GamsCbc*)Cptr)->getWelcomeMessage());
+	return ((GamsCbc*)Cptr)->readyAPI(Gptr, Optr);
 }
 
 DllExport void STDCALL cbcFree(cbcRec_t **Cptr) {

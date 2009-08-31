@@ -20,7 +20,7 @@ extern "C" {
 	DllExport int  STDCALL bonCallSolver(bonRec_t *Cptr);
 	DllExport int  STDCALL bonModifyProblem(bonRec_t *Cptr);
 	DllExport int  STDCALL bonHaveModifyProblem(bonRec_t *Cptr);
-	DllExport int  STDCALL bonReadyAPI(bonRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, dctHandle_t Dptr);
+	DllExport int  STDCALL bonReadyAPI(bonRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
 	DllExport void STDCALL bonFree(bonRec_t **Cptr);
 	DllExport void STDCALL bonCreate(bonRec_t **Cptr, char *msgBuf, int msgBufLen);
 

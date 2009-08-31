@@ -61,8 +61,8 @@ DIST_COMMON = $(includecoin_HEADERS) \
 @HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
 subdir = src/GamsUtils
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -77,11 +77,9 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includecoindir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libGamsUtils_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsJoat.la \
-	$(GAMSIO_OBJDIR)/libGamsGDX.la \
-	$(GAMSIO_OBJDIR)/libGamsOptions.la
-am_libGamsUtils_la_OBJECTS = GamsDictionary.lo GamsGDX.lo \
-	GamsOptions.lo GamsNLinstr.lo
+libGamsUtils_la_LIBADD =
+am_libGamsUtils_la_OBJECTS = GamsOptions.lo GamsNLinstr.lo optcc.lo \
+	gdxcc.lo gmomcc.lo gevmcc.lo
 libGamsUtils_la_OBJECTS = $(am_libGamsUtils_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -129,11 +127,6 @@ CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CDEFS = @CDEFS@
 CFLAGS = @CFLAGS@
-COIN_HAS_GAMSIO = @COIN_HAS_GAMSIO@
-COIN_HAS_GAMSIO_FALSE = @COIN_HAS_GAMSIO_FALSE@
-COIN_HAS_GAMSIO_TRUE = @COIN_HAS_GAMSIO_TRUE@
-COIN_HAS_GAMSSYSTEM_FALSE = @COIN_HAS_GAMSSYSTEM_FALSE@
-COIN_HAS_GAMSSYSTEM_TRUE = @COIN_HAS_GAMSSYSTEM_TRUE@
 COIN_HAS_GAMSUTILS_FALSE = @COIN_HAS_GAMSUTILS_FALSE@
 COIN_HAS_GAMSUTILS_TRUE = @COIN_HAS_GAMSUTILS_TRUE@
 CPP = @CPP@
@@ -160,26 +153,9 @@ F77 = @F77@
 FADDLIBS = @FADDLIBS@
 FFLAGS = @FFLAGS@
 FLIBS = @FLIBS@
-FORTRAN_NAMEMANGLING_CFLAG = @FORTRAN_NAMEMANGLING_CFLAG@
-GAMSIO_ADDLIBS = @GAMSIO_ADDLIBS@
-GAMSIO_CIA = @GAMSIO_CIA@
-GAMSIO_CODE = @GAMSIO_CODE@
-GAMSIO_CPPFLAGS = @GAMSIO_CPPFLAGS@
-GAMSIO_IS_DARWIN_FALSE = @GAMSIO_IS_DARWIN_FALSE@
-GAMSIO_IS_DARWIN_TRUE = @GAMSIO_IS_DARWIN_TRUE@
-GAMSIO_IS_UNIX_FALSE = @GAMSIO_IS_UNIX_FALSE@
-GAMSIO_IS_UNIX_TRUE = @GAMSIO_IS_UNIX_TRUE@
-GAMSIO_IS_WINDOWS_FALSE = @GAMSIO_IS_WINDOWS_FALSE@
-GAMSIO_IS_WINDOWS_TRUE = @GAMSIO_IS_WINDOWS_TRUE@
-GAMSIO_LIBS = @GAMSIO_LIBS@
-GAMSIO_OBJDIR = @GAMSIO_OBJDIR@
-GAMSIO_PRESENT_FALSE = @GAMSIO_PRESENT_FALSE@
-GAMSIO_PRESENT_TRUE = @GAMSIO_PRESENT_TRUE@
 GAMSUTILSDOCDIR = @GAMSUTILSDOCDIR@
 GAMSUTILSOBJDIR = @GAMSUTILSOBJDIR@
 GAMSUTILSSRCDIR = @GAMSUTILSSRCDIR@
-GAMS_ADDLIBS = @GAMS_ADDLIBS@
-GAMS_PATH = @GAMS_PATH@
 HAVE_EXTERNALS_FALSE = @HAVE_EXTERNALS_FALSE@
 HAVE_EXTERNALS_TRUE = @HAVE_EXTERNALS_TRUE@
 INSTALL_DATA = @INSTALL_DATA@
@@ -217,7 +193,6 @@ RANLIB = @RANLIB@
 RPATH_FLAGS = @RPATH_FLAGS@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
-SMAG_LIBS = @SMAG_LIBS@
 STRIP = @STRIP@
 VERSION = @VERSION@
 VPATH_DISTCLEANFILES = @VPATH_DISTCLEANFILES@
@@ -250,7 +225,6 @@ build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
 exec_prefix = @exec_prefix@
-gamspath = @gamspath@
 have_autoconf = @have_autoconf@
 have_automake = @have_automake@
 have_svn = @have_svn@
@@ -278,12 +252,12 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = $(am__append_1)
 lib_LTLIBRARIES = libGamsUtils.la
-libGamsUtils_la_SOURCES = GamsDictionary.cpp GamsGDX.cpp GamsOptions.cpp GamsNLinstr.c
+libGamsUtils_la_SOURCES = GamsOptions.cpp GamsNLinstr.c optcc.c gdxcc.c gmomcc.c gevmcc.c
 libGamsUtils_la_LDFLAGS = 
-libGamsUtils_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(GAMSIO_OBJDIR)/libGamsGDX.la $(GAMSIO_OBJDIR)/libGamsOptions.la
+#libGamsUtils_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(GAMSIO_OBJDIR)/libGamsGDX.la $(GAMSIO_OBJDIR)/libGamsOptions.la
 includecoindir = $(includedir)/coin
-includecoin_HEADERS = GamsDictionary.hpp GamsGDX.hpp GamsOptions.hpp GamsNLinstr.h
-AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..`
+includecoin_HEADERS = GamsGDX.hpp GamsOptions.hpp GamsNLinstr.h
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..`
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
 ########################################################################
@@ -363,10 +337,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsDictionary.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsGDX.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsNLinstr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOptions.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdxcc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gevmcc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmomcc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optcc.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

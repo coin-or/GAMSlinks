@@ -13,11 +13,12 @@
 #include "CoinHelperFunctions.hpp"
 
 #include "gmomcc.h"
+#include "gevmcc.h"
 
 #include <sstream>
 
-Gams2OSiL::Gams2OSiL(gmoHandle_t gmo_, struct dctRec* dict_)
-: gmo(gmo_), dict(gmo_, dict_), osinstance(NULL)
+Gams2OSiL::Gams2OSiL(gmoHandle_t gmo_)
+: gmo(gmo_), gev(gmo_ ? (gevRec*)gmoEnvironment(gmo_) : NULL), osinstance(NULL)
 { }
 
 Gams2OSiL::~Gams2OSiL() {
@@ -29,12 +30,10 @@ bool Gams2OSiL::createOSInstance() {
 	int i, j;
 	char buffer[255];
 
-	dict.readDictionary(); // try reading dictionary if available and not done already
-
 	// unfortunately, we do not know the model name
 	osinstance->setInstanceDescription("Generated from GAMS GMO problem");
 	osinstance->setVariableNumber(gmoN(gmo));
-	
+
 	char*        vartypes = new char[gmoN(gmo)];
 	std::string* varnames = new std::string[gmoN(gmo)];
 	for(i = 0; i < gmoN(gmo); ++i) {
@@ -49,19 +48,15 @@ bool Gams2OSiL::createOSInstance() {
 				vartypes[i] = 'I';
 				break;
 			default : {
-				// TODO: how to represent semicontinuous var. and SOS in OSiL ? 
-				gmoLogStat(gmo, "Error: Unsupported variable type.");
+				// TODO: how to represent semicontinuous var. and SOS in OSiL ?
+				gevLogStat(gev, "Error: Unsupported variable type.");
 				return false;
 			}
 		}
-		if (dict.haveNames() && dict.getColName(i, buffer, 256)) {
-			varnames[i] = buffer;
-		} else {
-			std::stringstream strstr; strstr << "x" << i << std::ends;
-			varnames[i] = strstr.str();
-		}
+		gmoGetVarNameOne(gmo, i, buffer);
+		varnames[i] = buffer;
 	}
-	
+
 	double* varlow = new double[gmoN(gmo)];
 	double* varup  = new double[gmoN(gmo)];
 	gmoGetVarLower(gmo, varlow);
@@ -69,24 +64,24 @@ bool Gams2OSiL::createOSInstance() {
 
 	if (!osinstance->setVariables(gmoN(gmo), varnames, varlow, varup, vartypes))
 		return false;
-	
+
 	delete[] vartypes;
 	delete[] varnames;
 	delete[] varlow;
 	delete[] varup;
-	
+
 	if (gmoModelType(gmo) == Proc_cns) { // no objective in constraint satisfaction models
 		osinstance->setObjectiveNumber(0);
 	} else { // setup objective
 		osinstance->setObjectiveNumber(1);
-	
+
 		SparseVector* objectiveCoefficients = new SparseVector(gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
 
 		int* colidx = new int[gmoObjNZ(gmo)];
 		double* val = new double[gmoObjNZ(gmo)];
 		int* nlflag = new int[gmoObjNZ(gmo)];
 		int* dummy  = new int[gmoObjNZ(gmo)];
-		
+
 		if (gmoObjNZ(gmo)) nlflag[0] = 0; // workaround for gmo bug
 		gmoGetObjSparse(gmo, colidx, val, nlflag, dummy, dummy);
 		for (i = 0, j = 0; i < gmoObjNZ(gmo); ++i) {
@@ -97,15 +92,16 @@ bool Gams2OSiL::createOSInstance() {
 		  assert(j <= gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
 		}
 	  assert(j == gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
-		
+
 		delete[] colidx;
 		delete[] val;
 		delete[] nlflag;
 		delete[] dummy;
 
-		std::string objname;
-		if (dict.haveNames() && dict.getObjName(buffer, 256))
-			objname = buffer;
+		std::string objname = "objective";
+		//TODO objective name
+//		if (dict.haveNames() && dict.getObjName(buffer, 256))
+//			objname = buffer;
 //		std::cout << "gmo obj con: " << gmoObjConst(gmo) << std::endl;
 		if (!osinstance->addObjective(-1, objname, gmoSense(gmo) == Obj_Min ? "min" : "max", gmoObjConst(gmo), 1., objectiveCoefficients)) {
 			delete objectiveCoefficients;
@@ -113,7 +109,7 @@ bool Gams2OSiL::createOSInstance() {
 		}
 		delete objectiveCoefficients;
 	}
-	
+
 	osinstance->setConstraintNumber(gmoM(gmo));
 
 	double lb, ub;
@@ -135,31 +131,27 @@ bool Gams2OSiL::createOSInstance() {
 				ub =  OSDBL_MAX;
 				break;
 			default:
-				gmoLogStat(gmo, "Error: Unknown row type. Exiting ...");
+				gevLogStat(gev, "Error: Unknown row type. Exiting ...");
 				return false;
 		}
 		std::string conname;
-		if (dict.haveNames() && dict.getRowName(i, buffer, 255)) {
-			conname = buffer;
-		} else {
-			std::stringstream strstr; strstr << "e" << i << std::ends;
-			conname = strstr.str();
-		}
+		gmoGetEquNameOne(gmo, i, buffer);
+		conname = buffer;
 		if (!osinstance->addConstraint(i, conname, lb, ub, 0.))
 			return false;
 	}
-	
+
 	int nz = gmoNZ(gmo);
 	double* values  = new double[nz];
 	int* colstarts  = new int[gmoN(gmo)+1];
 	int* rowindexes = new int[nz];
 	int* nlflags    = new int[nz];
-	
+
 	gmoGetMatrixCol(gmo, colstarts, rowindexes, values, nlflags);
 //	for (i = 0; i < gmoNZ(gmo); ++i)
 //		if (nlflags[i]) values[i] = 0.;
 	colstarts[gmoN(gmo)] = nz;
-	
+
 	int shift = 0;
 	for (int col = 0; col < gmoN(gmo); ++col) {
 		colstarts[col+1] -= shift;
@@ -176,8 +168,8 @@ bool Gams2OSiL::createOSInstance() {
 		}
 	}
 	nz -= shift;
-	
-	if (!osinstance->setLinearConstraintCoefficients(nz, true, 
+
+	if (!osinstance->setLinearConstraintCoefficients(nz, true,
 		values, 0, nz-1,
 		rowindexes, 0, nz-1,
 		colstarts, 0, gmoN(gmo))) {
@@ -194,21 +186,21 @@ bool Gams2OSiL::createOSInstance() {
 	osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions = gmoNLM(gmo) + (gmoObjNLNZ(gmo) ? 1 : 0);
 	osinstance->instanceData->nonlinearExpressions->nl = CoinCopyOfArrayOrZero((Nl**)NULL, osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
 	int iNLidx = 0;
-	
+
 	int* opcodes = new int[gmoMaxSingleFNL(gmo)+1];
 	int* fields  = new int[gmoMaxSingleFNL(gmo)+1];
 	int constantlen = gmoNLConst(gmo);
 	double* constants = (double*)gmoPPool(gmo);
 	int codelen;
-	
+
 	OSnLNode* nl;
 	if (gmoObjNLNZ(gmo)) {
 		std::clog << "parsing nonlinear objective instructions" << std::endl;
 		gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
-		
+
 		nl = parseGamsInstructions(codelen, opcodes, fields, constantlen, constants);
 		if (!nl) return false;
-		
+
 		double objjacval = gmoObjJacVal(gmo);
 		std::clog << "obj jac val: " << objjacval << std::endl;
 		if (objjacval == 1.) { // scale by -1/objjacval = negate
@@ -247,7 +239,7 @@ bool Gams2OSiL::createOSInstance() {
 		++iNLidx;
 	}
 	assert(iNLidx == osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
-	
+
 	return true;
 }
 
@@ -259,14 +251,14 @@ OSInstance* Gams2OSiL::takeOverOSInstance() {
 
 OSnLNode* Gams2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* fields, int constantlen, double* constants) {
 	std::vector<OSnLNode*> nlNodeVec;
-	
+
 	const bool debugoutput = false;
 
 //	for (int i=0; i<codelen; ++i)
 //		std::clog << i << '\t' << GamsOpCodeName[opcodes[i+1]] << '\t' << fields[i+1] << std::endl;
 
 	nlNodeVec.reserve(codelen);
-	
+
 	for (int i=0; i<codelen; ++i) {
 		GamsOpCode opcode = (GamsOpCode)opcodes[i];
 		int address = fields[i]-1;
@@ -336,7 +328,7 @@ OSnLNode* Gams2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* field
 			} break;
 			case nlMul: { // multiply
 				if (debugoutput) std::clog << "multiply" << std::endl;
-				nlNodeVec.push_back( new OSnLNodeTimes() );				
+				nlNodeVec.push_back( new OSnLNodeTimes() );
 			} break;
 			case nlMulV: { // multiply variable
 				address = gmoGetjSolver(gmo, address);
@@ -355,7 +347,7 @@ OSnLNode* Gams2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* field
 			} break;
 			case nlDiv: { // divide
 				if (debugoutput) std::clog << "divide" << std::endl;
-				nlNodeVec.push_back( new OSnLNodeDivide() );				
+				nlNodeVec.push_back( new OSnLNodeDivide() );
 			} break;
 			case nlDivV: { // divide variable
 				address = gmoGetjSolver(gmo, address);
@@ -374,7 +366,7 @@ OSnLNode* Gams2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* field
 			} break;
 			case nlUMin: { // unary minus
 				if (debugoutput) std::clog << "negate" << std::endl;
-				nlNodeVec.push_back( new OSnLNodeNegate() );				
+				nlNodeVec.push_back( new OSnLNodeNegate() );
 			} break;
 			case nlUMinV: { // unary minus variable
 				address = gmoGetjSolver(gmo, address);
@@ -436,22 +428,22 @@ OSnLNode* Gams2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* field
 					} break;
 					case fnabs: {
 						if (debugoutput) std::clog << "abs" << std::endl;
-						nlNodeVec.push_back( new OSnLNodeAbs() );						
+						nlNodeVec.push_back( new OSnLNodeAbs() );
 					} break;
 					case fncos: {
 						if (debugoutput) std::clog << "cos" << std::endl;
-						nlNodeVec.push_back( new OSnLNodeCos() );						
+						nlNodeVec.push_back( new OSnLNodeCos() );
 					} break;
 					case fnsin: {
 						if (debugoutput) std::clog << "sin" << std::endl;
-						nlNodeVec.push_back( new OSnLNodeSin() );						
+						nlNodeVec.push_back( new OSnLNodeSin() );
 					} break;
 					case fnpower:
 					case fnrpower: // x ^ y
 					case fncvpower: // constant ^ x
 					case fnvcpower: { // x ^ constant {
 						if (debugoutput) std::clog << "power" << std::endl;
-						nlNodeVec.push_back( new OSnLNodePower() );						
+						nlNodeVec.push_back( new OSnLNodePower() );
 					} break;
 					case fnpi: {
 						if (debugoutput) std::clog << "pi" << std::endl;
@@ -474,7 +466,7 @@ OSnLNode* Gams2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* field
 					case fnmod: case fntrunc: case fnsign:
 					case fnarctan: case fnerrf: case fndunfm:
 					case fndnorm: case fnerror: case fnfrac: case fnerrorl:
-			    case fnfact /* factorial */: 
+			    case fnfact /* factorial */:
 			    case fnunfmi /* uniform random number */:
 			    case fnncpf /* fischer: sqrt(x1^2+x2^2+2*x3) */:
 			    case fnncpcm /* chen-mangasarian: x1-x3*ln(1+exp((x1-x2)/x3))*/:
@@ -499,7 +491,7 @@ OSnLNode* Gams2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* field
 					default : {
 						if (debugoutput) std::cerr << "nr. " << func << " - unsuppored. Error." << std::endl;
 						return NULL;
-					}				
+					}
 				}
 			} break;
 			case nlMulIAdd: {
@@ -548,7 +540,7 @@ OSnLNode* Gams2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* field
 		}
 	}
 
-	if (!nlNodeVec.size()) return NULL;	
+	if (!nlNodeVec.size()) return NULL;
 	// the vector is in postfix format - create expression tree and return it
 	return nlNodeVec[0]->createExpressionTreeFromPostfix(nlNodeVec);
 }

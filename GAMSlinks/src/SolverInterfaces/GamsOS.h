@@ -20,7 +20,7 @@ extern "C" {
   DllExport int  STDCALL os_CallSolver(os_Rec_t *Cptr);
   DllExport int  STDCALL os_ModifyProblem(os_Rec_t *Cptr);
   DllExport int  STDCALL os_HaveModifyProblem(os_Rec_t *Cptr);
-  DllExport int  STDCALL os_ReadyAPI(os_Rec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, dctHandle_t Dptr);
+  DllExport int  STDCALL os_ReadyAPI(os_Rec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
   DllExport void STDCALL os_Free(os_Rec_t **Cptr);
   DllExport void STDCALL os_Create(os_Rec_t **Cptr, char *msgBuf, int msgBufLen);
 

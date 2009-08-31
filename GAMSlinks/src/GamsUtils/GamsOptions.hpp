@@ -21,6 +21,7 @@
 #endif
 
 struct gmoRec;
+struct gevRec;
 struct optRec;
 
 /** Wrapper class for GAMS option file handler.
@@ -29,28 +30,29 @@ struct optRec;
 class GamsOptions {
 private:
 	struct gmoRec* gmo;
+	struct gevRec* gev;
 	struct optRec* optionshandle; // handle for options
-	
+
 	bool opt_is_own;
-	
+
 	bool initOpt(const char* solvername);
 
 public:
 	/** Constructor for GamsOptions class.
 	 * Initialization of options handle.
 	 * Reading of the file "<systemdir>/opt<solvername>.def" to learn which options are supported.
-	 * @param gmo_ A Gams Modeling Object to get access to the system directory name and other stuff. Can be NULL and set later by setGMO. 
-	 * @param opt_ A Gams Optionfile handler. If NULL and setOpt is not called, an own one might be created. 
+	 * @param gmo_ A Gams Modeling Object to get access to the system directory name and other stuff. Can be NULL and set later by setGMO.
+	 * @param opt_ A Gams Optionfile handler. If NULL and setOpt is not called, an own one might be created.
 	 */
 	GamsOptions(struct gmoRec* gmo_ = NULL, struct optRec* opt_ = NULL);
-	
+
 	/** Destructor.
 	 */
 	~GamsOptions();
-	
-	void setGMO(struct gmoRec* gmo_) { gmo = gmo_; }
+
+	void setGMO(struct gmoRec* gmo_);
 	void setOpt(struct optRec* opt_);
-	
+
 	/** Reads an options file.
 	 * @param solvername The name of your solver.
 	 * @param optfilename Giving NULL for optfilename will read nothing and returns true.
@@ -67,7 +69,7 @@ public:
 	 */
 	bool isDefined(const char *optname);
 //	bool optDefinedRecent(const char *optname);
-	
+
 	/** Gets the value of a boolean option.
 	 * @param optname The name of the option.
 	 */
@@ -85,7 +87,7 @@ public:
 	 * @param buffer A buffer where the value can be stored (it should be large enough).
 	 */
 	char* getString(const char *optname, char *buffer);
-	
+
 	/** Sets the value of a boolean option.
 	 * @param optname The name of the option.
 	 * @param bval The value to set.

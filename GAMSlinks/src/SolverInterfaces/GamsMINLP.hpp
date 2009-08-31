@@ -17,6 +17,7 @@ class GamsCouenne;
 class GamsCouenneSetup;
 
 struct gmoRec;
+struct gevRec;
 
 #include "BonTMINLP.hpp"
 
@@ -28,8 +29,9 @@ class GamsMINLP : public Bonmin::TMINLP {
 	friend class GamsCouenneSetup;
 private:
 	struct gmoRec* gmo;
+	struct gevRec* gev;
   double isMin;
-  
+
   bool in_couenne;
 
 	Bonmin::TMINLP::SosInfo sosinfo;

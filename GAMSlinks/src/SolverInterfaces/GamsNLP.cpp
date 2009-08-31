@@ -31,6 +31,7 @@
 #endif
 
 #include "gmomcc.h"
+#include "gevmcc.h"
 
 using namespace Ipopt;
 
@@ -40,9 +41,11 @@ GamsNLP::GamsNLP (gmoHandle_t gmo_)
 {
   gmo = gmo_;
   assert(gmo);
-	
-	timelimit    = gmoResLim(gmo);
-	domviollimit = gmoDomLim(gmo);
+  gev = (gevRec*) gmoEnvironment(gmo);
+  assert(gev);
+
+	timelimit    = gevGetDblOpt(gev, gevResLim);
+	domviollimit = gevGetIntOpt(gev, gevDomLim);
 }
 
 GamsNLP::~GamsNLP() {
@@ -57,14 +60,14 @@ bool GamsNLP::get_nlp_info(Index& n, Index& m, Index& jac_nnz, Index& nnz_h_lag,
 	jac_nnz     = gmoNZ(gmo);
 	nnz_h_lag   = gmoHessLagNz(gmo);
 	index_style = C_STYLE;
-	
+
 	return true;
 }
 
 bool GamsNLP::get_bounds_info (Index n, Number* x_l, Number* x_u, Index m, Number* g_l, Number* g_u) {
 	assert(n == gmoN(gmo));
 	assert(m == gmoM(gmo));
-	
+
 	gmoGetVarLower(gmo, x_l);
 	gmoGetVarUpper(gmo, x_u);
 	gmoGetRhs(gmo, g_u);
@@ -86,11 +89,11 @@ bool GamsNLP::get_bounds_info (Index n, Number* x_l, Number* x_u, Index m, Numbe
 				*g_u = gmoPinf(gmo);
 				break;
 			case equ_C: // conic function
-				gmoLogStat(gmo, "Error: Conic constraints not supported.");
+				gevLogStat(gev, "Error: Conic constraints not supported.");
 				return false;
 				break;
 			default:
-				gmoLogStat(gmo, "Error: Unsuppored equation type.");
+				gevLogStat(gev, "Error: Unsuppored equation type.");
 				return false;
 		}
 	}
@@ -107,7 +110,7 @@ bool GamsNLP::get_starting_point(Index n, bool init_x, Number* x, bool init_z, N
 		for (Index j = m; j; --j, ++lambda)
 			*lambda *= -1;
 	}
-	
+
 	if (init_z) {
 		gmoGetVarM(gmo, z_L);
 		for (Index j = n; j; --j, ++z_L, ++z_U) {
@@ -118,7 +121,7 @@ bool GamsNLP::get_starting_point(Index n, bool init_x, Number* x, bool init_z, N
 				*z_U = 0;
 		}
 	}
-	
+
 	if (init_x) {
 		gmoGetVarL(gmo, x);
 
@@ -127,28 +130,28 @@ bool GamsNLP::get_starting_point(Index n, bool init_x, Number* x, bool init_z, N
   		if (x[j] < -div_iter_tol) {
   			char buffer[255];
   			sprintf(buffer, "Initial value %e for variable %d below diverging iterates tolerance %e. Set initial value to %e.\n", x[j], j, -div_iter_tol, -.99*div_iter_tol);
-  			gmoLogStatPChar(gmo, buffer);
+  			gevLogStatPChar(gev, buffer);
   			x[j] = -.99*div_iter_tol;
   		} else if (x[j] > div_iter_tol) {
   			char buffer[255];
   			sprintf(buffer, "Initial value %e for variable %d above diverging iterates tolerance %e. Set initial value to %e.\n", x[j], j, div_iter_tol, .99*div_iter_tol);
-  			gmoLogStatPChar(gmo, buffer);
+  			gevLogStatPChar(gev, buffer);
   			x[j] = .99*div_iter_tol;
   		}
   	}
 	}
-	
+
   return true;
 }
 
 bool GamsNLP::get_variables_linearity(Index n, LinearityType* var_types) {
 	assert(n == gmoN(gmo));
-	
+
 	if (gmoNLNZ(gmo) == 0 && gmoObjNLNZ(gmo) == 0) { // problem is linear
 		memset(var_types, LINEAR, n*sizeof(LinearityType));
 		return true;
 	}
-	
+
 	int jnz, jnlnz, jobjnz;
 	for (int i = 0; i < n; ++i) {
 		gmoGetColStat(gmo, i, &jnz, &jnlnz, &jobjnz);
@@ -157,14 +160,14 @@ bool GamsNLP::get_variables_linearity(Index n, LinearityType* var_types) {
 		else
 			var_types[i] = LINEAR;
 	}
-	
+
 	return true;
 }
 
 // returns the constraint linearity
 bool GamsNLP::get_constraints_linearity(Index m, LinearityType* const_types) {
 	assert(m == gmoM(gmo));
-	
+
 	if (gmoNLNZ(gmo) == 0) { // all constraints are linear
 		memset(const_types, LINEAR, m*sizeof(LinearityType));
 		return true;
@@ -172,7 +175,7 @@ bool GamsNLP::get_constraints_linearity(Index m, LinearityType* const_types) {
 
 	for (Index i = 0; i < m; ++i)
 		const_types[i] = gmoNLfunc(gmo, i) ? NON_LINEAR : LINEAR;
-	
+
 	return true;
 }
 
@@ -183,10 +186,10 @@ bool GamsNLP::eval_f(Index n, const Number* x, bool new_x, Number& obj_value) {
 		gmoEvalNewPoint(gmo, x);
 	int nerror = gmoEvalObjFunc(gmo, x, &obj_value);
 
-  if (nerror < 0) {
+  if (EvalRCSYSTEM == nerror) {
 		char buffer[255];
   	sprintf(buffer, "Error detected in evaluation of objective function!\nnerror = %d\nExiting from subroutine - eval_f\n", nerror);
-		gmoLogStatPChar(gmo, buffer);
+		gevLogStatPChar(gev, buffer);
     throw -1;
   }
   if (nerror > 0) {
@@ -199,7 +202,7 @@ bool GamsNLP::eval_f(Index n, const Number* x, bool new_x, Number& obj_value) {
 
 bool GamsNLP::eval_grad_f (Index n, const Number* x, bool new_x, Number* grad_f) {
 	assert(n == gmoN(gmo));
-	
+
 	if (new_x)
 		gmoEvalNewPoint(gmo, x);
 
@@ -208,17 +211,17 @@ bool GamsNLP::eval_grad_f (Index n, const Number* x, bool new_x, Number* grad_f)
  	double gx;
 	int nerror = gmoEvalObjGrad(gmo, x, &val, grad_f, &gx);
 
-  if (nerror < 0) {
+  if (EvalRCSYSTEM == nerror) {
 		char buffer[255];
-  	sprintf(buffer, "Error detected in GAMS evaluation of objective gradient!\nnerror = %d\nExiting from subroutine - eval_grad_f\n", nerror); 
-		gmoLogStatPChar(gmo, buffer);
+  	sprintf(buffer, "Error detected in GAMS evaluation of objective gradient!\nnerror = %d\nExiting from subroutine - eval_grad_f\n", nerror);
+		gevLogStatPChar(gev, buffer);
     throw -1;
   }
   if (nerror > 0) {
 		++domviolations;
 		return false;
 	}
-	
+
   return true;
 }
 
@@ -232,10 +235,10 @@ bool GamsNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
   int nerror;
   for (int i = 0; i < m; ++i) {
 		nerror = gmoEvalFunc(gmo, i, x, &g[i]);
-	  if (nerror < 0) {
-			char buffer[255];  	
-	  	sprintf(buffer, "Error detected in evaluation of constraint %d!\nnerror = %d\nExiting from subroutine - eval_g\n", i, nerror); 
-			gmoLogStatPChar(gmo, buffer);
+	  if (EvalRCSYSTEM == nerror) {
+			char buffer[255];
+	  	sprintf(buffer, "Error detected in evaluation of constraint %d!\nnerror = %d\nExiting from subroutine - eval_g\n", i, nerror);
+			gevLogStatPChar(gev, buffer);
 	    throw -1;
 	  }
 	  if (nerror > 0) {
@@ -251,7 +254,7 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
 	assert(n == gmoN(gmo));
 	assert(m == gmoM(gmo));
 	assert(nele_jac == gmoNZ(gmo));
-	
+
   if (values == NULL) { // return the structure of the jacobian
     assert(NULL == x);
     assert(NULL != iRow);
@@ -270,10 +273,10 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
     	for (int j = iRowStart[i]; j < iRowStart[i+1]; ++j)
     		iRow[j] = i;
     memcpy(jCol, this->jCol, nele_jac * sizeof(int));
-    
+
     delete[] jacval;
     delete[] nlflag;
-    
+
     delete[] grad;
     grad = new double[n];
 
@@ -284,22 +287,22 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
     assert(NULL != iRowStart);
     assert(NULL != this->jCol);
   	assert(NULL != grad);
-  	
+
   	if (new_x)
   		gmoEvalNewPoint(gmo, x);
-  	
+
   	double val;
   	double gx;
   	int nerror;
     int k = 0;
     int next;
-    
+
   	for (int rownr = 0; rownr < m; ++rownr) {
   		nerror = gmoEvalGrad(gmo, rownr, x, &val, grad, &gx);
-      if (nerror < 0) {
-  			char buffer[255];  	
-  	  	sprintf(buffer, "Error detected in evaluation of gradient for constraint %d!\nnerror = %d\nExiting from subroutine - eval_jac_g\n", rownr, nerror); 
-  			gmoLogStatPChar(gmo, buffer);
+      if (EvalRCSYSTEM == nerror) {
+  			char buffer[255];
+  	  	sprintf(buffer, "Error detected in evaluation of gradient for constraint %d!\nnerror = %d\nExiting from subroutine - eval_jac_g\n", rownr, nerror);
+  			gevLogStatPChar(gev, buffer);
   			throw -1;
       }
       if (nerror > 0) {
@@ -310,7 +313,7 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
       next = iRowStart[rownr+1];
       for (; k < next; ++k)
       	values[k] = grad[this->jCol[k]];
-      
+
 //      for (; k < nele_jac && this->iRow[k] == rownr; ++k)
 //      	values[k] = grad[this->jCol[k]];
     }
@@ -332,7 +335,7 @@ bool GamsNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor, In
     assert(NULL != jCol);
 
     gmoHessLagStruct(gmo, iRow, jCol);
-        
+
   } else { // return the values. This is a symmetric matrix, fill the lower left triangle only.
     assert(NULL != x);
     assert(NULL != lambda);
@@ -345,9 +348,9 @@ bool GamsNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor, In
   	// for GAMS lambda would need to be multiplied by -1, we do this via the constraint weight
     int nerror = gmoHessLagValue(gmo, const_cast<double*>(x), const_cast<double*>(lambda), values, obj_factor, -1.);
     if (nerror < 0) {
-			char buffer[255];  	
+			char buffer[255];
 	  	sprintf(buffer, "Error detected in evaluation of Hessian!\nnerror = %d\nExiting from subroutine - eval_h\n", nerror);
-			gmoLogStatPChar(gmo, buffer);
+			gevLogStatPChar(gev, buffer);
 			throw -1;
     } else if (nerror > 0) {
 			++domviolations;
@@ -359,7 +362,7 @@ bool GamsNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor, In
 }
 
 bool GamsNLP::intermediate_callback(AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq) {
-	if (timelimit && gmoTimeDiffStart(gmo) - clockStart > timelimit) return false;
+	if (timelimit && gevTimeDiffStart(gev) - clockStart > timelimit) return false;
 	if (domviollimit && domviolations >= domviollimit) return false;
 	return true;
 }
@@ -369,13 +372,13 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
 	assert(m == gmoM(gmo));
 
 	bool write_solution = false;
-	
+
   switch (status) {
 	  case SUCCESS:
 	  case STOP_AT_ACCEPTABLE_POINT:
 			gmoModelStatSet(gmo, gmoNLNZ(gmo) ? ModelStat_OptimalLocal : ModelStat_OptimalGlobal);
 			gmoSolveStatSet(gmo, SolveStat_Normal);
-	  	write_solution = true; 
+	  	write_solution = true;
 			break;
 	  case LOCAL_INFEASIBILITY:
 			gmoModelStatSet(gmo, gmoNLNZ(gmo) ? ModelStat_InfeasibleLocal : ModelStat_InfeasibleGlobal);
@@ -383,7 +386,7 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
 			write_solution = true;
 	    break;
 	  case DIVERGING_ITERATES:
-			gmoLogStat(gmo, "Diverging iterates: we'll guess unbounded!");
+			gevLogStat(gev, "Diverging iterates: we'll guess unbounded!");
 			gmoModelStatSet(gmo, ModelStat_Unbounded);
 			gmoSolveStatSet(gmo, SolveStat_Normal);
 			write_solution = true;
@@ -391,10 +394,10 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
 		case STOP_AT_TINY_STEP:
 	  case RESTORATION_FAILURE:
 			if (cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol) {
-				gmoLog(gmo, "Having feasible solution.\n");
+				gevLog(gev, "Having feasible solution.\n");
 				gmoModelStatSet(gmo, ModelStat_NonOptimalIntermed);
 			} else {
-				gmoLog(gmo, "Current point is not feasible.");
+				gevLog(gev, "Current point is not feasible.");
 				gmoModelStatSet(gmo, ModelStat_InfeasibleIntermed);
 			}
 			gmoSolveStatSet(gmo, SolveStat_Solver); // terminated by solver (normal completion not allowed by GAMS philosophy here: its not normal when it stops with an intermediate point)
@@ -402,10 +405,10 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
 	    break;
 	  case MAXITER_EXCEEDED:
 			if (cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol) {
-				gmoLog(gmo, "Having feasible solution.\n");
+				gevLog(gev, "Having feasible solution.\n");
 				gmoModelStatSet(gmo, ModelStat_NonOptimalIntermed);
 			} else {
-				gmoLog(gmo, "Current point is not feasible.");
+				gevLog(gev, "Current point is not feasible.");
 				gmoModelStatSet(gmo, ModelStat_InfeasibleIntermed);
 			}
 			gmoSolveStatSet(gmo, SolveStat_Iteration);
@@ -413,15 +416,15 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
 			break;
 		case USER_REQUESTED_STOP:
 			if (domviollimit && domviolations >= domviollimit) {
-				gmoLogStat(gmo, "Domain violation limit exceeded!");
+				gevLogStat(gev, "Domain violation limit exceeded!");
 				gmoModelStatSet(gmo, ModelStat_InfeasibleIntermed);
 				gmoSolveStatSet(gmo, SolveStat_EvalError);
 			} else {
 				if (cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol) {
-					gmoLogStat(gmo, "Time limit exceeded! Point is feasible.");
+					gevLogStat(gev, "Time limit exceeded! Point is feasible.");
 					gmoModelStatSet(gmo, ModelStat_NonOptimalIntermed);
 				} else {
-					gmoLogStat(gmo, "Time limit exceeded! Point is not feasible.");
+					gevLogStat(gev, "Time limit exceeded! Point is not feasible.");
 					gmoModelStatSet(gmo, ModelStat_InfeasibleIntermed);
 				}
 				gmoSolveStatSet(gmo, SolveStat_Resource);
@@ -448,14 +451,14 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
 	  default:
 	  	char buffer[255];
 	  	sprintf(buffer, "OUCH: unhandled SolverReturn of %d\n", status);
-			gmoLogStatPChar(gmo, buffer);
+			gevLogStatPChar(gev, buffer);
 			gmoModelStatSet(gmo, ModelStat_ErrorUnknown);
 			gmoSolveStatSet(gmo, SolveStat_SystemErr);
   }
 
   if (data)
   	gmoSetHeadnTail(gmo, Hiterused, data->iter_count());
-	gmoSetHeadnTail(gmo, HresUsed, gmoTimeDiffStart(gmo) - clockStart);
+	gmoSetHeadnTail(gmo, HresUsed, gevTimeDiffStart(gev) - clockStart);
 	gmoSetHeadnTail(gmo, HdomUsed, domviolations);
 
   if (write_solution) {
@@ -474,11 +477,11 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
   		orignlp = dynamic_cast<OrigIpoptNLP*>(GetRawPtr(cq->GetIpoptNLP()));
   	if (orignlp)
   		tnlp_adapter = dynamic_cast<TNLPAdapter*>(GetRawPtr(orignlp->nlp()));
-  		
+
   	if (tnlp_adapter) {
   		scaled_viol = new double[m];
   		tnlp_adapter->ResortG(*cq->curr_c(), *cq->curr_d_minus_s(), scaled_viol);
-  		
+
     	SmartPtr<Vector> dummy = cq->curr_c()->MakeNew();
     	dummy->Set(0.);
     	compl_xL = new double[n];
@@ -520,7 +523,7 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
 			if (z_L[i] > gmoMinf(gmo)) colMarg[i] += z_L[i];
 			if (z_U[i] < gmoPinf(gmo)) colMarg[i] -= z_U[i];
 		}
-		
+
 		int* rowBasStat   = new int[m];
 		int* rowIndic     = new int[m];
     double* negLambda = new double[m];
@@ -534,7 +537,7 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
 				rowIndic[i] = Cstat_OK;
     	negLambda[i] = -lambda[i];
     }
-        
+
   	gmoSetSolution8(gmo, x, colMarg, negLambda, g, colBasStat, colIndic, rowBasStat, rowIndic);
   	gmoSetHeadnTail(gmo, HobjVal, obj_value);
 

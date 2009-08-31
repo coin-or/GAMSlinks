@@ -13,19 +13,20 @@
 
 #include "IpJournalist.hpp"
 
-struct gmoRec;
+struct gevRec;
 
 /** A particular Journal implementation that uses the GMO routines for output.
  */
 class GamsJournal : public Ipopt::Journal {
 private:
-	struct gmoRec* gmo;
+	struct gevRec* gev;
+
 	/** highest level for output to status file */
 	Ipopt::EJournalLevel status_level;
 
 public:
-  GamsJournal(struct gmoRec* gmo_, const char* name, Ipopt::EJournalLevel default_level, Ipopt::EJournalLevel status_level_ = Ipopt::J_SUMMARY)
-  : Ipopt::Journal(name, default_level), gmo(gmo_), status_level(status_level_)
+  GamsJournal(struct gevRec* gev_, const char* name, Ipopt::EJournalLevel default_level, Ipopt::EJournalLevel status_level_ = Ipopt::J_SUMMARY)
+  : Ipopt::Journal(name, default_level), gev(gev_), status_level(status_level_)
   { }
 
   ~GamsJournal() { }

@@ -59,11 +59,12 @@ extern "C" {
 
 // GAMS
 #include "gmomcc.h"
+#include "gevmcc.h"
 
 using namespace Ipopt;
 
 GamsIpopt::GamsIpopt()
-: gmo(NULL)
+: gmo(NULL), gev(NULL)
 {
 #ifdef GAMS_BUILD
 	strcpy(ipopt_message, "GAMS/CoinIpoptD (Ipopt Library 3.6)\nwritten by A. Waechter\n");
@@ -74,7 +75,7 @@ GamsIpopt::GamsIpopt()
 
 GamsIpopt::~GamsIpopt() { }
 
-int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* gcd) {
+int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gmo = gmo_;
 	assert(gmo);
 	assert(IsNull(ipopt));
@@ -82,19 +83,24 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* 
 	if (getGmoReady())
 		return 1;
 
+	if (getGevReady())
+		return 1;
+
+	gev = (gevRec*)gmoEnvironment(gmo);
+
 	gmoObjStyleSet(gmo, ObjType_Fun);
 	gmoObjReformSet(gmo, 1);
  	gmoIndexBaseSet(gmo, 0);
 
  	ipopt = new IpoptApplication(false);
 
- 	SmartPtr<Journal> jrnl = new GamsJournal(gmo, "console", J_ITERSUMMARY);
+ 	SmartPtr<Journal> jrnl = new GamsJournal(gev, "console", J_ITERSUMMARY);
 	jrnl->SetPrintLevel(J_DBG, J_NONE);
 	if (!ipopt->Jnlst()->AddJournal(jrnl))
-		gmoLogStat(gmo, "Failed to register GamsJournal for IPOPT output.");
+		gevLogStat(gev, "Failed to register GamsJournal for IPOPT output.");
 
 //  ipopt->Options()->SetNumericValue("bound_relax_factor", 0, true, true);
-	ipopt->Options()->SetIntegerValue("max_iter", gmoIterLim(gmo), true, true);
+	ipopt->Options()->SetIntegerValue("max_iter", gevGetIntOpt(gev, gevIterLim), true, true);
   ipopt->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
 // 	ipopt->Options()->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);
 // 	ipopt->Options()->SetNumericValue("nlp_upper_bound_inf", gmoPinf(gmo), false, true);
@@ -109,7 +115,7 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* 
 	// add option to specify path to hsl library
 	ipopt->RegOptions()->AddStringOption1("hsl_library", // name
 			"path and filename of HSL library for dynamic load",  // short description
-			"", // default value 
+			"", // default value
 			"*", // setting1
 			"path (incl. filename) of HSL library", // description1
 			"Specify the path to a library that contains HSL routines and can be load via dynamic linking. "
@@ -120,14 +126,14 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* 
 	// add option to specify path to pardiso library
 	ipopt->RegOptions()->AddStringOption1("pardiso_library", // name
 			"path and filename of PARDISO library for dynamic load",  // short description
-			"", // default value 
+			"", // default value
 			"*", // setting1
 			"path (incl. filename) of Pardiso library", // description1
 			"Specify the path to a PARDISO library that and can be load via dynamic linking. "
 			"Note, that you still need to specify to pardiso as linear_solver."
 	);
-#endif 	
- 	
+#endif
+
 	if (gmoOptFile(gmo)) {
 	 	ipopt->Options()->SetStringValue("print_user_options", "yes", true, true);
 		char buffer[1024];
@@ -135,7 +141,7 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* 
 		ipopt->Initialize(buffer);
 	} else
 		ipopt->Initialize("");
-	
+
 	double ipoptinf;
 	ipopt->Options()->GetNumericValue("nlp_lower_bound_inf", ipoptinf, "");
 	gmoMinfSet(gmo, ipoptinf);
@@ -155,7 +161,7 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* 
 	if (hess_approx == "exact") {
 		int do2dir, dohess;
 		if (gmoHessLoad(gmo, 0, -1, &do2dir, &dohess) || !dohess) { // TODO make "-1" a parameter (like rvhess in CONOPT)
-			gmoLogStat(gmo, "Failed to initialize Hessian structure. We continue with a limited-memory Hessian approximation!");
+			gevLogStat(gev, "Failed to initialize Hessian structure. We continue with a limited-memory Hessian approximation!");
 			ipopt->Options()->SetStringValue("hessian_approximation", "limited-memory");
 	  }
 	}
@@ -165,8 +171,8 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* 
 	if (ipopt->Options()->GetStringValue("hsl_library", libpath, "")) {
 		char buffer[512];
 		if (LSL_loadHSL(libpath.c_str(), buffer, 512) != 0) {
-			gmoLogStatPChar(gmo, "Failed to load HSL library at user specified path: ");
-			gmoLogStat(gmo, buffer);
+			gevLogStatPChar(gev, "Failed to load HSL library at user specified path: ");
+			gevLogStat(gev, buffer);
 			gmoSolveStatSet(gmo, SolveStat_SystemErr);
 			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 			return -1;
@@ -177,29 +183,29 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* 
 	if (ipopt->Options()->GetStringValue("pardiso_library", libpath, "")) {
 		char buffer[512];
 		if (LSL_loadPardisoLib(libpath.c_str(), buffer, 512) != 0) {
-			gmoLogStatPChar(gmo, "Failed to load Pardiso library at user specified path: ");
-			gmoLogStat(gmo, buffer);
+			gevLogStatPChar(gev, "Failed to load Pardiso library at user specified path: ");
+			gevLogStat(gev, buffer);
 			gmoSolveStatSet(gmo, SolveStat_SystemErr);
 			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		  return -1;
 		}
 	}
 #endif
-		
+
 	return 0;
 }
 
 int GamsIpopt::callSolver() {
 	assert(IsValid(ipopt));
 	assert(IsValid(nlp));
-	
-	((GamsNLP*)GetRawPtr(nlp))->clockStart = gmoTimeDiffStart(gmo);
+
+	((GamsNLP*)GetRawPtr(nlp))->clockStart = gevTimeDiffStart(gev);
 	ApplicationReturnStatus status;
 	try {
 		status = ipopt->OptimizeTNLP(nlp); // TODO reoptimize if problem is just modified
 	} catch (IpoptException e) {
 		status = Unrecoverable_Exception;
-		gmoLogStat(gmo, e.Message().c_str());
+		gevLogStat(gev, e.Message().c_str());
 	}
 
 	switch (status) {
@@ -246,12 +252,12 @@ int GamsIpopt::callSolver() {
 #ifdef HAVE_HSL_LOADER
   if (LSL_isHSLLoaded())
   	if (LSL_unloadHSL() != 0)
-  		gmoLogStat(gmo, "Failed to unload HSL library.");
+  		gevLogStat(gev, "Failed to unload HSL library.");
 #endif
 #ifndef HAVE_PARDISO
   if (LSL_isPardisoLoaded())
   	if (LSL_unloadPardisoLib()!=0)
-  		gmoLogStat(gmo, "Failed to unload Pardiso library.");
+  		gevLogStat(gev, "Failed to unload Pardiso library.");
 #endif
 
 	return 0;
@@ -276,14 +282,18 @@ DllExport int STDCALL ipoHaveModifyProblem(ipoRec_t *Cptr) {
 	return ((GamsIpopt*)Cptr)->haveModifyProblem();
 }
 
-DllExport int STDCALL ipoReadyAPI(ipoRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, dctHandle_t Dptr) {
+DllExport int STDCALL ipoReadyAPI(ipoRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) {
+	gevHandle_t Eptr;
 	assert(Cptr != NULL);
 	assert(Gptr != NULL);
 	char msg[256];
 	if (!gmoGetReady(msg, sizeof(msg)))
 		return 1;
-	gmoLogStatPChar(Gptr, ((GamsIpopt*)Cptr)->getWelcomeMessage());
-	return ((GamsIpopt*)Cptr)->readyAPI(Gptr, Optr, Dptr);
+	if (!gevGetReady(msg, sizeof(msg)))
+		return 1;
+	Eptr = (gevHandle_t) gmoEnvironment(Gptr);
+	gevLogStatPChar(Eptr, ((GamsIpopt*)Cptr)->getWelcomeMessage());
+	return ((GamsIpopt*)Cptr)->readyAPI(Gptr, Optr);
 }
 
 DllExport void STDCALL ipoFree(ipoRec_t **Cptr) {

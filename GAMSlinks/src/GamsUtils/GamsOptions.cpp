@@ -57,10 +57,11 @@
 #endif
 
 #include "gmomcc.h"
+#include "gevmcc.h"
 #include "optcc.h"
 
 GamsOptions::GamsOptions(gmoHandle_t gmo_, optHandle_t opt_)
-: gmo(gmo_), optionshandle(opt_), opt_is_own(false)
+: gmo(gmo_), gev(gmo_ ? (gevRec*)gmoEnvironment(gmo_) : NULL), optionshandle(opt_), opt_is_own(false)
 { }
 
 GamsOptions::~GamsOptions() {
@@ -74,32 +75,37 @@ bool GamsOptions::initOpt(const char* solvername) {
 	/* Get the Option File Handling set up */
 	char buffer[512];
 	if (!optCreate(&optionshandle, buffer, 512)) {
-		gmoLogStatPChar(gmo, "\n*** Could not create optionfile handle: "); 
-		gmoLogStat(gmo, buffer); 
+		gevLogStatPChar(gev, "\n*** Could not create optionfile handle: ");
+		gevLogStat(gev, buffer);
 		return false;
 	}
 
-	gmoNameSysDir(gmo, buffer);
+	gevGetStrOpt(gev, gevNameSysDir, buffer);
 	buffer[511] = '\0';
 	int len = strlen(buffer);
 	if (snprintf(buffer+len, 512-len, "opt%s.def", solvername) >= 512) {
-		gmoLogStatPChar(gmo, "\n*** Path to GAMS system directory too long.\n");
+		gevLogStatPChar(gev, "\n*** Path to GAMS system directory too long.\n");
 		return false;
 	}
-	
+
 	if (optReadDefinition(optionshandle, buffer)) {
-		int itype; 
+		int itype;
 		for (int i = 1; i <= optMessageCount(optionshandle); ++i) {
 			optGetMessage(optionshandle, i, buffer, &itype);
-			gmoLogStat(gmo, buffer);
+			gevLogStat(gev, buffer);
 		}
 		optClearMessages(optionshandle);
 		return false;
 	}
 	optEOLOnlySet(optionshandle, 1);
-	
+
 	opt_is_own = true;
 	return true;
+}
+
+void GamsOptions::setGMO(struct gmoRec* gmo_) {
+	gmo = gmo_;
+	gev = gmo_ ?  (gevRec*)gmoEnvironment(gmo_) : NULL;
 }
 
 void GamsOptions::setOpt(struct optRec* opt_) {
@@ -107,11 +113,11 @@ void GamsOptions::setOpt(struct optRec* opt_) {
 
 	char buffer[512];
 	if (!optGetReady(buffer, 512)) {
-		gmoLogStatPChar(gmo, "\n*** Could not load optionfile library: "); 
-		gmoLogStat(gmo, buffer);
+		gevLogStatPChar(gev, "\n*** Could not load optionfile library: ");
+		gevLogStat(gev, buffer);
 		return;
 	}
-	
+
 	opt_is_own = false;
 	optionshandle = opt_;
 }
@@ -128,7 +134,7 @@ bool GamsOptions::readOptionsFile(const char* solvername, const char* optfilenam
 	  for (int i = 1; i <= optMessageCount(optionshandle); ++i) {
   	  optGetMessage(optionshandle, i, buffer, &itype);
     	if (itype <= optMsgFileLeave || itype == optMsgUserError)
-    		gmoLogStat(gmo, buffer);
+    		gevLogStat(gev, buffer);
 	  }
 	  optClearMessages(optionshandle);
 		optEchoSet(optionshandle, 0);
@@ -155,7 +161,7 @@ bool GamsOptions::isDefined(const char *optname) {
   } else {
   	char buffer[255];
   	snprintf(buffer, 255, "*** Internal Error. Unknown option %s\n", optname);
-		gmoLogStatPChar(gmo, buffer);
+		gevLogStatPChar(gev, buffer);
     return false;
   }
 }
@@ -170,15 +176,15 @@ int GamsOptions::getInteger(const char *optname) {
     optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
     if (dataType != optDataInteger) {
     	snprintf(sval, 255, "*** Internal Error. Option %s is not an integer (it is %d)\n", optname, dataType);
-    	gmoLogStatPChar(gmo, sval);
+    	gevLogStatPChar(gev, sval);
       return 0;
     }
     optGetValuesNr(optionshandle, i, oname, &ival, &dval, sval);
     return ival;
-  } 
+  }
 
  	snprintf(sval, 255, "*** Internal Error. Unknown option %s\n", optname);
-	gmoLogStatPChar(gmo, sval);
+	gevLogStatPChar(gev, sval);
 	return 0;
 }
 
@@ -192,7 +198,7 @@ double GamsOptions::getDouble(const char *optname) {
     optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
     if (dataType != optDataDouble) {
     	snprintf(sval, 255, "*** Internal Error. Option %s is not a double (it is %d)\n", optname, dataType);
-    	gmoLogStatPChar(gmo, sval);
+    	gevLogStatPChar(gev, sval);
       return 0.;
     }
     optGetValuesNr(optionshandle, i, oname, &ival, &dval, sval);
@@ -200,7 +206,7 @@ double GamsOptions::getDouble(const char *optname) {
   }
 
  	snprintf(sval, 255, "*** Internal Error. Unknown option %s\n", optname);
-	gmoLogStatPChar(gmo, sval);
+	gevLogStatPChar(gev, sval);
 	return 0.;
 }
 
@@ -214,7 +220,7 @@ char* GamsOptions::getString(const char *optname, char *sval) {
     optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
     if (dataType != optDataString) {
     	snprintf(oname, 255, "*** Internal Error. Option %s is not a string (it is %d)\n", optname, dataType);
-    	gmoLogStatPChar(gmo, oname);
+    	gevLogStatPChar(gev, oname);
    	  return sval;
     }
     optGetValuesNr(optionshandle, i, oname, &ival, &dval, sval);
@@ -222,7 +228,7 @@ char* GamsOptions::getString(const char *optname, char *sval) {
   }
 
  	snprintf(oname, 255, "*** Internal Error. Unknown option %s\n", optname);
-	gmoLogStatPChar(gmo, oname);
+	gevLogStatPChar(gev, oname);
 	return sval;
 }
 
@@ -235,28 +241,28 @@ void GamsOptions::setInteger(const char *optname, int ival) {
     optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
     if (dataType != optDataInteger) {
 			snprintf(stmp, 255, "*** Internal Error. Option %s is not an integer (it is %d)\n", optname, dataType);
-			gmoLogStatPChar(gmo, stmp);
+			gevLogStatPChar(gev, stmp);
       return;
     }
     optSetValuesNr(optionshandle, i, ival, 0.0, "");
-    
+
     if (optMessageCount(optionshandle)) {
     	char buffer[255];
 	    for (i=1; i<=optMessageCount(optionshandle); i++) {
 	      optGetMessage(optionshandle, i, stmp, &k);
 	      if (k==optMsgUserError || k<optMsgFileEnter) {
 					snprintf(buffer, 255, "%d: %s\n", k, stmp);
-					gmoLogStatPChar(gmo, buffer);
+					gevLogStatPChar(gev, buffer);
 	      }
 			}
 	    optClearMessages(optionshandle);
 		}
-		
+
 		return;
   }
-  
+
  	snprintf(stmp, 255, "*** Internal Error. Unknown option %s\n", optname);
-	gmoLogStatPChar(gmo, stmp);
+	gevLogStatPChar(gev, stmp);
 }
 
 void GamsOptions::setDouble(const char *optname, double dval) {
@@ -268,28 +274,28 @@ void GamsOptions::setDouble(const char *optname, double dval) {
     optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
     if (dataType != optDataDouble) {
 			snprintf(stmp, 255, "*** Internal Error. Option %s is not a double (it is %d)\n", optname, dataType);
-			gmoLogStatPChar(gmo, stmp);
+			gevLogStatPChar(gev, stmp);
       return;
     }
     optSetValuesNr(optionshandle, i, 0, dval, "");
-    
+
     if (optMessageCount(optionshandle)) {
     	char buffer[255];
 	    for (i=1; i<=optMessageCount(optionshandle); i++) {
 	      optGetMessage(optionshandle, i, stmp, &k);
 	      if (k==optMsgUserError || k<optMsgFileEnter) {
 					snprintf(buffer, 255, "%d: %s\n", k, stmp);
-					gmoLogStatPChar(gmo, buffer);
+					gevLogStatPChar(gev, buffer);
 	      }
 			}
 	    optClearMessages(optionshandle);
 		}
-		
+
 		return;
   }
-  
+
  	snprintf(stmp, 255, "*** Internal Error. Unknown option %s\n", optname);
-	gmoLogStatPChar(gmo, stmp);
+	gevLogStatPChar(gev, stmp);
 }
 
 void GamsOptions::setString(const char *optname, const char *sval) {
@@ -301,7 +307,7 @@ void GamsOptions::setString(const char *optname, const char *sval) {
     optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
     if (dataType != optDataString) {
 			snprintf(stmp, 255, "*** Internal Error. Option %s is not a string (it is %d)\n", optname, dataType);
-			gmoLogStatPChar(gmo, stmp);
+			gevLogStatPChar(gev, stmp);
       return;
     }
     optSetValuesNr(optionshandle, i, 0, 0.0, sval);
@@ -312,15 +318,15 @@ void GamsOptions::setString(const char *optname, const char *sval) {
 	      optGetMessage(optionshandle, i, stmp, &k);
 	      if (k==optMsgUserError || k<optMsgFileEnter) {
 					snprintf(buffer, 255, "%d: %s\n", k, stmp);
-					gmoLogStatPChar(gmo, buffer);
+					gevLogStatPChar(gev, buffer);
 	      }
 			}
 	    optClearMessages(optionshandle);
 		}
-		
+
 		return;
   }
-  
+
  	snprintf(stmp, 255, "*** Internal Error. Unknown option %s\n", optname);
-	gmoLogStatPChar(gmo, stmp);
+	gevLogStatPChar(gev, stmp);
 }

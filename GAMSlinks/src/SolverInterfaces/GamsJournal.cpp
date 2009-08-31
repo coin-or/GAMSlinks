@@ -9,6 +9,7 @@
 #include "GamsJournal.hpp"
 
 #include "gmomcc.h"
+#include "gevmcc.h"
 
 #ifdef HAVE_CSTDIO
 #include <cstdio>
@@ -59,9 +60,9 @@ fakevsnprintf(char *str, size_t size, const char *format, va_list ap) {
 
 void GamsJournal::PrintImpl(Ipopt::EJournalCategory category, Ipopt::EJournalLevel level, const char* str) {
 	if (level <= status_level)
-		gmoLogStatPChar(gmo, str);
+		gevLogStatPChar(gev, str);
 	else
-		gmoLogPChar(gmo, str);
+		gevLogPChar(gev, str);
 }
 
 void GamsJournal::PrintfImpl(Ipopt::EJournalCategory category, Ipopt::EJournalLevel level, const char* pformat, va_list ap) {

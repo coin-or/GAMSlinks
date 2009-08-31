@@ -22,9 +22,10 @@ class OSResult;
 class GamsOS : public GamsSolver {
 private:
 	struct gmoRec* gmo;
-	
+	struct gevRec* gev;
+
 	char           os_message[100];
-	
+
 	GamsOptions    gamsopt;
 	OSInstance*    osinstance;
 
@@ -37,15 +38,15 @@ public:
 	GamsOS();
 	~GamsOS();
 
-	int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct dctRec* gcd);
-	
+	int readyAPI(struct gmoRec* gmo, struct optRec* opt);
+
 //	int haveModifyProblem();
-	
+
 //	int modifyProblem();
-	
+
 	int callSolver();
-	
-	const char* getWelcomeMessage() { return os_message; }	
+
+	const char* getWelcomeMessage() { return os_message; }
 };
 
 extern "C" DllExport GamsOS* STDCALL createNewGamsOS();

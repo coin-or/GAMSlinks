@@ -9,24 +9,24 @@
 #ifndef GAMSSOLVER_H_
 #define GAMSSOLVER_H_
 
-#if defined(_WIN32) 
-# if ! defined(STDCALL) 
-#  define STDCALL   __stdcall 
-# endif 
-# if ! defined(DllExport) 
-#  define DllExport __declspec( dllexport ) 
-# endif 
-#else 
-# if ! defined(STDCALL) 
-#  define STDCALL 
-# endif 
-# if ! defined(DllExport) 
-#  define DllExport 
-# endif 
-#endif 
+#if defined(_WIN32)
+# if ! defined(STDCALL)
+#  define STDCALL   __stdcall
+# endif
+# if ! defined(DllExport)
+#  define DllExport __declspec( dllexport )
+# endif
+#else
+# if ! defined(STDCALL)
+#  define STDCALL
+# endif
+# if ! defined(DllExport)
+#  define DllExport
+# endif
+#endif
 
 typedef struct gmoRec* gmoHandle_t;
+typedef struct gevRec* gevHandle_t;
 typedef struct optRec* optHandle_t;
-typedef struct dctRec* dctHandle_t;
 
 #endif /*GAMSSOLVER_H_*/

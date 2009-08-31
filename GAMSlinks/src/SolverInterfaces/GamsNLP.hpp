@@ -14,6 +14,7 @@
 #include "IpTNLP.hpp"
 
 struct gmoRec;
+struct gevRec;
 class GamsMINLP;
 
 /** A TNLP for Ipopt that uses GMO to interface the problem formulation.
@@ -22,12 +23,13 @@ class GamsNLP : public Ipopt::TNLP {
 	friend class GamsMINLP;
 private:
 	struct gmoRec* gmo;
+	struct gevRec* gev;
 
 	double timelimit;
 	long int domviollimit;
-	
+
 	int* iRowStart;
-	int* jCol;	
+	int* jCol;
 	double* grad;
 
 public:
@@ -54,7 +56,7 @@ public:
   		bool init_z, Ipopt::Number* z_L, Ipopt::Number* z_U,
   		Ipopt::Index m, bool init_lambda,
   		Ipopt::Number* lambda);
-  
+
   /** Method to return the variables linearity. */
   bool get_variables_linearity(Ipopt::Index n, LinearityType* var_types);
 

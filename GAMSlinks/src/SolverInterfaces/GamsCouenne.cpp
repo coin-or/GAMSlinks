@@ -30,7 +30,9 @@
 #endif
 
 // GAMS
+#define GMS_SV_NA     2.0E300   /* not available/applicable */ 
 #include "gmomcc.h"
+#include "gevmcc.h"
 
 #include "GamsMINLP.hpp"
 #include "GamsJournal.hpp"
@@ -96,7 +98,7 @@ using namespace Ipopt;
 using namespace std;
 
 GamsCouenne::GamsCouenne()
-: gmo(NULL), gamscbc(NULL)
+: gmo(NULL), gev(NULL), gamscbc(NULL)
 {
 #ifdef GAMS_BUILD
 	strcpy(couenne_message, "GAMS/CoinCouenne (Couenne Library 0.2)\nwritten by P. Belotti\n");
@@ -109,7 +111,7 @@ GamsCouenne::~GamsCouenne() {
 	delete gamscbc;
 }
 
-int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec* gcd) {
+int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gmo = gmo_;
 	assert(gmo);
 	assert(IsNull(minlp));
@@ -117,24 +119,28 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec
 	if (getGmoReady())
 		return 1;
 
+	if (getGevReady())
+		return 1; 
+	gev = (gevRec*)gmoEnvironment(gmo);
+	
 	gmoObjStyleSet(gmo, ObjType_Fun);
 	gmoObjReformSet(gmo, 1);
  	gmoIndexBaseSet(gmo, 0);
 
  	if (isMIP()) {
- 		gmoLogStat(gmo, "Problem is linear. Passing over to Cbc.");
+ 		gevLogStat(gev, "Problem is linear. Passing over to Cbc.");
  		gamscbc = new GamsCbc();
- 		return gamscbc->readyAPI(gmo, opt, gcd);
+ 		return gamscbc->readyAPI(gmo, opt);
  	}
  	
  	if (!gmoN(gmo)) {
- 		gmoLogStat(gmo, "Error: Bonmin requires variables.");
+ 		gevLogStat(gev, "Error: Bonmin requires variables.");
  		return 1;
  	}
 
  	for (int i = 0; i < gmoN(gmo); ++i)
 		if (gmoGetVarTypeOne(gmo, i) == var_SC || gmoGetVarTypeOne(gmo, i) == var_SI) {
-			gmoLogStat(gmo, "Error: Semicontinuous and semiinteger variables not supported by Bonmin.");
+			gevLogStat(gev, "Error: Semicontinuous and semiinteger variables not supported by Bonmin.");
 			return 1;
 		}
  
@@ -142,10 +148,10 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec
   minlp->in_couenne = true;
 
 	jnlst = new Ipopt::Journalist();
- 	SmartPtr<Journal> jrnl = new GamsJournal(gmo, "console", J_ITERSUMMARY, J_STRONGWARNING);
+ 	SmartPtr<Journal> jrnl = new GamsJournal(gev, "console", J_ITERSUMMARY, J_STRONGWARNING);
 	jrnl->SetPrintLevel(J_DBG, J_NONE);
 	if (!jnlst->AddJournal(jrnl))
-		gmoLogStat(gmo, "Failed to register GamsJournal for IPOPT output.");
+		gevLogStat(gev, "Failed to register GamsJournal for IPOPT output.");
 	
 	roptions = new Bonmin::RegisteredOptions();
 	options = new Ipopt::OptionsList(GetRawPtr(roptions), jnlst);
@@ -177,16 +183,13 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec
 
 	// Change some options
 //	options->SetNumericValue("bound_relax_factor", 0, true, true);
-	options->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);
-	options->SetNumericValue("nlp_upper_bound_inf", gmoPinf(gmo), false, true);
-	if (gmoUseCutOff(gmo))
-		options->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == Obj_Min ? gmoCutOff(gmo) : -gmoCutOff(gmo), true, true);
-	options->SetNumericValue("bonmin.allowable_gap", gmoOptCA(gmo), true, true);
-	options->SetNumericValue("bonmin.allowable_fraction_gap", gmoOptCR(gmo), true, true);
-	if (gmoNodeLim(gmo))
-		options->SetIntegerValue("bonmin.node_limit", gmoNodeLim(gmo), true, true);
-	options->SetNumericValue("bonmin.time_limit", gmoResLim(gmo), true, true);
-  options->SetIntegerValue("bonmin.problem_print_level", J_STRONGWARNING, true, true); /* so that Couenne does not print the whole problem before reformulation */
+  if (GMS_SV_NA != gevGetDblOpt(gev, gevCutOff)) 
+  	options->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == Obj_Min ? gevGetDblOpt(gev, gevCutOff) : -gevGetDblOpt(gev, gevCutOff), true, true); 
+  options->SetNumericValue("bonmin.allowable_gap", gevGetDblOpt(gev, gevOptCA), true, true); 
+ 	options->SetNumericValue("bonmin.allowable_fraction_gap", gevGetDblOpt(gev, gevOptCR), true, true); 
+ 	if (gevGetIntOpt(gev, gevNodeLim))
+ 		options->SetIntegerValue("bonmin.node_limit", gevGetIntOpt(gev, gevNodeLim), true, true); 
+ 	options->SetNumericValue("bonmin.time_limit", gevGetDblOpt(gev, gevResLim), true, true); 
 
   // workaround for bug in couenne reformulation: if there are tiny constants, delete_redundant might setup a nonstandard reformulation (e.g., using x*x instead of x^2) 
   // thus, we change the default of delete_redundant to off in this case
@@ -203,6 +206,13 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt, struct dctRec
 
 	if (gmoNLM(gmo) == 0  && (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp))
 		options->SetStringValue("hessian_constant", "yes", true, true); 
+	
+ 	//TODO forbid that user changes these Ipopt options
+  double ipoptinf;
+ 	options->GetNumericValue("nlp_lower_bound_inf", ipoptinf, "");
+ 	gmoMinfSet(gmo, ipoptinf);
+ 	options->GetNumericValue("nlp_upper_bound_inf", ipoptinf, "");
+ 	gmoPinfSet(gmo, ipoptinf);
 
  	return 0;
 }
@@ -223,7 +233,7 @@ int GamsCouenne::callSolver() {
  	else
  		problem = setupProblem();
  	if (!problem) {
- 		gmoLogStat(gmo, "Error in setting up problem for Couenne.\n");
+ 		gevLogStat(gev, "Error in setting up problem for Couenne.\n");
  		return -1;
  	}
 	
@@ -246,8 +256,8 @@ int GamsCouenne::callSolver() {
 	#ifdef HAVE_HSL_LOADER
 		if (options->GetStringValue("hsl_library", libpath, "")) {
 			if (LSL_loadHSL(libpath.c_str(), buffer, 1024) != 0) {
-				gmoLogStatPChar(gmo, "Failed to load HSL library at user specified path: ");
-				gmoLogStat(gmo, buffer);
+				gevLogStatPChar(gev, "Failed to load HSL library at user specified path: ");
+				gevLogStat(gev, buffer);
 			  return -1;
 			}
 		}
@@ -255,8 +265,8 @@ int GamsCouenne::callSolver() {
 	#ifndef HAVE_PARDISO
 		if (options->GetStringValue("pardiso_library", libpath, "")) {
 			if (LSL_loadPardisoLib(libpath.c_str(), buffer, 1024) != 0) {
-				gmoLogStatPChar(gmo, "Failed to load Pardiso library at user specified path: ");
-				gmoLogStat(gmo, buffer);
+				gevLogStatPChar(gev, "Failed to load Pardiso library at user specified path: ");
+				gevLogStat(gev, buffer);
 			  return -1;
 			}
 		}
@@ -272,40 +282,41 @@ int GamsCouenne::callSolver() {
 		if (s == "exact") {
 			int do2dir, dohess;
 			if (gmoHessLoad(gmo, 0, -1, &do2dir, &dohess) || !dohess) { // TODO make "-1" a parameter (like rvhess in CONOPT)
-				gmoLogStat(gmo, "Failed to initialize Hessian structure. We continue with a limited-memory Hessian approximation!");
+				gevLogStat(gev, "Failed to initialize Hessian structure. We continue with a limited-memory Hessian approximation!");
 				options->SetStringValue("hessian_approximation", "limited-memory");
 		  }
 		}
 		
 		CouenneInterface* ci = new CouenneInterface;
 		ci->initialize(roptions, options, jnlst, GetRawPtr(minlp));
-		GamsMessageHandler* msghandler = new GamsMessageHandler(gmo);
+		GamsMessageHandler* msghandler = new GamsMessageHandler(gev);
 		ci->passInMessageHandler(msghandler);
 
-		minlp->nlp->clockStart = gmoTimeDiffStart(gmo);
+		minlp->nlp->clockStart = gevTimeDiffStart(gev);
 
 		char** argv = NULL;
 		if (!couenne.InitializeCouenne(argv, problem, ci)) {
-			gmoLogStat(gmo, "Reformulation finds model infeasible.\n");
+			gevLogStat(gev, "Reformulation finds model infeasible.\n");
 			gmoSolveStatSet(gmo, SolveStat_Normal);
 			gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
 			return 0;
 		}
 		
-		double preprocessTime = gmoTimeDiffStart(gmo) - minlp->nlp->clockStart;
+		double preprocessTime = gevTimeDiffStart(gev) - minlp->nlp->clockStart;
 		
 		snprintf(buffer, 1024, "Couenne initialized (%g seconds).", preprocessTime);
-		gmoLogStat(gmo, buffer);
+		gevLogStat(gev, buffer);
 		
-		if (preprocessTime >= gmoResLim(gmo)) {
-			gmoLogStat(gmo, "Time is up.\n");
+		double reslim = gevGetDblOpt(gev, gevResLim);
+		if (preprocessTime >= reslim) {
+			gevLogStat(gev, "Time is up.\n");
 			gmoSolveStatSet(gmo, SolveStat_Resource);
 			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 			return 0;
 		}
 		
-		options->SetNumericValue("bonmin.time_limit", gmoResLim(gmo) - preprocessTime, true, true);
-    couenne.setDoubleParameter(BabSetupBase::MaxTime, gmoResLim(gmo) - preprocessTime);
+		options->SetNumericValue("bonmin.time_limit", reslim - preprocessTime, true, true);
+    couenne.setDoubleParameter(BabSetupBase::MaxTime, reslim - preprocessTime);
 				
 		bb(couenne); // do branch and bound
 		
@@ -318,7 +329,7 @@ int GamsCouenne::callSolver() {
 
 		if (bb.bestSolution()) {
 			snprintf(buffer, 100, "\nCouenne finished. Found feasible point. Objective function value = %g.", best_val);
-			gmoLogStat(gmo, buffer);
+			gevLogStat(gev, buffer);
 
 			double* negLambda = new double[gmoM(gmo)];
 			memset(negLambda, 0, gmoM(gmo)*sizeof(double));
@@ -329,57 +340,57 @@ int GamsCouenne::callSolver() {
 			delete[] negLambda;
 		} else {
          gmoSetHeadnTail(gmo, HobjVal,   gmoPinf(gmo));
-			gmoLogStat(gmo, "\nCouenne finished. No feasible point found.");
+			gevLogStat(gev, "\nCouenne finished. No feasible point found.");
 		}
 
 		if (best_bound > -1e200 && best_bound < 1e200)
 			gmoSetHeadnTail(gmo, Tmipbest, best_bound);
 		gmoSetHeadnTail(gmo, Tmipnod, bb.numNodes());
 		gmoSetHeadnTail(gmo, Hiterused, bb.iterationCount());
-		gmoSetHeadnTail(gmo, HresUsed,  gmoTimeDiffStart(gmo) - minlp->nlp->clockStart);
+		gmoSetHeadnTail(gmo, HresUsed,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
 		gmoSetHeadnTail(gmo, HdomUsed,  minlp->nlp->domviolations);
 		gmoSolveStatSet(gmo, minlp->solver_status);
 		gmoModelStatSet(gmo, minlp->model_status);
 
-		gmoLogStat(gmo, "");
+		gevLogStat(gev, "");
 		if (bb.bestSolution()) {
-			snprintf(buffer, 1024, "MINLP solution: %20.10g   (%d nodes, %g seconds)", best_val, bb.numNodes(), gmoTimeDiffStart(gmo) - minlp->nlp->clockStart);
-			gmoLogStat(gmo, buffer);
+			snprintf(buffer, 1024, "MINLP solution: %20.10g   (%d nodes, %g seconds)", best_val, bb.numNodes(), gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+			gevLogStat(gev, buffer);
 		}
 		if (best_bound > -1e200 && best_bound < 1e200) {
 			snprintf(buffer, 1024, "Best possible: %21.10g\n", best_bound);
-			gmoLogStat(gmo, buffer);
+			gevLogStat(gev, buffer);
 
 			if (bb.bestSolution()) {
 				snprintf(buffer, 1024, "Absolute gap: %22.5g\nRelative gap: %22.5g\n", CoinAbs(best_val-best_bound), CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.));
-				gmoLogStat(gmo, buffer);
+				gevLogStat(gev, buffer);
 			}
 		}
 		
 	} catch (IpoptException error) {
-		gmoLogStat(gmo, error.Message().c_str());
+		gevLogStat(gev, error.Message().c_str());
 		gmoSolveStatSet(gmo, SolveStat_SolverErr);
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 	  return -1;
   } catch(CoinError &error) {
   	snprintf(buffer, 1024, "%s::%s\n%s", error.className().c_str(), error.methodName().c_str(), error.message().c_str());
-		gmoLogStat(gmo, buffer);
+		gevLogStat(gev, buffer);
 		gmoSolveStatSet(gmo, SolveStat_SolverErr);
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 	  return 1;
   } catch (TNLPSolver::UnsolvedError *E) { 	// there has been a failure to solve a problem with Ipopt.
 		snprintf(buffer, 1024, "Error: %s exited with error %s", E->solverName().c_str(), E->errorName().c_str());
-		gmoLogStat(gmo, buffer);
+		gevLogStat(gev, buffer);
 		gmoSolveStatSet(gmo, SolveStat_SolverErr);
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		return 1;
 	} catch (std::bad_alloc) {
-		gmoLogStat(gmo, "Error: Not enough memory!");
+		gevLogStat(gev, "Error: Not enough memory!");
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		return -1;
 	} catch (...) {
-		gmoLogStat(gmo, "Error: Unknown exception thrown.\n");
+		gevLogStat(gev, "Error: Unknown exception thrown.\n");
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		return -1;
@@ -408,14 +419,14 @@ CouenneProblem* GamsCouenne::setupProblem() {
 			case var_S1:
 			case var_S2:
 		  	//TODO prob->addVariable(false, prob->domain());
-		  	gmoLogStat(gmo, "Special ordered sets not supported by Gams/Couenne link yet.");
+		  	gevLogStat(gev, "Special ordered sets not supported by Gams/Couenne link yet.");
 		  	return NULL;
 			case var_SC:
 			case var_SI:
-		  	gmoLogStat(gmo, "Semicontinuous and semiinteger variables not supported by Couenne.");
+		  	gevLogStat(gev, "Semicontinuous and semiinteger variables not supported by Couenne.");
 		  	return NULL;
 			default:
-		  	gmoLogStat(gmo, "Unknown variable type.");
+		  	gevLogStat(gev, "Unknown variable type.");
 		  	return NULL;
 		}
 	}
@@ -545,7 +556,7 @@ CouenneProblem* GamsCouenne::setupProblem() {
 				break;
 			case equ_N:
 				// TODO I doubt that adding a RNG constraint with -infty/infty bounds would work here
-				gmoLogStat(gmo, "Free constraints not supported by Gams/Couenne link yet. Constraint ignored.");
+				gevLogStat(gev, "Free constraints not supported by Gams/Couenne link yet. Constraint ignored.");
 				break;
 		}
 	}
@@ -886,7 +897,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 					default : {
 						char buffer[256];
 						sprintf(buffer, "Gams function code %d not supported.", func);
-						gmoLogStat(gmo, buffer);
+						gevLogStat(gev, buffer);
 						return NULL;
 					}
 				}
@@ -935,7 +946,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 			default: {
 				char buffer[256];
 				sprintf(buffer, "Gams instruction %d not supported.", opcode);
-				gmoLogStat(gmo, buffer);
+				gevLogStat(gev, buffer);
 				return NULL;
 			}
 		}
@@ -953,7 +964,7 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 	
 	int do2dir, dohess;
 	if (gmoHessLoad(gmo, 0, -1, &do2dir, &dohess) || !dohess) {
-		gmoLogStat(gmo, "Failed to initialize Hessian structure. Trying usual setupProblem.");
+		gevLogStat(gev, "Failed to initialize Hessian structure. Trying usual setupProblem.");
 		return setupProblem();
   }
 
@@ -972,14 +983,14 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 			case var_S1:
 			case var_S2:
 		  	//TODO prob->addVariable(false, prob->domain());
-		  	gmoLogStat(gmo, "Special ordered sets not supported by Gams/Couenne link yet.");
+		  	gevLogStat(gev, "Special ordered sets not supported by Gams/Couenne link yet.");
 		  	return NULL;
 			case var_SC:
 			case var_SI:
-		  	gmoLogStat(gmo, "Semicontinuous and semiinteger variables not supported by Couenne.");
+		  	gevLogStat(gev, "Semicontinuous and semiinteger variables not supported by Couenne.");
 		  	return NULL;
 			default:
-		  	gmoLogStat(gmo, "Unknown variable type.");
+		  	gevLogStat(gev, "Unknown variable type.");
 		  	return NULL;
 		}
 	}
@@ -1050,7 +1061,7 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 		memset(hess_val, 0, gmoHessLagNz(gmo)*sizeof(double));
 		nerror = gmoHessLagValue(gmo, null, lambda, hess_val, isMin, 0.);
 		if (nerror) {
-			gmoLogStat(gmo, "Error evaluation hessian of objective function.\n");
+			gevLogStat(gev, "Error evaluation hessian of objective function.\n");
 			return NULL;
 		}
 		
@@ -1120,7 +1131,7 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 			nerror = gmoHessLagValue(gmo, null, lambda, hess_val, 0., 1.);
 			lambda[i] = 0.;
 			if (nerror) {
-				gmoLogStat(gmo, "Error evaluation hessian of constraint function.\n");
+				gevLogStat(gev, "Error evaluation hessian of constraint function.\n");
 				return NULL;
 			}
 
@@ -1178,7 +1189,7 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 				break;
 			case equ_N:
 				// TODO I doubt that adding a RNG constraint with -infty/infty bounds would work here
-				gmoLogStat(gmo, "Free constraints not supported by Gams/Couenne link yet. Constraint ignored.");
+				gevLogStat(gev, "Free constraints not supported by Gams/Couenne link yet. Constraint ignored.");
 				break;
 		}
 	}
@@ -1212,14 +1223,18 @@ DllExport int STDCALL couHaveModifyProblem(couRec_t *Cptr) {
 	return ((GamsCouenne*)Cptr)->haveModifyProblem();
 }
 
-DllExport int STDCALL couReadyAPI(couRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, dctHandle_t Dptr) {
+DllExport int STDCALL couReadyAPI(couRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) {
+	gevHandle_t Eptr;
 	assert(Cptr != NULL);
 	assert(Gptr != NULL);
 	char msg[256];
 	if (!gmoGetReady(msg, sizeof(msg)))
 		return 1;
-	gmoLogStatPChar(Gptr, ((GamsCouenne*)Cptr)->getWelcomeMessage());
-	return ((GamsCouenne*)Cptr)->readyAPI(Gptr, Optr, Dptr);
+	if (!gevGetReady(msg, sizeof(msg)))
+		return 1;
+	Eptr = (gevHandle_t) gmoEnvironment(Gptr);
+	gevLogStatPChar(Eptr, ((GamsCouenne*)Cptr)->getWelcomeMessage());
+	return ((GamsCouenne*)Cptr)->readyAPI(Gptr, Optr);
 }
 
 DllExport void STDCALL couFree(couRec_t **Cptr) {

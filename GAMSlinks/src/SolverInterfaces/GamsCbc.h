@@ -20,7 +20,7 @@ extern "C" {
 	DllExport int  STDCALL cbcCallSolver(cbcRec_t *Cptr);
 	DllExport int  STDCALL cbcModifyProblem(cbcRec_t *Cptr);
 	DllExport int  STDCALL cbcHaveModifyProblem(cbcRec_t *Cptr);
-	DllExport int  STDCALL cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr, dctHandle_t Dptr);
+	DllExport int  STDCALL cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
 	DllExport void STDCALL cbcFree(cbcRec_t **Cptr);
 	DllExport void STDCALL cbcCreate(cbcRec_t **Cptr, char *msgBuf, int msgBufLen);
 

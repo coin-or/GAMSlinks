@@ -11,8 +11,8 @@
 
 #include "GAMSlinksConfig.h"
 
-class GamsDictionary;
 struct gmoRec;
+struct gevRec;
 struct gdxRec;
 
 /** Wrapper class for GAMS data exchange (GDX) file handler.
@@ -21,18 +21,18 @@ struct gdxRec;
 class GamsGDX {
 private:
 	struct gmoRec* gmo;
-	GamsDictionary& dict;
+	struct gevRec* gev;
 	struct gdxRec* gdx;
-	
+
 	void reportError(int n) const;
-	
+
 public:
 	/** Constructor.
 	 * @param gams_ A GAMS handler.
 	 * @param dict_ A GAMS dictionary.
 	 */
-	GamsGDX(struct gmoRec* gmo_, GamsDictionary& dictionary);
-	
+	GamsGDX(struct gmoRec* gmo_);
+
 	/** Destructor.
 	 */
 	~GamsGDX();
@@ -41,7 +41,7 @@ public:
 	 * @return True on success, False on failure.
 	 */
 	bool init();
-	
+
 	/** Writes a column vector to a GDX file.
 	 * Assumes that the GDX library has been initialized successfully before.
 	 * @param x Primal column values.
@@ -50,7 +50,7 @@ public:
 	 * @param filename The name of the GDX file to create.
 	 */
 	bool writePoint(const double* x, const double* rc, double objval, const char* filename) const;
-	
+
 };
 
 

@@ -10,23 +10,24 @@
 #include "IpIpoptCalculatedQuantities.hpp"
 
 #include "gmomcc.h"
+#include "gevmcc.h"
 
 using namespace Ipopt;
 using namespace Bonmin;
 
 // constructor
 GamsMINLP::	GamsMINLP(struct gmoRec* gmo_)
-: gmo(gmo_), in_couenne(false), hess_iRow(NULL), hess_jCol(NULL)
+: gmo(gmo_), gev(gmo_ ? (gevRec*)gmoEnvironment(gmo_) : NULL), in_couenne(false), hess_iRow(NULL), hess_jCol(NULL)
 {
 	assert(gmo);
 	switch (gmoSense(gmo)) {
 		case Obj_Min: isMin =  1.; break;
 		case Obj_Max: isMin = -1.; break;
 		default:
-			gmoLogStat(gmo, "Error: Unsupported objective sense!\n");
+			gevLogStat(gev, "Error: Unsupported objective sense!\n");
 			exit(EXIT_FAILURE);
 	}
-	
+
 	nlp = new GamsNLP(gmo);
 
   setupPrioritiesSOS();
@@ -65,7 +66,7 @@ void GamsMINLP::setupPrioritiesSOS() {
 		}
 	}
 #endif
-	
+
 	// Tell solver which variables belong to SOS of type 1 or 2
 	int numSos1, numSos2, nzSos, numSos;
 	gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);
@@ -85,14 +86,14 @@ void GamsMINLP::setupPrioritiesSOS() {
 	sosinfo.priorities = new int[sosinfo.num];
 	sosinfo.types      = new char[sosinfo.num];
 	int* sostype       = new int[numSos];
-	
+
 	gmoGetSosConstraints(gmo, sostype, sosinfo.starts, sosinfo.indices, sosinfo.weights);
-	
+
 	for (int i = 0; i < numSos; ++i) {
 		sosinfo.types[i] = (char)sostype[i];
 		sosinfo.priorities[i] = gmoN(gmo) - (sosinfo.starts[i+1] - sosinfo.starts[i]); // branch on long sets first
 	}
-	
+
 	delete[] sostype;
 }
 
@@ -124,13 +125,13 @@ bool GamsMINLP::get_variables_types(Index n, VariableType* var_types) {
 			case var_SC:
 			case var_SI:
 			default: {
-				gmoLogStat(gmo, "Error: Semicontinuous and semiinteger variables not supported by Bonmin.\n"); 			
+				gevLogStat(gev, "Error: Semicontinuous and semiinteger variables not supported by Bonmin.\n");
 			  return false;
 			}
 		}
 	}
-	
-	return true;	
+
+	return true;
 }
 
 bool GamsMINLP::get_variables_linearity(Index n, Ipopt::TNLP::LinearityType* var_linearity) {
@@ -159,7 +160,7 @@ bool GamsMINLP::eval_grad_f (Index n, const Number* x, bool new_x, Number* grad_
 	if (gmoSense(gmo) == Obj_Max)
 		for (int i = n; i ; --i)
 			(*grad_f++) *= -1;
-	
+
   return true;
 }
 
@@ -181,8 +182,8 @@ bool GamsMINLP::eval_gi(Index n, const Number* x, bool new_x, Index i, Number& g
 
   if (nerror < 0) {
 		char buffer[255];
-  	sprintf(buffer, "Error detected in evaluation of constraint %d!\nnerror = %d\nExiting from subroutine - eval_g\n", i, nerror); 
-		gmoLogStatPChar(gmo, buffer);
+  	sprintf(buffer, "Error detected in evaluation of constraint %d!\nnerror = %d\nExiting from subroutine - eval_g\n", i, nerror);
+		gevLogStatPChar(gev, buffer);
     throw -1;
   }
   if (nerror > 0) {
@@ -196,16 +197,16 @@ bool GamsMINLP::eval_gi(Index n, const Number* x, bool new_x, Index i, Number& g
 bool GamsMINLP::eval_grad_gi(Index n, const Number* x, bool new_x, Index i, Index& nele_grad_gi, Index* jCol, Number* values) {
 	assert(n == gmoN(gmo));
 	assert(i < gmoM(gmo));
-	
+
 	if (values == NULL) {
     assert(NULL == x);
     assert(NULL != jCol);
     assert(NULL != nlp->jCol);
     assert(NULL != nlp->iRowStart);
-    
+
 		nele_grad_gi = nlp->iRowStart[i+1] - nlp->iRowStart[i];
 		memcpy(jCol, nlp->jCol + nlp->iRowStart[i], nele_grad_gi * sizeof(int));
-		
+
   } else {
     assert(NULL != x);
     assert(NULL == jCol);
@@ -213,16 +214,16 @@ bool GamsMINLP::eval_grad_gi(Index n, const Number* x, bool new_x, Index i, Inde
 
   	if (new_x)
   		gmoEvalNewPoint(gmo, x);
-  	
+
   	double val;
   	double gx;
-    
+
   	int nerror = gmoEvalGrad(gmo, i, x, &val, nlp->grad, &gx);
-  	
+
     if (nerror < 0) {
 			char buffer[255];
-	  	sprintf(buffer, "Error detected in evaluation of gradient of constraint %d!\nnerror = %d\nExiting from subroutine - eval_grad_gi\n", i, nerror); 
-			gmoLogStatPChar(gmo, buffer);
+	  	sprintf(buffer, "Error detected in evaluation of gradient of constraint %d!\nnerror = %d\nExiting from subroutine - eval_grad_gi\n", i, nerror);
+			gevLogStatPChar(gev, buffer);
 	    throw -1;
     }
     if (nerror > 0) {
@@ -268,7 +269,7 @@ void GamsMINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const Nu
   switch (status) {
   	case TMINLP::SUCCESS: {
     	if (x) {
-    		if (gmoOptCA(gmo) == 0 && gmoOptCR(gmo) == 0 && (in_couenne || gmoNLNZ(gmo) == 0)) // report optimal if optcr=optca=0 and we are running in couenne or model is a mip
+    		if (gevGetDblOpt(gev, gevOptCA) == 0 && gevGetDblOpt(gev, gevOptCR) == 0 && (in_couenne || gmoNLNZ(gmo) == 0)) // report optimal if optcr=optca=0 and we are running in couenne or model is a mip
     			model_status = ModelStat_OptimalGlobal; // optimal
     		else
     			model_status = ModelStat_OptimalLocal; // integer feasible solution
@@ -279,16 +280,18 @@ void GamsMINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const Nu
   	case TMINLP::INFEASIBLE: {
     	model_status = ModelStat_InfeasibleNoSolution; // infeasible - no solution
     } break;
+#ifndef GAMS_BUILD
   	case TMINLP::CONTINUOUS_UNBOUNDED: {
   		model_status = ModelStat_UnboundedNoSolution; // unbounded - no solution
   	} break;
+#endif
   	case TMINLP::LIMIT_EXCEEDED: {
-			if (gmoTimeDiffStart(gmo) - nlp->clockStart >= gmoResLim(gmo)) {
+			if (gevTimeDiffStart(gev) - nlp->clockStart >= gevGetDblOpt(gev, gevResLim)) {
 				solver_status = SolveStat_Resource;
-				gmoLogStat(gmo, "Time limit exceeded.\n");
+				gevLogStat(gev, "Time limit exceeded.\n");
 			} else { // should be iteration limit = node limit
 				solver_status = SolveStat_Iteration;
-				gmoLogStat(gmo, "Node limit exceeded.\n");
+				gevLogStat(gev, "Node limit exceeded.\n");
 			}
     	if (x) {
 	    	model_status = ModelStat_Integer; // integer feasible solution

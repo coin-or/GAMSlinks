@@ -88,8 +88,6 @@ GAMSlinks/src/GamsIO/SmagExtra.h -text
 GAMSlinks/src/GamsIO/SmagJournal.cpp -text
 GAMSlinks/src/GamsIO/SmagJournal.hpp -text
 GAMSlinks/src/GamsIO/SmagStricmp.c -text
-GAMSlinks/src/GamsUtils/GamsDictionary.cpp -text
-GAMSlinks/src/GamsUtils/GamsDictionary.hpp -text
 GAMSlinks/src/GamsUtils/GamsGDX.cpp -text
 GAMSlinks/src/GamsUtils/GamsGDX.hpp -text
 GAMSlinks/src/GamsUtils/GamsLibLoader.c -text

@@ -23,26 +23,27 @@
 #endif
 
 #include "gmomcc.h"
+#include "gevmcc.h"
 
 OSrL2Gams::OSrL2Gams(gmoHandle_t gmo_)
-: gmo(gmo_)
+: gmo(gmo_), gev(gmo_ ? (gevRec*)gmoEnvironment(gmo_) : NULL)
 { }
 
 void OSrL2Gams::writeSolution(OSResult& osresult) {
 	if (osresult.general == NULL) {
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SolverErr);
-		gmoLogStat(gmo, "Error: OS result does not have header.");
+		gevLogStat(gev, "Error: OS result does not have header.");
 		return;
 	} else if (osresult.getGeneralStatusType() == "error") {
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SolverErr);
-		gmoLogStatPChar(gmo, "Error: OS result reports error: ");
-		gmoLogStat(gmo, osresult.getGeneralMessage().c_str());
+		gevLogStatPChar(gev, "Error: OS result reports error: ");
+		gevLogStat(gev, osresult.getGeneralMessage().c_str());
 		return;
 	} else if (osresult.getGeneralStatusType() == "warning") {
-		gmoLogStatPChar(gmo, "Warning: OS result reports warning: ");
-		gmoLogStat(gmo, osresult.getGeneralMessage().c_str());
+		gevLogStatPChar(gev, "Warning: OS result reports warning: ");
+		gevLogStat(gev, osresult.getGeneralMessage().c_str());
 	}
 
 	gmoSolveStatSet(gmo, SolveStat_Normal);
@@ -77,13 +78,13 @@ void OSrL2Gams::writeSolution(OSResult& osresult) {
 	}
 
 	if (osresult.getVariableNumber() != gmoN(gmo)) {
-		gmoLogStat(gmo, "Error: Number of variables in OS result does not match with gams model.");
+		gevLogStat(gev, "Error: Number of variables in OS result does not match with gams model.");
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return;
 	}
 	if (osresult.getConstraintNumber() != gmoM(gmo)) {
-		gmoLogStat(gmo, "Error: Number of constraints in OS result does not match with gams model.");
+		gevLogStat(gev, "Error: Number of constraints in OS result does not match with gams model.");
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return;
@@ -101,7 +102,7 @@ void OSrL2Gams::writeSolution(OSResult& osresult) {
 	int* rowIndic   = CoinCopyOfArray((int*)NULL, gmoM(gmo), (int)Cstat_OK);
 	double* rowLev  = CoinCopyOfArray((double*)NULL, gmoM(gmo), SMAG_DBL_NA);
 	double* rowMarg = CoinCopyOfArray((double*)NULL, gmoM(gmo), SMAG_DBL_NA);
-	
+
 	//TODO
 //	if (sol->constraints && sol->constraints->values) // set row levels, if available
 //		for (std::vector<ConValue*>::iterator it(sol->constraints->values->con.begin());
@@ -124,9 +125,9 @@ void OSrL2Gams::writeSolution(OSResult& osresult) {
 				break;
 			}
 		}
-	
+
 	gmoSetSolution8(gmo, colLev, colMarg, rowMarg, rowLev, colBasStat, colIndic, rowBasStat, rowIndic);
-	
+
 	delete[] rowLev;
 	delete[] rowMarg;
 	delete[] rowBasStat;
@@ -135,7 +136,7 @@ void OSrL2Gams::writeSolution(OSResult& osresult) {
 	delete[] colMarg;
 	delete[] colBasStat;
 	delete[] colIndic;
-	
+
 	if (sol->objectives && sol->objectives->values && sol->objectives->values->obj[0])
 		gmoSetHeadnTail(gmo, HobjVal, sol->objectives->values->obj[0]->value);
 }
@@ -146,8 +147,8 @@ void OSrL2Gams::writeSolution(std::string& osrl) {
 	try {
 		osresult = osrl_reader.readOSrL(osrl);
 	} catch(const ErrorClass& error) {
-		gmoLogStat(gmo, "Error parsing the OS result string:");
-		gmoLogStat(gmo, error.errormsg.c_str());
+		gevLogStat(gev, "Error parsing the OS result string:");
+		gevLogStat(gev, error.errormsg.c_str());
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return;

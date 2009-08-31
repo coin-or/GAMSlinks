@@ -7,7 +7,6 @@
 // Author: Stefan Vigerske
 
 #include "GamsGDX.hpp"
-#include "GamsDictionary.hpp"
 
 #ifdef HAVE_CSTDLIB
 #include <cstdlib>
@@ -48,11 +47,11 @@
 #endif
 
 #include "gdxcc.h"
-#include "dctmcc.h"
 #include "gmomcc.h"
+#include "gevmcc.h"
 
-GamsGDX::GamsGDX(struct gmoRec* gmo_, GamsDictionary& dictionary)
-: gmo(gmo_), dict(dictionary), gdx(NULL)
+GamsGDX::GamsGDX(struct gmoRec* gmo_)
+: gmo(gmo_), gev(gmo_ ? (gevRec*)gmoEnvironment(gmo_) : NULL), gdx(NULL)
 { }
 
 GamsGDX::~GamsGDX() {
@@ -65,16 +64,16 @@ GamsGDX::~GamsGDX() {
 void GamsGDX::reportError(int n) const {
 	char message[256];
 	if (!gdxErrorStr(gdx, n, message))
-		gmoLogStatPChar(gmo, "Retrieve of GDX I/O error message failed.");
+		gevLogStatPChar(gev, "Retrieve of GDX I/O error message failed.");
 	else
-		gmoLogStatPChar(gmo, message);
+		gevLogStatPChar(gev, message);
 }
 
 bool GamsGDX::init() {
 	char errormsg[128];
 	if (!gdxCreate(&gdx, errormsg, 128)) {
-		gmoLogStatPChar(gmo, "Initialization of GDX I/O library failed: ");
-		gmoLogStat(gmo, errormsg);
+		gevLogStatPChar(gev, "Initialization of GDX I/O library failed: ");
+		gevLogStat(gev, errormsg);
 		return false;
 	}
 
@@ -89,15 +88,15 @@ bool GamsGDX::init() {
 
 bool GamsGDX::writePoint(const double* x, const double* rc, double objval, const char* filename) const {
 	if (!gdx) {
-		gmoLogStatPChar(gmo, "Error: GDX library not initialized.\n");
+		gevLogStatPChar(gev, "Error: GDX library not initialized.\n");
 		return false;
 	}
-	if (!dict.haveNames()) {
-		gmoLogStatPChar(gmo, "Error: Dictionary does not have names.\n");
+	if (!gmoDict(gmo)) {
+		gevLogStatPChar(gev, "Error: Do not have dictionary.\n");
 		return false;
 	}
 	if (!x) {
-		gmoLogStatPChar(gmo, "Error: No primal values given.\n");
+		gevLogStatPChar(gev, "Error: No primal values given.\n");
 		return false;
 	}
 
@@ -118,11 +117,11 @@ bool GamsGDX::writePoint(const double* x, const double* rc, double objval, const
 	for (int i = -1; i < gmoN(gmo); ++i) { // -1 stands for objective variable
 		colnr = i >= 0 ? gmoGetjModel(gmo, i) : gmoObjVar(gmo);
   	if (0==dctColUels(dict.dict, colnr, &symIndex, uelIndices, &symDim)) {
-  		gmoLogStatPChar(gmo, "Error in dctColUels.\n");
+  		gevLogStatPChar(gev, "Error in dctColUels.\n");
   		return false;
   	}
 	  if (dctSymName(dict.dict, symIndex, symName, GMS_UEL_IDENT_SIZE)) {
-	  	gmoLogStatPChar(gmo, "Error in dctSymName.\n");
+	  	gevLogStatPChar(gev, "Error in dctSymName.\n");
 	  	return false;
 	  }
 
@@ -131,13 +130,13 @@ bool GamsGDX::writePoint(const double* x, const double* rc, double objval, const
 				if (!gdxDataWriteDone(gdx)) {
 					char msg[256];
 					snprintf(msg, 256, "Error in gdxDataWriteDone for symbol nr. %d\n", oldSym);
-					gmoLogStatPChar(gmo, msg);
+					gevLogStatPChar(gev, msg);
 					return false;
 				}
 			}
 			if (!gdxDataWriteStrStart(gdx, symName, NULL, symDim, dt_var, 0)) {
-				gmoLogStatPChar(gmo, "Error in gdxDataWriteStrStart for symbol ");
-				gmoLogStat(gmo, symName);
+				gevLogStatPChar(gev, "Error in gdxDataWriteStrStart for symbol ");
+				gevLogStat(gev, symName);
 				return false;
 			}
 			oldSym=symIndex;
@@ -145,7 +144,7 @@ bool GamsGDX::writePoint(const double* x, const double* rc, double objval, const
 
 		for (int k = 0;  k < symDim;  k++) {
     	if (dctUelLabel(dict.dict, uelIndices[k], &quote, IndicesPtr[k], GMS_UEL_IDENT_SIZE)) {
-    		gmoLogStatPChar(gmo, "Error in dctUelLabel.\n");
+    		gevLogStatPChar(gev, "Error in dctUelLabel.\n");
 				return false;
 			}
 		}
@@ -164,8 +163,8 @@ bool GamsGDX::writePoint(const double* x, const double* rc, double objval, const
 		}
 
 		if (!gdxDataWriteStr(gdx, const_cast<const char**>(IndicesPtr), Values)) {
-			gmoLogStatPChar(gmo, "Error in gdxDataWriteStr for symbol ");
-			gmoLogStat(gmo, symName);
+			gevLogStatPChar(gev, "Error in gdxDataWriteStr for symbol ");
+			gevLogStat(gev, symName);
 			return false;
 		}
   }
@@ -173,7 +172,7 @@ bool GamsGDX::writePoint(const double* x, const double* rc, double objval, const
 	if (!gdxDataWriteDone(gdx)) { // finish last symbol
 		char msg[256];
 		snprintf(msg, 256, "Error in gdxDataWriteDone for symbol nr. %d\n", oldSym);
-		gmoLogStatPChar(gmo, msg);
+		gevLogStatPChar(gev, msg);
 		return false;
 	}
 

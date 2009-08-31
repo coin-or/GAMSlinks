@@ -36,6 +36,10 @@ AC_PREFIX_DEFAULT([`pwd`])
 # Get the system type
 AC_CANONICAL_BUILD
 
+#turn off warnings and pedantic mode since it seem to make trouble with gams *cc files
+#gcc 4.2.1 error: ISO C forbids conversion of object pointer to function pointer type
+coin_skip_warn_cflags=yes
+
 # If this project depends on external projects, the Externals file in
 # the source root directory contains definition of where to find those
 # externals.  The following macro ensures that those externals are

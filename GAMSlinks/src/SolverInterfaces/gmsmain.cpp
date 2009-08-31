@@ -42,6 +42,7 @@
 #endif
 
 #include "gmomcc.h"
+#include "gevmcc.h"
 
 int main(int argc, char** argv) {
 #ifdef HAVE_WINDOWS_H
@@ -55,98 +56,118 @@ int main(int argc, char** argv) {
   }
 
   gmoHandle_t gmo;
+  gevHandle_t gev;
   char msg[256];
   int rc;
 
   // initialize GMO:
   // first try path where GAMS I/O libraries were during compilation (the gmo library there should be the correct version)
   // if that fails, try using some global search path, so it should take the one from the gams installation (hope it is update enough) 
-  if (!gmoCreateD(&gmo, GAMSIO_PATH, msg, sizeof(msg))) {
+//  if (!gmoCreateD(&gmo, GAMSIO_PATH, msg, sizeof(msg))) {
   	if (!gmoCreate(&gmo, msg, sizeof(msg))) {
   		fprintf(stderr, "%s\n",msg);
   		return EXIT_FAILURE;
   	}
-  }
+//  }
+
+//  if (!gevCreateD(&gev, GAMSIO_PATH, msg, sizeof(msg))) {
+  	if (!gevCreate(&gev, msg, sizeof(msg))) {
+  		fprintf(stderr, "%s\n",msg);
+  		return EXIT_FAILURE;
+  	}
+//  }
 
   gmoIdentSet(gmo, SOLVERNAME "link object");
   
   // load control file
-  if ((rc = gmoLoadInfoGms(gmo, argv[1]))) {
+  if ((rc = gevInitEnvironmentLegacy(gev, argv[1]))) {
   	fprintf(stderr, "Could not load control file: %s Rc = %d\n", argv[1], rc);
     gmoFree(&gmo);
-  	return EXIT_FAILURE;
-  }
-  
-  // setup GAMS output channels
-  if ((rc = gmoOpenGms(gmo))) {
-  	fprintf(stderr, "Could not open GAMS environment. Rc = %d\n", rc);
-    gmoFree(&gmo);
+    gevFree(&gev);
   	return EXIT_FAILURE;
   }
 
-  if ((rc = gmoLoadDataGms(gmo))) {
-  	gmoLogStat(gmo, "Could not load model data.");
-    gmoCloseGms(gmo);
+  if ((rc = gmoRegisterEnvironment(gmo, gev, msg))) {
+  	gevLogStat(gev, "Could not register environment.");
+  	gmoFree(&gmo);
+  	gevFree(&gev);
+  	return EXIT_FAILURE;
+  }
+
+  // setup GAMS output channels
+//  if ((rc = gmoOpenGms(gmo))) {
+//  	fprintf(stderr, "Could not open GAMS environment. Rc = %d\n", rc);
+//    gmoFree(&gmo);
+//  	return EXIT_FAILURE;
+//  }
+
+  if ((rc = gmoLoadDataLegacy(gmo, msg))) {
+  	gevLogStat(gev, "Could not load model data.");
+//    gmoCloseGms(gmo);
     gmoFree(&gmo);
+    gevFree(&gev);
   	return EXIT_FAILURE;
   }
   
   if ((rc = lt_dlinit())) {
-  	gmoLogStat(gmo, "Could not initialize dynamic library loader.");
-    gmoCloseGms(gmo);
+  	gevLogStat(gev, "Could not initialize dynamic library loader.");
+//    gmoCloseGms(gmo);
     gmoFree(&gmo);
-  	return EXIT_FAILURE;
+    gevFree(&gev);
+    return EXIT_FAILURE;
   }
   
   lt_dlhandle coinlib = lt_dlopenext("libGamsCoin");
   if (!coinlib) {
-  	gmoLogStat(gmo, "Could not load GamsCoin library.");
-  	gmoLogStat(gmo, lt_dlerror());
-  	gmoCloseGms(gmo);
+  	gevLogStat(gev, "Could not load GamsCoin library.");
+  	gevLogStat(gev, lt_dlerror());
+//  	gmoCloseGms(gmo);
   	gmoFree(&gmo);
+    gevFree(&gev);
   	return EXIT_FAILURE;  	
   }
   
   createNewGamsSolver_t* createsolver = (createNewGamsSolver_t*) lt_dlsym(coinlib, CREATEFUNCNAME);
   if (!createsolver) {
-  	gmoLogStat(gmo, "Could not load " CREATEFUNCNAME " symbol from GamsCoin library.");
-  	gmoLogStat(gmo, lt_dlerror());
-  	gmoCloseGms(gmo);
+  	gevLogStat(gev, "Could not load " CREATEFUNCNAME " symbol from GamsCoin library.");
+  	gevLogStat(gev, lt_dlerror());
+//  	gmoCloseGms(gmo);
   	gmoFree(&gmo);
+    gevFree(&gev);
   	lt_dlclose(coinlib);
   	return EXIT_FAILURE;  	
   }
   
   GamsSolver* solver = (*createsolver)();
-  gmoLogStat(gmo, "");
-	gmoLogStatPChar(gmo, solver->getWelcomeMessage());
+  gevLogStat(gev, "");
+	gevLogStatPChar(gev, solver->getWelcomeMessage());
 	
   bool ok = true;
 	
-  if (solver->readyAPI(gmo, NULL, NULL) != 0) {
-  	gmoLogStat(gmo, "There was an error in setting up " SOLVERNAME ".\n");
+  if (solver->readyAPI(gmo, NULL) != 0) {
+  	gevLogStat(gev, "There was an error in setting up " SOLVERNAME ".\n");
 //  	gmoSolveStatSet(gmo, SolveStat_SystemErr);
 //  	gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
   	ok = false;
   }
   if (ok && solver->callSolver() != 0) {
-  	gmoLogStat(gmo, "There was an error in solving the model.\n");
+  	gevLogStat(gev, "There was an error in solving the model.\n");
 //  	gmoSolveStatSet(gmo, SolveStat_SystemErr);
 //  	gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
   	ok = false;
   }
-	gmoUnloadSolutionGms(gmo);
+	gmoUnloadSolutionLegacy(gmo);
 	
 	delete solver;
 
-// 	gmoLogStat(gmo, SOLVERNAME " finished.");
+// 	gevLogStat(gev, SOLVERNAME " finished.");
   
   //close output channels
-  gmoCloseGms(gmo);
-  //free gmo handle
+//  gmoCloseGms(gmo);
   gmoFree(&gmo);
-  //unload gmo library
+  gevFree(&gev);
   gmoLibraryUnload();
+  gevLibraryUnload();
 
 	lt_dlclose(coinlib);
 	lt_dlexit();

@@ -315,52 +315,62 @@ PROGRAMS = $(noinst_PROGRAMS)
 am__gmsbmdnx_SOURCES_DIST = gmsbmd.cpp
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am_gmsbmdnx_OBJECTS = gmsbmd.$(OBJEXT)
 gmsbmdnx_OBJECTS = $(am_gmsbmdnx_OBJECTS)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdnx_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsJoat.la \
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdnx_DEPENDENCIES = ../GamsUtils/gevmcc.lo \
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@	../GamsUtils/gmomcc.lo \
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
 am__gmsbmdux_out_SOURCES_DIST = gmsbmd.cpp
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am_gmsbmdux_out_OBJECTS = gmsbmd.$(OBJEXT)
 gmsbmdux_out_OBJECTS = $(am_gmsbmdux_out_OBJECTS)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdux_out_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsJoat.la \
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdux_out_DEPENDENCIES = ../GamsUtils/gevmcc.lo \
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@	../GamsUtils/gmomcc.lo \
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
 am__gmscbcnx_SOURCES_DIST = gmscbc.cpp
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am_gmscbcnx_OBJECTS = gmscbc.$(OBJEXT)
 gmscbcnx_OBJECTS = $(am_gmscbcnx_OBJECTS)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsJoat.la \
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_DEPENDENCIES = ../GamsUtils/gevmcc.lo \
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	../GamsUtils/gmomcc.lo \
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
 am__gmscbcux_out_SOURCES_DIST = gmscbc.cpp
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am_gmscbcux_out_OBJECTS = gmscbc.$(OBJEXT)
 gmscbcux_out_OBJECTS = $(am_gmscbcux_out_OBJECTS)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsJoat.la \
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_DEPENDENCIES = ../GamsUtils/gevmcc.lo \
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	../GamsUtils/gmomcc.lo \
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
 am__gmscounx_SOURCES_DIST = gmscou.cpp
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am_gmscounx_OBJECTS = gmscou.$(OBJEXT)
 gmscounx_OBJECTS = $(am_gmscounx_OBJECTS)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscounx_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsJoat.la \
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscounx_DEPENDENCIES = ../GamsUtils/gevmcc.lo \
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@	../GamsUtils/gmomcc.lo \
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
 am__gmscouux_out_SOURCES_DIST = gmscou.cpp
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am_gmscouux_out_OBJECTS = gmscou.$(OBJEXT)
 gmscouux_out_OBJECTS = $(am_gmscouux_out_OBJECTS)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscouux_out_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsJoat.la \
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscouux_out_DEPENDENCIES = ../GamsUtils/gevmcc.lo \
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@	../GamsUtils/gmomcc.lo \
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
 am__gmsipdnx_SOURCES_DIST = gmsipd.cpp
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am_gmsipdnx_OBJECTS = gmsipd.$(OBJEXT)
 gmsipdnx_OBJECTS = $(am_gmsipdnx_OBJECTS)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsJoat.la \
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_DEPENDENCIES = ../GamsUtils/gevmcc.lo \
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@	../GamsUtils/gmomcc.lo \
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
 am__gmsipdux_out_SOURCES_DIST = gmsipd.cpp
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am_gmsipdux_out_OBJECTS = gmsipd.$(OBJEXT)
 gmsipdux_out_OBJECTS = $(am_gmsipdux_out_OBJECTS)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsJoat.la \
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_DEPENDENCIES = ../GamsUtils/gevmcc.lo \
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@	../GamsUtils/gmomcc.lo \
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
 am__gmsosdnx_SOURCES_DIST = gmsosd.cpp
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am_gmsosdnx_OBJECTS = gmsosd.$(OBJEXT)
 gmsosdnx_OBJECTS = $(am_gmsosdnx_OBJECTS)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdnx_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsJoat.la \
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdnx_DEPENDENCIES = ../GamsUtils/gevmcc.lo \
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@	../GamsUtils/gmomcc.lo \
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
 am__gmsosdux_out_SOURCES_DIST = gmsosd.cpp
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am_gmsosdux_out_OBJECTS = gmsosd.$(OBJEXT)
 gmsosdux_out_OBJECTS = $(am_gmsosdux_out_OBJECTS)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdux_out_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsJoat.la \
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdux_out_DEPENDENCIES = ../GamsUtils/gevmcc.lo \
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@	../GamsUtils/gmomcc.lo \
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -712,21 +722,21 @@ libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la \
 	$(am__append_47) $(am__append_49) $(am__append_51) \
 	$(am__append_53) $(am__append_55) $(am__append_57)
 libGamsCoin_la_LDFLAGS = -module -no-undefined
-AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) -I`$(CYGPATH_W) $(srcdir)/..` \
-	-I`$(CYGPATH_W) $(srcdir)/../GamsUtils` -I`$(CYGPATH_W) \
-	$(LIBLTDLSRCDIR)` $(am__append_2) $(am__append_14) \
-	$(am__append_23) $(am__append_31) $(am__append_35) \
-	$(am__append_44) $(am__append_45)
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) \
+	$(srcdir)/../GamsUtils` -I`$(CYGPATH_W) $(LIBLTDLSRCDIR)` \
+	$(am__append_2) $(am__append_14) $(am__append_23) \
+	$(am__append_31) $(am__append_35) $(am__append_44) \
+	$(am__append_45)
 gamsinstallfiles = $(am__append_8) $(am__append_10) $(am__append_11) \
 	$(am__append_18) $(am__append_20) $(am__append_27) \
 	$(am__append_29) $(am__append_39) $(am__append_41) \
 	$(am__append_59) $(am__append_61) $(am__append_62)
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_SOURCES = gmscbc.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_LDADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(LIBLTDLOBJDIR)/libltdlc.la
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_LDADD = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_SOURCES = gmscbc.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_LDADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(LIBLTDLOBJDIR)/libltdlc.la
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcnx_LDADD = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
 @GAMSLINKS_BUILD_IPOPT_TRUE@includecoindir = $(includedir)/coin
 @GAMSLINKS_BUILD_IPOPT_TRUE@includecoin_HEADERS = \
 @GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/Algorithm/IpIpoptCalculatedQuantities.hpp \
@@ -743,28 +753,28 @@ gamsinstallfiles = $(am__append_8) $(am__append_10) $(am__append_11) \
 
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_SOURCES = gmsipd.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_LDADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(LIBLTDLOBJDIR)/libltdlc.la
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_LDADD = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_SOURCES = gmsipd.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_LDADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(LIBLTDLOBJDIR)/libltdlc.la
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_LDADD = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdux_out_SOURCES = gmsbmd.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdux_out_LDADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(LIBLTDLOBJDIR)/libltdlc.la
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdux_out_LDADD = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdnx_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdnx_SOURCES = gmsbmd.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdnx_LDADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(LIBLTDLOBJDIR)/libltdlc.la
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdnx_LDADD = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscouux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscouux_out_SOURCES = gmscou.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscouux_out_LDADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(LIBLTDLOBJDIR)/libltdlc.la
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscouux_out_LDADD = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscounx_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscounx_SOURCES = gmscou.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscounx_LDADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(LIBLTDLOBJDIR)/libltdlc.la
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscounx_LDADD = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdux_out_SOURCES = gmsosd.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdux_out_LDADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(LIBLTDLOBJDIR)/libltdlc.la
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdux_out_LDADD = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdnx_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdnx_SOURCES = gmsosd.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdnx_LDADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(LIBLTDLOBJDIR)/libltdlc.la
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdnx_LDADD = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)

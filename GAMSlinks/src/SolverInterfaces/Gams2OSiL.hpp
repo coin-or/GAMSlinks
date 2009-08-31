@@ -10,34 +10,34 @@
 #define GAMS2OSIL_HPP_
 
 #include "GAMSlinksConfig.h"
-#include "GamsDictionary.hpp"
 
 class OSInstance;
 class OSnLNode;
 
 struct gmoRec;
+struct gevRec;
 
 /** Creating a OSInstance from a GAMS model given as GAMS Modeling Object (GMO).
  */
 class Gams2OSiL {
 private:
 	struct gmoRec* gmo;
-	GamsDictionary dict;	
+	struct gevRec* gev;
 
 	OSnLNode* parseGamsInstructions(int codelen, int* opcodes, int* fields, int constantlen, double* constants);
 
 	OSInstance *osinstance;
 public:
 
-	Gams2OSiL(struct gmoRec* gmo_, struct dctRec* dict_);
+	Gams2OSiL(struct gmoRec* gmo_);
 
 	~Gams2OSiL();
-	
+
  	/** Creates an OSInstance from the GAMS smag instance representation
- 	 * @return whether the instance is created successfully. 
+ 	 * @return whether the instance is created successfully.
  	 */
 	bool createOSInstance();
-	
+
 	/** Gives OSInstance and ownership to calling function.
 	 * This object forgets about the created instance.
 	 */

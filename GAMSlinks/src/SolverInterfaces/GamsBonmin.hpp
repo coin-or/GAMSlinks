@@ -24,7 +24,8 @@ namespace Bonmin {
 class GamsBonmin : public GamsSolver {
 private:
 	struct gmoRec* gmo;
-		
+	struct gevRec* gev;
+
 	char           bonmin_message[100];
 
 	GamsMessageHandler*    msghandler;
@@ -35,22 +36,22 @@ private:
 
 	void writeSolution(Bonmin::OsiTMINLPInterface& osi_tminlp, int itercount);
 	void writeSolutionNoDual(Bonmin::OsiTMINLPInterface& osi_tminlp, int itercount);
-	
+
 	bool isNLP();
 	bool isMIP();
 
 public:
 	GamsBonmin();
 	~GamsBonmin();
-	
-	int readyAPI(struct gmoRec* gmo, struct optRec* opt, struct dctRec* gcd);
-	
+
+	int readyAPI(struct gmoRec* gmo, struct optRec* opt);
+
 //	int haveModifyProblem();
-	
+
 //	int modifyProblem();
-	
+
 	int callSolver();
-	
+
 	const char* getWelcomeMessage() { return bonmin_message; }
 
 }; // GamsBonmin
