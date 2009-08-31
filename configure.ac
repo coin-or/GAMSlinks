@@ -38,12 +38,6 @@ AC_PREFIX_DEFAULT([`pwd`])
 AC_COIN_CREATE_LIBTOOL
 
 #############################################################################
-#             Check which ThirdParty sources are available                  #
-#############################################################################
-
-AC_COIN_THIRDPARTY_SUBDIRS([GAMSIO],[ThirdParty/GAMSIO],[get.GAMSIO])
-
-#############################################################################
 #                  Check which subprojects are there                        #
 #############################################################################
 
