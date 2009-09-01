@@ -216,6 +216,28 @@ fi
 AC_COIN_USE_GAMS
 AC_DEFINE_UNQUOTED([GAMSIO_PATH],["$gamsio_srcdir"],[The path of the GAMS I/O libraries])
 
+CIA_FLAG=""
+case $build in
+  x86_64-*-linux-*)
+    CIA_FLAG=-DCIA_LEX
+  ;;
+  i?86-*-linux-*)
+  ;;
+  *-cygwin* | *-mingw32*)
+  ;;
+  *-mingw64*)
+    CIA_FLAG=-DCIA_WEX
+  ;;
+  i?86-*-darwin*)
+    CIA_FLAG=-DCIA_DAR
+  ;;
+  i?86-*-solaris*)
+  ;;
+  *)
+    AC_MSG_WARN([Build type $build unknown. Assuming 32bit Linux system.])
+esac
+AC_SUBST(CIA_FLAG)
+
 #############################################################################
 # Check which solvers we build and which interfaces we can (and want) build #
 #############################################################################
