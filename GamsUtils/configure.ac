@@ -129,6 +129,33 @@ AC_CHECK_FUNCS([stricmp strcasecmp],[break],,)
 AC_CHECK_FUNCS([snprintf _snprintf],[break],,)
 AC_CHECK_FUNCS([vsnprintf _vsnprintf],[break],,)
 
+###############################################
+#             GAMS specific stuff             #
+###############################################
+
+CIA_FLAG=""
+case $build in
+  x86_64-*-linux-*)
+    CIA_FLAG=-DCIA_LEX
+  ;;
+  i?86-*-linux-*)
+  ;;
+  *-cygwin* | *-mingw32*)
+  ;;
+  *-mingw64*)
+    CIA_FLAG=-DCIA_WEX
+  ;;
+  i?86-*-darwin*)
+    CIA_FLAG=-DCIA_DAR
+  ;;
+  i?86-*-solaris*)
+  ;;
+  *)
+    AC_MSG_WARN([Build type $build unknown. Assuming 32bit Linux system.])
+esac
+AC_SUBST(CIA_FLAG)
+
+
 ##########################################################################
 
 # Additional libraries and packages
