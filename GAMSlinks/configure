@@ -28092,7 +28092,7 @@ fi
 
 
 if test $gamslinks_build_gamsio = 1 &&
-   ( test $coin_build_dylp = 1 || test $coin_build_symphony = 1 || test $coin_build_vol = 1 || test $coin_has_cpx = true ) ; then
+   ( test $coin_build_dylp = 1 || test $coin_build_symphony = 1 || test $coin_build_vol = 1 || test $coin_build_cbc = 1 || test $coin_has_cpx = true ) ; then
   gamslinks_build_osi=1
 else
   gamslinks_build_osi=0
@@ -28262,6 +28262,26 @@ fi
 
 if test $coin_vpath_config = yes; then
   coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/install/gmsipdnt.dat"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/gmsocpus.run"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/gmsocpnt.cmd"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/install/gmsocpun.dat"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/install/gmsocpnt.dat"
 fi
 
 

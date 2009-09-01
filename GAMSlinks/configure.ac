@@ -328,7 +328,7 @@ AC_SUBST(gamslinks_build_bonmin)
 AM_CONDITIONAL([GAMSLINKS_BUILD_BONMIN],[test $gamslinks_build_bonmin = 1])
 
 if test $gamslinks_build_gamsio = 1 &&
-   ( test $coin_build_dylp = 1 || test $coin_build_symphony = 1 || test $coin_build_vol = 1 || test $coin_has_cpx = true ) ; then
+   ( test $coin_build_dylp = 1 || test $coin_build_symphony = 1 || test $coin_build_vol = 1 || test $coin_build_cbc = 1 || test $coin_has_cpx = true ) ; then
   gamslinks_build_osi=1
 else
   gamslinks_build_osi=0
@@ -386,6 +386,10 @@ AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsipdus.run)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsipdnt.cmd)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsipdun.dat)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsipdnt.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsocpus.run)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsocpnt.cmd)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsocpun.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsocpnt.dat)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsosdus.run)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsosdnt.cmd)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsosdun.dat)
