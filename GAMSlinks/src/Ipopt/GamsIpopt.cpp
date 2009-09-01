@@ -249,7 +249,7 @@ int main (int argc, char* argv[]) {
   	if (LSL_unloadPardisoLib()!=0)
   		smagStdOutputPrint(prob, SMAG_ALLMASK, "Failed to unload Pardiso library.\n");
 #endif
-  
+#if 0  
   if (mysmagnlp->ip_data) {
   	std::ofstream timedat("rtext.txt");
   	TimingStatistics& tstat(mysmagnlp->ip_data->TimingStats());
@@ -261,7 +261,7 @@ int main (int argc, char* argv[]) {
 
   	timedat.close();
   }
-	
+#endif	
 	smagStdOutputPrint(prob, SMAG_LOGMASK, "\nGAMS/Ipopt finished.\n");
 	smagStdOutputStop(prob, buffer, sizeof(buffer));
 	smagClose(prob);
