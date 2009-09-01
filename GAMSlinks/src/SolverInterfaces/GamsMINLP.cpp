@@ -7,6 +7,10 @@
 // Authors: Stefan Vigerske
 
 #include "GamsMINLP.hpp"
+// the following three includes seem to be needed to please the intel/win32 compiler
+#include "IpVector.hpp"
+#include "IpMatrix.hpp"
+#include "IpSymMatrix.hpp"
 #include "IpIpoptCalculatedQuantities.hpp"
 
 #include "gmomcc.h"
