@@ -8,6 +8,8 @@
 
 #include "GamsOsi.hpp"
 #include "GamsOsiCplex.h"
+#include "GamsOsiXpress.h"
+#include "GamsOsiMosek.h"
 
 #ifdef HAVE_CSTDLIB
 #include <cstdlib>
@@ -46,17 +48,25 @@
 #include "CoinHelperFunctions.hpp"
 #include "CoinTime.hpp"
 #include "CoinPackedVector.hpp"
+#ifdef COIN_HAS_CBC
+#include "OsiCbcSolverInterface.hpp"
+#endif
 #ifdef COIN_HAS_CPX
 #include "OsiCpxSolverInterface.hpp"
 #endif
-#ifdef COIN_HAS_CBC
-#include "OsiCbcSolverInterface.hpp"
+#ifdef COIN_HAS_XPR
+#include "OsiXprSolverInterface.hpp"
+#endif
+#ifdef COIN_HAS_MSK
+#include "OsiMskSolverInterface.hpp"
 #endif
 
 GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 : gmo(NULL), gev(NULL), msghandler(NULL), osi(NULL), solverid(solverid_)
 {
 	switch (solverid) {
+
+#ifdef COIN_HAS_CBC
 		case CBC:
 #ifdef GAMS_BUILD
 			sprintf(osi_message, "GAMS/CoinOsiCbc (Osi library 0.100, CBC library 2.3)\nwritten by J. Forrest\n");
@@ -64,6 +74,9 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 			sprintf(osi_message, "GAMS/OsiCbc (Osi library 0.100, CBC library 2.3)\nwritten by J. Forrest\n");
 #endif
 			break;
+#endif
+			
+#ifdef COIN_HAS_CPX
 		case CPLEX:
 #ifdef GAMS_BUILD
 			sprintf(osi_message, "GAMS/CoinOsiCplex (Osi library 0.100, CPLEX library %.2f)\nwritten by T. Achterberg\n", CPX_VERSION/100.);
@@ -71,6 +84,28 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 			sprintf(osi_message, "GAMS/OsiCplex (Osi library 0.100, CPLEX library %.2f)\nwritten by T. Achterberg\n", CPX_VERSION/100.);
 #endif
 			break;
+#endif
+			
+#ifdef COIN_HAS_MSK
+		case MOSEK:
+#ifdef GAMS_BUILD
+			sprintf(osi_message, "GAMS/CoinOsiMosek (Osi library 0.100, MOSEK library %d.%d)\nwritten by Bo Jensen\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
+#else
+			sprintf(osi_message, "GAMS/OsiMosek (Osi library 0.100, MOSEK library %d.%d)\nwritten Bo Jensen\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
+#endif
+			break;
+#endif
+			
+#ifdef COIN_HAS_XPR
+		case XPRESS:
+#ifdef GAMS_BUILD
+			sprintf(osi_message, "GAMS/CoinOsiXpress (Osi library 0.100, XPRESS library %d)\n", XPVERSION);
+#else
+			sprintf(osi_message, "GAMS/OsiXpress (Osi library 0.100, XPRESS library %d)\n", XPVERSION);
+#endif
+			break;
+#endif
+			
      default:
     	 fprintf(stderr, "Unsupported solver id: %d\n", solverid);
     	 exit(EXIT_FAILURE);
@@ -107,10 +142,10 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	switch (solverid) {
 		case CBC:
 			break;
+#ifdef COIN_HAS_CPX
 		case CPLEX: {
 			int cp_l=0, cp_m=0, cp_q=0, cp_p=0;
 			licenseInit_t initType;
-			char msg[256];
 
 			/* Cplex license setup */
 			if (gevcplexlice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
@@ -120,32 +155,85 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				return 1;
 			}
 		} break;
+#endif
+#ifdef COIN_HAS_XPR
+		case XPRESS: {
+			XPlicenseInit_t initType;
+			char msg[256];
+			
+			/* Xpress license setup */
+			if (gevxpresslice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
+					gmoNDisc(gmo), 1, &initType, msg, sizeof(msg))) {
+				gevLogStat(gev, "*** Could not register GAMS/XPRESS license. Contact support@gams.com\n");
+				gevLogStat(gev, msg);
+				gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
+				return 1;
+			}
+		} break;
+#endif
+#ifdef COIN_HASK_MSK
+		case MOSEK: {
+			//TODO
+			gevLogStat(gev, "Michael, we do not have the gev license setup for MOSEK yet!\n");
+			return 1;
+		} break;
+#endif
 		default:
 			gevLogStat(gev, "Unsupported solver id\n");
 			return 1;
 	}
 #endif
 
-	switch (solverid) {
-		case CBC:
+	try {
+		switch (solverid) {
+			case CBC:
 #ifdef COIN_HAS_CBC
-			osi = new OsiCbcSolverInterface;
+				osi = new OsiCbcSolverInterface;
 #else
-			gevLogStat(gev, "GamsOsi compiled without Osi/Cbc interface.\n");
-			return 1;
+				gevLogStat(gev, "GamsOsi compiled without Osi/Cbc interface.\n");
+				return 1;
 #endif
-			break;
-		case CPLEX:
+				break;
+			case CPLEX:
 #ifdef COIN_HAS_CPX
-			osi = new OsiCpxSolverInterface;
+				osi = new OsiCpxSolverInterface;
 #else
-			gevLogStat(gev, "GamsOsi compiled without Osi/CPLEX interface.\n");
-			return 1;
+				gevLogStat(gev, "GamsOsi compiled without Osi/CPLEX interface.\n");
+				return 1;
 #endif
-			break;
-		default:
-			gevLogStat(gev, "Unsupported solver id\n");
-			return 1;
+				break;
+			case MOSEK:
+#ifdef COIN_HAS_MSK
+				osi = new OsiMskSolverInterface;
+#else
+				gevLogStat(gev, "GamsOsi compiled without Osi/MOSEK interface.\n");
+				return 1;
+#endif
+				break;
+			case XPRESS: {
+#ifdef COIN_HAS_XPR
+				OsiXprSolverInterface* osixpr = new OsiXprSolverInterface(gmoM(gmo), gmoNZ(gmo));
+				if (!osixpr->getNumInstances()) {
+					gevLogStat(gev, "Failed to setup XPRESS instance. Maybe you do not have a license?\n");
+					return 1;
+				}
+				osi = osixpr;
+#else
+				gevLogStat(gev, "GamsOsi compiled without Osi/XPRESS interface.\n");
+				return 1;
+#endif
+			} break;
+			default:
+				gevLogStat(gev, "Unsupported solver id\n");
+				return 1;
+		}
+	} catch (CoinError error) {
+		gevLogStatPChar(gev, "Exception caught when creating Osi interface: ");
+		gevLogStat(gev, error.message().c_str());
+		return 1;
+	} catch (...) {
+		gevLogStat(gev, "Unknown exception caught when creating Osi interface\n");
+		return 1;
 	}
 
 	gmoPinfSet(gmo,  osi->getInfinity());
@@ -477,45 +565,58 @@ DllExport GamsOsi* STDCALL createNewGamsOsiCplex() {
 	return new GamsOsi(GamsOsi::CPLEX);
 }
 
-DllExport int STDCALL ocpCallSolver(ocpRec_t *Cptr) {
-	assert(Cptr != NULL);
-	return ((GamsOsi*)Cptr)->callSolver();
+DllExport GamsOsi* STDCALL createNewGamsOsiMosek() {
+	return new GamsOsi(GamsOsi::MOSEK);
 }
 
-DllExport int STDCALL ocpModifyProblem(ocpRec_t *Cptr) {
-	assert(Cptr != NULL);
-	return ((GamsOsi*)Cptr)->modifyProblem();
+DllExport GamsOsi* STDCALL createNewGamsOsiXpress() {
+	return new GamsOsi(GamsOsi::XPRESS);
 }
 
-DllExport int STDCALL ocpHaveModifyProblem(ocpRec_t *Cptr) {
-	assert(Cptr != NULL);
-	return ((GamsOsi*)Cptr)->haveModifyProblem();
-}
-
-DllExport int STDCALL ocpReadyAPI(ocpRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) {
-	gevHandle_t Eptr;
-	assert(Cptr != NULL);
-	assert(Gptr != NULL);
-	char msg[256];
-	if (!gmoGetReady(msg, sizeof(msg)))
-		return 1;
-	if (!gevGetReady(msg, sizeof(msg)))
-		return 1;
-	Eptr = (gevHandle_t) gmoEnvironment(Gptr);
-	gevLogStatPChar(Eptr, ((GamsOsi*)Cptr)->getWelcomeMessage());
-        
-	return ((GamsOsi*)Cptr)->readyAPI(Gptr, Optr);
-}
-
-DllExport void STDCALL ocpFree(ocpRec_t **Cptr) {
-	assert(Cptr != NULL);
-	delete (GamsOsi*)*Cptr;
-	*Cptr = NULL;
-}
-
-DllExport void STDCALL ocpCreate(ocpRec_t **Cptr, char *msgBuf, int msgBufLen) {
-	assert(Cptr != NULL);
-	*Cptr = (ocpRec_t*) new GamsOsi(GamsOsi::CPLEX);
-	if (msgBufLen && msgBuf)
-		msgBuf[0] = 0;
-}
+#define osi_C_interface( xxx, yyy ) \
+	DllExport int STDCALL xxx ## CallSolver(xxx ## Rec_t *Cptr) { \
+		assert(Cptr != NULL); \
+		return ((GamsOsi*)Cptr)->callSolver(); \
+	} \
+	\
+	DllExport int STDCALL xxx ## ModifyProblem(xxx ## Rec_t *Cptr) { \
+		assert(Cptr != NULL); \
+		return ((GamsOsi*)Cptr)->modifyProblem(); \
+	} \
+	\
+	DllExport int STDCALL xxx ## HaveModifyProblem(xxx ## Rec_t *Cptr) { \
+		assert(Cptr != NULL); \
+		return ((GamsOsi*)Cptr)->haveModifyProblem(); \
+	} \
+	\
+	DllExport int STDCALL xxx ## ReadyAPI(xxx ## Rec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) { \
+		gevHandle_t Eptr; \
+		assert(Cptr != NULL); \
+		assert(Gptr != NULL); \
+		char msg[256]; \
+		if (!gmoGetReady(msg, sizeof(msg))) \
+			return 1; \
+		if (!gevGetReady(msg, sizeof(msg))) \
+			return 1; \
+		Eptr = (gevHandle_t) gmoEnvironment(Gptr); \
+		gevLogStatPChar(Eptr, ((GamsOsi*)Cptr)->getWelcomeMessage()); \
+		\
+		return ((GamsOsi*)Cptr)->readyAPI(Gptr, Optr); \
+	} \
+	\
+	DllExport void STDCALL xxx ## Free(xxx ## Rec_t **Cptr) { \
+		assert(Cptr != NULL); \
+		delete (GamsOsi*)*Cptr; \
+		*Cptr = NULL; \
+	} \
+	\
+	DllExport void STDCALL xxx ## Create(xxx ## Rec_t **Cptr, char *msgBuf, int msgBufLen) { \
+		assert(Cptr != NULL); \
+		*Cptr = (xxx ## Rec_t*) new GamsOsi(yyy); \
+		if (msgBufLen && msgBuf) \
+			msgBuf[0] = 0; \
+	}
+	
+osi_C_interface(ocp, GamsOsi::CPLEX)
+osi_C_interface(oxp, GamsOsi::XPRESS)
+osi_C_interface(oms, GamsOsi::MOSEK)

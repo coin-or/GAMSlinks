@@ -88,6 +88,56 @@ endif
   EXTRA_DIST       += gmsocpnt.cmd gmsocpus.run install/gmsocpnt.dat install/gmsocpun.dat
 endif
 
+if COIN_HAS_MSK
+  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiMsk/libOsiMsk.la $(MSKLIB)
+  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiMsk/libOsiMsk.la
+
+  AM_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiMsk` -I`$(CYGPATH_W) $(MSKINCDIR)`
+
+if GAMSIO_IS_UNIX
+  noinst_PROGRAMS     += gmsomsux.out
+  gmsomsux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+  gmsomsux_out_SOURCES = gmsoms.cpp
+  gmsomsux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+  gamsinstallfiles    += gmsomsux.out gmsomsus.run install/gmsomsun.dat
+endif
+
+if GAMSIO_IS_WINDOWS
+  noinst_PROGRAMS  += gmsomsnx
+  gmsomsnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+  gmsomsnx_SOURCES  = gmsoms.cpp
+  gmsomsnx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+  gamsinstallfiles += gmsomsnx.exe gmsomsnt.cmd install/gmsomsnt.dat
+endif
+
+  EXTRA_DIST       += gmsomsnt.cmd gmsomsus.run install/gmsomsnt.dat install/gmsomsun.dat
+endif
+
+if COIN_HAS_XPR
+  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiXpr/libOsiXpr.la $(XPRLIB)
+  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiXpr/libOsiXpr.la
+
+  AM_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiXpr` -I`$(CYGPATH_W) $(XPRINCDIR)`
+
+if GAMSIO_IS_UNIX
+  noinst_PROGRAMS     += gmsoxpux.out
+  gmsoxpux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+  gmsoxpux_out_SOURCES = gmsoxp.cpp
+  gmsoxpux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+  gamsinstallfiles    += gmsoxpux.out gmsoxpus.run install/gmsoxpun.dat
+endif
+
+if GAMSIO_IS_WINDOWS
+  noinst_PROGRAMS  += gmsoxpnx
+  gmsoxpnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+  gmsoxpnx_SOURCES  = gmsoxp.cpp
+  gmsoxpnx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+  gamsinstallfiles += gmsoxpnx.exe gmsoxpnt.cmd install/gmsoxpnt.dat
+endif
+
+  EXTRA_DIST       += gmsoxpnt.cmd gmsoxpus.run install/gmsoxpnt.dat install/gmsoxpun.dat
+endif
+
 endif
 
 if GAMSLINKS_BUILD_CBC

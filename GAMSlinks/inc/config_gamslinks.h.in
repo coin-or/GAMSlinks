@@ -51,6 +51,9 @@
 /* Define to 1 if the libltdl package is used */
 #undef COIN_HAS_LIBLTDL
 
+/* Define to 1 if the Mosek package is available */
+#undef COIN_HAS_MSK
+
 /* Define to 1 if the OS package is used */
 #undef COIN_HAS_OS
 
@@ -68,6 +71,9 @@
 
 /* Define to 1 if the Vol package is used */
 #undef COIN_HAS_VOL
+
+/* Define to 1 if the Xpress package is available */
+#undef COIN_HAS_XPR
 
 /* If defined, the Gams/OS interface should allow local solves */
 #undef COIN_OS_SOLVER

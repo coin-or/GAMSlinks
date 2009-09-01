@@ -54,4 +54,8 @@ public:
 
 extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiCplex();
 
+extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiMosek();
+
+extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiXpress();
+
 #endif /*GAMSOSI_HPP_*/
