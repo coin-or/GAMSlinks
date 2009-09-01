@@ -58,8 +58,8 @@ if COIN_HAS_COUENNE
   AM_CPPFLAGS += \
 	 -I`$(CYGPATH_W) $(COUENNESRCDIR)/src/main` \
 	 -I`$(CYGPATH_W) $(COUENNEOBJDIR)/inc`
-  GamsOS_LDADD  += $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src/main/libBonCouenne.la
-  GamsOS_DEPENDENCIES  += $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src/main/libBonCouenne.la
+  GamsOS_LDADD += $(COUENNEOBJDIR)/src/main/libBonCouenne.la $(COUENNEOBJDIR)/src/libCouenne.la 
+  GamsOS_DEPENDENCIES  += $(COUENNEOBJDIR)/src/main/libBonCouenne.la $(COUENNEOBJDIR)/src/libCouenne.la 
 endif
 
 if COIN_HAS_BONMIN
