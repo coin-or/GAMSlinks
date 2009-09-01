@@ -39,8 +39,6 @@ AC_LIBTOOL_DLOPEN
 AC_LIBLTDL_CONVENIENCE
 AC_COIN_CREATE_LIBTOOL
 
-AC_CONFIG_SUBDIRS(libltdl)
-
 #############################################################################
 #             Check which ThirdParty sources are available                  #
 #############################################################################
@@ -58,6 +56,7 @@ AC_COIN_THIRDPARTY_SUBDIRS([Mumps],[ThirdParty/Mumps],[MUMPS/src/dmumps_part1.F]
 
 #we want SCIP to be build after CoinUtils and Clp in order to use them there 
 
+AC_COIN_MAIN_SUBDIRS(libltdl)
 AC_COIN_MAIN_SUBDIRS(CoinUtils)
 AC_COIN_MAIN_SUBDIRS(Clp)
 AC_COIN_THIRDPARTY_SUBDIRS([Scip],[ThirdParty/SCIP],[scip/src/scip/scip.h])

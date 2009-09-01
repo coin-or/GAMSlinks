@@ -472,13 +472,13 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subdirs_all="$ac_subdirs_all libltdl"
 ac_subdirs_all="$ac_subdirs_all ThirdParty/GAMSIO"
 ac_subdirs_all="$ac_subdirs_all ThirdParty/Glpk"
 ac_subdirs_all="$ac_subdirs_all ThirdParty/Blas"
 ac_subdirs_all="$ac_subdirs_all ThirdParty/Lapack"
 ac_subdirs_all="$ac_subdirs_all ThirdParty/HSL"
 ac_subdirs_all="$ac_subdirs_all ThirdParty/Mumps"
+ac_subdirs_all="$ac_subdirs_all libltdl"
 ac_subdirs_all="$ac_subdirs_all CoinUtils"
 ac_subdirs_all="$ac_subdirs_all Clp"
 ac_subdirs_all="$ac_subdirs_all ThirdParty/SCIP"
@@ -20822,11 +20822,6 @@ LT_LDFLAGS=
 # AC_MSG_NOTICE([Finished INIT_AUTO_TOOLS from CREATE_LIBTOOL.])
 
 
-
-
-subdirs="$subdirs libltdl"
-
-
 #############################################################################
 #             Check which ThirdParty sources are available                  #
 #############################################################################
@@ -21041,6 +21036,44 @@ fi
 #############################################################################
 
 #we want SCIP to be build after CoinUtils and Clp in order to use them there
+
+
+
+echo "$as_me:$LINENO: checking whether directory libltdl is available" >&5
+echo $ECHO_N "checking whether directory libltdl is available... $ECHO_C" >&6
+                coin_skip=no
+                if test x"$COIN_SKIP_PROJECTS" != x; then
+                  for dir in $COIN_SKIP_PROJECTS; do
+                    if test $dir = libltdl; then
+                      coin_skip=yes
+                    fi
+                  done
+                fi
+                if test $coin_skip = yes; then
+                  echo "$as_me:$LINENO: result: skipping" >&5
+echo "${ECHO_T}skipping" >&6
+                elif test -r $srcdir/libltdl/configure; then
+                  coin_subdirs="$coin_subdirs libltdl"
+                  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+
+
+subdirs="$subdirs libltdl"
+
+                else
+                  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+                fi
+
+
+
+
+
+
+
+
+
+
 
 
 
