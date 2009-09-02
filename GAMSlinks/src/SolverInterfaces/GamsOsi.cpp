@@ -155,7 +155,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #ifdef COIN_HAS_CPX
 #ifdef GAMS_BUILD
 				int cp_l=0, cp_m=0, cp_q=0, cp_p=0;
-				licenseInit_t initType;
+				CPlicenseInit_t initType;
 
 				/* Cplex license setup */
 				if (gevcplexlice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
@@ -172,19 +172,26 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #endif
 			} break;
 			
-			case MOSEK:
+			case MOSEK: {
 #ifdef COIN_HAS_MSK
-				osi = new OsiMskSolverInterface;
+				OsiMskSolverInterface* osimsk = new OsiMskSolverInterface;
+				osi = osimsk;
 #ifdef GAMS_BUILD
-				gevLogStat(gev, "Still alive.\n");
-				
+				MKlicenseInit_t initType;
+				if (gevmoseklice(gev,osimsk->getEnvironmentPtr(),gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
+						gmoNDisc(gmo), 1, &initType)) {
+					gevLogStat(gev, "*** Could not register GAMS/MOSEK license. Contact support@gams.com\n");
+					gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
+					return 1;
+				}
+				if (MSK_initenv(osimsk->getEnvironmentPtr())) return 1;
 #endif
-				
+
 #else
 				gevLogStat(gev, "GamsOsi compiled without Osi/MOSEK interface.\n");
 				return 1;
 #endif
-				break;
+			} break;
 				
 			case XPRESS: {
 #ifdef COIN_HAS_XPR
