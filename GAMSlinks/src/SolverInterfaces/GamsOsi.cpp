@@ -276,9 +276,9 @@ int GamsOsi::callSolver() {
 	double start_cputime  = CoinCpuTime();
 	double start_walltime = CoinWallclockTime();
 
-	if (isLP())
+	if (isLP() || solverid == XPRESS)
 		osi->initialSolve();
-	else
+	if (!isLP())
 		osi->branchAndBound();
 
 	double end_cputime  = CoinCpuTime();
@@ -516,7 +516,6 @@ bool GamsOsi::writeSolution(double cputime, double walltime) {
 		gmoSolveStatSet(gmo, SolveStat_Solver);
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gevLogStat(gev, "Model status unknown, no feasible solution found.");
-		gevLogStat(gev, buffer);
 	}
 
 	gmoSetHeadnTail(gmo, Hiterused, osi->getIterationCount());
