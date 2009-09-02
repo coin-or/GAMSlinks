@@ -191,6 +191,7 @@ GAMSlinks/src/SolverInterfaces/GamsOS.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsOsi.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsOsi.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsOsiCplex.h -text
+GAMSlinks/src/SolverInterfaces/GamsOsiGurobi.h -text
 GAMSlinks/src/SolverInterfaces/GamsOsiHelper.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsOsiHelper.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsOsiMosek.h -text
@@ -202,6 +203,8 @@ GAMSlinks/src/SolverInterfaces/Makefile.am -text
 GAMSlinks/src/SolverInterfaces/Makefile.in -text
 GAMSlinks/src/SolverInterfaces/OSrL2Gams.cpp -text
 GAMSlinks/src/SolverInterfaces/OSrL2Gams.hpp -text
+GAMSlinks/src/SolverInterfaces/OsiGrbSolverInterface.cpp -text
+GAMSlinks/src/SolverInterfaces/OsiGrbSolverInterface.hpp -text
 GAMSlinks/src/SolverInterfaces/gmsbmd.cpp -text
 GAMSlinks/src/SolverInterfaces/gmsbmdnt.cmd -text
 GAMSlinks/src/SolverInterfaces/gmsbmdus.run -text

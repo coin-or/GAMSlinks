@@ -88,6 +88,12 @@ endif
   EXTRA_DIST       += gmsocpnt.cmd gmsocpus.run install/gmsocpnt.dat install/gmsocpun.dat
 endif
 
+if COIN_HAS_GRB
+	libGamsCoin_la_SOURCES      += OsiGrbSolverInterface.cpp
+  libGamsCoin_la_LIBADD       += $(GRBLIB)
+  AM_CPPFLAGS += -I`$(CYGPATH_W) $(GRBINCDIR)`
+endif
+
 if COIN_HAS_MSK
   libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiMsk/libOsiMsk.la $(MSKLIB)
   libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiMsk/libOsiMsk.la

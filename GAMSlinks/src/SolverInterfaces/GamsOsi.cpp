@@ -8,6 +8,7 @@
 
 #include "GamsOsi.hpp"
 #include "GamsOsiCplex.h"
+#include "GamsOsiGurobi.h"
 #include "GamsOsiXpress.h"
 #include "GamsOsiMosek.h"
 
@@ -54,6 +55,12 @@
 #ifdef COIN_HAS_CPX
 #include "OsiCpxSolverInterface.hpp"
 #endif
+#ifdef COIN_HAS_GRB
+#include "OsiGrbSolverInterface.hpp"
+extern "C" {
+#include "gurobi_c.h" // to get version numbers
+}
+#endif
 #ifdef COIN_HAS_XPR
 #include "OsiXprSolverInterface.hpp"
 #endif
@@ -85,7 +92,17 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 #endif
 			break;
 #endif
-			
+
+#ifdef COIN_HAS_GRB
+		case GUROBI:
+#ifdef GAMS_BUILD
+			sprintf(osi_message, "GAMS/CoinOsiGurobi (Osi library 0.100, GUROBI library %d.%d.%d)\nwritten by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
+#else
+			sprintf(osi_message, "GAMS/OsiGurobi (Osi library 0.100, GUROBI library %d.%d.%d)\nwritten by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
+#endif
+			break;
+#endif
+
 #ifdef COIN_HAS_MSK
 		case MOSEK:
 #ifdef GAMS_BUILD
@@ -171,7 +188,28 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				return 1;
 #endif
 			} break;
-			
+
+			case GUROBI: {
+#ifdef COIN_HAS_GRB
+				GRBenv* grbenv = NULL;
+#ifdef GAMS_BUILD
+				GUlicenseInit_t initType;
+
+				/* Cplex license setup */
+				if (gevgurobilice(gev,&grbenv,NULL,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
+						gmoNDisc(gmo), 1, &initType)) {
+					gevLogStat(gev, "*** Could not register GAMS/GUROBI license. Contact support@gams.com\n");
+					gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
+					return 1;
+				}
+#endif
+				osi = new OsiGrbSolverInterface(grbenv);
+#else
+				gevLogStat(gev, "GamsOsi compiled without Osi/Gurobi interface.\n");
+				return 1;
+#endif
+			} break;
+
 			case MOSEK: {
 #ifdef COIN_HAS_MSK
 				OsiMskSolverInterface* osimsk = new OsiMskSolverInterface;
@@ -618,5 +656,6 @@ DllExport GamsOsi* STDCALL createNewGamsOsiXpress() {
 	}
 	
 osi_C_interface(ocp, GamsOsi::CPLEX)
+osi_C_interface(ogu, GamsOsi::GUROBI)
 osi_C_interface(oxp, GamsOsi::XPRESS)
 osi_C_interface(omk, GamsOsi::MOSEK)
