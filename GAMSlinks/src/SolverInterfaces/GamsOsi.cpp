@@ -284,6 +284,7 @@ int GamsOsi::callSolver() {
 	double end_cputime  = CoinCpuTime();
 	double end_walltime = CoinWallclockTime();
 
+#if 0
 	double* varlow = NULL;
 	double* varup  = NULL;
 	double* varlev = NULL;
@@ -308,9 +309,11 @@ int GamsOsi::callSolver() {
 			osi->setColSolution(varlev);
 		}
 	}
-
+#endif
+	
 	writeSolution(end_cputime - start_cputime, end_walltime - start_walltime);
 
+#if 0
 	if (!isLP() && varlev) { // reset original bounds
 		gmoGetVarLower(gmo, varlow);
 		gmoGetVarUpper(gmo, varup);
@@ -321,7 +324,8 @@ int GamsOsi::callSolver() {
 	delete[] varlow;
 	delete[] varup;
 	delete[] varlev;
-
+#endif
+	
 	return 0;
 }
 
