@@ -11,18 +11,18 @@
 
 #include "GamsSolver.h"
 
-typedef void omsRec_t;
+typedef void omkRec_t;
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-	DllExport int  STDCALL omsCallSolver(omsRec_t *Cptr);
-	DllExport int  STDCALL omsModifyProblem(omsRec_t *Cptr);
-	DllExport int  STDCALL omsHaveModifyProblem(omsRec_t *Cptr);
-	DllExport int  STDCALL omsReadyAPI(omsRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
-	DllExport void STDCALL omsFree(omsRec_t **Cptr);
-	DllExport void STDCALL omsCreate(omsRec_t **Cptr, char *msgBuf, int msgBufLen);
+	DllExport int  STDCALL omkCallSolver(omkRec_t *Cptr);
+	DllExport int  STDCALL omkModifyProblem(omkRec_t *Cptr);
+	DllExport int  STDCALL omkHaveModifyProblem(omkRec_t *Cptr);
+	DllExport int  STDCALL omkReadyAPI(omkRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
+	DllExport void STDCALL omkFree(omkRec_t **Cptr);
+	DllExport void STDCALL omkCreate(omkRec_t **Cptr, char *msgBuf, int msgBufLen);
 
 #if defined(__cplusplus)
 }

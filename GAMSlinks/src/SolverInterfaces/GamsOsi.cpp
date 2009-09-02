@@ -138,52 +138,8 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	  gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
 	  return 1;
 	}
-
-	switch (solverid) {
-		case CBC:
-			break;
-#ifdef COIN_HAS_CPX
-		case CPLEX: {
-			int cp_l=0, cp_m=0, cp_q=0, cp_p=0;
-			licenseInit_t initType;
-
-			/* Cplex license setup */
-			if (gevcplexlice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
-					gmoNDisc(gmo), 1, &initType, &cp_l, &cp_m, &cp_q, &cp_p)) {
-				gevLogStat(gev, "*** Could not register GAMS/CPLEX license. Contact support@gams.com\n");
-				gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
-				return 1;
-			}
-		} break;
 #endif
-#ifdef COIN_HAS_XPR
-		case XPRESS: {
-			XPlicenseInit_t initType;
-			char msg[256];
-			
-			/* Xpress license setup */
-			if (gevxpresslice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
-					gmoNDisc(gmo), 1, &initType, msg, sizeof(msg))) {
-				gevLogStat(gev, "*** Could not register GAMS/XPRESS license. Contact support@gams.com\n");
-				gevLogStat(gev, msg);
-				gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
-				return 1;
-			}
-		} break;
-#endif
-#ifdef COIN_HASK_MSK
-		case MOSEK: {
-			//TODO
-			gevLogStat(gev, "Michael, we do not have the gev license setup for MOSEK yet!\n");
-			return 1;
-		} break;
-#endif
-		default:
-			gevLogStat(gev, "Unsupported solver id\n");
-			return 1;
-	}
-#endif
-
+	
 	try {
 		switch (solverid) {
 			case CBC:
@@ -194,24 +150,57 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				return 1;
 #endif
 				break;
-			case CPLEX:
+				
+			case CPLEX: {
 #ifdef COIN_HAS_CPX
+#ifdef GAMS_BUILD
+				int cp_l=0, cp_m=0, cp_q=0, cp_p=0;
+				licenseInit_t initType;
+
+				/* Cplex license setup */
+				if (gevcplexlice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
+						gmoNDisc(gmo), 1, &initType, &cp_l, &cp_m, &cp_q, &cp_p)) {
+					gevLogStat(gev, "*** Could not register GAMS/CPLEX license. Contact support@gams.com\n");
+					gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
+					return 1;
+				}
+#endif
 				osi = new OsiCpxSolverInterface;
 #else
 				gevLogStat(gev, "GamsOsi compiled without Osi/CPLEX interface.\n");
 				return 1;
 #endif
-				break;
+			} break;
+			
 			case MOSEK:
 #ifdef COIN_HAS_MSK
 				osi = new OsiMskSolverInterface;
+#ifdef GAMS_BUILD
+				gevLogStat(gev, "Still alive.\n");
+				
+#endif
+				
 #else
 				gevLogStat(gev, "GamsOsi compiled without Osi/MOSEK interface.\n");
 				return 1;
 #endif
 				break;
+				
 			case XPRESS: {
 #ifdef COIN_HAS_XPR
+#ifdef GAMS_BUILD
+				XPlicenseInit_t initType;
+				char msg[256];
+				
+				/* Xpress license setup */
+				if (gevxpresslice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
+						gmoNDisc(gmo), 1, &initType, msg, sizeof(msg))) {
+					gevLogStat(gev, "*** Could not register GAMS/XPRESS license. Contact support@gams.com\n");
+					gevLogStat(gev, msg);
+					gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
+					return 1;
+				}
+#endif				
 				OsiXprSolverInterface* osixpr = new OsiXprSolverInterface(gmoM(gmo), gmoNZ(gmo));
 				if (!osixpr->getNumInstances()) {
 					gevLogStat(gev, "Failed to setup XPRESS instance. Maybe you do not have a license?\n");
@@ -223,6 +212,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				return 1;
 #endif
 			} break;
+			
 			default:
 				gevLogStat(gev, "Unsupported solver id\n");
 				return 1;
@@ -619,4 +609,4 @@ DllExport GamsOsi* STDCALL createNewGamsOsiXpress() {
 	
 osi_C_interface(ocp, GamsOsi::CPLEX)
 osi_C_interface(oxp, GamsOsi::XPRESS)
-osi_C_interface(oms, GamsOsi::MOSEK)
+osi_C_interface(omk, GamsOsi::MOSEK)
