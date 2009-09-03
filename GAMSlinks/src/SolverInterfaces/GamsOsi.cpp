@@ -196,7 +196,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				GUlicenseInit_t initType;
 
 				/* Cplex license setup */
-				if (gevgurobilice(gev,&grbenv,NULL,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
+				if (gevgurobilice(gev,(void**)&grbenv,NULL,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
 						gmoNDisc(gmo), 1, &initType)) {
 					gevLogStat(gev, "*** Could not register GAMS/GUROBI license. Contact support@gams.com\n");
 					gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
@@ -566,8 +566,17 @@ bool GamsOsi::writeSolution(double cputime, double walltime) {
 	gmoSetHeadnTail(gmo, Tmipbest, model->getBestPossibleObjValue());
 	gmoSetHeadnTail(gmo, Tmipnod, model->getNodeCount());
 #endif
-	if (write_solution && !gamsOsiStoreSolution(gmo, *osi, false))
-		return false;
+	if (write_solution) {
+		if (isLP()) {
+			if (!gamsOsiStoreSolution(gmo, *osi, false))
+				return false;
+		} else { // is MIP -> store only primal values for now
+			double* rowprice = CoinCopyOfArrayOrZero((double*)NULL, gmoM(gmo));
+			gmoSetHeadnTail(gmo, HobjVal, osi->getObjValue());
+			gmoSetSolution2(gmo, osi->getColSolution(), rowprice);
+			delete[] rowprice;
+		}
+	}
 
 	if (!isLP()) {
 		if (osi->getColSolution()) {
