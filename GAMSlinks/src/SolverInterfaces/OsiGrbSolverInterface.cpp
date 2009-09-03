@@ -613,6 +613,7 @@ CoinWarmStart* OsiGrbSolverInterface::getWarmStart() const
 	ws = new CoinWarmStartBasis;
 	ws->setSize( numcols, numrows );
 
+	char sense;
 	for( i = 0; i < numrows; ++i )
 	{
 	  switch( rstat[i] )
@@ -621,10 +622,10 @@ CoinWarmStart* OsiGrbSolverInterface::getWarmStart() const
 	  		ws->setArtifStatus( i, CoinWarmStartBasis::basic );
 	  		break;
 	  	case GRB_NONBASIC_LOWER:
-	  		ws->setArtifStatus( i, CoinWarmStartBasis::atLowerBound );
-	  		break;
 	  	case GRB_NONBASIC_UPPER:
-	  		ws->setArtifStatus( i, CoinWarmStartBasis::atUpperBound );
+				rc = GRBgetcharattrelement(getMutableLpPtr(), GRB_CHAR_ATTR_SENSE, i, &sense);
+				checkGRBerror( rc, "GRBgetcharattrelement", "getWarmStart" );
+	  		ws->setArtifStatus( i, (sense == '>' ? CoinWarmStartBasis::atLowerBound : CoinWarmStartBasis::atUpperBound) );
 	  		break;
 	  	default:  // unknown row status
 	  		delete ws;
@@ -725,14 +726,10 @@ bool OsiGrbSolverInterface::setWarmStart(const CoinWarmStart* warmstart)
   			stat[i] = GRB_BASIC;
   			break;
   		case CoinWarmStartBasis::atLowerBound:
+  		case CoinWarmStartBasis::atUpperBound:
   			stat[i] = GRB_NONBASIC_LOWER;
   			break;
-  		case CoinWarmStartBasis::atUpperBound:
-  			stat[i] = GRB_NONBASIC_UPPER;
-  			break;
   		case CoinWarmStartBasis::isFree:
-  			stat[i] = GRB_SUPERBASIC;
-  			break;
   		default:  // unknown row status
   			delete[] stat;
   			return false;
@@ -2965,6 +2962,7 @@ void OsiGrbSolverInterface::getBasisStatus(int* cstat, int* rstat) const {
 	rc = GRBgetintattrarray(getMutableLpPtr(), GRB_INT_ATTR_CBASIS, 0, numrows, rstat);
 	checkGRBerror( rc, "GRBgetintattrarray", "getBasisStatus" );
 
+	char sense;
 	for (int i = 0; i < numrows; ++i)
 		switch (rstat[i])
 		{
@@ -2972,10 +2970,10 @@ void OsiGrbSolverInterface::getBasisStatus(int* cstat, int* rstat) const {
 				rstat[i] = 1;
 				break;
 			case GRB_NONBASIC_LOWER:
-				rstat[i] = 3;
-				break;
 			case GRB_NONBASIC_UPPER:
-				rstat[i] = 2;
+				rc = GRBgetcharattrelement(getMutableLpPtr(), GRB_CHAR_ATTR_SENSE, i, &sense);
+				checkGRBerror( rc, "GRBgetcharattrelement", "getBasisStatus" );
+				rstat[i] = (sense == '>' ? 3 : 2);
 				break;
 		}
 }
