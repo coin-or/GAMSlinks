@@ -26,7 +26,8 @@ typedef struct _GRBenv GRBenv;
 
 class OsiGrbSolverInterface : virtual public OsiSolverInterface {
 //  friend void OsiGrbSolverInterfaceUnitTest(const std::string & mpsDir, const std::string & netlibDir);
-  
+	friend void checkGRBerror( int err, std::string grbfuncname, std::string osimethod );
+
 public:
   
   //---------------------------------------------------------------------------

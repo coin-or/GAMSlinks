@@ -4,7 +4,7 @@
 // author:   Stefan Vigerske
 //           Humboldt University Berlin
 // date:     09/02/2009
-// comments: please scan this file for '???' and read the comments
+// comments: please scan this file for '???' and 'TODO' and read the comments
 //-----------------------------------------------------------------------------
 // Copyright (C) 2009 Humboldt University Berlin and others.
 // All Rights Reserved.
@@ -72,8 +72,10 @@ checkGRBerror( int err, std::string grbfuncname, std::string osimethod )
 {
   if( err != 0 )
     {
-      char s[100];
-      sprintf( s, "%s returned error %d", grbfuncname.c_str(), err );
+      char s[1001];
+      sprintf( s, "%s returned error %d ", grbfuncname.c_str(), err );
+      if (OsiGrbSolverInterface::env_)
+      	strncat(s, GRBgeterrormsg(OsiGrbSolverInterface::env_), 1000);
       std::cout << "ERROR: " << s << " (" << osimethod << " in OsiGrbSolverInterface)" << std::endl;
       throw CoinError( s, osimethod, "OsiGrbSolverInterface" );
     }
@@ -840,7 +842,7 @@ int OsiGrbSolverInterface::getNumCols() const
   
   int numcols, rc;
 
-  GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_NUMVARS, &numcols);
+  rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_NUMVARS, &numcols);
   checkGRBerror( rc, "GRBgetintattr", "getNumCols" );
 
   return numcols;
@@ -852,7 +854,7 @@ int OsiGrbSolverInterface::getNumRows() const
 
   int numrows, rc;
 
-  GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_NUMCONSTRS, &numrows);
+  rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_NUMCONSTRS, &numrows);
   checkGRBerror( rc, "GRBgetintattr", "getNumRows" );
 
   return numrows;
@@ -864,7 +866,7 @@ int OsiGrbSolverInterface::getNumElements() const
 
   int numnz, rc;
 
-  GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_NUMNZS, &numnz);
+  rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_NUMNZS, &numnz);
   checkGRBerror( rc, "GRBgetintattr", "getNumElements" );
 
   return numnz;
@@ -2944,7 +2946,7 @@ void OsiGrbSolverInterface::getBasisStatus(int* cstat, int* rstat) const {
 	int numrows = getNumRows();
 	
 	int rc = GRBgetintattrarray(getMutableLpPtr(), GRB_INT_ATTR_VBASIS, 0, numcols, cstat);
-	checkGRBerror( rc, "GRBgetintattrarray", "getWarmStart" );
+	checkGRBerror( rc, "GRBgetintattrarray", "getBasisStatus" );
 	
 	for (int i = 0; i < numcols; ++i)
 		switch (cstat[i])
@@ -2963,8 +2965,8 @@ void OsiGrbSolverInterface::getBasisStatus(int* cstat, int* rstat) const {
 				break;
 		}
 
-	rc = GRBgetintattrarray(getMutableLpPtr(), GRB_INT_ATTR_CBASIS, 0, numcols, rstat);
-	checkGRBerror( rc, "GRBgetintattrarray", "getWarmStart" );
+	rc = GRBgetintattrarray(getMutableLpPtr(), GRB_INT_ATTR_CBASIS, 0, numrows, rstat);
+	checkGRBerror( rc, "GRBgetintattrarray", "getBasisStatus" );
 
 	for (int i = 0; i < numrows; ++i)
 		switch (rstat[i])
