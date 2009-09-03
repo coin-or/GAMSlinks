@@ -45,6 +45,9 @@
 /* Define to 1 if Glpk package is available */
 #undef COIN_HAS_GLPK
 
+/* Define to 1 if the Gurobi package is available */
+#undef COIN_HAS_GRB
+
 /* Define to 1 if the Ipopt package is used */
 #undef COIN_HAS_IPOPT
 

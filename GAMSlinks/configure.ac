@@ -196,10 +196,11 @@ AC_ARG_ENABLE([cbc-parallel],,
 )
 
 #################################
-# CPLEX and SOPLEX for Gams/OSI #
+# LP/MIP Solvers for Gams/OSI   #
 #################################
 
 AC_COIN_HAS_USER_LIBRARY([Cplex],[CPX],[cplex.h],[CPXgetstat])
+AC_COIN_HAS_USER_LIBRARY([Gurobi],[GRB],[gurobi_c.h],[GRBloadenv])
 AC_COIN_HAS_USER_LIBRARY([Soplex],[SPX],[spxsolver.h])
 AC_COIN_HAS_USER_LIBRARY([Xpress],[XPR],[xprs.h],[XPRSsetintcontrol])
 AC_COIN_HAS_USER_LIBRARY([Mosek],[MSK],[mosek.h],[MSK_openmosek])
