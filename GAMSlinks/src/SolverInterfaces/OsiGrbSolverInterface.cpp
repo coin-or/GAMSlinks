@@ -625,7 +625,7 @@ CoinWarmStart* OsiGrbSolverInterface::getWarmStart() const
 	  	case GRB_NONBASIC_UPPER:
 				rc = GRBgetcharattrelement(getMutableLpPtr(), GRB_CHAR_ATTR_SENSE, i, &sense);
 				checkGRBerror( rc, "GRBgetcharattrelement", "getWarmStart" );
-	  		ws->setArtifStatus( i, (sense == '>' ? CoinWarmStartBasis::atLowerBound : CoinWarmStartBasis::atUpperBound) );
+	  		ws->setArtifStatus( i, (sense == '>' ? CoinWarmStartBasis::atUpperBound : CoinWarmStartBasis::atLowerBound) );
 	  		break;
 	  	default:  // unknown row status
 	  		delete ws;
@@ -1724,6 +1724,9 @@ void OsiGrbSolverInterface::setObjSense(double s)
   
   int rc = GRBsetintattr(getLpPtr( OsiGrbSolverInterface::FREECACHED_RESULTS ), GRB_INT_ATTR_MODELSENSE, (int)s);
   checkGRBerror(rc, "GRBsetintattr", "setObjSense");
+  
+  rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "setObjSense");
 }
 
 //-----------------------------------------------------------------------------
@@ -2973,7 +2976,7 @@ void OsiGrbSolverInterface::getBasisStatus(int* cstat, int* rstat) const {
 			case GRB_NONBASIC_UPPER:
 				rc = GRBgetcharattrelement(getMutableLpPtr(), GRB_CHAR_ATTR_SENSE, i, &sense);
 				checkGRBerror( rc, "GRBgetcharattrelement", "getBasisStatus" );
-				rstat[i] = (sense == '>' ? 3 : 2);
+				rstat[i] = (sense == '>' ? 2 : 3);
 				break;
 		}
 }
