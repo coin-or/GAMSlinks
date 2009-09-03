@@ -376,11 +376,11 @@ bool GamsOsi::setupProblem(OsiSolverInterface& solver) {
 	if (!gamsOsiLoadProblem(gmo, solver))
 		return false;
 
-	if (!gmoN(gmo)) {
-		gevLog(gev, "Problem has no columns. Adding fake column...");
-		CoinPackedVector vec(0);
-		solver.addCol(vec, -solver.getInfinity(), solver.getInfinity(), 0.);
-	}
+//	if (!gmoN(gmo)) {
+//		gevLog(gev, "Problem has no columns. Adding fake column...");
+//		CoinPackedVector vec(0);
+//		solver.addCol(vec, -solver.getInfinity(), solver.getInfinity(), 0.);
+//	}
 
 	if (gmoDict(gmo)!=NULL) {
 		solver.setIntParam(OsiNameDiscipline, 2);

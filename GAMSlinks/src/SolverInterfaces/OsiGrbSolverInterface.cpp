@@ -2231,14 +2231,18 @@ OsiGrbSolverInterface::loadProblem( const CoinPackedMatrix& matrix,
 	assert( nc == m->getNumCols() );
 	assert( nr == m->getNumRows() );
 	assert( m->isColOrdered() ); 
+	
+	int modelsense;
+	int err = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_MODELSENSE, &modelsense);
+	checkGRBerror( err, "GRBgetintattr", "loadProblem" );
 
 	gutsOfDestructor(); // kill old LP, if any
 
 	std::string pn;
 	getStrParam(OsiProbName, pn);
-	int err = GRBloadmodel(env_, &lp_, const_cast<char*>(pn.c_str()),
+	err = GRBloadmodel(env_, &lp_, const_cast<char*>(pn.c_str()),
 			nc, nr,
-			1,  // assume minimization
+			modelsense,
 			0.0,
 			ob, 
 			const_cast<char *>(myrowsen),
@@ -2410,13 +2414,17 @@ OsiGrbSolverInterface::loadProblem(const int numcols, const int numrows,
 	for (i = 0; i < nc; ++i)
 		len[i] = start[i+1] - start[i];
 
+	int modelsense;
+	int err = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_MODELSENSE, &modelsense);
+	checkGRBerror( err, "GRBgetintattr", "loadProblem" );
+
 	gutsOfDestructor(); // kill old LP, if any
 
 	std::string pn;
 	getStrParam(OsiProbName, pn);
-	int err = GRBloadmodel(env_, &lp_, const_cast<char*>(pn.c_str()),
+	err = GRBloadmodel(env_, &lp_, const_cast<char*>(pn.c_str()),
 			nc, nr,
-			1,  // assume minimization
+			modelsense,
 			0.0,
 			ob, 
 			myrowsen,
