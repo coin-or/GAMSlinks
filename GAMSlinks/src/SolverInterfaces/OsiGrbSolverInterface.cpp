@@ -176,45 +176,47 @@ void OsiGrbSolverInterface::initialSolve()
   
   GRBmodel* lp = getLpPtr( OsiGrbSolverInterface::FREECACHED_RESULTS );
 
+  /* set whether dual or primal */
   int algorithm = GRB_LPMETHOD_PRIMAL;
   gotHint = getHintParam(OsiDoDualInInitial,takeHint,strength);
   assert (gotHint);
   if (strength!=OsiHintIgnore)
   	algorithm = takeHint ? GRB_LPMETHOD_DUAL : GRB_LPMETHOD_PRIMAL;
 
-	rc = GRBsetintparam(env_, GRB_INT_PAR_LPMETHOD, algorithm);
+	rc = GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_LPMETHOD, algorithm);
 	checkGRBerror( rc, "GRBsetintparam", "initialSolve" );
 
+	/* set whether presolve or not */
   int presolve = GRB_PRESOLVE_AUTO;
   gotHint = (getHintParam(OsiDoPresolveInInitial,takeHint,strength));
   assert (gotHint);
   if (strength!=OsiHintIgnore)
   	presolve = takeHint ? GRB_PRESOLVE_AUTO : GRB_PRESOLVE_OFF;
 
-	rc = GRBsetintparam(env_, GRB_INT_PAR_PRESOLVE, presolve);
+	rc = GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_PRESOLVE, presolve);
 	checkGRBerror( rc, "GRBsetintparam", "initialSolve" );
 
-  if (messageHandler()->logLevel() == 0)
-  	rc = GRBsetintparam(env_, GRB_INT_PAR_OUTPUTFLAG, 0);
-  else
-  	rc = GRBsetintparam(env_, GRB_INT_PAR_OUTPUTFLAG, 1);
+	/* set whether output or not */
+ 	rc = GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_OUTPUTFLAG, (messageHandler()->logLevel() > 0));
 	checkGRBerror( rc, "GRBsetintparam", "initialSolve" );
 
+	/* optimize */
   rc = GRBoptimize(lp);
   checkGRBerror( rc, "GRBoptimize", "initialSolve" );
   
+  /* reoptimize without presolve if status unclear */
   int stat;
   rc = GRBgetintattr(lp, GRB_INT_ATTR_STATUS, &stat);
 	checkGRBerror( rc, "GRBgetintattr", "initialSolve" );
 
   if (stat == GRB_INF_OR_UNBD && presolve != GRB_PRESOLVE_OFF) {
-  	rc = GRBsetintparam(env_, GRB_INT_PAR_PRESOLVE, GRB_PRESOLVE_OFF);
+  	rc = GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_PRESOLVE, GRB_PRESOLVE_OFF);
   	checkGRBerror( rc, "GRBsetintparam", "initialSolve" );
 
     rc = GRBoptimize(lp);
     checkGRBerror( rc, "GRBoptimize", "initialSolve" );
   	
-  	rc = GRBsetintparam(env_, GRB_INT_PAR_PRESOLVE, presolve);
+  	rc = GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_PRESOLVE, presolve);
   	checkGRBerror( rc, "GRBsetintparam", "initialSolve" );
   }
 }
@@ -231,45 +233,47 @@ void OsiGrbSolverInterface::resolve()
   
   GRBmodel* lp = getLpPtr( OsiGrbSolverInterface::FREECACHED_RESULTS );
 
+  /* set whether primal or dual */
   int algorithm = GRB_LPMETHOD_DUAL;
   gotHint = getHintParam(OsiDoDualInResolve,takeHint,strength);
   assert (gotHint);
   if (strength != OsiHintIgnore)
   	algorithm = takeHint ? GRB_LPMETHOD_DUAL : GRB_LPMETHOD_PRIMAL;
 
-  rc = GRBsetintparam(env_, GRB_INT_PAR_LPMETHOD, algorithm);
+  rc = GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_LPMETHOD, algorithm);
 	checkGRBerror( rc, "GRBsetintparam", "resolve" );
 
+	/* set whether presolve or not */
   int presolve = GRB_PRESOLVE_OFF;
   gotHint = getHintParam(OsiDoPresolveInResolve,takeHint,strength);
   assert (gotHint);
   if (strength != OsiHintIgnore)
   	presolve = takeHint ? GRB_PRESOLVE_AUTO : GRB_PRESOLVE_OFF;
 
-	rc = GRBsetintparam(env_, GRB_INT_PAR_PRESOLVE, presolve);
+	rc = GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_PRESOLVE, presolve);
 	checkGRBerror( rc, "GRBsetintparam", "resolve" );
 
-  if (messageHandler()->logLevel() == 0)
-  	rc = GRBsetintparam(env_, GRB_INT_PAR_OUTPUTFLAG, 0);
-  else
-  	rc = GRBsetintparam(env_, GRB_INT_PAR_OUTPUTFLAG, 1);
+	/* set whether output or not */
+ 	rc = GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_OUTPUTFLAG, (messageHandler()->logLevel() > 0));
 	checkGRBerror( rc, "GRBsetintparam", "resolve" );
 
+	/* optimize */
   rc = GRBoptimize(lp);
   checkGRBerror( rc, "GRBoptimize", "resolve" );
-  
+
+  /* reoptimize if status unclear */
   int stat;
   rc = GRBgetintattr(lp, GRB_INT_ATTR_STATUS, &stat);
 	checkGRBerror( rc, "GRBgetintattr", "resolve" );
 
   if (stat == GRB_INF_OR_UNBD && presolve != GRB_PRESOLVE_OFF) {
-  	rc = GRBsetintparam(env_, GRB_INT_PAR_PRESOLVE, GRB_PRESOLVE_OFF);
+  	rc = GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_PRESOLVE, GRB_PRESOLVE_OFF);
   	checkGRBerror( rc, "GRBsetintparam", "resolve" );
 
     rc = GRBoptimize(lp);
     checkGRBerror( rc, "GRBoptimize", "resolve" );
   	
-  	rc = GRBsetintparam(env_, GRB_INT_PAR_PRESOLVE, presolve);
+  	rc = GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_PRESOLVE, presolve);
   	checkGRBerror( rc, "GRBsetintparam", "resolve" );
   }
 }
@@ -284,10 +288,7 @@ void OsiGrbSolverInterface::branchAndBound()
 
   GRBmodel* lp = getLpPtr( OsiGrbSolverInterface::FREECACHED_RESULTS );
 
-  if (messageHandler()->logLevel() == 0)
-  	rc = GRBsetintparam(env_, GRB_INT_PAR_OUTPUTFLAG, 0);
-  else
-  	rc = GRBsetintparam(env_, GRB_INT_PAR_OUTPUTFLAG, 1);
+ 	rc = GRBsetintparam(GRBgetenv(lp), GRB_INT_PAR_OUTPUTFLAG, (messageHandler()->logLevel() > 0));
 	checkGRBerror( rc, "GRBsetintparam", "branchAndBound" );
 
   rc = GRBoptimize( lp );
@@ -308,7 +309,7 @@ OsiGrbSolverInterface::setIntParam(OsiIntParam key, int value)
   switch (key)
   {
     case OsiMaxNumIteration:
-    	rc = GRBsetdblparam(env_, GRB_DBL_PAR_ITERATIONLIMIT, (double)value);
+    	rc = GRBsetdblparam(GRBgetenv(getMutableLpPtr()), GRB_DBL_PAR_ITERATIONLIMIT, (double)value);
       checkGRBerror( rc, "GRBsetdblparam", "setIntParam" );
       retval = (rc == 0);
       break;
@@ -346,16 +347,16 @@ OsiGrbSolverInterface::setDblParam(OsiDblParam key, double value)
 //  	case OsiDualObjectiveLimit:
 //  		break;
   	case OsiPrimalObjectiveLimit:
-    	rc = GRBsetdblparam(env_, GRB_DBL_PAR_CUTOFF, value);
+    	rc = GRBsetdblparam(GRBgetenv(getMutableLpPtr()), GRB_DBL_PAR_CUTOFF, value);
       checkGRBerror( rc, "GRBsetdblparam", "setDblParam" );
   		break;
   	case OsiDualTolerance:
-    	rc = GRBsetdblparam(env_, GRB_DBL_PAR_OPTIMALITYTOL, value);
+    	rc = GRBsetdblparam(GRBgetenv(getMutableLpPtr()), GRB_DBL_PAR_OPTIMALITYTOL, value);
       checkGRBerror( rc, "GRBsetdblparam", "setDblParam" );
       retval = (rc == 0);
   		break;
   	case OsiPrimalTolerance:
-    	rc = GRBsetdblparam(env_, GRB_DBL_PAR_FEASIBILITYTOL, value);
+    	rc = GRBsetdblparam(GRBgetenv(getMutableLpPtr()), GRB_DBL_PAR_FEASIBILITYTOL, value);
       checkGRBerror( rc, "GRBsetdblparam", "setDblParam" );
       retval = (rc == 0);
   		break;
@@ -407,7 +408,7 @@ OsiGrbSolverInterface::getIntParam(OsiIntParam key, int& value) const
     {
     case OsiMaxNumIteration:
     	double dblval;
-    	rc = GRBgetdblparam(env_, GRB_DBL_PAR_ITERATIONLIMIT, &dblval);
+    	rc = GRBgetdblparam(GRBgetenv(getMutableLpPtr()), GRB_DBL_PAR_ITERATIONLIMIT, &dblval);
       checkGRBerror( rc, "GRBgetdblparam", "getIntParam" );
     	value = (int) dblval;
       break;
@@ -440,16 +441,16 @@ OsiGrbSolverInterface::getDblParam(OsiDblParam key, double& value) const
 //    	case OsiDualObjectiveLimit:
 //    		break;
    	case OsiPrimalObjectiveLimit:
-   		rc = GRBgetdblparam(env_, GRB_DBL_PAR_CUTOFF, &value);
+   		rc = GRBgetdblparam(GRBgetenv(getMutableLpPtr()), GRB_DBL_PAR_CUTOFF, &value);
    		checkGRBerror( rc, "GRBgetdblparam", "getDblParam" );
    		retval = (rc == 0);
   	case OsiDualTolerance:
-  		rc = GRBgetdblparam(env_, GRB_DBL_PAR_OPTIMALITYTOL, &value);
+  		rc = GRBgetdblparam(GRBgetenv(getMutableLpPtr()), GRB_DBL_PAR_OPTIMALITYTOL, &value);
   		checkGRBerror( rc, "GRBgetdblparam", "getDblParam" );
   		retval = (rc == 0);
   		break;
   	case OsiPrimalTolerance:
-  		rc = GRBgetdblparam(env_, GRB_DBL_PAR_FEASIBILITYTOL, &value);
+  		rc = GRBgetdblparam(GRBgetenv(getMutableLpPtr()), GRB_DBL_PAR_FEASIBILITYTOL, &value);
   		checkGRBerror( rc, "GRBgetdblparam", "getDblParam" );
   		retval = (rc == 0);
   		break;
@@ -798,15 +799,15 @@ void OsiGrbSolverInterface::solveFromHotStart()
   rc = GRBsetintattrarray(getLpPtr(OsiGrbSolverInterface::FREECACHED_RESULTS), GRB_INT_ATTR_VBASIS, 0, getNumCols(), hotStartCStat_ );
 	checkGRBerror( rc, "GRBsetintattrarray", "solveFromHotStart" );
 
-	rc = GRBgetdblparam(env_, GRB_DBL_PAR_ITERATIONLIMIT, &maxiter);
+	rc = GRBgetdblparam(GRBgetenv(getMutableLpPtr()), GRB_DBL_PAR_ITERATIONLIMIT, &maxiter);
 	checkGRBerror( rc, "GRBgetdblparam", "solveFromHotStart" );
 
-	rc = GRBsetdblparam(env_, GRB_DBL_PAR_ITERATIONLIMIT, (double)hotStartMaxIteration_);
+	rc = GRBsetdblparam(GRBgetenv(getMutableLpPtr()), GRB_DBL_PAR_ITERATIONLIMIT, (double)hotStartMaxIteration_);
   checkGRBerror( rc, "GRBsetdblparam", "solveFromHotStart" );
   
   resolve();
 
-	rc = GRBsetdblparam(env_, GRB_DBL_PAR_ITERATIONLIMIT, maxiter);
+	rc = GRBsetdblparam(GRBgetenv(getMutableLpPtr()), GRB_DBL_PAR_ITERATIONLIMIT, maxiter);
   checkGRBerror( rc, "GRBsetdblparam", "solveFromHotStart" );
 }
 
