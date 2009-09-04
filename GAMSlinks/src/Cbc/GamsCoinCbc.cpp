@@ -470,7 +470,7 @@ void setupPrioritiesSOSSemiCon(GamsModel& gm, CbcModel& model) {
 
 
 void setupStartingPoint(GamsModel& gm, GamsOptions& opt, CbcModel& model) {
-	if (!gm.getIgnoreBasis()) { // set initial basis
+	if (gm.getHaveAdvancedBasis()) { // set initial basis
 		//gm.PrintOut(GamsModel::LogMask, "Setting initial basis as provided by GAMS.");
 		model.solver()->setColSolution(gm.ColLevel());
 		model.solver()->setRowPrice(gm.RowMargin());

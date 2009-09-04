@@ -441,8 +441,8 @@ bool GamsModel::getPriorityOption() {
 	return iolib.priots;
 }
 
-bool GamsModel::getIgnoreBasis() {
-	return iolib.ignbas;
+bool GamsModel::getHaveAdvancedBasis() {
+	return iolib.ignbas; /* ignbas = 1 means that we should NOT ignore the advanced basis */
 }
 
 void GamsModel::setStatus(const SolverStatus& newSolverStatus, 

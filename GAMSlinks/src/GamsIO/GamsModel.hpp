@@ -401,7 +401,7 @@ public:
   bool getPriorityOption();
   /** GAMS Parameter: Whether to ignore initial basis given by GAMS. 
    */
-  bool getIgnoreBasis();
+  bool getHaveAdvancedBasis();
 
 	/** The name of the option file.
 	 * @return The name of the option file, or NULL if no optionfile should be read.
