@@ -314,10 +314,15 @@ int GamsOsi::callSolver() {
 	double start_cputime  = CoinCpuTime();
 	double start_walltime = CoinWallclockTime();
 
-	if (isLP() || solverid == XPRESS)
-		osi->initialSolve();
-	if (!isLP())
-		osi->branchAndBound();
+	try {
+		if (isLP() || solverid == XPRESS)
+			osi->initialSolve();
+		if (!isLP())
+			osi->branchAndBound();
+	} catch (CoinError error) {
+		gevLogStatPChar(gev, "Exception caught when solving problem: ");
+		gevLogStat(gev, error.message().c_str());
+	}
 
 	double end_cputime  = CoinCpuTime();
 	double end_walltime = CoinWallclockTime();
@@ -370,6 +375,8 @@ int GamsOsi::callSolver() {
 bool GamsOsi::setupProblem(OsiSolverInterface& solver) {
 	if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI) || gmoGetVarTypeCnt(gmo, var_S1) || gmoGetVarTypeCnt(gmo, var_S2)) {
 		gevLogStat(gev, "SOS, semicontinuous, and semiinteger variables not supported by OSI. Aborting...\n");
+		gmoSolveStatSet(gmo, SolveStat_Capability);
+		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 		return false;
 	}
 	
@@ -464,15 +471,20 @@ bool GamsOsi::setupStartingPoint() {
 			}
 		}
 
-		osi->setColSolution(varlevel);
-		osi->setRowPrice(rowprice);
-		if (osi->setBasisStatus(cstat, rstat)) {
-			gevLogStat(gev, "Failed to set initial basis. Exiting ...");
-			delete[] varlevel;
-			delete[] rowprice;
-			delete[] cstat;
-			delete[] rstat;
-			return false;
+		try {
+			osi->setColSolution(varlevel);
+			osi->setRowPrice(rowprice);
+			if (osi->setBasisStatus(cstat, rstat)) {
+				gevLogStat(gev, "Failed to set initial basis. Exiting ...");
+				delete[] varlevel;
+				delete[] rowprice;
+				delete[] cstat;
+				delete[] rstat;
+				return false;
+			}
+		} catch (CoinError error) {
+			gevLogStatPChar(gev, "Exception caught when setting initial basis: ");
+			gevLogStat(gev, error.message().c_str());
 		}
 
 		delete[] rowprice;
@@ -510,77 +522,95 @@ bool GamsOsi::writeSolution(double cputime, double walltime) {
 	bool write_solution = false;
 	char buffer[255];
 
-	gevLogStat(gev, "");
-	if (osi->isProvenDualInfeasible()) {
-		gmoSolveStatSet(gmo, SolveStat_Normal);
-		gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
-		gevLogStat(gev, "Model unbounded.");
-		
-	} else if (osi->isProvenPrimalInfeasible()) {
-		gmoSolveStatSet(gmo, SolveStat_Normal);
-		gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
-		gevLogStat(gev, "Model infeasible.");
+	try {
+		gevLogStat(gev, "");
+		if (osi->isProvenDualInfeasible()) {
+			gmoSolveStatSet(gmo, SolveStat_Normal);
+			gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
+			gevLogStat(gev, "Model unbounded.");
 
-	} else if (osi->isAbandoned()) {
-		gmoSolveStatSet(gmo, SolveStat_SolverErr);
-		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-		gevLogStat(gev, "Model abandoned.");
+		} else if (osi->isProvenPrimalInfeasible()) {
+			gmoSolveStatSet(gmo, SolveStat_Normal);
+			gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+			gevLogStat(gev, "Model infeasible.");
 
-	} else if (osi->isProvenOptimal()) {
-		write_solution = true;
-		gmoSolveStatSet(gmo, SolveStat_Normal);
-		gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
-		gevLogStat(gev, "Solved to optimality.");
+		} else if (osi->isAbandoned()) {
+			gmoSolveStatSet(gmo, SolveStat_SolverErr);
+			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+			gevLogStat(gev, "Model abandoned.");
+
+		} else if (osi->isProvenOptimal()) {
+			write_solution = true;
+			gmoSolveStatSet(gmo, SolveStat_Normal);
+			gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
+			gevLogStat(gev, "Solved to optimality.");
 
 #if STEFAN
-	} else if (model->isSecondsLimitReached()) {
-		gmoSolveStatSet(gmo, SolveStat_Resource);
-		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-		gevLogStat(gev, "Time limit reached.");
+		} else if (model->isSecondsLimitReached()) {
+			gmoSolveStatSet(gmo, SolveStat_Resource);
+			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+			gevLogStat(gev, "Time limit reached.");
 
 #endif
-	} else if (osi->isIterationLimitReached()) {
-		gmoSolveStatSet(gmo, SolveStat_Iteration);
-		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-		gevLogStat(gev, "Iteration limit reached.");
+		} else if (osi->isIterationLimitReached()) {
+			gmoSolveStatSet(gmo, SolveStat_Iteration);
+			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+			gevLogStat(gev, "Iteration limit reached.");
 
-	} else if (osi->isPrimalObjectiveLimitReached()) {
-		gmoSolveStatSet(gmo, SolveStat_Solver);
-		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-		gevLogStat(gev, "Primal objective limit reached.");
+		} else if (osi->isPrimalObjectiveLimitReached()) {
+			gmoSolveStatSet(gmo, SolveStat_Solver);
+			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+			gevLogStat(gev, "Primal objective limit reached.");
 
-	} else if (osi->isDualObjectiveLimitReached()) {
-		gmoSolveStatSet(gmo, SolveStat_Solver);
-		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-		gevLogStat(gev, "Dual objective limit reached.");
+		} else if (osi->isDualObjectiveLimitReached()) {
+			gmoSolveStatSet(gmo, SolveStat_Solver);
+			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+			gevLogStat(gev, "Dual objective limit reached.");
 
-	} else {
+		} else {
+			gmoSolveStatSet(gmo, SolveStat_Solver);
+			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+			gevLogStat(gev, "Model status unknown, no feasible solution found.");
+		}
+	} catch (CoinError error) {
+		gevLogStatPChar(gev, "Exception caught when requesting solution status: ");
+		gevLogStat(gev, error.message().c_str());
 		gmoSolveStatSet(gmo, SolveStat_Solver);
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-		gevLogStat(gev, "Model status unknown, no feasible solution found.");
 	}
 
-	gmoSetHeadnTail(gmo, Hiterused, osi->getIterationCount());
-	gmoSetHeadnTail(gmo, HresUsed, cputime);
+	try {
+		gmoSetHeadnTail(gmo, Hiterused, osi->getIterationCount());
+		gmoSetHeadnTail(gmo, HresUsed, cputime);
 #if STEFAN
-	gmoSetHeadnTail(gmo, Tmipbest, model->getBestPossibleObjValue());
-	gmoSetHeadnTail(gmo, Tmipnod, model->getNodeCount());
+		gmoSetHeadnTail(gmo, Tmipbest, model->getBestPossibleObjValue());
+		gmoSetHeadnTail(gmo, Tmipnod, model->getNodeCount());
 #endif
+	} catch (CoinError error) {
+		gevLogStatPChar(gev, "Exception caught when requesting solution statistics: ");
+		gevLogStat(gev, error.message().c_str());
+	}
+
 	if (write_solution) {
 		if (isLP()) {
 			if (!gamsOsiStoreSolution(gmo, *osi, false))
 				return false;
 		} else { // is MIP -> store only primal values for now
 			double* rowprice = CoinCopyOfArrayOrZero((double*)NULL, gmoM(gmo));
-			gmoSetHeadnTail(gmo, HobjVal, osi->getObjValue());
-			gmoSetSolution2(gmo, osi->getColSolution(), rowprice);
+			try {
+				gmoSetHeadnTail(gmo, HobjVal, osi->getObjValue());
+				gmoSetSolution2(gmo, osi->getColSolution(), rowprice);
+			} catch (CoinError error) {
+				gevLogStatPChar(gev, "Exception caught when requesting primal solution values: ");
+				gevLogStat(gev, error.message().c_str());
+			}
 			delete[] rowprice;
 		}
 	}
 
 	if (!isLP()) {
-		if (osi->getColSolution()) {
-			snprintf(buffer, 255, "MIP solution: %21.10g   (%g seconds)", osi->getObjValue(), cputime);
+		if (write_solution) {
+			snprintf(buffer, 255, "MIP solution: %21.10g   (%g seconds)", gmoGetHeadnTail(gmo, HobjVal), cputime);
 			gevLogStat(gev, buffer);
 		}
 #if STEFAN
