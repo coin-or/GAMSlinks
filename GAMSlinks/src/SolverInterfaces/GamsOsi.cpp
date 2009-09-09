@@ -88,7 +88,7 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 #ifdef GAMS_BUILD
 			sprintf(osi_message, "GAMS/CoinOsiCplex (Osi library 0.100, CPLEX library %.2f)\nwritten by T. Achterberg\n", CPX_VERSION/100.);
 #else
-			sprintf(osi_message, "GAMS/OsiCplex (Osi library 0.100, CPLEX library %.2f)\nwritten by T. Achterberg\n", CPX_VERSION/100.);
+			sprintf(osi_message, "GAMS/OsiCplex (Osi library 0.100, CPLEX library %.2f)\nOsi link written by T. Achterberg\n", CPX_VERSION/100.);
 #endif
 			break;
 #endif
@@ -96,7 +96,7 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 #ifdef COIN_HAS_GRB
 		case GUROBI:
 #ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/CoinOsiGurobi (Osi library 0.100, GUROBI library %d.%d.%d)\nwritten by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
+			sprintf(osi_message, "GAMS/CoinOsiGurobi (Osi library 0.100, GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
 #else
 			sprintf(osi_message, "GAMS/OsiGurobi (Osi library 0.100, GUROBI library %d.%d.%d)\nwritten by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
 #endif
@@ -151,7 +151,8 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #ifdef GAMS_BUILD
 #define GEVPTR gev 
 #include "cgevmagic2.h"
-	if  (gevLicenseCheck(gev, gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo))) {
+	if (gevLicenseCheck(gev, gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo))) {
+		gevLogStat(gev, "The license check failed.\n");
 	  gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
 	  return 1;
 	}
@@ -195,13 +196,14 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #ifdef GAMS_BUILD
 				GUlicenseInit_t initType;
 
-				/* Cplex license setup */
+				/* Gurobi license setup */
 				if (gevgurobilice(gev,(void**)&grbenv,NULL,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
 						gmoNDisc(gmo), 1, &initType)) {
 					gevLogStat(gev, "*** Could not register GAMS/GUROBI license. Contact support@gams.com\n");
 					gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
 					return 1;
 				}
+				/* TODO someone need to free grbenv at the end */
 #endif
 				osi = new OsiGrbSolverInterface(grbenv);
 #else
@@ -288,7 +290,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 	if (gmoN(gmo) && !setupStartingPoint()) {
 		gevLogStat(gev, "Error setting up starting point.");
-		return -1;
+//		return -1;
 	}
 	
 	if (!setupParameters()) {
@@ -313,7 +315,7 @@ int GamsOsi::callSolver() {
 
 	double start_cputime  = CoinCpuTime();
 	double start_walltime = CoinWallclockTime();
-
+	
 	try {
 		if (isLP() || solverid == XPRESS)
 			osi->initialSolve();
@@ -323,7 +325,7 @@ int GamsOsi::callSolver() {
 		gevLogStatPChar(gev, "Exception caught when solving problem: ");
 		gevLogStat(gev, error.message().c_str());
 	}
-
+	
 	double end_cputime  = CoinCpuTime();
 	double end_walltime = CoinWallclockTime();
 
@@ -410,89 +412,86 @@ bool GamsOsi::setupProblem(OsiSolverInterface& solver) {
 
 
 bool GamsOsi::setupStartingPoint() {
-	double* varlevel = NULL;
-	if (gmoHaveBasis(gmo)) {
-		varlevel         = new double[gmoN(gmo)];
-		double* rowprice = new double[gmoM(gmo)];
-		int* cstat       = new int[gmoN(gmo)];
-		int* rstat       = new int[gmoM(gmo)];
+	if (!gmoHaveBasis(gmo))
+		return true;
+	
+	double* varlevel = new double[gmoN(gmo)];
+	double* rowprice = new double[gmoM(gmo)];
+	CoinWarmStartBasis basis;
+	basis.setSize(gmoN(gmo), gmoM(gmo));
 
-		gmoGetVarL(gmo, varlevel);
-		gmoGetEquM(gmo, rowprice);
+	gmoGetVarL(gmo, varlevel);
+	gmoGetEquM(gmo, rowprice);
 
-	  int nbas = 0;
-		for (int j = 0; j < gmoN(gmo); ++j) {
-			switch (gmoGetVarBasOne(gmo, j)) {
-				case 0: // this seem to mean that variable should be basic
-					if (++nbas <= gmoM(gmo))
-						cstat[j] = 1; // basic
-					else if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
-						cstat[j] = 0; // superbasic = free
-					else if (fabs(gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j)))
-						cstat[j] = 3; // nonbasic at lower bound
-					else
-						cstat[j] = 2; // nonbasic at upper bound
-					break;
-				case 1:
-					if (fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
-						cstat[j] = 3; // nonbasic at lower bound
-					else
-						cstat[j] = 2; // nonbasic at upper bound
-					break;
-				default:
-					gevLogStat(gev, "Error: invalid basis indicator for column.");
-					delete[] cstat;
-					delete[] rstat;
-					delete[] rowprice;
-					delete[] varlevel;
-					return false;
-			}
+	int nbas = 0;
+	for (int j = 0; j < gmoN(gmo); ++j) {
+		switch (gmoGetVarBasOne(gmo, j)) {
+			case 0: // this seem to mean that variable should be basic
+				if (nbas < gmoM(gmo)) {
+					basis.setStructStatus(j, CoinWarmStartBasis::basic);
+					++nbas;
+				} else if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
+					basis.setStructStatus(j, CoinWarmStartBasis::isFree);
+				else if (fabs(gmoGetVarLowerOne(gmo, j) - varlevel[j]) < fabs(gmoGetVarUpperOne(gmo, j) - varlevel[j]))
+					basis.setStructStatus(j, CoinWarmStartBasis::atLowerBound);
+				else
+					basis.setStructStatus(j, CoinWarmStartBasis::atUpperBound);
+				break;
+			case 1:
+				if (fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
+					basis.setStructStatus(j, CoinWarmStartBasis::atLowerBound);
+				else
+					basis.setStructStatus(j, CoinWarmStartBasis::atUpperBound);
+				break;
+			default:
+				gevLogStat(gev, "Error: invalid basis indicator for column.");
+				delete[] rowprice;
+				delete[] varlevel;
+				return false;
 		}
+	}
 
-		nbas = 0;
-		for (int j = 0; j< gmoM(gmo); ++j) {
-			switch (gmoGetEquBasOne(gmo, j)) {
-				case 0:
-					if (++nbas < gmoM(gmo))
-						rstat[j] = 1; // basic
-					else
-						rstat[j] = 2; // nonbasic at upper bound (flipped for cbc)
-					break;
-				case 1:
-					rstat[j] = 2; // nonbasic at upper bound (flipped for cbc)
-					break;
-				default:
-					gevLogStat(gev, "Error: invalid basis indicator for row.");
-					delete[] cstat;
-					delete[] rstat;
-					delete[] rowprice;
-					delete[] varlevel;
-					return false;
-			}
+	for (int j = 0; j< gmoM(gmo); ++j) {
+		switch (gmoGetEquBasOne(gmo, j)) {
+			case 0:
+				if (nbas < gmoM(gmo)) {
+					basis.setArtifStatus(j, CoinWarmStartBasis::basic);
+					++nbas;
+				} else
+					basis.setArtifStatus(j, CoinWarmStartBasis::atUpperBound);  //TODO correct?
+				break;
+			case 1:
+				basis.setArtifStatus(j, CoinWarmStartBasis::atUpperBound);  //TODO correct?
+				break;
+			default:
+				gevLogStat(gev, "Error: invalid basis indicator for row.");
+				delete[] rowprice;
+				delete[] varlevel;
+				return false;
 		}
+	}
 
-		try {
+	try {
+		if (solverid != GUROBI) {
 			osi->setColSolution(varlevel);
 			osi->setRowPrice(rowprice);
-			if (osi->setBasisStatus(cstat, rstat)) {
-				gevLogStat(gev, "Failed to set initial basis. Exiting ...");
-				delete[] varlevel;
-				delete[] rowprice;
-				delete[] cstat;
-				delete[] rstat;
-				return false;
-			}
-		} catch (CoinError error) {
-			gevLogStatPChar(gev, "Exception caught when setting initial basis: ");
-			gevLogStat(gev, error.message().c_str());
 		}
-
+		if (!osi->setWarmStart(&basis)) {
+			gevLogStat(gev, "Failed to set initial basis. Exiting ...");
+			delete[] varlevel;
+			delete[] rowprice;
+			return false;
+		}
+	} catch (CoinError error) {
+		gevLogStatPChar(gev, "Exception caught when setting initial basis: ");
+		gevLogStat(gev, error.message().c_str());
+		delete[] varlevel;
 		delete[] rowprice;
-		delete[] cstat;
-		delete[] rstat;
+		return false;
 	}
 
 	delete[] varlevel;
+	delete[] rowprice;
 
 	return true;
 }
