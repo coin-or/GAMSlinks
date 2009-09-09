@@ -378,11 +378,12 @@ bool GamsCbc::setupStartingPoint() {
 		for (int j = 0; j < gmoN(gmo); ++j) {
 			switch (gmoGetVarBasOne(gmo, j)) {
 				case 0: // this seem to mean that variable should be basic
-					if (++nbas <= gmoM(gmo))
+					if (nbas < gmoM(gmo)) {
 						cstat[j] = 1; // basic
-					else if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
+						++nbas;
+					} else if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
 						cstat[j] = 0; // superbasic = free
-					else if (fabs(gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j)))
+					else if (fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
 						cstat[j] = 3; // nonbasic at lower bound
 					else
 						cstat[j] = 2; // nonbasic at upper bound
@@ -403,13 +404,13 @@ bool GamsCbc::setupStartingPoint() {
 			}
 		}
 
-		nbas = 0;
 		for (int j = 0; j< gmoM(gmo); ++j) {
 			switch (gmoGetEquBasOne(gmo, j)) {
 				case 0:
-					if (++nbas < gmoM(gmo))
+					if (nbas < gmoM(gmo)) {
 						rstat[j] = 1; // basic
-					else
+						++nbas;
+					} else
 						rstat[j] = 2; // nonbasic at upper bound (flipped for cbc)
 					break;
 				case 1:
