@@ -674,7 +674,7 @@ bool OsiGrbSolverInterface::setWarmStart(const CoinWarmStart* warmstart)
   const CoinWarmStartBasis* ws = dynamic_cast<const CoinWarmStartBasis*>(warmstart);
   int numcols, numrows, i, rc;
   int *stat;
-  bool retval = false;
+  bool retval = true;
 
   if( !ws )
     return false;
@@ -1747,9 +1747,10 @@ void OsiGrbSolverInterface::setColSolution(const double * cs)
 
   	// Copy in new col solution.
   	CoinDisjointCopyN( cs, nc, colsol_ );
-  	
-  	int err = GRBsetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_X, 0, nc, const_cast<double*>(colsol_));
- 		checkGRBerror( err, "GRBsetdblattrarray", "setColSolution" );
+
+  	std::cout << "OsiGrb::setColSolution: Gurobi does not allow setting the column solution. Command is ignored." << std::endl;
+//  	int err = GRBsetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_X, 0, nc, const_cast<double*>(colsol_));
+// 		checkGRBerror( err, "GRBsetdblattrarray", "setColSolution" );
   }
 }
 
@@ -1772,8 +1773,9 @@ void OsiGrbSolverInterface::setRowPrice(const double * rs)
   	// Copy in new row solution.
   	CoinDisjointCopyN( rs, nr, rowsol_ );
 
-  	int err = GRBsetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_PI, 0, nr, const_cast<double*>(rowsol_));
- 		checkGRBerror( err, "GRBsetdblattrarray", "setRowPrice" );
+   std::cout << "OsiGrb::setRowPrice: Gurobi does not allow setting the row price. Command is ignored." << std::endl;
+//  	int err = GRBsetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_PI, 0, nr, const_cast<double*>(rowsol_));
+// 		checkGRBerror( err, "GRBsetdblattrarray", "setRowPrice" );
   }
 }
 
@@ -2582,7 +2584,7 @@ OsiGrbSolverInterface::OsiGrbSolverInterface(GRBenv* grbenv)
   		throw CoinError("Already have a Gurobi environment.\n", "OsiGrbSolverInterface", "OsiGrbSolverInterface");
   	
   	env_ = grbenv;
-  	++numInstances_;
+  	numInstances_ += 2; /* count one for the external user and one for this */
   }
   else
   	incrementInstanceCounter();
