@@ -276,7 +276,8 @@ LIBLTDLSRCDIR = @LIBLTDLSRCDIR@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@ `cat $(CLPOBJDIR)/clp_addlibs.txt \
 	$(GAMSLINKSOBJDIR)/smagio_addlibs.txt \
-	$(COINUTILSOBJDIR)/coinutils_addlibs.txt`
+	$(COINUTILSOBJDIR)/coinutils_addlibs.txt \
+	$(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
 LN_S = @LN_S@
@@ -413,22 +414,26 @@ AM_CPPFLAGS = $(GAMSIO_CPPFLAGS) \
 @COIN_BUILD_SCIP_FALSE@	../GamsIO/libSmagStricmp.la \
 @COIN_BUILD_SCIP_FALSE@	../GamsIO/libSmagIO.la \
 @COIN_BUILD_SCIP_FALSE@	$(CLPOBJDIR)/src/libClp.la \
-@COIN_BUILD_SCIP_FALSE@	$(COINUTILSOBJDIR)/src/libCoinUtils.la
+@COIN_BUILD_SCIP_FALSE@	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
+@COIN_BUILD_SCIP_FALSE@	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 @COIN_BUILD_SCIP_TRUE@GamsScip_LDADD = $(SCIPOBJDIR)/libcoinscip.la \
 @COIN_BUILD_SCIP_TRUE@	../GamsIO/libSmagStricmp.la \
 @COIN_BUILD_SCIP_TRUE@	../GamsIO/libSmagIO.la \
 @COIN_BUILD_SCIP_TRUE@	$(CLPOBJDIR)/src/libClp.la \
-@COIN_BUILD_SCIP_TRUE@	$(COINUTILSOBJDIR)/src/libCoinUtils.la
+@COIN_BUILD_SCIP_TRUE@	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
+@COIN_BUILD_SCIP_TRUE@	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 @COIN_BUILD_SCIP_FALSE@GamsScip_DEPENDENCIES = ../GamsIO/libSmagIO.la \
 @COIN_BUILD_SCIP_FALSE@	$(SMAG_LIBS) \
 @COIN_BUILD_SCIP_FALSE@	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
-@COIN_BUILD_SCIP_FALSE@	$(CLPOBJDIR)/src/libClp.la
+@COIN_BUILD_SCIP_FALSE@	$(CLPOBJDIR)/src/libClp.la \
+@COIN_BUILD_SCIP_FALSE@	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 @COIN_BUILD_SCIP_TRUE@GamsScip_DEPENDENCIES =  \
 @COIN_BUILD_SCIP_TRUE@	$(SCIPOBJDIR)/libcoinscip.la \
 @COIN_BUILD_SCIP_TRUE@	../GamsIO/libSmagStricmp.la \
 @COIN_BUILD_SCIP_TRUE@	../GamsIO/libSmagIO.la $(SMAG_LIBS) \
 @COIN_BUILD_SCIP_TRUE@	$(COINUTILSOBJDIR)/src/libCoinUtils.la \
-@COIN_BUILD_SCIP_TRUE@	$(CLPOBJDIR)/src/libClp.la
+@COIN_BUILD_SCIP_TRUE@	$(CLPOBJDIR)/src/libClp.la \
+@COIN_BUILD_SCIP_TRUE@	$(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 GamsScip_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)

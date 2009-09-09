@@ -49,7 +49,7 @@ AC_COIN_PROG_CXX
 # Initialize automake
 AC_COIN_INIT_AUTO_TOOLS
 
-#TODO: check for Clp and CoinUtils
+#TODO: check for Clp and CoinUtils and Ipopt
 #AC_COIN_MAIN_SUBDIRS(../../CoinUtils)
 #AC_COIN_MAIN_SUBDIRS(../../Clp)
 #AC_COIN_HAS_PROJECT(../../CoinUtils)
@@ -61,7 +61,7 @@ rm -f $MAKEOKFILE
 if test x"$use_thirdpartyscip" = xbuild ; then
   touch $MAKEOKFILE
   
-  EXTRAFLAGS=
+  EXTRAFLAGS="-DWITH_IPOPT"
   
   AC_CHECK_MEMBER(struct sigaction.sa_handler,,
     [EXTRAFLAGS="$EXTRAFLAGS -DNO_SIGACTION"],
@@ -86,7 +86,7 @@ if test x"$use_thirdpartyscip" = xbuild ; then
   if (test x$majorver != x110) ; then
     AC_MSG_ERROR(["Incorrect SCIP version. This build system is made for SCIP >= 1.10.0."])
   fi
-  AM_CONDITIONAL(SCIPDEVVERSION, [test x$minorver = x0])
+  AM_CONDITIONAL(SCIPDEVVERSION, [test x$minorver = x11])
   
   if test x$minorver = x0 ; then
     CFLAGS=`echo $CFLAGS | sed -e 's/-pedantic-errors//'`

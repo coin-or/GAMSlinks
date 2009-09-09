@@ -33,14 +33,16 @@ endif
 GamsScip_LDADD += \
  ../GamsIO/libSmagIO.la \
  $(CLPOBJDIR)/src/libClp.la \
- $(COINUTILSOBJDIR)/src/libCoinUtils.la
+ $(COINUTILSOBJDIR)/src/libCoinUtils.la \
+ $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 
 GamsScip_DEPENDENCIES += \
  ../GamsIO/libSmagIO.la $(SMAG_LIBS) \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- $(CLPOBJDIR)/src/libClp.la
+ $(CLPOBJDIR)/src/libClp.la \
+ $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 
-LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
+LIBS += `cat $(CLPOBJDIR)/clp_addlibs.txt $(GAMSLINKSOBJDIR)/smagio_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
 
 GamsScip_LDFLAGS = $(ADDLIBS) -rpath $(libdir)
 

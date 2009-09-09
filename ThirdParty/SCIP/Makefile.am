@@ -155,9 +155,16 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/tclique/tclique_graph.c \
       $(SCIPDIR)/src/blockmemshell/memory.c
 
-#if SCIPDEVVERSION
-#nodist_libcoinscip_la_SOURCES += 
-#endif
+if SCIPDEVVERSION
+nodist_libcoinscip_la_SOURCES += \
+			$(SCIPDIR)/src/scip/cons_quadratic.c \
+			$(SCIPDIR)/src/scip/nlpi.c \
+			$(SCIPDIR)/src/scip/nlpi_oracle.c \
+			$(SCIPDIR)/src/scip/heur_nlp.c \
+			$(SCIPDIR)/src/scip/heur_trivial.c \
+			$(SCIPDIR)/src/scip/reader_gms.c \
+			$(SCIPDIR)/src/scip/reader_fzn.c
+endif
 
 #nodist_libcoinscip_la_SOURCES += \
 #      $(SCIPDIR)/src/objscip/objbranchrule.cpp \
@@ -180,17 +187,30 @@ nodist_libcoinscip_la_SOURCES = \
 
 #add CLP as linear solver
 nodist_libcoinscip_la_SOURCES += $(SCIPDIR)/src/scip/lpi_clp.cpp
+if SCIPDEVVERSION
+#add IPOPT as nonlinear solver
+nodist_libcoinscip_la_SOURCES += $(SCIPDIR)/src/scip/nlpi_ipopt.cpp
+endif
 
 COINUTILSSRCDIR=$(srcdir)/../../CoinUtils
 COINUTILSOBJDIR=../../CoinUtils
 CLPSRCDIR=$(srcdir)/../../Clp
 CLPOBJDIR=../../Clp
+IPOPTSRCDIR=$(srcdir)/../../Ipopt
+IPOPTOBJDIR=../../Ipopt
 
 AM_CPPFLAGS += \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
- -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
+ -I`$(CYGPATH_W) $(CLPOBJDIR)/inc` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Algorithm` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/CGPenalty` \
+ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/LinearSolverLoader` \
+ -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
 
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)`

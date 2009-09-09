@@ -13,9 +13,9 @@
 #include "GamsBCH.hpp"
 #include "GamsHandler.hpp"
 
-extern "C" {
-#include "scip/scip.h"
-}
+#include "scip/type_scip.h"
+#include "scip/type_retcode.h"
+#include "scip/type_var.h"
 
 /** Adds BCH relevant parameters to a SCIP object.
  */

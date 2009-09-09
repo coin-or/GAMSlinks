@@ -20390,7 +20390,7 @@ LT_LDFLAGS=
 #END
 }
 
-#TODO: check for Clp and CoinUtils
+#TODO: check for Clp and CoinUtils and Ipopt
 #AC_COIN_MAIN_SUBDIRS(../../CoinUtils)
 #AC_COIN_MAIN_SUBDIRS(../../Clp)
 #AC_COIN_HAS_PROJECT(../../CoinUtils)
@@ -20661,7 +20661,7 @@ rm -f $MAKEOKFILE
 if test x"$use_thirdpartyscip" = xbuild ; then
   touch $MAKEOKFILE
 
-  EXTRAFLAGS=
+  EXTRAFLAGS="-DWITH_IPOPT"
 
   echo "$as_me:$LINENO: checking for struct sigaction.sa_handler" >&5
 echo $ECHO_N "checking for struct sigaction.sa_handler... $ECHO_C" >&6
@@ -21080,7 +21080,7 @@ echo "$as_me: error: \"Incorrect SCIP version. This build system is made for SCI
   fi
 
 
-if test x$minorver = x0; then
+if test x$minorver = x11; then
   SCIPDEVVERSION_TRUE=
   SCIPDEVVERSION_FALSE='#'
 else

@@ -62,13 +62,22 @@ extern "C" {
 #include "CoinError.hpp"
 #include "ClpSimplex.hpp" // for passing in message handler
 
+#define __SCIP_MESSAGE_H__
+#include "scip/def.h"
+#undef __SCIP_MESSAGE_H__
+
+#if SCIP_SUBVERSION < 11
 extern "C" {
+#endif
+#include "scip/message.h"
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
 #include "scip/cons_linear.h"
 #include "scip/cons_sos1.h"
 #include "scip/cons_sos2.h"
+#if SCIP_SUBVERSION < 11
 }
+#endif
 
 #include "ScipBCH.hpp"
 
