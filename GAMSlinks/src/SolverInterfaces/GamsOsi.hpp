@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id: GamsOsi.hpp 648 2009-04-10 15:11:56Z stefan $
+// $Id$
 //
 // Author: Stefan Vigerske
 

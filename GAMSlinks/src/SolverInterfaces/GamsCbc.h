@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id: GamsCbc.hpp 629 2009-03-22 20:49:16Z stefan $
+// $Id$
 //
 // Author: Stefan Vigerske
 

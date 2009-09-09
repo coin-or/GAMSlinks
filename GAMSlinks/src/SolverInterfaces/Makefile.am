@@ -91,7 +91,26 @@ endif
 if COIN_HAS_GRB
   libGamsCoin_la_SOURCES      += OsiGrbSolverInterface.cpp
   libGamsCoin_la_LIBADD       += $(GRBLIB)
+  
   AM_CPPFLAGS += -I`$(CYGPATH_W) $(GRBINCDIR)`
+
+if GAMSIO_IS_UNIX
+  noinst_PROGRAMS     += gmsoguux.out
+  gmsoguux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+  gmsoguux_out_SOURCES = gmsogu.cpp
+  gmsoguux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+  gamsinstallfiles    += gmsoguux.out gmsoguus.run install/gmsoguun.dat
+endif
+
+if GAMSIO_IS_WINDOWS
+  noinst_PROGRAMS  += gmsogunx
+  gmsogunx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+  gmsogunx_SOURCES  = gmsogu.cpp
+  gmsogunx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+  gamsinstallfiles += gmsogunx.exe gmsogunt.cmd install/gmsogunt.dat
+endif
+
+  EXTRA_DIST       += gmsogunt.cmd gmsoguus.run install/gmsogunt.dat install/gmsoguun.dat
 endif
 
 if COIN_HAS_MSK

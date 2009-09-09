@@ -6,6 +6,6 @@
 //
 // Author: Stefan Vigerske
 
-#define SOLVERNAME "OsiXpress"
-#define CREATEFUNCNAME "createNewGamsOsiXpress"
+#define SOLVERNAME "OsiGurobi"
+#define CREATEFUNCNAME "createNewGamsOsiGurobi"
 #include "gmsmain.cpp"

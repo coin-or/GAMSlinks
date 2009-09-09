@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id: GamsBonmin.cpp 699 2009-07-26 12:00:54Z stefan $
+// $Id$
 //
 // Author: Stefan Vigerske
 

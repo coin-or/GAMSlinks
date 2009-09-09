@@ -152,8 +152,8 @@ bool gamsOsiStoreSolution(struct gmoRec* gmo, const OsiSolverInterface& solver, 
 	const double* colMargin = solver.getReducedCost();
 	const double* rowLevel  = solver.getRowActivity();
 	const double* rowMargin = solver.getRowPrice();
-	assert(colLevel);
-	assert(rowLevel);
+	assert(!gmoN(gmo) || colLevel);
+	assert(!gmoM(gmo) || rowLevel);
 
 	int* colBasis = new int[solver.getNumCols()];
 	int* rowBasis = new int[solver.getNumRows()];

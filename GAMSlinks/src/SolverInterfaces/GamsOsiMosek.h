@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id: GamsOsiMosek.h 660 2009-04-16 19:59:35Z stefan $
+// $Id$
 //
 // Author: Stefan Vigerske
 

@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id: GamsOsi.cpp 701 2009-07-26 15:11:55Z stefan $
+// $Id$
 //
 // Author: Stefan Vigerske
 
@@ -640,6 +640,10 @@ bool GamsOsi::isLP() {
 
 DllExport GamsOsi* STDCALL createNewGamsOsiCplex() {
 	return new GamsOsi(GamsOsi::CPLEX);
+}
+
+DllExport GamsOsi* STDCALL createNewGamsOsiGurobi() {
+   return new GamsOsi(GamsOsi::GUROBI);
 }
 
 DllExport GamsOsi* STDCALL createNewGamsOsiMosek() {
