@@ -382,6 +382,9 @@ bool GamsOsi::setupProblem(OsiSolverInterface& solver) {
 		return false;
 	}
 	
+	if (gmoGetEquTypeCnt(gmo, equ_N))
+		gmoSetNRowPerm(gmo);
+	
 	if (!gamsOsiLoadProblem(gmo, solver))
 		return false;
 
@@ -481,6 +484,11 @@ bool GamsOsi::setupStartingPoint() {
 			delete[] varlevel;
 			delete[] rowprice;
 			return false;
+		} else if (solverid == GUROBI ) {
+			gevLog(gev, "Registered advanced basis. This turns off presolve!");
+			gevLog(gev, "In case of poor performance consider turning off advanced basis registration via GAMS option BRatio=1.");
+		} else {
+			gevLog(gev, "Registered advanced basis.");
 		}
 	} catch (CoinError error) {
 		gevLogStatPChar(gev, "Exception caught when setting initial basis: ");
