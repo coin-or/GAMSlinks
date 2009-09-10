@@ -696,10 +696,8 @@ bool OsiGrbSolverInterface::setWarmStart(const CoinWarmStart* warmstart)
   			stat[i] = GRB_BASIC;
   			break;
   		case CoinWarmStartBasis::atLowerBound:
-  			stat[i] = GRB_NONBASIC_LOWER;
-  			break;
   		case CoinWarmStartBasis::atUpperBound:
-  			stat[i] = GRB_NONBASIC_UPPER;
+  			stat[i] = GRB_NONBASIC_LOWER;
   			break;
   		default:  // unknown row status
   			delete[] stat;
@@ -726,8 +724,10 @@ bool OsiGrbSolverInterface::setWarmStart(const CoinWarmStart* warmstart)
   			stat[i] = GRB_BASIC;
   			break;
   		case CoinWarmStartBasis::atLowerBound:
-  		case CoinWarmStartBasis::atUpperBound:
   			stat[i] = GRB_NONBASIC_LOWER;
+  			break;
+  		case CoinWarmStartBasis::atUpperBound:
+  			stat[i] = GRB_NONBASIC_UPPER;
   			break;
   		case CoinWarmStartBasis::isFree:
   		default:  // unknown row status
