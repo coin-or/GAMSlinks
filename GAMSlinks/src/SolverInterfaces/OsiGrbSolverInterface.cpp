@@ -1066,16 +1066,23 @@ bool OsiGrbSolverInterface::isContinuous( int colNumber ) const
 const CoinPackedMatrix * OsiGrbSolverInterface::getMatrixByRow() const
 {
   debugMessage("OsiGrbSolverInterface::getMatrixByRow()\n");
-
+  
   if ( matrixByRow_ == NULL ) 
   {
   	int nrows = getNumRows();
   	int ncols = getNumCols();
+  	
+    if ( nrows == 0 ) {
+    	matrixByRow_ = new CoinPackedMatrix();
+    	matrixByRow_->setDimensions(0, ncols);
+    	return matrixByRow_;
+    }
+
   	int nelems, rc;
   	int *starts   = new int   [nrows + 1];
   	int *len      = new int   [nrows];
 
-  	rc = GRBgetconstrs(getMutableLpPtr(), &nelems, NULL, NULL, NULL, 0, nrows); 
+  	rc = GRBgetconstrs(getMutableLpPtr(), &nelems, NULL, NULL, NULL, 0, nrows);
   	checkGRBerror( rc, "GRBgetconstrs", "getMatrixByRow" );
 
   	assert( nelems == getNumElements() );
@@ -2590,6 +2597,9 @@ OsiGrbSolverInterface::OsiGrbSolverInterface(GRBenv* grbenv)
   	incrementInstanceCounter();
   
   gutsOfConstructor();
+  
+  // change Osi default to Gurobi default
+  setHintParam(OsiDoDualInInitial,true,OsiHintTry);
 }
 
 
