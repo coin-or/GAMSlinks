@@ -74,8 +74,8 @@ checkGRBerror( int err, std::string grbfuncname, std::string osimethod )
     {
       char s[1001];
       sprintf( s, "%s returned error %d ", grbfuncname.c_str(), err );
-      if (OsiGrbSolverInterface::env_)
-      	strncat(s, GRBgeterrormsg(OsiGrbSolverInterface::env_), 1000);
+      if (OsiGrbSolverInterface::globalenv_)
+      	strncat(s, GRBgeterrormsg(OsiGrbSolverInterface::globalenv_), 1000);
       std::cout << "ERROR: " << s << " (" << osimethod << " in OsiGrbSolverInterface)" << std::endl;
       throw CoinError( s, osimethod, "OsiGrbSolverInterface" );
     }
@@ -2249,7 +2249,7 @@ OsiGrbSolverInterface::loadProblem( const CoinPackedMatrix& matrix,
 
 	std::string pn;
 	getStrParam(OsiProbName, pn);
-	err = GRBloadmodel(env_, &lp_, const_cast<char*>(pn.c_str()),
+	err = GRBloadmodel(getEnvironmentPtr(), &lp_, const_cast<char*>(pn.c_str()),
 			nc, nr,
 			modelsense,
 			0.0,
@@ -2431,7 +2431,7 @@ OsiGrbSolverInterface::loadProblem(const int numcols, const int numrows,
 
 	std::string pn;
 	getStrParam(OsiProbName, pn);
-	err = GRBloadmodel(env_, &lp_, const_cast<char*>(pn.c_str()),
+	err = GRBloadmodel(getEnvironmentPtr(), &lp_, const_cast<char*>(pn.c_str()),
 			nc, nr,
 			modelsense,
 			0.0,
@@ -2494,10 +2494,10 @@ void OsiGrbSolverInterface::writeMps( const char * filename,
 // CPX specific public interfaces
 //#############################################################################
 
-GRBenv* OsiGrbSolverInterface::getEnvironmentPtr()
+GRBenv* OsiGrbSolverInterface::getEnvironmentPtr() const
 {
-  assert( env_ != NULL );
-  return env_;
+  assert( localenv_ != NULL || globalenv_ != NULL );
+  return localenv_ ? localenv_ : globalenv_;
 }
 
 GRBmodel* OsiGrbSolverInterface::getLpPtr( int keepCached )
@@ -2521,11 +2521,12 @@ const char * OsiGrbSolverInterface::getCtype() const
 
 void OsiGrbSolverInterface::incrementInstanceCounter()
 {
-	if ( numInstances_ == 0 )
+	if ( numInstances_ == 0 && !globalenv_)
 	{
-		int err = GRBloadenv( &env_, NULL );
+		int err = GRBloadenv( &globalenv_, NULL );
 		checkGRBerror( err, "GRBloadenv", "incrementInstanceCounter" );
-		assert( env_ != NULL );
+		assert( globalenv_ != NULL );
+		globalenv_is_ours = true;
 	}
   numInstances_++;
 }
@@ -2535,11 +2536,12 @@ void OsiGrbSolverInterface::incrementInstanceCounter()
 void OsiGrbSolverInterface::decrementInstanceCounter()
 {
 	assert( numInstances_ != 0 );
+	assert( globalenv_ != NULL );
 	numInstances_--;
-	if ( numInstances_ == 0 )
+	if ( numInstances_ == 0 && globalenv_is_ours)
 	{
-		GRBfreeenv( env_ );
-		env_ = NULL;
+		GRBfreeenv( globalenv_ );
+		globalenv_ = NULL;
 	}
 }
 
@@ -2550,6 +2552,21 @@ unsigned int OsiGrbSolverInterface::getNumInstances()
   return numInstances_;
 }
 
+void OsiGrbSolverInterface::setEnvironment(GRBenv* globalenv)
+{
+	if (numInstances_)
+	{
+		assert(globalenv_);
+		throw CoinError("Cannot set global gurobi environment, since some OsiGrb instance is still using it.", "setEnvironment", "OsiGrbSolverInterface");
+	}
+	
+	assert(!globalenv_ || !globalenv_is_ours);
+	
+	globalenv_ = globalenv;
+	globalenv_is_ours = false;
+}
+
+
 //#############################################################################
 // Constructors, destructors clone and assignment
 //#############################################################################
@@ -2557,8 +2574,9 @@ unsigned int OsiGrbSolverInterface::getNumInstances()
 //-------------------------------------------------------------------
 // Default Constructor 
 //-------------------------------------------------------------------
-OsiGrbSolverInterface::OsiGrbSolverInterface(GRBenv* grbenv)
+OsiGrbSolverInterface::OsiGrbSolverInterface(bool use_local_env)
   : OsiSolverInterface(),
+    localenv_(NULL),
     lp_(NULL),
     hotStartCStat_(NULL),
     hotStartCStatSize_(0),
@@ -2585,17 +2603,52 @@ OsiGrbSolverInterface::OsiGrbSolverInterface(GRBenv* grbenv)
 {
   debugMessage("OsiGrbSolverInterface::OsiGrbSolverInterface()\n");
   
-  if (grbenv)
+  if (use_local_env)
   {
-  	if (env_)
-  		throw CoinError("Already have a Gurobi environment.\n", "OsiGrbSolverInterface", "OsiGrbSolverInterface");
-  	
-  	env_ = grbenv;
-  	numInstances_ += 2; /* count one for the external user and one for this */
+		int err = GRBloadenv( &localenv_, NULL );
+		checkGRBerror( err, "GRBloadenv", "OsiGrbSolverInterface" );
+		assert( localenv_ != NULL );
   }
   else
   	incrementInstanceCounter();
+    
+  gutsOfConstructor();
   
+  // change Osi default to Gurobi default
+  setHintParam(OsiDoDualInInitial,true,OsiHintTry);
+}
+
+OsiGrbSolverInterface::OsiGrbSolverInterface(GRBenv* localgrbenv)
+  : OsiSolverInterface(),
+    localenv_(localgrbenv),
+    lp_(NULL),
+    hotStartCStat_(NULL),
+    hotStartCStatSize_(0),
+    hotStartRStat_(NULL),
+    hotStartRStatSize_(0),
+    hotStartMaxIteration_(1000000), // ??? default iteration limit for strong branching is large
+    obj_(NULL),
+    collower_(NULL),
+    colupper_(NULL),
+    rowsense_(NULL),
+    rhs_(NULL),
+    rowrange_(NULL),
+    rowlower_(NULL),
+    rowupper_(NULL),
+    colsol_(NULL),
+    rowsol_(NULL),
+    redcost_(NULL),
+    rowact_(NULL),
+    matrixByRow_(NULL),
+    matrixByCol_(NULL),
+    coltype_(NULL),
+    coltypesize_(0),
+    probtypemip_(false)
+{
+  debugMessage("OsiGrbSolverInterface::OsiGrbSolverInterface()\n");
+
+  assert( localenv_ != NULL );
+    
   gutsOfConstructor();
   
   // change Osi default to Gurobi default
@@ -2618,6 +2671,7 @@ OsiSolverInterface * OsiGrbSolverInterface::clone(bool copyData) const
 //-------------------------------------------------------------------
 OsiGrbSolverInterface::OsiGrbSolverInterface( const OsiGrbSolverInterface & source )
   : OsiSolverInterface(source),
+    localenv_(NULL),
     lp_(NULL),
     hotStartCStat_(NULL),
     hotStartCStatSize_(0),
@@ -2644,7 +2698,13 @@ OsiGrbSolverInterface::OsiGrbSolverInterface( const OsiGrbSolverInterface & sour
 {
   debugMessage("OsiGrbSolverInterface::OsiGrbSolverInterface(%p)\n", (void*)&source);
 
-  incrementInstanceCounter();  
+  if (source.localenv_) {
+		int err = GRBloadenv( &localenv_, NULL );
+		checkGRBerror( err, "GRBloadenv", "OsiGrbSolverInterface" );
+		assert( localenv_ != NULL );
+  } else
+  	incrementInstanceCounter();
+  
   gutsOfConstructor();
   gutsOfCopy( source );
 }
@@ -2658,7 +2718,10 @@ OsiGrbSolverInterface::~OsiGrbSolverInterface()
   debugMessage("OsiGrbSolverInterface::~OsiGrbSolverInterface()\n");
 
   gutsOfDestructor();
-  decrementInstanceCounter();
+  if (localenv_) {
+		GRBfreeenv( localenv_ );
+  } else
+  	decrementInstanceCounter();
 }
 
 //----------------------------------------------------------------
@@ -2753,7 +2816,8 @@ void OsiGrbSolverInterface::applyRowCut( const OsiRowCut & rowCut )
 //------------------------------------------------------------------
 // Static data
 //------------------------------------------------------------------      
-GRBenv* OsiGrbSolverInterface::env_ = NULL;
+GRBenv* OsiGrbSolverInterface::globalenv_ = NULL;
+bool OsiGrbSolverInterface::globalenv_is_ours = true;
 unsigned int OsiGrbSolverInterface::numInstances_ = 0;
  
 //-------------------------------------------------------------------
@@ -2766,11 +2830,11 @@ GRBmodel* OsiGrbSolverInterface::getMutableLpPtr() const
 	if ( lp_ == NULL )
 	{
 		int err;
-		assert(env_ != NULL);
+		assert(getEnvironmentPtr() != NULL);
 		
 		std::string pn;
 		getStrParam(OsiProbName, pn);
-		err = GRBnewmodel(env_, &lp_, const_cast<char*>(pn.c_str()), 0, NULL, NULL, NULL, NULL, NULL);
+		err = GRBnewmodel(getEnvironmentPtr(), &lp_, const_cast<char*>(pn.c_str()), 0, NULL, NULL, NULL, NULL, NULL);
 		checkGRBerror( err, "GRBcreateprob", "getMutableLpPtr" );
 		assert( lp_ != NULL ); 
 	}
