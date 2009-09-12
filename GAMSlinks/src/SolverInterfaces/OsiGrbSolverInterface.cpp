@@ -408,6 +408,8 @@ OsiGrbSolverInterface::getIntParam(OsiIntParam key, int& value) const
     {
     case OsiMaxNumIteration:
     	double dblval;
+      rc = GRBupdatemodel(getMutableLpPtr());
+      checkGRBerror(rc, "GRBupdatemodel", "getIntParam");
     	rc = GRBgetdblparam(GRBgetenv(getMutableLpPtr()), GRB_DBL_PAR_ITERATIONLIMIT, &dblval);
       checkGRBerror( rc, "GRBgetdblparam", "getIntParam" );
     	value = (int) dblval;
@@ -433,8 +435,10 @@ OsiGrbSolverInterface::getDblParam(OsiDblParam key, double& value) const
 {
   debugMessage("OsiGrbSolverInterface::getDblParam(%d)\n", key);
 
+  int rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "getDblParam");
+
   bool retval = false;
-  int rc;
   switch (key) 
   {
 //TODO
@@ -499,8 +503,11 @@ bool OsiGrbSolverInterface::isAbandoned() const
 {
   debugMessage("OsiGrbSolverInterface::isAbandoned()\n");
 
+  int rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "isAbandoned");
+
   int stat;
-  int rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &stat);
+  rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &stat);
 	checkGRBerror( rc, "GRBgetintattr", "isAbandoned" );
 	
 	return (
@@ -514,8 +521,11 @@ bool OsiGrbSolverInterface::isProvenOptimal() const
 {
   debugMessage("OsiGrbSolverInterface::isProvenOptimal()\n");
 
+  int rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "isProvenOptimal");
+
   int stat;
-  int rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &stat);
+  rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &stat);
 	checkGRBerror( rc, "GRBgetintattr", "isProvenOptimal" );
 
 	return (stat == GRB_OPTIMAL);
@@ -525,8 +535,11 @@ bool OsiGrbSolverInterface::isProvenPrimalInfeasible() const
 {
   debugMessage("OsiGrbSolverInterface::isProvenPrimalInfeasible()\n");
 
+  int rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "isProvenPrimalInfeasible");
+
   int stat;
-  int rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &stat);
+  rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &stat);
 	checkGRBerror( rc, "GRBgetintattr", "isProvenPrimalInfeasible" );
 
 	return (stat == GRB_INFEASIBLE);
@@ -536,8 +549,11 @@ bool OsiGrbSolverInterface::isProvenDualInfeasible() const
 {
   debugMessage("OsiGrbSolverInterface::isProvenDualInfeasible()\n");
 
+  int rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "isProvenDualInfeasible");
+
   int stat;
-  int rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &stat);
+  rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &stat);
 	checkGRBerror( rc, "GRBgetintattr", "isProvenDualInfeasible" );
 
 	return (stat == GRB_UNBOUNDED);
@@ -547,8 +563,11 @@ bool OsiGrbSolverInterface::isPrimalObjectiveLimitReached() const
 {
   debugMessage("OsiGrbSolverInterface::isPrimalObjectiveLimitReached()\n");
 
+  int rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "isPrimalObjectiveLimitReached");
+
   int stat;
-  int rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &stat);
+  rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &stat);
 	checkGRBerror( rc, "GRBgetintattr", "isPrimalObjectiveLimitReached" );
 
 	return (stat == GRB_CUTOFF);
@@ -565,8 +584,11 @@ bool OsiGrbSolverInterface::isIterationLimitReached() const
 {
   debugMessage("OsiGrbSolverInterface::isIterationLimitReached()\n");
 
+  int rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "isIterationLimitReached");
+
   int stat;
-  int rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &stat);
+  rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &stat);
 	checkGRBerror( rc, "GRBgetintattr", "isIterationLimitReached" );
 
 	return (stat == GRB_ITERATION_LIMIT);
@@ -591,6 +613,9 @@ CoinWarmStart* OsiGrbSolverInterface::getWarmStart() const
   int rc, i;
 
   assert(!probtypemip_);
+  
+  rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "getWarmStart");
 
   rc = GRBgetintattrarray(getMutableLpPtr(), GRB_INT_ATTR_VBASIS, 0, numcols, cstat);
 	checkGRBerror( rc, "GRBgetintattrarray", "getWarmStart" );
@@ -773,6 +798,9 @@ void OsiGrbSolverInterface::markHotStart()
   	hotStartRStat_ = new int[hotStartRStatSize_];
   }
 
+  rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "markHotStart");
+
   rc = GRBgetintattrarray(getMutableLpPtr(), GRB_INT_ATTR_VBASIS, 0, numcols, hotStartCStat_);
 	checkGRBerror( rc, "GRBgetintattrarray", "markHotStart" );
   rc = GRBgetintattrarray(getMutableLpPtr(), GRB_INT_ATTR_CBASIS, 0, numrows, hotStartRStat_);
@@ -790,7 +818,10 @@ void OsiGrbSolverInterface::solveFromHotStart()
 
   assert( getNumCols() <= hotStartCStatSize_ );
   assert( getNumRows() <= hotStartRStatSize_ );
-  
+
+  rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "solveFromHotStart");
+
   rc = GRBsetintattrarray(getLpPtr(OsiGrbSolverInterface::FREECACHED_RESULTS), GRB_INT_ATTR_CBASIS, 0, getNumRows(), hotStartRStat_ );
 	checkGRBerror( rc, "GRBsetintattrarray", "solveFromHotStart" );
   rc = GRBsetintattrarray(getLpPtr(OsiGrbSolverInterface::FREECACHED_RESULTS), GRB_INT_ATTR_VBASIS, 0, getNumCols(), hotStartCStat_ );
@@ -828,6 +859,9 @@ int OsiGrbSolverInterface::getNumCols() const
   
   int numcols, rc;
 
+  rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "getNumCols");
+
   rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_NUMVARS, &numcols);
   checkGRBerror( rc, "GRBgetintattr", "getNumCols" );
 
@@ -840,6 +874,9 @@ int OsiGrbSolverInterface::getNumRows() const
 
   int numrows, rc;
 
+  rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "getNumRows");
+
   rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_NUMCONSTRS, &numrows);
   checkGRBerror( rc, "GRBgetintattr", "getNumRows" );
 
@@ -851,6 +888,9 @@ int OsiGrbSolverInterface::getNumElements() const
   debugMessage("OsiGrbSolverInterface::getNumElements()\n");
 
   int numnz, rc;
+
+  rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "getNumElements");
 
   rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_NUMNZS, &numnz);
   checkGRBerror( rc, "GRBgetintattr", "getNumElements" );
@@ -872,7 +912,9 @@ const double * OsiGrbSolverInterface::getColLower() const
   	if( ncols > 0 )
   	{
   		collower_ = new double[ncols];
-  		int rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_LB, 0, ncols, collower_);
+  	  int rc = GRBupdatemodel(getMutableLpPtr());
+  	  checkGRBerror(rc, "GRBupdatemodel", "getColLower");
+  		rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_LB, 0, ncols, collower_);
   	  checkGRBerror( rc, "GRBgetdblattrarray", "getColLower" );
   	}
   }
@@ -891,7 +933,9 @@ const double * OsiGrbSolverInterface::getColUpper() const
   	if( ncols > 0 )
   	{
   		colupper_ = new double[ncols];
-  		int rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_UB, 0, ncols, colupper_);
+  	  int rc = GRBupdatemodel(getMutableLpPtr());
+  	  checkGRBerror(rc, "GRBupdatemodel", "getColUpper");
+  		rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_UB, 0, ncols, colupper_);
   	  checkGRBerror( rc, "GRBgetdblattrarray", "getColUpper" );
   	}
   }
@@ -910,7 +954,9 @@ const char * OsiGrbSolverInterface::getRowSense() const
   	if( nrows > 0 )
   	{
   		rowsense_ = new char[nrows];
-  		int rc = GRBgetcharattrarray(getMutableLpPtr(), GRB_CHAR_ATTR_SENSE, 0, nrows, rowsense_);
+  	  int rc = GRBupdatemodel(getMutableLpPtr());
+  	  checkGRBerror(rc, "GRBupdatemodel", "getRowSense");
+  		rc = GRBgetcharattrarray(getMutableLpPtr(), GRB_CHAR_ATTR_SENSE, 0, nrows, rowsense_);
   	  checkGRBerror( rc, "GRBgetcharattrarray", "getRowSense" );
   	  
   	  for (int i = 0; i < nrows; ++i)
@@ -946,6 +992,8 @@ const double * OsiGrbSolverInterface::getRightHandSide() const
   	if( nrows > 0 )
   	{
   		rhs_ = new double[nrows];
+  	  rc = GRBupdatemodel(getMutableLpPtr());
+  	  checkGRBerror(rc, "GRBupdatemodel", "getRightHandSide");
   		rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_RHS, 0, nrows, rhs_);
   	  checkGRBerror( rc, "GRBgetdblattrarray", "getRightHandSide" );
   	}
@@ -1028,7 +1076,9 @@ const double * OsiGrbSolverInterface::getObjCoefficients() const
   	if( ncols > 0 )
   	{
   		obj_ = new double[ncols];
-  		int rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_OBJ, 0, ncols, obj_);
+  	  int rc = GRBupdatemodel(getMutableLpPtr());
+  	  checkGRBerror(rc, "GRBupdatemodel", "getObjCoefficients");
+  		rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_OBJ, 0, ncols, obj_);
   		checkGRBerror( rc, "GRBgetdblattrarray", "getObjCoefficients" );
   	}
   }
@@ -1042,7 +1092,9 @@ double OsiGrbSolverInterface::getObjSense() const
   debugMessage("OsiGrbSolverInterface::getObjSense()\n");
 
   int sense;
-  int rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_MODELSENSE, &sense);
+  int rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror( rc, "GRBupdatemodel", "getObjSense");
+  rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_MODELSENSE, &sense);
 	checkGRBerror( rc, "GRBgetintattr", "getObjSense" );
  
   return (double)sense;
@@ -1081,6 +1133,9 @@ const CoinPackedMatrix * OsiGrbSolverInterface::getMatrixByRow() const
   	int nelems, rc;
   	int *starts   = new int   [nrows + 1];
   	int *len      = new int   [nrows];
+
+    rc = GRBupdatemodel(getMutableLpPtr());
+    checkGRBerror(rc, "GRBupdatemodel", "getMatrixByRow");
 
   	rc = GRBgetconstrs(getMutableLpPtr(), &nelems, NULL, NULL, NULL, 0, nrows);
   	checkGRBerror( rc, "GRBgetconstrs", "getMatrixByRow" );
@@ -1123,6 +1178,9 @@ const CoinPackedMatrix * OsiGrbSolverInterface::getMatrixByCol() const
 		int nelems, rc;
 		int *starts = new int   [ncols + 1];
 		int *len    = new int   [ncols];
+
+	  rc = GRBupdatemodel(getMutableLpPtr());
+	  checkGRBerror(rc, "GRBupdatemodel", "getMatrixByCol");
 
   	rc = GRBgetvars(getMutableLpPtr(), &nelems, NULL, NULL, NULL, 0, ncols); 
   	checkGRBerror( rc, "GRBgetvars", "getMatrixByCol" );
@@ -1179,9 +1237,12 @@ const double * OsiGrbSolverInterface::getColSolution() const
 		int ncols = getNumCols();
 		if( ncols > 0 )
 		{
-			colsol_ = new double[ncols]; 
-			
-			int rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_X, 0, ncols, colsol_);
+			colsol_ = new double[ncols];
+
+		  int rc = GRBupdatemodel(getMutableLpPtr());
+		  checkGRBerror(rc, "GRBupdatemodel", "getColSolution");
+
+			rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_X, 0, ncols, colsol_);
 	  	checkGRBerror( rc, "GRBgetdblattrarray", "getColSolution" );
 	  	
 	  	if (rc)
@@ -1204,7 +1265,10 @@ const double * OsiGrbSolverInterface::getRowPrice() const
   	{
   		rowsol_ = new double[nrows];
   		
-			int rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_PI, 0, nrows, rowsol_);
+  	  int rc = GRBupdatemodel(getMutableLpPtr());
+  	  checkGRBerror(rc, "GRBupdatemodel", "getRowPrice");
+  	  
+			rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_PI, 0, nrows, rowsol_);
 	  	checkGRBerror( rc, "GRBgetdblattrarray", "getRowPrice" );
   		
 	  	if (rc)
@@ -1226,7 +1290,11 @@ const double * OsiGrbSolverInterface::getReducedCost() const
   	if( ncols > 0 )
   	{
   		redcost_ = new double[ncols];
-			int rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_RC, 0, ncols, redcost_);
+  		
+  	  int rc = GRBupdatemodel(getMutableLpPtr());
+  	  checkGRBerror(rc, "GRBupdatemodel", "getReducedCost");
+
+			rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_RC, 0, ncols, redcost_);
 	  	checkGRBerror( rc, "GRBgetdblattrarray", "getReducedCost" );
 
 	  	if (rc)
@@ -1248,8 +1316,11 @@ const double * OsiGrbSolverInterface::getRowActivity() const
   	if( nrows > 0 )
   	{
   		rowact_ = new double[nrows];
+  		
+  		int rc = GRBupdatemodel(getMutableLpPtr());
+  	  checkGRBerror(rc, "GRBupdatemodel", "getRowActivity");
 
-  		int rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_SLACK, 0, nrows, rowact_);
+  		rc = GRBgetdblattrarray(getMutableLpPtr(), GRB_DBL_ATTR_SLACK, 0, nrows, rowact_);
 	  	checkGRBerror( rc, "GRBgetdblattrarray", "getRowActivity" );
 	  	
 	  	if (rc)
@@ -1269,7 +1340,10 @@ double OsiGrbSolverInterface::getObjValue() const
 
   double objval = 0.0;
  
-	int rc = GRBgetdblattr(getMutableLpPtr(), GRB_DBL_ATTR_OBJVAL, &objval);
+  int rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "getObjValue");
+
+	rc = GRBgetdblattr(getMutableLpPtr(), GRB_DBL_ATTR_OBJVAL, &objval);
 	checkGRBerror( rc, "GRBgetdblattr", "getObjValue" );
 
   // Adjust objective function value by constant term in objective function
@@ -1286,7 +1360,11 @@ int OsiGrbSolverInterface::getIterationCount() const
   debugMessage("OsiGrbSolverInterface::getIterationCount()\n");
 
   double itercnt;
-	int rc = GRBgetdblattr(getMutableLpPtr(), GRB_DBL_ATTR_ITERCOUNT, &itercnt);
+  
+  int rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "getIterationCount");
+
+	rc = GRBgetdblattr(getMutableLpPtr(), GRB_DBL_ATTR_ITERCOUNT, &itercnt);
 	checkGRBerror( rc, "GRBgetdblattr", "getIterationCount" );
 
   return (int)itercnt;
@@ -1731,9 +1809,6 @@ void OsiGrbSolverInterface::setObjSense(double s)
   
   int rc = GRBsetintattr(getLpPtr( OsiGrbSolverInterface::FREECACHED_RESULTS ), GRB_INT_ATTR_MODELSENSE, (int)s);
   checkGRBerror(rc, "GRBsetintattr", "setObjSense");
-  
-  rc = GRBupdatemodel(getMutableLpPtr());
-  checkGRBerror(rc, "GRBupdatemodel", "setObjSense");
 }
 
 //-----------------------------------------------------------------------------
@@ -2242,7 +2317,10 @@ OsiGrbSolverInterface::loadProblem( const CoinPackedMatrix& matrix,
 	assert( m->isColOrdered() ); 
 	
 	int modelsense;
-	int err = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_MODELSENSE, &modelsense);
+  int err = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror( err, "GRBupdatemodel", "loadProblem");
+  
+	err = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_MODELSENSE, &modelsense);
 	checkGRBerror( err, "GRBgetintattr", "loadProblem" );
 
 	gutsOfDestructor(); // kill old LP, if any
@@ -2423,8 +2501,11 @@ OsiGrbSolverInterface::loadProblem(const int numcols, const int numrows,
 	for (i = 0; i < nc; ++i)
 		len[i] = start[i+1] - start[i];
 
+  int err = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror( err, "GRBupdatemodel", "loadProblem");
+
 	int modelsense;
-	int err = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_MODELSENSE, &modelsense);
+	err = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_MODELSENSE, &modelsense);
 	checkGRBerror( err, "GRBgetintattr", "loadProblem" );
 
 	gutsOfDestructor(); // kill old LP, if any
@@ -2995,9 +3076,12 @@ bool OsiGrbSolverInterface::basisIsAvailable() const {
   if (getNumCols() == 0)
   	return true;
 
+  int rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror( rc, "GRBupdatemodel", "basisIsAvailable" );
+
   int status;
-  int rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &status);
-	checkGRBerror( rc, "GRBgetintattr", "isAbandoned" );
+  rc = GRBgetintattr(getMutableLpPtr(), GRB_INT_ATTR_STATUS, &status);
+	checkGRBerror( rc, "GRBgetintattr", "basisIsAvailable" );
 
 	if (status == GRB_LOADED || status == GRB_INFEASIBLE || status == GRB_INF_OR_UNBD || status == GRB_UNBOUNDED)
 		return false;
@@ -3017,8 +3101,11 @@ void OsiGrbSolverInterface::getBasisStatus(int* cstat, int* rstat) const {
 
 	int numcols = getNumCols();
 	int numrows = getNumRows();
-	
-	int rc = GRBgetintattrarray(getMutableLpPtr(), GRB_INT_ATTR_VBASIS, 0, numcols, cstat);
+
+	int rc = GRBupdatemodel(getMutableLpPtr());
+  checkGRBerror(rc, "GRBupdatemodel", "getBasisStatus");
+
+	rc = GRBgetintattrarray(getMutableLpPtr(), GRB_INT_ATTR_VBASIS, 0, numcols, cstat);
 	checkGRBerror( rc, "GRBgetintattrarray", "getBasisStatus" );
 	
 	for (int i = 0; i < numcols; ++i)
