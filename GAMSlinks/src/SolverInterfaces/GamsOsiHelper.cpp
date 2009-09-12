@@ -152,6 +152,7 @@ bool gamsOsiStoreSolution(struct gmoRec* gmo, const OsiSolverInterface& solver, 
 	const double* colMargin = solver.getReducedCost();
 	const double* rowLevel  = solver.getRowActivity();
 	const double* rowMargin = solver.getRowPrice();
+	
 	assert(!gmoN(gmo) || colLevel);
 	assert(!gmoN(gmo) || colMargin);
 	assert(!gmoM(gmo) || rowLevel);
@@ -160,13 +161,17 @@ bool gamsOsiStoreSolution(struct gmoRec* gmo, const OsiSolverInterface& solver, 
 	int* colBasis = new int[solver.getNumCols()];
 	int* rowBasis = new int[solver.getNumRows()];
 	int* dummy    = CoinCopyOfArray((int*)NULL, CoinMax(gmoN(gmo), gmoM(gmo)), 0);
-	double* empty = new double[0];
+	double dummy2;
 	
 	// workaround for gmo if there are not rows (or columns)
-	if (!gmoN(gmo))
-		colMargin = empty;
-	if (!gmoM(gmo))
-		rowMargin = empty;
+	if (!gmoN(gmo)) {
+		colLevel  = &dummy2;
+		colMargin = &dummy2;
+	}
+	if (!gmoM(gmo)) {
+		rowLevel  = &dummy2;
+		rowMargin = &dummy2;
+	}
 
 	if (solver.optimalBasisIsAvailable()) {
 		solver.getBasisStatus(colBasis, rowBasis);
@@ -228,7 +233,6 @@ bool gamsOsiStoreSolution(struct gmoRec* gmo, const OsiSolverInterface& solver, 
 	delete[] colBasis;
 	delete[] rowBasis;
 	delete[] dummy;
-	delete[] empty;
 
 	return true;
 }

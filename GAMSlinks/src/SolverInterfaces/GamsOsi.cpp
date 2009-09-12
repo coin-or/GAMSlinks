@@ -66,6 +66,7 @@ extern "C" {
 #endif
 #ifdef COIN_HAS_MSK
 #include "OsiMskSolverInterface.hpp"
+#include "mosek.h"
 #endif
 
 GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
@@ -203,9 +204,10 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 					gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
 					return 1;
 				}
-				/* TODO someone need to free grbenv at the end */
 #endif
-				osi = new OsiGrbSolverInterface(grbenv);
+//				OsiGrbSolverInterface::setEnvironment(grbenv);
+//				osi = new OsiGrbSolverInterface();
+				osi = new OsiGrbSolverInterface(grbenv); // this lets OsiGrb take over ownership of grbenv, so it will be freed when osi is deleted
 #else
 				gevLogStat(gev, "GamsOsi compiled without Osi/Gurobi interface.\n");
 				return 1;
@@ -214,19 +216,27 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 			case MOSEK: {
 #ifdef COIN_HAS_MSK
-				OsiMskSolverInterface* osimsk = new OsiMskSolverInterface;
-				osi = osimsk;
 #ifdef GAMS_BUILD
+				MSKenv_t mskenv;
 				MKlicenseInit_t initType;
-				if (gevmoseklice(gev,osimsk->getEnvironmentPtr(),gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
-						gmoNDisc(gmo), 1, &initType)) {
+				
+		    if (MSK_makeenv(&mskenv,NULL, NULL,NULL,NULL)) {
+					gevLogStat(gev, "Failed to initialize Mosek environment.");
+					return 1;
+		    }
+//		    err = MSK_linkfunctoenvstream(env_, MSK_STREAM_LOG, NULL, printlog);
+//		    checkMSKerror( err, "MSK_linkfunctoenvstream", "incrementInstanceCounter" );
+				if (gevmoseklice(gev,mskenv,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo), 1, &initType)) {
 					gevLogStat(gev, "*** Could not register GAMS/MOSEK license. Contact support@gams.com\n");
 					gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
 					return 1;
 				}
-				if (MSK_initenv(osimsk->getEnvironmentPtr())) return 1;
+		    if (MSK_initenv(mskenv)) {
+					gevLogStat(gev, "Failed to initialize Mosek environment.");
+					return 1;
+		    }
 #endif
-
+				osi = new OsiMskSolverInterface(mskenv);
 #else
 				gevLogStat(gev, "GamsOsi compiled without Osi/MOSEK interface.\n");
 				return 1;
@@ -461,10 +471,10 @@ bool GamsOsi::setupStartingPoint() {
 					basis.setArtifStatus(j, CoinWarmStartBasis::basic);
 					++nbas;
 				} else
-					basis.setArtifStatus(j, CoinWarmStartBasis::atUpperBound);  //TODO correct?
+					basis.setArtifStatus(j, CoinWarmStartBasis::atUpperBound);
 				break;
 			case 1:
-				basis.setArtifStatus(j, CoinWarmStartBasis::atUpperBound);  //TODO correct?
+				basis.setArtifStatus(j, CoinWarmStartBasis::atUpperBound);
 				break;
 			default:
 				gevLogStat(gev, "Error: invalid basis indicator for row.");
@@ -587,7 +597,8 @@ bool GamsOsi::writeSolution(double cputime, double walltime) {
 	}
 
 	try {
-		gmoSetHeadnTail(gmo, Hiterused, osi->getIterationCount());
+		if (isLP())
+			gmoSetHeadnTail(gmo, Hiterused, osi->getIterationCount());
 		gmoSetHeadnTail(gmo, HresUsed, cputime);
 #if STEFAN
 		gmoSetHeadnTail(gmo, Tmipbest, model->getBestPossibleObjValue());
