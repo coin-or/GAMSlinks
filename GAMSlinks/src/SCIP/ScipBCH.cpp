@@ -57,7 +57,7 @@
 #include "scip/def.h"
 #undef __SCIP_MESSAGE_H__
  
-#if SCIP_SUBVERSION < 11
+#if SCIP_VERSION < 120
 extern "C" {
 #endif
 #include "scip/message.h"
@@ -67,7 +67,7 @@ extern "C" {
 #include "scip/struct_scip.h"
 #include "scip/struct_sol.h"
 #endif
-#if SCIP_SUBVERSION < 11
+#if SCIP_VERSION < 120
 }
 #endif
 

@@ -83,10 +83,10 @@ if test x"$use_thirdpartyscip" = xbuild ; then
   majorver=`awk '/define SCIP_VERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
   minorver=`awk '/define SCIP_SUBVERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
   AC_MSG_RESULT([${majorver}.${minorver}])
-  if (test x$majorver != x110) ; then
-    AC_MSG_ERROR(["Incorrect SCIP version. This build system is made for SCIP >= 1.10.0."])
+  if (test x$majorver != x110 && test x$majorver != x120) ; then
+    AC_MSG_ERROR(["Incorrect SCIP version. This build system is made for SCIP 1.10.0 or 1.20.0"])
   fi
-  AM_CONDITIONAL(SCIPDEVVERSION, [test x$minorver = x11])
+  AM_CONDITIONAL(SCIPDEVVERSION, [test x$majorver = x120])
   
   if test x$minorver = x0 ; then
     CFLAGS=`echo $CFLAGS | sed -e 's/-pedantic-errors//'`

@@ -56,6 +56,7 @@ host_triplet = @host@
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/nlpi_oracle.c \
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/heur_nlp.c \
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/heur_trivial.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/heur_trysol.c \
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_gms.c \
 @SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/reader_fzn.c
 
@@ -85,8 +86,8 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 libcoinscip_la_LIBADD =
 @SCIPDEVVERSION_TRUE@am__objects_1 = cons_quadratic.lo nlpi.lo \
 @SCIPDEVVERSION_TRUE@	nlpi_oracle.lo heur_nlp.lo \
-@SCIPDEVVERSION_TRUE@	heur_trivial.lo reader_gms.lo \
-@SCIPDEVVERSION_TRUE@	reader_fzn.lo
+@SCIPDEVVERSION_TRUE@	heur_trivial.lo heur_trysol.lo \
+@SCIPDEVVERSION_TRUE@	reader_gms.lo reader_fzn.lo
 @SCIPDEVVERSION_TRUE@am__objects_2 = nlpi_ipopt.lo
 nodist_libcoinscip_la_OBJECTS = branch.lo bitencode.lo buffer.lo \
 	clock.lo conflict.lo cons.lo cutpool.lo debug.lo dialog.lo \
@@ -611,6 +612,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_shifting.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_simplerounding.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_trivial.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_trysol.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_veclendiving.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/history.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/implics.Plo@am__quote@
@@ -1689,6 +1691,13 @@ heur_trivial.lo: $(SCIPDIR)/src/scip/heur_trivial.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/heur_trivial.c' object='heur_trivial.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o heur_trivial.lo `test -f '$(SCIPDIR)/src/scip/heur_trivial.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_trivial.c
+
+heur_trysol.lo: $(SCIPDIR)/src/scip/heur_trysol.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT heur_trysol.lo -MD -MP -MF "$(DEPDIR)/heur_trysol.Tpo" -c -o heur_trysol.lo `test -f '$(SCIPDIR)/src/scip/heur_trysol.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_trysol.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/heur_trysol.Tpo" "$(DEPDIR)/heur_trysol.Plo"; else rm -f "$(DEPDIR)/heur_trysol.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/heur_trysol.c' object='heur_trysol.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o heur_trysol.lo `test -f '$(SCIPDIR)/src/scip/heur_trysol.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_trysol.c
 
 reader_gms.lo: $(SCIPDIR)/src/scip/reader_gms.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_gms.lo -MD -MP -MF "$(DEPDIR)/reader_gms.Tpo" -c -o reader_gms.lo `test -f '$(SCIPDIR)/src/scip/reader_gms.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/reader_gms.c; \

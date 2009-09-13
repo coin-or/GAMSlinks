@@ -66,7 +66,7 @@ extern "C" {
 #include "scip/def.h"
 #undef __SCIP_MESSAGE_H__
 
-#if SCIP_SUBVERSION < 11
+#if SCIP_VERSION < 120
 extern "C" {
 #endif
 #include "scip/message.h"
@@ -75,7 +75,7 @@ extern "C" {
 #include "scip/cons_linear.h"
 #include "scip/cons_sos1.h"
 #include "scip/cons_sos2.h"
-#if SCIP_SUBVERSION < 11
+#if SCIP_VERSION < 120
 }
 #endif
 

@@ -162,6 +162,7 @@ nodist_libcoinscip_la_SOURCES += \
 			$(SCIPDIR)/src/scip/nlpi_oracle.c \
 			$(SCIPDIR)/src/scip/heur_nlp.c \
 			$(SCIPDIR)/src/scip/heur_trivial.c \
+			$(SCIPDIR)/src/scip/heur_trysol.c \
 			$(SCIPDIR)/src/scip/reader_gms.c \
 			$(SCIPDIR)/src/scip/reader_fzn.c
 endif
