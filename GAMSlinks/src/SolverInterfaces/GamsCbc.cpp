@@ -111,8 +111,8 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
   gmoIndexBaseSet(gmo, 0);
 
 	msghandler = new GamsMessageHandler(gev);
-	solver.passInMessageHandler(msghandler);
-	solver.setHintParam(OsiDoReducePrint, true, OsiHintTry);
+//	solver.passInMessageHandler(msghandler);
+//	solver.setHintParam(OsiDoReducePrint, true, OsiHintTry);
 
 	if (!setupProblem(solver)) {
 		gevLogStat(gev, "Error setting up problem...");
@@ -131,9 +131,20 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	model = new CbcModel(solver);
 	model->passInMessageHandler(msghandler);
 
+	/* workaround problem with cbc messages and own message handler:
+	 * Setting own message handler makes all message handlers in Cbc/Clp/OsiClp equal.
+	 * Thus, when Cbc sets the loglevel for Clp to 0, it also does so for Cbc.
+	 * Setting the messages of all messages of interest to -1 gets them printed again.
+	 */
+	model->messages().setDetailMessages(-1,1,7);
+	model->messages().setDetailMessages(-1,9,15);
+	model->messages().setDetailMessages(-1,16,21);
+	model->messages().setDetailMessages(-1,26,39);
+	model->messages().setDetailMessages(-1,40,46);
+
 	CbcMain0(*model);
   // Switch off most output
-	model->solver()->setHintParam(OsiDoReducePrint, true, OsiHintTry);
+//	model->solver()->setHintParam(OsiDoReducePrint, true, OsiHintTry);
 
 	if (gmoN(gmo)) {
 		if (!setupPrioritiesSOSSemiCon()) {
