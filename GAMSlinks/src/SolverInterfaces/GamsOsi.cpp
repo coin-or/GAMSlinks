@@ -321,7 +321,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 //}
 
 int GamsOsi::callSolver() {
-	gevLogStat(gev, "\nCalling OSI main solution routine...");
+//	gevLogStat(gev, "\nCalling OSI main solution routine...");
 
 	double start_cputime  = CoinCpuTime();
 	double start_walltime = CoinWallclockTime();
@@ -366,6 +366,7 @@ int GamsOsi::callSolver() {
 	}
 #endif
 	
+	gevLogStat(gev, "");
 	writeSolution(end_cputime - start_cputime, end_walltime - start_walltime);
 
 #if 0
@@ -515,23 +516,63 @@ bool GamsOsi::setupStartingPoint() {
 }
 
 bool GamsOsi::setupParameters() {
-	//note: does not seem to work via Osi: OsiDoPresolveInInitial, OsiDoDualInInitial
-
-	// Some tolerances and limits
-#if STEFAN
-	model->setDblParam(CbcModel::CbcMaximumSeconds,  options.getDouble("reslim"));
-#endif
-	
 	// iteration limit only for LPs
 	if (isLP())
 		osi->setIntParam(OsiMaxNumIteration, gevGetIntOpt(gev, gevIterLim));
 
+	double reslim = gevGetDblOpt(gev, gevResLim);
+	int nodelim = gevGetIntOpt(gev, gevNodeLim);
+	double optcr = gevGetDblOpt(gev, gevOptCR);
+	double optca = gevGetDblOpt(gev, gevOptCA);
+
+	switch (solverid) {
+		case CBC: 
 #if STEFAN
-	// MIP parameters
+	model->setDblParam(CbcModel::CbcMaximumSeconds,  options.getDouble("reslim"));
 	model->setIntParam(CbcModel::CbcMaxNumNode,           options.getInteger("nodelim"));
 	model->setDblParam(CbcModel::CbcAllowableGap,         options.getDouble ("optca"));
 	model->setDblParam(CbcModel::CbcAllowableFractionGap, options.getDouble ("optcr"));
 #endif
+		
+#ifdef COIN_HAS_CPX
+		case CPLEX: {
+			OsiCpxSolverInterface* osicpx = dynamic_cast<OsiCpxSolverInterface*>(osi);
+			assert(osicpx != NULL);
+			CPXsetdblparam(osicpx->getEnvironmentPtr(), CPX_PARAM_TILIM, reslim);
+			if (!isLP() && nodelim)
+				CPXsetintparam(osicpx->getEnvironmentPtr(), CPX_PARAM_NODELIM, nodelim);
+			CPXsetdblparam(osicpx->getEnvironmentPtr(), CPX_PARAM_EPGAP, optcr);
+			CPXsetdblparam(osicpx->getEnvironmentPtr(), CPX_PARAM_EPAGAP, optca);
+			
+			if (gmoOptFile(gmo)) {
+				char buffer[4096];
+				gmoNameOptFile(gmo, buffer);
+				gevLogStatPChar(gev, "Let CPLEX read option file "); gevLogStat(gev, buffer);
+				int ret = CPXreadcopyparam(osicpx->getEnvironmentPtr(), buffer);
+				if (ret) {
+					const char* errstr = CPXgeterrorstring(osicpx->getEnvironmentPtr(), ret, buffer);
+					gevLogStatPChar(gev, "Reading option file failed: ");
+					if (errstr)
+						gevLogStat(gev, errstr);
+					else
+						gevLogStat(gev, "unknown error code");
+				}
+			}
+			
+		} break;
+#endif
+			
+		case GUROBI:
+			
+		case MOSEK:
+			
+		case XPRESS:
+
+		default:
+			gevLogStat(gev, "Encountered unsupported solver id in setupParameters.");
+			return false;
+	}
+	
 	return true;
 }
 
@@ -539,61 +580,195 @@ bool GamsOsi::writeSolution(double cputime, double walltime) {
 	bool write_solution = false;
 	char buffer[255];
 
-	try {
-		gevLogStat(gev, "");
-		if (osi->isProvenDualInfeasible()) {
-			gmoSolveStatSet(gmo, SolveStat_Normal);
-			gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
-			gevLogStat(gev, "Model unbounded.");
+	switch (solverid) {
+#ifdef COIN_HAS_CPX
+		case CPLEX: {
+			OsiCpxSolverInterface* osicpx = dynamic_cast<OsiCpxSolverInterface*>(osi);
+			assert(osicpx);
+			int stat = CPXgetstat( osicpx->getEnvironmentPtr(), osicpx->getLpPtr(OsiCpxSolverInterface::KEEPCACHED_ALL) );
+			switch (stat) {
+				case CPX_STAT_OPTIMAL:
+				case CPX_STAT_OPTIMAL_INFEAS:
+				case CPXMIP_OPTIMAL:
+				case CPXMIP_OPTIMAL_INFEAS:
+					write_solution = true;
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
+					if (stat == CPX_STAT_OPTIMAL_INFEAS || stat == CPXMIP_OPTIMAL_INFEAS)
+						gevLogStat(gev, "Solved to optimality, but solution has infeasibilities after unscaling.");
+					else
+						gevLogStat(gev, "Solved to optimality.");
+					break;
+				
+				case CPX_STAT_UNBOUNDED:
+				case CPXMIP_UNBOUNDED:
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
+					gevLogStat(gev, "Model unbounded.");
+					break;
+					
+				case CPX_STAT_INFEASIBLE:
+				case CPX_STAT_INForUNBD:
+				case CPXMIP_INFEASIBLE:
+				case CPXMIP_INForUNBD:
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+					gevLogStat(gev, "Model infeasible.");
+					break;
+					
+				case CPX_STAT_NUM_BEST:
+				case CPX_STAT_FEASIBLE:
+					gevLogStat(gev, "Feasible solution found.");
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_NonOptimalIntermed);
+					break;
+				
+				case CPX_STAT_ABORT_IT_LIM:
+					gmoSolveStatSet(gmo, SolveStat_Iteration);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Iteration limit reached.");
+					break;
+					
+				case CPX_STAT_ABORT_TIME_LIM:
+					gmoSolveStatSet(gmo, SolveStat_Resource);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Time limit reached.");
+					break;
 
-		} else if (osi->isProvenPrimalInfeasible()) {
-			gmoSolveStatSet(gmo, SolveStat_Normal);
-			gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
-			gevLogStat(gev, "Model infeasible.");
+				case CPX_STAT_ABORT_OBJ_LIM:
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Objective limit reached.");
+					break;
+					
+				case CPX_STAT_ABORT_USER:
+					gmoSolveStatSet(gmo, SolveStat_User);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Stopped on user interrupt.");
+					break;
+					
+				case CPXMIP_OPTIMAL_TOL:
+					write_solution = true;
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_Integer);
+					gevLogStat(gev, "Solved to optimality within gap tolerances.");
+					break;
 
-		} else if (osi->isAbandoned()) {
-			gmoSolveStatSet(gmo, SolveStat_SolverErr);
-			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-			gevLogStat(gev, "Model abandoned.");
+				case CPXMIP_SOL_LIM:
+					write_solution = true;
+					gmoSolveStatSet(gmo, SolveStat_Solver);
+					gmoModelStatSet(gmo, ModelStat_Integer);
+					gevLogStat(gev, "Solution limit reached.");
+					break;
 
-		} else if (osi->isProvenOptimal()) {
-			write_solution = true;
-			gmoSolveStatSet(gmo, SolveStat_Normal);
-			gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
-			gevLogStat(gev, "Solved to optimality.");
+				case CPXMIP_NODE_LIM_FEAS:
+					write_solution = true;
+					gmoSolveStatSet(gmo, SolveStat_Iteration);
+					gmoModelStatSet(gmo, ModelStat_Integer);
+					gevLogStat(gev, "Node limit reached, have feasible solution.");
+					break;
+					
+				case CPXMIP_NODE_LIM_INFEAS:
+					gmoSolveStatSet(gmo, SolveStat_Iteration);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Node limit reached, do not have feasible solution.");
+					break;
+					
+				case CPXMIP_TIME_LIM_FEAS:
+					write_solution = true;
+					gmoSolveStatSet(gmo, SolveStat_Resource);
+					gmoModelStatSet(gmo, ModelStat_Integer);
+					gevLogStat(gev, "Time limit reached, have feasible solution.");
+					break;
+
+				case CPXMIP_TIME_LIM_INFEAS:
+					gmoSolveStatSet(gmo, SolveStat_Resource);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Time limit reached, do not have feasible solution.");
+					break;
+					
+				case CPXMIP_FAIL_FEAS:
+				case CPXMIP_FAIL_FEAS_NO_TREE:
+				case CPXMIP_MEM_LIM_FEAS:
+				case CPXMIP_ABORT_FEAS:
+				case CPXMIP_FEASIBLE:
+					write_solution = true;
+					gmoSolveStatSet(gmo, SolveStat_Solver);
+					gmoModelStatSet(gmo, ModelStat_Integer);
+					gevLogStat(gev, "Solving failed, but have feasible solution.");
+					break;
+					
+				case CPXMIP_FAIL_INFEAS:
+				case CPXMIP_FAIL_INFEAS_NO_TREE:
+				case CPXMIP_MEM_LIM_INFEAS:
+				case CPXMIP_ABORT_INFEAS:
+					gmoSolveStatSet(gmo, SolveStat_Solver);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Solving failed, do not have feasible solution.");
+					break;
+			}
+						
+		} break;
+#endif
+		
+		default:
+	
+			try {
+				gevLogStat(gev, "");
+				if (osi->isProvenDualInfeasible()) {
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
+					gevLogStat(gev, "Model unbounded.");
+
+				} else if (osi->isProvenPrimalInfeasible()) {
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+					gevLogStat(gev, "Model infeasible.");
+
+				} else if (osi->isAbandoned()) {
+					gmoSolveStatSet(gmo, SolveStat_SolverErr);
+					gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+					gevLogStat(gev, "Model abandoned.");
+
+				} else if (osi->isProvenOptimal()) {
+					write_solution = true;
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
+					gevLogStat(gev, "Solved to optimality.");
 
 #if STEFAN
-		} else if (model->isSecondsLimitReached()) {
-			gmoSolveStatSet(gmo, SolveStat_Resource);
-			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-			gevLogStat(gev, "Time limit reached.");
+				} else if (model->isSecondsLimitReached()) {
+					gmoSolveStatSet(gmo, SolveStat_Resource);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Time limit reached.");
 
 #endif
-		} else if (osi->isIterationLimitReached()) {
-			gmoSolveStatSet(gmo, SolveStat_Iteration);
-			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-			gevLogStat(gev, "Iteration limit reached.");
+				} else if (osi->isIterationLimitReached()) {
+					gmoSolveStatSet(gmo, SolveStat_Iteration);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Iteration limit reached.");
 
-		} else if (osi->isPrimalObjectiveLimitReached()) {
-			gmoSolveStatSet(gmo, SolveStat_Solver);
-			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-			gevLogStat(gev, "Primal objective limit reached.");
+				} else if (osi->isPrimalObjectiveLimitReached()) {
+					gmoSolveStatSet(gmo, SolveStat_Solver);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Primal objective limit reached.");
 
-		} else if (osi->isDualObjectiveLimitReached()) {
-			gmoSolveStatSet(gmo, SolveStat_Solver);
-			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-			gevLogStat(gev, "Dual objective limit reached.");
+				} else if (osi->isDualObjectiveLimitReached()) {
+					gmoSolveStatSet(gmo, SolveStat_Solver);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Dual objective limit reached.");
 
-		} else {
-			gmoSolveStatSet(gmo, SolveStat_Solver);
-			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-			gevLogStat(gev, "Model status unknown, no feasible solution found.");
-		}
-	} catch (CoinError error) {
-		gevLogStatPChar(gev, "Exception caught when requesting solution status: ");
-		gevLogStat(gev, error.message().c_str());
-		gmoSolveStatSet(gmo, SolveStat_Solver);
-		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+				} else {
+					gmoSolveStatSet(gmo, SolveStat_Solver);
+					gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+					gevLogStat(gev, "Model status unknown.");
+				}
+			} catch (CoinError error) {
+				gevLogStatPChar(gev, "Exception caught when requesting solution status: ");
+				gevLogStat(gev, error.message().c_str());
+				gmoSolveStatSet(gmo, SolveStat_Solver);
+				gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+			}
 	}
 
 	try {
