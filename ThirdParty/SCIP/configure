@@ -21069,18 +21069,18 @@ fi
 
   echo "$as_me:$LINENO: checking SCIP version" >&5
 echo $ECHO_N "checking SCIP version... $ECHO_C" >&6
-  majorver=`awk '/define SCIP_VERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
-  minorver=`awk '/define SCIP_SUBVERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
-  echo "$as_me:$LINENO: result: ${majorver}.${minorver}" >&5
-echo "${ECHO_T}${majorver}.${minorver}" >&6
-  if (test x$majorver != x110 && test x$majorver != x120) ; then
-    { { echo "$as_me:$LINENO: error: \"Incorrect SCIP version. This build system is made for SCIP 1.10.0 or 1.20.0\"" >&5
-echo "$as_me: error: \"Incorrect SCIP version. This build system is made for SCIP 1.10.0 or 1.20.0\"" >&2;}
+  scipver=`awk '/define SCIP_VERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
+  scipsubver=`awk '/define SCIP_SUBVERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
+  echo "$as_me:$LINENO: result: ${scipver}.${scipsubver}" >&5
+echo "${ECHO_T}${scipver}.${scipsubver}" >&6
+  if (test x$scipver != x120) ; then
+    { { echo "$as_me:$LINENO: error: \"Incorrect SCIP version. This build system is made for SCIP 120.x\"" >&5
+echo "$as_me: error: \"Incorrect SCIP version. This build system is made for SCIP 120.x\"" >&2;}
    { (exit 1); exit 1; }; }
   fi
 
 
-if test x$majorver = x120; then
+if test x$scipsubver != x0; then
   SCIPDEVVERSION_TRUE=
   SCIPDEVVERSION_FALSE='#'
 else
@@ -21089,19 +21089,19 @@ else
 fi
 
 
-  if test x$minorver = x0 ; then
-    CFLAGS=`echo $CFLAGS | sed -e 's/-pedantic-errors//'`
-    CXXFLAGS=`echo $CXXFLAGS | sed -e 's/-pedantic-errors//'`
-  else
-    # SCIP uses long long that result in errors if -pedantic-errors is used
-    # thus, we disable this warning
-    case "$CC" in
-      *gcc* )
-      	CFLAGS="$CFLAGS -Wno-long-long -Wno-overlength-strings"
-      	CXXFLAGS="$CXXFLAGS -Wno-long-long -Wno-overlength-strings"
-      ;;
-   esac
-  fi
+#  if test x$minorver = x999 ; then
+#    CFLAGS=`echo $CFLAGS | sed -e 's/-pedantic-errors//'`
+#    CXXFLAGS=`echo $CXXFLAGS | sed -e 's/-pedantic-errors//'`
+#  else
+  # SCIP uses long long that result in errors if -pedantic-errors is used
+  # thus, we disable this warning
+  case "$CC" in
+    *gcc* )
+    	CFLAGS="$CFLAGS -Wno-long-long -Wno-overlength-strings"
+    	CXXFLAGS="$CXXFLAGS -Wno-long-long -Wno-overlength-strings"
+    ;;
+  esac
+#  fi
 
 else
   if test x$coin_has_scip = xtrue ; then

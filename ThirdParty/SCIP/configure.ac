@@ -1,4 +1,4 @@
-# Copyright (C) 2008 Stefan Vigerske
+# Copyright (C) 2008, 2009 Stefan Vigerske
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 
@@ -80,27 +80,27 @@ if test x"$use_thirdpartyscip" = xbuild ; then
   CXXFLAGS="$CXXFLAGS $EXTRAFLAGS"
   
   AC_MSG_CHECKING([SCIP version])
-  majorver=`awk '/define SCIP_VERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
-  minorver=`awk '/define SCIP_SUBVERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
-  AC_MSG_RESULT([${majorver}.${minorver}])
-  if (test x$majorver != x110 && test x$majorver != x120) ; then
-    AC_MSG_ERROR(["Incorrect SCIP version. This build system is made for SCIP 1.10.0 or 1.20.0"])
+  scipver=`awk '/define SCIP_VERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
+  scipsubver=`awk '/define SCIP_SUBVERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
+  AC_MSG_RESULT([${scipver}.${scipsubver}])
+  if (test x$scipver != x120) ; then
+    AC_MSG_ERROR(["Incorrect SCIP version. This build system is made for SCIP 120.x"])
   fi
-  AM_CONDITIONAL(SCIPDEVVERSION, [test x$majorver = x120])
+  AM_CONDITIONAL(SCIPDEVVERSION, [test x$scipsubver != x0])
   
-  if test x$minorver = x0 ; then
-    CFLAGS=`echo $CFLAGS | sed -e 's/-pedantic-errors//'`
-    CXXFLAGS=`echo $CXXFLAGS | sed -e 's/-pedantic-errors//'`
-  else
-    # SCIP uses long long that result in errors if -pedantic-errors is used
-    # thus, we disable this warning
-    case "$CC" in
-      *gcc* )
-      	CFLAGS="$CFLAGS -Wno-long-long -Wno-overlength-strings"
-      	CXXFLAGS="$CXXFLAGS -Wno-long-long -Wno-overlength-strings"
-      ;;
-   esac
-  fi
+#  if test x$minorver = x999 ; then
+#    CFLAGS=`echo $CFLAGS | sed -e 's/-pedantic-errors//'`
+#    CXXFLAGS=`echo $CXXFLAGS | sed -e 's/-pedantic-errors//'`
+#  else
+  # SCIP uses long long that result in errors if -pedantic-errors is used
+  # thus, we disable this warning
+  case "$CC" in
+    *gcc* )
+    	CFLAGS="$CFLAGS -Wno-long-long -Wno-overlength-strings"
+    	CXXFLAGS="$CXXFLAGS -Wno-long-long -Wno-overlength-strings"
+    ;;
+  esac
+#  fi
   
 else
   if test x$coin_has_scip = xtrue ; then

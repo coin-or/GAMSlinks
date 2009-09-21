@@ -1,4 +1,4 @@
-# Copyright (C) 2008 Stefan Vigerske
+# Copyright (C) 2008, 2009 Stefan Vigerske
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 
@@ -89,6 +89,7 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/scip/cons_indicator.c \
 			$(SCIPDIR)/src/scip/cons_sos1.c \
 			$(SCIPDIR)/src/scip/cons_sos2.c \
+			$(SCIPDIR)/src/scip/cons_quadratic.c \
 			$(SCIPDIR)/src/scip/dialog_default.c \
 			$(SCIPDIR)/src/scip/disp_default.c \
 			$(SCIPDIR)/src/scip/heur_actconsdiving.c \
@@ -115,6 +116,9 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/scip/heur_simplerounding.c \
 			$(SCIPDIR)/src/scip/heur_veclendiving.c \
 			$(SCIPDIR)/src/scip/heur_dins.c \
+			$(SCIPDIR)/src/scip/heur_nlp.c \
+			$(SCIPDIR)/src/scip/heur_trivial.c \
+			$(SCIPDIR)/src/scip/heur_trysol.c \
 			$(SCIPDIR)/src/scip/nodesel_bfs.c \
 			$(SCIPDIR)/src/scip/nodesel_dfs.c \
 			$(SCIPDIR)/src/scip/nodesel_estimate.c \
@@ -140,6 +144,8 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/scip/reader_ppm.c \
 			$(SCIPDIR)/src/scip/reader_rlp.c \
 			$(SCIPDIR)/src/scip/reader_sos.c \
+			$(SCIPDIR)/src/scip/reader_gms.c \
+			$(SCIPDIR)/src/scip/reader_fzn.c \
 			$(SCIPDIR)/src/scip/sepa_clique.c \
 			$(SCIPDIR)/src/scip/sepa_cmir.c \
 			$(SCIPDIR)/src/scip/sepa_flowcover.c \
@@ -150,6 +156,8 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/scip/sepa_strongcg.c \
 			$(SCIPDIR)/src/scip/sepa_mcf.c \
 			$(SCIPDIR)/src/scip/sepa_zerohalf.c \
+			$(SCIPDIR)/src/scip/nlpi.c \
+			$(SCIPDIR)/src/scip/nlpi_oracle.c \
 			$(SCIPDIR)/src/tclique/tclique_branch.c \
 			$(SCIPDIR)/src/tclique/tclique_coloring.c \
 			$(SCIPDIR)/src/tclique/tclique_graph.c \
@@ -157,14 +165,7 @@ nodist_libcoinscip_la_SOURCES = \
 
 if SCIPDEVVERSION
 nodist_libcoinscip_la_SOURCES += \
-			$(SCIPDIR)/src/scip/cons_quadratic.c \
-			$(SCIPDIR)/src/scip/nlpi.c \
-			$(SCIPDIR)/src/scip/nlpi_oracle.c \
-			$(SCIPDIR)/src/scip/heur_nlp.c \
-			$(SCIPDIR)/src/scip/heur_trivial.c \
-			$(SCIPDIR)/src/scip/heur_trysol.c \
-			$(SCIPDIR)/src/scip/reader_gms.c \
-			$(SCIPDIR)/src/scip/reader_fzn.c
+			$(SCIPDIR)/src/scip/cons_soc.c
 endif
 
 #nodist_libcoinscip_la_SOURCES += \
@@ -188,10 +189,8 @@ endif
 
 #add CLP as linear solver
 nodist_libcoinscip_la_SOURCES += $(SCIPDIR)/src/scip/lpi_clp.cpp
-if SCIPDEVVERSION
 #add IPOPT as nonlinear solver
 nodist_libcoinscip_la_SOURCES += $(SCIPDIR)/src/scip/nlpi_ipopt.cpp
-endif
 
 COINUTILSSRCDIR=$(srcdir)/../../CoinUtils
 COINUTILSOBJDIR=../../CoinUtils

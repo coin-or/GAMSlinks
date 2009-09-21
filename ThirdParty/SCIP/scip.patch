@@ -1,0 +1,122 @@
+--- scip/src/scip/sepa_zerohalf.c.orig	2009-09-21 11:27:28.000000000 +0200
++++ scip/src/scip/sepa_zerohalf.c	2009-09-21 11:30:46.000000000 +0200
+@@ -12,11 +12,11 @@
+ /*  along with SCIP; see the file COPYING. If not email to scip@zib.de.      */
+ /*                                                                           */
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+-#pragma ident "@(#) $Id: sepa_zerohalf.c,v 1.21 2009/09/14 07:21:39 bzfheinz Exp $"
++#pragma ident "@(#) $Id: sepa_zerohalf.c,v 1.22 2009/09/21 09:30:46 bzfviger Exp $"
+ 
+ /* prints short statistics (callback, preprocessing, adding cuts) */
+-// #define SCIP_DEBUG
+-// #define ZEROHALF__PRINT_STATISTICS /**< print statistics */
++/* // #define SCIP_DEBUG */
++/* // #define ZEROHALF__PRINT_STATISTICS */ /**< print statistics */
+ 
+ /**
+  * @file   sepa_zerohalf.c
+@@ -4050,7 +4050,7 @@
+                      (lpdata->rcolsindexofcol[lppos] == LP_SOL_EQUALS_ODD_LB
+                         || lpdata->rcolsindexofcol[lppos] == LP_SOL_EQUALS_ODD_UB));
+ 
+-               // ???????????? TODO (?) analog fuer kont. Vars (?)
++               /* // ???????????? TODO (?) analog fuer kont. Vars (?) */
+ 
+                continue;  /* col is not relevant */
+             }
+@@ -6344,7 +6344,7 @@
+     
+    /* apply gaussian elimination mod 2 */
+ #ifdef SCIP_DEBUG
+-   debugPrintMod2Data(scip, lpdata, mod2data, FALSE); // ???????????????????????????? DEBUG
++   debugPrintMod2Data(scip, lpdata, mod2data, FALSE); /* // ???????????????????????????? DEBUG */
+ #endif
+ 
+    /* choose pivot col */
+@@ -6409,24 +6409,24 @@
+    }
+ 
+ #ifdef SCIP_DEBUG
+-   SCIPdebugMessage("after gaussian steps:\n"); // ?????????????DEBUG
+-   debugPrintMod2Data(scip, lpdata, mod2data, FALSE); // ???????????????????????????? DEBUG
++   SCIPdebugMessage("after gaussian steps:\n"); /* // ?????????????DEBUG */
++   debugPrintMod2Data(scip, lpdata, mod2data, FALSE); /* // ???????????????????????????? DEBUG */
+ #endif
+    /* remove (generated) column singletons */
+    SCIP_CALL(preprocessColumns(scip, sepadata, lpdata, mod2data,
+          0, mod2data->ncolsind, FALSE, TRUE, TRUE));
+ 
+ #ifdef SCIP_DEBUG
+-   SCIPdebugMessage("w/o col singletons:\n"); // ?????????????DEBUG
+-   debugPrintMod2Data(scip, lpdata, mod2data, FALSE); // ???????????????????????????? DEBUG
++   SCIPdebugMessage("w/o col singletons:\n"); /* // ?????????????DEBUG */
++   debugPrintMod2Data(scip, lpdata, mod2data, FALSE); /* // ???????????????????????????? DEBUG */
+ #endif
+    /* remove zero rows and rows with slack > maxslack */
+    SCIP_CALL(preprocessRows(scip, sepadata, lpdata, mod2data,
+          0, mod2data->nrowsind, TRUE, TRUE, FALSE));
+ 
+ #ifdef SCIP_DEBUG
+-   SCIPdebugMessage("w/o slack>maxslack rowsl:\n"); // ?????????????DEBUG
+-   debugPrintMod2Data(scip, lpdata, mod2data, FALSE); // ???????????????????????????? DEBUG
++   SCIPdebugMessage("w/o slack>maxslack rowsl:\n"); /* // ?????????????DEBUG */
++   debugPrintMod2Data(scip, lpdata, mod2data, FALSE); /* // ???????????????????????????? DEBUG */
+ #endif
+    /* search for zerohalf cuts */ 
+    SCIP_CALL(preprocessTrivialZerohalfCuts(scip, sepadata, lpdata, mod2data,
+--- scip/src/tclique/tclique_graph.c.orig	2009-09-21 11:29:42.000000000 +0200
++++ scip/src/tclique/tclique_graph.c	2009-09-21 11:34:25.000000000 +0200
+@@ -12,7 +12,7 @@
+ /*  along with TCLIQUE; see the file COPYING.                                */
+ /*                                                                           */
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+-#pragma ident "@(#) $Id: tclique_graph.c,v 1.13 2009/09/14 16:27:42 bzfwolte Exp $"
++#pragma ident "@(#) $Id: tclique_graph.c,v 1.14 2009/09/21 09:34:25 bzfviger Exp $"
+ 
+ /**@file   tclique_graph.c
+  * @brief  graph data part of algorithm for maximum cliques
+@@ -576,7 +576,7 @@
+    result = fscanf(file, "%s", probname);
+    if( result == EOF )
+    {
+-      infoMessage("\Error while reading probname in file %s", filename); 
++      infoMessage("Error while reading probname in file %s", filename); 
+       fclose(file);
+       return FALSE;
+    }
+@@ -584,7 +584,7 @@
+    result = fscanf(file, "%d", &(*tcliquegraph)->nnodes);
+    if( result == EOF )
+    {
+-      infoMessage("\Error while reading number of nodes in file %s", filename); 
++      infoMessage("Error while reading number of nodes in file %s", filename); 
+       fclose(file);
+       return FALSE;
+    }
+@@ -592,7 +592,7 @@
+    result = fscanf(file, "%d", &(*tcliquegraph)->nedges);
+    if( result == EOF )
+    {
+-      infoMessage("\Error while reading number of edges in file %s", filename); 
++      infoMessage("Error while reading number of edges in file %s", filename); 
+       fclose(file);
+       return FALSE;
+    }
+@@ -617,7 +617,7 @@
+       result = fscanf(file, "%lf", &weight);
+       if( result == EOF )
+       {
+-         infoMessage("\Error while reading weights of nodes in file %s", filename); 
++         infoMessage("Error while reading weights of nodes in file %s", filename); 
+          fclose(file);
+          return FALSE;
+       }
+@@ -634,7 +634,7 @@
+       result = fscanf(file, "%d%d", &node1, &node2);
+       if( result == EOF )
+       {
+-         infoMessage("\Error while reading edges in file %s", filename); 
++         infoMessage("Error while reading edges in file %s", filename); 
+          fclose(file);
+          return FALSE;
+       }

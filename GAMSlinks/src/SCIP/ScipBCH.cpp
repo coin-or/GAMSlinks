@@ -52,23 +52,12 @@
 
 #include "GamsDictionary.hpp"
 
-// get SCIP_SUBVERSION, but not function definitions
-#define __SCIP_MESSAGE_H__
-#include "scip/def.h"
-#undef __SCIP_MESSAGE_H__
- 
-#if SCIP_VERSION < 120
-extern "C" {
-#endif
 #include "scip/message.h"
 #include "scip/scip.h"
 #include "scip/sol.h"
 #ifndef NDEBUG
 #include "scip/struct_scip.h"
 #include "scip/struct_sol.h"
-#endif
-#if SCIP_VERSION < 120
-}
 #endif
 
 /** Data of separator.
