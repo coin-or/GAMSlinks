@@ -89,7 +89,11 @@ int main (int argc, const char *argv[]) {
 	// Pass in the GAMS status/log file print routines 
 	GamsMessageHandler myout(gamshandler), slvout(gamshandler);
 	slvout.setPrefix(0);
-
+	slvout.setLogLevel(0,1);
+   slvout.setLogLevel(1,0);
+   slvout.setLogLevel(2,0);
+   slvout.setLogLevel(3,0);
+	
 //	solver.passInMessageHandler(&slvout);
 //	solver.getModelPtr()->passInMessageHandler(&slvout);
 //	solver.setHintParam(OsiDoReducePrint,true,OsiHintTry);
@@ -150,11 +154,11 @@ int main (int argc, const char *argv[]) {
 	 * Thus, when Cbc sets the loglevel for Clp to 0, it also does so for Cbc.
 	 * Setting the messages of all messages of interest to -1 gets them printed again.
 	 */
-	model.messages().setDetailMessages(-1,1,7);
-	model.messages().setDetailMessages(-1,9,15);
-	model.messages().setDetailMessages(-1,16,21);
-	model.messages().setDetailMessages(-1,26,39);
-	model.messages().setDetailMessages(-1,40,46);
+//	model.messages().setDetailMessages(-1,1,7);
+//	model.messages().setDetailMessages(-1,9,15);
+//	model.messages().setDetailMessages(-1,16,21);
+//	model.messages().setDetailMessages(-1,26,39);
+//	model.messages().setDetailMessages(-1,40,46);
 
 	CbcMain0(model);
   // Switch off most output

@@ -113,6 +113,10 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	msghandler = new GamsMessageHandler(gev);
 //	solver.passInMessageHandler(msghandler);
 //	solver.setHintParam(OsiDoReducePrint, true, OsiHintTry);
+   msghandler->setLogLevel(0,1);
+   msghandler->setLogLevel(1,0);
+   msghandler->setLogLevel(2,0);
+   msghandler->setLogLevel(3,0);
 
 	if (!setupProblem(solver)) {
 		gevLogStat(gev, "Error setting up problem...");
@@ -136,11 +140,11 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	 * Thus, when Cbc sets the loglevel for Clp to 0, it also does so for Cbc.
 	 * Setting the messages of all messages of interest to -1 gets them printed again.
 	 */
-	model->messages().setDetailMessages(-1,1,7);
-	model->messages().setDetailMessages(-1,9,15);
-	model->messages().setDetailMessages(-1,16,21);
-	model->messages().setDetailMessages(-1,26,39);
-	model->messages().setDetailMessages(-1,40,46);
+//	model->messages().setDetailMessages(-1,1,7);
+//	model->messages().setDetailMessages(-1,9,15);
+//	model->messages().setDetailMessages(-1,16,21);
+//	model->messages().setDetailMessages(-1,26,39);
+//	model->messages().setDetailMessages(-1,40,46);
 
 	CbcMain0(*model);
   // Switch off most output
