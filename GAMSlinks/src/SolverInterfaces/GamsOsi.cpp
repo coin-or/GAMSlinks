@@ -562,12 +562,77 @@ bool GamsOsi::setupParameters() {
 		} break;
 #endif
 			
-		case GUROBI:
+#ifdef COIN_HAS_GRB
+		case GUROBI:  {
+			OsiGrbSolverInterface* osigrb = dynamic_cast<OsiGrbSolverInterface*>(osi);
+			assert(osigrb != NULL);
+			GRBenv* grbenv = GRBgetenv(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL));
+			GRBsetdblparam(grbenv, GRB_DBL_PAR_TIMELIMIT, reslim);
+			if (!isLP() && nodelim)
+				GRBsetdblparam(grbenv, GRB_DBL_PAR_NODELIMIT, (double)nodelim);
+			GRBsetdblparam(grbenv, GRB_DBL_PAR_MIPGAP, optcr);
+			//optca not in gurobi
 			
-		case MOSEK:
+			if (gmoOptFile(gmo)) {
+				char buffer[4096];
+				gmoNameOptFile(gmo, buffer);
+				gevLogStatPChar(gev, "Let GUROBI read option file "); gevLogStat(gev, buffer);
+				int ret = GRBreadparams(grbenv, buffer);
+				if (ret) {
+					const char* errstr = GRBgeterrormsg(grbenv);
+					gevLogStatPChar(gev, "Reading option file failed: ");
+					if (errstr)
+						gevLogStat(gev, errstr);
+					else
+						gevLogStat(gev, "unknown error");
+				}
+			}
 			
-		case XPRESS:
-
+		} break;
+#endif
+			
+#ifdef COIN_HAS_MSK
+		case MOSEK: {
+			OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
+			assert(osimsk != NULL);
+			MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_OPTIMIZER_MAX_TIME, reslim);
+			if (!isLP() && nodelim)
+				MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_MIO_MAX_NUM_RELAXS, nodelim);
+			MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_NEAR_TOL_REL_GAP, optcr);
+			MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_NEAR_TOL_ABS_GAP, optca);
+			if (gmoOptFile(gmo)) {
+				char buffer[4096];
+				gmoNameOptFile(gmo, buffer);
+				gevLogStatPChar(gev, "Let MOSEK read option file "); gevLogStat(gev, buffer);
+				MSK_putstrparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_SPAR_PARAM_READ_FILE_NAME, buffer);
+				MSK_readparamfile(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL));
+			}
+			
+			break;
+		}
+#endif
+			
+#ifdef COIN_HAS_XPR
+		case XPRESS: {
+			OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
+			assert(osixpr != NULL);
+			
+			XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXTIME, (int)reslim);
+			if (!isLP() && nodelim)
+				XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXNODE, nodelim);
+			XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPRELSTOP, optcr);
+			XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPABSSTOP, optcr);
+//			if (gmoOptFile(gmo)) {
+//				char buffer[4096];
+//				gmoNameOptFile(gmo, buffer);
+//				gevLogStatPChar(gev, "Let XPRESS read option file "); gevLogStat(gev, buffer);
+//  TODO ...
+//			}
+			
+			break;
+		}
+#endif
+		
 		default:
 			gevLogStat(gev, "Encountered unsupported solver id in setupParameters.");
 			return false;
@@ -710,7 +775,341 @@ bool GamsOsi::writeSolution(double cputime, double walltime) {
 						
 		} break;
 #endif
+
+#ifdef COIN_HAS_GRB
+		case GUROBI: {
+			OsiGrbSolverInterface* osigrb = dynamic_cast<OsiGrbSolverInterface*>(osi);
+			assert(osigrb);
+			int stat, nrsol;
+			GRBgetintattr(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL), GRB_INT_ATTR_SOLCOUNT, &nrsol);
+		  GRBgetintattr(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL), GRB_INT_ATTR_STATUS, &stat);
+			write_solution = nrsol;
+			switch (stat) {
+				case GRB_OPTIMAL:
+					assert(nrsol);
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					if (isLP()) {
+						gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
+						gevLogStat(gev, "Solved to optimality.");
+					} else {
+						double bound;
+						GRBgetdblattr(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL), GRB_DBL_ATTR_OBJBOUND, &bound);
+						if(fabs(bound - osi->getObjValue()) < 1e-9) {
+							gevLogStat(gev, "Solved to optimality.");
+							gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
+						} else {
+							gevLogStat(gev, "Solved to optimality within tolerances.");
+							gmoModelStatSet(gmo, ModelStat_Integer);
+						}
+					}
+					break;
+					
+				case GRB_INFEASIBLE:
+					assert(!nrsol);
+				case GRB_INF_OR_UNBD:
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+					gevLogStat(gev, "Model infeasible.");
+					break;
+					
+				case GRB_UNBOUNDED:
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
+					gevLogStat(gev, "Model unbounded.");
+					break;
+					
+				case GRB_CUTOFF:
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Objective limit reached.");
+					break;
+					
+				case GRB_ITERATION_LIMIT:
+					gmoSolveStatSet(gmo, SolveStat_Iteration);
+					if (nrsol) {
+						gmoModelStatSet(gmo, isLP() ? ModelStat_NonOptimalIntermed : ModelStat_Integer);
+						gevLogStat(gev, "Iteration limit reached, but have feasible solution.");
+					} else {
+						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+						gevLogStat(gev, "Iteration limit reached.");
+					}
+					break;
+
+				case GRB_NODE_LIMIT:
+					gmoSolveStatSet(gmo, SolveStat_Iteration);
+					assert(!isLP());
+					if (nrsol) {
+						gmoModelStatSet(gmo, ModelStat_Integer);
+						gevLogStat(gev, "Node limit reached, but have feasible solution.");
+					} else {
+						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+						gevLogStat(gev, "Node limit reached.");
+					}
+					break;
+					
+				case GRB_TIME_LIMIT:
+					gmoSolveStatSet(gmo, SolveStat_Resource);
+					if (nrsol) {
+						gmoModelStatSet(gmo, isLP() ? ModelStat_NonOptimalIntermed : ModelStat_Integer);
+						gevLogStat(gev, "Time limit reached, but have feasible solution.");
+					} else {
+						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+						gevLogStat(gev, "Time limit reached.");
+					}
+					break;
+					
+				case GRB_SOLUTION_LIMIT:
+					gmoSolveStatSet(gmo, SolveStat_Solver);
+					if (nrsol) {
+						gmoModelStatSet(gmo, isLP() ? ModelStat_NonOptimalIntermed : ModelStat_Integer);
+						gevLogStat(gev, "Solution limit reached.");
+					} else {
+						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+						gevLogStat(gev, "Solution limit reached, but do not have solution.");
+					}
+					break;
+					
+				case GRB_INTERRUPTED:
+					gmoSolveStatSet(gmo, SolveStat_User);
+					if (nrsol) {
+						gmoModelStatSet(gmo, isLP() ? ModelStat_NonOptimalIntermed : ModelStat_Integer);
+						gevLogStat(gev, "User interrupt, have feasible solution.");
+					} else {
+						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+						gevLogStat(gev, "User interrupt.");
+					}
+					break;
+					
+				case GRB_NUMERIC:
+					gmoSolveStatSet(gmo, SolveStat_Solver);
+					if (nrsol) {
+						gmoModelStatSet(gmo, isLP() ? ModelStat_NonOptimalIntermed : ModelStat_Integer);
+						gevLogStat(gev, "Stopped on numerical difficulties, but have feasible solution.");
+					} else {
+						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+						gevLogStat(gev, "Stopped on numerical difficulties.");
+					}
+					break;
+					
+				case GRB_LOADED:
+				default:
+					gmoSolveStatSet(gmo, SolveStat_Solver);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Solving failed, unknown status.");
+					break;
+			}
+			break;
+		}
+#endif
 		
+#ifdef COIN_HAS_MSK
+		case MOSEK: {
+			OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
+			assert(osimsk);
+
+			MSKsolstae status;
+		  MSKsoltypee solution;
+
+			int res;
+			if (isLP()) {
+				solution = MSK_SOL_BAS;
+				MSK_solutiondef(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), solution, &res);
+				if (res == MSK_RES_OK ) {
+					solution = MSK_SOL_ITR;
+					MSK_solutiondef(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), solution, &res);
+					if (res == MSK_RES_OK) {
+						gmoSolveStatSet(gmo, SolveStat_SolverErr);
+						gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+						gevLogStat(gev, "Failure retrieving solution status.");
+						break;
+					}
+				}
+			} else {
+				solution = MSK_SOL_ITG;
+				MSK_solutiondef(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), solution, &res);
+				if (res == MSK_RES_OK) {
+					gmoSolveStatSet(gmo, SolveStat_SolverErr);
+					gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+					gevLogStat(gev, "Failure retrieving solution status.");
+					break;
+				}
+			}
+			
+		  MSK_getsolution(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), solution, NULL, &status,
+		  	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+		  
+		  switch (status) {
+        case MSK_SOL_STA_NEAR_INTEGER_OPTIMAL:
+        case MSK_SOL_STA_NEAR_OPTIMAL:
+        	write_solution = true;
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					if( isLP() )
+						gmoModelStatSet(gmo, ModelStat_OptimalLocal);
+					else
+						gmoModelStatSet(gmo, ModelStat_Integer);
+					gevLogStat(gev, "Solved nearly to optimality.");
+        	break;
+        	
+        case MSK_SOL_STA_PRIM_FEAS:
+        case MSK_SOL_STA_PRIM_AND_DUAL_FEAS:
+        	write_solution = true;
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					if( isLP() )
+						gmoModelStatSet(gmo, ModelStat_NonOptimalIntermed);
+					else
+						gmoModelStatSet(gmo, ModelStat_Integer);
+					gevLogStat(gev, "Solved to feasibility.");
+					break;
+        	        	
+        case MSK_SOL_STA_OPTIMAL:
+        case MSK_SOL_STA_INTEGER_OPTIMAL:
+        	write_solution = true;
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
+					gevLogStat(gev, "Solved to optimality.");
+					break;
+        	
+        case MSK_SOL_STA_PRIM_INFEAS_CER:
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+					gevLogStat(gev, "Model is infeasible.");
+					break;
+        	
+        case MSK_SOL_STA_DUAL_INFEAS_CER:
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
+					gevLogStat(gev, "Model is unbounded.");
+					break;
+
+        case MSK_SOL_STA_DUAL_FEAS:
+        case MSK_SOL_STA_NEAR_PRIM_FEAS:
+        case MSK_SOL_STA_NEAR_DUAL_FEAS:
+        case MSK_SOL_STA_NEAR_PRIM_AND_DUAL_FEAS:
+        case MSK_SOL_STA_NEAR_PRIM_INFEAS_CER:
+        case MSK_SOL_STA_NEAR_DUAL_INFEAS_CER:
+					gmoSolveStatSet(gmo, SolveStat_Solver);
+					gmoModelStatSet(gmo, ModelStat_InfeasibleIntermed);
+					gevLogStat(gev, "Stopped before feasibility or infeasibility proven.");
+					break;
+
+        case MSK_SOL_STA_UNKNOWN:
+        default:
+					gmoSolveStatSet(gmo, SolveStat_Solver);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Solve status unknown.");
+		  }
+		  
+			break;
+		}
+#endif
+		
+#ifdef COIN_HAS_XPR
+		case XPRESS: {
+			OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
+			assert(osixpr);
+			int status;
+			if (isLP()) {
+				XPRSgetintattrib(osixpr->getLpPtr(), XPRS_LPSTATUS, &status);
+
+				switch (status) {
+					case XPRS_LP_OPTIMAL:
+						write_solution = true;
+						gmoSolveStatSet(gmo, SolveStat_Normal);
+						gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
+						gevLogStat(gev, "Solved to optimality.");
+						break;
+						
+					case XPRS_LP_INFEAS:
+						gmoSolveStatSet(gmo, SolveStat_Normal);
+						gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+						gevLogStat(gev, "Model is infeasible.");
+						break;
+						
+					case XPRS_LP_CUTOFF:
+						gmoSolveStatSet(gmo, SolveStat_Solver);
+						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+						gevLogStat(gev, "Objective limit reached.");
+						break;
+						
+					case XPRS_LP_UNBOUNDED:
+						gmoSolveStatSet(gmo, SolveStat_Normal);
+						gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
+						gevLogStat(gev, "Model is unbounded.");
+						break;
+						
+					case XPRS_LP_CUTOFF_IN_DUAL:
+						gmoSolveStatSet(gmo, SolveStat_Solver);
+						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+						gevLogStat(gev, "Dual objective limit reached.");
+						break;
+
+					case XPRS_LP_UNFINISHED:
+					case XPRS_LP_UNSOLVED:
+					case XPRS_LP_NONCONVEX:
+						gmoSolveStatSet(gmo, SolveStat_Solver);
+						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+						gevLogStat(gev, "Model not solved.");
+						break;
+						
+					default:
+						gmoSolveStatSet(gmo, SolveStat_Solver);
+						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+						gevLogStat(gev, "Solution status unknown.");
+						break;
+				}
+			} else {
+				XPRSgetintattrib(osixpr->getLpPtr(), XPRS_MIPSTATUS, &status);
+				switch (status) {
+					case XPRS_MIP_LP_NOT_OPTIMAL:
+						gmoSolveStatSet(gmo, SolveStat_Solver);
+						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+						gevLogStat(gev, "LP relaxation not solved to optimality.");
+						break;
+						
+					case XPRS_MIP_LP_OPTIMAL:
+						gmoSolveStatSet(gmo, SolveStat_Solver);
+						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+						gevLogStat(gev, "Only LP relaxation solved.");
+						break;
+						
+					case XPRS_MIP_NO_SOL_FOUND:
+						gmoSolveStatSet(gmo, SolveStat_Normal);
+						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+						gevLogStat(gev, "No solution found.");
+						break;
+
+					case XPRS_MIP_SOLUTION:
+						write_solution = true;
+						gmoSolveStatSet(gmo, SolveStat_Normal);
+						gmoModelStatSet(gmo, ModelStat_Integer);
+						gevLogStat(gev, "Found integer feasible solution.");
+						break;
+						
+					case XPRS_MIP_INFEAS:
+						gmoSolveStatSet(gmo, SolveStat_Normal);
+						gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+						gevLogStat(gev, "Model is infeasible.");
+						break;
+						
+					case XPRS_MIP_OPTIMAL:
+						write_solution = true;
+						gmoSolveStatSet(gmo, SolveStat_Normal);
+						double bestBound;
+				    XPRSgetdblattrib(osixpr->getLpPtr(), XPRS_BESTBOUND, &bestBound);
+				    if(fabs(bestBound - osixpr->getObjValue()) < 1e-9) {
+				    	gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
+				    	gevLogStat(gev, "Solved to optimality.");
+				    } else {
+				    	gmoModelStatSet(gmo, ModelStat_Integer);
+				    	gevLogStat(gev, "Solved to optimality within tolerances.");
+				    }
+						break;
+				}
+			}			
+			break;
+		}
+#endif		
+
 		default:
 	
 			try {
