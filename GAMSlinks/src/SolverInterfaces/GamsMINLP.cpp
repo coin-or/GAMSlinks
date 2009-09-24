@@ -281,11 +281,9 @@ void GamsMINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const Nu
   	case TMINLP::INFEASIBLE: {
     	model_status = ModelStat_InfeasibleNoSolution; // infeasible - no solution
     } break;
-#ifndef GAMS_BUILD
   	case TMINLP::CONTINUOUS_UNBOUNDED: {
   		model_status = ModelStat_UnboundedNoSolution; // unbounded - no solution
   	} break;
-#endif
   	case TMINLP::LIMIT_EXCEEDED: {
 			if (gevTimeDiffStart(gev) - nlp->clockStart >= gevGetDblOpt(gev, gevResLim)) {
 				solver_status = SolveStat_Resource;

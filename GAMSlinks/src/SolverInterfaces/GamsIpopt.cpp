@@ -101,6 +101,7 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
   ipopt->Options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
 	ipopt->Options()->SetIntegerValue("max_iter", gevGetIntOpt(gev, gevIterLim), true, true);
+	ipopt->Options()->SetNumericValue("max_cpu_time", gevGetDblOpt(gev, gevResLim), true, true);
   ipopt->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
 // 	ipopt->Options()->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);
 // 	ipopt->Options()->SetNumericValue("nlp_upper_bound_inf", gmoPinf(gmo), false, true);
@@ -216,6 +217,7 @@ int GamsIpopt::callSolver() {
 		case Diverging_Iterates:
 		case User_Requested_Stop:
 		case Maximum_Iterations_Exceeded:
+		case Maximum_CpuTime_Exceeded:
 		case Restoration_Failed:
 		case Error_In_Step_Computation:
 			break; // these should have been handled by FinalizeSolution already

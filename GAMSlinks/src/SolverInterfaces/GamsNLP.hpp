@@ -25,7 +25,6 @@ private:
 	struct gmoRec* gmo;
 	struct gevRec* gev;
 
-	double timelimit;
 	long int domviollimit;
 
 	int* iRowStart;

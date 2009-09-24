@@ -44,7 +44,6 @@ GamsNLP::GamsNLP (gmoHandle_t gmo_)
   gev = (gevRec*) gmoEnvironment(gmo);
   assert(gev);
 
-	timelimit    = gevGetDblOpt(gev, gevResLim);
 	domviollimit = gevGetIntOpt(gev, gevDomLim);
 }
 
@@ -362,7 +361,6 @@ bool GamsNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor, In
 }
 
 bool GamsNLP::intermediate_callback(AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq) {
-	if (timelimit && gevTimeDiffStart(gev) - clockStart > timelimit) return false;
 	if (domviollimit && domviolations >= domviollimit) return false;
 	return true;
 }
@@ -414,23 +412,24 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
 			gmoSolveStatSet(gmo, SolveStat_Iteration);
 			write_solution=true;
 			break;
-		case USER_REQUESTED_STOP:
-			if (domviollimit && domviolations >= domviollimit) {
-				gevLogStat(gev, "Domain violation limit exceeded!");
-				gmoModelStatSet(gmo, ModelStat_InfeasibleIntermed);
-				gmoSolveStatSet(gmo, SolveStat_EvalError);
+	  case CPUTIME_EXCEEDED:
+			if (cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol) {
+				gevLog(gev, "Having feasible solution.\n");
+				gmoModelStatSet(gmo, ModelStat_NonOptimalIntermed);
 			} else {
-				if (cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol) {
-					gevLogStat(gev, "Time limit exceeded! Point is feasible.");
-					gmoModelStatSet(gmo, ModelStat_NonOptimalIntermed);
-				} else {
-					gevLogStat(gev, "Time limit exceeded! Point is not feasible.");
-					gmoModelStatSet(gmo, ModelStat_InfeasibleIntermed);
-				}
-				gmoSolveStatSet(gmo, SolveStat_Resource);
+				gevLog(gev, "Current point is not feasible.");
+				gmoModelStatSet(gmo, ModelStat_InfeasibleIntermed);
 			}
+			gmoSolveStatSet(gmo, SolveStat_Resource);
 			write_solution=true;
 			break;
+	  case USER_REQUESTED_STOP:
+	  	assert(domviollimit && domviolations >= domviollimit);
+	  	gevLogStat(gev, "Domain violation limit exceeded!");
+	  	gmoModelStatSet(gmo, ModelStat_InfeasibleIntermed);
+	  	gmoSolveStatSet(gmo, SolveStat_EvalError);
+	  	write_solution=true;
+	  	break;
 		case ERROR_IN_STEP_COMPUTATION:
 		case TOO_FEW_DEGREES_OF_FREEDOM:
 			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
