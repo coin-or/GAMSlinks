@@ -63,6 +63,7 @@ extern "C" {
 #endif
 #ifdef COIN_HAS_XPR
 #include "OsiXprSolverInterface.hpp"
+extern "C" void XPRScommand(XPRSprob, char*);
 #endif
 #ifdef COIN_HAS_MSK
 #include "OsiMskSolverInterface.hpp"
@@ -621,13 +622,21 @@ bool GamsOsi::setupParameters() {
 			if (!isLP() && nodelim)
 				XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXNODE, nodelim);
 			XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPRELSTOP, optcr);
-			XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPABSSTOP, optcr);
-//			if (gmoOptFile(gmo)) {
-//				char buffer[4096];
-//				gmoNameOptFile(gmo, buffer);
-//				gevLogStatPChar(gev, "Let XPRESS read option file "); gevLogStat(gev, buffer);
-//  TODO ...
-//			}
+			XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPABSSTOP, optca);
+			if (gmoOptFile(gmo)) {
+				char buffer[4096];
+				gmoNameOptFile(gmo, buffer);
+				gevLogStatPChar(gev, "Let XPRESS process option file "); gevLogStat(gev, buffer);
+				std::ifstream optfile(buffer);
+				if (!optfile.good()) {
+					gevLogStat(gev, "Could not open option file.");
+				} else {
+					do {
+						optfile.getline(buffer, 4096);
+						XPRScommand(osixpr->getLpPtr(), buffer);
+					} while (optfile.good());
+				}
+			}
 			
 			break;
 		}
@@ -1045,7 +1054,9 @@ bool GamsOsi::writeSolution(double cputime, double walltime) {
 
 					case XPRS_LP_UNFINISHED:
 					case XPRS_LP_UNSOLVED:
+#if XPVERSION > 20
 					case XPRS_LP_NONCONVEX:
+#endif
 						gmoSolveStatSet(gmo, SolveStat_Solver);
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 						gevLogStat(gev, "Model not solved.");
