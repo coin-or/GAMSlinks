@@ -62,7 +62,6 @@ extern "C" {
 #include "CoinError.hpp"
 #include "ClpSimplex.hpp" // for passing in message handler
 
-#include "scip/message.h"
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
 #include "scip/cons_linear.h"

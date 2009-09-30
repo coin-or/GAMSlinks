@@ -52,7 +52,6 @@
 
 #include "GamsDictionary.hpp"
 
-#include "scip/message.h"
 #include "scip/scip.h"
 #include "scip/sol.h"
 #ifndef NDEBUG
