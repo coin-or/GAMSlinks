@@ -535,7 +535,11 @@ CouenneProblem* GamsCouenne::setupProblem() {
 				continue;
 			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(colindexes[j]), values[j]));
 		}
+#ifdef GAMS_BUILD
+		if (gmoGetEquOrderOne(gmo, i) > order_L) {
+#else
 		if (gmoNLfunc(gmo, i)) {
+#endif
 			gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields);
 			expression** nl = new expression*[1];
 			nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
@@ -1127,7 +1131,11 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(j), linear[j]));
 		}
 
+#ifdef GAMS_BUILD
+		if (gmoGetEquOrderOne(gmo, i) > order_L) {
+#else
 		if (gmoNLfunc(gmo, i)) {
+#endif
 			lambda[i] = -1.;
 			memset(hess_val, 0, gmoHessLagNz(gmo)*sizeof(double));
 			nerror = gmoHessLagValue(gmo, null, lambda, hess_val, 0., 1.);

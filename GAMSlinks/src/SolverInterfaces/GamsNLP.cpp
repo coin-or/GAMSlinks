@@ -151,9 +151,13 @@ bool GamsNLP::get_variables_linearity(Index n, LinearityType* var_types) {
 		return true;
 	}
 
-	int jnz, jnlnz, jobjnz;
+	int jnz, jqnz, jnlnz, jobjnz;
 	for (int i = 0; i < n; ++i) {
+#ifdef GAMS_BUILD
+		gmoGetColStat(gmo, i, &jnz, &jqnz, &jnlnz, &jobjnz);
+#else
 		gmoGetColStat(gmo, i, &jnz, &jnlnz, &jobjnz);
+#endif
 		if (jnlnz || (jobjnz == 1)) // jobjnz is -1 if linear in obj, +1 if nonlinear in obj, and 0 if not there
 			var_types[i] = NON_LINEAR;
 		else
@@ -173,7 +177,11 @@ bool GamsNLP::get_constraints_linearity(Index m, LinearityType* const_types) {
 	}
 
 	for (Index i = 0; i < m; ++i)
+#ifdef GAMS_BUILD
+		const_types[i] = gmoGetEquOrderOne(gmo, i) > order_L ? NON_LINEAR : LINEAR;
+#else
 		const_types[i] = gmoNLfunc(gmo, i) ? NON_LINEAR : LINEAR;
+#endif
 
 	return true;
 }
