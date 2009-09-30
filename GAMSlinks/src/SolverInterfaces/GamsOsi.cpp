@@ -236,8 +236,10 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 					gevLogStat(gev, "Failed to initialize Mosek environment.");
 					return 1;
 		    }
-#endif
 				osi = new OsiMskSolverInterface(mskenv);
+#else
+				osi = new OsiMskSolverInterface();
+#endif
 #else
 				gevLogStat(gev, "GamsOsi compiled without Osi/MOSEK interface.\n");
 				return 1;
