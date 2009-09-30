@@ -63,7 +63,7 @@ extern "C" {
 #endif
 #ifdef COIN_HAS_XPR
 #include "OsiXprSolverInterface.hpp"
-extern "C" void XPRScommand(XPRSprob, char*);
+extern "C" void STDCALL XPRScommand(XPRSprob, char*);
 #endif
 #ifdef COIN_HAS_MSK
 #include "OsiMskSolverInterface.hpp"
