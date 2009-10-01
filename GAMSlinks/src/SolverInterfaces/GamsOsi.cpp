@@ -154,8 +154,12 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #define GEVPTR gev 
 #include "cgevmagic2.h"
 	if (gevLicenseCheck(gev, gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo))) {
-		gevLogStat(gev, "The license check failed.\n");
-	  gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
+		char msg[256];
+		gevLogStat(gev, "The license check failed:\n");
+		while (gevLicenseGetMessage(gev, msg))
+			gevLogStat(gev,msg);
+	  gmoSolveStatSet(gmo, SolveStat_License);
+	  gmoModelStatSet(gmo, ModelStat_LicenseError);
 	  return 1;
 	}
 #endif
@@ -179,11 +183,8 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 				/* Cplex license setup */
 				if (gevcplexlice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
-						gmoNDisc(gmo), 1, &initType, &cp_l, &cp_m, &cp_q, &cp_p)) {
-					gevLogStat(gev, "*** Could not register GAMS/CPLEX license. Contact support@gams.com\n");
-					gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
-					return 1;
-				}
+						gmoNDisc(gmo), 0, &initType, &cp_l, &cp_m, &cp_q, &cp_p))
+					gevLogStat(gev, "Trying to use Cplex standalone license.\n");
 #endif
 				osi = new OsiCpxSolverInterface;
 #else
@@ -200,15 +201,13 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 				/* Gurobi license setup */
 				if (gevgurobilice(gev,(void**)&grbenv,NULL,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
-						gmoNDisc(gmo), 1, &initType)) {
-					gevLogStat(gev, "*** Could not register GAMS/GUROBI license. Contact support@gams.com\n");
-					gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
-					return 1;
-				}
+						gmoNDisc(gmo), 0, &initType))
+					gevLogStat(gev, "Trying to use Gurobi standalone license.\n");
 #endif
-//				OsiGrbSolverInterface::setEnvironment(grbenv);
-//				osi = new OsiGrbSolverInterface();
-				osi = new OsiGrbSolverInterface(grbenv); // this lets OsiGrb take over ownership of grbenv, so it will be freed when osi is deleted
+				if (grbenv)
+					osi = new OsiGrbSolverInterface(grbenv); // this lets OsiGrb take over ownership of grbenv, so it will be freed when osi is deleted
+				else
+					osi = new OsiGrbSolverInterface; // OsiGrb creates environment
 #else
 				gevLogStat(gev, "GamsOsi compiled without Osi/Gurobi interface.\n");
 				return 1;
@@ -221,21 +220,19 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				MSKenv_t mskenv;
 				MKlicenseInit_t initType;
 				
-		    if (MSK_makeenv(&mskenv,NULL, NULL,NULL,NULL)) {
-					gevLogStat(gev, "Failed to initialize Mosek environment.");
-					return 1;
-		    }
-//		    err = MSK_linkfunctoenvstream(env_, MSK_STREAM_LOG, NULL, printlog);
-//		    checkMSKerror( err, "MSK_linkfunctoenvstream", "incrementInstanceCounter" );
-				if (gevmoseklice(gev,mskenv,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo), 1, &initType)) {
-					gevLogStat(gev, "*** Could not register GAMS/MOSEK license. Contact support@gams.com\n");
-					gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
+				if (MSK_makeenv(&mskenv,NULL, NULL,NULL,NULL)) {
+					gevLogStat(gev, "Failed to create Mosek environment.");
 					return 1;
 				}
-		    if (MSK_initenv(mskenv)) {
+//		    err = MSK_linkfunctoenvstream(env_, MSK_STREAM_LOG, NULL, printlog);
+//		    checkMSKerror( err, "MSK_linkfunctoenvstream", "incrementInstanceCounter" );
+				if (gevmoseklice(gev,mskenv,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo), 0, &initType))
+					gevLogStat(gev, "Trying to use Mosek standalone license.\n");
+				
+				if (MSK_initenv(mskenv)) {
 					gevLogStat(gev, "Failed to initialize Mosek environment.");
 					return 1;
-		    }
+				}
 				osi = new OsiMskSolverInterface(mskenv);
 #else
 				osi = new OsiMskSolverInterface();
@@ -254,16 +251,14 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				
 				/* Xpress license setup */
 				if (gevxpresslice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
-						gmoNDisc(gmo), 1, &initType, msg, sizeof(msg))) {
-					gevLogStat(gev, "*** Could not register GAMS/XPRESS license. Contact support@gams.com\n");
-					gevLogStat(gev, msg);
-					gmoSolveStatSet(gmo, SolveStat_License); gmoModelStatSet(gmo, ModelStat_LicenseError);
-					return 1;
-				}
+						gmoNDisc(gmo), 0, &initType, msg, sizeof(msg)))
+					gevLogStat(gev, "Trying to use Xpress standalone license.\n");
 #endif				
 				OsiXprSolverInterface* osixpr = new OsiXprSolverInterface(gmoM(gmo), gmoNZ(gmo));
 				if (!osixpr->getNumInstances()) {
 					gevLogStat(gev, "Failed to setup XPRESS instance. Maybe you do not have a license?\n");
+					gmoSolveStatSet(gmo, SolveStat_License);
+					gmoModelStatSet(gmo, ModelStat_LicenseError);
 					return 1;
 				}
 				osi = osixpr;
