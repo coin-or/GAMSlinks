@@ -2728,7 +2728,12 @@ OsiGrbSolverInterface::OsiGrbSolverInterface(GRBenv* localgrbenv)
 {
   debugMessage("OsiGrbSolverInterface::OsiGrbSolverInterface()\n");
 
-  assert( localenv_ != NULL );
+  if (localenv_ == NULL)
+  { // if user called this constructor with NULL pointer, we assume that he meant that a local environment should be created
+		int err = GRBloadenv( &localenv_, NULL );
+		checkGRBerror( err, "GRBloadenv", "OsiGrbSolverInterface" );
+		assert( localenv_ != NULL );
+  }
     
   gutsOfConstructor();
   
