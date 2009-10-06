@@ -114,7 +114,7 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 //	solver.passInMessageHandler(msghandler);
 //	solver.setHintParam(OsiDoReducePrint, true, OsiHintTry);
    msghandler->setLogLevel(0,1);
-   msghandler->setLogLevel(1,0);
+   msghandler->setLogLevel(1,isLP());
    msghandler->setLogLevel(2,0);
    msghandler->setLogLevel(3,0);
 

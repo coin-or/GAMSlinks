@@ -88,12 +88,12 @@ int main (int argc, const char *argv[]) {
 	
 	// Pass in the GAMS status/log file print routines 
 	GamsMessageHandler myout(gamshandler), slvout(gamshandler);
-	slvout.setPrefix(0);
+	slvout.setPrefix(false);
 	slvout.setLogLevel(0,1);
-   slvout.setLogLevel(1,0);
-   slvout.setLogLevel(2,0);
-   slvout.setLogLevel(3,0);
-	
+	slvout.setLogLevel(1,gm.isLP());
+	slvout.setLogLevel(2,0);
+	slvout.setLogLevel(3,0);
+
 //	solver.passInMessageHandler(&slvout);
 //	solver.getModelPtr()->passInMessageHandler(&slvout);
 //	solver.setHintParam(OsiDoReducePrint,true,OsiHintTry);
