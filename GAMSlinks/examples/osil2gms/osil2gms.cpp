@@ -11,11 +11,11 @@
 #include <string>
 #include <list>
 
-using namespace std;
-
 #include "OSInstance.h"
 #include "OSiLReader.h"
-#include <OSCommonUtil.h>
+//#include <OSCommonUtil.h>
+
+using namespace std;
 
 void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
    switch (node->inodeInt) {

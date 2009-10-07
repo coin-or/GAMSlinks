@@ -12,12 +12,11 @@
 //#include <string>
 //#include <list>
 
-using namespace std;
-
-//#include "OSInstance.h"
 #include "OSiLReader.h"
 #include "OSrLReader.h"
 //#include "OSCommonUtil.h"
+
+using namespace std;
 
 typedef struct {
 	string instancename;
@@ -59,7 +58,12 @@ int main(int argc, char** argv) {
   stringbuf osrlstringbuf;
   osrlfile.get(osrlstringbuf, '\0');
 	OSrLReader osrlreader;
-	OSResult* osresult = osrlreader.readOSrL(osrlstringbuf.str());
+	OSResult* osresult;
+	try {
+	  osresult = osrlreader.readOSrL(osrlstringbuf.str());
+	} catch (ErrorClass err) {
+	  std::cerr << "Error: " << err.errormsg << std::endl;
+	}
 	
 	tracerecord record;
 	
@@ -95,13 +99,13 @@ void fillTraceRecord(tracerecord& record, OSInstance& instance, OSResult& result
 	record.solver_status = 13;
 	record.obj_value = 0;
 	record.solvertime = 0;
-	
+/*	
 	if (result.resultHeader == NULL) {
 		record.solver_status = 10; // error solver failure
 		record.model_status = 13; // error no solution
 		return;
 	}
-	
+*/	
 	if (result.getInstanceName().length() && instance.getInstanceName().length()) {
 		if (result.getInstanceName().length() != instance.getInstanceName().length()) {
 			cerr << "Error: Instance name in OSInstance an OSResult do not match." << endl;
@@ -172,17 +176,19 @@ void fillTraceRecord(tracerecord& record, OSInstance& instance, OSResult& result
 	}
 
 	if (result.getSolutionNumber()) {
-		OptimizationSolution* sol=result.resultData->optimization->solution[0];
+		OptimizationSolution* sol=result.optimization->solution[0];
 		
 		if (sol->objectives && sol->objectives->values && sol->objectives->values->obj[0])
 			record.obj_value = sol->objectives->values->obj[0]->value;
 	}
-	
+#if 0	
 	const char* timestr = result.resultHeader->time.c_str();
 	char* endptr;
 	record.solvertime = strtod(timestr, &endptr);
 	if (endptr == timestr || *endptr != '\0') // error in conversion, or string is empty
 		record.solvertime = 0;
+#endif
+  record.solvertime = result.getTimeValue();
 	
 //	cout << "time: " << result.resultHeader->time << endl;
 	
