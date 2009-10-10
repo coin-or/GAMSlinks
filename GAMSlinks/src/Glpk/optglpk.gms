@@ -29,7 +29,6 @@ set g Glpk Option Groups /
       gomorycuts             gomorys mixed-integer cuts
       mircuts                mixed-integer rounding cuts
       reslim_fixedrun        resource limit for solve with fixed discrete variables
-      noiterlim              turn off iteration limit
       names                  indicates whether row and column names should be given to glpk
       solvefinal             switch for the solve of the problem with fixed discrete variables 
 * GAMS options
@@ -64,7 +63,6 @@ general.(
   mircuts         .b.(def 0)
   solvefinal      .b.(def 1)
   reslim_fixedrun .r.(def 1000)
-  noiterlim       .b.(def 0)
   names           .b.(def 0)
 * GAMS options
   reslim          .r.(def 1000)
@@ -103,7 +101,6 @@ $onempty
   presolve.(      0, 1)
   solvefinal.(    0, 1)
   names.(         0, 1)
-  noiterlim.(     0, 1)
  /
 $offempty
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
@@ -115,5 +112,5 @@ $offempty
 *                     cutoff     'GAMS cutoff'
                    /
 $onempty
- oep(o) enum options for documentation only / presolve, noiterlim, names, solvefinal, cuts, cliquecuts, covercuts, gomorycuts, mircuts /;
+ oep(o) enum options for documentation only / presolve, names, solvefinal, cuts, cliquecuts, covercuts, gomorycuts, mircuts /;
 $offempty

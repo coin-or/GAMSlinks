@@ -187,12 +187,19 @@ this threshold. The valid range for this real option is
 $0 <  {\tt dual\_inf\_tol } <  {\tt +inf}$
 and its default value is $1$.
 
+\paragraph{max\_cpu\_time:}\label{sec:max_cpu_time} Maximum number of CPU seconds. $\;$ \\
+     A limit on CPU seconds that Ipopt can use to solve one problem.  If
+     during the convergence check this limit is exceeded, Ipopt will terminate
+     with a corresponding error message.
+The valid range for this integer option is
+$0 \le {\tt max\_cpu\_time } <  {\tt +inf}$
+and its default value is the value of the GAMS parameter reslim, which default value is $1000$.
 
 \paragraph{max\_iter:}\label{sec:max_iter} Maximum number of iterations. $\;$ \\
  The algorithm terminates with an error message if
 the number of iterations exceeded this number. The valid range for this integer option is
 $0 \le {\tt max\_iter } <  {\tt +inf}$
-and its default value is the value of the GAMS parameter iterlim, which default value is $10000$.
+and its default value is the value of the GAMS parameter iterlim, which default value is $\infty$.
 
 
 \paragraph{s\_max:}\label{sec:s_max} Scaling threshold for the NLP error. $\;$ \\
@@ -782,7 +789,7 @@ the factor for this relaxation.  If it is set to
 zero, then then bounds relaxation is disabled.
 (See Eqn.(35) in the implementation paper.) The valid range for this real option is 
 $0 \le {\tt bound\_relax\_factor } <  {\tt +inf}$
-and its default value is $0$.
+and its default value is $10^{-10}$.
 
 
 \paragraph{check\_derivatives\_for\_naninf:}\label{sec:check_derivatives_for_naninf} Indicates whether it is desired to check for Nan/Inf in derivative matrices $\;$ \\

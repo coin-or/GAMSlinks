@@ -36,15 +36,15 @@ With the availability of source code for the GAMSlinks the user is not limited t
 
 Available solvers include:
 \begin{itemize}
-\item CoinBonmin 1.0: Basic Open-source Nonlinear Mixed Integer programming\\
+\item CoinBonmin 1.1: Basic Open-source Nonlinear Mixed Integer programming\\
 (model types: LP, RMIP, MIP, DNLP, NLP, RMINLP, MINLP, QCP, RMIQCP, MIQCP)
 \item CoinCbc 2.3: COIN-OR Branch and Cut\\
 (model types: LP, MIP, RMIP)
-\item CoinGlpk 4.37: Gnu Linear Programming Kit\\
+\item CoinGlpk 4.39: Gnu Linear Programming Kit\\
 (model types: LP, MIP, RMIP)
-\item CoinIpopt 3.6: Interior Point Optimizer\\
+\item CoinIpopt 3.7: Interior Point Optimizer\\
 (model types: LP, RMIP, DNLP, NLP, RMINLP, QCP, RMIQCP)
-\item CoinScip 1.1.0: Solving Constrained Integer Programs\\
+\item CoinScip 1.2.0: Solving Constrained Integer Programs\\
 (model types: LP, MIP, RMIP)
 \end{itemize}
 
@@ -64,31 +64,31 @@ For more information see the COIN-OR/GAMSlinks web site at
 
 GAMS/CoinBonmin brings the open source MINLP solver Bonmin from the COIN-OR foundation to the broad audience of GAMS users.
 
-Bonmin (\textbf{B}asic \textbf{O}pen-source \textbf{N}onlinear \textbf{M}ixed \textbf{In}teger programming) is an open-source solver for mixed-integer nonlinear programming (MINLPs), whereof some parts are still experimental.
+Bonmin (\textbf{B}asic \textbf{O}pen-source \textbf{N}onlinear \textbf{M}ixed \textbf{In}teger programming) is an open-source solver for mixed-integer nonlinear programming (MINLPs).
 The code is developed in a joined project of IBM and the Carnegie Mellon University.
 The COIN-OR project leader for Bonmin is Pierre Bonami.
 
 Bonmin implements five different algorithms:
 \begin{itemize}
-\item {B-BB}: a simple branch-and-bound algorithm based on solving a continuous nonlinear program at each node of the search tree and branching on variables (default)
-\item {B-OA}: an outer-approximation based decomposition algorithm
-\item {B-QG}: an outer-approximation based branch-and-cut algorithm (by Queseda and Grossmann)
-\item {B-Hyb}: a hybrid outer-approximation/nonlinear programming based branch-and-cut algorithm
+\item {B-BB} (\textbf{default}): a simple branch-and-bound algorithm based on solving a continuous nonlinear program at each node of the search tree and branching on integer variables; this algorithm is similar to the one implemented in the solver SBB
+\item {B-OA}: an outer-approximation based decomposition algorithm based on iterating solving and improving of a MIP relaxation and solving NLP subproblems; this algorithm is similar to the one implemented in the solvers DICOPT and AlphaECP
+\item {B-QG}: an outer-approximation based branch-and-cut algorithm (by Queseda and Grossmann) based on solving a continuous linear program at each node of the search tree, improving the linear program by outer approximation, and branching on integer variables
+\item {B-Hyb}: a branch-and-bound algorithm which is a hybrid of B-BB and B-QG and is based on solving either a continuous nonlinear or a continuous linear program at each node of the search tree, improving the linear program by outer approximation, and branching on integer variables
 \item {B-Ecp}: an ECP cuts based branch-and-cut algorithm a la FilMINT
 \end{itemize}
-The algorithms are exact when the problem is convex, otherwise they are heuristics.
+The algorithms are exact when the problem is \textbf{convex}, otherwise they are heuristics.
 
-For convex MINLPs, experiments on a reasonably large test set of problems have shown that B-Hyp is the algorithm of choice (it solved most of the problems in 3 hours of computing time).
+For convex MINLPs, experiments on a reasonably large test set of problems have shown that B-Hyb is the algorithm of choice (it solved most of the problems in 3 hours of computing time).
 Nevertheless, there are cases where B-OA is much faster than B-Hyb and others where B-BB is interesting.
 B-QG corresponds mainly to a specific parameter setting of B-Hyb where some features are disabled.
-B-Ecp has just been added to Bonmin and is still experimental.
-For nonconvex MINLPs, it is strongly recommend to use B-BB, even though it is still a heuristic for such problems too.
+B-Ecp has recently been added to Bonmin and is still experimental.
+For \textbf{nonconvex} MINLPs, it is strongly recommend to use B-BB, even though it is a heuristic for such problems too.
 % Therefore, it is the default algorithm in Bonmin.
 
 For more information we refer to
 \begin{itemize}
 \item the Bonmin web site \texttt{https://projects.coin-or.org/Bonmin} and
-\item the paper P. Bonami, L.T. Biegler, A.R. Conn, G. Cornuejols, I.E. Grossmann, C.D. Laird, J. Lee, A. Lodi, F. Margot, N.Sawaya and A. W\"achter, An Algorithmic Framework for Convex Mixed Integer Nonlinear Programs, \emph{IBM Research Report} RC23771, Oct. 2005.
+\item the paper P. Bonami, L.T. Biegler, A.R. Conn, G. Cornuejols, I.E. Grossmann, C.D. Laird, J. Lee, A. Lodi, F. Margot, N.Sawaya and A. W\"achter, An Algorithmic Framework for Convex Mixed Integer Nonlinear Programs, \emph{Discrete Optimization} 5, 186--204, 2008, and \emph{IBM Research Report} RC23771, Oct. 2005.
 \end{itemize}
 Most of the Bonmin documentation in the section is taken from the Bonmin manual available on the Bonmin web site.
 
@@ -127,7 +127,7 @@ The most important option in Bonmin is the choice of the solution algorithm.
 This can be set by using the option named \texttt{bonmin.algorithm} which can be set to \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, \texttt{B-Hyb}, or \texttt{B-Ecp} (its default value is \texttt{B-BB}).
 Depending on the value of this option, certain other options may be available or not.
 
-In the context of outer approximation decomposition, several options are available for configuring the MIP subsolver CBC.
+In the context of outer approximation decomposition (B-OA), several options are available for configuring the MIP subsolver CBC.
 By setting the option \texttt{bonmin.milp\_subsolver} to \texttt{Cbc\_Par}, a version of CBC is chosen that can be parameterized by the user.
 The options that can be set are the node-selection strategy, the number of strong-branching candidates, the number of branches before pseudo costs are to be trusted, and the frequency of some cut generators.
 Their name coincide with Bonmins options, except that the ``\texttt{bonmin.}'' prefix is replaced with  ``\texttt{milp\_sub.}''.
@@ -185,28 +185,28 @@ cutoff\_decr& F& $10^{-5}$& +& +& +& +\\
 integer\_tolerance& F& $10^{-6}$& +& +& +& +\\
 iteration\_limit& I& $\infty$& +& +& +& +\\
 nlp\_failure\_behavior& S& stop& +& +& +& +\\
-node\_comparison& S& dynamic& +& +& +& +\\
-node\_limit& I& nodlim or iterlim ($10000$)& +& +& +& +\\
+node\_comparison& S& best-bound& +& +& +& +\\
+node\_limit& I& nodlim or iterlim ($\infty$)& +& +& +& +\\
 num\_cut\_passes& I& 1&--& +& +& +\\
 num\_cut\_passes\_at\_root& I& 20&--& +& +& +\\
 number\_before\_trust& I& 8& +& +& +& +\\
 number\_strong\_branch& I& 20& +& +& +& +\\
 solution\_limit& I& $\infty$& +& +& +& +\\
 time\_limit& F& reslim ($1000$)& +& +& +& +\\
-tree\_search\_strategy& S& topnode& +& +& +& +\\
-variable\_selection& S& strongbranching& +& +& +& +\\
-\hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Diving options}\\
-\hline
-max\_backtracks\_in\_dive& I& 5& +& +& +& +\\
-max\_dive\_depth& I& $\infty$& +& +& +& +\\
-stop\_diving\_on\_cutoff& S& no& +& +& +& +\\
+tree\_search\_strategy& S& probed-dive& +& +& +& +\\
+variable\_selection& S& strong-branching& +& +& +& +\\
 \hline
 \end{tabular}
 
 \begin{tabular}{|l|r|r|r|r|r|r|}\hline
 Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
 \hline
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Diving options}\\
+\hline
+max\_backtracks\_in\_dive& I& 5& +& +& +& +\\
+max\_dive\_depth& I& $\infty$& +& +& +& +\\
+stop\_diving\_on\_cutoff& S& no& +& +& +& +\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{ECP based strong branching}\\
 \hline
@@ -248,13 +248,13 @@ userkeep& I& 0& +& +& +& +\\
 \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{MILP cutting planes in hybrid algorithm}\\
 \hline
 2mir\_cuts& I& 0&--& +&--& +\\
-Gomory\_cuts& I& \-5&--& +&--& +\\
-clique\_cuts& I& \-5&--& +&--& +\\
-cover\_cuts& I& \-5&--& +&--& +\\
-flow\_covers\_cuts& I& \-5&--& +&--& +\\
+Gomory\_cuts& I& -5&--& +&--& +\\
+clique\_cuts& I& -5&--& +&--& +\\
+cover\_cuts& I& -5&--& +&--& +\\
+flow\_covers\_cuts& I& -5&--& +&--& +\\
 lift\_and\_project\_cuts& I& 0&--& +&--& +\\
-mir\_cuts& I& \-5&--& +&--& +\\
-% probing\_cuts& I& \-5&--& +&--& +\\
+mir\_cuts& I& -5&--& +&--& +\\
+% probing\_cuts& I& -5&--& +&--& +\\
 reduce\_and\_split\_cuts& I& 0&--& +&--& +\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{NLP interface}\\
@@ -265,7 +265,7 @@ warm\_start& S& none& +&--&--&--\\
 \hline
 max\_consecutive\_failures& I& 10& +& +& +& +\\
 max\_random\_point\_radius& F& 100000& +&--&--&--\\
-num\_iterations\_suspect& I& \-1& +& +& +& +\\
+num\_iterations\_suspect& I& -1& +& +& +& +\\
 num\_retry\_unsolved\_random\_point& I& 0& +& +& +& +\\
 random\_point\_perturbation\_interval& F& 1& +&--&--&--\\
 random\_point\_type& S& Jon& +&--&--&--\\
@@ -305,7 +305,7 @@ very\_tiny\_element& F& $10^{-17}$&--& +& +& +\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{Strong branching setup}\\
 \hline
-candidate\_sort\_criterion& S& best\-ps\-cost& +& +& +& +\\
+candidate\_sort\_criterion& S& best-ps-cost& +& +& +& +\\
 maxmin\_crit\_have\_sol& F& 0.1& +& +& +& +\\
 maxmin\_crit\_no\_sol& F& 0.7& +& +& +& +\\
 min\_number\_strong\_branch& I& 0& +& +& +& +\\
@@ -332,7 +332,7 @@ detect infeasible problems faster.
 \item \texttt{expect\_infeasible\_problem} is set to {\tt yes} which enables some heuristics to detect infeasible problems faster.
 \item \texttt{warm\_start\_init\_point} is set to {\tt yes} when a full primal/dual starting point is available (generally for all the optimizations after the continuous relaxation has been solved).
 \item \texttt{print\_level} is set to $0$ by default to turn off Ipopt output.
-\item \texttt{bound\_relax\_factor} is set to $0.0$.
+\item \texttt{bound\_relax\_factor} is set to $10^{-10}$.
 \end{itemize}
 
 \section{CoinCbc}
@@ -386,7 +386,7 @@ Following is an example options file coincbc.opt.
 \end{verbatim}
 It will cause CoinCBC to use cut generators only in the root node and turns off the perturbation of the LP relaxation.
 
-GAMS/CoinCBC now support the GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
+GAMS/CoinCBC supports the GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
 The GAMS BCH facility automates all major steps necessary to define, execute, and control the use of user defined routines within the framework of general purpose MIP codes.
 Currently supported are user defined cut generators and heuristics.
 Please see the BCH documentation at \texttt{http://www.gams.com/docs/bch.htm} for further information.
@@ -459,7 +459,6 @@ Most of the Ipopt documentation in the section was taken from the Ipopt manual a
 \subsection{Model requirements}
 
 Ipopt can handle nonlinear programming models which functions can be nonconvex, but should be twice continuously differentiable.
-GAMS/CoinIpopt now supports user-defined scalings of variables and equations using the .scale suffix and scaleopt option (see chapter 17.2 of the GAMS User's Guide).
 
 \subsection{Usage of CoinIpopt}
 
@@ -681,8 +680,8 @@ GAMS/CoinScip uses the COIN-OR linear solver CLP from J.J. Forrest as LP solver,
 
 \subsection{Model requirements}
 
-SCIP supports continuous, binary, and integer variables, special ordered sets, but no semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide).
-Branching priorities are supported.
+SCIP supports continuous, binary, and integer variables, special ordered sets, and branching priorities.
+Semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide) and indicator constraints are not supported by the interface yet.
 
 \subsection{Usage of CoinScip}
 
@@ -694,7 +693,7 @@ The following statement can be used inside your GAMS program to specify using Co
 The above statement should appear before the Solve statement.
 If CoinScip was specified as the default solver during GAMS installation, the above statement is not necessary.
 
-GAMS/CoinScip now support the GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
+GAMS/CoinScip supports the GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
 The GAMS BCH facility automates all major steps necessary to define, execute, and control the use of user defined routines within the framework of general purpose MIP codes.
 Currently supported are user defined cut generators and heuristics and the incumbent reporting callback.
 Please see the BCH documentation at \texttt{http://www.gams.com/docs/bch.htm} for further information.
@@ -729,7 +728,7 @@ It causes GAMS/CoinScip to turn off all cut generators, to skip the final solve 
 SCIP supports a large set of options.
 Sample option files can be obtained from
 \begin{verbatim}
-     http://www.gams.com/~svigerske/scip1.1
+     http://www.gams.com/~svigerske/scip1.2
 \end{verbatim}
 
 Further, there is a set of options that are specific to the GAMS/CoinScip interface, most of them for control of the GAMS BCH facility.
@@ -936,8 +935,8 @@ Calls gamskeep instead of gams
 
 \section{CoinBonminD, CoinCbcD, CoinIpoptD}
 
-For Bonmin, Cbc, and Ipopt, experimental in-core communication links have been added.
+For Bonmin, Cbc, and Ipopt, experimental in-core communication links are available.
 They offer in-core communication between GAMS and the solver, making potentially large model scratch files unnecessary.
-The current in-core communication links support all features of the traditional ones, except for branching priorities and the GAMS branch-cut-heuristic facility (BCH).
+The current in-core communication links support all features of the traditional ones, except for the GAMS branch-cut-heuristic facility (BCH).
 
 \chapterend

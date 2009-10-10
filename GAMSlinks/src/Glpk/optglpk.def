@@ -39,7 +39,6 @@ cliquecuts boolean 0 1 1 1 clique cuts
 gomorycuts boolean 0 1 1 1 gomorys mixed-integer cuts
 mircuts boolean 0 0 1 1 mixed-integer rounding cuts
 reslim_fixedrun double 0 1000 0 maxdouble 1 1 resource limit for solve with fixed discrete variables
-noiterlim boolean 0 0 1 1 turn off iteration limit
 names boolean 0 0 1 1 indicates whether row and column names should be given to glpk
 solvefinal boolean 0 1 1 1 switch for the solve of the problem with fixed discrete variables
 reslim double 0 1000 0 maxdouble 1 1 resource limit

@@ -151,7 +151,7 @@ Possible values:
 \paragraph{node\_comparison:}\label{sec:node_comparison} Choose the node selection strategy. $\;$ \\
  Choose the strategy for selecting the next node
 to be processed.
-The default value for this string option is "dynamic".
+The default value for this string option is "best-bound".
 \\ 
 Possible values:
 \begin{itemize}
@@ -168,7 +168,7 @@ solution
 \paragraph{node\_limit:}\label{sec:node_limit} Set the maximum number of nodes explored in the branch-and-bound search. $\;$ \\
  The valid range for this integer option is
 $0 \le {\tt node\_limit } <  {\tt +inf}$
-and its default value is the value of the GAMS parameter nodlim, if set, otherwise it is the value of the GAMS parameter iterlim, which default value is 10000.
+and its default value is the value of the GAMS parameter nodlim, if set, otherwise it is the value of the GAMS parameter iterlim, which default value is $\infty$.
 
 
 \paragraph{num\_cut\_passes:}\label{sec:num_cut_passes} Set the maximum number of cut passes at regular nodes of the branch-and-cut. $\;$ \\
@@ -210,12 +210,12 @@ and its default value is the value of the GAMS parameter reslim, which default v
 
 \paragraph{tree\_search\_strategy:}\label{sec:tree_search_strategy} Pick a strategy for traversing the tree $\;$ \\
  All strategies can be used in conjunction with
-any of the node comparison functions.Options
+any of the node comparison functions. Options
 which affect dfs-dive are max-backtracks-in-dive
 and max-dive-depth. The dfs-dive won't work in a
 non-convex problem where objective does not
 decrease down branches.
-The default value for this string option is "top-node".
+The default value for this string option is "probed-dive".
 \\ 
 Possible values:
 \begin{itemize}
@@ -227,7 +227,7 @@ function.
    \item probed-dive: Dive in the tree exploring two childs before
 continuing the dive at each level.
    \item dfs-dive: Dive in the tree if possible doing a depth
-first search.Backtrack on leaves or when a
+first search. Backtrack on leaves or when a
 prescribed depth is attained or when estimate
 of best possible integer feasible solution in
 subtree is worst than cutoff. Once a prescribed
@@ -777,7 +777,7 @@ $0 \le {\tt setup\_pseudo\_frac } \le 1$
 and its default value is $0.5$.
 
 
-\paragraph{trust\_strong\_branching\_for\_pseudo\_cost:}\label{sec:trust_strong_branching_for_pseudo_cost} Wether or not to trust strong branching results for updating pseudo costs. $\;$ \\
+\paragraph{trust\_strong\_branching\_for\_pseudo\_cost:}\label{sec:trust_strong_branching_for_pseudo_cost} Whether or not to trust strong branching results for updating pseudo costs. $\;$ \\
 The default value for this string option is "yes".
 Possible values are ``no'' and ``yes''.
 

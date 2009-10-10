@@ -230,19 +230,6 @@ Maximum time in seconds.
 
 iterlim
 Maximum number of simplex iterations.
-You can remove the limit on the simplex iterations by setting the <a href="#noiterlim">noiterlim option</a>.
-
-
-noiterlim
-Allows to switch off the <a href="#iterlim">simplex iteration limit</a>.
-
-
-noiterlim.0
-Keeps simplex iteration limit.
-
-
-noiterlim.1
-Turns off simplex iteration limit.
 
 
 names

@@ -50,9 +50,6 @@ mircuts</a></td>
 <tr><td><a href="#names">
 names</a></td>
 <td>indicates whether row and column names should be given to glpk</td></tr>
-<tr><td><a href="#noiterlim">
-noiterlim</a></td>
-<td>turn off iteration limit</td></tr>
 <tr><td><a href="#optcr">
 optcr</a></td>
 <td>relative stopping tolerance on MIP gap</td></tr>
@@ -242,20 +239,6 @@ Turing names off may help if memory is very tight.
 Do not load variable and equation names.</td></tr>
 <tr valign="top"><td width=20 align=right>1</td><td>.
 Load variable and equation names.</td></tr>
-</table>
-
-<h4><a name="noiterlim">
-noiterlim</a>
-<i> (integer)</i> turn off iteration limit</h4><p>
-
-Allows to switch off the <a href="#iterlim">simplex iteration limit</a>.
-
-<br><i>(default = 0)</i>
-<table>
-<tr valign="top"><td width=20 align=right>0</td><td>.
-Keeps simplex iteration limit.</td></tr>
-<tr valign="top"><td width=20 align=right>1</td><td>.
-Turns off simplex iteration limit.</td></tr>
 </table>
 
 <h4><a name="optcr">
