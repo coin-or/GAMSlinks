@@ -295,7 +295,6 @@ ThirdParty/SCIP/scip.patch -text
 /depcomp -text
 doxydoc/doxygen.conf -text
 /install-sh -text
-/ipopt.patch -text
 libltdl/COPYING.LIB -text
 libltdl/Makefile.am -text
 libltdl/Makefile.in -text
