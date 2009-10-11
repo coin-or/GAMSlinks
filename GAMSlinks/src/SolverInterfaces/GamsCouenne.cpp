@@ -206,7 +206,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
     options->SetStringValue("delete_redundant", "no", "couenne.");
 
 	if (gmoNLM(gmo) == 0  && (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp))
-		options->SetStringValue("hessian_constant", "yes", true, true); 
+		options->SetStringValue("hessian_constant", "yes", true, true);
 	
   double ipoptinf;
  	options->GetNumericValue("nlp_lower_bound_inf", ipoptinf, "");
@@ -215,6 +215,8 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
  	options->GetNumericValue("nlp_upper_bound_inf", ipoptinf, "");
  	options->SetNumericValue("nlp_upper_bound_inf", ipoptinf, false, true); /* to disallow clobber */
  	gmoPinfSet(gmo, ipoptinf);
+
+// 	printOptions();
 
  	return 0;
 }
@@ -535,7 +537,7 @@ CouenneProblem* GamsCouenne::setupProblem() {
 				continue;
 			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(colindexes[j]), values[j]));
 		}
-#ifdef GAMS_BUILD
+#if defined(GAMS_BUILD) || defined(GMOAPIVERSION)
 		if (gmoGetEquOrderOne(gmo, i) > order_L) {
 #else
 		if (gmoNLfunc(gmo, i)) {
@@ -1131,11 +1133,12 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(j), linear[j]));
 		}
 
-#ifdef GAMS_BUILD
-		if (gmoGetEquOrderOne(gmo, i) > order_L) {
+#if defined(GAMS_BUILD) || defined(GMOAPIVERSION)
+		if (gmoGetEquOrderOne(gmo, i) > order_L)
 #else
-		if (gmoNLfunc(gmo, i)) {
+		if (gmoNLfunc(gmo, i))
 #endif
+		{
 			lambda[i] = -1.;
 			memset(hess_val, 0, gmoHessLagNz(gmo)*sizeof(double));
 			nerror = gmoHessLagValue(gmo, null, lambda, hess_val, 0., 1.);
@@ -1213,6 +1216,75 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 
 	return prob;
 }
+
+void GamsCouenne::printOptions() {
+	const Bonmin::RegisteredOptions::RegOptionsList& optionlist(roptions->RegisteredOptionsList());
+
+	std::ofstream tabfile("couenne_options_table.tex");
+	roptions->writeLatexOptionsTable(tabfile, Bonmin::RegisteredOptions::CouenneCategory);
+
+	// options sorted by category
+	std::map<std::string, std::list<SmartPtr<RegisteredOption> > > opts;
+
+	for (Bonmin::RegisteredOptions::RegOptionsList::const_iterator it(optionlist.begin()); it!=optionlist.end(); ++it) {
+		//  	jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "%s %s %d\n", it->first.c_str(), it->second->RegisteringCategory().c_str(), regoptions->categoriesInfo(it->second->RegisteringCategory()));
+
+		std::string category(it->second->RegisteringCategory());
+
+		if (category.empty()) continue;
+		// skip ipopt and bonmin options
+		if (roptions->categoriesInfo(category)==Bonmin::RegisteredOptions::IpoptCategory) continue;
+		if (roptions->categoriesInfo(category)==Bonmin::RegisteredOptions::BonminCategory) continue;
+
+//		if (it->second->Name()=="nlp_solver" ||
+//				it->second->Name()=="file_solution" ||
+//				it->second->Name()=="sos_constraints")
+//			continue;
+//
+//		if (category=="Bonmin ecp based strong branching")
+//			category="ECP based strong branching";
+//		if (category=="MILP cutting planes in hybrid")
+//			category+=" algorithm (B-Hyb)";
+//		if (category=="Nlp solution robustness")
+//			category="NLP solution robustness";
+//		if (category=="Nlp solve options in B-Hyb")
+//			category="NLP solves in hybrid algorithm (B-Hyb)";
+//		if (category=="Options for MILP subsolver in OA decomposition" || category=="Options for OA decomposition")
+//			category="Outer Approximation Decomposition (B-OA)";
+//		if (category=="Options for ecp cuts generation")
+//			category="ECP cuts generation";
+//		if (category=="Options for non-convex problems")
+//			category="Nonconvex problems";
+//		if (category=="Output ond log-levels ptions")
+//			category="Output";
+//		if (category=="nlp interface option")
+//			category="NLP interface";
+//
+//		if (it->second->Name()=="oa_cuts_log_level" ||
+//				it->second->Name()=="nlp_log_level" ||
+//				it->second->Name()=="milp_log_level" ||
+//				it->second->Name()=="oa_log_level" ||
+//				it->second->Name()=="oa_log_frequency")
+//			category="Output";
+
+		opts[category].push_back(it->second);
+	}
+
+	for (std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ!=opts.end(); ++it_categ) {
+		std::string category(it_categ->first);
+		//  	jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "category %s:\n", it_categ->first.c_str());
+		jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "\\subsubsection{%s}\n", category.c_str());
+		for (std::string::size_type spacepos = category.find(' '); spacepos != std::string::npos; spacepos = category.find(' '))
+			category[spacepos]='_';
+		jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "\\label{sec:%s}\n\n", category.c_str());
+
+		for (std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt!=it_categ->second.end(); ++it_opt) {
+			//    	jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "   %s\n", (*it_opt)->Name().c_str());
+			(*it_opt)->OutputLatexDescription(*jnlst);
+		}
+	}
+}
+
 
 DllExport GamsCouenne* STDCALL createNewGamsCouenne() {
 	return new GamsCouenne();

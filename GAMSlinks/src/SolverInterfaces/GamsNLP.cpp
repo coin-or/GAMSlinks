@@ -153,7 +153,7 @@ bool GamsNLP::get_variables_linearity(Index n, LinearityType* var_types) {
 
 	int jnz, jqnz, jnlnz, jobjnz;
 	for (int i = 0; i < n; ++i) {
-#ifdef GAMS_BUILD
+#if defined(GAMS_BUILD) || defined(GMOAPIVERSION)
 		gmoGetColStat(gmo, i, &jnz, &jqnz, &jnlnz, &jobjnz);
 #else
 		gmoGetColStat(gmo, i, &jnz, &jnlnz, &jobjnz);
@@ -177,7 +177,7 @@ bool GamsNLP::get_constraints_linearity(Index m, LinearityType* const_types) {
 	}
 
 	for (Index i = 0; i < m; ++i)
-#ifdef GAMS_BUILD
+#if defined(GAMS_BUILD) || defined(GMOAPIVERSION)
 		const_types[i] = gmoGetEquOrderOne(gmo, i) > order_L ? NON_LINEAR : LINEAR;
 #else
 		const_types[i] = gmoNLfunc(gmo, i) ? NON_LINEAR : LINEAR;
