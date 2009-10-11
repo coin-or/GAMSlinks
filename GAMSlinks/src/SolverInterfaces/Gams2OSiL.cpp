@@ -53,7 +53,10 @@ bool Gams2OSiL::createOSInstance() {
 				return false;
 			}
 		}
-		gmoGetVarNameOne(gmo, i, buffer);
+		if (gmoDict(gmo))
+			gmoGetVarNameOne(gmo, i, buffer);
+		else
+			sprintf(buffer, "x%08d", i);
 		varnames[i] = buffer;
 	}
 
@@ -135,7 +138,10 @@ bool Gams2OSiL::createOSInstance() {
 				return false;
 		}
 		std::string conname;
-		gmoGetEquNameOne(gmo, i, buffer);
+		if (gmoDict(gmo))
+			gmoGetEquNameOne(gmo, i, buffer);
+		else
+			sprintf(buffer, "e%08d", i);
 		conname = buffer;
 		if (!osinstance->addConstraint(i, conname, lb, ub, 0.))
 			return false;
@@ -195,14 +201,14 @@ bool Gams2OSiL::createOSInstance() {
 
 	OSnLNode* nl;
 	if (gmoObjNLNZ(gmo)) {
-		std::clog << "parsing nonlinear objective instructions" << std::endl;
+//		std::clog << "parsing nonlinear objective instructions" << std::endl;
 		gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
 
 		nl = parseGamsInstructions(codelen, opcodes, fields, constantlen, constants);
 		if (!nl) return false;
 
 		double objjacval = gmoObjJacVal(gmo);
-		std::clog << "obj jac val: " << objjacval << std::endl;
+//		std::clog << "obj jac val: " << objjacval << std::endl;
 		if (objjacval == 1.) { // scale by -1/objjacval = negate
 			OSnLNode* negnode = new OSnLNodeNegate;
 			negnode->m_mChildren[0] = nl;
@@ -228,7 +234,7 @@ bool Gams2OSiL::createOSInstance() {
 			std::clog << "got nonzero return at constraint " << i << std::endl;
 		}
 		if (!codelen) continue;
-		std::clog << "parsing " << codelen << " nonlinear instructions of constraint " << osinstance->getConstraintNames()[i] << std::endl;
+//		std::clog << "parsing " << codelen << " nonlinear instructions of constraint " << osinstance->getConstraintNames()[i] << std::endl;
 		nl = parseGamsInstructions(codelen, opcodes, fields, constantlen, constants);
 		if (!nl) return false;
 		assert(iNLidx < osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
