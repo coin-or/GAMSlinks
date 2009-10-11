@@ -13,9 +13,11 @@ GAMSlinks/doc/gamsdist/ind_coin.tex -text
 GAMSlinks/doc/gamsdist/optbonmin_a.tex -text
 GAMSlinks/doc/gamsdist/optcbc_a.tex -text
 GAMSlinks/doc/gamsdist/optcbc_s.tex -text
+GAMSlinks/doc/gamsdist/optcouenne_a.tex -text
 GAMSlinks/doc/gamsdist/optglpk_a.tex -text
 GAMSlinks/doc/gamsdist/optglpk_s.tex -text
 GAMSlinks/doc/gamsdist/optipopt_a.tex -text
+GAMSlinks/doc/gamsdist/optosd_a.tex -text
 GAMSlinks/examples/adbench/Makefile.am -text
 GAMSlinks/examples/adbench/Makefile.in -text
 GAMSlinks/examples/adbench/adbench.cpp -text

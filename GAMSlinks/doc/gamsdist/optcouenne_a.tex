@@ -1,0 +1,484 @@
+\subsubsection{Output options}
+
+\paragraph{boundtightening\_print\_level:}\label{sec:boundtightening_print_level} Output level for bound tightening code in Couenne $\;$ \\
+ The valid range for this integer option is
+$-2 \le {\tt boundtightening\_print\_level } \le 12$
+and its default value is $0$.
+
+\paragraph{branching\_print\_level:}\label{sec:branching_print_level} Output level for braching code in Couenne $\;$ \\
+ The valid range for this integer option is
+$-2 \le {\tt branching\_print\_level } \le 12$
+and its default value is $0$.
+
+\paragraph{convexifying\_print\_level:}\label{sec:convexifying_print_level} Output level for convexifying code in Couenne $\;$ \\
+ The valid range for this integer option is
+$-2 \le {\tt convexifying\_print\_level } \le 12$
+and its default value is $0$.
+
+\paragraph{disjcuts\_print\_level:}\label{sec:disjcuts_print_level} Output level for disjunctive cuts in Couenne $\;$ \\
+ The valid range for this integer option is
+$-2 \le {\tt disjcuts\_print\_level } \le 12$
+and its default value is $4$.
+
+\paragraph{nlpheur\_print\_level:}\label{sec:nlpheur_print_level} Output level for NLP heuristic in Couenne $\;$ \\
+ The valid range for this integer option is
+$-2 \le {\tt nlpheur\_print\_level } \le 12$
+and its default value is $4$.
+
+\paragraph{problem\_print\_level:}\label{sec:problem_print_level} Output level for problem manipulation code in Couenne. $\;$ An option value of 4 prints out the initial problem, while a value of 7 prints the reformulated problem as well.\\
+ The valid range for this integer option is
+$-2 \le {\tt problem\_print\_level } \le 12$
+and its default value is $2$.
+
+\paragraph{reformulate\_print\_level:}\label{sec:reformulate_print_level} Output level for reformulating problems in Couenne $\;$ \\
+ The valid range for this integer option is
+$-2 \le {\tt reformulate\_print\_level } \le 12$
+and its default value is $4$.
+
+\subsubsection{Reformulation and Linearization options}
+
+
+\paragraph{convexification\_cuts:}\label{sec:convexification_cuts} Specify the frequency (in terms of nodes) at which Couenne ECP cuts are generated. $\;$ \\
+A frequency of 0 amounts to never solve the NLP relaxation. The valid range for this integer option is
+$-99 \le {\tt convexification\_cuts}$
+and its default value is $1$.
+
+
+\paragraph{convexification\_type:}\label{sec:convexification_type} Determines in which point the linear over/under-estimators are generated $\;$ \\
+The default value for this string option is "current-point-only". \\
+Possible values:
+\begin{itemize}
+   \item current-point-only: Only at current optimum of relaxation
+   \item uniform-grid: Points chosen in a uniform grid between the bounds of the problem
+   \item around-current-point: At points around current optimum of relaxation
+\end{itemize}
+
+\paragraph{convexification\_points:}\label{sec:convexification_points} Specify the number of points at which to convexify when convexification type is uniform-grid or around-current-point. $\;$ \\
+For the lower envelopes of convex functions, this is the number of points where a supporting hyperplane is generated.
+This only holds for the initial linearization, as all other linearizations only add at most one cut per expression.
+\\
+ The valid range for this integer option is
+$0 \le {\tt convexification\_points }$
+and its default value is $4$.
+
+
+\paragraph{violated\_cuts\_only:}\label{sec:violated_cuts_only} Yes if only violated convexification cuts should be added. $\;$ \\
+The default value for this string option is "yes".\\
+Possible values: ``yes'' and ``no''.
+
+\paragraph{delete\_redundant:}\label{sec:delete_redundant} Eliminate redundant variables, which appear in the problem as $x_k$ = $x_h$. $\;$ \\
+The default value for this string option is in most cases "yes".
+If the GAMS interface observes tiny constants in the nonlinear expressions, then the default is ``no''.
+\\ 
+Possible values:
+\begin{itemize}
+   \item no: Keep redundant variables, making the problem a
+bit larger
+   \item yes: Eliminate redundant variables (the problem will be equivalent, only smaller)
+\end{itemize}
+
+\paragraph{use\_quadratic:}\label{sec:use_quadratic} disable decomposition of quadratic expressions $\;$ \\
+If enabled, then quadratic forms are not reformulated and therefore decomposed as a sum of auxiliary variables, each associated with a bilinear term, but rather taken as a whole expression.
+Envelopes for these expressions are generated through $\alpha$-convexification.
+The default value for this string option is "no".\\ 
+Possible values:
+\begin{itemize}
+   \item no: Use an auxiliary for each bilinear term
+   \item yes: Create only one auxiliary for a quadratic expression
+\end{itemize}
+
+\subsubsection{Branching options}
+
+\paragraph{cont\_var\_priority:}\label{sec:cont_var_priority} Priority of continuous variable branching $\;$ \\
+When branching, this is compared to the priority of integer variables, whose priority is fixed to 1000. Higher values mean smaller priority, so if this parameter is set to 1001 or higher, if a branch-and-bound node has at least one integer
+variable whose value is fractional, then branching will be performed on that variable.
+The valid range for this integer option is
+$1 \le {\tt cont\_var\_priority }$ and its default value is $2000$.
+
+\paragraph{branch\_conv\_cuts:}\label{sec:branch_conv_cuts} Apply convexification cuts before branching (for now only within strong branching). $\;$ \\
+After applying a branching rule and before resolving the subproblem, generate a round of linearization cuts with the new bounds enforced by the rule.
+The default value for this string option is "yes".
+\\ 
+Possible values: ``yes'' and ``no''.
+
+\paragraph{branch\_fbbt:}\label{sec:branch_fbbt} Apply bound tightening before branching $\;$ \\
+After applying a branching rule and before re-solving the subproblem, apply Bound Tightening.
+The default value for this string option is "yes".
+\\ 
+Possible values: ``yes'' and ``no''.
+
+\paragraph{branch\_pt\_select:}\label{sec:branch_pt_select} Chooses branching point selection strategy. $\;$ \\
+The default value for this string option is "mid-point". \\ 
+Possible values:
+\begin{itemize}
+   \item lp-clamped: LP point clamped in $[k,1-k]$ of the bound intervals ($k$ defined by lp\_clamp)
+   \item lp-central: LP point if within $[k,1-k]$ of the bound intervals, middle point otherwise ($k$ defined by branch\_lp\_clamp)
+   \item balanced: minimizes max distance from curve to convexification
+   \item min-area: minimizes total area of the two convexifications
+   \item mid-point: convex combination of current point and mid point
+%    \item no-branch: do not branch, return null infeasibility; for testing purposes only
+\end{itemize}
+
+\paragraph{branch\_pt\_select\_cube:}\label{sec:branch_pt_select_cube} Chooses branching point selection strategy for cube operator. $\;$ \\
+The default value for this string option is the value of ``branch\_pt\_select''. \\
+Possible values: see ``branch\_pt\_select''.
+
+\paragraph{branch\_pt\_select\_div:}\label{sec:branch_pt_select_div} Chooses branching point selection strategy for division operator. $\;$ \\
+The default value for this string option is the value of ``branch\_pt\_select''. \\
+Possible values: see ``branch\_pt\_select''.
+
+\paragraph{branch\_pt\_select\_exp:}\label{sec:branch_pt_select_exp} Chooses branching point selection strategy for exp operator. $\;$ \\
+The default value for this string option is the value of ``branch\_pt\_select''. \\
+Possible values: see ``branch\_pt\_select''.
+
+\paragraph{branch\_pt\_select\_log:}\label{sec:branch_pt_select_log} Chooses branching point selection strategy for log operator. $\;$ \\
+The default value for this string option is the value of ``branch\_pt\_select''. \\
+Possible values: see ``branch\_pt\_select''.
+
+\paragraph{branch\_pt\_select\_negpow:}\label{sec:branch_pt_select_negpow} Chooses branching point selection strategy for negpow operator. $\;$ \\
+The default value for this string option is the value of ``branch\_pt\_select''. \\
+Possible values: see ``branch\_pt\_select''.
+
+\paragraph{branch\_pt\_select\_pow:}\label{sec:branch_pt_select_pow} Chooses branching point selection strategy for power operator. $\;$ \\
+The default value for this string option is the value of ``branch\_pt\_select''. \\
+Possible values: see ``branch\_pt\_select''.
+
+\paragraph{branch\_pt\_select\_prod:}\label{sec:branch_pt_select_prod} Chooses branching point selection strategy for product operator. $\;$ \\
+The default value for this string option is the value of ``branch\_pt\_select''. \\
+Possible values: see ``branch\_pt\_select''.
+
+\paragraph{branch\_pt\_select\_sqr:}\label{sec:branch_pt_select_sqr} Chooses branching point selection strategy for square operator$\;$ \\
+The default value for this string option is the value of ``branch\_pt\_select''. \\
+Possible values: see ``branch\_pt\_select''.
+
+\paragraph{branch\_pt\_select\_trig:}\label{sec:branch_pt_select_trig} Chooses branching point selection strategy for trigonometric operators. $\;$ \\
+The default value for this string option is the value of ``branch\_pt\_select''. \\
+Possible values: see ``branch\_pt\_select''.
+
+\paragraph{branch\_lp\_clamp:}\label{sec:branch_lp_clamp} Defines safe interval percentage for using LP point as a branching point $\;$ \\
+The valid range for this real option is 
+$0 \le {\tt branch\_lp\_clamp } \le 1$
+and its default value is $0.2$.
+
+\paragraph{branch\_lp\_clamp\_cube:}\label{sec:branch_lp_clamp_cube} Defines safe interval percentage for using LP point as a branching point for cube. $\;$ \\
+The valid range for this real option is 
+$0 \le {\tt branch\_lp\_clamp\_cube } \le 0.5$
+and its default value is $0.2$.
+
+\paragraph{branch\_lp\_clamp\_div:}\label{sec:branch_lp_clamp_div} Defines safe interval percentage for using LP point as a branching point for div.$\;$ \\
+The valid range for this real option is 
+$0 \le {\tt branch\_lp\_clamp\_div } \le 0.5$
+and its default value is $0.2$.
+
+\paragraph{branch\_lp\_clamp\_exp:}\label{sec:branch_lp_clamp_exp} Defines safe interval percentage for using LP point as a branching point for exp.$\;$ \\
+The valid range for this real option is 
+$0 \le {\tt branch\_lp\_clamp\_exp } \le 0.5$
+and its default value is $0.2$.
+
+\paragraph{branch\_lp\_clamp\_log:}\label{sec:branch_lp_clamp_log} Defines safe interval percentage for using LP point as a branching point for log.$\;$ \\
+The valid range for this real option is 
+$0 \le {\tt branch\_lp\_clamp\_log } \le 0.5$
+and its default value is $0.2$.
+
+\paragraph{branch\_lp\_clamp\_negpow:}\label{sec:branch_lp_clamp_negpow} Defines safe interval percentage for using LP point as a branching point for negpow. $\;$ \\
+The valid range for this real option is 
+$0 \le {\tt branch\_lp\_clamp\_negpow } \le 0.5$
+and its default value is $0.2$.
+
+\paragraph{branch\_lp\_clamp\_pow:}\label{sec:branch_lp_clamp_pow} Defines safe interval percentage for using LP point as a branching point for power. $\;$ \\
+The valid range for this real option is 
+$0 \le {\tt branch\_lp\_clamp\_pow } \le 0.5$
+and its default value is $0.2$.
+
+\paragraph{branch\_lp\_clamp\_prod:}\label{sec:branch_lp_clamp_prod} Defines safe interval percentage for using LP point as a branching point for products.$\;$ \\
+The valid range for this real option is 
+$0 \le {\tt branch\_lp\_clamp\_prod } \le 0.5$
+and its default value is $0.2$.
+
+\paragraph{branch\_lp\_clamp\_sqr:}\label{sec:branch_lp_clamp_sqr} Defines safe interval percentage for using LP point as a branching point for square.$\;$ \\
+The valid range for this real option is 
+$0 \le {\tt branch\_lp\_clamp\_sqr } \le 0.5$
+and its default value is $0.2$.
+
+\paragraph{branch\_lp\_clamp\_trig:}\label{sec:branch_lp_clamp_trig} Defines safe interval percentage for using LP point as a branching point for trigonometric expressions. $\;$ \\
+The valid range for this real option is 
+$0 \le {\tt branch\_lp\_clamp\_trig } \le 0.5$
+and its default value is $0.2$.
+
+\paragraph{branch\_midpoint\_alpha:}\label{sec:branch_midpoint_alpha} Defines convex combination of mid point and current LP point: $b = \alpha x_{lp} + (1-\alpha) (lb+ub)/2$ $\;$ \\
+The valid range for this real option is $0 \le {\tt branch\_midpoint\_alpha } \le 1$ and its default value is $0.25$.
+
+\paragraph{branching\_object:}\label{sec:branching_object} Defines the source of infeasibility of a problem. $\;$ \\
+The option ``var\_obj'' indicates that infeasibility is associated with each variable.
+For example, suppose the optimal solution to the LP relaxation is denoted by $(x^*,w^*)$. If two auxiliary variables $w_2 = f_2(x_1)$ and $w_3 = f_3(x_1)$ have an optimal value in the LP solution such that $w_2^* \neq f_2(x_1^*)$ and $w_3^* \neq
+f_3(x_1^*)$, then $x_1$ will be associated an ``infeasibility'' measure dependent on
+$|w_2^* - f_2(x_1^*)|$ and $|w_3^* - f_3(x_1^*)|$.
+With the option ``expr\_obj'', the infeasibility is attributed to auxiliaries $w_2$ and $w_3$, but this is not recommended. Finally, using ``vt\_obj'' allows to use Violation Transfer, a branching variable selection technique used in BARON.
+The default value for this string option is ``var\_obj''. \\
+Possible values:
+\begin{itemize}
+   \item vt\_obj: use Violation Transfer from Tawarmalani and Sahinidis (BARON)
+   \item var\_obj: use one object for each variable
+   \item expr\_obj: use one object for each nonlinear expression
+\end{itemize}
+
+\paragraph{red\_cost\_branching:}\label{sec:red_cost_branching} Apply Reduced Cost Branching (instead of the Violation Transfer) $\;$ \\
+Setting this option requires setting ``branching\_object'' to ``vt\_obj''.
+The default value for this string option is "no".\\ 
+Possible values:
+\begin{itemize}
+   \item no: Use Violation Transfer with $\sum |\pi_i a_{ij}|$
+   \item yes: Use Reduced cost branching with $|\sum \pi_i a_{ij}|$
+\end{itemize}
+
+\paragraph{pseudocost\_mult:}\label{sec:pseudocost_mult} Multipliers of pseudocosts for estimating and updating estimation of bound $\;$ \\
+The default value for this string option is ``interval\_br\_rev''. \\
+Possible values:
+\begin{itemize}
+   \item infeasibility: infeasibility of the variable (see ``branching\_object'')
+   \item projectDist: distance between current LP point and resulting branches' LP points
+   \item interval\_lp: width of the interval between variable bounds and current LP point
+   \item interval\_lp\_rev: similar to interval\_lp, reversed
+   \item interval\_br: width of the interval between variable bounds and branching point
+   \item interval\_br\_rev: similar to interval\_br, reversed
+\end{itemize}
+
+\paragraph{pseudocost\_mult\_lp:}\label{sec:pseudocost_mult_lp} Use distance between LP points to update multipliers of pseudocosts after simulating branching $\;$ \\
+The default value for this string option is "no". \\
+Possible values: ``yes'' and ``no''
+
+\subsubsection{Bound tightening options}
+
+\paragraph{feasibility\_bt:}\label{sec:feasibility_bt} Feasibility-based (cheap) bound tightening (FBBT) $\;$ \\
+A pre-processing technique to reduce the bounding box, before the generation of linearization cuts.
+This is a quick and effective way to reduce the solution set, and it is highly recommended to keep it active.
+The default value for this string option is "yes".
+\\ 
+Possible values: ``yes'' and ``no''.
+
+\paragraph{aggressive\_fbbt:}\label{sec:aggressive_fbbt} Aggressive feasibility-based bound tightening (to use with NLP points) $\;$ \\
+Aggressive FBBT is a version of probing that also allows to reduce the solution set, although it is not as quick
+as FBBT. It can be applied up to a certain depth of the B\&B tree -- see ``log\_num\_abt\_per\_level''. In general, this option is useful but can be switched off if a problem is too large and seems not to benefit from it.
+The default value for this string option is "yes".
+\\ 
+Possible values: ``yes'' and ``no''
+
+\paragraph{optimality\_bt:}\label{sec:optimality_bt} Optimality-based (expensive) bound tightening (OBBT) $\;$ \\
+This is another bound reduction technique aiming at reducing the solution set by looking at the initial LP relaxation.
+This technique is computationally expensive, and should be used only when necessary.
+The default value for this string option is "yes".\\
+Possible values: ``yes'' and ``no''
+
+\paragraph{redcost\_bt:}\label{sec:redcost_bt} Reduced cost bound tightening $\;$ \\
+This bound reduction technique uses the reduced costs of the LP in order to infer better variable bounds.
+The default value for this string option is "yes".\\ 
+Possible values: ``yes'' and ``no''
+
+% \paragraph{enable\_lp\_implied\_bounds:}\label{sec:enable_lp_implied_bounds} Enable OsiSolverInterface::tightenBounds () -- warning: it has caused some trouble to Couenne $\;$ \\
+% The default value for this string option is "no".
+% \\ 
+% Possible values:
+% \begin{itemize}
+%    \item no: 
+%    \item yes: 
+% \end{itemize}
+
+\paragraph{log\_num\_abt\_per\_level:}\label{sec:log_num_abt_per_level} Specify the frequency (in terms of nodes) for aggressive bound tightening. $\;$ \\
+If $-1$, apply at every node (expensive!).
+If 0, apply at the root node only.
+If $k\geq 0$, apply with probability $2^{k-d}$, where $d$ is the current depth of the B\&B tree.
+The valid range for this integer option is $-1 \le {\tt log\_num\_abt\_per\_level }$ and its default value is $2$.
+
+\paragraph{log\_num\_obbt\_per\_level:}\label{sec:log_num_obbt_per_level} Specify the frequency (in terms of nodes) for optimality-based bound tightening. $\;$ \\
+If $-1$, apply at every node (expensive!).
+If 0, apply at the root node only.
+If $k\geq 0$, apply with probability $2^{k-d}$, where $d$ is the current depth of the B\&B tree.
+The valid range for this integer option is $-1 \le {\tt log\_num\_obbt\_per\_level }$ and its default value is $1$.
+
+\subsubsection{Disjunctive cut options}
+
+\paragraph{minlp\_disj\_cuts:}\label{sec:minlp_disj_cuts} The frequency (in terms of nodes) at which Couenne disjunctive cuts are generated. $\;$ \\
+A frequency of 0 (default) means these cuts are never generated.
+Any positive number $n$ instructs Couenne to generate them at every $n$ nodes of the B\&B tree.
+A negative number $-n$ means that generation should be attempted at the root node, and if successful it can be repeated at every $n$ nodes, otherwise it is stopped altogether.
+The valid range for this integer option is $-99 \le {\tt minlp\_disj\_cuts }$ and its default value is $0$.
+
+\paragraph{disj\_depth\_level:}\label{sec:disj_depth_level} Depth of the B\&B tree when to start decreasing the number of objects that generate disjunctions. $\;$ \\
+This has a similar behavior as log\_num\_obbt\_per\_level.
+A value of $-1$ means that generation can be done at all nodes.
+The valid range for this integer option is $-1 \le {\tt disj\_depth\_level }$ and its default value is $5$.
+
+\paragraph{disj\_depth\_stop:}\label{sec:disj_depth_stop} Depth of the B\&B tree where separation of disjunctive cuts is stopped. $\;$ \\
+A value of $-1$ means that generation is not stopped.
+The default value for this integer option is $20$ and its valid range is $-1 \le {\tt disj\_depth\_stop}$.
+
+\paragraph{disj\_active\_cols:}\label{sec:disj_active_cols} Only include violated variable bounds in the Cut Generating LP (CGLP). $\;$ \\
+This reduces the size of the CGLP, but may produce less efficient cuts.
+The default value for this string option is "no". \\ 
+Possible values: ``yes'' and ``no''.
+
+\paragraph{disj\_active\_rows:}\label{sec:disj_active_rows} Only include violated linear inequalities in the CGLP. $\;$ \\
+This reduces the size of the CGLP, but may produce less efficient cuts.
+The default value for this string option is "no". \\ 
+Possible values: ``yes'' and ``no''.
+
+\paragraph{disj\_cumulative:}\label{sec:disj_cumulative} Add previous disjunctive cut to the current CGLP. $\;$ \\
+When generating disjunctive cuts on a set of disjunctions $1, 2, \ldots, k$, introduce the cut relative to the previous disjunction $i-1$ in the CGLP used for disjunction $i$. Notice that, although this makes
+the cut generated more efficient, it increases the rank of the disjunctive cut generated.
+The default value for this string option is "no".\\
+Possible values: ``yes'' and ``no''
+
+\paragraph{disj\_init\_number:}\label{sec:disj_init_number} Maximum number of disjunction to consider at each iteration. $\;$ \\
+$-1$ means no limit.
+The valid range for this integer option is $-1 \le {\tt disj\_init\_number }$ and its default value is $10$.
+
+\paragraph{disj\_init\_perc:}\label{sec:disj_init_perc} The maximum fraction of all disjunctions currently violated by the problem to consider for generating disjunctions. $\;$ \\
+The valid range for this real option is 
+$0 \le {\tt disj\_init\_perc } \le 1$
+and its default value is $0.5$.
+
+\subsubsection{Nonlinear solver options}
+
+\paragraph{local\_optimization\_heuristic:}\label{sec:local_optimization_heuristic} Do we search for local solutions of NLP's $\;$ \\
+If enabled, a heuristic based on Ipopt is used to find feasible solutions for the problem.
+It is highly recommended that this option is left enabled, as it would be difficult to find feasible solutions otherwise.
+The default value for this string option is "yes".\\
+Possible values: ``yes'' and ``no''
+
+\paragraph{log\_num\_local\_optimization\_per\_level:}\label{sec:log_num_local_optimization_per_level} At what depth of the B\&B tree should the calls to the heuristic be reduced. $\;$ \\
+The behavior is similar to ``log\_num\_obbt\_per\_level'':
+The parameter specifies the logarithm of the number of local optimizations to perform on average on a given depth of the tree.
+The nodes at a given depth are randomly selected.
+If for a given level there are less nodes than this number, then NLPs are solved for every node.
+For example if this parameter is set to 8, then NLP's are solved for all nodes until level 8, then for half the node at
+level 9, 1/4 at level 10, $\ldots$.
+Value $-1$ specify to perform local searches at all nodes.
+The valid range for this integer option is $-1 \le {\tt log\_num\_local\_optimization\_per\_level }$
+and its default value is $2$.
+
+\subsubsection{Tolerance options}
+
+\paragraph{feas\_tolerance:}\label{sec:feas_tolerance} Feasibility tolerance for constraints/auxiliary variables. $\;$ \\
+The valid range for this real option is ${\tt -inf} <  {\tt feas\_tolerance }$ and its default value is $10^{-5}$.
+
+\subsubsection{MIP cut generator options}
+
+For the following options, the frequency $k$ has the following meaning:
+If $k > 0$, then cuts are generated every $k$ nodes.
+If $-99 < k < 0$, then cuts are generated every $-k$ nodes but Cbc may decide to stop generating cuts if not
+enough are generated at the root node.
+If $k=-99$, then cuts are generate only at the root node.
+If $k=0$ or $k=-100$, then do not generate cuts.
+The valid range for these integer options is $-100 \le k$ and their default value is $0$.
+
+\paragraph{Gomory\_cuts:}\label{sec:couenne_Gomory_cuts} Frequency $k$ (in terms of nodes) for generating Gomory cuts in branch-and-cut. $\;$
+% See ``2mir\_cuts''.
+% The valid range for this integer option is
+% $-100 \le {\tt Gomory\_cuts } <  {\tt +inf}$
+% and its default value is $0$.
+
+\paragraph{clique\_cuts:}\label{sec:couenne_clique_cuts} Frequency $k$ (in terms of nodes) for generating clique cuts in branch-and-cut. $\;$
+% See ``2mir\_cuts''.
+% The valid range for this integer option is
+% $-100 \le {\tt clique\_cuts } <  {\tt +inf}$
+% and its default value is $0$.
+
+\paragraph{cover\_cuts:}\label{sec:couenne_cover_cuts} Frequency $k$ (in terms of nodes) for generating cover cuts in branch-and-cut. $\;$ 
+% See ``2mir\_cuts''.
+% The valid range for this integer option is
+% $-100 \le {\tt cover\_cuts } <  {\tt +inf}$
+% and its default value is $0$.
+
+\paragraph{flow\_covers\_cuts:}\label{sec:couenne_flow_covers_cuts} Frequency $k$ (in terms of nodes) for generating flow cover cuts in branch-and-cut. $\;$ 
+% See ``2mir\_cuts''.
+% The valid range for this integer option is
+% $-100 \le {\tt flow\_covers\_cuts } <  {\tt +inf}$
+% and its default value is $0$.
+
+\paragraph{lift\_and\_project\_cuts:}\label{sec:couenne_lift_and_project_cuts} Frequency $k$ (in terms of nodes) for generating lift and project cuts in branch-and-cut. $\;$ 
+% See ``2mir\_cuts''.
+% The valid range for this integer option is
+% $-100 \le {\tt lift\_and\_project\_cuts } <  {\tt +inf}$
+% and its default value is $0$.
+
+\paragraph{mir\_cuts:}\label{sec:couenne_mir_cuts} Frequency $k$ (in terms of nodes) for generating MIR cuts in branch-and-cut. $\;$ 
+% See ``2mir\_cuts''.
+% The valid range for this integer option is
+% $-100 \le {\tt mir\_cuts } <  {\tt +inf}$
+% and its default value is $0$.
+
+\paragraph{2mir\_cuts:}\label{sec:couenne_2mir_cuts} Frequency $k$ (in terms of nodes) for generating 2-MIR cuts in branch-and-cut. $\;$
+
+\paragraph{probing\_cuts:}\label{sec:couenne_probing_cuts} Frequency $k$ (in terms of nodes) for generating probing cuts in branch-and-cut. $\;$ 
+% See ``2mir\_cuts''.
+% The valid range for this integer option is
+% $-100 \le {\tt probing\_cuts } <  {\tt +inf}$
+% and its default value is $0$.
+
+\paragraph{reduce\_split\_cuts:}\label{sec:couenne_reduce_split_cuts} Frequency $k$ (in terms of nodes) for generating reduce split cuts in branch-and-cut. $\;$ 
+% See ``2mir\_cuts''.
+% The valid range for this integer option is
+% $-100 \le {\tt reduce\_split\_cuts } <  {\tt +inf}$
+% and its default value is $0$.
+
+% \paragraph{opt\_window:}\label{sec:opt_window} Window around known optimum $\;$ \\
+%  Default value is infinity. The valid range for this real option is 
+% ${\tt -inf} <  {\tt opt\_window } <  {\tt +inf}$
+% and its default value is $1.79769 \cdot 10^{+308}$.
+
+% \paragraph{test\_mode:}\label{sec:test_mode} set to true if this is Couenne unit test $\;$ \\
+% 
+% The default value for this string option is "no".
+% \\ 
+% Possible values:
+% \begin{itemize}
+%    \item yes: 
+%    \item no: 
+% \end{itemize}
+
+% \paragraph{art\_cutoff:}\label{sec:art_cutoff} Artificial cutoff $\;$ \\
+%  Default value is infinity. The valid range for this real option is 
+% ${\tt -inf} <  {\tt art\_cutoff } <  {\tt +inf}$
+% and its default value is $1.79769 \cdot 10^{+308}$.
+% 
+% 
+% \paragraph{art\_lower:}\label{sec:art_lower} Artificial lower bound $\;$ \\
+%  Default value is -COIN\_DBL\_MAX. The valid range for this real option is 
+% ${\tt -inf} <  {\tt art\_lower } <  {\tt +inf}$
+% and its default value is $-1.79769 \cdot 10^{+308}$.
+
+% \paragraph{check\_lp:}\label{sec:check_lp} Check all LPs through an independent call to OsiClpSolverInterface::initialSolve() $\;$ \\
+% 
+% The default value for this string option is "no".
+% \\ 
+% Possible values:
+% \begin{itemize}
+%    \item no: 
+%    \item yes: 
+% \end{itemize}
+
+% \paragraph{couenne\_check:}\label{sec:couenne_check} known value of a global optimum $\;$ \\
+%  Default value is +infinity. The valid range for this real option is 
+% ${\tt -inf} <  {\tt couenne\_check } <  {\tt +inf}$
+% and its default value is $1.79769 \cdot 10^{+308}$.
+
+
+% \paragraph{display\_stats:}\label{sec:display_stats} display statistics at the end of the run $\;$ \\
+% 
+% The default value for this string option is "no".
+% \\ 
+% Possible values:
+% \begin{itemize}
+%    \item yes: 
+%    \item no: 
+% \end{itemize}
+
+% \paragraph{enable\_sos:}\label{sec:enable_sos} Use Special Ordered Sets (SOS) as indicated in the MINLP model $\;$ \\
+% 
+% The default value for this string option is "no".
+% \\ 
+% Possible values:
+% \begin{itemize}
+%    \item no: 
+%    \item yes: 
+% \end{itemize}

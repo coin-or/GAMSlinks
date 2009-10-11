@@ -5,7 +5,7 @@
 <body>
 <h2>OSD Options</h2>
 GAMS/OS brings the open source Optimization Services project to the broad audience of GAMS users.
-The code has been written primarily by Jun Ma and Kipp Martin.
+The code has been written primarily by Horand Gassmann, Jun Ma, and Kipp Martin.
 The GAMS interface for OS is maintained by Stefan Vigerske, Humboldt University, in a COIN-OR project called GAMSlinks.
 For more information visit the web site for
 <a href="http://www.coin-or.org">COIN-OR</a>,
@@ -48,56 +48,79 @@ writeosrl</a></td>
 readosol</a>
 <i> (string)</i> read the solver options from an OSoL file</h4><p>
 
+Specifies the name of an option file in OSoL format that is given to the solver or an OS server.
 
 
 <h4><a name="readospl">
 readospl</a>
 <i> (string)</i> read knock request as OSpL file</h4><p>
 
+Specifies the name of an OSpL file to use for the knock method.
 
 
 <h4><a name="service">
 service</a>
 <i> (string)</i> address of an Optimization Services Agent for a remote solve</h4><p>
 
+Specifies the URL of an Optimization Services Server.
+If specified, then this server is contacted and the service method specified under service_method is executed.
+Note that by default the server executes CBC to solve an instance.
+You can change the solver with the solver option.
 
 
 <h4><a name="service_method">
 service_method</a>
 <i> (string)</i> method of an OS Agent to call</h4><p>
 
+Specifies the method to execute on a server.
 
 <br><i>(default = solve)</i>
 <table>
-<tr valign="top"><td width=20 align=right>solve</td><td></td></tr>
-<tr valign="top"><td width=20 align=right>getJobID</td><td></td></tr>
-<tr valign="top"><td width=20 align=right>knock</td><td></td></tr>
-<tr valign="top"><td width=20 align=right>kill</td><td></td></tr>
-<tr valign="top"><td width=20 align=right>send</td><td></td></tr>
-<tr valign="top"><td width=20 align=right>retrieve</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>solve</td><td>.
+Specifies that an OS server should solve the provided instance and return the result.
+CoinOS will wait until the OS server returns the result.</td></tr>
+<tr valign="top"><td width=20 align=right>getJobID</td><td>.
+Specifies that an available Job identifier should be requested from an OS server. </td></tr>
+<tr valign="top"><td width=20 align=right>knock</td><td>.
+Specifies that the status of a solve process is requested from an OS server.
+The knock service method requires an OSpL file as input, see option readospl.</td></tr>
+<tr valign="top"><td width=20 align=right>kill</td><td>.
+Specifies that a solve process should be interrupted on an OS server.
+You should specify an OSoL file containing the JobID by using the readosil option.</td></tr>
+<tr valign="top"><td width=20 align=right>send</td><td>.
+Specifies that the model instance is send to an OS server and the server should solve this instance.
+CoinOS does not wait until the OS server returns the result but returns when submission of the instance is completed.</td></tr>
+<tr valign="top"><td width=20 align=right>retrieve</td><td>.
+Specifies that an optimization result should be requested from an OS server.
+You should specify an OSoL file containing the JobID by using the readosil option.</td></tr>
 </table>
 
 <h4><a name="solver">
 solver</a>
 <i> (string)</i> specification of a solver</h4><p>
 
+Specifies the solver that is used to solve an instance.
+Valid values are Clp, Cbc, Glpk, Ipopt, Bonmin, Couenne.
 
 
 <h4><a name="writeosil">
 writeosil</a>
 <i> (string)</i> write the problem instance as OSiL file</h4><p>
 
+Specifies the name of a file in which the GAMS model instance should be writting in OSiL format.
 
 
 <h4><a name="writeospl">
 writeospl</a>
 <i> (string)</i> write knock or kill reply into OSpL file</h4><p>
 
+Specifies the name of an OSpL file in which the answer from the knock or kill method is written.
 
 
 <h4><a name="writeosrl">
 writeosrl</a>
 <i> (string)</i> write the optimization result as OSrL file</h4><p>
 
+Specifies the name of a file in which the result of a solve process (solution, status, ...) should be writting in OSrL format.
 
 </body></html>
