@@ -196,6 +196,11 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 		char buffer[128];
 		if (gamsopt.getString("solver", buffer))
 			solvername.assign(buffer);
+		if (solvername == "none") {
+			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+			gmoSolveStatSet(gmo, SolveStat_Normal);
+	    return true;
+		}
 	} else { // set default solver depending on problem type and what is available
 		solvername = getSolverName(
 				osinstance->getNumberOfNonlinearExpressions() || osinstance->getNumberOfQuadraticTerms(),
