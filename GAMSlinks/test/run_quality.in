@@ -68,6 +68,8 @@ fi
 
 if test @gamslinks_build_glpk@ = 1 ; then
   solvers="$solvers , Glpk"
+  skiplist="$skiplist skip('Glpk','lp10')=yes;"
+  skiplist="$skiplist skip('Glpk','sl4lp10')=yes;"
   skiplist="$skiplist skip('Glpk','sos1a')=yes;"
   skiplist="$skiplist skip('Glpk','sl4sos1a')=yes;"
   skiplist="$skiplist skip('Glpk','semicon1')=yes;"

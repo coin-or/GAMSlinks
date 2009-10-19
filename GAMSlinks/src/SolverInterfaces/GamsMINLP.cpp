@@ -273,7 +273,7 @@ void GamsMINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const Nu
     		if (gevGetDblOpt(gev, gevOptCA) == 0 && gevGetDblOpt(gev, gevOptCR) == 0 && (in_couenne || gmoNLNZ(gmo) == 0)) // report optimal if optcr=optca=0 and we are running in couenne or model is a mip
     			model_status = ModelStat_OptimalGlobal; // optimal
     		else
-    			model_status = ModelStat_OptimalLocal; // integer feasible solution
+    			model_status = ModelStat_Integer; // integer feasible solution
     	} else { // this should not happen
     		model_status = ModelStat_ErrorNoSolution; // error - no solution
     	}
