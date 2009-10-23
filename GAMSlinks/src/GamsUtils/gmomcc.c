@@ -1,7 +1,7 @@
 /* Copyright (C) GAMS Development 2009
    All Rights Reserved.
    This code is published under the Common Public License.
-  
+
    $Id$
 
    Author:  Lutz Westermann
@@ -40,7 +40,7 @@ static int ScreenIndicator = 1;
 static int ExceptionIndicator = 0;
 static int ExitIndicator = 1;
 static gmoErrorCallback_t ErrorCallBack = NULL;
-int gmoAPIErrorCount = 0;
+static int APIErrorCount = 0;
 
 typedef void (GMO_CALLCONV *gmoXCreate_t) (gmoHandle_t *pgmo);
 static GMO_FUNCPTR(gmoXCreate);
@@ -74,20 +74,23 @@ int  GMO_CALLCONV d_gmoInitData (gmoHandle_t pgmo, int rows, int cols)
 int  GMO_CALLCONV d_gmoCompleteData (gmoHandle_t pgmo, const char *instname)
 { int d_s[]={3,11}; printAndReturn(gmoCompleteData,1,int ) }
 
-int  GMO_CALLCONV d_gmoQMaker (gmoHandle_t pgmo, double density, int *isparam)
-{ int d_s[]={3,13,8}; printAndReturn(gmoQMaker,2,int ) }
+int  GMO_CALLCONV d_gmoQMaker (gmoHandle_t pgmo, double density)
+{ int d_s[]={3,13}; printAndReturn(gmoQMaker,1,int ) }
+
+int  GMO_CALLCONV d_gmoGetObjQ (gmoHandle_t pgmo, int *qnz, int *qdiagnz, int *qcol, int *qrow, double *qcoef)
+{ int d_s[]={3,4,4,8,8,6}; printAndReturn(gmoGetObjQ,5,int ) }
+
+int  GMO_CALLCONV d_gmoGetRowQ (gmoHandle_t pgmo, int si, int *qnz, int *qdiagnz, int *qcol, int *qrow, double *qcoef)
+{ int d_s[]={3,3,4,4,8,8,6}; printAndReturn(gmoGetRowQ,6,int ) }
 
 int  GMO_CALLCONV d_gmoDumpQMakerGDX (gmoHandle_t pgmo, const char *gdxfname)
 { int d_s[]={3,11}; printAndReturn(gmoDumpQMakerGDX,1,int ) }
 
-int  GMO_CALLCONV d_gmoFreeQMaker (gmoHandle_t pgmo)
-{ int d_s[]={3}; printAndReturn(gmoFreeQMaker,0,int ) }
+int  GMO_CALLCONV d_gmoGetColStat (gmoHandle_t pgmo, int sj, int *jnz, int *jqnz, int *jnlnz, int *jobjnz)
+{ int d_s[]={3,3,4,4,4,4}; printAndReturn(gmoGetColStat,5,int ) }
 
-int  GMO_CALLCONV d_gmoGetColStat (gmoHandle_t pgmo, int sj, int *jnz, int *jnlnz, int *jobjnz)
-{ int d_s[]={3,3,4,4,4}; printAndReturn(gmoGetColStat,4,int ) }
-
-int  GMO_CALLCONV d_gmoGetRowStat (gmoHandle_t pgmo, int si, int *inz, int *inlnz)
-{ int d_s[]={3,3,4,4}; printAndReturn(gmoGetRowStat,3,int ) }
+int  GMO_CALLCONV d_gmoGetRowStat (gmoHandle_t pgmo, int si, int *inz, int *iqnz, int *inlnz)
+{ int d_s[]={3,3,4,4,4}; printAndReturn(gmoGetRowStat,4,int ) }
 
 int  GMO_CALLCONV d_gmoGetMatrixCplex (gmoHandle_t pgmo, int *ColStart, int *ColLength, int *RowIndex, double *JacValue)
 { int d_s[]={3,8,8,8,6}; printAndReturn(gmoGetMatrixCplex,4,int ) }
@@ -134,9 +137,6 @@ int  GMO_CALLCONV d_gmoSetVarL (gmoHandle_t pgmo, const double *X)
 void  GMO_CALLCONV d_gmoSetVarLOne (gmoHandle_t pgmo, int sj, double value)
 { int d_s[]={0,3,13}; printNoReturn(gmoSetVarLOne,2) }
 
-double  GMO_CALLCONV d_gmoEvalandSetObjVarL (gmoHandle_t pgmo)
-{ int d_s[]={13}; printAndReturn(gmoEvalandSetObjVarL,0,double ) }
-
 int  GMO_CALLCONV d_gmoGetVarM (gmoHandle_t pgmo, double *Dj)
 { int d_s[]={3,6}; printAndReturn(gmoGetVarM,1,int ) }
 
@@ -146,8 +146,8 @@ double  GMO_CALLCONV d_gmoGetVarMOne (gmoHandle_t pgmo, int sj)
 int  GMO_CALLCONV d_gmoSetVarM (gmoHandle_t pgmo, const double *Dj)
 { int d_s[]={3,5}; printAndReturn(gmoSetVarM,1,int ) }
 
-int  GMO_CALLCONV d_gmoGetVarNameOne (gmoHandle_t pgmo, int sj, char *colname)
-{ int d_s[]={3,3,12}; printAndReturn(gmoGetVarNameOne,2,int ) }
+char * GMO_CALLCONV d_gmoGetVarNameOne (gmoHandle_t pgmo, int sj, char *buf)
+{ int d_s[]={12,3}; printAndReturn(gmoGetVarNameOne,1,char *) }
 
 int  GMO_CALLCONV d_gmoGetVarLower (gmoHandle_t pgmo, double *LoVector)
 { int d_s[]={3,6}; printAndReturn(gmoGetVarLower,1,int ) }
@@ -161,20 +161,8 @@ int  GMO_CALLCONV d_gmoGetVarUpper (gmoHandle_t pgmo, double *UpVector)
 double  GMO_CALLCONV d_gmoGetVarUpperOne (gmoHandle_t pgmo, int sj)
 { int d_s[]={13,3}; printAndReturn(gmoGetVarUpperOne,1,double ) }
 
-int  GMO_CALLCONV d_gmoGetAltVarLower (gmoHandle_t pgmo, double *LoVector)
-{ int d_s[]={3,6}; printAndReturn(gmoGetAltVarLower,1,int ) }
-
-double  GMO_CALLCONV d_gmoGetAltVarLowerOne (gmoHandle_t pgmo, int sj)
-{ int d_s[]={13,3}; printAndReturn(gmoGetAltVarLowerOne,1,double ) }
-
 void  GMO_CALLCONV d_gmoSetAltVarLowerOne (gmoHandle_t pgmo, int sj, double value)
 { int d_s[]={0,3,13}; printNoReturn(gmoSetAltVarLowerOne,2) }
-
-int  GMO_CALLCONV d_gmoGetAltVarUpper (gmoHandle_t pgmo, double *UpVector)
-{ int d_s[]={3,6}; printAndReturn(gmoGetAltVarUpper,1,int ) }
-
-double  GMO_CALLCONV d_gmoGetAltVarUpperOne (gmoHandle_t pgmo, int sj)
-{ int d_s[]={13,3}; printAndReturn(gmoGetAltVarUpperOne,1,double ) }
 
 void  GMO_CALLCONV d_gmoSetAltVarUpperOne (gmoHandle_t pgmo, int sj, double value)
 { int d_s[]={0,3,13}; printNoReturn(gmoSetAltVarUpperOne,2) }
@@ -236,20 +224,14 @@ double  GMO_CALLCONV d_gmoGetEquMOne (gmoHandle_t pgmo, int si)
 int  GMO_CALLCONV d_gmoSetEquM (gmoHandle_t pgmo, const double *PI)
 { int d_s[]={3,5}; printAndReturn(gmoSetEquM,1,int ) }
 
-int  GMO_CALLCONV d_gmoGetEquNameOne (gmoHandle_t pgmo, int si, char *rowname)
-{ int d_s[]={3,3,12}; printAndReturn(gmoGetEquNameOne,2,int ) }
+char * GMO_CALLCONV d_gmoGetEquNameOne (gmoHandle_t pgmo, int si, char *buf)
+{ int d_s[]={12,3}; printAndReturn(gmoGetEquNameOne,1,char *) }
 
 int  GMO_CALLCONV d_gmoGetRhs (gmoHandle_t pgmo, double *RhsVector)
 { int d_s[]={3,6}; printAndReturn(gmoGetRhs,1,int ) }
 
 double  GMO_CALLCONV d_gmoGetRhsOne (gmoHandle_t pgmo, int si)
 { int d_s[]={13,3}; printAndReturn(gmoGetRhsOne,1,double ) }
-
-int  GMO_CALLCONV d_gmoGetAltRHS (gmoHandle_t pgmo, double *RhsVector)
-{ int d_s[]={3,6}; printAndReturn(gmoGetAltRHS,1,int ) }
-
-double  GMO_CALLCONV d_gmoGetAltRHSOne (gmoHandle_t pgmo, int si)
-{ int d_s[]={13,3}; printAndReturn(gmoGetAltRHSOne,1,double ) }
 
 int  GMO_CALLCONV d_gmoSetAltRHS (gmoHandle_t pgmo, const double *RhsVector)
 { int d_s[]={3,5}; printAndReturn(gmoSetAltRHS,1,int ) }
@@ -302,6 +284,12 @@ int  GMO_CALLCONV d_gmoGetEquScale (gmoHandle_t pgmo, double *ScaleVector)
 double  GMO_CALLCONV d_gmoGetEquScaleOne (gmoHandle_t pgmo, int si)
 { int d_s[]={13,3}; printAndReturn(gmoGetEquScaleOne,1,double ) }
 
+int  GMO_CALLCONV d_gmoGetEquOrderOne (gmoHandle_t pgmo, int si)
+{ int d_s[]={3,3}; printAndReturn(gmoGetEquOrderOne,1,int ) }
+
+void  GMO_CALLCONV d_gmoGetXLibCounts (gmoHandle_t pgmo, int *x_rows, int *x_cols, int *x_nzs)
+{ int d_s[]={0,4,4,4}; printNoReturn(gmoGetXLibCounts,3) }
+
 double  GMO_CALLCONV d_gmoGetHeadnTail (gmoHandle_t pgmo, int headrec)
 { int d_s[]={13,3}; printAndReturn(gmoGetHeadnTail,1,double ) }
 
@@ -343,9 +331,6 @@ int  GMO_CALLCONV d_gmoEvalNewPoint (gmoHandle_t pgmo, const double *X)
 
 int  GMO_CALLCONV d_gmoEvalSync (gmoHandle_t pgmo)
 { int d_s[]={3}; printAndReturn(gmoEvalSync,0,int ) }
-
-int  GMO_CALLCONV d_gmoNLfunc (gmoHandle_t pgmo, int si)
-{ int d_s[]={3,3}; printAndReturn(gmoNLfunc,1,int ) }
 
 int  GMO_CALLCONV d_gmoEvalFunc (gmoHandle_t pgmo, int si, const double *X, double *f)
 { int d_s[]={3,3,5,14}; printAndReturn(gmoEvalFunc,3,int ) }
@@ -450,10 +435,10 @@ int  GMO_CALLCONV d_gmoGetjModel (gmoHandle_t pgmo, int sj)
 { int d_s[]={3,3}; printAndReturn(gmoGetjModel,1,int ) }
 
 int  GMO_CALLCONV d_gmoAddRow (gmoHandle_t pgmo, int typEqu, int matchEqu, double slackEqu, double scaleEqu, double rhsEqu, double mEqu, int basEqu, int nzEqu, const int *colArr, const double *jacArr, const int *nlArr)
-{ int d_s[]={3,3,3,13,13,13,13,15,3,7,5,7}; printAndReturn(gmoAddRow,11,int ) }
+{ int d_s[]={3,3,3,13,13,13,13,3,3,7,5,7}; printAndReturn(gmoAddRow,11,int ) }
 
 int  GMO_CALLCONV d_gmoAddCol (gmoHandle_t pgmo, int typVar, double loVar, double lVar, double upVar, double mVar, int basVar, int sosVar, double priorVar, double scaleVar, int nzVar, const int *rowArr, const double *jacArr, const int *nlArr)
-{ int d_s[]={3,3,13,13,13,13,15,3,13,13,3,7,5,7}; printAndReturn(gmoAddCol,13,int ) }
+{ int d_s[]={3,3,13,13,13,13,3,3,13,13,3,7,5,7}; printAndReturn(gmoAddCol,13,int ) }
 
 int  GMO_CALLCONV d_gmoCrudeness (gmoHandle_t pgmo)
 { int d_s[]={3}; printAndReturn(gmoCrudeness,0,int ) }
@@ -557,6 +542,12 @@ int  GMO_CALLCONV d_gmoObjStyle (gmoHandle_t pgmo)
 void GMO_CALLCONV d_gmoObjStyleSet (gmoHandle_t pgmo, const int x)
 { int d_s[]={0,3}; printNoReturn(gmoObjStyleSet,1) }
 
+int  GMO_CALLCONV d_gmoInterface (gmoHandle_t pgmo)
+{ int d_s[]={3}; printAndReturn(gmoInterface,0,int ) }
+
+void GMO_CALLCONV d_gmoInterfaceSet (gmoHandle_t pgmo, const int x)
+{ int d_s[]={0,3}; printNoReturn(gmoInterfaceSet,1) }
+
 int  GMO_CALLCONV d_gmoIndexBase (gmoHandle_t pgmo)
 { int d_s[]={3}; printAndReturn(gmoIndexBase,0,int ) }
 
@@ -628,6 +619,9 @@ int  GMO_CALLCONV d_gmoNDisc (gmoHandle_t pgmo)
 
 int  GMO_CALLCONV d_gmoMaxQnz (gmoHandle_t pgmo)
 { int d_s[]={3}; printAndReturn(gmoMaxQnz,0,int ) }
+
+int  GMO_CALLCONV d_gmoQRows (gmoHandle_t pgmo)
+{ int d_s[]={3}; printAndReturn(gmoQRows,0,int ) }
 
 int  GMO_CALLCONV d_gmoNLCodeFun (gmoHandle_t pgmo)
 { int d_s[]={3}; printAndReturn(gmoNLCodeFun,0,int ) }
@@ -793,6 +787,12 @@ char * GMO_CALLCONV d_gmoNameXLib (gmoHandle_t pgmo, char *buf)
 
 void GMO_CALLCONV d_gmoNameXLibSet (gmoHandle_t pgmo, const char *x)
 { int d_s[]={0,12}; printNoReturn(gmoNameXLibSet,1) }
+
+char * GMO_CALLCONV d_gmoNameMatFile (gmoHandle_t pgmo, char *buf)
+{ int d_s[]={12}; printAndReturn(gmoNameMatFile,0,char *) }
+
+void GMO_CALLCONV d_gmoNameMatFileSet (gmoHandle_t pgmo, const char *x)
+{ int d_s[]={0,12}; printNoReturn(gmoNameMatFileSet,1) }
 
 char * GMO_CALLCONV d_gmoNameDict (gmoHandle_t pgmo, char *buf)
 { int d_s[]={12}; printAndReturn(gmoNameDict,0,char *) }
@@ -1046,7 +1046,7 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   LOADIT(gmoXCheck, "CgmoXCheck");
   LOADIT(gmoXAPIVersion, "CgmoXAPIVersion");
 
-  if (!gmoXAPIVersion(5,errBuf,&cl))
+  if (!gmoXAPIVersion(6,errBuf,&cl))
     return 1;
 
 
@@ -1059,11 +1059,12 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   {int s[]={3,12}; CheckAndLoad(gmoLoadDataLegacy,1,"C"); }
   {int s[]={3,3,3}; CheckAndLoad(gmoInitData,2,""); }
   {int s[]={3,11}; CheckAndLoad(gmoCompleteData,1,"C"); }
-  {int s[]={3,13,8}; CheckAndLoad(gmoQMaker,2,""); }
+  {int s[]={3,13}; CheckAndLoad(gmoQMaker,1,""); }
+  {int s[]={3,4,4,8,8,6}; CheckAndLoad(gmoGetObjQ,5,""); }
+  {int s[]={3,3,4,4,8,8,6}; CheckAndLoad(gmoGetRowQ,6,""); }
   {int s[]={3,11}; CheckAndLoad(gmoDumpQMakerGDX,1,"C"); }
-  {int s[]={3}; CheckAndLoad(gmoFreeQMaker,0,""); }
-  {int s[]={3,3,4,4,4}; CheckAndLoad(gmoGetColStat,4,""); }
-  {int s[]={3,3,4,4}; CheckAndLoad(gmoGetRowStat,3,""); }
+  {int s[]={3,3,4,4,4,4}; CheckAndLoad(gmoGetColStat,5,""); }
+  {int s[]={3,3,4,4,4}; CheckAndLoad(gmoGetRowStat,4,""); }
   {int s[]={3,8,8,8,6}; CheckAndLoad(gmoGetMatrixCplex,4,""); }
   {int s[]={3,8,8,6,8}; CheckAndLoad(gmoGetMatrixCol,4,""); }
   {int s[]={3,6}; CheckAndLoad(gmoGetObjVector,1,""); }
@@ -1079,20 +1080,15 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   {int s[]={13,3}; CheckAndLoad(gmoGetVarLOne,1,""); }
   {int s[]={3,5}; CheckAndLoad(gmoSetVarL,1,""); }
   {int s[]={0,3,13}; CheckAndLoad(gmoSetVarLOne,2,""); }
-  {int s[]={13}; CheckAndLoad(gmoEvalandSetObjVarL,0,""); }
   {int s[]={3,6}; CheckAndLoad(gmoGetVarM,1,""); }
   {int s[]={13,3}; CheckAndLoad(gmoGetVarMOne,1,""); }
   {int s[]={3,5}; CheckAndLoad(gmoSetVarM,1,""); }
-  {int s[]={3,3,12}; CheckAndLoad(gmoGetVarNameOne,2,"C"); }
+  {int s[]={12,3}; CheckAndLoad(gmoGetVarNameOne,1,"C"); }
   {int s[]={3,6}; CheckAndLoad(gmoGetVarLower,1,""); }
   {int s[]={13,3}; CheckAndLoad(gmoGetVarLowerOne,1,""); }
   {int s[]={3,6}; CheckAndLoad(gmoGetVarUpper,1,""); }
   {int s[]={13,3}; CheckAndLoad(gmoGetVarUpperOne,1,""); }
-  {int s[]={3,6}; CheckAndLoad(gmoGetAltVarLower,1,""); }
-  {int s[]={13,3}; CheckAndLoad(gmoGetAltVarLowerOne,1,""); }
   {int s[]={0,3,13}; CheckAndLoad(gmoSetAltVarLowerOne,2,""); }
-  {int s[]={3,6}; CheckAndLoad(gmoGetAltVarUpper,1,""); }
-  {int s[]={13,3}; CheckAndLoad(gmoGetAltVarUpperOne,1,""); }
   {int s[]={0,3,13}; CheckAndLoad(gmoSetAltVarUpperOne,2,""); }
   {int s[]={3,5,5}; CheckAndLoad(gmoSetAltVarBounds,2,""); }
   {int s[]={3,8}; CheckAndLoad(gmoGetVarType,1,""); }
@@ -1113,11 +1109,9 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   {int s[]={3,6}; CheckAndLoad(gmoGetEquM,1,""); }
   {int s[]={13,3}; CheckAndLoad(gmoGetEquMOne,1,""); }
   {int s[]={3,5}; CheckAndLoad(gmoSetEquM,1,""); }
-  {int s[]={3,3,12}; CheckAndLoad(gmoGetEquNameOne,2,"C"); }
+  {int s[]={12,3}; CheckAndLoad(gmoGetEquNameOne,1,"C"); }
   {int s[]={3,6}; CheckAndLoad(gmoGetRhs,1,""); }
   {int s[]={13,3}; CheckAndLoad(gmoGetRhsOne,1,""); }
-  {int s[]={3,6}; CheckAndLoad(gmoGetAltRHS,1,""); }
-  {int s[]={13,3}; CheckAndLoad(gmoGetAltRHSOne,1,""); }
   {int s[]={3,5}; CheckAndLoad(gmoSetAltRHS,1,""); }
   {int s[]={0,3,13}; CheckAndLoad(gmoSetAltRHSOne,2,""); }
   {int s[]={3,6}; CheckAndLoad(gmoGetEquSlack,1,""); }
@@ -1135,6 +1129,8 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   {int s[]={3,3}; CheckAndLoad(gmoGetEquMatchOne,1,""); }
   {int s[]={3,6}; CheckAndLoad(gmoGetEquScale,1,""); }
   {int s[]={13,3}; CheckAndLoad(gmoGetEquScaleOne,1,""); }
+  {int s[]={3,3}; CheckAndLoad(gmoGetEquOrderOne,1,""); }
+  {int s[]={0,4,4,4}; CheckAndLoad(gmoGetXLibCounts,3,""); }
   {int s[]={13,3}; CheckAndLoad(gmoGetHeadnTail,1,""); }
   {int s[]={0,3,13}; CheckAndLoad(gmoSetHeadnTail,2,""); }
   {int s[]={3,8}; CheckAndLoad(gmoSetEquPermutation,1,""); }
@@ -1149,7 +1145,6 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   {int s[]={0,3,3}; CheckAndLoad(gmoIgnoreEvalErrors,2,""); }
   {int s[]={3,5}; CheckAndLoad(gmoEvalNewPoint,1,""); }
   {int s[]={3}; CheckAndLoad(gmoEvalSync,0,""); }
-  {int s[]={3,3}; CheckAndLoad(gmoNLfunc,1,""); }
   {int s[]={3,3,5,14}; CheckAndLoad(gmoEvalFunc,3,""); }
   {int s[]={3,3,14}; CheckAndLoad(gmoEvalFuncInt,2,""); }
   {int s[]={3,3,5,14}; CheckAndLoad(gmoEvalFuncL,3,""); }
@@ -1184,8 +1179,8 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   {int s[]={3,3}; CheckAndLoad(gmoGetjSolver,1,""); }
   {int s[]={3,3}; CheckAndLoad(gmoGetiModel,1,""); }
   {int s[]={3,3}; CheckAndLoad(gmoGetjModel,1,""); }
-  {int s[]={3,3,3,13,13,13,13,15,3,7,5,7}; CheckAndLoad(gmoAddRow,11,""); }
-  {int s[]={3,3,13,13,13,13,15,3,13,13,3,7,5,7}; CheckAndLoad(gmoAddCol,13,""); }
+  {int s[]={3,3,3,13,13,13,13,3,3,7,5,7}; CheckAndLoad(gmoAddRow,11,""); }
+  {int s[]={3,3,13,13,13,13,3,3,13,13,3,7,5,7}; CheckAndLoad(gmoAddCol,13,""); }
   {int s[]={3}; CheckAndLoad(gmoCrudeness,0,""); }
   {int s[]={1}; CheckAndLoad(gmoDict,0,""); }
   {int s[]={1}; CheckAndLoad(gmoEnvironment,0,""); }
@@ -1220,6 +1215,8 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   {int s[]={3}; CheckAndLoad(gmoObjNLNZ,0,""); }
   {int s[]={3}; CheckAndLoad(gmoObjStyle,0,""); }
   {int s[]={0,3}; CheckAndLoad(gmoObjStyleSet,1,""); }
+  {int s[]={3}; CheckAndLoad(gmoInterface,0,""); }
+  {int s[]={0,3}; CheckAndLoad(gmoInterfaceSet,1,""); }
   {int s[]={3}; CheckAndLoad(gmoIndexBase,0,""); }
   {int s[]={0,3}; CheckAndLoad(gmoIndexBaseSet,1,""); }
   {int s[]={15}; CheckAndLoad(gmoObjReform,0,""); }
@@ -1244,6 +1241,7 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   {int s[]={0,15}; CheckAndLoad(gmoForceContSet,1,""); }
   {int s[]={3}; CheckAndLoad(gmoNDisc,0,""); }
   {int s[]={3}; CheckAndLoad(gmoMaxQnz,0,""); }
+  {int s[]={3}; CheckAndLoad(gmoQRows,0,""); }
   {int s[]={3}; CheckAndLoad(gmoNLCodeFun,0,""); }
   {int s[]={3}; CheckAndLoad(gmoMaxSingleFNL,0,""); }
   {int s[]={1}; CheckAndLoad(gmoPCodeFun,0,""); }
@@ -1299,6 +1297,8 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   {int s[]={0,12}; CheckAndLoad(gmoNameSolFileSet,1,"C"); }
   {int s[]={12}; CheckAndLoad(gmoNameXLib,0,"C"); }
   {int s[]={0,12}; CheckAndLoad(gmoNameXLibSet,1,"C"); }
+  {int s[]={12}; CheckAndLoad(gmoNameMatFile,0,"C"); }
+  {int s[]={0,12}; CheckAndLoad(gmoNameMatFileSet,1,"C"); }
   {int s[]={12}; CheckAndLoad(gmoNameDict,0,"C"); }
   {int s[]={0,12}; CheckAndLoad(gmoNameDictSet,1,"C"); }
   {int s[]={12}; CheckAndLoad(gmoNameParams,0,"C"); }
@@ -1504,12 +1504,22 @@ void gmoSetErrorCallback(gmoErrorCallback_t func)
   ErrorCallBack = func;
 }
 
+int gmoGetAPIErrorCount(void)
+{
+  return APIErrorCount;
+}
+
+void gmoSetAPIErrorCount(int ecnt)
+{
+  APIErrorCount = ecnt;
+}
+
 void gmoErrorHandling(const char *msg)
 {
-  gmoAPIErrorCount++;
+  APIErrorCount++;
   if (ScreenIndicator) { printf("%s\n", msg); fflush(stdout); }
   if (ErrorCallBack)
-     if (ErrorCallBack(gmoAPIErrorCount, msg)) exit(123);
+     if (ErrorCallBack(APIErrorCount, msg)) exit(123);
   assert(!ExceptionIndicator);
   if (ExitIndicator) exit(123);
 }

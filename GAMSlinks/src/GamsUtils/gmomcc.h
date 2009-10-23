@@ -1,7 +1,7 @@
 /* Copyright (C) GAMS Development 2009
    All Rights Reserved.
    This code is published under the Common Public License.
-  
+
    $Id$
 
    Author:  Lutz Westermann
@@ -15,12 +15,15 @@
 #if ! defined(_GMOCC_H_)
 #     define  _GMOCC_H_
 
+#define GMOAPIVERSION 6
+
 
 enum gmoEquType {
   equ_E = 0,
   equ_G = 1,
   equ_L = 2,
   equ_N = 3,
+  equ_X = 4,
   equ_C = 5  };
 
 enum gmoVarType {
@@ -31,6 +34,12 @@ enum gmoVarType {
   var_S2 = 4,
   var_SC = 5,
   var_SI = 6  };
+
+enum gmoEquOrder {
+  order_ERR = 0,
+  order_L   = 1,
+  order_Q   = 2,
+  order_NL  = 3  };
 
 enum gmoVarFreeType {
   var_X_F = 0,
@@ -53,6 +62,10 @@ enum gmoObjectiveType {
   ObjType_Var = 0,
   ObjType_Equ = 1,
   ObjType_Fun = 2  };
+
+enum gmoInterfaceType {
+  IFace_Processed = 0,
+  IFace_Raw       = 1  };
 
 enum gmoObjectiveSense {
   Obj_Min = 0,
@@ -157,7 +170,6 @@ struct gmoRec;
 typedef struct gmoRec *gmoHandle_t;
 
 typedef int (*gmoErrorCallback_t) (int ErrCount, const char *msg);
-extern int gmoAPIErrorCount;
 
 /* headers for "wrapper" routines implemented in C */
 int gmoGetReady  (char *msgBuf, int msgBufLen);
@@ -179,6 +191,8 @@ int  gmoGetExitIndicator     (void);
 void gmoSetExitIndicator     (int extind);
 gmoErrorCallback_t gmoGetErrorCallback(void);
 void gmoSetErrorCallback(gmoErrorCallback_t func);
+int  gmoGetAPIErrorCount     (void);
+void gmoSetAPIErrorCount     (int ecnt);
 
 void gmoErrorHandling(const char *msg);
 
@@ -195,11 +209,12 @@ void gmoErrorHandling(const char *msg);
 int  GMO_CALLCONV d_gmoLoadDataLegacy (gmoHandle_t pgmo, char *msg);
 int  GMO_CALLCONV d_gmoInitData (gmoHandle_t pgmo, int rows, int cols);
 int  GMO_CALLCONV d_gmoCompleteData (gmoHandle_t pgmo, const char *instname);
-int  GMO_CALLCONV d_gmoQMaker (gmoHandle_t pgmo, double density, int *isparam);
+int  GMO_CALLCONV d_gmoQMaker (gmoHandle_t pgmo, double density);
+int  GMO_CALLCONV d_gmoGetObjQ (gmoHandle_t pgmo, int *qnz, int *qdiagnz, int *qcol, int *qrow, double *qcoef);
+int  GMO_CALLCONV d_gmoGetRowQ (gmoHandle_t pgmo, int si, int *qnz, int *qdiagnz, int *qcol, int *qrow, double *qcoef);
 int  GMO_CALLCONV d_gmoDumpQMakerGDX (gmoHandle_t pgmo, const char *gdxfname);
-int  GMO_CALLCONV d_gmoFreeQMaker (gmoHandle_t pgmo);
-int  GMO_CALLCONV d_gmoGetColStat (gmoHandle_t pgmo, int sj, int *jnz, int *jnlnz, int *jobjnz);
-int  GMO_CALLCONV d_gmoGetRowStat (gmoHandle_t pgmo, int si, int *inz, int *inlnz);
+int  GMO_CALLCONV d_gmoGetColStat (gmoHandle_t pgmo, int sj, int *jnz, int *jqnz, int *jnlnz, int *jobjnz);
+int  GMO_CALLCONV d_gmoGetRowStat (gmoHandle_t pgmo, int si, int *inz, int *iqnz, int *inlnz);
 int  GMO_CALLCONV d_gmoGetMatrixCplex (gmoHandle_t pgmo, int *ColStart, int *ColLength, int *RowIndex, double *JacValue);
 int  GMO_CALLCONV d_gmoGetMatrixCol (gmoHandle_t pgmo, int *ColStart, int *RowIndex, double *JacValue, int *NLFlag);
 int  GMO_CALLCONV d_gmoGetObjVector (gmoHandle_t pgmo, double *ObjVector);
@@ -215,20 +230,15 @@ int  GMO_CALLCONV d_gmoGetVarL (gmoHandle_t pgmo, double *X);
 double  GMO_CALLCONV d_gmoGetVarLOne (gmoHandle_t pgmo, int sj);
 int  GMO_CALLCONV d_gmoSetVarL (gmoHandle_t pgmo, const double *X);
 void  GMO_CALLCONV d_gmoSetVarLOne (gmoHandle_t pgmo, int sj, double value);
-double  GMO_CALLCONV d_gmoEvalandSetObjVarL (gmoHandle_t pgmo);
 int  GMO_CALLCONV d_gmoGetVarM (gmoHandle_t pgmo, double *Dj);
 double  GMO_CALLCONV d_gmoGetVarMOne (gmoHandle_t pgmo, int sj);
 int  GMO_CALLCONV d_gmoSetVarM (gmoHandle_t pgmo, const double *Dj);
-int  GMO_CALLCONV d_gmoGetVarNameOne (gmoHandle_t pgmo, int sj, char *colname);
+char * GMO_CALLCONV d_gmoGetVarNameOne (gmoHandle_t pgmo, int sj, char *buf);
 int  GMO_CALLCONV d_gmoGetVarLower (gmoHandle_t pgmo, double *LoVector);
 double  GMO_CALLCONV d_gmoGetVarLowerOne (gmoHandle_t pgmo, int sj);
 int  GMO_CALLCONV d_gmoGetVarUpper (gmoHandle_t pgmo, double *UpVector);
 double  GMO_CALLCONV d_gmoGetVarUpperOne (gmoHandle_t pgmo, int sj);
-int  GMO_CALLCONV d_gmoGetAltVarLower (gmoHandle_t pgmo, double *LoVector);
-double  GMO_CALLCONV d_gmoGetAltVarLowerOne (gmoHandle_t pgmo, int sj);
 void  GMO_CALLCONV d_gmoSetAltVarLowerOne (gmoHandle_t pgmo, int sj, double value);
-int  GMO_CALLCONV d_gmoGetAltVarUpper (gmoHandle_t pgmo, double *UpVector);
-double  GMO_CALLCONV d_gmoGetAltVarUpperOne (gmoHandle_t pgmo, int sj);
 void  GMO_CALLCONV d_gmoSetAltVarUpperOne (gmoHandle_t pgmo, int sj, double value);
 int  GMO_CALLCONV d_gmoSetAltVarBounds (gmoHandle_t pgmo, const double *LoVector, const double *UpVector);
 int  GMO_CALLCONV d_gmoGetVarType (gmoHandle_t pgmo, int *TypeVector);
@@ -249,11 +259,9 @@ int  GMO_CALLCONV d_gmoSetEquL (gmoHandle_t pgmo, const double *Mvector);
 int  GMO_CALLCONV d_gmoGetEquM (gmoHandle_t pgmo, double *PI);
 double  GMO_CALLCONV d_gmoGetEquMOne (gmoHandle_t pgmo, int si);
 int  GMO_CALLCONV d_gmoSetEquM (gmoHandle_t pgmo, const double *PI);
-int  GMO_CALLCONV d_gmoGetEquNameOne (gmoHandle_t pgmo, int si, char *rowname);
+char * GMO_CALLCONV d_gmoGetEquNameOne (gmoHandle_t pgmo, int si, char *buf);
 int  GMO_CALLCONV d_gmoGetRhs (gmoHandle_t pgmo, double *RhsVector);
 double  GMO_CALLCONV d_gmoGetRhsOne (gmoHandle_t pgmo, int si);
-int  GMO_CALLCONV d_gmoGetAltRHS (gmoHandle_t pgmo, double *RhsVector);
-double  GMO_CALLCONV d_gmoGetAltRHSOne (gmoHandle_t pgmo, int si);
 int  GMO_CALLCONV d_gmoSetAltRHS (gmoHandle_t pgmo, const double *RhsVector);
 void  GMO_CALLCONV d_gmoSetAltRHSOne (gmoHandle_t pgmo, int si, double value);
 int  GMO_CALLCONV d_gmoGetEquSlack (gmoHandle_t pgmo, double *Mvector);
@@ -271,6 +279,8 @@ int  GMO_CALLCONV d_gmoGetEquMatch (gmoHandle_t pgmo, int *matchVector);
 int  GMO_CALLCONV d_gmoGetEquMatchOne (gmoHandle_t pgmo, int si);
 int  GMO_CALLCONV d_gmoGetEquScale (gmoHandle_t pgmo, double *ScaleVector);
 double  GMO_CALLCONV d_gmoGetEquScaleOne (gmoHandle_t pgmo, int si);
+int  GMO_CALLCONV d_gmoGetEquOrderOne (gmoHandle_t pgmo, int si);
+void  GMO_CALLCONV d_gmoGetXLibCounts (gmoHandle_t pgmo, int *x_rows, int *x_cols, int *x_nzs);
 double  GMO_CALLCONV d_gmoGetHeadnTail (gmoHandle_t pgmo, int headrec);
 void  GMO_CALLCONV d_gmoSetHeadnTail (gmoHandle_t pgmo, int headrec, double value);
 int  GMO_CALLCONV d_gmoSetEquPermutation (gmoHandle_t pgmo, int *permut);
@@ -285,7 +295,6 @@ int  GMO_CALLCONV d_gmoLastEvalErrors (gmoHandle_t pgmo, int tidx);
 void  GMO_CALLCONV d_gmoIgnoreEvalErrors (gmoHandle_t pgmo, int ignerr, int tidx);
 int  GMO_CALLCONV d_gmoEvalNewPoint (gmoHandle_t pgmo, const double *X);
 int  GMO_CALLCONV d_gmoEvalSync (gmoHandle_t pgmo);
-int  GMO_CALLCONV d_gmoNLfunc (gmoHandle_t pgmo, int si);
 int  GMO_CALLCONV d_gmoEvalFunc (gmoHandle_t pgmo, int si, const double *X, double *f);
 int  GMO_CALLCONV d_gmoEvalFuncInt (gmoHandle_t pgmo, int si, double *f);
 int  GMO_CALLCONV d_gmoEvalFuncL (gmoHandle_t pgmo, int si, const double *X, double *fnl);
@@ -356,6 +365,8 @@ int  GMO_CALLCONV d_gmoObjNZ (gmoHandle_t pgmo);
 int  GMO_CALLCONV d_gmoObjNLNZ (gmoHandle_t pgmo);
 int  GMO_CALLCONV d_gmoObjStyle (gmoHandle_t pgmo);
 void GMO_CALLCONV d_gmoObjStyleSet (gmoHandle_t pgmo, const int x);
+int  GMO_CALLCONV d_gmoInterface (gmoHandle_t pgmo);
+void GMO_CALLCONV d_gmoInterfaceSet (gmoHandle_t pgmo, const int x);
 int  GMO_CALLCONV d_gmoIndexBase (gmoHandle_t pgmo);
 void GMO_CALLCONV d_gmoIndexBaseSet (gmoHandle_t pgmo, const int x);
 int  GMO_CALLCONV d_gmoObjReform (gmoHandle_t pgmo);
@@ -380,6 +391,7 @@ int  GMO_CALLCONV d_gmoForceCont (gmoHandle_t pgmo);
 void GMO_CALLCONV d_gmoForceContSet (gmoHandle_t pgmo, const int x);
 int  GMO_CALLCONV d_gmoNDisc (gmoHandle_t pgmo);
 int  GMO_CALLCONV d_gmoMaxQnz (gmoHandle_t pgmo);
+int  GMO_CALLCONV d_gmoQRows (gmoHandle_t pgmo);
 int  GMO_CALLCONV d_gmoNLCodeFun (gmoHandle_t pgmo);
 int  GMO_CALLCONV d_gmoMaxSingleFNL (gmoHandle_t pgmo);
 void * GMO_CALLCONV d_gmoPCodeFun (gmoHandle_t pgmo);
@@ -435,6 +447,8 @@ char * GMO_CALLCONV d_gmoNameSolFile (gmoHandle_t pgmo, char *buf);
 void GMO_CALLCONV d_gmoNameSolFileSet (gmoHandle_t pgmo, const char *x);
 char * GMO_CALLCONV d_gmoNameXLib (gmoHandle_t pgmo, char *buf);
 void GMO_CALLCONV d_gmoNameXLibSet (gmoHandle_t pgmo, const char *x);
+char * GMO_CALLCONV d_gmoNameMatFile (gmoHandle_t pgmo, char *buf);
+void GMO_CALLCONV d_gmoNameMatFileSet (gmoHandle_t pgmo, const char *x);
 char * GMO_CALLCONV d_gmoNameDict (gmoHandle_t pgmo, char *buf);
 void GMO_CALLCONV d_gmoNameDictSet (gmoHandle_t pgmo, const char *x);
 char * GMO_CALLCONV d_gmoNameParams (gmoHandle_t pgmo, char *buf);
@@ -447,15 +461,17 @@ typedef int  (GMO_CALLCONV *gmoInitData_t) (gmoHandle_t pgmo, int rows, int cols
 GMO_FUNCPTR(gmoInitData);
 typedef int  (GMO_CALLCONV *gmoCompleteData_t) (gmoHandle_t pgmo, const char *instname);
 GMO_FUNCPTR(gmoCompleteData);
-typedef int  (GMO_CALLCONV *gmoQMaker_t) (gmoHandle_t pgmo, double density, int *isparam);
+typedef int  (GMO_CALLCONV *gmoQMaker_t) (gmoHandle_t pgmo, double density);
 GMO_FUNCPTR(gmoQMaker);
+typedef int  (GMO_CALLCONV *gmoGetObjQ_t) (gmoHandle_t pgmo, int *qnz, int *qdiagnz, int *qcol, int *qrow, double *qcoef);
+GMO_FUNCPTR(gmoGetObjQ);
+typedef int  (GMO_CALLCONV *gmoGetRowQ_t) (gmoHandle_t pgmo, int si, int *qnz, int *qdiagnz, int *qcol, int *qrow, double *qcoef);
+GMO_FUNCPTR(gmoGetRowQ);
 typedef int  (GMO_CALLCONV *gmoDumpQMakerGDX_t) (gmoHandle_t pgmo, const char *gdxfname);
 GMO_FUNCPTR(gmoDumpQMakerGDX);
-typedef int  (GMO_CALLCONV *gmoFreeQMaker_t) (gmoHandle_t pgmo);
-GMO_FUNCPTR(gmoFreeQMaker);
-typedef int  (GMO_CALLCONV *gmoGetColStat_t) (gmoHandle_t pgmo, int sj, int *jnz, int *jnlnz, int *jobjnz);
+typedef int  (GMO_CALLCONV *gmoGetColStat_t) (gmoHandle_t pgmo, int sj, int *jnz, int *jqnz, int *jnlnz, int *jobjnz);
 GMO_FUNCPTR(gmoGetColStat);
-typedef int  (GMO_CALLCONV *gmoGetRowStat_t) (gmoHandle_t pgmo, int si, int *inz, int *inlnz);
+typedef int  (GMO_CALLCONV *gmoGetRowStat_t) (gmoHandle_t pgmo, int si, int *inz, int *iqnz, int *inlnz);
 GMO_FUNCPTR(gmoGetRowStat);
 typedef int  (GMO_CALLCONV *gmoGetMatrixCplex_t) (gmoHandle_t pgmo, int *ColStart, int *ColLength, int *RowIndex, double *JacValue);
 GMO_FUNCPTR(gmoGetMatrixCplex);
@@ -487,15 +503,13 @@ typedef int  (GMO_CALLCONV *gmoSetVarL_t) (gmoHandle_t pgmo, const double *X);
 GMO_FUNCPTR(gmoSetVarL);
 typedef void  (GMO_CALLCONV *gmoSetVarLOne_t) (gmoHandle_t pgmo, int sj, double value);
 GMO_FUNCPTR(gmoSetVarLOne);
-typedef double  (GMO_CALLCONV *gmoEvalandSetObjVarL_t) (gmoHandle_t pgmo);
-GMO_FUNCPTR(gmoEvalandSetObjVarL);
 typedef int  (GMO_CALLCONV *gmoGetVarM_t) (gmoHandle_t pgmo, double *Dj);
 GMO_FUNCPTR(gmoGetVarM);
 typedef double  (GMO_CALLCONV *gmoGetVarMOne_t) (gmoHandle_t pgmo, int sj);
 GMO_FUNCPTR(gmoGetVarMOne);
 typedef int  (GMO_CALLCONV *gmoSetVarM_t) (gmoHandle_t pgmo, const double *Dj);
 GMO_FUNCPTR(gmoSetVarM);
-typedef int  (GMO_CALLCONV *gmoGetVarNameOne_t) (gmoHandle_t pgmo, int sj, char *colname);
+typedef char * (GMO_CALLCONV *gmoGetVarNameOne_t) (gmoHandle_t pgmo, int sj, char *buf);
 GMO_FUNCPTR(gmoGetVarNameOne);
 typedef int  (GMO_CALLCONV *gmoGetVarLower_t) (gmoHandle_t pgmo, double *LoVector);
 GMO_FUNCPTR(gmoGetVarLower);
@@ -505,16 +519,8 @@ typedef int  (GMO_CALLCONV *gmoGetVarUpper_t) (gmoHandle_t pgmo, double *UpVecto
 GMO_FUNCPTR(gmoGetVarUpper);
 typedef double  (GMO_CALLCONV *gmoGetVarUpperOne_t) (gmoHandle_t pgmo, int sj);
 GMO_FUNCPTR(gmoGetVarUpperOne);
-typedef int  (GMO_CALLCONV *gmoGetAltVarLower_t) (gmoHandle_t pgmo, double *LoVector);
-GMO_FUNCPTR(gmoGetAltVarLower);
-typedef double  (GMO_CALLCONV *gmoGetAltVarLowerOne_t) (gmoHandle_t pgmo, int sj);
-GMO_FUNCPTR(gmoGetAltVarLowerOne);
 typedef void  (GMO_CALLCONV *gmoSetAltVarLowerOne_t) (gmoHandle_t pgmo, int sj, double value);
 GMO_FUNCPTR(gmoSetAltVarLowerOne);
-typedef int  (GMO_CALLCONV *gmoGetAltVarUpper_t) (gmoHandle_t pgmo, double *UpVector);
-GMO_FUNCPTR(gmoGetAltVarUpper);
-typedef double  (GMO_CALLCONV *gmoGetAltVarUpperOne_t) (gmoHandle_t pgmo, int sj);
-GMO_FUNCPTR(gmoGetAltVarUpperOne);
 typedef void  (GMO_CALLCONV *gmoSetAltVarUpperOne_t) (gmoHandle_t pgmo, int sj, double value);
 GMO_FUNCPTR(gmoSetAltVarUpperOne);
 typedef int  (GMO_CALLCONV *gmoSetAltVarBounds_t) (gmoHandle_t pgmo, const double *LoVector, const double *UpVector);
@@ -555,16 +561,12 @@ typedef double  (GMO_CALLCONV *gmoGetEquMOne_t) (gmoHandle_t pgmo, int si);
 GMO_FUNCPTR(gmoGetEquMOne);
 typedef int  (GMO_CALLCONV *gmoSetEquM_t) (gmoHandle_t pgmo, const double *PI);
 GMO_FUNCPTR(gmoSetEquM);
-typedef int  (GMO_CALLCONV *gmoGetEquNameOne_t) (gmoHandle_t pgmo, int si, char *rowname);
+typedef char * (GMO_CALLCONV *gmoGetEquNameOne_t) (gmoHandle_t pgmo, int si, char *buf);
 GMO_FUNCPTR(gmoGetEquNameOne);
 typedef int  (GMO_CALLCONV *gmoGetRhs_t) (gmoHandle_t pgmo, double *RhsVector);
 GMO_FUNCPTR(gmoGetRhs);
 typedef double  (GMO_CALLCONV *gmoGetRhsOne_t) (gmoHandle_t pgmo, int si);
 GMO_FUNCPTR(gmoGetRhsOne);
-typedef int  (GMO_CALLCONV *gmoGetAltRHS_t) (gmoHandle_t pgmo, double *RhsVector);
-GMO_FUNCPTR(gmoGetAltRHS);
-typedef double  (GMO_CALLCONV *gmoGetAltRHSOne_t) (gmoHandle_t pgmo, int si);
-GMO_FUNCPTR(gmoGetAltRHSOne);
 typedef int  (GMO_CALLCONV *gmoSetAltRHS_t) (gmoHandle_t pgmo, const double *RhsVector);
 GMO_FUNCPTR(gmoSetAltRHS);
 typedef void  (GMO_CALLCONV *gmoSetAltRHSOne_t) (gmoHandle_t pgmo, int si, double value);
@@ -599,6 +601,10 @@ typedef int  (GMO_CALLCONV *gmoGetEquScale_t) (gmoHandle_t pgmo, double *ScaleVe
 GMO_FUNCPTR(gmoGetEquScale);
 typedef double  (GMO_CALLCONV *gmoGetEquScaleOne_t) (gmoHandle_t pgmo, int si);
 GMO_FUNCPTR(gmoGetEquScaleOne);
+typedef int  (GMO_CALLCONV *gmoGetEquOrderOne_t) (gmoHandle_t pgmo, int si);
+GMO_FUNCPTR(gmoGetEquOrderOne);
+typedef void  (GMO_CALLCONV *gmoGetXLibCounts_t) (gmoHandle_t pgmo, int *x_rows, int *x_cols, int *x_nzs);
+GMO_FUNCPTR(gmoGetXLibCounts);
 typedef double  (GMO_CALLCONV *gmoGetHeadnTail_t) (gmoHandle_t pgmo, int headrec);
 GMO_FUNCPTR(gmoGetHeadnTail);
 typedef void  (GMO_CALLCONV *gmoSetHeadnTail_t) (gmoHandle_t pgmo, int headrec, double value);
@@ -627,8 +633,6 @@ typedef int  (GMO_CALLCONV *gmoEvalNewPoint_t) (gmoHandle_t pgmo, const double *
 GMO_FUNCPTR(gmoEvalNewPoint);
 typedef int  (GMO_CALLCONV *gmoEvalSync_t) (gmoHandle_t pgmo);
 GMO_FUNCPTR(gmoEvalSync);
-typedef int  (GMO_CALLCONV *gmoNLfunc_t) (gmoHandle_t pgmo, int si);
-GMO_FUNCPTR(gmoNLfunc);
 typedef int  (GMO_CALLCONV *gmoEvalFunc_t) (gmoHandle_t pgmo, int si, const double *X, double *f);
 GMO_FUNCPTR(gmoEvalFunc);
 typedef int  (GMO_CALLCONV *gmoEvalFuncInt_t) (gmoHandle_t pgmo, int si, double *f);
@@ -769,6 +773,10 @@ typedef int  (GMO_CALLCONV *gmoObjStyle_t) (gmoHandle_t pgmo);
 GMO_FUNCPTR(gmoObjStyle);
 typedef void (GMO_CALLCONV *gmoObjStyleSet_t) (gmoHandle_t pgmo, const int x);
 GMO_FUNCPTR(gmoObjStyleSet);
+typedef int  (GMO_CALLCONV *gmoInterface_t) (gmoHandle_t pgmo);
+GMO_FUNCPTR(gmoInterface);
+typedef void (GMO_CALLCONV *gmoInterfaceSet_t) (gmoHandle_t pgmo, const int x);
+GMO_FUNCPTR(gmoInterfaceSet);
 typedef int  (GMO_CALLCONV *gmoIndexBase_t) (gmoHandle_t pgmo);
 GMO_FUNCPTR(gmoIndexBase);
 typedef void (GMO_CALLCONV *gmoIndexBaseSet_t) (gmoHandle_t pgmo, const int x);
@@ -817,6 +825,8 @@ typedef int  (GMO_CALLCONV *gmoNDisc_t) (gmoHandle_t pgmo);
 GMO_FUNCPTR(gmoNDisc);
 typedef int  (GMO_CALLCONV *gmoMaxQnz_t) (gmoHandle_t pgmo);
 GMO_FUNCPTR(gmoMaxQnz);
+typedef int  (GMO_CALLCONV *gmoQRows_t) (gmoHandle_t pgmo);
+GMO_FUNCPTR(gmoQRows);
 typedef int  (GMO_CALLCONV *gmoNLCodeFun_t) (gmoHandle_t pgmo);
 GMO_FUNCPTR(gmoNLCodeFun);
 typedef int  (GMO_CALLCONV *gmoMaxSingleFNL_t) (gmoHandle_t pgmo);
@@ -927,6 +937,10 @@ typedef char * (GMO_CALLCONV *gmoNameXLib_t) (gmoHandle_t pgmo, char *buf);
 GMO_FUNCPTR(gmoNameXLib);
 typedef void (GMO_CALLCONV *gmoNameXLibSet_t) (gmoHandle_t pgmo, const char *x);
 GMO_FUNCPTR(gmoNameXLibSet);
+typedef char * (GMO_CALLCONV *gmoNameMatFile_t) (gmoHandle_t pgmo, char *buf);
+GMO_FUNCPTR(gmoNameMatFile);
+typedef void (GMO_CALLCONV *gmoNameMatFileSet_t) (gmoHandle_t pgmo, const char *x);
+GMO_FUNCPTR(gmoNameMatFileSet);
 typedef char * (GMO_CALLCONV *gmoNameDict_t) (gmoHandle_t pgmo, char *buf);
 GMO_FUNCPTR(gmoNameDict);
 typedef void (GMO_CALLCONV *gmoNameDictSet_t) (gmoHandle_t pgmo, const char *x);

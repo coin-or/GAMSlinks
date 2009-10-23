@@ -1,7 +1,7 @@
 /* Copyright (C) GAMS Development 2009
    All Rights Reserved.
    This code is published under the Common Public License.
-  
+
    $Id$
 
    Author:  Lutz Westermann
@@ -40,7 +40,7 @@ static int ScreenIndicator = 1;
 static int ExceptionIndicator = 0;
 static int ExitIndicator = 1;
 static gevErrorCallback_t ErrorCallBack = NULL;
-int gevAPIErrorCount = 0;
+static int APIErrorCount = 0;
 
 typedef void (GEV_CALLCONV *gevXCreate_t) (gevHandle_t *pgev);
 static GEV_FUNCPTR(gevXCreate);
@@ -148,6 +148,12 @@ void  GEV_CALLCONV d_gevLogStatPChar (gevHandle_t pgev, const char *p)
 
 int  GEV_CALLCONV d_gevLicenseCheck (gevHandle_t pgev, int m, int n, int nz, int nlnz, int ndisc)
 { int d_s[]={15,3,3,3,3,3}; printAndReturn(gevLicenseCheck,5,int ) }
+
+int  GEV_CALLCONV d_gevLicenseCheckSubSys (gevHandle_t pgev, char *msg, const char *Lcode)
+{ int d_s[]={15,12,11}; printAndReturn(gevLicenseCheckSubSys,2,int ) }
+
+int  GEV_CALLCONV d_gevLicenseCheckSubInternal (gevHandle_t pgev, char *msg, int subsysnum, const char *Lcode)
+{ int d_s[]={15,12,3,11}; printAndReturn(gevLicenseCheckSubInternal,3,int ) }
 
 int  GEV_CALLCONV d_gevLicenseQueryOption (gevHandle_t pgev, const char *cstr, const char *ostr, int *oval)
 { int d_s[]={15,11,11,4}; printAndReturn(gevLicenseQueryOption,3,int ) }
@@ -467,7 +473,7 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   LOADIT(gevXCheck, "CgevXCheck");
   LOADIT(gevXAPIVersion, "CgevXAPIVersion");
 
-  if (!gevXAPIVersion(1,errBuf,&cl))
+  if (!gevXAPIVersion(2,errBuf,&cl))
     return 1;
 
 
@@ -505,6 +511,8 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   {int s[]={0,11}; CheckAndLoad(gevLogStat,1,"C"); }
   {int s[]={0,9}; CheckAndLoad(gevLogStatPChar,1,""); }
   {int s[]={15,3,3,3,3,3}; CheckAndLoad(gevLicenseCheck,5,""); }
+  {int s[]={15,12,11}; CheckAndLoad(gevLicenseCheckSubSys,2,"C"); }
+  {int s[]={15,12,3,11}; CheckAndLoad(gevLicenseCheckSubInternal,3,"C"); }
   {int s[]={15,11,11,4}; CheckAndLoad(gevLicenseQueryOption,3,"C"); }
   {int s[]={0,3,11,3,3}; CheckAndLoad(gevLicenseRegisterSystem,4,"C"); }
   {int s[]={15,12}; CheckAndLoad(gevLicenseGetMessage,1,"C"); }
@@ -732,12 +740,22 @@ void gevSetErrorCallback(gevErrorCallback_t func)
   ErrorCallBack = func;
 }
 
+int gevGetAPIErrorCount(void)
+{
+  return APIErrorCount;
+}
+
+void gevSetAPIErrorCount(int ecnt)
+{
+  APIErrorCount = ecnt;
+}
+
 void gevErrorHandling(const char *msg)
 {
-  gevAPIErrorCount++;
+  APIErrorCount++;
   if (ScreenIndicator) { printf("%s\n", msg); fflush(stdout); }
   if (ErrorCallBack)
-     if (ErrorCallBack(gevAPIErrorCount, msg)) exit(123);
+     if (ErrorCallBack(APIErrorCount, msg)) exit(123);
   assert(!ExceptionIndicator);
   if (ExitIndicator) exit(123);
 }

@@ -1,7 +1,7 @@
 /* Copyright (C) GAMS Development 2009
    All Rights Reserved.
    This code is published under the Common Public License.
-  
+
    $Id$
 
    Author:  Lutz Westermann
@@ -14,6 +14,8 @@
 
 #if ! defined(_GEVCC_H_)
 #     define  _GEVCC_H_
+
+#define GEVAPIVERSION 2
 
 
 enum gevWriteMode {
@@ -83,7 +85,6 @@ struct gevRec;
 typedef struct gevRec *gevHandle_t;
 
 typedef int (*gevErrorCallback_t) (int ErrCount, const char *msg);
-extern int gevAPIErrorCount;
 
 /* headers for "wrapper" routines implemented in C */
 int gevGetReady  (char *msgBuf, int msgBufLen);
@@ -105,6 +106,8 @@ int  gevGetExitIndicator     (void);
 void gevSetExitIndicator     (int extind);
 gevErrorCallback_t gevGetErrorCallback(void);
 void gevSetErrorCallback(gevErrorCallback_t func);
+int  gevGetAPIErrorCount     (void);
+void gevSetAPIErrorCount     (int ecnt);
 
 void gevErrorHandling(const char *msg);
 
@@ -148,6 +151,8 @@ void  GEV_CALLCONV d_gevStatB (gevHandle_t pgev, const char *s);
 void  GEV_CALLCONV d_gevLogStat (gevHandle_t pgev, const char *s);
 void  GEV_CALLCONV d_gevLogStatPChar (gevHandle_t pgev, const char *p);
 int  GEV_CALLCONV d_gevLicenseCheck (gevHandle_t pgev, int m, int n, int nz, int nlnz, int ndisc);
+int  GEV_CALLCONV d_gevLicenseCheckSubSys (gevHandle_t pgev, char *msg, const char *Lcode);
+int  GEV_CALLCONV d_gevLicenseCheckSubInternal (gevHandle_t pgev, char *msg, int subsysnum, const char *Lcode);
 int  GEV_CALLCONV d_gevLicenseQueryOption (gevHandle_t pgev, const char *cstr, const char *ostr, int *oval);
 void  GEV_CALLCONV d_gevLicenseRegisterSystem (gevHandle_t pgev, int nsubsys, const char *codes, int checksum, int isglobal);
 int  GEV_CALLCONV d_gevLicenseGetMessage (gevHandle_t pgev, char *msg);
@@ -232,6 +237,10 @@ typedef void  (GEV_CALLCONV *gevLogStatPChar_t) (gevHandle_t pgev, const char *p
 GEV_FUNCPTR(gevLogStatPChar);
 typedef int  (GEV_CALLCONV *gevLicenseCheck_t) (gevHandle_t pgev, int m, int n, int nz, int nlnz, int ndisc);
 GEV_FUNCPTR(gevLicenseCheck);
+typedef int  (GEV_CALLCONV *gevLicenseCheckSubSys_t) (gevHandle_t pgev, char *msg, const char *Lcode);
+GEV_FUNCPTR(gevLicenseCheckSubSys);
+typedef int  (GEV_CALLCONV *gevLicenseCheckSubInternal_t) (gevHandle_t pgev, char *msg, int subsysnum, const char *Lcode);
+GEV_FUNCPTR(gevLicenseCheckSubInternal);
 typedef int  (GEV_CALLCONV *gevLicenseQueryOption_t) (gevHandle_t pgev, const char *cstr, const char *ostr, int *oval);
 GEV_FUNCPTR(gevLicenseQueryOption);
 typedef void  (GEV_CALLCONV *gevLicenseRegisterSystem_t) (gevHandle_t pgev, int nsubsys, const char *codes, int checksum, int isglobal);
