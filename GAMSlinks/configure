@@ -28714,7 +28714,7 @@ else
 fi
 
 
-if test $gamslinks_build_gamsio = 1 && test "x$coin_has_scip" = xtrue && (test $use_thirdpartyscip = 0 || test $coin_build_clp = 1) ; then
+if test $gamslinks_build_gamsio = 1 && test "x$coin_has_scip" = xtrue && (test $use_thirdpartyscip = 0 || (test $coin_build_clp = 1 && test $gamslinks_build_ipopt = 1)) ; then
   gamslinks_build_scip=1
 else
   gamslinks_build_scip=0
@@ -28954,6 +28954,26 @@ fi
 
 if test $coin_vpath_config = yes; then
   coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/install/gmsoxpnt.dat"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/gmsscdus.run"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/gmsscdnt.cmd"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/install/gmsscdun.dat"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/install/gmsscdnt.dat"
 fi
 
 

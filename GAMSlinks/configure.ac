@@ -348,7 +348,7 @@ else
 fi
 AM_CONDITIONAL([GAMSLINKS_BUILD_OS], [test $gamslinks_build_os = 1])
 
-if test $gamslinks_build_gamsio = 1 && test "x$coin_has_scip" = xtrue && (test $use_thirdpartyscip = 0 || test $coin_build_clp = 1) ; then
+if test $gamslinks_build_gamsio = 1 && test "x$coin_has_scip" = xtrue && (test $use_thirdpartyscip = 0 || (test $coin_build_clp = 1 && test $gamslinks_build_ipopt = 1)) ; then
   gamslinks_build_scip=1
 else
   gamslinks_build_scip=0
@@ -410,6 +410,10 @@ AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsoxpus.run)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsoxpnt.cmd)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsoxpun.dat)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsoxpnt.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsscdus.run)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsscdnt.cmd)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsscdun.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsscdnt.dat)
 AC_COIN_VPATH_LINK(src/Cbc/gmscc_us.run)
 AC_COIN_VPATH_LINK(src/Cbc/gmscc_nt.cmd)
 AC_COIN_VPATH_LINK(src/Cbc/install/gmscc_un.dat)

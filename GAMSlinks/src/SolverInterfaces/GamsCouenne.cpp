@@ -140,7 +140,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
  	for (int i = 0; i < gmoN(gmo); ++i)
 		if (gmoGetVarTypeOne(gmo, i) == var_SC || gmoGetVarTypeOne(gmo, i) == var_SI) {
-			gevLogStat(gev, "Error: Semicontinuous and semiinteger variables not supported by Bonmin.");
+			gevLogStat(gev, "Error: Semicontinuous and semiinteger variables not supported by Couenne.");
 			return 1;
 		}
  

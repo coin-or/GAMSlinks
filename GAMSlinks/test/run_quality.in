@@ -118,6 +118,8 @@ if test @gamslinks_build_couenne@ = 1 ; then
   skiplist="$skiplist skip('Couenne','sl4lp03')=yes;"
   skiplist="$skiplist skip('Couenne','nlpqcp01')=yes;"
   skiplist="$skiplist skip('Couenne','nlpqcp02')=yes;"
+  skiplist="$skiplist skip('Couenne','qcp01')=yes;"
+  skiplist="$skiplist skip('Couenne','qcp02')=yes;"
   testlist[${#testlist[@]}]="--solver couenne --suite lp"
   testlist[${#testlist[@]}]="--solver couenne --suite mip user1=rmip=couenne"
   testlist[${#testlist[@]}]="--solver couenne --suite nlp user1=\"--MCHECKS=0\""
@@ -177,17 +179,25 @@ fi
 
 if test @gamslinks_build_scip@ = 1 ; then
   solvers="$solvers , Scip"
-  skiplist="$skiplist skip('Scip','sos2a')=yes;"
   skiplist="$skiplist skip('Scip','semicon1')=yes;"
   skiplist="$skiplist skip('Scip','sl4scon1')=yes;"
-  #for the moment, we better skip the test of output to stdout
-  if grep -q slvstdskip quality.gms ; then
-    stdskiplist="$stdskiplist slvstdskip('Scip')=yes;"
-  else
-    stdskiplist="$stdskiplist slvstdoutskip('Scip')=yes;"
-  fi
   testlist[${#testlist[@]}]="--solver scip --suite lp"
   testlist[${#testlist[@]}]="--solver scip --suite mip user1=\"--MIPMCHECKS=0 rmip=scip\""
+
+  solvers="$solvers , ScipD"
+  skiplist="$skiplist skip('ScipD','semicon1')=yes;"
+  skiplist="$skiplist skip('ScipD','sl4scon1')=yes;"
+  testlist[${#testlist[@]}]="--solver scipd --suite lp"
+  testlist[${#testlist[@]}]="--solver scipd --suite mip user1=\"--MIPMCHECKS=0 rmip=scipd\""
+
+#  #for the moment, we better skip the test of output to stdout
+#  if grep -q slvstdskip quality.gms ; then
+#    stdskiplist="$stdskiplist slvstdskip('Scip')=yes;"
+#    stdskiplist="$stdskiplist slvstdskip('ScipD')=yes;"
+#  else
+#    stdskiplist="$stdskiplist slvstdoutskip('Scip')=yes;"
+#    stdskiplist="$stdskiplist slvstdoutskip('ScipD')=yes;"
+#  fi
 fi
 
 

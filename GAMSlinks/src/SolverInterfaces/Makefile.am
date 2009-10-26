@@ -169,8 +169,6 @@ if GAMSLINKS_BUILD_CBC
 libGamsCoin_la_SOURCES += GamsCbc.cpp
 
 AM_CPPFLAGS += \
- -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
- -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src` \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglClique` \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglDuplicateRow` \
@@ -258,6 +256,39 @@ endif
 
 EXTRA_DIST       += gmsipdnt.cmd gmsipdus.run install/gmsipdnt.dat install/gmsipdun.dat
 
+endif
+
+if GAMSLINKS_BUILD_SCIP
+libGamsCoin_la_SOURCES += GamsScip.cpp
+AM_CPPFLAGS += \
+ -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
+ -I`$(CYGPATH_W) $(CLPOBJDIR)/inc` \
+ -I`$(CYGPATH_W) $(SCIPINCDIR)`
+
+if COIN_BUILD_SCIP
+libGamsCoin_la_LIBADD       += $(SCIPOBJDIR)/libcoinscip.la
+libGamsCoin_la_DEPENDENCIES += $(SCIPOBJDIR)/libcoinscip.la
+else
+libGamsCoin_la_LIBADD       += $(SCIPLIB)
+endif 
+ 
+if GAMSIO_IS_UNIX
+noinst_PROGRAMS     += gmsscdux.out
+gmsscdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+gmsscdux_out_SOURCES = gmsscd.cpp
+gmsscdux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+gamsinstallfiles    += gmsscdux.out gmsscdus.run install/gmsscdun.dat
+endif
+
+if GAMSIO_IS_WINDOWS
+noinst_PROGRAMS  += gmsscdnx
+gmsscdnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+gmsscdnx_SOURCES  = gmsscd.cpp
+gmsscdnx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+gamsinstallfiles += gmsscdnx.exe gmsscdnt.cmd install/gmsscdnt.dat
+endif
+
+EXTRA_DIST       += gmsscdnt.cmd gmsscdus.run install/gmsscdnt.dat install/gmsscdun.dat
 endif
 
 if GAMSLINKS_BUILD_BONMIN

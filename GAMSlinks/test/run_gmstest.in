@@ -124,6 +124,11 @@ if test @gamslinks_build_scip@ = 1 ; then
   SMP="$SMP SMP('Scip', 'LP') = yes;"
   SMP="$SMP SMP('Scip', 'MIP') = yes;"
   SMP="$SMP SMP('Scip', 'RMIP') = yes;"
+
+  solvers="$solvers , 'ScipD'"
+  SMP="$SMP SMP('ScipD', 'LP') = yes;"
+  SMP="$SMP SMP('ScipD', 'MIP') = yes;"
+  SMP="$SMP SMP('ScipD', 'RMIP') = yes;"
 fi
 
 # create driver generator

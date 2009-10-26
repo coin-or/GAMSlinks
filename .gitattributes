@@ -198,6 +198,9 @@ GAMSlinks/src/SolverInterfaces/GamsOsiHelper.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsOsiHelper.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsOsiMosek.h -text
 GAMSlinks/src/SolverInterfaces/GamsOsiXpress.h -text
+GAMSlinks/src/SolverInterfaces/GamsScip.cpp -text
+GAMSlinks/src/SolverInterfaces/GamsScip.h -text
+GAMSlinks/src/SolverInterfaces/GamsScip.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsSolver.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsSolver.h -text
 GAMSlinks/src/SolverInterfaces/GamsSolver.hpp -text
@@ -235,6 +238,9 @@ GAMSlinks/src/SolverInterfaces/gmsosdus.run -text
 GAMSlinks/src/SolverInterfaces/gmsoxp.cpp -text
 GAMSlinks/src/SolverInterfaces/gmsoxpnt.cmd -text
 GAMSlinks/src/SolverInterfaces/gmsoxpus.run -text
+GAMSlinks/src/SolverInterfaces/gmsscd.cpp -text
+GAMSlinks/src/SolverInterfaces/gmsscdnt.cmd -text
+GAMSlinks/src/SolverInterfaces/gmsscdus.run -text
 GAMSlinks/src/SolverInterfaces/install/gmsbmdnt.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmsbmdun.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmscbcnt.dat -text
@@ -253,6 +259,8 @@ GAMSlinks/src/SolverInterfaces/install/gmsosdnt.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmsosdun.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmsoxpnt.dat -text
 GAMSlinks/src/SolverInterfaces/install/gmsoxpun.dat -text
+GAMSlinks/src/SolverInterfaces/install/gmsscdnt.dat -text
+GAMSlinks/src/SolverInterfaces/install/gmsscdun.dat -text
 GAMSlinks/src/SolverInterfaces/optcbcd.def -text
 GAMSlinks/src/SolverInterfaces/optcbcd.gms -text
 GAMSlinks/src/SolverInterfaces/optcbcd.html -text
