@@ -45,8 +45,8 @@
 #include "scip/cons_sos2.h"
 
 // workaround for accessing Objoffset; should be addObjoffset, but that does not seem to be implemented
-#include "scip/struct_scip.h"
-#include "scip/prob.h"
+//#include "scip/struct_scip.h"
+//#include "scip/prob.h"
 
 SCIP_DECL_MESSAGEERROR(GamsScipPrintWarningOrError) {
 	assert(SCIPmessagehdlrGetData(messagehdlr) != NULL);
@@ -109,7 +109,7 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	  return 1;
 	} else {
 		int isAcademic = 0;
-    gevlicenseQueryOption(gev, "GAMS","ACADEMIC", &isAcademic);
+    gevLicenseQueryOption(gev, "GAMS","ACADEMIC", &isAcademic);
     if (!isAcademic) {
     	char msg[256];
   		while (gevLicenseGetMessage(gev, msg))
@@ -574,14 +574,30 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 		SCIP_CALL( SCIPcreateVar(scip, &objvar, "xobj", -SCIPinfinity(scip), SCIPinfinity(scip), 1.0, SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL) );
 		SCIP_CALL( SCIPaddVar(scip, objvar) );
 
-		gmoGetObjSparse(gmo, indices, coefs, NULL, &nz, &nlnz);
-		for (int j = 0; j < nz; ++j)
-			consvars[j] = vars[indices[j]];
+		gmoGetObjVector(gmo, coefs);
+		nz = 0;
+		for (int j = 0; j < gmoN(gmo); ++j)
+			if (coefs[j]) {
+				coefs[nz] = coefs[j]; // should be safe since nz <= j
+				consvars[nz] = vars[j];
+				++nz;
+			}
+		
+//		gmoGetObjSparse(gmo, indices, coefs, NULL, &nz, &nlnz);
+//		for (int j = 0; j < nz; ++j) {
+//			consvars[j] = vars[indices[j]];
+//			printf("%+g*%s ", coefs[j], SCIPvarGetName(consvars[j]));
+//		}
+//		printf("\n");
 		consvars[nz] = objvar;
 		coefs[nz] = -1.0;
-		
+
 		gmoGetObjQ(gmo, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
 		for (int j = 0; j < qnz; ++j) {
+			assert(qcol[j] >= 0);
+			assert(qrow[j] >= 0);
+			assert(qcol[j] < gmoN(gmo));
+			assert(qrow[j] < gmoN(gmo));
 			quadvars1[j] = vars[qcol[j]];
 			quadvars2[j] = vars[qrow[j]];
 			if (qcol[j] == qrow[j])
@@ -603,8 +619,12 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 		
 		SCIP_CALL( SCIPreleaseVar(scip, &objvar) );
 		
-	} else if (gmoObjConst(gmo)) {
-		SCIPprobAddObjoffset(scip->origprob, gmoObjConst(gmo));
+	} else if (!SCIPisZero(scip, gmoObjConst(gmo))) {
+		SCIP_VAR* objconst;
+		SCIP_CALL( SCIPcreateVar(scip, &objconst, "objconst", 1.0, 1.0, gmoObjConst(gmo), SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL) );
+		SCIP_CALL( SCIPaddVar(scip, objconst) );
+		SCIP_CALL( SCIPreleaseVar(scip, &objconst) );
+//		SCIPprobAddObjoffset(scip->origprob, gmoObjConst(gmo));
 	}
 
 	if (gmoSense(gmo) == Obj_Max)
@@ -657,8 +677,8 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 	// need to transform before doing getLPI and before providing initial solution
 	// also objective offset does not seem to be copied to transformed problem
 	SCIP_CALL( SCIPtransformProb(scip) );
-	if (gmoObjNLNZ(gmo) == 0)
-		SCIPprobAddObjoffset(scip->transprob, gmoObjConst(gmo));
+//	if (gmoObjNLNZ(gmo) == 0)
+//		SCIPprobAddObjoffset(scip->transprob, gmoObjConst(gmo));
 	//TODO there seem to be a problem with the offset when SCIP does restarts
 
 	if (gevGetDblOpt(gev, gevCutOff) != GMS_SV_NA)
