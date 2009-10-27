@@ -537,6 +537,10 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 				
 				gmoGetRowQ(gmo, i, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
 				for (int j = 0; j < qnz; ++j) {
+					assert(qcol[j] >= 0);
+					assert(qrow[j] >= 0);
+					assert(qcol[j] < gmoN(gmo));
+					assert(qrow[j] < gmoN(gmo));
 					quadvars1[j] = vars[qcol[j]];
 					quadvars2[j] = vars[qrow[j]];
 					if (qcol[j] == qrow[j])
@@ -652,10 +656,10 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 			
 			sprintf(buffer, "sos%d", i);
 			if (sostype[i] == 1) {
-				SCIP_CALL( SCIPcreateConsSOS1(scip, &con, buffer, k, consvars, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
+				SCIP_CALL( SCIPcreateConsSOS1(scip, &con, buffer, k, consvars, &soswt[sosbeg[i]], TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
 			} else {
 				assert(sostype[i] == 2);
-				SCIP_CALL( SCIPcreateConsSOS2(scip, &con, buffer, k, consvars, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
+				SCIP_CALL( SCIPcreateConsSOS2(scip, &con, buffer, k, consvars, &soswt[sosbeg[i]], TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
 			}
 			
 			SCIP_CALL( SCIPaddCons(scip, con) );
