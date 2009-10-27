@@ -45,6 +45,7 @@ private:
    SCIP_RETCODE setupSCIP();
    SCIP_RETCODE setupSCIPParameters();
    SCIP_RETCODE setupMIQCP();
+   SCIP_RETCODE setupInitialBasis();
    SCIP_RETCODE setupStartPoint();
    SCIP_RETCODE processLPSolution(double time);
    SCIP_RETCODE processMIQCPSolution();

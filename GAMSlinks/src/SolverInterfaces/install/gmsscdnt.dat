@@ -1,6 +1,6 @@
 id           ScipD
 license_id   00 01 02
-capabilities LP RMIP MIP
+capabilities LP RMIP MIP QCP RMIQCP MIQCP
 file_type    2112
 dictionary_file 4
 run_file     gmsscdnt.cmd
