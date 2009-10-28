@@ -97,19 +97,11 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 #ifdef GAMS_BUILD
 #define GEVPTR gev
-//??? #define SKIPCHECK
 #include "cgevmagic2.h"
-	if (gevLicenseCheck(gev, gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo))) {
-		char msg[256];
-		gevLogStat(gev, "The license check failed:\n");
-		while (gevLicenseGetMessage(gev, msg))
-			gevLogStat(gev,msg);
-	  gmoSolveStatSet(gmo, SolveStat_License);
-	  gmoModelStatSet(gmo, ModelStat_LicenseError);
-	  return 1;
-	} else {
+	if (gevLicenseCheck(gev, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo))) {
+		// model larger than demo and no solver-specific license; check if we have an academic license
 		int isAcademic = 0;
-    gevLicenseQueryOption(gev, "GAMS","ACADEMIC", &isAcademic);
+    gevLicenseQueryOption(gev, "GAMS", "ACADEMIC", &isAcademic);
     if (!isAcademic) {
     	char msg[256];
   		while (gevLicenseGetMessage(gev, msg))
@@ -120,8 +112,13 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
   	  gmoModelStatSet(gmo, ModelStat_LicenseError);
   	  return 1;
     }
+    isDemo = false;
+	} else {
+		// we have a demo modell, or license is available; however, there is nothing like a scip license, so it means the model fits into the demo size
+		int isAcademic = 0;
+    gevLicenseQueryOption(gev, "GAMS", "ACADEMIC", &isAcademic);
+    isDemo = !isAcademic; // we run in demo mode if there is no academic license, that is we cannot allow to open a scip shell
 	}
-	//TODO find out if we run in demo mode and set isDemo
 #endif
 
 	gmoObjReformSet(gmo, 1);
