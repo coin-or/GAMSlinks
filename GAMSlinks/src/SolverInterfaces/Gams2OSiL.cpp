@@ -65,8 +65,10 @@ bool Gams2OSiL::createOSInstance() {
 	gmoGetVarLower(gmo, varlow);
 	gmoGetVarUpper(gmo, varup);
 
-	if (!osinstance->setVariables(gmoN(gmo), varnames, varlow, varup, vartypes))
+	if (gmoN(gmo) && !osinstance->setVariables(gmoN(gmo), varnames, varlow, varup, vartypes)) {
+	   gevLogStat(gev, "Error: OSInstance::setVariables did not succeed.\n");
 		return false;
+	}
 
 	delete[] vartypes;
 	delete[] varnames;
@@ -108,6 +110,7 @@ bool Gams2OSiL::createOSInstance() {
 //		std::cout << "gmo obj con: " << gmoObjConst(gmo) << std::endl;
 		if (!osinstance->addObjective(-1, objname, gmoSense(gmo) == Obj_Min ? "min" : "max", gmoObjConst(gmo), 1., objectiveCoefficients)) {
 			delete objectiveCoefficients;
+	      gevLogStat(gev, "Error: OSInstance::addObjective did not succeed.\n");
 			return false;
 		}
 		delete objectiveCoefficients;
@@ -143,8 +146,10 @@ bool Gams2OSiL::createOSInstance() {
 		else
 			sprintf(buffer, "e%08d", i);
 		conname = buffer;
-		if (!osinstance->addConstraint(i, conname, lb, ub, 0.))
+		if (!osinstance->addConstraint(i, conname, lb, ub, 0.)) {
+	      gevLogStat(gev, "Error: OSInstance::addConstraint did not succeed.\n");
 			return false;
+		}
 	}
 
 	int nz = gmoNZ(gmo);
@@ -180,6 +185,7 @@ bool Gams2OSiL::createOSInstance() {
 		rowindexes, 0, nz-1,
 		colstarts, 0, gmoN(gmo))) {
 		delete[] nlflags;
+      gevLogStat(gev, "Error: OSInstance::setLinearConstraintCoefficients did not succeed.\n");
 		return false;
 	}
 
@@ -205,7 +211,10 @@ bool Gams2OSiL::createOSInstance() {
 		gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
 
 		nl = parseGamsInstructions(codelen, opcodes, fields, constantlen, constants);
-		if (!nl) return false;
+		if (!nl) {
+	      gevLogStat(gev, "Error: failure when parsing GAMS instructions.\n");
+		   return false;
+		}
 
 		double objjacval = gmoObjJacVal(gmo);
 //		std::clog << "obj jac val: " << objjacval << std::endl;
@@ -236,7 +245,10 @@ bool Gams2OSiL::createOSInstance() {
 		if (!codelen) continue;
 //		std::clog << "parsing " << codelen << " nonlinear instructions of constraint " << osinstance->getConstraintNames()[i] << std::endl;
 		nl = parseGamsInstructions(codelen, opcodes, fields, constantlen, constants);
-		if (!nl) return false;
+		if (!nl) {
+		    gevLogStat(gev, "Error: failure when parsing GAMS instructions.\n");
+		    return false;
+		}
 		assert(iNLidx < osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
 		osinstance->instanceData->nonlinearExpressions->nl[iNLidx] = new Nl();
 		osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->idx = i; // correct that this is the con. number?

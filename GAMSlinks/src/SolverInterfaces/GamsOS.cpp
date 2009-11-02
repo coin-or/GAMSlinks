@@ -86,7 +86,7 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	Gams2OSiL gmoosil(gmo);
 	if (!gmoosil.createOSInstance()) {
 		gevLogStat(gev, "Creation of OSInstance failed.");
-		return false;
+		return 1;
 	}
 
 	osinstance = gmoosil.takeOverOSInstance();
@@ -111,6 +111,8 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 }
 
 int GamsOS::callSolver() {
+   assert(osinstance != NULL);
+   
 	std::string osol;
 	if (gamsopt.isDefined("readosol")) {
 		char osolfilename[255], buffer[512];
