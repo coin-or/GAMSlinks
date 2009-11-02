@@ -43,7 +43,7 @@ GamsOS::GamsOS()
 : gmo(NULL), osinstance(NULL)
 {
 #ifdef GAMS_BUILD
-	strcpy(os_message, "GAMS/CoinOS (OS Library 2.0)\nwritten by H. Gassmann, J. Ma, and K. Martin\n");
+	strcpy(os_message, "GAMS/OS (OS Library 2.0)\nwritten by H. Gassmann, J. Ma, and K. Martin\n");
 #else
 	strcpy(os_message, "GAMS/OSD (OS Library 2.0)\nwritten by H. Gassmann, J. Ma, and K. Martin\n");
 #endif
@@ -77,9 +77,9 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		char buffer[1024];
 		gmoNameOptFile(gmo, buffer);
 #ifdef GAMS_BUILD
-		gamsopt.readOptionsFile("coinos", gmoOptFile(gmo) ? buffer : NULL);
+		gamsopt.readOptionsFile("os",  gmoOptFile(gmo) ? buffer : NULL);
 #else
-		gamsopt.readOptionsFile("osd",    gmoOptFile(gmo) ? buffer : NULL);
+		gamsopt.readOptionsFile("osd", gmoOptFile(gmo) ? buffer : NULL);
 #endif
 	}
 
