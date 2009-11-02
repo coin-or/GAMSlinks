@@ -1,0 +1,22 @@
+Index: cppad/cppad/local/rev_hes_sweep.hpp
+===================================================================
+--- cppad/cppad/local/rev_hes_sweep.hpp	(Revision 1454)
++++ cppad/cppad/local/rev_hes_sweep.hpp	(Arbeitskopie)
+@@ -555,6 +555,8 @@
+ 			CPPAD_ASSERT_UNKNOWN( n_ind == 2 );
+ 			CPPAD_ASSERT_UNKNOWN( ind[1] < i_var );
+ 
++         Xf = ForJac + ind[0] * npv;
++         Xh = RevHes + ind[0] * npv;
+ 			Yf = ForJac + ind[1] * npv;
+ 			Yh = RevHes + ind[1] * npv;
+ 			for(j = 0; j < npv; j++)
+@@ -571,6 +573,8 @@
+ 
+ 			Xf = ForJac + ind[0] * npv;
+ 			Xh = RevHes + ind[0] * npv;
++         Yf = ForJac + ind[1] * npv;
++         Yh = RevHes + ind[1] * npv;
+ 			for(j = 0; j < npv; j++)
+ 			{	Xh[j] |= Zh[j] | (*Zr & Xf[j]); 
+ 				Yh[j] |= Zh[j] | (*Zr & Xf[j]); 
