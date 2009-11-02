@@ -88,10 +88,10 @@ bool Gams2OSiL::createOSInstance() {
 			int* colidx = new int[gmoObjNZ(gmo)];
 			double* val = new double[gmoObjNZ(gmo)];
 			int* nlflag = new int[gmoObjNZ(gmo)];
-			int* dummy  = new int[gmoObjNZ(gmo)];
+			int dummy;
 
 			if (gmoObjNZ(gmo)) nlflag[0] = 0; // workaround for gmo bug
-			gmoGetObjSparse(gmo, colidx, val, nlflag, dummy, dummy);
+			gmoGetObjSparse(gmo, colidx, val, nlflag, &dummy, &dummy);
 			for (i = 0, j = 0; i < gmoObjNZ(gmo); ++i) {
 				if (nlflag[i]) continue;
 				objectiveCoefficients->indexes[j] = colidx[i];
@@ -104,7 +104,6 @@ bool Gams2OSiL::createOSInstance() {
 			delete[] colidx;
 			delete[] val;
 			delete[] nlflag;
-			delete[] dummy;
 		} else {
 			objectiveCoefficients = new SparseVector(0);
 		}

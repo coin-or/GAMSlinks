@@ -481,10 +481,10 @@ CouenneProblem* GamsCouenne::setupProblem() {
 	int* colidx = new int[gmoObjNZ(gmo)];
 	double* val = new double[gmoObjNZ(gmo)];
 	int* nlflag = new int[gmoObjNZ(gmo)];
-	int* dummy  = new int[gmoObjNZ(gmo)];
+	int dummy;
 	
 	if (gmoObjNZ(gmo)) nlflag[0] = 0; // workaround for gmo bug
-	gmoGetObjSparse(gmo, colidx, val, nlflag, dummy, dummy);
+	gmoGetObjSparse(gmo, colidx, val, nlflag, &dummy, &dummy);
 	for (int i = 0; i < gmoObjNZ(gmo); ++i) {
 		if (nlflag[i])
 			continue;
@@ -495,7 +495,6 @@ CouenneProblem* GamsCouenne::setupProblem() {
 	delete[] colidx;
 	delete[] val;
 	delete[] nlflag;
-	delete[] dummy;
 		
 	if (gmoObjNLNZ(gmo)) {
 		gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
