@@ -80,28 +80,34 @@ bool Gams2OSiL::createOSInstance() {
 	} else { // setup objective
 		osinstance->setObjectiveNumber(1);
 
-		SparseVector* objectiveCoefficients = new SparseVector(gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
+		SparseVector* objectiveCoefficients = NULL;
 
-		int* colidx = new int[gmoObjNZ(gmo)];
-		double* val = new double[gmoObjNZ(gmo)];
-		int* nlflag = new int[gmoObjNZ(gmo)];
-		int* dummy  = new int[gmoObjNZ(gmo)];
+		if (gmoN(gmo)) {
+			objectiveCoefficients = new SparseVector(gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
+			
+			int* colidx = new int[gmoObjNZ(gmo)];
+			double* val = new double[gmoObjNZ(gmo)];
+			int* nlflag = new int[gmoObjNZ(gmo)];
+			int* dummy  = new int[gmoObjNZ(gmo)];
 
-		if (gmoObjNZ(gmo)) nlflag[0] = 0; // workaround for gmo bug
-		gmoGetObjSparse(gmo, colidx, val, nlflag, dummy, dummy);
-		for (i = 0, j = 0; i < gmoObjNZ(gmo); ++i) {
-			if (nlflag[i]) continue;
-			objectiveCoefficients->indexes[j] = colidx[i];
-			objectiveCoefficients->values[j]  = val[i];
-			j++;
-		  assert(j <= gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
+			if (gmoObjNZ(gmo)) nlflag[0] = 0; // workaround for gmo bug
+			gmoGetObjSparse(gmo, colidx, val, nlflag, dummy, dummy);
+			for (i = 0, j = 0; i < gmoObjNZ(gmo); ++i) {
+				if (nlflag[i]) continue;
+				objectiveCoefficients->indexes[j] = colidx[i];
+				objectiveCoefficients->values[j]  = val[i];
+				j++;
+				assert(j <= gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
+			}
+			assert(j == gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
+
+			delete[] colidx;
+			delete[] val;
+			delete[] nlflag;
+			delete[] dummy;
+		} else {
+			objectiveCoefficients = new SparseVector(0);
 		}
-	  assert(j == gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
-
-		delete[] colidx;
-		delete[] val;
-		delete[] nlflag;
-		delete[] dummy;
 
 		std::string objname = "objective";
 		//TODO objective name

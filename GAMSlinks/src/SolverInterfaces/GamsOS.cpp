@@ -84,8 +84,18 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	}
 
 	Gams2OSiL gmoosil(gmo);
-	if (!gmoosil.createOSInstance()) {
-		gevLogStat(gev, "Creation of OSInstance failed.");
+	try {
+		if (!gmoosil.createOSInstance()) {
+			gevLogStat(gev, "Creation of OSInstance failed.");
+			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+			gmoSolveStatSet(gmo, SolveStat_SystemErr);
+			return 1;
+		}
+	} catch(ErrorClass error) {
+		gevLogStat(gev, "Error creating the instance. Error message:");
+		gevLogStat(gev, error.errormsg.c_str());
+		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return 1;
 	}
 
@@ -215,37 +225,45 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 	}
 
 	DefaultSolver* solver=NULL;
-	if (solvername.find("ipopt") != std::string::npos) {
+	try {
+		if (solvername.find("ipopt") != std::string::npos) {
 #ifdef COIN_HAS_IPOPT
-		solver = new IpoptSolver();
+			solver = new IpoptSolver();
 #else
-		gevLogStat(gev, "Error: Ipopt not available.");
-		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-		gmoSolveStatSet(gmo, SolveStat_Capability);
-		return false;
+			gevLogStat(gev, "Error: Ipopt not available.");
+			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+			gmoSolveStatSet(gmo, SolveStat_Capability);
+			return false;
 #endif
-	} else if (solvername.find("bonmin") != std::string::npos) {
+		} else if (solvername.find("bonmin") != std::string::npos) {
 #ifdef COIN_HAS_BONMIN
-		solver = new BonminSolver();
+			solver = new BonminSolver();
 #else
-		gevLogStat(gev, "Error: Bonmin not available.");
-		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-		gmoSolveStatSet(gmo, SolveStat_Capability);
-		return false;
+			gevLogStat(gev, "Error: Bonmin not available.");
+			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+			gmoSolveStatSet(gmo, SolveStat_Capability);
+			return false;
 #endif
 #ifdef GMODEVELOP
-	}	else if (solvername.find("gmo") != std::string::npos) {
-		solver = new GMOSolver();
+		}	else if (solvername.find("gmo") != std::string::npos) {
+			solver = new GMOSolver();
 #endif
-	} else {
+		} else {
 #ifdef COIN_HAS_OSI
-		solver = new CoinSolver();
+			solver = new CoinSolver();
 #else
-		gevLogStat(gev, "Error: CoinSolver not available.");
-		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-		gmoSolveStatSet(gmo, SolveStat_Capability);
-		return false;
+			gevLogStat(gev, "Error: CoinSolver not available.");
+			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+			gmoSolveStatSet(gmo, SolveStat_Capability);
+			return false;
 #endif
+		}
+	} catch (ErrorClass error) {
+		gevLogStat(gev, "Error creating the OS solver interface. Error message:");
+		gevLogStat(gev, error.errormsg.c_str());
+		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+		gmoSolveStatSet(gmo, SolveStat_SystemErr);
+		return 1;
 	}
 
 	solver->sSolverName = solvername;
