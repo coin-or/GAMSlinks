@@ -70,6 +70,28 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gmoObjStyleSet(gmo, ObjType_Fun);
 	gmoIndexBaseSet(gmo, 0);
 
+	/* OS does not like problems without variables */
+	if (gmoN(gmo)==0) {
+		gevLogStat(gev, "Error: OS does not support problems without variables.");
+		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+		gmoSolveStatSet(gmo, SolveStat_Capability);
+		return 1;
+	}
+
+	if (gmoGetVarTypeCnt(gmo, var_S1) || gmoGetVarTypeCnt(gmo, var_S2) || gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
+		gevLogStat(gev, "Error: Semicontinuous and semiinteger variables and special ordered sets not supported by OS.");
+		gmoSolveStatSet(gmo, SolveStat_Capability);
+		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+		return 1;
+  }
+	
+	if (gmoGetEquTypeCnt(gmo, equ_C) || gmoGetEquTypeCnt(gmo, equ_X)) {
+		gevLogStat(gev, "Error: Conic constraints and external functions not supported by OS.");
+		gmoSolveStatSet(gmo, SolveStat_Capability);
+		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+		return 1;
+  }
+
 	gamsopt.setGMO(gmo);
 	if (opt) {
 		gamsopt.setOpt(opt);

@@ -24,6 +24,7 @@
 
 #include "gmomcc.h"
 #include "gevmcc.h"
+#define GMS_SV_NA     2.0E300   /* not available/applicable */
 
 OSrL2Gams::OSrL2Gams(gmoHandle_t gmo_)
 : gmo(gmo_), gev(gmo_ ? (gevRec*)gmoEnvironment(gmo_) : NULL)
@@ -95,13 +96,13 @@ void OSrL2Gams::writeSolution(OSResult& osresult) {
 #define SMAG_DBL_NA -1E20  // there is a gmoNAinteger, but no gmoNAdouble
 	int* colBasStat = CoinCopyOfArray((int*)NULL, gmoN(gmo), (int)Bstat_Super);
 	int* colIndic   = CoinCopyOfArray((int*)NULL, gmoN(gmo), (int)Cstat_OK);
-	double* colMarg = CoinCopyOfArray((double*)NULL, gmoN(gmo), SMAG_DBL_NA);
-	double* colLev  = CoinCopyOfArray((double*)NULL, gmoN(gmo), SMAG_DBL_NA);
+	double* colMarg = CoinCopyOfArray((double*)NULL, gmoN(gmo), GMS_SV_NA);
+	double* colLev  = CoinCopyOfArray((double*)NULL, gmoN(gmo), GMS_SV_NA);
 
 	int* rowBasStat = CoinCopyOfArray((int*)NULL, gmoM(gmo), (int)Bstat_Super);
 	int* rowIndic   = CoinCopyOfArray((int*)NULL, gmoM(gmo), (int)Cstat_OK);
-	double* rowLev  = CoinCopyOfArray((double*)NULL, gmoM(gmo), SMAG_DBL_NA);
-	double* rowMarg = CoinCopyOfArray((double*)NULL, gmoM(gmo), SMAG_DBL_NA);
+	double* rowLev  = CoinCopyOfArray((double*)NULL, gmoM(gmo), GMS_SV_NA);
+	double* rowMarg = CoinCopyOfArray((double*)NULL, gmoM(gmo), GMS_SV_NA);
 
 	//TODO
 //	if (sol->constraints && sol->constraints->values) // set row levels, if available
