@@ -236,9 +236,17 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 	    return true;
 		}
 	} else { // set default solver depending on problem type and what is available
-		solvername = getSolverName(
-				osinstance->getNumberOfNonlinearExpressions() || osinstance->getNumberOfQuadraticTerms(),
-				osinstance->getNumberOfBinaryVariables() || osinstance->getNumberOfIntegerVariables());
+		try {
+			solvername = getSolverName(
+					osinstance->getNumberOfNonlinearExpressions() || osinstance->getNumberOfQuadraticTerms(),
+					osinstance->getNumberOfBinaryVariables() || osinstance->getNumberOfIntegerVariables());
+		} catch (ErrorClass error) {
+			gevLogStat(gev, "Error selecting a solver. Error message:");
+			gevLogStat(gev, error.errormsg.c_str());
+			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+			gmoSolveStatSet(gmo, SolveStat_SystemErr);
+			return 1;
+		}
 		if (solvername.find("error") != std::string::npos) {
 			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 			gmoSolveStatSet(gmo, SolveStat_Capability);
@@ -292,7 +300,9 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 	solver->osinstance = osinstance;
 	solver->osol = osol;
 
-	gevLogStat(gev, "Solving the instance...\n");
+	gevLogStatPChar(gev, "Solving the instance with ");
+	gevLogStatPChar(gev, solvername.c_str());
+	gevLogStat(gev, "...");
 	try {
 		solver->buildSolverInstance();
 		solver->solve();

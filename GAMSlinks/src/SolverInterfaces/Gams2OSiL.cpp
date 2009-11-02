@@ -115,7 +115,7 @@ bool Gams2OSiL::createOSInstance() {
 //		std::cout << "gmo obj con: " << gmoObjConst(gmo) << std::endl;
 		if (!osinstance->addObjective(-1, objname, gmoSense(gmo) == Obj_Min ? "min" : "max", gmoObjConst(gmo), 1., objectiveCoefficients)) {
 			delete objectiveCoefficients;
-	      gevLogStat(gev, "Error: OSInstance::addObjective did not succeed.\n");
+			gevLogStat(gev, "Error: OSInstance::addObjective did not succeed.\n");
 			return false;
 		}
 		delete objectiveCoefficients;
@@ -190,7 +190,7 @@ bool Gams2OSiL::createOSInstance() {
 		rowindexes, 0, nz-1,
 		colstarts, 0, gmoN(gmo))) {
 		delete[] nlflags;
-      gevLogStat(gev, "Error: OSInstance::setLinearConstraintCoefficients did not succeed.\n");
+		gevLogStat(gev, "Error: OSInstance::setLinearConstraintCoefficients did not succeed.\n");
 		return false;
 	}
 
