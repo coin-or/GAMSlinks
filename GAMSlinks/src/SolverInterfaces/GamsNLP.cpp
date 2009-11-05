@@ -29,6 +29,14 @@
 #include <math.h>
 #endif
 #endif
+// for sprintf
+#ifdef HAVE_CSTDIO
+#include <cstdio>
+#else
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
+#endif
+#endif
 
 #include "gmomcc.h"
 #include "gevmcc.h"
