@@ -67,9 +67,9 @@ GamsIpopt::GamsIpopt()
 : gmo(NULL), gev(NULL)
 {
 #ifdef GAMS_BUILD
-	strcpy(ipopt_message, "GAMS/CoinIpoptD (Ipopt Library 3.7)\nwritten by A. Waechter\n");
+	strcpy(ipopt_message, "GAMS/CoinIpoptD (Ipopt Library 3.8)\nwritten by A. Waechter\n");
 #else
-	strcpy(ipopt_message, "GAMS/IpoptD (Ipopt Library 3.7)\nwritten by A. Waechter\n");
+	strcpy(ipopt_message, "GAMS/IpoptD (Ipopt Library 3.8)\nwritten by A. Waechter\n");
 #endif
 }
 
