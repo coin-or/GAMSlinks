@@ -282,6 +282,8 @@ OSnLNode* Gams2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* field
 
 	nlNodeVec.reserve(codelen);
 
+	int nargs = -1;
+
 	for (int i=0; i<codelen; ++i) {
 		GamsOpCode opcode = (GamsOpCode)opcodes[i];
 		int address = fields[i]-1;
@@ -485,6 +487,58 @@ OSnLNode* Gams2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* field
 						nlNodeVec.push_back( nlNode );
 						nlNodeVec.push_back( new OSnLNodeDivide() );
 					} break;
+			    case fnpoly: { /* simple polynomial */
+						if (debugoutput) std::clog << "polynom of degree " << nargs-1 << std::endl;
+						assert(nargs >= 0);
+						switch (nargs) {
+							case 0:
+								delete nlNodeVec.back(); nlNodeVec.pop_back(); // delete variable of polynom
+								nlNodeVec.push_back( new OSnLNodeNumber() ); // push zero
+								break;
+							case 1: { // "constant" polynom
+								assert(nlNodeVec.size() >= 2);
+								// delete variable
+								delete nlNodeVec[nlNodeVec.size()-2];
+								// put constant there
+								nlNodeVec[nlNodeVec.size()-2] = nlNodeVec.back();
+								// forget last element
+								nlNodeVec.pop_back();
+							} break;
+							default: { // polynom is at least linear
+								std::vector<OSnLNode*> coeff(nargs);
+								while (nargs) {
+									assert(!nlNodeVec.empty());
+									coeff[nargs-1] = nlNodeVec.back();
+									nlNodeVec.pop_back();
+									--nargs;
+								}
+								assert(!nlNodeVec.empty());
+								OSnLNode* var = nlNodeVec.back(); nlNodeVec.pop_back();
+								
+								nlNodeVec.push_back(coeff[0]);
+								
+								nlNodeVec.push_back(coeff[1]);
+								nlNodeVec.push_back(var);
+								nlNodeVec.push_back(new OSnLNodeTimes());
+								
+								nlNodeVec.push_back(new OSnLNodePlus());
+								for (size_t i = 2; i < coeff.size(); ++i) {
+									nlNodeVec.push_back(coeff[i]);
+									nlNodeVec.push_back(var);
+									if (i == 2) {
+										nlNodeVec.push_back(new OSnLNodeSquare());
+									} else {
+										OSnLNodeNumber* exponent = new OSnLNodeNumber(); exponent->value = i;
+										nlNodeVec.push_back(exponent);
+										nlNodeVec.push_back(new OSnLNodePower());
+									}
+									nlNodeVec.push_back(new OSnLNodeTimes());
+									nlNodeVec.push_back(new OSnLNodePlus());
+								}
+							}
+						}
+						nargs = -1;
+			    } break;
 					case fnceil: case fnfloor: case fnround:
 					case fnmod: case fntrunc: case fnsign:
 					case fnarctan: case fnerrf: case fndunfm:
@@ -510,7 +564,6 @@ OSnLNode* Gams2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* field
 			    case fnbinomial:
 			    case fntan: case fnarccos:
 			    case fnarcsin: case fnarctan2 /* arctan(x2/x1) */:
-			    case fnpoly: /* simple polynomial */
 					default : {
 						if (debugoutput) std::cerr << "nr. " << func << " - unsuppored. Error." << std::endl;
 						return NULL;
@@ -526,7 +579,8 @@ OSnLNode* Gams2OSiL::parseGamsInstructions(int codelen, int* opcodes, int* field
 				nlNodeVec.push_back( new OSnLNodePlus() );
 			} break;
 			case nlFuncArgN : {
-				if (debugoutput) std::clog << "ignored" << std::endl;
+				nargs = address;
+				if (debugoutput) std::clog << nargs << "arguments" << std::endl;
 			} break;
 			case nlArg: {
 				if (debugoutput) std::clog << "ignored" << std::endl;
