@@ -346,6 +346,7 @@ if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" !=
 else
   gamslinks_build_os=0
 fi
+AC_SUBST(gamslinks_build_os)
 AM_CONDITIONAL([GAMSLINKS_BUILD_OS], [test $gamslinks_build_os = 1])
 
 if test $gamslinks_build_gamsio = 1 && test "x$coin_has_scip" = xtrue && (test $use_thirdpartyscip = 0 || (test $coin_build_clp = 1 && test $gamslinks_build_ipopt = 1)) ; then

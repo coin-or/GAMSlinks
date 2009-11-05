@@ -417,6 +417,7 @@ gamslinks_build_cbc = @gamslinks_build_cbc@
 gamslinks_build_couenne = @gamslinks_build_couenne@
 gamslinks_build_glpk = @gamslinks_build_glpk@
 gamslinks_build_ipopt = @gamslinks_build_ipopt@
+gamslinks_build_os = @gamslinks_build_os@
 gamslinks_build_osi = @gamslinks_build_osi@
 gamslinks_build_scip = @gamslinks_build_scip@
 gamspath = @gamspath@
