@@ -561,12 +561,13 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 		SCIP_CALL( SCIPreleaseCons(scip, &con) );
 	}
 	
+	// TODO if there was cancelation (e.g., qcp04), then it could actually be a linear objective, which is indicated by gmoGetObjOrder(gmo) == order_L  
 	if (gmoObjNLNZ(gmo)) { // make constraint to represent objective function
 		SCIP_VAR* objvar = NULL;
-		int nz, nlnz, qnz, qdiagnz;
+		int nz, /*nlnz,*/ qnz, qdiagnz;
 		double lhs, rhs;
 #ifdef GAMS_BUILD
-		if (gmoGetObjOrder(gmo) != order_Q) {
+		if (gmoGetObjOrder(gmo) != order_L && gmoGetObjOrder(gmo) != order_Q) {
 			gevLogStat(gev, "ERROR: General nonlinear objective functions not supported by SCIP (yet).");
 			return SCIP_READERROR;
 		}
