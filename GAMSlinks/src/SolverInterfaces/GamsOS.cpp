@@ -69,15 +69,7 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gmoObjReformSet(gmo, 1);
 	gmoObjStyleSet(gmo, ObjType_Fun);
 	gmoIndexBaseSet(gmo, 0);
-
-	/* OS does not like problems without variables */
-	if (gmoN(gmo)==0) {
-		gevLogStat(gev, "Error: OS does not support problems without variables.");
-		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-		gmoSolveStatSet(gmo, SolveStat_Capability);
-		return 1;
-	}
-
+	
 	if (gmoGetVarTypeCnt(gmo, var_S1) || gmoGetVarTypeCnt(gmo, var_S2) || gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
 		gevLogStat(gev, "Error: Semicontinuous and semiinteger variables and special ordered sets not supported by OS.");
 		gmoSolveStatSet(gmo, SolveStat_Capability);
