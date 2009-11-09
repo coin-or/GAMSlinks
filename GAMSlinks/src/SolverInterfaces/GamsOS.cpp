@@ -39,6 +39,28 @@
 #include <fstream>
 #include <iostream>
 
+static
+void mygevLogStatPChar(gevRec* gev, const char* msg_) {
+	int len = strlen(msg_);
+	
+	if (len < 250) {
+		gevLogStat(gev, msg_);
+		return;
+	}
+	
+	char* msg = const_cast<char*>(msg_);
+	
+	char tmp = msg[0];
+	for (int i = 0; i < len; i+=250) {
+		msg[i] = tmp;
+		if (i+250 < len) {
+			tmp = msg[i+250];
+			msg[i+250] = 0;
+		}
+		gevLogStat(gev, msg+i);
+	}
+}
+
 GamsOS::GamsOS()
 : gmo(NULL), osinstance(NULL)
 {
@@ -107,7 +129,7 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		}
 	} catch(ErrorClass error) {
 		gevLogStat(gev, "Error creating the instance. Error message:");
-		gevLogStat(gev, error.errormsg.c_str());
+		mygevLogStatPChar(gev, error.errormsg.c_str());
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return 1;
@@ -234,7 +256,7 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 					osinstance->getNumberOfBinaryVariables() || osinstance->getNumberOfIntegerVariables());
 		} catch (ErrorClass error) {
 			gevLogStat(gev, "Error selecting a solver. Error message:");
-			gevLogStat(gev, error.errormsg.c_str());
+			mygevLogStatPChar(gev, error.errormsg.c_str());
 			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 			gmoSolveStatSet(gmo, SolveStat_SystemErr);
 			return 1;
@@ -282,7 +304,7 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 		}
 	} catch (ErrorClass error) {
 		gevLogStat(gev, "Error creating the OS solver interface. Error message:");
-		gevLogStat(gev, error.errormsg.c_str());
+		mygevLogStatPChar(gev, error.errormsg.c_str());
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return 1;
@@ -305,7 +327,7 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 
 	} catch(ErrorClass error) {
 		gevLogStat(gev, "Error solving the instance. Error message:");
-		gevLogStat(gev, error.errormsg.c_str());
+		mygevLogStatPChar(gev, error.errormsg.c_str());
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return false;
@@ -401,7 +423,7 @@ bool GamsOS::remoteSolve(OSInstance* osinstance, std::string& osol) {
 				}
 			} else {
 				gevLogStat(gev, "Answer from knock:");
-				gevLogStat(gev, ospl.c_str());
+				mygevLogStatPChar(gev, ospl.c_str());
 				gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 				gmoSolveStatSet(gmo, SolveStat_SystemErr);
 			}
@@ -425,7 +447,7 @@ bool GamsOS::remoteSolve(OSInstance* osinstance, std::string& osol) {
 				}
 			} else {
 				gevLogStat(gev, "Answer from kill:");
-				gevLogStat(gev, ospl.c_str());
+				mygevLogStatPChar(gev, ospl.c_str());
 				gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 				gmoSolveStatSet(gmo, SolveStat_Normal);
 			}
@@ -455,7 +477,7 @@ bool GamsOS::remoteSolve(OSInstance* osinstance, std::string& osol) {
 		}
 	} catch(ErrorClass error) {
 		gevLogStat(gev, "Error handling the OS service. Error message:");
-		gevLogStat(gev, error.errormsg.c_str());
+		mygevLogStatPChar(gev, error.errormsg.c_str());
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return false;

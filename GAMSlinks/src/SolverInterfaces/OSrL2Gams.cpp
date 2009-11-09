@@ -26,6 +26,28 @@
 #include "gevmcc.h"
 #define GMS_SV_NA     2.0E300   /* not available/applicable */
 
+static
+void mygevLogStatPChar(gevRec* gev, const char* msg_) {
+	int len = strlen(msg_);
+	
+	if (len < 250) {
+		gevLogStat(gev, msg_);
+		return;
+	}
+	
+	char* msg = const_cast<char*>(msg_);
+	
+	char tmp = msg[0];
+	for (int i = 0; i < len; i+=250) {
+		msg[i] = tmp;
+		if (i+250 < len) {
+			tmp = msg[i+250];
+			msg[i+250] = 0;
+		}
+		gevLogStat(gev, msg+i);
+	}
+}
+
 OSrL2Gams::OSrL2Gams(gmoHandle_t gmo_)
 : gmo(gmo_), gev(gmo_ ? (gevRec*)gmoEnvironment(gmo_) : NULL)
 { }
@@ -40,11 +62,13 @@ void OSrL2Gams::writeSolution(OSResult& osresult) {
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SolverErr);
 		gevLogStatPChar(gev, "Error: OS result reports error: ");
-		gevLogStat(gev, osresult.getGeneralMessage().c_str());
+		gevLogStatPChar(gev, osresult.getGeneralMessage().c_str());
+		gevLogStat(gev, "");
 		return;
 	} else if (osresult.getGeneralStatusType() == "warning") {
 		gevLogStatPChar(gev, "Warning: OS result reports warning: ");
-		gevLogStat(gev, osresult.getGeneralMessage().c_str());
+		gevLogStatPChar(gev, osresult.getGeneralMessage().c_str());
+		gevLogStat(gev, "");
 	}
 
 	gmoSolveStatSet(gmo, SolveStat_Normal);
@@ -143,7 +167,7 @@ void OSrL2Gams::writeSolution(std::string& osrl) {
 		osresult = osrl_reader.readOSrL(osrl);
 	} catch(const ErrorClass& error) {
 		gevLogStat(gev, "Error parsing the OS result string:");
-		gevLogStat(gev, error.errormsg.c_str());
+		gevLogStatPChar(gev, error.errormsg.c_str());
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return;
