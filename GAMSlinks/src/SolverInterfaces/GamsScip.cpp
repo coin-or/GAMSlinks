@@ -948,7 +948,7 @@ SCIP_RETCODE GamsScip::processMIQCPSolution() {
 	}
 
 	// if the scip shell was used, the user might have done nasty things with the problem, so make sure that we do not crash here 
-	if (nrsol && gmoN(gmo) == SCIPgetNOrigVars(scip)) {
+	if (nrsol && gmoN(gmo) <= SCIPgetNOrigVars(scip)) {
 		SCIP_SOL* sol = SCIPgetBestSol(scip);
 		assert(sol != NULL);
 		
