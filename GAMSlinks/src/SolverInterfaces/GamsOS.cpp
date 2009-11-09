@@ -350,11 +350,20 @@ bool GamsOS::remoteSolve(OSInstance* osinstance, std::string& osol) {
 	char buffer[512];
 
 	if (gamsopt.isDefined("solver")) { // if a solver option was specified put that into osol
-		std::string::size_type iStringpos = osol.find("</osol");
-		std::string solverInput = "<other name=\"os_solver\">";
 		gamsopt.getString("solver", buffer);
-		solverInput += buffer;
-		solverInput += "</other>";
+		std::string::size_type iStringpos = osol.find("</general");
+		std::string solverInput;
+		if (iStringpos == std::string::npos) {
+			iStringpos = osol.find("</osol");
+			assert(iStringpos != std::string::npos);
+			solverInput = "<general><solverToInvoke>";
+			solverInput += buffer;
+			solverInput += "</solverToInvoke></general>";
+		} else {
+			solverInput = "<solverToInvoke>";
+			solverInput += buffer;
+			solverInput += "</solverToInvoke>";
+		}
 		osol.insert(iStringpos, solverInput);
 //		std::clog << "OSoL: " << osol;
 	}
