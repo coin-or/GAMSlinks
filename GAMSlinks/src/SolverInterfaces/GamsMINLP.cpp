@@ -270,7 +270,7 @@ void GamsMINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const Nu
   switch (status) {
   	case TMINLP::SUCCESS: {
     	if (x) {
-    		if (gevGetDblOpt(gev, gevOptCA) == 0 && gevGetDblOpt(gev, gevOptCR) == 0 && (in_couenne || gmoNLNZ(gmo) == 0)) // report optimal if optcr=optca=0 and we are running in couenne or model is a mip
+    		if (gevGetDblOpt(gev, gevOptCA) == 0 && gevGetDblOpt(gev, gevOptCR) == 0 && (in_couenne || (gmoObjNLNZ(gmo) == 0 && gmoNLNZ(gmo) == 0))) // report optimal if optcr=optca=0 and we are running in couenne or model is a mip
     			model_status = ModelStat_OptimalGlobal; // optimal
     		else
     			model_status = gmoNDisc(gmo) ? ModelStat_Integer : ModelStat_OptimalLocal; // integer feasible solution or local optimal

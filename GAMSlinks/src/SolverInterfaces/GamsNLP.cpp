@@ -390,12 +390,12 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
   switch (status) {
 	  case SUCCESS:
 	  case STOP_AT_ACCEPTABLE_POINT:
-			gmoModelStatSet(gmo, gmoNLNZ(gmo) ? ModelStat_OptimalLocal : ModelStat_OptimalGlobal);
+			gmoModelStatSet(gmo, (gmoObjNLNZ(gmo) || gmoNLNZ(gmo)) ? ModelStat_OptimalLocal : ModelStat_OptimalGlobal);
 			gmoSolveStatSet(gmo, SolveStat_Normal);
 	  	write_solution = true;
 			break;
 	  case LOCAL_INFEASIBILITY:
-			gmoModelStatSet(gmo, gmoNLNZ(gmo) ? ModelStat_InfeasibleLocal : ModelStat_InfeasibleGlobal);
+			gmoModelStatSet(gmo, (gmoObjNLNZ(gmo) || gmoNLNZ(gmo)) ? ModelStat_InfeasibleLocal : ModelStat_InfeasibleGlobal);
 			gmoSolveStatSet(gmo, SolveStat_Normal);
 			write_solution = true;
 	    break;
