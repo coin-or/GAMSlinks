@@ -38,7 +38,7 @@ CoinOS does not wait until the OS server returns the result but returns when sub
 
 service_method.retrieve
 Specifies that an optimization result should be requested from an OS server.
-You should specify an OSoL file containing the JobID by using the readosil option.
+You should specify an OSoL file containing the JobID by using the readosol option.
 
 
 service_method.getJobID
@@ -52,7 +52,7 @@ The knock service method requires an OSpL file as input, see option readospl.
 
 service_method.kill
 Specifies that a solve process should be interrupted on an OS server.
-You should specify an OSoL file containing the JobID by using the readosil option.
+You should specify an OSoL file containing the JobID by using the readosol option.
 
 
 writeosil
