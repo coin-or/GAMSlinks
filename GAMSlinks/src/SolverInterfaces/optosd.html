@@ -49,6 +49,7 @@ readosol</a>
 <i> (string)</i> read the solver options from an OSoL file</h4><p>
 
 Specifies the name of an option file in OSoL format that is given to the solver or an OS server.
+This way it is possible to pass options directly to the COIN-OR solvers interfaced by OS.
 
 
 <h4><a name="readospl">
@@ -64,7 +65,7 @@ service</a>
 
 Specifies the URL of an Optimization Services Server.
 If specified, then this server is contacted and the service method specified under service_method is executed.
-Note that by default the server executes CBC to solve an instance.
+Note that by default the server chooses a solver that is appropriate to the model type.
 You can change the solver with the solver option.
 
 
@@ -73,6 +74,9 @@ service_method</a>
 <i> (string)</i> method of an OS Agent to call</h4><p>
 
 Specifies the method to execute on a server.
+The method ``solve'' is used for a synchronous call.
+The OS process will submit the job to the server and wait for the result.
+If this is not desirable, the remote solver service can also be used asynchronously, i.e., a job can be submitted (via "send") and at a later date it can be checked whether it is completed (via "knock") and the result can be retrieved (via "retrieve").
 
 <br><i>(default = solve)</i>
 <table>
@@ -80,19 +84,26 @@ Specifies the method to execute on a server.
 Specifies that an OS server should solve the provided instance and return the result.
 CoinOS will wait until the OS server returns the result.</td></tr>
 <tr valign="top"><td width=20 align=right>getJobID</td><td>.
-Specifies that an available Job identifier should be requested from an OS server. </td></tr>
+When working in asynchronous mode, the server needs to uniquely identify each job.
+The getJobID service method results in the server returning a unique job id.
+The job id is printed to the log and should be used in the send method.</td></tr>
 <tr valign="top"><td width=20 align=right>knock</td><td>.
-Specifies that the status of a solve process is requested from an OS server.
-The knock service method requires an OSpL file as input, see option readospl.</td></tr>
+Specifies that the status of all or a specific solve process is requested from an OS server.
+By default, the status of all jobs on the server will be displayed in the format of the Optimization Services process Language (OSpL).
+If you specify a file with the writeospl option, then the result will be written to this file.
+If only the status of one job is required, then an osol file containing a job id (see method ``send'') should be specified with the readosol option.
+By default, a standard OSpL file is send to the server.
+The user can specify a customized file via the readospl option.</td></tr>
 <tr valign="top"><td width=20 align=right>kill</td><td>.
 Specifies that a solve process should be interrupted on an OS server.
-You should specify an OSoL file containing the JobID by using the readosol option.</td></tr>
+You should specify an OSoL file containing the JobID by using the readosil option (see method ``send'').</td></tr>
 <tr valign="top"><td width=20 align=right>send</td><td>.
 Specifies that the model instance is send to an OS server and the server should solve this instance.
-CoinOS does not wait until the OS server returns the result but returns when submission of the instance is completed.</td></tr>
+CoinOS does not wait until the OS server returns the result but returns when submission of the instance is completed.
+It is required to specify an unused job id (retrieved via getJobID) via an OSoL file.</td></tr>
 <tr valign="top"><td width=20 align=right>retrieve</td><td>.
 Specifies that an optimization result should be requested from an OS server.
-You should specify an OSoL file containing the JobID by using the readosol option.</td></tr>
+You should specify an OSoL file containing the JobID by using the readosil option (see method ``send'').</td></tr>
 </table>
 
 <h4><a name="solver">
@@ -100,7 +111,8 @@ solver</a>
 <i> (string)</i> specification of a solver</h4><p>
 
 Specifies the solver that is used to solve an instance.
-Valid values are Clp, Cbc, Glpk, Ipopt, Bonmin, Couenne.
+Valid values are Clp, Cbc, Glpk, Ipopt, Bonmin, Couenne, none.
+If 'none' is specified, then solving is skipped. This value is only valid for a local solve.
 
 
 <h4><a name="writeosil">

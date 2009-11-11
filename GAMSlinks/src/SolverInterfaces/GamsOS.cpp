@@ -409,10 +409,16 @@ bool GamsOS::remoteSolve(OSInstance* osinstance, std::string& osol) {
 					std::getline(osplfile, ospl, '\0');
 				}
 			} else {
-				gevLogStat(gev, "Error: To use OS service method 'knock', a ospl file need to be given (use option 'readospl').");
-				gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-				gmoSolveStatSet(gmo, SolveStat_SystemErr);
-				return false;
+				ospl="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+           "<ospl xmlns=\"os.optimizationservices.org\" "
+           "xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" "
+           "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+           "xsi:schemaLocation=\"os.optimizationservices.org http://www.optimizationservices.org/schemas/OSpL.xsd\">"
+           "<processHeader>"
+           "<request action=\"getAll\"/>"
+           "</processHeader>"
+           "<processData/>"
+           "</ospl>";
 			}
 			ospl = agent.knock(ospl, osol);
 
