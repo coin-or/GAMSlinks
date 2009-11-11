@@ -2,11 +2,18 @@
 
 \begin{description}
 
+\item[\label{solver}\hypertarget{solver}
+{\textbf{solver (\slshape{string})}}]\hspace{1.0in}
+
+Specifies the solver that is used to solve an instance.
+Valid values are Clp, Cbc, Glpk, Ipopt, Bonmin, Couenne for a local solve.
+For a remote solve, valid values are the names of the solvers that are installed on the OS server.
+
 \item[\label{readosol}\hypertarget{readosol}
 {\textbf{readosol (\slshape{string})}}]\hspace{1.0in}
 
 Specifies the name of an option file in OSoL format that is given to the solver or an OS server.
-
+This way it is possible to pass options directly to the COIN-OR solvers interfaced by OS.
 
 \item[\label{writeosil}\hypertarget{writeosil}
 {\textbf{writeosil (\slshape{string})}}]\hspace{1.0in}
@@ -19,50 +26,6 @@ Specifies the name of a file in which the GAMS model instance should be writting
 
 Specifies the name of a file in which the result of a solve process (solution, status, ...) should be writting in OSrL format.
 
-
-\item[\label{service}\hypertarget{service}
-{\textbf{service (\slshape{string})}}]\hspace{1.0in}
-
-Specifies the URL of an Optimization Services Server.
-If specified, then this server is contacted and the service method specified under service\_method is executed.
-Note that by default the server executes CBC to solve an instance.
-You can change the solver with the solver option.
-
-
-\item[\label{service_method}\hypertarget{service_method}
-{\textbf{service\_method (\slshape{string})}}]\hspace{1.0in}
-
-Specifies the method to execute on a server.
-
-\textsl{(default = solve)}
-\begin{itemize}
-\item[solve] 
-Specifies that an OS server should solve the provided instance and return the result.
-CoinOS will wait until the OS server returns the result.
-\item[getJobID] 
-Specifies that an available Job identifier should be requested from an OS server.
-\item[knock] 
-Specifies that the status of a solve process is requested from an OS server.
-The knock service method requires an OSpL file as input, see option readospl.
-\item[kill] 
-Specifies that a solve process should be interrupted on an OS server.
-You should specify an OSoL file containing the JobID by using the readosol option.
-\item[send] 
-Specifies that the model instance is send to an OS server and the server should solve this instance.
-CoinOS does not wait until the OS server returns the result but returns when submission of the instance is completed.
-\item[retrieve] 
-Specifies that an optimization result should be requested from an OS server.
-You should specify an OSoL file containing the JobID by using the readosol option.
-\end{itemize}
-
-\item[\label{solver}\hypertarget{solver}
-{\textbf{solver (\slshape{string})}}]\hspace{1.0in}
-
-Specifies the solver that is used to solve an instance.
-Valid values are Clp, Cbc, Glpk, Ipopt, Bonmin, Couenne for a local solve.
-For a remote solve, valid values are the names of the solvers that are installed on the OS server.
-
-
 \item[\label{readospl}\hypertarget{readospl}
 {\textbf{readospl (\slshape{string})}}]\hspace{1.0in}
 
@@ -73,5 +36,68 @@ Specifies the name of an OSpL file to use for the knock method.
 {\textbf{writeospl (\slshape{string})}}]\hspace{1.0in}
 
 Specifies the name of an OSpL file in which the answer from the knock or kill method is written.
+
+
+\item[\label{service}\hypertarget{service}
+{\textbf{service (\slshape{string})}}]\hspace{1.0in}
+
+Specifies the URL of an Optimization Services Server.
+If specified, then this server is contacted and the service method specified under service\_method is executed.
+Note that by default the server chooses a solver that is appropriate to the model type.
+You can change the solver with the solver option.
+
+
+\item[\label{service_method}\hypertarget{service_method}
+{\textbf{service\_method (\slshape{string})}}]\hspace{1.0in}
+
+Specifies the method to execute on a server.
+The method ``solve'' is used for a synchronous call. 
+The OS process will submit the job to the server and wait for the result.
+If this is not desirable, the remote solver service can also be used asynchronously, i.e., a job can be submitted (method ``send''), the OS process finished, and at a later date it can be checked whether the job is completed (method ``knock'') and the result can be retrieved (method ``retrieve'').
+
+\textsl{(default = solve)}
+\begin{itemize}
+\item[solve] 
+Specifies that an OS server should solve the provided instance and return the result.
+CoinOS will wait until the OS server returns the result.
+\item[getJobID] 
+When working in asynchronous mode, the server needs to uniquely identify each job.
+The getJobID service method results in the server returning a unique job id.
+The job id is printed to the log and should be used in the send method.
+
+\item[send] 
+Specifies that the model instance is send to an OS server and the server should solve this instance.
+CoinOS does not wait until the OS server returns the result but returns when submission of the instance is completed.
+It is required to specify an unused job id (retrieved via getJobID) via an OSoL file, e.g.
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8"?>
+<osol xmlns="os.optimizationservices.org"
+      xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="os.optimizationservices.org
+                          http://www.optimizationservices.org/schemas/2.0/OSoL.xsd">
+<general>
+    <jobID>xyz1234Aug3010AM</jobID>
+</general>
+</osol>
+\end{verbatim}
+
+\item[knock] 
+Specifies that the status of all or a specific solve process is requested from an OS server.
+By default, the status of all jobs on the server will be displayed in the format of the Optimization Services process Language (OSpL).
+If you specify a file with the writeospl option, then the result will be written to this file.
+If only the status of one job is required, then an osol file containing a job id (see method ``send'') should be specified with the readosol option.
+By default, a standard OSpL file is send to the server.
+The user can specify a customized file via the readospl option.
+
+\item[retrieve] 
+Specifies that an optimization result should be requested from an OS server.
+You should specify an OSoL file containing the JobID by using the readosil option (see method ``send'').
+
+\item[kill] 
+Specifies that a solve process should be interrupted on an OS server.
+You should specify an OSoL file containing the JobID by using the readosil option (see method ``send'').
+
+\end{itemize}
 
 \end{description}
