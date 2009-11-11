@@ -62,12 +62,12 @@ void OSrL2Gams::writeSolution(OSResult& osresult) {
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SolverErr);
 		gevLogStatPChar(gev, "Error: OS result reports error: ");
-		gevLogStatPChar(gev, osresult.getGeneralMessage().c_str());
+		mygevLogStatPChar(gev, osresult.getGeneralMessage().c_str());
 		gevLogStat(gev, "");
 		return;
 	} else if (osresult.getGeneralStatusType() == "warning") {
 		gevLogStatPChar(gev, "Warning: OS result reports warning: ");
-		gevLogStatPChar(gev, osresult.getGeneralMessage().c_str());
+		mygevLogStatPChar(gev, osresult.getGeneralMessage().c_str());
 		gevLogStat(gev, "");
 	}
 
@@ -167,7 +167,7 @@ void OSrL2Gams::writeSolution(std::string& osrl) {
 		osresult = osrl_reader.readOSrL(osrl);
 	} catch(const ErrorClass& error) {
 		gevLogStat(gev, "Error parsing the OS result string:");
-		gevLogStatPChar(gev, error.errormsg.c_str());
+		mygevLogStatPChar(gev, error.errormsg.c_str());
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return;
