@@ -89,6 +89,9 @@ int  GMO_CALLCONV d_gmoDumpQMakerGDX (gmoHandle_t pgmo, const char *gdxfname)
 int  GMO_CALLCONV d_gmoGetColStat (gmoHandle_t pgmo, int sj, int *jnz, int *jqnz, int *jnlnz, int *jobjnz)
 { int d_s[]={3,3,4,4,4,4}; printAndReturn(gmoGetColStat,5,int ) }
 
+int  GMO_CALLCONV d_gmoGetObjStat (gmoHandle_t pgmo, int *inz, int *iqnz, int *inlnz)
+{ int d_s[]={3,4,4,4}; printAndReturn(gmoGetObjStat,3,int ) }
+
 int  GMO_CALLCONV d_gmoGetRowStat (gmoHandle_t pgmo, int si, int *inz, int *iqnz, int *inlnz)
 { int d_s[]={3,3,4,4,4}; printAndReturn(gmoGetRowStat,4,int ) }
 
@@ -541,6 +544,9 @@ int  GMO_CALLCONV d_gmoObjStyle (gmoHandle_t pgmo)
 
 void GMO_CALLCONV d_gmoObjStyleSet (gmoHandle_t pgmo, const int x)
 { int d_s[]={0,3}; printNoReturn(gmoObjStyleSet,1) }
+
+int  GMO_CALLCONV d_gmoGetObjOrder (gmoHandle_t pgmo)
+{ int d_s[]={3}; printAndReturn(gmoGetObjOrder,0,int ) }
 
 int  GMO_CALLCONV d_gmoInterface (gmoHandle_t pgmo)
 { int d_s[]={3}; printAndReturn(gmoInterface,0,int ) }
@@ -1064,6 +1070,7 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   {int s[]={3,3,4,4,8,8,6}; CheckAndLoad(gmoGetRowQ,6,""); }
   {int s[]={3,11}; CheckAndLoad(gmoDumpQMakerGDX,1,"C"); }
   {int s[]={3,3,4,4,4,4}; CheckAndLoad(gmoGetColStat,5,""); }
+  {int s[]={3,4,4,4}; CheckAndLoad(gmoGetObjStat,3,""); }
   {int s[]={3,3,4,4,4}; CheckAndLoad(gmoGetRowStat,4,""); }
   {int s[]={3,8,8,8,6}; CheckAndLoad(gmoGetMatrixCplex,4,""); }
   {int s[]={3,8,8,6,8}; CheckAndLoad(gmoGetMatrixCol,4,""); }
@@ -1215,6 +1222,7 @@ XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
   {int s[]={3}; CheckAndLoad(gmoObjNLNZ,0,""); }
   {int s[]={3}; CheckAndLoad(gmoObjStyle,0,""); }
   {int s[]={0,3}; CheckAndLoad(gmoObjStyleSet,1,""); }
+  {int s[]={3}; CheckAndLoad(gmoGetObjOrder,0,""); }
   {int s[]={3}; CheckAndLoad(gmoInterface,0,""); }
   {int s[]={0,3}; CheckAndLoad(gmoInterfaceSet,1,""); }
   {int s[]={3}; CheckAndLoad(gmoIndexBase,0,""); }

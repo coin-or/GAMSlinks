@@ -418,10 +418,8 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 	SCIP_CALL( SCIPallocBufferArray(scip, &coefs, gmoN(gmo)+1) ); // +1 if we have to transform the objective into a constraint
 	
 	if (gmoObjNLNZ(gmo) == 0) {
-		gmoGetObjVector(gmo, coefs);
-#ifdef GAMS_BUILD
 		assert(gmoGetObjOrder(gmo) == order_L);
-#endif
+		gmoGetObjVector(gmo, coefs);
 	} else
 		memset(coefs, 0, gmoN(gmo)*sizeof(double));
 	for (int i = 0; i < gmoN(gmo); ++i) {
@@ -566,12 +564,10 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 		SCIP_VAR* objvar = NULL;
 		int nz, /*nlnz,*/ qnz, qdiagnz;
 		double lhs, rhs;
-#ifdef GAMS_BUILD
 		if (gmoGetObjOrder(gmo) != order_L && gmoGetObjOrder(gmo) != order_Q) {
 			gevLogStat(gev, "ERROR: General nonlinear objective functions not supported by SCIP (yet).");
 			return SCIP_READERROR;
 		}
-#endif
 		
 		SCIP_CALL( SCIPcreateVar(scip, &objvar, "xobj", -SCIPinfinity(scip), SCIPinfinity(scip), 1.0, SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL) );
 		SCIP_CALL( SCIPaddVar(scip, objvar) );
