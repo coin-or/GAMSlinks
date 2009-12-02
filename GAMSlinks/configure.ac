@@ -297,14 +297,8 @@ AC_SUBST(gamslinks_build_ipopt)
 AM_CONDITIONAL([GAMSLINKS_BUILD_IPOPT], [test $gamslinks_build_ipopt = 1])
 
 if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
-   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping ; then
-  gamslinks_build_gamsio=1
-else
-  gamslinks_build_gamsio=0
-fi
-AM_CONDITIONAL([GAMSLINKS_BUILD_GAMSIO],[test $gamslinks_build_gamsio = 1])
-
-if test $gamslinks_build_gamsio = 1 && test "x$coin_has_glpk" = xtrue ; then
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping &&
+   test "x$coin_has_glpk" = xtrue ; then
   gamslinks_build_glpk=1
 else
   gamslinks_build_glpk=0
@@ -312,7 +306,9 @@ fi
 AC_SUBST(gamslinks_build_glpk)
 AM_CONDITIONAL([GAMSLINKS_BUILD_GLPK],[test $gamslinks_build_glpk = 1])
 
-if test $gamslinks_build_gamsio = 1 && test $coin_build_clp = 1 && test $coin_build_cbc = 1 ; then
+if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping &&
+   test $coin_build_clp = 1 && test $coin_build_cbc = 1 ; then
   gamslinks_build_cbc=1
 else
   gamslinks_build_cbc=0
@@ -330,7 +326,8 @@ fi
 AC_SUBST(gamslinks_build_bonmin)
 AM_CONDITIONAL([GAMSLINKS_BUILD_BONMIN],[test $gamslinks_build_bonmin = 1])
 
-if test $gamslinks_build_gamsio = 1 &&
+if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping &&
    ( test $coin_build_dylp = 1 || test $coin_build_symphony = 1 || test $coin_build_vol = 1 || test $coin_build_cbc = 1 || test $coin_has_cpx = true ) ; then
   gamslinks_build_osi=1
 else
@@ -349,7 +346,9 @@ fi
 AC_SUBST(gamslinks_build_os)
 AM_CONDITIONAL([GAMSLINKS_BUILD_OS], [test $gamslinks_build_os = 1])
 
-if test $gamslinks_build_gamsio = 1 && test "x$coin_has_scip" = xtrue && (test $use_thirdpartyscip = 0 || (test $coin_build_clp = 1 && test $gamslinks_build_ipopt = 1)) ; then
+if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping &&
+   test "x$coin_has_scip" = xtrue && (test $use_thirdpartyscip = 0 || (test $coin_build_clp = 1 && test $gamslinks_build_ipopt = 1)) ; then
   gamslinks_build_scip=1
 else
   gamslinks_build_scip=0

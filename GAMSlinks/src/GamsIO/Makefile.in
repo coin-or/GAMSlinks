@@ -54,11 +54,13 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@COIN_HAS_COINUTILS_TRUE@am__append_1 = libGamsIO.la libSmagIO.la
+@COIN_HAS_OSI_TRUE@am__append_2 = GamsFinalize.cpp
 DIST_COMMON = $(includecoin_HEADERS) \
 	$(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_1 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_2 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_3 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_4 = .Externals-stamp
 subdir = src/GamsIO
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
@@ -80,16 +82,22 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libGamsIO_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsOptions.la \
 	$(GAMSIO_OBJDIR)/libGamsGDX.la
-am_libGamsIO_la_OBJECTS = GamsModel.lo GamsFinalize.lo \
-	GamsMessageHandler.lo GamsOptions.lo GamsDictionary.lo \
-	GamsBCH.lo GamsHandlerIOLib.lo GamsGDX.lo
+am__libGamsIO_la_SOURCES_DIST = GamsModel.cpp GamsMessageHandler.cpp \
+	GamsOptions.cpp GamsDictionary.cpp GamsBCH.cpp \
+	GamsHandlerIOLib.cpp GamsGDX.cpp GamsFinalize.cpp
+@COIN_HAS_OSI_TRUE@am__objects_1 = GamsFinalize.lo
+am_libGamsIO_la_OBJECTS = GamsModel.lo GamsMessageHandler.lo \
+	GamsOptions.lo GamsDictionary.lo GamsBCH.lo \
+	GamsHandlerIOLib.lo GamsGDX.lo $(am__objects_1)
 libGamsIO_la_OBJECTS = $(am_libGamsIO_la_OBJECTS)
+@COIN_HAS_COINUTILS_TRUE@am_libGamsIO_la_rpath = -rpath $(libdir)
 libSmagIO_la_DEPENDENCIES = $(GAMSIO_OBJDIR)/libGamsOptions.la \
 	$(GAMSIO_OBJDIR)/libGamsGDX.la
 am_libSmagIO_la_OBJECTS = GamsOptions.lo GamsMessageHandler.lo \
 	SmagExtra.lo GamsHandlerSmag.lo GamsBCH.lo GamsDictionary.lo \
 	GamsGDX.lo GamsNLinstr.lo
 libSmagIO_la_OBJECTS = $(am_libSmagIO_la_OBJECTS)
+@COIN_HAS_COINUTILS_TRUE@am_libSmagIO_la_rpath = -rpath $(libdir)
 libSmagStricmp_la_LIBADD =
 am_libSmagStricmp_la_OBJECTS = SmagStricmp.lo
 libSmagStricmp_la_OBJECTS = $(am_libSmagStricmp_la_OBJECTS)
@@ -113,8 +121,8 @@ CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libGamsIO_la_SOURCES) $(libSmagIO_la_SOURCES) \
 	$(libSmagStricmp_la_SOURCES)
-DIST_SOURCES = $(libGamsIO_la_SOURCES) $(libSmagIO_la_SOURCES) \
-	$(libSmagStricmp_la_SOURCES)
+DIST_SOURCES = $(am__libGamsIO_la_SOURCES_DIST) \
+	$(libSmagIO_la_SOURCES) $(libSmagStricmp_la_SOURCES)
 includecoinHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(includecoin_HEADERS)
 ETAGS = etags
@@ -271,8 +279,6 @@ GAMSLINKS_BUILD_CBC_FALSE = @GAMSLINKS_BUILD_CBC_FALSE@
 GAMSLINKS_BUILD_CBC_TRUE = @GAMSLINKS_BUILD_CBC_TRUE@
 GAMSLINKS_BUILD_COUENNE_FALSE = @GAMSLINKS_BUILD_COUENNE_FALSE@
 GAMSLINKS_BUILD_COUENNE_TRUE = @GAMSLINKS_BUILD_COUENNE_TRUE@
-GAMSLINKS_BUILD_GAMSIO_FALSE = @GAMSLINKS_BUILD_GAMSIO_FALSE@
-GAMSLINKS_BUILD_GAMSIO_TRUE = @GAMSLINKS_BUILD_GAMSIO_TRUE@
 GAMSLINKS_BUILD_GLPK_FALSE = @GAMSLINKS_BUILD_GLPK_FALSE@
 GAMSLINKS_BUILD_GLPK_TRUE = @GAMSLINKS_BUILD_GLPK_TRUE@
 GAMSLINKS_BUILD_IPOPT_FALSE = @GAMSLINKS_BUILD_IPOPT_FALSE@
@@ -427,11 +433,11 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = $(am__append_1)
-lib_LTLIBRARIES = libGamsIO.la libSmagIO.la libSmagStricmp.la
-libGamsIO_la_SOURCES = \
-  GamsModel.cpp GamsFinalize.cpp GamsMessageHandler.cpp GamsOptions.cpp GamsDictionary.cpp GamsBCH.cpp GamsHandlerIOLib.cpp GamsGDX.cpp
-
+EXTRA_DIST = $(am__append_3)
+lib_LTLIBRARIES = libSmagStricmp.la $(am__append_1)
+libGamsIO_la_SOURCES = GamsModel.cpp GamsMessageHandler.cpp \
+	GamsOptions.cpp GamsDictionary.cpp GamsBCH.cpp \
+	GamsHandlerIOLib.cpp GamsGDX.cpp $(am__append_2)
 libGamsIO_la_LDFLAGS = 
 libGamsIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 
@@ -442,10 +448,6 @@ libSmagIO_la_SOURCES = \
 libSmagIO_la_LDFLAGS = 
 libSmagIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 libSmagStricmp_la_SOURCES = SmagStricmp.c
-
-#libGmoIO_la_SOURCES = GamsHandlerGmo.cpp GamsOptions.cpp GamsNLinstr.c
-#libGmoIO_la_LDFLAGS =
-#libGmoIO_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsOptions.la $(GAMSIO_OBJDIR)/libGamsGMO.la $(GAMSIO_OBJDIR)/libGamsGDX.la
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = \
   GamsModel.hpp GamsMessageHandler.hpp GamsFinalize.hpp GamsOptions.hpp GamsDictionary.hpp GamsBCH.hpp GamsHandler.hpp GamsHandlerIOLib.hpp \
@@ -464,7 +466,7 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 ########################################################################
 
 # Files that are generated and should be cleaned with make distclean
-DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(am__append_4) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: all-am
@@ -528,9 +530,9 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libGamsIO.la: $(libGamsIO_la_OBJECTS) $(libGamsIO_la_DEPENDENCIES) 
-	$(CXXLINK) -rpath $(libdir) $(libGamsIO_la_LDFLAGS) $(libGamsIO_la_OBJECTS) $(libGamsIO_la_LIBADD) $(LIBS)
+	$(CXXLINK) $(am_libGamsIO_la_rpath) $(libGamsIO_la_LDFLAGS) $(libGamsIO_la_OBJECTS) $(libGamsIO_la_LIBADD) $(LIBS)
 libSmagIO.la: $(libSmagIO_la_OBJECTS) $(libSmagIO_la_DEPENDENCIES) 
-	$(CXXLINK) -rpath $(libdir) $(libSmagIO_la_LDFLAGS) $(libSmagIO_la_OBJECTS) $(libSmagIO_la_LIBADD) $(LIBS)
+	$(CXXLINK) $(am_libSmagIO_la_rpath) $(libSmagIO_la_LDFLAGS) $(libSmagIO_la_OBJECTS) $(libSmagIO_la_LIBADD) $(LIBS)
 libSmagStricmp.la: $(libSmagStricmp_la_OBJECTS) $(libSmagStricmp_la_DEPENDENCIES) 
 	$(LINK) -rpath $(libdir) $(libSmagStricmp_la_LDFLAGS) $(libSmagStricmp_la_OBJECTS) $(libSmagStricmp_la_LIBADD) $(LIBS)
 
