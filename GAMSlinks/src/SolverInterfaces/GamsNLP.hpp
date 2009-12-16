@@ -62,6 +62,16 @@ public:
   /** Method to return the constraint linearity. */
   bool get_constraints_linearity(Ipopt::Index m, LinearityType* const_types);
 
+  /** Method to return any meta data for the variables and the constraints */
+  bool get_var_con_metadata(Ipopt::Index n,
+  		StringMetaDataMapType& var_string_md,
+  		IntegerMetaDataMapType& var_integer_md,
+  		NumericMetaDataMapType& var_numeric_md,
+  		Ipopt::Index m,
+  		StringMetaDataMapType& con_string_md,
+  		IntegerMetaDataMapType& con_integer_md,
+  		NumericMetaDataMapType& con_numeric_md);
+
   /** Method to return the objective value */
   bool eval_f(Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Number& obj_value);
 

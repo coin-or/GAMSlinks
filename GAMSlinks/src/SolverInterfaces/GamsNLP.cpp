@@ -194,6 +194,39 @@ bool GamsNLP::get_constraints_linearity(Index m, LinearityType* const_types) {
 	return true;
 }
 
+/** Method to return any meta data for the variables and the constraints */
+bool GamsNLP::get_var_con_metadata(Index n,
+		StringMetaDataMapType& var_string_md,
+		IntegerMetaDataMapType& var_integer_md,
+		NumericMetaDataMapType& var_numeric_md,
+		Index m,
+		StringMetaDataMapType& con_string_md,
+		IntegerMetaDataMapType& con_integer_md,
+		NumericMetaDataMapType& con_numeric_md) {
+	
+	if( gmoDict(gmo) != NULL ) {
+		char buffer[1024];
+		
+		std::vector<std::string>& varnames(var_string_md["idx_names"]);
+		varnames.reserve(n);
+		for(int i = 0; i < n; ++i) {
+			gmoGetVarNameOne(gmo, i, buffer);
+			varnames.push_back(buffer);
+		}
+		
+		std::vector<std::string>& connames(con_string_md["idx_names"]);
+		connames.reserve(m);
+		for(int i = 0; i < m; ++i) {
+			gmoGetEquNameOne(gmo, i, buffer);
+			connames.push_back(buffer);
+		}
+		
+		return true;
+	}
+	
+	return false;
+}
+
 bool GamsNLP::eval_f(Index n, const Number* x, bool new_x, Number& obj_value) {
 	assert(n == gmoN(gmo));
 

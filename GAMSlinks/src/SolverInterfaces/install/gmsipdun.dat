@@ -18,7 +18,7 @@ full_name	GAMS/IPOPTD
 license_id	FR
 capabilities	LP RMIP NLP RMINLP DNLP QCP RMIQCP
 file_type	112
-dictionary_file	0
+dictionary_file	4
 run_file	gmsipdus.run
 exe_file	gmsipdux.out
 special		2
