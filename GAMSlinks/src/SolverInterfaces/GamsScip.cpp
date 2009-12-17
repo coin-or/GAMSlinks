@@ -33,6 +33,9 @@
 #define GMS_SV_NA     2.0E300   /* not available/applicable */
 #include "gmomcc.h"
 #include "gevmcc.h"
+#ifdef GAMS_BUILD
+#include "gmspal.h"
+#endif
 #include "GamsMessageHandler.hpp"
 
 #include "ClpSimplex.hpp" // for passing in message handler
@@ -97,14 +100,14 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 #ifdef GAMS_BUILD
 #define GEVPTR gev
-#include "cgevmagic2.h"
-	if (gevLicenseCheck(gev, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo))) {
+#include "cmagic2.h"
+	if (licenseCheck(gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo))) {
 		// model larger than demo and no solver-specific license; check if we have an academic license
 		int isAcademic = 0;
-    gevLicenseQueryOption(gev, "GAMS", "ACADEMIC", &isAcademic);
+    licenseQueryOption("GAMS", "ACADEMIC", &isAcademic);
     if (!isAcademic) {
     	char msg[256];
-  		while (gevLicenseGetMessage(gev, msg))
+  		while (licenseGetMessage(gev, msg))
   			gevLogStat(gev, msg);
       gevLogStat(gev, "*** Use of SCIP is limited to academic users.");
       gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");
@@ -116,7 +119,7 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	} else {
 		// we have a demo modell, or license is available; however, there is nothing like a scip license, so it means the model fits into the demo size
 		int isAcademic = 0;
-    gevLicenseQueryOption(gev, "GAMS", "ACADEMIC", &isAcademic);
+    licenseQueryOption("GAMS", "ACADEMIC", &isAcademic);
     isDemo = !isAcademic; // we run in demo mode if there is no academic license, that is we cannot allow to open a scip shell
 	}
 #endif

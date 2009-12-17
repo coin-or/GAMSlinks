@@ -41,6 +41,7 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
+#include "gmspal.h"
 #include "gevlice.h"
 #endif
 #include "GamsMessageHandler.hpp"
@@ -154,11 +155,11 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 #ifdef GAMS_BUILD
 #define GEVPTR gev 
-#include "cgevmagic2.h"
-	if (gevLicenseCheck(gev, gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo))) {
+#include "cmagic2.h"
+	if (licenseCheck(gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo))) {
 		char msg[256];
 		gevLogStat(gev, "The license check failed:\n");
-		while (gevLicenseGetMessage(gev, msg))
+		while (licenseGetMessage(gev, msg))
 			gevLogStat(gev,msg);
 	  gmoSolveStatSet(gmo, SolveStat_License);
 	  gmoModelStatSet(gmo, ModelStat_LicenseError);
