@@ -1,33 +1,31 @@
 Index: CoinUtils/configure
 ===================================================================
---- CoinUtils/configure	(Revision 1207)
-+++ CoinUtils/configure	(Arbeitskopie)
-@@ -28570,6 +28570,8 @@
+--- CoinUtils/configure	(revision 1241)
++++ CoinUtils/configure	(working copy)
+@@ -28570,6 +28570,7 @@
  
  if test x"$use_thirdpartyglpk" = xbuild; then
    COINUTILS_LIBADD="../../ThirdParty/Glpk/libcoinglpk.la $COINUTILS_LIBADD"
-+  GLPKADDLIBS=`cat ../ThirdParty/Glpk/glpk_addlibs.txt`
-+  ADDLIBS="$GLPKADDLIBS $ADDLIBS"
++  ADDLIBS="$ADDLIBS `cat ../ThirdParty/Glpk/glpk_addlibs.txt`"
  fi
  
  #############################################################################
 Index: CoinUtils/configure.ac
 ===================================================================
---- CoinUtils/configure.ac	(Revision 1207)
-+++ CoinUtils/configure.ac	(Arbeitskopie)
-@@ -446,6 +446,8 @@
+--- CoinUtils/configure.ac	(revision 1241)
++++ CoinUtils/configure.ac	(working copy)
+@@ -446,6 +446,7 @@
  AC_COIN_HAS_GLPK(Gmpl)
  if test x"$use_thirdpartyglpk" = xbuild; then
    COINUTILS_LIBADD="../../ThirdParty/Glpk/libcoinglpk.la $COINUTILS_LIBADD"
-+  GLPKADDLIBS=`cat ../ThirdParty/Glpk/glpk_addlibs.txt`
-+  ADDLIBS="$GLPKADDLIBS $ADDLIBS"
++  ADDLIBS="$ADDLIBS `cat ../ThirdParty/Glpk/glpk_addlibs.txt`"
  fi
  
  #############################################################################
 Index: CoinUtils/src/Makefile.in
 ===================================================================
---- CoinUtils/src/Makefile.in	(Revision 1207)
-+++ CoinUtils/src/Makefile.in	(Arbeitskopie)
+--- CoinUtils/src/Makefile.in	(revision 1241)
++++ CoinUtils/src/Makefile.in	(working copy)
 @@ -43,7 +43,7 @@
  POST_UNINSTALL = :
  build_triplet = @build@
@@ -39,9 +37,9 @@ Index: CoinUtils/src/Makefile.in
  	$(srcdir)/Makefile.in
 Index: CoinUtils/src/Makefile.am
 ===================================================================
---- CoinUtils/src/Makefile.am	(Revision 1207)
-+++ CoinUtils/src/Makefile.am	(Arbeitskopie)
-@@ -107,7 +107,7 @@
+--- CoinUtils/src/Makefile.am	(revision 1241)
++++ CoinUtils/src/Makefile.am	(working copy)
+@@ -112,7 +112,7 @@
  # "cygpath" stuff is necessary to compile with native compilers on Windows
  AM_CPPFLAGS =
  if COIN_HAS_GMPL
