@@ -80,9 +80,9 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 #ifdef COIN_HAS_CBC
 		case CBC:
 #ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/CoinOsiCbc (Osi library 0.100, CBC library 2.3)\nwritten by J. Forrest\n");
+			sprintf(osi_message, "GAMS/OsiCbc (Osi library 0.101, CBC library 2.4)\nwritten by J. Forrest\n");
 #else
-			sprintf(osi_message, "GAMS/OsiCbc (Osi library 0.100, CBC library 2.3)\nwritten by J. Forrest\n");
+			sprintf(osi_message, "GAMS/OsiCbc (Osi library 0.101, CBC library 2.4)\nwritten by J. Forrest\n");
 #endif
 			break;
 #endif
@@ -90,9 +90,9 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 #ifdef COIN_HAS_CPX
 		case CPLEX:
 #ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/CoinOsiCplex (Osi library 0.100, CPLEX library %.2f)\nOsi link written by T. Achterberg\n", CPX_VERSION/100.);
+			sprintf(osi_message, "GAMS/OsiCplex (Osi library 0.101, CPLEX library %.2f)\nOsi link written by T. Achterberg\n", CPX_VERSION/100.);
 #else
-			sprintf(osi_message, "GAMS/OsiCplex (Osi library 0.100, CPLEX library %.2f)\nOsi link written by T. Achterberg\n", CPX_VERSION/100.);
+			sprintf(osi_message, "GAMS/OsiCplex (Osi library 0.101, CPLEX library %.2f)\nOsi link written by T. Achterberg\n", CPX_VERSION/100.);
 #endif
 			break;
 #endif
@@ -100,9 +100,9 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 #ifdef COIN_HAS_GRB
 		case GUROBI:
 #ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/CoinOsiGurobi (Osi library 0.100, GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
+			sprintf(osi_message, "GAMS/OsiGurobi (Osi library 0.101, GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
 #else
-			sprintf(osi_message, "GAMS/OsiGurobi (Osi library 0.100, GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
+			sprintf(osi_message, "GAMS/OsiGurobi (Osi library 0.101, GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
 #endif
 			break;
 #endif
@@ -110,9 +110,9 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 #ifdef COIN_HAS_MSK
 		case MOSEK:
 #ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/CoinOsiMosek (Osi library 0.100, MOSEK library %d.%d)\nwritten by Bo Jensen\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
+			sprintf(osi_message, "GAMS/OsiMosek (Osi library 0.101, MOSEK library %d.%d)\nwritten by Bo Jensen\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
 #else
-			sprintf(osi_message, "GAMS/OsiMosek (Osi library 0.100, MOSEK library %d.%d)\nwritten Bo Jensen\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
+			sprintf(osi_message, "GAMS/OsiMosek (Osi library 0.101, MOSEK library %d.%d)\nwritten Bo Jensen\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
 #endif
 			break;
 #endif
@@ -120,9 +120,9 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 #ifdef COIN_HAS_XPR
 		case XPRESS:
 #ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/CoinOsiXpress (Osi library 0.100, Xpress library %d)\n", XPVERSION);
+			sprintf(osi_message, "GAMS/OsiXpress (Osi library 0.101, Xpress library %d)\n", XPVERSION);
 #else
-			sprintf(osi_message, "GAMS/OsiXpress (Osi library 0.100, Xpress library %d)\n", XPVERSION);
+			sprintf(osi_message, "GAMS/OsiXpress (Osi library 0.101, Xpress library %d)\n", XPVERSION);
 #endif
 			break;
 #endif
