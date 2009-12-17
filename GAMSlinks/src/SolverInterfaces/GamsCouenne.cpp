@@ -971,8 +971,10 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 //	printf("using MIQQP problem setup method\n");
 	
-	int do2dir, dohess;
-	if (gmoHessLoad(gmo, 0, -1, &do2dir, &dohess) || !dohess) {
+	int do2dir = 1;
+	int dohess = 1;
+	gmoHessLoad(gmo, 0, -1, &do2dir, &dohess);
+	if (!dohess) {
 		gevLogStat(gev, "Failed to initialize Hessian structure. Trying usual setupProblem.");
 		return setupProblem();
   }
