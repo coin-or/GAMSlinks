@@ -295,7 +295,6 @@ ThirdParty/SCIP/configure -text
 ThirdParty/SCIP/configure.ac -text
 ThirdParty/SCIP/m4/ac_coin_scip.m4 -text
 ThirdParty/SCIP/scip.patch -text
-/clp.patch -text
 /coinutils.patch -text
 /compile -text
 /config.guess -text
