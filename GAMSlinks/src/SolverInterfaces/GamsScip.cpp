@@ -107,7 +107,7 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
     licenseQueryOption("GAMS", "ACADEMIC", &isAcademic);
     if (!isAcademic) {
     	char msg[256];
-  		while (licenseGetMessage(gev, msg))
+  		while (licenseGetMessage(msg, sizeof(msg)))
   			gevLogStat(gev, msg);
       gevLogStat(gev, "*** Use of SCIP is limited to academic users.");
       gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");

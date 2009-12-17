@@ -159,7 +159,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	if (licenseCheck(gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo))) {
 		char msg[256];
 		gevLogStat(gev, "The license check failed:\n");
-		while (licenseGetMessage(gev, msg))
+		while (licenseGetMessage(msg, sizeof(msg)))
 			gevLogStat(gev,msg);
 	  gmoSolveStatSet(gmo, SolveStat_License);
 	  gmoModelStatSet(gmo, ModelStat_LicenseError);
