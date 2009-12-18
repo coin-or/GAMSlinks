@@ -21342,7 +21342,7 @@ echo "${ECHO_T}$ac_cv_header_float_h" >&6
 
 fi
 if test $ac_cv_header_float_h = yes; then
-  EXTRAFLAGS="$EXTRAFLAGS -DROUNDING_FP"
+  EXTRAFLAGS="$EXTRAFLAGS -DROUNDING_MS"
 fi
 
 
