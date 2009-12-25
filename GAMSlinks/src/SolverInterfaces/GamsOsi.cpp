@@ -8,6 +8,7 @@
 
 #include "GamsOsi.hpp"
 #include "GamsOsiCplex.h"
+#include "GamsOsiGlpk.h"
 #include "GamsOsiGurobi.h"
 #include "GamsOsiXpress.h"
 #include "GamsOsiMosek.h"
@@ -57,6 +58,12 @@
 #include "OsiCpxSolverInterface.hpp"
 #include "cplex.h"
 #endif
+#ifdef COIN_HAS_GLPK
+#include "OsiGlpkSolverInterface.hpp"
+extern "C" {
+#include "glpk.h" // to get version numbers
+}
+#endif
 #ifdef COIN_HAS_GRB
 #include "OsiGrbSolverInterface.hpp"
 extern "C" {
@@ -98,6 +105,16 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 			break;
 #endif
 
+#ifdef COIN_HAS_GLPK
+      case GLPK:
+#ifdef GAMS_BUILD
+         sprintf(osi_message, "GAMS/OsiGlpk (Osi library 0.101, GLPK library %d.%d)\nOsi link written by Vivian De Smedt and Braden Hunsaker\n", GLP_MAJOR_VERSION, GLP_MINOR_VERSION);
+#else
+         sprintf(osi_message, "GAMS/OsiGlpk (Osi library 0.101, GLPK library %d.%d)\nOsi link written by Vivian De Smedt and Braden Hunsaker\n", GLP_MAJOR_VERSION, GLP_MINOR_VERSION);
+#endif
+         break;
+#endif
+
 #ifdef COIN_HAS_GRB
 		case GUROBI:
 #ifdef GAMS_BUILD
@@ -127,7 +144,7 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 #endif
 			break;
 #endif
-			
+
      default:
     	 fprintf(stderr, "Unsupported solver id: %d\n", solverid);
     	 exit(EXIT_FAILURE);
@@ -195,6 +212,15 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				return 1;
 #endif
 			} break;
+
+         case GLPK: {
+#ifdef COIN_HAS_GLPK
+            osi = new OsiGlpkSolverInterface();
+#else
+            gevLogStat(gev, "GamsOsi compiled without Osi/Glpk interface.\n");
+            return 1;
+#endif
+         } break;
 
 			case GUROBI: {
 #ifdef COIN_HAS_GRB
@@ -291,7 +317,8 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	msghandler = new GamsMessageHandler(gev);
 	msghandler->setPrefix(false);
 	osi->passInMessageHandler(msghandler);
-	osi->setHintParam(OsiDoReducePrint, true, OsiHintTry);
+	osi->setHintParam(OsiDoReducePrint, true,  OsiHintTry);
+
 	/* gurobi does not support message callbacks (yet), so we turn off message printing if lo=2 */
 	if (gevGetIntOpt(gev, gevLogOption) == 0 || (solverid == GUROBI && gevGetIntOpt(gev, gevLogOption) == 2))
 		msghandler->setLogLevel(0);
@@ -517,7 +544,32 @@ bool GamsOsi::setupParameters() {
 			
 		} break;
 #endif
-			
+
+#ifdef COIN_HAS_GLPK
+      case GLPK: {
+         OsiGlpkSolverInterface* osiglpk = dynamic_cast<OsiGlpkSolverInterface*>(osi);
+         assert(osiglpk != NULL);
+         if (reslim > 1e+6) { // GLPK cannot handle very large timelimits, so we run it without limit then
+            gevLogStat(gev, "Time limit too large. GLPK will run without timelimit.");
+            reslim = -1;
+         }
+         lpx_set_real_parm(osiglpk->getModelPtr(), LPX_K_TMLIM, reslim);
+
+         if (!isLP() && nodelim)
+            gevLogStat(gev, "Cannot set node limit for GLPK. Node limit ignored.");
+
+         lpx_set_real_parm(osiglpk->getModelPtr(), LPX_K_MIPGAP, optcr);
+         // optca not in glpk
+
+         osiglpk->setHintParam(OsiDoPresolveInInitial, true, OsiForceDo); // turn on LP presolver
+         osiglpk->setHintParam(OsiDoReducePrint, false, OsiForceDo); // GLPK loglevel 3
+
+         if (gmoOptFile(gmo))
+            gevLogStat(gev, "Cannot pass option file to GLPK. Option file ignored.");
+
+      } break;
+#endif
+
 #ifdef COIN_HAS_GRB
 		case GUROBI:  {
 			OsiGrbSolverInterface* osigrb = dynamic_cast<OsiGrbSolverInterface*>(osi);
@@ -738,6 +790,62 @@ bool GamsOsi::writeSolution(double cputime, double walltime) {
 			}
 						
 		} break;
+#endif
+
+#ifdef COIN_HAS_GLPK
+      case GLPK: {
+         OsiGlpkSolverInterface* osiglpk = dynamic_cast<OsiGlpkSolverInterface*>(osi);
+         assert(osiglpk);
+
+         if (osiglpk->isTimeLimitReached()) {
+            gmoSolveStatSet(gmo, SolveStat_Resource);
+            if (osiglpk->isFeasible()) {
+               write_solution = true;
+               gevLogStat(gev, "Time limit reached, have feasible solution.");
+               gmoModelStatSet(gmo, isLP() ? ModelStat_NonOptimalIntermed : ModelStat_Integer);
+            } else {
+               gevLogStat(gev, "Time limit reached, do not have feasible solution.");
+               gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+            }
+         } else if (osiglpk->isIterationLimitReached()) {
+            gmoSolveStatSet(gmo, SolveStat_Iteration);
+            if (osiglpk->isFeasible()) {
+               write_solution = true;
+               gevLogStat(gev, "Iteration limit reached, have feasible solution.");
+               gmoModelStatSet(gmo, isLP() ? ModelStat_NonOptimalIntermed : ModelStat_Integer);
+            } else {
+               gevLogStat(gev, "Iteration limit reached, do not have feasible solution.");
+               gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+            }
+         }  else if (osiglpk->isProvenPrimalInfeasible()) {
+            gevLogStat(gev, "Model infeasible.");
+            gmoSolveStatSet(gmo, SolveStat_Normal);
+            gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+         } else if (osiglpk->isProvenDualInfeasible()) { // GAMS doesn't have dual infeasible, so we hope for the best and call it unbounded
+            gevLogStat(gev, "Model unbounded.");
+            gmoSolveStatSet(gmo, SolveStat_Normal);
+            gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
+         } else if (osiglpk->isProvenOptimal()) {
+            write_solution = true;
+            gevLogStat(gev, "Optimal solution found.");
+            gmoSolveStatSet(gmo, SolveStat_Normal);
+            gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
+         } else if (osiglpk->isFeasible()) {
+            write_solution = true;
+            gevLogStat(gev, "Feasible solution found.");
+            gmoSolveStatSet(gmo, SolveStat_Normal);
+            gmoModelStatSet(gmo, isLP() ? ModelStat_NonOptimalIntermed : ModelStat_Integer);
+         } else if (osiglpk->isAbandoned()) {
+            gevLogStat(gev, "Model abandoned.");
+            gmoSolveStatSet(gmo, SolveStat_SolverErr);
+            gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+         } else {
+            gevLogStat(gev, "Unknown solve outcome.");
+            gmoSolveStatSet(gmo, SolveStat_SystemErr);
+            gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+         }
+
+      } break;
 #endif
 
 #ifdef COIN_HAS_GRB
@@ -1192,6 +1300,10 @@ DllExport GamsOsi* STDCALL createNewGamsOsiCplex() {
 	return new GamsOsi(GamsOsi::CPLEX);
 }
 
+DllExport GamsOsi* STDCALL createNewGamsOsiGlpk() {
+   return new GamsOsi(GamsOsi::GLPK);
+}
+
 DllExport GamsOsi* STDCALL createNewGamsOsiGurobi() {
    return new GamsOsi(GamsOsi::GUROBI);
 }
@@ -1249,6 +1361,7 @@ DllExport GamsOsi* STDCALL createNewGamsOsiXpress() {
 	}
 	
 osi_C_interface(ocp, GamsOsi::CPLEX)
+osi_C_interface(ogl, GamsOsi::GLPK)
 osi_C_interface(ogu, GamsOsi::GUROBI)
 osi_C_interface(oxp, GamsOsi::XPRESS)
 osi_C_interface(omk, GamsOsi::MOSEK)

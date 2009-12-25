@@ -18,7 +18,7 @@ class OsiSolverInterface;
 
 class GamsOsi : public GamsSolver {
 public:
-	typedef enum { CBC, CPLEX, GUROBI, MOSEK, XPRESS } OSISOLVER;
+	typedef enum { CBC, CPLEX, GLPK, GUROBI, MOSEK, XPRESS } OSISOLVER;
 private:
 	struct gmoRec* gmo;
 	struct gevRec* gev;
@@ -27,7 +27,7 @@ private:
 	OsiSolverInterface* osi;
 	OSISOLVER           solverid;
 
-	char osi_message[100];
+	char osi_message[200];
 
 	bool setupProblem(OsiSolverInterface& solver);
 	bool setupStartingPoint();
@@ -53,6 +53,8 @@ public:
 }; // GamsOsi
 
 extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiCplex();
+
+extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiGlpk();
 
 extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiGurobi();
 

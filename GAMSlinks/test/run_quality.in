@@ -76,6 +76,23 @@ if test @gamslinks_build_glpk@ = 1 ; then
   skiplist="$skiplist skip('Glpk','sl4scon1')=yes;"
   testlist[${#testlist[@]}]="--solver glpk --suite lp"
   testlist[${#testlist[@]}]="--solver glpk --suite mip user1=rmip=glpk"
+
+  solvers="$solvers , OsiGlpk"
+  skiplist="$skiplist skip('OsiGlpk','lp10')=yes;"
+  skiplist="$skiplist skip('OsiGlpk','sl4lp10')=yes;"
+  skiplist="$skiplist skip('OsiGlpk','sos1a')=yes;"
+  skiplist="$skiplist skip('OsiGlpk','sl4sos1a')=yes;"
+  skiplist="$skiplist skip('OsiGlpk','semicon1')=yes;"
+  skiplist="$skiplist skip('OsiGlpk','sl4scon1')=yes;"
+  testlist[${#testlist[@]}]="--solver osiglpk --suite lp"
+  testlist[${#testlist[@]}]="--solver osiglpk --suite mip user1=rmip=osiglpk"
+
+  #from GAMS 22.7 on, slvstdskip has been renamed to slvstdoutskip
+  if grep -q slvstdskip quality.gms ; then
+    stdskiplist="$stdskiplist slvstdskip('OsiGlpk')=yes;"
+  else
+    stdskiplist="$stdskiplist slvstdoutskip('OsiGlpk')=yes;"
+  fi
 fi
 
 if test @gamslinks_build_cbc@ = 1 ; then
@@ -144,23 +161,6 @@ if test @gamslinks_build_osi@ = 1 ; then
     stdskiplist="$stdskiplist slvstdoutskip('Osi')=yes;"
   fi
  
-  if test @coin_build_clp@ = 1 ; then
-    echo "solver clp" > osi.opt
-    testlist[${#testlist[@]}]="--solver osi --suite lp user1=\"optdir=`pwd` optfile=1\""
-  fi
-    
-  if test @coin_build_cbc@ = 1 ; then
-    echo "solver cbc" > osi.op2
-    testlist[${#testlist[@]}]="--solver osi --suite lp user1=\"optdir=`pwd` optfile=2\""
-    testlist[${#testlist[@]}]="--solver osi --suite mip user1=\"optdir=`pwd` optfile=2 rmip=osi\""
-  fi
-  
-  if test @coin_build_glpk@ = 1 ; then
-    echo "solver glpk" > osi.op3
-    testlist[${#testlist[@]}]="--solver osi --suite lp user1=\"optdir=`pwd` optfile=3\""
-    testlist[${#testlist[@]}]="--solver osi --suite mip user1=\"optdir=`pwd` optfile=3 rmip=osi\""
-  fi
-
   if test @coin_build_dylp@ = 1 ; then
     echo "solver dylp" > osi.op4
 # dylp is currently skipped because lp10 fails

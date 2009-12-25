@@ -88,6 +88,31 @@ endif
   EXTRA_DIST       += gmsocpnt.cmd gmsocpus.run install/gmsocpnt.dat install/gmsocpun.dat
 endif
 
+if COIN_HAS_GLPK
+  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+  
+  AM_CPPFLAGS += -I`$(CYGPATH_W) $(GLPKINCDIR)`
+
+if GAMSIO_IS_UNIX
+  noinst_PROGRAMS     += gmsoglux.out
+  gmsoglux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+  gmsoglux_out_SOURCES = gmsogl.cpp
+  gmsoglux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+  gamsinstallfiles    += gmsoglux.out gmsoglus.run install/gmsoglun.dat
+endif
+
+if GAMSIO_IS_WINDOWS
+  noinst_PROGRAMS  += gmsoglnx
+  gmsoglnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+  gmsoglnx_SOURCES  = gmsogl.cpp
+  gmsoglnx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+  gamsinstallfiles += gmsoglnx.exe gmsoglnt.cmd install/gmsoglnt.dat
+endif
+
+  EXTRA_DIST       += gmsoglnt.cmd gmsoglus.run install/gmsoglnt.dat install/gmsoglun.dat
+endif
+
 if COIN_HAS_GRB
   libGamsCoin_la_SOURCES      += OsiGrbSolverInterface.cpp
   libGamsCoin_la_LIBADD       += $(GRBLIB)
