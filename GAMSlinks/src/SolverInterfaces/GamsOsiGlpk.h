@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id: GamsOsiCplex.h 739 2009-09-09 21:08:08Z stefan $
+// $Id$
 //
 // Author: Stefan Vigerske
 
