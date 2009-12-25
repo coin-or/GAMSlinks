@@ -22909,6 +22909,64 @@ fi
 echo "$as_me:$LINENO: result: $coin_has_os" >&5
 echo "${ECHO_T}$coin_has_os" >&6
 
+echo "$as_me:$LINENO: checking for COIN project libltdl" >&5
+echo $ECHO_N "checking for COIN project libltdl... $ECHO_C" >&6
+
+# First check, if the sub-project is actually available (ToDo: allow
+# other locations)
+
+coin_has_libltdl=unavailable
+if test x"$COIN_SKIP_PROJECTS" != x; then
+  for dir in $COIN_SKIP_PROJECTS; do
+    if test $dir = libltdl; then
+      coin_has_libltdl=skipping
+    fi
+  done
+fi
+
+if test $coin_has_libltdl != skipping; then
+  if test $PACKAGE_TARNAME = libltdl; then
+    coin_has_libltdl=.
+  else
+    if test -d $srcdir/../libltdl; then
+      coin_has_libltdl=../libltdl
+    fi
+  fi
+fi
+
+if test $coin_has_libltdl != unavailable &&
+   test $coin_has_libltdl != skipping; then
+  # Set the #define if the component is available
+
+cat >>confdefs.h <<\_ACEOF
+#define COIN_HAS_LIBLTDL 1
+_ACEOF
+
+
+  # Set the variables for source and object code location
+
+  LIBLTDLSRCDIR=`cd $srcdir/$coin_has_libltdl; pwd`
+
+  LIBLTDLOBJDIR=`pwd`/$coin_has_libltdl
+
+  LIBLTDLDOCDIR=$abs_lib_dir/../share/doc/coin/libltdl
+fi
+
+  # Define the Makefile conditional
+
+
+if test $coin_has_libltdl != unavailable &&
+                test $coin_has_libltdl != skipping; then
+  COIN_HAS_LIBLTDL_TRUE=
+  COIN_HAS_LIBLTDL_FALSE='#'
+else
+  COIN_HAS_LIBLTDL_TRUE='#'
+  COIN_HAS_LIBLTDL_FALSE=
+fi
+
+echo "$as_me:$LINENO: result: $coin_has_libltdl" >&5
+echo "${ECHO_T}$coin_has_libltdl" >&6
+
 
 ############################################################################
 ############################################################################
@@ -29457,6 +29515,13 @@ if test -z "${COIN_HAS_OS_TRUE}" && test -z "${COIN_HAS_OS_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_OS\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"COIN_HAS_OS\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${COIN_HAS_LIBLTDL_TRUE}" && test -z "${COIN_HAS_LIBLTDL_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_LIBLTDL\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COIN_HAS_LIBLTDL\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi

@@ -9,7 +9,10 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = GamsUtils SolverInterfaces GamsIO
+SUBDIRS = GamsIO GamsUtils
+if COIN_HAS_LIBLTDL
+  SUBDIRS += SolverInterfaces
+endif
 if GAMSLINKS_BUILD_CBC
   SUBDIRS += Cbc
 endif

@@ -94,6 +94,7 @@ AC_COIN_HAS_PROJECT(Bonmin)
 AC_COIN_HAS_PROJECT(cppad)
 AC_COIN_HAS_PROJECT(Couenne)
 AC_COIN_HAS_PROJECT(OS)
+AC_COIN_HAS_PROJECT(libltdl)
 
 ############################################################################
 ############################################################################
