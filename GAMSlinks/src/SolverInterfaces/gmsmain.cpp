@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
   LTDL_SET_PRELOADED_SYMBOLS();
   
   if (argc == 1) {
-  	fprintf(stderr, "usage: %s <control_file_name>\nexiting ...\n", argv[0]);
+    fprintf(stderr, "usage: %s <control_file_name>\nexiting ...\n", argv[0]);
     return EXIT_FAILURE;
   }
 
@@ -61,37 +61,31 @@ int main(int argc, char** argv) {
   int rc;
 
   // initialize GMO:
-  // first try path where GAMS I/O libraries were during compilation (the gmo library there should be the correct version)
-  // if that fails, try using some global search path, so it should take the one from the gams installation (hope it is update enough) 
-//  if (!gmoCreateD(&gmo, GAMSIO_PATH, msg, sizeof(msg))) {
-  	if (!gmoCreate(&gmo, msg, sizeof(msg))) {
-  		fprintf(stderr, "%s\n",msg);
-  		return EXIT_FAILURE;
-  	}
-//  }
+  if (!gmoCreate(&gmo, msg, sizeof(msg))) {
+    fprintf(stderr, "%s\n",msg);
+    return EXIT_FAILURE;
+  }
 
-//  if (!gevCreateD(&gev, GAMSIO_PATH, msg, sizeof(msg))) {
-  	if (!gevCreate(&gev, msg, sizeof(msg))) {
-  		fprintf(stderr, "%s\n",msg);
-  		return EXIT_FAILURE;
-  	}
-//  }
+  if (!gevCreate(&gev, msg, sizeof(msg))) {
+    fprintf(stderr, "%s\n",msg);
+    return EXIT_FAILURE;
+  }
 
   gmoIdentSet(gmo, SOLVERNAME "link object");
   
   // load control file
   if ((rc = gevInitEnvironmentLegacy(gev, argv[1]))) {
-  	fprintf(stderr, "Could not load control file: %s Rc = %d\n", argv[1], rc);
+    fprintf(stderr, "Could not load control file: %s Rc = %d\n", argv[1], rc);
     gmoFree(&gmo);
     gevFree(&gev);
-  	return EXIT_FAILURE;
+    return EXIT_FAILURE;
   }
 
   if ((rc = gmoRegisterEnvironment(gmo, gev, msg))) {
-  	gevLogStat(gev, "Could not register environment.");
-  	gmoFree(&gmo);
-  	gevFree(&gev);
-  	return EXIT_FAILURE;
+    gevLogStat(gev, "Could not register environment.");
+    gmoFree(&gmo);
+    gevFree(&gev);
+    return EXIT_FAILURE;
   }
 
   // setup GAMS output channels
@@ -102,15 +96,15 @@ int main(int argc, char** argv) {
 //  }
 
   if ((rc = gmoLoadDataLegacy(gmo, msg))) {
-  	gevLogStat(gev, "Could not load model data.");
+    gevLogStat(gev, "Could not load model data.");
 //    gmoCloseGms(gmo);
     gmoFree(&gmo);
     gevFree(&gev);
-  	return EXIT_FAILURE;
+    return EXIT_FAILURE;
   }
   
   if ((rc = lt_dlinit())) {
-  	gevLogStat(gev, "Could not initialize dynamic library loader.");
+    gevLogStat(gev, "Could not initialize dynamic library loader.");
 //    gmoCloseGms(gmo);
     gmoFree(&gmo);
     gevFree(&gev);
@@ -119,46 +113,42 @@ int main(int argc, char** argv) {
   
   lt_dlhandle coinlib = lt_dlopenext("libGamsCoin");
   if (!coinlib) {
-  	gevLogStat(gev, "Could not load GamsCoin library.");
-  	gevLogStat(gev, lt_dlerror());
+    gevLogStat(gev, "Could not load GamsCoin library.");
+    gevLogStat(gev, lt_dlerror());
 //  	gmoCloseGms(gmo);
-  	gmoFree(&gmo);
+    gmoFree(&gmo);
     gevFree(&gev);
-  	return EXIT_FAILURE;  	
+    return EXIT_FAILURE;
   }
   
   createNewGamsSolver_t* createsolver = (createNewGamsSolver_t*) lt_dlsym(coinlib, CREATEFUNCNAME);
   if (!createsolver) {
-  	gevLogStat(gev, "Could not load " CREATEFUNCNAME " symbol from GamsCoin library.");
-  	gevLogStat(gev, lt_dlerror());
+    gevLogStat(gev, "Could not load " CREATEFUNCNAME " symbol from GamsCoin library.");
+    gevLogStat(gev, lt_dlerror());
 //  	gmoCloseGms(gmo);
-  	gmoFree(&gmo);
+    gmoFree(&gmo);
     gevFree(&gev);
-  	lt_dlclose(coinlib);
-  	return EXIT_FAILURE;  	
+    lt_dlclose(coinlib);
+    return EXIT_FAILURE;
   }
   
   GamsSolver* solver = (*createsolver)();
   gevLogStat(gev, "");
-	gevLogStatPChar(gev, solver->getWelcomeMessage());
-	
+  gevLogStatPChar(gev, solver->getWelcomeMessage());
+
   bool ok = true;
-	
+
   if (solver->readyAPI(gmo, NULL) != 0) {
-  	gevLogStat(gev, "There was an error in setting up " SOLVERNAME ".\n");
-//  	gmoSolveStatSet(gmo, SolveStat_SystemErr);
-//  	gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-  	ok = false;
+    gevLogStat(gev, "There was an error in setting up " SOLVERNAME ".\n");
+    ok = false;
   }
   if (ok && solver->callSolver() != 0) {
-  	gevLogStat(gev, "There was an error in solving the model.\n");
-//  	gmoSolveStatSet(gmo, SolveStat_SystemErr);
-//  	gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-  	ok = false;
+    gevLogStat(gev, "There was an error in solving the model.\n");
+    ok = false;
   }
-	gmoUnloadSolutionLegacy(gmo);
-	
-	delete solver;
+  gmoUnloadSolutionLegacy(gmo);
+
+  delete solver;
 
 // 	gevLogStat(gev, SOLVERNAME " finished.");
   
@@ -169,8 +159,8 @@ int main(int argc, char** argv) {
   gmoLibraryUnload();
   gevLibraryUnload();
 
-	lt_dlclose(coinlib);
-	lt_dlexit();
+  lt_dlclose(coinlib);
+  lt_dlexit();
 
-	return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
