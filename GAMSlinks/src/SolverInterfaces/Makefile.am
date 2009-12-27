@@ -11,24 +11,27 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST     =
 DISTCLEANFILES =
 
+# these flags are required for compiling every library and executable  
+COMMON_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/../GamsUtils`
+
+# these flags are common when compiling and linking the executables
+GMSXXX_CPPFLAGS = -I`$(CYGPATH_W) $(LIBLTDLSRCDIR)` $(COMMON_CPPFLAGS)
+GMSXXX_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+GMSXXX_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+
 noinst_PROGRAMS             =
 lib_LTLIBRARIES             = libGamsCoin.la
 libGamsCoin_la_SOURCES      = GamsSolver.cpp
 libGamsCoin_la_LIBADD       = ../GamsUtils/libGamsUtils.la
-libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la
 libGamsCoin_la_LDFLAGS      = -module -no-undefined
-
-AM_CPPFLAGS = \
- -I`$(CYGPATH_W) $(srcdir)/..` \
- -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` \
- -I`$(CYGPATH_W) $(LIBLTDLSRCDIR)`
+libGamsCoin_la_CPPFLAGS     = $(COMMON_CPPFLAGS)
 
 gamsinstallfiles =
 
 if GAMSLINKS_BUILD_OSI
 libGamsCoin_la_SOURCES += GamsOsi.cpp GamsOsiHelper.cpp GamsMessageHandler.cpp
 
-AM_CPPFLAGS += \
+libGamsCoin_la_CPPFLAGS += \
  -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(OSISRCDIR)/src` \
@@ -36,52 +39,46 @@ AM_CPPFLAGS += \
 
 libGamsCoin_la_LIBADD += \
  $(OSIOBJDIR)/src/libOsi.la \
- $(COINUTILSOBJDIR)/src/libCoinUtils.la \
- `cat $(OSIOBJDIR)/osi_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
-
-libGamsCoin_la_DEPENDENCIES += \
- $(OSIOBJDIR)/src/libOsi.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la
+ 
+libGamsCoin_la_LDFLAGS += `cat $(OSIOBJDIR)/osi_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
 if COIN_HAS_CBC
-  libGamsCoin_la_LIBADD       += \
+  libGamsCoin_la_LIBADD  += \
    $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
    $(CBCOBJDIR)/src/libCbc.la \
    $(CGLOBJDIR)/src/libCgl.la \
    $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
-   $(CLPOBJDIR)/src/libClp.la \
-   `cat $(CGLOBJDIR)/cgl_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt`
-  libGamsCoin_la_DEPENDENCIES += \
-   $(OSIOBJDIR)/src/OsiCbc/libOsiCbc.la \
-   $(CBCOBJDIR)/src/libCbc.la \
-   $(CGLOBJDIR)/src/libCgl.la \
-   $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
-   $(CLPOBJDIR)/src/libClp.la  
+   $(CLPOBJDIR)/src/libClp.la
+  libGamsCoin_la_LDFLAGS += `cat $(CGLOBJDIR)/cgl_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt`
 
-  AM_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCbc` \
+  libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCbc` \
    -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
    -I`$(CYGPATH_W) $(CBCOBJDIR)/inc`
 endif
 
 if COIN_HAS_CPX
-  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
-  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
-
-  AM_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCpx` -I`$(CYGPATH_W) $(CPXINCDIR)`
+  libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
+  libGamsCoin_la_LDFLAGS  += $(CPXLIB)
+  libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCpx` -I`$(CYGPATH_W) $(CPXINCDIR)`
 
 if GAMSIO_IS_UNIX
-  noinst_PROGRAMS     += gmsocpux.out
-  gmsocpux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-  gmsocpux_out_SOURCES = gmsocp.cpp
-  gmsocpux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-  gamsinstallfiles    += gmsocpux.out gmsocpus.run install/gmsocpun.dat
+  noinst_PROGRAMS      += gmsocpux.out
+  gmsocpux_out_SOURCES  = gmsmain.cpp
+  gmsocpux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiCplex\" -DCREATEFUNCNAME=\"createNewGamsOsiCplex\"
+  gmsocpux_out_LDADD    = $(GMSXXX_LDADD)
+  gmsocpux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsocpux_out_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles     += gmsocpux.out gmsocpus.run install/gmsocpun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsocpnx
-  gmsocpnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-  gmsocpnx_SOURCES  = gmsocp.cpp
-  gmsocpnx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+  gmsocpnx_SOURCES  = gmsmain.cpp
+  gmsocpnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiCplex\" -DCREATEFUNCNAME=\"createNewGamsOsiCplex\"
+  gmsocpnx_LDADD    = $(GMSXXX_LDADD)
+  gmsocpnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsocpnx_DEPENDENCIES = libGamsCoin.la
   gamsinstallfiles += gmsocpnx.exe gmsocpnt.cmd install/gmsocpnt.dat
 endif
 
@@ -89,24 +86,26 @@ endif
 endif
 
 if COIN_HAS_GLPK
-  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
-  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
-  
-  AM_CPPFLAGS += -I`$(CYGPATH_W) $(GLPKINCDIR)`
+  libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+  libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(GLPKINCDIR)`
 
 if GAMSIO_IS_UNIX
-  noinst_PROGRAMS     += gmsoglux.out
-  gmsoglux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-  gmsoglux_out_SOURCES = gmsogl.cpp
-  gmsoglux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-  gamsinstallfiles    += gmsoglux.out gmsoglus.run install/gmsoglun.dat
+  noinst_PROGRAMS      += gmsoglux.out
+  gmsoglux_out_SOURCES  = gmsmain.cpp
+  gmsoglux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGlpk\" -DCREATEFUNCNAME=\"createNewGamsOsiGlpk\"
+  gmsoglux_out_LDADD    = $(GMSXXX_LDADD)
+  gmsoglux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsoglux_out_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles     += gmsoglux.out gmsoglus.run install/gmsoglun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsoglnx
-  gmsoglnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-  gmsoglnx_SOURCES  = gmsogl.cpp
-  gmsoglnx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+  gmsoglnx_SOURCES  = gmsmain.cpp
+  gmsoglnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGlpk\" -DCREATEFUNCNAME=\"createNewGamsOsiGlpk\"
+  gmsoglnx_LDADD    = $(GMSXXX_LDADD)
+  gmsoglnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsoglnx_DEPENDENCIES = libGamsCoin.la
   gamsinstallfiles += gmsoglnx.exe gmsoglnt.cmd install/gmsoglnt.dat
 endif
 
@@ -114,24 +113,27 @@ endif
 endif
 
 if COIN_HAS_GRB
-  libGamsCoin_la_SOURCES      += OsiGrbSolverInterface.cpp
-  libGamsCoin_la_LIBADD       += $(GRBLIB)
-  
-  AM_CPPFLAGS += -I`$(CYGPATH_W) $(GRBINCDIR)`
+  libGamsCoin_la_SOURCES  += OsiGrbSolverInterface.cpp
+  libGamsCoin_la_LDFLAGS  += $(GRBLIB)
+  libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(GRBINCDIR)`
 
 if GAMSIO_IS_UNIX
-  noinst_PROGRAMS     += gmsoguux.out
-  gmsoguux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-  gmsoguux_out_SOURCES = gmsogu.cpp
-  gmsoguux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-  gamsinstallfiles    += gmsoguux.out gmsoguus.run install/gmsoguun.dat
+  noinst_PROGRAMS      += gmsoguux.out
+  gmsoguux_out_SOURCES  = gmsmain.cpp
+  gmsoguux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGurobi\" -DCREATEFUNCNAME=\"createNewGamsOsiGurobi\"
+  gmsoguux_out_LDADD    = $(GMSXXX_LDADD)
+  gmsoguux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsoguux_out_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles     += gmsoguux.out gmsoguus.run install/gmsoguun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsogunx
-  gmsogunx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-  gmsogunx_SOURCES  = gmsogu.cpp
-  gmsogunx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+  gmsogunx_SOURCES  = gmsmain.cpp
+  gmsogunx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGurobi\" -DCREATEFUNCNAME=\"createNewGamsOsiGurobi\"
+  gmsogunx_LDADD    = $(GMSXXX_LDADD)
+  gmsogunx_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsogunx_DEPENDENCIES = libGamsCoin.la
   gamsinstallfiles += gmsogunx.exe gmsogunt.cmd install/gmsogunt.dat
 endif
 
@@ -139,24 +141,27 @@ endif
 endif
 
 if COIN_HAS_MSK
-  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiMsk/libOsiMsk.la $(MSKLIB)
-  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiMsk/libOsiMsk.la
-
-  AM_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiMsk` -I`$(CYGPATH_W) $(MSKINCDIR)`
+  libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiMsk/libOsiMsk.la
+  libGamsCoin_la_LDFLAGS  += $(MSKLIB)
+  libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiMsk` -I`$(CYGPATH_W) $(MSKINCDIR)`
 
 if GAMSIO_IS_UNIX
-  noinst_PROGRAMS     += gmsomsux.out
-  gmsomsux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-  gmsomsux_out_SOURCES = gmsoms.cpp
-  gmsomsux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-  gamsinstallfiles    += gmsomsux.out gmsomsus.run install/gmsomsun.dat
+  noinst_PROGRAMS      += gmsomsux.out
+  gmsomsux_out_SOURCES  = gmsmain.cpp
+  gmsomsux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiMosek\" -DCREATEFUNCNAME=\"createNewGamsOsiMosek\"
+  gmsomsux_out_LDADD    = $(GMSXXX_LDADD)
+  gmsomsux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsomsux_out_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles     += gmsomsux.out gmsomsus.run install/gmsomsun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsomsnx
-  gmsomsnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-  gmsomsnx_SOURCES  = gmsoms.cpp
-  gmsomsnx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+  gmsomsnx_SOURCES  = gmsmain.cpp
+  gmsomsnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiMosek\" -DCREATEFUNCNAME=\"createNewGamsOsiMosek\"
+  gmsomsnx_LDADD    = $(GMSXXX_LDADD)
+  gmsomsnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsomsnx_DEPENDENCIES = libGamsCoin.la
   gamsinstallfiles += gmsomsnx.exe gmsomsnt.cmd install/gmsomsnt.dat
 endif
 
@@ -164,24 +169,27 @@ endif
 endif
 
 if COIN_HAS_XPR
-  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiXpr/libOsiXpr.la $(XPRLIB)
-  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiXpr/libOsiXpr.la
-
-  AM_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiXpr` -I`$(CYGPATH_W) $(XPRINCDIR)`
+  libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiXpr/libOsiXpr.la 
+  libGamsCoin_la_LDFLAGS  += $(XPRLIB)
+  libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiXpr` -I`$(CYGPATH_W) $(XPRINCDIR)`
 
 if GAMSIO_IS_UNIX
-  noinst_PROGRAMS     += gmsoxpux.out
-  gmsoxpux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-  gmsoxpux_out_SOURCES = gmsoxp.cpp
-  gmsoxpux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-  gamsinstallfiles    += gmsoxpux.out gmsoxpus.run install/gmsoxpun.dat
+  noinst_PROGRAMS      += gmsoxpux.out
+  gmsoxpux_out_SOURCES  = gmsmain.cpp
+  gmsoxpux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiXpress\" -DCREATEFUNCNAME=\"createNewGamsOsiXpress\"
+  gmsoxpux_out_LDADD    = $(GMSXXX_LDADD)
+  gmsoxpux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsoxpux_out_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles     += gmsoxpux.out gmsoxpus.run install/gmsoxpun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsoxpnx
-  gmsoxpnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-  gmsoxpnx_SOURCES  = gmsoxp.cpp
-  gmsoxpnx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+  gmsoxpnx_SOURCES  = gmsmain.cpp
+  gmsoxpnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiXpress\" -DCREATEFUNCNAME=\"createNewGamsOsiXpress\"
+  gmsoxpnx_LDADD    = $(GMSXXX_LDADD)
+  gmsoxpnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsoxpnx_DEPENDENCIES = libGamsCoin.la
   gamsinstallfiles += gmsoxpnx.exe gmsoxpnt.cmd install/gmsoxpnt.dat
 endif
 
@@ -191,9 +199,9 @@ endif
 endif
 
 if GAMSLINKS_BUILD_CBC
-libGamsCoin_la_SOURCES += GamsCbc.cpp
+libGamsCoin_la_SOURCES  += GamsCbc.cpp
 
-AM_CPPFLAGS += \
+libGamsCoin_la_CPPFLAGS += \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src` \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglClique` \
  -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglDuplicateRow` \
@@ -211,23 +219,26 @@ AM_CPPFLAGS += \
  -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
  -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
 
-libGamsCoin_la_LIBADD       += $(CBCOBJDIR)/src/libCbcSolver.la 
-libGamsCoin_la_DEPENDENCIES += $(CBCOBJDIR)/src/libCbcSolver.la
+libGamsCoin_la_LIBADD   += $(CBCOBJDIR)/src/libCbcSolver.la 
  
 if GAMSIO_IS_UNIX
-noinst_PROGRAMS     += gmscbcux.out
-gmscbcux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-gmscbcux_out_SOURCES = gmscbc.cpp
-gmscbcux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-gamsinstallfiles    += gmscbcux.out gmscbcus.run install/gmscbcun.dat
+  noinst_PROGRAMS      += gmscbcux.out
+  gmscbcux_out_SOURCES  = gmsmain.cpp
+  gmscbcux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Cbc\" -DCREATEFUNCNAME=\"createNewGamsCbc\"
+  gmscbcux_out_LDADD    = $(GMSXXX_LDADD)
+  gmscbcux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmscbcux_out_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles     += gmscbcux.out gmscbcus.run install/gmscbcun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
-noinst_PROGRAMS  += gmscbcnx
-gmscbcnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-gmscbcnx_SOURCES  = gmscbc.cpp
-gmscbcnx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-gamsinstallfiles += gmscbcnx.exe gmscbcnt.cmd install/gmscbcnt.dat
+  noinst_PROGRAMS  += gmscbcnx
+  gmscbcnx_SOURCES  = gmsmain.cpp
+  gmscbcnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Cbc\" -DCREATEFUNCNAME=\"createNewGamsCbc\"
+  gmscbcnx_LDADD    = $(GMSXXX_LDADD)
+  gmscbcnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmscbcnx_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles += gmscbcnx.exe gmscbcnt.cmd install/gmscbcnt.dat
 endif
 
 gamsinstallfiles += optcbcd.def
@@ -251,7 +262,7 @@ includecoin_HEADERS = \
   $(IPOPTSRCDIR)/src/Interfaces/IpTNLPAdapter.hpp \
   $(IPOPTSRCDIR)/src/Algorithm/IpOrigIpoptNLP.hpp
 
-AM_CPPFLAGS += \
+libGamsCoin_la_CPPFLAGS += \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \
@@ -260,23 +271,27 @@ AM_CPPFLAGS += \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/LinearSolverLoader` \
  -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
 
-libGamsCoin_la_LIBADD       += $(IPOPTOBJDIR)/src/Interfaces/libipopt.la `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
-libGamsCoin_la_DEPENDENCIES += $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
+libGamsCoin_la_LIBADD   += $(IPOPTOBJDIR)/src/Interfaces/libipopt.la 
+libGamsCoin_la_LDFLAGS  += `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
 
 if GAMSIO_IS_UNIX
-noinst_PROGRAMS     += gmsipdux.out
-gmsipdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-gmsipdux_out_SOURCES = gmsipd.cpp
-gmsipdux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-gamsinstallfiles    += gmsipdux.out gmsipdus.run install/gmsipdun.dat
+  noinst_PROGRAMS      += gmsipdux.out
+  gmsipdux_out_SOURCES  = gmsmain.cpp
+  gmsipdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Ipopt\" -DCREATEFUNCNAME=\"createNewGamsIpopt\"
+  gmsipdux_out_LDADD    = $(GMSXXX_LDADD)
+  gmsipdux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsipdux_out_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles     += gmsipdux.out gmsipdus.run install/gmsipdun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
-noinst_PROGRAMS  += gmsipdnx
-gmsipdnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-gmsipdnx_SOURCES  = gmsipd.cpp
-gmsipdnx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-gamsinstallfiles += gmsipdnx.exe gmsipdnt.cmd install/gmsipdnt.dat
+  noinst_PROGRAMS  += gmsipdnx
+  gmsipdnx_SOURCES  = gmsmain.cpp
+  gmsipdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Ipopt\" -DCREATEFUNCNAME=\"createNewGamsIpopt\"
+  gmsipdnx_LDADD    = $(GMSXXX_LDADD)
+  gmsipdnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsipdnx_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles += gmsipdnx.exe gmsipdnt.cmd install/gmsipdnt.dat
 endif
 
 EXTRA_DIST       += gmsipdnt.cmd gmsipdus.run install/gmsipdnt.dat install/gmsipdun.dat
@@ -284,33 +299,36 @@ EXTRA_DIST       += gmsipdnt.cmd gmsipdus.run install/gmsipdnt.dat install/gmsip
 endif
 
 if GAMSLINKS_BUILD_SCIP
-libGamsCoin_la_SOURCES += GamsScip.cpp
-AM_CPPFLAGS += \
+libGamsCoin_la_SOURCES  += GamsScip.cpp
+libGamsCoin_la_CPPFLAGS += \
  -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
  -I`$(CYGPATH_W) $(CLPOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(SCIPINCDIR)`
 
 if COIN_BUILD_SCIP
-libGamsCoin_la_LIBADD       += $(SCIPOBJDIR)/libcoinscip.la
-libGamsCoin_la_DEPENDENCIES += $(SCIPOBJDIR)/libcoinscip.la
+libGamsCoin_la_LIBADD   += $(SCIPOBJDIR)/libcoinscip.la
 else
-libGamsCoin_la_LIBADD       += $(SCIPLIB)
+libGamsCoin_la_LDFLAGS  += $(SCIPLIB)
 endif 
  
 if GAMSIO_IS_UNIX
-noinst_PROGRAMS     += gmsscdux.out
-gmsscdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-gmsscdux_out_SOURCES = gmsscd.cpp
-gmsscdux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-gamsinstallfiles    += gmsscdux.out gmsscdus.run install/gmsscdun.dat
+  noinst_PROGRAMS      += gmsscdux.out
+  gmsscdux_out_SOURCES  = gmsmain.cpp
+  gmsscdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Scip\" -DCREATEFUNCNAME=\"createNewGamsScip\"
+  gmsscdux_out_LDADD    = $(GMSXXX_LDADD)
+  gmsscdux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsscdux_out_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles     += gmsscdux.out gmsscdus.run install/gmsscdun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
-noinst_PROGRAMS  += gmsscdnx
-gmsscdnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-gmsscdnx_SOURCES  = gmsscd.cpp
-gmsscdnx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-gamsinstallfiles += gmsscdnx.exe gmsscdnt.cmd install/gmsscdnt.dat
+  noinst_PROGRAMS  += gmsscdnx
+  gmsscdnx_SOURCES  = gmsmain.cpp
+  gmsscdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Scip\" -DCREATEFUNCNAME=\"createNewGamsScip\"
+  gmsscdnx_LDADD    = $(GMSXXX_LDADD)
+  gmsscdnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsscdnx_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles += gmsscdnx.exe gmsscdnt.cmd install/gmsscdnt.dat
 endif
 
 EXTRA_DIST       += gmsscdnt.cmd gmsscdus.run install/gmsscdnt.dat install/gmsscdun.dat
@@ -319,29 +337,32 @@ endif
 if GAMSLINKS_BUILD_BONMIN
 libGamsCoin_la_SOURCES += GamsBonmin.cpp GamsMINLP.cpp
 
-AM_CPPFLAGS += \
+libGamsCoin_la_CPPFLAGS += \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms` \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Interfaces` \
  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/CbcBonmin` \
  -I`$(CYGPATH_W) $(BONMINOBJDIR)/inc`
 
-libGamsCoin_la_LIBADD       += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
-libGamsCoin_la_DEPENDENCIES += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
+libGamsCoin_la_LIBADD   += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
 
 if GAMSIO_IS_UNIX
-noinst_PROGRAMS     += gmsbmdux.out
-gmsbmdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-gmsbmdux_out_SOURCES = gmsbmd.cpp
-gmsbmdux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-gamsinstallfiles    += gmsbmdux.out gmsbmdus.run install/gmsbmdun.dat
+  noinst_PROGRAMS      += gmsbmdux.out
+  gmsbmdux_out_SOURCES  = gmsmain.cpp
+  gmsbmdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Bonmin\" -DCREATEFUNCNAME=\"createNewGamsBonmin\"
+  gmsbmdux_out_LDADD    = $(GMSXXX_LDADD)
+  gmsbmdux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsbmdux_out_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles     += gmsbmdux.out gmsbmdus.run install/gmsbmdun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
-noinst_PROGRAMS  += gmsbmdnx
-gmsbmdnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-gmsbmdnx_SOURCES  = gmsbmd.cpp
-gmsbmdnx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-gamsinstallfiles += gmsbmdnx.exe gmsbmdnt.cmd install/gmsbmdnt.dat
+  noinst_PROGRAMS  += gmsbmdnx
+  gmsbmdnx_SOURCES  = gmsmain.cpp
+  gmsbmdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Bonmin\" -DCREATEFUNCNAME=\"createNewGamsBonmin\"
+  gmsbmdnx_LDADD    = $(GMSXXX_LDADD)
+  gmsbmdnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsbmdnx_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles += gmsbmdnx.exe gmsbmdnt.cmd install/gmsbmdnt.dat
 endif
 
 EXTRA_DIST       += gmsbmdnt.cmd gmsbmdus.run install/gmsbmdnt.dat install/gmsbmdun.dat
@@ -349,17 +370,16 @@ EXTRA_DIST       += gmsbmdnt.cmd gmsbmdus.run install/gmsbmdnt.dat install/gmsbm
 endif
 
 if GAMSLINKS_BUILD_GLPK
-AM_CPPFLAGS += \
+libGamsCoin_la_CPPFLAGS += \
  -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
  -I`$(CYGPATH_W) $(GLPKINCDIR)`
-libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
-libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
+libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 endif
 
 if GAMSLINKS_BUILD_COUENNE
 libGamsCoin_la_SOURCES += GamsCouenne.cpp
 
-AM_CPPFLAGS += \
+libGamsCoin_la_CPPFLAGS += \
   -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms/OaGenerators` \
   -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms/Branching` \
   -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglLandP` \
@@ -378,23 +398,26 @@ AM_CPPFLAGS += \
 	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src` \
 	-I`$(CYGPATH_W) $(COUENNEOBJDIR)/inc`
 	
-libGamsCoin_la_LIBADD       += $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src/main/libBonCouenne.la
-libGamsCoin_la_DEPENDENCIES += $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src/main/libBonCouenne.la
+libGamsCoin_la_LIBADD += $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src/main/libBonCouenne.la
 
 if GAMSIO_IS_UNIX
-noinst_PROGRAMS     += gmscouux.out
-gmscouux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-gmscouux_out_SOURCES = gmscou.cpp
-gmscouux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-gamsinstallfiles    += gmscouux.out gmscouus.run install/gmscouun.dat
+  noinst_PROGRAMS      += gmscouux.out
+  gmscouux_out_SOURCES  = gmsmain.cpp
+  gmscouux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Couenne\" -DCREATEFUNCNAME=\"createNewGamsCouenne\"
+  gmscouux_out_LDADD    = $(GMSXXX_LDADD)
+  gmscouux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmscouux_out_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles     += gmscouux.out gmscouus.run install/gmscouun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
-noinst_PROGRAMS  += gmscounx
-gmscounx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-gmscounx_SOURCES  = gmscou.cpp
-gmscounx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-gamsinstallfiles += gmscounx.exe gmscount.cmd install/gmscount.dat
+  noinst_PROGRAMS  += gmscounx
+  gmscounx_SOURCES  = gmsmain.cpp
+  gmscounx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Couenne\" -DCREATEFUNCNAME=\"createNewGamsCouenne\"
+  gmscounx_LDADD    = $(GMSXXX_LDADD)
+  gmscounx_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmscounx_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles += gmscounx.exe gmscount.cmd install/gmscount.dat
 endif
 
 EXTRA_DIST       += gmscount.cmd gmscouus.run install/gmscount.dat install/gmscouun.dat
@@ -404,7 +427,7 @@ endif
 if GAMSLINKS_BUILD_OS
 libGamsCoin_la_SOURCES += GamsOS.cpp Gams2OSiL.cpp OSrL2Gams.cpp
 
-AM_CPPFLAGS += \
+libGamsCoin_la_CPPFLAGS += \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src` \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSCommonInterfaces` \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSUtils` \
@@ -415,61 +438,58 @@ AM_CPPFLAGS += \
 
 #OSSolverInterface.la need to come before OSCommonInterfaces.la
 if COIN_OS_SOLVER
-  AM_CPPFLAGS   += -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSSolverInterfaces`
-  libGamsCoin_la_LIBADD       += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
-  libGamsCoin_la_DEPENDENCIES += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
+  libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSSolverInterfaces`
+  libGamsCoin_la_LIBADD   += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
 endif
 
-libGamsCoin_la_LIBADD += \
+libGamsCoin_la_LIBADD  += \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
  $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
  $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
- $(OSOBJDIR)/src/OSAgent/libOSAgent.la \
- `cat $(OSOBJDIR)/os_addlibs.txt`
-
-libGamsCoin_la_DEPENDENCIES += \
- $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
- $(OSOBJDIR)/src/OSAgent/libOSAgent.la \
- $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
- $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la
+ $(OSOBJDIR)/src/OSAgent/libOSAgent.la
+libGamsCoin_la_LDFLAGS += `cat $(OSOBJDIR)/os_addlibs.txt`
 
 if COIN_OS_SOLVER
 if COIN_HAS_CPX
   #might be duplicated if GAMSLINKS_BUILD_CBC is true
-  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la $(CPXLIB)
-  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
+  libGamsCoin_la_LIBADD  += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
+  libGamsCoin_la_LDFLAGS += $(CPXLIB)
 endif
 
 if COIN_HAS_DYLP
-  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la $(DYLPOBJDIR)/src/Dylp/libDylp.la `cat $(DYLPOBJDIR)/dylp_addlibs.txt`
-  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la $(DYLPOBJDIR)/src/Dylp/libDylp.la
+  libGamsCoin_la_LIBADD  += $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la $(DYLPOBJDIR)/src/Dylp/libDylp.la
+  libGamsCoin_la_LDFLAGS += `cat $(DYLPOBJDIR)/dylp_addlibs.txt`
 endif  
 
 if COIN_HAS_VOL
-  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiVol/libOsiVol.la $(VOLOBJDIR)/src/libVol.la `cat $(VOLOBJDIR)/vol_addlibs.txt`
-  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiVol/libOsiVol.la $(VOLOBJDIR)/src/libVol.la
+  libGamsCoin_la_LIBADD  += $(OSIOBJDIR)/src/OsiVol/libOsiVol.la $(VOLOBJDIR)/src/libVol.la
+  libGamsCoin_la_LDFLAGS += `cat $(VOLOBJDIR)/vol_addlibs.txt`
 endif
 
 if COIN_HAS_SYMPHONY
-  libGamsCoin_la_LIBADD       += $(OSIOBJDIR)/src/OsiSym/libOsiSym.la $(SYMPHONYOBJDIR)/src/libSym.la `cat $(SYMPHONYOBJDIR)/sym_addlibs.txt`
-  libGamsCoin_la_DEPENDENCIES += $(OSIOBJDIR)/src/OsiSym/libOsiSym.la $(SYMPHONYOBJDIR)/src/libSym.la
+  libGamsCoin_la_LIBADD  += $(OSIOBJDIR)/src/OsiSym/libOsiSym.la $(SYMPHONYOBJDIR)/src/libSym.la
+  libGamsCoin_la_LDFLAGS += `cat $(SYMPHONYOBJDIR)/sym_addlibs.txt`
 endif
 endif
 
 if GAMSIO_IS_UNIX
-noinst_PROGRAMS     += gmsosdux.out
-gmsosdux_out_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-gmsosdux_out_SOURCES = gmsosd.cpp
-gmsosdux_out_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-gamsinstallfiles    += gmsosdux.out gmsosdus.run install/gmsosdun.dat
+  noinst_PROGRAMS      += gmsosdux.out
+  gmsosdux_out_SOURCES  = gmsmain.cpp
+  gmsosdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OS\" -DCREATEFUNCNAME=\"createNewGamsOS\"
+  gmsosdux_out_LDADD    = $(GMSXXX_LDADD)
+  gmsosdux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsosdux_out_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles     += gmsosdux.out gmsosdus.run install/gmsosdun.dat
 endif
 
 if GAMSIO_IS_WINDOWS
-noinst_PROGRAMS  += gmsosdnx
-gmsosdnx_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
-gmsosdnx_SOURCES  = gmsosd.cpp
-gmsosdnx_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-gamsinstallfiles += gmsosdnx.exe gmsosdnt.cmd install/gmsosdnt.dat
+  noinst_PROGRAMS  += gmsosdnx
+  gmsosdnx_SOURCES  = gmsmain.cpp
+  gmsosdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OS\" -DCREATEFUNCNAME=\"createNewGamsOS\"
+  gmsosdnx_LDADD    = $(GMSXXX_LDADD)
+  gmsosdnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmsosdnx_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles += gmsosdnx.exe gmsosdnt.cmd install/gmsosdnt.dat
 endif
 
 gamsinstallfiles += optosd.def
