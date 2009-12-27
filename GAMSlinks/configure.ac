@@ -220,6 +220,13 @@ fi
 AC_COIN_USE_GAMS
 AC_DEFINE_UNQUOTED([GAMSIO_PATH],["$gamsio_srcdir"],[The path of the GAMS I/O libraries])
 
+# at least for running gdb phtread may need be required to link into executables
+case $GAMSIO_CODE in
+  LNX | LEG | LX3 | LEI | SIG | DII | DIG )
+      GAMS_ADDLIBS="-lpthread $GAMS_ADDLIBS"
+    ;;
+esac
+
 CIA_FLAG=""
 case $build in
   x86_64-*-linux-*)
