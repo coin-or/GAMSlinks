@@ -3213,6 +3213,7 @@ try_dlopen (phandle, filename)
 	 the status flag, and bail out.  */
       if (!file)
 	{
+      	printf("could not find file %s\n", filename);
 	  LT_DLMUTEX_SETERROR (LT_DLSTRERROR (FILE_NOT_FOUND));
 	  ++errors;
 	  goto cleanup;

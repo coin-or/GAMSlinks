@@ -96,9 +96,9 @@ int main (int argc, char* argv[]) {
   smagReadModel (prob);
 
 #ifdef GAMS_BUILD
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinBonmin MINLP Solver (Bonmin Library 1.1)\nwritten by P. Bonami\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinBonmin MINLP Solver (Bonmin Library 1.3)\nwritten by P. Bonami\n");
 #else
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Bonmin MINLP Solver (Bonmin Library 1.1)\nwritten by P. Bonami\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/Bonmin MINLP Solver (Bonmin Library 1.3)\nwritten by P. Bonami\n");
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 

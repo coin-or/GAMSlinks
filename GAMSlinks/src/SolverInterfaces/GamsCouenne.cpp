@@ -101,9 +101,9 @@ GamsCouenne::GamsCouenne()
 : gmo(NULL), gev(NULL), gamscbc(NULL)
 {
 #ifdef GAMS_BUILD
-	strcpy(couenne_message, "GAMS/Couenne (Couenne Library 0.2)\nwritten by P. Belotti\n");
+	strcpy(couenne_message, "GAMS/Couenne (Couenne Library 0.3)\nwritten by P. Belotti\n");
 #else
-	strcpy(couenne_message, "GAMS/Couenne (Couenne Library 0.2)\nwritten by P. Belotti\n");
+	strcpy(couenne_message, "GAMS/Couenne (Couenne Library 0.3)\nwritten by P. Belotti\n");
 #endif
 }
 
