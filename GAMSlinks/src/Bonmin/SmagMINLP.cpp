@@ -328,7 +328,6 @@ bool SMAG_MINLP::eval_g (Index n, const Number *x, bool new_x, Index m, Number *
 bool SMAG_MINLP::eval_jac_g (Index n, const Number *x, bool new_x,
 	    Index m, Index nele_jac, Index *iRow, Index *jCol, Number *values) {
   if (values == NULL) {
-    assert(NULL==x);
     assert(NULL!=iRow);
     assert(NULL!=jCol);
     smagConGradRec_t* cGrad;
