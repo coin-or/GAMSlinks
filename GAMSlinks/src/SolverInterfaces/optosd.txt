@@ -11,7 +11,7 @@ For documentation of GAMS parameters, see the <A href="http://www.gams.com/docs/
 
 solver
 Specifies the solver that is used to solve an instance.
-Valid values are Clp, Cbc, Glpk, Ipopt, Bonmin, Couenne, none.
+Valid values are clp, cbc, glpk, ipopt, bonmin, couenne, none.
 If 'none' is specified, then solving is skipped. This value is only valid for a local solve. 
 
 

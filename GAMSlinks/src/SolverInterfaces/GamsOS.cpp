@@ -24,8 +24,11 @@
 #ifdef COIN_HAS_IPOPT
 #include "OSIpoptSolver.h"
 #endif
-#ifdef COIN_HAS_IPOPT
+#ifdef COIN_HAS_BONMIN
 #include "OSBonminSolver.h"
+#endif
+#ifdef COIN_HAS_COUENNE
+#include "OSCouenneSolver.h"
 #endif
 #endif
 
@@ -192,6 +195,9 @@ std::string GamsOS::getSolverName(bool isnonlinear, bool isdiscrete) {
 #ifdef COIN_HAS_BONMIN
 			return "bonmin";
 #endif
+#ifdef COIN_HAS_COUENNE
+			return "couenne";
+#endif
 			gevLogStat(gev, "Error: No MINLP solver with OS interface available.");
 		} else { // NLP
 #ifdef COIN_HAS_IPOPT
@@ -287,6 +293,15 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 			gmoSolveStatSet(gmo, SolveStat_Capability);
 			return false;
+#endif
+      } else if (solvername.find("couenne") != std::string::npos) {
+#ifdef COIN_HAS_COUENNE
+         solver = new CouenneSolver();
+#else
+         gevLogStat(gev, "Error: Couenne not available.");
+         gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+         gmoSolveStatSet(gmo, SolveStat_Capability);
+         return false;
 #endif
 #ifdef GMODEVELOP
 		}	else if (solvername.find("gmo") != std::string::npos) {
