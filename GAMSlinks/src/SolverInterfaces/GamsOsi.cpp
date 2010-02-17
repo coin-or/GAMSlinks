@@ -248,6 +248,8 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				
 				if (MSK_makeenv(&mskenv,NULL, NULL,NULL,NULL)) {
 					gevLogStat(gev, "Failed to create Mosek environment.");
+					gmoSolveStatSet(gmo, SolveStat_SetupErr);
+					gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 					return 1;
 				}
 				if (gevmoseklice(gev,mskenv,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo), 0, &initType))
@@ -255,6 +257,8 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				
 				if (MSK_initenv(mskenv)) {
 					gevLogStat(gev, "Failed to initialize Mosek environment.");
+					gmoSolveStatSet(gmo, SolveStat_SetupErr);
+					gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 					return 1;
 				}
 				osi = new OsiMskSolverInterface(mskenv);
@@ -302,6 +306,8 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	} catch (CoinError error) {
 		gevLogStatPChar(gev, "Exception caught when creating Osi interface: ");
 		gevLogStat(gev, error.message().c_str());
+		gmoSolveStatSet(gmo, SolveStat_SetupErr);
+		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		return 1;
 	} catch (...) {
 		gevLogStat(gev, "Unknown exception caught when creating Osi interface\n");
