@@ -109,7 +109,8 @@ if GAMSIO_IS_WINDOWS
   gamsinstallfiles += gmsoglnx.exe gmsoglnt.cmd install/gmsoglnt.dat
 endif
 
-  EXTRA_DIST       += gmsoglnt.cmd gmsoglus.run install/gmsoglnt.dat install/gmsoglun.dat
+  gamsinstallfiles += optosiglpk.def
+  EXTRA_DIST       += optosiglpk.def optosiglpk.gms optosiglpk.txt gmsoglnt.cmd gmsoglus.run install/gmsoglnt.dat install/gmsoglun.dat
 endif
 
 if COIN_HAS_GRB

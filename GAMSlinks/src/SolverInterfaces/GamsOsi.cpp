@@ -80,6 +80,12 @@ extern "C" void STDCALL XPRScommand(XPRSprob, char*);
 #include "mosek.h"
 #endif
 
+static int glpkprint(void* info, const char* msg) {
+  assert(info != NULL);
+  gevLogStatPChar((gevHandle_t)info, msg);
+  return 1;
+}
+
 GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 : gmo(NULL), gev(NULL), msghandler(NULL), osi(NULL), solverid(solverid_)
 {
@@ -88,9 +94,9 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 #ifdef COIN_HAS_CBC
 		case CBC:
 #ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/OsiCbc (Osi library 0.101, CBC library 2.4)\nwritten by J. Forrest\n");
+			sprintf(osi_message, "GAMS/OsiCbc (Osi library 0.102, CBC library 2.4)\nwritten by J. Forrest\n");
 #else
-			sprintf(osi_message, "GAMS/OsiCbc (Osi library 0.101, CBC library 2.4)\nwritten by J. Forrest\n");
+			sprintf(osi_message, "GAMS/OsiCbc (Osi library 0.102, CBC library 2.4)\nwritten by J. Forrest\n");
 #endif
 			break;
 #endif
@@ -98,29 +104,29 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 #ifdef COIN_HAS_CPX
 		case CPLEX:
 #ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/OsiCplex (Osi library 0.101, CPLEX library %.2f)\nOsi link written by T. Achterberg\n", CPX_VERSION/100.);
+			sprintf(osi_message, "GAMS/OsiCplex (Osi library 0.102, CPLEX library %.2f)\nOsi link written by T. Achterberg\n", CPX_VERSION/100.);
 #else
-			sprintf(osi_message, "GAMS/OsiCplex (Osi library 0.101, CPLEX library %.2f)\nOsi link written by T. Achterberg\n", CPX_VERSION/100.);
+			sprintf(osi_message, "GAMS/OsiCplex (Osi library 0.102, CPLEX library %.2f)\nOsi link written by T. Achterberg\n", CPX_VERSION/100.);
 #endif
 			break;
 #endif
 
 #ifdef COIN_HAS_GLPK
-      case GLPK:
+		case GLPK:
 #ifdef GAMS_BUILD
-         sprintf(osi_message, "GAMS/OsiGlpk (Osi library 0.101, GLPK library %d.%d)\nOsi link written by Vivian De Smedt and Braden Hunsaker\n", GLP_MAJOR_VERSION, GLP_MINOR_VERSION);
+		  sprintf(osi_message, "GAMS/OsiGlpk (Osi library 0.102, GLPK library %d.%d)\nOsi link written by Vivian De Smedt and Braden Hunsaker\n", GLP_MAJOR_VERSION, GLP_MINOR_VERSION);
 #else
-         sprintf(osi_message, "GAMS/OsiGlpk (Osi library 0.101, GLPK library %d.%d)\nOsi link written by Vivian De Smedt and Braden Hunsaker\n", GLP_MAJOR_VERSION, GLP_MINOR_VERSION);
+		  sprintf(osi_message, "GAMS/OsiGlpk (Osi library 0.102, GLPK library %d.%d)\nOsi link written by Vivian De Smedt and Braden Hunsaker\n", GLP_MAJOR_VERSION, GLP_MINOR_VERSION);
 #endif
-         break;
+		  break;
 #endif
 
 #ifdef COIN_HAS_GRB
 		case GUROBI:
 #ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/OsiGurobi (Osi library 0.101, GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
+			sprintf(osi_message, "GAMS/OsiGurobi (Osi library 0.102, GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
 #else
-			sprintf(osi_message, "GAMS/OsiGurobi (Osi library 0.101, GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
+			sprintf(osi_message, "GAMS/OsiGurobi (Osi library 0.102, GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
 #endif
 			break;
 #endif
@@ -128,9 +134,9 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 #ifdef COIN_HAS_MSK
 		case MOSEK:
 #ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/OsiMosek (Osi library 0.101, MOSEK library %d.%d)\nwritten by Bo Jensen\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
+			sprintf(osi_message, "GAMS/OsiMosek (Osi library 0.102, MOSEK library %d.%d)\nwritten by Bo Jensen\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
 #else
-			sprintf(osi_message, "GAMS/OsiMosek (Osi library 0.101, MOSEK library %d.%d)\nwritten Bo Jensen\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
+			sprintf(osi_message, "GAMS/OsiMosek (Osi library 0.102, MOSEK library %d.%d)\nwritten Bo Jensen\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
 #endif
 			break;
 #endif
@@ -138,9 +144,9 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 #ifdef COIN_HAS_XPR
 		case XPRESS:
 #ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/OsiXpress (Osi library 0.101, Xpress library %d)\n", XPVERSION);
+			sprintf(osi_message, "GAMS/OsiXpress (Osi library 0.102, Xpress library %d)\n", XPVERSION);
 #else
-			sprintf(osi_message, "GAMS/OsiXpress (Osi library 0.101, Xpress library %d)\n", XPVERSION);
+			sprintf(osi_message, "GAMS/OsiXpress (Osi library 0.102, Xpress library %d)\n", XPVERSION);
 #endif
 			break;
 #endif
@@ -169,6 +175,24 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1;
 
 	gev = (gevRec*)gmoEnvironment(gmo);
+
+	if (solverid == GLPK) {
+	  options.setGMO(gmo);
+	  if (opt) {
+	    options.setOpt(opt);
+	  } else {
+	    char buffer[1024];
+	    gmoNameOptFile(gmo, buffer);
+#ifdef GAMS_BUILD
+	    options.readOptionsFile("osiglpk", gmoOptFile(gmo) ? buffer : NULL);
+#else
+	    options.readOptionsFile("osiglpk", gmoOptFile(gmo) ? buffer : NULL);
+#endif
+	  }
+	  if (options.isDefined("reslim"))  gevSetDblOpt(gev, gevResLim,  options.getDouble ("reslim"));
+	  if (options.isDefined("iterlim")) gevSetIntOpt(gev, gevIterLim, options.getInteger("iterlim"));
+	  if (options.isDefined("optcr"))   gevSetDblOpt(gev, gevOptCR,   options.getDouble ("optcr"));
+	}
 
 #ifdef GAMS_BUILD
 #define GEVPTR gev 
@@ -213,14 +237,14 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #endif
 			} break;
 
-         case GLPK: {
+			case GLPK: {
 #ifdef COIN_HAS_GLPK
-            osi = new OsiGlpkSolverInterface();
+			  osi = new OsiGlpkSolverInterface();
 #else
-            gevLogStat(gev, "GamsOsi compiled without Osi/Glpk interface.\n");
-            return 1;
+			  gevLogStat(gev, "GamsOsi compiled without Osi/Glpk interface.\n");
+			  return 1;
 #endif
-         } break;
+			} break;
 
 			case GUROBI: {
 #ifdef COIN_HAS_GRB
@@ -356,6 +380,11 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 //}
 
 int GamsOsi::callSolver() {
+#ifdef COIN_HAS_GLPK
+  if (solverid == GLPK)
+    glp_term_hook(glpkprint, gev);
+#endif
+
 	double start_cputime  = CoinCpuTime();
 	double start_walltime = CoinWallclockTime();
 	
@@ -371,6 +400,11 @@ int GamsOsi::callSolver() {
 	
 	double end_cputime  = CoinCpuTime();
 	double end_walltime = CoinWallclockTime();
+
+#ifdef COIN_HAS_GLPK
+  if (solverid == GLPK)
+    glp_term_hook(NULL, NULL);
+#endif
 	
 	gevLogStat(gev, "");
 	writeSolution(end_cputime - start_cputime, end_walltime - start_walltime);
@@ -552,28 +586,100 @@ bool GamsOsi::setupParameters() {
 #endif
 
 #ifdef COIN_HAS_GLPK
-      case GLPK: {
-         OsiGlpkSolverInterface* osiglpk = dynamic_cast<OsiGlpkSolverInterface*>(osi);
-         assert(osiglpk != NULL);
-         if (reslim > 1e+6) { // GLPK cannot handle very large timelimits, so we run it without limit then
-            gevLogStat(gev, "Time limit too large. GLPK will run without timelimit.");
-            reslim = -1;
-         }
-         lpx_set_real_parm(osiglpk->getModelPtr(), LPX_K_TMLIM, reslim);
+		case GLPK: {
+		  OsiGlpkSolverInterface* osiglpk = dynamic_cast<OsiGlpkSolverInterface*>(osi);
+		  assert(osiglpk != NULL);
 
-         if (!isLP() && nodelim)
-            gevLogStat(gev, "Cannot set node limit for GLPK. Node limit ignored.");
+		  LPX* glpk_model = osiglpk->getModelPtr();
 
-         lpx_set_real_parm(osiglpk->getModelPtr(), LPX_K_MIPGAP, optcr);
-         // optca not in glpk
+		  if (reslim > 1e+6) { // GLPK cannot handle very large timelimits, so we run it without limit then
+		    gevLogStat(gev, "Time limit too large. GLPK will run without timelimit.");
+		    reslim = -1;
+		  }
+		  lpx_set_real_parm(glpk_model, LPX_K_TMLIM, reslim);
 
-         osiglpk->setHintParam(OsiDoPresolveInInitial, true, OsiForceDo); // turn on LP presolver
-         osiglpk->setHintParam(OsiDoReducePrint, false, OsiForceDo); // GLPK loglevel 3
+		  if (!isLP() && nodelim)
+		    gevLogStat(gev, "Cannot set node limit for GLPK. Node limit ignored.");
 
-         if (gmoOptFile(gmo))
-            gevLogStat(gev, "Cannot pass option file to GLPK. Option file ignored.");
+		  lpx_set_real_parm(glpk_model, LPX_K_MIPGAP, optcr);
+		  // optca not in glpk
 
-      } break;
+		  osiglpk->setHintParam(OsiDoReducePrint, false, OsiForceDo); // GLPK loglevel 3
+
+      // GLPK LP parameters
+
+		  if (!osiglpk->setIntParam(OsiMaxNumIteration, options.getInteger("iterlim")))
+		    gevLogStat(gev, "Failed to set iteration limit for GLPK.");
+
+		  if (!osiglpk->setDblParam(OsiDualTolerance, options.getDouble("tol_dual")))
+		    gevLogStat(gev, "Failed to set dual tolerance for GLPK.");
+
+		  if (!osiglpk->setDblParam(OsiPrimalTolerance, options.getDouble("tol_primal")))
+		    gevLogStat(gev, "Failed to set primal tolerance for GLPK.");
+
+		  // more parameters
+		  char buffer[255];
+		  options.getString("scaling", buffer);
+		  if (strcmp(buffer, "off")==0)
+		    lpx_set_int_parm(glpk_model, LPX_K_SCALE, 0);
+		  else if (strcmp(buffer, "equilibrium")==0)
+		    lpx_set_int_parm(glpk_model, LPX_K_SCALE, 1);
+		  else if (strcmp(buffer, "mean")==0)
+		    lpx_set_int_parm(glpk_model, LPX_K_SCALE, 2);
+		  else if (strcmp(buffer, "meanequilibrium")==0)
+		    lpx_set_int_parm(glpk_model, LPX_K_SCALE, 3); // default (set in OsiGlpk)
+
+		  options.getString("startalg", buffer);
+		  osiglpk->setHintParam(OsiDoDualInInitial, (strcmp(buffer, "dual")==0), OsiForceDo);
+
+		  osiglpk->setHintParam(OsiDoPresolveInInitial, options.getBool("presolve"), OsiForceDo);
+
+		  options.getString("pricing", buffer);
+		  if (strcmp(buffer, "textbook")==0)
+		    lpx_set_int_parm(glpk_model, LPX_K_PRICE, 0);
+		  else if (strcmp(buffer, "steepestedge")==0)
+		    lpx_set_int_parm(glpk_model, LPX_K_PRICE, 1); // default
+
+		  options.getString("factorization", buffer);
+		  if (strcmp(buffer, "forresttomlin")==0)
+		    lpx_set_int_parm(glpk_model, LPX_K_BFTYPE, 1);
+		  else if (strcmp(buffer, "bartelsgolub")==0)
+		    lpx_set_int_parm(glpk_model, LPX_K_BFTYPE, 2);
+		  else if (strcmp(buffer, "givens")==0)
+		    lpx_set_int_parm(glpk_model, LPX_K_BFTYPE, 3);
+
+		  // GLPK MIP parameters
+
+		  options.getString("backtracking", buffer);
+		  if (strcmp(buffer, "depthfirst")==0)
+		    lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 0);
+		  else if (strcmp(buffer, "breadthfirst")==0)
+		    lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 1);
+		  else if (strcmp(buffer, "bestprojection")==0)
+		    lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 2);
+
+		  int cutindicator=0;
+		  switch (options.getInteger("cuts")) {
+		    case -1 : break; // no cuts
+		    case  1 : cutindicator=LPX_C_ALL; break; // all cuts
+		    case  0 : // user defined cut selection
+		      if (options.getBool("covercuts")) cutindicator|=LPX_C_COVER;
+		      if (options.getBool("cliquecuts")) cutindicator|=LPX_C_CLIQUE;
+		      if (options.getBool("gomorycuts")) cutindicator|=LPX_C_GOMORY;
+		      if (options.getBool("mircuts")) cutindicator|=LPX_C_MIR;
+		      break;
+		    default: ;
+		  }
+		  lpx_set_int_parm(glpk_model, LPX_K_USECUTS, cutindicator);
+
+		  double tol_integer=options.getDouble("tol_integer");
+		  if (tol_integer>0.001) {
+		    gevLog(gev, "Cannot use tol_integer of larger then 0.001. Setting integer tolerance to 0.001.");
+		    tol_integer=0.001;
+		  }
+		  lpx_set_real_parm(glpk_model, LPX_K_TOLINT, tol_integer);
+
+		} break;
 #endif
 
 #ifdef COIN_HAS_GRB

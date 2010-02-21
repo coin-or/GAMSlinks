@@ -23,6 +23,8 @@ private:
 	struct gmoRec* gmo;
 	struct gevRec* gev;
 
+	GamsOptions    options;
+
 	GamsMessageHandler* msghandler;
 	OsiSolverInterface* osi;
 	OSISOLVER           solverid;

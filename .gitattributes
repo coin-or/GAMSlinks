@@ -264,6 +264,10 @@ GAMSlinks/src/SolverInterfaces/optosd.def -text
 GAMSlinks/src/SolverInterfaces/optosd.gms -text
 GAMSlinks/src/SolverInterfaces/optosd.html -text
 GAMSlinks/src/SolverInterfaces/optosd.txt -text
+GAMSlinks/src/SolverInterfaces/optosiglpk.def -text
+GAMSlinks/src/SolverInterfaces/optosiglpk.gms -text
+GAMSlinks/src/SolverInterfaces/optosiglpk.html -text
+GAMSlinks/src/SolverInterfaces/optosiglpk.txt -text
 GAMSlinks/test/Makefile.am -text
 GAMSlinks/test/Makefile.in -text
 GAMSlinks/test/run_gmstest.in -text

@@ -1,0 +1,319 @@
+<html>
+<head>
+<title>OSIGLPK Options</title>
+</head>
+<body>
+<h2>OSIGLPK Options</h2>
+GAMS/OsiGlpk brings the open source LP/MIP solver Glpk from the GNU Open Software foundation to the broad audience of GAMS users.
+The code has been written primarily by A. Makhorin.
+The GAMS interface for Glpk is maintained by Stefan Vigerske, Humboldt University, in a COIN-OR project called GAMSlinks.
+The interface uses the OSI Glpk interface written by Vivian De Smedt, Braden Hunsaker, and Lou Hafer.<BR>
+For more information visit the web site for
+<a href="http://www.coin-or.org">COIN-OR</a>,
+<a href="https://projects.coin-or.org/Osi">OSI<a>,
+<a href="http://www.gnu.org/software/glpk/glpk.html">Glpk<a>, and
+<a href="https://projects.coin-or.org/GAMSlinks">GAMSlinks</a>.<BR>
+For documentation of GAMS parameters, see the <A href="http://www.gams.com/docs/parame.htm">GAMS parameters documentation</A>.
+<p>For more information about this solver please inspect the
+complete <a href="docs/solvers/coin.pdf">OSIGLPK manual</a>.
+
+<h2>Summary of OSIGLPK Options</h2>
+<table>
+<tr><th height=75 valign=bottom colspan=2 align=left><h3>General Options</h3></th></tr>
+<tr><td><a href="#backtracking">
+backtracking</a></td>
+<td>backtracking heuristic</td></tr>
+<tr><td><a href="#cliquecuts">
+cliquecuts</a></td>
+<td>clique cuts</td></tr>
+<tr><td><a href="#covercuts">
+covercuts</a></td>
+<td>cover cuts</td></tr>
+<tr><td><a href="#cuts">
+cuts</a></td>
+<td>turning on or off all cut generators</td></tr>
+<tr><td><a href="#factorization">
+factorization</a></td>
+<td>basis factorization method</td></tr>
+<tr><td><a href="#gomorycuts">
+gomorycuts</a></td>
+<td>gomorys mixed-integer cuts</td></tr>
+<tr><td><a href="#initbasis">
+initbasis</a></td>
+<td>method for initial basis</td></tr>
+<tr><td><a href="#iterlim">
+iterlim</a></td>
+<td>iteration limit</td></tr>
+<tr><td><a href="#mircuts">
+mircuts</a></td>
+<td>mixed-integer rounding cuts</td></tr>
+<tr><td><a href="#optcr">
+optcr</a></td>
+<td>relative stopping tolerance on MIP gap</td></tr>
+<tr><td><a href="#presolve">
+presolve</a></td>
+<td>LP presolver</td></tr>
+<tr><td><a href="#pricing">
+pricing</a></td>
+<td>pricing method</td></tr>
+<tr><td><a href="#reslim">
+reslim</a></td>
+<td>resource limit</td></tr>
+<tr><td><a href="#scaling">
+scaling</a></td>
+<td>scaling method</td></tr>
+<tr><td><a href="#startalg">
+startalg</a></td>
+<td>LP solver for root node</td></tr>
+<tr><td><a href="#tol_dual">
+tol_dual</a></td>
+<td>dual feasibility tolerance</td></tr>
+<tr><td><a href="#tol_integer">
+tol_integer</a></td>
+<td>integer feasibility tolerance</td></tr>
+<tr><td><a href="#tol_primal">
+tol_primal</a></td>
+<td>primal feasibility tolerance</td></tr></table>
+<h2>Detailed Descriptions of OSIGLPK Options</h2>
+
+<h4><a name="backtracking">
+backtracking</a>
+<i> (string)</i> backtracking heuristic</h4><p>
+
+Determines which method to use for the backtracking heuristic.
+
+<br><i>(default = bestprojection)</i>
+<table>
+<tr valign="top"><td width=20 align=right>depthfirst</td><td>.
+Let GLPK use a depth first search.</td></tr>
+<tr valign="top"><td width=20 align=right>breadthfirst</td><td>.
+Let GLPK use a breadth first search.</td></tr>
+<tr valign="top"><td width=20 align=right>bestprojection</td><td>.
+Let GLPK use a best projection heuristic.</td></tr>
+</table>
+
+<h4><a name="cliquecuts">
+cliquecuts</a>
+<i> (integer)</i> clique cuts</h4><p>
+
+Whether to enable clique cuts.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turn off clique cuts</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turn on clique cuts</td></tr>
+</table>
+
+<h4><a name="covercuts">
+covercuts</a>
+<i> (integer)</i> cover cuts</h4><p>
+
+Whether to enable cover cuts.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turn off cover cuts</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turn on cover cuts</td></tr>
+</table>
+
+<h4><a name="cuts">
+cuts</a>
+<i> (integer)</i> turning on or off all cut generators</h4><p>
+
+Determines which cuts generator to use: none, all, or user-defined
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>-1</td><td>.
+Turn off all cut generators</td></tr>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turn on or off each cut generators separately</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turn on all cut generators</td></tr>
+</table>
+
+<h4><a name="factorization">
+factorization</a>
+<i> (string)</i> basis factorization method</h4><p>
+
+Sets the method for the LP basis factorization.<BR>
+If you observe that GLPK reports numerical instabilities than you could try to use a more stable factorization method.
+
+<br><i>(default = forresttomlin)</i>
+<table>
+<tr valign="top"><td width=20 align=right>forresttomlin</td><td>.
+Does a LU factorization followed by Forrest-Tomlin updates.
+This method is fast, but less stable than others.</td></tr>
+<tr valign="top"><td width=20 align=right>bartelsgolub</td><td>.
+Does a LU factorization followed by a Schur complement and Bartels-Golub updates.
+This method is slower than Forrest-Tomlin, but more stable.</td></tr>
+<tr valign="top"><td width=20 align=right>givens</td><td>.
+Does a LU factorization followed by a Schur complement and Givens rotation updates.
+This method is slower than Forrest-Tomlin, but more stable.</td></tr>
+</table>
+
+<h4><a name="gomorycuts">
+gomorycuts</a>
+<i> (integer)</i> gomorys mixed-integer cuts</h4><p>
+
+Whether to enable Gomorys mixed-integer linear cuts.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turn off gomory cuts</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turn on gomory cuts</td></tr>
+</table>
+
+<h4><a name="initbasis">
+initbasis</a>
+<i> (string)</i> method for initial basis</h4><p>
+
+Sets the method that computes the initial basis.
+Setting this option has only effect if the <a href="#presolve">presolver</a> is turned off, which is on by default.
+
+<br><i>(default = advanced)</i>
+<table>
+<tr valign="top"><td width=20 align=right>standard</td><td>.
+Uses the standard initial basis of all slacks.</td></tr>
+<tr valign="top"><td width=20 align=right>advanced</td><td>.
+Computes an advanced initial basis.</td></tr>
+<tr valign="top"><td width=20 align=right>bixby</td><td>.
+Uses Bixby's initial basis.</td></tr>
+<tr valign="top"><td width=20 align=right>user</td><td>.
+Uses basis provided by GAMS.
+Note that a feasible basis need to be given, otherwise Glpk will fail.</td></tr>
+</table>
+
+<h4><a name="iterlim">
+iterlim</a>
+<i> (integer)</i> iteration limit</h4><p>
+
+Maximum number of simplex iterations.
+
+<br><i>(default = GAMS iterlim)</i>
+
+<h4><a name="mircuts">
+mircuts</a>
+<i> (integer)</i> mixed-integer rounding cuts</h4><p>
+
+Whether to enable mixed-integer rounding cuts.
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turn off mir cuts</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turn on mir cuts</td></tr>
+</table>
+
+<h4><a name="optcr">
+optcr</a>
+<i> (real)</i> relative stopping tolerance on MIP gap</h4><p>
+
+Relative optimality criterion for a MIP.
+The search is stoped when the relative gap between the incumbent and the bound given by the LP relaxation is smaller than this value.
+
+<br><i>(default = GAMS optcr)</i>
+
+<h4><a name="presolve">
+presolve</a>
+<i> (integer)</i> LP presolver</h4><p>
+
+Determines whether the LP presolver should be used.
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turns off the LP presolver.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turns on the LP presolver.</td></tr>
+</table>
+
+<h4><a name="pricing">
+pricing</a>
+<i> (string)</i> pricing method</h4><p>
+
+Sets the pricing method for both primal and dual simplex.
+
+<br><i>(default = steepestedge)</i>
+<table>
+<tr valign="top"><td width=20 align=right>textbook</td><td>.
+Use a textbook pricing rule.</td></tr>
+<tr valign="top"><td width=20 align=right>steepestedge</td><td>.
+Use a steepest edge pricing rule.</td></tr>
+</table>
+
+<h4><a name="reslim">
+reslim</a>
+<i> (real)</i> resource limit</h4><p>
+
+Maximum time in seconds.
+
+<br><i>(default = GAMS reslim)</i>
+
+<h4><a name="scaling">
+scaling</a>
+<i> (string)</i> scaling method</h4><p>
+
+This option determines the method how the constraint matrix is scaled.
+Note that scaling is only applied when the presolver is turned off (which by default is on).
+
+<br><i>(default = meanequilibrium)</i>
+<table>
+<tr valign="top"><td width=20 align=right>off</td><td>.
+Turn off scaling.</td></tr>
+<tr valign="top"><td width=20 align=right>equilibrium</td><td>.
+Let GLPK use an equilibrium scaling method.</td></tr>
+<tr valign="top"><td width=20 align=right>mean</td><td>.
+Let GLPK use a geometric mean scaling method.</td></tr>
+<tr valign="top"><td width=20 align=right>meanequilibrium</td><td>.
+Let GLPK use first a geometric mean scaling, then an equilibrium scaling.</td></tr>
+</table>
+
+<h4><a name="startalg">
+startalg</a>
+<i> (string)</i> LP solver for root node</h4><p>
+
+This option determines whether a primal or dual simplex algorithm should be used to solve an LP or the root node of a MIP.
+
+<br><i>(default = primal)</i>
+<table>
+<tr valign="top"><td width=20 align=right>primal</td><td>.
+Let GLPK use a primal simplex algorithm.</td></tr>
+<tr valign="top"><td width=20 align=right>dual</td><td>.
+Let GLPK use a dual simplex algorithm.</td></tr>
+</table>
+
+<h4><a name="tol_dual">
+tol_dual</a>
+<i> (real)</i> dual feasibility tolerance</h4><p>
+
+Absolute tolerance used to check if the current basis solution is dual feasible.
+(Glpk manual: Do not change this parameter without detailed understanding its purpose.)
+
+<br><i>(default = 1e-7)</i>
+
+<h4><a name="tol_integer">
+tol_integer</a>
+<i> (real)</i> integer feasibility tolerance</h4><p>
+
+Absolute tolerance used to check if the current basis solution is integer feasible.
+(Glpk manual: Do not change this parameter without detailed understanding its purpose.)
+
+<br><i>(default = 1e-5)</i>
+
+<h4><a name="tol_primal">
+tol_primal</a>
+<i> (real)</i> primal feasibility tolerance</h4><p>
+
+Relative tolerance used to check if the current basis solution is primal feasible.
+(Glpk manual: Do not change this parameter without detailed understanding its purpose.)
+
+<br><i>(default = 1e-7)</i>
+</body></html>

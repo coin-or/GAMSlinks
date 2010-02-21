@@ -28974,6 +28974,11 @@ fi
 
 
 if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/optosiglpk.def"
+fi
+
+
+if test $coin_vpath_config = yes; then
   coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/gmsoguus.run"
 fi
 
