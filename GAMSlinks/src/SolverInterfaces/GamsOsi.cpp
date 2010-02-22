@@ -222,13 +222,15 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 			case CPLEX: {
 #ifdef COIN_HAS_CPX
 #ifdef GAMS_BUILD
-				int cp_l=0, cp_m=0, cp_q=0, cp_p=0;
+                                int rc, cp_l=0, cp_m=0, cp_q=0, cp_p=0;
 				CPlicenseInit_t initType;
 
 				/* Cplex license setup */
-				if (gevcplexlice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
-						gmoNDisc(gmo), 0, &initType, &cp_l, &cp_m, &cp_q, &cp_p))
-					gevLogStat(gev, "Trying to use Cplex standalone license.\n");
+                                rc = gevcplexlice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
+                                                  gmoNDisc(gmo), 0, &initType, &cp_l, &cp_m, &cp_q, &cp_p); 
+				if (rc || (0==rc && ((0==cp_m && gmoNDisc(gmo)) || (0==cp_q && gmoNLNZ(gmo)))))
+                                        gevLogStat(gev, "Trying to use Cplex standalone license.\n");
+
 #endif
 				osi = new OsiCpxSolverInterface;
 #else
@@ -269,6 +271,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #ifdef GAMS_BUILD
 				MSKenv_t mskenv;
 				MKlicenseInit_t initType;
+                                int rc;
 				
 				if (MSK_makeenv(&mskenv,NULL, NULL,NULL,NULL)) {
 					gevLogStat(gev, "Failed to create Mosek environment.");
@@ -276,7 +279,8 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 					gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 					return 1;
 				}
-				if (gevmoseklice(gev,mskenv,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo), 0, &initType))
+				rc = gevmoseklice(gev,mskenv,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo), 0, &initType);
+				if (rc || (0==rc && (MBGAMS==initType && gmoNDisc(gmo))))
 					gevLogStat(gev, "Trying to use Mosek standalone license.\n");
 				
 				if (MSK_initenv(mskenv)) {
