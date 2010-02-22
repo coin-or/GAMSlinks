@@ -1,5 +1,2054 @@
---- scip/src/scip/sepa_zerohalf.c.orig	2009-09-21 11:27:28.000000000 +0200
-+++ scip/src/scip/sepa_zerohalf.c	2009-09-21 11:30:46.000000000 +0200
+diff -aur scip/src/scip/conflict.c scip/src/scip/conflict.c
+--- scip/src/scip/conflict.c	2009-09-08 22:41:29.000000000 +0200
++++ scip/src/scip/conflict.c	2010-02-22 15:20:17.000000000 +0100
+@@ -872,12 +872,12 @@
+          bdchginfos[i-1] = bdchginfo;
+ 
+       /* remove the redundant bound change by moving the later ones one slot to the front */
++      conflictset->nbdchginfos--;
+       for( ; i < conflictset->nbdchginfos; ++i )
+       {
+          bdchginfos[i] = bdchginfos[i+1];
+          sortvals[i] = sortvals[i+1];
+       }
+-      conflictset->nbdchginfos--;
+    }
+ 
+    return SCIP_OKAY;
+diff -aur scip/src/scip/cons_linear.c scip/src/scip/cons_linear.c
+--- scip/src/scip/cons_linear.c	2009-09-11 17:18:33.000000000 +0200
++++ scip/src/scip/cons_linear.c	2010-02-22 15:20:17.000000000 +0100
+@@ -5439,6 +5439,10 @@
+       }
+    }
+ 
++   /* do not multi aggregate binary variables */
++   if( bestslacktype == SCIP_VARTYPE_BINARY )
++      return SCIP_OKAY;
++
+    /* if all coefficients and variables are integral, the right hand side must also be integral */
+    if( coefsintegral && varsintegral && !SCIPisFeasIntegral(scip, consdata->rhs) )
+    {
+@@ -9202,7 +9206,9 @@
+    ncoefs = 0;
+    var = NULL;
+ 
+-   while( getNextToken(&tokenizer) )
++   SCIPdebugMessage("start parsing linear constraint expression\n");
++
++   while( getNextToken(&tokenizer) && (*success) )
+    {
+       /* if the variable type is given ignore it */
+       if( strncmp(tokenizer.token, "[B]", 3) == 0 && strlen(tokenizer.token) == 3 )
+@@ -9244,11 +9250,27 @@
+       {
+          if( ncoefs == 0 && havevalue )
+          {
+-            assert(sense == CIP_SENSE_LE);
+-            lhs  = coef;
++            /* the constraint has no variables */
++            switch(sense)
++            {
++            case CIP_SENSE_LE:
++               lhs = coef;
++               break;
++            case CIP_SENSE_GE:
++               rhs = coef;
++               break;
++            case CIP_SENSE_EQ:
++               lhs = coef;
++               rhs = coef;
++               break;
++            default:
++               SCIPverbMessage(scip, SCIP_VERBLEVEL_MINIMAL, NULL, "Syntax error: expected unknown sense <%d>)\n", sense);
++               (*success) = FALSE;
++            }
+             sense = CIP_SENSE_NOTHING;
++            havevalue = FALSE;
+          }
+-         
++
+          continue;
+       }
+       
+@@ -9271,7 +9293,7 @@
+       /* check if we read a value */
+       if( isValue(scip, &tokenizer, &coef) )
+       {
+-         SCIPdebugMessage("read coefficient value: %g with sign %+d\n", coef, coefsign);
++         SCIPdebugMessage("read coefficient value: <%g> with sign %+d\n", coef, coefsign);
+          if( havevalue )
+          {
+             SCIPverbMessage(scip, SCIP_VERBLEVEL_MINIMAL, NULL, "Syntax error: two consecutive values");
+@@ -9977,10 +9999,16 @@
+    /* map variables of the source constraint to variables of the target SCIP */
+    for( v = 0; v < nvars && *success; ++v )
+    {
+-      vars[v] = (SCIP_VAR*) (size_t) SCIPhashmapGetImage(varmap, vars[v]);
++      SCIP_VAR* var;
++      var = vars[v];
++      vars[v] = (SCIP_VAR*) (size_t) SCIPhashmapGetImage(varmap, var);
+ 
+       if( vars[v] == NULL )
++      {
++         SCIPdebugMessage("Could not map variable <%s>, copying constraint <%s> failed \n", SCIPvarGetName(var), name);    
+          (*success) = FALSE;
++      }
++
+    }
+ 
+    if( *success )
+diff -aur scip/src/scip/cons_logicor.c scip/src/scip/cons_logicor.c
+--- scip/src/scip/cons_logicor.c	2009-09-02 12:30:43.000000000 +0200
++++ scip/src/scip/cons_logicor.c	2010-02-22 15:20:17.000000000 +0100
+@@ -12,7 +12,7 @@
+ /*  along with SCIP; see the file COPYING. If not email to scip@zib.de.      */
+ /*                                                                           */
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+-#pragma ident "@(#) $Id: cons_logicor.c,v 1.132 2009/09/02 10:30:43 bzfheinz Exp $"
++#pragma ident "@(#) $Id: cons_logicor.c,v 1.133 2009/11/23 21:05:18 bzfheinz Exp $"
+ 
+ /**@file   cons_logicor.c
+  * @ingroup CONSHDLRS 
+@@ -263,7 +263,7 @@
+    SCIPinfoMessage(scip, file, ")");
+    
+    if( endline )
+-      SCIPinfoMessage(scip, file, ")\n");
++      SCIPinfoMessage(scip, file, "\n");
+ }
+ 
+ /** stores the given variable numbers as watched variables, and updates the event processing */
+diff -aur scip/src/scip/cons_quadratic.c scip/src/scip/cons_quadratic.c
+--- scip/src/scip/cons_quadratic.c	2009-09-14 19:29:13.000000000 +0200
++++ scip/src/scip/cons_quadratic.c	2010-02-22 15:29:26.000000000 +0100
+@@ -145,15 +145,19 @@
+ {
+    SCIP_Bool             replacesqrbinary;          /**< were squares of binary variables replaced by the variable itself ? */
+    int                   replacebinaryprodlength;   /**< length of linear term which when multiplied with a binary variable is replaced by an auxiliary variable and an equivalent linear formulation */
++   int                   empathy4and;               /**< how much empathy we have for using the AND constraint handler: 0 avoid always; 1 use sometimes; 2 use as often as possible */
+    SCIP_Bool             disaggregation;            /**< should we disaggregate block separable quadratic constraints ? */
+    SCIP_Real             mincutefficacy;            /**< minimal efficacy of a cut in order to add it to relaxation */
+    SCIP_Bool             doscaling;                 /**< should constraints be scaled in the feasibility check ? */
+    SCIP_Bool             fastpropagate;             /**< should a faster but maybe less effective propagation be used ? */
+    SCIP_Real             defaultbound;              /**< a bound to set for variables that are unbounded and in a nonconvex term after presolve */
+    SCIP_Real             cutmaxrange;               /**< maximal range (maximal coef / minimal coef) of a cut in order to be added to LP */
++   SCIP_Bool             linearizenlpsol;           /**< whether convex quadratic constraints should be linearized in a solution found by the NLP or RENSNL heuristic */
+ 
+-   SCIP_HEUR*            nlpheur;                   /**< a pointer to the NLP heuristic */
++   SCIP_HEUR*            nlpheur;                   /**< a pointer to the NLP heuristic, if available */
++   SCIP_HEUR*            rensnlheur;                /**< a pointer to the RENSNL heuristic, if available */
+    SCIP_EVENTHDLR*       eventhdlr;                 /**< our handler for variable bound change events */
++   int                   newsoleventfilterpos;      /**< filter position of new solution event handler, if catched */
+ 
+    SCIP_HASHMAP*         branchcand;                /**< branching candidates */
+    VARINFEASIBILITY*     varinfeas;                 /**< list of variable infeasibilities */
+@@ -573,7 +577,8 @@
+ 
+ /** translate from one value of infinity to another
+  * 
+- *  if val is >= infty1, then give infty2, else give val */
++ *  if val is >= infty1, then give infty2, else give val
++ */
+ #define infty2infty(infty1, infty2, val) (val >= infty1 ? infty2 : val)
+ 
+ #ifndef WITH_LAPACK
+@@ -665,7 +670,6 @@
+    assert(event != NULL);
+    assert(eventdata != NULL);
+    assert(eventhdlr != NULL);
+-   /* assert(strcmp(SCIPeventhdlrGetName(eventhdlr), CONSHDLR_NAME) == 0); */
+ 
+    consdata = eventdata->consdata;
+    assert(consdata != NULL);
+@@ -734,6 +738,7 @@
+    consdata = SCIPconsGetData(cons);
+    assert(consdata != NULL);
+ 
++   consdata->isremovedfixings = TRUE;
+    SCIP_CALL( SCIPreallocMemoryArray(scip, &consdata->linbndchgeventdata, consdata->nlinvars) );
+    for( i = 0; i < consdata->nlinvars; ++i )
+    {
+@@ -741,6 +746,7 @@
+       consdata->linbndchgeventdata[i].consdata = consdata;
+       consdata->linbndchgeventdata[i].varidx = i;
+       SCIP_CALL( SCIPcatchVarEvent(scip, consdata->linvars[i], SCIP_EVENTTYPE_BOUNDCHANGED | SCIP_EVENTTYPE_VARFIXED, eventhdlr, &consdata->linbndchgeventdata[i], NULL) );
++      consdata->isremovedfixings = consdata->isremovedfixings && SCIPvarIsActive(consdata->linvars[i]);
+    }
+    SCIP_CALL( SCIPreallocMemoryArray(scip, &consdata->quadbndchgeventdata, consdata->nquadvars) );
+    SCIPintervalSetEmpty(SCIPinfinity(scip), &consdata->quadrange);
+@@ -750,6 +756,7 @@
+       consdata->quadbndchgeventdata[i].consdata = consdata;
+       consdata->quadbndchgeventdata[i].varidx   = -i-1;
+       SCIP_CALL( SCIPcatchVarEvent(scip, consdata->quadvars[i], SCIP_EVENTTYPE_BOUNDCHANGED | SCIP_EVENTTYPE_VARFIXED, eventhdlr, &consdata->quadbndchgeventdata[i], NULL) );
++      consdata->isremovedfixings = consdata->isremovedfixings && SCIPvarIsActive(consdata->quadvars[i]);
+    }
+    for( i = 0; i < consdata->nbilinterms; ++i )
+       SCIPintervalSetEmpty(SCIPinfinity(scip), &consdata->bilinrange[i]);
+@@ -1525,13 +1532,18 @@
+       var = consdata->linvars[i];
+       *havechange = *havechange || ((SCIPvarGetStatus(var) != SCIP_VARSTATUS_COLUMN) && (SCIPvarGetStatus(var) != SCIP_VARSTATUS_LOOSE));
+       *havechange = *havechange || SCIPisEQ(scip, SCIPvarGetLbGlobal(var), SCIPvarGetUbGlobal(var));
++      *havechange = *havechange || SCIPisZero(scip, consdata->lincoefs[i]);
+       SCIP_CALL( presolveAddLinearTerm(scip, *terms, constant, consdata->lincoefs[i], var) );
+    }
+ 
+    for( j = 0; j < consdata->nquadvars; ++j )
+    {
+       if( consdata->quadlincoefs[j] == 0.0 && consdata->quadsqrcoefs[j] == 0.0 )
++      {
++         if( consdata->nadjbilin[j] == 0 )
++            *havechange = TRUE;
+          continue;
++      }
+ 
+       var = consdata->quadvars[j];
+       assert(SCIPvarGetStatus(var) != SCIP_VARSTATUS_ORIGINAL); /* should not happen after transformation */
+@@ -1588,7 +1600,10 @@
+       coef = consdata->bilincoefs[j];
+ 
+       if( coef == 0.0 )
++      {
++         *havechange = TRUE;
+          continue;
++      }
+ 
+       assert(SCIPvarGetStatus(var) != SCIP_VARSTATUS_ORIGINAL);
+       switch( SCIPvarGetStatus(var) )
+@@ -1759,6 +1774,209 @@
+    return SCIP_OKAY;
+ }
+ 
++#if 1
++/** disaggregates a block separable constraint into several quadratic constraints
++ */
++static
++SCIP_RETCODE presolveDisaggregate(
++   SCIP*                 scip,               /**< SCIP data structure */
++   SCIP_CONSHDLR*        conshdlr,           /**< the constraint handler itself */
++   SCIP_CONS*            cons,               /**< constraint */
++   SCIP_HASHMAP*         terms,              /**< constraint function in form of PRESOLVEQUADTERM's */
++   SCIP_Real             constant,           /**< constant part of constraint function */
++   int                   ncomponents         /**< number of components (blocks) */
++   )
++{
++   SCIP_CONSHDLRDATA* conshdlrdata;
++   SCIP_CONSDATA*     consdata;
++   SCIP_HASHMAPLIST*  list;
++   PRESOLVEQUADTERM*  term;
++   SCIP_VAR**         newlinvars;
++   SCIP_Real*         newlincoefs;
++   SCIP_CONS*         blockcons;
++   SCIP_CONSDATA*     blockconsdata;
++   SCIP_VAR*          auxvar;
++   SCIP_VAR*          var;
++   int                nnewlinvars;
++   int                inewlinvars;
++   char               name[255];
++   int                i;
++   int                k;
++   SCIP_CONS*         lincons;
++   SCIP_Real          lhs, rhs;
++
++   assert(scip != NULL);
++   assert(conshdlr != NULL);
++   assert(cons != NULL);
++   assert(terms != NULL);
++   assert(ncomponents > 1);
++   assert(SCIPgetStage(scip) < SCIP_STAGE_INITSOLVE);
++
++   conshdlrdata = SCIPconshdlrGetData(conshdlr);
++   assert(conshdlrdata != NULL);
++
++   consdata = SCIPconsGetData(cons);
++   assert(consdata != NULL);
++
++   SCIPdebugMessage("disaggregate constraint %s\n", SCIPconsGetName(cons));
++
++   nnewlinvars = ncomponents;
++   for( i = 0; i < SCIPhashmapGetNLists(terms); ++i )
++      for( list = SCIPhashmapGetList(terms, i); list != NULL; list = SCIPhashmapListGetNext(list) )
++      {
++         term = (PRESOLVEQUADTERM*) SCIPhashmapListGetImage(list);
++         if( term->component == -1 )
++         {
++            assert(SCIPisZero(scip, term->sqrcoefs));
++            assert(term->bilin == NULL);
++            if( SCIPisZero(scip, term->lincoefs) )
++               continue;
++            ++nnewlinvars;
++         }
++      }
++
++   SCIP_CALL( SCIPallocBufferArray(scip, &newlinvars,  nnewlinvars) );
++   SCIP_CALL( SCIPallocBufferArray(scip, &newlincoefs, nnewlinvars) );
++
++   inewlinvars = 0;
++   for( k = 0; k < ncomponents; ++k )
++   {
++      SCIP_CALL( SCIPallocMemory( scip, &blockconsdata) );
++
++      /* we need to enforce only one bound here
++       * we cannot make auxvar implicit integer then
++       * hope it does not have bad effect on bound tightening
++       */
++      blockconsdata->lhs = SCIPisInfinity(scip, -consdata->lhs) ? -SCIPinfinity(scip) : 0.;
++      blockconsdata->rhs = SCIPisInfinity(scip,  consdata->rhs) ?  SCIPinfinity(scip) : 0.;
++
++      blockconsdata->nlinvars = 0;
++      blockconsdata->linvars = NULL;
++      blockconsdata->lincoefs = NULL;
++
++      blockconsdata->nquadvars = 0;
++      blockconsdata->quadvars = NULL;
++      blockconsdata->quadlincoefs = NULL;
++      blockconsdata->quadsqrcoefs = NULL;
++      blockconsdata->nadjbilin = NULL;
++      blockconsdata->adjbilin = NULL;
++
++      blockconsdata->nbilinterms = 0;
++      blockconsdata->bilincoefs = NULL;
++      blockconsdata->bilinvars1 = NULL;
++      blockconsdata->bilinvars2 = NULL;
++
++      blockconsdata->linrange = NULL;
++      blockconsdata->quadrangevar = NULL;
++      blockconsdata->linbndchgeventdata = NULL;
++      blockconsdata->quadbndchgeventdata = NULL;
++      blockconsdata->bilinrange = NULL;
++
++      SCIP_CALL( consdataSetFunctionData(scip, blockconsdata, terms, k) );
++      assert(blockconsdata->nlinvars == 0);
++      assert(blockconsdata->linvars == NULL);
++      assert(blockconsdata->lincoefs == NULL);
++      assert(blockconsdata->linrange == NULL);
++      /* we scale the new constraints by ncomponents, so that the sum of the feasibility violations stays below the feasibility tolerance in a solution */
++#if 0
++      for( i = 0; i < blockconsdata->nquadvars; ++i )
++      {
++         blockconsdata->quadlincoefs[i] *= ncomponents;
++         blockconsdata->quadsqrcoefs[i] *= ncomponents;
++      }
++      for( i = 0; i < blockconsdata->nbilinterms; ++i )
++         blockconsdata->bilincoefs[i] *= ncomponents;
++#endif
++
++      (void)SCIPsnprintf(name, 255, "%s#%u", SCIPconsGetName(cons), k);
++      SCIP_CALL( SCIPcreateVar(scip, &auxvar, name, -SCIPinfinity(scip), SCIPinfinity(scip), 0.0, SCIP_VARTYPE_CONTINUOUS, SCIPconsIsInitial(cons), SCIPconsIsRemovable(cons), NULL, NULL, NULL, NULL) );
++      SCIP_CALL( SCIPaddVar(scip, auxvar) );
++
++      SCIP_CALL( SCIPallocMemoryArray(scip, &blockconsdata->linvars,  1) );
++      SCIP_CALL( SCIPallocMemoryArray(scip, &blockconsdata->lincoefs, 1) );
++      SCIP_CALL( SCIPallocMemoryArray(scip, &blockconsdata->linrange, 1) );
++
++      blockconsdata->nlinvars = 1;
++      blockconsdata->linvars[0] = auxvar;
++      blockconsdata->lincoefs[0] = -1;
++
++      blockconsdata->isconvex = FALSE;
++      blockconsdata->isconcave = FALSE;
++      blockconsdata->isremovedfixings = TRUE;
++      blockconsdata->ispropagated = FALSE;
++      blockconsdata->ispresolved = FALSE; /* so that in the next presolve round maybe auxvar is made implicit integer */
++
++      SCIP_CALL( SCIPcreateCons(scip, &blockcons, name, conshdlr, blockconsdata, 
++         SCIPconsIsInitial(cons), SCIPconsIsSeparated(cons), SCIPconsIsEnforced(cons),
++         SCIPconsIsChecked(cons), SCIPconsIsPropagated(cons),  SCIPconsIsLocal(cons),
++         SCIPconsIsModifiable(cons), SCIPconsIsDynamic(cons), SCIPconsIsRemovable(cons),
++         SCIPconsIsStickingAtNode(cons)) );
++
++      SCIP_CALL( SCIPaddCons(scip, blockcons) );
++      SCIPdebugMessage("created new constraint %s: ", SCIPconsGetName(blockcons));
++#ifdef SCIP_DEBUG
++      SCIP_CALL( SCIPprintCons(scip, blockcons, NULL) );
++#endif
++      if( SCIPgetStage(scip) >= SCIP_STAGE_PRESOLVING )
++      {
++         SCIP_CALL( catchVarEvents(scip, conshdlrdata->eventhdlr, blockcons) );
++      }
++
++      SCIP_CALL( SCIPreleaseCons(scip, &blockcons) );
++
++      assert(inewlinvars < nnewlinvars);
++      newlinvars [inewlinvars] = auxvar;
++#if 0
++      newlincoefs[inewlinvars] = 1.0/ncomponents;
++#else
++      newlincoefs[inewlinvars] = 1.0;
++#endif
++      ++inewlinvars;
++   }
++
++   for( i = 0; i < SCIPhashmapGetNLists(terms); ++i )
++      for( list = SCIPhashmapGetList(terms, i); list != NULL; list = SCIPhashmapListGetNext(list) )
++      {
++         term = (PRESOLVEQUADTERM*) SCIPhashmapListGetImage(list);
++         if( term->component == -1 && !SCIPisZero(scip, term->lincoefs) )
++         {
++            var = (SCIP_VAR*) SCIPhashmapListGetOrigin(list);
++            assert(inewlinvars < nnewlinvars);
++            newlinvars [inewlinvars] = var;
++            newlincoefs[inewlinvars] = term->lincoefs;
++            ++inewlinvars;
++         }
++      }
++   assert(inewlinvars == nnewlinvars);
++
++   /* create linear constraint from linear part and auxiliary variables */
++   if( !SCIPisInfinity(scip, -consdata->lhs) )
++      lhs = consdata->lhs - constant;
++   else
++      lhs = -SCIPinfinity(scip);
++   if( !SCIPisInfinity(scip, consdata->rhs) )
++      rhs = consdata->rhs - constant;
++   else
++      rhs = SCIPinfinity(scip);
++   
++   SCIP_CALL( SCIPcreateConsLinear(scip, &lincons, SCIPconsGetName(cons), nnewlinvars, newlinvars, newlincoefs, lhs, rhs,
++      SCIPconsIsInitial(cons), SCIPconsIsSeparated(cons), SCIPconsIsEnforced(cons),
++      SCIPconsIsChecked(cons), SCIPconsIsPropagated(cons),  SCIPconsIsLocal(cons),
++      SCIPconsIsModifiable(cons), SCIPconsIsDynamic(cons), SCIPconsIsRemovable(cons),
++      SCIPconsIsStickingAtNode(cons)) );
++   SCIP_CALL( SCIPaddCons(scip, lincons) );
++   
++   SCIPdebugMessage("added coupling constraint ");
++   SCIPdebug( SCIP_CALL( SCIPprintCons(scip, lincons, NULL) ) );
++   
++   SCIP_CALL( SCIPreleaseCons(scip, &lincons) );
++
++   SCIPfreeBufferArray(scip, &newlinvars);
++   SCIPfreeBufferArray(scip, &newlincoefs);
++
++   return SCIP_OKAY;
++}
++#else
+ /** disaggregates a block separable constraint into several quadratic constraints
+  */
+ static
+@@ -1954,7 +2172,8 @@
+ 
+    return SCIP_OKAY;
+ }
+-#if 0
++#endif
++
+ /** Reformulates products of binary variables as AND constraint.
+  *  For a product y*x, with x and y binary variables, the product is replaced by a new auxiliary variable z and the constraint z = {x and y} is added.
+  */
+@@ -2077,7 +2296,6 @@
+ 
+    return SCIP_OKAY;
+ }
+-#endif
+ 
+ /** Reformulates products of binary times bounded continuous variables as system of linear inequalities (plus auxiliary variable).
+  * 
+@@ -2095,7 +2313,8 @@
+    SCIP_CONS*            cons,               /**< constraint */
+    SCIP_HASHMAP*         terms,              /**< constraint function in form of PRESOLVEQUADTERM's */
+    int*                  nvarsadded,         /**< buffer where to store the number of auxiliary variables added */
+-   int                   maxnrvar            /**< maximal number of variables in linear term to consider when replacing by one auxiliary variable */
++   int                   maxnrvar,           /**< maximal number of variables in linear term to consider when replacing by one auxiliary variable */
++   int                   empathy4and         /**< empathy for using AND constraint handler */
+    )
+ {  /*lint --e{666} */
+    SCIP_VAR**         xvars  = NULL;
+@@ -2201,7 +2420,7 @@
+          assert(!SCIPisInfinity(scip, -SCIPintervalGetInf(xbnds)));
+          assert(!SCIPisInfinity(scip, SCIPintervalGetSup(xbnds)));
+          
+-         if( nxvars == 1 && SCIPvarGetType(xvars[0]) == SCIP_VARTYPE_BINARY )
++         if( nxvars == 1 && empathy4and >= 1 && SCIPvarGetType(xvars[0]) == SCIP_VARTYPE_BINARY )
+          { /* product of two binary variables, replace by auxvar and AND constraint */
+             /* add auxiliary variable z */
+             (void)SCIPsnprintf(name, 255, "prod%s*%s", SCIPvarGetName(y), SCIPvarGetName(xvars[0]));
+@@ -2226,7 +2445,7 @@
+             SCIP_CALL( SCIPreleaseVar(scip, &auxvar) );
+          }
+          else
+-         { /* product of binary avariable with more than one binary or with continuous variables, replace by auxvar and linear constraints */
++         { /* product of binary avariable with more than one binary or with continuous variables or with binary and user did not like AND -> replace by auxvar and linear constraints */
+             /* add auxiliary variable z */
+             if( nxvars == 1 )
+                (void)SCIPsnprintf(name, 255, "prod%s*%s", SCIPvarGetName(y), SCIPvarGetName(xvars[0]));
+@@ -2396,12 +2615,15 @@
+ 
+    if( n == 2 )
+    { /* compute eigenvalues by hand */
+-      SCIP_Real d;
+       assert(consdata->nbilinterms == 1);
+-      d = (consdata->quadsqrcoefs[0] - consdata->quadsqrcoefs[1]);
+-      d = sqrt(d*d + consdata->bilincoefs[0]*consdata->bilincoefs[0]);
+-      consdata->isconvex = !SCIPisNegative(scip, -(consdata->quadsqrcoefs[0] + consdata->quadsqrcoefs[1]) - d);
+-      consdata->isconcave = !SCIPisPositive(scip, -(consdata->quadsqrcoefs[0] + consdata->quadsqrcoefs[1]) + d);
++      consdata->isconvex =
++         consdata->quadsqrcoefs[0] >= 0 &&
++         consdata->quadsqrcoefs[1] >= 0 &&
++         4 * consdata->quadsqrcoefs[0] * consdata->quadsqrcoefs[1] >= consdata->bilincoefs[0] * consdata->bilincoefs[0];
++      consdata->isconcave = 
++         consdata->quadsqrcoefs[0] <= 0 &&
++         consdata->quadsqrcoefs[1] <= 0 &&
++         4 * consdata->quadsqrcoefs[0] * consdata->quadsqrcoefs[1] >= consdata->bilincoefs[0] * consdata->bilincoefs[0];
+       return SCIP_OKAY;
+    }
+ 
+@@ -2953,7 +3175,7 @@
+    isconvex = (violbound == SCIP_BOUNDTYPE_LOWER) ? consdata->isconcave : consdata->isconvex;
+    isglobal = SCIPconsIsGlobal(cons) && isconvex;
+ 
+-   SCIP_CALL( SCIPcreateEmptyRow(scip, row, "cut", -SCIPinfinity(scip), SCIPinfinity(scip), !isglobal /* locally */, TRUE /* modifiable */, TRUE /* removable */ ) );
++   SCIP_CALL( SCIPcreateEmptyRow(scip, row, "cut", -SCIPinfinity(scip), SCIPinfinity(scip), !isglobal /* locally */, FALSE /* modifiable */, TRUE /* removable */ ) );
+    bnd = (violbound == SCIP_BOUNDTYPE_LOWER) ? consdata->lhs : consdata->rhs;
+    assert(!SCIPisInfinity(scip, ABS(bnd)));
+ 
+@@ -2996,18 +3218,26 @@
+             bnd += consdata->quadsqrcoefs[j] * f * (f+1);
+          }
+ 
++         if( SCIPisInfinity(scip, ABS(rowcoef)) )
++         {
++            SCIPdebugMessage("skip linearization of square term in constraint %s because var %s is almost at infinity\n", SCIPconsGetName(cons), SCIPvarGetName(x));
++            SCIP_CALL( SCIPreleaseRow(scip, row) );
++            return SCIP_OKAY;
++         }
++
+          SCIP_CALL( SCIPaddVarToRow(scip, *row, x, rowcoef) );
+       }
+ 
+       for( j = 0; j < consdata->nbilinterms; ++j )
+       { /* linearization of bilinear terms */
++         coef = consdata->bilincoefs[j];
+          x = consdata->bilinvars1[j];
+          xval = SCIPgetSolVal(scip, sol, x);
+          if( xval < SCIPvarGetLbLocal(x) )
+             xval = SCIPvarGetLbLocal(x);
+          else if( xval > SCIPvarGetUbLocal(x) )
+             xval = SCIPvarGetUbLocal(x);
+-         if( SCIPisInfinity(scip, ABS(xval)) )
++         if( SCIPisInfinity(scip, ABS(coef*xval)) )
+          {
+             SCIPdebugMessage("skip linearization of bilinear term in constraint %s because var %s is at infinity\n", SCIPconsGetName(cons), SCIPvarGetName(x));
+             SCIP_CALL( SCIPreleaseRow(scip, row) );
+@@ -3020,15 +3250,13 @@
+             yval = SCIPvarGetLbLocal(y);
+          else if( yval > SCIPvarGetUbLocal(y) )
+             yval = SCIPvarGetUbLocal(y);
+-         if( SCIPisInfinity(scip, ABS(yval)) )
++         if( SCIPisInfinity(scip, ABS(coef*yval)) )
+          {
+             SCIPdebugMessage("skip linearization of bilinear term in constraint %s because var %s is at infinity\n", SCIPconsGetName(cons), SCIPvarGetName(y));
+             SCIP_CALL( SCIPreleaseRow(scip, row) );
+             return SCIP_OKAY;
+          }
+ 
+-         coef = consdata->bilincoefs[j];
+-
+          SCIP_CALL( SCIPaddVarToRow(scip, *row, x, coef * yval) );
+          SCIP_CALL( SCIPaddVarToRow(scip, *row, y, coef * xval) );
+          bnd += coef * xval * yval;
+@@ -3086,6 +3314,13 @@
+             bnd += coef * xlb * xub;
+          }
+ 
++         if( SCIPisInfinity(scip, ABS(rowcoef)) )
++         {
++            SCIPdebugMessage("skip underestimator of square term in constraint %s because var %s is almost at infinity\n", SCIPconsGetName(cons), SCIPvarGetName(x));
++            SCIP_CALL( SCIPreleaseRow(scip, row) );
++            return SCIP_OKAY;
++         }
++         
+          SCIP_CALL( SCIPaddVarToRow(scip, *row, x, rowcoef) );
+       }
+ 
+@@ -3177,6 +3412,14 @@
+             ycoef = -ycoef;
+             bnd_  = -bnd_;
+          }
++         
++         if( SCIPisInfinity(scip, ABS(xcoef)) || SCIPisInfinity(scip, ABS(ycoef)) )
++         {
++            SCIPdebugMessage("skip underestimator of bilinear term in constraint %s because var %s or %s is almost unbounded\n", SCIPconsGetName(cons), SCIPvarGetName(x), SCIPvarGetName(y));
++            SCIP_CALL( SCIPreleaseRow(scip, row) );
++            return SCIP_OKAY;
++         }
++         
+          SCIP_CALL( SCIPaddVarToRow(scip, *row, x, xcoef) );
+          SCIP_CALL( SCIPaddVarToRow(scip, *row, y, ycoef) );
+          bnd += bnd_;
+@@ -3294,6 +3537,81 @@
+    return SCIP_OKAY;
+ }
+ 
++/** processes the event that a new primal solution has been found */
++static
++SCIP_DECL_EVENTEXEC(processNewSolutionEvent)
++{
++   SCIP_CONSHDLR* conshdlr;
++   SCIP_CONSHDLRDATA* conshdlrdata;
++   SCIP_CONS**    conss;
++   int            nconss;
++   SCIP_CONSDATA* consdata;
++   int            c;
++   SCIP_SOL*      sol;
++   SCIP_ROW*      row = NULL;
++
++   assert(scip != NULL);
++   assert(event != NULL);
++   assert(eventdata != NULL);
++   assert(eventhdlr != NULL);
++
++   assert((SCIPeventGetType(event) | SCIP_EVENTTYPE_SOLFOUND) != 0);
++
++   conshdlr = (SCIP_CONSHDLR*)eventdata;
++
++   nconss = SCIPconshdlrGetNConss(conshdlr);
++
++   if( nconss == 0 )
++      return SCIP_OKAY;
++
++   conshdlrdata = SCIPconshdlrGetData(conshdlr);
++   assert(conshdlrdata != NULL);
++
++   sol = SCIPeventGetSol(event);
++   assert(sol != NULL);
++
++   /* we are only interested in solution coming from the NLP or RENSNL heuristic (is that good?) */
++   if( SCIPsolGetHeur(sol) == NULL )
++      return SCIP_OKAY;
++   if( SCIPsolGetHeur(sol) != conshdlrdata->nlpheur && SCIPsolGetHeur(sol) != conshdlrdata->rensnlheur)
++      return SCIP_OKAY;
++
++   conss = SCIPconshdlrGetConss(conshdlr);
++   assert(conss != NULL);
++
++   SCIPdebugMessage("catched new sol event %d from heur %p; have %d conss\n", SCIPeventGetType(event), SCIPsolGetHeur(sol), nconss);
++
++   for( c = 0; c < nconss; ++c )
++   {
++      if( SCIPconsIsLocal(conss[c]) )
++         continue;
++
++      consdata = SCIPconsGetData(conss[c]);
++      assert(consdata != NULL);
++
++      if( consdata->isconvex && !SCIPisInfinity(scip, consdata->rhs) )
++      {
++         SCIP_CALL( generateCut(scip, conss[c], sol, SCIP_BOUNDTYPE_UPPER, &row, conshdlrdata->cutmaxrange) );
++      }
++      else if( consdata->isconcave && !SCIPisInfinity(scip, -consdata->lhs) )
++      {
++         SCIP_CALL( generateCut(scip, conss[c], sol, SCIP_BOUNDTYPE_LOWER, &row, conshdlrdata->cutmaxrange) );
++      }
++      else
++         continue;
++
++      if( row == NULL )
++         continue;
++
++      assert(!SCIProwIsLocal(row));
++
++      SCIP_CALL( SCIPaddPoolCut(scip, row) );
++      SCIP_CALL( SCIPreleaseRow(scip, &row) );
++   }
++
++   return SCIP_OKAY;
++}
++
+ /** computes the infeasibilities of variables from the convexification gaps in the constraints and notifies the branching rule about them
+  */
+ static
+@@ -3467,6 +3785,9 @@
+       
+       for( i = 0; i < consdata->nquadvars; ++i )
+       {
++         /* do not propose fixed variables */
++         if( SCIPisEQ(scip, SCIPvarGetLbLocal(consdata->quadvars[i]), SCIPvarGetUbLocal(consdata->quadvars[i])) )
++            continue;
+          val = SCIPgetSolVal(scip, NULL, consdata->quadvars[i]);
+          if( ABS(val) > brvarval )
+          {
+@@ -3528,7 +3849,7 @@
+       if( tightened )
+       {
+          SCIPdebugMessage("tightened lower bound of linear variable %s in constraint %s to %g\n", SCIPvarGetName(var), SCIPconsGetName(cons), SCIPvarGetLbLocal(var));
+-         ++nchgbds;
++         ++*nchgbds;
+          *result = SCIP_REDUCEDDOM;
+          SCIP_CALL( SCIPresetConsAge(scip, cons) );
+       }
+@@ -3547,7 +3868,7 @@
+       if( tightened )
+       {
+          SCIPdebugMessage("tightened upper bound of linear variable %s in constraint %s to %g\n", SCIPvarGetName(var), SCIPconsGetName(cons), SCIPvarGetUbLocal(var));
+-         ++nchgbds;
++         ++*nchgbds;
+          *result = SCIP_REDUCEDDOM;
+          SCIP_CALL( SCIPresetConsAge(scip, cons) );
+       }
+@@ -3632,7 +3953,7 @@
+       if( tightened )
+       {
+          SCIPdebugMessage("tightened lower bound of quadratic variable %s in constraint %s to %g\n", SCIPvarGetName(var), SCIPconsGetName(cons), SCIPvarGetLbLocal(var));
+-         ++nchgbds;
++         ++*nchgbds;
+          *result = SCIP_REDUCEDDOM;
+          SCIP_CALL( SCIPresetConsAge(scip, cons) );
+       }
+@@ -3651,7 +3972,7 @@
+       if( tightened )
+       {
+          SCIPdebugMessage("tightened upper bound of quadratic variable %s in constraint %s to %g -> %g\n", SCIPvarGetName(var), SCIPconsGetName(cons), SCIPintervalGetSup(newrange), SCIPvarGetUbLocal(var));
+-         ++nchgbds;
++         ++*nchgbds;
+          *result = SCIP_REDUCEDDOM;
+          SCIP_CALL( SCIPresetConsAge(scip, cons) );
+       }
+@@ -3720,7 +4041,7 @@
+    }
+ }
+ 
+-/** updates the ranges for quadratic terms associated to each variable in a constraint data;
++/** updates the ranges for quadratic terms associated to each variable in a constraint data (a*x^2+b*x);
+  *  adds up all ranges;
+  *  returns whether there is a term which range is entire
+  */
+@@ -3900,9 +4221,9 @@
+ 
+    consdata = SCIPconsGetData(cons);
+    assert(consdata != NULL);
+-   assert(consdata->linrange     || consdata->nlinvars  == 0);
+-   assert(consdata->quadrangevar || consdata->nquadvars == 0);
+-   assert(consdata->bilinrange   || consdata->nbilinterms   == 0);
++   assert(consdata->linrange     || consdata->nlinvars    == 0);
++   assert(consdata->quadrangevar || consdata->nquadvars   == 0);
++   assert(consdata->bilinrange   || consdata->nbilinterms == 0);
+ 
+    *result = SCIP_DIDNOTRUN;
+ 
+@@ -3930,8 +4251,8 @@
+    intervalinfty = 1000 * SCIPinfinity(scip) * SCIPinfinity(scip);
+ 
+    SCIPintervalSetBounds(&consbounds,
+-      -infty2infty(SCIPinfinity(scip), intervalinfty, -consdata->lhs),
+-       infty2infty(SCIPinfinity(scip), intervalinfty,  consdata->rhs));
++      -infty2infty(SCIPinfinity(scip), intervalinfty, -consdata->lhs+SCIPfeastol(scip)/2.0),
++       infty2infty(SCIPinfinity(scip), intervalinfty,  consdata->rhs+SCIPfeastol(scip)/2.0));
+    
+    propagateBoundsUpdateLinRange(scip, consdata, intervalinfty, &linrangesum, &entirevaridx);
+    if( entirevaridx == -2 )
+@@ -4126,14 +4447,31 @@
+          }
+          else
+             rhs = consbounds;
+-
+-         /* we should not just put all bilinear terms into the right hand side, that would be fatal for equations like x*y \in [...]
+-          * since recomputing the best quad range is too expensive,
+-          * we undo all the substractions of bilinrange where this var is involved and setup an appropriate linear term (b)
+-          */
+-         if( consdata->nadjbilin[j] )
++         if( consdata->nadjbilin[j] > 0 )
+          {
+-            for( k = 0; k < consdata->nadjbilin[j]; ++k )
++            /* we should not just put all bilinear terms into the right hand side, that would be fatal for equations like x*y \in [...]
++             * since recomputing the best quad range is too expensive,
++             * we undo all the substractions of bilinrange where this var is involved and setup an appropriate linear term (b)
++             * 
++             * this is also still expensive in case of many bilinear terms
++             * thus, for now, we just pick some bilinear terms arbitrarily that are substracted from the rhs and leave the others on the rhs
++             * TODO something better should be done, maybe sorting adjbilin with some criterion and take the first 6; or rewrite the whole propagation stuff
++             */
++#define MAXBILIN 6
++            int step;
++            if( consdata->nadjbilin[j] < MAXBILIN )
++            {
++               k = 0;
++               step = 1;
++            }
++            else
++            {
++               k = SCIPgetDepth(scip) % MAXBILIN;
++               step = consdata->nadjbilin[j] / MAXBILIN;
++               assert(k < consdata->nadjbilin[j]);
++               assert(step > 0);
++            }
++            for( ; k < consdata->nadjbilin[j]; k += step )
+             {
+                l = consdata->adjbilin[j][k];
+                if( consdata->nquadvars > 2 )
+@@ -4624,9 +4962,21 @@
+        else
+            SCIPverbMessage(scip, SCIP_VERBLEVEL_HIGH, NULL, "There are nonconvex quadratic constraints.\n");
+    }
+-       
+-   conshdlrdata->nlpheur = SCIPfindHeur(scip, "nlp");
++
++   conshdlrdata->nlpheur    = SCIPfindHeur(scip, "nlp");
++   conshdlrdata->rensnlheur = SCIPfindHeur(scip, "rensnl");
+    
++   conshdlrdata->newsoleventfilterpos = -1;
++   if( nconss != 0 && (conshdlrdata->nlpheur != NULL || conshdlrdata->rensnlheur != NULL) && conshdlrdata->linearizenlpsol )
++   {
++      SCIP_EVENTHDLR* eventhdlr;
++
++      eventhdlr = SCIPfindEventhdlr(scip, CONSHDLR_NAME"_newsolution");
++      assert(eventhdlr != NULL);
++
++      SCIP_CALL( SCIPcatchEvent(scip, SCIP_EVENTTYPE_SOLFOUND, eventhdlr, (SCIP_EVENTDATA*)conshdlr, &conshdlrdata->newsoleventfilterpos) );
++   }
++
+    return SCIP_OKAY;
+ }
+ 
+@@ -4649,8 +4999,24 @@
+       assert(conss != NULL);
+       SCIP_CALL( dropVarEvents(scip, conshdlrdata->eventhdlr, conss[c]) );
+    }
+-   
+-   conshdlrdata->nlpheur = NULL;
++
++   if( conshdlrdata->newsoleventfilterpos >= 0 )
++   {
++      SCIP_EVENTHDLR* eventhdlr;
++
++      /* failing of the following events mean that new solution events should not have been catched */
++      assert(conshdlrdata->nlpheur != NULL || conshdlrdata->rensnlheur != NULL);
++      assert(conshdlrdata->linearizenlpsol);
++
++      eventhdlr = SCIPfindEventhdlr(scip, CONSHDLR_NAME"_newsolution");
++      assert(eventhdlr != NULL);
++
++      SCIP_CALL( SCIPdropEvent(scip, SCIP_EVENTTYPE_SOLFOUND, eventhdlr, (SCIP_EVENTDATA*)conshdlr, conshdlrdata->newsoleventfilterpos) );
++      conshdlrdata->newsoleventfilterpos = -1;
++   }
++
++   conshdlrdata->nlpheur    = NULL;
++   conshdlrdata->rensnlheur = NULL;
+ 
+    return SCIP_OKAY;
+ }
+@@ -5119,9 +5485,9 @@
+             int nconsadded;
+ 
+             nconsadded = 0;
+-#if 0
+-            if( conshdlrdata->replace_binaryprod_forceAND )
+-            {
++
++            if( conshdlrdata->empathy4and == 2 )
++            { /* user really likes AND, so give him */
+                SCIP_CALL( presolveTryAddAND(scip, conss[c], terms, &nconsadded) );
+                if( nconsadded != 0 )
+                { /* does this count as an upgrade? */
+@@ -5129,8 +5495,8 @@
+                   havechange = TRUE;
+                }
+             }
+-#endif
+-            SCIP_CALL( presolveTryAddLinearReform(scip, conss[c], terms, &nconsadded, conshdlrdata->replacebinaryprodlength) );
++
++            SCIP_CALL( presolveTryAddLinearReform(scip, conss[c], terms, &nconsadded, conshdlrdata->replacebinaryprodlength, conshdlrdata->empathy4and) );
+             if( nconsadded != 0 )
+             { /* does this count as an upgrade? */
+                *result = SCIP_SUCCESS;
+@@ -5209,19 +5575,21 @@
+ 
+             if( havechange || (ncomponents > 1 && conshdlrdata->disaggregation) )
+             {
+-               /* unlock all variables */
+-               for( i = 0; i < consdata->nlinvars; ++i )
+-               {
+-                  SCIP_CALL( unlockLinearVariable(scip, conss[c], consdata->linvars[i], consdata->lincoefs[i]) );
+-               }
+-               for( i = 0; i < consdata->nquadvars; ++i )
+-               {
+-                  SCIP_CALL( SCIPunlockVarCons(scip, consdata->quadvars[i], conss[c], TRUE, TRUE) );
+-               }
++               SCIPdebugMessage("delete constraint %s after upgrade\n", SCIPconsGetName(conss[c]));
+                SCIP_CALL( dropVarEvents(scip, conshdlrdata->eventhdlr, conss[c]) );
+ 
+                if( ncomponents == 1 || !conshdlrdata->disaggregation )
+                {
++                  /* unlock all variables */
++                  for( i = 0; i < consdata->nlinvars; ++i )
++                  {
++                     SCIP_CALL( unlockLinearVariable(scip, conss[c], consdata->linvars[i], consdata->lincoefs[i]) );
++                  }
++                  for( i = 0; i < consdata->nquadvars; ++i )
++                  {
++                     SCIP_CALL( SCIPunlockVarCons(scip, consdata->quadvars[i], conss[c], TRUE, TRUE) );
++                  }
++                  
+                   SCIP_CALL( consdataSetFunctionData(scip, consdata, terms, -1) );
+                   if( !SCIPisInfinity(scip, -consdata->lhs) )
+                      consdata->lhs -= constant;
+@@ -5230,8 +5598,26 @@
+                }
+                else
+                {
++#if 1
++                  SCIP_CALL( presolveDisaggregate(scip, conshdlr, conss[c], terms, constant, ncomponents) );
++                  SCIP_CALL( SCIPdelCons(scip, conss[c]) );
++                  ++*nupgdconss;
++                  *result = SCIP_SUCCESS;
++                  presolveQuadTermFree(scip, &terms);
++                  continue;
++#else                  
++                  /* unlock all variables */
++                  for( i = 0; i < consdata->nlinvars; ++i )
++                  {
++                     SCIP_CALL( unlockLinearVariable(scip, conss[c], consdata->linvars[i], consdata->lincoefs[i]) );
++                  }
++                  for( i = 0; i < consdata->nquadvars; ++i )
++                  {
++                     SCIP_CALL( SCIPunlockVarCons(scip, consdata->quadvars[i], conss[c], TRUE, TRUE) );
++                  }
+                   SCIP_CALL( presolveDisaggregate(scip, conshdlr, conss[c], terms, constant, ncomponents) );
+                   havechange = TRUE;
++#endif
+                }
+ 
+                /* lock all variables */
+@@ -5773,6 +6159,10 @@
+          "max. length of linear term which when multiplied with a binary variables is replaced by an auxiliary variable and a linear reformulation (0 to turn off)",
+          &conshdlrdata->replacebinaryprodlength, FALSE, INT_MAX, 0, INT_MAX, NULL, NULL) );
+ 
++   SCIP_CALL( SCIPaddIntParam(scip, "constraints/"CONSHDLR_NAME"/empathy4and",
++         "empathy level for using the AND constraint handler: 0 always avoid using AND; 1 use AND sometimes; 2 use AND as often as possible",
++         &conshdlrdata->empathy4and, FALSE, 0, 0, 2, NULL, NULL) );
++   
+    SCIP_CALL( SCIPaddBoolParam(scip, "constraints/"CONSHDLR_NAME"/disaggregate",
+          "whether quadratic constraints consisting of several quadratic blocks should be disaggregated in several constraints",
+          &conshdlrdata->disaggregation, FALSE, TRUE, NULL, NULL) );
+@@ -5797,6 +6187,10 @@
+          "maximal range of a cut (maximal coefficient divided by minimal coefficient) in order to be added to LP relaxation",
+          &conshdlrdata->cutmaxrange, FALSE, 1e+10, 0.0, SCIPinfinity(scip), NULL, NULL) );
+ 
++   SCIP_CALL( SCIPaddBoolParam(scip, "constraints/"CONSHDLR_NAME"/linearizenlpsol",
++         "whether convex quadratic constraints should be linearized in a solution found by the NLP or RENSNL heuristic",
++         &conshdlrdata->linearizenlpsol, FALSE, TRUE, NULL, NULL) );
++
+    SCIP_CALL( SCIPaddCharParam(scip, "constraints/"CONSHDLR_NAME"/strategy",
+          "strategy to use for selecting branching variable: b: rb-int-br, r: rb-int-br-rev, i: rb-inf",
+          &conshdlrdata->strategy, FALSE, 'r', "bri", NULL, NULL) );
+@@ -5805,9 +6199,12 @@
+          "minimal fractional distance of branching point to variable bounds; a value of 0.5 leads to branching always in the middle of a bounded domain",
+          &conshdlrdata->mindistbrpointtobound, FALSE, 0.2, 0.0001, 0.5, NULL, NULL) );
+    
+-   SCIP_CALL( SCIPincludeEventhdlr(scip, CONSHDLR_NAME, "signals a bound change to a quadratic constraint",
++   SCIP_CALL( SCIPincludeEventhdlr(scip, CONSHDLR_NAME"_boundchange", "signals a bound change to a quadratic constraint",
+       NULL, NULL, NULL, NULL, NULL, NULL, processVarEvent, NULL) );
+-   conshdlrdata->eventhdlr = SCIPfindEventhdlr(scip, CONSHDLR_NAME);
++   conshdlrdata->eventhdlr = SCIPfindEventhdlr(scip, CONSHDLR_NAME"_boundchange");
++
++   SCIP_CALL( SCIPincludeEventhdlr(scip, CONSHDLR_NAME"_newsolution", "handles the event that a new primal solution has been found",
++      NULL, NULL, NULL, NULL, NULL, NULL, processNewSolutionEvent, NULL) );
+ 
+    return SCIP_OKAY;
+ }
+@@ -5859,6 +6256,8 @@
+    SCIP_CONSDATA* consdata;
+    SCIP_HASHMAP*  terms;
+    int i;
++   
++   assert( modifiable == FALSE ); /* we do not support column generation */
+ 
+    /* find the quadratic constraint handler */
+    conshdlr = SCIPfindConshdlr(scip, CONSHDLR_NAME);
+@@ -5964,6 +6363,7 @@
+    SCIP_CONSDATA* consdata;
+    int i;
+    
++   assert( modifiable == FALSE ); /* we do not support column generation */
+    assert(nlinvars == 0 || (linvars != NULL && lincoefs != NULL));
+    assert(nquadvars == 0 || (quadvars != NULL && quadlincoefs != NULL && quadsqrcoefs != NULL));
+    assert(nbilinterms == 0 || (bilinvars1 != NULL && bilinvars2 != NULL && bilincoefs != NULL && nquadvars > 0));
+diff -aur scip/src/scip/cons_setppc.c scip/src/scip/cons_setppc.c
+--- scip/src/scip/cons_setppc.c	2009-09-08 22:41:29.000000000 +0200
++++ scip/src/scip/cons_setppc.c	2010-02-22 15:20:17.000000000 +0100
+@@ -3,7 +3,7 @@
+ /*                  This file is part of the program and library             */
+ /*         SCIP --- Solving Constraint Integer Programs                      */
+ /*                                                                           */
+-/*    Copyright (C) 2002-2009 Konrad-Zuse-Zentrum                            */
++/*    Copyright (C) 2002-2010 Konrad-Zuse-Zentrum                            */
+ /*                            fuer Informationstechnik Berlin                */
+ /*                                                                           */
+ /*  SCIP is distributed under the terms of the ZIB Academic License.         */
+@@ -12,7 +12,7 @@
+ /*  along with SCIP; see the file COPYING. If not email to scip@zib.de.      */
+ /*                                                                           */
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+-#pragma ident "@(#) $Id: cons_setppc.c,v 1.144 2009/09/08 20:41:29 bzfberth Exp $"
++#pragma ident "@(#) $Id: cons_setppc.c,v 1.146 2010/01/04 20:35:38 bzfheinz Exp $"
+ 
+ /**@file   cons_setppc.c
+  * @ingroup CONSHDLRS 
+@@ -2927,6 +2927,7 @@
+ {  /*lint --e{715}*/
+    SCIP_CONSHDLRDATA* conshdlrdata;
+    int oldnfixedvars;
++   int oldnaggrvars;
+    int oldndelconss;
+    int firstchange;
+    int firstclique;
+@@ -2942,6 +2943,7 @@
+    *result = SCIP_DIDNOTFIND;
+    oldnfixedvars = *nfixedvars;
+    oldndelconss = *ndelconss;
++   oldnaggrvars = *naggrvars;
+    cutoff = FALSE;
+ 
+    conshdlrdata = SCIPconshdlrGetData(conshdlr);
+@@ -2966,7 +2968,7 @@
+       /*SCIPdebugMessage("presolving set partitioning / packing / covering constraint <%s>\n", SCIPconsGetName(cons));*/
+ 
+       /* remove all variables that are fixed to zero */
+-      if( nrounds == 0 || nnewfixedvars > 0 || nnewaggrvars > 0 || *nfixedvars > oldnfixedvars )
++      if( nrounds == 0 || nnewfixedvars > 0 || nnewaggrvars > 0 || *naggrvars > oldnaggrvars || *nfixedvars > oldnfixedvars )
+       {
+          SCIP_CALL( applyFixings(scip, cons) );
+       }
+diff -aur scip/src/scip/dialog.c scip/src/scip/dialog.c
+--- scip/src/scip/dialog.c	2009-09-14 19:29:13.000000000 +0200
++++ scip/src/scip/dialog.c	2010-02-22 15:29:26.000000000 +0100
+@@ -12,7 +12,7 @@
+ /*  along with SCIP; see the file COPYING. If not email to scip@zib.de.      */
+ /*                                                                           */
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+-#pragma ident "@(#) $Id: dialog.c,v 1.52 2009/09/04 15:58:23 bzfheinz Exp $"
++#pragma ident "@(#) $Id: dialog.c,v 1.53 2009/11/04 16:05:35 bzfviger Exp $"
+ 
+ /**@file   dialog.c
+  * @brief  methods for user interface dialog
+@@ -442,10 +442,13 @@
+ 
+       /* strip trailing spaces */
+       len = (int)strlen(&dialoghdlr->buffer[dialoghdlr->bufferpos]);
+-      while( isspace(dialoghdlr->buffer[dialoghdlr->bufferpos + len - 1]) )
++      if( len > 0 )
+       {
+-         dialoghdlr->buffer[dialoghdlr->bufferpos + len - 1] = '\0';
+-         len--;
++         while( isspace(dialoghdlr->buffer[dialoghdlr->bufferpos + len - 1]) )
++         {
++            dialoghdlr->buffer[dialoghdlr->bufferpos + len - 1] = '\0';
++            len--;
++         }
+       }
+ 
+       /* insert command in command history */
+diff -aur scip/src/scip/heur_nlp.c scip/src/scip/heur_nlp.c
+--- scip/src/scip/heur_nlp.c	2009-09-14 19:29:13.000000000 +0200
++++ scip/src/scip/heur_nlp.c	2010-02-22 15:29:26.000000000 +0100
+@@ -56,6 +56,7 @@
+ {
+    SCIP_NLPI*            nlpi;               /**< NLP solver interface */
+    SCIP_NLPSTATISTICS*   nlpstatistics;      /**< statistics from NLP solver */
++   SCIP_EVENTHDLR*       eventhdlr;          /**< event handler for global bound change events */
+    
+    int                   nvars;              /**< number of variables in NLP */
+    SCIP_VAR**            var_nlp2scip;       /**< mapping variables in NLP to SCIP variables */
+@@ -476,11 +477,47 @@
+    
+    /* initialize data structure for NLP solve statistics */
+    SCIP_CALL( SCIPnlpStatisticsCreate(scip, &heurdata->nlpstatistics) );
++   
++   /** catch variable global bounds change events */
++   for( i = 0; i < heurdata->nvars; ++i )
++   {
++      SCIP_CALL( SCIPcatchVarEvent(scip, heurdata->var_nlp2scip[i], SCIP_EVENTTYPE_GBDCHANGED, heurdata->eventhdlr, (SCIP_EVENTDATA*)heurdata, NULL) );
++   }
+ 
+    return SCIP_OKAY;
+ }
+ #endif
+ 
++/** process variable global bound change event */
++static
++SCIP_DECL_EVENTEXEC(processVarEvent)
++{
++   SCIP_HEURDATA* heurdata;
++   SCIP_VAR*      var;
++   int            nlpidx;
++   SCIP_Real      lb, ub;
++   
++   assert(scip      != NULL);
++   assert(event     != NULL);
++   assert(eventdata != NULL);
++   assert(eventhdlr != NULL);
++
++   heurdata = (SCIP_HEURDATA*)eventdata;
++   assert(heurdata  != NULL);
++
++   var = SCIPeventGetVar(event);
++   assert(var != NULL);
++   
++   assert(SCIPhashmapExists(heurdata->var_scip2nlp, var));
++   nlpidx = (int) (size_t) SCIPhashmapGetImage(heurdata->var_scip2nlp, var);
++
++   lb = SCIPvarGetLbGlobal(var);
++   ub = SCIPvarGetUbGlobal(var);
++   SCIP_CALL( SCIPnlpiChgVarBounds(scip, heurdata->nlpi, 1, &nlpidx, &lb, &ub) );
++
++   return SCIP_OKAY;
++}
++
+ /** for a fixation of discrete variables, applies the variable bound constraints to the NLP */
+ static
+ SCIP_RETCODE applyVarBoundConstraints(
+@@ -552,6 +589,8 @@
+             varlb[varcnt] = SCIPvarGetLbGlobal(var);
+          if (SCIPvarGetUbGlobal(var) < varub[varcnt])
+             varub[varcnt] = SCIPvarGetUbGlobal(var);
++         if( varlb[varcnt] > varub[varcnt] )
++            varlb[varcnt] = varub[varcnt];
+          
+          /* remember that a bound change for variable var is now stored at position varbnd */
+          SCIP_CALL( SCIPhashmapInsert(varmap, var, (void*)(size_t)(varcnt+1)) );
+@@ -586,6 +625,8 @@
+          /* possibly tighten previously stored bound change on variable var with newly computed bounds */ 
+          varlb[idx_] = MAX(varlb[idx_],lhs);
+          varub[idx_] = MIN(varub[idx_],rhs);
++         if( varlb[idx_] > varub[idx_] )
++            varlb[idx_] = varub[idx_];
+    
+          SCIPdebugMessage("%s: var %s at %d now bounded in [%g, %g] due to %s = %g  [updated]\n",
+             SCIPconsGetName(cons), SCIPvarGetName(var), varidx[idx_],
+@@ -621,7 +662,10 @@
+    assert(heurdata->nlpstatistics != NULL);
+    
+    for( i = 0; i < heurdata->nvars; ++i )
++   {
++      SCIP_CALL( SCIPdropVarEvent(scip, heurdata->var_nlp2scip[i], SCIP_EVENTTYPE_GBDCHANGED, heurdata->eventhdlr, (SCIP_EVENTDATA*)heurdata, -1) );
+       SCIP_CALL( SCIPreleaseVar(scip, &heurdata->var_nlp2scip[i]) );
++   }
+    
+    SCIPfreeMemoryArray(scip, &heurdata->var_nlp2scip);
+    SCIPhashmapFree(&heurdata->var_scip2nlp);
+@@ -809,7 +853,8 @@
+       /* only call heuristic if optimal LP solution is available */
+       if( SCIPgetLPSolstat(scip) != SCIP_LPSOLSTAT_OPTIMAL )
+       {
+-         SCIPdebugMessage("skip NLP heuristic because no start candidate given and no LP solution available\n");
++         *result = SCIP_DELAYED;
++         SCIPdebugMessage("NLP heuristic delayed because no start candidate given and no LP solution available\n");
+          return SCIP_OKAY;
+       }
+ 
+@@ -1023,7 +1068,12 @@
+    /* create Nlp primal heuristic data */
+    SCIP_CALL( SCIPallocMemory(scip, &heurdata) );
+    BMSclearMemory(heurdata);
+-   
++
++   /* include variable event handler */
++   SCIP_CALL( SCIPincludeEventhdlr(scip, HEUR_NAME, "propagates a global bound change to the NLP",
++      NULL, NULL, NULL, NULL, NULL, NULL, processVarEvent, NULL) );
++   heurdata->eventhdlr = SCIPfindEventhdlr(scip, HEUR_NAME);
++
+    /* include primal heuristic */
+    SCIP_CALL( SCIPincludeHeur(scip, HEUR_NAME, HEUR_DESC, HEUR_DISPCHAR, HEUR_PRIORITY, HEUR_FREQ, HEUR_FREQOFS,
+          HEUR_MAXDEPTH, HEUR_TIMING, heurFreeNlp, heurInitNlp, heurExitNlp, heurInitsolNlp, heurExitsolNlp, heurExecNlp,
+diff -aur scip/src/scip/heur_oneopt.c scip/src/scip/heur_oneopt.c
+--- scip/src/scip/heur_oneopt.c	2009-09-11 18:34:48.000000000 +0200
++++ scip/src/scip/heur_oneopt.c	2010-02-22 15:20:17.000000000 +0100
+@@ -186,12 +186,14 @@
+ 
+       /* update row activity, only regard global rows in the LP */
+       if( rowpos >= 0 && !SCIProwIsLocal(row) )
++      {
+          activities[rowpos] +=  shiftval * colvals[i];
+ 
+-      if( SCIPisInfinity(scip, activities[rowpos]) )
+-         activities[rowpos] = SCIPinfinity(scip);
+-      else if( SCIPisInfinity(scip, -activities[rowpos]) )
+-         activities[rowpos] = -SCIPinfinity(scip);
++         if( SCIPisInfinity(scip, activities[rowpos]) )
++            activities[rowpos] = SCIPinfinity(scip);
++         else if( SCIPisInfinity(scip, -activities[rowpos]) )
++            activities[rowpos] = -SCIPinfinity(scip);
++      }
+    }
+ 
+    return SCIP_OKAY;
+@@ -270,6 +272,10 @@
+    SCIP_Real* activities;                    /* row activities for working solution */
+    SCIP_Real* shiftvals;
+ 
++   SCIP_Real lb;
++   SCIP_Real ub;
++   SCIP_Bool valid;
++   int nchgbound;
+    int nbinvars;
+    int nintvars;
+    int nvars;
+@@ -309,7 +315,7 @@
+     * with continuous or implicit integer variables
+     */
+    if( nvars > nintvars && ( !SCIPhasCurrentNodeLP(scip) || SCIPgetLPSolstat(scip) != SCIP_LPSOLSTAT_OPTIMAL ) )
+-	 return SCIP_OKAY;
++      return SCIP_OKAY;
+ 
+    if( heurtiming == SCIP_HEURTIMING_BEFORENODE && SCIPhasCurrentNodeLP(scip) )
+    {
+@@ -318,25 +324,58 @@
+       SCIP_CALL( SCIPconstructLP(scip,&cutoff) );
+       SCIP_CALL( SCIPflushLP(scip) );       
+    }
+-
++   
+    /* we need an LP */
+    if( SCIPgetNLPRows(scip) == 0 )
+       return SCIP_OKAY;
+ 
+    *result = SCIP_DIDNOTFIND;
+ 
++   nchgbound = 0;
++
+    /* initialize data */
+    nshiftcands = 0;
+    shiftcandssize = 8;
+    heurdata->lastsolindex = SCIPsolGetIndex(bestsol);
+-
+    SCIP_CALL( SCIPcreateSolCopy(scip, &worksol, bestsol) );
+    SCIPsolSetHeur(worksol,heur);
+ 
++   SCIPdebugMessage("Starting bound adjustment in 1-opt heuristic\n");
++
++   /* maybe change solution values due to global bound changes first */
++   for( i = nvars - 1; i >= 0; --i )
++   {
++      SCIP_VAR* var;
++      SCIP_Real solval;
++
++      var = vars[i];
++      lb = SCIPvarGetLbGlobal(var);
++      ub = SCIPvarGetUbGlobal(var);
++
++      solval = SCIPgetSolVal(scip, bestsol,var);
++      /* old solution value is smaller than the actual lower bound */
++      if( SCIPisFeasLT(scip, solval, lb) )
++      {
++         /* set the solution value to the global lower bound */
++         SCIP_CALL( SCIPsetSolVal(scip, worksol, var, lb) );
++         ++nchgbound;
++         SCIPdebugMessage("var <%s> type %d, old solval %g now fixed to lb %g\n", SCIPvarGetName(var), SCIPvarGetType(var), solval, lb);
++      }
++      /* old solution value is greater than the actual upper bound */
++      else if( SCIPisFeasGT(scip, solval, SCIPvarGetUbGlobal(var)) )
++      {
++         /* set the solution value to the global upper bound */
++         SCIP_CALL( SCIPsetSolVal(scip, worksol, var, ub) );
++         ++nchgbound;
++         SCIPdebugMessage("var <%s> type %d, old solval %g now fixed to ub %g\n", SCIPvarGetName(var), SCIPvarGetType(var), solval, ub);
++      }
++   }
++
++   SCIPdebugMessage("number of bound changes (due to global bounds) = %d\n", nchgbound);
+    SCIP_CALL( SCIPgetLPRowsData(scip, &lprows, &nlprows) );
+    SCIP_CALL( SCIPallocBufferArray(scip, &activities, nlprows) );
+-   SCIP_CALL( SCIPallocBufferArray(scip, &shiftcands, shiftcandssize) );
+-   SCIP_CALL( SCIPallocBufferArray(scip, &shiftvals, shiftcandssize) );
++
++   valid = TRUE;
+ 
+    /* initialize activities */
+    for( i = 0; i < nlprows; ++i )
+@@ -348,11 +387,29 @@
+ 
+       if( !SCIProwIsLocal(row) )
+       {
+-         activities[i] = SCIPgetRowSolActivity(scip, row, bestsol);
++         activities[i] = SCIPgetRowSolActivity(scip, row, worksol);
+          SCIPdebugMessage("Row <%s> has activity %g\n", SCIProwGetName(row), activities[i]);
++         if( SCIPisFeasLT(scip, activities[i], SCIProwGetLhs(row)) || SCIPisFeasGT(scip, activities[i], SCIProwGetRhs(row)) )
++         {
++            valid = FALSE;
++            SCIPdebug( SCIP_CALL( SCIPprintRow(scip, row, NULL) ) );
++            SCIPdebugMessage("row <%s> activity %g violates bounds, lhs = %g, rhs = %g\n", SCIProwGetName(row), activities[i], SCIProwGetLhs(row), SCIProwGetRhs(row));
++            break;
++         }
+       }
+    }
+ 
++   if(!valid)
++   {
++      /** @todo try to correct lp rows */
++      SCIPdebugMessage("Some global bound changes were not valid in lp rows.\n");
++      goto TERMINATE;
++   }
++
++   SCIP_CALL( SCIPallocBufferArray(scip, &shiftcands, shiftcandssize) );
++   SCIP_CALL( SCIPallocBufferArray(scip, &shiftvals, shiftcandssize) );
++
++
+    SCIPdebugMessage("Starting 1-opt heuristic\n");
+ 
+    /* enumerate all integer variables and find out which of them are shiftable */
+@@ -364,7 +421,7 @@
+          SCIP_Real solval;
+ 
+          /* find out whether the variable can be shifted */
+-         solval = SCIPgetSolVal(scip, bestsol,vars[i]);
++         solval = SCIPgetSolVal(scip, worksol, vars[i]);
+          shiftval = calcShiftVal(scip, vars[i], solval, activities);
+ 
+          /* insert the variable into the list of shifting candidates */
+@@ -397,7 +454,7 @@
+       {
+          var = shiftcands[0];
+          assert(var != NULL);
+-         solval = SCIPgetSolVal(scip, bestsol, var);
++         solval = SCIPgetSolVal(scip, worksol, var);
+          shiftval = shiftvals[0];
+          assert(!SCIPisFeasZero(scip,shiftval));
+          SCIPdebugMessage(" Only one shiftcand found, var <%s>, which is now shifted by<%1.1f> \n",
+@@ -432,7 +489,7 @@
+          {
+             var = shiftcands[i];
+             assert(var != NULL);
+-            solval = SCIPgetSolVal(scip, bestsol, var);
++            solval = SCIPgetSolVal(scip, worksol, var);
+             shiftval = calcShiftVal(scip, var, solval, activities);
+             SCIPdebugMessage(" -> Variable <%s> is now shifted by <%1.1f> \n", SCIPvarGetName(vars[i]), shiftval);
+             assert(i > 0 || !SCIPisFeasZero(scip, shiftval));
+@@ -450,7 +507,17 @@
+       {
+          SCIP_Bool success;
+ 
++#if 1
+          SCIP_CALL( SCIPtrySol(scip, worksol, FALSE, FALSE, FALSE, &success) );
++#else
++         /* We have to check the bounds of the work solution since it might be that these are violated w.r.t. to the
++          * "current" global bounds. This can be the case if we shift one variable down and the corresponding
++          * constraint/row which would enforce this shifting to an other variable is deleted due to the "current" global
++          * bounds. Note, that the global bounds change during solution process. It can even happen that the best
++          * solution which we have at hand is not feasible anymore in the current transformed problem.
++          */
++         SCIP_CALL( SCIPtrySol(scip, worksol, TRUE, FALSE, FALSE, &success) );
++#endif
+          if( success )
+          {
+             SCIPdebugMessage("found feasible shifted solution:\n");
+@@ -517,9 +584,18 @@
+             /* copy the current LP solution to the working solution */
+             SCIP_CALL( SCIPlinkLPSol(scip, worksol) );
+ 
+-            /* check solution for feasibility */
++#if 1
+             SCIP_CALL( SCIPtrySol(scip, worksol, FALSE, FALSE, FALSE, &success) );
+-
++#else
++            /* We have to check the bounds of the work solution since it might be that these are violated w.r.t. to the
++             * "current" global bounds. This can be the case if we shift one variable down and the corresponding
++             * constraint/row which would enforce this shifting to an other variable is deleted due to the "current" global
++             * bounds. Note, that the global bounds change during solution process. It can even happen that the best
++             * solution which we have at hand is not feasible anymore in the current transformed problem.
++             */
++            SCIP_CALL( SCIPtrySol(scip, worksol, TRUE, FALSE, FALSE, &success) );
++#endif
++            /* check solution for feasibility */
+             if( success )
+             {
+                SCIPdebugMessage("found feasible shifted solution:\n");
+@@ -535,11 +611,13 @@
+    }
+    SCIPdebugMessage("Finished 1-opt heuristic\n");
+ 
+-   SCIP_CALL( SCIPfreeSol(scip, &worksol) );
+-   SCIPfreeBufferArray(scip, &activities);
+    SCIPfreeBufferArray(scip, &shiftvals);
+    SCIPfreeBufferArray(scip, &shiftcands);
+ 
++ TERMINATE:
++   SCIPfreeBufferArray(scip, &activities);
++   SCIP_CALL( SCIPfreeSol(scip, &worksol) );
++
+    return SCIP_OKAY;
+ }
+ 
+diff -aur scip/src/scip/lp.c scip/src/scip/lp.c
+--- scip/src/scip/lp.c	2009-09-10 12:01:35.000000000 +0200
++++ scip/src/scip/lp.c	2010-02-22 15:20:17.000000000 +0100
+@@ -7069,7 +7069,7 @@
+    }
+ 
+    /* check if the total number of non-zeros is too large */
+-   if( *nrowinds > maxmksetcoefs )
++   if( *nvarinds > maxmksetcoefs )
+       *rowtoolong = TRUE;
+ }
+ 
+@@ -12408,10 +12408,24 @@
+             && !SCIPsetIsFeasPositive(set, lpicols[c]->primsol - lpicols[c]->ub);
+       if( dualfeasible != NULL )
+       {
+-         if( SCIPsetIsFeasGT(set, lpicols[c]->primsol, lpicols[c]->lb) )
+-            *dualfeasible = *dualfeasible && !SCIPsetIsFeasPositive(set, lpicols[c]->redcost);
+-         if( SCIPsetIsFeasLT(set, lpicols[c]->primsol, lpicols[c]->ub) )
+-            *dualfeasible = *dualfeasible && !SCIPsetIsFeasNegative(set, lpicols[c]->redcost);
++         if ( lp->lastlpalgo == SCIP_LPALGO_BARRIER )
++         {
++            double compslack;
++
++            /* complementary slackness in barrier solutions is measured as product of primal solution and reduced costs */
++            compslack = (lpicols[c]->primsol - lpicols[c]->lb) * lpicols[c]->redcost;
++            *dualfeasible = *dualfeasible && !SCIPsetIsFeasPositive(set, compslack);
++            compslack = (lpicols[c]->ub - lpicols[c]->primsol) * lpicols[c]->redcost;
++            *dualfeasible = *dualfeasible && !SCIPsetIsFeasNegative(set, compslack);
++         }
++         else
++         {
++            /* complementary slackness in simplex means that basic variables should have zero reduced costs */
++            if( SCIPsetIsFeasGT(set, lpicols[c]->primsol, lpicols[c]->lb) )
++               *dualfeasible = *dualfeasible && !SCIPsetIsFeasPositive(set, lpicols[c]->redcost);
++            if( SCIPsetIsFeasLT(set, lpicols[c]->primsol, lpicols[c]->ub) )
++               *dualfeasible = *dualfeasible && !SCIPsetIsFeasNegative(set, lpicols[c]->redcost);
++         }
+       } /*lint --e{705}*/
+       SCIPdebugMessage(" col <%s> [%g,%g]: primsol=%.9f, redcost=%.9f, pfeas=%u/%u(%u), dfeas=%u(%u)\n",
+          SCIPvarGetName(lpicols[c]->var), lpicols[c]->lb, lpicols[c]->ub, lpicols[c]->primsol, lpicols[c]->redcost,
+diff -aur scip/src/scip/lpi_clp.cpp scip/src/scip/lpi_clp.cpp
+--- scip/src/scip/lpi_clp.cpp	2009-09-02 16:59:38.000000000 +0200
++++ scip/src/scip/lpi_clp.cpp	2010-02-22 15:20:17.000000000 +0100
+@@ -12,7 +12,7 @@
+ /*  along with SCIP; see the file COPYING. If not email to scip@zib.de.      */
+ /*                                                                           */
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+-#pragma ident "@(#) $Id: lpi_clp.cpp,v 1.61 2009/09/02 14:59:38 bzfpfets Exp $"
++#pragma ident "@(#) $Id: lpi_clp.cpp,v 1.63 2009/09/21 21:45:26 bzfpfets Exp $"
+ 
+ /**@file   lpi_clp.cpp
+  * @ingroup LPIS
+@@ -956,26 +956,33 @@
+       clp->setColumnBounds(ind[j], lb[j], ub[j]);
+       if ( sol != 0 )
+       {
+-	 assert( colLower != 0 );
+-	 assert( colUpper != 0 );
+-	 int k = ind[j];
+-	 switch ( clp->getColumnStatus(k) )
+-	 {
+-	 case ClpSimplex::isFree:
+-	 case ClpSimplex::superBasic:
+-	    sol[j] = 0.0;
+-	    break;
+-	 case ClpSimplex::atUpperBound:
+-	    sol[k] = colUpper[k];
+-	    assert( colUpper[k] == ub[j] );
+-	    break;
+-	 case ClpSimplex::isFixed:
+-	 case ClpSimplex::atLowerBound:
+-	    sol[k] = colLower[k];
+-	    assert( colLower[k] == lb[j] );
+-	    break;
+-	 default:;
+-	 }
++         if( clp->statusExists() )
++         {
++            assert( colLower != 0 );
++            assert( colUpper != 0 );
++            int k = ind[j];
++            switch ( clp->getColumnStatus(k) )
++            {
++               case ClpSimplex::isFree:
++               case ClpSimplex::superBasic:
++                  sol[j] = 0.0;
++                  break;
++               case ClpSimplex::atUpperBound:
++                  sol[k] = colUpper[k];
++                  assert( colUpper[k] == ub[j] );
++                  break;
++               case ClpSimplex::isFixed:
++               case ClpSimplex::atLowerBound:
++                  sol[k] = colLower[k];
++                  assert( colLower[k] == lb[j] );
++                  break;
++               default:;
++            }
++         }
++         else
++         { /* workaround: if there is no status, we assume something */
++            sol[j] = 0.0;
++         }
+       }
+    }
+ 
+@@ -2811,8 +2818,10 @@
+    SCIPdebugMessage("calling SCIPlpiFreeState()\n");
+ 
+    assert(lpi != 0);
++   assert(lpistate != NULL);
+ 
+-   lpistateFree(lpistate, blkmem);
++   if ( *lpistate != NULL )
++      lpistateFree(lpistate, blkmem);
+ 
+    return SCIP_OKAY;
+ }
+diff -aur scip/src/scip/lpi_cpx.c scip/src/scip/lpi_cpx.c
+--- scip/src/scip/lpi_cpx.c	2009-04-06 15:06:53.000000000 +0200
++++ scip/src/scip/lpi_cpx.c	2010-02-22 15:20:17.000000000 +0100
+@@ -12,7 +12,7 @@
+ /*  along with SCIP; see the file COPYING. If not email to scip@zib.de.      */
+ /*                                                                           */
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+-#pragma ident "@(#) $Id: lpi_cpx.c,v 1.124 2009/04/06 13:06:53 bzfberth Exp $"
++#pragma ident "@(#) $Id: lpi_cpx.c,v 1.125 2009/09/21 17:17:29 bzfwinkm Exp $"
+ 
+ /**@file   lpi_cpx.c
+  * @ingroup LPIS
+@@ -524,13 +524,24 @@
+ static
+ double getDblParam(SCIP_LPI* lpi, const int param)
+ {
++   SCIP_Real val;
+    int i;
+ 
+    assert(lpi != NULL);
+ 
+    for( i = 0; i < NUMDBLPARAM; ++i )
++   {
+       if( dblparam[i] == param )
+-         return lpi->cpxparam.dblparval[i];
++      {
++	 val = lpi->cpxparam.dblparval[i];
++	 if( val >= CPX_INFBOUND )
++	    return CPX_INFBOUND;
++	 else if( val <= -CPX_INFBOUND )
++	    return -CPX_INFBOUND;
++	 else
++	    return val;
++      }
++   }
+ 
+    SCIPerrorMessage("unknown CPLEX double parameter\n");
+    SCIPABORT();
+@@ -564,11 +575,16 @@
+ 
+    assert(lpi != NULL);
+ 
++   if( parval >= CPX_INFBOUND )
++      parval = 1e+75;
++   else if( parval <= -CPX_INFBOUND )
++      parval = -1e+75;
++
+    for( i = 0; i < NUMDBLPARAM; ++i )
+       if( dblparam[i] == param )
+       {
+-         lpi->cpxparam.dblparval[i] = parval;
+-         return;
++	 lpi->cpxparam.dblparval[i] = parval;
++	 return;
+       }
+ 
+    SCIPerrorMessage("unknown CPLEX double parameter\n");
+diff -aur scip/src/scip/lpi_msk.c scip/src/scip/lpi_msk.c
+--- scip/src/scip/lpi_msk.c	2009-09-12 12:18:33.000000000 +0200
++++ scip/src/scip/lpi_msk.c	2010-02-22 15:20:17.000000000 +0100
+@@ -12,9 +12,9 @@
+ /*  along with SCIP; see the file COPYING. If not email to scip@zib.de.      */
+ /*                                                                           */
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+-#pragma ident "@(#) $Id: lpi_msk.c,v 1.13 2009/09/12 10:18:33 bzfheinz Exp $"
++#pragma ident "@(#) $Id: lpi_msk.c,v 1.14 2009/10/11 11:23:55 bzfheinz Exp $"
+ 
+-/**@file   lpi_cpx.c
++/**@file   lpi_msk.c
+  * @ingroup LPIS
+  * @brief  LP interface for MOSEK
+  * @author Bo Jensen
+@@ -3750,7 +3750,7 @@
+    /*lint --e{641}*/
+    static int pricing[7] = {
+       MSK_SIM_SELECTION_SE,
+-      MSK_SIM_SELECTION_FREE,
++      MSK_SIM_SELECTION_SE,
+       MSK_SIM_SELECTION_FULL,
+       MSK_SIM_SELECTION_PARTIAL,
+       MSK_SIM_SELECTION_SE,
+diff -aur scip/src/scip/lpi_spx.cpp scip/src/scip/lpi_spx.cpp
+--- scip/src/scip/lpi_spx.cpp	2009-09-10 17:38:15.000000000 +0200
++++ scip/src/scip/lpi_spx.cpp	2010-02-22 15:20:17.000000000 +0100
+@@ -12,7 +12,7 @@
+ /*  along with SCIP; see the file COPYING. If not email to scip@zib.de.      */
+ /*                                                                           */
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+-#pragma ident "@(#) $Id: lpi_spx.cpp,v 1.93 2009/09/10 15:38:15 bzfberth Exp $"
++#pragma ident "@(#) $Id: lpi_spx.cpp,v 1.95 2009/09/23 13:18:55 bzfheinz Exp $"
+ 
+ /**@file   lpi_spx.cpp
+  * @ingroup LPIS
+@@ -2420,8 +2420,8 @@
+ 
+    assert(lpi != NULL);
+    assert(lpi->spx != NULL);
+-   assert(cstat != NULL);
+-   assert(rstat != NULL);
++   assert(cstat != NULL || lpi->spx->nCols() == 0);
++   assert(rstat != NULL || lpi->spx->nRows() == 0);
+ 
+    invalidateSolution(lpi);
+ 
+@@ -2910,8 +2910,10 @@
+    SCIPdebugMessage("calling SCIPlpiFreeState()\n");
+ 
+    assert(lpi != NULL);
++   assert(lpistate != NULL);
+ 
+-   lpistateFree(lpistate, blkmem);
++   if ( *lpistate != NULL )
++      lpistateFree(lpistate, blkmem);
+ 
+    return SCIP_OKAY;
+ }
+diff -aur scip/src/scip/nlpi_ipopt.cpp scip/src/scip/nlpi_ipopt.cpp
+--- scip/src/scip/nlpi_ipopt.cpp	2009-09-13 16:37:06.000000000 +0200
++++ scip/src/scip/nlpi_ipopt.cpp	2010-02-22 15:20:17.000000000 +0100
+@@ -20,7 +20,6 @@
+  * @author  Stefan Vigerske
+  *
+  * @todo warm starts
+- * @todo ScipJournal to redirect Ipopt output 
+  * @todo use new_x: Ipopt sets new_x = false if any function has been evaluated for the current x already, while oracle allows new_x to be false only if the current function has been evaluated for the current x before
+  */
+ 
+@@ -40,6 +39,7 @@
+ }
+ #include "IpIpoptCalculatedQuantities.hpp"
+ #include "IpSolveStatistics.hpp"
++#include "IpJournalist.hpp"
+ 
+ using namespace Ipopt;
+ 
+@@ -260,6 +260,30 @@
+    );
+ };
+ 
++/** A particular Ipopt::Journal implementation that uses the SCIP message routines for output.
++ */
++class ScipJournal : public Ipopt::Journal {
++public:
++  ScipJournal(const char* name, Ipopt::EJournalLevel default_level)
++  : Ipopt::Journal(name, default_level)
++  { }
++
++  ~ScipJournal() { }
++
++protected:
++  void PrintImpl(Ipopt::EJournalCategory category, Ipopt::EJournalLevel level, const char* str)
++  {
++     SCIPmessagePrintInfo(str);
++  }
++
++  void PrintfImpl(Ipopt::EJournalCategory category, Ipopt::EJournalLevel level, const char* pformat, va_list ap)
++  {
++     SCIPmessageVPrintInfo(pformat, ap);
++  }
++
++  void FlushBufferImpl() { }
++};
++
+ /** clears the last solution arrays and sets the solstat and termstat to unknown and other, resp. */
+ static
+ void SCIPnlpiIpoptInvalidateSolution(
+@@ -302,25 +326,29 @@
+    
+    try
+    {
+-      data->ipopt = new IpoptApplication();
++      /* initialize IPOPT without default journal */
++      data->ipopt = new IpoptApplication(false);
+       if( IsNull(data->ipopt) )
+          throw std::bad_alloc();
+-   }
+-   catch( std::bad_alloc )
+-   {
+-      SCIPerrorMessage("Not enough memory to allocate IpoptApplication.\n");
+-      return SCIP_NOMEMORY;
+-   }
++      
++      /* plugin our journal to get output through SCIP message handler */
++      SmartPtr<Journal> jrnl = new ScipJournal("console", J_ITERSUMMARY);
++      if( IsNull(jrnl) )
++         throw std::bad_alloc();
++      jrnl->SetPrintLevel(J_DBG, J_NONE);
++      if (!data->ipopt->Jnlst()->AddJournal(jrnl))
++      {
++         SCIPerrorMessage("Failed to register ScipJournal for IPOPT output.");
++      }
+ 
+-   try
+-   {
++      /* initialize Ipopt/SCIP NLP interface */
+       data->nlp = new ScipNLP(scip, data);
+       if( IsNull(data->nlp) )
+          throw std::bad_alloc();
+    }
+    catch( std::bad_alloc )
+    {
+-      SCIPerrorMessage("Not enough memory to allocate ScipNLP.\n");
++      SCIPerrorMessage("Not enough memory to initialize Ipopt.\n");
+       return SCIP_NOMEMORY;
+    }
+    
+diff -aur scip/src/scip/nlpi_oracle.c scip/src/scip/nlpi_oracle.c
+--- scip/src/scip/nlpi_oracle.c	2009-09-11 18:02:48.000000000 +0200
++++ scip/src/scip/nlpi_oracle.c	2010-02-22 15:20:17.000000000 +0100
+@@ -1318,7 +1318,7 @@
+          
+          if( nnz >= maxnnz )
+          {
+-            maxnnz *= 2;
++            maxnnz = MAX(nnz, 2*maxnnz);
+             SCIP_CALL( SCIPreallocMemoryArray(scip, &oracle->jaccols, maxnnz) );
+          }
+          
+diff -aur scip/src/scip/reader_gms.c scip/src/scip/reader_gms.c
+--- scip/src/scip/reader_gms.c	2009-09-11 17:18:33.000000000 +0200
++++ scip/src/scip/reader_gms.c	2010-02-22 15:20:17.000000000 +0100
+@@ -12,7 +12,7 @@
+ /*  along with SCIP; see the file COPYING. If not email to scip@zib.de.      */
+ /*                                                                           */
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+-#pragma ident "@(#) $Id: reader_gms.c,v 1.30 2009/09/11 15:18:33 bzfgamra Exp $"
++#pragma ident "@(#) $Id: reader_gms.c,v 1.31 2009/11/12 19:58:47 bzfviger Exp $"
+ 
+ /**@file   reader_gms.c
+  * @ingroup FILEReaders 
+@@ -64,7 +64,7 @@
+  * Local methods (for writing)
+  */
+ 
+-static const char badchars[] = "#*+/-";
++static const char badchars[] = "#*+/-@";
+ 
+ /** transforms given variables, scalars, and constant to the corresponding active variables, scalars, and constant */
+ static
+@@ -758,7 +758,7 @@
+ 
+    SCIP_CALL( SCIPgetBoolParam(scip, "reading/gmsreader/replaceforbiddenchars", &replaceforbiddenchars) );
+ 
+-   /* check if the variable names contain the symbols '#', '*', '+', '/', or '-' */
++   /* check if the variable names contain the symbols '#', '*', '+', '/', '-', or '@' */
+    for( badchar = badchars; *badchar; ++badchar )
+    {
+       for( v = 0; v < nvars; ++v )
+@@ -820,7 +820,7 @@
+ 
+    SCIP_CALL( SCIPgetBoolParam(scip, "reading/gmsreader/replaceforbiddenchars", &replaceforbiddenchars) );
+ 
+-   /* check if the constraint names contain the symbol '#', '*', '+', '/', or '-' */
++   /* check if the constraint names contain the symbol '#', '*', '+', '/', '-', or '@' */
+    for( badchar = badchars; *badchar; ++badchar )
+    {
+       for( c = 0; c < nconss; ++c )
+@@ -932,7 +932,7 @@
+ 
+    /* add gms reader parameters for writing routines*/
+    SCIP_CALL( SCIPaddBoolParam(scip,
+-         "reading/gmsreader/freeints", "are integer variables free by default (depending on GAMS version)?",
++         "reading/gmsreader/freeints", "have integer variables no upper bound by default (depending on GAMS version)?",
+          NULL, FALSE, FALSE, NULL, NULL) );
+ 
+    SCIP_CALL( SCIPaddBoolParam(scip,
+@@ -1118,9 +1118,9 @@
+       }
+ 
+       /* lower bound */
+-      if( v < nbinvars || (v < nintvars && !freeints) )
++      if( v < nbinvars + nintvars )
+       {
+-         /* default lower bound is 0 */
++         /* default lower bound of binaries and integers is 0 (also in recent gams versions if pf4=0 is given) */
+          if( !SCIPisZero(scip, lb) )
+          {
+             if( !SCIPisInfinity(scip, -lb) )
+@@ -1130,13 +1130,7 @@
+             nondefbounds = TRUE;
+          }
+       }
+-      else if( v < nintvars && !SCIPisInfinity(scip, -lb) )
+-      {
+-         /* freeints == TRUE: integer variables are free by default */
+-         SCIPinfoMessage(scip, file, " %s.lo = %g;\n", varname, SCIPceil(scip, lb));
+-         nondefbounds = TRUE;
+-      }
+-      else if( v >= nintvars && !SCIPisInfinity(scip, -lb) )
++      else if( v >= nbinvars + nintvars && !SCIPisInfinity(scip, -lb) )
+       {
+          /* continuous variables are free by default */
+          SCIPinfoMessage(scip, file, " %s.lo = %.15g;\n", varname, lb);
+@@ -1152,7 +1146,7 @@
+             nondefbounds = TRUE;
+          }
+       }
+-      else if( v < nintvars && !freeints )
++      else if( v < nbinvars + nintvars && !freeints )
+       {
+          /* freeints == FALSE: integer variables have upper bound 100 by default */
+          if( !SCIPisEQ(scip, ub, 100.0) )
+@@ -1164,13 +1158,13 @@
+             nondefbounds = TRUE;
+          }
+       }
+-      else if( v < nintvars && !SCIPisInfinity(scip, ub) )
++      else if( v < nbinvars + nintvars && !SCIPisInfinity(scip, ub) )
+       {
+-         /* freeints == TRUE: integer variables are free by default */
++         /* freeints == TRUE: integer variables have no upper bound by default */
+          SCIPinfoMessage(scip, file, " %s.up = %g;\n", varname, SCIPfloor(scip, ub));
+          nondefbounds = TRUE;
+       }
+-      else if( v >= nintvars && !SCIPisInfinity(scip, ub) )
++      else if( v >= nbinvars + nintvars && !SCIPisInfinity(scip, ub) )
+       {
+          /* continuous variables are free by default */
+          SCIPinfoMessage(scip, file, " %s.up = %.15g;\n", varname, ub);
+@@ -1179,7 +1173,7 @@
+    }
+ 
+    if( !nondefbounds )
+-      SCIPinfoMessage(scip, file, "* (All other bounds at default value: binary [0,1], integer [%s], continuous [-inf,+inf].)\n", freeints ? "-inf,+inf" : "0,100");
++      SCIPinfoMessage(scip, file, "* (All other bounds at default value: binary [0,1], integer [%s], continuous [-inf,+inf].)\n", freeints ? "0,+inf" : "0,100");
+    SCIPinfoMessage(scip, file, "\n");
+ 
+    /* print equations section */
+diff -aur scip/src/scip/reader_lp.c scip/src/scip/reader_lp.c
+--- scip/src/scip/reader_lp.c	2009-09-11 16:39:52.000000000 +0200
++++ scip/src/scip/reader_lp.c	2010-02-22 15:20:17.000000000 +0100
+@@ -2342,8 +2342,8 @@
+ {
+    int v;
+ 
+-   assert( scip != NULL );
+-   assert( vars != NULL );
++   assert(scip != NULL);
++   assert(vars != NULL || nvars == 0);
+ 
+    /* check if the variable names are not to long */
+    for( v = 0; v < nvars; ++v )
+diff -aur scip/src/scip/reader_opb.c scip/src/scip/reader_opb.c
+--- scip/src/scip/reader_opb.c	2009-09-11 16:39:52.000000000 +0200
++++ scip/src/scip/reader_opb.c	2010-02-22 15:20:17.000000000 +0100
+@@ -12,7 +12,7 @@
+ /*  along with SCIP; see the file COPYING. If not email to scip@zib.de.      */
+ /*                                                                           */
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+-#pragma ident "@(#) $Id: reader_opb.c,v 1.39 2009/09/11 14:39:52 bzfberth Exp $"
++#pragma ident "@(#) $Id: reader_opb.c,v 1.42 2009/09/22 17:25:41 bzfheinz Exp $"
+ 
+ /**@file   reader_opb.c
+  * @ingroup FILEREADERS 
+@@ -94,7 +94,6 @@
+ #define OPB_MAX_LINELEN       65536  /**< size of the line buffer for reading or writing */
+ #define OPB_MAX_PUSHEDTOKENS  2
+ #define OPB_INIT_COEFSSIZE    8192
+-#define TRYUSINGCOMMENTANDINFO       /**< should comments being read to use additional information about the number of and constraints */
+ 
+ /** Section in OPB File */
+ enum OpbExpType {
+@@ -393,7 +392,7 @@
+       {
+          SCIPwarningMessage("we read %d character from the file; these might indicates an corrupted input file!", OPB_MAX_LINELEN - 2);
+          opbinput->linebuf[OPB_MAX_LINELEN-2] = '\0';
+-         SCIPdebugMessage("the buffer might be currented\n");
++         SCIPdebugMessage("the buffer might be corrupted\n");
+       }
+       else
+       {
+@@ -424,6 +423,8 @@
+       }
+    }
+ 
++   SCIPdebugMessage("%s\n", opbinput->linebuf);
++
+    return TRUE;
+ }
+ 
+@@ -1201,17 +1202,14 @@
+    return SCIP_OKAY;
+ }
+ 
+-/** reads an OPB file */
++/** tries to read the first comment line which usually contains information about the max size of "and" products */
+ static
+-SCIP_RETCODE readOPBFile(
++SCIP_RETCODE getMaxAndConsDim(
+    SCIP*                 scip,               /**< SCIP data structure */
+    OPBINPUT*             opbinput,           /**< OPB reading data */
+    const char*           filename            /**< name of the input file */
+    )
+-{
+-   int nNonlinearConss;
+-
+-#ifdef TRYUSINGCOMMENTANDINFO
++{   
+    SCIP_Bool stop;
+    char* commentstart;
+    char* nproducts;
+@@ -1220,30 +1218,13 @@
+    stop = FALSE;
+    commentstart = NULL;
+    nproducts = NULL;
+-#endif
+-
+-   assert(opbinput != NULL);
+-
+-   /* open file */
+-   opbinput->file = SCIPfopen(filename, "r");
+-   if( opbinput->file == NULL )
+-   {
+-      SCIPerrorMessage("cannot open file <%s> for reading\n", filename);
+-      SCIPprintSysError(filename);
+-      return SCIP_NOFILE;
+-   }
+ 
+-   /* reading additional information about the number of and constraints in comments to avoid reallocating "opbinput.andconss" */
+-#ifdef TRYUSINGCOMMENTANDINFO
+-   BMSclearMemoryArray(opbinput->linebuf, OPB_MAX_LINELEN);
+-   
+    do
+    {   
+       if( SCIPfgets(opbinput->linebuf, sizeof(opbinput->linebuf), opbinput->file) == NULL )
+       {
+          assert(SCIPfeof( opbinput->file ) );
+-         opbinput->eof = TRUE;
+-         goto TERMINATE;
++         break;
+       }
+       
+       /* read characters after comment symbol */
+@@ -1291,16 +1272,53 @@
+             break;
+          }
+       }
+-   }while(commentstart != NULL && !stop);
++   }
++   while(commentstart != NULL && !stop);
+ 
+    opbinput->linebuf[0] = '\0';
+ 
++#if 0 /* following lines should be correct, but gzseek seems to not reseting status beeing at the end of file */
+    /* reset filereader pointer to the beginning */
+-   SCIPfseek(opbinput->file, 0, SEEK_SET);
++   (void) SCIPfseek(opbinput->file, 0, SEEK_SET);
++#else
++   SCIPfclose(opbinput->file);
++   opbinput->file = SCIPfopen(filename, "r");
+ #endif
+ 
+-   SCIP_CALL( SCIPallocMemoryArray(scip, &(opbinput->consanddata), opbinput->sconsanddata ) );
++   return SCIP_OKAY;
++}
+ 
++/** reads an OPB file */
++static
++SCIP_RETCODE readOPBFile(
++   SCIP*                 scip,               /**< SCIP data structure */
++   OPBINPUT*             opbinput,           /**< OPB reading data */
++   const char*           filename            /**< name of the input file */
++   )
++{
++   int nNonlinearConss;
++   int i;
++
++   assert(opbinput != NULL);
++   
++   /* open file */
++   opbinput->file = SCIPfopen(filename, "r");
++   if( opbinput->file == NULL )
++   {
++      SCIPerrorMessage("cannot open file <%s> for reading\n", filename);
++      SCIPprintSysError(filename);
++      return SCIP_NOFILE;
++   }
++   
++   /* tries to read the first comment line which usually contains information about the max size of "and" products */
++   SCIP_CALL( getMaxAndConsDim(scip, opbinput, filename) );
++
++   /* reading additional information about the number of and constraints in comments to avoid reallocating
++      "opbinput.andconss" */
++   BMSclearMemoryArray(opbinput->linebuf, OPB_MAX_LINELEN);
++   
++   SCIP_CALL( SCIPallocMemoryArray(scip, &(opbinput->consanddata), opbinput->sconsanddata ) );
++   
+    /* create problem */
+    SCIP_CALL( SCIPcreateProb(scip, filename, NULL, NULL, NULL, NULL, NULL, NULL) );
+ 
+@@ -1316,10 +1334,10 @@
+       SCIPfreeMemoryArray(scip, &((opbinput->consanddata)[i]->vars) );
+       SCIPfreeBlockMemory(scip, &(opbinput->consanddata)[i] );
+    }
++
+    /* free dynamically allocated memory */
+    SCIPfreeMemoryArrayNull(scip, &(opbinput->consanddata) );
+ 
+- TERMINATE:
+    /* close file */
+    SCIPfclose(opbinput->file);
+ 
+diff -aur scip/src/scip/reader_zpl.c scip/src/scip/reader_zpl.c
+--- scip/src/scip/reader_zpl.c	2009-09-14 19:29:13.000000000 +0200
++++ scip/src/scip/reader_zpl.c	2010-02-22 15:29:26.000000000 +0100
+@@ -12,7 +12,7 @@
+ /*  along with SCIP; see the file COPYING. If not email to scip@zib.de.      */
+ /*                                                                           */
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+-#pragma ident "@(#) $Id: reader_zpl.c,v 1.46 2009/09/04 15:58:24 bzfheinz Exp $"
++#pragma ident "@(#) $Id: reader_zpl.c,v 1.47 2009/09/27 21:31:45 bzfheinz Exp $"
+ 
+ /**@file   reader_zpl.c
+  * @ingroup FILEREADERS 
+@@ -44,26 +44,17 @@
+ #include "zimpl/ratlptypes.h"
+ #include "zimpl/mme.h"
+ #include "zimpl/xlpglue.h"
++#include "zimpl/zimpllib.h"
+ 
+ /** ZIMPL_VERSION is defined by ZIMPL version 3.00 and higher. ZIMPL 3.00 made same changes in the interface to SCIP. */
+ #if (ZIMPL_VERSION >= 300)
+ #include "zimpl/mono.h"
+ #endif
+ 
+-extern
+-Bool zpl_read(const char* filename);
+-extern
+-Bool zpl_read_with_args(int argc, char** argv);
+-
+-
+-
+ #define READER_NAME             "zplreader"
+ #define READER_DESC             "file reader for ZIMPL model files"
+ #define READER_EXTENSION        "zpl"
+ 
+-
+-
+-
+ /*
+  * LP construction interface of ZIMPL
+  */
+@@ -1009,7 +1000,7 @@
+    if( strcmp(paramstr, "-") == 0 )
+    {
+       /* call ZIMPL parser without arguments */
+-      if( !zpl_read(filename) )
++      if( !zpl_read(filename, TRUE) )
+          readerror_ = TRUE;
+    }
+    else
+@@ -1093,7 +1084,7 @@
+       }
+ 
+       /* call ZIMPL parser with arguments */
+-      if( !zpl_read_with_args(argc, argv) )
++      if( !zpl_read_with_args(argv, argc, TRUE) )
+          readerror_ = TRUE;
+ 
+       /* free argument memory */
+diff -aur scip/src/scip/sepa_zerohalf.c scip/src/scip/sepa_zerohalf.c
+--- scip/src/scip/sepa_zerohalf.c	2009-09-14 09:21:39.000000000 +0200
++++ scip/src/scip/sepa_zerohalf.c	2010-02-22 15:28:20.000000000 +0100
 @@ -12,11 +12,11 @@
  /*  along with SCIP; see the file COPYING. If not email to scip@zib.de.      */
  /*                                                                           */
@@ -64,8 +2113,92 @@
  #endif
     /* search for zerohalf cuts */ 
     SCIP_CALL(preprocessTrivialZerohalfCuts(scip, sepadata, lpdata, mod2data,
---- scip/src/tclique/tclique_graph.c.orig	2009-09-21 11:29:42.000000000 +0200
-+++ scip/src/tclique/tclique_graph.c	2009-09-21 11:34:25.000000000 +0200
+diff -aur scip/src/scip/solve.c scip/src/scip/solve.c
+--- scip/src/scip/solve.c	2009-09-11 12:44:54.000000000 +0200
++++ scip/src/scip/solve.c	2010-02-22 15:20:17.000000000 +0100
+@@ -1294,14 +1294,14 @@
+       SCIPsetSortPricers(set);
+ 
+       /* call external pricer algorithms, that are active for the current problem */
+-      enoughvars = (SCIPpricestoreGetNVars(pricestore) >= SCIPsetGetPriceMaxvars(set, pretendroot)/2);
++      enoughvars = (SCIPpricestoreGetNVars(pricestore) >= SCIPsetGetPriceMaxvars(set, pretendroot)/2 + 1);
+       for( p = 0; p < set->nactivepricers && !enoughvars; ++p )
+       {
+          SCIP_CALL( SCIPpricerExec(set->pricers[p], set, prob, lp, pricestore, &lb, &result) );
+          assert(result == SCIP_DIDNOTRUN || result == SCIP_SUCCESS);
+          SCIPdebugMessage("pricing: pricer %s returned result = %s, lowerbound = %f\n", 
+             SCIPpricerGetName(set->pricers[p]), (result == SCIP_DIDNOTRUN ? "didnotrun" : "success"), *lowerbound);
+-         enoughvars = enoughvars || (SCIPpricestoreGetNVars(pricestore) >= SCIPsetGetPriceMaxvars(set, pretendroot)/2);
++         enoughvars = enoughvars || (SCIPpricestoreGetNVars(pricestore) >= (SCIPsetGetPriceMaxvars(set, pretendroot)+1)/2);
+          *aborted = ( (*aborted) || (result == SCIP_DIDNOTRUN) );
+          *lowerbound = MAX(*lowerbound, lb);
+       }
+@@ -2404,7 +2404,6 @@
+    focusnodehaslp = (set->lp_solvedepth == -1 || actdepth <= set->lp_solvedepth);
+    focusnodehaslp = focusnodehaslp && (set->lp_solvefreq >= 1 && actdepth % set->lp_solvefreq == 0);
+    focusnodehaslp = focusnodehaslp || (actdepth == 0 && set->lp_solvefreq == 0);
+-   focusnodehaslp = focusnodehaslp || (actdepth == 0 && prob->ncontvars > 0);
+    focusnodehaslp = focusnodehaslp && SCIPsetIsLT(set, SCIPlpGetPseudoObjval(lp, set), primal->cutoffbound);
+    SCIPtreeSetFocusNodeLP(tree, focusnodehaslp);
+ 
+@@ -2703,6 +2702,8 @@
+          SCIP_RESULT result;
+          int nlpcands;
+ 
++         result = SCIP_DIDNOTRUN;
++
+          if( SCIPtreeHasFocusNodeLP(tree) )
+          {
+             SCIP_CALL( SCIPbranchcandGetLPCands(branchcand, set, stat, lp, NULL, NULL, NULL, &nlpcands, NULL) );
+@@ -2784,11 +2785,11 @@
+             {
+                assert(!SCIPtreeHasFocusNodeLP(tree) || pricingaborted); /* feasible LP solutions with all integers fixed must be feasible */
+ 
+-               if( SCIPlpGetSolstat(lp) == SCIP_LPSOLSTAT_TIMELIMIT || SCIPlpGetSolstat(lp) == SCIP_LPSOLSTAT_ITERLIMIT )
++               if( SCIPlpGetSolstat(lp) == SCIP_LPSOLSTAT_TIMELIMIT || SCIPlpGetSolstat(lp) == SCIP_LPSOLSTAT_ITERLIMIT || SCIPsolveIsStopped(set, stat, FALSE) )
+                {
+                   SCIP_NODE* node;
+                
+-                  /* as we hit the time or iteration limit, we do not want to solve the LP again.
++                  /* as we hit the time or iteration limit or another interrupt (e.g., gap limit), we do not want to solve the LP again.
+                    * in order to terminate correctly, we create a "branching" with only one child node 
+                    * that is a copy of the focusnode 
+                    */
+@@ -2813,7 +2814,7 @@
+             }
+             break;
+          default:
+-            SCIPerrorMessage("invalid result code <%d> from SCIPbranchLP() or SCIPbranchPseudo()\n", result);
++            SCIPerrorMessage("invalid result code <%d> from SCIPbranchLP(), SCIPbranchRelax() or SCIPbranchPseudo()\n", result);
+             return SCIP_INVALIDRESULT;
+          }  /*lint !e788*/
+          assert(*cutoff || solvelpagain || propagateagain || branched); /* something must have been done */
+diff -aur scip/src/scip/tree.c scip/src/scip/tree.c
+--- scip/src/scip/tree.c	2009-09-10 15:47:15.000000000 +0200
++++ scip/src/scip/tree.c	2010-02-22 15:20:17.000000000 +0100
+@@ -2033,6 +2033,9 @@
+             SCIP_Real lb;
+             SCIP_Real ub;
+                   
++            if( SCIPvarGetStatus(implvars[j]) == SCIP_VARSTATUS_MULTAGGR )
++               continue;
++
+             /* check for infeasibility */
+             lb = SCIPvarGetLbLocal(implvars[j]);
+             ub = SCIPvarGetUbLocal(implvars[j]);
+@@ -2082,6 +2085,9 @@
+                   
+                assert(SCIPvarGetType(vars[k]) == SCIP_VARTYPE_BINARY);
+ 
++               if( SCIPvarGetStatus(vars[k]) == SCIP_VARSTATUS_MULTAGGR )
++                  continue;
++
+                if( vars[k] == var && values[k] == varfixing )
+                   continue;
+ 
+diff -aur scip/src/tclique/tclique_graph.c scip/src/tclique/tclique_graph.c
+--- scip/src/tclique/tclique_graph.c	2009-09-14 18:27:42.000000000 +0200
++++ scip/src/tclique/tclique_graph.c	2010-02-22 15:20:17.000000000 +0100
 @@ -12,7 +12,7 @@
  /*  along with TCLIQUE; see the file COPYING.                                */
  /*                                                                           */
@@ -120,73 +2253,8 @@
           fclose(file);
           return FALSE;
        }
---- scip/src/scip/lpi_clp.cpp	2 Sep 2009 14:59:38 -0000	1.61
-+++ scip/src/scip/lpi_clp.cpp	21 Sep 2009 10:22:27 -0000	1.62
-@@ -12,7 +12,7 @@
- /*  along with SCIP; see the file COPYING. If not email to scip@zib.de.      */
- /*                                                                           */
- /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
--#pragma ident "@(#) $Id: lpi_clp.cpp,v 1.61 2009/09/02 14:59:38 bzfpfets Exp $"
-+#pragma ident "@(#) $Id: lpi_clp.cpp,v 1.62 2009/09/21 10:22:27 bzfviger Exp $"
- 
- /**@file   lpi_clp.cpp
-  * @ingroup LPIS
-@@ -956,26 +956,33 @@
-       clp->setColumnBounds(ind[j], lb[j], ub[j]);
-       if ( sol != 0 )
-       {
--	 assert( colLower != 0 );
--	 assert( colUpper != 0 );
--	 int k = ind[j];
--	 switch ( clp->getColumnStatus(k) )
--	 {
--	 case ClpSimplex::isFree:
--	 case ClpSimplex::superBasic:
--	    sol[j] = 0.0;
--	    break;
--	 case ClpSimplex::atUpperBound:
--	    sol[k] = colUpper[k];
--	    assert( colUpper[k] == ub[j] );
--	    break;
--	 case ClpSimplex::isFixed:
--	 case ClpSimplex::atLowerBound:
--	    sol[k] = colLower[k];
--	    assert( colLower[k] == lb[j] );
--	    break;
--	 default:;
--	 }
-+         if( clp->statusExists() )
-+         {
-+            assert( colLower != 0 );
-+            assert( colUpper != 0 );
-+            int k = ind[j];
-+            switch ( clp->getColumnStatus(k) )
-+            {
-+               case ClpSimplex::isFree:
-+               case ClpSimplex::superBasic:
-+                  sol[j] = 0.0;
-+                  break;
-+               case ClpSimplex::atUpperBound:
-+                  sol[k] = colUpper[k];
-+                  assert( colUpper[k] == ub[j] );
-+                  break;
-+               case ClpSimplex::isFixed:
-+               case ClpSimplex::atLowerBound:
-+                  sol[k] = colLower[k];
-+                  assert( colLower[k] == lb[j] );
-+                  break;
-+               default:;
-+            }
-+         }
-+         else
-+         { /* workaround: if there is no status, we assume something */
-+            sol[j] = 0.0;
-+         }
-       }
-    }
- 
---- scip/src/scip/heur_trivial.c	10 Sep 2009 21:12:40 -0000	1.5
-+++ scip/src/scip/heur_trivial.c	12 Oct 2009 17:18:36 -0000	1.6
+--- scip/src/scip/heur_trivial.c        10 Sep 2009 21:12:40 -0000      1.5
++++ scip/src/scip/heur_trivial.c        12 Oct 2009 17:18:36 -0000      1.6
 @@ -128,11 +128,11 @@
        /* set variables to the bound with fewer locks, if tie choose an average value */
        if( SCIPvarGetNLocksDown(vars[i]) >  SCIPvarGetNLocksUp(vars[i]) )
@@ -198,6 +2266,6 @@
        {
 -         SCIP_CALL( SCIPsetSolVal(scip, lbsol, vars[i], lb) );
 +         SCIP_CALL( SCIPsetSolVal(scip, locksol, vars[i], lb) );
-       }      
+       }
        else
        {
