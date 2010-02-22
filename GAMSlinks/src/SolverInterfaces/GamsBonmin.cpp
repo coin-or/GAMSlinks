@@ -182,6 +182,7 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	bonmin_setup->options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
 //	bonmin_setup->options()->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);
 //	bonmin_setup->options()->SetNumericValue("nlp_upper_bound_inf", gmoPinf(gmo), false, true);
+	bonmin_setup->options()->SetIntegerValue("bonmin.nlp_log_at_root", Ipopt::J_ITERSUMMARY, true, true);
 	if (GMS_SV_NA != gevGetDblOpt(gev, gevCutOff))
 		bonmin_setup->options()->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == Obj_Min ? gevGetDblOpt(gev, gevCutOff) : -gevGetDblOpt(gev, gevCutOff), true, true);
 	bonmin_setup->options()->SetNumericValue("bonmin.allowable_gap", gevGetDblOpt(gev, gevOptCA), true, true);
