@@ -309,8 +309,8 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				OsiXprSolverInterface* osixpr = new OsiXprSolverInterface(gmoM(gmo), gmoNZ(gmo));
 				if (!osixpr->getNumInstances()) {
 					gevLogStat(gev, "Failed to setup XPRESS instance. Maybe you do not have a license?\n");
-					gmoSolveStatSet(gmo, SolveStat_License);
-					gmoModelStatSet(gmo, ModelStat_LicenseError);
+					gmoSolveStatSet(gmo, SolveStat_SetupErr);
+					gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 					return 1;
 				}
 				osi = osixpr;
