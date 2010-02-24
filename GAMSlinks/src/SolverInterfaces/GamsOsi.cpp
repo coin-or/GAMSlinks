@@ -388,6 +388,15 @@ int GamsOsi::callSolver() {
   if (solverid == GLPK)
     glp_term_hook(glpkprint, gev);
 #endif
+  
+  if (gevGetIntOpt(gev, gevInteger3))
+  {
+  	char buffer[1024];
+  	gmoNameInput(gmo, buffer);
+  	//gevLogPChar(gev, "Writing MPS file ");
+  	//gevLog(gev, buffer);
+  	osi->writeMps(buffer);
+  }
 
 	double start_cputime  = CoinCpuTime();
 	double start_walltime = CoinWallclockTime();
@@ -411,7 +420,11 @@ int GamsOsi::callSolver() {
 #endif
 	
 	gevLogStat(gev, "");
-	writeSolution(end_cputime - start_cputime, end_walltime - start_walltime);
+	bool solwritten;
+	writeSolution(end_cputime - start_cputime, end_walltime - start_walltime, solwritten);
+	
+	if (!isLP() && gevGetIntOpt(gev, gevInteger1) && solwritten)
+		solveFixed();
 
 	return 0;
 }
@@ -430,7 +443,7 @@ bool GamsOsi::setupProblem(OsiSolverInterface& solver) {
 	if (!gamsOsiLoadProblem(gmo, solver))
 		return false;
 
-	if (gmoDict(gmo)!=NULL) {
+	if (gmoDict(gmo)!=NULL && gevGetIntOpt(gev, gevInteger2)) {
 		solver.setIntParam(OsiNameDiscipline, 2);
 		char buffer[255];
 		std::string stbuffer;
@@ -773,9 +786,10 @@ bool GamsOsi::setupParameters() {
 	return true;
 }
 
-bool GamsOsi::writeSolution(double cputime, double walltime) {
-	bool write_solution = false;
+bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solution) {
 	char buffer[255];
+	
+	write_solution = false;
 
 	switch (solverid) {
 #ifdef COIN_HAS_CPX
@@ -1367,8 +1381,10 @@ bool GamsOsi::writeSolution(double cputime, double walltime) {
 
 	if (write_solution) {
 		if (isLP()) {
-			if (!gamsOsiStoreSolution(gmo, *osi, false))
+			if (!gamsOsiStoreSolution(gmo, *osi, false)) {
+				write_solution = false;
 				return false;
+			}
 		} else { // is MIP -> store only primal values for now
 			double* rowprice = CoinCopyOfArrayOrZero((double*)NULL, gmoM(gmo));
 			try {
@@ -1377,6 +1393,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime) {
 			} catch (CoinError error) {
 				gevLogStatPChar(gev, "Exception caught when requesting primal solution values: ");
 				gevLogStat(gev, error.message().c_str());
+				write_solution = false;
 			}
 			delete[] rowprice;
 		}
@@ -1398,6 +1415,97 @@ bool GamsOsi::writeSolution(double cputime, double walltime) {
 		}
 #endif
 	}
+
+	return true;
+}
+
+bool GamsOsi::solveFixed() {
+	gevLogStat(gev, "\nSolving LP obtained from MIP by fixing discrete variables to values in solution.\n");
+	
+	for (int i = 0; i < gmoN(gmo); ++i)
+		if (gmoGetVarTypeOne(gmo, i) != var_X) {
+			double solval, dummy;
+			int dummy2;
+			gmoGetSolutionVarRec(gmo, i, &solval, &dummy, &dummy2, &dummy2);
+			osi->setColBounds(i, solval, solval);
+		}
+	
+	if (gevGetDblOpt(gev, gevReal1)) {
+		switch (solverid) {
+#ifdef COIN_HAS_CBC
+			case CBC: {
+				OsiCbcSolverInterface* osicbc = dynamic_cast<OsiCbcSolverInterface*>(osi);
+				osicbc->getModelPtr()->setDblParam(CbcModel::CbcMaximumSeconds, gevGetDblOpt(gev, gevReal1));
+			} break;
+#endif
+			
+#ifdef COIN_HAS_CPX
+			case CPLEX: {
+				OsiCpxSolverInterface* osicpx = dynamic_cast<OsiCpxSolverInterface*>(osi);
+				assert(osicpx != NULL);
+				CPXsetdblparam(osicpx->getEnvironmentPtr(), CPX_PARAM_TILIM, gevGetDblOpt(gev, gevReal1));
+			} break;
+#endif
+			
+#ifdef COIN_HAS_GLPK
+			case GLPK: {
+			  OsiGlpkSolverInterface* osiglpk = dynamic_cast<OsiGlpkSolverInterface*>(osi);
+			  assert(osiglpk != NULL);
+			  if (gevGetDblOpt(gev, gevReal1) > 1e+6) { // GLPK cannot handle very large timelimits, so we run it without limit then
+			    gevLogStat(gev, "Time limit for final LP solve too large. GLPK will run without timelimit.");
+				  lpx_set_real_parm(osiglpk->getModelPtr(), LPX_K_TMLIM, -1);
+			  }
+			  lpx_set_real_parm(osiglpk->getModelPtr(), LPX_K_TMLIM, gevGetDblOpt(gev, gevReal1));
+			} break;
+	#endif
+
+	#ifdef COIN_HAS_GRB
+			case GUROBI:  {
+				OsiGrbSolverInterface* osigrb = dynamic_cast<OsiGrbSolverInterface*>(osi);
+				assert(osigrb != NULL);
+				GRBsetdblparam(GRBgetenv(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL)), GRB_DBL_PAR_TIMELIMIT, gevGetDblOpt(gev, gevReal1));
+			} break;
+	#endif
+				
+	#ifdef COIN_HAS_MSK
+			case MOSEK: {
+				OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
+				assert(osimsk != NULL);
+				MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_OPTIMIZER_MAX_TIME, gevGetDblOpt(gev, gevReal1));
+				break;
+			}
+	#endif
+				
+	#ifdef COIN_HAS_XPR
+			case XPRESS: {
+				OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
+				assert(osixpr != NULL);
+				XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXTIME, (int)gevGetDblOpt(gev, gevReal1));
+				break;
+			}
+	#endif
+			
+			default:
+				gevLogStat(gev, "Encountered unsupported solver id in setupParameters.");
+				return false;
+		}
+	}
+	
+	osi->resolve();
+	
+	if (osi->isProvenOptimal()) {
+		if (!gamsOsiStoreSolution(gmo, *osi, false)) {
+			gevLogStat(gev, "Failed to store LP solution. Only primal solution values will be available in GAMS solution file.\n");
+			return false;
+		}
+	} else {
+		gevLogStat(gev, "Solve of final LP failed. Only primal solution values will be available in GAMS solution file.\n");
+		gevSetIntOpt(gev, gevInteger1, 0);
+	}
+	
+	for (int i = 0; i < gmoN(gmo); ++i)
+		if (gmoGetVarTypeOne(gmo, i) != var_X)
+			osi->setColBounds(i, gmoGetVarLowerOne(gmo, i), gmoGetVarUpperOne(gmo, i));
 
 	return true;
 }

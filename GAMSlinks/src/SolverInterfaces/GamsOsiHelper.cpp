@@ -141,6 +141,10 @@ bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 			}
 		}
 	}
+	
+	char inputname[1024];
+	gmoNameInput(gmo, inputname);
+	solver.setStrParam(OsiProbName, inputname);
 
 	return true;
 }

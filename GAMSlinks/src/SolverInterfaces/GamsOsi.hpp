@@ -34,7 +34,8 @@ private:
 	bool setupProblem(OsiSolverInterface& solver);
 	bool setupStartingPoint();
 	bool setupParameters();
-	bool writeSolution(double cputime, double walltime);
+	bool writeSolution(double cputime, double walltime, bool& solwritten);
+	bool solveFixed();
 
 	bool isLP();
 
