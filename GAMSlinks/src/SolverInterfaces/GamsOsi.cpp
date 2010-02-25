@@ -528,16 +528,20 @@ bool GamsOsi::setupStartingPoint() {
 			osi->setColSolution(varlevel);
 			osi->setRowPrice(rowprice);
 		}
-		if (!osi->setWarmStart(&basis)) {
-			gevLogStat(gev, "Failed to set initial basis. Exiting ...");
-			delete[] varlevel;
-			delete[] rowprice;
-			return false;
-		} else if (solverid == GUROBI ) {
-			gevLog(gev, "Registered advanced basis. This turns off presolve!");
-			gevLog(gev, "In case of poor performance consider turning off advanced basis registration via GAMS option BRatio=1.");
+		if (solverid != GUROBI || nbas == gmoM(gmo)) {
+			if (!osi->setWarmStart(&basis)) {
+				gevLogStat(gev, "Failed to set initial basis. Exiting ...");
+				delete[] varlevel;
+				delete[] rowprice;
+				return false;
+			} else if (solverid == GUROBI ) {
+				gevLog(gev, "Registered advanced basis. This turns off presolve!");
+				gevLog(gev, "In case of poor performance consider turning off advanced basis registration via GAMS option BRatio=1.");
+			} else {
+				gevLog(gev, "Registered advanced basis.");
+			}
 		} else {
-			gevLog(gev, "Registered advanced basis.");
+			gevLog(gev, "Did not attempt to register incomplete basis.\n");
 		}
 	} catch (CoinError error) {
 		gevLogStatPChar(gev, "Exception caught when setting initial basis: ");
