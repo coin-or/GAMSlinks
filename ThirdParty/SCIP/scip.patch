@@ -1692,11 +1692,19 @@ diff -aur scip/src/scip/nlpi_ipopt.cpp scip/src/scip/nlpi_ipopt.cpp
        return SCIP_NOMEMORY;
     }
     
-diff -aur scip/src/scip/nlpi_oracle.c scip/src/scip/nlpi_oracle.c
---- scip/src/scip/nlpi_oracle.c	2009-09-11 18:02:48.000000000 +0200
-+++ scip/src/scip/nlpi_oracle.c	2010-02-22 15:20:17.000000000 +0100
+--- scip/src/scip/nlpi_oracle.c   2009-09-11 18:02:48.000000000 +0200
++++ scip/src/scip/nlpi_oracle.c   2010-02-25 15:49:21.000000000 +0100
+@@ -1270,7 +1270,7 @@
+          int nz = oracle->conslinoffsets[i+1] - oracle->conslinoffsets[i];
+          if( nnz + nz > maxnnz )
+          {
+-           maxnnz *= 2;
++           maxnnz = MAX(nnz + nz, 2*maxnnz);
+            SCIP_CALL( SCIPreallocMemoryArray(scip, &oracle->jaccols, maxnnz) );
+          }
+          BMScopyMemoryArray(&oracle->jaccols[nnz], &oracle->conslininds[oracle->conslinoffsets[i]], nz);
 @@ -1318,7 +1318,7 @@
-          
+
           if( nnz >= maxnnz )
           {
 -            maxnnz *= 2;
