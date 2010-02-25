@@ -64,7 +64,7 @@ SCIP_DECL_MESSAGEINFO(GamsScipPrintInfoOrDialog) {
 GamsScip::GamsScip()
 : gmo(NULL), gev(NULL), isDemo(false), gamsmsghandler(NULL), scip(NULL), scipmsghandler(NULL), vars(NULL), lpi(NULL)
 {
-  sprintf(scip_message, "SCIP version %d.%d.%d [LP solver: %s]\n%s\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
+  sprintf(scip_message, "SCIP version %d.%d.%d (+ patchset 1) [LP solver: %s]\n%s\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
 }
 
 GamsScip::~GamsScip() {

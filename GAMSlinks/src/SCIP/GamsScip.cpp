@@ -125,7 +125,7 @@ int main (int argc, const char *argv[]) {
   if (smagStdOutputStart(prob, SMAG_STATUS_OVERWRITE_IFDUMMY, buffer, sizeof(buffer)))
   	fprintf(stderr, "Warning: Error opening GAMS output files .. continuing anyhow\t%s\n", buffer);
 
-  sprintf(buffer, "\nSCIP version %d.%d.%d [LP solver: %s]\n%s\n\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
+  sprintf(buffer, "\nSCIP version %d.%d.%d (+ patchset 1) [LP solver: %s]\n%s\n\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
 	smagStdOutputPrint(prob, SMAG_ALLMASK, buffer);
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
  
