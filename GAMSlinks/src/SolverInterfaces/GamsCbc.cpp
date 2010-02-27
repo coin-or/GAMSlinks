@@ -88,9 +88,9 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		char buffer[1024];
 		gmoNameOptFile(gmo, buffer);
 #ifdef GAMS_BUILD
-		options.readOptionsFile("coincbc", gmoOptFile(gmo) ? buffer : NULL);
+		options.readOptionsFile("cbc",  gmoOptFile(gmo) ? buffer : NULL);
 #else
-		options.readOptionsFile("cbcd",    gmoOptFile(gmo) ? buffer : NULL);
+		options.readOptionsFile("cbcd", gmoOptFile(gmo) ? buffer : NULL);
 #endif
 	}
 	if (!options.isDefined("reslim"))  options.setDouble ("reslim",  gevGetDblOpt(gev, gevResLim));
