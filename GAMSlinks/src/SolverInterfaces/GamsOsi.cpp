@@ -93,61 +93,37 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 
 #ifdef COIN_HAS_CBC
 		case CBC:
-#ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/OsiCbc (Osi library 0.102, CBC library 2.4)\nwritten by J. Forrest\n");
-#else
-			sprintf(osi_message, "GAMS/OsiCbc (Osi library 0.102, CBC library 2.4)\nwritten by J. Forrest\n");
-#endif
+			sprintf(osi_message, "OsiCbc (Osi library 0.102, CBC library 2.4)\nOsi link written by J. Forrest. Osi is part of COIN-OR.\n");
 			break;
 #endif
 			
 #ifdef COIN_HAS_CPX
 		case CPLEX:
-#ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/OsiCplex (Osi library 0.102, CPLEX library %.2f)\nOsi link written by T. Achterberg\n", CPX_VERSION/100.);
-#else
-			sprintf(osi_message, "GAMS/OsiCplex (Osi library 0.102, CPLEX library %.2f)\nOsi link written by T. Achterberg\n", CPX_VERSION/100.);
-#endif
+			sprintf(osi_message, "OsiCplex (Osi library 0.102, CPLEX library %.2f)\nOsi link written by T. Achterberg. Osi is part of COIN-OR.\n", CPX_VERSION/100.);
 			break;
 #endif
 
 #ifdef COIN_HAS_GLPK
 		case GLPK:
-#ifdef GAMS_BUILD
-		  sprintf(osi_message, "GAMS/OsiGlpk (Osi library 0.102, GLPK library %d.%d)\nOsi link written by Vivian De Smedt and Braden Hunsaker\n", GLP_MAJOR_VERSION, GLP_MINOR_VERSION);
-#else
-		  sprintf(osi_message, "GAMS/OsiGlpk (Osi library 0.102, GLPK library %d.%d)\nOsi link written by Vivian De Smedt and Braden Hunsaker\n", GLP_MAJOR_VERSION, GLP_MINOR_VERSION);
-#endif
+		  sprintf(osi_message, "OsiGlpk (Osi library 0.102, GLPK library %d.%d)\nOsi link written by Vivian De Smedt and Braden Hunsaker. Osi is part of COIN-OR.\n", GLP_MAJOR_VERSION, GLP_MINOR_VERSION);
 		  break;
 #endif
 
 #ifdef COIN_HAS_GRB
 		case GUROBI:
-#ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/OsiGurobi (Osi library 0.102, GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
-#else
-			sprintf(osi_message, "GAMS/OsiGurobi (Osi library 0.102, GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
-#endif
+			sprintf(osi_message, "OsiGurobi (Osi library 0.102, GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske. Osi is part of COIN-OR.\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
 			break;
 #endif
 
 #ifdef COIN_HAS_MSK
 		case MOSEK:
-#ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/OsiMosek (Osi library 0.102, MOSEK library %d.%d)\nwritten by Bo Jensen\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
-#else
-			sprintf(osi_message, "GAMS/OsiMosek (Osi library 0.102, MOSEK library %d.%d)\nwritten Bo Jensen\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
-#endif
+			sprintf(osi_message, "OsiMosek (Osi library 0.102, MOSEK library %d.%d)\nwritten by Bo Jensen. Osi is part of COIN-OR.\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
 			break;
 #endif
 			
 #ifdef COIN_HAS_XPR
 		case XPRESS:
-#ifdef GAMS_BUILD
-			sprintf(osi_message, "GAMS/OsiXpress (Osi library 0.102, Xpress library %d)\n", XPVERSION);
-#else
-			sprintf(osi_message, "GAMS/OsiXpress (Osi library 0.102, Xpress library %d)\n", XPVERSION);
-#endif
+			sprintf(osi_message, "OsiXpress (Osi library 0.102, FICO Xpress-Optimizer library %d)\nOsi is part of COIN-OR.\n", XPVERSION);
 			break;
 #endif
 

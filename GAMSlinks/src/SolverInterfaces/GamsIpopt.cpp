@@ -66,11 +66,7 @@ using namespace Ipopt;
 GamsIpopt::GamsIpopt()
 : gmo(NULL), gev(NULL)
 {
-#ifdef GAMS_BUILD
-	strcpy(ipopt_message, "GAMS/Ipopt (Ipopt Library 3.8)\nwritten by A. Waechter\n");
-#else
-	strcpy(ipopt_message, "GAMS/IpoptD (Ipopt Library 3.8)\nwritten by A. Waechter\n");
-#endif
+	strcpy(ipopt_message, "COIN-OR Interior Point Optimizer (Ipopt Library 3.8)\nwritten by A. Waechter\n");
 }
 
 GamsIpopt::~GamsIpopt() { }

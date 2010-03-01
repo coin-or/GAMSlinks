@@ -100,11 +100,7 @@ using namespace std;
 GamsCouenne::GamsCouenne()
 : gmo(NULL), gev(NULL), gamscbc(NULL)
 {
-#ifdef GAMS_BUILD
-	strcpy(couenne_message, "GAMS/Couenne (Couenne Library 0.3)\nwritten by P. Belotti\n");
-#else
-	strcpy(couenne_message, "GAMS/Couenne (Couenne Library 0.3)\nwritten by P. Belotti\n");
-#endif
+	strcpy(couenne_message, "COIN-OR Couenne (Couenne Library 0.3)\nwritten by P. Belotti\n");
 }
 
 GamsCouenne::~GamsCouenne() {

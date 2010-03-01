@@ -67,11 +67,7 @@ void mygevLogStatPChar(gevRec* gev, const char* msg_) {
 GamsOS::GamsOS()
 : gmo(NULL), osinstance(NULL)
 {
-#ifdef GAMS_BUILD
-	strcpy(os_message, "GAMS/OS (OS Library 2.0)\nwritten by H. Gassmann, J. Ma, and K. Martin\n");
-#else
-	strcpy(os_message, "GAMS/OSD (OS Library 2.0)\nwritten by H. Gassmann, J. Ma, and K. Martin\n");
-#endif
+	strcpy(os_message, "COIN-OR Optimization Services (OS Library 2.0)\nwritten by H. Gassmann, J. Ma, and K. Martin\n");
 }
 
 GamsOS::~GamsOS() { }

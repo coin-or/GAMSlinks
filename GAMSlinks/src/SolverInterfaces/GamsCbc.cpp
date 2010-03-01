@@ -53,11 +53,7 @@
 GamsCbc::GamsCbc()
 : gmo(NULL), gev(NULL), msghandler(NULL), model(NULL), cbc_argc(0), cbc_args(NULL)
 {
-#ifdef GAMS_BUILD
-	strcpy(cbc_message, "GAMS/Cbc (CBC Library 2.4)\nwritten by J. Forrest\n");
-#else
-	strcpy(cbc_message, "GAMS/CbcD (CBC Library 2.4)\nwritten by J. Forrest\n");
-#endif
+	strcpy(cbc_message, "COIN-OR Branch and Cut (CBC Library 2.4)\nwritten by J. Forrest\n");
 }
 
 GamsCbc::~GamsCbc() {
