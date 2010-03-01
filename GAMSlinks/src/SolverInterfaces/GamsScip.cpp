@@ -43,6 +43,7 @@
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
 #include "scip/cons_linear.h"
+#include "scip/cons_bounddisjunction.h"
 #include "scip/cons_quadratic.h"
 #include "scip/cons_sos1.h"
 #include "scip/cons_sos2.h"
@@ -128,13 +129,6 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gmoObjStyleSet(gmo, ObjType_Fun);
   gmoIndexBaseSet(gmo, 0);
 
-	if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
-		gevLogStat(gev, "ERROR: Semicontinuous and semiinteger variables not supported by SCIP interface yet.\n");
-		gmoSolveStatSet(gmo, SolveStat_Capability);
-		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-		return 1;
-  }
-	
 	if (gmoGetEquTypeCnt(gmo, equ_C) || gmoGetEquTypeCnt(gmo, equ_X)) {
 		gevLogStat(gev, "ERROR: Conic constraints and external functions not supported by SCIP or SCIP interface.\n");
 		gmoSolveStatSet(gmo, SolveStat_Capability);
@@ -427,7 +421,12 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 		memset(coefs, 0, gmoN(gmo)*sizeof(double));
 	for (int i = 0; i < gmoN(gmo); ++i) {
 		SCIP_VARTYPE vartype;
+		SCIP_Real lb, ub;
+		lb = gmoGetVarLowerOne(gmo, i);
+		ub = gmoGetVarUpperOne(gmo, i);
 		switch (gmoGetVarTypeOne(gmo, i)) {
+			case var_SC:
+				lb = 0.0;
 			case var_X:
 			case var_S1:
 			case var_S2:
@@ -436,18 +435,20 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 			case var_B:
 				vartype = SCIP_VARTYPE_BINARY;
 				break;
+			case var_SI:
+				lb = 0.0;
 			case var_I:
 				vartype = SCIP_VARTYPE_INTEGER;
 				break;
 			default :
-				gevLogStat(gev, "Error: semicontinuous and semiinteger variables not supported.\n");
+				gevLogStat(gev, "Error: unknown variable type.\n");
 				return SCIP_READERROR;
 		}
 		if (names)
 			gmoGetVarNameOne(gmo, i, buffer);
 		else
 			sprintf(buffer, "x%d", i);
-		SCIP_CALL( SCIPcreateVar(scip, &vars[i], buffer, gmoGetVarLowerOne(gmo, i), gmoGetVarUpperOne(gmo, i), coefs[i], vartype, TRUE, FALSE, NULL, NULL, NULL, NULL) );
+		SCIP_CALL( SCIPcreateVar(scip, &vars[i], buffer, lb, ub, coefs[i], vartype, TRUE, FALSE, NULL, NULL, NULL, NULL) );
 		SCIP_CALL( SCIPaddVar(scip, vars[i]) );
 		
 		if (gmoPriorOpt(gmo) && minprior < maxprior && gmoGetVarTypeOne(gmo, i) != var_X) {
@@ -456,6 +457,33 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 			// thus, we scale the values from GAMS to lie between 0 (lowest prior) and 1000 (highest prior) 
 			int branchpriority = (int)(1000.0 / (maxprior - minprior) * (maxprior - gmoGetVarPriorOne(gmo, i)));
 			SCIP_CALL( SCIPchgVarBranchPriority(scip, vars[i], branchpriority) );
+		}
+	}
+	
+	/* setup bound disjunction constraints for semicontinuous/semiinteger variables 
+	 * by saying x <= 0 or x >= gmoGetVarLower */
+	if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
+		SCIP_BOUNDTYPE bndtypes[2];
+		SCIP_Real      bnds[2];
+		SCIP_VAR*      bndvars[2];
+		SCIP_CONS*     cons;
+		
+		bndtypes[0] = SCIP_BOUNDTYPE_UPPER;
+		bndtypes[1] = SCIP_BOUNDTYPE_LOWER;
+		bnds[0] = 0;
+
+		for (int i = 0; i < gmoN(gmo); ++i) {
+			if (gmoGetVarTypeOne(gmo, i) != var_SC && gmoGetVarTypeOne(gmo, i) != var_SI)
+				continue;
+			
+			bndvars[0] = vars[i];
+			bndvars[1] = vars[i];
+			bnds[1] = gmoGetVarLowerOne(gmo, i);
+			snprintf(buffer, 256, "bnddisj_%s\n", SCIPvarGetName(vars[i]));
+			SCIP_CALL( SCIPcreateConsBounddisjunction(scip, &cons, buffer, 2, bndvars, bndtypes, bnds,
+				TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
+			SCIP_CALL( SCIPaddCons(scip, cons) );
+			SCIP_CALL( SCIPreleaseCons(scip, &cons) );
 		}
 	}
 	
