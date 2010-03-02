@@ -101,6 +101,9 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 #ifdef GAMS_BUILD
 #define GEVPTR gev
+/* bad bad bad */ 
+#undef SUB_FR
+#define SUB_SC
 #include "cmagic2.h"
 	if (licenseCheck(gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo))) {
 		// model larger than demo and no solver-specific license; check if we have an academic license
@@ -479,7 +482,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 			bndvars[0] = vars[i];
 			bndvars[1] = vars[i];
 			bnds[1] = gmoGetVarLowerOne(gmo, i);
-			snprintf(buffer, 256, "bnddisj_%s\n", SCIPvarGetName(vars[i]));
+			snprintf(buffer, 256, "bnddisj_%s", SCIPvarGetName(vars[i]));
 			SCIP_CALL( SCIPcreateConsBounddisjunction(scip, &cons, buffer, 2, bndvars, bndtypes, bnds,
 				TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
 			SCIP_CALL( SCIPaddCons(scip, cons) );
