@@ -393,7 +393,8 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 
 	char buffer[256];
 
-	SCIP_CALL( SCIPcreateProb(scip, "gamsmodel", NULL, NULL, NULL, NULL, NULL, NULL) );
+	gmoNameInput(gmo, buffer);
+	SCIP_CALL( SCIPcreateProb(scip, buffer, NULL, NULL, NULL, NULL, NULL, NULL) );
 
 	SCIP_Bool names = FALSE;
 	if (gmoDict(gmo))
