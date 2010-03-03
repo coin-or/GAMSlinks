@@ -138,7 +138,14 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 		return 1;
   }
-	
+
+	if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
+		gevLogStat(gev, "ERROR: Semicontinuous and semiinteger variables not supported yet.\n");
+		gmoSolveStatSet(gmo, SolveStat_Capability);
+		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+		return 1;
+  }
+
 	gamsmsghandler = new GamsMessageHandler(gev);
   
 	SCIP_RETCODE scipret;
