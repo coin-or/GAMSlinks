@@ -460,13 +460,15 @@ bool GamsOsi::setupStartingPoint() {
 					++nbas;
 				} else if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
 					basis.setStructStatus(j, CoinWarmStartBasis::isFree);
-				else if (fabs(gmoGetVarLowerOne(gmo, j) - varlevel[j]) < fabs(gmoGetVarUpperOne(gmo, j) - varlevel[j]))
+				else if (gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) || fabs(gmoGetVarLowerOne(gmo, j) - varlevel[j]) < fabs(gmoGetVarUpperOne(gmo, j) - varlevel[j]))
 					basis.setStructStatus(j, CoinWarmStartBasis::atLowerBound);
 				else
 					basis.setStructStatus(j, CoinWarmStartBasis::atUpperBound);
 				break;
 			case 1:
-				if (fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
+				if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
+					basis.setStructStatus(j, CoinWarmStartBasis::isFree);
+				else if (gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) || fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
 					basis.setStructStatus(j, CoinWarmStartBasis::atLowerBound);
 				else
 					basis.setStructStatus(j, CoinWarmStartBasis::atUpperBound);
@@ -486,10 +488,10 @@ bool GamsOsi::setupStartingPoint() {
 					basis.setArtifStatus(j, CoinWarmStartBasis::basic);
 					++nbas;
 				} else
-					basis.setArtifStatus(j, CoinWarmStartBasis::atUpperBound);
+					basis.setArtifStatus(j, gmoGetEquTypeOne(gmo, j) == equ_G ? CoinWarmStartBasis::atLowerBound : CoinWarmStartBasis::atUpperBound);
 				break;
 			case 1:
-				basis.setArtifStatus(j, CoinWarmStartBasis::atUpperBound);
+				basis.setArtifStatus(j, gmoGetEquTypeOne(gmo, j) == equ_G ? CoinWarmStartBasis::atLowerBound : CoinWarmStartBasis::atUpperBound);
 				break;
 			default:
 				gevLogStat(gev, "Error: invalid basis indicator for row.");

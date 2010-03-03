@@ -394,13 +394,15 @@ bool GamsCbc::setupStartingPoint() {
 						++nbas;
 					} else if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
 						cstat[j] = 0; // superbasic = free
-					else if (fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
+					else if (gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) || fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
 						cstat[j] = 3; // nonbasic at lower bound
 					else
 						cstat[j] = 2; // nonbasic at upper bound
 					break;
 				case 1:
-					if (fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
+					if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
+						cstat[j] = 0; // superbasic = free
+					if (gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) || fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
 						cstat[j] = 3; // nonbasic at lower bound
 					else
 						cstat[j] = 2; // nonbasic at upper bound
@@ -422,10 +424,10 @@ bool GamsCbc::setupStartingPoint() {
 						rstat[j] = 1; // basic
 						++nbas;
 					} else
-						rstat[j] = 2; // nonbasic at upper bound (flipped for cbc)
+						rstat[j] = gmoGetEquTypeOne(gmo, j) == equ_L ? 3 : 2; // nonbasic at some bound
 					break;
 				case 1:
-					rstat[j] = 2; // nonbasic at upper bound (flipped for cbc)
+					rstat[j] = gmoGetEquTypeOne(gmo, j) == equ_L ? 3 : 2; // nonbasic at some bound
 					break;
 				default:
 					gevLogStat(gev, "Error: invalid basis indicator for row.");

@@ -186,6 +186,7 @@ AC_ARG_ENABLE(os-solver,
   [os_solver=no] )
   
 AM_CONDITIONAL(COIN_OS_SOLVER, [test x"$os_solver" = xyes])
+AC_SUBST(os_solver)
 AC_MSG_RESULT([$os_solver])
 
 ################
@@ -486,7 +487,7 @@ AC_CONFIG_FILES([Makefile
                  test/Makefile test/run_quality test/run_gmstest
                  examples/adbench/Makefile
                  examples/osil2gms/Makefile
-                ])
+                ], [chmod +x test/run_quality test/run_gmstest])
 
 AC_CONFIG_HEADER([inc/config_gamslinks.h])
 

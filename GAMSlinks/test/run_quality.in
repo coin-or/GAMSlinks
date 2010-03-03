@@ -193,7 +193,7 @@ if test @gamslinks_build_scip@ = 1 ; then
   testlist[${#testlist[@]}]="--solver scipd --suite qcp user1=\"--QPMCHECKS=0 --TESTTOL=1e-3\""
 fi
 
-if test @gamslinks_build_os@ = 1 ; then
+if test @gamslinks_build_os@ = 1 -a @os_solver@ = yes ; then
   solvers="$solvers , OSD"
   skiplist="$skiplist skip('OSD','lp03')=yes;"
   skiplist="$skiplist skip('OSD','sl4lp03')=yes;"

@@ -367,6 +367,7 @@ localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+os_solver = @os_solver@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 sbindir = @sbindir@
@@ -547,7 +548,6 @@ uninstall-am: uninstall-info-am
 
 
 test:
-	chmod u+x ./run_quality ./run_gmstest
 	sh -c ./run_quality
 	sh -c ./run_gmstest
 

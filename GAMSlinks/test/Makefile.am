@@ -11,7 +11,6 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST =
 
 test:
-	chmod u+x ./run_quality ./run_gmstest
 	sh -c ./run_quality
 	sh -c ./run_gmstest
 

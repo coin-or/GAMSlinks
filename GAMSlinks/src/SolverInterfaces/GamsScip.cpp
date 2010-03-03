@@ -747,13 +747,15 @@ SCIP_RETCODE GamsScip::setupInitialBasis() {
 					++nbas;
 				} else if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
 					cstat[j] = SCIP_BASESTAT_ZERO;
-				else if (fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
+				else if (gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) || fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
 					cstat[j] = SCIP_BASESTAT_LOWER;
 				else
 					cstat[j] = SCIP_BASESTAT_UPPER;
 				break;
 			case 1:
-				if (fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
+				if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
+					cstat[j] = SCIP_BASESTAT_ZERO;
+				else if (gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) || fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
 					cstat[j] = SCIP_BASESTAT_LOWER;
 				else
 					cstat[j] = SCIP_BASESTAT_UPPER;
@@ -773,10 +775,10 @@ SCIP_RETCODE GamsScip::setupInitialBasis() {
 					rstat[j] = SCIP_BASESTAT_BASIC;
 					++nbas;
 				} else
-					rstat[j] = SCIP_BASESTAT_LOWER;
+					rstat[j] = gmoGetEquTypeOne(gmo, j) == equ_L ? SCIP_BASESTAT_UPPER : SCIP_BASESTAT_LOWER;
 				break;
 			case 1:
-				rstat[j] = SCIP_BASESTAT_LOWER;
+				rstat[j] = gmoGetEquTypeOne(gmo, j) == equ_L ? SCIP_BASESTAT_UPPER : SCIP_BASESTAT_LOWER;
 				break;
 			default:
 				gevLogStat(gev, "ERROR: invalid basis indicator for row.");
