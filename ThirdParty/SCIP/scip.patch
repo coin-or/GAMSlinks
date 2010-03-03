@@ -2277,3 +2277,396 @@ diff -aur scip/src/tclique/tclique_graph.c scip/src/tclique/tclique_graph.c
        }
        else
        {
+--- scip/src/scip/cons_knapsack.c	4 Jan 2010 20:35:37 -0000	1.183
++++ scip/src/scip/cons_knapsack.c	2 Mar 2010 14:53:27 -0000	1.185
+@@ -421,26 +421,45 @@
+          /* all weight have to be not negative */
+          assert( weights[v] >= 0 );
+ 
+-         if( weights[v] != 0 )
++         if( weights[v] > 0 )
+          {
+-            vars[k] = vars[v];
+-            weights[k] = weights[v];
+-            k++;
++            (*consdata)->vars[k] = vars[v];
++            (*consdata)->weights[k] = weights[v];
++            ++k;
+          }
+       }
++      assert(k >= 0);
++
+       (*consdata)->nvars = k;
++      if( k < nvars )
++      {
++         if( k > 0 )
++         {
++            SCIP_CALL( SCIPreallocBlockMemoryArray(scip, &(*consdata)->vars, nvars, k) );
++            SCIP_CALL( SCIPreallocBlockMemoryArray(scip, &(*consdata)->weights, nvars, k) );
++         }
++         else
++         {
++            SCIPfreeBlockMemoryArray(scip, &(*consdata)->vars, nvars);
++            SCIPfreeBlockMemoryArray(scip, &(*consdata)->weights, nvars);
++
++            (*consdata)->vars = NULL;
++            (*consdata)->weights = NULL;
++            assert( (*consdata)->nvars == 0 );
++         }
++      }
+    }
+    else
+    {
+       (*consdata)->vars = NULL;
+       (*consdata)->weights = NULL;
++      (*consdata)->nvars = 0;
+    }
+ 
+    /* capacity has to be greater or equal to zero */
+    assert( capacity >= 0 );
+ 
+-   (*consdata)->nvars = nvars;
+-   (*consdata)->varssize = nvars;
++   (*consdata)->varssize = (*consdata)->nvars;
+    (*consdata)->capacity = capacity;
+    (*consdata)->eventdatas = NULL;
+    (*consdata)->cliquepartition = NULL;
+@@ -460,8 +479,8 @@
+       SCIP_CALL( SCIPgetTransformedVars(scip, (*consdata)->nvars, (*consdata)->vars, (*consdata)->vars) );
+ 
+       /* allocate memory for additional data structures */
+-      SCIP_CALL( SCIPallocBlockMemoryArray(scip, &(*consdata)->eventdatas, nvars) );
+-      SCIP_CALL( SCIPallocBlockMemoryArray(scip, &(*consdata)->cliquepartition, nvars) );
++      SCIP_CALL( SCIPallocBlockMemoryArray(scip, &(*consdata)->eventdatas, (*consdata)->nvars) );
++      SCIP_CALL( SCIPallocBlockMemoryArray(scip, &(*consdata)->cliquepartition, (*consdata)->nvars) );
+ 
+       /* catch events for variables */
+       SCIP_CALL( catchEvents(scip, *consdata, eventhdlr) );
+@@ -502,8 +521,13 @@
+    {
+       SCIPfreeBlockMemoryArray(scip, &(*consdata)->cliquepartition, (*consdata)->varssize);
+    }
+-   SCIPfreeBlockMemoryArray(scip, &(*consdata)->vars, (*consdata)->varssize);
+-   SCIPfreeBlockMemoryArray(scip, &(*consdata)->weights, (*consdata)->varssize);
++   if( (*consdata)->vars != NULL )
++   {
++      assert( (*consdata)->weights != NULL );
++      assert( (*consdata)->varssize > 0 );
++      SCIPfreeBlockMemoryArray(scip, &(*consdata)->vars, (*consdata)->varssize);
++      SCIPfreeBlockMemoryArray(scip, &(*consdata)->weights, (*consdata)->varssize);
++   }
+ 
+    SCIPfreeBlockMemory(scip, consdata);
+  
+--- scip/src/scip/cons_setppc.c	4 Jan 2010 20:35:38 -0000	1.146
++++ scip/src/scip/cons_setppc.c	2 Mar 2010 17:24:10 -0000	1.147
+@@ -1695,7 +1695,7 @@
+ }
+ 
+ /** compares each constraint with all other constraints for possible redundancy and removes or changes constraint 
+- *  accordingly; in contrast to preprocessConstraintPairs(), it uses a hash table 
++ *  accordingly; in contrast to removeRedundantConstraints(), it uses a hash table 
+  */
+ static
+ SCIP_RETCODE detectRedundantConstraints(
+@@ -2029,6 +2029,8 @@
+    SCIP_Bool cons0changed;
+    int c;
+ 
++   assert(scip != NULL);
++   assert(conss != NULL);
+    assert(cutoff != NULL);
+    assert(nfixedvars != NULL);
+    assert(ndelconss != NULL);
+@@ -2177,9 +2179,6 @@
+    return SCIP_OKAY;
+ }
+ 
+-
+-
+-
+ /*
+  * Callback methods of constraint handler
+  */
+@@ -3235,8 +3234,10 @@
+       {
+          /* detect redundant constraints; fast version with hash table instead of pairwise comparison */
+          SCIP_CALL( detectRedundantConstraints(scip, SCIPblkmem(scip), conss, nconss, &firstchange, ndelconss, nchgsides) );
++	 if( oldndelconss < *ndelconss )
++	    *result = SCIP_SUCCESS;
+       }
+-            
++
+       /* check constraints for redundancy */
+       if( conshdlrdata->presolpairwise )
+       {
+@@ -3266,6 +3267,7 @@
+                   oldndelconss = *ndelconss;
+                   oldnfixedvars = *nfixedvars;
+                   npaircomparisons = 0;
++		  *result = SCIP_SUCCESS;
+                }
+             }
+          }
+--- scip/src/scip/lp.c	17 Feb 2010 09:56:29 -0000	1.332
++++ scip/src/scip/lp.c	2 Mar 2010 20:18:15 -0000	1.334
+@@ -10939,10 +10939,10 @@
+       assert(lp->dualfeasible);
+       lp->lpsolstat = SCIP_LPSOLSTAT_OPTIMAL;
+       SCIP_CALL( SCIPlpiGetObjval(lp->lpi, &lp->lpobjval) );
+-      if( SCIPsetIsRelGE(set, lp->lpobjval, lp->lpiuobjlim) )
++      if( SCIPsetIsGE(set, lp->lpobjval, lp->lpiuobjlim) )
+       {
+          /* the solver may return the optimal value, even if this is greater or equal than the upper bound */
+-         SCIPdebugMessage("optimal solution %g exceeds objective limit %g\n", lp->lpobjval, lp->lpiuobjlim);
++         SCIPdebugMessage("optimal solution %.15g exceeds objective limit %.15g\n", lp->lpobjval, lp->lpiuobjlim);
+          lp->lpsolstat = SCIP_LPSOLSTAT_OBJLIMIT;
+          lp->lpobjval = SCIPsetInfinity(set);
+       }
+@@ -11470,14 +11470,14 @@
+                /* optimal solution / objlimit with fastmip turned off / itlimit or timelimit, but objlimit exceeded */
+                if( solstat == SCIP_LPSOLSTAT_OPTIMAL || solstat == SCIP_LPSOLSTAT_OBJLIMIT 
+                   || ( (solstat == SCIP_LPSOLSTAT_ITERLIMIT || solstat == SCIP_LPSOLSTAT_TIMELIMIT) 
+-                     && SCIPsetIsRelGE(set, objval, lp->cutoffbound - lp->looseobjval) ) )
++                     && SCIPsetIsGE(set, objval, lp->cutoffbound - lp->looseobjval) ) )
+                {
+                   /* get new solution and objective value */
+                   SCIP_CALL( SCIPlpGetSol(lp, set, stat, NULL, NULL) );
+                   /* if objective value is larger than the cutoff bound, set solution status to objective 
+                      limit reached and objective value to infinity, in case solstat = SCIP_LPSOLSTAT_OBJLIMIT,
+                      this was already done in the lpSolve() method */               
+-                  if( SCIPsetIsRelGE(set, objval, lp->cutoffbound - lp->looseobjval) )
++                  if( SCIPsetIsGE(set, objval, lp->cutoffbound - lp->looseobjval) )
+                   {
+                      lp->lpsolstat = SCIP_LPSOLSTAT_OBJLIMIT;
+                      lp->lpobjval = SCIPsetInfinity(set);
+@@ -11657,7 +11657,7 @@
+    assert(lp->pseudoobjvalinf >= 0);
+    assert(set != NULL);
+ 
+-   if( lp->pseudoobjvalinf > 0 ||  set->npricers > 0 )
++   if( lp->pseudoobjvalinf > 0 ||  set->nactivepricers > 0 )
+       return -SCIPsetInfinity(set);
+    else
+       return lp->pseudoobjval;
+@@ -11694,7 +11694,7 @@
+    }
+    assert(pseudoobjvalinf >= 0);
+ 
+-   if( pseudoobjvalinf > 0 || set->npricers > 0 )
++   if( pseudoobjvalinf > 0 || set->nactivepricers > 0 )
+       return -SCIPsetInfinity(set);
+    else
+       return pseudoobjval;
+@@ -11751,7 +11751,7 @@
+    }
+    assert(pseudoobjvalinf >= 0);
+ 
+-   if( pseudoobjvalinf > 0 || set->npricers > 0 )
++   if( pseudoobjvalinf > 0 || set->nactivepricers > 0 )
+       return -SCIPsetInfinity(set);
+    else
+       return pseudoobjval;
+@@ -13666,7 +13666,7 @@
+ {
+    SCIP_CALL( provedBound(lp, set, FALSE, bound) );
+ 
+-   SCIPdebugMessage("proved lower bound of LP: %g\n", *bound);
++   SCIPdebugMessage("proved lower bound of LP: %.15g\n", *bound);
+ 
+    return SCIP_OKAY;
+ }
+--- scip/src/scip/reader_opb.c	4 Jan 2010 20:35:47 -0000	1.44
++++ scip/src/scip/reader_opb.c	23 Feb 2010 14:19:26 -0000	1.45
+@@ -382,21 +382,23 @@
+       
+    if( opbinput->linebuf[OPB_MAX_LINELEN-2] != '\0' )
+    {
++      /* overwrite the character to search the last blank from this position backwards */
++      opbinput->linebuf[OPB_MAX_LINELEN-2] = '\0';
++
+       /* buffer is full; erase last token since it might be incomplete */
+       opbinput->endline = FALSE;
+       last = strrchr(opbinput->linebuf, ' ');
+-
+       if( last == NULL )
+       {
+-         SCIPwarningMessage("we read %d character from the file; these might indicates an corrupted input file!", OPB_MAX_LINELEN - 2);
+-         opbinput->linebuf[OPB_MAX_LINELEN-2] = '\0';
+-         SCIPdebugMessage("the buffer might be corrupted\n");
+-      }
+-      else
+-      {
+-         SCIPfseek(opbinput->file, -(long) strlen(last), SEEK_CUR);
+-         *last = '\0';
+-         SCIPdebugMessage("correct buffer\n");
++	 SCIPwarningMessage("we read %d character from the file; these might indicates an corrupted input file!", OPB_MAX_LINELEN - 2);
++	 opbinput->linebuf[OPB_MAX_LINELEN-2] = '\0';
++	 SCIPdebugMessage("the buffer might be corrupted\n");
++      }
++      else 
++      {
++	 SCIPfseek(opbinput->file, -(long) strlen(last) - 1, SEEK_CUR);
++	 SCIPdebugMessage("correct buffer, reread the last %ld characters\n", (long) strlen(last) + 1);
++	 *last = '\0';
+       }
+    }
+    else 
+@@ -705,6 +707,7 @@
+    
+    /* create new variable of the given name */
+    SCIPdebugMessage("creating new variable: <%s>\n", name);
++   
+    SCIP_CALL( SCIPcreateVar(scip, &newvar, name, 0.0, 1.0, 0.0, SCIP_VARTYPE_BINARY,
+          initial, removable, NULL, NULL, NULL, NULL) );
+    SCIP_CALL( SCIPaddVar(scip, newvar) );
+--- scip/src/scip/scip.c	25 Feb 2010 14:40:35 -0000	1.542
++++ scip/src/scip/scip.c	1 Mar 2010 13:14:42 -0000	1.544
+@@ -9658,7 +9658,7 @@
+    return SCIP_OKAY;
+ }
+ 
+-/** parses constrint information (in cip format) out of a string; if the parsing process was successful a constraint is
++/** parses constraint information (in cip format) out of a string; if the parsing process was successful a constraint is
+  *  creates and captures;
+  *  Warning! If a constraint is marked to be checked for feasibility but not to be enforced, a LP or pseudo solution may
+  *  be declared feasible even if it violates this particular constraint.  This constellation should only be used, if no
+@@ -13632,6 +13632,105 @@
+    return SCIP_OKAY;
+ }
+ 
++/** checks solution for feasibility in original problem without adding it to the solution store */
++static
++SCIP_RETCODE checkSolOrig(
++   SCIP*                 scip,               /**< SCIP data structure */
++   SCIP_SOL*             sol,                /**< primal CIP solution */
++   SCIP_Bool*            feasible,           /**< stores whether given solution is feasible */
++   SCIP_Bool             printreason,        /**< should the reason for the violation be printed? */
++   SCIP_Bool             completely,         /**< should all violation be checked? */
++   SCIP_Bool             checkbounds,        /**< should the bounds of the variables be checked? */
++   SCIP_Bool             checkintegrality,   /**< has integrality to be checked? */
++   SCIP_Bool             checklprows,        /**< have current LP rows to be checked? */
++   SCIP_Bool             checkmodifiable     /**< have modifiable constraint to be checked? */
++   )
++{
++   SCIP_RESULT result;
++   int v;
++   int c;
++   int h;
++
++   assert(scip != NULL);
++   assert(sol != NULL);
++   assert(feasible != NULL);
++
++   SCIP_CALL( checkStage(scip, "checkSolOrig", FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE) );
++
++   *feasible = TRUE;
++
++   /* check bounds */
++   if( checkbounds )
++   {
++      for( v = 0; v < scip->origprob->nvars && *feasible; ++v )
++      {
++         SCIP_VAR* var;
++         SCIP_Real solval;
++         SCIP_Real lb;
++         SCIP_Real ub;
++         
++         var = scip->origprob->vars[v];
++         solval = SCIPsolGetVal(sol, scip->set, scip->stat, var);
++         lb = SCIPvarGetLbOriginal(var);
++         ub = SCIPvarGetUbOriginal(var);
++         if( SCIPsetIsFeasLT(scip->set, solval, lb) || SCIPsetIsFeasGT(scip->set, solval, ub) )
++         {
++            *feasible = FALSE;
++            
++            if( printreason )
++            {
++               SCIPmessagePrintInfo("solution violates original bounds of variable <%s> [%g,%g] solution value <%g>\n",
++                  SCIPvarGetName(var), lb, ub, solval);
++            }
++            
++            if( !completely )
++               return SCIP_OKAY;
++         }
++      }
++   }
++
++   /* check original constraints
++    *
++    * in general modifiable constraints can not be checked, because the variables to fulfill them might be missing in
++    * the original problem; however, if the solution comes from a heuristic during presolving modifiable constraints
++    * have to be checked;
++    */
++   for( c = 0; c < scip->origprob->nconss; ++c )
++   {
++      if( SCIPconsIsChecked(scip->origprob->conss[c]) && (checkmodifiable || !SCIPconsIsModifiable(scip->origprob->conss[c])) )
++      {
++         /* check solution */
++         SCIP_CALL( SCIPconsCheck(scip->origprob->conss[c], scip->set, sol, 
++               checkintegrality, checklprows, printreason, &result) );
++
++         if( result != SCIP_FEASIBLE )
++         {
++            *feasible = FALSE;
++            if( !completely )
++               return SCIP_OKAY;
++         }
++      }
++   }
++
++   /* call constraint handlers that don't need constraints */
++   for( h = 0; h < scip->set->nconshdlrs; ++h )
++   {
++      if( !SCIPconshdlrNeedsCons(scip->set->conshdlrs[h]) )
++      {
++         SCIP_CALL( SCIPconshdlrCheck(scip->set->conshdlrs[h], scip->mem->solvemem, scip->set, scip->stat, sol,
++               checkintegrality, checklprows, printreason, &result) );
++         if( result != SCIP_FEASIBLE )
++         {
++            *feasible = FALSE;
++            if( !completely) 
++               return SCIP_OKAY;
++         }
++      }
++   }
++   
++   return SCIP_OKAY;
++}
++
+ /** checks solution for feasibility; if possible, adds it to storage by copying */
+ SCIP_RETCODE SCIPtrySol(
+    SCIP*                 scip,               /**< SCIP data structure */
+@@ -13659,8 +13758,9 @@
+    {
+       SCIP_Bool feasible;
+ 
+-      /* SCIPprimalTrySol() can only be called on transformed solutions */
+-      SCIP_CALL( SCIPcheckSolOrig(scip, sol, &feasible, FALSE, FALSE) );
++      /* SCIPprimalTrySol() can only be called on transformed solutions; therefore check solutions in original problem
++       * including modifiable constraints */
++      SCIP_CALL( checkSolOrig(scip, sol, &feasible, FALSE, FALSE, checkbounds, checkintegrality, checklprows, TRUE) );
+       if( feasible )
+       {
+          SCIP_CALL( SCIPprimalAddSol(scip->primal, scip->mem->solvemem, scip->set, scip->stat, scip->transprob,
+@@ -13706,8 +13806,9 @@
+    {
+       SCIP_Bool feasible;
+ 
+-      /* SCIPprimalTrySol() can only be called on transformed solutions */
+-      SCIP_CALL( SCIPcheckSolOrig(scip, *sol, &feasible, FALSE, FALSE) );
++      /* SCIPprimalTrySol() can only be called on transformed solutions; therefore check solutions in original problem 
++      *  including modifiable constraints */
++      SCIP_CALL( checkSolOrig(scip, *sol, &feasible, FALSE, FALSE, checkbounds, checkintegrality, checklprows, TRUE) );
+       if( feasible )
+       {
+          SCIP_CALL( SCIPprimalAddSolFree(scip->primal, scip->mem->solvemem, scip->set, scip->stat, scip->transprob,
+@@ -13763,7 +13864,7 @@
+    if( SCIPsolGetOrigin(sol) == SCIP_SOLORIGIN_ORIGINAL )
+    {
+       /* SCIPsolCheck() can only be called on transformed solutions */
+-      SCIP_CALL( SCIPcheckSolOrig(scip, sol, feasible, FALSE, FALSE) );
++      SCIP_CALL( checkSolOrig(scip, sol, feasible, FALSE, FALSE, checkbounds, checkintegrality, checklprows, FALSE) );
+    }
+    else
+    {
