@@ -16,8 +16,10 @@ COMMON_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/../Gam
 
 # these flags are common when compiling and linking the executables
 GMSXXX_CPPFLAGS = -I`$(CYGPATH_W) $(LIBLTDLSRCDIR)` $(COMMON_CPPFLAGS)
-GMSXXX_LDADD   = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-GMSXXX_LDFLAGS  = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+GMSXXX_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+GMSXXX_LDFLAGS  = -rpath $(libdir) -dlopen libGamsCoin.la
+
+LIBS += $(ADDLIBS) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt`
 
 noinst_PROGRAMS             =
 lib_LTLIBRARIES             = libGamsCoin.la
@@ -41,7 +43,7 @@ libGamsCoin_la_LIBADD += \
  $(OSIOBJDIR)/src/libOsi.la \
  $(COINUTILSOBJDIR)/src/libCoinUtils.la
  
-libGamsCoin_la_LDFLAGS += `cat $(OSIOBJDIR)/osi_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
+LIBS += `cat $(OSIOBJDIR)/osi_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
 
 if COIN_HAS_CBC
   libGamsCoin_la_LIBADD  += \
@@ -50,7 +52,7 @@ if COIN_HAS_CBC
    $(CGLOBJDIR)/src/libCgl.la \
    $(OSIOBJDIR)/src/OsiClp/libOsiClp.la \
    $(CLPOBJDIR)/src/libClp.la
-  libGamsCoin_la_LDFLAGS += `cat $(CGLOBJDIR)/cgl_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt`
+  LIBS += `cat $(CGLOBJDIR)/cgl_addlibs.txt $(CBCOBJDIR)/cbc_addlibs.txt $(CLPOBJDIR)/clp_addlibs.txt`
 
   libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCbc` \
    -I`$(CYGPATH_W) $(CBCSRCDIR)/src` \
@@ -272,8 +274,8 @@ libGamsCoin_la_CPPFLAGS += \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/contrib/LinearSolverLoader` \
  -I`$(CYGPATH_W) $(IPOPTOBJDIR)/inc`
 
-libGamsCoin_la_LIBADD   += $(IPOPTOBJDIR)/src/Interfaces/libipopt.la 
-libGamsCoin_la_LDFLAGS  += `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
+libGamsCoin_la_LIBADD += $(IPOPTOBJDIR)/src/Interfaces/libipopt.la 
+LIBS  += `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
 
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsipdux.out
@@ -443,12 +445,12 @@ if COIN_OS_SOLVER
   libGamsCoin_la_LIBADD   += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
 endif
 
-libGamsCoin_la_LIBADD  += \
+libGamsCoin_la_LIBADD += \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
  $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
  $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
  $(OSOBJDIR)/src/OSAgent/libOSAgent.la
-libGamsCoin_la_LDFLAGS += `cat $(OSOBJDIR)/os_addlibs.txt`
+LIBS += `cat $(OSOBJDIR)/os_addlibs.txt`
 
 if COIN_OS_SOLVER
 if COIN_HAS_CPX
@@ -458,18 +460,18 @@ if COIN_HAS_CPX
 endif
 
 if COIN_HAS_DYLP
-  libGamsCoin_la_LIBADD  += $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la $(DYLPOBJDIR)/src/Dylp/libDylp.la
-  libGamsCoin_la_LDFLAGS += `cat $(DYLPOBJDIR)/dylp_addlibs.txt`
+  libGamsCoin_la_LIBADD += $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la $(DYLPOBJDIR)/src/Dylp/libDylp.la
+  LIBS += `cat $(DYLPOBJDIR)/dylp_addlibs.txt`
 endif  
 
 if COIN_HAS_VOL
-  libGamsCoin_la_LIBADD  += $(OSIOBJDIR)/src/OsiVol/libOsiVol.la $(VOLOBJDIR)/src/libVol.la
-  libGamsCoin_la_LDFLAGS += `cat $(VOLOBJDIR)/vol_addlibs.txt`
+  libGamsCoin_la_LIBADD += $(OSIOBJDIR)/src/OsiVol/libOsiVol.la $(VOLOBJDIR)/src/libVol.la
+  LIBS += `cat $(VOLOBJDIR)/vol_addlibs.txt`
 endif
 
 if COIN_HAS_SYMPHONY
-  libGamsCoin_la_LIBADD  += $(OSIOBJDIR)/src/OsiSym/libOsiSym.la $(SYMPHONYOBJDIR)/src/libSym.la
-  libGamsCoin_la_LDFLAGS += `cat $(SYMPHONYOBJDIR)/sym_addlibs.txt`
+  libGamsCoin_la_LIBADD += $(OSIOBJDIR)/src/OsiSym/libOsiSym.la $(SYMPHONYOBJDIR)/src/libSym.la
+  LIBS += `cat $(SYMPHONYOBJDIR)/sym_addlibs.txt`
 endif
 endif
 

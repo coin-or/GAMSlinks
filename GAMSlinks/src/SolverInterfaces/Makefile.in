@@ -682,7 +682,10 @@ LIBLTDLDOCDIR = @LIBLTDLDOCDIR@
 LIBLTDLOBJDIR = @LIBLTDLOBJDIR@
 LIBLTDLSRCDIR = @LIBLTDLSRCDIR@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@
+LIBS = @LIBS@ $(ADDLIBS) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` \
+	$(am__append_4) $(am__append_6) $(am__append_60) \
+	$(am__append_98) $(am__append_102) $(am__append_104) \
+	$(am__append_106)
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
 LN_S = @LN_S@
@@ -817,7 +820,7 @@ COMMON_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/../Gam
 # these flags are common when compiling and linking the executables
 GMSXXX_CPPFLAGS = -I`$(CYGPATH_W) $(LIBLTDLSRCDIR)` $(COMMON_CPPFLAGS)
 GMSXXX_LDADD = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
-GMSXXX_LDFLAGS = $(ADDLIBS) -rpath $(libdir) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` -dlopen libGamsCoin.la
+GMSXXX_LDFLAGS = -rpath $(libdir) -dlopen libGamsCoin.la
 lib_LTLIBRARIES = libGamsCoin.la
 libGamsCoin_la_SOURCES = GamsSolver.cpp $(am__append_1) \
 	$(am__append_24) $(am__append_48) $(am__append_57) \
@@ -830,11 +833,9 @@ libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la $(am__append_3) \
 	$(am__append_84) $(am__append_87) $(am__append_96) \
 	$(am__append_97) $(am__append_99) $(am__append_101) \
 	$(am__append_103) $(am__append_105)
-libGamsCoin_la_LDFLAGS = -module -no-undefined $(am__append_4) \
-	$(am__append_6) $(am__append_9) $(am__append_25) \
-	$(am__append_33) $(am__append_41) $(am__append_60) \
-	$(am__append_69) $(am__append_98) $(am__append_100) \
-	$(am__append_102) $(am__append_104) $(am__append_106)
+libGamsCoin_la_LDFLAGS = -module -no-undefined $(am__append_9) \
+	$(am__append_25) $(am__append_33) $(am__append_41) \
+	$(am__append_69) $(am__append_100)
 libGamsCoin_la_CPPFLAGS = $(COMMON_CPPFLAGS) $(am__append_2) \
 	$(am__append_7) $(am__append_10) $(am__append_17) \
 	$(am__append_26) $(am__append_34) $(am__append_42) \
