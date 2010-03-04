@@ -51,7 +51,13 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @SCIPDEVVERSION_TRUE@am__append_1 = \
-@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_soc.c
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_orbitope.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/cons_soc.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/heur_twoopt.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/heur_undercover.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/heur_zirounding.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/prop_vbounds.c \
+@SCIPDEVVERSION_TRUE@			$(SCIPDIR)/src/scip/sepa_rapidlearning.c
 
 DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../BuildTools/Makemain.inc \
@@ -75,7 +81,10 @@ CONFIG_HEADER = config_scip.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libcoinscip_la_LIBADD =
-@SCIPDEVVERSION_TRUE@am__objects_1 = cons_soc.lo
+@SCIPDEVVERSION_TRUE@am__objects_1 = cons_orbitope.lo cons_soc.lo \
+@SCIPDEVVERSION_TRUE@	heur_twoopt.lo heur_undercover.lo \
+@SCIPDEVVERSION_TRUE@	heur_zirounding.lo prop_vbounds.lo \
+@SCIPDEVVERSION_TRUE@	sepa_rapidlearning.lo
 nodist_libcoinscip_la_OBJECTS = branch.lo bitencode.lo buffer.lo \
 	clock.lo conflict.lo cons.lo cutpool.lo debug.lo dialog.lo \
 	disp.lo event.lo fileio.lo heur.lo history.lo implics.lo \
@@ -311,7 +320,7 @@ AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)` -I`$(CYGPATH_W) \
 	$(IPOPTOBJDIR)/inc`
 
 #nodist_libcoinscip_la_SOURCES += \
-#      $(SCIPDIR)/src/objscip/objbranchrule.cpp \
+#			$(SCIPDIR)/src/objscip/objbranchrule.cpp \
 #			$(SCIPDIR)/src/objscip/objconshdlr.cpp \
 #			$(SCIPDIR)/src/objscip/objdialog.cpp \
 #			$(SCIPDIR)/src/objscip/objdisp.cpp \
@@ -570,6 +579,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_linear.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_logicor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_or.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_orbitope.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_quadratic.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_setppc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cons_soc.Plo@am__quote@
@@ -612,7 +622,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_simplerounding.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_trivial.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_trysol.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_twoopt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_undercover.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_veclendiving.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/heur_zirounding.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/history.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/implics.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/interrupt.Plo@am__quote@
@@ -647,6 +660,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prop_pseudoobj.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prop_rootredcost.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prop_vbounds.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_ccg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_cip.Plo@am__quote@
@@ -675,6 +689,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_impliedbounds.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_intobj.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_mcf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_rapidlearning.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_redcost.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_strongcg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sepa_zerohalf.Plo@am__quote@
@@ -1712,12 +1727,54 @@ memory.lo: $(SCIPDIR)/src/blockmemshell/memory.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o memory.lo `test -f '$(SCIPDIR)/src/blockmemshell/memory.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/blockmemshell/memory.c
 
+cons_orbitope.lo: $(SCIPDIR)/src/scip/cons_orbitope.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_orbitope.lo -MD -MP -MF "$(DEPDIR)/cons_orbitope.Tpo" -c -o cons_orbitope.lo `test -f '$(SCIPDIR)/src/scip/cons_orbitope.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_orbitope.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_orbitope.Tpo" "$(DEPDIR)/cons_orbitope.Plo"; else rm -f "$(DEPDIR)/cons_orbitope.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_orbitope.c' object='cons_orbitope.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_orbitope.lo `test -f '$(SCIPDIR)/src/scip/cons_orbitope.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_orbitope.c
+
 cons_soc.lo: $(SCIPDIR)/src/scip/cons_soc.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cons_soc.lo -MD -MP -MF "$(DEPDIR)/cons_soc.Tpo" -c -o cons_soc.lo `test -f '$(SCIPDIR)/src/scip/cons_soc.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_soc.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/cons_soc.Tpo" "$(DEPDIR)/cons_soc.Plo"; else rm -f "$(DEPDIR)/cons_soc.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/cons_soc.c' object='cons_soc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cons_soc.lo `test -f '$(SCIPDIR)/src/scip/cons_soc.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/cons_soc.c
+
+heur_twoopt.lo: $(SCIPDIR)/src/scip/heur_twoopt.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT heur_twoopt.lo -MD -MP -MF "$(DEPDIR)/heur_twoopt.Tpo" -c -o heur_twoopt.lo `test -f '$(SCIPDIR)/src/scip/heur_twoopt.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_twoopt.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/heur_twoopt.Tpo" "$(DEPDIR)/heur_twoopt.Plo"; else rm -f "$(DEPDIR)/heur_twoopt.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/heur_twoopt.c' object='heur_twoopt.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o heur_twoopt.lo `test -f '$(SCIPDIR)/src/scip/heur_twoopt.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_twoopt.c
+
+heur_undercover.lo: $(SCIPDIR)/src/scip/heur_undercover.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT heur_undercover.lo -MD -MP -MF "$(DEPDIR)/heur_undercover.Tpo" -c -o heur_undercover.lo `test -f '$(SCIPDIR)/src/scip/heur_undercover.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_undercover.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/heur_undercover.Tpo" "$(DEPDIR)/heur_undercover.Plo"; else rm -f "$(DEPDIR)/heur_undercover.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/heur_undercover.c' object='heur_undercover.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o heur_undercover.lo `test -f '$(SCIPDIR)/src/scip/heur_undercover.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_undercover.c
+
+heur_zirounding.lo: $(SCIPDIR)/src/scip/heur_zirounding.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT heur_zirounding.lo -MD -MP -MF "$(DEPDIR)/heur_zirounding.Tpo" -c -o heur_zirounding.lo `test -f '$(SCIPDIR)/src/scip/heur_zirounding.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_zirounding.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/heur_zirounding.Tpo" "$(DEPDIR)/heur_zirounding.Plo"; else rm -f "$(DEPDIR)/heur_zirounding.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/heur_zirounding.c' object='heur_zirounding.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o heur_zirounding.lo `test -f '$(SCIPDIR)/src/scip/heur_zirounding.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/heur_zirounding.c
+
+prop_vbounds.lo: $(SCIPDIR)/src/scip/prop_vbounds.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT prop_vbounds.lo -MD -MP -MF "$(DEPDIR)/prop_vbounds.Tpo" -c -o prop_vbounds.lo `test -f '$(SCIPDIR)/src/scip/prop_vbounds.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/prop_vbounds.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/prop_vbounds.Tpo" "$(DEPDIR)/prop_vbounds.Plo"; else rm -f "$(DEPDIR)/prop_vbounds.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/prop_vbounds.c' object='prop_vbounds.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o prop_vbounds.lo `test -f '$(SCIPDIR)/src/scip/prop_vbounds.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/prop_vbounds.c
+
+sepa_rapidlearning.lo: $(SCIPDIR)/src/scip/sepa_rapidlearning.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sepa_rapidlearning.lo -MD -MP -MF "$(DEPDIR)/sepa_rapidlearning.Tpo" -c -o sepa_rapidlearning.lo `test -f '$(SCIPDIR)/src/scip/sepa_rapidlearning.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_rapidlearning.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/sepa_rapidlearning.Tpo" "$(DEPDIR)/sepa_rapidlearning.Plo"; else rm -f "$(DEPDIR)/sepa_rapidlearning.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(SCIPDIR)/src/scip/sepa_rapidlearning.c' object='sepa_rapidlearning.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sepa_rapidlearning.lo `test -f '$(SCIPDIR)/src/scip/sepa_rapidlearning.c' || echo '$(srcdir)/'`$(SCIPDIR)/src/scip/sepa_rapidlearning.c
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

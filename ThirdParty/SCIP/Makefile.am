@@ -19,8 +19,8 @@ SCIPDIR = @SCIPDIR@
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)`
 
 nodist_libcoinscip_la_SOURCES = \
-      $(SCIPDIR)/src/scip/branch.c \
-      $(SCIPDIR)/src/scip/bitencode.c \
+			$(SCIPDIR)/src/scip/branch.c \
+			$(SCIPDIR)/src/scip/bitencode.c \
 			$(SCIPDIR)/src/scip/buffer.c \
 			$(SCIPDIR)/src/scip/clock.c \
 			$(SCIPDIR)/src/scip/conflict.c \
@@ -38,7 +38,7 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/scip/intervalarith.c \
 			$(SCIPDIR)/src/scip/lp.c \
 			$(SCIPDIR)/src/scip/mem.c \
-      $(SCIPDIR)/src/scip/message.c \
+			$(SCIPDIR)/src/scip/message.c \
 			$(SCIPDIR)/src/scip/misc.c \
 			$(SCIPDIR)/src/scip/nodesel.c \
 			$(SCIPDIR)/src/scip/paramset.c \
@@ -161,15 +161,21 @@ nodist_libcoinscip_la_SOURCES = \
 			$(SCIPDIR)/src/tclique/tclique_branch.c \
 			$(SCIPDIR)/src/tclique/tclique_coloring.c \
 			$(SCIPDIR)/src/tclique/tclique_graph.c \
-      $(SCIPDIR)/src/blockmemshell/memory.c
+			$(SCIPDIR)/src/blockmemshell/memory.c
 
 if SCIPDEVVERSION
 nodist_libcoinscip_la_SOURCES += \
-			$(SCIPDIR)/src/scip/cons_soc.c
+			$(SCIPDIR)/src/scip/cons_orbitope.c \
+			$(SCIPDIR)/src/scip/cons_soc.c \
+			$(SCIPDIR)/src/scip/heur_twoopt.c \
+			$(SCIPDIR)/src/scip/heur_undercover.c \
+			$(SCIPDIR)/src/scip/heur_zirounding.c \
+			$(SCIPDIR)/src/scip/prop_vbounds.c \
+			$(SCIPDIR)/src/scip/sepa_rapidlearning.c
 endif
 
 #nodist_libcoinscip_la_SOURCES += \
-#      $(SCIPDIR)/src/objscip/objbranchrule.cpp \
+#			$(SCIPDIR)/src/objscip/objbranchrule.cpp \
 #			$(SCIPDIR)/src/objscip/objconshdlr.cpp \
 #			$(SCIPDIR)/src/objscip/objdialog.cpp \
 #			$(SCIPDIR)/src/objscip/objdisp.cpp \
