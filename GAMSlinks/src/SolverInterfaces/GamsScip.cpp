@@ -107,6 +107,7 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	
 #ifdef GAMS_BUILD
 #include "coinlibdCL5svn.h" 
+	char buffer[512];
 	auditGetLine(buffer, sizeof(buffer));
 	gevLogStat(gev, "");
 	gevLogStat(gev, buffer);
