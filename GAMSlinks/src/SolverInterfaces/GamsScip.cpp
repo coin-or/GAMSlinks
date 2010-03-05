@@ -132,20 +132,22 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gmoObjStyleSet(gmo, ObjType_Fun);
   gmoIndexBaseSet(gmo, 0);
 
-	if (gmoGetEquTypeCnt(gmo, equ_C) || gmoGetEquTypeCnt(gmo, equ_X)) {
-		gevLogStat(gev, "ERROR: Conic constraints and external functions not supported by SCIP or SCIP interface.\n");
+	if (gmoGetEquTypeCnt(gmo, equ_C)) {
+		gevLogStat(gev, "ERROR: Conic constraints not supported by SCIP interface.\n");
 		gmoSolveStatSet(gmo, SolveStat_Capability);
 		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 		return 1;
   }
-
+	
+#if SCIP_SUBVERSION < 8
 	if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
 		gevLogStat(gev, "ERROR: Semicontinuous and semiinteger variables not supported yet.\n");
 		gmoSolveStatSet(gmo, SolveStat_Capability);
 		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 		return 1;
   }
-
+#endif
+	
 	gamsmsghandler = new GamsMessageHandler(gev);
   
 	SCIP_RETCODE scipret;
