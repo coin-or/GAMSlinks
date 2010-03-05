@@ -1126,7 +1126,8 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 			OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
 			assert(osimsk);
 
-			MSKsolstae status;
+			MSKprostae probstatus;
+			MSKsolstae solstatus;
 		  MSKsoltypee solution;
 
 			int res;
@@ -1154,10 +1155,10 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 				}
 			}
 			
-		  MSK_getsolution(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), solution, NULL, &status,
+		  MSK_getsolution(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), solution, &probstatus, &solstatus,
 		  	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 		  
-		  switch (status) {
+		  switch (solstatus) {
         case MSK_SOL_STA_NEAR_INTEGER_OPTIMAL:
         case MSK_SOL_STA_NEAR_OPTIMAL:
         	write_solution = true;
@@ -1213,9 +1214,70 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 
         case MSK_SOL_STA_UNKNOWN:
         default:
-					gmoSolveStatSet(gmo, SolveStat_Solver);
-					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-					gevLogStat(gev, "Solve status unknown.");
+        	switch (probstatus) {
+        		case MSK_PRO_STA_DUAL_FEAS:
+    					gmoSolveStatSet(gmo, SolveStat_Normal);
+    					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+    					gevLogStat(gev, "Model is dual feasible.");
+    					break;
+    					
+        		case MSK_PRO_STA_DUAL_INFEAS:
+    					gmoSolveStatSet(gmo, SolveStat_Normal);
+    					gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
+    					gevLogStat(gev, "Model is dual infeasible (probably unbounded).");
+    					break;
+
+        		case MSK_PRO_STA_ILL_POSED:
+    					gmoSolveStatSet(gmo, SolveStat_Normal);
+    					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+    					gevLogStat(gev, "Model is ill posed.");
+    					break;
+
+        		case MSK_PRO_STA_NEAR_DUAL_FEAS:
+        		case MSK_PRO_STA_NEAR_PRIM_AND_DUAL_FEAS:
+        		case MSK_PRO_STA_NEAR_PRIM_FEAS:
+    					gmoSolveStatSet(gmo, SolveStat_Normal);
+    					gmoModelStatSet(gmo, ModelStat_InfeasibleIntermed);
+    					gevLogStat(gev, "Stopped before feasibility or infeasibility proven.");
+    					break;
+
+        		case MSK_PRO_STA_PRIM_AND_DUAL_FEAS:
+    					gmoSolveStatSet(gmo, SolveStat_Normal);
+    					gmoModelStatSet(gmo, ModelStat_NonOptimalIntermed);
+    					gevLogStat(gev, "Model is primal and dual feasible.");
+    					break;
+
+        		case MSK_PRO_STA_PRIM_AND_DUAL_INFEAS:
+    					gmoSolveStatSet(gmo, SolveStat_Normal);
+    					gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+    					gevLogStat(gev, "Model is primal and dual infeasible.");
+    					break;
+
+        		case MSK_PRO_STA_PRIM_FEAS:
+    					gmoSolveStatSet(gmo, SolveStat_Normal);
+    					gmoModelStatSet(gmo, ModelStat_NonOptimalIntermed);
+    					gevLogStat(gev, "Model is primal feasible.");
+    					break;
+
+        		case MSK_PRO_STA_PRIM_INFEAS:
+    					gmoSolveStatSet(gmo, SolveStat_Normal);
+    					gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+    					gevLogStat(gev, "Model is primal infeasible.");
+    					break;
+
+        		case MSK_PRO_STA_PRIM_INFEAS_OR_UNBOUNDED:
+    					gmoSolveStatSet(gmo, SolveStat_Normal);
+    					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+    					gevLogStat(gev, "Model is infeasible or unbounded.");
+    					break;
+
+        		case MSK_PRO_STA_UNKNOWN:
+        		default:
+    					gmoSolveStatSet(gmo, SolveStat_Solver);
+    					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+    					gevLogStat(gev, "Solve status unknown.");
+    					break;
+        	}
 		  }
 		  
 			break;
