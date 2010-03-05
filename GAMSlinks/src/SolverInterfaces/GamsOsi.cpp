@@ -139,6 +139,8 @@ GamsOsi::~GamsOsi() {
 }
 
 int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
+  char buffer[1024];
+  
 	gmo = gmo_;
 	assert(gmo);
 	assert(!osi);
@@ -151,13 +153,23 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1;
 
 	gev = (gevRec*)gmoEnvironment(gmo);
+	
+#ifdef GAMS_BUILD
+#include "coinlibdCL7svn.h" 
+	auditGetLine(buffer, sizeof(buffer));
+	gevLogStat(gev, "");
+	gevLogStat(gev, buffer);
+	gevStatAudit(gev, buffer);
+#endif
+	
+	gevLogStat(gev, "");
+	gevLogStatPChar(gev, getWelcomeMessage());
 
 	if (solverid == GLPK) {
 	  options.setGMO(gmo);
 	  if (opt) {
 	    options.setOpt(opt);
 	  } else {
-	    char buffer[1024];
 	    gmoNameOptFile(gmo, buffer);
 #ifdef GAMS_BUILD
 	    options.readOptionsFile("osiglpk", gmoOptFile(gmo) ? buffer : NULL);
@@ -1539,7 +1551,6 @@ DllExport GamsOsi* STDCALL createNewGamsOsiXpress() {
 	} \
 	\
 	DllExport int STDCALL xxx ## ReadyAPI(xxx ## Rec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) { \
-		gevHandle_t Eptr; \
 		assert(Cptr != NULL); \
 		assert(Gptr != NULL); \
 		char msg[256]; \
@@ -1547,9 +1558,6 @@ DllExport GamsOsi* STDCALL createNewGamsOsiXpress() {
 			return 1; \
 		if (!gevGetReady(msg, sizeof(msg))) \
 			return 1; \
-		Eptr = (gevHandle_t) gmoEnvironment(Gptr); \
-		gevLogStatPChar(Eptr, ((GamsOsi*)Cptr)->getWelcomeMessage()); \
-		\
 		return ((GamsOsi*)Cptr)->readyAPI(Gptr, Optr); \
 	} \
 	\

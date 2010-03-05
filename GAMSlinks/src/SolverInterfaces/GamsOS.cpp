@@ -37,6 +37,9 @@
 
 #include "gmomcc.h"
 #include "gevmcc.h"
+#ifdef GAMS_BUILD
+#include "gmspal.h"  /* for audit line */
+#endif
 
 #include <string>
 #include <fstream>
@@ -73,9 +76,10 @@ GamsOS::GamsOS()
 GamsOS::~GamsOS() { }
 
 int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
+	char buffer[256];
+	
 	gmo = gmo_;
 	assert(gmo);
-	char buffer[255];
 
 	if (getGmoReady())
 		return 1;
@@ -84,6 +88,34 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1;
 
 	gev = (gevRec*)gmoEnvironment(gmo);
+	
+#ifdef GAMS_BUILD
+	switch( solverid )
+	{
+		case CPLEX:
+#include "coinlibdCL7svn.h"
+			break;
+		case GLPK:
+#include "coinlibdCL6svn.h"
+			break;
+		case GUROBI:
+#include "coinlibdCL8svn.h"
+			break;
+		case MOSEK:
+#include "coinlibdCL9svn.h"
+			break;
+		case XPRESS:
+#include "coinlibdCLAsvn.h"
+			break;
+	}
+	auditGetLine(buffer, sizeof(buffer));
+	gevLogStat(gev, "");
+	gevLogStat(gev, buffer);
+	gevStatAudit(gev, buffer);
+#endif
+	
+	gevLogStat(gev, "");
+	gevLogStatPChar(gev, getWelcomeMessage());
 
 	gmoMinfSet(gmo, -OSDBL_MAX);
 	gmoPinfSet(gmo,  OSDBL_MAX);
@@ -559,7 +591,6 @@ DllExport int STDCALL os_HaveModifyProblem(os_Rec_t *Cptr) {
 }
 
 DllExport int STDCALL os_ReadyAPI(os_Rec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) {
-	gevHandle_t Eptr;
 	assert(Cptr != NULL);
 	assert(Gptr != NULL);
 	char msg[256];
@@ -567,8 +598,6 @@ DllExport int STDCALL os_ReadyAPI(os_Rec_t *Cptr, gmoHandle_t Gptr, optHandle_t 
 		return 1;
 	if (!gevGetReady(msg, sizeof(msg)))
 		return 1;
-	Eptr = (gevHandle_t) gmoEnvironment(Gptr);
-	gevLogStatPChar(Eptr, ((GamsOS*)Cptr)->getWelcomeMessage());
 	return ((GamsOS*)Cptr)->readyAPI(Gptr, Optr);
 }
 

@@ -133,8 +133,6 @@ int main(int argc, char** argv) {
   }
   
   GamsSolver* solver = (*createsolver)();
-  gevLogStat(gev, "");
-  gevLogStatPChar(gev, solver->getWelcomeMessage());
 
   bool ok = true;
 

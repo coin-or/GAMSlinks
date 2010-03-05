@@ -98,6 +98,14 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1;
 
 	gev = (gevRec*)gmoEnvironment(gmo);
+	
+#ifdef GAMS_BUILD
+#include "coinlibdCL5svn.h" 
+	auditGetLine(buffer, sizeof(buffer));
+	gevLogStat(gev, "");
+	gevLogStat(gev, buffer);
+	gevStatAudit(gev, buffer);
+#endif
 
 #ifdef GAMS_BUILD
 #define GEVPTR gev
@@ -127,6 +135,9 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
     isDemo = !isAcademic; // we run in demo mode if there is no academic license, that is we cannot allow to open a scip shell
 	}
 #endif
+	
+	gevLogStat(gev, "");
+	gevLogStatPChar(gev, getWelcomeMessage());
 
 	gmoObjReformSet(gmo, 1);
 	gmoObjStyleSet(gmo, ObjType_Fun);
@@ -1053,7 +1064,6 @@ DllExport int STDCALL scpHaveModifyProblem(scpRec_t *Cptr) {
 }
 
 DllExport int STDCALL scpReadyAPI(scpRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) {
-	gevHandle_t Eptr;
 	assert(Cptr != NULL);
 	assert(Gptr != NULL);
 	char msg[256];
@@ -1061,8 +1071,6 @@ DllExport int STDCALL scpReadyAPI(scpRec_t *Cptr, gmoHandle_t Gptr, optHandle_t 
 		return 1;
 	if (!gevGetReady(msg, sizeof(msg)))
 		return 1;
-	Eptr = (gevHandle_t) gmoEnvironment(Gptr);
-	gevLogStatPChar(Eptr, ((GamsScip*)Cptr)->getWelcomeMessage());
 	return ((GamsScip*)Cptr)->readyAPI(Gptr, Optr);
 }
 

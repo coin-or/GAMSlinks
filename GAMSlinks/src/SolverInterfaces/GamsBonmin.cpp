@@ -68,6 +68,9 @@ extern "C" {
 #define GMS_SV_NA     2.0E300   /* not available/applicable */
 #include "gmomcc.h"
 #include "gevmcc.h"
+#ifdef GAMS_BUILD
+#include "gmspal.h"  /* for audit line */
+#endif
 
 using namespace Bonmin;
 using namespace Ipopt;
@@ -86,6 +89,8 @@ GamsBonmin::~GamsBonmin() {
 }
 
 int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
+	char buffer[512];
+
 	gmo = gmo_;
 	assert(gmo);
 	assert(IsNull(minlp));
@@ -98,6 +103,17 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1;
 
 	gev = (gevRec*)gmoEnvironment(gmo);
+	
+#ifdef GAMS_BUILD
+#include "coinlibdCLsvn.h" 
+	auditGetLine(buffer, sizeof(buffer));
+	gevLogStat(gev, "");
+	gevLogStat(gev, buffer);
+	gevStatAudit(gev, buffer);
+#endif
+	
+	gevLogStat(gev, "");
+	gevLogStatPChar(gev, getWelcomeMessage());
 
 	gmoObjStyleSet(gmo, ObjType_Fun);
 	gmoObjReformSet(gmo, 1);
@@ -193,7 +209,6 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	try {
 		if (gmoOptFile(gmo)) {
 		 	bonmin_setup->options()->SetStringValue("print_user_options", "yes", true, true);
-			char buffer[1024];
 			gmoNameOptFile(gmo, buffer);
 			bonmin_setup->readOptionsFile(buffer);
 		}	else { // need to let Bonmin read something, otherwise it will try to read its default option file bonmin.opt
@@ -213,7 +228,6 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	std::string libpath;
 #ifdef HAVE_HSL_LOADER
 	if (bonmin_setup->options()->GetStringValue("hsl_library", libpath, "")) {
-		char buffer[512];
 		if (LSL_loadHSL(libpath.c_str(), buffer, 512) != 0) {
 			gevLogStatPChar(gev, "Failed to load HSL library at user specified path: ");
 			gevLogStat(gev, buffer);
@@ -223,7 +237,6 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #endif
 #ifndef HAVE_PARDISO
 	if (bonmin_setup->options()->GetStringValue("pardiso_library", libpath, "")) {
-		char buffer[512];
 		if (LSL_loadPardisoLib(libpath.c_str(), buffer, 512) != 0) {
 			gevLogStatPChar(gev, "Failed to load Pardiso library at user specified path: ");
 			gevLogStat(gev, buffer);
@@ -519,7 +532,6 @@ DllExport int STDCALL bonHaveModifyProblem(bonRec_t *Cptr) {
 }
 
 DllExport int STDCALL bonReadyAPI(bonRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) {
-	gevHandle_t Eptr;
 	assert(Cptr != NULL);
 	assert(Gptr != NULL);
 	char msg[256];
@@ -527,8 +539,6 @@ DllExport int STDCALL bonReadyAPI(bonRec_t *Cptr, gmoHandle_t Gptr, optHandle_t 
 		return 1;
 	if (!gevGetReady(msg, sizeof(msg)))
 		return 1;
-	Eptr = (gevHandle_t) gmoEnvironment(Gptr);
-	gevLogStatPChar(Eptr, ((GamsBonmin*)Cptr)->getWelcomeMessage());
 	return ((GamsBonmin*)Cptr)->readyAPI(Gptr, Optr);
 }
 

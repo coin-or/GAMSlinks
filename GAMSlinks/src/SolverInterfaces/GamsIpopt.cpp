@@ -60,6 +60,9 @@ extern "C" {
 // GAMS
 #include "gmomcc.h"
 #include "gevmcc.h"
+#ifdef GAMS_BUILD
+#include "gmspal.h"  /* for audit line */
+#endif
 
 using namespace Ipopt;
 
@@ -72,6 +75,8 @@ GamsIpopt::GamsIpopt()
 GamsIpopt::~GamsIpopt() { }
 
 int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
+	char buffer[1024];
+	
 	gmo = gmo_;
 	assert(gmo);
 	assert(IsNull(ipopt));
@@ -83,6 +88,17 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1;
 
 	gev = (gevRec*)gmoEnvironment(gmo);
+	
+#ifdef GAMS_BUILD
+#include "coinlibdCL3svn.h" 
+	auditGetLine(buffer, sizeof(buffer));
+	gevLogStat(gev, "");
+	gevLogStat(gev, buffer);
+	gevStatAudit(gev, buffer);
+#endif
+	
+	gevLogStat(gev, "");
+	gevLogStatPChar(gev, getWelcomeMessage());
 
 	gmoObjStyleSet(gmo, ObjType_Fun);
 	gmoObjReformSet(gmo, 1);
@@ -133,7 +149,6 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 	if (gmoOptFile(gmo)) {
 	 	ipopt->Options()->SetStringValue("print_user_options", "yes", true, true);
-		char buffer[1024];
 		gmoNameOptFile(gmo, buffer);
 		ipopt->Initialize(buffer);
 	} else
@@ -168,8 +183,7 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	std::string libpath;
 #ifdef HAVE_HSL_LOADER
 	if (ipopt->Options()->GetStringValue("hsl_library", libpath, "")) {
-		char buffer[512];
-		if (LSL_loadHSL(libpath.c_str(), buffer, 512) != 0) {
+		if (LSL_loadHSL(libpath.c_str(), buffer, sizeof(buffer)) != 0) {
 			gevLogStatPChar(gev, "Failed to load HSL library at user specified path: ");
 			gevLogStat(gev, buffer);
 			gmoSolveStatSet(gmo, SolveStat_SystemErr);
@@ -180,8 +194,7 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #endif
 #ifndef HAVE_PARDISO
 	if (ipopt->Options()->GetStringValue("pardiso_library", libpath, "")) {
-		char buffer[512];
-		if (LSL_loadPardisoLib(libpath.c_str(), buffer, 512) != 0) {
+		if (LSL_loadPardisoLib(libpath.c_str(), buffer, sizeof(buffer)) != 0) {
 			gevLogStatPChar(gev, "Failed to load Pardiso library at user specified path: ");
 			gevLogStat(gev, buffer);
 			gmoSolveStatSet(gmo, SolveStat_SystemErr);
@@ -283,7 +296,6 @@ DllExport int STDCALL ipoHaveModifyProblem(ipoRec_t *Cptr) {
 }
 
 DllExport int STDCALL ipoReadyAPI(ipoRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) {
-	gevHandle_t Eptr;
 	assert(Cptr != NULL);
 	assert(Gptr != NULL);
 	char msg[256];
@@ -291,8 +303,6 @@ DllExport int STDCALL ipoReadyAPI(ipoRec_t *Cptr, gmoHandle_t Gptr, optHandle_t 
 		return 1;
 	if (!gevGetReady(msg, sizeof(msg)))
 		return 1;
-	Eptr = (gevHandle_t) gmoEnvironment(Gptr);
-	gevLogStatPChar(Eptr, ((GamsIpopt*)Cptr)->getWelcomeMessage());
 	return ((GamsIpopt*)Cptr)->readyAPI(Gptr, Optr);
 }
 

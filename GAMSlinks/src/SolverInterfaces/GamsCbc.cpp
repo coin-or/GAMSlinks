@@ -37,6 +37,9 @@
 #define GMS_SV_NA     2.0E300   /* not available/applicable */
 #include "gmomcc.h"
 #include "gevmcc.h"
+#ifdef GAMS_BUILD
+#include "gmspal.h"  /* for audit line */
+#endif
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
 
@@ -65,6 +68,8 @@ GamsCbc::~GamsCbc() {
 }
 
 int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
+	char buffer[1024];
+	
 	gmo = gmo_;
 	assert(gmo);
 	assert(!model);
@@ -77,11 +82,21 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 	gev = (gevRec*)gmoEnvironment(gmo);
 
+#ifdef GAMS_BUILD
+#include "coinlibdCL1svn.h" 
+	auditGetLine(buffer, sizeof(buffer));
+	gevLogStat(gev, "");
+	gevLogStat(gev, buffer);
+	gevStatAudit(gev, buffer);
+#endif
+	
+	gevLogStat(gev, "");
+	gevLogStatPChar(gev, getWelcomeMessage());
+
 	options.setGMO(gmo);
 	if (opt) {
 		options.setOpt(opt);
 	} else {
-		char buffer[1024];
 		gmoNameOptFile(gmo, buffer);
 #ifdef GAMS_BUILD
 		options.readOptionsFile("cbc",  gmoOptFile(gmo) ? buffer : NULL);
@@ -121,7 +136,6 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 	// write MPS file
 	if (options.isDefined("writemps")) {
-		char buffer[1024];
 		options.getString("writemps", buffer);
 		gevLogStatPChar(gev, "\nWriting MPS file ");
 		gevLogStat(gev, buffer);
@@ -1307,7 +1321,6 @@ DllExport int STDCALL cbcHaveModifyProblem(cbcRec_t *Cptr) {
 }
 
 DllExport int STDCALL cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) {
-	gevHandle_t Eptr;
 	assert(Cptr != NULL);
 	assert(Gptr != NULL);
 	char msg[256];
@@ -1315,8 +1328,6 @@ DllExport int STDCALL cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t 
 		return 1;
 	if (!gevGetReady(msg, sizeof(msg)))
 		return 1;
-	Eptr = (gevHandle_t) gmoEnvironment(Gptr);
-	gevLogStatPChar(Eptr, ((GamsCbc*)Cptr)->getWelcomeMessage());
 	return ((GamsCbc*)Cptr)->readyAPI(Gptr, Optr);
 }
 

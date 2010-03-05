@@ -33,6 +33,9 @@
 #define GMS_SV_NA     2.0E300   /* not available/applicable */ 
 #include "gmomcc.h"
 #include "gevmcc.h"
+#ifdef GAMS_BUILD
+#include "gmspal.h"  /* for audit line */
+#endif
 
 #include "GamsMINLP.hpp"
 #include "GamsJournal.hpp"
@@ -108,6 +111,8 @@ GamsCouenne::~GamsCouenne() {
 }
 
 int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
+	char buffer[256];
+	
 	gmo = gmo_;
 	assert(gmo);
 	assert(IsNull(minlp));
@@ -119,6 +124,17 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1; 
 	gev = (gevRec*)gmoEnvironment(gmo);
 	
+#ifdef GAMS_BUILD
+#include "coinlibdCL2svn.h" 
+	auditGetLine(buffer, sizeof(buffer));
+	gevLogStat(gev, "");
+	gevLogStat(gev, buffer);
+	gevStatAudit(gev, buffer);
+#endif
+	
+	gevLogStat(gev, "");
+	gevLogStatPChar(gev, getWelcomeMessage());
+
 	gmoObjStyleSet(gmo, ObjType_Fun);
 	gmoObjReformSet(gmo, 1);
  	gmoIndexBaseSet(gmo, 0);
@@ -1305,7 +1321,6 @@ DllExport int STDCALL couHaveModifyProblem(couRec_t *Cptr) {
 }
 
 DllExport int STDCALL couReadyAPI(couRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) {
-	gevHandle_t Eptr;
 	assert(Cptr != NULL);
 	assert(Gptr != NULL);
 	char msg[256];
@@ -1313,8 +1328,6 @@ DllExport int STDCALL couReadyAPI(couRec_t *Cptr, gmoHandle_t Gptr, optHandle_t 
 		return 1;
 	if (!gevGetReady(msg, sizeof(msg)))
 		return 1;
-	Eptr = (gevHandle_t) gmoEnvironment(Gptr);
-	gevLogStatPChar(Eptr, ((GamsCouenne*)Cptr)->getWelcomeMessage());
 	return ((GamsCouenne*)Cptr)->readyAPI(Gptr, Optr);
 }
 
