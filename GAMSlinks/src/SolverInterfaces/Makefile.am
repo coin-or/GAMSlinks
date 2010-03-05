@@ -116,7 +116,6 @@ endif
 endif
 
 if COIN_HAS_GRB
-  libGamsCoin_la_SOURCES  += OsiGrbSolverInterface.cpp
   libGamsCoin_la_LDFLAGS  += $(GRBLIB)
   libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(GRBINCDIR)`
 

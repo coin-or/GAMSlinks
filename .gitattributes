@@ -209,8 +209,6 @@ GAMSlinks/src/SolverInterfaces/Makefile.am -text
 GAMSlinks/src/SolverInterfaces/Makefile.in -text
 GAMSlinks/src/SolverInterfaces/OSrL2Gams.cpp -text
 GAMSlinks/src/SolverInterfaces/OSrL2Gams.hpp -text
-GAMSlinks/src/SolverInterfaces/OsiGrbSolverInterface.cpp -text
-GAMSlinks/src/SolverInterfaces/OsiGrbSolverInterface.hpp -text
 GAMSlinks/src/SolverInterfaces/gmsbmdnt.cmd -text
 GAMSlinks/src/SolverInterfaces/gmsbmdus.run -text
 GAMSlinks/src/SolverInterfaces/gmscbcnt.cmd -text

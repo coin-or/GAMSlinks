@@ -65,11 +65,16 @@ extern "C" {
 }
 
 // GAMS
-#define GMS_SV_NA     2.0E300   /* not available/applicable */
 #include "gmomcc.h"
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
 #include "gmspal.h"  /* for audit line */
+#endif
+/* value for not available/applicable */
+#if GMOAPIVERSION >= 7
+#define GMS_SV_NA     gmoValNA(gmo)
+#else
+#define GMS_SV_NA     2.0E300
 #endif
 
 using namespace Bonmin;

@@ -24,7 +24,12 @@
 
 #include "gmomcc.h"
 #include "gevmcc.h"
-#define GMS_SV_NA     2.0E300   /* not available/applicable */
+/* value for not available/applicable */
+#if GMOAPIVERSION >= 7
+#define GMS_SV_NA     gmoValNA(gmo)
+#else
+#define GMS_SV_NA     2.0E300
+#endif
 
 static
 void mygevLogStatPChar(gevRec* gev, const char* msg_) {
