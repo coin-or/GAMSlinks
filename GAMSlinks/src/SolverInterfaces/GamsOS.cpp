@@ -90,24 +90,7 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gev = (gevRec*)gmoEnvironment(gmo);
 	
 #ifdef GAMS_BUILD
-	switch( solverid )
-	{
-		case CPLEX:
-#include "coinlibdCL7svn.h"
-			break;
-		case GLPK:
-#include "coinlibdCL6svn.h"
-			break;
-		case GUROBI:
-#include "coinlibdCL8svn.h"
-			break;
-		case MOSEK:
-#include "coinlibdCL9svn.h"
-			break;
-		case XPRESS:
-#include "coinlibdCLAsvn.h"
-			break;
-	}
+#include "coinlibdCL4svn.h"
 	auditGetLine(buffer, sizeof(buffer));
 	gevLogStat(gev, "");
 	gevLogStat(gev, buffer);
