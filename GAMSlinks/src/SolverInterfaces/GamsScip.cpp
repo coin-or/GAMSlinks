@@ -71,7 +71,7 @@ SCIP_DECL_MESSAGEINFO(GamsScipPrintInfoOrDialog) {
 GamsScip::GamsScip()
 : gmo(NULL), gev(NULL), isDemo(false), gamsmsghandler(NULL), scip(NULL), scipmsghandler(NULL), vars(NULL), lpi(NULL)
 {
-  sprintf(scip_message, "SCIP version %d.%d.%d (+ patchset 1) [LP solver: %s]\n%s\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
+  sprintf(scip_message, "SCIP version %d.%d.%d.%d (+ patchset 1) [LP solver: %s]\n%s\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion(), SCIPsubversion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
 }
 
 GamsScip::~GamsScip() {
@@ -380,9 +380,9 @@ SCIP_RETCODE GamsScip::setupSCIPParameters() {
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/gap", gevGetDblOpt(gev, gevOptCR)) );
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/absgap", gevGetDblOpt(gev, gevOptCA)) );
 	SCIP_CALL( SCIPsetIntParam(scip, "display/width", 80) );
+	SCIP_CALL( SCIPsetBoolParam(scip, "constraints/quadratic/disaggregate", FALSE) );
 
 	SCIPchgFeastol(scip, 1e-7);
-	SCIPchgDualfeastol(scip, 1e-7);
 
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/names",            "whether the gams dictionary should be read and col/row names be given to scip",         NULL, FALSE, FALSE, NULL, NULL) );
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/solvefinal",       "whether the problem should be solved with fixed discrete variables to get dual values", NULL, FALSE, TRUE,  NULL, NULL) );
