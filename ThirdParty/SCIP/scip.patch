@@ -2670,3 +2670,45 @@ diff -aur scip/src/tclique/tclique_graph.c scip/src/tclique/tclique_graph.c
     }
     else
     {
+--- scip/src/scip/heur_nlp.c	2010-03-10 11:26:23.000000000 +0100
++++ scip/src/scip/heur_nlp.c	2010-03-10 11:31:56.000000000 +0100
+@@ -773,12 +773,17 @@
+ #else
+       SCIPverbMessage(scip, SCIP_VERBLEVEL_FULL, NULL, "No NLP solver available. NLP local search heuristic will not run.\n");
+ #endif
++      
++      /* if the heuristic is called at the root node, we want to be called directly after the initial root LP solve */
++      if( SCIPheurGetFreqofs(heur) == 0 )
++         SCIPheurSetTimingmask(heur, SCIP_HEURTIMING_DURINGLPLOOP | HEUR_TIMING);
+    }
+    else
+    {
+       SCIPdebugMessage("No nonlinear continuous variables. NLP local search heuristic will not run.\n");
+    }
+    
++   
+    return SCIP_OKAY;
+ }
+ 
+@@ -820,6 +825,8 @@
+       SCIP_CALL( SCIPfreeSol(scip, &heurdata->startcand) );
+    }
+ 
++   SCIPheurSetTimingmask(heur, HEUR_TIMING);
++
+    return SCIP_OKAY;
+ }
+ 
+@@ -1049,7 +1056,11 @@
+    }
+    
+    /* TODO reset time and iterlimit in nlp solver? */
+-   
++
++   /* reset timing, if it was changed temporary (at the root node) */
++   if( heurtiming != HEUR_TIMING )
++      SCIPheurSetTimingmask(heur, HEUR_TIMING);
++
+    return SCIP_OKAY;
+ }
+ 
