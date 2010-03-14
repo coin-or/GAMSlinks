@@ -193,24 +193,6 @@ if test @gamslinks_build_scip@ = 1 ; then
   testlist[${#testlist[@]}]="--solver scipd --suite qcp user1=\"--QPMCHECKS=0 --TESTTOL=1e-3\""
 fi
 
-if test @gamslinks_build_os@ = 1 -a @os_solver@ = yes ; then
-  solvers="$solvers , OSD"
-  skiplist="$skiplist skip('OSD','lp03')=yes;"
-  skiplist="$skiplist skip('OSD','sl4lp03')=yes;"
-  skiplist="$skiplist skip('OSD','lonlp')=yes;"
-  testlist[${#testlist[@]}]="--solver osd --suite lp"
-  testlist[${#testlist[@]}]="--solver osd --suite mip user1=rmip=osd"
-  testlist[${#testlist[@]}]="--solver osd --suite nlp"
-  testlist[${#testlist[@]}]="--solver osd --suite qcp"
-
-  #for the moment, we better skip the test of output to stdout
-  if grep -q slvstdskip quality.gms ; then
-    stdskiplist="$stdskiplist slvstdskip('OSD')=yes;"
-  else
-    stdskiplist="$stdskiplist slvstdoutskip('OSD')=yes;"
-  fi
-fi
-
 echo "Patch quality test driver to get COIN solvers and skip list in." 
 #We add our solvers to the list of master solvers,
 #put our solver-model skiplist somewhere (in front of skip('convert',mdl)=yes), and

@@ -3,9 +3,7 @@ $eolcom //
 set g OS Option Groups /
         general        General Options
       /
-    e / '-1', 0*100,
-        'solve', getJobID, knock, kill, send, retrieve
-      /
+    e / '-1' /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
     t / I Integer, R Real, S String, B Binary /
     o Options /
@@ -13,10 +11,7 @@ set g OS Option Groups /
       writeosil              write the problem instance as OSiL file
       writeosrl              write the optimization result as OSrL file
       service                address of an Optimization Services Agent for a remote solve
-      service_method         method of an OS Agent to call 
       solver                 specification of a solver
-      readospl               read knock request as OSpL file
-      writeospl              write knock or kill reply into OSpL file
 * GAMS options
 * immediates
       nobounds               ignores bounds on options
@@ -30,10 +25,7 @@ general.(
   writeosil        .s.(def '')
   writeosrl        .s.(def '')
   service          .s.(def '')
-  service_method   .s.(def 'solve')
   solver           .s.(def '')
-  readospl         .s.(def '')
-  writeospl        .s.(def '')
 * GAMS options
 * immediates
   nobounds        .b.(def 0)
@@ -41,12 +33,6 @@ general.(
 ) /
 $onempty
   oe(o,e) /
-  service_method.(   'solve'
-                     getJobID
-                     knock
-                     kill
-                     send
-                     retrieve )
   /
 $offempty
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /

@@ -173,22 +173,6 @@ if test "x$coin_has_scip" = xtrue ; then
   esac
 fi
 
-########################
-# OS Solver Interfaces #
-########################
-
-#if enable-os-solver is set, then we link the Gams/OS binary with all available coin solvers that have an OS interface and allow a "local" solve 
-AC_MSG_CHECKING([whether to include solvers into GamsOS binary])
-AC_ARG_ENABLE(os-solver,
-  AC_HELP_STRING([--enable-os-solver],[whether to include solver interfaces to available solvers into the GamsOS binary (default=no)]),
-  [os_solver=yes
-   AC_DEFINE([COIN_OS_SOLVER],[1],[If defined, the Gams/OS interface should allow local solves])],
-  [os_solver=no] )
-  
-AM_CONDITIONAL(COIN_OS_SOLVER, [test x"$os_solver" = xyes])
-AC_SUBST(os_solver)
-AC_MSG_RESULT([$os_solver])
-
 ################
 # CBC parallel #
 ################

@@ -78,9 +78,6 @@
 /* Define to 1 if the Xpress package is available */
 #undef COIN_HAS_XPR
 
-/* If defined, the Gams/OS interface should allow local solves */
-#undef COIN_OS_SOLVER
-
 /* Define to dummy `main' function (if any) required to link to the Fortran
    libraries. */
 #undef F77_DUMMY_MAIN

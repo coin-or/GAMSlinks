@@ -438,41 +438,12 @@ libGamsCoin_la_CPPFLAGS += \
  -I`$(CYGPATH_W) $(OSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(CPPADSRCDIR)`
 
-#OSSolverInterface.la need to come before OSCommonInterfaces.la
-if COIN_OS_SOLVER
-  libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSSolverInterfaces`
-  libGamsCoin_la_LIBADD   += $(OSOBJDIR)/src/OSSolverInterfaces/libOSSolverInterfaces.la
-endif
-
 libGamsCoin_la_LIBADD += \
  $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
  $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
  $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
  $(OSOBJDIR)/src/OSAgent/libOSAgent.la
 LIBS += `cat $(OSOBJDIR)/os_addlibs.txt`
-
-if COIN_OS_SOLVER
-if COIN_HAS_CPX
-  #might be duplicated if GAMSLINKS_BUILD_CBC is true
-  libGamsCoin_la_LIBADD  += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
-  libGamsCoin_la_LDFLAGS += $(CPXLIB)
-endif
-
-if COIN_HAS_DYLP
-  libGamsCoin_la_LIBADD += $(OSIOBJDIR)/src/OsiDylp/libOsiDylp.la $(DYLPOBJDIR)/src/Dylp/libDylp.la
-  LIBS += `cat $(DYLPOBJDIR)/dylp_addlibs.txt`
-endif  
-
-if COIN_HAS_VOL
-  libGamsCoin_la_LIBADD += $(OSIOBJDIR)/src/OsiVol/libOsiVol.la $(VOLOBJDIR)/src/libVol.la
-  LIBS += `cat $(VOLOBJDIR)/vol_addlibs.txt`
-endif
-
-if COIN_HAS_SYMPHONY
-  libGamsCoin_la_LIBADD += $(OSIOBJDIR)/src/OsiSym/libOsiSym.la $(SYMPHONYOBJDIR)/src/libSym.la
-  LIBS += `cat $(SYMPHONYOBJDIR)/sym_addlibs.txt`
-endif
-endif
 
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsosdux.out

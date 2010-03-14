@@ -13,24 +13,6 @@
 #include "OSrLWriter.h"
 #include "OSErrorClass.h"
 #include "OSSolverAgent.h"
-#ifdef COIN_OS_SOLVER
-#include "OSDefaultSolver.h"
-#ifdef GMODEVELOP
-#include "GMOSolver.hpp"
-#endif
-#ifdef COIN_HAS_OSI
-#include "OSCoinSolver.h"
-#endif
-#ifdef COIN_HAS_IPOPT
-#include "OSIpoptSolver.h"
-#endif
-#ifdef COIN_HAS_BONMIN
-#include "OSBonminSolver.h"
-#endif
-#ifdef COIN_HAS_COUENNE
-#include "OSCouenneSolver.h"
-#endif
-#endif
 
 #include "GamsOSxL.hpp"
 
@@ -148,7 +130,7 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 }
 
 int GamsOS::callSolver() {
-   assert(osinstance != NULL);
+  assert(osinstance != NULL);
    
 	std::string osol;
 	if (gamsopt.isDefined("readosol")) {
@@ -166,188 +148,19 @@ int GamsOS::callSolver() {
 		osol = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <osol xmlns=\"os.optimizationservices.org\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"os.optimizationservices.org http://www.optimizationservices.org/schemas/OSoL.xsd\"></osol>";
 	}
 
-	bool fail;
+	int retcode;
 
 	if (gamsopt.isDefined("service"))
-		fail = !remoteSolve(osinstance, osol);
-	else
-		fail = !localSolve(osinstance, osol);
-
-	return fail;
-}
-
-#ifdef COIN_OS_SOLVER
-std::string GamsOS::getSolverName(bool isnonlinear, bool isdiscrete) {
-	if (isnonlinear) { // (MI)NLP
-		if (isdiscrete) { // MINLP
-#ifdef COIN_HAS_BONMIN
-			return "bonmin";
-#endif
-#ifdef COIN_HAS_COUENNE
-			return "couenne";
-#endif
-			gevLogStat(gev, "Error: No MINLP solver with OS interface available.");
-		} else { // NLP
-#ifdef COIN_HAS_IPOPT
-			return "ipopt";
-#endif
-			gevLogStat(gev, "Error: No NLP solver with OS interface available.");
-		}
-	} else if (isdiscrete) { // MIP
-#ifdef COIN_HAS_CBC
-		return "cbc";
-#endif
-#ifdef COIN_HAS_CPX
-		return "cplex";
-#endif
-#ifdef COIN_HAS_GLPK
-		return "glpk";
-#endif
-#ifdef COIN_HAS_SYMPHONY
-		return "symphony";
-#endif
-		gevLogStat(gev, "Error: No MIP solver with OS interface available.");
-	} else { // LP
-#ifdef COIN_HAS_CLP
-		return "clp";
-#endif
-#ifdef COIN_HAS_CPX
-		return "cplex";
-#endif
-#ifdef COIN_HAS_GLPK
-		return "glpk";
-#endif
-#ifdef COIN_HAS_DYLP
-		return "dylp";
-#endif
-#ifdef COIN_HAS_IPOPT
-		return "ipopt";
-#endif
-#ifdef COIN_HAS_VOL
-		return "vol";
-#endif
-		gevLogStat(gev, "Error: No LP solver with OS interface available.");
+		retcode = !remoteSolve(osinstance, osol);
+	else {
+	  gevLogStat(gev, "\nNo Optimization Services server specified (option 'service').\nSkipping remote solve.");
+    gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+    gmoSolveStatSet(gmo, SolveStat_Normal);
+    retcode = 0;
 	}
 
-	return "error";
+	return retcode;
 }
-
-bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
-	std::string solvername;
-	if (gamsopt.isDefined("solver")) {
-		char buffer[128];
-		if (gamsopt.getString("solver", buffer))
-			solvername.assign(buffer);
-		if (solvername == "none") {
-			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-			gmoSolveStatSet(gmo, SolveStat_Normal);
-	    return true;
-		}
-	} else { // set default solver depending on problem type and what is available
-		try {
-			solvername = getSolverName(
-					osinstance->getNumberOfNonlinearExpressions() || osinstance->getNumberOfQuadraticTerms(),
-					osinstance->getNumberOfBinaryVariables() || osinstance->getNumberOfIntegerVariables());
-		} catch (ErrorClass error) {
-			gevLogStat(gev, "Error selecting a solver. Error message:");
-			gevLogStatPChar(gev, error.errormsg.c_str());
-			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-			gmoSolveStatSet(gmo, SolveStat_SystemErr);
-			return 1;
-		}
-		if (solvername.find("error") != std::string::npos) {
-			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-			gmoSolveStatSet(gmo, SolveStat_Capability);
-	    return false;
-		}
-	}
-
-	DefaultSolver* solver=NULL;
-	try {
-		if (solvername.find("ipopt") != std::string::npos) {
-#ifdef COIN_HAS_IPOPT
-			solver = new IpoptSolver();
-#else
-			gevLogStat(gev, "Error: Ipopt not available.");
-			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-			gmoSolveStatSet(gmo, SolveStat_Capability);
-			return false;
-#endif
-		} else if (solvername.find("bonmin") != std::string::npos) {
-#ifdef COIN_HAS_BONMIN
-			solver = new BonminSolver();
-#else
-			gevLogStat(gev, "Error: Bonmin not available.");
-			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-			gmoSolveStatSet(gmo, SolveStat_Capability);
-			return false;
-#endif
-      } else if (solvername.find("couenne") != std::string::npos) {
-#ifdef COIN_HAS_COUENNE
-         solver = new CouenneSolver();
-#else
-         gevLogStat(gev, "Error: Couenne not available.");
-         gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-         gmoSolveStatSet(gmo, SolveStat_Capability);
-         return false;
-#endif
-#ifdef GMODEVELOP
-		}	else if (solvername.find("gmo") != std::string::npos) {
-			solver = new GMOSolver();
-#endif
-		} else {
-#ifdef COIN_HAS_OSI
-			solver = new CoinSolver();
-#else
-			gevLogStat(gev, "Error: CoinSolver not available.");
-			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-			gmoSolveStatSet(gmo, SolveStat_Capability);
-			return false;
-#endif
-		}
-	} catch (ErrorClass error) {
-		gevLogStat(gev, "Error creating the OS solver interface. Error message:");
-		gevLogStatPChar(gev, error.errormsg.c_str());
-		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-		gmoSolveStatSet(gmo, SolveStat_SystemErr);
-		return 1;
-	}
-
-	solver->sSolverName = solvername;
-	solver->osinstance = osinstance;
-	solver->osol = osol;
-
-	gevLogStatPChar(gev, "Solving the instance with ");
-	gevLogStatPChar(gev, solvername.c_str());
-	gevLogStat(gev, "...");
-	try {
-		solver->buildSolverInstance();
-		solver->solve();
-		gevLogStat(gev, "\nDone solving the instance.");
-
-		if (!processResult(&solver->osrl, solver->osresult))
-			return false;
-
-	} catch(ErrorClass error) {
-		gevLogStat(gev, "Error solving the instance. Error message:");
-		gevLogStatPChar(gev, error.errormsg.c_str());
-		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-		gmoSolveStatSet(gmo, SolveStat_SystemErr);
-		return false;
-	}
-
-	delete solver;
-	return true;
-}
-#else
-
-bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
-	gevLogStat(gev, "Local solve of instances not supported. You need to rebuild GamsOS with the option --enable-os-solver.");
-	gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-	gmoSolveStatSet(gmo, SolveStat_Capability);
-	return false;
-}
-#endif
 
 bool GamsOS::remoteSolve(OSInstance* osinstance, std::string& osol) {
 	char buffer[512];
@@ -376,6 +189,12 @@ bool GamsOS::remoteSolve(OSInstance* osinstance, std::string& osol) {
 	try {
 		OSSolverAgent agent(gamsopt.getString("service", buffer));
 
+#if 1
+    std::string osrl = agent.solve(OSiLWriter().writeOSiL(osinstance), osol);
+    if (!processResult(&osrl, NULL))
+      return false;
+
+#else
 		if (!gamsopt.getString("service_method", buffer)) {
 			gevLogStat(gev, "Error reading value of parameter service_method");
 			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
@@ -493,6 +312,8 @@ bool GamsOS::remoteSolve(OSInstance* osinstance, std::string& osol) {
 			gmoSolveStatSet(gmo, SolveStat_SystemErr);
 			return false;
 		}
+#endif
+
 	} catch(ErrorClass error) {
 		gevLogStat(gev, "Error handling the OS service. Error message:");
 		gevLogStatPChar(gev, error.errormsg.c_str());

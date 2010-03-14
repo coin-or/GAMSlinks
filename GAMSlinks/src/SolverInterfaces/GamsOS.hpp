@@ -17,14 +17,14 @@
 class OSInstance;
 class OSResult;
 
-/* Interface between a GAMS model in form of a Gams Modeling Object (GMO) and Optimization Services (OS) routines.
+/* Interface between a GAMS and Optimization Services (OS).
  */
 class GamsOS : public GamsSolver {
 private:
 	struct gmoRec* gmo;
 	struct gevRec* gev;
 
-	char           os_message[100];
+	char           os_message[200];
 
 	GamsOptions    gamsopt;
 	OSInstance*    osinstance;
