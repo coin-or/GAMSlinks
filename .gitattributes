@@ -165,8 +165,6 @@ GAMSlinks/src/SCIP/gmssc_nt.cmd -text
 GAMSlinks/src/SCIP/gmssc_us.run -text
 GAMSlinks/src/SCIP/install/gmssc_nt.dat -text
 GAMSlinks/src/SCIP/install/gmssc_un.dat -text
-GAMSlinks/src/SolverInterfaces/Gams2OSiL.cpp -text
-GAMSlinks/src/SolverInterfaces/Gams2OSiL.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsBonmin.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsBonmin.h -text
 GAMSlinks/src/SolverInterfaces/GamsBonmin.hpp -text
@@ -190,6 +188,8 @@ GAMSlinks/src/SolverInterfaces/GamsNLP.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsOS.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsOS.h -text
 GAMSlinks/src/SolverInterfaces/GamsOS.hpp -text
+GAMSlinks/src/SolverInterfaces/GamsOSxL.cpp -text
+GAMSlinks/src/SolverInterfaces/GamsOSxL.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsOsi.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsOsi.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsOsiCplex.h -text
@@ -207,8 +207,6 @@ GAMSlinks/src/SolverInterfaces/GamsSolver.h -text
 GAMSlinks/src/SolverInterfaces/GamsSolver.hpp -text
 GAMSlinks/src/SolverInterfaces/Makefile.am -text
 GAMSlinks/src/SolverInterfaces/Makefile.in -text
-GAMSlinks/src/SolverInterfaces/OSrL2Gams.cpp -text
-GAMSlinks/src/SolverInterfaces/OSrL2Gams.hpp -text
 GAMSlinks/src/SolverInterfaces/gmsbmdnt.cmd -text
 GAMSlinks/src/SolverInterfaces/gmsbmdus.run -text
 GAMSlinks/src/SolverInterfaces/gmscbcnt.cmd -text

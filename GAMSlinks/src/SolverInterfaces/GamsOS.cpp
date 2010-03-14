@@ -32,8 +32,7 @@
 #endif
 #endif
 
-#include "Gams2OSiL.hpp"
-#include "OSrL2Gams.hpp"
+#include "GamsOSxL.hpp"
 
 #include "gmomcc.h"
 #include "gevmcc.h"
@@ -44,28 +43,6 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-
-static
-void mygevLogStatPChar(gevRec* gev, const char* msg_) {
-	int len = strlen(msg_);
-	
-	if (len < 250) {
-		gevLogStat(gev, msg_);
-		return;
-	}
-	
-	char* msg = const_cast<char*>(msg_);
-	
-	char tmp = msg[0];
-	for (int i = 0; i < len; i+=250) {
-		msg[i] = tmp;
-		if (i+250 < len) {
-			tmp = msg[i+250];
-			msg[i+250] = 0;
-		}
-		gevLogStat(gev, msg+i);
-	}
-}
 
 GamsOS::GamsOS()
 : gmo(NULL), osinstance(NULL)
@@ -133,9 +110,9 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #endif
 	}
 
-	Gams2OSiL gmoosil(gmo);
+	GamsOSxL gmoosxl(gmo);
 	try {
-		if (!gmoosil.createOSInstance()) {
+		if (!gmoosxl.createOSInstance()) {
 			gevLogStat(gev, "Creation of OSInstance failed.");
 			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 			gmoSolveStatSet(gmo, SolveStat_SystemErr);
@@ -143,13 +120,13 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		}
 	} catch(ErrorClass error) {
 		gevLogStat(gev, "Error creating the instance. Error message:");
-		mygevLogStatPChar(gev, error.errormsg.c_str());
+		gevLogStatPChar(gev, error.errormsg.c_str());
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return 1;
 	}
 
-	osinstance = gmoosil.takeOverOSInstance();
+	osinstance = gmoosxl.takeOverOSInstance();
 
 	if (gamsopt.isDefined("writeosil")) {
 		OSiLWriter osilwriter;
@@ -273,7 +250,7 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 					osinstance->getNumberOfBinaryVariables() || osinstance->getNumberOfIntegerVariables());
 		} catch (ErrorClass error) {
 			gevLogStat(gev, "Error selecting a solver. Error message:");
-			mygevLogStatPChar(gev, error.errormsg.c_str());
+			gevLogStatPChar(gev, error.errormsg.c_str());
 			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 			gmoSolveStatSet(gmo, SolveStat_SystemErr);
 			return 1;
@@ -330,7 +307,7 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 		}
 	} catch (ErrorClass error) {
 		gevLogStat(gev, "Error creating the OS solver interface. Error message:");
-		mygevLogStatPChar(gev, error.errormsg.c_str());
+		gevLogStatPChar(gev, error.errormsg.c_str());
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return 1;
@@ -353,7 +330,7 @@ bool GamsOS::localSolve(OSInstance* osinstance, std::string& osol) {
 
 	} catch(ErrorClass error) {
 		gevLogStat(gev, "Error solving the instance. Error message:");
-		mygevLogStatPChar(gev, error.errormsg.c_str());
+		gevLogStatPChar(gev, error.errormsg.c_str());
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return false;
@@ -464,7 +441,7 @@ bool GamsOS::remoteSolve(OSInstance* osinstance, std::string& osol) {
 				}
 			} else {
 				gevLogStat(gev, "Answer from knock:");
-				mygevLogStatPChar(gev, ospl.c_str());
+				gevLogStatPChar(gev, ospl.c_str());
 				gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 				gmoSolveStatSet(gmo, SolveStat_SystemErr);
 			}
@@ -488,7 +465,7 @@ bool GamsOS::remoteSolve(OSInstance* osinstance, std::string& osol) {
 				}
 			} else {
 				gevLogStat(gev, "Answer from kill:");
-				mygevLogStatPChar(gev, ospl.c_str());
+				gevLogStatPChar(gev, ospl.c_str());
 				gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 				gmoSolveStatSet(gmo, SolveStat_Normal);
 			}
@@ -518,7 +495,7 @@ bool GamsOS::remoteSolve(OSInstance* osinstance, std::string& osol) {
 		}
 	} catch(ErrorClass error) {
 		gevLogStat(gev, "Error handling the OS service. Error message:");
-		mygevLogStatPChar(gev, error.errormsg.c_str());
+		gevLogStatPChar(gev, error.errormsg.c_str());
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		return false;
@@ -545,7 +522,7 @@ bool GamsOS::processResult(std::string* osrl, OSResult* osresult) {
 		}
 	}
 
-	OSrL2Gams osrl2gmo(gmo);
+	GamsOSxL osrl2gmo(gmo);
 	if (osresult)
 		osrl2gmo.writeSolution(*osresult);
 	else

@@ -226,7 +226,7 @@ noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_89 = gmscounx
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_90 = gmscounx.exe gmscount.cmd install/gmscount.dat
 @GAMSLINKS_BUILD_COUENNE_TRUE@am__append_91 = gmscount.cmd gmscouus.run install/gmscount.dat install/gmscouun.dat
-@GAMSLINKS_BUILD_OS_TRUE@am__append_92 = GamsOS.cpp Gams2OSiL.cpp OSrL2Gams.cpp
+@GAMSLINKS_BUILD_OS_TRUE@am__append_92 = GamsOS.cpp GamsOSxL.cpp
 @GAMSLINKS_BUILD_OS_TRUE@am__append_93 = \
 @GAMSLINKS_BUILD_OS_TRUE@ -I`$(CYGPATH_W) $(OSSRCDIR)/src` \
 @GAMSLINKS_BUILD_OS_TRUE@ -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSCommonInterfaces` \
@@ -331,7 +331,7 @@ am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp GamsOsi.cpp \
 	GamsOsiHelper.cpp GamsMessageHandler.cpp GamsCbc.cpp \
 	GamsIpopt.cpp GamsNLP.cpp GamsJournal.cpp GamsScip.cpp \
 	GamsBonmin.cpp GamsMINLP.cpp GamsCouenne.cpp GamsOS.cpp \
-	Gams2OSiL.cpp OSrL2Gams.cpp
+	GamsOSxL.cpp
 @GAMSLINKS_BUILD_OSI_TRUE@am__objects_1 = libGamsCoin_la-GamsOsi.lo \
 @GAMSLINKS_BUILD_OSI_TRUE@	libGamsCoin_la-GamsOsiHelper.lo \
 @GAMSLINKS_BUILD_OSI_TRUE@	libGamsCoin_la-GamsMessageHandler.lo
@@ -347,8 +347,7 @@ am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp GamsOsi.cpp \
 @GAMSLINKS_BUILD_COUENNE_TRUE@am__objects_6 =  \
 @GAMSLINKS_BUILD_COUENNE_TRUE@	libGamsCoin_la-GamsCouenne.lo
 @GAMSLINKS_BUILD_OS_TRUE@am__objects_7 = libGamsCoin_la-GamsOS.lo \
-@GAMSLINKS_BUILD_OS_TRUE@	libGamsCoin_la-Gams2OSiL.lo \
-@GAMSLINKS_BUILD_OS_TRUE@	libGamsCoin_la-OSrL2Gams.lo
+@GAMSLINKS_BUILD_OS_TRUE@	libGamsCoin_la-GamsOSxL.lo
 am_libGamsCoin_la_OBJECTS = libGamsCoin_la-GamsSolver.lo \
 	$(am__objects_1) $(am__objects_2) $(am__objects_3) \
 	$(am__objects_4) $(am__objects_5) $(am__objects_6) \
@@ -1138,7 +1137,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsoxpux_out-gmsmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsscdnx-gmsmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsscdux_out-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-Gams2OSiL.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsBonmin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsCbc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsCouenne.Plo@am__quote@
@@ -1148,11 +1146,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsMessageHandler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsNLP.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsOS.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsOSxL.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsOsi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsOsiHelper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsScip.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsSolver.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-OSrL2Gams.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -1266,19 +1264,12 @@ libGamsCoin_la-GamsOS.lo: GamsOS.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGamsCoin_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libGamsCoin_la-GamsOS.lo `test -f 'GamsOS.cpp' || echo '$(srcdir)/'`GamsOS.cpp
 
-libGamsCoin_la-Gams2OSiL.lo: Gams2OSiL.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGamsCoin_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libGamsCoin_la-Gams2OSiL.lo -MD -MP -MF "$(DEPDIR)/libGamsCoin_la-Gams2OSiL.Tpo" -c -o libGamsCoin_la-Gams2OSiL.lo `test -f 'Gams2OSiL.cpp' || echo '$(srcdir)/'`Gams2OSiL.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libGamsCoin_la-Gams2OSiL.Tpo" "$(DEPDIR)/libGamsCoin_la-Gams2OSiL.Plo"; else rm -f "$(DEPDIR)/libGamsCoin_la-Gams2OSiL.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Gams2OSiL.cpp' object='libGamsCoin_la-Gams2OSiL.lo' libtool=yes @AMDEPBACKSLASH@
+libGamsCoin_la-GamsOSxL.lo: GamsOSxL.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGamsCoin_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libGamsCoin_la-GamsOSxL.lo -MD -MP -MF "$(DEPDIR)/libGamsCoin_la-GamsOSxL.Tpo" -c -o libGamsCoin_la-GamsOSxL.lo `test -f 'GamsOSxL.cpp' || echo '$(srcdir)/'`GamsOSxL.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libGamsCoin_la-GamsOSxL.Tpo" "$(DEPDIR)/libGamsCoin_la-GamsOSxL.Plo"; else rm -f "$(DEPDIR)/libGamsCoin_la-GamsOSxL.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='GamsOSxL.cpp' object='libGamsCoin_la-GamsOSxL.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGamsCoin_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libGamsCoin_la-Gams2OSiL.lo `test -f 'Gams2OSiL.cpp' || echo '$(srcdir)/'`Gams2OSiL.cpp
-
-libGamsCoin_la-OSrL2Gams.lo: OSrL2Gams.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGamsCoin_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libGamsCoin_la-OSrL2Gams.lo -MD -MP -MF "$(DEPDIR)/libGamsCoin_la-OSrL2Gams.Tpo" -c -o libGamsCoin_la-OSrL2Gams.lo `test -f 'OSrL2Gams.cpp' || echo '$(srcdir)/'`OSrL2Gams.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libGamsCoin_la-OSrL2Gams.Tpo" "$(DEPDIR)/libGamsCoin_la-OSrL2Gams.Plo"; else rm -f "$(DEPDIR)/libGamsCoin_la-OSrL2Gams.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='OSrL2Gams.cpp' object='libGamsCoin_la-OSrL2Gams.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGamsCoin_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libGamsCoin_la-OSrL2Gams.lo `test -f 'OSrL2Gams.cpp' || echo '$(srcdir)/'`OSrL2Gams.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGamsCoin_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libGamsCoin_la-GamsOSxL.lo `test -f 'GamsOSxL.cpp' || echo '$(srcdir)/'`GamsOSxL.cpp
 
 gmsbmdnx-gmsmain.o: gmsmain.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbmdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsbmdnx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsbmdnx-gmsmain.Tpo" -c -o gmsbmdnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \

@@ -427,7 +427,7 @@ EXTRA_DIST       += gmscount.cmd gmscouus.run install/gmscount.dat install/gmsco
 endif
 
 if GAMSLINKS_BUILD_OS
-libGamsCoin_la_SOURCES += GamsOS.cpp Gams2OSiL.cpp OSrL2Gams.cpp
+libGamsCoin_la_SOURCES += GamsOS.cpp GamsOSxL.cpp
 
 libGamsCoin_la_CPPFLAGS += \
  -I`$(CYGPATH_W) $(OSSRCDIR)/src` \
