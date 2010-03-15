@@ -1,5 +1,5 @@
 introduction
-GAMS/OS brings the open source Optimization Services project to the broad audience of GAMS users.
+GAMS/OS brings the open source Optimization Services (OS) project to the broad audience of GAMS users.
 The code has been written primarily by Horand Gassmann, Jun Ma, and Kipp Martin.
 The GAMS interface for OS is maintained by Stefan Vigerske, Humboldt University, in a COIN-OR project called GAMSlinks.
 For more information visit the web site for
@@ -9,17 +9,15 @@ For more information visit the web site for
 For documentation of GAMS parameters, see the <A href="http://www.gams.com/docs/parame.htm">GAMS parameters documentation</A>.
 
 
-solver
-Specifies the solver that is used to solve an instance.
-Valid values are clp, cbc, glpk, ipopt, bonmin, couenne, none.
-If 'none' is specified, then solving is skipped. This value is only valid for a local solve. 
-
-
 service
 Specifies the URL of an Optimization Services Server.
-If specified, then this server is contacted and the service method specified under service_method is executed.
+The GAMS model is converted into OSiL format, send to the server, and the result translated back into GAMS format.
 Note that by default the server chooses a solver that is appropriate to the model type.
 You can change the solver with the solver option.
+
+
+solver
+Specifies the solver that is used to solve an instance.
 
 
 writeosil
@@ -31,7 +29,7 @@ Specifies the name of a file in which the result of a solve process (solution, s
  
 
 readosol
-Specifies the name of an option file in OSoL format that is given to the solver or an OS server.
+Specifies the name of an option file in OSoL format that is given to the OS server.
 This way it is possible to pass options directly to the COIN-OR solvers interfaced by OS.
 
 
