@@ -541,7 +541,7 @@ bool GamsOsi::setupStartingPoint() {
 			osi->setColSolution(varlevel);
 			osi->setRowPrice(rowprice);
 		}
-		if (solverid != GUROBI || nbas == gmoM(gmo)) {
+		if ((solverid != GUROBI && solverid != MOSEK) || nbas == gmoM(gmo)) {
 			if (!osi->setWarmStart(&basis)) {
 				gevLogStat(gev, "Failed to set initial basis. Exiting ...");
 				delete[] varlevel;
