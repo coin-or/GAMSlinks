@@ -725,7 +725,9 @@ bool GamsOsi::setupParameters() {
 			if (!isLP() && nodelim)
 				GRBsetdblparam(grbenv, GRB_DBL_PAR_NODELIMIT, (double)nodelim);
 			GRBsetdblparam(grbenv, GRB_DBL_PAR_MIPGAP, optcr);
-			//optca not in gurobi
+#if GRB_VERSION_MAJOR >= 3
+         GRBsetdblparam(grbenv, GRB_DBL_PAR_MIPGAPABS, optca);
+#endif
 			
 			if (gmoOptFile(gmo)) {
 				char buffer[4096];
@@ -1109,6 +1111,19 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 						gevLogStat(gev, "Stopped on numerical difficulties.");
 					}
 					break;
+
+#if GRB_VERSION_MAJOR >= 3
+            case GRB_SUBOPTIMAL:
+               gmoSolveStatSet(gmo, SolveStat_Solver);
+               if (nrsol) {
+                  gmoModelStatSet(gmo, isLP() ? ModelStat_NonOptimalIntermed : ModelStat_Integer);
+                  gevLogStat(gev, "Stopped on suboptimal but feasible solution.");
+               } else {
+                  gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+                  gevLogStat(gev, "Stopped at suboptimal point.");
+               }
+               break;
+#endif
 					
 				case GRB_LOADED:
 				default:
