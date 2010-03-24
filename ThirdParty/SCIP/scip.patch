@@ -2712,3 +2712,25 @@ diff -aur scip/src/tclique/tclique_graph.c scip/src/tclique/tclique_graph.c
     return SCIP_OKAY;
  }
  
+--- scip/src/scip/lpi_clp.cpp	4 Jan 2010 20:35:43 -0000	1.65
++++ scip/src/scip/lpi_clp.cpp	20 Mar 2010 17:22:41 -0000	1.66
+@@ -2609,7 +2609,18 @@
+ 
+    int* idx;
+    SCIP_ALLOC( BMSallocMemoryArray(&idx, nrows) );
+-   clp->getBasics(idx);
++
++   /* If secondaryStatus == 6, clp says the LP is empty. Mose likely this happened, because the
++      matrix is empty, i.e., all rows were redundant/empty. In this case, we construct a basis
++      consisting of slack variables. */
++   if ( clp->secondaryStatus() == 6 )
++   {
++      assert( clp->getNumElements() == 0 );
++      for (int i = 0; i < nrows; ++i)
++	 idx[i] = ncols + i;
++   }
++   else
++      clp->getBasics(idx);
+ 
+    for (int i = 0; i < nrows; ++i)
+    {
