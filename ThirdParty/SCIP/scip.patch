@@ -2734,3 +2734,47 @@ diff -aur scip/src/tclique/tclique_graph.c scip/src/tclique/tclique_graph.c
  
     for (int i = 0; i < nrows; ++i)
     {
+--- scip/src/scip/intervalarith.c	2009-09-09 15:57:30.000000000 +0200
++++ scip/src/scip/intervalarith.c	2010-03-10 13:08:08.000000000 +0100
+@@ -111,6 +111,44 @@
+ }
+ #endif
+ 
++#ifdef ROUNDING_MS
++#define ROUNDING
++/*
++ * Microsoft compiler rounding operations
++ */
++
++#include <float.h>
++
++/** Microsoft rounding mode settings */
++enum RoundMode
++{
++   SCIP_ROUND_DOWNWARDS = RC_DOWN,           /**< round always down */
++   SCIP_ROUND_UPWARDS   = RC_UP              /**< round always up */
++};
++typedef enum RoundMode ROUNDMODE;
++
++/** sets rounding mode of floating point operations */
++static
++void setRoundingMode(
++   ROUNDMODE        roundmode           /**< rounding mode to activate */
++   )
++{
++   if( (_controlfp(roundmode, _MCW_RC) & _MCW_RC) != roundmode )
++   {
++      SCIPerrorMessage("error setting rounding mode to %x\n", roundmode);
++      SCIPABORT();
++   }
++}
++
++/** gets current rounding mode of floating point operations */
++static
++ROUNDMODE getRoundingMode(
++   void
++   )
++{
++	return _controlfp(0, 0) & _MCW_RC;
++}
++#endif
