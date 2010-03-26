@@ -298,6 +298,7 @@ ThirdParty/SCIP/scip.patch -text
 /configure.ac -text
 /depcomp -text
 doxydoc/doxygen.conf -text
+/fixMakefile.inForWindows -text
 /install-sh -text
 libltdl/COPYING.LIB -text
 libltdl/Makefile.am -text
