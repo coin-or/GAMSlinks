@@ -21,7 +21,7 @@
 #define QUOTEME_(x) #x
 #define QUOTEME(x) QUOTEME_(x)
 #else
-extern "C" GamsSolver* CREATEFUNCNAME ();
+extern "C" GamsSolver* STDCALL CREATEFUNCNAME (void);
 #endif
 
 #ifdef HAVE_CSTDLIB
