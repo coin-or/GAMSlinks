@@ -15,7 +15,12 @@
 
 #include "GAMSlinksConfig.h"
 #include "GamsSolver.hpp"
+
+#ifdef COIN_HAS_LIBLTDL
 #include <ltdl.h>
+#else
+extern "C" GamsSolver* CREATEFUNCNAME ();
+#endif
 
 #ifdef HAVE_CSTDLIB
 #include <cstdlib>
@@ -48,7 +53,9 @@ int main(int argc, char** argv) {
 #ifdef HAVE_WINDOWS_H
   SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
 #endif
+#ifdef COIN_HAS_LIBLTDL
   LTDL_SET_PRELOADED_SYMBOLS();
+#endif
   
   if (argc == 1) {
     fprintf(stderr, "usage: %s <control_file_name>\nexiting ...\n", argv[0]);
@@ -102,7 +109,8 @@ int main(int argc, char** argv) {
     gevFree(&gev);
     return EXIT_FAILURE;
   }
-  
+
+#ifdef COIN_HAS_LIBLTDL  
   if ((rc = lt_dlinit())) {
     gevLogStat(gev, "Could not initialize dynamic library loader.");
 //    gmoCloseGms(gmo);
@@ -132,6 +140,10 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
   
+#else
+  createNewGamsSolver_t* createsolver = (createNewGamsSolver_t*) CREATEFUNCNAME;
+#endif
+  
   GamsSolver* solver = (*createsolver)();
 
   bool ok = true;
@@ -157,8 +169,10 @@ int main(int argc, char** argv) {
   gmoLibraryUnload();
   gevLibraryUnload();
 
+#ifdef COIN_HAS_LIBLTDL
   lt_dlclose(coinlib);
   lt_dlexit();
+#endif
 
   return EXIT_SUCCESS;
 }
