@@ -2778,3 +2778,47 @@ diff -aur scip/src/tclique/tclique_graph.c scip/src/tclique/tclique_graph.c
 +	return _controlfp(0, 0) & _MCW_RC;
 +}
 +#endif
+ 
+ 
+ #ifndef ROUNDING
+--- scip/src/scip/cons_knapsack.c	26 Mar 2010 13:55:19 -0000	1.190
++++ scip/src/scip/cons_knapsack.c	26 Mar 2010 19:50:21 -0000	1.192
+@@ -4163,7 +4163,15 @@
+ 
+    SCIPdebugMessage("apply fixings:\n");
+    SCIPdebug(SCIP_CALL( SCIPprintCons(scip, cons, NULL) ));
+-   
++
++   /* check infeasibility */
++   if ( consdata->onesweightsum > consdata->capacity )
++   {
++      SCIPdebugMessage("apply fixings detected cutoff.\n");
++      *cutoff = TRUE;
++      return SCIP_OKAY;
++   }
++
+    v = 0;
+    while( v < consdata->nvars )
+    {
+--- scip/src/scip/scip.c	12 Mar 2010 14:54:30 -0000	1.546
++++ scip/src/scip/scip.c	26 Mar 2010 11:04:02 -0000	1.549
+@@ -12072,7 +12072,7 @@
+     */
+    if( !scip->set->misc_exactsolve && SCIPtreeGetCurrentDepth(scip->tree) > 0
+       && (SCIPlpGetSolstat(scip->lp) == SCIP_LPSOLSTAT_INFEASIBLE
+-         || SCIPlpGetSolstat(scip->lp) == SCIP_LPSOLSTAT_OBJLIMIT)
++         || (SCIPlpGetSolstat(scip->lp) == SCIP_LPSOLSTAT_OBJLIMIT && !SCIPlpDivingObjChanged(scip->lp)))
+       && SCIPprobAllColsInLP(scip->transprob, scip->set, scip->lp) )
+    {
+       SCIP_CALL( SCIPconflictAnalyzeLP(scip->conflict, scip->mem->solvemem, scip->set, scip->stat, scip->transprob,
+@@ -16036,7 +16036,10 @@
+    else
+    {
+       if( scip->primal->nsols == 0 )
++      {
++	 SCIPmessageFPrintInfo(file, "  Primal Bound     : %+21.14e", primalbound);
+          SCIPmessageFPrintInfo(file, "   (user objective limit)\n");
++      }
+       else
+       {
+          /* display first primal bound line */
