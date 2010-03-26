@@ -54,19 +54,18 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@COIN_HAS_LIBLTDL_TRUE@am__append_1 = SolverInterfaces
-@GAMSLINKS_BUILD_CBC_TRUE@am__append_2 = Cbc
-@GAMSLINKS_BUILD_GLPK_TRUE@am__append_3 = Glpk
-@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_4 = Ipopt
-@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_5 = Bonmin
-@GAMSLINKS_BUILD_OSI_TRUE@am__append_6 = Osi
-@GAMSLINKS_BUILD_OS_TRUE@am__append_7 = OS
-@GAMSLINKS_BUILD_SCIP_TRUE@am__append_8 = SCIP
+@GAMSLINKS_BUILD_CBC_TRUE@am__append_1 = Cbc
+@GAMSLINKS_BUILD_GLPK_TRUE@am__append_2 = Glpk
+@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_3 = Ipopt
+@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_4 = Bonmin
+@GAMSLINKS_BUILD_OSI_TRUE@am__append_5 = Osi
+@GAMSLINKS_BUILD_OS_TRUE@am__append_6 = OS
+@GAMSLINKS_BUILD_SCIP_TRUE@am__append_7 = SCIP
 DIST_COMMON = $(includecoin_HEADERS) \
 	$(srcdir)/../../BuildTools/Makemain.inc $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_9 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_10 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_8 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_9 = .Externals-stamp
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
@@ -402,11 +401,11 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = GamsIO GamsUtils $(am__append_1) $(am__append_2) \
-	$(am__append_3) $(am__append_4) $(am__append_5) \
-	$(am__append_6) $(am__append_7) $(am__append_8)
-EXTRA_DIST = $(am__append_9)
-DISTCLEANFILES = $(am__append_10) $(VPATH_DISTCLEANFILES)
+SUBDIRS = GamsIO GamsUtils SolverInterfaces $(am__append_1) \
+	$(am__append_2) $(am__append_3) $(am__append_4) \
+	$(am__append_5) $(am__append_6) $(am__append_7)
+EXTRA_DIST = $(am__append_8)
+DISTCLEANFILES = $(am__append_9) $(VPATH_DISTCLEANFILES)
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = ../inc/config_gamslinks.h
 ConfigHeader = GAMSlinksConfig.h

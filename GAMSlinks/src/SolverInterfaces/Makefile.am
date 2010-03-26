@@ -15,18 +15,28 @@ DISTCLEANFILES =
 COMMON_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/../GamsUtils`
 
 # these flags are common when compiling and linking the executables
+if COIN_HAS_LIBLTDL
 GMSXXX_CPPFLAGS = -I`$(CYGPATH_W) $(LIBLTDLSRCDIR)` $(COMMON_CPPFLAGS)
 GMSXXX_LDADD    = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
 GMSXXX_LDFLAGS  = -rpath $(libdir) -dlopen libGamsCoin.la
+else
+GMSXXX_CPPFLAGS = $(COMMON_CPPFLAGS)
+GMSXXX_LDADD    = libGamsCoin.la
+GMSXXX_LDFLAGS  = -rpath $(libdir) 
+endif
 
 LIBS += $(ADDLIBS) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt`
 
 noinst_PROGRAMS             =
 lib_LTLIBRARIES             = libGamsCoin.la
 libGamsCoin_la_SOURCES      = GamsSolver.cpp
-libGamsCoin_la_LIBADD       = ../GamsUtils/libGamsUtils.la
-libGamsCoin_la_LDFLAGS      = -module -no-undefined
 libGamsCoin_la_CPPFLAGS     = $(COMMON_CPPFLAGS)
+libGamsCoin_la_LIBADD       = ../GamsUtils/libGamsUtils.la
+if COIN_HAS_LIBLTDL
+libGamsCoin_la_LDFLAGS      = -module -no-undefined
+else
+libGamsCoin_la_LDFLAGS      =
+endif
 
 gamsinstallfiles =
 
@@ -67,7 +77,7 @@ if COIN_HAS_CPX
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsocpux.out
   gmsocpux_out_SOURCES  = gmsmain.cpp
-  gmsocpux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiCplex\" -DCREATEFUNCNAME=\"createNewGamsOsiCplex\"
+  gmsocpux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiCplex\" -DCREATEFUNCNAME=createNewGamsOsiCplex
   gmsocpux_out_LDADD    = $(GMSXXX_LDADD)
   gmsocpux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsocpux_out_DEPENDENCIES = libGamsCoin.la
@@ -77,7 +87,7 @@ endif
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsocpnx
   gmsocpnx_SOURCES  = gmsmain.cpp
-  gmsocpnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiCplex\" -DCREATEFUNCNAME=\"createNewGamsOsiCplex\"
+  gmsocpnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiCplex\" -DCREATEFUNCNAME=createNewGamsOsiCplex
   gmsocpnx_LDADD    = $(GMSXXX_LDADD)
   gmsocpnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsocpnx_DEPENDENCIES = libGamsCoin.la
@@ -94,7 +104,7 @@ if COIN_HAS_GLPK
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsoglux.out
   gmsoglux_out_SOURCES  = gmsmain.cpp
-  gmsoglux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGlpk\" -DCREATEFUNCNAME=\"createNewGamsOsiGlpk\"
+  gmsoglux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGlpk\" -DCREATEFUNCNAME=createNewGamsOsiGlpk
   gmsoglux_out_LDADD    = $(GMSXXX_LDADD)
   gmsoglux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsoglux_out_DEPENDENCIES = libGamsCoin.la
@@ -104,7 +114,7 @@ endif
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsoglnx
   gmsoglnx_SOURCES  = gmsmain.cpp
-  gmsoglnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGlpk\" -DCREATEFUNCNAME=\"createNewGamsOsiGlpk\"
+  gmsoglnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGlpk\" -DCREATEFUNCNAME=createNewGamsOsiGlpk
   gmsoglnx_LDADD    = $(GMSXXX_LDADD)
   gmsoglnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsoglnx_DEPENDENCIES = libGamsCoin.la
@@ -122,7 +132,7 @@ if COIN_HAS_GRB
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsoguux.out
   gmsoguux_out_SOURCES  = gmsmain.cpp
-  gmsoguux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGurobi\" -DCREATEFUNCNAME=\"createNewGamsOsiGurobi\"
+  gmsoguux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGurobi\" -DCREATEFUNCNAME=createNewGamsOsiGurobi
   gmsoguux_out_LDADD    = $(GMSXXX_LDADD)
   gmsoguux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsoguux_out_DEPENDENCIES = libGamsCoin.la
@@ -132,7 +142,7 @@ endif
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsogunx
   gmsogunx_SOURCES  = gmsmain.cpp
-  gmsogunx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGurobi\" -DCREATEFUNCNAME=\"createNewGamsOsiGurobi\"
+  gmsogunx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGurobi\" -DCREATEFUNCNAME=createNewGamsOsiGurobi
   gmsogunx_LDADD    = $(GMSXXX_LDADD)
   gmsogunx_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsogunx_DEPENDENCIES = libGamsCoin.la
@@ -150,7 +160,7 @@ if COIN_HAS_MSK
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsomsux.out
   gmsomsux_out_SOURCES  = gmsmain.cpp
-  gmsomsux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiMosek\" -DCREATEFUNCNAME=\"createNewGamsOsiMosek\"
+  gmsomsux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiMosek\" -DCREATEFUNCNAME=createNewGamsOsiMosek
   gmsomsux_out_LDADD    = $(GMSXXX_LDADD)
   gmsomsux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsomsux_out_DEPENDENCIES = libGamsCoin.la
@@ -160,7 +170,7 @@ endif
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsomsnx
   gmsomsnx_SOURCES  = gmsmain.cpp
-  gmsomsnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiMosek\" -DCREATEFUNCNAME=\"createNewGamsOsiMosek\"
+  gmsomsnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiMosek\" -DCREATEFUNCNAME=createNewGamsOsiMosek
   gmsomsnx_LDADD    = $(GMSXXX_LDADD)
   gmsomsnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsomsnx_DEPENDENCIES = libGamsCoin.la
@@ -178,7 +188,7 @@ if COIN_HAS_XPR
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsoxpux.out
   gmsoxpux_out_SOURCES  = gmsmain.cpp
-  gmsoxpux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiXpress\" -DCREATEFUNCNAME=\"createNewGamsOsiXpress\"
+  gmsoxpux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiXpress\" -DCREATEFUNCNAME=createNewGamsOsiXpress
   gmsoxpux_out_LDADD    = $(GMSXXX_LDADD)
   gmsoxpux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsoxpux_out_DEPENDENCIES = libGamsCoin.la
@@ -188,7 +198,7 @@ endif
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsoxpnx
   gmsoxpnx_SOURCES  = gmsmain.cpp
-  gmsoxpnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiXpress\" -DCREATEFUNCNAME=\"createNewGamsOsiXpress\"
+  gmsoxpnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiXpress\" -DCREATEFUNCNAME=createNewGamsOsiXpress
   gmsoxpnx_LDADD    = $(GMSXXX_LDADD)
   gmsoxpnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsoxpnx_DEPENDENCIES = libGamsCoin.la
@@ -226,7 +236,7 @@ libGamsCoin_la_LIBADD   += $(CBCOBJDIR)/src/libCbcSolver.la
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmscbcux.out
   gmscbcux_out_SOURCES  = gmsmain.cpp
-  gmscbcux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Cbc\" -DCREATEFUNCNAME=\"createNewGamsCbc\"
+  gmscbcux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Cbc\" -DCREATEFUNCNAME=createNewGamsCbc
   gmscbcux_out_LDADD    = $(GMSXXX_LDADD)
   gmscbcux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmscbcux_out_DEPENDENCIES = libGamsCoin.la
@@ -236,7 +246,7 @@ endif
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmscbcnx
   gmscbcnx_SOURCES  = gmsmain.cpp
-  gmscbcnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Cbc\" -DCREATEFUNCNAME=\"createNewGamsCbc\"
+  gmscbcnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Cbc\" -DCREATEFUNCNAME=createNewGamsCbc
   gmscbcnx_LDADD    = $(GMSXXX_LDADD)
   gmscbcnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmscbcnx_DEPENDENCIES = libGamsCoin.la
@@ -279,7 +289,7 @@ LIBS  += `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsipdux.out
   gmsipdux_out_SOURCES  = gmsmain.cpp
-  gmsipdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Ipopt\" -DCREATEFUNCNAME=\"createNewGamsIpopt\"
+  gmsipdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Ipopt\" -DCREATEFUNCNAME=createNewGamsIpopt
   gmsipdux_out_LDADD    = $(GMSXXX_LDADD)
   gmsipdux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsipdux_out_DEPENDENCIES = libGamsCoin.la
@@ -289,7 +299,7 @@ endif
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsipdnx
   gmsipdnx_SOURCES  = gmsmain.cpp
-  gmsipdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Ipopt\" -DCREATEFUNCNAME=\"createNewGamsIpopt\"
+  gmsipdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Ipopt\" -DCREATEFUNCNAME=createNewGamsIpopt
   gmsipdnx_LDADD    = $(GMSXXX_LDADD)
   gmsipdnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsipdnx_DEPENDENCIES = libGamsCoin.la
@@ -316,7 +326,7 @@ endif
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsscdux.out
   gmsscdux_out_SOURCES  = gmsmain.cpp
-  gmsscdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Scip\" -DCREATEFUNCNAME=\"createNewGamsScip\"
+  gmsscdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Scip\" -DCREATEFUNCNAME=createNewGamsScip
   gmsscdux_out_LDADD    = $(GMSXXX_LDADD)
   gmsscdux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsscdux_out_DEPENDENCIES = libGamsCoin.la
@@ -326,7 +336,7 @@ endif
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsscdnx
   gmsscdnx_SOURCES  = gmsmain.cpp
-  gmsscdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Scip\" -DCREATEFUNCNAME=\"createNewGamsScip\"
+  gmsscdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Scip\" -DCREATEFUNCNAME=createNewGamsScip
   gmsscdnx_LDADD    = $(GMSXXX_LDADD)
   gmsscdnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsscdnx_DEPENDENCIES = libGamsCoin.la
@@ -350,7 +360,7 @@ libGamsCoin_la_LIBADD   += $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsbmdux.out
   gmsbmdux_out_SOURCES  = gmsmain.cpp
-  gmsbmdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Bonmin\" -DCREATEFUNCNAME=\"createNewGamsBonmin\"
+  gmsbmdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Bonmin\" -DCREATEFUNCNAME=createNewGamsBonmin
   gmsbmdux_out_LDADD    = $(GMSXXX_LDADD)
   gmsbmdux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsbmdux_out_DEPENDENCIES = libGamsCoin.la
@@ -360,7 +370,7 @@ endif
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsbmdnx
   gmsbmdnx_SOURCES  = gmsmain.cpp
-  gmsbmdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Bonmin\" -DCREATEFUNCNAME=\"createNewGamsBonmin\"
+  gmsbmdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Bonmin\" -DCREATEFUNCNAME=createNewGamsBonmin
   gmsbmdnx_LDADD    = $(GMSXXX_LDADD)
   gmsbmdnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsbmdnx_DEPENDENCIES = libGamsCoin.la
@@ -405,7 +415,7 @@ libGamsCoin_la_LIBADD += $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmscouux.out
   gmscouux_out_SOURCES  = gmsmain.cpp
-  gmscouux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Couenne\" -DCREATEFUNCNAME=\"createNewGamsCouenne\"
+  gmscouux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Couenne\" -DCREATEFUNCNAME=createNewGamsCouenne
   gmscouux_out_LDADD    = $(GMSXXX_LDADD)
   gmscouux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmscouux_out_DEPENDENCIES = libGamsCoin.la
@@ -415,7 +425,7 @@ endif
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmscounx
   gmscounx_SOURCES  = gmsmain.cpp
-  gmscounx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Couenne\" -DCREATEFUNCNAME=\"createNewGamsCouenne\"
+  gmscounx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Couenne\" -DCREATEFUNCNAME=createNewGamsCouenne
   gmscounx_LDADD    = $(GMSXXX_LDADD)
   gmscounx_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmscounx_DEPENDENCIES = libGamsCoin.la
@@ -448,7 +458,7 @@ LIBS += `cat $(OSOBJDIR)/os_addlibs.txt`
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsosdux.out
   gmsosdux_out_SOURCES  = gmsmain.cpp
-  gmsosdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OS\" -DCREATEFUNCNAME=\"createNewGamsOS\"
+  gmsosdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OS\" -DCREATEFUNCNAME=createNewGamsOS
   gmsosdux_out_LDADD    = $(GMSXXX_LDADD)
   gmsosdux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsosdux_out_DEPENDENCIES = libGamsCoin.la
@@ -458,7 +468,7 @@ endif
 if GAMSIO_IS_WINDOWS
   noinst_PROGRAMS  += gmsosdnx
   gmsosdnx_SOURCES  = gmsmain.cpp
-  gmsosdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OS\" -DCREATEFUNCNAME=\"createNewGamsOS\"
+  gmsosdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OS\" -DCREATEFUNCNAME=createNewGamsOS
   gmsosdnx_LDADD    = $(GMSXXX_LDADD)
   gmsosdnx_LDFLAGS  = $(GMSXXX_LDFLAGS)
   gmsosdnx_DEPENDENCIES = libGamsCoin.la

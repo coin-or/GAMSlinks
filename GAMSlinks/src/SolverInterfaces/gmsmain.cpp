@@ -18,6 +18,8 @@
 
 #ifdef COIN_HAS_LIBLTDL
 #include <ltdl.h>
+#define QUOTEME_(x) #x
+#define QUOTEME(x) QUOTEME_(x)
 #else
 extern "C" GamsSolver* CREATEFUNCNAME ();
 #endif
@@ -129,9 +131,9 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
   
-  createNewGamsSolver_t* createsolver = (createNewGamsSolver_t*) lt_dlsym(coinlib, CREATEFUNCNAME);
+  createNewGamsSolver_t* createsolver = (createNewGamsSolver_t*) lt_dlsym(coinlib, QUOTEME(CREATEFUNCNAME));
   if (!createsolver) {
-    gevLogStat(gev, "Could not load " CREATEFUNCNAME " symbol from GamsCoin library.");
+    gevLogStat(gev, "Could not load " QUOTEME(CREATEFUNCNAME) " symbol from GamsCoin library.");
     gevLogStat(gev, lt_dlerror());
 //  	gmoCloseGms(gmo);
     gmoFree(&gmo);
@@ -141,7 +143,7 @@ int main(int argc, char** argv) {
   }
   
 #else
-  createNewGamsSolver_t* createsolver = (createNewGamsSolver_t*) CREATEFUNCNAME;
+  createNewGamsSolver_t* createsolver = CREATEFUNCNAME;
 #endif
   
   GamsSolver* solver = (*createsolver)();
