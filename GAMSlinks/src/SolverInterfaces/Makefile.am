@@ -71,7 +71,7 @@ endif
 
 if COIN_HAS_CPX
   libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
-  libGamsCoin_la_LDFLAGS  += $(CPXLIB)
+#  libGamsCoin_la_LDFLAGS  += $(CPXLIB)
   libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCpx` -I`$(CYGPATH_W) $(CPXINCDIR)`
 
 if GAMSIO_IS_UNIX
@@ -126,7 +126,8 @@ endif
 endif
 
 if COIN_HAS_GRB
-  libGamsCoin_la_LDFLAGS  += $(GRBLIB)
+  libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiGrb/libOsiGrb.la
+#  libGamsCoin_la_LDFLAGS  += $(GRBLIB)
   libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(GRBINCDIR)`
 
 if GAMSIO_IS_UNIX
@@ -154,7 +155,7 @@ endif
 
 if COIN_HAS_MSK
   libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiMsk/libOsiMsk.la
-  libGamsCoin_la_LDFLAGS  += $(MSKLIB)
+#  libGamsCoin_la_LDFLAGS  += $(MSKLIB)
   libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiMsk` -I`$(CYGPATH_W) $(MSKINCDIR)`
 
 if GAMSIO_IS_UNIX
@@ -182,7 +183,7 @@ endif
 
 if COIN_HAS_XPR
   libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiXpr/libOsiXpr.la 
-  libGamsCoin_la_LDFLAGS  += $(XPRLIB)
+#  libGamsCoin_la_LDFLAGS  += $(XPRLIB)
   libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiXpr` -I`$(CYGPATH_W) $(XPRINCDIR)`
 
 if GAMSIO_IS_UNIX
