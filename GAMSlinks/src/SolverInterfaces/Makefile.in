@@ -1014,7 +1014,7 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libGamsCoin.la: $(libGamsCoin_la_OBJECTS) $(libGamsCoin_la_DEPENDENCIES) 
-	$(CXXLINK) -rpath $(libdir) $(libGamsCoin_la_LDFLAGS) $(libGamsCoin_la_OBJECTS) $(libGamsCoin_la_LIBADD)
+	$(CXXLINK) -rpath $(libdir) $(libGamsCoin_la_LDFLAGS) $(libGamsCoin_la_OBJECTS) $(libGamsCoin_la_LIBADD) $(LIBS)
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
