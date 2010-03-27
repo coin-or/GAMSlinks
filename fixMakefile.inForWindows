@@ -1,4 +1,4 @@
 #!/bin/bash
 
 cd GAMSlinks/src/SolverInterfaces || exit 1
-sed -e '/-o gms...nx-gmsmain.obj/s/-o /-Fo/pg' Makefile.in > bla && cp bla Makefile.in
+sed -e '/-o gms...nx-gmsmain.obj/s/-o /-Fo/g' Makefile.in > bla && cp bla Makefile.in

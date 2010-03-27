@@ -29214,7 +29214,11 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-                                                                                                                                                                                                        ac_config_files="$ac_config_files Makefile gamsio_addlibs.txt smagio_addlibs.txt gams_addlibs.txt src/Makefile src/GamsIO/Makefile src/GamsUtils/Makefile src/Cbc/Makefile src/Glpk/Makefile src/Osi/Makefile src/Ipopt/Makefile src/Bonmin/Makefile src/OS/Makefile src/SCIP/Makefile src/SolverInterfaces/Makefile test/Makefile test/run_quality test/run_gmstest examples/adbench/Makefile examples/osil2gms/Makefile"
+                                                                                                                                                                                    ac_config_files="$ac_config_files Makefile gamsio_addlibs.txt smagio_addlibs.txt gams_addlibs.txt src/Makefile src/GamsIO/Makefile src/GamsUtils/Makefile src/Cbc/Makefile src/Glpk/Makefile src/Osi/Makefile src/Ipopt/Makefile src/Bonmin/Makefile src/OS/Makefile src/SCIP/Makefile src/SolverInterfaces/Makefile test/Makefile examples/adbench/Makefile examples/osil2gms/Makefile"
+
+          ac_config_files="$ac_config_files test/run_quality"
+
+          ac_config_files="$ac_config_files test/run_gmstest"
 
 
           ac_config_headers="$ac_config_headers inc/config_gamslinks.h"
@@ -30157,10 +30161,10 @@ do
   "src/SCIP/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/SCIP/Makefile" ;;
   "src/SolverInterfaces/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/SolverInterfaces/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
-  "test/run_quality" ) CONFIG_FILES="$CONFIG_FILES test/run_quality" ;;
-  "test/run_gmstest" ) CONFIG_FILES="$CONFIG_FILES test/run_gmstest" ;;
   "examples/adbench/Makefile" ) CONFIG_FILES="$CONFIG_FILES examples/adbench/Makefile" ;;
   "examples/osil2gms/Makefile" ) CONFIG_FILES="$CONFIG_FILES examples/osil2gms/Makefile" ;;
+  "test/run_quality" ) CONFIG_FILES="$CONFIG_FILES test/run_quality" ;;
+  "test/run_gmstest" ) CONFIG_FILES="$CONFIG_FILES test/run_gmstest" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "inc/config_gamslinks.h" ) CONFIG_HEADERS="$CONFIG_HEADERS inc/config_gamslinks.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
@@ -30759,26 +30763,8 @@ s,@INSTALL@,$ac_INSTALL,;t t
 
   # Run the commands associated with the file.
   case $ac_file in
-    Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    gamsio_addlibs.txt ) chmod +x test/run_quality test/run_gmstest ;;
-    smagio_addlibs.txt ) chmod +x test/run_quality test/run_gmstest ;;
-    gams_addlibs.txt ) chmod +x test/run_quality test/run_gmstest ;;
-    src/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    src/GamsIO/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    src/GamsUtils/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    src/Cbc/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    src/Glpk/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    src/Osi/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    src/Ipopt/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    src/Bonmin/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    src/OS/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    src/SCIP/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    src/SolverInterfaces/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    test/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    test/run_quality ) chmod +x test/run_quality test/run_gmstest ;;
-    test/run_gmstest ) chmod +x test/run_quality test/run_gmstest ;;
-    examples/adbench/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
-    examples/osil2gms/Makefile ) chmod +x test/run_quality test/run_gmstest ;;
+    test/run_quality ) chmod +x test/run_quality ;;
+    test/run_gmstest ) chmod +x test/run_gmstest ;;
   esac
 done
 _ACEOF

@@ -468,10 +468,12 @@ AC_CONFIG_FILES([Makefile
                  src/OS/Makefile
                  src/SCIP/Makefile
                  src/SolverInterfaces/Makefile
-                 test/Makefile test/run_quality test/run_gmstest
+                 test/Makefile
                  examples/adbench/Makefile
                  examples/osil2gms/Makefile
-                ], [chmod +x test/run_quality test/run_gmstest])
+                ])
+AC_CONFIG_FILES([test/run_quality], [chmod +x test/run_quality])
+AC_CONFIG_FILES([test/run_gmstest], [chmod +x test/run_gmstest])
 
 AC_CONFIG_HEADER([inc/config_gamslinks.h])
 

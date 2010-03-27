@@ -1261,11 +1261,9 @@ gmsbmdnx-gmsmain.o: gmsmain.cpp
 
 gmsbmdnx-gmsmain.obj: gmsmain.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbmdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsbmdnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsbmdnx-gmsmain.Tpo" -c -Fogmsbmdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbmdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsbmdnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsbmdnx-gmsmain.Tpo" -c -Fogmsbmdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsbmdnx-gmsmain.Tpo" "$(DEPDIR)/gmsbmdnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsbmdnx-gmsmain.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsbmdnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbmdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsbmdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbmdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsbmdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
 gmsbmdux_out-gmsmain.o: gmsmain.cpp
@@ -1291,11 +1289,9 @@ gmscbcnx-gmsmain.o: gmsmain.cpp
 
 gmscbcnx-gmsmain.obj: gmsmain.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmscbcnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmscbcnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmscbcnx-gmsmain.Tpo" -c -Fogmscbcnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmscbcnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmscbcnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmscbcnx-gmsmain.Tpo" -c -Fogmscbcnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmscbcnx-gmsmain.Tpo" "$(DEPDIR)/gmscbcnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmscbcnx-gmsmain.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmscbcnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmscbcnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmscbcnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmscbcnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmscbcnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
 gmscbcux_out-gmsmain.o: gmsmain.cpp
@@ -1321,11 +1317,9 @@ gmscounx-gmsmain.o: gmsmain.cpp
 
 gmscounx-gmsmain.obj: gmsmain.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmscounx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmscounx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmscounx-gmsmain.Tpo" -c -Fogmscounx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmscounx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmscounx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmscounx-gmsmain.Tpo" -c -Fogmscounx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmscounx-gmsmain.Tpo" "$(DEPDIR)/gmscounx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmscounx-gmsmain.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmscounx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmscounx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmscounx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmscounx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmscounx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
 gmscouux_out-gmsmain.o: gmsmain.cpp
@@ -1379,11 +1373,9 @@ gmsocpnx-gmsmain.o: gmsmain.cpp
 
 gmsocpnx-gmsmain.obj: gmsmain.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsocpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsocpnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsocpnx-gmsmain.Tpo" -c -Fogmsocpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsocpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsocpnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsocpnx-gmsmain.Tpo" -c -Fogmsocpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsocpnx-gmsmain.Tpo" "$(DEPDIR)/gmsocpnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsocpnx-gmsmain.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsocpnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsocpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsocpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsocpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsocpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
 gmsocpux_out-gmsmain.o: gmsmain.cpp
@@ -1409,11 +1401,9 @@ gmsoglnx-gmsmain.o: gmsmain.cpp
 
 gmsoglnx-gmsmain.obj: gmsmain.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoglnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoglnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsoglnx-gmsmain.Tpo" -c -Fogmsoglnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoglnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoglnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsoglnx-gmsmain.Tpo" -c -Fogmsoglnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsoglnx-gmsmain.Tpo" "$(DEPDIR)/gmsoglnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsoglnx-gmsmain.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsoglnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoglnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsoglnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoglnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsoglnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
 gmsoglux_out-gmsmain.o: gmsmain.cpp
@@ -1439,11 +1429,9 @@ gmsogunx-gmsmain.o: gmsmain.cpp
 
 gmsogunx-gmsmain.obj: gmsmain.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsogunx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsogunx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsogunx-gmsmain.Tpo" -c -Fogmsogunx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsogunx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsogunx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsogunx-gmsmain.Tpo" -c -Fogmsogunx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsogunx-gmsmain.Tpo" "$(DEPDIR)/gmsogunx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsogunx-gmsmain.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsogunx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsogunx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsogunx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsogunx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsogunx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
 gmsoguux_out-gmsmain.o: gmsmain.cpp
@@ -1469,11 +1457,9 @@ gmsomsnx-gmsmain.o: gmsmain.cpp
 
 gmsomsnx-gmsmain.obj: gmsmain.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsomsnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsomsnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsomsnx-gmsmain.Tpo" -c -Fogmsomsnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsomsnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsomsnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsomsnx-gmsmain.Tpo" -c -Fogmsomsnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsomsnx-gmsmain.Tpo" "$(DEPDIR)/gmsomsnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsomsnx-gmsmain.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsomsnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsomsnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsomsnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsomsnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsomsnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
 gmsomsux_out-gmsmain.o: gmsmain.cpp
@@ -1499,11 +1485,9 @@ gmsosdnx-gmsmain.o: gmsmain.cpp
 
 gmsosdnx-gmsmain.obj: gmsmain.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsosdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsosdnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsosdnx-gmsmain.Tpo" -c -Fogmsosdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsosdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsosdnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsosdnx-gmsmain.Tpo" -c -Fogmsosdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsosdnx-gmsmain.Tpo" "$(DEPDIR)/gmsosdnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsosdnx-gmsmain.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsosdnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsosdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsosdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsosdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsosdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
 gmsosdux_out-gmsmain.o: gmsmain.cpp
@@ -1529,11 +1513,9 @@ gmsoxpnx-gmsmain.o: gmsmain.cpp
 
 gmsoxpnx-gmsmain.obj: gmsmain.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoxpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoxpnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsoxpnx-gmsmain.Tpo" -c -Fogmsoxpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoxpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoxpnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsoxpnx-gmsmain.Tpo" -c -Fogmsoxpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsoxpnx-gmsmain.Tpo" "$(DEPDIR)/gmsoxpnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsoxpnx-gmsmain.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsoxpnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoxpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsoxpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoxpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsoxpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
 gmsoxpux_out-gmsmain.o: gmsmain.cpp
@@ -1559,11 +1541,9 @@ gmsscdnx-gmsmain.o: gmsmain.cpp
 
 gmsscdnx-gmsmain.obj: gmsmain.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsscdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsscdnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsscdnx-gmsmain.Tpo" -c -Fogmsscdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsscdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsscdnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsscdnx-gmsmain.Tpo" -c -Fogmsscdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsscdnx-gmsmain.Tpo" "$(DEPDIR)/gmsscdnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsscdnx-gmsmain.Tpo"; exit 1; fi
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsscdnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsscdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsscdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsscdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -Fogmsscdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
 gmsscdux_out-gmsmain.o: gmsmain.cpp
