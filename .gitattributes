@@ -310,5 +310,6 @@ libltdl/configure.ac -text
 libltdl/ltdl.c -text
 libltdl/ltdl.h -text
 /ltmain.sh -text
+/makefiles.patch -text
 /missing -text
 /osispx.patch -text

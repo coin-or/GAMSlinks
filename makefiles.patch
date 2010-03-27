@@ -1,0 +1,42 @@
+Index: Clp/src/Makefile.in
+===================================================================
+--- Clp/src/Makefile.in	(revision 1533)
++++ Clp/src/Makefile.in	(working copy)
+@@ -488,7 +488,7 @@
+ 	  rm -f "$${dir}/so_locations"; \
+ 	done
+ libClp.la: $(libClp_la_OBJECTS) $(libClp_la_DEPENDENCIES) 
+-	$(CXXLINK) -rpath $(libdir) $(libClp_la_LDFLAGS) $(libClp_la_OBJECTS) $(libClp_la_LIBADD) $(LIBS)
++	$(CXXLINK) -rpath $(libdir) $(libClp_la_LDFLAGS) $(libClp_la_OBJECTS) $(libClp_la_LIBADD)
+ install-binPROGRAMS: $(bin_PROGRAMS)
+ 	@$(NORMAL_INSTALL)
+ 	test -z "$(bindir)" || $(mkdir_p) "$(DESTDIR)$(bindir)"
+Index: Cbc/src/Makefile.in
+===================================================================
+--- Cbc/src/Makefile.in	(revision 1439)
++++ Cbc/src/Makefile.in	(working copy)
+@@ -759,9 +759,9 @@
+ 	  rm -f "$${dir}/so_locations"; \
+ 	done
+ libCbc.la: $(libCbc_la_OBJECTS) $(libCbc_la_DEPENDENCIES) 
+-	$(CXXLINK) -rpath $(libdir) $(libCbc_la_LDFLAGS) $(libCbc_la_OBJECTS) $(libCbc_la_LIBADD) $(LIBS)
++	$(CXXLINK) -rpath $(libdir) $(libCbc_la_LDFLAGS) $(libCbc_la_OBJECTS) $(libCbc_la_LIBADD)
+ libCbcSolver.la: $(libCbcSolver_la_OBJECTS) $(libCbcSolver_la_DEPENDENCIES) 
+-	$(CXXLINK) -rpath $(libdir) $(libCbcSolver_la_LDFLAGS) $(libCbcSolver_la_OBJECTS) $(libCbcSolver_la_LIBADD) $(LIBS)
++	$(CXXLINK) -rpath $(libdir) $(libCbcSolver_la_LDFLAGS) $(libCbcSolver_la_OBJECTS) $(libCbcSolver_la_LIBADD)
+ install-binPROGRAMS: $(bin_PROGRAMS)
+ 	@$(NORMAL_INSTALL)
+ 	test -z "$(bindir)" || $(mkdir_p) "$(DESTDIR)$(bindir)"
+Index: GAMSlinks/src/SolverInterfaces/Makefile.in
+===================================================================
+--- GAMSlinks/src/SolverInterfaces/Makefile.in	(revision 881)
++++ GAMSlinks/src/SolverInterfaces/Makefile.in	(working copy)
+@@ -1014,7 +1014,7 @@
+ 	  rm -f "$${dir}/so_locations"; \
+ 	done
+ libGamsCoin.la: $(libGamsCoin_la_OBJECTS) $(libGamsCoin_la_DEPENDENCIES) 
+-	$(CXXLINK) -rpath $(libdir) $(libGamsCoin_la_LDFLAGS) $(libGamsCoin_la_OBJECTS) $(libGamsCoin_la_LIBADD) $(LIBS)
++	$(CXXLINK) -rpath $(libdir) $(libGamsCoin_la_LDFLAGS) $(libGamsCoin_la_OBJECTS) $(libGamsCoin_la_LIBADD)
+ 
+ clean-noinstPROGRAMS:
+ 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
