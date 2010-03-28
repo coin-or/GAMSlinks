@@ -112,27 +112,20 @@ void OSrL2Smag::writeSolution(OSResult& osresult) {
 	//TODO: add some checks that we do not write over the length of our arrays
 
 	if (sol->variables && sol->variables->values) { // set var values, if available
-		for (std::vector<VarValue*>::const_iterator it(sol->variables->values->var.begin());
-			it!=sol->variables->values->var.end(); ++it)
-			colLev[(*it)->idx]=(*it)->value;
+    for (int i = 0; i < sol->variables->values->numberOfVar; ++i)
+      colLev[sol->variables->values->var[i]->idx] = sol->variables->values->var[i]->value;
 		smagEvalConFunc(smag, colLev, rowLev);
 	}
-		
 	if (sol->constraints && sol->constraints->dualValues) // set row dual values, if available
-		for (std::vector<DualVarValue*>::iterator it(sol->constraints->dualValues->con.begin());
-		it!=sol->constraints->dualValues->con.end(); ++it) {
-			rowMarg[(*it)->idx]=(*it)->value; // what are it->lbValue and it->ubValue ?
-		}
+    for (int i = 0; i < sol->constraints->dualValues->numberOfCon; ++i)
+      rowMarg[sol->constraints->dualValues->con[i]->idx] = sol->constraints->dualValues->con[i]->value;
 	if (sol->variables)
-		for (int i=0; i<sol->variables->numberOfOtherVariableResults; ++i) {
+		for (int i=0; i<sol->variables->numberOfOtherVariableResults; ++i)
 			if (sol->variables->other[i]->name=="reduced costs") {
-				for (std::vector<OtherVarResult*>::const_iterator it(sol->variables->other[i]->var.begin());
-				it!=sol->variables->other[i]->var.end(); ++it) {
-					colMarg[(*it)->idx]=atof((*it)->value.c_str());
-				}
+        for (int j = 0; j < sol->variables->other[i]->numberOfVar; ++j)
+          colMarg[sol->variables->other[i]->var[j]->idx] = atof(sol->variables->other[i]->var[j]->value.c_str());
 				break;
 			}
-		}
 
 	double objvalue=SMAG_DBL_NA;
 	if (sol->objectives && sol->objectives->values && sol->objectives->values->obj[0])

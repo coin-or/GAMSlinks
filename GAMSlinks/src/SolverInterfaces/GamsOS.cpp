@@ -29,7 +29,7 @@
 GamsOS::GamsOS()
 : gmo(NULL), osinstance(NULL)
 {
-	strcpy(os_message, "COIN-OR Optimization Services (OS Library 2.0)\nwritten by H. Gassmann, J. Ma, and K. Martin\n");
+	strcpy(os_message, "COIN-OR Optimization Services (OS Library 2.1)\nwritten by H. Gassmann, J. Ma, and K. Martin\n");
 }
 
 GamsOS::~GamsOS() { }

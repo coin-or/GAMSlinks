@@ -101,9 +101,9 @@ int main (int argc, char* argv[]) {
   smagReadModel (prob);
 
 #ifdef GAMS_BUILD
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinOS (OS Library 2.0)\nwritten by Horand Gassmann, Jun Ma, and Kipp Martin.\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/CoinOS (OS Library 2.1)\nwritten by Horand Gassmann, Jun Ma, and Kipp Martin.\n");
 #else
-	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/OS (OS Library 2.0)\nwritten by Horand Gassmann, Jun Ma, and Kipp Martin.\n");
+	smagStdOutputPrint(prob, SMAG_ALLMASK, "\nGAMS/OS (OS Library 2.1)\nwritten by Horand Gassmann, Jun Ma, and Kipp Martin.\n");
 #endif
 	smagStdOutputFlush(prob, SMAG_ALLMASK);
 	
