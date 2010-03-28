@@ -95,6 +95,7 @@ bool GamsSolver::checkLicense(struct gmoRec* gmo) {
       gevLogStat(gev, msg);
     return false;
   }
+  return true;
 #undef GEVPTR
 #else
   return true;
