@@ -206,19 +206,27 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	}
 
 #ifdef GAMS_BUILD
-#define GEVPTR gev 
-#include "cmagic2.h"
-	if (licenseCheck(gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo))) {
-		char msg[256];
-		gevLogStat(gev, "The license check failed:\n");
-		while (licenseGetMessage(msg, sizeof(msg)))
-			gevLogStat(gev,msg);
-	  gmoSolveStatSet(gmo, SolveStat_License);
-	  gmoModelStatSet(gmo, ModelStat_LicenseError);
-	  return 1;
+	if(!checkLicense(gmo)) {
+    gmoSolveStatSet(gmo, SolveStat_License);
+    gmoModelStatSet(gmo, ModelStat_LicenseError);
+    return 1;
 	}
 #endif
 	
+//#ifdef GAMS_BUILD
+//#define GEVPTR gev
+//#include "cmagic2.h"
+//	if (licenseCheck(gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo))) {
+//		char msg[256];
+//		gevLogStat(gev, "The license check failed:\n");
+//		while (licenseGetMessage(msg, sizeof(msg)))
+//			gevLogStat(gev,msg);
+//	  gmoSolveStatSet(gmo, SolveStat_License);
+//	  gmoModelStatSet(gmo, ModelStat_LicenseError);
+//	  return 1;
+//	}
+//#endif
+
 	try {
 		switch (solverid) {
 			case CBC:
@@ -232,17 +240,19 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				
 			case CPLEX: {
 #ifdef COIN_HAS_CPX
-#ifdef GAMS_BUILD
-                                int rc, cp_l=0, cp_m=0, cp_q=0, cp_p=0;
-				CPlicenseInit_t initType;
-
-				/* Cplex license setup */
-                                rc = gevcplexlice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
-                                                  gmoNDisc(gmo), 0, &initType, &cp_l, &cp_m, &cp_q, &cp_p); 
-				if (rc || (0==rc && ((0==cp_m && gmoNDisc(gmo)) || (0==cp_q && gmoNLNZ(gmo)))))
-                                        gevLogStat(gev, "Trying to use Cplex standalone license.\n");
-
-#endif
+        if (!registerGamsCplexLicense(gmo))
+          gevLogStat(gev, "Trying to use Cplex standalone license.");
+//#ifdef GAMS_BUILD
+//                                int rc, cp_l=0, cp_m=0, cp_q=0, cp_p=0;
+//				CPlicenseInit_t initType;
+//
+//				/* Cplex license setup */
+//                                rc = gevcplexlice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
+//                                                  gmoNDisc(gmo), 0, &initType, &cp_l, &cp_m, &cp_q, &cp_p);
+//				if (rc || (0==rc && ((0==cp_m && gmoNDisc(gmo)) || (0==cp_q && gmoNLNZ(gmo)))))
+//                                        gevLogStat(gev, "Trying to use Cplex standalone license.\n");
+//
+//#endif
 				osi = new OsiCpxSolverInterface;
 #else
 				gevLogStat(gev, "GamsOsi compiled without Osi/CPLEX interface.\n");

@@ -143,13 +143,17 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
  		return 1;
  	}
 
- 	for (int i = 0; i < gmoN(gmo); ++i)
-		if (gmoGetVarTypeOne(gmo, i) == var_SC || gmoGetVarTypeOne(gmo, i) == var_SI) {
-			gevLogStat(gev, "Error: Semicontinuous and semiinteger variables not supported by Bonmin.");
-	 		gmoSolveStatSet(gmo, SolveStat_Capability);
-	 		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-			return 1;
-		}
+  if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
+    gevLogStat(gev, "ERROR: Semicontinuous and semiinteger variables not supported by Bonmin.\n");
+    gmoSolveStatSet(gmo, SolveStat_Capability);
+    gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+    return 1;
+  }
+
+#ifdef COIN_HAS_CPX
+ 	if (checkLicense(gmo) && registerGamsCplexLicense(gmo))
+ 	  gevLog(gev, "Registered GAMS/CPLEX license.");
+#endif
 
 	bonmin_setup = new BonminSetup();
 

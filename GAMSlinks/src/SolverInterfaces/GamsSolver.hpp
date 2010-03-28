@@ -37,6 +37,16 @@ public:
 	 */
 	int getGevReady();
 
+	/** Calls the GAMS license check, if build by GAMS.
+	 * @return True if license check was skipped or successful.
+	 */
+	bool checkLicense(struct gmoRec* gmo);
+
+	/** Registers a GAMS/CPLEX license, if build by GAMS.
+	 * @return True if license was registered or no CPLEX available.
+	 */
+	bool registerGamsCplexLicense(struct gmoRec* gmo);
+
 	/** Initialization of solver interface and solver.
 	 * Loads problem into solver.
 	 */
