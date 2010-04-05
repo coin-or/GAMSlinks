@@ -17,7 +17,7 @@ You can change the solver with the solver option.
 
 
 solver
-Specifies the solver that is used to solve an instance.
+Specifies the solver that is used to solve an instance on the OS server.
 
 
 writeosil
@@ -30,13 +30,5 @@ Specifies the name of a file in which the result of a solve process (solution, s
 
 readosol
 Specifies the name of an option file in OSoL format that is given to the OS server.
-This way it is possible to pass options directly to the COIN-OR solvers interfaced by OS.
-
-
-readospl
-Specifies the name of an OSpL file to use for the knock method.
-
-
-writeospl
-Specifies the name of an OSpL file in which the answer from the knock or kill method is written.
+This way it is possible to pass options directly to the solvers interfaced by OS.
   

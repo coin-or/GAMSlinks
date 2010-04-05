@@ -1,5 +1,3 @@
-\subsection{Detailed Descriptions of CoinCBC Options}
-
 \subsubsection{General Options}
 
 \begin{description}
@@ -984,153 +982,153 @@ If it is set (between -2 and 20), Cbc will try  and fix some integer variables
 
 \end{description}
 
-\subsubsection{MIP Options for the GAMS Branch Cut and Heuristic Facility}
-
-\begin{description}
-\item[\label{usercutcall}\hypertarget{usercutcall}
-{\textbf{usercutcall (\slshape{string})}}]\hspace{1.0in}
-
-The GAMS command line (minus the gams executable name) to call the cut generator.
-
-
-\item[\label{usercutfirst}\hypertarget{usercutfirst}
-{\textbf{usercutfirst (\slshape{integer})}}]\hspace{1.0in}
-
-Calls the cut generator for the first $n$ nodes.
-
-\textsl{(default = 10)}
-
-\item[\label{usercutfreq}\hypertarget{usercutfreq}
-{\textbf{usercutfreq (\slshape{integer})}}]\hspace{1.0in}
-
-Determines the frequency of the cut generator model calls.
-
-\textsl{(default = 10)}
-
-\item[\label{usercutinterval}\hypertarget{usercutinterval}
-{\textbf{usercutinterval (\slshape{integer})}}]\hspace{1.0in}
-
-Determines the interval when to apply the multiplier for the frequency of the cut generator model calls.
-See userheurinterval for details.
-
-\textsl{(default = 100)}
-
-\item[\label{usercutmult}\hypertarget{usercutmult}
-{\textbf{usercutmult (\slshape{integer})}}]\hspace{1.0in}
-
-Determines the multiplier for the frequency of the cut generator model calls.
-
-\textsl{(default = 2)}
-
-\item[\label{usercutnewint}\hypertarget{usercutnewint}
-{\textbf{usercutnewint (\slshape{integer})}}]\hspace{1.0in}
-
-Calls the cut generator if the solver found a new integer feasible solution.
-
-\textsl{(default = 1)}
-\begin{itemize}
-\item[0] .
-Do not call cut generator because a new integer feasible solution is found.
-\item[1] .
-Let CBC call the cut generator if a new integer feasible solution is found.
-\end{itemize}
-
-\item[\label{usergdxin}\hypertarget{usergdxin}
-{\textbf{usergdxin (\slshape{string})}}]\hspace{1.0in}
-
-The name of the GDX file read back into CBC.
-
-\textsl{(default =} \verb=bchin.gdx=)
-
-\item[\label{usergdxname}\hypertarget{usergdxname}
-{\textbf{usergdxname (\slshape{string})}}]\hspace{1.0in}
-
-The name of the GDX file exported from the solver with the solution at the node.
-
-\textsl{(default =} \verb=bchout.gdx=)
-
-\item[\label{usergdxnameinc}\hypertarget{usergdxnameinc}
-{\textbf{usergdxnameinc (\slshape{string})}}]\hspace{1.0in}
-
-The name of the GDX file exported from the solver with the incumbent solution.
-
-\textsl{(default =} \verb=bchout_i.gdx=)
-
-\item[\label{usergdxprefix}\hypertarget{usergdxprefix}
-{\textbf{usergdxprefix (\slshape{string})}}]\hspace{1.0in}
-
-Prefixes to use for usergdxin, usergdxname, and usergdxnameinc.
-
-
-\item[\label{userheurcall}\hypertarget{userheurcall}
-{\textbf{userheurcall (\slshape{string})}}]\hspace{1.0in}
-
-The GAMS command line (minus the gams executable name) to call the heuristic.
-
-
-\item[\label{userheurfirst}\hypertarget{userheurfirst}
-{\textbf{userheurfirst (\slshape{integer})}}]\hspace{1.0in}
-
-Calls the heuristic for the first n nodes.
-
-\textsl{(default = 10)}
-
-\item[\label{userheurfreq}\hypertarget{userheurfreq}
-{\textbf{userheurfreq (\slshape{integer})}}]\hspace{1.0in}
-
-Determines the frequency of the heuristic model calls.
-
-\textsl{(default = 10)}
-
-\item[\label{userheurinterval}\hypertarget{userheurinterval}
-{\textbf{userheurinterval (\slshape{integer})}}]\hspace{1.0in}
-
-Determines the interval when to apply the multiplier for the frequency of the heuristic model calls.
-For example, for the first 100 (userheurinterval) nodes, the solver call every 10th (userheurfreq) node
-the heuristic.
-After 100 nodes, the frequency gets multiplied by 10 (userheurmult), so that for the next 100 node the solver calls the heuristic every 20th node.
-For nodes 200-300, the heuristic get called every 40th node, for nodes 300-400 every 80th node and after node 400 every 100th node.
-
-\textsl{(default = 100)}
-
-\item[\label{userheurmult}\hypertarget{userheurmult}
-{\textbf{userheurmult (\slshape{integer})}}]\hspace{1.0in}
-
-Determines the multiplier for the frequency of the heuristic model calls.
-
-\textsl{(default = 2)}
-
-\item[\label{userheurnewint}\hypertarget{userheurnewint}
-{\textbf{userheurnewint (\slshape{integer})}}]\hspace{1.0in}
-
-Calls the heuristic if the solver found a new integer feasible solution.
-
-\textsl{(default = 1)}
-\begin{itemize}
-\item[0] .
-Do not call heuristic because a new integer feasible solution is found.
-\item[1] .
-Let CBC call the heuristic if a new integer feasible solution is found.
-\end{itemize}
-
-\item[\label{userheurobjfirst}\hypertarget{userheurobjfirst}
-{\textbf{userheurobjfirst (\slshape{integer})}}]\hspace{1.0in}
-
-Similar to userheurfirst but only calls the heuristic if the relaxed objective value promises a significant improvement of the current incumbent, i.e., the LP value of the node has to be closer to the best bound than the current incumbent.
-
-\textsl{(default = 0)}
-
-\item[\label{userjobid}\hypertarget{userjobid}
-{\textbf{userjobid (\slshape{string})}}]\hspace{1.0in}
-
-Postfixes to use for gdxname, gdxnameinc, and gdxin.
-
-
-\item[\label{userkeep}\hypertarget{userkeep}
-{\textbf{userkeep (\slshape{integer})}}]\hspace{1.0in}
-
-Calls gamskeep instead of gams
-
-\textsl{(default = 0)}
-
-\end{description}
+% \subsubsection{MIP Options for the GAMS Branch Cut and Heuristic Facility}
+% 
+% \begin{description}
+% \item[\label{usercutcall}\hypertarget{usercutcall}
+% {\textbf{usercutcall (\slshape{string})}}]\hspace{1.0in}
+% 
+% The GAMS command line (minus the gams executable name) to call the cut generator.
+% 
+% 
+% \item[\label{usercutfirst}\hypertarget{usercutfirst}
+% {\textbf{usercutfirst (\slshape{integer})}}]\hspace{1.0in}
+% 
+% Calls the cut generator for the first $n$ nodes.
+% 
+% \textsl{(default = 10)}
+% 
+% \item[\label{usercutfreq}\hypertarget{usercutfreq}
+% {\textbf{usercutfreq (\slshape{integer})}}]\hspace{1.0in}
+% 
+% Determines the frequency of the cut generator model calls.
+% 
+% \textsl{(default = 10)}
+% 
+% \item[\label{usercutinterval}\hypertarget{usercutinterval}
+% {\textbf{usercutinterval (\slshape{integer})}}]\hspace{1.0in}
+% 
+% Determines the interval when to apply the multiplier for the frequency of the cut generator model calls.
+% See userheurinterval for details.
+% 
+% \textsl{(default = 100)}
+% 
+% \item[\label{usercutmult}\hypertarget{usercutmult}
+% {\textbf{usercutmult (\slshape{integer})}}]\hspace{1.0in}
+% 
+% Determines the multiplier for the frequency of the cut generator model calls.
+% 
+% \textsl{(default = 2)}
+% 
+% \item[\label{usercutnewint}\hypertarget{usercutnewint}
+% {\textbf{usercutnewint (\slshape{integer})}}]\hspace{1.0in}
+% 
+% Calls the cut generator if the solver found a new integer feasible solution.
+% 
+% \textsl{(default = 1)}
+% \begin{itemize}
+% \item[0] .
+% Do not call cut generator because a new integer feasible solution is found.
+% \item[1] .
+% Let CBC call the cut generator if a new integer feasible solution is found.
+% \end{itemize}
+% 
+% \item[\label{usergdxin}\hypertarget{usergdxin}
+% {\textbf{usergdxin (\slshape{string})}}]\hspace{1.0in}
+% 
+% The name of the GDX file read back into CBC.
+% 
+% \textsl{(default =} \verb=bchin.gdx=)
+% 
+% \item[\label{usergdxname}\hypertarget{usergdxname}
+% {\textbf{usergdxname (\slshape{string})}}]\hspace{1.0in}
+% 
+% The name of the GDX file exported from the solver with the solution at the node.
+% 
+% \textsl{(default =} \verb=bchout.gdx=)
+% 
+% \item[\label{usergdxnameinc}\hypertarget{usergdxnameinc}
+% {\textbf{usergdxnameinc (\slshape{string})}}]\hspace{1.0in}
+% 
+% The name of the GDX file exported from the solver with the incumbent solution.
+% 
+% \textsl{(default =} \verb=bchout_i.gdx=)
+% 
+% \item[\label{usergdxprefix}\hypertarget{usergdxprefix}
+% {\textbf{usergdxprefix (\slshape{string})}}]\hspace{1.0in}
+% 
+% Prefixes to use for usergdxin, usergdxname, and usergdxnameinc.
+% 
+% 
+% \item[\label{userheurcall}\hypertarget{userheurcall}
+% {\textbf{userheurcall (\slshape{string})}}]\hspace{1.0in}
+% 
+% The GAMS command line (minus the gams executable name) to call the heuristic.
+% 
+% 
+% \item[\label{userheurfirst}\hypertarget{userheurfirst}
+% {\textbf{userheurfirst (\slshape{integer})}}]\hspace{1.0in}
+% 
+% Calls the heuristic for the first n nodes.
+% 
+% \textsl{(default = 10)}
+% 
+% \item[\label{userheurfreq}\hypertarget{userheurfreq}
+% {\textbf{userheurfreq (\slshape{integer})}}]\hspace{1.0in}
+% 
+% Determines the frequency of the heuristic model calls.
+% 
+% \textsl{(default = 10)}
+% 
+% \item[\label{userheurinterval}\hypertarget{userheurinterval}
+% {\textbf{userheurinterval (\slshape{integer})}}]\hspace{1.0in}
+% 
+% Determines the interval when to apply the multiplier for the frequency of the heuristic model calls.
+% For example, for the first 100 (userheurinterval) nodes, the solver call every 10th (userheurfreq) node
+% the heuristic.
+% After 100 nodes, the frequency gets multiplied by 10 (userheurmult), so that for the next 100 node the solver calls the heuristic every 20th node.
+% For nodes 200-300, the heuristic get called every 40th node, for nodes 300-400 every 80th node and after node 400 every 100th node.
+% 
+% \textsl{(default = 100)}
+% 
+% \item[\label{userheurmult}\hypertarget{userheurmult}
+% {\textbf{userheurmult (\slshape{integer})}}]\hspace{1.0in}
+% 
+% Determines the multiplier for the frequency of the heuristic model calls.
+% 
+% \textsl{(default = 2)}
+% 
+% \item[\label{userheurnewint}\hypertarget{userheurnewint}
+% {\textbf{userheurnewint (\slshape{integer})}}]\hspace{1.0in}
+% 
+% Calls the heuristic if the solver found a new integer feasible solution.
+% 
+% \textsl{(default = 1)}
+% \begin{itemize}
+% \item[0] .
+% Do not call heuristic because a new integer feasible solution is found.
+% \item[1] .
+% Let CBC call the heuristic if a new integer feasible solution is found.
+% \end{itemize}
+% 
+% \item[\label{userheurobjfirst}\hypertarget{userheurobjfirst}
+% {\textbf{userheurobjfirst (\slshape{integer})}}]\hspace{1.0in}
+% 
+% Similar to userheurfirst but only calls the heuristic if the relaxed objective value promises a significant improvement of the current incumbent, i.e., the LP value of the node has to be closer to the best bound than the current incumbent.
+% 
+% \textsl{(default = 0)}
+% 
+% \item[\label{userjobid}\hypertarget{userjobid}
+% {\textbf{userjobid (\slshape{string})}}]\hspace{1.0in}
+% 
+% Postfixes to use for gdxname, gdxnameinc, and gdxin.
+% 
+% 
+% \item[\label{userkeep}\hypertarget{userkeep}
+% {\textbf{userkeep (\slshape{integer})}}]\hspace{1.0in}
+% 
+% Calls gamskeep instead of gams
+% 
+% \textsl{(default = 0)}
+% 
+% \end{description}

@@ -9,13 +9,17 @@
 %\usepackage{epsfig}
 \usepackage[pdftex]{graphicx}
 %end{latexonly}
+\usepackage{xspace}
+\usepackage{chapterbib}
 
-\usepackage{html}
+\newenvironment{latexonly}{}{}
 
-\begin{htmlonly}
-\newcommand{\hyperlink}[2]{\htmlref{#2}{#1}}
-\newcommand{\hypertarget}[2]{{#2}}
-\end{htmlonly}
+% \usepackage{html}
+
+% \begin{htmlonly}
+% \newcommand{\hyperlink}[2]{\htmlref{#2}{#1}}
+% \newcommand{\hypertarget}[2]{{#2}}
+% \end{htmlonly}
 
 \parindent0em
 \parskip0.5em
@@ -145,7 +149,7 @@
 
 %%% COIN
 \include{coin}
-%\cleardoublepage
+\cleardoublepage
 
 %%% CONOPT
 %\addcontentsline{toc}{chapter}{\protect\numberline{3}{GAMS/CONOPT}}
@@ -194,6 +198,10 @@
 
 %%% SBB
 %\include{sbb}
+%\cleardoublepage
+
+%%% SCIP
+\include{scip}
 %\cleardoublepage
 
 %%% SNOPT

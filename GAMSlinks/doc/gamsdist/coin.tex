@@ -17,6 +17,23 @@
 {\begin{list}{}{\vspace*{-1.5ex}\renewcommand{\makelabel}{\desclabel}\parsep-0.15cm\labelwidth#1\leftmargin#1\setlength{\labelsep}{\itemindent}\topsep0cm\parskip0cm\partopsep0cm}}%
 {\end{list}}
 
+\newcommand{\GAMS}{\textsc{GAMS}\xspace}
+\newcommand{\BONMIN}{\textsc{Bonmin}\xspace}
+\newcommand{\CBC}{\textsc{CBC}\xspace}
+\newcommand{\COUENNE}{\textsc{Couenne}\xspace}
+\newcommand{\IPOPT}{\textsc{Ipopt}\xspace}
+\newcommand{\OS}{\textsc{OS}\xspace}
+\newcommand{\OSI}{\textsc{OSI}\xspace}
+\newcommand{\OSICPLEX}{\textsc{OsiCplex}\xspace}
+\newcommand{\OSIGUROBI}{\textsc{OsiGurobi}\xspace}
+\newcommand{\OSIGLPK}{\textsc{OsiGlpk}\xspace}
+\newcommand{\OSIMOSEK}{\textsc{OsiMosek}\xspace}
+\newcommand{\OSIXPRESS}{\textsc{OsiXpress}\xspace}
+\newcommand{\CPLEX}{\textsc{CPLEX}\xspace}
+\newcommand{\GUROBI}{\textsc{GUROBI}\xspace}
+\newcommand{\GLPK}{\textsc{GLPK}\xspace}
+\newcommand{\MOSEK}{\textsc{MOSEK}\xspace}
+\newcommand{\XPRESS}{\textsc{XPRESS}\xspace}
 
 \chapter{COIN-OR}
 \textbf{Stefan Vigerske, Humboldt University Berlin, Germany}
@@ -24,146 +41,241 @@
 
 \minitoc
 
-
 \section{Introduction}
 
-COIN-OR (\textbf{CO}mputational \textbf{IN}frastructure for \textbf{O}perations \textbf{R}esearch, \texttt{http://www.coin-or.org}) is an initiative to spur the development of open-source software for the operations research community.
+COIN-OR (\textbf{CO}mputational \textbf{IN}frastructure for \textbf{O}perations \textbf{R}esearch, \texttt{http://www.coin-or.org}) is an initiative to spur the development of open-source software for the operations research community~\cite{Lo03}.
 One of the projects hosted at COIN-OR is the GAMSlinks project (\texttt{https://projects.coin-or.org/GAMSlinks}).
-It is dedicated to the development of interfaces between GAMS and open source solvers.
-Some of these links and solvers have also found their way into the regular GAMS distribution.
-They are currently available for Linux (32 and 64 bit), Windows (32 and 64 bit), Sun Solaris (Intel 64 bit), and Darwin (Intel 32 and 64 bit) systems.
-With the availability of source code for the GAMSlinks the user is not limited to the out of the box solvers that come with a regular GAMS distribution, but can extend and build these interfaces by themselves.
+It is dedicated to the development of interfaces between \GAMS and open source solvers.
+Some of these links and solvers have also found their way into the regular \GAMS distribution.
+% They are currently available for Linux (32 and 64 bit), Windows (32 and 64 bit), Sun Solaris (Intel 64 bit), and Darwin (Intel 32 and 64 bit) systems.
+With the availability of source code for the GAMSlinks the user is not limited to the out of the box solvers that come with a regular \GAMS distribution, but can extend and build these interfaces by themselves.
 
 Available solvers and tools include:
 \begin{itemize}
-\item CoinBonmin 1.1: Basic Open-source Nonlinear Mixed Integer programming\\
+\item \BONMIN: Basic Open-source Nonlinear Mixed Integer programming\\
 (model types: LP, RMIP, MIP, DNLP, NLP, RMINLP, MINLP, QCP, RMIQCP, MIQCP)
-\item CoinCbc 2.3: COIN-OR Branch and Cut\\
-(model types: LP, MIP, RMIP)
-\item CoinCouenne 0.2: Convex Over and Under Envelopes for Nonlinear Estimation\\
+\item \CBC: COIN-OR Branch and Cut\\
+(model types: LP, RMIP, MIP)
+\item \COUENNE: Convex Over and Under Envelopes for Nonlinear Estimation\\
 (model types: LP, RMIP, MIP, DNLP, NLP, RMINLP, MINLP, QCP, RMIQCP, MIQCP)
-\item CoinGlpk 4.39: Gnu Linear Programming Kit\\
-(model types: LP, MIP, RMIP)
-\item CoinIpopt 3.7: Interior Point Optimizer\\
+% \item CoinGlpk 4.39: Gnu Linear Programming Kit\\
+% (model types: LP, MIP, RMIP)
+\item \IPOPT: Interior Point Optimizer\\
 (model types: LP, RMIP, DNLP, NLP, RMINLP, QCP, RMIQCP)
-\item CoinOS 2.0: Optimization Services\\
+\item \OS: Optimization Services\\
 (model types: LP, RMIP, MIP, DNLP, NLP, RMINLP, MINLP, QCP, RMIQCP, MIQCP)
-\item CoinScip 1.2.0: Solving Constrained Integer Programs\\
-(model types: LP, MIP, RMIP)
+\item \OSICPLEX, \OSIGLPK, \OSIGUROBI, \OSIMOSEK, \OSIXPRESS: Open Solver Interface\\
+(model types: LP, RMIP, MIP)
 \end{itemize}
-
-% The open source concept opens new possibilities for our advanced users:
-% 
-% \begin{itemize}
-% \item Make modifications to the existing links
-% \item Port the links to another platform supported by GAMS
-% \item Connect new solvers to GAMS/COIN-OR
-% \item Extend the documentation
-% \end{itemize}
 
 For more information see the COIN-OR/GAMSlinks web site at
 \texttt{https://projects.coin-or.org/GAMSlinks}.
 
-\section{CoinBonmin and CoinBonminD}
+\section{\BONMIN}
 
-GAMS/CoinBonmin brings the open source MINLP solver Bonmin to the broad audience of GAMS users.
+% \GAMS/\BONMIN brings the open source MINLP solver \BONMIN to the broad audience of \GAMS users.
 
-Bonmin (\textbf{B}asic \textbf{O}pen-source \textbf{N}onlinear \textbf{M}ixed \textbf{In}teger programming) is an open-source solver for convex mixed-integer nonlinear programming (MINLPs).
-The code is developed in a joined project of IBM and the Carnegie Mellon University.
-The COIN-OR project leader for Bonmin is Pierre Bonami.
+\BONMIN (\textbf{B}asic \textbf{O}pen-source \textbf{N}onlinear \textbf{M}ixed \textbf{In}teger programming) is an open-source solver for mixed-integer nonlinear programming (MINLPs).
+The code has been developed as part of a collaboration between Carnegie Mellon University and IBM Research.
+The COIN-OR project leader for \BONMIN is Pierre Bonami.
 
-Bonmin implements five different algorithms:
+\BONMIN implements six different algorithms for solving MINLPs:
 \begin{itemize}
-\item {B-BB} (\textbf{default}): a simple branch-and-bound algorithm based on solving a continuous nonlinear program at each node of the search tree and branching on integer variables; this algorithm is similar to the one implemented in the solver SBB
-\item {B-OA}: an outer-approximation based decomposition algorithm based on iterating solving and improving of a MIP relaxation and solving NLP subproblems; this algorithm is similar to the one implemented in the solvers DICOPT and AlphaECP
-\item {B-QG}: an outer-approximation based branch-and-cut algorithm (by Queseda and Grossmann) based on solving a continuous linear program at each node of the search tree, improving the linear program by outer approximation, and branching on integer variables
-\item {B-Hyb}: a branch-and-bound algorithm which is a hybrid of B-BB and B-QG and is based on solving either a continuous nonlinear or a continuous linear program at each node of the search tree, improving the linear program by outer approximation, and branching on integer variables
-\item {B-Ecp}: an ECP cuts based branch-and-cut algorithm a la FilMINT
+\item {B-BB} (\textbf{default}): a simple branch-and-bound algorithm based on solving a continuous nonlinear program at each node of the search tree and branching on integer variables~\cite{GuptaRavindran85}; this algorithm is similar to the one implemented in the solver \textsc{SBB}
+\item {B-OA}: an outer-approximation based decomposition algorithm based on iterating solving and improving of a MIP relaxation and solving NLP subproblems~\cite{DuGr86,FlLe94}; this algorithm is similar to the one implemented in the solver \textsc{DICOPT}
+\item {B-QG}: an outer-approximation based branch-and-cut algorithm based on solving a continuous linear program at each node of the search tree, improving the linear program by outer approximation, and branching on integer variables~\cite{QeGr92}.
+\item {B-Hyb}: a branch-and-bound algorithm which is a hybrid of B-BB and B-QG and is based on solving either a continuous nonlinear or a continuous linear program at each node of the search tree, improving the linear program by outer approximation, and branching on integer variables~\cite{BBCCGLLLMSW}
+\item {B-Ecp}: another outer-approximation based branch-and-cut algorithm inspired by the settings used in the solver \textsc{FilMINT}~\cite{AbLeLi07}
+\item {B-iFP}: an iterated feasibility pump algorithm~\cite{BoCoLoMa06}
 \end{itemize}
 The algorithms are exact when the problem is \textbf{convex}, otherwise they are heuristics.
 
 For convex MINLPs, experiments on a reasonably large test set of problems have shown that B-Hyb is the algorithm of choice (it solved most of the problems in 3 hours of computing time).
 Nevertheless, there are cases where B-OA is much faster than B-Hyb and others where B-BB is interesting.
-B-QG corresponds mainly to a specific parameter setting of B-Hyb where some features are disabled.
-B-Ecp has recently been added to Bonmin and is still experimental.
-For \textbf{nonconvex} MINLPs, it is strongly recommend to use B-BB, even though it is a heuristic for such problems too.
-% Therefore, it is the default algorithm in Bonmin.
+B-QG and B-Ecp corresponds mainly to a specific parameter setting of B-Hyb but they can be faster in some cases.
+B-iFP is more tailored at finding quickly good solutions to very hard convex MINLP.
+For \textbf{nonconvex} MINLPs, it is strongly recommended to use B-BB (the outer-approximation algorithms have not been tailored to treat nonconvex problems at this point).
+Although even B-BB is only a heuristic for such problems, several options are available to try and improve the quality of the solutions it provides.
 
-For more information we refer to
-\begin{itemize}
-\item the Bonmin web site \texttt{https://projects.coin-or.org/Bonmin} and
-\item the paper P. Bonami, L.T. Biegler, A.R. Conn, G. Cornuejols, I.E. Grossmann, C.D. Laird, J. Lee, A. Lodi, F. Margot, N.Sawaya and A. W\"achter, An Algorithmic Framework for Convex Mixed Integer Nonlinear Programs, \emph{Discrete Optimization} 5, 186--204, 2008, and \emph{IBM Research Report} RC23771, Oct. 2005.
-\end{itemize}
-Most of the Bonmin documentation in the section is taken from the Bonmin manual available on the Bonmin web site.
+For more information we refer to \cite{BoCoLoMa06,BoKiLi09,BoGo08,BBCCGLLLMSW} and the \BONMIN web site \texttt{https://projects.coin-or.org/Bonmin}.
+Most of the \BONMIN documentation in this section is taken from the \BONMIN manual~\cite{BonminManual}.
 
-Gams/BonminD is an experimental in-core communication link.
-It offers in-core communication between GAMS and the solver, making potentially large model scratch files unnecessary.
-This links supports all features of the traditional link except for the GAMS branch-cut-heuristic facility (BCH).
+% \GAMS/BonminD is an experimental in-core communication link.
+% It offers in-core communication between \GAMS and the solver, making potentially large model scratch files unnecessary.
+% This links supports all features of the traditional link except for the \GAMS branch-cut-heuristic facility (BCH).
 
 \subsection{Model requirements}
 
-Bonmin can handle mixed-integer nonlinear programming models which functions can be nonconvex, but should be twice continuously differentiable.
-The Bonmin link in GAMS supports continuous, binary, and integer variables, special ordered sets, branching priorities, but no semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide).
+\BONMIN can handle mixed-integer nonlinear programming models which functions should be twice continuously differentiable.
+The \BONMIN link in \GAMS supports continuous, binary, and integer variables, special ordered sets, branching priorities, but no semi-continuous or semi-integer variables (see chapter 17.1 of the \GAMS User's Guide).
 
-If GAMS/CoinBonmin is called for a model with only continuous variables, the interface directly calls Ipopt.
+If \GAMS/\BONMIN is called for a model with only continuous variables, the interface directly calls \IPOPT.
+If \GAMS/\BONMIN is called for a model with only linear equations, the interface directly calls \CBC.
 
-\subsection{Usage of CoinBonmin}
+\subsection{Usage}
 
-The following statement can be used inside your GAMS program to specify using CoinBonmin
+The following statement can be used inside your \GAMS program to specify using \BONMIN
 \begin{verbatim}
-  Option MINLP = CoinBonmin;     { or LP, RMIP, MIP, DNLP, NLP, RMINLP, QCP, RMIQCP, MIQCP }
+  Option MINLP = BONMIN;     { or LP, RMIP, MIP, DNLP, NLP, RMINLP, QCP, RMIQCP, MIQCP }
 \end{verbatim}
 
 The above statement should appear before the Solve statement.
-If CoinBonmin was specified as the default solver during GAMS installation, the above statement is not necessary.
+If \BONMIN was specified as the default solver during \GAMS installation, the above statement is not necessary.
 
-GAMS/CoinBonmin supports the GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
-The GAMS BCH facility automates all major steps necessary to define, execute, and control the use of user defined routines within the framework of general purpose MIP and MINLP codes.
-Currently supported are user defined cut generators and heuristics, where cut generator cannot be used in Bonmins pure B\&B algorithm (B-BB).
-Please see the BCH documentation at \texttt{http://www.gams.com/docs/bch.htm} for further information.
+\GAMS/\BONMIN currently does not support the \GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
+If you need to use \GAMS/\BONMIN with BCH, please consider to use a \GAMS system of version $\leq 23.3$, available at \url{http://www.gams.com/download/download_old.htm}.
+% \GAMS/\BONMIN supports the \GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
+% The \GAMS BCH facility automates all major steps necessary to define, execute, and control the use of user defined routines within the framework of general purpose MIP and MINLP codes.
+% Currently supported are user defined cut generators and heuristics, where cut generator cannot be used in Bonmins pure B\&B algorithm (B-BB).
+% Please see the BCH documentation at \texttt{http://www.gams.com/docs/bch.htm} for further information.
 
-\subsection{Specification of CoinBonmin Options}
-\label{sub:bonminoptionspec}
+\subsubsection{Specification of Options}
 
-A Bonmin option file contains both Ipopt and Bonmin options, for clarity all Bonmin options should be preceded with the prefix ``\texttt{bonmin.}'', except those corresponding to the BCH facility.
-%Bonmin has many options that can be adjusted for the algorithm (see Section \ref{sub:bonminoptions}).
-The scheme to name option files is the same as for all other GAMS solvers.
-Specifying \texttt{optfile=1} let Gams/CoinBonmin read \texttt{coinbonmin.opt}, \texttt{optfile=2} corresponds to \texttt{coinbonmin.op2}, and so on.
-The format of the option file is the same as for Ipopt (see Section \ref{sub:ipoptoptionspec}).
+A \BONMIN option file contains both \IPOPT and \BONMIN options, for clarity all \BONMIN options should be preceded with the prefix ``\texttt{bonmin.}''. %, except those corresponding to the BCH facility.
+The scheme to name option files is the same as for all other \GAMS solvers.
+Specifying \texttt{optfile=1} let \GAMS/\BONMIN read \texttt{coinbonmin.opt}, \texttt{optfile=2} corresponds to \texttt{coinbonmin.op2}, and so on.
+The format of the option file is the same as for \IPOPT (see Section \ref{sub:ipoptoptionspec}).
 
-The most important option in Bonmin is the choice of the solution algorithm.
-This can be set by using the option named \texttt{bonmin.algorithm} which can be set to \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, \texttt{B-Hyb}, or \texttt{B-Ecp} (its default value is \texttt{B-BB}).
-Depending on the value of this option, certain other options may be available or not.
-
-In the context of outer approximation decomposition (B-OA), several options are available for configuring the MIP subsolver CBC.
-By setting the option \texttt{bonmin.milp\_subsolver} to \texttt{Cbc\_Par}, a version of CBC is chosen that can be parameterized by the user.
-The options that can be set are the node-selection strategy, the number of strong-branching candidates, the number of branches before pseudo costs are to be trusted, and the frequency of some cut generators.
-Their name coincide with Bonmins options, except that the ``\texttt{bonmin.}'' prefix is replaced with  ``\texttt{milp\_sub.}''.
+The most important option in \BONMIN is the choice of the solution algorithm.
+This can be set by using the option named \texttt{bonmin.algorithm} which can be set to \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, \texttt{B-Hyb}, \texttt{B-Ecp}, or \texttt{B-iFP} (its default value is \texttt{B-BB}).
+Depending on the value of this option, certain other options may be available or not, cf.\ Section~\ref{sub:bonminalloptions}.
 
 An example of a \texttt{bonmin.opt} file is the following:
 \begin{verbatim}
    bonmin.algorithm       B-Hyb
    bonmin.oa_log_level    4
-   bonmin.milp_subsolver  Cbc_Par
-   milp_sub.cover_cuts    0
    print_level            6
-   userheurcall           "bchheur.gms reslim 10"
 \end{verbatim}
-This sets the algorithm to be used to the hybrid algorithm, the level of outer approximation related output to $4$, the MIP subsolver for outer approximation to a parameterized version of CBC, switches off cover cutting planes for the MIP subsolver, sets the print level for \texttt{Ipopt} to $6$, and let Bonmin call a user defined heuristic specified in the model \texttt{bchheur.gms} with a timelimit of 10 seconds.
+%    bonmin.milp_subsolver  Cbc_Par
+%    milp_sub.cover_cuts    0
+%    userheurcall           "bchheur.gms reslim 10"
+This sets the algorithm to be used to the hybrid algorithm, the level of outer approximation related output to $4$, 
+% the MIP subsolver for outer approximation to a parameterized version of CBC, switches off cover cutting planes for the MIP subsolver,
+and sets the print level for \IPOPT to $6$.
+%  and let \BONMIN call a user defined heuristic specified in the model \texttt{bchheur.gms} with a timelimit of 10 seconds.
 
-GAMS/CoinBonmin understands currently the following GAMS parameters: reslim (time limit), iterlim (iteration limit), nodlim (node limit), cutoff, optca (absolute gap tolerance), and optcr (relative gap tolerance).
-You can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your GAMS program, e.g. \verb+Option nodlim=1000;+.
+\GAMS/\BONMIN understands currently the following \GAMS parameters: \texttt{reslim} (time limit), \texttt{iterlim} (iteration limit), \texttt{nodlim} (node limit), \texttt{cutoff}, \texttt{optca} (absolute gap tolerance), and \texttt{optcr} (relative gap tolerance).
+One can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your \GAMS program, e.g. \verb+Option nodlim=1000;+.
 
-\subsection{Description of CoinBonmin Options}
-\label{sub:bonminoptions}
+\subsubsection{Passing options to local search based heuristics and OA generators}
+Several parts of the algorithms in \BONMIN are based on solving a simplified version of the problem with another instance of \BONMIN:
+Outer Approximation Decomposition (called in {\tt B-Hyb} at the root node)
+and Feasibility Pump for MINLP (called in {\tt B-Hyb} or {\tt B-BB} at the root node), RINS, RENS, Local Branching.
+
+In all these cases, one can pass options to the sub-algorithm used through the option file.
+The basic principle is that the ``\texttt{bonmin.}'' prefix  is replaced with a prefix that identifies the sub-algorithm used:
+\begin{itemize}
+\item to pass options to Outer Approximation Decomposition: {\tt oa\_decomposition.},
+\item to pass options to Feasibility Pump for MINLP: {\tt pump\_for\_minlp.},
+\item to pass options to RINS: {\tt rins.},
+\item to pass options to RENS: {\tt rens.},
+\item to pass options to Local Branching: {\tt local\_branch}.
+\end{itemize}
+
+For example, to run a maximum of 60 seconds of FP for MINLP until 6 solutions are found at the beginning of the hybrid algorithm, one sets the following options:
+\begin{verbatim}
+bonmin.algorithm              B-Hyb
+bonmin.pump_for_minlp         yes   # tells to run FP for MINLP
+pump_for_minlp.time_limit     60    # set a time limit for the pump
+pump_for_minlp.solution_limit 6     # set a solution limit
+\end{verbatim}
+Note that the actual solution and time limit will be the minimum of the global limits set for \BONMIN.
+
+A slightly more complicated set of options may be used when using RINS.
+Say for example that one wants to run RINS inside \texttt{B-BB}.
+Each time RINS is called one wants to solve the small-size MINLP generated using B-QG (one may run any algorithm available in \BONMIN for solving an MINLP) and wants to stop as soon as \texttt{B-QG} found one solution.
+To achieve this, one sets the following options
+\begin{verbatim}
+bonmin.algorithm    B-BB
+bonmin.rins         yes
+rins.algorithm      B-QG
+rins.solution_limit 1
+\end{verbatim}
+This example shows that it is possible to set any option used in the sub-algorithm to be different than the one used for the main algorithm.
+
+In the context of OA and FP for MINLP, a standard MILP solver is used.
+Several option are available for configuring this MILP solver.
+\BONMIN allows a choice of different MILP solvers through the option
+\texttt{bonmin.milp\_sub\-sol\-ver}. Values for this option are: {\tt Cbc\_D} which uses \CBC with its
+default settings, {\tt Cbc\_Par} which uses a version of \CBC that can be parameterized by the user, and
+\texttt{Cplex} which uses \CPLEX with its default settings.
+The options that can be set in {\tt Cbc\_Par} are the number of strong-branching candidates,
+the number of branches before pseudo costs are to be trusted, and the frequency of the various cut generators, c.f.\ Section~\ref{sub:bonminalloptions} for details.
+The \texttt{Cplex} is currently not available on Macintosh platforms.
+Further, a valid \CPLEX licence (standalone or \GAMS/\CPLEX) is required.
+
+\subsubsection{Getting good solutions to nonconvex problems}
+To solve a problem with nonconvex constraints, one should only use the branch-and-bound algorithm {\tt B-BB}.
+
+A few options have been designed in \BONMIN specifically to treat
+problems that do not have a convex continuous relaxation.
+In such problems, the solutions obtained from \IPOPT are
+not necessarily globally optimal, but are only locally optimal.
+Also the outer-approximation constraints are not necessarily valid inequalities for the problem.
+
+No specific heuristic method for treating nonconvex problems is implemented
+yet within the OA framework.
+But for the pure branch-and-bound {\tt B-BB}, a few options have been implemented while having
+in mind that lower bounds provided by \IPOPT should not be trusted and with the goal of
+trying to get good solutions. Such options are at a very experimental stage.
+
+First, in the context of nonconvex problems, \IPOPT may find different local optima when started
+from different starting points. The two options {\tt num\_re\-solve\_at\_root} and {\tt num\_resolve\_at\_node}
+allow for solving the root node or each node of the tree, respectively, with a user-specified
+number of different randomly-chosen starting points, saving the best solution found.
+Note that the function to generate a random starting point is very na\"{\i}ve:
+it chooses a random point (uniformly) between the bounds provided for the variable.
+In particular if there are some functions that can not be evaluated at some points of the domain, it may pick such points,
+and so it is not robust in that respect.
+
+Secondly, since the solution given by \IPOPT does not truly give a lower bound, the fathoming rule can be changed to continue branching even if the solution value to the current node is worse than the best-known solution.
+This is achieved by setting {\tt allowable\_gap}
+and {\tt allowable\_fraction\_gap} and {\tt cutoff\_decr} to negative values.
+
+\subsubsection{\IPOPT options changed by \BONMIN}
+
+\IPOPT has a very large number of options, see Section \ref{sub:ipoptoptions} to get a complete description.
+To use \IPOPT more efficiently in the context of the solution of a MINLP problems,
+\BONMIN changes some \IPOPT options from their default values, which may help to improve \IPOPT's warm-starting capabilities and its ability to prove quickly that a subproblem is infeasible.
+These are settings that \IPOPT does not use for ordinary NLP problems.
+Note that options set by the user in an option file will override these settings.
+\begin{itemize}
+\item {\tt mu\_strategy} and {\tt mu\_oracle} are set, respectively, to
+{\tt adaptive} and {\tt probing} by default. These are newly implemented strategies in \IPOPT
+for updating the barrier parameter. They were found to be more efficient in the context of MINLP.
+
+\item {\tt gamma\_phi} and {\tt gamma\_theta} are set to $10^{-8}$ and $10^{-4}$ respectively.
+This has the effect of reducing the size of the filter in the line search performed by \IPOPT.
+
+\item {\tt required\_infeasibility\_reduction} is set to $0.1$.
+This increases the required infeasibility reduction when \IPOPT enters the
+restoration phase and should thus help to detect infeasible problems faster.
+
+\item {\tt expect\_infeasible\_problem} is set to {\tt yes}, which enables some heuristics
+to detect infeasible problems faster.
+
+\item {\tt warm\_start\_init\_point} is set to {\tt yes} when a full primal/dual starting
+point is available (generally all the optimizations after the continuous relaxation has been solved).
+
+\item {\tt print\_level} is set to $0$ by default to turn off \IPOPT output.
+
+\item \texttt{bound\_relax\_factor} is set to $10^{-10}$. All of the bounds
+of the problem are relaxed by this factor. This may cause some trouble
+when constraint functions can only be evaluated within their bounds.
+In such cases, this option should be set to $0$.
+\end{itemize}
+
+\subsection{Detailed Options Description}
+\label{sub:bonminalloptions}
 
 The following tables gives the list of options together with their types, default values and availability in each of the four main algorithms.
 The column labeled `type' indicates the type of the parameter (`F' stands for float, `I' for integer, and `S' for
 string).
 The column labeled `default' indicates the global default value.
-Then for each of the four algorithm \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, and \texttt{B-Hyb}, `$+$' indicates that the option is available for that particular algorithm while `$-$' indicates that it is not.
-Options that are marked with $^*$ are those that can be used to configure the MIP subsolver.
+Then for each of the algorithms \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, \texttt{B-Hyb}, \texttt{B-Ecp}, and \texttt{B-iFP} `$+$' indicates that the option is available for that particular algorithm, while `$-$' indicates that it is not.
+The column labaled `Cbc\_Par' indicates the options that can be used to parametrize the MIP subsolver in the context of OA and FP.
 
+%TODO update
 \begin{center}
 \begin{tabular}{|l|r|r|r|r|r|r|}\hline
 Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} \\
@@ -231,28 +343,28 @@ ecp\_propability\_factor& F& 1000&--&--&--& +\\
 ecp\_rel\_tol& F& 0&--&--&--& +\\
 filmint\_ecp\_cuts& I& 0&--&--&--& +\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{6}{l|}{GAMS Branch Cut and Heuristic Facility}\\
-\hline
-usercutcall& S& none& --& +& +& +\\
-usercutfirst& I& 10& --& +& +& +\\
-usercutfreq& I& 10& --& +& +& +\\
-usercutinterval& I& 100& --& +& +& +\\
-usercutmult& I& 2& --& +& +& +\\
-usercutnewint& I& 0& --& +& +& +\\
-usergdxin& S& bchin.gdx& +& +& +& +\\
-usergdxname& S& bchout.gdx& +& +& +& +\\
-usergdxnameinc& S& bchout\_i.gdx& +& +& +& +\\
-usergdxprefix& S&none & +& +& +& +\\
-userheurcall& S& none& +& +& +& +\\
-userheurfirst& I& 10& +& +& +& +\\
-userheurfreq& I& 10& +& +& +& +\\
-userheurinterval& I& 100& +& +& +& +\\
-userheurmult& I& 2& +& +& +& +\\
-userheurnewint& I& 0& +& +& +& +\\
-userheurobjfirst& I& 0& +& +& +& +\\
-userjobid& S& none& +& +& +& +\\
-userkeep& I& 0& +& +& +& +\\
-\hline
+% \multicolumn{1}{|c}{} & \multicolumn{6}{l|}{\GAMS Branch Cut and Heuristic Facility}\\
+% \hline
+% usercutcall& S& none& --& +& +& +\\
+% usercutfirst& I& 10& --& +& +& +\\
+% usercutfreq& I& 10& --& +& +& +\\
+% usercutinterval& I& 100& --& +& +& +\\
+% usercutmult& I& 2& --& +& +& +\\
+% usercutnewint& I& 0& --& +& +& +\\
+% usergdxin& S& bchin.gdx& +& +& +& +\\
+% usergdxname& S& bchout.gdx& +& +& +& +\\
+% usergdxnameinc& S& bchout\_i.gdx& +& +& +& +\\
+% usergdxprefix& S&none & +& +& +& +\\
+% userheurcall& S& none& +& +& +& +\\
+% userheurfirst& I& 10& +& +& +& +\\
+% userheurfreq& I& 10& +& +& +& +\\
+% userheurinterval& I& 100& +& +& +& +\\
+% userheurmult& I& 2& +& +& +& +\\
+% userheurnewint& I& 0& +& +& +& +\\
+% userheurobjfirst& I& 0& +& +& +& +\\
+% userjobid& S& none& +& +& +& +\\
+% userkeep& I& 0& +& +& +& +\\
+% \hline
 \end{tabular}
 
 \begin{tabular}{|l|r|r|r|r|r|r|}\hline
@@ -326,145 +438,133 @@ trust\_strong\_branching\_for\_pseudo\_cost& S& yes& +& +& +& +\\
 \end{tabular}
 \end{center}
 
+%TODO update
 \input{optbonmin_a}
 
-\subsubsection{Ipopt}
-All Ipopt options are available in CoinBonmin, please refer to section \ref{sub:ipoptoptions} for a detailed description.
-The default value of the following Ipopt parameters are changed in Gams/CoinBonmin:
-\begin{itemize}
-\item \texttt{mu\_strategy} and \texttt{mu\_oracle} are set, respectively, to {\tt adaptive} and {\tt probing} by default.
-\item \texttt{gamma\_phi} and \texttt{gamma\_theta} are set to $10^{-8}$ and $10^{-4}$ respectively. This has the effect of reducing the size of the filter in the line search performed by Ipopt.
-\item \texttt{required\_infeasibility\_reduction} is set to $0.1$.
-This increases the required infeasibility reduction when Ipopt enters the restoration phase and should thus help
-detect infeasible problems faster.
-\item \texttt{expect\_infeasible\_problem} is set to {\tt yes} which enables some heuristics to detect infeasible problems faster.
-\item \texttt{warm\_start\_init\_point} is set to {\tt yes} when a full primal/dual starting point is available (generally for all the optimizations after the continuous relaxation has been solved).
-\item \texttt{print\_level} is set to $0$ by default to turn off Ipopt output.
-\item \texttt{bound\_relax\_factor} is set to $10^{-10}$.
-\end{itemize}
-
-\section{CoinCbc and CoinCbcD}
+\section{\CBC}
 \label{sec:coincbc}
 \hypertarget{sec:coincbc}{}
 
-GAMS/CoinCBC brings the open source LP/MIP solver CBC to the broad audience of GAMS users.
+% \GAMS/\CBC brings the open source LP/MIP solver \CBC to the broad audience of \GAMS users.
 
-CBC (COIN-OR Branch and Cut) is an open-source mixed integer programming solver working with the COIN-OR LP solver CLP and the COIN-OR Cut generator library Cgl.
-The code has been written primarily by John J. Forrest, who is the COIN-OR project leader for Cbc.
+\CBC (COIN-OR Branch and Cut) is an open-source mixed integer programming solver working with the COIN-OR LP solver \textsc{CLP} and the COIN-OR Cut generator library \textsc{Cgl}.
+The code has been written primarily by John J. Forrest.
 
 For more information we refer to
 \begin{itemize}
-\item the CBC web site \texttt{https://projects.coin-or.org/Cbc},
-\item the Cgl web site \texttt{https://projects.coin-or.org/Cgl}, and
-\item the CLP web site \texttt{https://projects.coin-or.org/Clp}.
+\item the \CBC web site \texttt{https://projects.coin-or.org/Cbc},
+\item the \textsc{Cgl} web site \texttt{https://projects.coin-or.org/Cgl}, and
+\item the \textsc{CLP} web site \texttt{https://projects.coin-or.org/Clp}.
 \end{itemize}
-Most of the CBC documentation in the section was copied from the help in the CBC standalone version.
-
-Gams/CbcD is an experimental in-core communication link.
-It offers in-core communication between GAMS and the solver, making potentially large model scratch files unnecessary.
-This links supports all features of the traditional link except for the GAMS branch-cut-heuristic facility (BCH).
+Most of the \CBC documentation in the section was copied from the help in the \CBC standalone version.
 
 \subsection{Model requirements}
 
-The CBC link in GAMS supports continuous, binary, integer, semicontinuous, semiinteger variables, special ordered sets of type 1 and 2, and branching priorities (see chapter 17.1 of the GAMS User's Guide).
+The \CBC link in \GAMS supports continuous, binary, integer, semicontinuous, semiinteger variables, special ordered sets of type 1 and 2, and branching priorities (see chapter 17.1 of the \GAMS User's Guide).
 % Quadratic objective functions are not supported yet.
 
-\subsection{Usage of CoinCbc}
+\subsection{Usage}
 
-The following statement can be used inside your GAMS program to specify using CoinCBC
+The following statement can be used inside your \GAMS program to specify using \CBC
 \begin{verbatim}
-  Option LP = CoinCbc;     { or MIP or RMIP }
+  Option LP = CBC;     { or MIP or RMIP }
 \end{verbatim}
 
 The above statement should appear before the Solve statement.
-If CoinCBC was specified as the default solver during GAMS installation, the above statement is not necessary.
+If \CBC was specified as the default solver during \GAMS installation, the above statement is not necessary.
 
-There are many parameters which can affect the performance the CBCs Branch and Cut Algorithm.
+There are many parameters which can affect the performance the \CBC{}s Branch and Cut Algorithm.
 First just try with default settings and look carefully at the log file.
 Did cuts help? Did they take too long? Look at the output to see which cuts were effective and then do some tuning (see the option \hyperlink{cuts}{cuts}).
 If the \hyperlink{preprocess}{preprocessing} reduced the size of the problem or strengthened many coefficients then it is probably wise to leave it on.
 Switch off \hyperlink{heuristics}{heuristics} which did not provide solutions.
-The other major area to look at is the search. Hopefully good solutions were obtained fairly early in the search so the important point is to select the best variable to branch on.
-See whether strong branching did a good job - or did it just take a lot of iterations.
+The other major area to look at is the search.
+Hopefully good solutions were obtained fairly early in the search so the important point is to select the best variable to branch on.
+See whether strong branching did a good job -- or did it just take a lot of iterations?
 Adjust the options \hyperlink{strongbranching}{strongbranching} and \hyperlink{trustpseudocosts}{trustpseudocosts}.
 
-The GAMS/CoinCBC options file consists of one option or comment per line.
+\subsubsection{Specification of Options}
+
+The \GAMS/\CBC options file consists of one option or comment per line.
 An asterisk (*) at the beginning of a line causes the entire line to be ignored.
 Otherwise, the line will be interpreted as an option name and value separated by any amount of white space (blanks or tabs).
-Following is an example options file coincbc.opt.
+Following is an example options file \texttt{cbc.opt}.
 \begin{verbatim}
   cuts root
   perturbation off
 \end{verbatim}
-It will cause CoinCBC to use cut generators only in the root node and turns off the perturbation of the LP relaxation.
+It will cause \CBC to use cut generators only in the root node and turns off the perturbation of the LP relaxation.
 
-GAMS/CoinCBC supports the GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
-The GAMS BCH facility automates all major steps necessary to define, execute, and control the use of user defined routines within the framework of general purpose MIP codes.
-Currently supported are user defined cut generators and heuristics.
-Please see the BCH documentation at \texttt{http://www.gams.com/docs/bch.htm} for further information.
+\GAMS/\CBC currently does not support the \GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
+If you need to use \GAMS/\CBC with BCH, please consider to use a \GAMS system of version $\leq 23.3$, available at \url{http://www.gams.com/download/download_old.htm}.
 
-% \subsection{CoinCbc output}
-% \subsection{Some CoinCbc features}
+% \GAMS/\CBC supports the \GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
+% The \GAMS BCH facility automates all major steps necessary to define, execute, and control the use of user defined routines within the framework of general purpose MIP codes.
+% Currently supported are user defined cut generators and heuristics.
+% Please see the BCH documentation at \texttt{http://www.gams.com/docs/bch.htm} for further information.
 
-\input{optcbc_s}
-\input{optcbc_a}
+\subsection{Options}
 
-\section{CoinCouenne}
+Among all \CBC options, the following \GAMS parameters are currently supported in \CBC:
+\hyperlink{reslim}{reslim}, \hyperlink{iterlim}{iterlim}, \hyperlink{nodlim}{nodlim}, \hyperlink{optca}{optca}, \hyperlink{optcr}{optcr}, \hyperlink{increment}{cheat}, \hyperlink{cutoff}{cutoff}.
 
-GAMS/CoinCouenne brings the open source MINLP solver Couenne to the broad audience of GAMS users.
+In the following, we summarize all available \CBC options.
+\input{optcbc_s}  %TODO update?
 
-Couenne (\textbf{C}onvex \textbf{O}ver and \textbf{U}nder \textbf{En}velopes for \textbf{N}onlinear \textbf{E}stimation) is an open-source solver for nonconvex mixed-integer nonlinear programming (MINLPs).
-The code is developed in a joined project of IBM, Carnegie Mellon University, and Lehigh University.
-The COIN-OR project leader for Couenne is Pietro Belotti.
+In the following, we give a detailed description of all available \CBC options.
+\input{optcbc_a}  %TODO update?
 
-Couenne solves convex and nonconvex MINLPs by an LP based spatial branch-and-bound algorithm that is similar to BARON.
-The implementation extends Bonmin by routines to compute valid linear outer approximations for nonconvex problems and methods for bound tightening and branching on nonlinear continuous variables.
+\section{\COUENNE}
 
-For more information we refer to
-\begin{itemize}
-\item the Couenne web site \texttt{https://projects.coin-or.org/Couenne} and
-\item the paper P. Belotti, J. Lee, L. Liberti, F. Margot and A. Waechter, Branching and bounds tightening techniques for non-convex MINLP, \emph{IBM Research Report} RC24620, 2008.
-\end{itemize}
-Most of the Couenne documentation in the section is taken from the Couenne manual available on the Couenne web site.
+% \GAMS/\COUENNE brings the open source MINLP solver \COUENNE to the broad audience of \GAMS users.
+
+\COUENNE (\textbf{C}onvex \textbf{O}ver and \textbf{U}nder \textbf{En}velopes for \textbf{N}onlinear \textbf{E}stimation) is an open-source solver for nonconvex mixed-integer nonlinear programming (MINLPs).
+The code has been developed originally in a cooperation of Carnegie Mellon University and IBM Research, and now at Lehigh University.
+The COIN-OR project leader for \COUENNE is Pietro Belotti.
+
+\COUENNE solves convex and nonconvex MINLPs by an LP based spatial branch-and-bound algorithm that is similar to the algorithm used in \textsc{BARON}.
+The implementation extends \BONMIN by routines to compute valid linear outer approximations for nonconvex problems and methods for bound tightening and branching on nonlinear variables.
+
+For more information on the algorithm we refer to \cite{Be09,BeLeLiMaWa08} and the \COUENNE web site \url{https://projects.coin-or.org/Couenne}.
+Most of the \COUENNE documentation in this section is taken from the \COUENNE manual~\cite{CouenneManual}.
 
 \subsection{Model requirements}
 
-Couenne can handle mixed-integer nonlinear programming models which functions can be nonconvex, but should be twice continuously differentiable.
-The Couenne link in GAMS supports continuous, binary, and integer variables, but no special ordered sets, semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide).
+\COUENNE can handle mixed-integer nonlinear programming models which functions can be nonconvex, but should be twice continuously differentiable. Further, an algebraic description of the model need to be made available, which makes the use of some \GAMS functions and user-specified external functions impossible.
+The \COUENNE link in \GAMS supports continuous, binary, and integer variables, but no special ordered sets, semi-continuous or semi-integer variables (see chapter 17.1 of the \GAMS User's Guide).
 
-If GAMS/CoinCouenne is called for a linear model, the interface directly calls CBC.
+If \GAMS/\COUENNE is called for a linear model, the interface directly calls \CBC.
 
-\subsection{Usage of CoinCouenne}
+\subsection{Usage}
 
-The following statement can be used inside your GAMS program to specify using CoinCouenne
+The following statement can be used inside your \GAMS program to specify using \COUENNE
 \begin{verbatim}
-  Option MINLP = CoinCouenne;     { or LP, RMIP, MIP, DNLP, NLP, RMINLP, QCP, RMIQCP, MIQCP }
+  Option MINLP = COUENNE;     { or LP, RMIP, MIP, DNLP, NLP, RMINLP, QCP, RMIQCP, MIQCP }
 \end{verbatim}
 
 The above statement should appear before the Solve statement.
-If CoinCouenne was specified as the default solver during GAMS installation, the above statement is not necessary.
+If \COUENNE was specified as the default solver during \GAMS installation, the above statement is not necessary.
 
-\subsection{Specification of CoinCouenne Options}
-\label{sub:couenneoptionspec}
+\subsubsection{Specification of Options}
 
-A Couenne option file contains Ipopt, Bonmin, and Couenne options, for clarity all Bonmin options should be preceded with the prefix ``\texttt{bonmin.}'' and all Couenne options should be preceded with the prefix ``\texttt{couenne.}''.
-All Ipopt and many Bonmin options are available in CoinCouenne, please refer to sections \ref{sub:ipoptoptions} and \ref{sub:bonminoptions} for a detailed description.
-The scheme to name option files is the same as for all other GAMS solvers.
-Specifying \texttt{optfile=1} let Gams/CoinCouenne read \texttt{coincouenne.opt}, \texttt{optfile=2} corresponds to \texttt{coincouenne.op2}, and so on.
-The format of the option file is the same as for Ipopt (see Section \ref{sub:ipoptoptionspec}).
+A \COUENNE option file contains \IPOPT, \BONMIN, and \COUENNE options, for clarity all \BONMIN options should be preceded with the prefix ``\texttt{bonmin.}'' and all \COUENNE options should be preceded with the prefix ``\texttt{couenne.}''.
+All \IPOPT and many \BONMIN options are available in \COUENNE, please refer to the Sections~\ref{sub:ipoptoptions} and \ref{sub:bonminalloptions} for a detailed description.
+The scheme to name option files is the same as for all other \GAMS solvers.
+Specifying \texttt{optfile=1} let \GAMS/\COUENNE read \texttt{couenne.opt}, \texttt{optfile=2} corresponds to \texttt{couenne.op2}, and so on.
+The format of the option file is the same as for \IPOPT (see Section~\ref{sub:ipoptoptionspec}).
 
-GAMS/CoinCouenne understands currently the following GAMS parameters: reslim (time limit), nodlim (node limit), cutoff, optca (absolute gap tolerance), and optcr (relative gap tolerance).
-You can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your GAMS program, e.g. \verb+Option nodlim=1000;+.
+\GAMS/\COUENNE understands currently the following \GAMS parameters: \texttt{reslim} (time limit), \texttt{nodlim} (node limit), \texttt{cutoff}, \texttt{optca} (absolute gap tolerance), and \texttt{optcr} (relative gap tolerance).
+One can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your \GAMS program, e.g. \verb+Option nodlim=1000;+.
 
-\subsection{Description of CoinCouenne Options}
+\subsection{Detailed Options Description}
 \label{sub:couenneoptions}
 
-The following tables gives the list of options together with their types, default values and availability in each of the four main algorithms.
+The following tables gives the list of options together with their types and default values.
 The column labeled `type' indicates the type of the parameter (`F' stands for float, `I' for integer, and `S' for
 string).
-The column labeled `default' indicates the global default value.
-% Then for each of the four Bonmin algorithms \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, and \texttt{B-Hyb}, `$+$' indicates that the option is available for that particular algorithm while `$-$' indicates that it is not.
+The column labeled `default' indicates the default value.
 
+% TODO update?
 \begin{center}
 \begin{tabular}{|l|r|r|}\hline
 Option & type &  default \\
@@ -578,134 +678,119 @@ reduce\_split\_cuts& I& 0\\
 \end{tabular}
 \end{center}
 
+% TODO update?
 \input{optcouenne_a}
 
-\section{CoinGlpk}
 
-GAMS/CoinGlpk brings the open source LP/MIP solver Glpk from the GNU Open Software foundation to the broad audience of GAMS users.
+\section{\IPOPT}
 
-The code has been written primarily by A. Makhorin.
-The interface uses the OSI Glpk interface written by Vivian De Smedt, Braden Hunsaker, and Lou Hafer.
+% \GAMS/\IPOPT brings the open source NLP solver \IPOPT to the broad audience of \GAMS users.
 
-For more information we refer to
-\begin{itemize}
-\item the Glpk web site \texttt{http://www.gnu.org/software/glpk/glpk.html} and
-\item the Osi web site \texttt{https://projects.coin-or.org/Osi}.
-\end{itemize}
-Most of the Glpk documentation in the section was taken from the Glpk manual.
+\IPOPT (\textbf{I}nterior \textbf{P}oint \textbf{Opt}imizer) is an open-source solver for large-scale nonlinear programming.
+The code has been written primarily by Andreas W\"achter, who is the COIN-OR project leader for \IPOPT.
 
-\subsection{Model requirements}
+\IPOPT implements an interior point line search filter method.
+For more information on the algorithm we refer to~\cite{Waechter2002,WaBi06} and the \IPOPT web site \url{https://projects.coin-or.org/Ipopt}.
+Most of the \IPOPT documentation in the section was taken from the \IPOPT manual~\cite{IpoptManual}.
 
-Glpk supports continuous, binary, and integer variables, but no special ordered sets, semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide).
-Also branching priorities are not supported.
-
-\subsection{Usage of CoinGlpk}
-
-The following statement can be used inside your GAMS program to specify using CoinGlpk
-\begin{verbatim}
-  Option LP = CoinGlpk;     { or MIP or RMIP }
-\end{verbatim}
-
-The above statement should appear before the Solve statement.
-If CoinGlpk was specified as the default solver during GAMS installation, the above statement is not necessary.
-
-The GAMS/CoinGlpk options file consists of one option or comment per line.
-An asterisk (*) at the beginning of a line causes the entire line to be ignored.
-Otherwise, the line will be interpreted as an option name and value separated by any amount of white space (blanks or tabs).
-Following is an example options file coincbc.opt.
-\begin{verbatim}
-  factorization givens
-\end{verbatim}
-It will cause CoinGlpk to use Givens rotation updates for the factorization. (This option setting might help to avoid numerical difficulties in some cases.)
-
-\input{optglpk_s}
-\input{optglpk_a}
-
-
-
-\section{CoinIpopt and CoinIpoptD}
-
-GAMS/CoinIpopt brings the open source NLP solver Ipopt to the broad audience of GAMS users.
-
-Ipopt (\textbf{I}nterior \textbf{P}oint \textbf{Opt}imizer) is an open-source solver for large-scale nonlinear programming.
-The code has been written primarily by Andreas W\"achter, who is the COIN-OR project leader for Ipopt.
-
-For more information we refer to
-\begin{itemize}
-\item the Ipopt web site \texttt{https://projects.coin-or.org/Ipopt} and
-\item the \emph{implementation paper} A. W\"achter and L. T. Biegler, On the Implementation of a Primal-Dual Interior Point Filter Line Search Algorithm for Large-Scale Nonlinear Programming, \emph{Mathematical Programming} 106(1), pp. 25-57, 2006.
-\end{itemize}
-Most of the Ipopt documentation in the section was taken from the Ipopt manual available on the Ipopt web site.
-
-Gams/IpoptD is an experimental in-core communication link.
-It offers in-core communication between GAMS and the solver, making potentially large model scratch files unnecessary.
-This links supports all features of the traditional link except.
+\GAMS/\IPOPT uses \textsc{MUMPS}~4.9~\cite{AmestoyDuffKosterLExcellent2001,AmestoyGuermoucheLExcellentPralet2006} as linear solver, cf.~\url{http://graal.ens-lyon.fr/MUMPS}.
 
 \subsection{Model requirements}
 
-Ipopt can handle nonlinear programming models which functions can be nonconvex, but should be twice continuously differentiable.
+\IPOPT can handle nonlinear programming models which functions can be nonconvex, but should be twice continuously differentiable.
 
-\subsection{Usage of CoinIpopt}
+\subsection{Usage}
 
-The following statement can be used inside your GAMS program to specify using CoinIpopt
+The following statement can be used inside your \GAMS program to specify using \IPOPT
 \begin{verbatim}
-  Option NLP = CoinIpopt;     { or LP, RMIP, DNLP, RMINLP, QCP, RMIQCP }
+  Option NLP = IPOPT;     { or LP, RMIP, DNLP, RMINLP, QCP, RMIQCP }
 \end{verbatim}
 
 The above statement should appear before the Solve statement.
-If CoinIpopt was specified as the default solver during GAMS installation, the above statement is not necessary.
+If \IPOPT was specified as the default solver during \GAMS installation, the above statement is not necessary.
 
-\subsection{The linear solver in Ipopt}
+\subsubsection{The linear solver in \IPOPT}
 \label{ipoptlinearsolver}
 \hypertarget{ipoptlinearsolver}{}
 
-The performance and robustness of Ipopt on larger models heavily relies on the used solver for sparse symmetric indefinite linear systems.
-GAMS/CoinIpopt includes the sparse solver MUMPS 4.8.3 (\url{http://graal.ens-lyon.fr/MUMPS}).
+The performance and robustness of \IPOPT on larger models heavily relies on the used solver for sparse symmetric indefinite linear systems.
+\GAMS/\IPOPT includes the sparse solver MUMPS 4.9 (\url{http://graal.ens-lyon.fr/MUMPS}).
 The user can provide the Parallel Sparse Direct Solver PARDISO or routines from the Harwell Subroutine Library (HSL) as shared (or dynamic) libraries to replace MUMPS.
 
-\subsubsection{Using Harwell Subroutine Library routines with GAMS/CoinIpopt}
+\paragraph{Using Harwell Subroutine Library routines with \GAMS/\IPOPT.}
 
-If you have routines from the HSL available and want Gams/CoinIpopt to use them, you can provide them in a shared library.
-GAMS/CoinIpopt can use MA27, MA28, MA57, and MC19.
-By telling Ipopt to use one of these routines (see options linear\_solver, linear\_system\_scaling, nlp\_scaling\_method, dependency\_detector) GAMS/CoinIpopt attempts to load the required routines from the library libhsl.so (Unix-Systems), libhsl.dylib (MacOS X), or libhsl.dll (Windows).
-You can also specify the path and name for this library with the option hsl\_library.
-
+\GAMS/\IPOPT can use the HSL routines \texttt{MA27}, \texttt{MA28}, \texttt{MA57}, and \texttt{MC19} when provided as shared library.
+By telling \IPOPT to use one of these routines (see options \texttt{linear\_solver}, \texttt{linear\_system\_scaling}, \texttt{nlp\_scaling\_method}, \texttt{dependency\_detector}), \GAMS/\IPOPT attempts to load the required routines from the library \texttt{libhsl.so} (Unix-Systems), \texttt{libhsl.dylib} (MacOS X), or \texttt{libhsl.dll} (Windows), respectively.
+You can also specify the path and name for this library with the option \texttt{hsl\_library}.
 For example,
 \begin{verbatim}
  linear_solver ma27
- hsl_library /my/path/to/the/hsllib/myhsllib.so
+ hsl_library   /my/path/to/the/hsllib/myhsllib.so
 \end{verbatim}
-tells Ipopt to use the linear solver MA27 from the HSL library \verb=myhsllib.so= under the specified path.
+tells \IPOPT to use the linear solver MA27 from the HSL library \verb=myhsllib.so= under the specified path.
 
-The HSL routines MA27, MA28, and MC19 are available at \texttt{http://www.cse.clrc.ac.uk/nag/hsl}.
+The HSL routines \texttt{MA27}, \texttt{MA28}, and \texttt{MC19} are available at \url{http://www.cse.clrc.ac.uk/nag/hsl}.
 Note that it is your responsibility to ensure that you are entitled to download and use these routines!
 You can build a shared library using the ThirdParty/HSL project at COIN-OR.
 
-\subsubsection{Using PARDISO routines with GAMS/CoinIpopt}
-
-If you have the linear solver PARDISO available, then you can tell Gams/CoinIpopt to use by setting the linear\_solver option to pardiso.
-GAMS/CoinIpopt then attempts to load the library libpardiso.so (Unix-Systems), libpardiso.dylib (MacOS X), or libpardiso.dll (Windows).
-You can also specify the path and name for this library with the option pardiso\_library.
-
+\paragraph{Using PARDISO with \GAMS/\IPOPT.}
+Setting the option \texttt{linear\_solver} to \texttt{pardiso}, let \GAMS/\IPOPT attempt to load the linear solver PARDISO from the library \texttt{libpardiso.so} (Unix-Systems), \texttt{libpardiso.dylib} (MacOS X), or \texttt{libpardiso.dll} (Windows), respectively.
+You can also specify the path and name for this library with the option \texttt{pardiso\_library}.
 For example,
 \begin{verbatim}
- linear_solver pardiso
+ linear_solver   pardiso
  pardiso_library /my/path/to/the/pardisolib/mypardisolib.so
 \end{verbatim}
-tells Ipopt to use the linear solver PARDISO from the library \verb=mypardisolib.so= under the specified path.
+tells \IPOPT to use the linear solver PARDISO from the library \texttt{mypardisolib.so} under the specified path.
 
 PARDISO is available as compiled shared library for several platforms at \texttt{http://www.pardiso-project.org}.
 Note that it is your responsibility to ensure that you are entitled to download and use this package!
 
+
+\subsubsection{Specification of Options}
+\label{sub:ipoptoptionspec}
+
+\IPOPT has many options that can be adjusted for the algorithm (see Section \ref{sub:ipoptoptions}).
+Options are all identified by a string name, and their values can be of one of three types: Number (real), Integer, or String.
+Number options are used for things like tolerances, integer options are used for things like maximum number of iterations, and string options are used for setting algorithm details, like the NLP scaling method.
+Options can be set by creating a \texttt{ipopt.opt} file in the directory you are executing \IPOPT.
+
+The \texttt{ipopt.opt} file is read line by line and each line should contain the option name, followed by whitespace, and then the value.
+Comments can be included with the \# symbol. Don't forget to ensure you have a newline at the end of the file. For example,
+\begin{verbatim}
+# This is a comment
+
+# Turn off the NLP scaling
+nlp_scaling_method none
+
+# Change the initial barrier parameter
+mu_init 1e-2
+
+# Set the max number of iterations
+max_iter 500
+\end{verbatim}
+is a valid \texttt{ipopt.opt} file.
+
+% You can print the documentation for all \IPOPT options by using the option
+% \begin{verbatim}
+% print_options_documentation yes
+% \end{verbatim}
+% and running \IPOPT.
+% This will output all of the options documentation to the console.
+
+\GAMS/\IPOPT understand currently the following \GAMS parameters: \texttt{reslim} (time limit), \texttt{iterlim} (iteration limit), \texttt{domlim} (domain violation limit).
+You can set them either on the command line, e.g. \verb+iterlim=500+, or inside your \GAMS program, e.g. \verb+Option iterlim=500;+.
+
+
 \subsection{Output}
 
-This section describes the standard Ipopt console output.
-The output is designed to provide a quick summary of each iteration as Ipopt solves the problem.
+This section describes the standard \IPOPT console output.
+The output is designed to provide a quick summary of each iteration as \IPOPT solves the problem.
 
-Before Ipopt starts to solve the problem, it displays the problem statistics (number of nonzero-elements in the matrices, number of variables, etc.).
-Note that if you have fixed variables (both upper and lower bounds are equal), Ipopt may remove these variables from the problem internally and not include them in the problem statistics.
+Before \IPOPT starts to solve the problem, it displays the problem statistics (number of nonzero-elements in the matrices, number of variables, etc.).
+Note that if you have fixed variables (both upper and lower bounds are equal), \IPOPT may remove these variables from the problem internally and not include them in the problem statistics.
 
-Following the problem statistics, Ipopt will begin to solve the problem and you will see output resembling the following,
+Following the problem statistics, \IPOPT will begin to solve the problem and you will see output resembling the following,
 \begin{verbatim}
 iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
    0  1.6109693e+01 1.12e+01 5.28e-01   0.0 0.00e+00    -  0.00e+00 0.00e+00   0
@@ -742,13 +827,13 @@ The stepsize for the primal variables.
 The number of backtracking line search steps.
 \end{description}
 
-When the algorithm terminates, IPOPT will output a message to the screen based on the return status of the call to Optimize.
+When the algorithm terminates, \IPOPT will output a message to the screen based on the return status of the call to Optimize.
 The following is a list of the possible output messages to the console, and a brief description.
 
 \begin{description}
 \item[Optimal Solution Found.] ~
 
-    This message indicates that IPOPT found a (locally) optimal point within the desired tolerances.
+    This message indicates that \IPOPT found a (locally) optimal point within the desired tolerances.
 
 \item[Solved To Acceptable Level.] ~
 
@@ -764,7 +849,7 @@ The following is a list of the possible output messages to the console, and a br
 
 \item[Search Direction is becoming Too Small.] ~
 
-    This indicates that Ipopt is calculating very small step sizes and making very little progress.
+    This indicates that \IPOPT is calculating very small step sizes and making very little progress.
     This could happen if the problem has been solved to the best numerical accuracy possible given the current scaling.
 
 \item[Iterates divering; problem might be unbounded.] ~
@@ -778,119 +863,80 @@ The following is a list of the possible output messages to the console, and a br
 
 \item[Maximum Number of Iterations Exceeded.] ~
 
-    This indicates that Ipopt has exceeded the maximum number of iterations as specified by the option max\_iter.
+    This indicates that \IPOPT has exceeded the maximum number of iterations as specified by the option max\_iter.
 
 \item[Restoration Failed!] ~
 
     This indicates that the restoration phase failed to find a feasible point that was acceptable to the filter line search for the original problem.
-    This could happen if the problem is highly degenerate or does not satisfy the constraint qualification, or if an external function in GAMS provides incorrect derivative information.
+    This could happen if the problem is highly degenerate or does not satisfy the constraint qualification, or if an external function in \GAMS provides incorrect derivative information.
 
 \item[Error in step computation (regularization becomes too large?)!] ~
 
-    This messages is printed if Ipopt is unable to compute a search direction, despite several attempts to modify the iteration matrix.
+    This messages is printed if \IPOPT is unable to compute a search direction, despite several attempts to modify the iteration matrix.
     Usually, the value of the regularization parameter then becomes too large.
 
 \item[Problem has too few degrees of freedom.] ~
 
     This indicates that your problem, as specified, has too few degrees of freedom.
-    This can happen if you have too many equality constraints, or if you fix too many variables (Ipopt removes fixed variables).
+    This can happen if you have too many equality constraints, or if you fix too many variables (\IPOPT removes fixed variables).
 
 \item[Not enough memory.] ~
 
     An error occurred while trying to allocate memory.
     The problem may be too large for your current memory and swap configuration.
 
-\item[INTERNAL ERROR: Unknown SolverReturn value - Notify IPOPT Authors.] ~
+\item[INTERNAL ERROR: Unknown SolverReturn value - Notify \IPOPT Authors.] ~
 
-    An unknown internal error has occurred. Please notify the authors of the GAMS/CoinIpopt link or IPOPT (refer to \url{https://projects.coin-or.org/GAMSlinks} or \url{https://projects.coin-or.org/Ipopt}).
+    An unknown internal error has occurred. Please notify the authors of the \GAMS/\IPOPT link or \IPOPT (refer to \url{https://projects.coin-or.org/GAMSlinks} or \url{https://projects.coin-or.org/Ipopt}).
 \end{description}
 
 
-\subsection{Specification of CoinIpopt Options}
-\label{sub:ipoptoptionspec}
-
-Ipopt has many options that can be adjusted for the algorithm (see Section \ref{sub:ipoptoptions}).
-Options are all identified by a string name, and their values can be of one of three types: Number (real), Integer, or String.
-Number options are used for things like tolerances, integer options are used for things like maximum number of iterations, and string options are used for setting algorithm details, like the NLP scaling method.
-Options can be set by creating a \texttt{ipopt.opt} file in the directory you are executing Ipopt.
-
-The \texttt{ipopt.opt} file is read line by line and each line should contain the option name, followed by whitespace, and then the value.
-Comments can be included with the \# symbol. Don't forget to ensure you have a newline at the end of the file. For example,
-\begin{verbatim}
-# This is a comment
-
-# Turn off the NLP scaling
-nlp_scaling_method none
-
-# Change the initial barrier parameter
-mu_init 1e-2
-
-# Set the max number of iterations
-max_iter 500
-\end{verbatim}
-is a valid \texttt{ipopt.opt} file.
-
-% You can print the documentation for all Ipopt options by using the option
-% \begin{verbatim}
-% print_options_documentation yes
-% \end{verbatim}
-% and running IPOPT.
-% This will output all of the options documentation to the console.
-
-Note, that GAMS/CoinIpopt overwrites the Ipopt default setting for the parameters bound\_relax\_factor (set to 0.0) and mu\_strategy (set to adaptive).
-You can change these values by specifying these options in your Ipopt options file.
-
-GAMS/CoinIpopt understand currently the following GAMS parameters: reslim (time limit), iterlim (iteration limit), domlim (domain violation limit).
-You can set them either on the command line, e.g. \verb+iterlim=500+, or inside your GAMS program, e.g. \verb+Option iterlim=500;+.
-
-\subsection{Detailed Description of CoinIpopt Options}
+\subsection{Detailed Options Description}
 \label{sub:ipoptoptions}
+
+Note, that \GAMS/\IPOPT overwrites the \IPOPT default setting for the parameters \texttt{bound\_relax\_factor} (set to $10^{-10}$) and \texttt{mu\_strategy} (set to \texttt{adaptive}).
+% You can change these values by specifying these options in your \IPOPT options file.
+
+%TODO update?
 \input{optipopt_a}
 
-\section{CoinOS}
+\section{Optimization Services}
 
-GAMS/CoinOS brings the Optimization Services project to the broad audience of GAMS users.
-
-OS (\textbf{O}ptimization \textbf{S}ervices) is an initiative to provide a set of standards for representing optimization instances, results, solver options, and communication between clients and solvers in a distributed environment using Web Services.
+\OS (\textbf{O}ptimization \textbf{S}ervices) is an initiative to provide a set of standards for representing optimization instances, results, solver options, and communication between clients and solvers in a distributed environment using Web Services.
 The code has been written primarily by Horand Gassmann, Jun Ma, and Kipp Martin.
-Kipp Martin is the COIN-OR project leader for OS.
+Kipp Martin is the COIN-OR project leader for \OS.
 
-For more information we refer to
-\begin{itemize}
-\item the official OS web site \texttt{http://www.optimizationservices.org},
-\item the OS developer web site \texttt{https://projects.coin-or.org/OS}, and
-\item the OS manual available on the OS websites.
-\end{itemize}
+For more information we refer to the \OS manual~\cite{Ma2005}, the papers~\cite{FourerMaMartin2009,FourerMaMartin2010,OSManual}, and the web sites \url{http://www.optimizationservices.org} and \url{https://projects.coin-or.org/OS}.
 
-The OS link in GAMS allows you to convert instances of GAMS models into the OS instance language (OSiL) format, let an Optimization Services Server solve your instances remotely, or solve your models locally via the OS solver interfaces (currently Bonmin, Cbc, Clp, Couenne, Glpk, and Ipopt).
+The \OS link in \GAMS allows you to convert instances of \GAMS models into the \OS instance language (OSiL) format and let an Optimization Services Server solve your instances remotely.
 
 \subsection{Model requirements}
 
-OS supports continuous, binary, and integer variables, linear and nonlinear equations.
+\OS supports continuous, binary, and integer variables, linear and nonlinear equations.
 Special ordered sets, semicontinuous or semiinteger variables, and indicator constraints are currently not supported.
-Initial values are currently not supported by the Gams/OS link.
+Initial values are currently not supported by the \GAMS/\OS link.
 
-\subsection{Usage of CoinOS}
+\subsection{Usage}
 
-The following statement can be used inside your GAMS program to specify using CoinOS
+The following statement can be used inside your \GAMS program to specify using \OS
 \begin{verbatim}
-  Option MINLP = CoinOS;     { or LP, RMIP, MIP, DNLP, NLP, RMINLP, QCP, RMIQCP, MIQCP }
+  Option MINLP = OS;     { or LP, RMIP, MIP, DNLP, NLP, RMINLP, QCP, RMIQCP, MIQCP }
 \end{verbatim}
 
 The above statement should appear before the Solve statement.
 
-By default, for a given instance of a GAMS model, CoinOS selects a suitable solver, let the solver solve this instance (locally) via the corresponding OS solver interface and returns the solution to GAMS.
-For continuous linear models (LP and RMIP), CoinOS chooses Clp.
-For continuous nonlinear models (NLP, DNLP, RMINLP, QCP, RMIQCP), CoinOS chooses Ipopt.
-For mixed-integer linear models (MIP), CoinOS chooses Cbc.
-For mixed-integer nonlinear models (MIQCP, MINLP), CoinOS chooses Bonmin.
-You can change the choice of the solver by setting the ``solver'' option.
+By default, for a given instance of a \GAMS model, nothing happens.
+To solve an instance remotely, you have to specify the URL of an Optimization Services Server via the option \texttt{service}.
+Usually, the server chooses an appropriate solver for your instance, depending on their availability on the server.
+A fully equipped server chooses
+\textsc{CLP} for continuous linear models (LP and RMIP),
+\IPOPT for continuous nonlinear models (NLP, DNLP, RMINLP, QCP, RMIQCP),
+\CBC for mixed-integer linear models (MIP), and
+\BONMIN for mixed-integer nonlinear models (MIQCP, MINLP).
+An easy way to influence the choice of the solver on the server is the \texttt{solver} option.
 
-For a remove solve, you have to specify the URL of an Optimization Services Server via the option ``service''.
-Remove solves are experimental in CoinOS.
-
-Solver options can be specified with an OSoL (Optimization Services Options Language) file.
-For an example, the OSoL file
+Further options can be provided in an OSoL (Optimization Services Options Language) file, which is specified via the the \texttt{readosol} option.
+An example OSoL file looks like
 \begin{verbatim}
 <?xml version="1.0" encoding="UTF-8"?>
 <osol xmlns="os.optimizationservices.org" xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -906,312 +952,76 @@ For an example, the OSoL file
 </optimization>
 </osol>
 \end{verbatim}
-specifies that if CBC is used via OS, then cutting planes are disabled,
-if SYMPHONY is used via OS, then at most 2 nodes should be active,
-and if Ipopt is used via OS, then a limit of 2000 iterations is imposed.
-The osol file is specified with the ``readosol'' option.
+It specifies that if \CBC is used, then cutting planes are disabled,
+if \textsc{SYMPHONY} is used, then at most 2 nodes should be active,
+and if \IPOPT is used, then a limit of 2000 iterations is imposed.
+
+By default, the call to the server is a \emph{synchronous} call.
+The \GAMS process will wait for the result and then display the result.
+This may not be desirable when solving large optimization models.
+In order to use the remote solver service in an \emph{asynchronous} fashion, one can make use of the \GAMS Grid Computing Facility, see Appendix I in the \GAMS manual.
+
+\subsection{Detailed Options Descriptions}
 
 \input{optosd_a}
 
-\section{CoinScip}
+\section{\OSICPLEX, \OSIGLPK, \OSIGUROBI, \OSIMOSEK, \OSIXPRESS}
 
-GAMS/CoinScip brings the MIP solver from the Constrained Integer Programming framework SCIP to the broad audience of academic GAMS users.
+The ``bare bone'' solver links \GAMS/\OSICPLEX, \GAMS/\OSIGLPK, \GAMS/\OSIGUROBI, \GAMS/\OSIMOSEK, and \GAMS/\OSIXPRESS 
+allow users to solve their \GAMS models with a \GLPK or a standalone license of \CPLEX, \GUROBI, \MOSEK, or \XPRESS.
+The links use the COIN-OR Open Solver Interface (\OSI) to communicate with these solvers.
+The \OSICPLEX link has been written primarily by Tobias Achterberg,
+the \OSIGLPK link has been written by Vivian De Smedt, Braden Hunsaker, and Lou Hafer,
+the \OSIGUROBI link has been written primarily by Stefan Vigerske,
+the \OSIMOSEK link has been written primarily by Bo Jensen, and
+the \OSIXPRESS link has been written primarily by John Doe.
+Matthew Saltzman is the COIN-OR project leader for \OSI.
 
-The code is developed at the Konrad-Zuse-Zentrum f\"ur Informationstechnik Berlin (ZIB) and has been written primarily by T. Achterberg.
-It is distributed under the ZIB Academic License.
-
-For more information we refer to
-\begin{itemize}
-\item the SCIP web site \texttt{http://scip.zib.de} and
-\item the Ph.D. thesis ``Constraint Integer Programming'' by Tobias Achterberg, Berlin 2007.
-\end{itemize}
-
-GAMS/CoinScip uses the COIN-OR linear solver CLP from J.J. Forrest as LP solver, see \hyperlink{sec:coincbc}{Section \ref{sec:coincbc}}.
+For more information we refer to the \OSI web site \texttt{https://projects.coin-or.org/Osi}.
 
 \subsection{Model requirements}
 
-SCIP supports continuous, binary, and integer variables, special ordered sets, and branching priorities.
-Semi-continuous or semi-integer variables (see chapter 17.1 of the GAMS User's Guide) and indicator constraints are not supported by the interface yet.
+The \OSI links support linear equations and continuous, binary, and integer variables.
+Semicontinuous and Semiinteger variables, special ordered sets, branching priorities, and indicator constraints are not supported by \OSI.
 
-\subsection{Usage of CoinScip}
+\subsection{Usage}
 
-The following statement can be used inside your GAMS program to specify using CoinScip
+The following statement can be used inside your \GAMS program to specify using \OSIGUROBI
 \begin{verbatim}
-  Option MIP = CoinScip;     { or LP or RMIP }
-\end{verbatim}
-
-The above statement should appear before the Solve statement.
-If CoinScip was specified as the default solver during GAMS installation, the above statement is not necessary.
-
-GAMS/CoinScip supports the GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
-The GAMS BCH facility automates all major steps necessary to define, execute, and control the use of user defined routines within the framework of general purpose MIP codes.
-Currently supported are user defined cut generators and heuristics and the incumbent reporting callback.
-Please see the BCH documentation at \texttt{http://www.gams.com/docs/bch.htm} for further information.
-
-Information on the use of BCH callback routines is displayed in an extra column in the SCIP iteration output.
-The first number in this column (below the ``BCH'' in the header) is the number of callbacks to GAMS models that have been made so far (accumulated from cutgeneration, heuristic, and incumbent callbacks).
-The number below ``cut'' or ``cuts'' gives the number of cutting planes that have been generated by the users cutgenerator.
-Finally, the number below ``sol'' or ``sols'' gives the number of primal solutions that have been generated by the users heuristic.
-If SCIP accepts a heuristic solution as new incumbent solution, it prints a `G' in the first column of the iteration output.
-
-\subsection{Specification of CoinScip Options}
-
-GAMS/CoinScip currently supports the GAMS parameters reslim, iterlim, nodlim, optcr, and optca.
-
-Further, for a MIP solve the user can specify options by a SCIP options file.
-A SCIP options file consists of one option or comment per line.
-A pound sign (\#) at the beginning of a line causes the entire line to be ignored.
-Otherwise, the line will be interpreted as an option name and value separated by an equal sign (=) and any amount of white space (blanks or tabs).
-Further, string values have to be enclosed in quotation marks.
-
-A small example for a coinscip.opt file is:
-\begin{verbatim}
-  separating/maxrounds     = 0
-  separating/maxroundsroot = 0
-  gams/solvefinal          = FALSE
-  gams/usercutcall         = "bchcutgen.gms"
-\end{verbatim}
-It causes GAMS/CoinScip to turn off all cut generators, to skip the final solve of the MIP with fixed discrete variables, and to use a user defined cut generator.
-
-\subsection{Description of CoinScip options}
-
-SCIP supports a large set of options.
-Sample option files can be obtained from
-\begin{verbatim}
-     http://www.gams.com/~svigerske/scip1.2
-\end{verbatim}
-
-Further, there is a set of options that are specific to the GAMS/CoinScip interface, most of them for control of the GAMS BCH facility.
-
-\begin{description}
-\item[\label{scipnames}\hypertarget{scipnames}
-{\textbf{gams/names (\slshape{integer})}}]\hspace{1.0in}
-
-This option causes GAMS names for the variables and equations to be loaded into SCIP.
-These names will then be used for error messages, log entries, and so forth.
-Turning names off may help if memory is very tight.
-
-\textsl{(default = FALSE)}
-\begin{itemize}
-\item[FALSE] Do not load variable and equation names.
-\item[TRUE] Load variable and equation names.
-\end{itemize}
-
-
-\item[\label{scipsolvefinal}\hypertarget{scipsolvefinal}
-{\textbf{gams/solvefinal (\slshape{integer})}}]\hspace{1.0in}
-
-Sometimes the solution process after the branch-and-cut that solves the problem with fixed discrete variables takes a long time and the user is interested in the primal values of the solution only.
-In these cases, this option can be used to turn this final solve off.
-Without the final solve no proper marginal values are available and only zeros are returned to GAMS.
-
-\textsl{(default = TRUE)}
-\begin{itemize}
-\item[FALSE] Do not solve the fixed problem.
-\item[TRUE] Solve the fixed problem and return duals.
-\end{itemize}
-
-
-\item[\label{scipmipstart}\hypertarget{scipmipstart}
-{\textbf{gams/mipstart (\slshape{integer})}}]\hspace{1.0in}
-
-This option controls the use of advanced starting values for mixed integer programs.
-A setting of TRUE indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.
-
-\textsl{(default = TRUE)}
-\begin{itemize}
-\item[FALSE] Do not use the initial variable levels.
-\item[TRUE] Try to use the initial variable levels as a MIP starting solution.
-\end{itemize}
-
-
-\item[\label{scipprintstat}\hypertarget{scipprintstat}
-{\textbf{gams/print\_statistics (\slshape{integer})}}]\hspace{1.0in}
-
-This option controls the printing of solve statistics after a MIP solve.
-Turning on this option indicates that statistics like the number of
-generated cuts of each type or the calls of heuristics are printed after the
-MIP solve.
-
-\textsl{(default = FALSE)}
-\begin{itemize}
-\item[FALSE] Do not print statistics.
-\item[TRUE] Print statistics.
-\end{itemize}
-
-
-\item[\label{scipusercutcall}\hypertarget{scipusercutcall}
-{\textbf{gams/usercutcall (\slshape{string})}}]\hspace{1.0in}
-
-The GAMS command line (minus the gams executable name) to call the cut generator.
-
-
-\item[\label{scipusercutfirst}\hypertarget{scipusercutfirst}
-{\textbf{gams/usercutfirst (\slshape{integer})}}]\hspace{1.0in}
-
-Calls the cut generator for the first $n$ nodes.
-
-\textsl{(default = 10)}
-
-\item[\label{scipusercutfreq}\hypertarget{scipusercutfreq}
-{\textbf{gams/usercutfreq (\slshape{integer})}}]\hspace{1.0in}
-
-Determines the frequency of the cut generator model calls.
-
-\textsl{(default = 10)}
-
-\item[\label{scipusercutinterval}\hypertarget{scipusercutinterval}
-{\textbf{gams/usercutinterval (\slshape{integer})}}]\hspace{1.0in}
-
-Determines the interval when to apply the multiplier for the frequency of the cut generator model calls.
-See gams/userheurinterval for details.
-
-\textsl{(default = 100)}
-
-\item[\label{scipusercutmult}\hypertarget{scipusercutmult}
-{\textbf{gams/usercutmult (\slshape{integer})}}]\hspace{1.0in}
-
-Determines the multiplier for the frequency of the cut generator model calls.
-
-\textsl{(default = 2)}
-
-\item[\label{scipusercutnewint}\hypertarget{scipusercutnewint}
-{\textbf{gams/usercutnewint (\slshape{integer})}}]\hspace{1.0in}
-
-Calls the cut generator if the solver found a new integer feasible solution.
-
-\textsl{(default = TRUE)}
-\begin{itemize}
-\item[FALSE] Do not call cut generator because a new integer feasible solution is found.
-\item[TRUE] Let SCIP call the cut generator if a new integer feasible solution is found.
-\end{itemize}
-
-\item[\label{scipusergdxin}\hypertarget{scipusergdxin}
-{\textbf{gams/usergdxin (\slshape{string})}}]\hspace{1.0in}
-
-The name of the GDX file read back into SCIP.
-
-\textsl{(default =} \verb=bchin.gdx=)
-
-\item[\label{scipusergdxname}\hypertarget{scipusergdxname}
-{\textbf{gams/usergdxname (\slshape{string})}}]\hspace{1.0in}
-
-The name of the GDX file exported from the solver with the solution at the node.
-
-\textsl{(default =} \verb=bchout.gdx=)
-
-\item[\label{scipusergdxnameinc}\hypertarget{scipusergdxnameinc}
-{\textbf{gams/usergdxnameinc (\slshape{string})}}]\hspace{1.0in}
-
-The name of the GDX file exported from the solver with the incumbent solution.
-
-\textsl{(default =} \verb=bchout_i.gdx=)
-
-\item[\label{scipusergdxprefix}\hypertarget{scipusergdxprefix}
-{\textbf{gams/usergdxprefix (\slshape{string})}}]\hspace{1.0in}
-
-Prefixes to use for gams/usergdxin, gams/usergdxname, and gams/usergdxnameinc.
-
-
-\item[\label{scipuserheurcall}\hypertarget{scipuserheurcall}
-{\textbf{gams/userheurcall (\slshape{string})}}]\hspace{1.0in}
-
-The GAMS command line (minus the gams executable name) to call the heuristic.
-
-
-\item[\label{scipuserheurfirst}\hypertarget{scipuserheurfirst}
-{\textbf{gams/userheurfirst (\slshape{integer})}}]\hspace{1.0in}
-
-Calls the heuristic for the first $n$ nodes.
-
-\textsl{(default = 10)}
-
-\item[\label{scipuserheurfreq}\hypertarget{scipuserheurfreq}
-{\textbf{gams/userheurfreq (\slshape{integer})}}]\hspace{1.0in}
-
-Determines the frequency of the heuristic model calls.
-
-\textsl{(default = 10)}
-
-\item[\label{scipuserheurinterval}\hypertarget{scipuserheurinterval}
-{\textbf{gams/userheurinterval (\slshape{integer})}}]\hspace{1.0in}
-
-Determines the interval when to apply the multiplier for the frequency of the heuristic model calls.
-For example, for the first 100 (gams/userheurinterval) nodes, the solver call every 10th (gams/userheurfreq) node the heuristic.
-After 100 nodes, the frequency gets multiplied by 10 (gams/userheurmult), so that for the next 100 node the solver calls the heuristic every 20th node.
-For nodes 200-300, the heuristic get called every 40th node, for nodes 300-400 every 80th node and after node 400 every 100th node.
-
-\textsl{(default = 100)}
-
-\item[\label{scipuserheurmult}\hypertarget{scipuserheurmult}
-{\textbf{gams/userheurmult (\slshape{integer})}}]\hspace{1.0in}
-
-Determines the multiplier for the frequency of the heuristic model calls.
-
-\textsl{(default = 2)}
-
-\item[\label{scipuserheurnewint}\hypertarget{scipuserheurnewint}
-{\textbf{gams/userheurnewint (\slshape{integer})}}]\hspace{1.0in}
-
-Calls the heuristic if the solver found a new integer feasible solution.
-
-\textsl{(default = TRUE)}
-\begin{itemize}
-\item[FALSE] Do not call heuristic because a new integer feasible solution is found.
-\item[TRUE] Let SCIP call the heuristic if a new integer feasible solution is found.
-\end{itemize}
-
-\item[\label{scipuserheurobjfirst}\hypertarget{scipuserheurobjfirst}
-{\textbf{gams/userheurobjfirst (\slshape{integer})}}]\hspace{1.0in}
-
-Similar to gams/userheurfirst but only calls the heuristic if the relaxed objective value promises a significant improvement of the current incumbent, i.e., the LP value of the node has to be closer to the best bound than the current incumbent.
-
-\textsl{(default = FALSE)}
-
-\item[\label{scipuserjobid}\hypertarget{scipuserjobid}
-{\textbf{gams/userjobid (\slshape{string})}}]\hspace{1.0in}
-
-Postfixes to use for gams/gdxname, gams/gdxnameinc, and gams/gdxin.
-
-
-\item[\label{scipuserkeep}\hypertarget{scipuserkeep}
-{\textbf{gams/userkeep (\slshape{integer})}}]\hspace{1.0in}
-
-Calls gamskeep instead of gams
-
-\textsl{(default = FALSE)}
-
-\end{description}
-
-\section{CoinCplex, CoinGurobi, CoinMosek, CoinXpress}
-
-GAMS/CoinCplex, GAMS/CoinGurobi, GAMS/CoinMosek, GAMS/CoinXpress bring the open source Open Solver Interface (OSI) to the broad audience of GAMS users.
-
-These ``bare bone'' solver links allow users to solve their GAMS models with a standalone license of Cplex, Gurobi, Mosek, or Xpress.
-The links use the COIN-OR Open Solver Interface (OSI) to communicate with these solvers.
-The Osi/Cplex link has been written primarily by Tobias Achterberg,
-the Osi/Gurobi link has been written primarily by Stefan Vigerske,
-the Osi/Mosek link has been written primarily by Bo Jensen, and
-the Osi/Xpress link has been written primarily by John Doe.
-Matthew Saltzman is the COIN-OR project leader for OSI.
-
-For more information we refer to the OSI web site \texttt{https://projects.coin-or.org/Osi}.
-
-\subsection{Model requirements}
-
-The OSI links support linear equations and continuous, binary, and integer variables.
-Semicontinuous and Semiinteger variables, special ordered sets, branching priorities, and indicator constraints are not supported by OSI.
-
-\subsection{Usage of these links}
-
-The following statement can be used inside your GAMS program to specify using CoinGurobi
-\begin{verbatim}
-  Option MIP = CoinGurobi;     { or LP or RMIP }
+  Option MIP = OSIGUROBI;     { or LP or RMIP }
 \end{verbatim}
 
 The above statement should appear before the Solve statement.
 
-The links only support the general GAMS options reslim, optca (except for Gurobi), optcr, nodlim, and iterlim.
-In addition an option file in the format required by the solver can be provided via the GAMS optfile option.
+The links support the general \GAMS options \texttt{reslim}, \texttt{optca} (except for \OSIGLPK), \texttt{optcr}, \texttt{nodlim}, and \texttt{iterlim}.
+For \OSICPLEX, \OSIGUROBI, \OSIMOSEK, and \OSIXPRESS an option file in the format required by the solver can be provided via the \GAMS \texttt{optfile} option.
+For \OSIGLPK, an \GAMS option file can be provided, see Section~\ref{sub:glpkoptions} for details.
+
+If a MIP is solved via one of the \OSI links, only primal solution values are reported by default.
+To receive also the dual values for the LP that is obtained from the MIP by fixing all discrete variables, the \GAMS option \texttt{integer1} can be set to a nonzero value. Note that this may lead to solving another LP after the MIP solve has finished.
+
+Setting the \GAMS option \texttt{integer2} to a nonzero value makes variable and equation names available to the solver.
+This option may be useful for debugging purposes.
+
+Setting the \GAMS option \texttt{integer3} to a nonzero value leads to writing the model instance to a file in MPS format before starting the solution process.
+The name of the MPS file is chosen to be the name of the \GAMS model file with the extension \texttt{.gms} replaced by \texttt{.mps}.
+This option may be useful for debugging purposes.
+
+\subsection{\OSIGLPK Options}
+\label{sub:glpkoptions}
+
+The \OSIGLPK option file consists of one option or comment per line.
+An asterisk (*) at the beginning of a line causes the entire line to be ignored.
+Otherwise, the line will be interpreted as an option name and value separated by any amount of white space (blanks or tabs).
+Following is an example options file osiglpk.opt.
+\begin{verbatim}
+  factorization givens
+\end{verbatim}
+It will cause \OSIGLPK to use Givens rotation updates for the factorization. (This option setting might help to avoid numerical difficulties in some cases.)
+
+\input{optglpk_a}
+
+\bibliographystyle{plain}
+\bibliography{coin_scip}
 
 \chapterend

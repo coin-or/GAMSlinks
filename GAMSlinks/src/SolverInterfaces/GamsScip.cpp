@@ -385,7 +385,7 @@ SCIP_RETCODE GamsScip::setupSCIPParameters() {
 	SCIPchgFeastol(scip, 1e-7);
 
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/names",            "whether the gams dictionary should be read and col/row names be given to scip",         NULL, FALSE, FALSE, NULL, NULL) );
-	SCIP_CALL( SCIPaddBoolParam(scip, "gams/solvefinal",       "whether the problem should be solved with fixed discrete variables to get dual values", NULL, FALSE, TRUE,  NULL, NULL) );
+	/* SCIP_CALL( SCIPaddBoolParam(scip, "gams/solvefinal",       "whether the problem should be solved with fixed discrete variables to get dual values", NULL, FALSE, TRUE,  NULL, NULL) ); */
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/mipstart",         "whether to try initial point as first primal solution",                                 NULL, FALSE, TRUE,  NULL, NULL) );
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/print_statistics", "whether to print statistics on a MIP solve",                                            NULL, FALSE, FALSE, NULL, NULL) );
 	if (!isDemo)

@@ -1,9 +1,3 @@
-\subsection{Summary of CoinCBC Options}
-
-Among all CBC options, the following GAMS parameters are currently supported in CoinCBC:
-\hyperlink{reslim}{reslim}, \hyperlink{iterlim}{iterlim}, \hyperlink{nodlim}{nodlim}, \hyperlink{optca}{optca}, \hyperlink{optcr}{optcr}, \hyperlink{increment}{cheat}, \hyperlink{cutoff}{cutoff}.
-
-Currently CoinCBC understands the following options:
 
 \subsubsection{General Options}
 \begin{tabbing}
@@ -179,46 +173,46 @@ Currently CoinCBC understands the following options:
 {vubheuristic} \> VUB heuristic
 \end{tabbing}
 
-\subsubsection{MIP Options for the GAMS Branch Cut and Heuristic Facility}
-
-\begin{tabbing}
-\hspace {1.3in} \= \\
-\hyperlink{usercutcall}
-{usercutcall} \> The GAMS command line to call the cut generator \\
-\hyperlink{usercutfirst}
-{usercutfirst} \> Calls the cut generator for the first n nodes \\
-\hyperlink{usercutfreq}
-{usercutfreq} \> Determines the frequency of the cut generator model calls \\
-\hyperlink{usercutinterval}
-{usercutinterval} \> Determines interval when to apply multiplier for frequency of cut generator model calls \\
-\hyperlink{usercutmult}
-{usercutmult} \> Determines the multiplier for the frequency of the cut generator model calls \\
-\hyperlink{usercutnewint}
-{usercutnewint} \> Calls the cut generator if the solver found a new integer feasible solution \\
-\hyperlink{usergdxin}
-{usergdxin} \> The name of the GDX file read back into CBC \\
-\hyperlink{usergdxname}
-{usergdxname} \> The name of the GDX file exported from the solver with the solution at the node \\
-\hyperlink{usergdxnameinc}
-{usergdxnameinc} \> The name of the GDX file exported from the solver with the incumbent solution \\
-\hyperlink{usergdxprefix}
-{usergdxprefix} \> Prefixes usergdxin, usergdxname, and usergdxnameinc \\
-\hyperlink{userheurcall}
-{userheurcall} \> The GAMS command line to call the heuristic \\
-\hyperlink{userheurfirst}
-{userheurfirst} \> Calls the heuristic for the first n nodes \\
-\hyperlink{userheurfreq}
-{userheurfreq} \> Determines the frequency of the heuristic model calls \\
-\hyperlink{userheurinterval}
-{userheurinterval} \> Determines interval when to apply multiplier for frequency of heuristic model calls \\
-\hyperlink{userheurmult}
-{userheurmult} \> Determines the multiplier for the frequency of the heuristic model calls \\
-\hyperlink{userheurnewint}
-{userheurnewint} \> Calls the heuristic if the solver found a new integer feasible solution \\
-\hyperlink{userheurobjfirst}
-{userheurobjfirst} \> Calls heuristic if LP value of node is closer to best bound than current incumbent \\
-\hyperlink{userjobid}
-{userjobid} \> Postfixes gdxname, gdxnameinc and gdxin \\
-\hyperlink{userkeep}
-{userkeep} \> Calls gamskeep instead of gams
-\end{tabbing}
+% \subsubsection{MIP Options for the GAMS Branch Cut and Heuristic Facility}
+% 
+% \begin{tabbing}
+% \hspace {1.3in} \= \\
+% \hyperlink{usercutcall}
+% {usercutcall} \> The GAMS command line to call the cut generator \\
+% \hyperlink{usercutfirst}
+% {usercutfirst} \> Calls the cut generator for the first n nodes \\
+% \hyperlink{usercutfreq}
+% {usercutfreq} \> Determines the frequency of the cut generator model calls \\
+% \hyperlink{usercutinterval}
+% {usercutinterval} \> Determines interval when to apply multiplier for frequency of cut generator model calls \\
+% \hyperlink{usercutmult}
+% {usercutmult} \> Determines the multiplier for the frequency of the cut generator model calls \\
+% \hyperlink{usercutnewint}
+% {usercutnewint} \> Calls the cut generator if the solver found a new integer feasible solution \\
+% \hyperlink{usergdxin}
+% {usergdxin} \> The name of the GDX file read back into CBC \\
+% \hyperlink{usergdxname}
+% {usergdxname} \> The name of the GDX file exported from the solver with the solution at the node \\
+% \hyperlink{usergdxnameinc}
+% {usergdxnameinc} \> The name of the GDX file exported from the solver with the incumbent solution \\
+% \hyperlink{usergdxprefix}
+% {usergdxprefix} \> Prefixes usergdxin, usergdxname, and usergdxnameinc \\
+% \hyperlink{userheurcall}
+% {userheurcall} \> The GAMS command line to call the heuristic \\
+% \hyperlink{userheurfirst}
+% {userheurfirst} \> Calls the heuristic for the first n nodes \\
+% \hyperlink{userheurfreq}
+% {userheurfreq} \> Determines the frequency of the heuristic model calls \\
+% \hyperlink{userheurinterval}
+% {userheurinterval} \> Determines interval when to apply multiplier for frequency of heuristic model calls \\
+% \hyperlink{userheurmult}
+% {userheurmult} \> Determines the multiplier for the frequency of the heuristic model calls \\
+% \hyperlink{userheurnewint}
+% {userheurnewint} \> Calls the heuristic if the solver found a new integer feasible solution \\
+% \hyperlink{userheurobjfirst}
+% {userheurobjfirst} \> Calls heuristic if LP value of node is closer to best bound than current incumbent \\
+% \hyperlink{userjobid}
+% {userjobid} \> Postfixes gdxname, gdxnameinc and gdxin \\
+% \hyperlink{userkeep}
+% {userkeep} \> Calls gamskeep instead of gams
+% \end{tabbing}
