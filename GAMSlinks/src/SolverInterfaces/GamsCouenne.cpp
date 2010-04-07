@@ -116,8 +116,6 @@ GamsCouenne::~GamsCouenne() {
 }
 
 int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
-	char buffer[256];
-	
 	gmo = gmo_;
 	assert(gmo);
 	assert(IsNull(minlp));
@@ -130,6 +128,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gev = (gevRec*)gmoEnvironment(gmo);
 	
 #ifdef GAMS_BUILD
+	char buffer[256];
 #include "coinlibdCL2svn.h" 
 	auditGetLine(buffer, sizeof(buffer));
 	gevLogStat(gev, "");
@@ -261,10 +260,14 @@ int GamsCouenne::callSolver() {
 	char buffer[1024];
 	
  	CouenneProblem* problem;
+#if GMOAPIVERSION >= 7
+		problem = setupProblemNew();
+#else
  	if (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp)
  		problem = setupProblemMIQQP();
  	else
  		problem = setupProblem();
+#endif
  	if (!problem) {
  		gevLogStat(gev, "Error in setting up problem for Couenne.\n");
  		return -1;
@@ -605,6 +608,238 @@ CouenneProblem* GamsCouenne::setupProblem() {
 	delete[] rowstarts;
 	delete[] colindexes;
 	delete[] nlflags;
+//	delete[] constants;
+	
+	return prob;
+}
+
+CouenneProblem* GamsCouenne::setupProblemNew() {
+	CouenneProblem* prob = new CouenneProblem(NULL, NULL, jnlst);
+	
+	if (gmoQMaker(gmo, 0.5) < 0) { // negative number is error; positive number is number of nonquadratic nonlinear equations
+		gevLogStat(gev, "ERROR: Problems extracting information on quadratic functions in GMO.");
+		return NULL;
+	}
+	
+	int nz, nlnz;
+
+	double* lincoefs  = new double[gmoN(gmo)];
+	int*    lincolidx = new int[gmoN(gmo)];
+	int*    nlflag    = new int[gmoN(gmo)];
+	
+	double* quadcoefs = new double[gmoMaxQnz(gmo)];
+	int* qrow =  new int[gmoMaxQnz(gmo)];
+	int* qcol =  new int[gmoMaxQnz(gmo)];
+	int qnz, qdiagnz;
+	
+	int* opcodes = new int[gmoMaxSingleFNL(gmo)+1];
+	int* fields  = new int[gmoMaxSingleFNL(gmo)+1];
+	int constantlen = gmoNLConst(gmo);
+	double* constants = (double*)gmoPPool(gmo); //new double[gmoNLConst(gmo)];
+	int codelen;
+	
+	//	memcpy(constants, gmoPPool(gmo), constantlen*sizeof(double));
+	//	for (int i = 0; i < constantlen; ++i)
+	//		if (fabs(constants[i]) < COUENNE_EPS)
+	//			constants[i] = 0.;
+
+	exprGroup::lincoeff lin;
+	expression *body = NULL;
+
+	// add variables
+	for (int i = 0; i < gmoN(gmo); ++i) {
+		switch (gmoGetVarTypeOne(gmo, i)) {
+			case var_X:
+				prob->addVariable(false, prob->domain());
+				break;
+			case var_B:
+			case var_I:
+				prob->addVariable(true, prob->domain());
+				break;
+			case var_S1:
+			case var_S2:
+		  	//TODO prob->addVariable(false, prob->domain());
+		  	gevLogStat(gev, "Special ordered sets not supported by Gams/Couenne link yet.");
+		  	return NULL;
+			case var_SC:
+			case var_SI:
+		  	gevLogStat(gev, "Semicontinuous and semiinteger variables not supported by Couenne.");
+		  	return NULL;
+			default:
+		  	gevLogStat(gev, "Unknown variable type.");
+		  	return NULL;
+		}
+	}
+	
+	// add variable bounds and initial values
+	CouNumber* x_ = new CouNumber[gmoN(gmo)];
+	CouNumber* lb = new CouNumber[gmoN(gmo)];
+	CouNumber* ub = new CouNumber[gmoN(gmo)];
+	
+	gmoGetVarL(gmo, x_);
+	gmoGetVarLower(gmo, lb);
+	gmoGetVarUpper(gmo, ub);
+	
+	// translate from gmoM/Pinf to Couenne infinity
+	for (int i = 0; i < gmoN(gmo); ++i)	{
+		if (lb[i] <= gmoMinf(gmo))
+			lb[i] = -COUENNE_INFINITY;
+		if (ub[i] >= gmoPinf(gmo))
+			ub[i] =  COUENNE_INFINITY;
+	}
+	
+	prob->domain()->push(gmoN(gmo), x_, lb, ub);
+	
+	delete[] x_;
+	delete[] lb;
+	delete[] ub;
+
+	// add objective function
+	double isMin = (gmoSense(gmo) == Obj_Min) ? 1 : -1;
+	gmoGetObjSparse(gmo, lincolidx, lincoefs, nlflag, &nz, &nlnz);
+
+	if (gmoGetObjOrder(gmo) <= order_Q) {
+		lin.reserve(nz);
+		for (int i = 0; i < nz; ++i)
+			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[i]), isMin*lincoefs[i]));
+		
+		if( gmoGetObjOrder(gmo) == order_Q ) {
+			gmoGetObjQ(gmo, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
+			expression** quadpart = new expression*[qnz];
+			
+			for (int j = 0; j < qnz; ++j) {
+				assert(qcol[j] >= 0);
+				assert(qrow[j] >= 0);
+				assert(qcol[j] < gmoN(gmo));
+				assert(qrow[j] < gmoN(gmo));
+				if (qcol[j] == qrow[j]) {
+					quadcoefs[j] /= 2.0; // for some strange reason, the coefficients on the diagonal are multiplied by 2 in GMO.
+					quadpart[j] = new exprPow(new exprClone(prob->Var(qcol[j])), new exprConst(2.));
+				} else {
+					quadpart[j] = new exprMul(new exprClone(prob->Var(qcol[j])), new exprClone(prob->Var(qrow[j])));
+				}
+				quadcoefs[j] *= isMin;
+				if (quadcoefs[j] == -1.0)
+					quadpart[j] = new exprOpp(quadpart[j]);
+				else if (quadcoefs[j] != 1.0)
+					quadpart[j] = new exprMul(quadpart[j], new exprConst(quadcoefs[j]));
+			}
+
+			body = new exprGroup(isMin*gmoObjConst(gmo), lin, quadpart, qnz);
+
+		} else {
+			body = new exprGroup(isMin*gmoObjConst(gmo), lin, NULL, 0);
+		}
+		
+	} else { /* general nonlinear objective */ 
+		lin.reserve(nz-nlnz);
+		for (int i = 0; i < nz; ++i) {
+			if (nlflag[i])
+				continue;
+			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[i]), isMin*lincoefs[i]));
+		}
+		
+		gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
+		
+		expression** nl = new expression*[1];
+		nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
+		if (!nl[0])
+			return NULL;
+
+		double objjacval = isMin*gmoObjJacVal(gmo);
+		//std::clog << "obj jac val: " << objjacval << std::endl;
+		if (objjacval == 1.) { // scale by -1/objjacval = negate
+			nl[0] = new exprOpp(nl[0]);
+		} else if (objjacval != -1.) { // scale by -1/objjacval
+			nl[0] = new exprMul(nl[0], new exprConst(-1/objjacval));
+		}
+		
+		body = new exprGroup(isMin*gmoObjConst(gmo), lin, nl, 1);
+	}
+
+	prob->addObjective(body, "min");
+	
+	for (int i = 0; i < gmoM(gmo); ++i) {
+		gmoGetRowSparse(gmo, i, lincolidx, lincoefs, nlflag, &nz, &nlnz);
+		lin.clear();
+		
+		if (gmoGetEquOrderOne(gmo, i) <= order_Q) {
+			lin.reserve(nz);
+			for (int j = 0; j < nz; ++j)
+				lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[j]), isMin*lincoefs[j]));
+			
+			if( gmoGetObjOrder(gmo) == order_Q ) {
+				gmoGetRowQ(gmo, i, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
+				expression** quadpart = new expression*[qnz];
+				
+				for (int j = 0; j < qnz; ++j) {
+					assert(qcol[j] >= 0);
+					assert(qrow[j] >= 0);
+					assert(qcol[j] < gmoN(gmo));
+					assert(qrow[j] < gmoN(gmo));
+					if (qcol[j] == qrow[j]) {
+						quadcoefs[j] /= 2.0; // for some strange reason, the coefficients on the diagonal are multiplied by 2 in GMO.
+						quadpart[j] = new exprPow(new exprClone(prob->Var(qcol[j])), new exprConst(2.));
+					} else {
+						quadpart[j] = new exprMul(new exprClone(prob->Var(qcol[j])), new exprClone(prob->Var(qrow[j])));
+					}
+					quadcoefs[j] *= isMin;
+					if (quadcoefs[j] == -1.0)
+						quadpart[j] = new exprOpp(quadpart[j]);
+					else if (quadcoefs[j] != 1.0)
+						quadpart[j] = new exprMul(quadpart[j], new exprConst(quadcoefs[j]));
+				}
+
+				body = new exprGroup(0, lin, quadpart, qnz);
+
+			} else {
+				body = new exprGroup(0, lin, NULL, 0);
+			}
+			
+		} else { /* general nonlinear constraint */ 
+			lin.reserve(nz-nlnz);
+			for (int j = 0; j < nz; ++j) {
+				if (nlflag[j])
+					continue;
+				lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[j]), isMin*lincoefs[j]));
+			}
+
+			gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields);
+			expression** nl = new expression*[1];
+			nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
+			if (!nl[0])
+				return NULL;
+			
+			body = new exprGroup(0, lin, nl, 1);
+		}
+
+		switch (gmoGetEquTypeOne(gmo, i)) {
+			case equ_E:
+				prob->addEQConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
+				break;
+			case equ_L:
+				prob->addLEConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
+				break;
+			case equ_G:
+				prob->addGEConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
+				break;
+			case equ_N:
+				// TODO I doubt that adding a RNG constraint with -infty/infty bounds would work here
+				gevLogStat(gev, "Free constraints not supported by Gams/Couenne link yet. Constraint ignored.");
+				break;
+		}
+	}
+	
+  delete[] lincolidx;
+	delete[] lincoefs;
+	delete[] nlflag;
+
+	delete[] quadcoefs;
+	delete[] qrow;
+	delete[] qcol;
+	
+	delete[] opcodes;
+	delete[] fields;
 //	delete[] constants;
 	
 	return prob;

@@ -47,6 +47,7 @@ private:
 	bool isMIP();
   CouenneProblem* setupProblem();
   CouenneProblem* setupProblemMIQQP();
+  CouenneProblem* setupProblemNew();
   expression* parseGamsInstructions(CouenneProblem* prob, int codelen, int* opcodes, int* fields, int constantlen, double* constants);
   void printOptions();
 
