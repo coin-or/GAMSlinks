@@ -261,7 +261,7 @@ int GamsCouenne::callSolver() {
 	
  	CouenneProblem* problem;
 #if GMOAPIVERSION >= 7
- 	if( gevGetIntOpt(gev, gevInteger1) != 42 )
+ 	if( gevGetIntOpt(gev, gevInteger1) & 0x1 )
 		problem = setupProblemNew();
  	else
 #endif
@@ -273,6 +273,8 @@ int GamsCouenne::callSolver() {
  		gevLogStat(gev, "Error in setting up problem for Couenne.\n");
  		return -1;
  	}
+ 	if( gevGetIntOpt(gev, gevInteger1) & 0x2 )
+ 		problem->print();
 	
 	try {
 		Bab bb;
@@ -767,7 +769,7 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 		if (gmoGetEquOrderOne(gmo, i) <= order_Q) {
 			lin.reserve(nz);
 			for (int j = 0; j < nz; ++j)
-				lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[j]), isMin*lincoefs[j]));
+				lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[j]), lincoefs[j]));
 			
 			if( gmoGetEquOrderOne(gmo, i) == order_Q ) {
 				gmoGetRowQ(gmo, i, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
@@ -784,7 +786,6 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 					} else {
 						quadpart[j] = new exprMul(new exprClone(prob->Var(qcol[j])), new exprClone(prob->Var(qrow[j])));
 					}
-					quadcoefs[j] *= isMin;
 					if (quadcoefs[j] == -1.0)
 						quadpart[j] = new exprOpp(quadpart[j]);
 					else if (quadcoefs[j] != 1.0)
@@ -802,7 +803,7 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 			for (int j = 0; j < nz; ++j) {
 				if (nlflag[j])
 					continue;
-				lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[j]), isMin*lincoefs[j]));
+				lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[j]), lincoefs[j]));
 			}
 
 			gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields);
