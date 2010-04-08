@@ -261,7 +261,7 @@ int GamsCouenne::callSolver() {
 	
  	CouenneProblem* problem;
 #if GMOAPIVERSION >= 7
- 	if( gevGetIntOpt(gev, gevInteger1) & 0x1 )
+ 	if( !(gevGetIntOpt(gev, gevInteger1) & 0x1) )
 		problem = setupProblemNew();
  	else
 #endif
