@@ -261,13 +261,14 @@ int GamsCouenne::callSolver() {
 	
  	CouenneProblem* problem;
 #if GMOAPIVERSION >= 7
+ 	if( gevGetIntOpt(gev, gevInteger1) != 42 )
 		problem = setupProblemNew();
-#else
+ 	else
+#endif
  	if (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp)
  		problem = setupProblemMIQQP();
  	else
  		problem = setupProblem();
-#endif
  	if (!problem) {
  		gevLogStat(gev, "Error in setting up problem for Couenne.\n");
  		return -1;
@@ -768,7 +769,7 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 			for (int j = 0; j < nz; ++j)
 				lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[j]), isMin*lincoefs[j]));
 			
-			if( gmoGetObjOrder(gmo) == order_Q ) {
+			if( gmoGetEquOrderOne(gmo, i) == order_Q ) {
 				gmoGetRowQ(gmo, i, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
 				expression** quadpart = new expression*[qnz];
 				
