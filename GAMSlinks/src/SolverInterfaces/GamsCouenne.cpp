@@ -842,6 +842,10 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 	delete[] fields;
 //	delete[] constants;
 	
+#if GMOAPIVERSION >= 7
+	gmoWantQSet(gmo, 0);
+#endif
+	
 	return prob;
 }
 
