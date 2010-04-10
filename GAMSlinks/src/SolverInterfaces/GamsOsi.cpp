@@ -322,9 +322,9 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				
 			case XPRESS: {
 #ifdef COIN_HAS_XPR
+				char msg[1024];
 #ifdef GAMS_BUILD
 				XPlicenseInit_t initType;
-				char msg[1024];
 				
 				/* Xpress license setup */
 				if (gevxpresslice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
