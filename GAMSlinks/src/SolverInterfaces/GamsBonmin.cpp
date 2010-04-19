@@ -191,7 +191,7 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 			"*", // setting1
 			"path (incl. filename) of Pardiso library", // description1
 			"Specify the path to a Pardiso library that and can be load via dynamic linking. "
-			"Note, that you still need to specify to pardiso as linear_solver."
+			"Note, that you still need to specify to use pardiso as linear_solver."
 	);
 #endif
 

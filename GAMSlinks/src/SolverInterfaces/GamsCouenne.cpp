@@ -205,7 +205,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 			"*", // setting1
 			"path (incl. filename) of Pardiso library", // description1
 			"Specify the path to a Pardiso library that and can be load via dynamic linking. "
-			"Note, that you still need to specify to pardiso as linear_solver."
+			"Note, that you still need to specify to use pardiso as linear_solver."
 	);
 #endif
 
@@ -271,7 +271,10 @@ int GamsCouenne::callSolver() {
  		problem = setupProblem();
  	if (!problem) {
  		gevLogStat(gev, "Error in setting up problem for Couenne.\n");
- 		return -1;
+ 		//TODO should check more careful whether it was really an unsupported nonlinear function
+    gmoSolveStatSet(gmo, SolveStat_Capability);
+    gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+ 		return 1;
  	}
  	if( gevGetIntOpt(gev, gevInteger1) & 0x2 )
  		problem->print();
