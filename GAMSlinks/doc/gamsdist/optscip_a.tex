@@ -1,0 +1,2200 @@
+\printoptioncategory{GAMS interface specific options}
+\printoption{gams/names}%
+{boolean}%
+{0}%
+{This option causes GAMS names for the variables and equations to be loaded into SCIP. These names will then be used for error messages, log entries, and so forth. Turning names off may help if memory is very tight.}%
+{}
+
+\printoption{gams/mipstart}%
+{boolean}%
+{1}%
+{This option controls the use of advanced starting values for mixed integer programs. A setting of TRUE indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.}%
+{}
+
+\printoption{gams/print\_statistics}%
+{boolean}%
+{0}%
+{This option controls the printing of solve statistics after a MIP solve. Turning on this option indicates that statistics like the number of generated cuts of each type or the calls of heuristics are printed after the MIP solve.}%
+{}
+
+\printoption{gams/interactive}%
+{boolean}%
+{0}%
+{whether a SCIP shell should be opened instead of issuing a solve command (this option is not available in demo mode)}%
+{}
+
+\printoptioncategory{Branching}
+\printoption{branching/preferbinary}%
+{boolean}%
+{0}%
+{should branching on binary variables be preferred?}%
+{}
+
+\printoption{branching/allfullstrong/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$-1000$}%
+{priority of branching rule $<$allfullstrong$>$}%
+{}
+
+\printoption{branching/allfullstrong/maxdepth}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal depth level, up to which branching rule $<$allfullstrong$>$ should be used (-1 for no limit)}%
+{}
+
+\printoption{branching/allfullstrong/maxbounddist}%
+{$0\leq\textrm{real}\leq1$}%
+{$1$}%
+{maximal relative distance from current node's dual bound to primal bound compared to best node's dual bound for applying branching rule (0.0: only on current best node, 1.0: on all nodes)}%
+{}
+
+\printoption{branching/fullstrong/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$0$}%
+{priority of branching rule $<$fullstrong$>$}%
+{}
+
+\printoption{branching/fullstrong/maxdepth}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal depth level, up to which branching rule $<$fullstrong$>$ should be used (-1 for no limit)}%
+{}
+
+\printoption{branching/fullstrong/maxbounddist}%
+{$0\leq\textrm{real}\leq1$}%
+{$1$}%
+{maximal relative distance from current node's dual bound to primal bound compared to best node's dual bound for applying branching rule (0.0: only on current best node, 1.0: on all nodes)}%
+{}
+
+\printoption{branching/inference/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$1000$}%
+{priority of branching rule $<$inference$>$}%
+{}
+
+\printoption{branching/inference/maxdepth}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal depth level, up to which branching rule $<$inference$>$ should be used (-1 for no limit)}%
+{}
+
+\printoption{branching/inference/maxbounddist}%
+{$0\leq\textrm{real}\leq1$}%
+{$1$}%
+{maximal relative distance from current node's dual bound to primal bound compared to best node's dual bound for applying branching rule (0.0: only on current best node, 1.0: on all nodes)}%
+{}
+
+\printoption{branching/mostinf/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$100$}%
+{priority of branching rule $<$mostinf$>$}%
+{}
+
+\printoption{branching/mostinf/maxdepth}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal depth level, up to which branching rule $<$mostinf$>$ should be used (-1 for no limit)}%
+{}
+
+\printoption{branching/mostinf/maxbounddist}%
+{$0\leq\textrm{real}\leq1$}%
+{$1$}%
+{maximal relative distance from current node's dual bound to primal bound compared to best node's dual bound for applying branching rule (0.0: only on current best node, 1.0: on all nodes)}%
+{}
+
+\printoption{branching/leastinf/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$50$}%
+{priority of branching rule $<$leastinf$>$}%
+{}
+
+\printoption{branching/leastinf/maxdepth}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal depth level, up to which branching rule $<$leastinf$>$ should be used (-1 for no limit)}%
+{}
+
+\printoption{branching/leastinf/maxbounddist}%
+{$0\leq\textrm{real}\leq1$}%
+{$1$}%
+{maximal relative distance from current node's dual bound to primal bound compared to best node's dual bound for applying branching rule (0.0: only on current best node, 1.0: on all nodes)}%
+{}
+
+\printoption{branching/pscost/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$2000$}%
+{priority of branching rule $<$pscost$>$}%
+{}
+
+\printoption{branching/pscost/maxdepth}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal depth level, up to which branching rule $<$pscost$>$ should be used (-1 for no limit)}%
+{}
+
+\printoption{branching/pscost/maxbounddist}%
+{$0\leq\textrm{real}\leq1$}%
+{$1$}%
+{maximal relative distance from current node's dual bound to primal bound compared to best node's dual bound for applying branching rule (0.0: only on current best node, 1.0: on all nodes)}%
+{}
+
+\printoption{branching/random/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$-100000$}%
+{priority of branching rule $<$random$>$}%
+{}
+
+\printoption{branching/random/maxdepth}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal depth level, up to which branching rule $<$random$>$ should be used (-1 for no limit)}%
+{}
+
+\printoption{branching/random/maxbounddist}%
+{$0\leq\textrm{real}\leq1$}%
+{$1$}%
+{maximal relative distance from current node's dual bound to primal bound compared to best node's dual bound for applying branching rule (0.0: only on current best node, 1.0: on all nodes)}%
+{}
+
+\printoption{branching/relpscost/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$10000$}%
+{priority of branching rule $<$relpscost$>$}%
+{}
+
+\printoption{branching/relpscost/maxdepth}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal depth level, up to which branching rule $<$relpscost$>$ should be used (-1 for no limit)}%
+{}
+
+\printoption{branching/relpscost/maxbounddist}%
+{$0\leq\textrm{real}\leq1$}%
+{$1$}%
+{maximal relative distance from current node's dual bound to primal bound compared to best node's dual bound for applying branching rule (0.0: only on current best node, 1.0: on all nodes)}%
+{}
+
+\printoption{branching/relpscost/sbiterquot}%
+{$0\leq\textrm{real}$}%
+{$0.5$}%
+{maximal fraction of strong branching LP iterations compared to node relaxation LP iterations}%
+{}
+
+\printoption{branching/relpscost/sbiterofs}%
+{$0\leq\textrm{integer}$}%
+{$100000$}%
+{additional number of allowed strong branching LP iterations}%
+{}
+
+\printoption{branching/relpscost/initcand}%
+{$0\leq\textrm{integer}$}%
+{$100$}%
+{maximal number of candidates initialized with strong branching per node}%
+{}
+
+\printoption{branching/relpscost/inititer}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{iteration limit for strong branching initializations of pseudo cost entries (0: auto)}%
+{}
+
+\printoptioncategory{Conflict analysis}
+\printoption{conflict/enable}%
+{boolean}%
+{1}%
+{should conflict analysis be enabled?}%
+{}
+
+\printoption{conflict/useprop}%
+{boolean}%
+{1}%
+{should propagation conflict analysis be used?}%
+{}
+
+\printoption{conflict/useinflp}%
+{boolean}%
+{1}%
+{should infeasible LP conflict analysis be used?}%
+{}
+
+\printoption{conflict/useboundlp}%
+{boolean}%
+{0}%
+{should bound exceeding LP conflict analysis be used?}%
+{}
+
+\printoption{conflict/usesb}%
+{boolean}%
+{0}%
+{should infeasible/bound exceeding strong branching conflict analysis be used?}%
+{}
+
+\printoption{conflict/usepseudo}%
+{boolean}%
+{1}%
+{should pseudo solution conflict analysis be used?}%
+{}
+
+\printoption{conflict/preferbinary}%
+{boolean}%
+{0}%
+{should binary conflicts be preferred?}%
+{}
+
+\printoption{conflict/restartnum}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{number of successful conflict analysis calls that trigger a restart (0: disable conflict restarts)}%
+{}
+
+\printoption{conflict/restartfac}%
+{$0\leq\textrm{real}$}%
+{$1.5$}%
+{factor to increase restartnum with after each restart}%
+{}
+
+\printoptioncategory{Constraints}
+\printoption{constraints/linear/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/linear/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/linear/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$5$}%
+{maximal number of separation rounds per node (-1: unlimited)}%
+{}
+
+\printoption{constraints/linear/maxroundsroot}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of separation rounds per node in the root node (-1: unlimited)}%
+{}
+
+\printoption{constraints/linear/maxsepacuts}%
+{$0\leq\textrm{integer}$}%
+{$50$}%
+{maximal number of cuts separated per separation round}%
+{}
+
+\printoption{constraints/linear/maxsepacutsroot}%
+{$0\leq\textrm{integer}$}%
+{$200$}%
+{maximal number of cuts separated per separation round in the root node}%
+{}
+
+\printoption{constraints/linear/separateall}%
+{boolean}%
+{0}%
+{should all constraints be subject to cardinality cut generation instead of only the ones with non-zero dual value?}%
+{}
+
+\printoption{constraints/and/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/and/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/bounddisjunction/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/bounddisjunction/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/conjunction/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/conjunction/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/countsols/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/countsols/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/countsols/sparsetest}%
+{boolean}%
+{1}%
+{should the sparse solution test be turned on?}%
+{}
+
+\printoption{constraints/countsols/discardsols}%
+{boolean}%
+{1}%
+{is it allowed to discard solutions?}%
+{}
+
+\printoption{constraints/countsols/active}%
+{boolean}%
+{0}%
+{is the constraint handler active?}%
+{}
+
+\printoption{constraints/countsols/collect}%
+{boolean}%
+{0}%
+{should the solutions be collected?}%
+{}
+
+\printoption{constraints/countsols/sollimit}%
+{$-1\leq\textrm{integer}\leq-1$}%
+{$-1$}%
+{counting stops, if the given number of solutions were found (-1: no limit)}%
+{}
+
+\printoption{constraints/indicator/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/indicator/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/integral/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/integral/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/knapsack/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/knapsack/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/linear/upgrade/knapsack}%
+{boolean}%
+{1}%
+{enable linear upgrading for constraint handler $<$knapsack$>$}%
+{}
+
+\printoption{constraints/knapsack/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$5$}%
+{maximal number of separation rounds per node (-1: unlimited)}%
+{}
+
+\printoption{constraints/knapsack/maxroundsroot}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of separation rounds per node in the root node (-1: unlimited)}%
+{}
+
+\printoption{constraints/knapsack/maxsepacuts}%
+{$0\leq\textrm{integer}$}%
+{$50$}%
+{maximal number of cuts separated per separation round}%
+{}
+
+\printoption{constraints/knapsack/maxsepacutsroot}%
+{$0\leq\textrm{integer}$}%
+{$200$}%
+{maximal number of cuts separated per separation round in the root node}%
+{}
+
+\printoption{constraints/logicor/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/logicor/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/linear/upgrade/logicor}%
+{boolean}%
+{1}%
+{enable linear upgrading for constraint handler $<$logicor$>$}%
+{}
+
+\printoption{constraints/or/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/or/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/quadratic/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$2$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/quadratic/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/quadratic/replacesqrbinary}%
+{boolean}%
+{1}%
+{whether a square of a binary variables should be replaced by the binary variable}%
+{}
+
+\printoption{constraints/quadratic/replacebinaryprod}%
+{$0\leq\textrm{integer}$}%
+{$\infty$}%
+{max. length of linear term which when multiplied with a binary variables is replaced by an auxiliary variable and a linear reformulation (0 to turn off)}%
+{}
+
+\printoption{constraints/quadratic/disaggregate}%
+{boolean}%
+{1}%
+{whether quadratic constraints consisting of several quadratic blocks should be disaggregated in several constraints}%
+{}
+
+\printoption{constraints/quadratic/minefficacy}%
+{$0\leq\textrm{real}$}%
+{$0.0001$}%
+{minimal efficacy for a cut to be added to the LP; overwrites separating/efficacy}%
+{}
+
+\printoption{constraints/quadratic/scaling}%
+{boolean}%
+{1}%
+{whether a quadratic constraint should be scaled w.r.t. the current gradient norm when checking for feasibility}%
+{}
+
+\printoption{constraints/quadratic/fastpropagate}%
+{boolean}%
+{1}%
+{whether a propagation should be used that is faster in case of bilinear term, but also less efficient}%
+{}
+
+\printoption{constraints/quadratic/cutmaxrange}%
+{$0\leq\textrm{real}$}%
+{$10^{ 10}$}%
+{maximal range of a cut (maximal coefficient divided by minimal coefficient) in order to be added to LP relaxation}%
+{}
+
+\printoption{constraints/quadratic/strategy}%
+{character}%
+{r}%
+{strategy to use for selecting branching variable: b: rb-int-br, r: rb-int-br-rev, i: rb-inf}%
+{}
+
+\printoption{constraints/quadratic/mindistbrpointtobound}%
+{$0.0001\leq\textrm{real}\leq0.5$}%
+{$0.2$}%
+{minimal fractional distance of branching point to variable bounds; a value of 0.5 leads to branching always in the middle of a bounded domain}%
+{}
+
+\printoption{constraints/setppc/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/setppc/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/linear/upgrade/setppc}%
+{boolean}%
+{1}%
+{enable linear upgrading for constraint handler $<$setppc$>$}%
+{}
+
+\printoption{constraints/SOS1/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/SOS1/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/SOS1/branchSOS}%
+{boolean}%
+{1}%
+{Use SOS1 branching in enforcing (otherwise leave decision to branching rules)?}%
+{}
+
+\printoption{constraints/SOS1/branchNonzeros}%
+{boolean}%
+{0}%
+{Branch on SOS constraint with most number of nonzeros?}%
+{}
+
+\printoption{constraints/SOS1/branchWeight}%
+{boolean}%
+{0}%
+{Branch on SOS cons. with highest nonzero-variable weight for branching (needs branchNonzeros = false)?}%
+{}
+
+\printoption{constraints/SOS2/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/SOS2/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/varbound/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/varbound/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/linear/upgrade/varbound}%
+{boolean}%
+{1}%
+{enable linear upgrading for constraint handler $<$varbound$>$}%
+{}
+
+\printoption{constraints/xor/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/xor/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoptioncategory{Output}
+\printoption{display/verblevel}%
+{$0\leq\textrm{integer}\leq5$}%
+{$4$}%
+{verbosity level of output}%
+{}
+
+\printoption{display/width}%
+{$0\leq\textrm{integer}$}%
+{$139$}%
+{maximal number of characters in a node information line}%
+{}
+
+\printoption{display/freq}%
+{$-1\leq\textrm{integer}$}%
+{$100$}%
+{frequency for displaying node information lines}%
+{}
+
+\printoption{display/headerfreq}%
+{$-1\leq\textrm{integer}$}%
+{$15$}%
+{frequency for displaying header lines (every n'th node information line)}%
+{}
+
+\printoption{display/lpinfo}%
+{boolean}%
+{0}%
+{should the LP solver display status messages?}%
+{}
+
+\printoption{display/sols/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$0$}%
+{display activation status of display column $<$sols$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/feasST/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$0$}%
+{display activation status of display column $<$feasST$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/solfound/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$solfound$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/time/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$time$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/nnodes/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$nnodes$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/nodesleft/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$nodesleft$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/lpiterations/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$lpiterations$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/memused/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$memused$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/depth/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$depth$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/maxdepth/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$maxdepth$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/plungedepth/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$plungedepth$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/nfrac/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$nfrac$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/vars/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$vars$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/conss/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$conss$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/curconss/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$curconss$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/curcols/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$curcols$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/currows/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$currows$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/cuts/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$cuts$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/separounds/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$separounds$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/poolsize/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$poolsize$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/conflicts/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$conflicts$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/strongbranchs/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$strongbranchs$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/lpobj/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$lpobj$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/curdualbound/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$curdualbound$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/estimate/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$estimate$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/avgdualbound/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$avgdualbound$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/dualbound/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$dualbound$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/primalbound/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$primalbound$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/cutoffbound/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$cutoffbound$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/gap/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$gap$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/nsols/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$nsols$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoptioncategory{Heuristics}
+\printoption{heuristics/actconsdiving/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling primal heuristic $<$actconsdiving$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/actconsdiving/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$5$}%
+{frequency offset for calling primal heuristic $<$actconsdiving$>$}%
+{}
+
+\printoption{heuristics/actconsdiving/maxlpiterquot}%
+{$0\leq\textrm{real}$}%
+{$0.05$}%
+{maximal fraction of diving LP iterations compared to node LP iterations}%
+{}
+
+\printoption{heuristics/actconsdiving/maxlpiterofs}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{additional number of allowed LP iterations}%
+{}
+
+\printoption{heuristics/actconsdiving/backtrack}%
+{boolean}%
+{1}%
+{use one level of backtracking if infeasibility is encountered?}%
+{}
+
+\printoption{heuristics/coefdiving/freq}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{frequency for calling primal heuristic $<$coefdiving$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/coefdiving/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$1$}%
+{frequency offset for calling primal heuristic $<$coefdiving$>$}%
+{}
+
+\printoption{heuristics/coefdiving/maxlpiterquot}%
+{$0\leq\textrm{real}$}%
+{$0.05$}%
+{maximal fraction of diving LP iterations compared to node LP iterations}%
+{}
+
+\printoption{heuristics/coefdiving/maxlpiterofs}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{additional number of allowed LP iterations}%
+{}
+
+\printoption{heuristics/coefdiving/backtrack}%
+{boolean}%
+{1}%
+{use one level of backtracking if infeasibility is encountered?}%
+{}
+
+\printoption{heuristics/crossover/freq}%
+{$-1\leq\textrm{integer}$}%
+{$30$}%
+{frequency for calling primal heuristic $<$crossover$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/crossover/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$10$}%
+{frequency offset for calling primal heuristic $<$crossover$>$}%
+{}
+
+\printoption{heuristics/crossover/nodesofs}%
+{$0\leq\textrm{integer}\leq-1$}%
+{$500$}%
+{number of nodes added to the contingent of the total nodes}%
+{}
+
+\printoption{heuristics/crossover/nusedsols}%
+{$2\leq\textrm{integer}$}%
+{$3$}%
+{number of solutions to be taken into account}%
+{}
+
+\printoption{heuristics/crossover/nodesquot}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.1$}%
+{contingent of sub problem nodes in relation to the number of nodes of the original problem}%
+{}
+
+\printoption{heuristics/crossover/minfixingrate}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.666$}%
+{minimum percentage of integer variables that have to be fixed }%
+{}
+
+\printoption{heuristics/dins/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling primal heuristic $<$dins$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/dins/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$dins$>$}%
+{}
+
+\printoption{heuristics/dins/nodesofs}%
+{$0\leq\textrm{integer}\leq-1$}%
+{$5000$}%
+{number of nodes added to the contingent of the total nodes}%
+{}
+
+\printoption{heuristics/dins/nodesquot}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.05$}%
+{contingent of sub problem nodes in relation to the number of nodes of the original problem}%
+{}
+
+\printoption{heuristics/dins/minnodes}%
+{$0\leq\textrm{integer}\leq-1$}%
+{$500$}%
+{minimum number of nodes required to start the subproblem}%
+{}
+
+\printoption{heuristics/dins/solnum}%
+{$1\leq\textrm{integer}$}%
+{$5$}%
+{number of pool-solutions to be checked for flag array update (for hard fixing of binary variables)}%
+{}
+
+\printoption{heuristics/dins/neighborhoodsize}%
+{$1\leq\textrm{integer}$}%
+{$18$}%
+{radius (using Manhattan metric) of the incumbent's neighborhood to be searched}%
+{}
+
+\printoption{heuristics/feaspump/freq}%
+{$-1\leq\textrm{integer}$}%
+{$20$}%
+{frequency for calling primal heuristic $<$feaspump$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/feaspump/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$feaspump$>$}%
+{}
+
+\printoption{heuristics/feaspump/maxlpiterquot}%
+{$0\leq\textrm{real}$}%
+{$0.01$}%
+{maximal fraction of diving LP iterations compared to node LP iterations}%
+{}
+
+\printoption{heuristics/feaspump/maxlpiterofs}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{additional number of allowed LP iterations}%
+{}
+
+\printoption{heuristics/feaspump/objfactor}%
+{$0\leq\textrm{real}\leq1$}%
+{$1$}%
+{factor by which the regard of the objective is decreased in each round, 1.0 for dynamic}%
+{}
+
+\printoption{heuristics/feaspump/beforecuts}%
+{boolean}%
+{1}%
+{should the feasibility pump be called at root node before cut separation?}%
+{}
+
+\printoption{heuristics/fixandinfer/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling primal heuristic $<$fixandinfer$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/fixandinfer/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$fixandinfer$>$}%
+{}
+
+\printoption{heuristics/fracdiving/freq}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{frequency for calling primal heuristic $<$fracdiving$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/fracdiving/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$3$}%
+{frequency offset for calling primal heuristic $<$fracdiving$>$}%
+{}
+
+\printoption{heuristics/fracdiving/maxlpiterquot}%
+{$0\leq\textrm{real}$}%
+{$0.05$}%
+{maximal fraction of diving LP iterations compared to node LP iterations}%
+{}
+
+\printoption{heuristics/fracdiving/maxlpiterofs}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{additional number of allowed LP iterations}%
+{}
+
+\printoption{heuristics/fracdiving/backtrack}%
+{boolean}%
+{1}%
+{use one level of backtracking if infeasibility is encountered?}%
+{}
+
+\printoption{heuristics/guideddiving/freq}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{frequency for calling primal heuristic $<$guideddiving$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/guideddiving/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$7$}%
+{frequency offset for calling primal heuristic $<$guideddiving$>$}%
+{}
+
+\printoption{heuristics/guideddiving/maxlpiterquot}%
+{$0\leq\textrm{real}$}%
+{$0.05$}%
+{maximal fraction of diving LP iterations compared to node LP iterations}%
+{}
+
+\printoption{heuristics/guideddiving/maxlpiterofs}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{additional number of allowed LP iterations}%
+{}
+
+\printoption{heuristics/guideddiving/backtrack}%
+{boolean}%
+{1}%
+{use one level of backtracking if infeasibility is encountered?}%
+{}
+
+\printoption{heuristics/intdiving/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling primal heuristic $<$intdiving$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/intdiving/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$9$}%
+{frequency offset for calling primal heuristic $<$intdiving$>$}%
+{}
+
+\printoption{heuristics/intdiving/maxlpiterquot}%
+{$0\leq\textrm{real}$}%
+{$0.05$}%
+{maximal fraction of diving LP iterations compared to node LP iterations}%
+{}
+
+\printoption{heuristics/intdiving/maxlpiterofs}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{additional number of allowed LP iterations}%
+{}
+
+\printoption{heuristics/intdiving/backtrack}%
+{boolean}%
+{1}%
+{use one level of backtracking if infeasibility is encountered?}%
+{}
+
+\printoption{heuristics/intshifting/freq}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{frequency for calling primal heuristic $<$intshifting$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/intshifting/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$intshifting$>$}%
+{}
+
+\printoption{heuristics/linesearchdiving/freq}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{frequency for calling primal heuristic $<$linesearchdiving$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/linesearchdiving/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$6$}%
+{frequency offset for calling primal heuristic $<$linesearchdiving$>$}%
+{}
+
+\printoption{heuristics/linesearchdiving/maxlpiterquot}%
+{$0\leq\textrm{real}$}%
+{$0.05$}%
+{maximal fraction of diving LP iterations compared to node LP iterations}%
+{}
+
+\printoption{heuristics/linesearchdiving/maxlpiterofs}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{additional number of allowed LP iterations}%
+{}
+
+\printoption{heuristics/linesearchdiving/backtrack}%
+{boolean}%
+{1}%
+{use one level of backtracking if infeasibility is encountered?}%
+{}
+
+\printoption{heuristics/localbranching/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling primal heuristic $<$localbranching$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/localbranching/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$localbranching$>$}%
+{}
+
+\printoption{heuristics/localbranching/nodesofs}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{number of nodes added to the contingent of the total nodes}%
+{}
+
+\printoption{heuristics/localbranching/neighborhoodsize}%
+{$1\leq\textrm{integer}$}%
+{$18$}%
+{radius (using Manhattan metric) of the incumbent's neighborhood to be searched}%
+{}
+
+\printoption{heuristics/localbranching/nodesquot}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.05$}%
+{contingent of sub problem nodes in relation to the number of nodes of the original problem}%
+{}
+
+\printoption{heuristics/mutation/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling primal heuristic $<$mutation$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/mutation/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$8$}%
+{frequency offset for calling primal heuristic $<$mutation$>$}%
+{}
+
+\printoption{heuristics/mutation/nodesofs}%
+{$0\leq\textrm{integer}$}%
+{$500$}%
+{number of nodes added to the contingent of the total nodes}%
+{}
+
+\printoption{heuristics/mutation/nodesquot}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.1$}%
+{contingent of sub problem nodes in relation to the number of nodes of the original problem}%
+{}
+
+\printoption{heuristics/mutation/minfixingrate}%
+{$10^{- 6}\leq\textrm{real}\leq0.999999$}%
+{$0.8$}%
+{percentage of integer variables that have to be fixed }%
+{}
+
+\printoption{heuristics/nlp/freq}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{frequency for calling primal heuristic $<$nlp$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/nlp/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$nlp$>$}%
+{}
+
+\printoption{heuristics/nlp/nlpverblevel}%
+{$0\leq\textrm{integer}\leq2$}%
+{$0$}%
+{verbosity level of NLP solver}%
+{}
+
+\printoption{heuristics/nlp/nlpiterlimit}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{iteration limit of NLP solver; 0 to use solver default}%
+{}
+
+\printoption{heuristics/nlp/nlptimelimit}%
+{$0\leq\textrm{real}$}%
+{$0$}%
+{time limit of NLP solver; 0 to use solver default}%
+{}
+
+\printoption{heuristics/nlp/resolvetolfactor}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.01$}%
+{if SCIP does not accept a solution which the NLP solver thinks is feasible, the feasibility tolerance is reduced by this factor and the NLP resolved (set to 1. to turn off resolve}%
+{}
+
+\printoption{heuristics/nlp/resolvefromscratch}%
+{boolean}%
+{1}%
+{whether a resolve of an NLP due to disagreement of feasibility should be from the original starting point or the infeasible solution}%
+{}
+
+\printoption{heuristics/nlp/iteroffset}%
+{$0\leq\textrm{integer}$}%
+{$500$}%
+{number of iterations added to the contingent of the total number of iterations}%
+{}
+
+\printoption{heuristics/nlp/iterquotient}%
+{$0\leq\textrm{real}$}%
+{$0.1$}%
+{contingent of NLP iterations in relation to the number of nodes in SCIP}%
+{}
+
+\printoption{heuristics/nlp/itermin}%
+{$0\leq\textrm{integer}$}%
+{$300$}%
+{contingent of NLP iterations in relation to the number of nodes in SCIP}%
+{}
+
+\printoption{heuristics/nlp/varboundexplicit}%
+{boolean}%
+{1}%
+{whether variable bound constraints should be handled explicitly before solving NLP instead of adding them to the NLP}%
+{}
+
+\printoption{heuristics/objpscostdiving/freq}%
+{$-1\leq\textrm{integer}$}%
+{$20$}%
+{frequency for calling primal heuristic $<$objpscostdiving$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/objpscostdiving/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$4$}%
+{frequency offset for calling primal heuristic $<$objpscostdiving$>$}%
+{}
+
+\printoption{heuristics/objpscostdiving/maxlpiterquot}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.01$}%
+{maximal fraction of diving LP iterations compared to total iteration number}%
+{}
+
+\printoption{heuristics/objpscostdiving/maxlpiterofs}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{additional number of allowed LP iterations}%
+{}
+
+\printoption{heuristics/octane/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling primal heuristic $<$octane$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/octane/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$octane$>$}%
+{}
+
+\printoption{heuristics/oneopt/freq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for calling primal heuristic $<$oneopt$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/oneopt/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$oneopt$>$}%
+{}
+
+\printoption{heuristics/pscostdiving/freq}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{frequency for calling primal heuristic $<$pscostdiving$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/pscostdiving/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$2$}%
+{frequency offset for calling primal heuristic $<$pscostdiving$>$}%
+{}
+
+\printoption{heuristics/pscostdiving/maxlpiterquot}%
+{$0\leq\textrm{real}$}%
+{$0.05$}%
+{maximal fraction of diving LP iterations compared to node LP iterations}%
+{}
+
+\printoption{heuristics/pscostdiving/maxlpiterofs}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{additional number of allowed LP iterations}%
+{}
+
+\printoption{heuristics/pscostdiving/backtrack}%
+{boolean}%
+{1}%
+{use one level of backtracking if infeasibility is encountered?}%
+{}
+
+\printoption{heuristics/rens/freq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for calling primal heuristic $<$rens$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/rens/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$rens$>$}%
+{}
+
+\printoption{heuristics/rens/minfixingrate}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.5$}%
+{minimum percentage of integer variables that have to be fixable }%
+{}
+
+\printoption{heuristics/rens/nodesofs}%
+{$0\leq\textrm{integer}\leq-1$}%
+{$500$}%
+{number of nodes added to the contingent of the total nodes}%
+{}
+
+\printoption{heuristics/rens/nodesquot}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.1$}%
+{contingent of sub problem nodes in relation to the number of nodes of the original problem}%
+{}
+
+\printoption{heuristics/rins/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling primal heuristic $<$rins$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/rins/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$5$}%
+{frequency offset for calling primal heuristic $<$rins$>$}%
+{}
+
+\printoption{heuristics/rins/nodesofs}%
+{$0\leq\textrm{integer}$}%
+{$500$}%
+{number of nodes added to the contingent of the total nodes}%
+{}
+
+\printoption{heuristics/rins/nodesquot}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.1$}%
+{contingent of sub problem nodes in relation to the number of nodes of the original problem}%
+{}
+
+\printoption{heuristics/rins/minfixingrate}%
+{$0\leq\textrm{real}\leq1$}%
+{$0$}%
+{minimum percentage of integer variables that have to be fixed }%
+{}
+
+\printoption{heuristics/rootsoldiving/freq}%
+{$-1\leq\textrm{integer}$}%
+{$20$}%
+{frequency for calling primal heuristic $<$rootsoldiving$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/rootsoldiving/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$5$}%
+{frequency offset for calling primal heuristic $<$rootsoldiving$>$}%
+{}
+
+\printoption{heuristics/rootsoldiving/maxlpiterquot}%
+{$0\leq\textrm{real}$}%
+{$0.01$}%
+{maximal fraction of diving LP iterations compared to node LP iterations}%
+{}
+
+\printoption{heuristics/rootsoldiving/maxlpiterofs}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{additional number of allowed LP iterations}%
+{}
+
+\printoption{heuristics/rounding/freq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for calling primal heuristic $<$rounding$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/rounding/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$rounding$>$}%
+{}
+
+\printoption{heuristics/shifting/freq}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{frequency for calling primal heuristic $<$shifting$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/shifting/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$shifting$>$}%
+{}
+
+\printoption{heuristics/simplerounding/freq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for calling primal heuristic $<$simplerounding$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/simplerounding/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$simplerounding$>$}%
+{}
+
+\printoption{heuristics/trivial/freq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for calling primal heuristic $<$trivial$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/trivial/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$trivial$>$}%
+{}
+
+\printoption{heuristics/trysol/freq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for calling primal heuristic $<$trysol$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/trysol/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$trysol$>$}%
+{}
+
+\printoption{heuristics/veclendiving/freq}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{frequency for calling primal heuristic $<$veclendiving$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/veclendiving/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$4$}%
+{frequency offset for calling primal heuristic $<$veclendiving$>$}%
+{}
+
+\printoption{heuristics/veclendiving/maxlpiterquot}%
+{$0\leq\textrm{real}$}%
+{$0.05$}%
+{maximal fraction of diving LP iterations compared to node LP iterations}%
+{}
+
+\printoption{heuristics/veclendiving/maxlpiterofs}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{additional number of allowed LP iterations}%
+{}
+
+\printoption{heuristics/veclendiving/backtrack}%
+{boolean}%
+{1}%
+{use one level of backtracking if infeasibility is encountered?}%
+{}
+
+\printoptioncategory{Limits}
+\printoption{limits/time}%
+{$0\leq\textrm{real}$}%
+{$\infty$}%
+{maximal time in seconds to run}%
+{}
+
+\printoption{limits/nodes}%
+{$-1\leq\textrm{integer}\leq-1$}%
+{$-1$}%
+{maximal number of nodes to process (-1: no limit)}%
+{}
+
+\printoption{limits/stallnodes}%
+{$-1\leq\textrm{integer}\leq-1$}%
+{$-1$}%
+{solving stops, if the given number of nodes was processed since the last improvement of the primal solution value (-1: no limit)}%
+{}
+
+\printoption{limits/memory}%
+{$0\leq\textrm{real}$}%
+{$\infty$}%
+{maximal memory usage in MB; reported memory usage is lower than real memory usage!}%
+{}
+
+\printoption{limits/gap}%
+{$0\leq\textrm{real}$}%
+{$0$}%
+{solving stops, if the relative gap = |(primalbound - dualbound)/dualbound| is below the given value}%
+{}
+
+\printoption{limits/absgap}%
+{$0\leq\textrm{real}$}%
+{$0$}%
+{solving stops, if the absolute gap = |primalbound - dualbound| is below the given value}%
+{}
+
+\printoption{limits/solutions}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{solving stops, if the given number of solutions were found (-1: no limit)}%
+{}
+
+\printoption{limits/bestsol}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{solving stops, if the given number of solution improvements were found (-1: no limit)}%
+{}
+
+\printoption{limits/maxsol}%
+{$1\leq\textrm{integer}$}%
+{$100$}%
+{maximal number of solutions to store in the solution storage}%
+{}
+
+\printoptioncategory{LP}
+\printoption{lp/solvefreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for solving LP at the nodes (-1: never; 0: only root LP)}%
+{}
+
+\printoption{lp/solvedepth}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal depth for solving LP at the nodes (-1: no depth limit)}%
+{}
+
+\printoption{lp/initalgorithm}%
+{character}%
+{s}%
+{LP algorithm for solving initial LP relaxations (automatic 's'implex, 'p'rimal simplex, 'd'ual simplex, 'b'arrier, barrier with 'c'rossover)}%
+{}
+
+\printoption{lp/resolvealgorithm}%
+{character}%
+{s}%
+{LP algorithm for resolving LP relaxations if a starting basis exists (automatic 's'implex, 'p'rimal simplex, 'd'ual simplex, 'b'arrier, barrier with 'c'rossover)}%
+{}
+
+\printoption{lp/pricing}%
+{character}%
+{l}%
+{LP pricing strategy ('l'pi default, 'a'uto, 'f'ull pricing, 'p'artial, 's'teepest edge pricing, 'q'uickstart steepest edge pricing, 'd'evex pricing)}%
+{}
+
+\printoptioncategory{Memory}
+\printoption{memory/savefac}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.8$}%
+{fraction of maximal memory usage resulting in switch to memory saving mode}%
+{}
+
+\printoptioncategory{Micellaneous}
+\printoption{misc/catchctrlc}%
+{boolean}%
+{1}%
+{should the CTRL-C interrupt be caught by SCIP?}%
+{}
+
+\printoptioncategory{Node Selection}
+\printoption{nodeselection/childsel}%
+{character}%
+{h}%
+{child selection rule ('d'own, 'u'p, 'p'seudo costs, 'i'nference, 'l'p value, 'r'oot LP value difference, 'h'brid inference/root LP value difference)}%
+{}
+
+\printoption{nodeselection/bfs/stdpriority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$100000$}%
+{priority of node selection rule $<$bfs$>$ in standard mode}%
+{}
+
+\printoption{nodeselection/dfs/stdpriority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$0$}%
+{priority of node selection rule $<$dfs$>$ in standard mode}%
+{}
+
+\printoption{nodeselection/estimate/stdpriority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$200000$}%
+{priority of node selection rule $<$estimate$>$ in standard mode}%
+{}
+
+\printoption{nodeselection/estimate/bestnodefreq}%
+{$0\leq\textrm{integer}$}%
+{$10$}%
+{frequency at which the best node instead of the best estimate is selected (0: never)}%
+{}
+
+\printoption{nodeselection/hybridestim/stdpriority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$50000$}%
+{priority of node selection rule $<$hybridestim$>$ in standard mode}%
+{}
+
+\printoption{nodeselection/hybridestim/bestnodefreq}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{frequency at which the best node instead of the hybrid best estimate / best bound is selected (0: never)}%
+{}
+
+\printoption{nodeselection/restartdfs/stdpriority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$10000$}%
+{priority of node selection rule $<$restartdfs$>$ in standard mode}%
+{}
+
+\printoption{nodeselection/restartdfs/selectbestfreq}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{frequency for selecting the best node instead of the deepest one (0: never)}%
+{}
+
+\printoptioncategory{Tolerances}
+\printoption{numerics/epsilon}%
+{$10^{-20}\leq\textrm{real}\leq0.001$}%
+{$10^{- 9}$}%
+{absolute values smaller than this are considered zero}%
+{}
+
+\printoption{numerics/sumepsilon}%
+{$10^{-17}\leq\textrm{real}\leq0.001$}%
+{$10^{- 6}$}%
+{absolute values of sums smaller than this are considered zero}%
+{}
+
+\printoption{numerics/feastol}%
+{$10^{-17}\leq\textrm{real}\leq0.001$}%
+{$10^{- 6}$}%
+{LP feasibility tolerance for constraints}%
+{}
+
+\printoption{numerics/dualfeastol}%
+{$10^{-17}\leq\textrm{real}\leq0.001$}%
+{$10^{- 9}$}%
+{LP feasibility tolerance for reduced costs}%
+{}
+
+\printoptioncategory{Presolving}
+\printoption{presolving/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of presolving rounds (-1: unlimited)}%
+{}
+
+\printoption{presolving/maxrestarts}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of restarts (-1: unlimited)}%
+{}
+
+\printoption{presolving/boundshift/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{maximal number of presolving rounds the presolver participates in (-1: no limit)}%
+{}
+
+\printoption{presolving/dualfix/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of presolving rounds the presolver participates in (-1: no limit)}%
+{}
+
+\printoption{presolving/implics/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of presolving rounds the presolver participates in (-1: no limit)}%
+{}
+
+\printoption{presolving/inttobinary/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of presolving rounds the presolver participates in (-1: no limit)}%
+{}
+
+\printoption{presolving/probing/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of presolving rounds the presolver participates in (-1: no limit)}%
+{}
+
+\printoption{presolving/probing/maxruns}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{maximal number of runs, probing participates in (-1: no limit)}%
+{}
+
+\printoption{presolving/trivial/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of presolving rounds the presolver participates in (-1: no limit)}%
+{}
+
+\printoptioncategory{Domain Propagation}
+\printoption{propagating/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$100$}%
+{maximal number of propagation rounds per node (-1: unlimited)}%
+{}
+
+\printoption{propagating/maxroundsroot}%
+{$-1\leq\textrm{integer}$}%
+{$1000$}%
+{maximal number of propagation rounds in the root node (-1: unlimited)}%
+{}
+
+\printoption{propagating/abortoncutoff}%
+{boolean}%
+{1}%
+{should propagation be aborted immediately? setting this to FALSE could help conflict analysis to produce more conflict constraints}%
+{}
+
+\printoption{propagating/pseudoobj/freq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for calling propagator $<$pseudoobj$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{propagating/rootredcost/freq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for calling propagator $<$rootredcost$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoptioncategory{Separation}
+\printoption{separating/maxbounddist}%
+{$0\leq\textrm{real}\leq1$}%
+{$1$}%
+{maximal relative distance from current node's dual bound to primal bound compared to best node's dual bound for applying separation (0.0: only on current best node, 1.0: on all nodes)}%
+{}
+
+\printoption{separating/minefficacy}%
+{$0\leq\textrm{real}$}%
+{$0.05$}%
+{minimal efficacy for a cut to enter the LP}%
+{}
+
+\printoption{separating/minefficacyroot}%
+{$0\leq\textrm{real}$}%
+{$0.01$}%
+{minimal efficacy for a cut to enter the LP in the root node}%
+{}
+
+\printoption{separating/minortho}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.5$}%
+{minimal orthogonality for a cut to enter the LP}%
+{}
+
+\printoption{separating/minorthoroot}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.5$}%
+{minimal orthogonality for a cut to enter the LP in the root node}%
+{}
+
+\printoption{separating/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$5$}%
+{maximal number of separation rounds per node (-1: unlimited)}%
+{}
+
+\printoption{separating/maxroundsroot}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of separation rounds in the root node (-1: unlimited)}%
+{}
+
+\printoption{separating/maxstallrounds}%
+{$-1\leq\textrm{integer}$}%
+{$5$}%
+{maximal number of consecutive separation rounds without objective or integrality improvement (-1: no additional restriction)}%
+{}
+
+\printoption{separating/maxcuts}%
+{$0\leq\textrm{integer}$}%
+{$100$}%
+{maximal number of cuts separated per separation round (0: disable local separation)}%
+{}
+
+\printoption{separating/maxcutsroot}%
+{$0\leq\textrm{integer}$}%
+{$2000$}%
+{maximal number of separated cuts at the root node (0: disable root node separation)}%
+{}
+
+\printoption{separating/poolfreq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{separation frequency for the global cut pool (-1: disable global cut pool, 0: only separate pool at the root)}%
+{}
+
+\printoption{separating/clique/freq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for calling separator $<$clique$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{separating/clique/maxsepacuts}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{maximal number of clique cuts separated per separation round (-1: no limit)}%
+{}
+
+\printoption{separating/cmir/freq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for calling separator $<$cmir$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{separating/cmir/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$3$}%
+{maximal number of cmir separation rounds per node (-1: unlimited)}%
+{}
+
+\printoption{separating/cmir/maxroundsroot}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{maximal number of cmir separation rounds in the root node (-1: unlimited)}%
+{}
+
+\printoption{separating/cmir/maxsepacuts}%
+{$0\leq\textrm{integer}$}%
+{$100$}%
+{maximal number of cmir cuts separated per separation round}%
+{}
+
+\printoption{separating/cmir/maxsepacutsroot}%
+{$0\leq\textrm{integer}$}%
+{$500$}%
+{maximal number of cmir cuts separated per separation round in the root node}%
+{}
+
+\printoption{separating/cmir/dynamiccuts}%
+{boolean}%
+{1}%
+{should generated cuts be removed from the LP if they are no longer tight?}%
+{}
+
+\printoption{separating/flowcover/freq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for calling separator $<$flowcover$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{separating/flowcover/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$5$}%
+{maximal number of separation rounds per node (-1: unlimited)}%
+{}
+
+\printoption{separating/flowcover/maxroundsroot}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{maximal number of separation rounds in the root node (-1: unlimited)}%
+{}
+
+\printoption{separating/flowcover/maxsepacuts}%
+{$0\leq\textrm{integer}$}%
+{$100$}%
+{maximal number of flow cover cuts separated per separation round}%
+{}
+
+\printoption{separating/flowcover/maxsepacutsroot}%
+{$0\leq\textrm{integer}$}%
+{$200$}%
+{maximal number of flow cover cuts separated per separation round in the root}%
+{}
+
+\printoption{separating/flowcover/dynamiccuts}%
+{boolean}%
+{1}%
+{should generated cuts be removed from the LP if they are no longer tight?}%
+{}
+
+\printoption{separating/gomory/freq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for calling separator $<$gomory$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{separating/gomory/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$5$}%
+{maximal number of gomory separation rounds per node (-1: unlimited)}%
+{}
+
+\printoption{separating/gomory/maxroundsroot}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of gomory separation rounds in the root node (-1: unlimited)}%
+{}
+
+\printoption{separating/gomory/maxsepacuts}%
+{$0\leq\textrm{integer}$}%
+{$50$}%
+{maximal number of gomory cuts separated per separation round}%
+{}
+
+\printoption{separating/gomory/maxsepacutsroot}%
+{$0\leq\textrm{integer}$}%
+{$500$}%
+{maximal number of gomory cuts separated per separation round in the root node}%
+{}
+
+\printoption{separating/gomory/dynamiccuts}%
+{boolean}%
+{1}%
+{should generated cuts be removed from the LP if they are no longer tight?}%
+{}
+
+\printoption{separating/impliedbounds/freq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for calling separator $<$impliedbounds$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{separating/intobj/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling separator $<$intobj$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{separating/mcf/freq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for calling separator $<$mcf$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{separating/mcf/dynamiccuts}%
+{boolean}%
+{1}%
+{should generated cuts be removed from the LP if they are no longer tight?}%
+{}
+
+\printoption{separating/mcf/maxsepacuts}%
+{$-1\leq\textrm{integer}$}%
+{$100$}%
+{maximal number of mcf cuts separated per separation round}%
+{}
+
+\printoption{separating/mcf/maxsepacutsroot}%
+{$-1\leq\textrm{integer}$}%
+{$200$}%
+{maximal number of mcf cuts separated per separation round in the root node  -- default separation}%
+{}
+
+\printoption{separating/redcost/freq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for calling separator $<$redcost$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{separating/redcost/continuous}%
+{boolean}%
+{0}%
+{should reduced cost fixing be also applied to continuous variables?}%
+{}
+
+\printoption{separating/strongcg/freq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for calling separator $<$strongcg$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{separating/strongcg/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$5$}%
+{maximal number of strong CG separation rounds per node (-1: unlimited)}%
+{}
+
+\printoption{separating/strongcg/maxroundsroot}%
+{$-1\leq\textrm{integer}$}%
+{$20$}%
+{maximal number of strong CG separation rounds in the root node (-1: unlimited)}%
+{}
+
+\printoption{separating/strongcg/maxsepacuts}%
+{$0\leq\textrm{integer}$}%
+{$50$}%
+{maximal number of strong CG cuts separated per separation round}%
+{}
+
+\printoption{separating/strongcg/maxsepacutsroot}%
+{$0\leq\textrm{integer}$}%
+{$500$}%
+{maximal number of strong CG cuts separated per separation round in the root node}%
+{}
+
+\printoption{separating/strongcg/dynamiccuts}%
+{boolean}%
+{1}%
+{should generated cuts be removed from the LP if they are no longer tight?}%
+{}
+
+\printoption{separating/zerohalf/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling separator $<$zerohalf$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{separating/zerohalf/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$5$}%
+{maximal number of zerohalf separation rounds per node (-1: unlimited)}%
+{}
+
+\printoption{separating/zerohalf/maxroundsroot}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{maximal number of zerohalf separation rounds in the root node (-1: unlimited)}%
+{}
+
+\printoption{separating/zerohalf/maxsepacuts}%
+{$0\leq\textrm{integer}$}%
+{$50$}%
+{maximal number of {0,1/2}-cuts separated per separation round}%
+{}
+
+\printoption{separating/zerohalf/maxsepacutsroot}%
+{$0\leq\textrm{integer}$}%
+{$500$}%
+{maximal number of {0,1/2}-cuts separated per separation round in the root node}%
+{}
+
+\printoption{separating/zerohalf/dynamiccuts}%
+{boolean}%
+{1}%
+{should generated cuts be removed from the LP if they are no longer tight?}%
+{}
+
+\printoption{separating/zerohalf/preprocessing/decomposeproblem}%
+{boolean}%
+{0}%
+{should problem be decomposed into subproblems (if possible) before applying preprocessing?}%
+{}
+
+\printoption{separating/zerohalf/preprocessing/delta}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.5$}%
+{value of delta parameter used in preprocessing method 'd'}%
+{}
+
+\printoption{separating/zerohalf/preprocessing/ppmethods}%
+{string}%
+{CXRGXIM}%
+{preprocessing methods and ordering:\\   \#                      'd' columns with small LP solution,\\    \#                      'G' modified Gaussian elimination,\\     \#                      'i' identical columns,\\   \#                      'I' identical rows,\\   \#                      'L' large slack rows,\\   \#                      'M' large slack rows (minslack),\\   \#                      's' column singletons,\\   \#                      'X' add trivial zerohalf cuts,\\   \#                      'z' zero columns,\\   \#                      'Z' zero rows,\\   \#                      'C' fast {'z','s'},\\   \#                      'R' fast {'Z','L','I'}\\   \#                      \\                         \#                      '-' no preprocessing\\     \#                     }%
+{}
+
+\printoption{separating/zerohalf/separating/forcecutstolp}%
+{boolean}%
+{0}%
+{should the cuts be forced to enter the LP?}%
+{}
+
+\printoption{separating/zerohalf/separating/forcecutstosepastore}%
+{boolean}%
+{0}%
+{should the cuts be forced to enter SCIP's sepastore?}%
+{}
+
+\printoption{separating/zerohalf/separating/minviolation}%
+{$0.001\leq\textrm{real}\leq0.5$}%
+{$0.3$}%
+{minimal violation of a {0,1/2}-cut to be separated}%
+{}
+
+\printoption{separating/zerohalf/separating/sepamethods}%
+{string}%
+{2g}%
+{separating methods and ordering:\\   \#                      '!' stop further processing if a cut was found,\\   \#                      '2' exact polynomial time algorithm (only if matrix has max 2 odd entries per row),\\   \#                      'e' enumeration heuristics (k=1: try all preprocessed rows),\\   \#                      'E' enumeration heuristics (k=2: try all combinations of up to two preprocessed rows),\\   \#                      'g' Extended Gaussian elimination heuristics,\\   \#                      's' auxiliary IP heuristics (i.e. number of solved nodes is limited)\\   \#                      'S' auxiliary IP exact      (i.e. unlimited number of nodes)\\   \#                      \\   \#                      '-' no processing\\   \#                     }%
+{}
+
+\printoption{separating/zerohalf/separating/auxip/settingsfile}%
+{string}%
+{-}%
+{optional settings file of the auxiliary IP (-: none)}%
+{}
+
+\printoption{separating/zerohalf/separating/auxip/sollimit}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{limits/solutions setting of the auxiliary IP}%
+{}
+
+\printoption{separating/zerohalf/separating/auxip/penaltyfactor}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.001$}%
+{penalty factor used with objective function 'p' of auxiliary IP}%
+{}
+
+\printoption{separating/zerohalf/separating/auxip/useallsols}%
+{boolean}%
+{1}%
+{should all (proper) solutions of the auxiliary IP be used to generate cuts instead of using only the best?}%
+{}
+
+\printoption{separating/zerohalf/separating/auxip/objective}%
+{character}%
+{v}%
+{auxiliary IP objective:\\   \#                      'v' maximize cut violation,\\   \#                      'u' minimize number of aggregated rows in cut,\\   \#                      'w' minimize number of aggregated rows in cut\\   \#                          weighted by the number of rows in the aggregation,\\   \#                      'p' maximize cut violation and penalize a high number\\   \#                          of aggregated rows in the cut weighted by the number\\   \#                          of rows in the aggregation and the penalty factor p\\   \#                     }%
+{}
+
+\printoptioncategory{Timing}
+\printoption{timing/clocktype}%
+{$1\leq\textrm{integer}\leq2$}%
+{$1$}%
+{default clock type (1: CPU user seconds, 2: wall clock time)}%
+{}
+
+\printoption{timing/enabled}%
+{boolean}%
+{1}%
+{is timing enabled?}%
+{}
+

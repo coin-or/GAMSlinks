@@ -1,0 +1,143 @@
+\topcaption{\label{tab:bonminoptions} 
+List of options and compatibility with the different algorithms.
+}
+\tablehead{\hline 
+Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} & {\tt B-Ecp} & {\tt B-iFP} & {\tt Cbc\_Par} \\
+\hline}
+\tabletail{\hline \multicolumn{10}{|r|}{continued on next page}\\\hline}
+{\small
+\begin{xtabular}{@{}|l|@{\;}r@{\;}|@{\;}r@{\;}|@{\;}r@{\;}|@{\;}r@{\;}|@{\;}r@{\;}|@{\;}r@{\;}|@{\;}r@{\;}|@{\;}r@{\;}|@{\;}r@{\;}|@{}}
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Algorithm choice}\\
+\hline
+algorithm & string & B-BB & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Branch-and-bound options}\\
+\hline
+allowable\_fraction\_gap & $\mathbb{Q}$ & \MYGAMS \texttt{optcr} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+allowable\_gap & $\mathbb{Q}$ & \MYGAMS \texttt{optca} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+cutoff & $\mathbb{Q}$ & \MYGAMS \texttt{cutoff} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+cutoff\_decr & $\mathbb{Q}$ & $10^{- 5}$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+enable\_dynamic\_nlp & string & no & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
+integer\_tolerance & $\mathbb{Q}$ & $10^{- 6}$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+iteration\_limit & $\mathbb{Z}$ & $\infty$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+nlp\_failure\_behavior & string & stop & $\checkmark$& --& --& --& --& --& --\\
+node\_comparison & string & best-bound & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+node\_limit & $\mathbb{Z}$ & \MYGAMS \texttt{nodlim} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+num\_cut\_passes & $\mathbb{Z}$ & $1$ & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
+num\_cut\_passes\_at\_root & $\mathbb{Z}$ & $20$ & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
+number\_before\_trust & $\mathbb{Z}$ & $8$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+number\_strong\_branch & $\mathbb{Z}$ & $20$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+solution\_limit & $\mathbb{Z}$ & $\infty$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+time\_limit & $\mathbb{Q}$ & \MYGAMS \texttt{reslim} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+tree\_search\_strategy & string & probed-dive & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+variable\_selection & string & strong-branching & $\checkmark$& --& --& --& --& --& --\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{ECP cuts generation}\\
+\hline
+ecp\_abs\_tol & $\mathbb{Q}$ & $10^{- 6}$ & --& --& $\checkmark$& $\checkmark$& --& --& --\\
+ecp\_max\_rounds & $\mathbb{Z}$ & $5$ & --& --& $\checkmark$& $\checkmark$& --& --& --\\
+ecp\_propability\_factor & $\mathbb{Q}$ & $10$ & --& --& $\checkmark$& $\checkmark$& --& --& --\\
+ecp\_rel\_tol & $\mathbb{Q}$ & $0$ & --& --& $\checkmark$& $\checkmark$& --& --& --\\
+filmint\_ecp\_cuts & $\mathbb{Z}$ & $0$ & --& --& $\checkmark$& $\checkmark$& --& --& --\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Feasibility checker using OA cuts}\\
+\hline
+feas\_check\_cut\_types & string & outer-approximations & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
+feas\_check\_discard\_policy & string & detect-cycles & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
+generate\_benders\_after\_so\_many\_oa & $\mathbb{Z}$ & $5000$ & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{MILP Solver}\\
+\hline
+milp\_solver & string & Cbc\_D & --& --& --& --& --& --& $\checkmark$\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{MILP cutting planes in hybrid algorithm (B-Hyb)}\\
+\hline
+2mir\_cuts & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+Gomory\_cuts & $\mathbb{Z}$ & $-5$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+clique\_cuts & $\mathbb{Z}$ & $-5$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+cover\_cuts & $\mathbb{Z}$ & $-5$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+flow\_cover\_cuts & $\mathbb{Z}$ & $-5$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+lift\_and\_project\_cuts & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+mir\_cuts & $\mathbb{Z}$ & $-5$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+reduce\_and\_split\_cuts & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{MINLP Heuristics}\\
+\hline
+feasibility\_pump\_objective\_norm & $\mathbb{Z}$ & $1$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+heuristic\_RINS & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+heuristic\_dive\_MIP\_fractional & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+heuristic\_dive\_MIP\_vectorLength & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+heuristic\_dive\_fractional & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+heuristic\_dive\_vectorLength & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+heuristic\_feasibility\_pump & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+pump\_for\_minlp & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{NLP interface}\\
+\hline
+warm\_start & string & none & $\checkmark$& --& --& --& --& --& --\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{NLP solution robustness}\\
+\hline
+max\_consecutive\_failures & $\mathbb{Z}$ & $10$ & $\checkmark$& --& --& --& --& --& --\\
+max\_random\_point\_radius & $\mathbb{Q}$ & $100000$ & $\checkmark$& --& --& --& --& --& --\\
+num\_iterations\_suspect & $\mathbb{Z}$ & $-1$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+num\_retry\_unsolved\_random\_point & $\mathbb{Z}$ & $0$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+random\_point\_perturbation\_interval & $\mathbb{Q}$ & $1$ & $\checkmark$& --& --& --& --& --& --\\
+random\_point\_type & string & Jon & $\checkmark$& --& --& --& --& --& --\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{NLP solves in hybrid algorithm (B-Hyb)}\\
+\hline
+nlp\_solve\_frequency & $\mathbb{Z}$ & $10$ & --& --& --& $\checkmark$& --& --& --\\
+nlp\_solve\_max\_depth & $\mathbb{Z}$ & $10$ & --& --& --& $\checkmark$& --& --& --\\
+nlp\_solves\_per\_depth & $\mathbb{Q}$ & $10^{ 100}$ & --& --& --& $\checkmark$& --& --& --\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Nonconvex problems}\\
+\hline
+coeff\_var\_threshold & $\mathbb{Q}$ & $0.1$ & $\checkmark$& --& --& --& --& --& --\\
+dynamic\_def\_cutoff\_decr & string & no & $\checkmark$& --& --& --& --& --& --\\
+first\_perc\_for\_cutoff\_decr & $\mathbb{Q}$ & $-0.02$ & $\checkmark$& --& --& --& --& --& --\\
+max\_consecutive\_infeasible & $\mathbb{Z}$ & $0$ & $\checkmark$& --& --& --& --& --& --\\
+num\_resolve\_at\_infeasibles & $\mathbb{Z}$ & $0$ & $\checkmark$& --& --& --& --& --& --\\
+num\_resolve\_at\_node & $\mathbb{Z}$ & $0$ & $\checkmark$& --& --& --& --& --& --\\
+num\_resolve\_at\_root & $\mathbb{Z}$ & $0$ & $\checkmark$& --& --& --& --& --& --\\
+second\_perc\_for\_cutoff\_decr & $\mathbb{Q}$ & $-0.05$ & $\checkmark$& --& --& --& --& --& --\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Outer Approximation Decomposition (B-OA)}\\
+\hline
+oa\_decomposition & string & no & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Outer Approximation cuts generation}\\
+\hline
+add\_only\_violated\_oa & string & no & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+oa\_cuts\_scope & string & global & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+tiny\_element & $\mathbb{Q}$ & $10^{- 8}$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+very\_tiny\_element & $\mathbb{Q}$ & $10^{-17}$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Output}\\
+\hline
+bb\_log\_interval & $\mathbb{Z}$ & $100$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+bb\_log\_level & $\mathbb{Z}$ & $1$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+fp\_log\_frequency & $\mathbb{Q}$ & $100$ & --& --& $\checkmark$& $\checkmark$& --& --& --\\
+fp\_log\_level & $\mathbb{Z}$ & $1$ & --& --& $\checkmark$& $\checkmark$& --& --& --\\
+lp\_log\_level & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+milp\_log\_level & $\mathbb{Z}$ & $0$ & --& --& --& --& --& --& $\checkmark$\\
+nlp\_log\_at\_root & $\mathbb{Z}$ & 5 & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+nlp\_log\_level & $\mathbb{Z}$ & $1$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+oa\_cuts\_log\_level & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+oa\_log\_frequency & $\mathbb{Q}$ & $100$ & $\checkmark$& --& --& $\checkmark$& $\checkmark$& --& --\\
+oa\_log\_level & $\mathbb{Z}$ & $1$ & $\checkmark$& --& --& $\checkmark$& $\checkmark$& --& --\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Strong branching setup}\\
+\hline
+candidate\_sort\_criterion & string & best-ps-cost & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+maxmin\_crit\_have\_sol & $\mathbb{Q}$ & $0.1$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+maxmin\_crit\_no\_sol & $\mathbb{Q}$ & $0.7$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+min\_number\_strong\_branch & $\mathbb{Z}$ & $0$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+number\_before\_trust\_list & $\mathbb{Z}$ & $0$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+number\_look\_ahead & $\mathbb{Z}$ & $0$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
+number\_strong\_branch\_root & $\mathbb{Z}$ & $\infty$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+setup\_pseudo\_frac & $\mathbb{Q}$ & $0.5$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+trust\_strong\_branching\_for\_pseudo\_cost & string & yes & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+\hline
+\end{xtabular}
+}

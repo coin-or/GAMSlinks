@@ -471,6 +471,7 @@ AC_CONFIG_FILES([Makefile
                  test/Makefile
                  examples/adbench/Makefile
                  examples/osil2gms/Makefile
+                 doc/optdoc/Makefile
                 ])
 AC_CONFIG_FILES([test/run_quality], [chmod +x test/run_quality])
 AC_CONFIG_FILES([test/run_gmstest], [chmod +x test/run_gmstest])
