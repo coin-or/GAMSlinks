@@ -28,6 +28,13 @@
 #endif
 #endif
 
+#include <string>
+#include <vector>
+#include <list>
+#include <map>
+#include <iostream>
+#include <fstream>
+
 #if COIN_HAS_BONMIN
 #include "IpIpoptApplication.hpp"
 #endif
@@ -166,7 +173,8 @@ void printOption(std::ostream& out,
 	bool min_strict,
 	OPTVAL& max,
 	bool max_strict,
-	const ENUMVAL& enumvals = ENUMVAL()) {
+	const ENUMVAL& enumvals = ENUMVAL(),
+	bool isSCIP = false) {
 	//std::clog << "print SCIP option " << name << "...";
 	
 	// some preprocessing
@@ -204,7 +212,10 @@ void printOption(std::ostream& out,
 //				out << "\\{" << min.boolval << ", " << max.boolval << "\\} ";
 		  out << "boolean";
 			out << "}%" << std::endl;
-			out << "{" << def.boolval << "}%" << std::endl;
+			if( isSCIP )
+			   out << "{" << (def.boolval ? "TRUE" : "FALSE") << "}%" << std::endl;
+			else
+			   out << "{" << def.boolval << "}%" << std::endl;
 			break;
 
 		case OPTTYPE_INTEGER:
@@ -243,7 +254,7 @@ void printOption(std::ostream& out,
 			
 		case OPTTYPE_ENUM: {
 			std::string tmp;
-			out << "{";
+			out << "{\\ttfamily";
 			for (ENUMVAL::const_iterator it(enumvals.begin()); it != enumvals.end(); ++it) {
 				if (it != enumvals.begin())
 					out << ", ";
@@ -273,14 +284,14 @@ void printOption(std::ostream& out,
   	std::string tmp;
   	out << "\\begin{list}{}{" << std::endl;
   	out << "\\setlength{\\parsep}{0em}" << std::endl;
-  	out << "\\setlength{\\leftmargin}{3ex}" << std::endl;
-  	out << "\\setlength{\\labelwidth}{1ex}" << std::endl;
+  	out << "\\setlength{\\leftmargin}{5ex}" << std::endl;
+  	out << "\\setlength{\\labelwidth}{2ex}" << std::endl;
   	out << "\\setlength{\\itemindent}{0ex}" << std::endl;
   	out << "\\setlength{\\topsep}{0pt}}" << std::endl;
 		for (ENUMVAL::const_iterator it(enumvals.begin()); it != enumvals.end(); ++it) {
 			tmp = it->first;
 			makeValidLatexString(tmp);
-			out << "\\item[\\textit{" << tmp << "}] ";
+			out << "\\item[\\texttt{" << tmp << "}] ";
 			
 			tmp = it->second;
 			makeValidLatexString(tmp);
@@ -611,6 +622,7 @@ void printBonminOptions() {
   bool minval_strict, maxval_strict;
   ENUMVAL enumval;
   std::string tmpstr;
+  std::string longdescr;
   
   std::ofstream optfile("optbonmin_a.tex"); 
 
@@ -670,14 +682,18 @@ void printBonminOptions() {
   				continue;
   		}
   		
+  		longdescr = (*it_opt)->LongDescription();
+  		
   		if ((*it_opt)->Name() == "nlp_log_at_root")
   			defaultval.intval = Ipopt::J_ITERSUMMARY;
   		else if ((*it_opt)->Name() == "allowable_fraction_gap")
   			defaultval.realval = 0.1;
   		else if ((*it_opt)->Name() == "time_limit")
   			defaultval.realval = 1000;
+  		else if (it_categ->first == "MILP cutting planes in hybrid algorithm (B-Hyb)" && (*it_opt)->Name() != "2mir_cuts")
+  		   longdescr = "See option \\texttt{2mir\\_cuts} for the meaning of k.";
 
-  		printOption(optfile, (*it_opt)->Name(), (*it_opt)->ShortDescription(), (*it_opt)->LongDescription(),
+  		printOption(optfile, (*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
   				opttype, defaultval, minval, minval_strict, maxval, maxval_strict, enumval);
   	}
   }
@@ -711,6 +727,7 @@ void printCouenneOptions() {
 
 		if (it->second->Name()=="lp_solver" ||
 				it->second->Name()=="couenne_check" ||
+            it->second->Name()=="enable_sos" ||
 				it->second->Name()=="test_mode")
 			continue;
 
@@ -926,9 +943,20 @@ void printSCIPOptions() {
   				defaultval.stringval = SCIPparamGetStringDefault(param);
   				break;
   		}
+  		
+  		if (strcmp(SCIPparamGetName(param), "display/width") == 0)
+  		   defaultval.intval = 80;
+      else if (strcmp(SCIPparamGetName(param), "limits/time") == 0)
+         defaultval.realval = 1000.0;
+      else if (strcmp(SCIPparamGetName(param), "limits/gap") == 0)
+         defaultval.realval = 0.1;
+      else if (strcmp(SCIPparamGetName(param), "limits/absgap") == 0)
+         defaultval.realval = 0.0;
+      else if (strcmp(SCIPparamGetName(param), "constraints/quadratic/disaggregated") == 0)
+         defaultval.boolval = false;
 
   		printOption(optfile, SCIPparamGetName(param), SCIPparamGetDesc(param), SCIPparamIsAdvanced(param) ? "This is an advanced option." : "",
-  				opttype, defaultval, minval, false, maxval, false, enumval);
+  				opttype, defaultval, minval, false, maxval, false, enumval, true);
   	}
   }
   

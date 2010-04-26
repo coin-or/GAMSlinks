@@ -6,13 +6,13 @@
 To achieve global convergence of the adaptive version, the algorithm has to switch to the monotone mode (Fiacco-McCormick approach) when convergence does not seem to appear.  This option sets the criterion used to decide when to do this switch. (Only used if option "mu\_strategy" is chosen as "adaptive".)}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{kkt-error}] nonmonotone decrease of kkt-error
-\item[\textit{obj-constr-filter}] 2-dim filter for objective and constraint violation
-\item[\textit{never-monotone-mode}] disables globalization
+\item[\texttt{kkt-error}] nonmonotone decrease of kkt-error
+\item[\texttt{obj-constr-filter}] 2-dim filter for objective and constraint violation
+\item[\texttt{never-monotone-mode}] disables globalization
 \end{list}
 }
 
@@ -23,14 +23,14 @@ To achieve global convergence of the adaptive version, the algorithm has to swit
 When computing the KKT error for the globalization strategies, the norm to be used is specified with this option. Note, this options is also used in the QualityFunctionMuOracle.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{1-norm}] use the 1-norm (abs sum)
-\item[\textit{2-norm-squared}] use the 2-norm squared (sum of squares)
-\item[\textit{max-norm}] use the infinity norm (max)
-\item[\textit{2-norm}] use 2-norm
+\item[\texttt{1-norm}] use the 1-norm (abs sum)
+\item[\texttt{2-norm-squared}] use the 2-norm squared (sum of squares)
+\item[\texttt{max-norm}] use the infinity norm (max)
+\item[\texttt{2-norm}] use 2-norm
 \end{list}
 }
 
@@ -62,12 +62,12 @@ When the globalization strategy for the adaptive barrier algorithm switches to t
 When the globalization strategy for the adaptive barrier algorithm switches to the monotone mode, it can either start from the most recent iterate (no), or from the last iterate that was accepted (yes).}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] don't restore accepted iterate
-\item[\textit{yes}] restore accepted iterate
+\item[\texttt{no}] don't restore accepted iterate
+\item[\texttt{yes}] restore accepted iterate
 \end{list}
 }
 
@@ -98,14 +98,14 @@ When using the adaptive globalization strategy, "obj-constr-filter", sufficient 
 Determines how the first value of the barrier parameter should be computed when switching to the "monotone mode" in the adaptive strategy. (Only considered if "adaptive" is selected for option "mu\_strategy".)}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{probing}] Mehrotra's probing heuristic
-\item[\textit{loqo}] LOQO's centrality rule
-\item[\textit{quality-function}] minimize a quality function
-\item[\textit{average\_compl}] base on current average complementarity
+\item[\texttt{probing}] Mehrotra's probing heuristic
+\item[\texttt{loqo}] LOQO's centrality rule
+\item[\texttt{quality-function}] minimize a quality function
+\item[\texttt{average\_compl}] base on current average complementarity
 \end{list}
 }
 
@@ -116,12 +116,12 @@ Determines how the first value of the barrier parameter should be computed when 
 If set to "no", the algorithm enforces at least one iteration per barrier problem, even if the barrier test is already met for the updated barrier parameter.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Take at least one iteration per barrier problem
-\item[\textit{yes}] Allow fast decrease of mu if barrier test it met
+\item[\texttt{no}] Take at least one iteration per barrier problem
+\item[\texttt{yes}] Allow fast decrease of mu if barrier test it met
 \end{list}
 }
 
@@ -167,13 +167,13 @@ This option specifies the lower bound on the barrier parameter in the adaptive m
 Determines how a new barrier parameter is computed in each "free-mode" iteration of the adaptive barrier parameter strategy. (Only considered if "adaptive" is selected for option "mu\_strategy").}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{probing}] Mehrotra's probing heuristic
-\item[\textit{loqo}] LOQO's centrality rule
-\item[\textit{quality-function}] minimize a quality function
+\item[\texttt{probing}] Mehrotra's probing heuristic
+\item[\texttt{loqo}] LOQO's centrality rule
+\item[\texttt{quality-function}] minimize a quality function
 \end{list}
 }
 
@@ -184,12 +184,12 @@ Determines how a new barrier parameter is computed in each "free-mode" iteration
 Determines which barrier parameter update strategy is to be used.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{monotone}] use the monotone (Fiacco-McCormick) strategy
-\item[\textit{adaptive}] use the adaptive update strategy
+\item[\texttt{monotone}] use the monotone (Fiacco-McCormick) strategy
+\item[\texttt{adaptive}] use the adaptive update strategy
 \end{list}
 }
 
@@ -207,12 +207,12 @@ For the Fiacco-McCormick update procedure the new barrier parameter mu is obtain
 This determines whether a term is added to the quality function that penalizes situations where the complementarity is much smaller than dual and primal infeasibilities. (Only used if option "mu\_oracle" is set to "quality-function".)}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{none}] no balancing term is added
-\item[\textit{cubic}] Max(0,Max(dual\_inf,primal\_inf)-compl)\^3
+\item[\texttt{none}] no balancing term is added
+\item[\texttt{cubic}] Max(0,Max(dual\_inf,primal\_inf)-compl)\^3
 \end{list}
 }
 
@@ -223,14 +223,14 @@ This determines whether a term is added to the quality function that penalizes s
 This determines whether a term is added to the quality function to penalize deviation from centrality with respect to complementarity.  The complementarity measure here is the xi in the Loqo update rule. (Only used if option "mu\_oracle" is set to "quality-function".)}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{none}] no penalty term is added
-\item[\textit{log}] complementarity * the log of the centrality measure
-\item[\textit{reciprocal}] complementarity * the reciprocal of the centrality measure
-\item[\textit{cubed-reciprocal}] complementarity * the reciprocal of the centrality measure cubed
+\item[\texttt{none}] no penalty term is added
+\item[\texttt{log}] complementarity * the log of the centrality measure
+\item[\texttt{reciprocal}] complementarity * the reciprocal of the centrality measure
+\item[\texttt{cubed-reciprocal}] complementarity * the reciprocal of the centrality measure cubed
 \end{list}
 }
 
@@ -248,14 +248,14 @@ The golden section search is performed for the quality function based mu oracle.
 (Only used if option "mu\_oracle" is set to "quality-function".)}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{1-norm}] use the 1-norm (abs sum)
-\item[\textit{2-norm-squared}] use the 2-norm squared (sum of squares)
-\item[\textit{max-norm}] use the infinity norm (max)
-\item[\textit{2-norm}] use 2-norm
+\item[\texttt{1-norm}] use the 1-norm (abs sum)
+\item[\texttt{2-norm-squared}] use the 2-norm squared (sum of squares)
+\item[\texttt{max-norm}] use the infinity norm (max)
+\item[\texttt{2-norm}] use 2-norm
 \end{list}
 }
 
@@ -401,12 +401,12 @@ Determines the convergence tolerance for the algorithm.  The algorithm terminate
 This determines which kind of information for the Hessian of the Lagrangian function is used by the algorithm.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{exact}] Use second derivatives provided by the NLP.
-\item[\textit{limited-memory}] Perform a limited-memory quasi-Newton approximation
+\item[\texttt{exact}] Use second derivatives provided by the NLP.
+\item[\texttt{limited-memory}] Perform a limited-memory quasi-Newton approximation
 \end{list}
 }
 
@@ -416,12 +416,12 @@ This determines which kind of information for the Hessian of the Lagrangian func
 {Indicates in which subspace the Hessian information is to be approximated.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{nonlinear-variables}] only in space of nonlinear variables.
-\item[\textit{all-variables}] in space of all variables (without slacks)
+\item[\texttt{nonlinear-variables}] only in space of nonlinear variables.
+\item[\texttt{all-variables}] in space of all variables (without slacks)
 \end{list}
 }
 
@@ -453,13 +453,13 @@ The starting matrix in the low rank update, B0, is chosen to be this multiple of
 Determines how the diagonal Matrix B\_0 as the first term in the limited memory approximation should be computed.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{scalar1}] sigma = s\^Ty/s\^Ts
-\item[\textit{scalar2}] sigma = y\^Ty/s\^Ty
-\item[\textit{constant}] sigma = limited\_memory\_init\_val
+\item[\texttt{scalar1}] sigma = s\^Ty/s\^Ts
+\item[\texttt{scalar2}] sigma = y\^Ty/s\^Ty
+\item[\texttt{constant}] sigma = limited\_memory\_init\_val
 \end{list}
 }
 
@@ -484,12 +484,12 @@ If the update is skipped more than this number of successive iterations, we quas
 Determines which update formula is to be used for the limited-memory quasi-Newton approximation.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{bfgs}] BFGS update (with skipping)
-\item[\textit{sr1}] SR1 (not working well)
+\item[\texttt{bfgs}] BFGS update (with skipping)
+\item[\texttt{sr1}] SR1 (not working well)
 \end{list}
 }
 
@@ -508,12 +508,12 @@ Determines how much the initial point might have to be modified in order to be s
 This option defines how the iterates for the bound multipliers are initialized.  If "constant" is chosen, then all bound multipliers are initialized to the value of "bound\_mult\_init\_val".  If "mu-based" is chosen, the each value is initialized to the the value of "mu\_init" divided by the corresponding slack variable.  This latter option might be useful if the starting point is close to the optimal solution.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{constant}] set all bound multipliers to the value of bound\_mult\_init\_val
-\item[\textit{mu-based}] initialize to mu\_init/x\_slack
+\item[\texttt{constant}] set all bound multipliers to the value of bound\_mult\_init\_val
+\item[\texttt{mu-based}] initialize to mu\_init/x\_slack
 \end{list}
 }
 
@@ -545,12 +545,12 @@ Determines how large the initial least-square guesses of the constraint multipli
 If set to yes, Ipopt tries to compute least-square multipliers (considering ALL dual variables).  If successful, the bound multipliers are possibly corrected to be at least bound\_mult\_init\_val. This might be useful if the user doesn't know anything about the starting point, or for solving an LP or QP.  This overwrites option "bound\_mult\_init\_method".}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] use bound\_mult\_init\_val and least-square equality constraint multipliers
-\item[\textit{yes}] overwrite user-provided point with least-square estimates
+\item[\texttt{no}] use bound\_mult\_init\_val and least-square equality constraint multipliers
+\item[\texttt{yes}] overwrite user-provided point with least-square estimates
 \end{list}
 }
 
@@ -561,12 +561,12 @@ If set to yes, Ipopt tries to compute least-square multipliers (considering ALL 
 If set to yes, Ipopt ignores the user provided point and solves a least square problem for the primal variables (x and s), to fit the linearized equality and inequality constraints.  This might be useful if the user doesn't know anything about the starting point, or for solving an LP or QP.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] take user-provided point
-\item[\textit{yes}] overwrite user-provided point with least-square estimates
+\item[\texttt{no}] take user-provided point
+\item[\texttt{yes}] overwrite user-provided point with least-square estimates
 \end{list}
 }
 
@@ -599,12 +599,12 @@ Even if it does not satisfy line search conditions.}%
 Setting this option to "yes" essentially disables the line search and makes the algorithm take aggressive steps, without global convergence guarantees.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] don't arbitrarily accept the full step
-\item[\textit{yes}] always accept the full step
+\item[\texttt{no}] don't arbitrarily accept the full step
+\item[\texttt{yes}] always accept the full step
 \end{list}
 }
 
@@ -615,20 +615,20 @@ Setting this option to "yes" essentially disables the line search and makes the 
 This option determines how the step size (alpha\_y) will be calculated when updating the constraint multipliers.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{primal}] use primal step size
-\item[\textit{bound-mult}] use step size for the bound multipliers (good for LPs)
-\item[\textit{min}] use the min of primal and bound multipliers
-\item[\textit{max}] use the max of primal and bound multipliers
-\item[\textit{full}] take a full step of size one
-\item[\textit{min-dual-infeas}] choose step size minimizing new dual infeasibility
-\item[\textit{safer-min-dual-infeas}] like "min\_dual\_infeas", but safeguarded by "min" and "max"
-\item[\textit{primal-and-full}] use the primal step size, and full step if delta\_x $<$= alpha\_for\_y\_tol
-\item[\textit{dual-and-full}] use the dual step size, and full step if delta\_x $<$= alpha\_for\_y\_tol
-\item[\textit{acceptor}] Call LSAcceptor to get step size for y
+\item[\texttt{primal}] use primal step size
+\item[\texttt{bound-mult}] use step size for the bound multipliers (good for LPs)
+\item[\texttt{min}] use the min of primal and bound multipliers
+\item[\texttt{max}] use the max of primal and bound multipliers
+\item[\texttt{full}] take a full step of size one
+\item[\texttt{min-dual-infeas}] choose step size minimizing new dual infeasibility
+\item[\texttt{safer-min-dual-infeas}] like "min\_dual\_infeas", but safeguarded by "min" and "max"
+\item[\texttt{primal-and-full}] use the primal step size, and full step if delta\_x $<$= alpha\_for\_y\_tol
+\item[\texttt{dual-and-full}] use the dual step size, and full step if delta\_x $<$= alpha\_for\_y\_tol
+\item[\texttt{acceptor}] Call LSAcceptor to get step size for y
 \end{list}
 }
 
@@ -660,13 +660,13 @@ At every step of the backtracking line search, the trial step size is reduced by
 Determines which norm should be used when the algorithm computes the constraint violation in the line search.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{1-norm}] use the 1-norm
-\item[\textit{2-norm}] use the 2-norm
-\item[\textit{max-norm}] use the infinity norm
+\item[\texttt{1-norm}] use the 1-norm
+\item[\texttt{2-norm}] use the 2-norm
+\item[\texttt{max-norm}] use the infinity norm
 \end{list}
 }
 
@@ -684,13 +684,13 @@ This option determines the factor by which complementarity is allowed to increas
 If "mu\_strategy" is "adaptive", this option determines what kind of corrector steps should be tried.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{none}] no corrector
-\item[\textit{affine}] corrector step towards mu=0
-\item[\textit{primal-dual}] corrector step towards current mu
+\item[\texttt{none}] no corrector
+\item[\texttt{affine}] corrector step towards mu=0
+\item[\texttt{primal-dual}] corrector step towards current mu
 \end{list}
 }
 
@@ -783,12 +783,12 @@ Trial points are rejected if they lead to an increase in the barrier objective f
 This asks the algorithm to recompute the multipliers, whenever the current infeasibility is less than recalc\_y\_feas\_tol. Choosing yes might be helpful in the quasi-Newton option.  However, each recalculation requires an extra factorization of the linear system.  If a limited memory quasi-Newton option is chosen, this is used by default.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] use the Newton step to update the multipliers
-\item[\textit{yes}] use least-square multiplier estimates
+\item[\texttt{no}] use the Newton step to update the multipliers
+\item[\texttt{yes}] use least-square multiplier estimates
 \end{list}
 }
 
@@ -826,12 +826,12 @@ If recalc\_y is chosen and the current infeasibility is less than this value, th
 The corrector step is not tried if negative curvature has been encountered during the computation of the search direction in the current iteration. This option is only used if "mu\_strategy" is "adaptive".}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] don't skip
-\item[\textit{yes}] skip
+\item[\texttt{no}] don't skip
+\item[\texttt{yes}] skip
 \end{list}
 }
 
@@ -842,12 +842,12 @@ The corrector step is not tried if negative curvature has been encountered durin
 The corrector step is not tried if the algorithm is currently in the monotone mode (see also option "barrier\_strategy").This option is only used if "mu\_strategy" is "adaptive".}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] don't skip
-\item[\textit{yes}] skip
+\item[\texttt{no}] don't skip
+\item[\texttt{yes}] skip
 \end{list}
 }
 
@@ -902,7 +902,7 @@ This option determines the number of trial iterations allowed before the watchdo
 
 \printoptioncategory{Linear Solver}
 \printoption{hsl\_library}%
-{string}%
+{\textrm{string}}%
 {}%
 {path and filename of HSL library for dynamic load\\
 Specify the path to a library that contains HSL routines and can be load via dynamic linking. Note, that you still need to specify to use the corresponding routines (ma27, ...) by setting the corresponding options, e.g., ``linear\_solver''.}%
@@ -915,12 +915,12 @@ Specify the path to a library that contains HSL routines and can be load via dyn
 This option is only important if a linear scaling method (e.g., mc19) is used.  If you choose "no", then the scaling factors are computed for every linear system from the start.  This can be quite expensive. Choosing "yes" means that the algorithm will start the scaling method only when the solutions to the linear system seem not good, and then use it until the end.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Always scale the linear system.
-\item[\textit{yes}] Start using linear system scaling if solutions seem not good.
+\item[\texttt{no}] Always scale the linear system.
+\item[\texttt{yes}] Start using linear system scaling if solutions seem not good.
 \end{list}
 }
 
@@ -931,14 +931,14 @@ This option is only important if a linear scaling method (e.g., mc19) is used.  
 Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). Note, that in order to use MA27, MA57, or Pardiso, a library with HSL or Pardiso code need to be provided (see Section 5.2 and options "hsl\_library" and "pardiso\_library").}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{ma27}] use the Harwell routine MA27
-\item[\textit{ma57}] use the Harwell routine MA57
-\item[\textit{pardiso}] use the Pardiso package
-\item[\textit{mumps}] use MUMPS package
+\item[\texttt{ma27}] use the Harwell routine MA27
+\item[\texttt{ma57}] use the Harwell routine MA57
+\item[\texttt{pardiso}] use the Pardiso package
+\item[\texttt{mumps}] use MUMPS package
 \end{list}
 }
 
@@ -949,17 +949,17 @@ Determines which linear algebra package is to be used for the solution of the au
 Determines the method used to compute symmetric scaling factors for the augmented system (see also the "linear\_scaling\_on\_demand" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. This option is only available if Ipopt has been compiled with MC19.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{none}] no scaling will be performed
-\item[\textit{mc19}] use the Harwell routine MC19
+\item[\texttt{none}] no scaling will be performed
+\item[\texttt{mc19}] use the Harwell routine MC19
 \end{list}
 }
 
 \printoption{pardiso\_library}%
-{string}%
+{\textrm{string}}%
 {}%
 {path and filename of PARDISO library for dynamic load\\
 Specify the path to a PARDISO library that and can be load via dynamic linking. Note, that you still need to specify to use pardiso as linear\_solver.}%
@@ -973,12 +973,12 @@ Specify the path to a PARDISO library that and can be load via dynamic linking. 
 Setting this option to "yes" means that Ipopt will call MA27 to compute solutions for right hand sides, even if MA27 has detected that the matrix is singular (but is still able to solve the linear system). In some cases this might be better than using Ipopt's heuristic of small perturbation of the lower diagonal of the KKT matrix.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Don't have MA27 solve singular systems
-\item[\textit{yes}] Have MA27 solve singular systems
+\item[\texttt{no}] Don't have MA27 solve singular systems
+\item[\texttt{yes}] Have MA27 solve singular systems
 \end{list}
 }
 
@@ -1024,12 +1024,12 @@ Ipopt may increase pivtol as high as pivtolmax to get a more accurate solution t
 Setting this option to "yes" essentially disables inertia check. This option makes the algorithm non-robust and easily fail, but it might give some insight into the necessity of inertia control.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] check inertia
-\item[\textit{yes}] skip inertia check
+\item[\texttt{no}] check inertia
+\item[\texttt{yes}] skip inertia check
 \end{list}
 }
 
@@ -1135,12 +1135,12 @@ Before start of the optimization, the bounds given by the user are relaxed.  Thi
 Activating this option will cause an error if an invalid number is detected in the constraint Jacobians or the Lagrangian Hessian.  If this is not activated, the test is skipped, and the algorithm might proceed with invalid numbers and fail.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Don't check (faster).
-\item[\textit{yes}] Check Jacobians and Hessian for Nan and Inf.
+\item[\texttt{no}] Don't check (faster).
+\item[\texttt{yes}] Check Jacobians and Hessian for Nan and Inf.
 \end{list}
 }
 
@@ -1150,12 +1150,12 @@ Activating this option will cause an error if an invalid number is detected in t
 {Indicates if the right hand sides of the constraints should be considered during dependency detection}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] only look at gradients
-\item[\textit{yes}] also consider right hand side
+\item[\texttt{no}] only look at gradients
+\item[\texttt{yes}] also consider right hand side
 \end{list}
 }
 
@@ -1166,14 +1166,14 @@ Activating this option will cause an error if an invalid number is detected in t
 The default and available choices depend on how Ipopt has been compiled.  This is experimental and does not work well.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{none}] don't check; no extra work at beginning
-\item[\textit{mumps}] use MUMPS
-\item[\textit{wsmp}] use WSMP
-\item[\textit{ma28}] use MA28
+\item[\texttt{none}] don't check; no extra work at beginning
+\item[\texttt{mumps}] use MUMPS
+\item[\texttt{wsmp}] use WSMP
+\item[\texttt{ma28}] use MA28
 \end{list}
 }
 
@@ -1184,13 +1184,13 @@ The default and available choices depend on how Ipopt has been compiled.  This i
 The main difference between those options is that the starting point in the "make\_constraint" case still has the fixed variables at their given values, whereas in the case "make\_parameter" the functions are always evaluated with the fixed values for those variables.  Also, for "relax\_bounds", the fixing bound constraints are relaxed (according to" bound\_relax\_factor"). For both "make\_constraints" and "relax\_bounds", bound multipliers are computed for the fixed variables.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{make\_parameter}] Remove fixed variable from optimization variables
-\item[\textit{make\_constraint}] Add equality constraints fixing variables
-\item[\textit{relax\_bounds}] Relax fixing bound constraints
+\item[\texttt{make\_parameter}] Remove fixed variable from optimization variables
+\item[\texttt{make\_constraint}] Add equality constraints fixing variables
+\item[\texttt{relax\_bounds}] Relax fixing bound constraints
 \end{list}
 }
 
@@ -1201,12 +1201,12 @@ The main difference between those options is that the starting point in the "mak
 Ipopt might relax the bounds during the optimization (see, e.g., option "bound\_relax\_factor").  This option determines whether the final point should be projected back into the user-provide original bounds after the optimization.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Leave final point unchanged
-\item[\textit{yes}] Project final point back into original bounds
+\item[\texttt{no}] Leave final point unchanged
+\item[\texttt{yes}] Project final point back into original bounds
 \end{list}
 }
 
@@ -1217,12 +1217,12 @@ Ipopt might relax the bounds during the optimization (see, e.g., option "bound\_
 Activating this option will cause Ipopt to ask for the Jacobian of the equality constraints only once from the NLP and reuse this information later.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Don't assume that all equality constraints are linear
-\item[\textit{yes}] Assume that equality constraints Jacobian are constant
+\item[\texttt{no}] Don't assume that all equality constraints are linear
+\item[\texttt{yes}] Assume that equality constraints Jacobian are constant
 \end{list}
 }
 
@@ -1233,12 +1233,12 @@ Activating this option will cause Ipopt to ask for the Jacobian of the equality 
 Activating this option will cause Ipopt to ask for the Jacobian of the inequality constraints only once from the NLP and reuse this information later.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Don't assume that all inequality constraints are linear
-\item[\textit{yes}] Assume that equality constraints Jacobian are constant
+\item[\texttt{no}] Don't assume that all inequality constraints are linear
+\item[\texttt{yes}] Assume that equality constraints Jacobian are constant
 \end{list}
 }
 
@@ -1278,14 +1278,14 @@ This is the gradient scaling cut-off. If the maximum gradient is above this valu
 Selects the technique used for scaling the problem internally before it is solved. For user-scaling, the parameters come from the NLP. If you are using AMPL, they can be specified through suffixes ("scaling\_factor")}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{none}] no problem scaling will be performed
-\item[\textit{user-scaling}] scaling parameters will come from the user
-\item[\textit{gradient-based}] scale the problem so the maximum gradient at the starting point is scaling\_max\_gradient
-\item[\textit{equilibration-based}] scale the problem so that first derivatives are of order 1 at random points (only available with MC19)
+\item[\texttt{none}] no problem scaling will be performed
+\item[\texttt{user-scaling}] scaling parameters will come from the user
+\item[\texttt{gradient-based}] scale the problem so the maximum gradient at the starting point is scaling\_max\_gradient
+\item[\texttt{equilibration-based}] scale the problem so that first derivatives are of order 1 at random points (only available with MC19)
 \end{list}
 }
 
@@ -1304,12 +1304,12 @@ If a positive number is chosen, the scaling factor the objective function is com
 This string contains some insider information about the current iteration.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] don't print string
-\item[\textit{yes}] print string at end of each iteration output
+\item[\texttt{no}] don't print string
+\item[\texttt{yes}] print string at end of each iteration output
 \end{list}
 }
 
@@ -1327,12 +1327,12 @@ Sets the default verbosity level for console output. The larger this value the m
 If selected, the program will print the CPU usage (user time) for selected tasks.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] don't print statistics
-\item[\textit{yes}] print all timing statistics
+\item[\texttt{no}] don't print statistics
+\item[\texttt{yes}] print all timing statistics
 \end{list}
 }
 
@@ -1343,12 +1343,12 @@ If selected, the program will print the CPU usage (user time) for selected tasks
 This option must be set for the inexact algorithm}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] leave bounds on variables
-\item[\textit{yes}] replace variable bounds by inequality constraints
+\item[\texttt{no}] leave bounds on variables
+\item[\texttt{yes}] replace variable bounds by inequality constraints
 \end{list}
 }
 
@@ -1415,13 +1415,13 @@ DPARM(2)}%
 This is IPAR(13) in Pardiso manual.  This option is only available if Ipopt has been compiled with Pardiso.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{complete}] Match complete (IPAR(13)=1)
-\item[\textit{complete+2x2}] Match complete+2x2 (IPAR(13)=2)
-\item[\textit{constraints}] Match constraints (IPAR(13)=3)
+\item[\texttt{complete}] Match complete (IPAR(13)=1)
+\item[\texttt{complete+2x2}] Match complete+2x2 (IPAR(13)=2)
+\item[\texttt{constraints}] Match constraints (IPAR(13)=3)
 \end{list}
 }
 
@@ -1460,12 +1460,12 @@ Setting this option to a positive integer k makes Pardiso work in the out-of-cor
 This option is only available if Ipopt has been compiled with Pardiso.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Always redo symbolic factorization when elements were perturbed
-\item[\textit{yes}] Only redo symbolic factorization when elements were perturbed if also the inertia was wrong
+\item[\texttt{no}] Always redo symbolic factorization when elements were perturbed
+\item[\texttt{yes}] Only redo symbolic factorization when elements were perturbed if also the inertia was wrong
 \end{list}
 }
 
@@ -1476,12 +1476,12 @@ This option is only available if Ipopt has been compiled with Pardiso.}%
 This option is only available if Ipopt has been compiled with Pardiso.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Don't assume that matrix is singular if elements were perturbed after recent symbolic factorization
-\item[\textit{yes}] Assume that matrix is singular if elements were perturbed after recent symbolic factorization
+\item[\texttt{no}] Don't assume that matrix is singular if elements were perturbed after recent symbolic factorization
+\item[\texttt{yes}] Assume that matrix is singular if elements were perturbed after recent symbolic factorization
 \end{list}
 }
 
@@ -1492,12 +1492,12 @@ This option is only available if Ipopt has been compiled with Pardiso.}%
 Setting this option to "yes" essentially disables inertia check. This option makes the algorithm non-robust and easily fail, but it might give some insight into the necessity of inertia control.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] check inertia
-\item[\textit{yes}] skip inertia check
+\item[\texttt{no}] check inertia
+\item[\texttt{yes}] skip inertia check
 \end{list}
 }
 
@@ -1523,12 +1523,12 @@ After returning from the restoration phase, the constraint multipliers are recom
 Setting this option to "yes" makes the restoration phase algorithm evaluate the objective function of the original problem at every trial point encountered during the restoration phase, even if this value is not required.  In this way, it is guaranteed that the original objective function can be evaluated without error at all accepted iterates; otherwise the algorithm might fail at a point where the restoration phase accepts an iterate that is good for the restoration phase problem, but not the original problem.  On the other hand, if the evaluation of the original objective is expensive, this might be costly.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] skip evaluation
-\item[\textit{yes}] evaluate at every trial point
+\item[\texttt{no}] skip evaluation
+\item[\texttt{yes}] evaluate at every trial point
 \end{list}
 }
 
@@ -1539,12 +1539,12 @@ Setting this option to "yes" makes the restoration phase algorithm evaluate the 
 This options is meant to activate heuristics that may speed up the infeasibility determination if you expect that there is a good chance for the problem to be infeasible.  In the filter line search procedure, the restoration phase is called more quickly than usually, and more reduction in the constraint violation is enforced before the restoration phase is left. If the problem is square, this option is enabled automatically.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] the problem probably be feasible
-\item[\textit{yes}] the problem has a good chance to be infeasible
+\item[\texttt{no}] the problem probably be feasible
+\item[\texttt{yes}] the problem has a good chance to be infeasible
 \end{list}
 }
 
@@ -1604,12 +1604,12 @@ The soft restoration phase attempts to reduce the primal-dual error with regular
 Setting this option to "yes" forces the algorithm to switch to the feasibility restoration phase in the first iteration. If the initial point is feasible, the algorithm will abort with a failure.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] don't force start in restoration phase
-\item[\textit{yes}] force start in restoration phase
+\item[\texttt{no}] don't force start in restoration phase
+\item[\texttt{yes}] force start in restoration phase
 \end{list}
 }
 
@@ -1621,12 +1621,12 @@ Setting this option to "yes" forces the algorithm to switch to the feasibility r
 If set to yes, the algorithm assumes that the linear system that is solved to obtain the search direction, is solved sufficiently well. In that case, no residuals are computed, and the computation of the search direction is a little faster.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Verify solution of linear system by computing residuals.
-\item[\textit{yes}] Trust that linear systems are solved well.
+\item[\texttt{no}] Verify solution of linear system by computing residuals.
+\item[\texttt{yes}] Trust that linear systems are solved well.
 \end{list}
 }
 
@@ -1672,12 +1672,12 @@ Iterative refinement (on the full unsymmetric system) is performed for each righ
 If set to yes, Ipopt runs as Mehrotra's predictor-corrector algorithm. This works usually very well for LPs and convex QPs.  This automatically disables the line search, and chooses the (unglobalized) adaptive mu strategy with the "probing" oracle, and uses "corrector\_type=affine" without any safeguards; you should not set any of those options explicitly in addition.  Also, unless otherwise specified, the values of "bound\_push", "bound\_frac", and "bound\_mult\_init\_val" are set more aggressive, and sets "alpha\_for\_y=bound\_mult".}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Do the usual Ipopt algorithm.
-\item[\textit{yes}] Do Mehrotra's predictor-corrector algorithm.
+\item[\texttt{no}] Do the usual Ipopt algorithm.
+\item[\texttt{yes}] Do Mehrotra's predictor-corrector algorithm.
 \end{list}
 }
 
@@ -1709,12 +1709,12 @@ If positive, incorrect inertia in the augmented system is ignored, and we test i
 This options makes the delta\_c and delta\_d perturbation be used for the computation of every search direction.  Usually, it is only used when the iteration matrix is singular.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] perturbation only used when required
-\item[\textit{yes}] always use perturbation
+\item[\texttt{no}] perturbation only used when required
+\item[\texttt{yes}] always use perturbation
 \end{list}
 }
 
@@ -1779,12 +1779,12 @@ If the residual test ratio is larger than this value after failed iterative refi
 {Tells algorithm whether to use the GetWarmStartIterate method in the NLP.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] call GetStartingPoint in the NLP
-\item[\textit{yes}] call GetWarmStartIterate in the NLP
+\item[\texttt{no}] call GetStartingPoint in the NLP
+\item[\texttt{yes}] call GetWarmStartIterate in the NLP
 \end{list}
 }
 
@@ -1795,12 +1795,12 @@ If the residual test ratio is larger than this value after failed iterative refi
 Indicates whether this optimization should use a warm start initialization, where values of primal and dual variables are given (e.g., from a previous optimization of a related problem.)}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] do not use the warm start initialization
-\item[\textit{yes}] use the warm start initialization
+\item[\texttt{no}] do not use the warm start initialization
+\item[\texttt{yes}] use the warm start initialization
 \end{list}
 }
 
@@ -1823,12 +1823,12 @@ Indicates whether this optimization should use a warm start initialization, wher
 If "yes" is chosen, then the algorithm assumes that an NLP is now to be solved, whose structure is identical to one that already was considered (with the same NLP object).}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Assume this is a new problem.
-\item[\textit{yes}] Assume this is problem has known structure
+\item[\texttt{no}] Assume this is a new problem.
+\item[\texttt{yes}] Assume this is problem has known structure
 \end{list}
 }
 

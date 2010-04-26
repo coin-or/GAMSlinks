@@ -9,7 +9,7 @@ If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are genera
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency k (in terms of nodes) for generating Gomory\_cuts cuts in branch-and-cut.\\
-If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are generated every -k nodes but Cbc may decide to stop generating cuts, if not enough are generated at the root node, if k=-99 generate cuts only at the root node, if k=0 or 100 do not generate cuts.}%
+See option \texttt{2mir\_cuts} for the meaning of k.}%
 {}
 
 \printoption{aggressive\_fbbt}%
@@ -22,15 +22,13 @@ Aggressive FBBT is a version of probing that also allows to reduce the solution 
 \printoption{art\_cutoff}%
 {$\textrm{real}$}%
 {$\infty$}%
-{Artificial cutoff\\
-Default value is infinity.}%
+{Artificial cutoff.}%
 {}
 
 \printoption{art\_lower}%
 {$\textrm{real}$}%
 {$-\infty$}%
-{Artificial lower bound\\
-Default value is -COIN\_DBL\_MAX.}%
+{Artificial lower bound.}%
 {}
 
 \printoption{boundtightening\_print\_level}%
@@ -56,78 +54,67 @@ After applying a branching rule and before re-solving the subproblem, apply Boun
 \printoption{branch\_lp\_clamp}%
 {$0\leq\textrm{real}\leq1$}%
 {$0.2$}%
-{Defines safe interval percentage for using LP point as a branching point\\
-Default value is 0.2.}%
+{Defines safe interval percentage for using LP point as a branching point.}%
 {}
 
 \printoption{branch\_lp\_clamp\_cube}%
 {$0\leq\textrm{real}\leq0.5$}%
 {$0.2$}%
-{Defines safe interval percentage [0,0.5] for using LP point as a branching point\\
-Default value is 0.2.}%
+{Defines safe interval percentage [0,0.5] for using LP point as a branching point.}%
 {}
 
 \printoption{branch\_lp\_clamp\_div}%
 {$0\leq\textrm{real}\leq0.5$}%
 {$0.2$}%
-{Defines safe interval percentage [0,0.5] for using LP point as a branching point\\
-Default value is 0.2.}%
+{Defines safe interval percentage [0,0.5] for using LP point as a branching point.}%
 {}
 
 \printoption{branch\_lp\_clamp\_exp}%
 {$0\leq\textrm{real}\leq0.5$}%
 {$0.2$}%
-{Defines safe interval percentage [0,0.5] for using LP point as a branching point\\
-Default value is 0.2.}%
+{Defines safe interval percentage [0,0.5] for using LP point as a branching point.}%
 {}
 
 \printoption{branch\_lp\_clamp\_log}%
 {$0\leq\textrm{real}\leq0.5$}%
 {$0.2$}%
-{Defines safe interval percentage [0,0.5] for using LP point as a branching point\\
-Default value is 0.2.}%
+{Defines safe interval percentage [0,0.5] for using LP point as a branching point.}%
 {}
 
 \printoption{branch\_lp\_clamp\_negpow}%
 {$0\leq\textrm{real}\leq0.5$}%
 {$0.2$}%
-{Defines safe interval percentage [0,0.5] for using LP point as a branching point\\
-Default value is 0.2.}%
+{Defines safe interval percentage [0,0.5] for using LP point as a branching point.}%
 {}
 
 \printoption{branch\_lp\_clamp\_pow}%
 {$0\leq\textrm{real}\leq0.5$}%
 {$0.2$}%
-{Defines safe interval percentage [0,0.5] for using LP point as a branching point\\
-Default value is 0.2.}%
+{Defines safe interval percentage [0,0.5] for using LP point as a branching point.}%
 {}
 
 \printoption{branch\_lp\_clamp\_prod}%
 {$0\leq\textrm{real}\leq0.5$}%
 {$0.2$}%
-{Defines safe interval percentage [0,0.5] for using LP point as a branching point\\
-Default value is 0.2.}%
+{Defines safe interval percentage [0,0.5] for using LP point as a branching point.}%
 {}
 
 \printoption{branch\_lp\_clamp\_sqr}%
 {$0\leq\textrm{real}\leq0.5$}%
 {$0.2$}%
-{Defines safe interval percentage [0,0.5] for using LP point as a branching point\\
-Default value is 0.2.}%
+{Defines safe interval percentage [0,0.5] for using LP point as a branching point.}%
 {}
 
 \printoption{branch\_lp\_clamp\_trig}%
 {$0\leq\textrm{real}\leq0.5$}%
 {$0.2$}%
-{Defines safe interval percentage [0,0.5] for using LP point as a branching point\\
-Default value is 0.2.}%
+{Defines safe interval percentage [0,0.5] for using LP point as a branching point.}%
 {}
 
 \printoption{branch\_midpoint\_alpha}%
 {$0\leq\textrm{real}\leq1$}%
 {$0.25$}%
-{Defines convex combination of mid point and current LP point: b = alpha x\_lp + (1-alpha) (lb+ub)/2.\\
-Default value is 0.25.}%
+{Defines convex combination of mid point and current LP point: b = alpha x\_lp + (1-alpha) (lb+ub)/2.}%
 {}
 
 \printoption{branch\_pt\_select}%
@@ -136,198 +123,81 @@ Default value is 0.25.}%
 {Chooses branching point selection strategy}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{lp-clamped}] LP point clamped in [k,1-k] of the bound intervals (k defined by lp\_clamp)
-\item[\textit{lp-central}] LP point if within [k,1-k] of the bound intervals, middle point otherwise(k defined by branch\_lp\_clamp)
-\item[\textit{balanced}] minimizes max distance from curve to convexification
-\item[\textit{min-area}] minimizes total area of the two convexifications
-\item[\textit{mid-point}] convex combination of current point and mid point
-\item[\textit{no-branch}] do not branch, return null infeasibility; for testing purposes only
+\item[\texttt{lp-clamped}] LP point clamped in [k,1-k] of the bound intervals (k defined by lp\_clamp)
+\item[\texttt{lp-central}] LP point if within [k,1-k] of the bound intervals, middle point otherwise(k defined by branch\_lp\_clamp)
+\item[\texttt{balanced}] minimizes max distance from curve to convexification
+\item[\texttt{min-area}] minimizes total area of the two convexifications
+\item[\texttt{mid-point}] convex combination of current point and mid point
+\item[\texttt{no-branch}] do not branch, return null infeasibility; for testing purposes only
 \end{list}
 }
 
 \printoption{branch\_pt\_select\_cube}%
 {common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator cube}%
-{\begin{list}{}{
-\setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
-\setlength{\itemindent}{0ex}
-\setlength{\topsep}{0pt}}
-\item[\textit{common}] use strategy defined for generic operators
-\item[\textit{lp-clamped}] LP point clamped in [k,1-k] of the bound intervals (k defined by lp\_clamp\_${this operator}$)
-\item[\textit{lp-central}] LP point if within [k,1-k] of the bound intervals, middle point otherwise(k defined by branch\_lp\_clamp\_${this operator}$)
-\item[\textit{balanced}] minimizes max distance from curve to convexification
-\item[\textit{min-area}] minimizes total area of the two convexifications
-\item[\textit{mid-point}] convex combination of current point and mid point
-\item[\textit{no-branch}] do not branch, return null infeasibility; for testing purposes only
-\end{list}
-}
+{Chooses branching point selection strategy for operator cube.
+Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
+{}
 
 \printoption{branch\_pt\_select\_div}%
 {common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator div}%
-{\begin{list}{}{
-\setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
-\setlength{\itemindent}{0ex}
-\setlength{\topsep}{0pt}}
-\item[\textit{common}] use strategy defined for generic operators
-\item[\textit{lp-clamped}] LP point clamped in [k,1-k] of the bound intervals (k defined by lp\_clamp\_${this operator}$)
-\item[\textit{lp-central}] LP point if within [k,1-k] of the bound intervals, middle point otherwise(k defined by branch\_lp\_clamp\_${this operator}$)
-\item[\textit{balanced}] minimizes max distance from curve to convexification
-\item[\textit{min-area}] minimizes total area of the two convexifications
-\item[\textit{mid-point}] convex combination of current point and mid point
-\item[\textit{no-branch}] do not branch, return null infeasibility; for testing purposes only
-\end{list}
-}
+{Chooses branching point selection strategy for operator div.
+Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
+{}
 
 \printoption{branch\_pt\_select\_exp}%
 {common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator exp}%
-{\begin{list}{}{
-\setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
-\setlength{\itemindent}{0ex}
-\setlength{\topsep}{0pt}}
-\item[\textit{common}] use strategy defined for generic operators
-\item[\textit{lp-clamped}] LP point clamped in [k,1-k] of the bound intervals (k defined by lp\_clamp\_${this operator}$)
-\item[\textit{lp-central}] LP point if within [k,1-k] of the bound intervals, middle point otherwise(k defined by branch\_lp\_clamp\_${this operator}$)
-\item[\textit{balanced}] minimizes max distance from curve to convexification
-\item[\textit{min-area}] minimizes total area of the two convexifications
-\item[\textit{mid-point}] convex combination of current point and mid point
-\item[\textit{no-branch}] do not branch, return null infeasibility; for testing purposes only
-\end{list}
-}
+{Chooses branching point selection strategy for operator exp.
+Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
+{}
 
 \printoption{branch\_pt\_select\_log}%
 {common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator log}%
-{\begin{list}{}{
-\setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
-\setlength{\itemindent}{0ex}
-\setlength{\topsep}{0pt}}
-\item[\textit{common}] use strategy defined for generic operators
-\item[\textit{lp-clamped}] LP point clamped in [k,1-k] of the bound intervals (k defined by lp\_clamp\_${this operator}$)
-\item[\textit{lp-central}] LP point if within [k,1-k] of the bound intervals, middle point otherwise(k defined by branch\_lp\_clamp\_${this operator}$)
-\item[\textit{balanced}] minimizes max distance from curve to convexification
-\item[\textit{min-area}] minimizes total area of the two convexifications
-\item[\textit{mid-point}] convex combination of current point and mid point
-\item[\textit{no-branch}] do not branch, return null infeasibility; for testing purposes only
-\end{list}
-}
+{Chooses branching point selection strategy for operator log.
+Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
+{}
 
 \printoption{branch\_pt\_select\_negpow}%
 {common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator negpow}%
-{\begin{list}{}{
-\setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
-\setlength{\itemindent}{0ex}
-\setlength{\topsep}{0pt}}
-\item[\textit{common}] use strategy defined for generic operators
-\item[\textit{lp-clamped}] LP point clamped in [k,1-k] of the bound intervals (k defined by lp\_clamp\_${this operator}$)
-\item[\textit{lp-central}] LP point if within [k,1-k] of the bound intervals, middle point otherwise(k defined by branch\_lp\_clamp\_${this operator}$)
-\item[\textit{balanced}] minimizes max distance from curve to convexification
-\item[\textit{min-area}] minimizes total area of the two convexifications
-\item[\textit{mid-point}] convex combination of current point and mid point
-\item[\textit{no-branch}] do not branch, return null infeasibility; for testing purposes only
-\end{list}
-}
+{Chooses branching point selection strategy for operator negpow.
+Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
+{}
 
 \printoption{branch\_pt\_select\_pow}%
 {common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator pow}%
-{\begin{list}{}{
-\setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
-\setlength{\itemindent}{0ex}
-\setlength{\topsep}{0pt}}
-\item[\textit{common}] use strategy defined for generic operators
-\item[\textit{lp-clamped}] LP point clamped in [k,1-k] of the bound intervals (k defined by lp\_clamp\_${this operator}$)
-\item[\textit{lp-central}] LP point if within [k,1-k] of the bound intervals, middle point otherwise(k defined by branch\_lp\_clamp\_${this operator}$)
-\item[\textit{balanced}] minimizes max distance from curve to convexification
-\item[\textit{min-area}] minimizes total area of the two convexifications
-\item[\textit{mid-point}] convex combination of current point and mid point
-\item[\textit{no-branch}] do not branch, return null infeasibility; for testing purposes only
-\end{list}
-}
+{Chooses branching point selection strategy for operator pow.
+Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
+{}
 
 \printoption{branch\_pt\_select\_prod}%
 {common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator prod}%
-{\begin{list}{}{
-\setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
-\setlength{\itemindent}{0ex}
-\setlength{\topsep}{0pt}}
-\item[\textit{common}] use strategy defined for generic operators
-\item[\textit{lp-clamped}] LP point clamped in [k,1-k] of the bound intervals (k defined by lp\_clamp\_${this operator}$)
-\item[\textit{lp-central}] LP point if within [k,1-k] of the bound intervals, middle point otherwise(k defined by branch\_lp\_clamp\_${this operator}$)
-\item[\textit{balanced}] minimizes max distance from curve to convexification
-\item[\textit{min-area}] minimizes total area of the two convexifications
-\item[\textit{mid-point}] convex combination of current point and mid point
-\item[\textit{no-branch}] do not branch, return null infeasibility; for testing purposes only
-\end{list}
-}
+{Chooses branching point selection strategy for operator prod.
+Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
+{}
 
 \printoption{branch\_pt\_select\_sqr}%
 {common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator sqr}%
-{\begin{list}{}{
-\setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
-\setlength{\itemindent}{0ex}
-\setlength{\topsep}{0pt}}
-\item[\textit{common}] use strategy defined for generic operators
-\item[\textit{lp-clamped}] LP point clamped in [k,1-k] of the bound intervals (k defined by lp\_clamp\_${this operator}$)
-\item[\textit{lp-central}] LP point if within [k,1-k] of the bound intervals, middle point otherwise(k defined by branch\_lp\_clamp\_${this operator}$)
-\item[\textit{balanced}] minimizes max distance from curve to convexification
-\item[\textit{min-area}] minimizes total area of the two convexifications
-\item[\textit{mid-point}] convex combination of current point and mid point
-\item[\textit{no-branch}] do not branch, return null infeasibility; for testing purposes only
-\end{list}
-}
+{Chooses branching point selection strategy for operator sqr.
+Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
+{}
 
 \printoption{branch\_pt\_select\_trig}%
 {common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator trig}%
-{\begin{list}{}{
-\setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
-\setlength{\itemindent}{0ex}
-\setlength{\topsep}{0pt}}
-\item[\textit{common}] use strategy defined for generic operators
-\item[\textit{lp-clamped}] LP point clamped in [k,1-k] of the bound intervals (k defined by lp\_clamp\_${this operator}$)
-\item[\textit{lp-central}] LP point if within [k,1-k] of the bound intervals, middle point otherwise(k defined by branch\_lp\_clamp\_${this operator}$)
-\item[\textit{balanced}] minimizes max distance from curve to convexification
-\item[\textit{min-area}] minimizes total area of the two convexifications
-\item[\textit{mid-point}] convex combination of current point and mid point
-\item[\textit{no-branch}] do not branch, return null infeasibility; for testing purposes only
-\end{list}
-}
+{Chooses branching point selection strategy for operator trig.
+Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
+{}
 
 \printoption{branching\_object}%
 {vt\_obj, var\_obj, expr\_obj}%
@@ -335,13 +205,13 @@ Default value is 0.25.}%
 {type of branching object for variable selection}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{vt\_obj}] use Violation Transfer from Tawarmalani and Sahinidis
-\item[\textit{var\_obj}] use one object for each variable
-\item[\textit{expr\_obj}] use one object for each nonlinear expression
+\item[\texttt{vt\_obj}] use Violation Transfer from Tawarmalani and Sahinidis
+\item[\texttt{var\_obj}] use one object for each variable
+\item[\texttt{expr\_obj}] use one object for each nonlinear expression
 \end{list}
 }
 
@@ -361,7 +231,7 @@ Default value is 0.25.}%
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency k (in terms of nodes) for generating clique\_cuts cuts in branch-and-cut.\\
-If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are generated every -k nodes but Cbc may decide to stop generating cuts, if not enough are generated at the root node, if k=-99 generate cuts only at the root node, if k=0 or 100 do not generate cuts.}%
+See option \texttt{2mir\_cuts} for the meaning of k.}%
 {}
 
 \printoption{cont\_var\_priority}%
@@ -391,13 +261,13 @@ A frequency of 0 amounts to never solve the NLP relaxation.}%
 For the lower envelopes of convex functions, this is the number of points where a supporting hyperplane is generated. This only holds for the initial linearization, as all other linearizations only add at most one cut per expression.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{current-point-only}] Only at current optimum of relaxation
-\item[\textit{uniform-grid}] Points chosen in a uniform grid between the bounds of the problem
-\item[\textit{around-current-point}] At points around current optimum of relaxation
+\item[\texttt{current-point-only}] Only at current optimum of relaxation
+\item[\texttt{uniform-grid}] Points chosen in a uniform grid between the bounds of the problem
+\item[\texttt{around-current-point}] At points around current optimum of relaxation
 \end{list}
 }
 
@@ -411,7 +281,7 @@ For the lower envelopes of convex functions, this is the number of points where 
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency k (in terms of nodes) for generating cover\_cuts cuts in branch-and-cut.\\
-If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are generated every -k nodes but Cbc may decide to stop generating cuts, if not enough are generated at the root node, if k=-99 generate cuts only at the root node, if k=0 or 100 do not generate cuts.}%
+See option \texttt{2mir\_cuts} for the meaning of k.}%
 {}
 
 \printoption{delete\_redundant}%
@@ -420,12 +290,12 @@ If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are genera
 {Eliminate redundant variables, which appear in the problem as x\_k = x\_h}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Keep redundant variables, making the problem a bit larger
-\item[\textit{yes}] Eliminate redundant variables (the problem will be equivalent, only smaller)
+\item[\texttt{no}] Keep redundant variables, making the problem a bit larger
+\item[\texttt{yes}] Eliminate redundant variables (the problem will be equivalent, only smaller)
 \end{list}
 }
 
@@ -495,24 +365,18 @@ A value of -1 means that generation can be done at all nodes}%
 {Enable OsiSolverInterface::tightenBounds () -- warning: it has caused some trouble to Couenne}%
 {}
 
-\printoption{enable\_sos}%
-{no, yes}%
-{no}%
-{Use Special Ordered Sets (SOS) as indicated in the MINLP model}%
-{}
-
 \printoption{estimate\_select}%
 {normal, product}%
 {normal}%
 {How the min/max estimates of the subproblems' bounds are used in strong branching}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{normal}] as usual in literature
-\item[\textit{product}] use their product
+\item[\texttt{normal}] as usual in literature
+\item[\texttt{product}] use their product
 \end{list}
 }
 
@@ -534,14 +398,14 @@ A pre-processing technique to reduce the bounding box, before the generation of 
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency k (in terms of nodes) for generating flow\_covers\_cuts cuts in branch-and-cut.\\
-If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are generated every -k nodes but Cbc may decide to stop generating cuts, if not enough are generated at the root node, if k=-99 generate cuts only at the root node, if k=0 or 100 do not generate cuts.}%
+See option \texttt{2mir\_cuts} for the meaning of k.}%
 {}
 
 \printoption{lift\_and\_project\_cuts}%
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency k (in terms of nodes) for generating lift\_and\_project\_cuts cuts in branch-and-cut.\\
-If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are generated every -k nodes but Cbc may decide to stop generating cuts, if not enough are generated at the root node, if k=-99 generate cuts only at the root node, if k=0 or 100 do not generate cuts.}%
+See option \texttt{2mir\_cuts} for the meaning of k.}%
 {}
 
 \printoption{local\_optimization\_heuristic}%
@@ -555,7 +419,7 @@ If enabled, a heuristic based on Ipopt is used to find feasible solutions for th
 {$-1\leq\textrm{integer}$}%
 {$2$}%
 {Specify the frequency (in terms of nodes) for aggressive bound tightening.\\
-If -1, apply at every node (expensive!). If 0, apply at root node only. If k$>$=0, apply with probability 2\^(k - level), level being the current depth of the B\&B tree.}%
+If -1, apply at every node (expensive!). If 0, apply at root node only. If k$>$=0, apply with probability $2^{(k - level)}$, level being the current depth of the B\&B tree.}%
 {}
 
 \printoption{log\_num\_local\_optimization\_per\_level}%
@@ -569,7 +433,7 @@ Solve as many nlp's at the nodes for each level of the tree. Nodes are randomly 
 {$-1\leq\textrm{integer}$}%
 {$1$}%
 {Specify the frequency (in terms of nodes) for optimality-based bound tightening.\\
-If -1, apply at every node (expensive!). If 0, apply at root node only. If k$>$=0, apply with probability 2\^(k - level), level being the current depth of the B\&B tree.}%
+If -1, apply at every node (expensive!). If 0, apply at root node only. If k$>$=0, apply with probability $2^{(k - level)}$, level being the current depth of the B\&B tree.}%
 {}
 
 \printoption{minlp\_disj\_cuts}%
@@ -583,7 +447,7 @@ A frequency of 0 (default) means these cuts are never generated. Any positive nu
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency k (in terms of nodes) for generating mir\_cuts cuts in branch-and-cut.\\
-If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are generated every -k nodes but Cbc may decide to stop generating cuts, if not enough are generated at the root node, if k=-99 generate cuts only at the root node, if k=0 or 100 do not generate cuts.}%
+See option \texttt{2mir\_cuts} for the meaning of k.}%
 {}
 
 \printoption{nlpheur\_print\_level}%
@@ -595,8 +459,7 @@ If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are genera
 \printoption{opt\_window}%
 {$\textrm{real}$}%
 {$\infty$}%
-{Window around known optimum\\
-Default value is infinity.}%
+{Window around known optimum.}%
 {}
 
 \printoption{optimality\_bt}%
@@ -616,7 +479,7 @@ This is another bound reduction technique aiming at reducing the solution set by
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency k (in terms of nodes) for generating probing\_cuts cuts in branch-and-cut.\\
-If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are generated every -k nodes but Cbc may decide to stop generating cuts, if not enough are generated at the root node, if k=-99 generate cuts only at the root node, if k=0 or 100 do not generate cuts.}%
+See option \texttt{2mir\_cuts} for the meaning of k.}%
 {}
 
 \printoption{problem\_print\_level}%
@@ -631,16 +494,16 @@ If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are genera
 {Multipliers of pseudocosts for estimating and update estimation of bound}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{infeasibility}] infeasibility returned by object
-\item[\textit{projectDist}] distance between current LP point and resulting branches' LP points
-\item[\textit{interval\_lp}] width of the interval between bound and current lp point
-\item[\textit{interval\_lp\_rev}] similar to interval\_lp, reversed
-\item[\textit{interval\_br}] width of the interval between bound and branching point
-\item[\textit{interval\_br\_rev}] similar to interval\_br, reversed
+\item[\texttt{infeasibility}] infeasibility returned by object
+\item[\texttt{projectDist}] distance between current LP point and resulting branches' LP points
+\item[\texttt{interval\_lp}] width of the interval between bound and current lp point
+\item[\texttt{interval\_lp\_rev}] similar to interval\_lp, reversed
+\item[\texttt{interval\_br}] width of the interval between bound and branching point
+\item[\texttt{interval\_br\_rev}] similar to interval\_br, reversed
 \end{list}
 }
 
@@ -656,12 +519,12 @@ If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are genera
 {Apply Reduced Cost Branching (instead of the Violation Transfer) -- MUST have vt\_obj enabled}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Use Violation Transfer with $\sum |\pi\_i a\_{ij}|$
-\item[\textit{yes}] Use Reduced cost branching with $|\sum \pi\_i a\_{ij}|$
+\item[\texttt{no}] Use Violation Transfer with $\sum |\pi\_i a\_{ij}|$
+\item[\texttt{yes}] Use Reduced cost branching with $|\sum \pi\_i a\_{ij}|$
 \end{list}
 }
 
@@ -676,7 +539,7 @@ This bound reduction technique uses the reduced costs of the LP in order to infe
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency k (in terms of nodes) for generating reduce\_split\_cuts cuts in branch-and-cut.\\
-If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are generated every -k nodes but Cbc may decide to stop generating cuts, if not enough are generated at the root node, if k=-99 generate cuts only at the root node, if k=0 or 100 do not generate cuts.}%
+See option \texttt{2mir\_cuts} for the meaning of k.}%
 {}
 
 \printoption{reformulate\_print\_level}%
@@ -692,12 +555,12 @@ If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are genera
 If enabled, then quadratic forms are not reformulated and therefore decomposed as a sum of auxiliary variables, each associated with a bilinear term, but rather taken as a whole expression. Envelopes for these expressions are generated through alpha-convexification.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
-\setlength{\leftmargin}{3ex}
-\setlength{\labelwidth}{1ex}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\textit{no}] Use an auxiliary for each bilinear term
-\item[\textit{yes}] Create only one auxiliary for a quadratic expression
+\item[\texttt{no}] Use an auxiliary for each bilinear term
+\item[\texttt{yes}] Create only one auxiliary for a quadratic expression
 \end{list}
 }
 

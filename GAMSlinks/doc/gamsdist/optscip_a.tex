@@ -1,32 +1,32 @@
 \printoptioncategory{GAMS interface specific options}
 \printoption{gams/names}%
 {boolean}%
-{0}%
+{FALSE}%
 {This option causes GAMS names for the variables and equations to be loaded into SCIP. These names will then be used for error messages, log entries, and so forth. Turning names off may help if memory is very tight.}%
 {}
 
 \printoption{gams/mipstart}%
 {boolean}%
-{1}%
+{TRUE}%
 {This option controls the use of advanced starting values for mixed integer programs. A setting of TRUE indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.}%
 {}
 
 \printoption{gams/print\_statistics}%
 {boolean}%
-{0}%
+{FALSE}%
 {This option controls the printing of solve statistics after a MIP solve. Turning on this option indicates that statistics like the number of generated cuts of each type or the calls of heuristics are printed after the MIP solve.}%
 {}
 
 \printoption{gams/interactive}%
 {boolean}%
-{0}%
+{FALSE}%
 {whether a SCIP shell should be opened instead of issuing a solve command (this option is not available in demo mode)}%
 {}
 
 \printoptioncategory{Branching}
 \printoption{branching/preferbinary}%
 {boolean}%
-{0}%
+{FALSE}%
 {should branching on binary variables be preferred?}%
 {}
 
@@ -201,43 +201,43 @@
 \printoptioncategory{Conflict analysis}
 \printoption{conflict/enable}%
 {boolean}%
-{1}%
+{TRUE}%
 {should conflict analysis be enabled?}%
 {}
 
 \printoption{conflict/useprop}%
 {boolean}%
-{1}%
+{TRUE}%
 {should propagation conflict analysis be used?}%
 {}
 
 \printoption{conflict/useinflp}%
 {boolean}%
-{1}%
+{TRUE}%
 {should infeasible LP conflict analysis be used?}%
 {}
 
 \printoption{conflict/useboundlp}%
 {boolean}%
-{0}%
+{FALSE}%
 {should bound exceeding LP conflict analysis be used?}%
 {}
 
 \printoption{conflict/usesb}%
 {boolean}%
-{0}%
+{FALSE}%
 {should infeasible/bound exceeding strong branching conflict analysis be used?}%
 {}
 
 \printoption{conflict/usepseudo}%
 {boolean}%
-{1}%
+{TRUE}%
 {should pseudo solution conflict analysis be used?}%
 {}
 
 \printoption{conflict/preferbinary}%
 {boolean}%
-{0}%
+{FALSE}%
 {should binary conflicts be preferred?}%
 {}
 
@@ -292,7 +292,7 @@
 
 \printoption{constraints/linear/separateall}%
 {boolean}%
-{0}%
+{FALSE}%
 {should all constraints be subject to cardinality cut generation instead of only the ones with non-zero dual value?}%
 {}
 
@@ -346,25 +346,25 @@
 
 \printoption{constraints/countsols/sparsetest}%
 {boolean}%
-{1}%
+{TRUE}%
 {should the sparse solution test be turned on?}%
 {}
 
 \printoption{constraints/countsols/discardsols}%
 {boolean}%
-{1}%
+{TRUE}%
 {is it allowed to discard solutions?}%
 {}
 
 \printoption{constraints/countsols/active}%
 {boolean}%
-{0}%
+{FALSE}%
 {is the constraint handler active?}%
 {}
 
 \printoption{constraints/countsols/collect}%
 {boolean}%
-{0}%
+{FALSE}%
 {should the solutions be collected?}%
 {}
 
@@ -412,7 +412,7 @@
 
 \printoption{constraints/linear/upgrade/knapsack}%
 {boolean}%
-{1}%
+{TRUE}%
 {enable linear upgrading for constraint handler $<$knapsack$>$}%
 {}
 
@@ -454,7 +454,7 @@
 
 \printoption{constraints/linear/upgrade/logicor}%
 {boolean}%
-{1}%
+{TRUE}%
 {enable linear upgrading for constraint handler $<$logicor$>$}%
 {}
 
@@ -484,7 +484,7 @@
 
 \printoption{constraints/quadratic/replacesqrbinary}%
 {boolean}%
-{1}%
+{TRUE}%
 {whether a square of a binary variables should be replaced by the binary variable}%
 {}
 
@@ -494,9 +494,15 @@
 {max. length of linear term which when multiplied with a binary variables is replaced by an auxiliary variable and a linear reformulation (0 to turn off)}%
 {}
 
+\printoption{constraints/quadratic/empathy4and}%
+{$0\leq\textrm{integer}\leq2$}%
+{$0$}%
+{empathy level for using the AND constraint handler: 0 always avoid using AND; 1 use AND sometimes; 2 use AND as often as possible}%
+{}
+
 \printoption{constraints/quadratic/disaggregate}%
 {boolean}%
-{1}%
+{TRUE}%
 {whether quadratic constraints consisting of several quadratic blocks should be disaggregated in several constraints}%
 {}
 
@@ -508,13 +514,13 @@
 
 \printoption{constraints/quadratic/scaling}%
 {boolean}%
-{1}%
+{TRUE}%
 {whether a quadratic constraint should be scaled w.r.t. the current gradient norm when checking for feasibility}%
 {}
 
 \printoption{constraints/quadratic/fastpropagate}%
 {boolean}%
-{1}%
+{TRUE}%
 {whether a propagation should be used that is faster in case of bilinear term, but also less efficient}%
 {}
 
@@ -522,6 +528,12 @@
 {$0\leq\textrm{real}$}%
 {$10^{ 10}$}%
 {maximal range of a cut (maximal coefficient divided by minimal coefficient) in order to be added to LP relaxation}%
+{}
+
+\printoption{constraints/quadratic/linearizenlpsol}%
+{boolean}%
+{TRUE}%
+{whether convex quadratic constraints should be linearized in a solution found by the NLP or RENSNL heuristic}%
 {}
 
 \printoption{constraints/quadratic/strategy}%
@@ -550,7 +562,7 @@
 
 \printoption{constraints/linear/upgrade/setppc}%
 {boolean}%
-{1}%
+{TRUE}%
 {enable linear upgrading for constraint handler $<$setppc$>$}%
 {}
 
@@ -568,19 +580,19 @@
 
 \printoption{constraints/SOS1/branchSOS}%
 {boolean}%
-{1}%
+{TRUE}%
 {Use SOS1 branching in enforcing (otherwise leave decision to branching rules)?}%
 {}
 
 \printoption{constraints/SOS1/branchNonzeros}%
 {boolean}%
-{0}%
+{FALSE}%
 {Branch on SOS constraint with most number of nonzeros?}%
 {}
 
 \printoption{constraints/SOS1/branchWeight}%
 {boolean}%
-{0}%
+{FALSE}%
 {Branch on SOS cons. with highest nonzero-variable weight for branching (needs branchNonzeros = false)?}%
 {}
 
@@ -610,7 +622,7 @@
 
 \printoption{constraints/linear/upgrade/varbound}%
 {boolean}%
-{1}%
+{TRUE}%
 {enable linear upgrading for constraint handler $<$varbound$>$}%
 {}
 
@@ -635,7 +647,7 @@
 
 \printoption{display/width}%
 {$0\leq\textrm{integer}$}%
-{$139$}%
+{$80$}%
 {maximal number of characters in a node information line}%
 {}
 
@@ -653,7 +665,7 @@
 
 \printoption{display/lpinfo}%
 {boolean}%
-{0}%
+{FALSE}%
 {should the LP solver display status messages?}%
 {}
 
@@ -870,7 +882,7 @@
 
 \printoption{heuristics/actconsdiving/backtrack}%
 {boolean}%
-{1}%
+{TRUE}%
 {use one level of backtracking if infeasibility is encountered?}%
 {}
 
@@ -900,7 +912,7 @@
 
 \printoption{heuristics/coefdiving/backtrack}%
 {boolean}%
-{1}%
+{TRUE}%
 {use one level of backtracking if infeasibility is encountered?}%
 {}
 
@@ -1014,7 +1026,7 @@
 
 \printoption{heuristics/feaspump/beforecuts}%
 {boolean}%
-{1}%
+{TRUE}%
 {should the feasibility pump be called at root node before cut separation?}%
 {}
 
@@ -1056,7 +1068,7 @@
 
 \printoption{heuristics/fracdiving/backtrack}%
 {boolean}%
-{1}%
+{TRUE}%
 {use one level of backtracking if infeasibility is encountered?}%
 {}
 
@@ -1086,7 +1098,7 @@
 
 \printoption{heuristics/guideddiving/backtrack}%
 {boolean}%
-{1}%
+{TRUE}%
 {use one level of backtracking if infeasibility is encountered?}%
 {}
 
@@ -1116,7 +1128,7 @@
 
 \printoption{heuristics/intdiving/backtrack}%
 {boolean}%
-{1}%
+{TRUE}%
 {use one level of backtracking if infeasibility is encountered?}%
 {}
 
@@ -1158,7 +1170,7 @@
 
 \printoption{heuristics/linesearchdiving/backtrack}%
 {boolean}%
-{1}%
+{TRUE}%
 {use one level of backtracking if infeasibility is encountered?}%
 {}
 
@@ -1260,7 +1272,7 @@
 
 \printoption{heuristics/nlp/resolvefromscratch}%
 {boolean}%
-{1}%
+{TRUE}%
 {whether a resolve of an NLP due to disagreement of feasibility should be from the original starting point or the infeasible solution}%
 {}
 
@@ -1284,7 +1296,7 @@
 
 \printoption{heuristics/nlp/varboundexplicit}%
 {boolean}%
-{1}%
+{TRUE}%
 {whether variable bound constraints should be handled explicitly before solving NLP instead of adding them to the NLP}%
 {}
 
@@ -1362,7 +1374,7 @@
 
 \printoption{heuristics/pscostdiving/backtrack}%
 {boolean}%
-{1}%
+{TRUE}%
 {use one level of backtracking if infeasibility is encountered?}%
 {}
 
@@ -1536,14 +1548,14 @@
 
 \printoption{heuristics/veclendiving/backtrack}%
 {boolean}%
-{1}%
+{TRUE}%
 {use one level of backtracking if infeasibility is encountered?}%
 {}
 
 \printoptioncategory{Limits}
 \printoption{limits/time}%
 {$0\leq\textrm{real}$}%
-{$\infty$}%
+{$1000$}%
 {maximal time in seconds to run}%
 {}
 
@@ -1567,7 +1579,7 @@
 
 \printoption{limits/gap}%
 {$0\leq\textrm{real}$}%
-{$0$}%
+{$0.1$}%
 {solving stops, if the relative gap = |(primalbound - dualbound)/dualbound| is below the given value}%
 {}
 
@@ -1636,7 +1648,7 @@
 \printoptioncategory{Micellaneous}
 \printoption{misc/catchctrlc}%
 {boolean}%
-{1}%
+{TRUE}%
 {should the CTRL-C interrupt be caught by SCIP?}%
 {}
 
@@ -1790,7 +1802,7 @@
 
 \printoption{propagating/abortoncutoff}%
 {boolean}%
-{1}%
+{TRUE}%
 {should propagation be aborted immediately? setting this to FALSE could help conflict analysis to produce more conflict constraints}%
 {}
 
@@ -1917,7 +1929,7 @@
 
 \printoption{separating/cmir/dynamiccuts}%
 {boolean}%
-{1}%
+{TRUE}%
 {should generated cuts be removed from the LP if they are no longer tight?}%
 {}
 
@@ -1953,7 +1965,7 @@
 
 \printoption{separating/flowcover/dynamiccuts}%
 {boolean}%
-{1}%
+{TRUE}%
 {should generated cuts be removed from the LP if they are no longer tight?}%
 {}
 
@@ -1989,7 +2001,7 @@
 
 \printoption{separating/gomory/dynamiccuts}%
 {boolean}%
-{1}%
+{TRUE}%
 {should generated cuts be removed from the LP if they are no longer tight?}%
 {}
 
@@ -2013,7 +2025,7 @@
 
 \printoption{separating/mcf/dynamiccuts}%
 {boolean}%
-{1}%
+{TRUE}%
 {should generated cuts be removed from the LP if they are no longer tight?}%
 {}
 
@@ -2037,7 +2049,7 @@
 
 \printoption{separating/redcost/continuous}%
 {boolean}%
-{0}%
+{FALSE}%
 {should reduced cost fixing be also applied to continuous variables?}%
 {}
 
@@ -2073,7 +2085,7 @@
 
 \printoption{separating/strongcg/dynamiccuts}%
 {boolean}%
-{1}%
+{TRUE}%
 {should generated cuts be removed from the LP if they are no longer tight?}%
 {}
 
@@ -2109,13 +2121,13 @@
 
 \printoption{separating/zerohalf/dynamiccuts}%
 {boolean}%
-{1}%
+{TRUE}%
 {should generated cuts be removed from the LP if they are no longer tight?}%
 {}
 
 \printoption{separating/zerohalf/preprocessing/decomposeproblem}%
 {boolean}%
-{0}%
+{FALSE}%
 {should problem be decomposed into subproblems (if possible) before applying preprocessing?}%
 {}
 
@@ -2128,18 +2140,18 @@
 \printoption{separating/zerohalf/preprocessing/ppmethods}%
 {string}%
 {CXRGXIM}%
-{preprocessing methods and ordering:\\   \#                      'd' columns with small LP solution,\\    \#                      'G' modified Gaussian elimination,\\     \#                      'i' identical columns,\\   \#                      'I' identical rows,\\   \#                      'L' large slack rows,\\   \#                      'M' large slack rows (minslack),\\   \#                      's' column singletons,\\   \#                      'X' add trivial zerohalf cuts,\\   \#                      'z' zero columns,\\   \#                      'Z' zero rows,\\   \#                      'C' fast {'z','s'},\\   \#                      'R' fast {'Z','L','I'}\\   \#                      \\                         \#                      '-' no preprocessing\\     \#                     }%
+{preprocessing methods and ordering:\\   \#                      'd' columns with small LP solution,\\    \#                      'G' modified Gaussian elimination,\\     \#                      'i' identical columns,\\   \#                      'I' identical rows,\\   \#                      'L' large slack rows,\\   \#                      'M' large slack rows (minslack),\\   \#                      's' column singletons,\\   \#                      'X' add trivial zerohalf cuts,\\   \#                      'z' zero columns,\\   \#                      'Z' zero rows,\\   \#                      'C' fast {'z','s'},\\   \#                      'R' fast {'Z','L','I'}\\   \#                      \\                         \#                      '-' no preprocessing                     }%
 {}
 
 \printoption{separating/zerohalf/separating/forcecutstolp}%
 {boolean}%
-{0}%
+{FALSE}%
 {should the cuts be forced to enter the LP?}%
 {}
 
 \printoption{separating/zerohalf/separating/forcecutstosepastore}%
 {boolean}%
-{0}%
+{FALSE}%
 {should the cuts be forced to enter SCIP's sepastore?}%
 {}
 
@@ -2152,7 +2164,7 @@
 \printoption{separating/zerohalf/separating/sepamethods}%
 {string}%
 {2g}%
-{separating methods and ordering:\\   \#                      '!' stop further processing if a cut was found,\\   \#                      '2' exact polynomial time algorithm (only if matrix has max 2 odd entries per row),\\   \#                      'e' enumeration heuristics (k=1: try all preprocessed rows),\\   \#                      'E' enumeration heuristics (k=2: try all combinations of up to two preprocessed rows),\\   \#                      'g' Extended Gaussian elimination heuristics,\\   \#                      's' auxiliary IP heuristics (i.e. number of solved nodes is limited)\\   \#                      'S' auxiliary IP exact      (i.e. unlimited number of nodes)\\   \#                      \\   \#                      '-' no processing\\   \#                     }%
+{separating methods and ordering:\\   \#                      '!' stop further processing if a cut was found,\\   \#                      '2' exact polynomial time algorithm (only if matrix has max 2 odd entries per row),\\   \#                      'e' enumeration heuristics (k=1: try all preprocessed rows),\\   \#                      'E' enumeration heuristics (k=2: try all combinations of up to two preprocessed rows),\\   \#                      'g' Extended Gaussian elimination heuristics,\\   \#                      's' auxiliary IP heuristics (i.e. number of solved nodes is limited)\\   \#                      'S' auxiliary IP exact      (i.e. unlimited number of nodes)\\   \#                      \\   \#                      '-' no processing                     }%
 {}
 
 \printoption{separating/zerohalf/separating/auxip/settingsfile}%
@@ -2175,14 +2187,14 @@
 
 \printoption{separating/zerohalf/separating/auxip/useallsols}%
 {boolean}%
-{1}%
+{TRUE}%
 {should all (proper) solutions of the auxiliary IP be used to generate cuts instead of using only the best?}%
 {}
 
 \printoption{separating/zerohalf/separating/auxip/objective}%
 {character}%
 {v}%
-{auxiliary IP objective:\\   \#                      'v' maximize cut violation,\\   \#                      'u' minimize number of aggregated rows in cut,\\   \#                      'w' minimize number of aggregated rows in cut\\   \#                          weighted by the number of rows in the aggregation,\\   \#                      'p' maximize cut violation and penalize a high number\\   \#                          of aggregated rows in the cut weighted by the number\\   \#                          of rows in the aggregation and the penalty factor p\\   \#                     }%
+{auxiliary IP objective:\\   \#                      'v' maximize cut violation,\\   \#                      'u' minimize number of aggregated rows in cut,\\   \#                      'w' minimize number of aggregated rows in cut\\   \#                          weighted by the number of rows in the aggregation,\\   \#                      'p' maximize cut violation and penalize a high number\\   \#                          of aggregated rows in the cut weighted by the number\\   \#                          of rows in the aggregation and the penalty factor p                     }%
 {}
 
 \printoptioncategory{Timing}
@@ -2194,7 +2206,7 @@
 
 \printoption{timing/enabled}%
 {boolean}%
-{1}%
+{TRUE}%
 {is timing enabled?}%
 {}
 

@@ -816,7 +816,7 @@ Turns the randomized rounding heuristic on.
 
 
 rens
-This parameter controls the use of the relaxation enforced neighborhood search heuristic.<BR>
+This parameter controls the use of the relaxation enforced neighborhood search heuristic.
 
 
 rens.0

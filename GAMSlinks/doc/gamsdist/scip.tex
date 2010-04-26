@@ -5,7 +5,7 @@
 % formating option print
 % \printoption{option name}{range of values}{default value}{description}{enum description}
 \newcommand{\printoption}[5]%
-{\textit{#1}\; (#2) \hfill #3\\
+{\textbf{\ttfamily #1}\; (#2) \hfill \texttt{#3}\\
 #4
 #5
 }
@@ -90,10 +90,7 @@ It causes \MYGAMS/\SCIP to disable probing during presolve and to turn off all c
 \section{Detailed Options Description}
 
 \SCIP supports a large set of options.
-Sample option files can be obtained from
-\begin{verbatim}
-     http://www.gams.com/~svigerske/scip1.2
-\end{verbatim}
+Sample option files can be obtained from \\ \url{http://www.gams.com/~svigerske/scip1.2}.
 
 % Further, there is a set of options that are specific to the \MYGAMS/\SCIP interface.
 % , most of them for control of the \MYGAMS BCH facility.
