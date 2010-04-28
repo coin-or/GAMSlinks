@@ -96,7 +96,7 @@ noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
 @COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_13 = gmsocpnx.exe gmsocpnt.cmd install/gmsocpnt.dat
 @COIN_HAS_CPX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_14 = gmsocpnt.cmd gmsocpus.run install/gmsocpnt.dat install/gmsocpun.dat
 @COIN_HAS_GLPK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_15 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
-@COIN_HAS_GLPK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_16 = -I`$(CYGPATH_W) $(GLPKINCDIR)`
+@COIN_HAS_GLPK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_16 = -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` -I`$(CYGPATH_W) $(GLPKINCDIR)`
 @COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_17 = gmsoglux.out
 @COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_18 = gmsoglux.out gmsoglus.run install/gmsoglun.dat
 @COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_19 = gmsoglnx
@@ -105,7 +105,7 @@ noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
 @COIN_HAS_GLPK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_22 = optosiglpk.def optosiglpk.gms optosiglpk.txt gmsoglnt.cmd gmsoglus.run install/gmsoglnt.dat install/gmsoglun.dat
 @COIN_HAS_GRB_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_23 = $(OSIOBJDIR)/src/OsiGrb/libOsiGrb.la
 #  libGamsCoin_la_LDFLAGS  += $(GRBLIB)
-@COIN_HAS_GRB_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_24 = -I`$(CYGPATH_W) $(GRBINCDIR)`
+@COIN_HAS_GRB_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_24 = -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGrb` -I`$(CYGPATH_W) $(GRBINCDIR)`
 @COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_25 = gmsoguux.out
 @COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_26 = gmsoguux.out gmsoguus.run install/gmsoguun.dat
 @COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_27 = gmsogunx
@@ -196,13 +196,8 @@ noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_76 = gmsbmdnx
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_77 = gmsbmdnx.exe gmsbmdnt.cmd install/gmsbmdnt.dat
 @GAMSLINKS_BUILD_BONMIN_TRUE@am__append_78 = gmsbmdnt.cmd gmsbmdus.run install/gmsbmdnt.dat install/gmsbmdun.dat
-@GAMSLINKS_BUILD_GLPK_TRUE@am__append_79 = \
-@GAMSLINKS_BUILD_GLPK_TRUE@ -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
-@GAMSLINKS_BUILD_GLPK_TRUE@ -I`$(CYGPATH_W) $(GLPKINCDIR)`
-
-@GAMSLINKS_BUILD_GLPK_TRUE@am__append_80 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
-@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_81 = GamsCouenne.cpp
-@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_82 = \
+@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_79 = GamsCouenne.cpp
+@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_80 = \
 @GAMSLINKS_BUILD_COUENNE_TRUE@  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms/OaGenerators` \
 @GAMSLINKS_BUILD_COUENNE_TRUE@  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms/Branching` \
 @GAMSLINKS_BUILD_COUENNE_TRUE@  -I`$(CYGPATH_W) $(CGLSRCDIR)/src/CglLandP` \
@@ -221,14 +216,14 @@ noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
 @GAMSLINKS_BUILD_COUENNE_TRUE@	-I`$(CYGPATH_W) $(COUENNESRCDIR)/src` \
 @GAMSLINKS_BUILD_COUENNE_TRUE@	-I`$(CYGPATH_W) $(COUENNEOBJDIR)/inc`
 
-@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_83 = $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src/main/libBonCouenne.la
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_84 = gmscouux.out
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_85 = gmscouux.out gmscouus.run install/gmscouun.dat
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_86 = gmscounx
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_87 = gmscounx.exe gmscount.cmd install/gmscount.dat
-@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_88 = gmscount.cmd gmscouus.run install/gmscount.dat install/gmscouun.dat
-@GAMSLINKS_BUILD_OS_TRUE@am__append_89 = GamsOS.cpp GamsOSxL.cpp
-@GAMSLINKS_BUILD_OS_TRUE@am__append_90 = \
+@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_81 = $(COUENNEOBJDIR)/src/libCouenne.la $(COUENNEOBJDIR)/src/main/libBonCouenne.la
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_82 = gmscouux.out
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_83 = gmscouux.out gmscouus.run install/gmscouun.dat
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_84 = gmscounx
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_85 = gmscounx.exe gmscount.cmd install/gmscount.dat
+@GAMSLINKS_BUILD_COUENNE_TRUE@am__append_86 = gmscount.cmd gmscouus.run install/gmscount.dat install/gmscouun.dat
+@GAMSLINKS_BUILD_OS_TRUE@am__append_87 = GamsOS.cpp GamsOSxL.cpp
+@GAMSLINKS_BUILD_OS_TRUE@am__append_88 = \
 @GAMSLINKS_BUILD_OS_TRUE@ -I`$(CYGPATH_W) $(OSSRCDIR)/src` \
 @GAMSLINKS_BUILD_OS_TRUE@ -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSCommonInterfaces` \
 @GAMSLINKS_BUILD_OS_TRUE@ -I`$(CYGPATH_W) $(OSSRCDIR)/src/OSUtils` \
@@ -237,24 +232,24 @@ noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
 @GAMSLINKS_BUILD_OS_TRUE@ -I`$(CYGPATH_W) $(OSOBJDIR)/inc` \
 @GAMSLINKS_BUILD_OS_TRUE@ -I`$(CYGPATH_W) $(CPPADSRCDIR)`
 
-@GAMSLINKS_BUILD_OS_TRUE@am__append_91 = \
+@GAMSLINKS_BUILD_OS_TRUE@am__append_89 = \
 @GAMSLINKS_BUILD_OS_TRUE@ $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
 @GAMSLINKS_BUILD_OS_TRUE@ $(OSOBJDIR)/src/OSParsers/libOSParsers.la \
 @GAMSLINKS_BUILD_OS_TRUE@ $(OSOBJDIR)/src/OSUtils/libOSUtils.la \
 @GAMSLINKS_BUILD_OS_TRUE@ $(OSOBJDIR)/src/OSAgent/libOSAgent.la
 
-@GAMSLINKS_BUILD_OS_TRUE@am__append_92 = `cat $(OSOBJDIR)/os_addlibs.txt`
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_93 = gmsosdux.out
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_94 = gmsosdux.out gmsosdus.run install/gmsosdun.dat
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_95 = gmsosdnx
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_96 = gmsosdnx.exe gmsosdnt.cmd install/gmsosdnt.dat
-@GAMSLINKS_BUILD_OS_TRUE@am__append_97 = optosd.def
-@GAMSLINKS_BUILD_OS_TRUE@am__append_98 = optosd.def optosd.gms optosd.txt gmsosdnt.cmd gmsosdus.run install/gmsosdnt.dat install/gmsosdun.dat
+@GAMSLINKS_BUILD_OS_TRUE@am__append_90 = `cat $(OSOBJDIR)/os_addlibs.txt`
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_91 = gmsosdux.out
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_92 = gmsosdux.out gmsosdus.run install/gmsosdun.dat
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_93 = gmsosdnx
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_94 = gmsosdnx.exe gmsosdnt.cmd install/gmsosdnt.dat
+@GAMSLINKS_BUILD_OS_TRUE@am__append_95 = optosd.def
+@GAMSLINKS_BUILD_OS_TRUE@am__append_96 = optosd.def optosd.gms optosd.txt gmsosdnt.cmd gmsosdus.run install/gmsosdnt.dat install/gmsosdun.dat
 DIST_COMMON = $(am__includecoin_HEADERS_DIST) \
 	$(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_99 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_100 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_97 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_98 = .Externals-stamp
 subdir = src/SolverInterfaces
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
@@ -292,10 +287,9 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 @GAMSLINKS_BUILD_IPOPT_TRUE@am__DEPENDENCIES_9 = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la
 @COIN_BUILD_SCIP_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__DEPENDENCIES_10 = $(SCIPOBJDIR)/libcoinscip.la
 @GAMSLINKS_BUILD_BONMIN_TRUE@am__DEPENDENCIES_11 = $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
-@GAMSLINKS_BUILD_GLPK_TRUE@am__DEPENDENCIES_12 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
-@GAMSLINKS_BUILD_COUENNE_TRUE@am__DEPENDENCIES_13 = $(COUENNEOBJDIR)/src/libCouenne.la \
+@GAMSLINKS_BUILD_COUENNE_TRUE@am__DEPENDENCIES_12 = $(COUENNEOBJDIR)/src/libCouenne.la \
 @GAMSLINKS_BUILD_COUENNE_TRUE@	$(COUENNEOBJDIR)/src/main/libBonCouenne.la
-@GAMSLINKS_BUILD_OS_TRUE@am__DEPENDENCIES_14 = $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
+@GAMSLINKS_BUILD_OS_TRUE@am__DEPENDENCIES_13 = $(OSOBJDIR)/src/OSCommonInterfaces/libOSCommonInterfaces.la \
 @GAMSLINKS_BUILD_OS_TRUE@	$(OSOBJDIR)/src/OSParsers/libOSParsers.la \
 @GAMSLINKS_BUILD_OS_TRUE@	$(OSOBJDIR)/src/OSUtils/libOSUtils.la \
 @GAMSLINKS_BUILD_OS_TRUE@	$(OSOBJDIR)/src/OSAgent/libOSAgent.la
@@ -306,7 +300,7 @@ libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la \
 	$(am__DEPENDENCIES_7) $(am__DEPENDENCIES_8) \
 	$(am__DEPENDENCIES_9) $(am__DEPENDENCIES_10) \
 	$(am__DEPENDENCIES_11) $(am__DEPENDENCIES_12) \
-	$(am__DEPENDENCIES_13) $(am__DEPENDENCIES_14)
+	$(am__DEPENDENCIES_13)
 am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp GamsOsi.cpp \
 	GamsOsiHelper.cpp GamsMessageHandler.cpp GamsCbc.cpp \
 	GamsIpopt.cpp GamsNLP.cpp GamsJournal.cpp GamsScip.cpp \
@@ -359,8 +353,8 @@ PROGRAMS = $(noinst_PROGRAMS)
 am__gmsbmdnx_SOURCES_DIST = gmsmain.cpp
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am_gmsbmdnx_OBJECTS = gmsbmdnx-gmsmain.$(OBJEXT)
 gmsbmdnx_OBJECTS = $(am_gmsbmdnx_OBJECTS)
-@COIN_HAS_LIBLTDL_FALSE@am__DEPENDENCIES_15 = libGamsCoin.la
-@COIN_HAS_LIBLTDL_TRUE@am__DEPENDENCIES_15 = ../GamsUtils/gevmcc.lo \
+@COIN_HAS_LIBLTDL_FALSE@am__DEPENDENCIES_14 = libGamsCoin.la
+@COIN_HAS_LIBLTDL_TRUE@am__DEPENDENCIES_14 = ../GamsUtils/gevmcc.lo \
 @COIN_HAS_LIBLTDL_TRUE@	../GamsUtils/gmomcc.lo \
 @COIN_HAS_LIBLTDL_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
 am__gmsbmdux_out_SOURCES_DIST = gmsmain.cpp
@@ -660,7 +654,7 @@ LIBLTDLSRCDIR = @LIBLTDLSRCDIR@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@ $(ADDLIBS) `cat $(GAMSLINKSOBJDIR)/gams_addlibs.txt` \
 	$(am__append_4) $(am__append_6) $(am__append_56) \
-	$(am__append_92)
+	$(am__append_90)
 LIBTOOL = @LIBTOOL@
 LIBTOOLM4 = @LIBTOOLM4@
 LN_S = @LN_S@
@@ -785,8 +779,8 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = $(am__append_14) $(am__append_22) $(am__append_29) \
 	$(am__append_36) $(am__append_43) $(am__append_52) \
 	$(am__append_61) $(am__append_70) $(am__append_78) \
-	$(am__append_88) $(am__append_98) $(am__append_99)
-DISTCLEANFILES = $(am__append_100) $(VPATH_DISTCLEANFILES)
+	$(am__append_86) $(am__append_96) $(am__append_97)
+DISTCLEANFILES = $(am__append_98) $(VPATH_DISTCLEANFILES)
 
 # these flags are required for compiling every library and executable  
 COMMON_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/../GamsUtils`
@@ -801,19 +795,17 @@ COMMON_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/../Gam
 lib_LTLIBRARIES = libGamsCoin.la
 libGamsCoin_la_SOURCES = GamsSolver.cpp $(am__append_1) \
 	$(am__append_44) $(am__append_53) $(am__append_62) \
-	$(am__append_71) $(am__append_81) $(am__append_89)
+	$(am__append_71) $(am__append_79) $(am__append_87)
 libGamsCoin_la_CPPFLAGS = $(COMMON_CPPFLAGS) $(am__append_2) \
 	$(am__append_7) $(am__append_9) $(am__append_16) \
 	$(am__append_24) $(am__append_31) $(am__append_38) \
 	$(am__append_45) $(am__append_54) $(am__append_63) \
-	$(am__append_72) $(am__append_79) $(am__append_82) \
-	$(am__append_90)
+	$(am__append_72) $(am__append_80) $(am__append_88)
 libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la $(am__append_3) \
 	$(am__append_5) $(am__append_8) $(am__append_15) \
 	$(am__append_23) $(am__append_30) $(am__append_37) \
 	$(am__append_46) $(am__append_55) $(am__append_64) \
-	$(am__append_73) $(am__append_80) $(am__append_83) \
-	$(am__append_91)
+	$(am__append_73) $(am__append_81) $(am__append_89)
 @COIN_HAS_LIBLTDL_FALSE@libGamsCoin_la_LDFLAGS = $(am__append_65)
 @COIN_HAS_LIBLTDL_TRUE@libGamsCoin_la_LDFLAGS = -module -no-undefined \
 @COIN_HAS_LIBLTDL_TRUE@	$(am__append_65)
@@ -823,9 +815,9 @@ gamsinstallfiles = $(am__append_11) $(am__append_13) $(am__append_18) \
 	$(am__append_40) $(am__append_42) $(am__append_48) \
 	$(am__append_50) $(am__append_51) $(am__append_58) \
 	$(am__append_60) $(am__append_67) $(am__append_69) \
-	$(am__append_75) $(am__append_77) $(am__append_85) \
-	$(am__append_87) $(am__append_94) $(am__append_96) \
-	$(am__append_97)
+	$(am__append_75) $(am__append_77) $(am__append_83) \
+	$(am__append_85) $(am__append_92) $(am__append_94) \
+	$(am__append_95)
 @COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsocpux_out_SOURCES = gmsmain.cpp
 @COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsocpux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiCplex\" -DCREATEFUNCNAME=createNewGamsOsiCplex
 @COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsocpux_out_LDADD = $(GMSXXX_LDADD)

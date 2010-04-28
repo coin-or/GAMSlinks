@@ -99,7 +99,7 @@ endif
 
 if COIN_HAS_GLPK
   libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
-  libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(GLPKINCDIR)`
+  libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` -I`$(CYGPATH_W) $(GLPKINCDIR)`
 
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsoglux.out
@@ -128,7 +128,7 @@ endif
 if COIN_HAS_GRB
   libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiGrb/libOsiGrb.la
 #  libGamsCoin_la_LDFLAGS  += $(GRBLIB)
-  libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(GRBINCDIR)`
+  libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGrb` -I`$(CYGPATH_W) $(GRBINCDIR)`
 
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsoguux.out
@@ -380,13 +380,6 @@ endif
 
 EXTRA_DIST       += gmsbmdnt.cmd gmsbmdus.run install/gmsbmdnt.dat install/gmsbmdun.dat
 
-endif
-
-if GAMSLINKS_BUILD_GLPK
-libGamsCoin_la_CPPFLAGS += \
- -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` \
- -I`$(CYGPATH_W) $(GLPKINCDIR)`
-libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 endif
 
 if GAMSLINKS_BUILD_COUENNE
