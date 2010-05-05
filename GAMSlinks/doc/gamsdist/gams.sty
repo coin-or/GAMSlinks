@@ -9,4 +9,23 @@
     \vskip 45\p@
 }}
 
+\renewcommand{\l@chapter}{\@dottedtocline{0}{1.5em}{2.3em}}
+\newcommand{\GAMS}{\textsc{GAMS}\xspace}
 
+% formating option print
+% \printoption{option name}{range of values}{default value}{description}{enum description}
+\newcommand{\printoption}[5]%
+{\textbf{\ttfamily #1}\; ({\ttfamily #2}) \hfill \texttt{#3}\\
+#4
+#5
+}
+\newcommand{\printoptioncategory}[1]{\smallskip
+
+\textbf{#1}
+
+}
+
+\pdfinfo{
+/CreationDate (D:20100327060000)
+/ModDate (D:20100327060000)
+}

@@ -1,7 +1,7 @@
-\topcaption{\label{tab:bonminoptions} 
+\topcaption{\label{tab:bonminoptions}
 List of options and compatibility with the different algorithms.
 }
-\tablehead{\hline 
+\tablehead{\hline
 Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} & {\tt B-Ecp} & {\tt B-iFP} & {\tt Cbc\_Par} \\
 \hline}
 \tabletail{\hline \multicolumn{10}{|r|}{continued on next page}\\\hline}
@@ -13,22 +13,22 @@ algorithm & string & B-BB & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmar
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Branch-and-bound options}\\
 \hline
-allowable\_fraction\_gap & $\mathbb{Q}$ & \MYGAMS \texttt{optcr} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
-allowable\_gap & $\mathbb{Q}$ & \MYGAMS \texttt{optca} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
-cutoff & $\mathbb{Q}$ & \MYGAMS \texttt{cutoff} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+allowable\_fraction\_gap & $\mathbb{Q}$ & \GAMS \texttt{optcr} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+allowable\_gap & $\mathbb{Q}$ & \GAMS \texttt{optca} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+cutoff & $\mathbb{Q}$ & \GAMS \texttt{cutoff} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 cutoff\_decr & $\mathbb{Q}$ & $10^{- 5}$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 enable\_dynamic\_nlp & string & no & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
 integer\_tolerance & $\mathbb{Q}$ & $10^{- 6}$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 iteration\_limit & $\mathbb{Z}$ & $\infty$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 nlp\_failure\_behavior & string & stop & $\checkmark$& --& --& --& --& --& --\\
 node\_comparison & string & best-bound & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
-node\_limit & $\mathbb{Z}$ & \MYGAMS \texttt{nodlim} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+node\_limit & $\mathbb{Z}$ & \GAMS \texttt{nodlim} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 num\_cut\_passes & $\mathbb{Z}$ & $1$ & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
 num\_cut\_passes\_at\_root & $\mathbb{Z}$ & $20$ & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
 number\_before\_trust & $\mathbb{Z}$ & $8$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 number\_strong\_branch & $\mathbb{Z}$ & $20$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 solution\_limit & $\mathbb{Z}$ & $\infty$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
-time\_limit & $\mathbb{Q}$ & \MYGAMS \texttt{reslim} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+time\_limit & $\mathbb{Q}$ & \GAMS \texttt{reslim} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 tree\_search\_strategy & string & probed-dive & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
 variable\_selection & string & strong-branching & $\checkmark$& --& --& --& --& --& --\\
 \hline
