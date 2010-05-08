@@ -2822,3 +2822,15 @@ diff -aur scip/src/tclique/tclique_graph.c scip/src/tclique/tclique_graph.c
        else
        {
           /* display first primal bound line */
+--- scip/src/scip/heur_nlp.c.orig	2010-05-08 17:11:39.000000000 +0200
++++ scip/src/scip/heur_nlp.c	2010-05-08 17:11:53.000000000 +0200
+@@ -428,8 +428,7 @@
+    {
+       if( SCIPvarGetObj(heurdata->var_nlp2scip[i]) )
+       {
+-         /* NLPI understands only minimization problems, so we turn maximization problems into minimization problems */ 
+-         objcoeff[cnt] = SCIPvarGetObj(heurdata->var_nlp2scip[i]) * (int)SCIPgetObjsense(scip);
++         objcoeff[cnt] = SCIPvarGetObj(heurdata->var_nlp2scip[i]);
+          objvar[cnt]   = i;
+          ++cnt;
+       }
