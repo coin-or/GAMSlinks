@@ -202,12 +202,11 @@ In the context of outer-approximation (OA) and feasibility pump for MINLP, a sta
 Several options are available for configuring this MILP solver.
 \BONMIN allows a choice of different MILP solvers through the option
 \texttt{bonmin.milp\_sub\-sol\-ver}. Values for this option are: {\tt Cbc\_D} which uses \CBC with its
-default settings and {\tt Cbc\_Par} which uses a version of \CBC that can be parameterized by the user.
-% , and \texttt{Cplex} which uses \CPLEX with its default settings.
+default settings, {\tt Cbc\_Par} which uses a version of \CBC that can be parameterized by the user, and \texttt{Cplex} which uses \CPLEX with its default settings.
 The options that can be set in {\tt Cbc\_Par} are the number of strong-branching candidates,
 the number of branches before pseudo costs are to be trusted, and the frequency of the various cut generators, c.f.\ Section~\ref{sub:bonminalloptions} for details.
-% The \texttt{Cplex} is currently not available on Macintosh platforms.
-% Further, a valid \CPLEX licence (standalone or \GAMS/\CPLEX) is required.
+The \texttt{Cplex} option is currently not available on Macintosh platforms.
+Further, a valid \CPLEX licence (standalone or \GAMS/\CPLEX) is required.
 
 \subsubsection{Getting good solutions to nonconvex problems}
 To solve a problem with nonconvex constraints, one should only use the branch-and-bound algorithm {\tt B-BB}.
