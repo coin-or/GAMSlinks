@@ -83,7 +83,7 @@ using namespace Ipopt;
 GamsBonmin::GamsBonmin()
 : gmo(NULL), gev(NULL), msghandler(NULL), bonmin_setup(NULL), gamsipopt(NULL), gamscbc(NULL)
 {
-	strcpy(bonmin_message, "COIN-OR Bonmin (Bonmin Library 1.3)\nwritten by P. Bonami\n");
+	strcpy(bonmin_message, "COIN-OR Bonmin (Bonmin Library 1.4)\nwritten by P. Bonami\n");
 }
 
 GamsBonmin::~GamsBonmin() {
