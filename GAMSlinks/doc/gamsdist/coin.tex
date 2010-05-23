@@ -191,10 +191,10 @@ Say for example that one wants to run RINS inside \texttt{B-BB}.
 Each time RINS is called one wants to solve the small-size MINLP generated using B-QG (one may run any algorithm available in \BONMIN for solving an MINLP) and wants to stop as soon as \texttt{B-QG} found one solution.
 To achieve this, one sets the following options
 \begin{verbatim}
-bonmin.algorithm    B-BB
-bonmin.rins         yes
-rins.algorithm      B-QG
-rins.solution_limit 1
+bonmin.algorithm      B-BB
+bonmin.heuristic_rins yes
+rins.algorithm        B-QG
+rins.solution_limit   1
 \end{verbatim}
 This example shows that it is possible to set any option used in the sub-algorithm to be different than the one used for the main algorithm.
 
@@ -205,7 +205,7 @@ Several options are available for configuring this MILP solver.
 default settings, {\tt Cbc\_Par} which uses a version of \CBC that can be parameterized by the user, and \texttt{Cplex} which uses \CPLEX with its default settings.
 The options that can be set in {\tt Cbc\_Par} are the number of strong-branching candidates,
 the number of branches before pseudo costs are to be trusted, and the frequency of the various cut generators, c.f.\ Section~\ref{sub:bonminalloptions} for details.
-The \texttt{Cplex} option is currently not available on Macintosh platforms.
+The \texttt{Cplex} option is currently not available on Macintosh and Windows-64bit platforms.
 Further, a valid \CPLEX licence (standalone or \GAMS/\CPLEX) is required.
 
 \subsubsection{Getting good solutions to nonconvex problems}
