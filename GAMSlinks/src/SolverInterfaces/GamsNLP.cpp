@@ -227,6 +227,47 @@ bool GamsNLP::get_var_con_metadata(Index n,
 	return false;
 }
 
+/** Method to return the number of nonlinear variables. */
+Ipopt::Index GamsNLP::get_number_of_nonlinear_variables() {
+  if (gmoNLNZ(gmo) == 0 && gmoObjNLNZ(gmo) == 0) { // problem is linear
+    return 0;
+  }
+
+  int count = 0;
+  int jnz, jqnz, jnlnz, jobjnz;
+  for (int i = 0; i < gmoN(gmo); ++i) {
+#if defined(GAMS_BUILD) || defined(GMOAPIVERSION)
+    gmoGetColStat(gmo, i, &jnz, &jqnz, &jnlnz, &jobjnz);
+#else
+    gmoGetColStat(gmo, i, &jnz, &jnlnz, &jobjnz);
+#endif
+    if (jnlnz || (jobjnz == 1)) // jobjnz is -1 if linear in obj, +1 if nonlinear in obj, and 0 if not there
+      ++count;
+  }
+
+  return count;
+}
+
+/** Method to return the indices of the nonlinear variables */
+bool GamsNLP::get_list_of_nonlinear_variables(Ipopt::Index num_nonlin_vars, Ipopt::Index* pos_nonlin_vars) {
+  int count = 0;
+  int jnz, jqnz, jnlnz, jobjnz;
+  for (int i = 0; i < gmoN(gmo); ++i) {
+#if defined(GAMS_BUILD) || defined(GMOAPIVERSION)
+    gmoGetColStat(gmo, i, &jnz, &jqnz, &jnlnz, &jobjnz);
+#else
+    gmoGetColStat(gmo, i, &jnz, &jnlnz, &jobjnz);
+#endif
+    if (jnlnz || (jobjnz == 1)) { // jobjnz is -1 if linear in obj, +1 if nonlinear in obj, and 0 if not there
+      assert(count < num_nonlin_vars);
+      pos_nonlin_vars[count++] = i;
+    }
+  }
+  assert(count == num_nonlin_vars);
+
+  return true;
+}
+
 bool GamsNLP::eval_f(Index n, const Number* x, bool new_x, Number& obj_value) {
 	assert(n == gmoN(gmo));
 
@@ -507,7 +548,7 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
   if (data)
   	gmoSetHeadnTail(gmo, Hiterused, data->iter_count());
 	gmoSetHeadnTail(gmo, HresUsed, gevTimeDiffStart(gev) - clockStart);
-	gmoSetHeadnTail(gmo, HdomUsed, domviolations);
+	gmoSetHeadnTail(gmo, HdomUsed, (double)domviolations);
 
   if (write_solution) {
   	double* scaled_viol=NULL;

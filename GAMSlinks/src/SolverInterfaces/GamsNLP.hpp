@@ -72,6 +72,12 @@ public:
   		IntegerMetaDataMapType& con_integer_md,
   		NumericMetaDataMapType& con_numeric_md);
 
+  /** Method to return the number of nonlinear variables. */
+  Ipopt::Index get_number_of_nonlinear_variables();
+
+  /** Method to return the indices of the nonlinear variables */
+  bool get_list_of_nonlinear_variables(Ipopt::Index num_nonlin_vars, Ipopt::Index* pos_nonlin_vars);
+
   /** Method to return the objective value */
   bool eval_f(Ipopt::Index n, const Ipopt::Number* x, bool new_x, Ipopt::Number& obj_value);
 
