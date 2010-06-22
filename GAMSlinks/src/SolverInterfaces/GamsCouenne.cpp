@@ -331,6 +331,12 @@ int GamsCouenne::callSolver() {
 		  }
 		}
 		
+		options->GetStringValue("lp_solver", s, "");
+		if (s == "cplex") {
+		  gevLogStat(gev, "CPLEX as LP solver not supported currently.\n");
+		  return 1;
+		}
+
 		CouenneInterface* ci = new CouenneInterface;
 		ci->initialize(roptions, options, jnlst, GetRawPtr(minlp));
 		GamsMessageHandler* msghandler = new GamsMessageHandler(gev);

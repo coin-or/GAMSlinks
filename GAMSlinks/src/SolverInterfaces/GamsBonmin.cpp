@@ -150,11 +150,6 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
     return 1;
   }
 
-#ifdef COIN_HAS_CPX
- 	if (checkLicense(gmo) && registerGamsCplexLicense(gmo))
- 	  gevLog(gev, "Registered GAMS/CPLEX license.");
-#endif
-
 	bonmin_setup = new BonminSetup();
 
 	// instead of initializeOptionsAndJournalist we do it our own way, so we can use the SmagJournal
@@ -234,6 +229,19 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return -1;
 	}
 
+  std::string parvalue;
+#ifdef COIN_HAS_CPX
+  std::string prefixes[6] = { "", "bonmin", "oa_decomposition.", "pump_for_minlp.", "rins.", "rens.", "local_branch." };
+  for( int i = 0; i < 6; ++i ) {
+    bonmin_setup->options()->GetStringValue("milp_solver", parvalue, prefixes[i]);
+    std::cout << prefixes[i] << "milp_solver = " << parvalue << std::endl;
+    if (parvalue == "Cplex" && (!checkLicense(gmo) || !registerGamsCplexLicense(gmo))) {
+      gevLogStat(gev, "No valid CPLEX license found.");
+      return 1;
+    }
+  }
+#endif
+
 	std::string libpath;
 #ifdef HAVE_HSL_LOADER
 	if (bonmin_setup->options()->GetStringValue("hsl_library", libpath, "")) {
@@ -268,7 +276,6 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 //	bonmin_setup.options()->GetNumericValue("constr_viol_tol", mysmagminlp->unscaled_conviol_tol, "");
 
 	bool hessian_is_approx = false;
-	std::string parvalue;
 	bonmin_setup->options()->GetStringValue("hessian_approximation", parvalue, "");
 	if (parvalue == "exact") {
 		int do2dir = 1;
