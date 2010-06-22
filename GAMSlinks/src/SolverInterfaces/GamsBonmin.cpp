@@ -231,8 +231,8 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
   std::string parvalue;
 #ifdef COIN_HAS_CPX
-  std::string prefixes[6] = { "", "bonmin", "oa_decomposition.", "pump_for_minlp.", "rins.", "rens.", "local_branch." };
-  for( int i = 0; i < 6; ++i ) {
+  std::string prefixes[7] = { "", "bonmin", "oa_decomposition.", "pump_for_minlp.", "rins.", "rens.", "local_branch." };
+  for( int i = 0; i < 7; ++i ) {
     bonmin_setup->options()->GetStringValue("milp_solver", parvalue, prefixes[i]);
     std::cout << prefixes[i] << "milp_solver = " << parvalue << std::endl;
     if (parvalue == "Cplex" && (!checkLicense(gmo) || !registerGamsCplexLicense(gmo))) {
