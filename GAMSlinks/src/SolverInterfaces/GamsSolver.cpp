@@ -33,7 +33,6 @@
 
 #ifdef GAMS_BUILD
 #include "gmspal.h"
-#include "gevlice.h"
 #endif
 
 GamsSolver::~GamsSolver() {
@@ -104,14 +103,31 @@ bool GamsSolver::checkLicense(struct gmoRec* gmo) {
 
 bool GamsSolver::registerGamsCplexLicense(struct gmoRec* gmo) {
 #if defined(COIN_HAS_CPX) && defined(GAMS_BUILD)
-  int rc, cp_l=0, cp_m=0, cp_q=0, cp_p=0;
-  CPlicenseInit_t initType;
   gevRec* gev = (gevRec*)gmoEnvironment(gmo);
 
-  /* Cplex license setup */
-  rc = gevcplexlice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType, &cp_l, &cp_m, &cp_q, &cp_p);
-  if (rc || (0==rc && ((0==cp_m && gmoNDisc(gmo)) || (0==cp_q && gmoNLNZ(gmo)))))
-    return false;
+/* bad bad bad */ 
+#undef SUB_FR
+#define GEVPTR gev
+#define SUB_OC
+#include "cmagic2.h"
+  if (licenseCheck(gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo))) {
+    // Check for CP and CL license
+    if (licenseCheckSubSys(2, "CPCL")) {
+      gevLogStat(gev,"***");
+      gevLogStat(gev,"*** LICENSE ERROR:");
+      gevLogStat(gev,"*** See http://www.gams.com/osicplex/ for OsiCplex licensing information.");
+      gevLogStat(gev,"***");
+      return false;
+    } else {
+      int isLicMIP=0, isLicCP=1;
+      licenseQueryOption("CPLEX","MIP", &isLicMIP);
+      licenseQueryOption("CPLEX","GMSLICE", &isLicCP);
+      if (0==isLicMIP && 1==isLicCP && gmoNDisc(gmo)) {
+        gevLogStat(gev,"*** MIP option not licensed. Can solve continuous models only.");
+        return false;
+      }
+    }
+  }
   return true;
 #else
   return true;

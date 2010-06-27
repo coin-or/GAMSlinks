@@ -88,8 +88,6 @@ bool GamsOSxL::initGMO(const char* datfile) {
     return false;
   }
 
-  gmoIdentSet(gmo, "OS link object");
-
   // load control file
   if ((rc = gevInitEnvironmentLegacy(gev, datfile))) {
     fprintf(stderr, "Could not init gams environment: %s Rc = %d\n", datfile, rc);

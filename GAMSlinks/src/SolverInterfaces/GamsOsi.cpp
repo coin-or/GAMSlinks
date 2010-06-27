@@ -240,8 +240,11 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				
 			case CPLEX: {
 #ifdef COIN_HAS_CPX
-        if (!registerGamsCplexLicense(gmo))
-          gevLogStat(gev, "Trying to use Cplex standalone license.");
+                          if (!registerGamsCplexLicense(gmo)) {
+                            gmoSolveStatSet(gmo, SolveStat_License);
+                            gmoModelStatSet(gmo, ModelStat_LicenseError);
+                            return 1;
+                          }
 //#ifdef GAMS_BUILD
 //                                int rc, cp_l=0, cp_m=0, cp_q=0, cp_p=0;
 //				CPlicenseInit_t initType;
@@ -322,9 +325,9 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				
 			case XPRESS: {
 #ifdef COIN_HAS_XPR
-				char msg[1024];
 #ifdef GAMS_BUILD
 				XPlicenseInit_t initType;
+				char msg[1024];
 				
 				/* Xpress license setup */
 				if (gevxpresslice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
