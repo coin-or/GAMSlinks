@@ -199,8 +199,10 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 //	bonmin_setup->options()->SetNumericValue("nlp_lower_bound_inf", gmoMinf(gmo), false, true);
 //	bonmin_setup->options()->SetNumericValue("nlp_upper_bound_inf", gmoPinf(gmo), false, true);
 	bonmin_setup->options()->SetIntegerValue("bonmin.nlp_log_at_root", Ipopt::J_ITERSUMMARY, true, true);
-	if (GMS_SV_NA != gevGetDblOpt(gev, gevCutOff))
+#if GMOAPIVERSION >= 7
+	if (gevGetIntOpt(gev, gevUseCutOff))
 		bonmin_setup->options()->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == Obj_Min ? gevGetDblOpt(gev, gevCutOff) : -gevGetDblOpt(gev, gevCutOff), true, true);
+#endif
 	bonmin_setup->options()->SetNumericValue("bonmin.allowable_gap", gevGetDblOpt(gev, gevOptCA), true, true);
 	bonmin_setup->options()->SetNumericValue("bonmin.allowable_fraction_gap", gevGetDblOpt(gev, gevOptCR), true, true);
 	if (gevGetIntOpt(gev, gevNodeLim))

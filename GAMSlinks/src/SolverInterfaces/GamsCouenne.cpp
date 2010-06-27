@@ -167,11 +167,6 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 			return 1;
 		}
  
-#ifdef COIN_HAS_CPX
-  if (checkLicense(gmo) && registerGamsCplexLicense(gmo))
-    gevLog(gev, "Registered GAMS/CPLEX license.");
-#endif
-
   minlp = new GamsMINLP(gmo);
   minlp->in_couenne = true;
 
@@ -211,8 +206,10 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 	// Change some options
 	options->SetNumericValue("bound_relax_factor", 1e-10, true, true);
-  if (GMS_SV_NA != gevGetDblOpt(gev, gevCutOff)) 
+#if GMOAPIVERSION >= 7
+  if (gevGetIntOpt(gev, gevUseCutOff))
   	options->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == Obj_Min ? gevGetDblOpt(gev, gevCutOff) : -gevGetDblOpt(gev, gevCutOff), true, true); 
+#endif
   options->SetNumericValue("bonmin.allowable_gap", gevGetDblOpt(gev, gevOptCA), true, true); 
  	options->SetNumericValue("bonmin.allowable_fraction_gap", gevGetDblOpt(gev, gevOptCR), true, true); 
  	if (gevGetIntOpt(gev, gevNodeLim))
@@ -331,8 +328,12 @@ int GamsCouenne::callSolver() {
 		  }
 		}
 		
+
 		options->GetStringValue("lp_solver", s, "");
 		if (s == "cplex") {
+//#ifdef COIN_HAS_CPX
+//    if (s == "cplex" && (!checkLicense(gmo) || !registerGamsCplexLicense(gmo))) {
+//#endif
 		  gevLogStat(gev, "CPLEX as LP solver not supported currently.\n");
 		  return 1;
 		}

@@ -77,8 +77,10 @@ GamsScip::GamsScip()
 GamsScip::~GamsScip() {
 	if (scip != NULL) {
 		if (vars != NULL) {
+#ifndef GAMS_BUILD
 			for (int i = 0; i < gmoN(gmo); ++i)
 				SCIP_CALL_ABORT( SCIPreleaseVar(scip, &vars[i]) );
+#endif
 			delete[] vars;
 		}
 		SCIP_CALL_ABORT( SCIPsetDefaultMessagehdlr() );
@@ -741,8 +743,10 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 //		SCIPprobAddObjoffset(scip->transprob, gmoObjConst(gmo));
 	//TODO there seem to be a problem with the offset when SCIP does restarts
 
-	if (gevGetDblOpt(gev, gevCutOff) != GMS_SV_NA)
+#if GMOAPIVERSION >= 7
+	if (gevGetIntOpt(gev, gevUseCutOff))
 		SCIP_CALL( SCIPsetObjlimit(scip, gevGetDblOpt(gev, gevCutOff)) );
+#endif
 	
 	return SCIP_OKAY;
 }

@@ -116,9 +116,10 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	if (!options.isDefined("nodelim") && options.isDefined("nodlim"))   options.setInteger("nodelim", options.getInteger("nodlim"));
 	if (!options.isDefined("optca"))   options.setDouble ("optca",   gevGetDblOpt(gev, gevOptCA));
 	if (!options.isDefined("optcr"))   options.setDouble ("optcr",   gevGetDblOpt(gev, gevOptCR));
-	if (!options.isDefined("cutoff")    && GMS_SV_NA != gevGetDblOpt(gev, gevCutOff)) options.setDouble("cutoff",    gevGetDblOpt(gev, gevCutOff));
-	if (!options.isDefined("increment") && GMS_SV_NA != gevGetDblOpt(gev, gevCheat))  options.setDouble("increment", gevGetDblOpt(gev, gevCheat));
-
+#if GMOAPIVERSION >= 7
+	if (!options.isDefined("cutoff")    && gevGetIntOpt(gev, gevUseCutOff)) options.setDouble("cutoff",    gevGetDblOpt(gev, gevCutOff));
+	if (!options.isDefined("increment") && gevGetIntOpt(gev, gevUseCheat))  options.setDouble("increment", gevGetDblOpt(gev, gevCheat));
+#endif
 	OsiClpSolverInterface solver;
 
 	gmoPinfSet(gmo,  solver.getInfinity());
