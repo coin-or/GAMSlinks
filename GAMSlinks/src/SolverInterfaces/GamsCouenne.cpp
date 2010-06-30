@@ -1218,6 +1218,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 				if (debugoutput) std::clog << "ignored" << std::endl;
 			} break;
 			// the following three should have been taken out by reorderInstr above; the remaining ones seem to be unused by now
+#if GMOAPIVERSION < 8
 			case nlPushS: // duplicate value from address levels down on top of stack
 			case nlPopup: // duplicate value from this level to at address levels down and pop entries in between
 			case nlSwap: // swap two positions on top of stack
@@ -1232,6 +1233,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 			case nlPopDerivS: // store scaled gradient
 			case nlEquScale: // equation scale
 			case nlEnd: // end of instruction list
+#endif
 			default: {
 				char buffer[256];
 				sprintf(buffer, "Gams instruction %d not supported.", opcode);
