@@ -717,7 +717,12 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[i]), isMin*lincoefs[i]));
 		
 		if( gmoGetObjOrder(gmo) == order_Q ) {
-			gmoGetObjQ(gmo, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
+#if GMOAPIVERSION >= 8
+         qnz = gmoObjQNZ(gmo);
+         gmoGetObjQ(gmo, qcol, qrow, quadcoefs);
+#else
+         gmoGetObjQ(gmo, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
+#endif
 			expression** quadpart = new expression*[qnz];
 			
 			for (int j = 0; j < qnz; ++j) {
@@ -782,7 +787,12 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 				lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[j]), lincoefs[j]));
 			
 			if( gmoGetEquOrderOne(gmo, i) == order_Q ) {
-				gmoGetRowQ(gmo, i, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
+#if GMOAPIVERSION >= 8
+            qnz = gmoGetRowQNZOne(gmo,i);
+            gmoGetRowQ(gmo, i, qcol, qrow, quadcoefs);
+#else
+            gmoGetRowQ(gmo, i, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
+#endif
 				expression** quadpart = new expression*[qnz];
 				
 				for (int j = 0; j < qnz; ++j) {
@@ -1217,23 +1227,6 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 			case nlStoreS: { // store scaled row
 				if (debugoutput) std::clog << "ignored" << std::endl;
 			} break;
-			// the following three should have been taken out by reorderInstr above; the remaining ones seem to be unused by now
-#if GMOAPIVERSION < 8
-			case nlPushS: // duplicate value from address levels down on top of stack
-			case nlPopup: // duplicate value from this level to at address levels down and pop entries in between
-			case nlSwap: // swap two positions on top of stack
-			case nlAddL: // add local
-			case nlSubL: // subtract local
-			case nlMulL: // multiply local
-			case nlDivL: // divide local
-			case nlPushL: // push local
-			case nlPopL: // pop local
-			case nlPopDeriv: // pop derivative
-			case nlUMinL: // push umin local
-			case nlPopDerivS: // store scaled gradient
-			case nlEquScale: // equation scale
-			case nlEnd: // end of instruction list
-#endif
 			default: {
 				char buffer[256];
 				sprintf(buffer, "Gams instruction %d not supported.", opcode);

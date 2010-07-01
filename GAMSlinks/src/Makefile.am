@@ -9,28 +9,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = GamsIO GamsUtils SolverInterfaces
-if GAMSLINKS_BUILD_CBC
-  SUBDIRS += Cbc
-endif
-if GAMSLINKS_BUILD_GLPK
-  SUBDIRS += Glpk
-endif
-if GAMSLINKS_BUILD_IPOPT
-  SUBDIRS += Ipopt
-endif
-if GAMSLINKS_BUILD_BONMIN
-  SUBDIRS += Bonmin
-endif
-if GAMSLINKS_BUILD_OSI
-  SUBDIRS += Osi
-endif
-if GAMSLINKS_BUILD_OS
-  SUBDIRS += OS
-endif
-if GAMSLINKS_BUILD_SCIP
-  SUBDIRS += SCIP
-endif
+SUBDIRS = GamsUtils SolverInterfaces
 
 EXTRA_DIST =
 

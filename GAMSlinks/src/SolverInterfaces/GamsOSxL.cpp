@@ -36,6 +36,11 @@
 #define GMS_SV_NA     2.0E300
 #endif
 
+#if GMOAPIVERSION < 8
+#define Hresused     HresUsed
+#define Hobjval      HobjVal
+#endif
+
 GamsOSxL::GamsOSxL(gmoHandle_t gmo_)
 : gmo(gmo_), gev(gmo_ ? (gevRec*)gmoEnvironment(gmo_) : NULL), gmo_is_our(false), osinstance(NULL)
 { }
@@ -671,6 +676,7 @@ OSnLNode* GamsOSxL::parseGamsInstructions(int codelen, int* opcodes, int* fields
 			    case fnarcsin: case fnarctan2 /* arctan(x2/x1) */:
 					default : {
 						if (debugoutput) std::cerr << "nr. " << func << " - unsuppored. Error." << std::endl;
+		            std::cerr << "GAMS function " << func << "not supported - Error." << std::endl;
 						return NULL;
 					}
 				}
@@ -700,23 +706,8 @@ OSnLNode* GamsOSxL::parseGamsInstructions(int codelen, int* opcodes, int* fields
 			case nlStoreS: { // store scaled row
 				if (debugoutput) std::clog << "ignored" << std::endl;
 			} break;
-			// the following three should have been taken out by reorderInstr above; the remaining ones seem to be unused by now
-			case nlPushS: // duplicate value from address levels down on top of stack
-			case nlPopup: // duplicate value from this level to at address levels down and pop entries in between
-			case nlSwap: // swap two positions on top of stack
-			case nlAddL: // add local
-			case nlSubL: // subtract local
-			case nlMulL: // multiply local
-			case nlDivL: // divide local
-			case nlPushL: // push local
-			case nlPopL: // pop local
-			case nlPopDeriv: // pop derivative
-			case nlUMinL: // push umin local
-			case nlPopDerivS: // store scaled gradient
-			case nlEquScale: // equation scale
-			case nlEnd: // end of instruction list
 			default: {
-				std::cerr << "not supported - Error." << std::endl;
+				std::cerr << "GAMS instruction " << opcode << "not supported - Error." << std::endl;
 				return NULL;
 			}
 		}
@@ -832,7 +823,7 @@ void GamsOSxL::writeSolution(OSResult& osresult) {
   delete[] colIndic;
 
   if (sol->objectives && sol->objectives->values && sol->objectives->values->obj[0])
-    gmoSetHeadnTail(gmo, HobjVal, sol->objectives->values->obj[0]->value);
+    gmoSetHeadnTail(gmo, Hobjval, sol->objectives->values->obj[0]->value);
 }
 
 void GamsOSxL::writeSolution(std::string& osrl) {

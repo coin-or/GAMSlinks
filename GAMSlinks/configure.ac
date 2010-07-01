@@ -202,15 +202,16 @@ AC_COIN_HAVE_GAMS
 if test $coin_has_gamsio = no; then
   AC_MSG_ERROR([need GAMS I/O libraries to build GAMSlinks])
 fi
-AC_COIN_USE_GAMS
-AC_DEFINE_UNQUOTED([GAMSIO_PATH],["$gamsio_srcdir"],[The path of the GAMS I/O libraries])
+#AC_COIN_USE_GAMS
+#AC_DEFINE_UNQUOTED([GAMSIO_PATH],["$gamsio_srcdir"],[The path of the GAMS I/O libraries])
 
-# at least for running gdb phtread may need be required to link into executables
+# at least for running gdb, pthread may need to be linked into executables
 case $GAMSIO_CODE in
   LNX | LEG | LX3 | LEI | SIG | DII | DIG )
-      GAMS_ADDLIBS="-lpthread $GAMS_ADDLIBS"
+      GAMS_ADDLIBS="-ldl -lpthread"
     ;;
 esac
+AC_SUBST(GAMS_ADDLIBS)
 
 CIA_FLAG=""
 case $build in

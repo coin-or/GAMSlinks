@@ -46,15 +46,6 @@ skiplist=
 stdskiplist=
 declare -a testlist
 if test @gamslinks_build_ipopt@ = 1 ; then
-  solvers="$solvers , Ipopt"
-  skiplist="$skiplist skip('Ipopt','lp03')=yes;"
-  skiplist="$skiplist skip('Ipopt','sl4lp03')=yes;"
-  skiplist="$skiplist skip('Ipopt','lp10')=yes;"
-  skiplist="$skiplist skip('Ipopt','sl4lp10')=yes;"
-  testlist[${#testlist[@]}]="--solver ipopt --suite lp"
-  testlist[${#testlist[@]}]="--solver ipopt --suite nlp"
-  testlist[${#testlist[@]}]="--solver ipopt --suite qcp"
-  
   solvers="$solvers , IpoptD"
   skiplist="$skiplist skip('IpoptD','lp03')=yes;"
   skiplist="$skiplist skip('IpoptD','sl4lp03')=yes;"
@@ -67,16 +58,6 @@ if test @gamslinks_build_ipopt@ = 1 ; then
 fi
 
 if test @gamslinks_build_glpk@ = 1 ; then
-  solvers="$solvers , Glpk"
-  skiplist="$skiplist skip('Glpk','lp10')=yes;"
-  skiplist="$skiplist skip('Glpk','sl4lp10')=yes;"
-  skiplist="$skiplist skip('Glpk','sos1a')=yes;"
-  skiplist="$skiplist skip('Glpk','sl4sos1a')=yes;"
-  skiplist="$skiplist skip('Glpk','semicon1')=yes;"
-  skiplist="$skiplist skip('Glpk','sl4scon1')=yes;"
-  testlist[${#testlist[@]}]="--solver glpk --suite lp"
-  testlist[${#testlist[@]}]="--solver glpk --suite mip user1=rmip=glpk"
-
   solvers="$solvers , OsiGlpk"
   skiplist="$skiplist skip('OsiGlpk','lp10')=yes;"
   skiplist="$skiplist skip('OsiGlpk','sl4lp10')=yes;"
@@ -96,12 +77,6 @@ if test @gamslinks_build_glpk@ = 1 ; then
 fi
 
 if test @gamslinks_build_cbc@ = 1 ; then
-  solvers="$solvers , Cbc"
-  testlist[${#testlist[@]}]="--solver cbc --suite lp"
-  testlist[${#testlist[@]}]="--solver cbc --suite mip user1=rmip=cbc"
-  skiplist="$skiplist skip('Cbc','lp03')=yes;"
-  skiplist="$skiplist skip('Cbc','sl4lp03')=yes;"
-  
   solvers="$solvers , Cbcd"
   testlist[${#testlist[@]}]="--solver cbcd --suite lp"
   testlist[${#testlist[@]}]="--solver cbcd --suite mip user1=rmip=cbcd"
@@ -110,16 +85,6 @@ if test @gamslinks_build_cbc@ = 1 ; then
 fi
 
 if test @gamslinks_build_bonmin@ = 1 ; then
-  solvers="$solvers , Bonmin"
-  skiplist="$skiplist skip('Bonmin','lp03')=yes;"
-  skiplist="$skiplist skip('Bonmin','sl4lp03')=yes;"
-  skiplist="$skiplist skip('Bonmin','lp10')=yes;"
-  skiplist="$skiplist skip('Bonmin','sl4lp10')=yes;"
-  testlist[${#testlist[@]}]="--solver bonmin --suite lp"
-  testlist[${#testlist[@]}]="--solver bonmin --suite mip user1=\"--MIPMCHECKS=0 rmip=bonmin\""
-  testlist[${#testlist[@]}]="--solver bonmin --suite nlp"
-  testlist[${#testlist[@]}]="--solver bonmin --suite qcp"
-
   solvers="$solvers , BonminD"
   skiplist="$skiplist skip('BonminD','lp03')=yes;"
   skiplist="$skiplist skip('BonminD','sl4lp03')=yes;"
@@ -143,47 +108,7 @@ if test @gamslinks_build_couenne@ = 1 ; then
   testlist[${#testlist[@]}]="--solver couenne --suite qcp user1=\"--QPMCHECKS=0 reslim=60\""
 fi
 
-if test @gamslinks_build_osi@ = 1 ; then
-  solvers="$solvers , Osi"
-  skiplist="$skiplist skip('Osi','sos1a')=yes;"
-  skiplist="$skiplist skip('Osi','sl4sos1a')=yes;"
-  skiplist="$skiplist skip('Osi','semicon1')=yes;"
-  skiplist="$skiplist skip('Osi','sl4scon1')=yes;"
-  if grep -q sos2a quality.gms ; then
-    skiplist="$skiplist skip('Osi','sos2a')=yes;"
-    skiplist="$skiplist skip('Osi','semiint1')=yes;"
-  fi
-  
-  #from GAMS 22.7 on, slvstdskip has been renamed to slvstdoutskip
-  if grep -q slvstdskip quality.gms ; then
-    stdskiplist="$stdskiplist slvstdskip('Osi')=yes;"
-  else
-    stdskiplist="$stdskiplist slvstdoutskip('Osi')=yes;"
-  fi
- 
-  if test @coin_build_dylp@ = 1 ; then
-    echo "solver dylp" > osi.op4
-# dylp is currently skipped because lp10 fails
-    # lp03 fail because it reports all variables are free in row sum(i,x(i))=0 (DyLP ticket 11)
-    # unfortunately, this skips the lp03 test for all osi solver
-#    skiplist="$skiplist skip('Osi','lp03')=yes;"
-#    skiplist="$skiplist skip('Osi','sl4lp03')=yes;"
-#    testlist[${#testlist[@]}]="--solver osi --suite lp user1=\"optdir=`pwd` optfile=4\""
-  fi
-
-  if test @coin_build_symphony@ = 1 ; then
-    echo "solver symphony" > osi.op5
-    testlist[${#testlist[@]}]="--solver osi --suite mip user1=\"optdir=`pwd` optfile=5 rmip=osi\""
-  fi
-fi
-
 if test @gamslinks_build_scip@ = 1 ; then
-  solvers="$solvers , Scip"
-  skiplist="$skiplist skip('Scip','semicon1')=yes;"
-  skiplist="$skiplist skip('Scip','sl4scon1')=yes;"
-  testlist[${#testlist[@]}]="--solver scip --suite lp"
-  testlist[${#testlist[@]}]="--solver scip --suite mip user1=\"--MIPMCHECKS=0 rmip=scip\""
-
   solvers="$solvers , ScipD"
   skiplist="$skiplist skip('ScipD','semicon1')=yes;"
   skiplist="$skiplist skip('ScipD','sl4scon1')=yes;"

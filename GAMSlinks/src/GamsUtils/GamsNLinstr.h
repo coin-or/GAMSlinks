@@ -185,9 +185,11 @@ GamsOpCode getInstrOpCode(unsigned int instr);
  */
 int getInstrAddress(unsigned int instr);
 
+#if 0
 /** Reorders instructions such that they do not contain PushS, Popup, or Swap anymore.
  */
 void reorderInstr(unsigned int* instr, int num_instr);
+#endif
 
 #if defined(__cplusplus)
 } /* extern "C" */

@@ -36,9 +36,6 @@
 /* Define to 1 if the DyLP package is used */
 #undef COIN_HAS_DYLP
 
-/* If defined, the GAMS I/O Library is available. */
-#undef COIN_HAS_GAMSIO
-
 /* Define to 1 if the GAMSlinks package is used */
 #undef COIN_HAS_GAMSLINKS
 
@@ -91,9 +88,6 @@
 
 /* Define if F77 and FC dummy `main' functions are identical. */
 #undef FC_DUMMY_MAIN_EQ_F77
-
-/* The path of the GAMS I/O libraries */
-#undef GAMSIO_PATH
 
 /* Define to 1 if you have the <assert.h> header file. */
 #undef HAVE_ASSERT_H

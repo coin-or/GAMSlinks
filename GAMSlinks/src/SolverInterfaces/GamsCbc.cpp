@@ -46,6 +46,11 @@
 #define GMS_SV_NA     2.0E300
 #endif
 
+#if GMOAPIVERSION < 8
+#define Hresused     HresUsed
+#define Hobjval      HobjVal
+#endif
+
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
 
@@ -75,7 +80,7 @@ GamsCbc::~GamsCbc() {
 
 int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	char buffer[1024];
-	
+
 	gmo = gmo_;
 	assert(gmo);
 	assert(!model);
@@ -89,13 +94,13 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gev = (gevRec*)gmoEnvironment(gmo);
 
 #ifdef GAMS_BUILD
-#include "coinlibdCL1svn.h" 
+#include "coinlibdCL1svn.h"
 	auditGetLine(buffer, sizeof(buffer));
 	gevLogStat(gev, "");
 	gevLogStat(gev, buffer);
 	gevStatAudit(gev, buffer);
 #endif
-	
+
 	gevLogStat(gev, "");
 	gevLogStatPChar(gev, getWelcomeMessage());
 
@@ -408,8 +413,13 @@ bool GamsCbc::setupStartingPoint() {
 
 	  int nbas = 0;
 		for (int j = 0; j < gmoN(gmo); ++j) {
+#if GMOAPIVERSION >= 8
+			switch (gmoGetVarStatOne(gmo, j)) {
+            case Bstat_Basic:
+#else
 			switch (gmoGetVarBasOne(gmo, j)) {
-				case 0: // this seem to mean that variable should be basic
+            case 0: // this seem to mean that variable should be basic
+#endif
 					if (nbas < gmoM(gmo)) {
 						cstat[j] = 1; // basic
 						++nbas;
@@ -420,7 +430,13 @@ bool GamsCbc::setupStartingPoint() {
 					else
 						cstat[j] = 2; // nonbasic at upper bound
 					break;
+#if GMOAPIVERSION >= 8
+				case Bstat_Lower:
+				case Bstat_Upper:
+				case Bstat_Super:
+#else
 				case 1:
+#endif
 					if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
 						cstat[j] = 0; // superbasic = free
 					if (gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) || fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
@@ -439,15 +455,26 @@ bool GamsCbc::setupStartingPoint() {
 		}
 
 		for (int j = 0; j< gmoM(gmo); ++j) {
-			switch (gmoGetEquBasOne(gmo, j)) {
-				case 0:
+#if GMOAPIVERSION >= 8
+         switch (gmoGetEquStatOne(gmo, j)) {
+            case Bstat_Basic:
+#else
+         switch (gmoGetEquBasOne(gmo, j)) {
+            case 0:
+#endif
 					if (nbas < gmoM(gmo)) {
 						rstat[j] = 1; // basic
 						++nbas;
 					} else
 						rstat[j] = gmoGetEquTypeOne(gmo, j) == equ_L ? 3 : 2; // nonbasic at some bound
 					break;
+#if GMOAPIVERSION >= 8
+				case Bstat_Lower:
+				case Bstat_Upper:
+				case Bstat_Super:
+#else
 				case 1:
+#endif
 					rstat[j] = gmoGetEquTypeOne(gmo, j) == equ_L ? 3 : 2; // nonbasic at some bound
 					break;
 				default:
@@ -1266,7 +1293,7 @@ bool GamsCbc::writeSolution(double cputime, double walltime) {
 	}
 
 	gmoSetHeadnTail(gmo, Hiterused, model->getIterationCount());
-	gmoSetHeadnTail(gmo, HresUsed, options.getInteger("threads") > 1 ? walltime : cputime);
+	gmoSetHeadnTail(gmo, Hresused, options.getInteger("threads") > 1 ? walltime : cputime);
 	gmoSetHeadnTail(gmo, Tmipbest, model->getBestPossibleObjValue());
 	gmoSetHeadnTail(gmo, Tmipnod, model->getNodeCount());
 

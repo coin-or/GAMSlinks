@@ -51,6 +51,11 @@
 #define GMS_SV_NA     2.0E300
 #endif
 
+#if GMOAPIVERSION < 8
+#define Hresused     HresUsed
+#define Hobjval      HobjVal
+#endif
+
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
 
@@ -102,7 +107,7 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 			sprintf(osi_message, "OsiCbc (Osi library 0.102, CBC library 2.4)\nOsi link written by J. Forrest. Osi is part of COIN-OR.\n");
 			break;
 #endif
-			
+
 #ifdef COIN_HAS_CPX
 		case CPLEX:
 			sprintf(osi_message, "OsiCplex (Osi library 0.102, CPLEX library %.2f)\nOsi link written by T. Achterberg. Osi is part of COIN-OR.\n", CPX_VERSION/100.);
@@ -126,7 +131,7 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 			sprintf(osi_message, "OsiMosek (Osi library 0.102, MOSEK library %d.%d)\nwritten by Bo Jensen. Osi is part of COIN-OR.\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
 			break;
 #endif
-			
+
 #ifdef COIN_HAS_XPR
 		case XPRESS:
 			sprintf(osi_message, "OsiXpress (Osi library 0.102, FICO Xpress-Optimizer library %d)\nOsi is part of COIN-OR.\n", XPVERSION);
@@ -146,7 +151,7 @@ GamsOsi::~GamsOsi() {
 
 int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
   char buffer[1024];
-  
+
 	gmo = gmo_;
 	assert(gmo);
 	assert(!osi);
@@ -159,7 +164,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1;
 
 	gev = (gevRec*)gmoEnvironment(gmo);
-	
+
 #ifdef GAMS_BUILD
 	switch( solverid )
 	{
@@ -184,7 +189,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gevLogStat(gev, buffer);
 	gevStatAudit(gev, buffer);
 #endif
-	
+
 	gevLogStat(gev, "");
 	gevLogStatPChar(gev, getWelcomeMessage());
 
@@ -212,7 +217,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
     return 1;
 	}
 #endif
-	
+
 //#ifdef GAMS_BUILD
 //#define GEVPTR gev
 //#include "cmagic2.h"
@@ -237,7 +242,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				return 1;
 #endif
 				break;
-				
+
 			case CPLEX: {
 #ifdef COIN_HAS_CPX
                           if (!registerGamsCplexLicense(gmo)) {
@@ -296,7 +301,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				MSKenv_t mskenv;
 				MKlicenseInit_t initType;
                                 int rc;
-				
+
 				if (MSK_makeenv(&mskenv,NULL, NULL,NULL,NULL)) {
 					gevLogStat(gev, "Failed to create Mosek environment.");
 					gmoSolveStatSet(gmo, SolveStat_SetupErr);
@@ -306,7 +311,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				rc = gevmoseklice(gev,mskenv,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo), 0, &initType);
 				if (rc || (0==rc && (MBGAMS==initType && gmoNDisc(gmo))))
 					gevLogStat(gev, "Trying to use Mosek standalone license.\n");
-				
+
 				if (MSK_initenv(mskenv)) {
 					gevLogStat(gev, "Failed to initialize Mosek environment.");
 					gmoSolveStatSet(gmo, SolveStat_SetupErr);
@@ -322,18 +327,18 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				return 1;
 #endif
 			} break;
-				
+
 			case XPRESS: {
 #ifdef COIN_HAS_XPR
 #ifdef GAMS_BUILD
 				XPlicenseInit_t initType;
 				char msg[1024];
-				
+
 				/* Xpress license setup */
 				if (gevxpresslice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
 						gmoNDisc(gmo), 0, &initType, msg, sizeof(msg)))
 					gevLogStat(gev, "Trying to use Xpress standalone license.\n");
-#endif				
+#endif
 				OsiXprSolverInterface* osixpr = new OsiXprSolverInterface(gmoM(gmo), gmoNZ(gmo));
 				if (!osixpr->getNumInstances()) {
 					gevLogStat(gev, "Failed to setup XPRESS instance. Maybe you do not have a license?\n");
@@ -342,7 +347,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 					return 1;
 				}
 				osi = osixpr;
-				
+
 				XPRSgetbanner(msg);
 				gevLog(gev, msg);
 #else
@@ -350,7 +355,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				return 1;
 #endif
 			} break;
-			
+
 			default:
 				gevLogStat(gev, "Unsupported solver id\n");
 				return 1;
@@ -389,7 +394,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	if (gmoN(gmo) && !setupStartingPoint()) {
 		gevLogStat(gev, "Error setting up starting point.");
 	}
-	
+
 	if (!setupParameters()) {
 		gevLogStat(gev, "Error setting up OSI parameters.");
 		return -1;
@@ -412,7 +417,7 @@ int GamsOsi::callSolver() {
   if (solverid == GLPK)
     glp_term_hook(glpkprint, gev);
 #endif
-  
+
   if (gevGetIntOpt(gev, gevInteger3))
   {
   	char buffer[1024];
@@ -424,7 +429,7 @@ int GamsOsi::callSolver() {
 
 	double start_cputime  = CoinCpuTime();
 	double start_walltime = CoinWallclockTime();
-	
+
 	try {
 		if (isLP())
 			osi->initialSolve();
@@ -434,7 +439,7 @@ int GamsOsi::callSolver() {
 		gevLogStatPChar(gev, "Exception caught when solving problem: ");
 		gevLogStat(gev, error.message().c_str());
 	}
-	
+
 	double end_cputime  = CoinCpuTime();
 	double end_walltime = CoinWallclockTime();
 
@@ -442,11 +447,11 @@ int GamsOsi::callSolver() {
   if (solverid == GLPK)
     glp_term_hook(NULL, NULL);
 #endif
-	
+
 	gevLogStat(gev, "");
 	bool solwritten;
 	writeSolution(end_cputime - start_cputime, end_walltime - start_walltime, solwritten);
-	
+
 	if (!isLP() && gevGetIntOpt(gev, gevInteger1) && solwritten)
 		solveFixed();
 
@@ -460,10 +465,10 @@ bool GamsOsi::setupProblem(OsiSolverInterface& solver) {
 		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 		return false;
 	}
-	
+
 	if (gmoGetEquTypeCnt(gmo, equ_N))
 		gmoSetNRowPerm(gmo);
-	
+
 	if (!gamsOsiLoadProblem(gmo, solver))
 		return false;
 
@@ -482,7 +487,7 @@ bool GamsOsi::setupProblem(OsiSolverInterface& solver) {
 			solver.setRowName(j, stbuffer);
 		}
 	}
-        
+
 	return true;
 }
 
@@ -490,7 +495,7 @@ bool GamsOsi::setupProblem(OsiSolverInterface& solver) {
 bool GamsOsi::setupStartingPoint() {
 	if (!gmoHaveBasis(gmo))
 		return true;
-	
+
 	double* varlevel = new double[gmoN(gmo)];
 	double* rowprice = new double[gmoM(gmo)];
 	CoinWarmStartBasis basis;
@@ -501,8 +506,13 @@ bool GamsOsi::setupStartingPoint() {
 
 	int nbas = 0;
 	for (int j = 0; j < gmoN(gmo); ++j) {
-		switch (gmoGetVarBasOne(gmo, j)) {
-			case 0: // this seem to mean that variable should be basic
+#if GMOAPIVERSION >= 8
+		switch (gmoGetVarStatOne(gmo, j)) {
+			case Bstat_Basic: // this seem to mean that variable should be basic
+#else
+     switch (gmoGetVarBasOne(gmo, j)) {
+         case 0: // this seem to mean that variable should be basic
+#endif
 				if (nbas < gmoM(gmo)) {
 					basis.setStructStatus(j, CoinWarmStartBasis::basic);
 					++nbas;
@@ -513,7 +523,13 @@ bool GamsOsi::setupStartingPoint() {
 				else
 					basis.setStructStatus(j, CoinWarmStartBasis::atUpperBound);
 				break;
+#if GMOAPIVERSION >= 8
+			case Bstat_Lower:
+			case Bstat_Upper:
+			case Bstat_Super:
+#else
 			case 1:
+#endif
 				if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
 					basis.setStructStatus(j, CoinWarmStartBasis::isFree);
 				else if (gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) || fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
@@ -530,15 +546,26 @@ bool GamsOsi::setupStartingPoint() {
 	}
 
 	for (int j = 0; j< gmoM(gmo); ++j) {
-		switch (gmoGetEquBasOne(gmo, j)) {
-			case 0:
+#if GMOAPIVERSION >= 8
+		switch (gmoGetEquStatOne(gmo, j)) {
+			case Bstat_Basic:
+#else
+      switch (gmoGetEquBasOne(gmo, j)) {
+         case 0:
+#endif
 				if (nbas < gmoM(gmo)) {
 					basis.setArtifStatus(j, CoinWarmStartBasis::basic);
 					++nbas;
 				} else
 					basis.setArtifStatus(j, gmoGetEquTypeOne(gmo, j) == equ_G ? CoinWarmStartBasis::atLowerBound : CoinWarmStartBasis::atUpperBound);
 				break;
+#if GMOAPIVERSION >= 8
+			case Bstat_Lower:
+			case Bstat_Upper:
+			case Bstat_Super:
+#else
 			case 1:
+#endif
 				basis.setArtifStatus(j, gmoGetEquTypeOne(gmo, j) == equ_G ? CoinWarmStartBasis::atLowerBound : CoinWarmStartBasis::atUpperBound);
 				break;
 			default:
@@ -603,7 +630,7 @@ bool GamsOsi::setupParameters() {
 			osicbc->getModelPtr()->setDblParam(CbcModel::CbcAllowableFractionGap, optcr);
 		} break;
 #endif
-		
+
 #ifdef COIN_HAS_CPX
 		case CPLEX: {
 			OsiCpxSolverInterface* osicpx = dynamic_cast<OsiCpxSolverInterface*>(osi);
@@ -613,7 +640,7 @@ bool GamsOsi::setupParameters() {
 				CPXsetintparam(osicpx->getEnvironmentPtr(), CPX_PARAM_NODELIM, nodelim);
 			CPXsetdblparam(osicpx->getEnvironmentPtr(), CPX_PARAM_EPGAP, optcr);
 			CPXsetdblparam(osicpx->getEnvironmentPtr(), CPX_PARAM_EPAGAP, optca);
-			
+
 			if (gmoOptFile(gmo)) {
 				char buffer[4096];
 				gmoNameOptFile(gmo, buffer);
@@ -628,7 +655,7 @@ bool GamsOsi::setupParameters() {
 						gevLogStat(gev, "unknown error code");
 				}
 			}
-			
+
 		} break;
 #endif
 
@@ -741,7 +768,7 @@ bool GamsOsi::setupParameters() {
 #if GRB_VERSION_MAJOR >= 3
          GRBsetdblparam(grbenv, GRB_DBL_PAR_MIPGAPABS, optca);
 #endif
-			
+
 			if (gmoOptFile(gmo)) {
 				char buffer[4096];
 				gmoNameOptFile(gmo, buffer);
@@ -756,10 +783,10 @@ bool GamsOsi::setupParameters() {
 						gevLogStat(gev, "unknown error");
 				}
 			}
-			
+
 		} break;
 #endif
-			
+
 #ifdef COIN_HAS_MSK
 		case MOSEK: {
 			OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
@@ -776,16 +803,16 @@ bool GamsOsi::setupParameters() {
 				MSK_putstrparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_SPAR_PARAM_READ_FILE_NAME, buffer);
 				MSK_readparamfile(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL));
 			}
-			
+
 			break;
 		}
 #endif
-			
+
 #ifdef COIN_HAS_XPR
 		case XPRESS: {
 			OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
 			assert(osixpr != NULL);
-			
+
 			XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXTIME, (int)reslim);
 			if (!isLP() && nodelim)
 				XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXNODE, nodelim);
@@ -805,22 +832,22 @@ bool GamsOsi::setupParameters() {
 					} while (optfile.good());
 				}
 			}
-			
+
 			break;
 		}
 #endif
-		
+
 		default:
 			gevLogStat(gev, "Encountered unsupported solver id in setupParameters.");
 			return false;
 	}
-	
+
 	return true;
 }
 
 bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solution) {
 	char buffer[255];
-	
+
 	write_solution = false;
 
 	switch (solverid) {
@@ -842,14 +869,14 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					else
 						gevLogStat(gev, "Solved to optimality.");
 					break;
-				
+
 				case CPX_STAT_UNBOUNDED:
 				case CPXMIP_UNBOUNDED:
 					gmoSolveStatSet(gmo, SolveStat_Normal);
 					gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
 					gevLogStat(gev, "Model unbounded.");
 					break;
-					
+
 				case CPX_STAT_INFEASIBLE:
 				case CPX_STAT_INForUNBD:
 				case CPXMIP_INFEASIBLE:
@@ -858,20 +885,20 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
 					gevLogStat(gev, "Model infeasible.");
 					break;
-					
+
 				case CPX_STAT_NUM_BEST:
 				case CPX_STAT_FEASIBLE:
 					gevLogStat(gev, "Feasible solution found.");
 					gmoSolveStatSet(gmo, SolveStat_Normal);
 					gmoModelStatSet(gmo, ModelStat_NonOptimalIntermed);
 					break;
-				
+
 				case CPX_STAT_ABORT_IT_LIM:
 					gmoSolveStatSet(gmo, SolveStat_Iteration);
 					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 					gevLogStat(gev, "Iteration limit reached.");
 					break;
-					
+
 				case CPX_STAT_ABORT_TIME_LIM:
 					gmoSolveStatSet(gmo, SolveStat_Resource);
 					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
@@ -883,13 +910,13 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 					gevLogStat(gev, "Objective limit reached.");
 					break;
-					
+
 				case CPX_STAT_ABORT_USER:
 					gmoSolveStatSet(gmo, SolveStat_User);
 					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 					gevLogStat(gev, "Stopped on user interrupt.");
 					break;
-					
+
 				case CPXMIP_OPTIMAL_TOL:
 					write_solution = true;
 					gmoSolveStatSet(gmo, SolveStat_Normal);
@@ -910,13 +937,13 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					gmoModelStatSet(gmo, ModelStat_Integer);
 					gevLogStat(gev, "Node limit reached, have feasible solution.");
 					break;
-					
+
 				case CPXMIP_NODE_LIM_INFEAS:
 					gmoSolveStatSet(gmo, SolveStat_Iteration);
 					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 					gevLogStat(gev, "Node limit reached, do not have feasible solution.");
 					break;
-					
+
 				case CPXMIP_TIME_LIM_FEAS:
 					write_solution = true;
 					gmoSolveStatSet(gmo, SolveStat_Resource);
@@ -929,7 +956,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 					gevLogStat(gev, "Time limit reached, do not have feasible solution.");
 					break;
-					
+
 				case CPXMIP_FAIL_FEAS:
 				case CPXMIP_FAIL_FEAS_NO_TREE:
 				case CPXMIP_MEM_LIM_FEAS:
@@ -940,7 +967,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					gmoModelStatSet(gmo, ModelStat_Integer);
 					gevLogStat(gev, "Solving failed, but have feasible solution.");
 					break;
-					
+
 				case CPXMIP_FAIL_INFEAS:
 				case CPXMIP_FAIL_INFEAS_NO_TREE:
 				case CPXMIP_MEM_LIM_INFEAS:
@@ -950,7 +977,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					gevLogStat(gev, "Solving failed, do not have feasible solution.");
 					break;
 			}
-						
+
 		} break;
 #endif
 
@@ -1037,7 +1064,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 						}
 					}
 					break;
-					
+
 				case GRB_INFEASIBLE:
 					assert(!nrsol);
 				case GRB_INF_OR_UNBD:
@@ -1045,19 +1072,19 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
 					gevLogStat(gev, "Model infeasible.");
 					break;
-					
+
 				case GRB_UNBOUNDED:
 					gmoSolveStatSet(gmo, SolveStat_Normal);
 					gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
 					gevLogStat(gev, "Model unbounded.");
 					break;
-					
+
 				case GRB_CUTOFF:
 					gmoSolveStatSet(gmo, SolveStat_Normal);
 					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 					gevLogStat(gev, "Objective limit reached.");
 					break;
-					
+
 				case GRB_ITERATION_LIMIT:
 					gmoSolveStatSet(gmo, SolveStat_Iteration);
 					if (nrsol) {
@@ -1080,7 +1107,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 						gevLogStat(gev, "Node limit reached.");
 					}
 					break;
-					
+
 				case GRB_TIME_LIMIT:
 					gmoSolveStatSet(gmo, SolveStat_Resource);
 					if (nrsol) {
@@ -1091,7 +1118,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 						gevLogStat(gev, "Time limit reached.");
 					}
 					break;
-					
+
 				case GRB_SOLUTION_LIMIT:
 					gmoSolveStatSet(gmo, SolveStat_Solver);
 					if (nrsol) {
@@ -1102,7 +1129,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 						gevLogStat(gev, "Solution limit reached, but do not have solution.");
 					}
 					break;
-					
+
 				case GRB_INTERRUPTED:
 					gmoSolveStatSet(gmo, SolveStat_User);
 					if (nrsol) {
@@ -1113,7 +1140,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 						gevLogStat(gev, "User interrupt.");
 					}
 					break;
-					
+
 				case GRB_NUMERIC:
 					gmoSolveStatSet(gmo, SolveStat_Solver);
 					if (nrsol) {
@@ -1137,7 +1164,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
                }
                break;
 #endif
-					
+
 				case GRB_LOADED:
 				default:
 					gmoSolveStatSet(gmo, SolveStat_Solver);
@@ -1148,7 +1175,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 			break;
 		}
 #endif
-		
+
 #ifdef COIN_HAS_MSK
 		case MOSEK: {
 			OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
@@ -1182,10 +1209,10 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					break;
 				}
 			}
-			
+
 		  MSK_getsolution(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), solution, &probstatus, &solstatus,
 		  	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-		  
+
 		  switch (solstatus) {
         case MSK_SOL_STA_NEAR_INTEGER_OPTIMAL:
         case MSK_SOL_STA_NEAR_OPTIMAL:
@@ -1197,7 +1224,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 						gmoModelStatSet(gmo, ModelStat_Integer);
 					gevLogStat(gev, "Solved nearly to optimality.");
         	break;
-        	
+
         case MSK_SOL_STA_PRIM_FEAS:
         case MSK_SOL_STA_PRIM_AND_DUAL_FEAS:
         	write_solution = true;
@@ -1208,7 +1235,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 						gmoModelStatSet(gmo, ModelStat_Integer);
 					gevLogStat(gev, "Solved to feasibility.");
 					break;
-        	        	
+
         case MSK_SOL_STA_OPTIMAL:
         case MSK_SOL_STA_INTEGER_OPTIMAL:
         	write_solution = true;
@@ -1216,13 +1243,13 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
 					gevLogStat(gev, "Solved to optimality.");
 					break;
-        	
+
         case MSK_SOL_STA_PRIM_INFEAS_CER:
 					gmoSolveStatSet(gmo, SolveStat_Normal);
 					gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
 					gevLogStat(gev, "Model is infeasible.");
 					break;
-        	
+
         case MSK_SOL_STA_DUAL_INFEAS_CER:
 					gmoSolveStatSet(gmo, SolveStat_Normal);
 					gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
@@ -1248,7 +1275,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
     					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
     					gevLogStat(gev, "Model is dual feasible.");
     					break;
-    					
+
         		case MSK_PRO_STA_DUAL_INFEAS:
     					gmoSolveStatSet(gmo, SolveStat_Normal);
     					gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
@@ -1307,11 +1334,11 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
     					break;
         	}
 		  }
-		  
+
 			break;
 		}
 #endif
-		
+
 #ifdef COIN_HAS_XPR
 		case XPRESS: {
 			OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
@@ -1327,25 +1354,25 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 						gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
 						gevLogStat(gev, "Solved to optimality.");
 						break;
-						
+
 					case XPRS_LP_INFEAS:
 						gmoSolveStatSet(gmo, SolveStat_Normal);
 						gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
 						gevLogStat(gev, "Model is infeasible.");
 						break;
-						
+
 					case XPRS_LP_CUTOFF:
 						gmoSolveStatSet(gmo, SolveStat_Solver);
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 						gevLogStat(gev, "Objective limit reached.");
 						break;
-						
+
 					case XPRS_LP_UNBOUNDED:
 						gmoSolveStatSet(gmo, SolveStat_Normal);
 						gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
 						gevLogStat(gev, "Model is unbounded.");
 						break;
-						
+
 					case XPRS_LP_CUTOFF_IN_DUAL:
 						gmoSolveStatSet(gmo, SolveStat_Solver);
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
@@ -1361,7 +1388,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 						gevLogStat(gev, "Model not solved.");
 						break;
-						
+
 					default:
 						gmoSolveStatSet(gmo, SolveStat_Solver);
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
@@ -1376,13 +1403,13 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 						gevLogStat(gev, "LP relaxation not solved to optimality.");
 						break;
-						
+
 					case XPRS_MIP_LP_OPTIMAL:
 						gmoSolveStatSet(gmo, SolveStat_Solver);
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 						gevLogStat(gev, "Only LP relaxation solved.");
 						break;
-						
+
 					case XPRS_MIP_NO_SOL_FOUND:
 						gmoSolveStatSet(gmo, SolveStat_Normal);
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
@@ -1395,13 +1422,13 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 						gmoModelStatSet(gmo, ModelStat_Integer);
 						gevLogStat(gev, "Found integer feasible solution.");
 						break;
-						
+
 					case XPRS_MIP_INFEAS:
 						gmoSolveStatSet(gmo, SolveStat_Normal);
 						gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
 						gevLogStat(gev, "Model is infeasible.");
 						break;
-						
+
 					case XPRS_MIP_OPTIMAL:
 						write_solution = true;
 						gmoSolveStatSet(gmo, SolveStat_Normal);
@@ -1416,12 +1443,12 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 				    }
 						break;
 				}
-			}			
+			}
 			break;
 		}
-#endif		
+#endif
 
-		default:	
+		default:
 			try {
 				gevLogStat(gev, "");
 				if (osi->isProvenDualInfeasible()) {
@@ -1476,7 +1503,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 	try {
 		if (isLP())
 			gmoSetHeadnTail(gmo, Hiterused, osi->getIterationCount());
-		gmoSetHeadnTail(gmo, HresUsed, cputime);
+		gmoSetHeadnTail(gmo, Hresused, cputime);
 #if STEFAN
 		gmoSetHeadnTail(gmo, Tmipbest, model->getBestPossibleObjValue());
 		gmoSetHeadnTail(gmo, Tmipnod, model->getNodeCount());
@@ -1495,7 +1522,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 		} else { // is MIP -> store only primal values for now
 			double* rowprice = CoinCopyOfArrayOrZero((double*)NULL, gmoM(gmo));
 			try {
-				gmoSetHeadnTail(gmo, HobjVal, osi->getObjValue());
+				gmoSetHeadnTail(gmo, Hobjval, osi->getObjValue());
 				gmoSetSolution2(gmo, osi->getColSolution(), rowprice);
 			} catch (CoinError error) {
 				gevLogStatPChar(gev, "Exception caught when requesting primal solution values: ");
@@ -1508,7 +1535,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 
 	if (!isLP()) {
 		if (write_solution) {
-			snprintf(buffer, 255, "MIP solution: %21.10g   (%g seconds)", gmoGetHeadnTail(gmo, HobjVal), cputime);
+			snprintf(buffer, 255, "MIP solution: %21.10g   (%g seconds)", gmoGetHeadnTail(gmo, Hobjval), cputime);
 			gevLogStat(gev, buffer);
 		}
 #if STEFAN
@@ -1528,7 +1555,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 
 bool GamsOsi::solveFixed() {
 	gevLogStat(gev, "\nSolving LP obtained from MIP by fixing discrete variables to values in solution.\n");
-	
+
 	for (int i = 0; i < gmoN(gmo); ++i)
 		if (gmoGetVarTypeOne(gmo, i) != var_X) {
 			double solval, dummy;
@@ -1536,7 +1563,7 @@ bool GamsOsi::solveFixed() {
 			gmoGetSolutionVarRec(gmo, i, &solval, &dummy, &dummy2, &dummy2);
 			osi->setColBounds(i, solval, solval);
 		}
-	
+
 	if (gevGetDblOpt(gev, gevReal1)) {
 		switch (solverid) {
 #ifdef COIN_HAS_CBC
@@ -1545,7 +1572,7 @@ bool GamsOsi::solveFixed() {
 				osicbc->getModelPtr()->setDblParam(CbcModel::CbcMaximumSeconds, gevGetDblOpt(gev, gevReal1));
 			} break;
 #endif
-			
+
 #ifdef COIN_HAS_CPX
 			case CPLEX: {
 				OsiCpxSolverInterface* osicpx = dynamic_cast<OsiCpxSolverInterface*>(osi);
@@ -1553,7 +1580,7 @@ bool GamsOsi::solveFixed() {
 				CPXsetdblparam(osicpx->getEnvironmentPtr(), CPX_PARAM_TILIM, gevGetDblOpt(gev, gevReal1));
 			} break;
 #endif
-			
+
 #ifdef COIN_HAS_GLPK
 			case GLPK: {
 			  OsiGlpkSolverInterface* osiglpk = dynamic_cast<OsiGlpkSolverInterface*>(osi);
@@ -1573,7 +1600,7 @@ bool GamsOsi::solveFixed() {
 				GRBsetdblparam(GRBgetenv(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL)), GRB_DBL_PAR_TIMELIMIT, gevGetDblOpt(gev, gevReal1));
 			} break;
 	#endif
-				
+
 	#ifdef COIN_HAS_MSK
 			case MOSEK: {
 				OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
@@ -1582,7 +1609,7 @@ bool GamsOsi::solveFixed() {
 				break;
 			}
 	#endif
-				
+
 	#ifdef COIN_HAS_XPR
 			case XPRESS: {
 				OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
@@ -1591,15 +1618,15 @@ bool GamsOsi::solveFixed() {
 				break;
 			}
 	#endif
-			
+
 			default:
 				gevLogStat(gev, "Encountered unsupported solver id in setupParameters.");
 				return false;
 		}
 	}
-	
+
 	osi->resolve();
-	
+
 	if (osi->isProvenOptimal()) {
 		if (!gamsOsiStoreSolution(gmo, *osi, false)) {
 			gevLogStat(gev, "Failed to store LP solution. Only primal solution values will be available in GAMS solution file.\n");
@@ -1609,7 +1636,7 @@ bool GamsOsi::solveFixed() {
 		gevLogStat(gev, "Solve of final LP failed. Only primal solution values will be available in GAMS solution file.\n");
 		gevSetIntOpt(gev, gevInteger1, 0);
 	}
-	
+
 	for (int i = 0; i < gmoN(gmo); ++i)
 		if (gmoGetVarTypeOne(gmo, i) != var_X)
 			osi->setColBounds(i, gmoGetVarLowerOne(gmo, i), gmoGetVarUpperOne(gmo, i));
@@ -1686,7 +1713,7 @@ DllExport GamsOsi* STDCALL createNewGamsOsiXpress() {
 		if (msgBufLen && msgBuf) \
 			msgBuf[0] = 0; \
 	}
-	
+
 osi_C_interface(ocp, GamsOsi::CPLEX)
 osi_C_interface(ogl, GamsOsi::GLPK)
 osi_C_interface(ogu, GamsOsi::GUROBI)

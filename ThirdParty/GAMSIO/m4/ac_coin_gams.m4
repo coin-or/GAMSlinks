@@ -73,7 +73,7 @@ AC_ARG_WITH([gamsio-code],
         esac
       ;;
       *-cygwin* | *-mingw32*)
-        GAMSIO_CODE=VIS
+        GAMSIO_CODE=VS8
       ;;
       *-mingw64*)
         GAMSIO_CODE=WEI
@@ -105,7 +105,7 @@ case $GAMSIO_CODE in
       gamsio_system=Linux
       GAMSIO_CIA=CIA_LNX
     ;;
-  VIS)
+  VIS | VS8)
       gamsio_system=Windows
       GAMSIO_CIA=CIA_WIN
     ;;
@@ -221,7 +221,7 @@ case $GAMSIO_CODE in
       GAMSIO_ADDLIBS="-ldl -lSystemStubs $IFORT_LIBS"
       GAMS_ADDLIBS="-ldl"
     ;;
-  VIS | WEI)
+  VIS | WEI | VS8)
       GAMSIO_LIBS="$gamsio_srcdir/iolib.lib $gamsio_srcdir/nliolib.lib $gamsio_srcdir/clicelib.lib $gamsio_srcdir/gclib.lib $gamsio_srcdir/f90pallib.lib"
       SMAG_LIBS="$gamsio_srcdir/clicelib.lib $gamsio_srcdir/smag.lib $gamsio_srcdir/gclib.lib $gamsio_srcdir/f90pallib.lib $gamsio_srcdir/g2d.lib $gamsio_srcdir/dictread.obj $gamsio_srcdir/dictfunc.obj $gamsio_srcdir/bch.obj"
       GAMSIO_ADDLIBS=""

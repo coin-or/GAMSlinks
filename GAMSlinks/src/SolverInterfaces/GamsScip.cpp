@@ -42,6 +42,11 @@
 #define GMS_SV_NA     2.0E300
 #endif
 
+#if GMOAPIVERSION < 8
+#define Hresused     HresUsed
+#define Hobjval      HobjVal
+#endif
+
 #include "GamsMessageHandler.hpp"
 
 #include "ClpSimplex.hpp" // for passing in message handler
@@ -106,9 +111,9 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1;
 
 	gev = (gevRec*)gmoEnvironment(gmo);
-	
+
 #ifdef GAMS_BUILD
-#include "coinlibdCL5svn.h" 
+#include "coinlibdCL5svn.h"
 	char buffer[512];
 	auditGetLine(buffer, sizeof(buffer));
 	gevLogStat(gev, "");
@@ -118,7 +123,7 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 #ifdef GAMS_BUILD
 #define GEVPTR gev
-/* bad bad bad */ 
+/* bad bad bad */
 #undef SUB_FR
 #define SUB_SC
 #include "cmagic2.h"
@@ -144,7 +149,7 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
     isDemo = !isAcademic; // we run in demo mode if there is no academic license, that is we cannot allow to open a scip shell
 	}
 #endif
-	
+
 	gevLogStat(gev, "");
 	gevLogStatPChar(gev, getWelcomeMessage());
 
@@ -158,7 +163,7 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 		return 1;
   }
-	
+
 #if SCIP_SUBVERSION < 8
 	if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
 		gevLogStat(gev, "ERROR: Semicontinuous and semiinteger variables not supported yet.\n");
@@ -167,9 +172,9 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1;
   }
 #endif
-	
+
 	gamsmsghandler = new GamsMessageHandler(gev);
-  
+
 	SCIP_RETCODE scipret;
 	if (isLP())
 		scipret = setupLPI();
@@ -183,14 +188,14 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		gmoSolveStatSet(gmo, SolveStat_SystemErr);
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		return 1;
-	} 
-	
+	}
+
 	return 0;
 }
 
 int GamsScip::callSolver() {
 	SCIP_RETCODE scipret;
-	
+
 	if (isLP()) {
 		scipret = setupInitialBasis();
 
@@ -204,10 +209,10 @@ int GamsScip::callSolver() {
 
   	if (scipret == SCIP_OKAY)
   		scipret = processLPSolution(gevTimeDiffStart(gev) - starttime);
-  	
+
 	} else {
 		scipret = setupStartPoint();
-		
+
 		if (scipret == SCIP_OKAY) {
 			SCIP_Bool interact = FALSE;
 			if (!isDemo)
@@ -227,11 +232,11 @@ int GamsScip::callSolver() {
   			gevLog(gev, "");
   			SCIPprintStatistics(scip, NULL);
   		}
-  		
+
   		scipret = processMIQCPSolution();
   	}
 	}
-	
+
 	if (scipret != SCIP_OKAY) {
 		char buffer[512];
 		snprintf(buffer, 512, "Error %d in call of SCIP function\n", scipret);
@@ -240,13 +245,13 @@ int GamsScip::callSolver() {
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		return 1;
 	}
-	
+
 	return 0;
 }
 
 SCIP_RETCODE GamsScip::setupLPI() {
 	assert(lpi == NULL);
-	
+
 	SCIP_CALL( SCIPlpiCreate(&lpi, "gamsproblem", gmoSense(gmo) == Obj_Max ? SCIP_OBJSEN_MAXIMIZE : SCIP_OBJSEN_MINIMIZE) );
 
 	SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, TRUE);
@@ -266,7 +271,7 @@ SCIP_RETCODE GamsScip::setupLPI() {
 		sprintf(buffer, "Note: Constant %g in objective function is ignored during LP solve.\n", gmoObjConst(gmo));
 		gevLogStatPChar(gev, buffer);
 	}
-	
+
 	double* objcoefs = new double[gmoN(gmo)];
 	double* collb    = new double[gmoN(gmo)];
 	double* colub    = new double[gmoN(gmo)];
@@ -274,23 +279,23 @@ SCIP_RETCODE GamsScip::setupLPI() {
 	gmoGetVarLower(gmo, collb);
 	gmoGetVarUpper(gmo, colub);
 	SCIP_CALL( SCIPlpiAddCols(lpi, gmoN(gmo), objcoefs, collb, colub, NULL, 0, NULL, NULL, NULL) );
-	
+
 	delete[] objcoefs;
 	delete[] collb;
 	delete[] colub;
-	
+
 	int*    rowstarts = new int[gmoM(gmo)+1];
 	int*    cols   = new int[gmoNZ(gmo)];
 	double* values = new double[gmoNZ(gmo)];
 	double* rowlhs = new double[gmoM(gmo)];
 	double* rowrhs = new double[gmoM(gmo)];
-	
+
 	gmoGetMatrixRow(gmo, rowstarts, cols, values, NULL);
   rowstarts[gmoM(gmo)] = gmoNZ(gmo); /* just to be sure it's there */
-  
+
   for (int i = 0; i < gmoM(gmo); ++i)
 		switch (gmoGetEquTypeOne(gmo, i)) {
-			case equ_E: 
+			case equ_E:
 				rowlhs[i] = rowrhs[i] = gmoGetRhsOne(gmo, i);
 				break;
 			case equ_G:
@@ -311,7 +316,7 @@ SCIP_RETCODE GamsScip::setupLPI() {
 				gevLogStat(gev, "ERROR: Unsupported equation type for LPI.");
 				return SCIP_READERROR;
 		}
-  
+
 //  printf("%d cols; %d rows; %d nz:\n", gmoN(gmo),  gmoM(gmo), gmoNZ(gmo));
 //  for (int i = 0; i < gmoM(gmo); ++i) {
 //  	printf("%d;  %g <= ", rowstarts[i], rowlhs[i]);
@@ -319,15 +324,15 @@ SCIP_RETCODE GamsScip::setupLPI() {
 //  		printf("%+g*x%d ", values[j], cols[j]);
 //  	printf("<= %g\n", rowrhs[i]);
 //  }
-	
+
   SCIP_CALL( SCIPlpiAddRows(lpi, gmoM(gmo), rowlhs, rowrhs, NULL, gmoNZ(gmo), rowstarts, cols, values) );
-  
+
   delete[] values;
   delete[] cols;
   delete[] rowstarts;
   delete[] rowlhs;
   delete[] rowrhs;
-  
+
   if (gmoN(gmo) == 0) { // if no columns, add a "fake" one to prevent Clp from crashing
   	double zero = 0.0;
   	int zeroint = 0;
@@ -340,17 +345,17 @@ SCIP_RETCODE GamsScip::setupLPI() {
 SCIP_RETCODE GamsScip::setupSCIP() {
 	assert(scip == NULL);
 	assert(scipmsghandler == NULL);
-	
+
   SCIP_CALL( SCIPcreateMessagehdlr(&scipmsghandler, FALSE, GamsScipPrintWarningOrError, GamsScipPrintWarningOrError, GamsScipPrintInfoOrDialog, GamsScipPrintInfoOrDialog, (SCIP_MESSAGEHDLRDATA*)this) );
 	SCIP_CALL( SCIPsetMessagehdlr(scipmsghandler) );
 
 	SCIP_CALL( SCIPcreate(&scip) );
-	
+
 	gmoPinfSet(gmo,  SCIPinfinity(scip));
 	gmoMinfSet(gmo, -SCIPinfinity(scip));
-	
+
 	SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
-	
+
 	SCIP_CALL( setupSCIPParameters() );
 	SCIP_CALL( setupMIQCP() );
 
@@ -362,20 +367,20 @@ SCIP_RETCODE GamsScip::setupSCIP() {
 		if (lpi)
 			((ClpSimplex*)SCIPlpiGetSolverPointer(lpi))->passInMessageHandler(gamsmsghandler);
 	}
-	
+
 	return SCIP_OKAY;
 }
 
 SCIP_RETCODE GamsScip::setupSCIPParameters() {
 	assert(scip != NULL);
-	
+
 	char buffer[512];
 	if (SCIPisInfinity(scip, gevGetDblOpt(gev, gevOptCA))) {
 		gevSetDblOpt(gev, gevOptCA, 0.999*SCIPinfinity(scip));
 		snprintf(buffer, sizeof(buffer), "Warning: Value for optca greater or equal than value for infinity. Reduced to %g.\n", 0.999*SCIPinfinity(scip));
 		gevLogStatPChar(gev, buffer);
 	}
-	
+
 	if (gevGetIntOpt(gev, gevNodeLim))
 		SCIP_CALL( SCIPsetLongintParam(scip, "limits/nodes", gevGetIntOpt(gev, gevNodeLim)) );
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/time", gevGetDblOpt(gev, gevResLim)) );
@@ -392,7 +397,7 @@ SCIP_RETCODE GamsScip::setupSCIPParameters() {
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/print_statistics", "whether to print statistics on a MIP solve",                                            NULL, FALSE, FALSE, NULL, NULL) );
 	if (!isDemo)
 		SCIP_CALL( SCIPaddBoolParam(scip, "gams/interactive",      "whether a SCIP shell should be opened instead of issuing a solve command",              NULL, FALSE, FALSE, NULL, NULL) );
-	
+
   if (gmoOptFile(gmo)) {
   	char optfilename[1024];
   	gmoNameOptFile(gmo, optfilename);
@@ -405,7 +410,7 @@ SCIP_RETCODE GamsScip::setupSCIPParameters() {
   		gevLogPChar(gev, buffer);
   	}
   }
-	
+
 	return SCIP_OKAY;
 }
 
@@ -421,7 +426,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 	SCIP_Bool names = FALSE;
 	if (gmoDict(gmo))
 		SCIP_CALL( SCIPgetBoolParam(scip, "gams/names", &names) );
-	
+
 	if (gmoNLNZ(gmo) || gmoObjNLNZ(gmo)) {
 		if (gmoQMaker(gmo, 0.5) < 0) { // negative number is error; positive number is number of nonquadratic nonlinear equations
 			gevLogStat(gev, "ERROR: Problems extracting information on quadratic functions in GMO.");
@@ -430,7 +435,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 	}
 
 	vars = new SCIP_VAR*[gmoN(gmo)];
-	
+
 	double minprior = SCIPinfinity(scip);
 	double maxprior = 0.0;
 	if (gmoPriorOpt(gmo) && gmoNDisc(gmo) > 0) { // compute range of given priorities
@@ -446,7 +451,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 
 	double* coefs;
 	SCIP_CALL( SCIPallocBufferArray(scip, &coefs, gmoN(gmo)+1) ); // +1 if we have to transform the objective into a constraint
-	
+
 	if (gmoObjNLNZ(gmo) == 0) {
 		assert(gmoGetObjOrder(gmo) == order_L);
 		gmoGetObjVector(gmo, coefs);
@@ -483,24 +488,24 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 			sprintf(buffer, "x%d", i);
 		SCIP_CALL( SCIPcreateVar(scip, &vars[i], buffer, lb, ub, coefs[i], vartype, TRUE, FALSE, NULL, NULL, NULL, NULL) );
 		SCIP_CALL( SCIPaddVar(scip, vars[i]) );
-		
+
 		if (gmoPriorOpt(gmo) && minprior < maxprior && gmoGetVarTypeOne(gmo, i) != var_X) {
 			// in GAMS: higher priorities are given by smaller .prior values
 			// in SCIP: variables with higher branch priority are always preferred to variables with lower priority in selection of branching variable
-			// thus, we scale the values from GAMS to lie between 0 (lowest prior) and 1000 (highest prior) 
+			// thus, we scale the values from GAMS to lie between 0 (lowest prior) and 1000 (highest prior)
 			int branchpriority = (int)(1000.0 / (maxprior - minprior) * (maxprior - gmoGetVarPriorOne(gmo, i)));
 			SCIP_CALL( SCIPchgVarBranchPriority(scip, vars[i], branchpriority) );
 		}
 	}
-	
-	/* setup bound disjunction constraints for semicontinuous/semiinteger variables 
+
+	/* setup bound disjunction constraints for semicontinuous/semiinteger variables
 	 * by saying x <= 0 or x >= gmoGetVarLower */
 	if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
 		SCIP_BOUNDTYPE bndtypes[2];
 		SCIP_Real      bnds[2];
 		SCIP_VAR*      bndvars[2];
 		SCIP_CONS*     cons;
-		
+
 		bndtypes[0] = SCIP_BOUNDTYPE_UPPER;
 		bndtypes[1] = SCIP_BOUNDTYPE_LOWER;
 		bnds[0] = 0;
@@ -508,7 +513,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 		for (int i = 0; i < gmoN(gmo); ++i) {
 			if (gmoGetVarTypeOne(gmo, i) != var_SC && gmoGetVarTypeOne(gmo, i) != var_SI)
 				continue;
-			
+
 			bndvars[0] = vars[i];
 			bndvars[1] = vars[i];
 			bnds[1] = gmoGetVarLowerOne(gmo, i);
@@ -519,12 +524,12 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 			SCIP_CALL( SCIPreleaseCons(scip, &cons) );
 		}
 	}
-	
+
 	int*       indices;
 	SCIP_VAR** consvars;
 	SCIP_CALL( SCIPallocBufferArray(scip, &indices,  gmoN(gmo)) );
 	SCIP_CALL( SCIPallocBufferArray(scip, &consvars, gmoN(gmo)+1) ); // +1 if we have to transform the objective into a constraint
-	
+
 	SCIP_VAR** quadvars1 = NULL;
 	SCIP_VAR** quadvars2 = NULL;
 	SCIP_Real* quadcoefs = NULL;
@@ -542,7 +547,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 	for (int i = 0; i < gmoM(gmo); ++i) {
 		double lhs, rhs;
 		switch (gmoGetEquTypeOne(gmo, i)) {
-			case equ_E: 
+			case equ_E:
 				lhs = rhs = gmoGetRhsOne(gmo, i);
 				break;
 			case equ_G:
@@ -586,15 +591,20 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 						TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
 				break;
 			}
-			
-			case order_Q: { // quadratic constraint 
+
+			case order_Q: { // quadratic constraint
 				int nz, nlnz, qnz, qdiagnz;
-				
+
 				gmoGetRowSparse(gmo, i, indices, coefs, NULL, &nz, &nlnz);
 				for (int j = 0; j < nz; ++j)
 					consvars[j] = vars[indices[j]];
-				
+
+#if GMOAPIVERSION >= 8
+				qnz = gmoGetRowQNZOne(gmo,i);
+				gmoGetRowQ(gmo, i, qcol, qrow, quadcoefs);
+#else
 				gmoGetRowQ(gmo, i, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
+#endif
 				for (int j = 0; j < qnz; ++j) {
 					assert(qcol[j] >= 0);
 					assert(qrow[j] >= 0);
@@ -610,7 +620,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 						TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
 				break;
 			}
-			
+
 			case order_NL: // nonlinear constraint
 				gevLogStat(gev, "ERROR: General nonlinear constraints not supported by SCIP (yet).");
 				return SCIP_READERROR;
@@ -618,12 +628,12 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 				gevLogStat(gev, "ERROR: Only linear and quadratic constraints are supported.");
 				return SCIP_READERROR;
 		}
-		
-		SCIP_CALL( SCIPaddCons(scip, con) );		
+
+		SCIP_CALL( SCIPaddCons(scip, con) );
 		SCIP_CALL( SCIPreleaseCons(scip, &con) );
 	}
-	
-	// TODO if there was cancelation (e.g., qcp04), then it could actually be a linear objective, which is indicated by gmoGetObjOrder(gmo) == order_L  
+
+	// TODO if there was cancelation (e.g., qcp04), then it could actually be a linear objective, which is indicated by gmoGetObjOrder(gmo) == order_L
 	if (gmoObjNLNZ(gmo)) { // make constraint to represent objective function
 		SCIP_VAR* objvar = NULL;
 		int nz, /*nlnz,*/ qnz, qdiagnz;
@@ -632,7 +642,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 			gevLogStat(gev, "ERROR: General nonlinear objective functions not supported by SCIP (yet).");
 			return SCIP_READERROR;
 		}
-		
+
 		SCIP_CALL( SCIPcreateVar(scip, &objvar, "xobj", -SCIPinfinity(scip), SCIPinfinity(scip), 1.0, SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL) );
 		SCIP_CALL( SCIPaddVar(scip, objvar) );
 
@@ -644,7 +654,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 				consvars[nz] = vars[j];
 				++nz;
 			}
-		
+
 //		gmoGetObjSparse(gmo, indices, coefs, NULL, &nz, &nlnz);
 //		for (int j = 0; j < nz; ++j) {
 //			consvars[j] = vars[indices[j]];
@@ -654,7 +664,12 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 		consvars[nz] = objvar;
 		coefs[nz] = -1.0;
 
+#if GMOAPIVERSION >= 8
+		qnz = gmoObjQNZ(gmo);
+		gmoGetObjQ(gmo, qcol, qrow, quadcoefs);
+#else
 		gmoGetObjQ(gmo, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
+#endif
 		for (int j = 0; j < qnz; ++j) {
 			assert(qcol[j] >= 0);
 			assert(qrow[j] >= 0);
@@ -676,11 +691,11 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 
 		SCIP_CALL( SCIPcreateConsQuadratic(scip, &con, "objective", nz+1, consvars, coefs, qnz, quadvars1, quadvars2, quadcoefs, lhs, rhs,
 				TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
-		SCIP_CALL( SCIPaddCons(scip, con) );		
+		SCIP_CALL( SCIPaddCons(scip, con) );
 		SCIP_CALL( SCIPreleaseCons(scip, &con) );
-		
+
 		SCIP_CALL( SCIPreleaseVar(scip, &objvar) );
-		
+
 	} else if (!SCIPisZero(scip, gmoObjConst(gmo))) {
 		SCIP_VAR* objconst;
 		SCIP_CALL( SCIPcreateVar(scip, &objconst, "objconst", 1.0, 1.0, gmoObjConst(gmo), SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL) );
@@ -691,7 +706,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 
 	if (gmoSense(gmo) == Obj_Max)
 		SCIP_CALL( SCIPsetObjsense(scip, SCIP_OBJSENSE_MAXIMIZE) );
-	
+
 	int numSos1, numSos2, nzSos;
 	gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);
 	if (nzSos)
@@ -703,7 +718,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 		double* soswt = new double[nzSos];
 
 		gmoGetSosConstraints(gmo, sostype, sosbeg, sosind, soswt);
-		
+
 		for (int i = 0; i < numSos; ++i)
 		{
 			int k = 0;
@@ -711,7 +726,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 				consvars[k] = vars[sosind[j]];
 				assert(gmoGetVarTypeOne(gmo, sosind[j]) == (sostype[i] == 1 ? var_S1 : var_S2));
 			}
-			
+
 			sprintf(buffer, "sos%d", i);
 			if (sostype[i] == 1) {
 				SCIP_CALL( SCIPcreateConsSOS1(scip, &con, buffer, k, consvars, &soswt[sosbeg[i]], TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
@@ -719,7 +734,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 				assert(sostype[i] == 2);
 				SCIP_CALL( SCIPcreateConsSOS2(scip, &con, buffer, k, consvars, &soswt[sosbeg[i]], TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
 			}
-			
+
 			SCIP_CALL( SCIPaddCons(scip, con) );
 			SCIP_CALL( SCIPreleaseCons(scip, &con) );
 		}
@@ -733,9 +748,9 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 	SCIPfreeBufferArrayNull(scip, &quadcoefs);
 	SCIPfreeBufferArrayNull(scip, &qrow);
 	SCIPfreeBufferArrayNull(scip, &qcol);
-	
+
 //	SCIP_CALL( SCIPwriteOrigProblem(scip, NULL, "gms", FALSE) );
-	
+
 	// need to transform before doing getLPI and before providing initial solution
 	// also objective offset does not seem to be copied to transformed problem
 	SCIP_CALL( SCIPtransformProb(scip) );
@@ -747,25 +762,30 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 	if (gevGetIntOpt(gev, gevUseCutOff))
 		SCIP_CALL( SCIPsetObjlimit(scip, gevGetDblOpt(gev, gevCutOff)) );
 #endif
-	
+
 	return SCIP_OKAY;
 }
 
 SCIP_RETCODE GamsScip::setupInitialBasis() {
 	assert(lpi != NULL);
-	
+
 	if (!gmoHaveBasis(gmo))
 		return SCIP_OKAY;
-	
+
 	int* cstat = new int[gmoN(gmo)];
 	int* rstat = new int[gmoM(gmo)];
 
 	gevLog(gev, "Setting initial basis.");
-	
+
 	int nbas = 0;
 	for (int j = 0; j < gmoN(gmo); ++j) {
-		switch (gmoGetVarBasOne(gmo, j)) {
-			case 0: // this seem to mean that variable should be basic
+#if GMOAPIVERSION >= 0
+		switch (gmoGetVarStatOne(gmo, j)) {
+			case Bstat_Basic:
+#else
+      switch (gmoGetVarBasOne(gmo, j)) {
+         case 0: // this seem to mean that variable should be basic
+#endif
 				if (nbas < gmoM(gmo)) {
 					cstat[j] = SCIP_BASESTAT_BASIC;
 					++nbas;
@@ -776,7 +796,13 @@ SCIP_RETCODE GamsScip::setupInitialBasis() {
 				else
 					cstat[j] = SCIP_BASESTAT_UPPER;
 				break;
+#if GMOAPIVERSION >= 8
+			case Bstat_Lower:
+			case Bstat_Upper:
+			case Bstat_Super:
+#else
 			case 1:
+#endif
 				if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
 					cstat[j] = SCIP_BASESTAT_ZERO;
 				else if (gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) || fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
@@ -793,15 +819,17 @@ SCIP_RETCODE GamsScip::setupInitialBasis() {
 	}
 
 	for (int j = 0; j< gmoM(gmo); ++j) {
-		switch (gmoGetEquBasOne(gmo, j)) {
-			case 0:
+		switch (gmoGetEquStatOne(gmo, j)) {
+			case Bstat_Basic:
 				if (nbas < gmoM(gmo)) {
 					rstat[j] = SCIP_BASESTAT_BASIC;
 					++nbas;
 				} else
 					rstat[j] = gmoGetEquTypeOne(gmo, j) == equ_L ? SCIP_BASESTAT_UPPER : SCIP_BASESTAT_LOWER;
 				break;
-			case 1:
+			case Bstat_Lower:
+			case Bstat_Upper:
+			case Bstat_Super:
 				rstat[j] = gmoGetEquTypeOne(gmo, j) == equ_L ? SCIP_BASESTAT_UPPER : SCIP_BASESTAT_LOWER;
 				break;
 			default:
@@ -811,7 +839,7 @@ SCIP_RETCODE GamsScip::setupInitialBasis() {
 				return SCIP_ERROR;
 		}
 	}
-	
+
 	SCIP_CALL( SCIPlpiSetBase(lpi, cstat, rstat) );
 	SCIP_CALL( SCIPlpiSetIntpar(lpi, SCIP_LPPAR_FROMSCRATCH, 0) );
 
@@ -823,41 +851,41 @@ SCIP_RETCODE GamsScip::setupInitialBasis() {
 
 SCIP_RETCODE GamsScip::setupStartPoint() {
 	assert(scip != NULL);
-	
+
 	SCIP_Bool mipstart;
 	SCIP_CALL( SCIPgetBoolParam(scip, "gams/mipstart", &mipstart) );
 	if (mipstart == FALSE)
 		return SCIP_OKAY;
-	
+
 	assert(SCIPgetStage(scip) >= SCIP_STAGE_TRANSFORMED);
-	
+
 	SCIP_SOL* sol;
 	SCIP_CALL( SCIPcreateOrigSol(scip, &sol, NULL) );
-	
+
 	double* vals;
 	SCIP_CALL( SCIPallocBufferArray(scip, &vals, gmoN(gmo)) );
 	gmoGetVarL(gmo, vals);
-	
+
 	SCIP_CALL( SCIPsetSolVals(scip, sol, gmoN(gmo), vars, vals) );
-	
+
 	SCIPfreeBufferArray(scip, &vals);
-	
+
 	SCIP_Bool stored;
 	SCIP_CALL( SCIPtrySolFree(scip, &sol, TRUE, TRUE, TRUE, &stored) );
-	
+
 	if (stored)
 		gevLog(gev, "Feasible initial solution used to initialize primal bound.");
-	
+
 	return SCIP_OKAY;
 }
 
 SCIP_RETCODE GamsScip::processLPSolution(double time) {
 	assert(lpi != NULL);
-	
+
 	SCIP_Bool primalfeasible = SCIPlpiIsPrimalFeasible(lpi);
 
 	gevLogPChar(gev, "\nSolution status: ");
-	
+
 	if (SCIPlpiIsPrimalUnbounded(lpi)) {
 		gmoSolveStatSet(gmo, SolveStat_Normal);
 		gmoModelStatSet(gmo, primalfeasible ? ModelStat_Unbounded : ModelStat_UnboundedNoSolution);
@@ -895,7 +923,7 @@ SCIP_RETCODE GamsScip::processLPSolution(double time) {
 	int iter;
 	SCIPlpiGetIterations(lpi, &iter);
 	gmoSetHeadnTail(gmo, Hiterused, iter);
-	
+
 	if (primalfeasible && gmoN(gmo)) {
 		double optval;
 		double* collev  = new double[gmoN(gmo)];
@@ -909,7 +937,7 @@ SCIP_RETCODE GamsScip::processLPSolution(double time) {
 
 		SCIPlpiGetSol(lpi, &optval, collev, rowmarg, rowlev, colmarg);
 		SCIPlpiGetBase(lpi, colbasstat, rowbasstat);
-		
+
 		for (int i = 0; i < gmoN(gmo); ++i) {
 //			if (gmoGetVarTypeOne(gmo, i) != var_X)
 //				colbasstat[i] = SMAG_BASSTAT_SUPERBASIC;
@@ -918,24 +946,24 @@ SCIP_RETCODE GamsScip::processLPSolution(double time) {
 				case SCIP_BASESTAT_LOWER: colbasstat[i] = Bstat_Lower; break;
 				case SCIP_BASESTAT_UPPER: colbasstat[i] = Bstat_Upper; break;
 				case SCIP_BASESTAT_BASIC: colbasstat[i] = Bstat_Basic; break;
-				case SCIP_BASESTAT_ZERO:  
+				case SCIP_BASESTAT_ZERO:
 				default:                  colbasstat[i] = Bstat_Super; break;
-			}			
+			}
 			colindic[i] = Cstat_OK;
 		}
-		
+
 		for (int i = 0; i < gmoM(gmo); ++i) {
 			switch(rowbasstat[i]) {
 				case SCIP_BASESTAT_LOWER: rowbasstat[i] = Bstat_Lower; break;
 				case SCIP_BASESTAT_UPPER: rowbasstat[i] = Bstat_Upper; break;
 				case SCIP_BASESTAT_BASIC: rowbasstat[i] = Bstat_Basic; break;
-				case SCIP_BASESTAT_ZERO:  
+				case SCIP_BASESTAT_ZERO:
 				default:                  rowbasstat[i] = Bstat_Super; break;
 			}
 			rowindic[i] = Cstat_OK;
 		}
-		
-		gmoSetHeadnTail(gmo, HobjVal, optval + gmoObjConst(gmo));
+
+		gmoSetHeadnTail(gmo, Hobjval, optval + gmoObjConst(gmo));
 		gmoSetSolution8(gmo, collev, colmarg, rowmarg, rowlev, colbasstat, colindic, rowbasstat, rowindic);
 
 		delete[] collev;
@@ -947,22 +975,22 @@ SCIP_RETCODE GamsScip::processLPSolution(double time) {
 		delete[] colindic;
 		delete[] rowindic;
 	} else if (gmoN(gmo) == 0) {
-		gmoSetHeadnTail(gmo, HobjVal, gmoObjConst(gmo));
-		
+		gmoSetHeadnTail(gmo, Hobjval, gmoObjConst(gmo));
+
 		double* rowmarg = new double[gmoM(gmo)];
 		memset(rowmarg, 0, gmoM(gmo)*sizeof(double));
 		gmoSetSolution2(gmo, rowmarg, rowmarg);
 		delete[] rowmarg;
 	}
 
-	gmoSetHeadnTail(gmo, HresUsed, time);
+	gmoSetHeadnTail(gmo, Hresused, time);
 
-	return SCIP_OKAY;	
+	return SCIP_OKAY;
 }
 
 SCIP_RETCODE GamsScip::processMIQCPSolution() {
 	assert(scip != NULL);
-	
+
 	int nrsol = SCIPgetNSols(scip);
 
 	switch (SCIPgetStatus(scip)) {
@@ -1012,27 +1040,27 @@ SCIP_RETCODE GamsScip::processMIQCPSolution() {
 			break;
 	}
 
-	// if the scip shell was used, the user might have done nasty things with the problem, so make sure that we do not crash here 
+	// if the scip shell was used, the user might have done nasty things with the problem, so make sure that we do not crash here
 	if (nrsol && gmoN(gmo) <= SCIPgetNOrigVars(scip)) {
 		SCIP_SOL* sol = SCIPgetBestSol(scip);
 		assert(sol != NULL);
-		
+
 		double* collev = new double[gmoN(gmo)];
 		double* lambda = new double[gmoM(gmo)];
 		memset(lambda, 0, gmoM(gmo)*sizeof(double));
-		
+
 		SCIP_CALL( SCIPgetSolVals(scip, sol, gmoN(gmo), vars, collev) );
 		gmoSetSolution2(gmo, collev, lambda);
-		
+
 		delete[] collev;
 		delete[] lambda;
-		
-		gmoSetHeadnTail(gmo, HobjVal, SCIPgetSolOrigObj(scip, sol));
+
+		gmoSetHeadnTail(gmo, Hobjval, SCIPgetSolOrigObj(scip, sol));
 	}
-	
+
 	gmoSetHeadnTail(gmo, Tmipbest, SCIPgetDualbound(scip));
 	gmoSetHeadnTail(gmo, Tmipnod,  (int)SCIPgetNNodes(scip));
-	gmoSetHeadnTail(gmo, HresUsed, SCIPgetSolvingTime(scip));
+	gmoSetHeadnTail(gmo, Hresused, SCIPgetSolvingTime(scip));
 
 	return SCIP_OKAY;
 }

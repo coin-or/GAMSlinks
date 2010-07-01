@@ -46,14 +46,6 @@ solvers="'dummy'"
 SMP=
 skiplist=
 if test @gamslinks_build_ipopt@ = 1 ; then
-  solvers="$solvers , 'Ipopt'"
-  SMP="$SMP SMP('Ipopt', 'LP') = yes;"
-  SMP="$SMP SMP('Ipopt', 'QCP') = yes;"
-  SMP="$SMP SMP('Ipopt', 'NLP') = yes;"
-  SMP="$SMP SMP('Ipopt', 'RMIP') = yes;"
-  SMP="$SMP SMP('Ipopt', 'RMIQCP') = yes;"
-  SMP="$SMP SMP('Ipopt', 'RMINLP') = yes;"
-
   solvers="$solvers , 'IpoptD'"
   SMP="$SMP SMP('IpoptD', 'LP') = yes;"
   SMP="$SMP SMP('IpoptD', 'QCP') = yes;"
@@ -63,19 +55,14 @@ if test @gamslinks_build_ipopt@ = 1 ; then
   SMP="$SMP SMP('IpoptD', 'RMINLP') = yes;"
 fi
 
-if test @gamslinks_build_glpk@ = 1 ; then
-  solvers="$solvers , 'Glpk'"
-  SMP="$SMP SMP('Glpk', 'LP') = yes;"
-  SMP="$SMP SMP('Glpk', 'MIP') = yes;"
-  SMP="$SMP SMP('Glpk', 'RMIP') = yes;"
-fi
+#if test @gamslinks_build_glpk@ = 1 ; then
+#  solvers="$solvers , 'Glpk'"
+#  SMP="$SMP SMP('Glpk', 'LP') = yes;"
+#  SMP="$SMP SMP('Glpk', 'MIP') = yes;"
+#  SMP="$SMP SMP('Glpk', 'RMIP') = yes;"
+#fi
 
 if test @gamslinks_build_cbc@ = 1 ; then
-  solvers="$solvers , 'Cbc'"
-  SMP="$SMP SMP('Cbc', 'LP') = yes;"
-  SMP="$SMP SMP('Cbc', 'MIP') = yes;"
-  SMP="$SMP SMP('Cbc', 'RMIP') = yes;"
-  
   solvers="$solvers , 'Cbcd'"
   SMP="$SMP SMP('Cbcd', 'LP') = yes;"
   SMP="$SMP SMP('Cbcd', 'MIP') = yes;"
@@ -83,17 +70,6 @@ if test @gamslinks_build_cbc@ = 1 ; then
 fi
 
 if test @gamslinks_build_bonmin@ = 1 ; then
-  solvers="$solvers , 'Bonmin'"
-  SMP="$SMP SMP('Bonmin', 'LP') = yes;"
-#  SMP="$SMP SMP('Bonmin', 'MIP') = yes;"
-  SMP="$SMP SMP('Bonmin', 'RMIP') = yes;"
-#  SMP="$SMP SMP('Bonmin', 'NLP') = yes;"
-  SMP="$SMP SMP('Bonmin', 'MINLP') = yes;"
-  SMP="$SMP SMP('Bonmin', 'RMINLP') = yes;"
-  SMP="$SMP SMP('Bonmin', 'QCP') = yes;"
-  SMP="$SMP SMP('Bonmin', 'MIQCP') = yes;"
-  SMP="$SMP SMP('Bonmin', 'RMIQCP') = yes;"
-
   solvers="$solvers , 'BonminD'"
   SMP="$SMP SMP('BonminD', 'LP') = yes;"
   SMP="$SMP SMP('BonminD', 'MIP') = yes;"
@@ -120,11 +96,6 @@ if test @gamslinks_build_couenne@ = 1 ; then
 fi
 
 if test @gamslinks_build_scip@ = 1 ; then
-  solvers="$solvers , 'Scip'"
-  SMP="$SMP SMP('Scip', 'LP') = yes;"
-  SMP="$SMP SMP('Scip', 'MIP') = yes;"
-  SMP="$SMP SMP('Scip', 'RMIP') = yes;"
-
   solvers="$solvers , 'ScipD'"
   SMP="$SMP SMP('ScipD', 'LP') = yes;"
   SMP="$SMP SMP('ScipD', 'MIP') = yes;"

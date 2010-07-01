@@ -16,6 +16,47 @@
 #include "GamsNLinstr.h"
 #include <stdlib.h>
 
+#if GMOAPIVERSION >= 8
+const char* GamsOpCodeName[MAXINS] = {
+   "nlNoOp",
+   "nlPushV",
+   "nlPushI",
+   "nlStore",
+   "nlAdd",
+   "nlAddV",
+   "nlAddI",
+   "nlSub",
+   "nlSubV",
+   "nlSubI",
+   "nlMul",
+   "nlMulV",
+   "nlMulI",
+   "nlDiv",
+   "nlDivV",
+   "nlDivI",
+   "nlUMin",
+   "nlUMinV",
+   "nlSwap",
+   "nlHeader",
+   "nlStoreS",
+   "nlEquScale",
+   "nlEnd",
+   "nlCallArg1",
+   "nlCallArg2",
+   "nlCallArgN",
+   "nlFuncArgN",
+   "nlPushS",
+   "nlPopup",
+   "nlArg",
+   "nlMulIAdd",
+   "nlPushZero",
+   "nlChk",
+   "nlAddO",
+   "nlPushO",
+   "nlInvoc",
+   "nlStackIn"
+};
+#else
 const char* GamsOpCodeName[MAXINS] = {
 	"nlNoOp",
 	"nlPushV",
@@ -80,6 +121,7 @@ const char* GamsOpCodeName[MAXINS] = {
 	"nlInvoc", 
 	"nlStackIn"
 };
+#endif
 
 /** Gives the opcode of a GAMS nonlinear instruction.
  */
@@ -96,6 +138,7 @@ int getInstrAddress(unsigned int instr) {
 	return (instr & 67108863)-1;
 }
 
+#if 0
 void swapInstr(unsigned int* instr, int len1, int len2) {
 	int moves = len1+len2;
 	int first = 0;
@@ -183,3 +226,4 @@ void reorderInstr(unsigned int* instr, int num_instr) {
 	
 	free(instrpos);
 }
+#endif

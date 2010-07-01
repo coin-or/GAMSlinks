@@ -472,7 +472,6 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subdirs_all="$ac_subdirs_all ThirdParty/GAMSIO"
 ac_subdirs_all="$ac_subdirs_all ThirdParty/Glpk"
 ac_subdirs_all="$ac_subdirs_all ThirdParty/Blas"
 ac_subdirs_all="$ac_subdirs_all ThirdParty/Lapack"
@@ -4190,7 +4189,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:4193:" \
+echo "$as_me:4192:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6449,7 +6448,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6452 "configure"' > conftest.$ac_ext
+  echo '#line 6451 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8413,11 +8412,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8416: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8415: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8420: \$? = $ac_status" >&5
+   echo "$as_me:8419: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8681,11 +8680,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8684: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8683: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8688: \$? = $ac_status" >&5
+   echo "$as_me:8687: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8785,11 +8784,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8788: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8787: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8792: \$? = $ac_status" >&5
+   echo "$as_me:8791: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11130,7 +11129,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11133 "configure"
+#line 11132 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11230,7 +11229,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11233 "configure"
+#line 11232 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13574,11 +13573,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13577: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13576: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13581: \$? = $ac_status" >&5
+   echo "$as_me:13580: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -13678,11 +13677,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13681: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13680: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13685: \$? = $ac_status" >&5
+   echo "$as_me:13684: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15248,11 +15247,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15251: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15250: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15255: \$? = $ac_status" >&5
+   echo "$as_me:15254: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15352,11 +15351,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15355: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15354: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15359: \$? = $ac_status" >&5
+   echo "$as_me:15358: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17559,11 +17558,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17562: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17561: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17566: \$? = $ac_status" >&5
+   echo "$as_me:17565: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17827,11 +17826,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17830: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17829: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17834: \$? = $ac_status" >&5
+   echo "$as_me:17833: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17931,11 +17930,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17934: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17933: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:17938: \$? = $ac_status" >&5
+   echo "$as_me:17937: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -20826,40 +20825,7 @@ LT_LDFLAGS=
 #             Check which ThirdParty sources are available                  #
 #############################################################################
 
-echo "$as_me:$LINENO: checking whether code for third party package GAMSIO is available" >&5
-echo $ECHO_N "checking whether code for third party package GAMSIO is available... $ECHO_C" >&6
-coin_skip=no
-if test x"$COIN_SKIP_PROJECTS" != x; then
-  for dir in $COIN_SKIP_PROJECTS; do
-    if test $dir = ThirdParty/GAMSIO; then
-      coin_skip=yes
-    fi
-  done
-fi
-if test $coin_skip = yes; then
-  echo "$as_me:$LINENO: result: skipping" >&5
-echo "${ECHO_T}skipping" >&6
-else
-  coin_tmp=`echo $srcdir/ThirdParty/GAMSIO/get.GAMSIO`
-  # There is probably a more elegant way to get the first thing out here...
-  for i in $coin_tmp; do
-    coin_tmp2=$i
-    #break 1
-  done
-  if test -r $coin_tmp2; then
-    coin_subdirs="$coin_subdirs ThirdParty/GAMSIO"
-    echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6
-
-
-subdirs="$subdirs ThirdParty/GAMSIO"
-
-  else
-    echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-  fi
-fi
-
+#AC_COIN_THIRDPARTY_SUBDIRS([GAMSIO],[ThirdParty/GAMSIO],[get.GAMSIO])
 echo "$as_me:$LINENO: checking whether code for third party package Glpk is available" >&5
 echo $ECHO_N "checking whether code for third party package Glpk is available... $ECHO_C" >&6
 coin_skip=no
