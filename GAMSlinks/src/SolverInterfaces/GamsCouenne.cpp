@@ -42,6 +42,12 @@
 #define GMS_SV_NA     2.0E300
 #endif
 
+#if GMOAPIVERSION < 8
+#define Hresused     HresUsed
+#define Hdomused     HdomUsed
+#define Hobjval      HobjVal
+#endif
+
 #include "GamsMINLP.hpp"
 #include "GamsJournal.hpp"
 #include "GamsMessageHandler.hpp"
@@ -386,11 +392,11 @@ int GamsCouenne::callSolver() {
 			memset(negLambda, 0, gmoM(gmo)*sizeof(double));
 			
 			gmoSetSolution2(gmo, bb.bestSolution(), negLambda);
-			gmoSetHeadnTail(gmo, HobjVal,   best_val);
+			gmoSetHeadnTail(gmo, Hobjval,   best_val);
 			
 			delete[] negLambda;
 		} else {
-         gmoSetHeadnTail(gmo, HobjVal,   gmoPinf(gmo));
+         gmoSetHeadnTail(gmo, Hobjval,   gmoPinf(gmo));
 			gevLogStat(gev, "\nCouenne finished. No feasible point found.");
 		}
 
@@ -398,8 +404,8 @@ int GamsCouenne::callSolver() {
 			gmoSetHeadnTail(gmo, Tmipbest, best_bound);
 		gmoSetHeadnTail(gmo, Tmipnod, bb.numNodes());
 		gmoSetHeadnTail(gmo, Hiterused, bb.iterationCount());
-		gmoSetHeadnTail(gmo, HresUsed,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
-		gmoSetHeadnTail(gmo, HdomUsed,  minlp->nlp->domviolations);
+		gmoSetHeadnTail(gmo, Hresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+		gmoSetHeadnTail(gmo, Hdomused,  minlp->nlp->domviolations);
 		gmoSolveStatSet(gmo, minlp->solver_status);
 		gmoModelStatSet(gmo, minlp->model_status);
 

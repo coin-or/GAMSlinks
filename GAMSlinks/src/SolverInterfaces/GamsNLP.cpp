@@ -41,6 +41,12 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 
+#if GMOAPIVERSION < 8
+#define Hresused     HresUsed
+#define Hdomused     HdomUsed
+#define Hobjval      HobjVal
+#endif
+
 using namespace Ipopt;
 
 GamsNLP::GamsNLP (gmoHandle_t gmo_)
@@ -547,8 +553,8 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
 
   if (data)
   	gmoSetHeadnTail(gmo, Hiterused, data->iter_count());
-	gmoSetHeadnTail(gmo, HresUsed, gevTimeDiffStart(gev) - clockStart);
-	gmoSetHeadnTail(gmo, HdomUsed, (double)domviolations);
+	gmoSetHeadnTail(gmo, Hresused, gevTimeDiffStart(gev) - clockStart);
+	gmoSetHeadnTail(gmo, Hdomused, (double)domviolations);
 
   if (write_solution) {
   	double* scaled_viol=NULL;
@@ -628,7 +634,7 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
     }
 
   	gmoSetSolution8(gmo, x, colMarg, negLambda, g, colBasStat, colIndic, rowBasStat, rowIndic);
-  	gmoSetHeadnTail(gmo, HobjVal, obj_value);
+  	gmoSetHeadnTail(gmo, Hobjval, obj_value);
 
 		delete[] scaled_viol;
   	delete[] compl_xL;

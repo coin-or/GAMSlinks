@@ -18,6 +18,11 @@
 #endif
 #endif
 
+#if GMOAPIVERSION < 8
+#define Hresused     HresUsed
+#define Hobjval      HobjVal
+#endif
+
 #include "CoinHelperFunctions.hpp"
 #include "CoinWarmStartBasis.hpp"
 #include "OsiSolverInterface.hpp"
@@ -231,7 +236,7 @@ bool gamsOsiStoreSolution(struct gmoRec* gmo, const OsiSolverInterface& solver, 
 		}
 	}
 
-	gmoSetHeadnTail(gmo, HobjVal, solver.getObjValue());
+	gmoSetHeadnTail(gmo, Hobjval, solver.getObjValue());
 	gmoSetSolution8(gmo, colLevel, colMargin, rowMargin, rowLevel, colBasis, dummy, rowBasis, dummy);
 
 	delete[] colBasis;

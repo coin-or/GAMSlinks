@@ -77,6 +77,12 @@ extern "C" {
 #define GMS_SV_NA     2.0E300
 #endif
 
+#if GMOAPIVERSION < 8
+#define Hresused     HresUsed
+#define Hdomused     HdomUsed
+#define Hobjval      HobjVal
+#endif
+
 #define ITERLIM_INFINITY 2000000000
 
 using namespace Bonmin;
@@ -403,8 +409,8 @@ int GamsBonmin::callSolver() {
 			gmoSolveStatSet(gmo, minlp->solver_status);
 			gmoModelStatSet(gmo, minlp->model_status);
 			gmoSetHeadnTail(gmo, Hiterused, bb.iterationCount());
-			gmoSetHeadnTail(gmo, HdomUsed,  minlp->nlp->domviolations);
-			gmoSetHeadnTail(gmo, HresUsed,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+			gmoSetHeadnTail(gmo, Hdomused,  minlp->nlp->domviolations);
+			gmoSetHeadnTail(gmo, Hresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
 		}
 
 		gevLogStat(gev, "");
@@ -475,10 +481,10 @@ void GamsBonmin::writeSolution(OsiTMINLPInterface& osi_tminlp, int itercount) {
   }
 
 	gmoSetSolution(gmo, osi_tminlp.getColSolution(), colMarg, negLambda, osi_tminlp.getRowActivity());
-	gmoSetHeadnTail(gmo, HobjVal,   isMin*osi_tminlp.getObjValue());
+	gmoSetHeadnTail(gmo, Hobjval,   isMin*osi_tminlp.getObjValue());
 	gmoSetHeadnTail(gmo, Hiterused, itercount);
-	gmoSetHeadnTail(gmo, HresUsed,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
-	gmoSetHeadnTail(gmo, HdomUsed,  minlp->nlp->domviolations);
+	gmoSetHeadnTail(gmo, Hresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+	gmoSetHeadnTail(gmo, Hdomused,  minlp->nlp->domviolations);
 
 	gmoModelStatSet(gmo, minlp->model_status);
 	gmoSolveStatSet(gmo, minlp->solver_status);
@@ -498,10 +504,10 @@ void GamsBonmin::writeSolutionNoDual(OsiTMINLPInterface& osi_tminlp, int itercou
 	memset(negLambda, 0, m*sizeof(double));
 
 	gmoSetSolution(gmo, osi_tminlp.getColSolution(), colMarg, negLambda, osi_tminlp.getRowActivity());
-	gmoSetHeadnTail(gmo, HobjVal,   isMin*osi_tminlp.getObjValue());
+	gmoSetHeadnTail(gmo, Hobjval,   isMin*osi_tminlp.getObjValue());
 	gmoSetHeadnTail(gmo, Hiterused, itercount);
-	gmoSetHeadnTail(gmo, HresUsed,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
-	gmoSetHeadnTail(gmo, HdomUsed,  minlp->nlp->domviolations);
+	gmoSetHeadnTail(gmo, Hresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+	gmoSetHeadnTail(gmo, Hdomused,  minlp->nlp->domviolations);
 
 	gmoModelStatSet(gmo, minlp->model_status);
 	gmoSolveStatSet(gmo, minlp->solver_status);
