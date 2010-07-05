@@ -596,6 +596,8 @@ void printBonminOptions() {
   			defaultval = "\\MYGAMS \\texttt{nodlim}";
   		else if ((*it_opt)->Name() == "time_limit")
   			defaultval = "\\MYGAMS \\texttt{reslim}";
+      else if ((*it_opt)->Name() == "iteration_limit")
+         defaultval = "\\MYGAMS \\texttt{iterlim}";
   		else if ((*it_opt)->Name() == "cutoff")
   			defaultval = "\\MYGAMS \\texttt{cutoff}";
   		  		

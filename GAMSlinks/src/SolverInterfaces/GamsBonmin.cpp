@@ -77,6 +77,8 @@ extern "C" {
 #define GMS_SV_NA     2.0E300
 #endif
 
+#define ITERLIM_INFINITY 2000000000
+
 using namespace Bonmin;
 using namespace Ipopt;
 
@@ -208,6 +210,8 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	if (gevGetIntOpt(gev, gevNodeLim))
 		bonmin_setup->options()->SetIntegerValue("bonmin.node_limit", gevGetIntOpt(gev, gevNodeLim), true, true);
 	bonmin_setup->options()->SetNumericValue("bonmin.time_limit", gevGetDblOpt(gev, gevResLim), true, true);
+	if (gevGetIntOpt(gev, gevIterLim) < ITERLIM_INFINITY)
+      bonmin_setup->options()->SetIntegerValue("bonmin.iteration_limit", gevGetIntOpt(gev, gevIterLim), true, true);
 
 	if (gmoNLM(gmo) == 0  && (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp))
 		bonmin_setup->options()->SetStringValue("hessian_constant", "yes", true, true);
