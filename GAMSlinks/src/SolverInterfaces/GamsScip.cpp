@@ -275,7 +275,11 @@ SCIP_RETCODE GamsScip::setupLPI() {
 	double* objcoefs = new double[gmoN(gmo)];
 	double* collb    = new double[gmoN(gmo)];
 	double* colub    = new double[gmoN(gmo)];
+#if GMOAPIVERSION >= 8
+	gmoGetObjVector(gmo, objcoefs, NULL);
+#else
 	gmoGetObjVector(gmo, objcoefs);
+#endif
 	gmoGetVarLower(gmo, collb);
 	gmoGetVarUpper(gmo, colub);
 	SCIP_CALL( SCIPlpiAddCols(lpi, gmoN(gmo), objcoefs, collb, colub, NULL, 0, NULL, NULL, NULL) );
@@ -454,7 +458,11 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 
 	if (gmoObjNLNZ(gmo) == 0) {
 		assert(gmoGetObjOrder(gmo) == order_L);
+#if GMOAPIVERSION >= 8
+		gmoGetObjVector(gmo, coefs, NULL);
+#else
 		gmoGetObjVector(gmo, coefs);
+#endif
 	} else
 		memset(coefs, 0, gmoN(gmo)*sizeof(double));
 	for (int i = 0; i < gmoN(gmo); ++i) {
@@ -646,7 +654,11 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 		SCIP_CALL( SCIPcreateVar(scip, &objvar, "xobj", -SCIPinfinity(scip), SCIPinfinity(scip), 1.0, SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL) );
 		SCIP_CALL( SCIPaddVar(scip, objvar) );
 
+#if GMOAPIVERSION >= 8
+		gmoGetObjVector(gmo, coefs, NULL);
+#else
 		gmoGetObjVector(gmo, coefs);
+#endif
 		nz = 0;
 		for (int j = 0; j < gmoN(gmo); ++j)
 			if (coefs[j]) {

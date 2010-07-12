@@ -46,7 +46,11 @@ bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 
 	// objective
 	double* objcoeff = new double[gmoN(gmo)];
+#if GMOAPIVERSION >= 8
+	gmoGetObjVector(gmo, objcoeff, NULL);
+#else
 	gmoGetObjVector(gmo, objcoeff);
+#endif
 	solver.setDblParam(OsiObjOffset, -gmoObjConst(gmo)); // strange, but cbc seem to wanna have the constant with different sign
 //	printf("obj constant: %g\n", gmoObjConst(gmo));
 
@@ -146,7 +150,7 @@ bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 			}
 		}
 	}
-	
+
 	char inputname[1024];
 	gmoNameInput(gmo, inputname);
 	solver.setStrParam(OsiProbName, inputname);
@@ -161,17 +165,17 @@ bool gamsOsiStoreSolution(struct gmoRec* gmo, const OsiSolverInterface& solver, 
 	const double* colMargin = solver.getReducedCost();
 	const double* rowLevel  = solver.getRowActivity();
 	const double* rowMargin = solver.getRowPrice();
-	
+
 	assert(!gmoN(gmo) || colLevel);
 	assert(!gmoN(gmo) || colMargin);
 	assert(!gmoM(gmo) || rowLevel);
 	assert(!gmoM(gmo) || rowMargin);
-	
+
 	int* colBasis = new int[solver.getNumCols()];
 	int* rowBasis = new int[solver.getNumRows()];
 	int* dummy    = CoinCopyOfArray((int*)NULL, CoinMax(gmoN(gmo), gmoM(gmo)), 0);
 	double dummy2;
-	
+
 	// workaround for gmo if there are not rows (or columns)
 	if (!gmoN(gmo)) {
 		colLevel  = &dummy2;
