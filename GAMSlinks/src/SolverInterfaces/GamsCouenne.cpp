@@ -1230,9 +1230,11 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 				if (debugoutput) std::clog << "push constant zero" << std::endl;
 				exp = new exprConst(0.);
 			} break;
+#if GMOAPIVERSION < 8
 			case nlStoreS: { // store scaled row
 				if (debugoutput) std::clog << "ignored" << std::endl;
 			} break;
+#endif
 			default: {
 				char buffer[256];
 				sprintf(buffer, "Gams instruction %d not supported.", opcode);

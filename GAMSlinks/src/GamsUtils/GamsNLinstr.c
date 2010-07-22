@@ -38,8 +38,6 @@ const char* GamsOpCodeName[MAXINS] = {
    "nlUMinV",
    "nlSwap",
    "nlHeader",
-   "nlStoreS",
-   "nlEquScale",
    "nlEnd",
    "nlCallArg1",
    "nlCallArg2",

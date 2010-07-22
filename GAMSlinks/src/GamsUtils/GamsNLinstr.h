@@ -46,24 +46,22 @@ typedef enum GamsOpCode_ {
 	nlUMinV    = 17, /* unary minus variable */
 	nlSwap     = 18, /* swap two positions on stack top */
 	nlHeader   = 19, /* header */
-	nlStoreS   = 20, /* store scaled row */
-	nlEquScale = 21, /* equation scale */
-	nlEnd      = 22, /* end of instruction list */
-	nlCallArg1 = 23,
-	nlCallArg2 = 24,
-	nlCallArgN = 25,
-	nlFuncArgN = 26,
-	nlPushS    = 27,
-	nlPopup    = 28,
-	nlArg      = 29,
-	nlMulIAdd  = 30,
-	nlPushZero = 31,
-	nlChk      = 32, 
-	nlAddO     = 33, 
-	nlPushO    = 34,
-	nlInvoc    = 35, 
-	nlStackIn  = 36,
-	MAXINS     = 37
+	nlEnd      = 20, /* end of instruction list */
+	nlCallArg1 = 21,
+	nlCallArg2 = 22,
+	nlCallArgN = 23,
+	nlFuncArgN = 24,
+	nlPushS    = 25,
+	nlPopup    = 26,
+	nlArg      = 27,
+	nlMulIAdd  = 28,
+	nlPushZero = 29,
+	nlChk      = 30, 
+	nlAddO     = 31, 
+	nlPushO    = 32,
+	nlInvoc    = 33, 
+	nlStackIn  = 34,
+	MAXINS     = 35
 } GamsOpCode;
 #else
 /** The opcodes of GAMS nonlinear expressions.

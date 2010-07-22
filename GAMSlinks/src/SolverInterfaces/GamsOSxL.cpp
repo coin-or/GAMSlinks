@@ -703,9 +703,11 @@ OSnLNode* GamsOSxL::parseGamsInstructions(int codelen, int* opcodes, int* fields
 				if (debugoutput) std::clog << "push constant zero" << std::endl;
 				nlNodeVec.push_back( new OSnLNodeNumber() );
 			} break;
+#if GMOAPIVERSION < 8
 			case nlStoreS: { // store scaled row
 				if (debugoutput) std::clog << "ignored" << std::endl;
 			} break;
+#endif
 			default: {
 				std::cerr << "GAMS instruction " << opcode << "not supported - Error." << std::endl;
 				return NULL;
