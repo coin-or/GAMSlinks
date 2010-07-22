@@ -40,6 +40,8 @@
 
 #include "OsiSolverInterface.hpp"
 #include "CoinPackedVector.hpp"
+#include "CoinHelperFunctions.hpp"
+#include "CoinWarmStartBasis.hpp"
 
 #if COIN_HAS_CLP
 #include "OsiClpSolverInterface.hpp"
