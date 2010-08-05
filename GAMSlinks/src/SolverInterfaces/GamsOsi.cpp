@@ -443,17 +443,17 @@ int GamsOsi::callSolver() {
 	double end_cputime  = CoinCpuTime();
 	double end_walltime = CoinWallclockTime();
 
-#ifdef COIN_HAS_GLPK
-  if (solverid == GLPK)
-    glp_term_hook(NULL, NULL);
-#endif
-
 	gevLogStat(gev, "");
 	bool solwritten;
 	writeSolution(end_cputime - start_cputime, end_walltime - start_walltime, solwritten);
 
 	if (!isLP() && gevGetIntOpt(gev, gevInteger1) && solwritten)
 		solveFixed();
+
+#ifdef COIN_HAS_GLPK
+  if (solverid == GLPK)
+    glp_term_hook(NULL, NULL);
+#endif
 
 	return 0;
 }
