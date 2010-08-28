@@ -36,16 +36,12 @@ const char* GamsOpCodeName[MAXINS] = {
    "nlDivI",
    "nlUMin",
    "nlUMinV",
-   "nlSwap",
    "nlHeader",
    "nlEnd",
    "nlCallArg1",
    "nlCallArg2",
    "nlCallArgN",
    "nlFuncArgN",
-   "nlPushS",
-   "nlPopup",
-   "nlArg",
    "nlMulIAdd",
    "nlPushZero",
    "nlChk",
@@ -100,23 +96,23 @@ const char* GamsOpCodeName[MAXINS] = {
 	"nlMulPop1",
 	"nlMulPop2",
 	"nlMulPop",
-	"nlAddPop", 
-	"nlSubPop", 
-	"nlGetConst", 
-	"nlMulConst1", 
-	"nlMulConst2", 
-	"nlMulConst", 
-	"nlNegLocal", 
-	"nlGetLocal", 
-	"nlSetLocal1", 
-	"nlSetLocal2", 
-	"nlSetLocal", 
-	"nlGetGrad", 
-	"nlPushIGrad", 
-	"nlChk", 
-	"nlAddO", 
+	"nlAddPop",
+	"nlSubPop",
+	"nlGetConst",
+	"nlMulConst1",
+	"nlMulConst2",
+	"nlMulConst",
+	"nlNegLocal",
+	"nlGetLocal",
+	"nlSetLocal1",
+	"nlSetLocal2",
+	"nlSetLocal",
+	"nlGetGrad",
+	"nlPushIGrad",
+	"nlChk",
+	"nlAddO",
 	"nlPushO",
-	"nlInvoc", 
+	"nlInvoc",
 	"nlStackIn"
 };
 #endif
@@ -141,7 +137,7 @@ void swapInstr(unsigned int* instr, int len1, int len2) {
 	int moves = len1+len2;
 	int first = 0;
 	unsigned int tmp, dest, source;
-	
+
 	do {
 		++first;
 		tmp = instr[first];
@@ -221,7 +217,7 @@ void reorderInstr(unsigned int* instr, int num_instr) {
 		}
 		instrpos[stacklen] = k;
 	}
-	
+
 	free(instrpos);
 }
 #endif

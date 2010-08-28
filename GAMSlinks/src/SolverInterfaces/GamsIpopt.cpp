@@ -173,7 +173,11 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	if (hess_approx == "exact") {
 		int do2dir = 1;
 		int dohess = 1;
-		gmoHessLoad(gmo, 0, -1, &do2dir, &dohess); // TODO make "-1" a parameter (like rvhess in CONOPT)
+#if GMOAPIVERSION >= 8
+		gmoHessLoad(gmo, 0, &do2dir, &dohess); // TODO make "0" a parameter (like rvhess in CONOPT)
+#else
+      gmoHessLoad(gmo, 0, -1, &do2dir, &dohess); // TODO make "0" a parameter (like rvhess in CONOPT)
+#endif
 		if (!dohess) {
 			gevLogStat(gev, "Failed to initialize Hessian structure. We continue with a limited-memory Hessian approximation!");
 			ipopt->Options()->SetStringValue("hessian_approximation", "limited-memory");

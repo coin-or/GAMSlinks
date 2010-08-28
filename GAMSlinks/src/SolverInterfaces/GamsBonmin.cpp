@@ -291,7 +291,11 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	if (parvalue == "exact") {
 		int do2dir = 1;
 		int dohess = 1;
-		gmoHessLoad(gmo, 0, -1, &do2dir, &dohess); // TODO make "-1" a parameter (like rvhess in CONOPT)
+#if GMOAPIVERSION >= 8
+		gmoHessLoad(gmo, 0, &do2dir, &dohess); // TODO make "0" a parameter (like rvhess in CONOPT)
+#else
+      gmoHessLoad(gmo, 0, -1, &do2dir, &dohess); // TODO make "0" a parameter (like rvhess in CONOPT)
+#endif
 		if (!dohess) { // TODO make "-1" a parameter (like rvhess in CONOPT)
 			gevLogStat(gev, "Failed to initialize Hessian structure. We continue with a limited-memory Hessian approximation!");
 			bonmin_setup->options()->SetStringValue("hessian_approximation", "limited-memory");

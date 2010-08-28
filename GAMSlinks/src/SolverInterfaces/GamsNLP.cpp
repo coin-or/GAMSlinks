@@ -321,29 +321,29 @@ bool GamsNLP::eval_grad_f (Index n, const Number* x, bool new_x, Number* grad_f)
 }
 
 bool GamsNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
-	assert(n == gmoN(gmo));
-	assert(m == gmoM(gmo));
+  assert(n == gmoN(gmo));
+  assert(m == gmoM(gmo));
 
-	if (new_x)
-		gmoEvalNewPoint(gmo, x);
+  if (new_x)
+    gmoEvalNewPoint(gmo, x);
 
   int nerror;
   for (int i = 0; i < m; ++i) {
-		nerror = gmoEvalFunc(gmo, i, x, &g[i]);
-	  if (EvalRCSYSTEM == nerror) {
-			char buffer[255];
-	  	sprintf(buffer, "Error detected in evaluation of constraint %d!\nnerror = %d\nExiting from subroutine - eval_g\n", i, nerror);
-			gevLogStatPChar(gev, buffer);
-	    throw -1;
-	  }
-	  if (nerror > 0) {
-			++domviolations;
-			return false;
-		}
+    nerror = gmoEvalFunc(gmo, i, x, &g[i]);
+    if (EvalRCSYSTEM == nerror) {
+      char buffer[255];
+      sprintf(buffer, "Error detected in evaluation of constraint %d!\nnerror = %d\nExiting from subroutine - eval_g\n", i, nerror);
+      gevLogStatPChar(gev, buffer);
+      throw -1;
+    }
+    if (nerror > 0) {
+      ++domviolations;
+      return false;
+    }
   }
 
   return true;
-}
+} // GamsNLP::eval_g
 
 bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index nele_jac, Index *iRow, Index *jCol, Number *values) {
 	assert(n == gmoN(gmo));
@@ -419,9 +419,9 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
 }
 
 bool GamsNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor, Index m, const Number *lambda, bool new_lambda, Index nele_hess, Index *iRow, Index *jCol, Number *values) {
-	assert(n == gmoN(gmo));
-	assert(m == gmoM(gmo));
-	assert(nele_hess == gmoHessLagNz(gmo));
+  assert(n == gmoN(gmo));
+  assert(m == gmoM(gmo));
+  assert(nele_hess == gmoHessLagNz(gmo));
 
   if (values == NULL) { // return the structure. This is a symmetric matrix, fill the lower left triangle only.
     assert(NULL == x);
@@ -431,30 +431,39 @@ bool GamsNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor, In
 
     gmoHessLagStruct(gmo, iRow, jCol);
 
-  } else { // return the values. This is a symmetric matrix, fill the lower left triangle only.
+  }
+  else { // return the values. This is a symmetric matrix, fill the lower left triangle only.
     assert(NULL != x);
     assert(NULL != lambda);
     assert(NULL == iRow);
     assert(NULL == jCol);
 
-  	if (new_x)
-  		gmoEvalNewPoint(gmo, x);
+    if (new_x)
+      gmoEvalNewPoint(gmo, x);
 
-  	// for GAMS lambda would need to be multiplied by -1, we do this via the constraint weight
-    int nerror = gmoHessLagValue(gmo, const_cast<double*>(x), const_cast<double*>(lambda), values, obj_factor, -1.);
-    if (nerror < 0) {
-			char buffer[255];
-	  	sprintf(buffer, "Error detected in evaluation of Hessian!\nnerror = %d\nExiting from subroutine - eval_h\n", nerror);
-			gevLogStatPChar(gev, buffer);
-			throw -1;
-    } else if (nerror > 0) {
-			++domviolations;
+    // for GAMS lambda would need to be multiplied by -1, we do this via the constraint weight
+    int nerror;
+    int irc;
+#if GMOAPIVERSION >= 8
+    irc = gmoHessLagValue(gmo, const_cast<double*>(x), const_cast<double*>(lambda), values, obj_factor, -1., &nerror);
+#else
+    nerror = gmoHessLagValue(gmo, const_cast<double*>(x), const_cast<double*>(lambda), values, obj_factor, -1.);
+    irc = nerror < 0 ? nerror : 0;
+#endif
+    if (irc) {
+      char buffer[256];
+      sprintf(buffer, "Error detected in evaluation of Hessian!\nrc = %d\nExiting from subroutine - eval_h\n", irc);
+      gevLogStatPChar(gev, buffer);
+      throw -1;
+    }
+    else if (0 != nerror) {
+      ++domviolations;
       return false;
     }
   }
 
   return true;
-}
+} // GamsNLP::eval_h
 
 bool GamsNLP::intermediate_callback(AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq) {
 	if (domviollimit && domviolations >= domviollimit) return false;

@@ -130,18 +130,18 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1;
 
 	if (getGevReady())
-		return 1; 
+		return 1;
 	gev = (gevRec*)gmoEnvironment(gmo);
-	
+
 #ifdef GAMS_BUILD
 	char buffer[256];
-#include "coinlibdCL2svn.h" 
+#include "coinlibdCL2svn.h"
 	auditGetLine(buffer, sizeof(buffer));
 	gevLogStat(gev, "");
 	gevLogStat(gev, buffer);
 	gevStatAudit(gev, buffer);
 #endif
-	
+
 	gevLogStat(gev, "");
 	gevLogStatPChar(gev, getWelcomeMessage());
 
@@ -154,7 +154,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
  		gamscbc = new GamsCbc();
  		return gamscbc->readyAPI(gmo, opt);
  	}
- 	
+
  	if (!gmoN(gmo)) {
  		gevLogStat(gev, "Error: Bonmin requires variables.");
  		return 1;
@@ -172,7 +172,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 			gevLogStat(gev, "Error: Semicontinuous and semiinteger variables not supported by Couenne.");
 			return 1;
 		}
- 
+
   minlp = new GamsMINLP(gmo);
   minlp->in_couenne = true;
 
@@ -181,17 +181,17 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	jrnl->SetPrintLevel(J_DBG, J_NONE);
 	if (!jnlst->AddJournal(jrnl))
 		gevLogStat(gev, "Failed to register GamsJournal for IPOPT output.");
-	
+
 	roptions = new Bonmin::RegisteredOptions();
 	options = new Ipopt::OptionsList(GetRawPtr(roptions), jnlst);
-	
+
 	CouenneSetup::registerAllOptions(roptions);
 	roptions->SetRegisteringCategory("Linear Solver", Bonmin::RegisteredOptions::IpoptCategory);
 #ifdef HAVE_HSL_LOADER
 	// add option to specify path to hsl library
   roptions->AddStringOption1("hsl_library", // name
 			"path and filename of HSL library for dynamic load",  // short description
-			"", // default value 
+			"", // default value
 			"*", // setting1
 			"path (incl. filename) of HSL library", // description1
 			"Specify the path to a library that contains HSL routines and can be load via dynamic linking. "
@@ -202,7 +202,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	// add option to specify path to pardiso library
   roptions->AddStringOption1("pardiso_library", // name
 			"path and filename of Pardiso library for dynamic load",  // short description
-			"", // default value 
+			"", // default value
 			"*", // setting1
 			"path (incl. filename) of Pardiso library", // description1
 			"Specify the path to a Pardiso library that and can be load via dynamic linking. "
@@ -214,16 +214,16 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	options->SetNumericValue("bound_relax_factor", 1e-10, true, true);
 #if GMOAPIVERSION >= 7
   if (gevGetIntOpt(gev, gevUseCutOff))
-  	options->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == Obj_Min ? gevGetDblOpt(gev, gevCutOff) : -gevGetDblOpt(gev, gevCutOff), true, true); 
+  	options->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == Obj_Min ? gevGetDblOpt(gev, gevCutOff) : -gevGetDblOpt(gev, gevCutOff), true, true);
 #endif
-  options->SetNumericValue("bonmin.allowable_gap", gevGetDblOpt(gev, gevOptCA), true, true); 
- 	options->SetNumericValue("bonmin.allowable_fraction_gap", gevGetDblOpt(gev, gevOptCR), true, true); 
+  options->SetNumericValue("bonmin.allowable_gap", gevGetDblOpt(gev, gevOptCA), true, true);
+ 	options->SetNumericValue("bonmin.allowable_fraction_gap", gevGetDblOpt(gev, gevOptCR), true, true);
  	if (gevGetIntOpt(gev, gevNodeLim))
- 		options->SetIntegerValue("bonmin.node_limit", gevGetIntOpt(gev, gevNodeLim), true, true); 
- 	options->SetNumericValue("bonmin.time_limit", gevGetDblOpt(gev, gevResLim), true, true); 
- 	options->SetIntegerValue("bonmin.problem_print_level", J_STRONGWARNING, true, true); /* otherwise Couenne prints the problem to stdout */ 
+ 		options->SetIntegerValue("bonmin.node_limit", gevGetIntOpt(gev, gevNodeLim), true, true);
+ 	options->SetNumericValue("bonmin.time_limit", gevGetDblOpt(gev, gevResLim), true, true);
+ 	options->SetIntegerValue("bonmin.problem_print_level", J_STRONGWARNING, true, true); /* otherwise Couenne prints the problem to stdout */
 
-  // workaround for bug in couenne reformulation: if there are tiny constants, delete_redundant might setup a nonstandard reformulation (e.g., using x*x instead of x^2) 
+  // workaround for bug in couenne reformulation: if there are tiny constants, delete_redundant might setup a nonstandard reformulation (e.g., using x*x instead of x^2)
   // thus, we change the default of delete_redundant to off in this case
   bool havetinyconst = false;
 	int constantlen = gmoNLConst(gmo);
@@ -238,7 +238,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 	if (gmoNLM(gmo) == 0  && (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp))
 		options->SetStringValue("hessian_constant", "yes", true, true);
-	
+
   double ipoptinf;
  	options->GetNumericValue("nlp_lower_bound_inf", ipoptinf, "");
  	options->SetNumericValue("nlp_lower_bound_inf", ipoptinf, false, true); /* to disallow clobber */
@@ -254,14 +254,14 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 int GamsCouenne::callSolver() {
 	assert(gmo);
-	
+
  	if (isMIP()) {
  		assert(gamscbc);
  		return gamscbc->callSolver();
  	}
- 	
+
 	char buffer[1024];
-	
+
  	CouenneProblem* problem;
 #if GMOAPIVERSION >= 7
  	if( !(gevGetIntOpt(gev, gevInteger1) & 0x1) )
@@ -281,14 +281,14 @@ int GamsCouenne::callSolver() {
  	}
  	if( gevGetIntOpt(gev, gevInteger1) & 0x2 )
  		problem->print();
-	
+
 	try {
 		Bab bb;
 		bb.setUsingCouenne(true);
-		
+
 		CouenneSetup couenne;
 		couenne.setOptionsAndJournalist(roptions, options, jnlst);
-		
+
 		if (gmoOptFile(gmo)) {
 			options->SetStringValue("print_user_options", "yes", true, true);
 			gmoNameOptFile(gmo, buffer);
@@ -296,7 +296,7 @@ int GamsCouenne::callSolver() {
 		} else // need to call readOptionsFile so that Couenne does not try reading couenne.opt later
 			couenne.BabSetupBase::readOptionsFile("");
 	   problem->initOptions(options);
-		
+
 		std::string libpath;
 #ifdef HAVE_HSL_LOADER
 		if (options->GetStringValue("hsl_library", libpath, "")) {
@@ -327,13 +327,17 @@ int GamsCouenne::callSolver() {
 		if (s == "exact") {
 			int do2dir = 1;
 			int dohess = 1;
-			gmoHessLoad(gmo, 0, -1, &do2dir, &dohess); // TODO make "-1" a parameter (like rvhess in CONOPT)
+#if GMOAPIVERSION >= 8
+			gmoHessLoad(gmo, 0, &do2dir, &dohess); // TODO make "0" a parameter (like rvhess in CONOPT)
+#else
+         gmoHessLoad(gmo, 0, -1, &do2dir, &dohess); // TODO make "0" a parameter (like rvhess in CONOPT)
+#endif
 			if (!dohess) { // TODO make "-1" a parameter (like rvhess in CONOPT)
 				gevLogStat(gev, "Failed to initialize Hessian structure. We continue with a limited-memory Hessian approximation!");
 				options->SetStringValue("hessian_approximation", "limited-memory");
 		  }
 		}
-		
+
 
 		options->GetStringValue("lp_solver", s, "");
 		if (s == "cplex") {
@@ -358,12 +362,12 @@ int GamsCouenne::callSolver() {
 			gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
 			return 0;
 		}
-		
+
 		double preprocessTime = gevTimeDiffStart(gev) - minlp->nlp->clockStart;
-		
+
 		snprintf(buffer, 1024, "Couenne initialized (%g seconds).", preprocessTime);
 		gevLogStat(gev, buffer);
-		
+
 		double reslim = gevGetDblOpt(gev, gevResLim);
 		if (preprocessTime >= reslim) {
 			gevLogStat(gev, "Time is up.\n");
@@ -371,12 +375,12 @@ int GamsCouenne::callSolver() {
 			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 			return 0;
 		}
-		
+
 		options->SetNumericValue("bonmin.time_limit", reslim - preprocessTime, true, true);
     couenne.setDoubleParameter(BabSetupBase::MaxTime, reslim - preprocessTime);
-				
+
 		bb(couenne); // do branch and bound
-		
+
 		double best_val = bb.model().getObjValue();
 		double best_bound = bb.model().getBestPossibleObjValue();
 		if (gmoSense(gmo) == Obj_Max) {
@@ -390,10 +394,10 @@ int GamsCouenne::callSolver() {
 
 			double* negLambda = new double[gmoM(gmo)];
 			memset(negLambda, 0, gmoM(gmo)*sizeof(double));
-			
+
 			gmoSetSolution2(gmo, bb.bestSolution(), negLambda);
 			gmoSetHeadnTail(gmo, Hobjval,   best_val);
-			
+
 			delete[] negLambda;
 		} else {
          gmoSetHeadnTail(gmo, Hobjval,   gmoPinf(gmo));
@@ -423,7 +427,7 @@ int GamsCouenne::callSolver() {
 				gevLogStat(gev, buffer);
 			}
 		}
-		
+
 	} catch (IpoptException error) {
 		gevLogStat(gev, error.Message().c_str());
 		gmoSolveStatSet(gmo, SolveStat_SolverErr);
@@ -452,7 +456,7 @@ int GamsCouenne::callSolver() {
 		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		return -1;
 	}
-	
+
 	return 0;
 }
 
@@ -462,7 +466,7 @@ bool GamsCouenne::isMIP() {
 
 CouenneProblem* GamsCouenne::setupProblem() {
 	CouenneProblem* prob = new CouenneProblem(NULL, NULL, jnlst);
-	
+
 	//add variables
 	for (int i = 0; i < gmoN(gmo); ++i) {
 		switch (gmoGetVarTypeOne(gmo, i)) {
@@ -487,16 +491,16 @@ CouenneProblem* GamsCouenne::setupProblem() {
 		  	return NULL;
 		}
 	}
-	
+
 	// add variable bounds and initial values
 	CouNumber* x_ = new CouNumber[gmoN(gmo)];
 	CouNumber* lb = new CouNumber[gmoN(gmo)];
 	CouNumber* ub = new CouNumber[gmoN(gmo)];
-	
+
 	gmoGetVarL(gmo, x_);
 	gmoGetVarLower(gmo, lb);
 	gmoGetVarUpper(gmo, ub);
-	
+
 	// translate from gmoM/Pinf to Couenne infinity
 	for (int i = 0; i < gmoN(gmo); ++i)	{
 		if (lb[i] <= gmoMinf(gmo))
@@ -504,20 +508,20 @@ CouenneProblem* GamsCouenne::setupProblem() {
 		if (ub[i] >= gmoPinf(gmo))
 			ub[i] =  COUENNE_INFINITY;
 	}
-	
+
 	prob->domain()->push(gmoN(gmo), x_, lb, ub);
-	
+
 	delete[] x_;
 	delete[] lb;
 	delete[] ub;
-	
+
 
 	int* opcodes = new int[gmoMaxSingleFNL(gmo)+1];
 	int* fields  = new int[gmoMaxSingleFNL(gmo)+1];
 	int constantlen = gmoNLConst(gmo);
 	double* constants = (double*)gmoPPool(gmo); //new double[gmoNLConst(gmo)];
 	int codelen;
-	
+
 //	memcpy(constants, gmoPPool(gmo), constantlen*sizeof(double));
 //	for (int i = 0; i < constantlen; ++i)
 //		if (fabs(constants[i]) < COUENNE_EPS)
@@ -528,14 +532,14 @@ CouenneProblem* GamsCouenne::setupProblem() {
 
 	// add objective function: first linear part, then nonlinear
 	double isMin = (gmoSense(gmo) == Obj_Min) ? 1 : -1;
-	
+
 	lin.reserve(gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
-	
+
 	int* colidx = new int[gmoObjNZ(gmo)];
 	double* val = new double[gmoObjNZ(gmo)];
 	int* nlflag = new int[gmoObjNZ(gmo)];
 	int dummy;
-	
+
 	if (gmoObjNZ(gmo)) nlflag[0] = 0; // workaround for gmo bug
 	gmoGetObjSparse(gmo, colidx, val, nlflag, &dummy, &dummy);
 	for (int i = 0; i < gmoObjNZ(gmo); ++i) {
@@ -548,10 +552,10 @@ CouenneProblem* GamsCouenne::setupProblem() {
 	delete[] colidx;
 	delete[] val;
 	delete[] nlflag;
-		
+
 	if (gmoObjNLNZ(gmo)) {
 		gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
-		
+
 		expression** nl = new expression*[1];
 		nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
 		if (!nl[0])
@@ -564,20 +568,20 @@ CouenneProblem* GamsCouenne::setupProblem() {
 		} else if (objjacval != -1.) { // scale by -1/objjacval
 			nl[0] = new exprMul(nl[0], new exprConst(-1/objjacval));
 		}
-		
+
 		body = new exprGroup(isMin*gmoObjConst(gmo), lin, nl, 1);
 	} else {
-		body = new exprGroup(isMin*gmoObjConst(gmo), lin, NULL, 0);			
+		body = new exprGroup(isMin*gmoObjConst(gmo), lin, NULL, 0);
 	}
-	
+
 	prob->addObjective(body, "min");
-	
+
 	int nz = gmoNZ(gmo);
 	double* values  = new double[nz];
 	int* rowstarts  = new int[gmoM(gmo)+1];
 	int* colindexes = new int[nz];
 	int* nlflags    = new int[nz];
-	
+
 	gmoGetMatrixRow(gmo, rowstarts, colindexes, values, nlflags);
 	rowstarts[gmoM(gmo)] = nz;
 
@@ -601,9 +605,9 @@ CouenneProblem* GamsCouenne::setupProblem() {
 				return NULL;
 			body = new exprGroup(0., lin, nl, 1);
 		} else {
-			body = new exprGroup(0., lin, NULL, 0);			
+			body = new exprGroup(0., lin, NULL, 0);
 		}
-		
+
 		switch (gmoGetEquTypeOne(gmo, i)) {
 			case equ_E:
 				prob->addEQConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
@@ -620,7 +624,7 @@ CouenneProblem* GamsCouenne::setupProblem() {
 				break;
 		}
 	}
-	
+
 	delete[] opcodes;
 	delete[] fields;
 	delete[] values;
@@ -628,35 +632,35 @@ CouenneProblem* GamsCouenne::setupProblem() {
 	delete[] colindexes;
 	delete[] nlflags;
 //	delete[] constants;
-	
+
 	return prob;
 }
 
 CouenneProblem* GamsCouenne::setupProblemNew() {
 	CouenneProblem* prob = new CouenneProblem(NULL, NULL, jnlst);
-	
+
 	if (gmoQMaker(gmo, 0.5) < 0) { // negative number is error; positive number is number of nonquadratic nonlinear equations
 		gevLogStat(gev, "ERROR: Problems extracting information on quadratic functions in GMO.");
 		return NULL;
 	}
-	
+
 	int nz, nlnz;
 
 	double* lincoefs  = new double[gmoN(gmo)];
 	int*    lincolidx = new int[gmoN(gmo)];
 	int*    nlflag    = new int[gmoN(gmo)];
-	
+
 	double* quadcoefs = new double[gmoMaxQnz(gmo)];
 	int* qrow =  new int[gmoMaxQnz(gmo)];
 	int* qcol =  new int[gmoMaxQnz(gmo)];
 	int qnz, qdiagnz;
-	
+
 	int* opcodes = new int[gmoMaxSingleFNL(gmo)+1];
 	int* fields  = new int[gmoMaxSingleFNL(gmo)+1];
 	int constantlen = gmoNLConst(gmo);
 	double* constants = (double*)gmoPPool(gmo); //new double[gmoNLConst(gmo)];
 	int codelen;
-	
+
 	//	memcpy(constants, gmoPPool(gmo), constantlen*sizeof(double));
 	//	for (int i = 0; i < constantlen; ++i)
 	//		if (fabs(constants[i]) < COUENNE_EPS)
@@ -689,16 +693,16 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 		  	return NULL;
 		}
 	}
-	
+
 	// add variable bounds and initial values
 	CouNumber* x_ = new CouNumber[gmoN(gmo)];
 	CouNumber* lb = new CouNumber[gmoN(gmo)];
 	CouNumber* ub = new CouNumber[gmoN(gmo)];
-	
+
 	gmoGetVarL(gmo, x_);
 	gmoGetVarLower(gmo, lb);
 	gmoGetVarUpper(gmo, ub);
-	
+
 	// translate from gmoM/Pinf to Couenne infinity
 	for (int i = 0; i < gmoN(gmo); ++i)	{
 		if (lb[i] <= gmoMinf(gmo))
@@ -706,9 +710,9 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 		if (ub[i] >= gmoPinf(gmo))
 			ub[i] =  COUENNE_INFINITY;
 	}
-	
+
 	prob->domain()->push(gmoN(gmo), x_, lb, ub);
-	
+
 	delete[] x_;
 	delete[] lb;
 	delete[] ub;
@@ -721,7 +725,7 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 		lin.reserve(nz);
 		for (int i = 0; i < nz; ++i)
 			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[i]), isMin*lincoefs[i]));
-		
+
 		if( gmoGetObjOrder(gmo) == order_Q ) {
 #if GMOAPIVERSION >= 8
          qnz = gmoObjQNZ(gmo);
@@ -730,7 +734,7 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
          gmoGetObjQ(gmo, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
 #endif
 			expression** quadpart = new expression*[qnz];
-			
+
 			for (int j = 0; j < qnz; ++j) {
 				assert(qcol[j] >= 0);
 				assert(qrow[j] >= 0);
@@ -754,17 +758,17 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 		} else {
 			body = new exprGroup(isMin*gmoObjConst(gmo), lin, NULL, 0);
 		}
-		
-	} else { /* general nonlinear objective */ 
+
+	} else { /* general nonlinear objective */
 		lin.reserve(nz-nlnz);
 		for (int i = 0; i < nz; ++i) {
 			if (nlflag[i])
 				continue;
 			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[i]), isMin*lincoefs[i]));
 		}
-		
+
 		gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
-		
+
 		expression** nl = new expression*[1];
 		nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
 		if (!nl[0])
@@ -777,21 +781,21 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 		} else if (objjacval != -1.) { // scale by -1/objjacval
 			nl[0] = new exprMul(nl[0], new exprConst(-1/objjacval));
 		}
-		
+
 		body = new exprGroup(isMin*gmoObjConst(gmo), lin, nl, 1);
 	}
 
 	prob->addObjective(body, "min");
-	
+
 	for (int i = 0; i < gmoM(gmo); ++i) {
 		gmoGetRowSparse(gmo, i, lincolidx, lincoefs, nlflag, &nz, &nlnz);
 		lin.clear();
-		
+
 		if (gmoGetEquOrderOne(gmo, i) <= order_Q) {
 			lin.reserve(nz);
 			for (int j = 0; j < nz; ++j)
 				lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[j]), lincoefs[j]));
-			
+
 			if( gmoGetEquOrderOne(gmo, i) == order_Q ) {
 #if GMOAPIVERSION >= 8
             qnz = gmoGetRowQNZOne(gmo,i);
@@ -800,7 +804,7 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
             gmoGetRowQ(gmo, i, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
 #endif
 				expression** quadpart = new expression*[qnz];
-				
+
 				for (int j = 0; j < qnz; ++j) {
 					assert(qcol[j] >= 0);
 					assert(qrow[j] >= 0);
@@ -823,8 +827,8 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 			} else {
 				body = new exprGroup(0, lin, NULL, 0);
 			}
-			
-		} else { /* general nonlinear constraint */ 
+
+		} else { /* general nonlinear constraint */
 			lin.reserve(nz-nlnz);
 			for (int j = 0; j < nz; ++j) {
 				if (nlflag[j])
@@ -837,7 +841,7 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 			nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
 			if (!nl[0])
 				return NULL;
-			
+
 			body = new exprGroup(0, lin, nl, 1);
 		}
 
@@ -857,7 +861,7 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 				break;
 		}
 	}
-	
+
   delete[] lincolidx;
 	delete[] lincoefs;
 	delete[] nlflag;
@@ -865,15 +869,15 @@ CouenneProblem* GamsCouenne::setupProblemNew() {
 	delete[] quadcoefs;
 	delete[] qrow;
 	delete[] qcol;
-	
+
 	delete[] opcodes;
 	delete[] fields;
 //	delete[] constants;
-	
+
 #if GMOAPIVERSION >= 7
 	gmoWantQSet(gmo, 0);
 #endif
-	
+
 	return prob;
 }
 
@@ -881,18 +885,18 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 	const bool debugoutput = false;
 
 	list<expression*> stack;
-	
+
 	int nargs = -1;
 
 	for (int pos = 0; pos < codelen; ++pos)
-	{	
+	{
 		GamsOpCode opcode = (GamsOpCode)opcodes[pos];
 		int address = fields[pos]-1;
 
 		if (debugoutput) std::clog << '\t' << GamsOpCodeName[opcode] << ": ";
-		
+
 		expression* exp = NULL;
-		
+
 		switch(opcode) {
 			case nlNoOp : { // no operation
 				if (debugoutput) std::clog << "ignored" << std::endl;
@@ -918,14 +922,14 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 			case nlAddV: { // add variable
 				address = gmoGetjSolver(gmo, address);
 				if (debugoutput) std::clog << "add variable " << address << std::endl;
-				
+
 				expression* term1 = stack.back(); stack.pop_back();
 				expression* term2 = new exprClone(prob->Variables()[address]);
 				exp = new exprSum(term1, term2);
 			} break;
 			case nlAddI: { // add immediate
 				if (debugoutput) std::clog << "add constant " << constants[address] << std::endl;
-				
+
 				expression* term1 = stack.back(); stack.pop_back();
 				expression* term2 = new exprConst(constants[address]);
 				exp = new exprSum(term1, term2);
@@ -946,7 +950,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 			} break;
 			case nlSubI: { // subtract immediate
 				if (debugoutput) std::clog << "substract constant " << constants[address] << std::endl;
-				
+
 				expression* term1 = stack.back(); stack.pop_back();
 				expression* term2 = new exprConst(constants[address]);
 				exp = new exprSub(term1, term2);
@@ -961,7 +965,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 			case nlMulV: { // multiply variable
 				address = gmoGetjSolver(gmo, address);
 				if (debugoutput) std::clog << "multiply variable " << address << std::endl;
-				
+
 				expression* term1 = stack.back(); stack.pop_back();
 				expression* term2 = new exprClone(prob->Variables()[address]);
 				exp = new exprMul(term1, term2);
@@ -986,7 +990,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 			case nlDivV: { // divide variable
 				address = gmoGetjSolver(gmo, address);
 				if (debugoutput) std::clog << "divide variable " << address << std::endl;
-				
+
 				expression* term1 = stack.back(); stack.pop_back();
 				expression* term2 = new exprClone(prob->Variables()[address]);
 				if (term1->Type() == CONST)
@@ -1003,7 +1007,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 			} break;
 			case nlUMin: { // unary minus
 				if (debugoutput) std::clog << "negate" << std::endl;
-				
+
 				expression* term = stack.back(); stack.pop_back();
 				exp = new exprOpp(term);
 			} break;
@@ -1018,11 +1022,11 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 			case nlCallArgN : {
 				if (debugoutput) std::clog << "call function ";
 				GamsFuncCode func = GamsFuncCode(address+1); // here the shift by one was not a good idea
-				
+
 				switch (func) {
 					case fnmin : {
 						if (debugoutput) std::clog << "min" << std::endl;
-						
+
 						expression* term1 = stack.back(); stack.pop_back();
 						expression* term2 = stack.back(); stack.pop_back();
 						exp = new exprMin(term1, term2);
@@ -1036,7 +1040,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 					} break;
 					case fnsqr : {
 						if (debugoutput) std::clog << "square" << std::endl;
-						
+
 						expression* term = stack.back(); stack.pop_back();
 						exp = new exprPow(term, new exprConst(2.));
 					} break;
@@ -1058,7 +1062,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 					case fnsllog10:
 					case fnsqlog10: {
 						if (debugoutput) std::clog << "log10 = ln * 1/ln(10)" << std::endl;
-						
+
 						expression* term = stack.back(); stack.pop_back();
 						exp = new exprMul(new exprLog(term), new exprConst(1./log(10.)));
 					} break;
@@ -1070,7 +1074,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 					} break;
 					case fnsqrt: {
 						if (debugoutput) std::clog << "sqrt" << std::endl;
-						
+
 						expression* term = stack.back(); stack.pop_back();
 						exp = new exprPow(term, new exprConst(.5));
 					} break;
@@ -1082,7 +1086,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 					} break;
 					case fncos: {
 						if (debugoutput) std::clog << "cos" << std::endl;
-						
+
 						expression* term = stack.back(); stack.pop_back();
 						exp = new exprCos(term);
 					} break;
@@ -1095,7 +1099,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 					case fnpower:
 					case fnrpower: { // x ^ y
 						if (debugoutput) std::clog << "power" << std::endl;
-						
+
 						expression* term1 = stack.back(); stack.pop_back();
 						expression* term2 = stack.back(); stack.pop_back();
 						if (term1->Type() == CONST)
@@ -1105,7 +1109,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 					} break;
 					case fncvpower: { // constant ^ x
 						if (debugoutput) std::clog << "power" << std::endl;
-						
+
 						expression* term1 = stack.back(); stack.pop_back();
 						expression* term2 = stack.back(); stack.pop_back();
 
@@ -1115,7 +1119,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 					} break;
 					case fnvcpower: { // x ^ constant
 						if (debugoutput) std::clog << "power" << std::endl;
-						
+
 						expression* term1 = stack.back(); stack.pop_back();
 						expression* term2 = stack.back(); stack.pop_back();
 						assert(term1->Type() == CONST);
@@ -1138,7 +1142,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 					case fnslrec: // 1/x
 					case fnsqrec: { // 1/x
 						if (debugoutput) std::clog << "divide" << std::endl;
-						
+
 						expression* term = stack.back(); stack.pop_back();
 						exp = new exprInv(term);
 					} break;
@@ -1178,7 +1182,7 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 					case fnmod: case fntrunc: case fnsign:
 					case fnarctan: case fnerrf: case fndunfm:
 					case fndnorm: case fnerror: case fnfrac: case fnerrorl:
-			    case fnfact /* factorial */: 
+			    case fnfact /* factorial */:
 			    case fnunfmi /* uniform random number */:
 			    case fnncpf /* fischer: sqrt(x1^2+x2^2+2*x3) */:
 			    case fnncpcm /* chen-mangasarian: x1-x3*ln(1+exp((x1-x2)/x3))*/:
@@ -1213,16 +1217,18 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 				expression* term1 = stack.back(); stack.pop_back();
 				term1 = new exprMul(term1, new exprConst(constants[address]));
 				expression* term2 = stack.back(); stack.pop_back();
-				
+
 				exp = new exprSum(term1, term2);
 			} break;
 			case nlFuncArgN : {
 				nargs = address;
 				if (debugoutput) std::clog << nargs << " arguments" << std::endl;
 			} break;
+#if GMOAPIVERSION < 8
 			case nlArg: {
 				if (debugoutput) std::clog << "ignored" << std::endl;
 			} break;
+#endif
 			case nlHeader: { // header
 				if (debugoutput) std::clog << "ignored" << std::endl;
 			} break;
@@ -1242,21 +1248,25 @@ expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen
 				return NULL;
 			}
 		}
-		
+
 		if (exp)
 			stack.push_back(exp);
 	}
 
-	assert(stack.size() == 1);	
+	assert(stack.size() == 1);
 	return stack.back();
 }
 
 CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 //	printf("using MIQQP problem setup method\n");
-	
+
 	int do2dir = 1;
 	int dohess = 1;
-	gmoHessLoad(gmo, 0, -1, &do2dir, &dohess);
+#if GMOAPIVERSION >= 8
+	gmoHessLoad(gmo, 0, &do2dir, &dohess);
+#else
+   gmoHessLoad(gmo, 0, -1, &do2dir, &dohess);
+#endif
 	if (!dohess) {
 		gevLogStat(gev, "Failed to initialize Hessian structure. Trying usual setupProblem.");
 		return setupProblem();
@@ -1288,16 +1298,16 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 		  	return NULL;
 		}
 	}
-	
+
 	// add variable bounds and initial values
 	CouNumber* x_ = new CouNumber[gmoN(gmo)];
 	CouNumber* lb = new CouNumber[gmoN(gmo)];
 	CouNumber* ub = new CouNumber[gmoN(gmo)];
-	
+
 	gmoGetVarL(gmo, x_);
 	gmoGetVarLower(gmo, lb);
 	gmoGetVarUpper(gmo, ub);
-	
+
 	// translate from gmoM/Pinf to Couenne infinity
 	for (int i = 0; i < gmoN(gmo); ++i)	{
 		if (lb[i] <= gmoMinf(gmo))
@@ -1305,17 +1315,17 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 		if (ub[i] >= gmoPinf(gmo))
 			ub[i] =  COUENNE_INFINITY;
 	}
-	
+
 	prob->domain()->push(gmoN(gmo), x_, lb, ub);
-	
+
 	delete[] x_;
 	delete[] lb;
 	delete[] ub;
-	
+
 	exprGroup::lincoeff lin;
 	expression *body = NULL;
 //	std::vector<quadElem> qcoeff;
-	
+
   lin.reserve(gmoN(gmo));
 //  qcoeff.reserve(gmoHessLagNz(gmo));
 
@@ -1325,15 +1335,15 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 		null[i] = 0.;
 	for (int i = 0; i < gmoM(gmo); ++i)
 		lambda[i] = 0.;
-	
+
 	double constant, dummy;
 	double* linear = new double[gmoN(gmo)];
-	int nerror;
-	
+	int nerror, irc;
+
 	int* hess_iRow   = new int[gmoHessLagNz(gmo)];
 	int* hess_jCol   = new int[gmoHessLagNz(gmo)];
 	double* hess_val = new double[gmoHessLagNz(gmo)];
-	
+
 	gmoHessLagStruct(gmo, hess_iRow, hess_jCol);
 
 	// add objective function
@@ -1353,12 +1363,17 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 
 	if (gmoObjNLNZ(gmo)) {
 		memset(hess_val, 0, gmoHessLagNz(gmo)*sizeof(double));
-		nerror = gmoHessLagValue(gmo, null, lambda, hess_val, isMin, 0.);
-		if (nerror) {
+#if GMOAPIVERSION >= 8
+		irc = gmoHessLagValue(gmo, null, lambda, hess_val, isMin, 0., &nerror);
+#else
+      nerror = gmoHessLagValue(gmo, null, lambda, hess_val, isMin, 0.);
+      irc = 0;
+#endif
+		if (irc || nerror) {
 			gevLogStat(gev, "Error evaluation hessian of objective function.\n");
 			return NULL;
 		}
-		
+
 		int nzcount = 0;
 		for (int i = 0; i < gmoHessLagNz(gmo); ++i) {
 			if (hess_val[i])
@@ -1386,7 +1401,7 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 			}
 			++k;
 		}
-		
+
 		body = new exprGroup(isMin*constant, lin, summands, nzcount);
 
 //		for (int i = 0; i < gmoHessLagNz(gmo); ++i) {
@@ -1395,7 +1410,7 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 //			qcoeff.push_back(quadElem(prob->Var(hess_iRow[i]), prob->Var(hess_jCol[i]),
 //				(hess_iRow[i] == hess_jCol[i] ? 0.5 : 1) * 2 * hess_val[i]));
 //		}
-		
+
 //	  body = new exprQuad(isMin*constant, lin, qcoeff, NULL, 0);
 	} else {
 	  body = new exprGroup(isMin*constant, lin, NULL, 0);
@@ -1404,7 +1419,7 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 	prob->addObjective(body, "min");
 
 	// add constraints
-	
+
 	for (int i = 0; i < gmoM(gmo); ++i) {
 		lin.resize(0);
 //		qcoeff.clear();
@@ -1427,9 +1442,14 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 		{
 			lambda[i] = -1.;
 			memset(hess_val, 0, gmoHessLagNz(gmo)*sizeof(double));
-			nerror = gmoHessLagValue(gmo, null, lambda, hess_val, 0., 1.);
+#if GMOAPIVERSION >= 8
+         irc = gmoHessLagValue(gmo, null, lambda, hess_val, 0., 1., &nerror);
+#else
+         nerror = gmoHessLagValue(gmo, null, lambda, hess_val, 0., 1.);
+			irc = 0;
+#endif
 			lambda[i] = 0.;
-			if (nerror) {
+			if (irc || nerror) {
 				gevLogStat(gev, "Error evaluation hessian of constraint function.\n");
 				return NULL;
 			}
@@ -1439,7 +1459,7 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 				if (hess_val[j])
 					++nzcount;
 			}
-			
+
 			expression** summands = new expression*[nzcount];
 			int k = 0;
 			for (int j = 0; j < gmoHessLagNz(gmo); ++j) {
@@ -1461,21 +1481,21 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 				}
 				++k;
 			}
-			
+
 			body = new exprGroup(constant, lin, summands, nzcount);
-			
+
 //			for (int j = 0; j < gmoHessLagNz(gmo); ++j) {
 //				if (!hess_val[j])
 //					continue;
 //				qcoeff.push_back(quadElem(prob->Var(hess_iRow[j]), prob->Var(hess_jCol[j]),
 //					(hess_iRow[j] == hess_jCol[j] ? 0.5 : 1) * 2 * hess_val[j]));
 //			}
-//			
+//
 //		  body = new exprQuad(constant, lin, qcoeff, NULL, 0);
 		} else {
 		  body = new exprGroup(constant, lin, NULL, 0);
 		}
-		
+
 		switch (gmoGetEquTypeOne(gmo, i)) {
 			case equ_E:
 				prob->addEQConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
@@ -1492,7 +1512,7 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 				break;
 		}
 	}
-	
+
 	delete[] null;
 	delete[] lambda;
 	delete[] linear;

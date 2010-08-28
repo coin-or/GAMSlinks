@@ -194,7 +194,7 @@ bool GamsOSxL::createOSInstance() {
 
 		if (gmoN(gmo)) {
 			objectiveCoefficients = new SparseVector(gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
-			
+
 			int* colidx = new int[gmoObjNZ(gmo)];
 			double* val = new double[gmoObjNZ(gmo)];
 			int* nlflag = new int[gmoObjNZ(gmo)];
@@ -624,13 +624,13 @@ OSnLNode* GamsOSxL::parseGamsInstructions(int codelen, int* opcodes, int* fields
 								}
 								assert(!nlNodeVec.empty());
 								OSnLNode* var = nlNodeVec.back(); nlNodeVec.pop_back();
-								
+
 								nlNodeVec.push_back(coeff[0]);
-								
+
 								nlNodeVec.push_back(coeff[1]);
 								nlNodeVec.push_back(var);
 								nlNodeVec.push_back(new OSnLNodeTimes());
-								
+
 								nlNodeVec.push_back(new OSnLNodePlus());
 								for (size_t i = 2; i < coeff.size(); ++i) {
 									nlNodeVec.push_back(coeff[i]);
@@ -693,9 +693,11 @@ OSnLNode* GamsOSxL::parseGamsInstructions(int codelen, int* opcodes, int* fields
 				nargs = address;
 				if (debugoutput) std::clog << nargs << "arguments" << std::endl;
 			} break;
+#if GMOAPIVERSION < 8
 			case nlArg: {
 				if (debugoutput) std::clog << "ignored" << std::endl;
 			} break;
+#endif
 			case nlHeader: { // header
 				if (debugoutput) std::clog << "ignored" << std::endl;
 			} break;
