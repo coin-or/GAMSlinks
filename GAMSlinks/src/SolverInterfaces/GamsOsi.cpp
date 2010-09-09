@@ -640,6 +640,7 @@ bool GamsOsi::setupParameters() {
 				CPXsetintparam(osicpx->getEnvironmentPtr(), CPX_PARAM_NODELIM, nodelim);
 			CPXsetdblparam(osicpx->getEnvironmentPtr(), CPX_PARAM_EPGAP, optcr);
 			CPXsetdblparam(osicpx->getEnvironmentPtr(), CPX_PARAM_EPAGAP, optca);
+         CPXsetintparam(osicpx->getEnvironmentPtr(), CPX_PARAM_THREADS, CoinMin(1, gevGetIntOpt(gev, gevInteger4)));
 
 			if (gmoOptFile(gmo)) {
 				char buffer[4096];
@@ -768,6 +769,7 @@ bool GamsOsi::setupParameters() {
 #if GRB_VERSION_MAJOR >= 3
          GRBsetdblparam(grbenv, GRB_DBL_PAR_MIPGAPABS, optca);
 #endif
+         GRBsetintparam(grbenv, GRB_INT_PAR_THREADS, CoinMin(1, gevGetIntOpt(gev, gevInteger4)));
 
 			if (gmoOptFile(gmo)) {
 				char buffer[4096];
@@ -796,6 +798,7 @@ bool GamsOsi::setupParameters() {
 				MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_MIO_MAX_NUM_RELAXS, nodelim);
 			MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_NEAR_TOL_REL_GAP, optcr);
 			MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_NEAR_TOL_ABS_GAP, optca);
+			MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_INTPNT_NUM_THREADS, CoinMin(1, getGetIntOpt(gev, gevInteger4)));
 			if (gmoOptFile(gmo)) {
 				char buffer[4096];
 				gmoNameOptFile(gmo, buffer);
@@ -818,6 +821,7 @@ bool GamsOsi::setupParameters() {
 				XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXNODE, nodelim);
 			XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPRELSTOP, optcr);
 			XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPABSSTOP, optca);
+         XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_THREADS, CoinMin(1, gevGetIntOpt(gev, gevInteger4)));
 			if (gmoOptFile(gmo)) {
 				char buffer[4096];
 				gmoNameOptFile(gmo, buffer);
