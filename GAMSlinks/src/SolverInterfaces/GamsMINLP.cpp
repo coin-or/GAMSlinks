@@ -180,18 +180,25 @@ bool GamsMINLP::eval_gi(Index n, const Number* x, bool new_x, Index i, Number& g
 	if (new_x)
 		gmoEvalNewPoint(gmo, x);
 
-	int nerror = gmoEvalFunc(gmo, i, x, &gi);
+	int rc;
+	int nerror;
+#if GMOAPIVERSION >= 8
+	rc = gmoEvalFunc(gmo, i, x, &gi, &nerror);
+#else
+   rc = gmoEvalFunc(gmo, i, x, &gi);
+   if (rc > 0) rc = 0;
+#endif
 
-  if (nerror < 0) {
-		char buffer[255];
-  	sprintf(buffer, "Error detected in evaluation of constraint %d!\nnerror = %d\nExiting from subroutine - eval_g\n", i, nerror);
-		gevLogStatPChar(gev, buffer);
+  if (rc) {
+    char buffer[255];
+    sprintf(buffer, "Error detected in evaluation of constraint %d!\nrc = %d\nExiting from subroutine - eval_g\n", i, rc);
+    gevLogStatPChar(gev, buffer);
     throw -1;
   }
   if (nerror > 0) {
-		++nlp->domviolations;
-		return false;
-	}
+    ++nlp->domviolations;
+    return false;
+  }
 
 	return true;
 }
@@ -220,21 +227,28 @@ bool GamsMINLP::eval_grad_gi(Index n, const Number* x, bool new_x, Index i, Inde
   	double val;
   	double gx;
 
-  	int nerror = gmoEvalGrad(gmo, i, x, &val, nlp->grad, &gx);
+   int rc;
+   int nerror;
+#if GMOAPIVERSION >= 8
+   rc = gmoEvalGrad(gmo, i, x, &val, nlp->grad, &gx, &nerror);
+#else
+   rc = gmoEvalGrad(gmo, i, x, &val, nlp->grad, &gx);
+   if (rc > 0) rc = 0;
+#endif
 
-    if (nerror < 0) {
-			char buffer[255];
-	  	sprintf(buffer, "Error detected in evaluation of gradient of constraint %d!\nnerror = %d\nExiting from subroutine - eval_grad_gi\n", i, nerror);
-			gevLogStatPChar(gev, buffer);
-	    throw -1;
-    }
-    if (nerror > 0) {
-			++nlp->domviolations;
+   if (rc) {
+      char buffer[255];
+      sprintf(buffer, "Error detected in evaluation of gradient of constraint %d!\nrc = %d\nExiting from subroutine - eval_grad_gi\n", i, rc);
+      gevLogStatPChar(gev, buffer);
+      throw -1;
+   }
+   if (nerror > 0) {
+      ++nlp->domviolations;
       return false;
-    }
-    int next = nlp->iRowStart[i+1];
-    for (int k = nlp->iRowStart[i]; k < next; ++k, ++values)
-    	*values = nlp->grad[nlp->jCol[k]];
+   }
+   int next = nlp->iRowStart[i+1];
+   for (int k = nlp->iRowStart[i]; k < next; ++k, ++values)
+      *values = nlp->grad[nlp->jCol[k]];
   }
 
   return true;

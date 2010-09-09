@@ -58,23 +58,23 @@ GamsNLP::GamsNLP (gmoHandle_t gmo_)
   gev = (gevRec*) gmoEnvironment(gmo);
   assert(gev);
 
-	domviollimit = gevGetIntOpt(gev, gevDomLim);
+  domviollimit = gevGetIntOpt(gev, gevDomLim);
 }
 
 GamsNLP::~GamsNLP() {
-	delete[] iRowStart;
-	delete[] jCol;
-	delete[] grad;
+  delete[] iRowStart;
+  delete[] jCol;
+  delete[] grad;
 }
 
 bool GamsNLP::get_nlp_info(Index& n, Index& m, Index& jac_nnz, Index& nnz_h_lag, TNLP::IndexStyleEnum &index_style) {
-	n           = gmoN(gmo);
-	m           = gmoM(gmo);
-	jac_nnz     = gmoNZ(gmo);
-	nnz_h_lag   = gmoHessLagNz(gmo);
-	index_style = C_STYLE;
+  n           = gmoN(gmo);
+  m           = gmoM(gmo);
+  jac_nnz     = gmoNZ(gmo);
+  nnz_h_lag   = gmoHessLagNz(gmo);
+  index_style = C_STYLE;
 
-	return true;
+  return true;
 }
 
 bool GamsNLP::get_bounds_info (Index n, Number* x_l, Number* x_u, Index m, Number* g_l, Number* g_u) {
@@ -275,47 +275,65 @@ bool GamsNLP::get_list_of_nonlinear_variables(Ipopt::Index num_nonlin_vars, Ipop
 }
 
 bool GamsNLP::eval_f(Index n, const Number* x, bool new_x, Number& obj_value) {
-	assert(n == gmoN(gmo));
+  assert(n == gmoN(gmo));
 
-	if (new_x)
-		gmoEvalNewPoint(gmo, x);
-	int nerror = gmoEvalObjFunc(gmo, x, &obj_value);
-
-  if (EvalRCSYSTEM == nerror) {
-		char buffer[255];
-  	sprintf(buffer, "Error detected in evaluation of objective function!\nnerror = %d\nExiting from subroutine - eval_f\n", nerror);
-		gevLogStatPChar(gev, buffer);
+  if (new_x)
+    gmoEvalNewPoint(gmo, x);
+  int nerror;
+  int rc;
+#if GMOAPIVERSION >= 8
+  rc = gmoEvalObjFunc(gmo, x, &obj_value, &nerror);
+#else
+  rc = gmoEvalObjFunc(gmo, x, &obj_value);
+  nerror = rc;
+#endif
+  
+  if (EvalRCSYSTEM == rc) {
+    char buffer[255];
+    sprintf(buffer, "Error detected in evaluation of objective function!\n"
+            "rc = %d\n"
+            "Exiting from subroutine - eval_f\n", rc);
+    gevLogStatPChar(gev, buffer);
     throw -1;
   }
   if (nerror > 0) {
-		++domviolations;
-		return false;
-	}
+    ++domviolations;
+    return false;
+  }
 
-	return true;
+  return true;
 }
 
 bool GamsNLP::eval_grad_f (Index n, const Number* x, bool new_x, Number* grad_f) {
-	assert(n == gmoN(gmo));
+  assert(n == gmoN(gmo));
 
-	if (new_x)
-		gmoEvalNewPoint(gmo, x);
+  if (new_x)
+    gmoEvalNewPoint(gmo, x);
 
   memset(grad_f, 0, n*sizeof(double));
-	double val;
- 	double gx;
-	int nerror = gmoEvalObjGrad(gmo, x, &val, grad_f, &gx);
+  double val;
+  double gx;
+  int nerror;
+  int rc;
+#if GMOAPIVERSION >= 8
+  rc = gmoEvalObjGrad(gmo, x, &val, grad_f, &gx, &nerror);
+#else
+  rc = gmoEvalObjGrad(gmo, x, &val, grad_f, &gx);
+  nerror = rc;
+#endif
 
-  if (EvalRCSYSTEM == nerror) {
-		char buffer[255];
-  	sprintf(buffer, "Error detected in GAMS evaluation of objective gradient!\nnerror = %d\nExiting from subroutine - eval_grad_f\n", nerror);
-		gevLogStatPChar(gev, buffer);
+  if (rc == EvalRCSYSTEM) {
+    char buffer[255];
+    sprintf(buffer, "Error detected in GAMS evaluation of objective gradient!\n"
+            "rc = %d\n"
+            "Exiting from subroutine - eval_grad_f\n", rc);
+    gevLogStatPChar(gev, buffer);
     throw -1;
   }
   if (nerror > 0) {
-		++domviolations;
-		return false;
-	}
+    ++domviolations;
+    return false;
+  }
 
   return true;
 }
@@ -327,12 +345,17 @@ bool GamsNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
   if (new_x)
     gmoEvalNewPoint(gmo, x);
 
-  int nerror;
+  int nerror, rc;
   for (int i = 0; i < m; ++i) {
-    nerror = gmoEvalFunc(gmo, i, x, &g[i]);
-    if (EvalRCSYSTEM == nerror) {
+#if GMOAPIVERSION >= 8
+    rc = gmoEvalFunc(gmo, i, x, &g[i], &nerror);
+#else
+    rc = gmoEvalFunc(gmo, i, x, &g[i]);
+    nerror = rc;
+#endif
+    if (rc == EvalRCSYSTEM) {
       char buffer[255];
-      sprintf(buffer, "Error detected in evaluation of constraint %d!\nnerror = %d\nExiting from subroutine - eval_g\n", i, nerror);
+      sprintf(buffer, "Error detected in evaluation of constraint %d!\nrc = %d\nExiting from subroutine - eval_g\n", i, rc);
       gevLogStatPChar(gev, buffer);
       throw -1;
     }
@@ -346,9 +369,9 @@ bool GamsNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
 } // GamsNLP::eval_g
 
 bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index nele_jac, Index *iRow, Index *jCol, Number *values) {
-	assert(n == gmoN(gmo));
-	assert(m == gmoM(gmo));
-	assert(nele_jac == gmoNZ(gmo));
+  assert(n == gmoN(gmo));
+  assert(m == gmoM(gmo));
+  assert(nele_jac == gmoNZ(gmo));
 
   if (values == NULL) { // return the structure of the jacobian
     assert(NULL == x);
@@ -365,8 +388,8 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
 
     assert(iRowStart[m] == nele_jac);
     for (Index i = 0;  i < m;  ++i)
-    	for (int j = iRowStart[i]; j < iRowStart[i+1]; ++j)
-    		iRow[j] = i;
+      for (int j = iRowStart[i]; j < iRowStart[i+1]; ++j)
+        iRow[j] = i;
     memcpy(jCol, this->jCol, nele_jac * sizeof(int));
 
     delete[] jacval;
@@ -381,27 +404,32 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
     assert(NULL == jCol);
     assert(NULL != iRowStart);
     assert(NULL != this->jCol);
-  	assert(NULL != grad);
+    assert(NULL != grad);
 
-  	if (new_x)
-  		gmoEvalNewPoint(gmo, x);
+    if (new_x)
+      gmoEvalNewPoint(gmo, x);
 
-  	double val;
-  	double gx;
-  	int nerror;
+    double val;
+    double gx;
+    int nerror, rc;
     int k = 0;
     int next;
 
-  	for (int rownr = 0; rownr < m; ++rownr) {
-  		nerror = gmoEvalGrad(gmo, rownr, x, &val, grad, &gx);
-      if (EvalRCSYSTEM == nerror) {
-  			char buffer[255];
-  	  	sprintf(buffer, "Error detected in evaluation of gradient for constraint %d!\nnerror = %d\nExiting from subroutine - eval_jac_g\n", rownr, nerror);
-  			gevLogStatPChar(gev, buffer);
-  			throw -1;
+    for (int rownr = 0; rownr < m; ++rownr) {
+#if GMOAPIVERSION >= 8
+      rc = gmoEvalGrad(gmo, rownr, x, &val, grad, &gx, &nerror);
+#else
+      rc = gmoEvalGrad(gmo, rownr, x, &val, grad, &gx);
+      nerror = rc;
+#endif
+      if (EvalRCSYSTEM == rc) {
+        char buffer[255];
+        sprintf(buffer, "Error detected in evaluation of gradient for constraint %d!\nrc = %d\nExiting from subroutine - eval_jac_g\n", rownr, rc);
+        gevLogStatPChar(gev, buffer);
+        throw -1;
       }
       if (nerror > 0) {
-  			++domviolations;
+        ++domviolations;
         return false;
       }
       assert(k == iRowStart[rownr]);

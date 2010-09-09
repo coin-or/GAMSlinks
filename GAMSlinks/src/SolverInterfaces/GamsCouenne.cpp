@@ -1351,9 +1351,14 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 	double isMin = (gmoSense(gmo) == Obj_Min) ? 1 : -1;
 
 	memset(linear, 0, gmoN(gmo)*sizeof(double));
-	nerror = gmoEvalObjGrad(gmo, null, &constant, linear, &dummy);
-	assert(nerror == 0);
-
+#if GMOAPIVERSION >= 8
+	irc = gmoEvalObjGrad(gmo, null, &constant, linear, &dummy, &nerror);
+	assert(0 == irc);
+#else
+   nerror = gmoEvalObjGrad(gmo, null, &constant, linear, &dummy);
+#endif
+   assert(0 == nerror);
+   
 	for (int i = 0; i < gmoN(gmo); ++i) {
 		if (!linear[i])
 			continue;
@@ -1425,7 +1430,12 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 //		qcoeff.clear();
 
 		memset(linear, 0, gmoN(gmo)*sizeof(double));
-		nerror = gmoEvalGrad(gmo, i, null, &constant, linear, &dummy);
+#if GMOAPIVERSION >= 8
+		irc = gmoEvalGrad(gmo, i, null, &constant, linear, &dummy, &nerror);
+		assert(0 == irc);
+#else
+      nerror = gmoEvalGrad(gmo, i, null, &constant, linear, &dummy);
+#endif
 		assert(nerror == 0);
 
 		for (int j = 0; j < gmoN(gmo); ++j) {
