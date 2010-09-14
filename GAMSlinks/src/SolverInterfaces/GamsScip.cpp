@@ -65,12 +65,18 @@
 
 SCIP_DECL_MESSAGEERROR(GamsScipPrintWarningOrError) {
 	assert(SCIPmessagehdlrGetData(messagehdlr) != NULL);
-	gevLogStatPChar(((GamsScip*)SCIPmessagehdlrGetData(messagehdlr))->gev, msg);
+	if (file != NULL)
+	   fprintf(file, msg);
+	else
+	   gevLogStatPChar(((GamsScip*)SCIPmessagehdlrGetData(messagehdlr))->gev, msg);
 }
 
 SCIP_DECL_MESSAGEINFO(GamsScipPrintInfoOrDialog) {
 	assert(SCIPmessagehdlrGetData(messagehdlr) != NULL);
-	gevLogPChar(((GamsScip*)SCIPmessagehdlrGetData(messagehdlr))->gev, msg);
+   if (file != NULL)
+      fprintf(file, msg);
+   else
+      gevLogPChar(((GamsScip*)SCIPmessagehdlrGetData(messagehdlr))->gev, msg);
 }
 
 GamsScip::GamsScip()
