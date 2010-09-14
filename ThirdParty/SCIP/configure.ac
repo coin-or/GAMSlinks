@@ -47,6 +47,8 @@ AC_COIN_PROG_CC
 AC_COIN_PROG_CXX
 
 # Initialize automake
+AM_INIT_AUTOMAKE([subdir-objects])
+AM_PROG_CC_C_O
 AC_COIN_INIT_AUTO_TOOLS
 
 #TODO: check for Clp and CoinUtils and Ipopt
@@ -86,10 +88,11 @@ if test x"$use_thirdpartyscip" = xbuild ; then
   scipver=`awk '/define SCIP_VERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
   scipsubver=`awk '/define SCIP_SUBVERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
   AC_MSG_RESULT([${scipver}.${scipsubver}])
-  if (test x$scipver != x120) ; then
+  if test x$scipver == x200 ; then
+     AM_CONDITIONAL(SCIPDEVVERSION, [test 1 = 1])
+  elif test x$scipver != x120 ; then
     AC_MSG_ERROR(["Incorrect SCIP version. This build system is made for SCIP 120.x"])
   fi
-  AM_CONDITIONAL(SCIPDEVVERSION, [test x$scipsubver != x0])
   
 #  if test x$minorver = x999 ; then
 #    CFLAGS=`echo $CFLAGS | sed -e 's/-pedantic-errors//'`

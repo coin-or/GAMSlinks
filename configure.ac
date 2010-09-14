@@ -54,11 +54,13 @@ AC_COIN_THIRDPARTY_SUBDIRS([Mumps],[ThirdParty/Mumps],[MUMPS/src/dmumps_part1.F]
 #                  Check which subprojects are there                        #
 #############################################################################
 
-#we want SCIP to be build after CoinUtils and Clp in order to use them there 
+#we want SCIP to be build after CoinUtils, Clp, Ipopt, and CppAD in order to use them there 
 
 AC_COIN_MAIN_SUBDIRS(libltdl)
 AC_COIN_MAIN_SUBDIRS(CoinUtils)
 AC_COIN_MAIN_SUBDIRS(Clp)
+AC_COIN_MAIN_SUBDIRS(Ipopt)
+AC_COIN_MAIN_SUBDIRS(cppad)
 AC_COIN_THIRDPARTY_SUBDIRS([Scip],[ThirdParty/SCIP],[scip/src/scip/scip.h])
 AC_COIN_MAIN_SUBDIRS(DyLP)
 AC_COIN_MAIN_SUBDIRS(Vol)
@@ -66,10 +68,8 @@ AC_COIN_MAIN_SUBDIRS(Cgl)
 AC_COIN_MAIN_SUBDIRS(Osi)
 AC_COIN_MAIN_SUBDIRS(SYMPHONY)
 AC_COIN_MAIN_SUBDIRS(Cbc)
-AC_COIN_MAIN_SUBDIRS(Ipopt)
 AC_COIN_MAIN_SUBDIRS(Bonmin)
 AC_COIN_MAIN_SUBDIRS(Couenne)
-AC_COIN_MAIN_SUBDIRS(cppad)
 AC_COIN_MAIN_SUBDIRS(OS)
 AC_COIN_MAIN_SUBDIRS(GAMSlinks)
 
