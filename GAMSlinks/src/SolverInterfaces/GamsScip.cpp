@@ -65,7 +65,7 @@
 
 SCIP_DECL_MESSAGEERROR(GamsScipPrintWarningOrError) {
 	assert(SCIPmessagehdlrGetData(messagehdlr) != NULL);
-	if (file != NULL)
+	if (file != NULL && file != stdout)
 	   fprintf(file, msg);
 	else
 	   gevLogStatPChar(((GamsScip*)SCIPmessagehdlrGetData(messagehdlr))->gev, msg);
@@ -73,7 +73,7 @@ SCIP_DECL_MESSAGEERROR(GamsScipPrintWarningOrError) {
 
 SCIP_DECL_MESSAGEINFO(GamsScipPrintInfoOrDialog) {
 	assert(SCIPmessagehdlrGetData(messagehdlr) != NULL);
-   if (file != NULL)
+   if (file != NULL && file != stdout)
       fprintf(file, msg);
    else
       gevLogPChar(((GamsScip*)SCIPmessagehdlrGetData(messagehdlr))->gev, msg);
