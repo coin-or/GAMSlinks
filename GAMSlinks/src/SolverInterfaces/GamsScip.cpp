@@ -260,13 +260,15 @@ SCIP_RETCODE GamsScip::setupLPI() {
 
 	SCIP_CALL( SCIPlpiCreate(&lpi, "gamsproblem", gmoSense(gmo) == Obj_Max ? SCIP_OBJSEN_MAXIMIZE : SCIP_OBJSEN_MINIMIZE) );
 
-	SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, TRUE);
 	SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPITLIM, gevGetIntOpt(gev, gevIterLim));
 	SCIPlpiSetRealpar(lpi, SCIP_LPPAR_LPTILIM, gevGetDblOpt(gev, gevResLim));
 
 	if (strncmp(SCIPlpiGetSolverName(), "Clp", 3) == 0) {
+	  SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, TRUE);
 		gamsmsghandler->setLogLevel(1); // SCIP has set Clp's loglevel to 2, but then it might print to stdout
 		((ClpSimplex*)SCIPlpiGetSolverPointer(lpi))->passInMessageHandler(gamsmsghandler);
+	} else {
+	  SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, FALSE);
 	}
 
 	gmoPinfSet(gmo,  SCIPlpiInfinity(lpi));
