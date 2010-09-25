@@ -65,7 +65,7 @@
 
 SCIP_DECL_MESSAGEERROR(GamsScipPrintWarningOrError) {
 	assert(SCIPmessagehdlrGetData(messagehdlr) != NULL);
-	if (file != NULL && file != stdout)
+	if (file != NULL && file != stderr)
 	   fprintf(file, msg);
 	else
 	   gevLogStatPChar(((GamsScip*)SCIPmessagehdlrGetData(messagehdlr))->gev, msg);
@@ -94,12 +94,13 @@ GamsScip::~GamsScip() {
 #endif
 			delete[] vars;
 		}
-		SCIP_CALL_ABORT( SCIPsetDefaultMessagehdlr() );
 		SCIP_CALL_ABORT( SCIPfree(&scip) );
-		SCIP_CALL_ABORT( SCIPfreeMessagehdlr(&scipmsghandler) );
 	}
   if (lpi != NULL)
   	SCIP_CALL_ABORT( SCIPlpiFree(&lpi) );
+
+  SCIP_CALL_ABORT( SCIPsetDefaultMessagehdlr() );
+  SCIP_CALL_ABORT( SCIPfreeMessagehdlr(&scipmsghandler) );
 
 	delete gamsmsghandler;
 }
@@ -181,7 +182,11 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 	gamsmsghandler = new GamsMessageHandler(gev);
 
-	SCIP_RETCODE scipret;
+  assert(scipmsghandler == NULL);
+  SCIP_CALL_ABORT( SCIPcreateMessagehdlr(&scipmsghandler, FALSE, GamsScipPrintWarningOrError, GamsScipPrintWarningOrError, GamsScipPrintInfoOrDialog, GamsScipPrintInfoOrDialog, (SCIP_MESSAGEHDLRDATA*)this) );
+  SCIP_CALL_ABORT( SCIPsetMessagehdlr(scipmsghandler) );
+
+  SCIP_RETCODE scipret;
 	if (isLP())
 		scipret = setupLPI();
 	else
@@ -365,10 +370,6 @@ SCIP_RETCODE GamsScip::setupLPI() {
 
 SCIP_RETCODE GamsScip::setupSCIP() {
 	assert(scip == NULL);
-	assert(scipmsghandler == NULL);
-
-  SCIP_CALL( SCIPcreateMessagehdlr(&scipmsghandler, FALSE, GamsScipPrintWarningOrError, GamsScipPrintWarningOrError, GamsScipPrintInfoOrDialog, GamsScipPrintInfoOrDialog, (SCIP_MESSAGEHDLRDATA*)this) );
-	SCIP_CALL( SCIPsetMessagehdlr(scipmsghandler) );
 
 	SCIP_CALL( SCIPcreate(&scip) );
 
