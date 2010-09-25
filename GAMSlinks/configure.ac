@@ -157,6 +157,12 @@ ADDLIBS_save="$ADDLIBS"
 
 AC_COIN_HAS_GLPK(Glpk)
 
+##################
+# SOPLEX LIBRARY #
+##################
+
+AC_COIN_HAS_SOPLEX
+
 ################
 # SCIP LIBRARY #
 ################

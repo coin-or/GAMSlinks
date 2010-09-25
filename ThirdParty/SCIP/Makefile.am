@@ -16,7 +16,7 @@ endif
 
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)`
 
-nodist_libcoinscip_la_SOURCES = \
+libcoinscip_la_SOURCES = \
 			@SCIPDIR@/src/scip/branch.c \
 			@SCIPDIR@/src/scip/bitencode.c \
 			@SCIPDIR@/src/scip/buffer.c \
@@ -158,7 +158,7 @@ nodist_libcoinscip_la_SOURCES = \
 			@SCIPDIR@/src/blockmemshell/memory.c
 		
 if SCIPDEVVERSION
-nodist_libcoinscip_la_SOURCES += \
+libcoinscip_la_SOURCES += \
 			@SCIPDIR@/src/scip/cons_cumulative.c \
 			@SCIPDIR@/src/scip/cons_linking.c \
 			@SCIPDIR@/src/scip/cons_orbitope.c \
@@ -184,36 +184,43 @@ nodist_libcoinscip_la_SOURCES += \
 			@SCIPDIR@/src/dijkstra/dijkstra_bh.c \
 			@SCIPDIR@/src/xml/xmlparse.c
 else
-nodist_libcoinscip_la_SOURCES += \
+libcoinscip_la_SOURCES += \
 			@SCIPDIR@/src/scip/heur_nlp.c \
 			@SCIPDIR@/src/scip/nlpi.c \
 			@SCIPDIR@/src/scip/nlpi_oracle.c \
 			@SCIPDIR@/src/scip/reader_sos.c
 endif
 
-#add CLP as linear solver
-nodist_libcoinscip_la_SOURCES += @SCIPDIR@/src/scip/lpi_clp.cpp
-
-#add IPOPT as nonlinear solver
-if SCIPDEVVERSION
-nodist_libcoinscip_la_SOURCES += @SCIPDIR@/src/nlpi/nlpi_ipopt.cpp
+if COIN_HAS_SOPLEX
+#add SOPLEX as linear solver
+libcoinscip_la_SOURCES += @SCIPDIR@/src/scip/lpi_spx.cpp
+AM_CPPFLAGS += -I`$(CYGPATH_W) $(SOPLEXINCDIR)`
 else
-nodist_libcoinscip_la_SOURCES += @SCIPDIR@/src/scip/nlpi_ipopt.cpp
-endif
-
+#add CLP as linear solver
+libcoinscip_la_SOURCES += @SCIPDIR@/src/scip/lpi_clp.cpp
 COINUTILSSRCDIR=$(srcdir)/../../CoinUtils
 COINUTILSOBJDIR=../../CoinUtils
 CLPSRCDIR=$(srcdir)/../../Clp
 CLPOBJDIR=../../Clp
+AM_CPPFLAGS += \
+ -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
+ -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
+ -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
+ -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
+endif
+
+#add IPOPT as nonlinear solver
+if SCIPDEVVERSION
+libcoinscip_la_SOURCES += @SCIPDIR@/src/nlpi/nlpi_ipopt.cpp
+else
+libcoinscip_la_SOURCES += @SCIPDIR@/src/scip/nlpi_ipopt.cpp
+endif
+
 IPOPTSRCDIR=$(srcdir)/../../Ipopt
 IPOPTOBJDIR=../../Ipopt
 CPPADSRCDIR=$(srcdir)/../../cppad
 
 AM_CPPFLAGS += \
- -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
- -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
- -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
- -I`$(CYGPATH_W) $(CLPOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` \
  -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/LinAlg` \

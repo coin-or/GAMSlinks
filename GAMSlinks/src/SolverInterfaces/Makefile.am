@@ -323,6 +323,14 @@ libGamsCoin_la_LIBADD   += $(SCIPOBJDIR)/libcoinscip.la
 else
 libGamsCoin_la_LDFLAGS  += $(SCIPLIB)
 endif 
+
+if COIN_HAS_SOPLEX
+if COIN_BUILD_SOPLEX
+libGamsCoin_la_LIBADD   += $(SOPLEXOBJDIR)/libcoinsoplex.la
+else
+libGamsCoin_la_LDFLAGS  += $(SOPLEXLIB)
+endif
+endif
  
 if GAMSIO_IS_UNIX
   noinst_PROGRAMS      += gmsscdux.out

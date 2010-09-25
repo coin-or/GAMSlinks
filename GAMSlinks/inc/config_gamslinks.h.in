@@ -63,6 +63,9 @@
 /* Define to 1 if package is available */
 #undef COIN_HAS_SCIP
 
+/* Define to 1 if package is available */
+#undef COIN_HAS_SOPLEX
+
 /* Define to 1 if the Soplex package is available */
 #undef COIN_HAS_SPX
 

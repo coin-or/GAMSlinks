@@ -471,7 +471,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS F77 ADD_FFLAGS DBG_FFLAGS OPT_FFLAGS FFLAGS ac_ct_F77 MPIF77 FLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR GAMSLINKSDOCDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE LIBLTDLSRCDIR LIBLTDLOBJDIR LIBLTDLDOCDIR COIN_HAS_LIBLTDL_TRUE COIN_HAS_LIBLTDL_FALSE CGLSRCDIR CGLOBJDIR CGLDOCDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COINUTILSDOCDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR OSIDOCDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR CLPDOCDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE VOLSRCDIR VOLOBJDIR VOLDOCDIR COIN_HAS_VOL_TRUE COIN_HAS_VOL_FALSE DYLPSRCDIR DYLPOBJDIR DYLPDOCDIR COIN_HAS_DYLP_TRUE COIN_HAS_DYLP_FALSE SYMPHONYSRCDIR SYMPHONYOBJDIR SYMPHONYDOCDIR COIN_HAS_SYMPHONY_TRUE COIN_HAS_SYMPHONY_FALSE CBCSRCDIR CBCOBJDIR CBCDOCDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR IPOPTDOCDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR BONMINDOCDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE CPPADSRCDIR CPPADOBJDIR CPPADDOCDIR COIN_HAS_CPPAD_TRUE COIN_HAS_CPPAD_FALSE COUENNESRCDIR COUENNEOBJDIR COUENNEDOCDIR COIN_HAS_COUENNE_TRUE COIN_HAS_COUENNE_FALSE OSSRCDIR OSOBJDIR OSDOCDIR COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE GLPKOBJDIR COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE SCIPINCDIR SCIPLIB COIN_HAS_SCIP_TRUE COIN_HAS_SCIP_FALSE SCIPOBJDIR COIN_BUILD_SCIP_TRUE COIN_BUILD_SCIP_FALSE CPXINCDIR CPXLIB COIN_HAS_CPX_TRUE COIN_HAS_CPX_FALSE GRBINCDIR GRBLIB COIN_HAS_GRB_TRUE COIN_HAS_GRB_FALSE SPXINCDIR SPXLIB COIN_HAS_SPX_TRUE COIN_HAS_SPX_FALSE XPRINCDIR XPRLIB COIN_HAS_XPR_TRUE COIN_HAS_XPR_FALSE MSKINCDIR MSKLIB COIN_HAS_MSK_TRUE COIN_HAS_MSK_FALSE gamspath COIN_HAS_GAMSSYSTEM_TRUE COIN_HAS_GAMSSYSTEM_FALSE GAMS_PATH GAMSIO_CODE GAMSIO_CIA GAMSIO_IS_DARWIN_TRUE GAMSIO_IS_DARWIN_FALSE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE GAMSIO_PRESENT_TRUE GAMSIO_PRESENT_FALSE GAMS_ADDLIBS CIA_FLAG coin_build_clp coin_build_cbc coin_build_glpk coin_build_dylp coin_build_symphony coin_build_vol gamslinks_build_ipopt GAMSLINKS_BUILD_IPOPT_TRUE GAMSLINKS_BUILD_IPOPT_FALSE gamslinks_build_glpk GAMSLINKS_BUILD_GLPK_TRUE GAMSLINKS_BUILD_GLPK_FALSE gamslinks_build_cbc GAMSLINKS_BUILD_CBC_TRUE GAMSLINKS_BUILD_CBC_FALSE gamslinks_build_bonmin GAMSLINKS_BUILD_BONMIN_TRUE GAMSLINKS_BUILD_BONMIN_FALSE gamslinks_build_osi GAMSLINKS_BUILD_OSI_TRUE GAMSLINKS_BUILD_OSI_FALSE gamslinks_build_os GAMSLINKS_BUILD_OS_TRUE GAMSLINKS_BUILD_OS_FALSE gamslinks_build_scip GAMSLINKS_BUILD_SCIP_TRUE GAMSLINKS_BUILD_SCIP_FALSE gamslinks_build_couenne GAMSLINKS_BUILD_COUENNE_TRUE GAMSLINKS_BUILD_COUENNE_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS F77 ADD_FFLAGS DBG_FFLAGS OPT_FFLAGS FFLAGS ac_ct_F77 MPIF77 FLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR GAMSLINKSDOCDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE LIBLTDLSRCDIR LIBLTDLOBJDIR LIBLTDLDOCDIR COIN_HAS_LIBLTDL_TRUE COIN_HAS_LIBLTDL_FALSE CGLSRCDIR CGLOBJDIR CGLDOCDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COINUTILSDOCDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR OSIDOCDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR CLPDOCDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE VOLSRCDIR VOLOBJDIR VOLDOCDIR COIN_HAS_VOL_TRUE COIN_HAS_VOL_FALSE DYLPSRCDIR DYLPOBJDIR DYLPDOCDIR COIN_HAS_DYLP_TRUE COIN_HAS_DYLP_FALSE SYMPHONYSRCDIR SYMPHONYOBJDIR SYMPHONYDOCDIR COIN_HAS_SYMPHONY_TRUE COIN_HAS_SYMPHONY_FALSE CBCSRCDIR CBCOBJDIR CBCDOCDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR IPOPTDOCDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR BONMINDOCDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE CPPADSRCDIR CPPADOBJDIR CPPADDOCDIR COIN_HAS_CPPAD_TRUE COIN_HAS_CPPAD_FALSE COUENNESRCDIR COUENNEOBJDIR COUENNEDOCDIR COIN_HAS_COUENNE_TRUE COIN_HAS_COUENNE_FALSE OSSRCDIR OSOBJDIR OSDOCDIR COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE GLPKOBJDIR COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE SOPLEXINCDIR SOPLEXLIB COIN_HAS_SOPLEX_TRUE COIN_HAS_SOPLEX_FALSE SOPLEXOBJDIR COIN_BUILD_SOPLEX_TRUE COIN_BUILD_SOPLEX_FALSE SCIPINCDIR SCIPLIB COIN_HAS_SCIP_TRUE COIN_HAS_SCIP_FALSE SCIPOBJDIR COIN_BUILD_SCIP_TRUE COIN_BUILD_SCIP_FALSE CPXINCDIR CPXLIB COIN_HAS_CPX_TRUE COIN_HAS_CPX_FALSE GRBINCDIR GRBLIB COIN_HAS_GRB_TRUE COIN_HAS_GRB_FALSE SPXINCDIR SPXLIB COIN_HAS_SPX_TRUE COIN_HAS_SPX_FALSE XPRINCDIR XPRLIB COIN_HAS_XPR_TRUE COIN_HAS_XPR_FALSE MSKINCDIR MSKLIB COIN_HAS_MSK_TRUE COIN_HAS_MSK_FALSE gamspath COIN_HAS_GAMSSYSTEM_TRUE COIN_HAS_GAMSSYSTEM_FALSE GAMS_PATH GAMSIO_CODE GAMSIO_CIA GAMSIO_IS_DARWIN_TRUE GAMSIO_IS_DARWIN_FALSE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE GAMSIO_PRESENT_TRUE GAMSIO_PRESENT_FALSE GAMS_ADDLIBS CIA_FLAG coin_build_clp coin_build_cbc coin_build_glpk coin_build_dylp coin_build_symphony coin_build_vol gamslinks_build_ipopt GAMSLINKS_BUILD_IPOPT_TRUE GAMSLINKS_BUILD_IPOPT_FALSE gamslinks_build_glpk GAMSLINKS_BUILD_GLPK_TRUE GAMSLINKS_BUILD_GLPK_FALSE gamslinks_build_cbc GAMSLINKS_BUILD_CBC_TRUE GAMSLINKS_BUILD_CBC_FALSE gamslinks_build_bonmin GAMSLINKS_BUILD_BONMIN_TRUE GAMSLINKS_BUILD_BONMIN_FALSE gamslinks_build_osi GAMSLINKS_BUILD_OSI_TRUE GAMSLINKS_BUILD_OSI_FALSE gamslinks_build_os GAMSLINKS_BUILD_OS_TRUE GAMSLINKS_BUILD_OS_FALSE gamslinks_build_scip GAMSLINKS_BUILD_SCIP_TRUE GAMSLINKS_BUILD_SCIP_FALSE gamslinks_build_couenne GAMSLINKS_BUILD_COUENNE_TRUE GAMSLINKS_BUILD_COUENNE_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1114,6 +1114,9 @@ Optional Features:
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-glpk-libcheck use disable-glpk-libcheck to skip the
                           link check at configuration time
+  --enable-soplex-libcheck
+                          use disable-soplex-libcheck to skip the
+                          link check at configuration time
   --enable-scip-libcheck use disable-scip-libcheck to skip the
                           link check at configuration time
 
@@ -1121,9 +1124,6 @@ Optional Features:
                           link check at configuration time
   --enable-gurobi-libcheck
                           use disable-gurobi-libcheck to skip the
-                          link check at configuration time
-  --enable-soplex-libcheck
-                          use disable-soplex-libcheck to skip the
                           link check at configuration time
   --enable-xpress-libcheck
                           use disable-xpress-libcheck to skip the
@@ -1146,14 +1146,14 @@ Optional Packages:
                           include additional configurations [automatic]
   --with-glpk-incdir specify the header file directory for library Glpk
   --with-glpk-lib specify the flags used to link with the library Glpk
+  --with-soplex-incdir specify the header file directory for library Soplex
+  --with-soplex-lib specify the flags used to link with the library Soplex
   --with-scip-incdir specify the header file directory for library Scip
   --with-scip-lib specify the flags used to link with the library Scip
   --with-cplex-incdir specify the header file directory for library Cplex
   --with-cplex-lib specify the flags used to link with the library Cplex
   --with-gurobi-incdir specify the header file directory for library Gurobi
   --with-gurobi-lib specify the flags used to link with the library Gurobi
-  --with-soplex-incdir specify the header file directory for library Soplex
-  --with-soplex-lib specify the flags used to link with the library Soplex
   --with-xpress-incdir specify the header file directory for library Xpress
   --with-xpress-lib specify the flags used to link with the library Xpress
   --with-mosek-incdir specify the header file directory for library Mosek
@@ -26812,6 +26812,199 @@ fi
 
 
 
+##################
+# SOPLEX LIBRARY #
+##################
+
+
+if test "$PACKAGE_NAME" = ThirdPartySoplex; then
+  coin_soplexobjdir=.
+else
+  if test -d ../ThirdParty/SoPlex ; then
+    coin_soplexobjdir=../ThirdParty/SoPlex
+  elif test -d ../SoPlex ; then
+    coin_soplexobjdir=../SoPlex
+  else
+    coin_soplexobjdir=../../ThirdParty/SoPlex
+  fi
+fi
+coin_soplexsrcdir=$abs_source_dir/$coin_soplexobjdir
+
+# Check for the requested component. If the user specified an external SOPLEX
+# library don't force a ThirdParty build, let the error propagate.
+# this macro defined SOPLEXLIB, SOPLEXINCDIR.
+
+  echo "$as_me:$LINENO: checking if user provides library for Soplex" >&5
+echo $ECHO_N "checking if user provides library for Soplex... $ECHO_C" >&6
+
+# Check for header file directory
+
+
+# Check whether --with-soplex-incdir or --without-soplex-incdir was given.
+if test "${with_soplex_incdir+set}" = set; then
+  withval="$with_soplex_incdir"
+  SOPLEXINCDIR=`cd $withval; pwd`
+fi;
+
+# Check for library directory
+
+
+# Check whether --with-soplex-lib or --without-soplex-lib was given.
+if test "${with_soplex_lib+set}" = set; then
+  withval="$with_soplex_lib"
+  SOPLEXLIB=$withval
+fi;
+
+# Switch to disable library check if requested
+
+  # Check whether --enable-soplex-libcheck or --disable-soplex-libcheck was given.
+if test "${enable_soplex_libcheck+set}" = set; then
+  enableval="$enable_soplex_libcheck"
+  soplex_libcheck=$enableval
+else
+  soplex_libcheck=yes
+fi;
+
+# At this point, if we're going to use the library, both LBRYINCDIR and
+# LBRYLIB must be defined and not empty.
+
+  if test x"$SOPLEXINCDIR" != x || test x"$SOPLEXLIB" != x; then
+    if test x"$SOPLEXINCDIR" = x || test x"$SOPLEXLIB" = x; then
+      { { echo "$as_me:$LINENO: error: You need to specify both an include directory and link flags to use library Soplex. Use --with-soplex-incdir of environment variable $SOPLEXINCDIR to specify the include directory. Use --with-soplex-lib or environment variable $SOPLEXLIB to specify link flags." >&5
+echo "$as_me: error: You need to specify both an include directory and link flags to use library Soplex. Use --with-soplex-incdir of environment variable $SOPLEXINCDIR to specify the include directory. Use --with-soplex-lib or environment variable $SOPLEXLIB to specify link flags." >&2;}
+   { (exit 1); exit 1; }; }
+    fi
+    coin_has_soplex=true
+    echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+  else
+    coin_has_soplex=false
+    echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+  fi
+
+# If we have instructions for use, consider header and link checks.
+
+  if test $coin_has_soplex = true; then
+
+# If argument 3 (file) is given, check for the file. Typically this will be a
+# header file, but that's not assumed.
+
+    if test -r $SOPLEXINCDIR/soplex/src/soplex.h; then
+
+  :
+else
+  { { echo "$as_me:$LINENO: error: Cannot find file soplex/src/soplex.h in $SOPLEXINCDIR" >&5
+echo "$as_me: error: Cannot find file soplex/src/soplex.h in $SOPLEXINCDIR" >&2;}
+   { (exit 1); exit 1; }; }
+  :
+fi
+
+
+# Now see if we can link the function. There are arguments for and against
+# assuming argument 3 is a header file declaring the function. A correct
+# function declaration is the main argument in favour. Having to cope with
+# possible dependencies or other oddities are the main arguments against.
+# Force the use of C as the best single choice amongst C++, C, and Fortran.
+# Obviously, this has limits.
+
+
+
+# If we make it this far, we've verified the file and linked the function. Add
+# the necessary link flags to ADDLIBS and define the preprocessor symbol
+# COIN_HAS_LBRY.
+
+    ADDLIBS="$SOPLEXLIB $ADDLIBS"
+
+cat >>confdefs.h <<\_ACEOF
+#define COIN_HAS_SOPLEX 1
+_ACEOF
+
+  fi
+
+# Arrange for configure to substitute LBRYINCDIR and LBRYLIB and create the
+# automake conditional. These actions must occur unconditionally.
+
+
+
+
+
+if test $coin_has_soplex = true; then
+  COIN_HAS_SOPLEX_TRUE=
+  COIN_HAS_SOPLEX_FALSE='#'
+else
+  COIN_HAS_SOPLEX_TRUE='#'
+  COIN_HAS_SOPLEX_FALSE=
+fi
+
+
+
+# If the user has supplied an external library (coin_has_soplex=true), use it.
+# Otherwise, we consider a build in ThirdParty/SoPlex.
+
+if test x"$coin_has_soplex" = xfalse && test x"$SOPLEXLIB" = x ; then
+  MAKEOKFILE=.MakeOk
+  # Check if the SoPlex's ThirdParty project has been configured
+  if test "$PACKAGE_NAME" != ThirdPartySoplex; then
+    if test -r $coin_soplexobjdir/.MakeOk; then
+      use_thirdpartysoplex=build
+    else
+      use_thirdpartysoplex=no
+    fi
+  else
+    use_thirdpartysoplex=build
+  fi
+else
+  #we use user provided SoPlex
+  use_thirdpartysoplex=no
+fi
+
+# If we're building, set the library and include directory variables, create a
+# preprocessor symbol, define a variable that says we're using SoPlex, and
+# another to indicate a link check is a bad idea (hard to do before the library
+# exists).
+
+if test x"$use_thirdpartysoplex" = xbuild ; then
+  SOPLEXINCDIR="$coin_soplexsrcdir/soplex/src"
+  SOPLEXOBJDIR=`cd $coin_soplexobjdir; pwd`
+
+
+
+cat >>confdefs.h <<\_ACEOF
+#define COIN_HAS_SOPLEX 1
+_ACEOF
+
+  coin_has_soplex=true
+  soplex_libcheck=no
+  { echo "$as_me:$LINENO: Using SoPlex in ThirdParty/SoPlex" >&5
+echo "$as_me: Using SoPlex in ThirdParty/SoPlex" >&6;}
+fi
+
+# Define the necessary automake conditionals.
+
+
+
+if test x"$coin_has_soplex" = xtrue; then
+  COIN_HAS_SOPLEX_TRUE=
+  COIN_HAS_SOPLEX_FALSE='#'
+else
+  COIN_HAS_SOPLEX_TRUE='#'
+  COIN_HAS_SOPLEX_FALSE=
+fi
+
+
+
+if test x"$use_thirdpartysoplex" = xbuild; then
+  COIN_BUILD_SOPLEX_TRUE=
+  COIN_BUILD_SOPLEX_FALSE='#'
+else
+  COIN_BUILD_SOPLEX_TRUE='#'
+  COIN_BUILD_SOPLEX_FALSE=
+fi
+
+
+
+
 ################
 # SCIP LIBRARY #
 ################
@@ -26884,12 +27077,12 @@ echo "${ECHO_T}no" >&6
 # If argument 3 (file) is given, check for the file. Typically this will be a
 # header file, but that's not assumed.
 
-    if test -r $SCIPINCDIR/scip/scip.h; then
+    if test -r $SCIPINCDIR/scip/src/scip/scip.h; then
 
   :
 else
-  { { echo "$as_me:$LINENO: error: Cannot find file scip/scip.h in $SCIPINCDIR" >&5
-echo "$as_me: error: Cannot find file scip/scip.h in $SCIPINCDIR" >&2;}
+  { { echo "$as_me:$LINENO: error: Cannot find file scip/src/scip/scip.h in $SCIPINCDIR" >&5
+echo "$as_me: error: Cannot find file scip/src/scip/scip.h in $SCIPINCDIR" >&2;}
    { (exit 1); exit 1; }; }
   :
 fi
@@ -27064,7 +27257,7 @@ fi
 
 
 
-if test x"coin_has_scip" = xtrue; then
+if test x"$coin_has_scip" = xtrue; then
   COIN_HAS_SCIP_TRUE=
   COIN_HAS_SCIP_FALSE='#'
 else
@@ -29272,6 +29465,27 @@ echo "$as_me: error: conditional \"COIN_BUILD_GLPK\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${COIN_HAS_SOPLEX_TRUE}" && test -z "${COIN_HAS_SOPLEX_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_SOPLEX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COIN_HAS_SOPLEX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${COIN_HAS_SOPLEX_TRUE}" && test -z "${COIN_HAS_SOPLEX_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_SOPLEX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COIN_HAS_SOPLEX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${COIN_BUILD_SOPLEX_TRUE}" && test -z "${COIN_BUILD_SOPLEX_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COIN_BUILD_SOPLEX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COIN_BUILD_SOPLEX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${COIN_HAS_SCIP_TRUE}" && test -z "${COIN_HAS_SCIP_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_SCIP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -30158,6 +30372,13 @@ s,@COIN_HAS_GLPK_FALSE@,$COIN_HAS_GLPK_FALSE,;t t
 s,@GLPKOBJDIR@,$GLPKOBJDIR,;t t
 s,@COIN_BUILD_GLPK_TRUE@,$COIN_BUILD_GLPK_TRUE,;t t
 s,@COIN_BUILD_GLPK_FALSE@,$COIN_BUILD_GLPK_FALSE,;t t
+s,@SOPLEXINCDIR@,$SOPLEXINCDIR,;t t
+s,@SOPLEXLIB@,$SOPLEXLIB,;t t
+s,@COIN_HAS_SOPLEX_TRUE@,$COIN_HAS_SOPLEX_TRUE,;t t
+s,@COIN_HAS_SOPLEX_FALSE@,$COIN_HAS_SOPLEX_FALSE,;t t
+s,@SOPLEXOBJDIR@,$SOPLEXOBJDIR,;t t
+s,@COIN_BUILD_SOPLEX_TRUE@,$COIN_BUILD_SOPLEX_TRUE,;t t
+s,@COIN_BUILD_SOPLEX_FALSE@,$COIN_BUILD_SOPLEX_FALSE,;t t
 s,@SCIPINCDIR@,$SCIPINCDIR,;t t
 s,@SCIPLIB@,$SCIPLIB,;t t
 s,@COIN_HAS_SCIP_TRUE@,$COIN_HAS_SCIP_TRUE,;t t

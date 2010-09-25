@@ -36,7 +36,7 @@ coin_scipsrcdir=$abs_source_dir/$coin_scipobjdir
 # Check for the requested component. If the user specified an external SCIP
 # library don't force a ThirdParty build, let the error propagate.
 # this macro defined SCIPLIB, SCIPINCDIR, 
-AC_COIN_HAS_USER_LIBRARY([Scip],[SCIP],[scip/scip.h],[SCIPcreate _SCIPcreate])
+AC_COIN_HAS_USER_LIBRARY([Scip],[SCIP],[scip/src/scip/scip.h],[SCIPcreate _SCIPcreate])
 
 # If the user has supplied an external library (coin_has_scip=true), use it.
 # Otherwise, we consider a build in ThirdParty/SCIP.
@@ -76,7 +76,7 @@ fi
 
 # Define the necessary automake conditionals.
 
-AM_CONDITIONAL(COIN_HAS_SCIP, [test x"coin_has_scip" = xtrue])
+AM_CONDITIONAL(COIN_HAS_SCIP, [test x"$coin_has_scip" = xtrue])
 AM_CONDITIONAL(COIN_BUILD_SCIP, [test x"$use_thirdpartyscip" = xbuild])
 
 ]) # AC_COIN_HAS_SCIP

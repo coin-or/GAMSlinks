@@ -41,6 +41,7 @@ GAMSlinks/gamsio_addlibs.txt.in -text
 GAMSlinks/inc/config_gamslinks.h.in -text
 GAMSlinks/m4/ac_coin_gams.m4 -text
 GAMSlinks/m4/ac_coin_scip.m4 -text
+GAMSlinks/m4/ac_coin_soplex.m4 -text
 GAMSlinks/smagio_addlibs.txt.in -text
 GAMSlinks/src/Bonmin/GamsBonmin.cpp -text
 GAMSlinks/src/Bonmin/Makefile.am -text
@@ -296,7 +297,14 @@ ThirdParty/SCIP/config_scip.h.in -text
 ThirdParty/SCIP/configure -text
 ThirdParty/SCIP/configure.ac -text
 ThirdParty/SCIP/m4/ac_coin_scip.m4 -text
+ThirdParty/SCIP/m4/ac_coin_soplex.m4 -text
 ThirdParty/SCIP/scip.patch -text
+ThirdParty/SoPlex/Makefile.am -text
+ThirdParty/SoPlex/Makefile.in -text
+ThirdParty/SoPlex/config_soplex.h.in -text
+ThirdParty/SoPlex/configure -text
+ThirdParty/SoPlex/configure.ac -text
+ThirdParty/SoPlex/m4/ac_coin_soplex.m4 -text
 /coinutils.patch -text
 /compile -text
 /config.guess -text
