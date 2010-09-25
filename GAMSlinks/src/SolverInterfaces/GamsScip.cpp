@@ -211,6 +211,15 @@ int GamsScip::callSolver() {
 			starttime = gevTimeDiffStart(gev);
 
 			scipret = SCIPlpiSolveDual(lpi);
+
+			// if the initial basis is singular, Soplex do not solve the LP, so we try again by solving from scratch
+			if( !SCIPlpiIsStable(lpi) && gmoHaveBasis(gmo) )
+			{
+	      gevLogStat(gev, "\nTrying again, now starting from scratch...");
+			  scipret = SCIPlpiSetIntpar(lpi, SCIP_LPPAR_FROMSCRATCH, TRUE);
+			  assert(scipret == SCIP_OKAY);
+	      scipret = SCIPlpiSolveDual(lpi);
+			}
 		}
 
   	if (scipret == SCIP_OKAY)
@@ -879,7 +888,7 @@ SCIP_RETCODE GamsScip::setupInitialBasis() {
 	}
 
 	SCIP_CALL( SCIPlpiSetBase(lpi, cstat, rstat) );
-	SCIP_CALL( SCIPlpiSetIntpar(lpi, SCIP_LPPAR_FROMSCRATCH, 0) );
+	SCIP_CALL( SCIPlpiSetIntpar(lpi, SCIP_LPPAR_FROMSCRATCH, FALSE) );
 
 	delete[] cstat;
 	delete[] rstat;
@@ -932,6 +941,11 @@ SCIP_RETCODE GamsScip::processLPSolution(double time) {
 		gmoSolveStatSet(gmo, SolveStat_Normal);
 		gmoModelStatSet(gmo, primalfeasible ? ModelStat_Unbounded : ModelStat_UnboundedNoSolution);
 		gevLog(gev, "Problem is unbounded.");
+	} else if (SCIPlpiHasPrimalRay(lpi)) {
+	  assert(primalfeasible == FALSE);
+    gmoSolveStatSet(gmo, SolveStat_Normal);
+    gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
+    gevLog(gev, "Problem is unbounded, do not have solution.");
 	} else if (SCIPlpiIsPrimalInfeasible(lpi)) {
 		gmoSolveStatSet(gmo, SolveStat_Normal);
 		gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);

@@ -110,9 +110,11 @@ fi
 
 if test @gamslinks_build_scip@ = 1 ; then
   solvers="$solvers , ScipD"
+  skiplist="$skiplist skip('ScipD','lp03')=yes;"
+  skiplist="$skiplist skip('ScipD','sl4lp03')=yes;"
   skiplist="$skiplist skip('ScipD','semicon1')=yes;"
   skiplist="$skiplist skip('ScipD','sl4scon1')=yes;"
-  skiplist="$skiplist skip('ScipD','qcp02')=yes;"
+  #skiplist="$skiplist skip('ScipD','qcp02')=yes;"
   testlist[${#testlist[@]}]="--solver scipd --suite lp"
   testlist[${#testlist[@]}]="--solver scipd --suite mip user1=\"--MIPMCHECKS=0 rmip=scipd\""
   testlist[${#testlist[@]}]="--solver scipd --suite qcp user1=\"--QPMCHECKS=0 --TESTTOL=1e-3\""
