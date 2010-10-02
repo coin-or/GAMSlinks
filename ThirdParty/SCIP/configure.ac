@@ -57,6 +57,24 @@ AC_COIN_INIT_AUTO_TOOLS
 #AC_COIN_HAS_PROJECT(../../CoinUtils)
 #AC_COIN_HAS_PROJECT(../../Clp)
 
+LIBS_save="$LIBS"
+ADDLIBS_save="$ADDLIBS"
+AC_COIN_HAS_USER_LIBRARY([Cplex],[CPX],[cplex.h],[CPXgetstat])
+LIBS=${LIBS_save}
+ADDLIBS=${ADDLIBS_save}
+
+AC_ARG_ENABLE([scip-use-cplex],
+  [AC_HELP_STRING([--enable-scip-use-cplex],[enable using CPLEX as LP solver in SCIP, if available])],
+  [case "$enableval" in
+     no | yes) ;;
+     *)
+       AC_MSG_ERROR([invalid argument for --enable-scip-use-cplex: $enableval]);;
+   esac
+   use_cplex=$enableval],
+  [use_cplex=no])
+
+AM_CONDITIONAL(SCIP_USE_CPLEX, [test "x$coin_has_cpx$use_cplex" = xtrueyes])
+
 AC_COIN_HAS_SOPLEX
 
 AC_COIN_HAS_SCIP

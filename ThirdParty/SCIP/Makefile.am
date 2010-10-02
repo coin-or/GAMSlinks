@@ -181,6 +181,10 @@ libcoinscip_la_SOURCES = \
 			@SCIPDIR@/src/dijkstra/dijkstra_bh.c \
 			@SCIPDIR@/src/xml/xmlparse.c
 		
+if SCIP_USE_CPLEX
+libcoinscip_la_SOURCES += @SCIPDIR@/src/scip/lpi_cpx.cpp
+AM_CPPFLAGS += -I`$(CYGPATH_W) $(CPXINCDIR)`
+else		
 if COIN_HAS_SOPLEX
 #add SOPLEX as linear solver
 libcoinscip_la_SOURCES += @SCIPDIR@/src/scip/lpi_spx.cpp
@@ -197,6 +201,7 @@ AM_CPPFLAGS += \
  -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
  -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
  -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
+endif
 endif
 
 #add IPOPT as nonlinear solver

@@ -50,17 +50,18 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-
+@SCIP_USE_CPLEX_TRUE@am__append_1 = @SCIPDIR@/src/scip/lpi_cpx.cpp
+@SCIP_USE_CPLEX_TRUE@am__append_2 = -I`$(CYGPATH_W) $(CPXINCDIR)`
 #add SOPLEX as linear solver
-@COIN_HAS_SOPLEX_TRUE@am__append_1 = @SCIPDIR@/src/scip/lpi_spx.cpp
-@COIN_HAS_SOPLEX_TRUE@am__append_2 = -I`$(CYGPATH_W) $(SOPLEXINCDIR)`
+@COIN_HAS_SOPLEX_TRUE@@SCIP_USE_CPLEX_FALSE@am__append_3 = @SCIPDIR@/src/scip/lpi_spx.cpp
+@COIN_HAS_SOPLEX_TRUE@@SCIP_USE_CPLEX_FALSE@am__append_4 = -I`$(CYGPATH_W) $(SOPLEXINCDIR)`
 #add CLP as linear solver
-@COIN_HAS_SOPLEX_FALSE@am__append_3 = @SCIPDIR@/src/scip/lpi_clp.cpp
-@COIN_HAS_SOPLEX_FALSE@am__append_4 = \
-@COIN_HAS_SOPLEX_FALSE@ -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
-@COIN_HAS_SOPLEX_FALSE@ -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
-@COIN_HAS_SOPLEX_FALSE@ -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
-@COIN_HAS_SOPLEX_FALSE@ -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
+@COIN_HAS_SOPLEX_FALSE@@SCIP_USE_CPLEX_FALSE@am__append_5 = @SCIPDIR@/src/scip/lpi_clp.cpp
+@COIN_HAS_SOPLEX_FALSE@@SCIP_USE_CPLEX_FALSE@am__append_6 = \
+@COIN_HAS_SOPLEX_FALSE@@SCIP_USE_CPLEX_FALSE@ -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
+@COIN_HAS_SOPLEX_FALSE@@SCIP_USE_CPLEX_FALSE@ -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
+@COIN_HAS_SOPLEX_FALSE@@SCIP_USE_CPLEX_FALSE@ -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
+@COIN_HAS_SOPLEX_FALSE@@SCIP_USE_CPLEX_FALSE@ -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
 
 DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../BuildTools/Makemain.inc \
@@ -70,8 +71,8 @@ DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../missing $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config_scip.h.in \
 	$(top_srcdir)/configure
-@HAVE_EXTERNALS_TRUE@am__append_5 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_6 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_7 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_8 = .Externals-stamp
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_scip.m4 \
@@ -221,12 +222,13 @@ am__libcoinscip_la_SOURCES_DIST = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/nlpi/exprinterpret_cppad.cpp \
 	@SCIPDIR@/src/nlpi/intervalarith.cpp \
 	@SCIPDIR@/src/dijkstra/dijkstra_bh.c \
-	@SCIPDIR@/src/xml/xmlparse.c @SCIPDIR@/src/scip/lpi_spx.cpp \
-	@SCIPDIR@/src/scip/lpi_clp.cpp \
+	@SCIPDIR@/src/xml/xmlparse.c @SCIPDIR@/src/scip/lpi_cpx.cpp \
+	@SCIPDIR@/src/scip/lpi_spx.cpp @SCIPDIR@/src/scip/lpi_clp.cpp \
 	@SCIPDIR@/src/nlpi/nlpi_ipopt.cpp
 am__dirstamp = $(am__leading_dot)dirstamp
-@COIN_HAS_SOPLEX_TRUE@am__objects_1 = @SCIPDIR@/src/scip/lpi_spx.lo
-@COIN_HAS_SOPLEX_FALSE@am__objects_2 = @SCIPDIR@/src/scip/lpi_clp.lo
+@SCIP_USE_CPLEX_TRUE@am__objects_1 = @SCIPDIR@/src/scip/lpi_cpx.lo
+@COIN_HAS_SOPLEX_TRUE@@SCIP_USE_CPLEX_FALSE@am__objects_2 = @SCIPDIR@/src/scip/lpi_spx.lo
+@COIN_HAS_SOPLEX_FALSE@@SCIP_USE_CPLEX_FALSE@am__objects_3 = @SCIPDIR@/src/scip/lpi_clp.lo
 am_libcoinscip_la_OBJECTS = @SCIPDIR@/src/scip/branch.lo \
 	@SCIPDIR@/src/scip/bitencode.lo @SCIPDIR@/src/scip/buffer.lo \
 	@SCIPDIR@/src/scip/clock.lo @SCIPDIR@/src/scip/conflict.lo \
@@ -367,7 +369,8 @@ am_libcoinscip_la_OBJECTS = @SCIPDIR@/src/scip/branch.lo \
 	@SCIPDIR@/src/nlpi/intervalarith.lo \
 	@SCIPDIR@/src/dijkstra/dijkstra_bh.lo \
 	@SCIPDIR@/src/xml/xmlparse.lo $(am__objects_1) \
-	$(am__objects_2) @SCIPDIR@/src/nlpi/nlpi_ipopt.lo
+	$(am__objects_2) $(am__objects_3) \
+	@SCIPDIR@/src/nlpi/nlpi_ipopt.lo
 libcoinscip_la_OBJECTS = $(am_libcoinscip_la_OBJECTS)
 @COIN_BUILD_SCIP_TRUE@am_libcoinscip_la_rpath =
 depcomp = $(SHELL) $(top_srcdir)/../../depcomp
@@ -427,12 +430,16 @@ COIN_BUILD_SCIP_FALSE = @COIN_BUILD_SCIP_FALSE@
 COIN_BUILD_SCIP_TRUE = @COIN_BUILD_SCIP_TRUE@
 COIN_BUILD_SOPLEX_FALSE = @COIN_BUILD_SOPLEX_FALSE@
 COIN_BUILD_SOPLEX_TRUE = @COIN_BUILD_SOPLEX_TRUE@
+COIN_HAS_CPX_FALSE = @COIN_HAS_CPX_FALSE@
+COIN_HAS_CPX_TRUE = @COIN_HAS_CPX_TRUE@
 COIN_HAS_SCIP_FALSE = @COIN_HAS_SCIP_FALSE@
 COIN_HAS_SCIP_TRUE = @COIN_HAS_SCIP_TRUE@
 COIN_HAS_SOPLEX_FALSE = @COIN_HAS_SOPLEX_FALSE@
 COIN_HAS_SOPLEX_TRUE = @COIN_HAS_SOPLEX_TRUE@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CPXINCDIR = @CPXINCDIR@
+CPXLIB = @CPXLIB@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEFS = @CXXDEFS@
@@ -492,6 +499,8 @@ SCIPDIR = @SCIPDIR@
 SCIPINCDIR = @SCIPINCDIR@
 SCIPLIB = @SCIPLIB@
 SCIPOBJDIR = @SCIPOBJDIR@
+SCIP_USE_CPLEX_FALSE = @SCIP_USE_CPLEX_FALSE@
+SCIP_USE_CPLEX_TRUE = @SCIP_USE_CPLEX_TRUE@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SOPLEXINCDIR = @SOPLEXINCDIR@
@@ -554,12 +563,13 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = $(am__append_5)
+EXTRA_DIST = $(am__append_7)
 @COIN_BUILD_SCIP_FALSE@noinst_LTLIBRARIES = 
 @COIN_BUILD_SCIP_TRUE@noinst_LTLIBRARIES = libcoinscip.la
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)` $(am__append_2) \
-	$(am__append_4) -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
-	-I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` -I`$(CYGPATH_W) \
+	$(am__append_4) $(am__append_6) -I`$(CYGPATH_W) \
+	$(IPOPTSRCDIR)/src/Interfaces` -I`$(CYGPATH_W) \
+	$(IPOPTSRCDIR)/src/Common` -I`$(CYGPATH_W) \
 	$(IPOPTSRCDIR)/src/LinAlg` -I`$(CYGPATH_W) \
 	$(IPOPTSRCDIR)/src/Algorithm` -I`$(CYGPATH_W) \
 	$(IPOPTSRCDIR)/src/contrib/CGPenalty` -I`$(CYGPATH_W) \
@@ -703,11 +713,11 @@ libcoinscip_la_SOURCES = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/nlpi/intervalarith.cpp \
 	@SCIPDIR@/src/dijkstra/dijkstra_bh.c \
 	@SCIPDIR@/src/xml/xmlparse.c $(am__append_1) $(am__append_3) \
-	@SCIPDIR@/src/nlpi/nlpi_ipopt.cpp
-@COIN_HAS_SOPLEX_FALSE@COINUTILSSRCDIR = $(srcdir)/../../CoinUtils
-@COIN_HAS_SOPLEX_FALSE@COINUTILSOBJDIR = ../../CoinUtils
-@COIN_HAS_SOPLEX_FALSE@CLPSRCDIR = $(srcdir)/../../Clp
-@COIN_HAS_SOPLEX_FALSE@CLPOBJDIR = ../../Clp
+	$(am__append_5) @SCIPDIR@/src/nlpi/nlpi_ipopt.cpp
+@COIN_HAS_SOPLEX_FALSE@@SCIP_USE_CPLEX_FALSE@COINUTILSSRCDIR = $(srcdir)/../../CoinUtils
+@COIN_HAS_SOPLEX_FALSE@@SCIP_USE_CPLEX_FALSE@COINUTILSOBJDIR = ../../CoinUtils
+@COIN_HAS_SOPLEX_FALSE@@SCIP_USE_CPLEX_FALSE@CLPSRCDIR = $(srcdir)/../../Clp
+@COIN_HAS_SOPLEX_FALSE@@SCIP_USE_CPLEX_FALSE@CLPOBJDIR = ../../Clp
 IPOPTSRCDIR = $(srcdir)/../../Ipopt
 IPOPTOBJDIR = ../../Ipopt
 CPPADSRCDIR = $(srcdir)/../../cppad
@@ -719,7 +729,7 @@ libcoinscip_la_LDFLAGS = $(LT_LDFLAGS)
 ########################################################################
 
 # Files that are generated and should be cleaned with make distclean
-DISTCLEANFILES = $(MAKEOKFILE) $(am__append_6) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(MAKEOKFILE) $(am__append_8) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: config_scip.h
@@ -1224,6 +1234,8 @@ clean-noinstLTLIBRARIES:
 	@: > @SCIPDIR@/src/xml/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/xml/xmlparse.lo: @SCIPDIR@/src/xml/$(am__dirstamp) \
 	@SCIPDIR@/src/xml/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/lpi_cpx.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/lpi_spx.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/lpi_clp.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
@@ -1419,6 +1431,8 @@ mostlyclean-compile:
 	-rm -f @SCIPDIR@/src/scip/lp.lo
 	-rm -f @SCIPDIR@/src/scip/lpi_clp.$(OBJEXT)
 	-rm -f @SCIPDIR@/src/scip/lpi_clp.lo
+	-rm -f @SCIPDIR@/src/scip/lpi_cpx.$(OBJEXT)
+	-rm -f @SCIPDIR@/src/scip/lpi_cpx.lo
 	-rm -f @SCIPDIR@/src/scip/lpi_spx.$(OBJEXT)
 	-rm -f @SCIPDIR@/src/scip/lpi_spx.lo
 	-rm -f @SCIPDIR@/src/scip/mem.$(OBJEXT)
@@ -1663,6 +1677,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/intervalarith.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/lp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/lpi_clp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/lpi_cpx.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/lpi_spx.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/mem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/message.Plo@am__quote@

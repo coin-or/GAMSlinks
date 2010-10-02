@@ -1,5 +1,8 @@
 /* config_scip.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define to 1 if the Cplex package is available */
+#undef COIN_HAS_CPX
+
 /* Define to 1 if package is available */
 #undef COIN_HAS_SCIP
 
