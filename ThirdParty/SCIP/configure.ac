@@ -90,16 +90,11 @@ if test x"$use_thirdpartyscip" = xbuild ; then
   scipver=`awk '/define SCIP_VERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
   scipsubver=`awk '/define SCIP_SUBVERSION/ {print $3}' ${SCIPINCDIR}/scip/def.h`
   AC_MSG_RESULT([${scipver}.${scipsubver}])
-  if test x$scipver == x200 ; then
-     AM_CONDITIONAL(SCIPDEVVERSION, [test 1 = 1])
-  elif test x$scipver != x120 ; then
-    AC_MSG_ERROR(["Incorrect SCIP version. This build system is made for SCIP 120.x"])
+  if test $scipver -lt 200 ; then
+    AC_MSG_ERROR(["Incorrect SCIP version. This build system is made for SCIP >= 2.0.0"])
   fi
+	AM_CONDITIONAL(SCIPDEVVERSION, [test $scipver != 200])
   
-#  if test x$minorver = x999 ; then
-#    CFLAGS=`echo $CFLAGS | sed -e 's/-pedantic-errors//'`
-#    CXXFLAGS=`echo $CXXFLAGS | sed -e 's/-pedantic-errors//'`
-#  else
   # SCIP uses long long that result in errors if -pedantic-errors is used
   # thus, we disable this warning
   case "$CC" in
@@ -109,7 +104,7 @@ if test x"$use_thirdpartyscip" = xbuild ; then
     ;;
   esac
 #  fi
-  
+
 else
   if test x$coin_has_scip = xtrue ; then
     AC_MSG_NOTICE([The SCIP sources don't need to be compiled])

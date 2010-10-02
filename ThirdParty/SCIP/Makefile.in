@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2008, 2009 Stefan Vigerske
+# Copyright (C) 2008 - 2010 Stefan Vigerske
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 
@@ -50,54 +50,18 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@SCIPDEVVERSION_TRUE@am__append_1 = \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/cons_cumulative.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/cons_linking.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/cons_orbitope.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/cons_soc.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/expression.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/heur_shiftandpropagate.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/heur_subnlp.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/heur_twoopt.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/heur_undercover.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/heur_zirounding.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/nlp.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/prop_vbounds.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/reader_pip.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/reader_wbo.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/sepa_cgmip.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/sepa_oddcycle.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/scip/sepa_rapidlearning.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/nlpi/nlpi.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/nlpi/nlpioracle.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/nlpi/expression.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/nlpi/exprinterpret_cppad.cpp \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/nlpi/intervalarith.cpp \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/dijkstra/dijkstra_bh.c \
-@SCIPDEVVERSION_TRUE@			@SCIPDIR@/src/xml/xmlparse.c
-
-@SCIPDEVVERSION_FALSE@am__append_2 = \
-@SCIPDEVVERSION_FALSE@			@SCIPDIR@/src/scip/heur_nlp.c \
-@SCIPDEVVERSION_FALSE@			@SCIPDIR@/src/scip/nlpi.c \
-@SCIPDEVVERSION_FALSE@			@SCIPDIR@/src/scip/nlpi_oracle.c \
-@SCIPDEVVERSION_FALSE@			@SCIPDIR@/src/scip/reader_sos.c
-
 
 #add SOPLEX as linear solver
-@COIN_HAS_SOPLEX_TRUE@am__append_3 = @SCIPDIR@/src/scip/lpi_spx.cpp
-@COIN_HAS_SOPLEX_TRUE@am__append_4 = -I`$(CYGPATH_W) $(SOPLEXINCDIR)`
+@COIN_HAS_SOPLEX_TRUE@am__append_1 = @SCIPDIR@/src/scip/lpi_spx.cpp
+@COIN_HAS_SOPLEX_TRUE@am__append_2 = -I`$(CYGPATH_W) $(SOPLEXINCDIR)`
 #add CLP as linear solver
-@COIN_HAS_SOPLEX_FALSE@am__append_5 = @SCIPDIR@/src/scip/lpi_clp.cpp
-@COIN_HAS_SOPLEX_FALSE@am__append_6 = \
+@COIN_HAS_SOPLEX_FALSE@am__append_3 = @SCIPDIR@/src/scip/lpi_clp.cpp
+@COIN_HAS_SOPLEX_FALSE@am__append_4 = \
 @COIN_HAS_SOPLEX_FALSE@ -I`$(CYGPATH_W) $(COINUTILSSRCDIR)/src` \
 @COIN_HAS_SOPLEX_FALSE@ -I`$(CYGPATH_W) $(COINUTILSOBJDIR)/inc` \
 @COIN_HAS_SOPLEX_FALSE@ -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
 @COIN_HAS_SOPLEX_FALSE@ -I`$(CYGPATH_W) $(CLPOBJDIR)/inc`
 
-
-#add IPOPT as nonlinear solver
-@SCIPDEVVERSION_TRUE@am__append_7 = @SCIPDIR@/src/nlpi/nlpi_ipopt.cpp
-@SCIPDEVVERSION_FALSE@am__append_8 = @SCIPDIR@/src/scip/nlpi_ipopt.cpp
 DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../BuildTools/Makemain.inc \
 	$(srcdir)/../../compile $(srcdir)/../../config.guess \
@@ -106,8 +70,8 @@ DIST_COMMON = $(am__configure_deps) \
 	$(srcdir)/../../missing $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config_scip.h.in \
 	$(top_srcdir)/configure
-@HAVE_EXTERNALS_TRUE@am__append_9 = Externals
-@HAVE_EXTERNALS_TRUE@am__append_10 = .Externals-stamp
+@HAVE_EXTERNALS_TRUE@am__append_5 = Externals
+@HAVE_EXTERNALS_TRUE@am__append_6 = .Externals-stamp
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_scip.m4 \
@@ -128,18 +92,19 @@ am__libcoinscip_la_SOURCES_DIST = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/scip/cons.c @SCIPDIR@/src/scip/cutpool.c \
 	@SCIPDIR@/src/scip/debug.c @SCIPDIR@/src/scip/dialog.c \
 	@SCIPDIR@/src/scip/disp.c @SCIPDIR@/src/scip/event.c \
-	@SCIPDIR@/src/scip/fileio.c @SCIPDIR@/src/scip/heur.c \
-	@SCIPDIR@/src/scip/history.c @SCIPDIR@/src/scip/implics.c \
-	@SCIPDIR@/src/scip/interrupt.c \
+	@SCIPDIR@/src/scip/expression.c @SCIPDIR@/src/scip/fileio.c \
+	@SCIPDIR@/src/scip/heur.c @SCIPDIR@/src/scip/history.c \
+	@SCIPDIR@/src/scip/implics.c @SCIPDIR@/src/scip/interrupt.c \
 	@SCIPDIR@/src/scip/intervalarith.c @SCIPDIR@/src/scip/lp.c \
 	@SCIPDIR@/src/scip/mem.c @SCIPDIR@/src/scip/message.c \
-	@SCIPDIR@/src/scip/misc.c @SCIPDIR@/src/scip/nodesel.c \
-	@SCIPDIR@/src/scip/paramset.c @SCIPDIR@/src/scip/presol.c \
-	@SCIPDIR@/src/scip/pricestore.c @SCIPDIR@/src/scip/pricer.c \
-	@SCIPDIR@/src/scip/primal.c @SCIPDIR@/src/scip/prob.c \
-	@SCIPDIR@/src/scip/prop.c @SCIPDIR@/src/scip/reader.c \
-	@SCIPDIR@/src/scip/relax.c @SCIPDIR@/src/scip/retcode.c \
-	@SCIPDIR@/src/scip/scip.c @SCIPDIR@/src/scip/scipdefplugins.c \
+	@SCIPDIR@/src/scip/misc.c @SCIPDIR@/src/scip/nlp.c \
+	@SCIPDIR@/src/scip/nodesel.c @SCIPDIR@/src/scip/paramset.c \
+	@SCIPDIR@/src/scip/presol.c @SCIPDIR@/src/scip/pricestore.c \
+	@SCIPDIR@/src/scip/pricer.c @SCIPDIR@/src/scip/primal.c \
+	@SCIPDIR@/src/scip/prob.c @SCIPDIR@/src/scip/prop.c \
+	@SCIPDIR@/src/scip/reader.c @SCIPDIR@/src/scip/relax.c \
+	@SCIPDIR@/src/scip/retcode.c @SCIPDIR@/src/scip/scip.c \
+	@SCIPDIR@/src/scip/scipdefplugins.c \
 	@SCIPDIR@/src/scip/scipshell.c @SCIPDIR@/src/scip/sepa.c \
 	@SCIPDIR@/src/scip/sepastore.c @SCIPDIR@/src/scip/set.c \
 	@SCIPDIR@/src/scip/sol.c @SCIPDIR@/src/scip/solve.c \
@@ -170,6 +135,10 @@ am__libcoinscip_la_SOURCES_DIST = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/scip/cons_countsols.c \
 	@SCIPDIR@/src/scip/cons_sos1.c @SCIPDIR@/src/scip/cons_sos2.c \
 	@SCIPDIR@/src/scip/cons_quadratic.c \
+	@SCIPDIR@/src/scip/cons_cumulative.c \
+	@SCIPDIR@/src/scip/cons_linking.c \
+	@SCIPDIR@/src/scip/cons_orbitope.c \
+	@SCIPDIR@/src/scip/cons_soc.c \
 	@SCIPDIR@/src/scip/dialog_default.c \
 	@SCIPDIR@/src/scip/disp_default.c \
 	@SCIPDIR@/src/scip/heur_actconsdiving.c \
@@ -197,6 +166,11 @@ am__libcoinscip_la_SOURCES_DIST = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/scip/heur_dins.c \
 	@SCIPDIR@/src/scip/heur_trivial.c \
 	@SCIPDIR@/src/scip/heur_trysol.c \
+	@SCIPDIR@/src/scip/heur_shiftandpropagate.c \
+	@SCIPDIR@/src/scip/heur_subnlp.c \
+	@SCIPDIR@/src/scip/heur_twoopt.c \
+	@SCIPDIR@/src/scip/heur_undercover.c \
+	@SCIPDIR@/src/scip/heur_zirounding.c \
 	@SCIPDIR@/src/scip/nodesel_bfs.c \
 	@SCIPDIR@/src/scip/nodesel_dfs.c \
 	@SCIPDIR@/src/scip/nodesel_estimate.c \
@@ -210,6 +184,7 @@ am__libcoinscip_la_SOURCES_DIST = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/scip/presol_boundshift.c \
 	@SCIPDIR@/src/scip/prop_pseudoobj.c \
 	@SCIPDIR@/src/scip/prop_rootredcost.c \
+	@SCIPDIR@/src/scip/prop_vbounds.c \
 	@SCIPDIR@/src/scip/reader_cnf.c \
 	@SCIPDIR@/src/scip/reader_fix.c @SCIPDIR@/src/scip/reader_lp.c \
 	@SCIPDIR@/src/scip/reader_mps.c \
@@ -222,6 +197,8 @@ am__libcoinscip_la_SOURCES_DIST = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/scip/reader_rlp.c \
 	@SCIPDIR@/src/scip/reader_gms.c \
 	@SCIPDIR@/src/scip/reader_fzn.c \
+	@SCIPDIR@/src/scip/reader_pip.c \
+	@SCIPDIR@/src/scip/reader_wbo.c \
 	@SCIPDIR@/src/scip/sepa_clique.c \
 	@SCIPDIR@/src/scip/sepa_cmir.c \
 	@SCIPDIR@/src/scip/sepa_flowcover.c \
@@ -232,89 +209,42 @@ am__libcoinscip_la_SOURCES_DIST = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/scip/sepa_strongcg.c \
 	@SCIPDIR@/src/scip/sepa_mcf.c \
 	@SCIPDIR@/src/scip/sepa_zerohalf.c \
-	@SCIPDIR@/src/tclique/tclique_branch.c \
-	@SCIPDIR@/src/tclique/tclique_coloring.c \
-	@SCIPDIR@/src/tclique/tclique_graph.c \
-	@SCIPDIR@/src/blockmemshell/memory.c \
-	@SCIPDIR@/src/scip/cons_cumulative.c \
-	@SCIPDIR@/src/scip/cons_linking.c \
-	@SCIPDIR@/src/scip/cons_orbitope.c \
-	@SCIPDIR@/src/scip/cons_soc.c @SCIPDIR@/src/scip/expression.c \
-	@SCIPDIR@/src/scip/heur_shiftandpropagate.c \
-	@SCIPDIR@/src/scip/heur_subnlp.c \
-	@SCIPDIR@/src/scip/heur_twoopt.c \
-	@SCIPDIR@/src/scip/heur_undercover.c \
-	@SCIPDIR@/src/scip/heur_zirounding.c @SCIPDIR@/src/scip/nlp.c \
-	@SCIPDIR@/src/scip/prop_vbounds.c \
-	@SCIPDIR@/src/scip/reader_pip.c \
-	@SCIPDIR@/src/scip/reader_wbo.c \
 	@SCIPDIR@/src/scip/sepa_cgmip.c \
 	@SCIPDIR@/src/scip/sepa_oddcycle.c \
 	@SCIPDIR@/src/scip/sepa_rapidlearning.c \
-	@SCIPDIR@/src/nlpi/nlpi.c @SCIPDIR@/src/nlpi/nlpioracle.c \
+	@SCIPDIR@/src/tclique/tclique_branch.c \
+	@SCIPDIR@/src/tclique/tclique_coloring.c \
+	@SCIPDIR@/src/tclique/tclique_graph.c \
+	@SCIPDIR@/src/blockmemshell/memory.c @SCIPDIR@/src/nlpi/nlpi.c \
+	@SCIPDIR@/src/nlpi/nlpioracle.c \
 	@SCIPDIR@/src/nlpi/expression.c \
 	@SCIPDIR@/src/nlpi/exprinterpret_cppad.cpp \
 	@SCIPDIR@/src/nlpi/intervalarith.cpp \
 	@SCIPDIR@/src/dijkstra/dijkstra_bh.c \
-	@SCIPDIR@/src/xml/xmlparse.c @SCIPDIR@/src/scip/heur_nlp.c \
-	@SCIPDIR@/src/scip/nlpi.c @SCIPDIR@/src/scip/nlpi_oracle.c \
-	@SCIPDIR@/src/scip/reader_sos.c @SCIPDIR@/src/scip/lpi_spx.cpp \
+	@SCIPDIR@/src/xml/xmlparse.c @SCIPDIR@/src/scip/lpi_spx.cpp \
 	@SCIPDIR@/src/scip/lpi_clp.cpp \
-	@SCIPDIR@/src/nlpi/nlpi_ipopt.cpp \
-	@SCIPDIR@/src/scip/nlpi_ipopt.cpp
+	@SCIPDIR@/src/nlpi/nlpi_ipopt.cpp
 am__dirstamp = $(am__leading_dot)dirstamp
-@SCIPDEVVERSION_TRUE@am__objects_1 =  \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/cons_cumulative.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/cons_linking.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/cons_orbitope.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/cons_soc.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/expression.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/heur_shiftandpropagate.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/heur_subnlp.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/heur_twoopt.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/heur_undercover.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/heur_zirounding.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/nlp.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/prop_vbounds.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/reader_pip.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/reader_wbo.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/sepa_cgmip.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/sepa_oddcycle.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/scip/sepa_rapidlearning.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/nlpi/nlpi.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/nlpi/nlpioracle.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/nlpi/expression.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/nlpi/exprinterpret_cppad.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/nlpi/intervalarith.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/dijkstra/dijkstra_bh.lo \
-@SCIPDEVVERSION_TRUE@	@SCIPDIR@/src/xml/xmlparse.lo
-@SCIPDEVVERSION_FALSE@am__objects_2 = @SCIPDIR@/src/scip/heur_nlp.lo \
-@SCIPDEVVERSION_FALSE@	@SCIPDIR@/src/scip/nlpi.lo \
-@SCIPDEVVERSION_FALSE@	@SCIPDIR@/src/scip/nlpi_oracle.lo \
-@SCIPDEVVERSION_FALSE@	@SCIPDIR@/src/scip/reader_sos.lo
-@COIN_HAS_SOPLEX_TRUE@am__objects_3 = @SCIPDIR@/src/scip/lpi_spx.lo
-@COIN_HAS_SOPLEX_FALSE@am__objects_4 = @SCIPDIR@/src/scip/lpi_clp.lo
-@SCIPDEVVERSION_TRUE@am__objects_5 = @SCIPDIR@/src/nlpi/nlpi_ipopt.lo
-@SCIPDEVVERSION_FALSE@am__objects_6 =  \
-@SCIPDEVVERSION_FALSE@	@SCIPDIR@/src/scip/nlpi_ipopt.lo
+@COIN_HAS_SOPLEX_TRUE@am__objects_1 = @SCIPDIR@/src/scip/lpi_spx.lo
+@COIN_HAS_SOPLEX_FALSE@am__objects_2 = @SCIPDIR@/src/scip/lpi_clp.lo
 am_libcoinscip_la_OBJECTS = @SCIPDIR@/src/scip/branch.lo \
 	@SCIPDIR@/src/scip/bitencode.lo @SCIPDIR@/src/scip/buffer.lo \
 	@SCIPDIR@/src/scip/clock.lo @SCIPDIR@/src/scip/conflict.lo \
 	@SCIPDIR@/src/scip/cons.lo @SCIPDIR@/src/scip/cutpool.lo \
 	@SCIPDIR@/src/scip/debug.lo @SCIPDIR@/src/scip/dialog.lo \
 	@SCIPDIR@/src/scip/disp.lo @SCIPDIR@/src/scip/event.lo \
-	@SCIPDIR@/src/scip/fileio.lo @SCIPDIR@/src/scip/heur.lo \
-	@SCIPDIR@/src/scip/history.lo @SCIPDIR@/src/scip/implics.lo \
-	@SCIPDIR@/src/scip/interrupt.lo \
+	@SCIPDIR@/src/scip/expression.lo @SCIPDIR@/src/scip/fileio.lo \
+	@SCIPDIR@/src/scip/heur.lo @SCIPDIR@/src/scip/history.lo \
+	@SCIPDIR@/src/scip/implics.lo @SCIPDIR@/src/scip/interrupt.lo \
 	@SCIPDIR@/src/scip/intervalarith.lo @SCIPDIR@/src/scip/lp.lo \
 	@SCIPDIR@/src/scip/mem.lo @SCIPDIR@/src/scip/message.lo \
-	@SCIPDIR@/src/scip/misc.lo @SCIPDIR@/src/scip/nodesel.lo \
-	@SCIPDIR@/src/scip/paramset.lo @SCIPDIR@/src/scip/presol.lo \
-	@SCIPDIR@/src/scip/pricestore.lo @SCIPDIR@/src/scip/pricer.lo \
-	@SCIPDIR@/src/scip/primal.lo @SCIPDIR@/src/scip/prob.lo \
-	@SCIPDIR@/src/scip/prop.lo @SCIPDIR@/src/scip/reader.lo \
-	@SCIPDIR@/src/scip/relax.lo @SCIPDIR@/src/scip/retcode.lo \
-	@SCIPDIR@/src/scip/scip.lo \
+	@SCIPDIR@/src/scip/misc.lo @SCIPDIR@/src/scip/nlp.lo \
+	@SCIPDIR@/src/scip/nodesel.lo @SCIPDIR@/src/scip/paramset.lo \
+	@SCIPDIR@/src/scip/presol.lo @SCIPDIR@/src/scip/pricestore.lo \
+	@SCIPDIR@/src/scip/pricer.lo @SCIPDIR@/src/scip/primal.lo \
+	@SCIPDIR@/src/scip/prob.lo @SCIPDIR@/src/scip/prop.lo \
+	@SCIPDIR@/src/scip/reader.lo @SCIPDIR@/src/scip/relax.lo \
+	@SCIPDIR@/src/scip/retcode.lo @SCIPDIR@/src/scip/scip.lo \
 	@SCIPDIR@/src/scip/scipdefplugins.lo \
 	@SCIPDIR@/src/scip/scipshell.lo @SCIPDIR@/src/scip/sepa.lo \
 	@SCIPDIR@/src/scip/sepastore.lo @SCIPDIR@/src/scip/set.lo \
@@ -348,6 +278,10 @@ am_libcoinscip_la_OBJECTS = @SCIPDIR@/src/scip/branch.lo \
 	@SCIPDIR@/src/scip/cons_sos1.lo \
 	@SCIPDIR@/src/scip/cons_sos2.lo \
 	@SCIPDIR@/src/scip/cons_quadratic.lo \
+	@SCIPDIR@/src/scip/cons_cumulative.lo \
+	@SCIPDIR@/src/scip/cons_linking.lo \
+	@SCIPDIR@/src/scip/cons_orbitope.lo \
+	@SCIPDIR@/src/scip/cons_soc.lo \
 	@SCIPDIR@/src/scip/dialog_default.lo \
 	@SCIPDIR@/src/scip/disp_default.lo \
 	@SCIPDIR@/src/scip/heur_actconsdiving.lo \
@@ -376,6 +310,11 @@ am_libcoinscip_la_OBJECTS = @SCIPDIR@/src/scip/branch.lo \
 	@SCIPDIR@/src/scip/heur_dins.lo \
 	@SCIPDIR@/src/scip/heur_trivial.lo \
 	@SCIPDIR@/src/scip/heur_trysol.lo \
+	@SCIPDIR@/src/scip/heur_shiftandpropagate.lo \
+	@SCIPDIR@/src/scip/heur_subnlp.lo \
+	@SCIPDIR@/src/scip/heur_twoopt.lo \
+	@SCIPDIR@/src/scip/heur_undercover.lo \
+	@SCIPDIR@/src/scip/heur_zirounding.lo \
 	@SCIPDIR@/src/scip/nodesel_bfs.lo \
 	@SCIPDIR@/src/scip/nodesel_dfs.lo \
 	@SCIPDIR@/src/scip/nodesel_estimate.lo \
@@ -389,6 +328,7 @@ am_libcoinscip_la_OBJECTS = @SCIPDIR@/src/scip/branch.lo \
 	@SCIPDIR@/src/scip/presol_boundshift.lo \
 	@SCIPDIR@/src/scip/prop_pseudoobj.lo \
 	@SCIPDIR@/src/scip/prop_rootredcost.lo \
+	@SCIPDIR@/src/scip/prop_vbounds.lo \
 	@SCIPDIR@/src/scip/reader_cnf.lo \
 	@SCIPDIR@/src/scip/reader_fix.lo \
 	@SCIPDIR@/src/scip/reader_lp.lo \
@@ -402,6 +342,8 @@ am_libcoinscip_la_OBJECTS = @SCIPDIR@/src/scip/branch.lo \
 	@SCIPDIR@/src/scip/reader_rlp.lo \
 	@SCIPDIR@/src/scip/reader_gms.lo \
 	@SCIPDIR@/src/scip/reader_fzn.lo \
+	@SCIPDIR@/src/scip/reader_pip.lo \
+	@SCIPDIR@/src/scip/reader_wbo.lo \
 	@SCIPDIR@/src/scip/sepa_clique.lo \
 	@SCIPDIR@/src/scip/sepa_cmir.lo \
 	@SCIPDIR@/src/scip/sepa_flowcover.lo \
@@ -412,12 +354,20 @@ am_libcoinscip_la_OBJECTS = @SCIPDIR@/src/scip/branch.lo \
 	@SCIPDIR@/src/scip/sepa_strongcg.lo \
 	@SCIPDIR@/src/scip/sepa_mcf.lo \
 	@SCIPDIR@/src/scip/sepa_zerohalf.lo \
+	@SCIPDIR@/src/scip/sepa_cgmip.lo \
+	@SCIPDIR@/src/scip/sepa_oddcycle.lo \
+	@SCIPDIR@/src/scip/sepa_rapidlearning.lo \
 	@SCIPDIR@/src/tclique/tclique_branch.lo \
 	@SCIPDIR@/src/tclique/tclique_coloring.lo \
 	@SCIPDIR@/src/tclique/tclique_graph.lo \
-	@SCIPDIR@/src/blockmemshell/memory.lo $(am__objects_1) \
-	$(am__objects_2) $(am__objects_3) $(am__objects_4) \
-	$(am__objects_5) $(am__objects_6)
+	@SCIPDIR@/src/blockmemshell/memory.lo \
+	@SCIPDIR@/src/nlpi/nlpi.lo @SCIPDIR@/src/nlpi/nlpioracle.lo \
+	@SCIPDIR@/src/nlpi/expression.lo \
+	@SCIPDIR@/src/nlpi/exprinterpret_cppad.lo \
+	@SCIPDIR@/src/nlpi/intervalarith.lo \
+	@SCIPDIR@/src/dijkstra/dijkstra_bh.lo \
+	@SCIPDIR@/src/xml/xmlparse.lo $(am__objects_1) \
+	$(am__objects_2) @SCIPDIR@/src/nlpi/nlpi_ipopt.lo
 libcoinscip_la_OBJECTS = $(am_libcoinscip_la_OBJECTS)
 @COIN_BUILD_SCIP_TRUE@am_libcoinscip_la_rpath =
 depcomp = $(SHELL) $(top_srcdir)/../../depcomp
@@ -604,35 +554,38 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = $(am__append_9)
+EXTRA_DIST = $(am__append_5)
 @COIN_BUILD_SCIP_FALSE@noinst_LTLIBRARIES = 
 @COIN_BUILD_SCIP_TRUE@noinst_LTLIBRARIES = libcoinscip.la
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)` $(am__append_4) \
-	$(am__append_6) -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(SCIPINCDIR)` $(am__append_2) \
+	$(am__append_4) -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
 	-I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Common` -I`$(CYGPATH_W) \
 	$(IPOPTSRCDIR)/src/LinAlg` -I`$(CYGPATH_W) \
 	$(IPOPTSRCDIR)/src/Algorithm` -I`$(CYGPATH_W) \
 	$(IPOPTSRCDIR)/src/contrib/CGPenalty` -I`$(CYGPATH_W) \
 	$(IPOPTSRCDIR)/src/contrib/LinearSolverLoader` -I`$(CYGPATH_W) \
 	$(IPOPTOBJDIR)/inc` -I`$(CYGPATH_W) $(CPPADSRCDIR)`
+
+#add IPOPT as nonlinear solver
 libcoinscip_la_SOURCES = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/scip/bitencode.c @SCIPDIR@/src/scip/buffer.c \
 	@SCIPDIR@/src/scip/clock.c @SCIPDIR@/src/scip/conflict.c \
 	@SCIPDIR@/src/scip/cons.c @SCIPDIR@/src/scip/cutpool.c \
 	@SCIPDIR@/src/scip/debug.c @SCIPDIR@/src/scip/dialog.c \
 	@SCIPDIR@/src/scip/disp.c @SCIPDIR@/src/scip/event.c \
-	@SCIPDIR@/src/scip/fileio.c @SCIPDIR@/src/scip/heur.c \
-	@SCIPDIR@/src/scip/history.c @SCIPDIR@/src/scip/implics.c \
-	@SCIPDIR@/src/scip/interrupt.c \
+	@SCIPDIR@/src/scip/expression.c @SCIPDIR@/src/scip/fileio.c \
+	@SCIPDIR@/src/scip/heur.c @SCIPDIR@/src/scip/history.c \
+	@SCIPDIR@/src/scip/implics.c @SCIPDIR@/src/scip/interrupt.c \
 	@SCIPDIR@/src/scip/intervalarith.c @SCIPDIR@/src/scip/lp.c \
 	@SCIPDIR@/src/scip/mem.c @SCIPDIR@/src/scip/message.c \
-	@SCIPDIR@/src/scip/misc.c @SCIPDIR@/src/scip/nodesel.c \
-	@SCIPDIR@/src/scip/paramset.c @SCIPDIR@/src/scip/presol.c \
-	@SCIPDIR@/src/scip/pricestore.c @SCIPDIR@/src/scip/pricer.c \
-	@SCIPDIR@/src/scip/primal.c @SCIPDIR@/src/scip/prob.c \
-	@SCIPDIR@/src/scip/prop.c @SCIPDIR@/src/scip/reader.c \
-	@SCIPDIR@/src/scip/relax.c @SCIPDIR@/src/scip/retcode.c \
-	@SCIPDIR@/src/scip/scip.c @SCIPDIR@/src/scip/scipdefplugins.c \
+	@SCIPDIR@/src/scip/misc.c @SCIPDIR@/src/scip/nlp.c \
+	@SCIPDIR@/src/scip/nodesel.c @SCIPDIR@/src/scip/paramset.c \
+	@SCIPDIR@/src/scip/presol.c @SCIPDIR@/src/scip/pricestore.c \
+	@SCIPDIR@/src/scip/pricer.c @SCIPDIR@/src/scip/primal.c \
+	@SCIPDIR@/src/scip/prob.c @SCIPDIR@/src/scip/prop.c \
+	@SCIPDIR@/src/scip/reader.c @SCIPDIR@/src/scip/relax.c \
+	@SCIPDIR@/src/scip/retcode.c @SCIPDIR@/src/scip/scip.c \
+	@SCIPDIR@/src/scip/scipdefplugins.c \
 	@SCIPDIR@/src/scip/scipshell.c @SCIPDIR@/src/scip/sepa.c \
 	@SCIPDIR@/src/scip/sepastore.c @SCIPDIR@/src/scip/set.c \
 	@SCIPDIR@/src/scip/sol.c @SCIPDIR@/src/scip/solve.c \
@@ -663,6 +616,10 @@ libcoinscip_la_SOURCES = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/scip/cons_countsols.c \
 	@SCIPDIR@/src/scip/cons_sos1.c @SCIPDIR@/src/scip/cons_sos2.c \
 	@SCIPDIR@/src/scip/cons_quadratic.c \
+	@SCIPDIR@/src/scip/cons_cumulative.c \
+	@SCIPDIR@/src/scip/cons_linking.c \
+	@SCIPDIR@/src/scip/cons_orbitope.c \
+	@SCIPDIR@/src/scip/cons_soc.c \
 	@SCIPDIR@/src/scip/dialog_default.c \
 	@SCIPDIR@/src/scip/disp_default.c \
 	@SCIPDIR@/src/scip/heur_actconsdiving.c \
@@ -690,6 +647,11 @@ libcoinscip_la_SOURCES = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/scip/heur_dins.c \
 	@SCIPDIR@/src/scip/heur_trivial.c \
 	@SCIPDIR@/src/scip/heur_trysol.c \
+	@SCIPDIR@/src/scip/heur_shiftandpropagate.c \
+	@SCIPDIR@/src/scip/heur_subnlp.c \
+	@SCIPDIR@/src/scip/heur_twoopt.c \
+	@SCIPDIR@/src/scip/heur_undercover.c \
+	@SCIPDIR@/src/scip/heur_zirounding.c \
 	@SCIPDIR@/src/scip/nodesel_bfs.c \
 	@SCIPDIR@/src/scip/nodesel_dfs.c \
 	@SCIPDIR@/src/scip/nodesel_estimate.c \
@@ -703,6 +665,7 @@ libcoinscip_la_SOURCES = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/scip/presol_boundshift.c \
 	@SCIPDIR@/src/scip/prop_pseudoobj.c \
 	@SCIPDIR@/src/scip/prop_rootredcost.c \
+	@SCIPDIR@/src/scip/prop_vbounds.c \
 	@SCIPDIR@/src/scip/reader_cnf.c \
 	@SCIPDIR@/src/scip/reader_fix.c @SCIPDIR@/src/scip/reader_lp.c \
 	@SCIPDIR@/src/scip/reader_mps.c \
@@ -715,6 +678,8 @@ libcoinscip_la_SOURCES = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/scip/reader_rlp.c \
 	@SCIPDIR@/src/scip/reader_gms.c \
 	@SCIPDIR@/src/scip/reader_fzn.c \
+	@SCIPDIR@/src/scip/reader_pip.c \
+	@SCIPDIR@/src/scip/reader_wbo.c \
 	@SCIPDIR@/src/scip/sepa_clique.c \
 	@SCIPDIR@/src/scip/sepa_cmir.c \
 	@SCIPDIR@/src/scip/sepa_flowcover.c \
@@ -725,12 +690,20 @@ libcoinscip_la_SOURCES = @SCIPDIR@/src/scip/branch.c \
 	@SCIPDIR@/src/scip/sepa_strongcg.c \
 	@SCIPDIR@/src/scip/sepa_mcf.c \
 	@SCIPDIR@/src/scip/sepa_zerohalf.c \
+	@SCIPDIR@/src/scip/sepa_cgmip.c \
+	@SCIPDIR@/src/scip/sepa_oddcycle.c \
+	@SCIPDIR@/src/scip/sepa_rapidlearning.c \
 	@SCIPDIR@/src/tclique/tclique_branch.c \
 	@SCIPDIR@/src/tclique/tclique_coloring.c \
 	@SCIPDIR@/src/tclique/tclique_graph.c \
-	@SCIPDIR@/src/blockmemshell/memory.c $(am__append_1) \
-	$(am__append_2) $(am__append_3) $(am__append_5) \
-	$(am__append_7) $(am__append_8)
+	@SCIPDIR@/src/blockmemshell/memory.c @SCIPDIR@/src/nlpi/nlpi.c \
+	@SCIPDIR@/src/nlpi/nlpioracle.c \
+	@SCIPDIR@/src/nlpi/expression.c \
+	@SCIPDIR@/src/nlpi/exprinterpret_cppad.cpp \
+	@SCIPDIR@/src/nlpi/intervalarith.cpp \
+	@SCIPDIR@/src/dijkstra/dijkstra_bh.c \
+	@SCIPDIR@/src/xml/xmlparse.c $(am__append_1) $(am__append_3) \
+	@SCIPDIR@/src/nlpi/nlpi_ipopt.cpp
 @COIN_HAS_SOPLEX_FALSE@COINUTILSSRCDIR = $(srcdir)/../../CoinUtils
 @COIN_HAS_SOPLEX_FALSE@COINUTILSOBJDIR = ../../CoinUtils
 @COIN_HAS_SOPLEX_FALSE@CLPSRCDIR = $(srcdir)/../../Clp
@@ -746,8 +719,7 @@ libcoinscip_la_LDFLAGS = $(LT_LDFLAGS)
 ########################################################################
 
 # Files that are generated and should be cleaned with make distclean
-DISTCLEANFILES = $(MAKEOKFILE) $(am__append_10) \
-	$(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(MAKEOKFILE) $(am__append_6) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
 all: config_scip.h
@@ -842,6 +814,8 @@ clean-noinstLTLIBRARIES:
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/event.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/expression.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/fileio.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/heur.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
@@ -862,6 +836,8 @@ clean-noinstLTLIBRARIES:
 @SCIPDIR@/src/scip/message.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/misc.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/nlp.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/nodesel.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
@@ -984,6 +960,17 @@ clean-noinstLTLIBRARIES:
 @SCIPDIR@/src/scip/cons_quadratic.lo:  \
 	@SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/cons_cumulative.lo:  \
+	@SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/cons_linking.lo:  \
+	@SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/cons_orbitope.lo:  \
+	@SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/cons_soc.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/dialog_default.lo:  \
 	@SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
@@ -1062,6 +1049,19 @@ clean-noinstLTLIBRARIES:
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/heur_trysol.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/heur_shiftandpropagate.lo:  \
+	@SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/heur_subnlp.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/heur_twoopt.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/heur_undercover.lo:  \
+	@SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/heur_zirounding.lo:  \
+	@SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/nodesel_bfs.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/nodesel_dfs.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
@@ -1099,6 +1099,9 @@ clean-noinstLTLIBRARIES:
 @SCIPDIR@/src/scip/prop_rootredcost.lo:  \
 	@SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/prop_vbounds.lo:  \
+	@SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/reader_cnf.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/reader_fix.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
@@ -1125,6 +1128,10 @@ clean-noinstLTLIBRARIES:
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/reader_fzn.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/reader_pip.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/reader_wbo.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/sepa_clique.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/sepa_cmir.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
@@ -1148,6 +1155,14 @@ clean-noinstLTLIBRARIES:
 @SCIPDIR@/src/scip/sepa_mcf.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/sepa_zerohalf.lo:  \
+	@SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/sepa_cgmip.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/sepa_oddcycle.lo:  \
+	@SCIPDIR@/src/scip/$(am__dirstamp) \
+	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
+@SCIPDIR@/src/scip/sepa_rapidlearning.lo:  \
 	@SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/tclique/$(am__dirstamp):
@@ -1174,49 +1189,6 @@ clean-noinstLTLIBRARIES:
 @SCIPDIR@/src/blockmemshell/memory.lo:  \
 	@SCIPDIR@/src/blockmemshell/$(am__dirstamp) \
 	@SCIPDIR@/src/blockmemshell/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/cons_cumulative.lo:  \
-	@SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/cons_linking.lo:  \
-	@SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/cons_orbitope.lo:  \
-	@SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/cons_soc.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/expression.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/heur_shiftandpropagate.lo:  \
-	@SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/heur_subnlp.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/heur_twoopt.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/heur_undercover.lo:  \
-	@SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/heur_zirounding.lo:  \
-	@SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/nlp.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/prop_vbounds.lo:  \
-	@SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/reader_pip.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/reader_wbo.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/sepa_cgmip.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/sepa_oddcycle.lo:  \
-	@SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/sepa_rapidlearning.lo:  \
-	@SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/nlpi/$(am__dirstamp):
 	@$(mkdir_p) @SCIPDIR@/src/nlpi
 	@: > @SCIPDIR@/src/nlpi/$(am__dirstamp)
@@ -1252,22 +1224,12 @@ clean-noinstLTLIBRARIES:
 	@: > @SCIPDIR@/src/xml/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/xml/xmlparse.lo: @SCIPDIR@/src/xml/$(am__dirstamp) \
 	@SCIPDIR@/src/xml/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/heur_nlp.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/nlpi.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/nlpi_oracle.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/reader_sos.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/lpi_spx.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/scip/lpi_clp.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
 	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 @SCIPDIR@/src/nlpi/nlpi_ipopt.lo: @SCIPDIR@/src/nlpi/$(am__dirstamp) \
 	@SCIPDIR@/src/nlpi/$(DEPDIR)/$(am__dirstamp)
-@SCIPDIR@/src/scip/nlpi_ipopt.lo: @SCIPDIR@/src/scip/$(am__dirstamp) \
-	@SCIPDIR@/src/scip/$(DEPDIR)/$(am__dirstamp)
 libcoinscip.la: $(libcoinscip_la_OBJECTS) $(libcoinscip_la_DEPENDENCIES) 
 	$(CXXLINK) $(am_libcoinscip_la_rpath) $(libcoinscip_la_LDFLAGS) $(libcoinscip_la_OBJECTS) $(libcoinscip_la_LIBADD) $(LIBS)
 
@@ -1409,8 +1371,6 @@ mostlyclean-compile:
 	-rm -f @SCIPDIR@/src/scip/heur_localbranching.lo
 	-rm -f @SCIPDIR@/src/scip/heur_mutation.$(OBJEXT)
 	-rm -f @SCIPDIR@/src/scip/heur_mutation.lo
-	-rm -f @SCIPDIR@/src/scip/heur_nlp.$(OBJEXT)
-	-rm -f @SCIPDIR@/src/scip/heur_nlp.lo
 	-rm -f @SCIPDIR@/src/scip/heur_objpscostdiving.$(OBJEXT)
 	-rm -f @SCIPDIR@/src/scip/heur_objpscostdiving.lo
 	-rm -f @SCIPDIR@/src/scip/heur_octane.$(OBJEXT)
@@ -1469,12 +1429,6 @@ mostlyclean-compile:
 	-rm -f @SCIPDIR@/src/scip/misc.lo
 	-rm -f @SCIPDIR@/src/scip/nlp.$(OBJEXT)
 	-rm -f @SCIPDIR@/src/scip/nlp.lo
-	-rm -f @SCIPDIR@/src/scip/nlpi.$(OBJEXT)
-	-rm -f @SCIPDIR@/src/scip/nlpi.lo
-	-rm -f @SCIPDIR@/src/scip/nlpi_ipopt.$(OBJEXT)
-	-rm -f @SCIPDIR@/src/scip/nlpi_ipopt.lo
-	-rm -f @SCIPDIR@/src/scip/nlpi_oracle.$(OBJEXT)
-	-rm -f @SCIPDIR@/src/scip/nlpi_oracle.lo
 	-rm -f @SCIPDIR@/src/scip/nodesel.$(OBJEXT)
 	-rm -f @SCIPDIR@/src/scip/nodesel.lo
 	-rm -f @SCIPDIR@/src/scip/nodesel_bfs.$(OBJEXT)
@@ -1547,8 +1501,6 @@ mostlyclean-compile:
 	-rm -f @SCIPDIR@/src/scip/reader_rlp.lo
 	-rm -f @SCIPDIR@/src/scip/reader_sol.$(OBJEXT)
 	-rm -f @SCIPDIR@/src/scip/reader_sol.lo
-	-rm -f @SCIPDIR@/src/scip/reader_sos.$(OBJEXT)
-	-rm -f @SCIPDIR@/src/scip/reader_sos.lo
 	-rm -f @SCIPDIR@/src/scip/reader_wbo.$(OBJEXT)
 	-rm -f @SCIPDIR@/src/scip/reader_wbo.lo
 	-rm -f @SCIPDIR@/src/scip/reader_zpl.$(OBJEXT)
@@ -1687,7 +1639,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/heur_linesearchdiving.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/heur_localbranching.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/heur_mutation.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/heur_nlp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/heur_objpscostdiving.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/heur_octane.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/heur_oneopt.Plo@am__quote@
@@ -1717,9 +1668,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/message.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/misc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/nlp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/nlpi.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/nlpi_ipopt.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/nlpi_oracle.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/nodesel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/nodesel_bfs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/nodesel_dfs.Plo@am__quote@
@@ -1756,7 +1704,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/reader_ppm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/reader_rlp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/reader_sol.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/reader_sos.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/reader_wbo.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/reader_zpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@@SCIPDIR@/src/scip/$(DEPDIR)/relax.Plo@am__quote@

@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development and others 2009
+// Copyright (C) GAMS Development and others 2009, 2010
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
@@ -49,7 +49,9 @@
 
 #include "GamsMessageHandler.hpp"
 
+#if COIN_HAS_CLP
 #include "ClpSimplex.hpp" // for passing in message handler
+#endif
 
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
@@ -171,15 +173,6 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1;
   }
 
-#if SCIP_VERSION < 200
-	if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
-		gevLogStat(gev, "ERROR: Semicontinuous and semiinteger variables not supported yet.\n");
-		gmoSolveStatSet(gmo, SolveStat_Capability);
-		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-		return 1;
-  }
-#endif
-
 	gamsmsghandler = new GamsMessageHandler(gev);
 
   assert(scipmsghandler == NULL);
@@ -277,11 +270,14 @@ SCIP_RETCODE GamsScip::setupLPI() {
 	SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPITLIM, gevGetIntOpt(gev, gevIterLim));
 	SCIPlpiSetRealpar(lpi, SCIP_LPPAR_LPTILIM, gevGetDblOpt(gev, gevResLim));
 
+#if COIN_HAS_CLP
 	if (strncmp(SCIPlpiGetSolverName(), "Clp", 3) == 0) {
 	  SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, TRUE);
 		gamsmsghandler->setLogLevel(1); // SCIP has set Clp's loglevel to 2, but then it might print to stdout
 		((ClpSimplex*)SCIPlpiGetSolverPointer(lpi))->passInMessageHandler(gamsmsghandler);
-	} else {
+	} else
+#endif
+	{
 	  SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, FALSE);
 	}
 
@@ -381,6 +377,7 @@ SCIP_RETCODE GamsScip::setupSCIP() {
 	SCIP_CALL( setupSCIPParameters() );
 	SCIP_CALL( setupMIQCP() );
 
+#if COIN_HAS_CLP
 	if (strncmp(SCIPlpiGetSolverName(), "Clp", 3) == 0) {
 		assert(SCIPgetStage(scip) >= SCIP_STAGE_TRANSFORMED);
 		gamsmsghandler->setLogLevel(0);
@@ -389,6 +386,7 @@ SCIP_RETCODE GamsScip::setupSCIP() {
 		if (lpi)
 			((ClpSimplex*)SCIPlpiGetSolverPointer(lpi))->passInMessageHandler(gamsmsghandler);
 	}
+#endif
 
 	return SCIP_OKAY;
 }
@@ -409,9 +407,6 @@ SCIP_RETCODE GamsScip::setupSCIPParameters() {
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/gap", gevGetDblOpt(gev, gevOptCR)) );
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/absgap", gevGetDblOpt(gev, gevOptCA)) );
 	SCIP_CALL( SCIPsetIntParam(scip, "display/width", 80) );
-#if SCIP_VERSION <= 120
-	SCIP_CALL( SCIPsetBoolParam(scip, "constraints/quadratic/disaggregate", FALSE) );
-#endif
 
 	SCIPchgFeastol(scip, 1e-7);
 
@@ -445,11 +440,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 	char buffer[256];
 
 	gmoNameInput(gmo, buffer);
-#if SCIP_VERSION >= 200
    SCIP_CALL( SCIPcreateProb(scip, buffer, NULL, NULL, NULL, NULL, NULL, NULL, NULL) );
-#else
-   SCIP_CALL( SCIPcreateProb(scip, buffer, NULL, NULL, NULL, NULL, NULL, NULL) );
-#endif
 
 	SCIP_Bool names = FALSE;
 	if (gmoDict(gmo))
@@ -518,11 +509,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 			gmoGetVarNameOne(gmo, i, buffer);
 		else
 			sprintf(buffer, "x%d", i);
-#if SCIP_VERSION >= 200
-      SCIP_CALL( SCIPcreateVar(scip, &vars[i], buffer, lb, ub, coefs[i], vartype, TRUE, FALSE, NULL, NULL, NULL, NULL, NULL) );
-#else
-      SCIP_CALL( SCIPcreateVar(scip, &vars[i], buffer, lb, ub, coefs[i], vartype, TRUE, FALSE, NULL, NULL, NULL, NULL) );
-#endif
+		SCIP_CALL( SCIPcreateVar(scip, &vars[i], buffer, lb, ub, coefs[i], vartype, TRUE, FALSE, NULL, NULL, NULL, NULL, NULL) );
 		SCIP_CALL( SCIPaddVar(scip, vars[i]) );
 
 		if (gmoPriorOpt(gmo) && minprior < maxprior && gmoGetVarTypeOne(gmo, i) != var_X) {
@@ -679,11 +666,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 			return SCIP_READERROR;
 		}
 
-#if SCIP_VERSION >= 200
-      SCIP_CALL( SCIPcreateVar(scip, &objvar, "xobj", -SCIPinfinity(scip), SCIPinfinity(scip), 1.0, SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL, NULL) );
-#else
-      SCIP_CALL( SCIPcreateVar(scip, &objvar, "xobj", -SCIPinfinity(scip), SCIPinfinity(scip), 1.0, SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL) );
-#endif
+		SCIP_CALL( SCIPcreateVar(scip, &objvar, "xobj", -SCIPinfinity(scip), SCIPinfinity(scip), 1.0, SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL, NULL) );
 		SCIP_CALL( SCIPaddVar(scip, objvar) );
 
 #if GMOAPIVERSION >= 8
@@ -742,11 +725,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 
 	} else if (!SCIPisZero(scip, gmoObjConst(gmo))) {
 		SCIP_VAR* objconst;
-#if SCIP_VERSION >= 200
 		SCIP_CALL( SCIPcreateVar(scip, &objconst, "objconst", 1.0, 1.0, gmoObjConst(gmo), SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL, NULL) );
-#else
-      SCIP_CALL( SCIPcreateVar(scip, &objconst, "objconst", 1.0, 1.0, gmoObjConst(gmo), SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL) );
-#endif
 		SCIP_CALL( SCIPaddVar(scip, objconst) );
 		SCIP_CALL( SCIPreleaseVar(scip, &objconst) );
 //		SCIPprobAddObjoffset(scip->origprob, gmoObjConst(gmo));
@@ -919,11 +898,7 @@ SCIP_RETCODE GamsScip::setupStartPoint() {
 	SCIPfreeBufferArray(scip, &vals);
 
 	SCIP_Bool stored;
-#if SCIP_VERSION >= 200
-   SCIP_CALL( SCIPtrySolFree(scip, &sol, FALSE, TRUE, TRUE, TRUE, &stored) );
-#else
-	SCIP_CALL( SCIPtrySolFree(scip, &sol, TRUE, TRUE, TRUE, &stored) );
-#endif
+	SCIP_CALL( SCIPtrySolFree(scip, &sol, FALSE, TRUE, TRUE, TRUE, &stored) );
 
 	if (stored)
 		gevLog(gev, "Feasible initial solution used to initialize primal bound.");

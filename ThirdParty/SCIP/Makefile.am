@@ -1,4 +1,4 @@
-# Copyright (C) 2008, 2009 Stefan Vigerske
+# Copyright (C) 2008 - 2010 Stefan Vigerske
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 
@@ -28,6 +28,7 @@ libcoinscip_la_SOURCES = \
 			@SCIPDIR@/src/scip/dialog.c \
 			@SCIPDIR@/src/scip/disp.c \
 			@SCIPDIR@/src/scip/event.c \
+			@SCIPDIR@/src/scip/expression.c \
 			@SCIPDIR@/src/scip/fileio.c \
 			@SCIPDIR@/src/scip/heur.c \
 			@SCIPDIR@/src/scip/history.c \
@@ -38,6 +39,7 @@ libcoinscip_la_SOURCES = \
 			@SCIPDIR@/src/scip/mem.c \
 			@SCIPDIR@/src/scip/message.c \
 			@SCIPDIR@/src/scip/misc.c \
+			@SCIPDIR@/src/scip/nlp.c \
 			@SCIPDIR@/src/scip/nodesel.c \
 			@SCIPDIR@/src/scip/paramset.c \
 			@SCIPDIR@/src/scip/presol.c \
@@ -88,6 +90,10 @@ libcoinscip_la_SOURCES = \
 			@SCIPDIR@/src/scip/cons_sos1.c \
 			@SCIPDIR@/src/scip/cons_sos2.c \
 			@SCIPDIR@/src/scip/cons_quadratic.c \
+			@SCIPDIR@/src/scip/cons_cumulative.c \
+			@SCIPDIR@/src/scip/cons_linking.c \
+			@SCIPDIR@/src/scip/cons_orbitope.c \
+			@SCIPDIR@/src/scip/cons_soc.c \
 			@SCIPDIR@/src/scip/dialog_default.c \
 			@SCIPDIR@/src/scip/disp_default.c \
 			@SCIPDIR@/src/scip/heur_actconsdiving.c \
@@ -116,6 +122,11 @@ libcoinscip_la_SOURCES = \
 			@SCIPDIR@/src/scip/heur_dins.c \
 			@SCIPDIR@/src/scip/heur_trivial.c \
 			@SCIPDIR@/src/scip/heur_trysol.c \
+			@SCIPDIR@/src/scip/heur_shiftandpropagate.c \
+			@SCIPDIR@/src/scip/heur_subnlp.c \
+			@SCIPDIR@/src/scip/heur_twoopt.c \
+			@SCIPDIR@/src/scip/heur_undercover.c \
+			@SCIPDIR@/src/scip/heur_zirounding.c \
 			@SCIPDIR@/src/scip/nodesel_bfs.c \
 			@SCIPDIR@/src/scip/nodesel_dfs.c \
 			@SCIPDIR@/src/scip/nodesel_estimate.c \
@@ -129,6 +140,7 @@ libcoinscip_la_SOURCES = \
 			@SCIPDIR@/src/scip/presol_boundshift.c \
 			@SCIPDIR@/src/scip/prop_pseudoobj.c \
 			@SCIPDIR@/src/scip/prop_rootredcost.c \
+			@SCIPDIR@/src/scip/prop_vbounds.c \
 			@SCIPDIR@/src/scip/reader_cnf.c \
 			@SCIPDIR@/src/scip/reader_fix.c \
 			@SCIPDIR@/src/scip/reader_lp.c \
@@ -142,6 +154,8 @@ libcoinscip_la_SOURCES = \
 			@SCIPDIR@/src/scip/reader_rlp.c \
 			@SCIPDIR@/src/scip/reader_gms.c \
 			@SCIPDIR@/src/scip/reader_fzn.c \
+			@SCIPDIR@/src/scip/reader_pip.c \
+			@SCIPDIR@/src/scip/reader_wbo.c \
 			@SCIPDIR@/src/scip/sepa_clique.c \
 			@SCIPDIR@/src/scip/sepa_cmir.c \
 			@SCIPDIR@/src/scip/sepa_flowcover.c \
@@ -152,30 +166,13 @@ libcoinscip_la_SOURCES = \
 			@SCIPDIR@/src/scip/sepa_strongcg.c \
 			@SCIPDIR@/src/scip/sepa_mcf.c \
 			@SCIPDIR@/src/scip/sepa_zerohalf.c \
-			@SCIPDIR@/src/tclique/tclique_branch.c \
-			@SCIPDIR@/src/tclique/tclique_coloring.c \
-			@SCIPDIR@/src/tclique/tclique_graph.c \
-			@SCIPDIR@/src/blockmemshell/memory.c
-		
-if SCIPDEVVERSION
-libcoinscip_la_SOURCES += \
-			@SCIPDIR@/src/scip/cons_cumulative.c \
-			@SCIPDIR@/src/scip/cons_linking.c \
-			@SCIPDIR@/src/scip/cons_orbitope.c \
-			@SCIPDIR@/src/scip/cons_soc.c \
-			@SCIPDIR@/src/scip/expression.c \
-			@SCIPDIR@/src/scip/heur_shiftandpropagate.c \
-			@SCIPDIR@/src/scip/heur_subnlp.c \
-			@SCIPDIR@/src/scip/heur_twoopt.c \
-			@SCIPDIR@/src/scip/heur_undercover.c \
-			@SCIPDIR@/src/scip/heur_zirounding.c \
-			@SCIPDIR@/src/scip/nlp.c \
-			@SCIPDIR@/src/scip/prop_vbounds.c \
-			@SCIPDIR@/src/scip/reader_pip.c \
-			@SCIPDIR@/src/scip/reader_wbo.c \
 			@SCIPDIR@/src/scip/sepa_cgmip.c \
 			@SCIPDIR@/src/scip/sepa_oddcycle.c \
 			@SCIPDIR@/src/scip/sepa_rapidlearning.c \
+			@SCIPDIR@/src/tclique/tclique_branch.c \
+			@SCIPDIR@/src/tclique/tclique_coloring.c \
+			@SCIPDIR@/src/tclique/tclique_graph.c \
+			@SCIPDIR@/src/blockmemshell/memory.c \
 			@SCIPDIR@/src/nlpi/nlpi.c \
 			@SCIPDIR@/src/nlpi/nlpioracle.c \
 			@SCIPDIR@/src/nlpi/expression.c \
@@ -183,14 +180,7 @@ libcoinscip_la_SOURCES += \
 			@SCIPDIR@/src/nlpi/intervalarith.cpp \
 			@SCIPDIR@/src/dijkstra/dijkstra_bh.c \
 			@SCIPDIR@/src/xml/xmlparse.c
-else
-libcoinscip_la_SOURCES += \
-			@SCIPDIR@/src/scip/heur_nlp.c \
-			@SCIPDIR@/src/scip/nlpi.c \
-			@SCIPDIR@/src/scip/nlpi_oracle.c \
-			@SCIPDIR@/src/scip/reader_sos.c
-endif
-
+		
 if COIN_HAS_SOPLEX
 #add SOPLEX as linear solver
 libcoinscip_la_SOURCES += @SCIPDIR@/src/scip/lpi_spx.cpp
@@ -210,11 +200,7 @@ AM_CPPFLAGS += \
 endif
 
 #add IPOPT as nonlinear solver
-if SCIPDEVVERSION
 libcoinscip_la_SOURCES += @SCIPDIR@/src/nlpi/nlpi_ipopt.cpp
-else
-libcoinscip_la_SOURCES += @SCIPDIR@/src/scip/nlpi_ipopt.cpp
-endif
 
 IPOPTSRCDIR=$(srcdir)/../../Ipopt
 IPOPTOBJDIR=../../Ipopt

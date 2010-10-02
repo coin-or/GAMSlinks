@@ -12,10 +12,7 @@ http://scip.zib.de
 
 and unpack it in this directory:
 
-gunzip scip-1.2.0.tgz
-tar xf scip-1.2.0.tar
+gunzip scip-2.0.0.tgz
+tar xf scip-2.0.0.tar
 
-Then you need to rename the directory scip-1.2.0 into scip
-and apply the patch file scip.patch:
-
-  patch -p0 < scip.patch
+Then you need to rename the directory scip-2.0.0 into scip.
