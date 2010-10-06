@@ -79,7 +79,10 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	
 	gmo = gmo_;
 	assert(gmo);
-	assert(IsNull(ipopt));
+	
+	/* free a previous NLP and Ipopt instance, if existing */
+	nlp = NULL;
+	ipopt = NULL;
 
 	if (getGmoReady())
 		return 1;

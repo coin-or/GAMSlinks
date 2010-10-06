@@ -124,7 +124,9 @@ GamsCouenne::~GamsCouenne() {
 int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gmo = gmo_;
 	assert(gmo);
-	assert(IsNull(minlp));
+	
+	minlp = NULL;
+	delete gamscbc;
 
 	if (getGmoReady())
 		return 1;

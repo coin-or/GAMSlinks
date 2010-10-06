@@ -106,8 +106,11 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 	gmo = gmo_;
 	assert(gmo);
-	assert(IsNull(minlp));
-	assert(bonmin_setup == NULL);
+	
+	delete gamsipopt;
+	delete gamscbc;
+   delete bonmin_setup;
+	minlp = NULL;
 
 	if (getGmoReady())
 		return 1;

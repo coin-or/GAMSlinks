@@ -83,7 +83,8 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 	gmo = gmo_;
 	assert(gmo);
-	assert(!model);
+	
+	delete model;
 
 	if (getGmoReady())
 		return 1;
@@ -133,13 +134,13 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gmoObjStyleSet(gmo, ObjType_Fun);
   gmoIndexBaseSet(gmo, 0);
 
-	msghandler = new GamsMessageHandler(gev);
-//	solver.passInMessageHandler(msghandler);
-//	solver.setHintParam(OsiDoReducePrint, true, OsiHintTry);
-   msghandler->setLogLevel(0,1);
+   if (msghandler == NULL) {
+      msghandler = new GamsMessageHandler(gev);
+      msghandler->setLogLevel(0,1);
+      msghandler->setLogLevel(2,0);
+      msghandler->setLogLevel(3,0);
+   }
    msghandler->setLogLevel(1,isLP());
-   msghandler->setLogLevel(2,0);
-   msghandler->setLogLevel(3,0);
 
 	if (!setupProblem(solver)) {
 		gevLogStat(gev, "Error setting up problem...");
@@ -1162,7 +1163,11 @@ bool GamsCbc::setupParameters() {
 		par_list.push_back("-solve");
 
 	int par_list_length = par_list.size();
-	assert(!cbc_args);
+	if( cbc_args != NULL ) {
+      for (int i = 0; i < cbc_argc; ++i)
+         free(cbc_args[i]);
+      delete[] cbc_args;
+	}
 	cbc_argc = par_list_length+2;
 	cbc_args = new char*[cbc_argc];
 	cbc_args[0] = strdup("GAMS/CBC");
