@@ -154,8 +154,10 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 	gmo = gmo_;
 	assert(gmo);
-	assert(!osi);
 	assert(!opt);
+	
+	/* delete an Osi from a previous solve, if there is one */
+	delete osi;
 
 	if (getGmoReady())
 		return 1;
@@ -339,7 +341,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 						gmoNDisc(gmo), 0, &initType, msg, sizeof(msg)))
 					gevLogStat(gev, "Trying to use Xpress standalone license.\n");
 #endif
-				OsiXprSolverInterface* osixpr = new OsiXprSolverInterface(gmoM(gmo), gmoNZ(gmo));
+				OsiXprSolverInterface* osixpr = new OsiXprSolverInterface(0,0);
 				if (!osixpr->getNumInstances()) {
 					gevLogStat(gev, "Failed to setup XPRESS instance. Maybe you do not have a license?\n");
 					gmoSolveStatSet(gmo, SolveStat_SetupErr);
@@ -377,8 +379,11 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gmoObjStyleSet(gmo, ObjType_Fun);
 	gmoIndexBaseSet(gmo, 0);
 
-	msghandler = new GamsMessageHandler(gev);
-	msghandler->setPrefix(false);
+	if( msghandler == NULL )
+	{
+	   msghandler = new GamsMessageHandler(gev);
+	   msghandler->setPrefix(false);
+	}
 	osi->passInMessageHandler(msghandler);
 	osi->setHintParam(OsiDoReducePrint, true,  OsiHintTry);
 

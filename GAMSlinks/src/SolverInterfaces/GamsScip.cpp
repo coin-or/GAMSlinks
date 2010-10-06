@@ -88,18 +88,9 @@ GamsScip::GamsScip()
 }
 
 GamsScip::~GamsScip() {
-	if (scip != NULL) {
-		if (vars != NULL) {
-#ifndef GAMS_BUILD
-			for (int i = 0; i < gmoN(gmo); ++i)
-				SCIP_CALL_ABORT( SCIPreleaseVar(scip, &vars[i]) );
-#endif
-			delete[] vars;
-		}
-		SCIP_CALL_ABORT( SCIPfree(&scip) );
-	}
-  if (lpi != NULL)
-  	SCIP_CALL_ABORT( SCIPlpiFree(&lpi) );
+
+   SCIP_CALL_ABORT( freeSCIP() );
+   SCIP_CALL_ABORT( freeLPI() );
 
   SCIP_CALL_ABORT( SCIPsetDefaultMessagehdlr() );
   SCIP_CALL_ABORT( SCIPfreeMessagehdlr(&scipmsghandler) );
@@ -173,7 +164,8 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1;
   }
 
-	gamsmsghandler = new GamsMessageHandler(gev);
+	if( gamsmsghandler == NULL )
+	   gamsmsghandler = new GamsMessageHandler(gev);
 
   assert(scipmsghandler == NULL);
   SCIP_CALL_ABORT( SCIPcreateMessagehdlr(&scipmsghandler, FALSE, GamsScipPrintWarningOrError, GamsScipPrintWarningOrError, GamsScipPrintInfoOrDialog, GamsScipPrintInfoOrDialog, (SCIP_MESSAGEHDLRDATA*)this) );
@@ -260,6 +252,29 @@ int GamsScip::callSolver() {
 	}
 
 	return 0;
+}
+
+SCIP_RETCODE GamsScip::freeLPI() {
+   if( lpi != NULL ) {
+      SCIP_CALL( SCIPlpiFree(&lpi) );
+   }
+   
+   return SCIP_OKAY;
+}
+
+SCIP_RETCODE GamsScip::freeSCIP() {
+   if (scip != NULL) {
+      if (vars != NULL) {
+#ifndef GAMS_BUILD
+         for (int i = 0; i < gmoN(gmo); ++i)
+            SCIP_CALL( SCIPreleaseVar(scip, &vars[i]) );
+#endif
+         delete[] vars;
+      }
+      SCIP_CALL( SCIPfree(&scip) );
+   }
+
+   return SCIP_OKAY;
 }
 
 SCIP_RETCODE GamsScip::setupLPI() {

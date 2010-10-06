@@ -41,6 +41,8 @@ private:
 
    char                scip_message[300];
 
+   SCIP_RETCODE freeLPI();
+   SCIP_RETCODE freeSCIP();
    SCIP_RETCODE setupLPI();
    SCIP_RETCODE setupSCIP();
    SCIP_RETCODE setupSCIPParameters();
