@@ -311,7 +311,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 					return 1;
 				}
 				rc = gevmoseklice(gev,mskenv,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo), 0, &initType);
-				if (rc || (0==rc && (MBGAMS==initType && gmoNDisc(gmo))))
+				if (rc)
 					gevLogStat(gev, "Trying to use Mosek standalone license.\n");
 
 				if (MSK_initenv(mskenv)) {
@@ -332,9 +332,9 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 			case XPRESS: {
 #ifdef COIN_HAS_XPR
+            char msg[1024];
 #ifdef GAMS_BUILD
 				XPlicenseInit_t initType;
-				char msg[1024];
 
 				/* Xpress license setup */
 				if (gevxpresslice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
