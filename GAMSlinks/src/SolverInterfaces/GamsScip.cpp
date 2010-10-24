@@ -293,7 +293,8 @@ SCIP_RETCODE GamsScip::setupLPI() {
 	} else
 #endif
 	{
-	  SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, FALSE);
+     /* enable output iff lo=1 or =3 */
+	  SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, gevGetIntOpt(gev, gevLogOption) == 1 || gevGetIntOpt(gev, gevLogOption) == 3);
 	}
 
 	gmoPinfSet(gmo,  SCIPlpiInfinity(lpi));
@@ -421,7 +422,22 @@ SCIP_RETCODE GamsScip::setupSCIPParameters() {
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/time", gevGetDblOpt(gev, gevResLim)) );
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/gap", gevGetDblOpt(gev, gevOptCR)) );
 	SCIP_CALL( SCIPsetRealParam(scip, "limits/absgap", gevGetDblOpt(gev, gevOptCA)) );
+#ifdef _WIN32
 	SCIP_CALL( SCIPsetIntParam(scip, "display/width", 80) );
+   SCIP_CALL( SCIPsetIntParam(scip, "display/lpavgiterations/active", 0) );
+   SCIP_CALL( SCIPsetIntParam(scip, "display/maxdepth/active", 0) );
+#endif
+   if (gmoNLNZ(gmo) || gmoObjNLNZ(gmo))
+   {
+      /* set some MINLP specific options */
+      SCIP_CALL( SCIPsetIntParam(scip, "display/nexternbranchcands/active", 2) );
+      SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/crossover/uselprows", FALSE) );
+      SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/dins/uselprows", FALSE) );
+      SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/rens/uselprows", FALSE) );
+      SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/rins/uselprows", FALSE) );
+      SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/localbranching/uselprows", FALSE) );
+      SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/mutation/uselprows", FALSE) );
+   }
 
 	SCIPchgFeastol(scip, 1e-7);
 
