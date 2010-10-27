@@ -85,11 +85,11 @@ Determines which method to use for the backtracking heuristic.
 <br><i>(default = bestprojection)</i>
 <table>
 <tr valign="top"><td width=20 align=right>depthfirst</td><td>.
-Let GLPK use a depth first search.</td></tr>
+Let OSIGLPK use a depth first search.</td></tr>
 <tr valign="top"><td width=20 align=right>breadthfirst</td><td>.
-Let GLPK use a breadth first search.</td></tr>
+Let OSIGLPK use a breadth first search.</td></tr>
 <tr valign="top"><td width=20 align=right>bestprojection</td><td>.
-Let GLPK use a best projection heuristic.</td></tr>
+Let OSIGLPK use a best projection heuristic.</td></tr>
 </table>
 
 <h4><a name="cliquecuts">
@@ -141,9 +141,9 @@ factorization</a>
 <i> (string)</i> basis factorization method</h4><p>
 
 Sets the method for the LP basis factorization.<BR>
-If you observe that GLPK reports numerical instabilities than you could try to use a more stable factorization method.
+If you observe that OSIGLPK reports numerical instabilities than you could try to use a more stable factorization method.
 
-<br><i>(default = forresttomlin)</i>
+<br><i>(default = givens)</i>
 <table>
 <tr valign="top"><td width=20 align=right>forresttomlin</td><td>.
 Does a LU factorization followed by Forrest-Tomlin updates.
@@ -269,11 +269,11 @@ Note that scaling is only applied when the presolver is turned off (which by def
 <tr valign="top"><td width=20 align=right>off</td><td>.
 Turn off scaling.</td></tr>
 <tr valign="top"><td width=20 align=right>equilibrium</td><td>.
-Let GLPK use an equilibrium scaling method.</td></tr>
+Let OSIGLPK use an equilibrium scaling method.</td></tr>
 <tr valign="top"><td width=20 align=right>mean</td><td>.
-Let GLPK use a geometric mean scaling method.</td></tr>
+Let OSIGLPK use a geometric mean scaling method.</td></tr>
 <tr valign="top"><td width=20 align=right>meanequilibrium</td><td>.
-Let GLPK use first a geometric mean scaling, then an equilibrium scaling.</td></tr>
+Let OSIGLPK use first a geometric mean scaling, then an equilibrium scaling.</td></tr>
 </table>
 
 <h4><a name="startalg">
@@ -285,9 +285,9 @@ This option determines whether a primal or dual simplex algorithm should be used
 <br><i>(default = primal)</i>
 <table>
 <tr valign="top"><td width=20 align=right>primal</td><td>.
-Let GLPK use a primal simplex algorithm.</td></tr>
+Let OSIGLPK use a primal simplex algorithm.</td></tr>
 <tr valign="top"><td width=20 align=right>dual</td><td>.
-Let GLPK use a dual simplex algorithm.</td></tr>
+Let OSIGLPK use a dual simplex algorithm.</td></tr>
 </table>
 
 <h4><a name="tol_dual">

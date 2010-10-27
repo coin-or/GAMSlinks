@@ -44,7 +44,7 @@ general.(
   startalg        .s.(def primal)
   scaling         .s.(def meanequilibrium)
   pricing         .s.(def steepestedge)
-  factorization   .s.(def forresttomlin)
+  factorization   .s.(def givens)
   initbasis       .s.(def advanced)
   tol_dual        .r.(def 1e-7)
   tol_primal      .r.(def 1e-7)

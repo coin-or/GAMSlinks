@@ -1,5 +1,5 @@
 *
-* optosiglpk.def
+* optglpk.def
 *
 
 startalg enumstr 0 "primal" 1 1 LP solver for root node
@@ -13,7 +13,7 @@ scaling enumstr 0 "meanequilibrium" 1 1 scaling method
 pricing enumstr 0 "steepestedge" 1 1 pricing method
  "textbook" 1
  "steepestedge" 1
-factorization enumstr 0 "forresttomlin" 1 1 basis factorization method
+factorization enumstr 0 "givens" 1 1 basis factorization method
  "forresttomlin" 1
  "bartelsgolub" 1
  "givens" 1
