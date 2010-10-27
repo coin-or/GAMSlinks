@@ -374,7 +374,6 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
   assert(nele_jac == gmoNZ(gmo));
 
   if (values == NULL) { // return the structure of the jacobian
-    assert(NULL == x);
     assert(NULL != iRow);
     assert(NULL != jCol);
 
@@ -495,6 +494,9 @@ bool GamsNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor, In
 
 bool GamsNLP::intermediate_callback(AlgorithmMode mode, Index iter, Number obj_value, Number inf_pr, Number inf_du, Number mu, Number d_norm, Number regularization_size, Number alpha_du, Number alpha_pr, Index ls_trials, const IpoptData *ip_data, IpoptCalculatedQuantities *ip_cq) {
 	if (domviollimit && domviolations >= domviollimit) return false;
+#if GEVAPIVERSION >= 4
+	if (gevTerminateGet(gev)) return false;
+#endif
 	return true;
 }
 
@@ -557,10 +559,13 @@ void GamsNLP::finalize_solution(SolverReturn status, Index n, const Number *x, c
 			write_solution=true;
 			break;
 	  case USER_REQUESTED_STOP:
-	  	assert(domviollimit && domviolations >= domviollimit);
-	  	gevLogStat(gev, "Domain violation limit exceeded!");
+	  	if (domviollimit && domviolations >= domviollimit) {
+	  		gevLogStat(gev, "Domain violation limit exceeded!");
+		  	gmoSolveStatSet(gmo, SolveStat_EvalError);
+	  	} else {
+		  	gmoSolveStatSet(gmo, SolveStat_User);
+	  	}
 	  	gmoModelStatSet(gmo, ModelStat_InfeasibleIntermed);
-	  	gmoSolveStatSet(gmo, SolveStat_EvalError);
 	  	write_solution=true;
 	  	break;
 		case ERROR_IN_STEP_COMPUTATION:
