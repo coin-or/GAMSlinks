@@ -135,12 +135,14 @@ bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 
 	// tell solver which variables are discrete
 	if (gmoNDisc(gmo)) {
+		int* discrind = new int[gmoNDisc(gmo)];
+		int j = 0;
 		for (int i = 0; i < gmoN(gmo); ++i) {
 			switch ((enum gmoVarType)gmoGetVarTypeOne(gmo, i)) {
 				case var_B:  // binary
 				case var_I:  // integer
 				case var_SI: // semiinteger
-					solver.setInteger(i);
+					discrind[j++] = i;
 					break;
 				case var_X:  // probably this means continuous variable
 				case var_S1: // in SOS1
@@ -149,6 +151,9 @@ bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 					break;
 			}
 		}
+		assert(j == gmoNDisc(gmo));
+		solver.setInteger(discrind, gmoNDisc(gmo));
+		delete[] discrind;
 	}
 
 	char inputname[1024];
