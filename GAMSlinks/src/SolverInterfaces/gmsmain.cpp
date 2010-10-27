@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  gmoIdentSet(gmo, SOLVERNAME "link object");
+  /* gmoIdentSet(gmo, SOLVERNAME "link object"); */
   
   // load control file
   if ((rc = gevInitEnvironmentLegacy(gev, argv[1]))) {
