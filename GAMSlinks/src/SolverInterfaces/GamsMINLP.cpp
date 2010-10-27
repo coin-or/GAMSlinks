@@ -302,9 +302,9 @@ void GamsMINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const Nu
 			if (gevTimeDiffStart(gev) - nlp->clockStart >= gevGetDblOpt(gev, gevResLim)) {
 				solver_status = SolveStat_Resource;
 				gevLogStat(gev, "Time limit exceeded.\n");
-			} else { // should be iteration limit = node limit
+			} else { // should be iteration limit = node limit, or user interrupt
 				solver_status = SolveStat_Iteration;
-				gevLogStat(gev, "Node or iteration limit exceeded, we will report iteration limit in listing file.\n");
+				gevLogStat(gev, "Node or iteration limit exceeded or user interrupt, we will report iteration limit in listing file.\n");
 			}
     	if (x) {
 	    	model_status = gmoNDisc(gmo) ? ModelStat_Integer : ModelStat_OptimalLocal; // integer feasible solution or local optimal
