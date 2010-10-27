@@ -97,6 +97,46 @@ static int glpkprint(void* info, const char* msg) {
   return 1;
 }
 
+#if COIN_HAS_CPX
+static int cpxinfocallback(CPXCENVptr cpxenv, void* cbdata, int wherefrom, void* cbhandle) {
+#if GEVAPIVERSION >= 4
+	return gevTerminateGet((gevHandle_t)cbhandle);
+#else
+	return 0;
+#endif
+}
+#endif
+
+#if COIN_HAS_GRB
+static int grbcallback(GRBmodel* model, void* qcbdata, int where, void* usrdata) {
+#if GEVAPIVERSION >= 4
+	if (gevTerminateGet((gevHandle_t)usrdata))
+		GRBterminate(model);
+#endif
+	return 0;
+}
+#endif
+
+#if COIN_HAS_XPR
+static int XPRS_CC xprcallback(XPRSprob prob, void* vUserDat) {
+#if GEVAPIVERSION >= 4
+	return gevTerminateGet((gevHandle_t)vUserDat);
+#else
+	return 0;
+#endif
+}
+#endif
+
+#if COIN_HAS_MSK
+static int MSKAPI mskcallback(MSKtask_t task, MSKuserhandle_t handle, MSKcallbackcodee caller) {
+#if GEVAPIVERSION >= 4
+	return gevTerminateGet((gevHandle_t)handle);
+#else
+	return 0;
+#endif
+}
+#endif
+
 GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 : gmo(NULL), gev(NULL), msghandler(NULL), osi(NULL), solverid(solverid_)
 {
@@ -247,23 +287,16 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 			case CPLEX: {
 #ifdef COIN_HAS_CPX
-                          if (!registerGamsCplexLicense(gmo)) {
-                            gmoSolveStatSet(gmo, SolveStat_License);
-                            gmoModelStatSet(gmo, ModelStat_LicenseError);
-                            return 1;
-                          }
-//#ifdef GAMS_BUILD
-//                                int rc, cp_l=0, cp_m=0, cp_q=0, cp_p=0;
-//				CPlicenseInit_t initType;
-//
-//				/* Cplex license setup */
-//                                rc = gevcplexlice(gev,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),
-//                                                  gmoNDisc(gmo), 0, &initType, &cp_l, &cp_m, &cp_q, &cp_p);
-//				if (rc || (0==rc && ((0==cp_m && gmoNDisc(gmo)) || (0==cp_q && gmoNLNZ(gmo)))))
-//                                        gevLogStat(gev, "Trying to use Cplex standalone license.\n");
-//
-//#endif
-				osi = new OsiCpxSolverInterface;
+				OsiCpxSolverInterface* osicpx;
+				if (!registerGamsCplexLicense(gmo)) {
+					gmoSolveStatSet(gmo, SolveStat_License);
+					gmoModelStatSet(gmo, ModelStat_LicenseError);
+					return 1;
+				}
+				osicpx = new OsiCpxSolverInterface;
+				osi = osicpx;
+
+				CPXsetinfocallbackfunc(osicpx->getEnvironmentPtr(), cpxinfocallback, (void*)gev);
 #else
 				gevLogStat(gev, "GamsOsi compiled without Osi/CPLEX interface.\n");
 				return 1;
@@ -404,6 +437,34 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		gevLogStat(gev, "Error setting up OSI parameters.");
 		return -1;
 	}
+
+#if COIN_HAS_GRB
+	if (solverid == GUROBI) {
+		OsiGrbSolverInterface* osigrb = dynamic_cast<OsiGrbSolverInterface*>(osi);
+		assert(osigrb != NULL);
+		if (GRBsetcallbackfunc(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL), grbcallback, (void*)gev))
+			gevLogStat(gev, GRBgeterrormsg(osigrb->getEnvironmentPtr()));
+	}
+#endif
+
+#if COIN_HAS_XPR
+	if (solverid == XPRESS) {
+		OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
+		assert(osixpr != NULL);
+
+	  XPRSsetcbgloballog(osixpr->getLpPtr(), xprcallback, (void*)gev);
+	  XPRSsetcblplog(osixpr->getLpPtr(), xprcallback, (void*)gev);
+	}
+#endif
+
+#if COIN_HAS_MSK
+	if (solverid == MOSEK) {
+		OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
+		assert(osimsk != NULL);
+
+		MSK_putcallbackfunc(osimsk->getLpPtr(), mskcallback, (void*)gev);
+	}
+#endif
 
 	return 0;
 }
@@ -821,7 +882,8 @@ bool GamsOsi::setupParameters() {
 			OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
 			assert(osixpr != NULL);
 
-			XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXTIME, (int)reslim);
+			/* need to set XPRS_MAXTIME to a negative number to have it working also for LP solves and before the first solution is found in MIP solves */
+			XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXTIME, -(int)reslim);
 			if (!isLP() && nodelim)
 				XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXNODE, nodelim);
 			XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPRELSTOP, optcr);
@@ -897,9 +959,9 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 
 				case CPX_STAT_NUM_BEST:
 				case CPX_STAT_FEASIBLE:
-					gevLogStat(gev, "Feasible solution found.");
 					gmoSolveStatSet(gmo, SolveStat_Normal);
 					gmoModelStatSet(gmo, ModelStat_NonOptimalIntermed);
+					gevLogStat(gev, "Feasible solution found.");
 					break;
 
 				case CPX_STAT_ABORT_IT_LIM:
@@ -966,10 +1028,21 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					gevLogStat(gev, "Time limit reached, do not have feasible solution.");
 					break;
 
+				case CPXMIP_ABORT_FEAS:
+					gmoSolveStatSet(gmo, SolveStat_User);
+					gmoModelStatSet(gmo, ModelStat_Integer);
+					gevLogStat(gev, "Solving interrupted, but have feasible solution.");
+					break;
+
+				case CPXMIP_ABORT_INFEAS:
+					gmoSolveStatSet(gmo, SolveStat_User);
+					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+					gevLogStat(gev, "Solving interrupted, do not have feasible solution.");
+					break;
+
 				case CPXMIP_FAIL_FEAS:
 				case CPXMIP_FAIL_FEAS_NO_TREE:
 				case CPXMIP_MEM_LIM_FEAS:
-				case CPXMIP_ABORT_FEAS:
 				case CPXMIP_FEASIBLE:
 					write_solution = true;
 					gmoSolveStatSet(gmo, SolveStat_Solver);
@@ -980,7 +1053,6 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 				case CPXMIP_FAIL_INFEAS:
 				case CPXMIP_FAIL_INFEAS_NO_TREE:
 				case CPXMIP_MEM_LIM_INFEAS:
-				case CPXMIP_ABORT_INFEAS:
 					gmoSolveStatSet(gmo, SolveStat_Solver);
 					gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 					gevLogStat(gev, "Solving failed, do not have feasible solution.");
@@ -1353,37 +1425,34 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 			OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
 			assert(osixpr);
 			int status;
+
+			gmoSolveStatSet(gmo, SolveStat_Normal);
 			if (isLP()) {
 				XPRSgetintattrib(osixpr->getLpPtr(), XPRS_LPSTATUS, &status);
 
 				switch (status) {
 					case XPRS_LP_OPTIMAL:
 						write_solution = true;
-						gmoSolveStatSet(gmo, SolveStat_Normal);
 						gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
 						gevLogStat(gev, "Solved to optimality.");
 						break;
 
 					case XPRS_LP_INFEAS:
-						gmoSolveStatSet(gmo, SolveStat_Normal);
 						gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
 						gevLogStat(gev, "Model is infeasible.");
 						break;
 
 					case XPRS_LP_CUTOFF:
-						gmoSolveStatSet(gmo, SolveStat_Solver);
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 						gevLogStat(gev, "Objective limit reached.");
 						break;
 
 					case XPRS_LP_UNBOUNDED:
-						gmoSolveStatSet(gmo, SolveStat_Normal);
 						gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
 						gevLogStat(gev, "Model is unbounded.");
 						break;
 
 					case XPRS_LP_CUTOFF_IN_DUAL:
-						gmoSolveStatSet(gmo, SolveStat_Solver);
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 						gevLogStat(gev, "Dual objective limit reached.");
 						break;
@@ -1393,13 +1462,12 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 #if XPVERSION > 20
 					case XPRS_LP_NONCONVEX:
 #endif
-						gmoSolveStatSet(gmo, SolveStat_Solver);
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-						gevLogStat(gev, "Model not solved.");
+						gmoSolveStatSet(gmo, SolveStat_Iteration); /* we just guess that it was the iteration limit */
+						gevLogStat(gev, "LP solve not finished.");
 						break;
 
 					default:
-						gmoSolveStatSet(gmo, SolveStat_Solver);
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 						gevLogStat(gev, "Solution status unknown.");
 						break;
@@ -1408,39 +1476,33 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 				XPRSgetintattrib(osixpr->getLpPtr(), XPRS_MIPSTATUS, &status);
 				switch (status) {
 					case XPRS_MIP_LP_NOT_OPTIMAL:
-						gmoSolveStatSet(gmo, SolveStat_Solver);
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 						gevLogStat(gev, "LP relaxation not solved to optimality.");
 						break;
 
 					case XPRS_MIP_LP_OPTIMAL:
-						gmoSolveStatSet(gmo, SolveStat_Solver);
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 						gevLogStat(gev, "Only LP relaxation solved.");
 						break;
 
 					case XPRS_MIP_NO_SOL_FOUND:
-						gmoSolveStatSet(gmo, SolveStat_Normal);
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 						gevLogStat(gev, "No solution found.");
 						break;
 
 					case XPRS_MIP_SOLUTION:
 						write_solution = true;
-						gmoSolveStatSet(gmo, SolveStat_Normal);
 						gmoModelStatSet(gmo, ModelStat_Integer);
 						gevLogStat(gev, "Found integer feasible solution.");
 						break;
 
 					case XPRS_MIP_INFEAS:
-						gmoSolveStatSet(gmo, SolveStat_Normal);
 						gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
 						gevLogStat(gev, "Model is infeasible.");
 						break;
 
 					case XPRS_MIP_OPTIMAL:
 						write_solution = true;
-						gmoSolveStatSet(gmo, SolveStat_Normal);
 						double bestBound;
 				    XPRSgetdblattrib(osixpr->getLpPtr(), XPRS_BESTBOUND, &bestBound);
 				    if(fabs(bestBound - osixpr->getObjValue()) < 1e-9) {
@@ -1453,6 +1515,41 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 						break;
 				}
 			}
+
+			XPRSgetintattrib(osixpr->getLpPtr(), XPRS_STOPSTATUS, &status);
+			switch (status) {
+				case 0:
+					break;
+				case XPRS_STOP_TIMELIMIT:
+					gmoSolveStatSet(gmo, SolveStat_Resource);
+					gevLogStat(gev, "Timelimit reached.");
+					break;
+				case XPRS_STOP_CTRLC:
+				case XPRS_STOP_USER:
+					gmoSolveStatSet(gmo, SolveStat_User);
+					gevLogStat(gev, "User interrupted.");
+					break;
+				case XPRS_STOP_NODELIMIT:
+					gmoSolveStatSet(gmo, SolveStat_Iteration);
+					gevLogStat(gev, "Nodelimit reached.");
+					break;
+				case XPRS_STOP_ITERLIMIT:
+					gmoSolveStatSet(gmo, SolveStat_Iteration);
+					gevLogStat(gev, "Iterationlimit reached.");
+					break;
+				case XPRS_STOP_MIPGAP:
+					gmoSolveStatSet(gmo, SolveStat_Normal);
+					break;
+				case XPRS_STOP_SOLLIMIT:
+					gmoSolveStatSet(gmo, SolveStat_User);
+					gevLogStat(gev, "Solutionlimit reached.");
+					break;
+				default:
+					gmoSolveStatSet(gmo, SolveStat_SystemErr);
+					gevLogStat(gev, "Unknown stop status.");
+					break;
+			}
+
 			break;
 		}
 #endif
@@ -1623,7 +1720,7 @@ bool GamsOsi::solveFixed() {
 			case XPRESS: {
 				OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
 				assert(osixpr != NULL);
-				XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXTIME, (int)gevGetDblOpt(gev, gevReal1));
+				XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXTIME, -(int)gevGetDblOpt(gev, gevReal1));
 				break;
 			}
 	#endif
