@@ -142,6 +142,7 @@ bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 				case var_B:  // binary
 				case var_I:  // integer
 				case var_SI: // semiinteger
+					assert(j < gmoNDisc(gmo));
 					discrind[j++] = i;
 					break;
 				case var_X:  // probably this means continuous variable
@@ -151,8 +152,7 @@ bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 					break;
 			}
 		}
-		assert(j == gmoNDisc(gmo));
-		solver.setInteger(discrind, gmoNDisc(gmo));
+		solver.setInteger(discrind, j);
 		delete[] discrind;
 	}
 
