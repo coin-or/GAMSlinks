@@ -97,8 +97,8 @@ static int glpkprint(void* info, const char* msg) {
   return 1;
 }
 
-#if COIN_HAS_CPX
-static int cpxinfocallback(CPXCENVptr cpxenv, void* cbdata, int wherefrom, void* cbhandle) {
+#ifdef COIN_HAS_CPX
+static int CPXPUBLIC cpxinfocallback(CPXCENVptr cpxenv, void* cbdata, int wherefrom, void* cbhandle) {
 #if GEVAPIVERSION >= 4
 	return gevTerminateGet((gevHandle_t)cbhandle);
 #else
@@ -107,8 +107,8 @@ static int cpxinfocallback(CPXCENVptr cpxenv, void* cbdata, int wherefrom, void*
 }
 #endif
 
-#if COIN_HAS_GRB
-static int grbcallback(GRBmodel* model, void* qcbdata, int where, void* usrdata) {
+#ifdef COIN_HAS_GRB
+static int __stdcall grbcallback(GRBmodel* model, void* qcbdata, int where, void* usrdata) {
 #if GEVAPIVERSION >= 4
 	if (gevTerminateGet((gevHandle_t)usrdata))
 		GRBterminate(model);
@@ -117,7 +117,7 @@ static int grbcallback(GRBmodel* model, void* qcbdata, int where, void* usrdata)
 }
 #endif
 
-#if COIN_HAS_XPR
+#ifdef COIN_HAS_XPR
 static int XPRS_CC xprcallback(XPRSprob prob, void* vUserDat) {
 #if GEVAPIVERSION >= 4
 	return gevTerminateGet((gevHandle_t)vUserDat);
@@ -127,7 +127,7 @@ static int XPRS_CC xprcallback(XPRSprob prob, void* vUserDat) {
 }
 #endif
 
-#if COIN_HAS_MSK
+#ifdef COIN_HAS_MSK
 static int MSKAPI mskcallback(MSKtask_t task, MSKuserhandle_t handle, MSKcallbackcodee caller) {
 #if GEVAPIVERSION >= 4
 	return gevTerminateGet((gevHandle_t)handle);
@@ -438,7 +438,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return -1;
 	}
 
-#if COIN_HAS_GRB
+#ifdef COIN_HAS_GRB
 	if (solverid == GUROBI) {
 		OsiGrbSolverInterface* osigrb = dynamic_cast<OsiGrbSolverInterface*>(osi);
 		assert(osigrb != NULL);
@@ -447,7 +447,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	}
 #endif
 
-#if COIN_HAS_XPR
+#ifdef COIN_HAS_XPR
 	if (solverid == XPRESS) {
 		OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
 		assert(osixpr != NULL);
@@ -457,7 +457,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	}
 #endif
 
-#if COIN_HAS_MSK
+#ifdef COIN_HAS_MSK
 	if (solverid == MOSEK) {
 		OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
 		assert(osimsk != NULL);
