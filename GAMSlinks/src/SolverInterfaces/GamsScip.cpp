@@ -437,6 +437,10 @@ SCIP_RETCODE GamsScip::setupSCIPParameters() {
       SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/rins/uselprows", FALSE) );
       SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/localbranching/uselprows", FALSE) );
       SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/mutation/uselprows", FALSE) );
+      /* a convex QP like qcp1 cannot be solved by separation in the LP solution solely
+       * setting minorthoroot to 0.4 helps in this case to ensure that the linearization in the global optimum makes its way into the LP
+       */
+      SCIP_CALL( SCIPsetRealParam(scip, "separating/minorthoroot", 0.4) );
    }
 
 	SCIPchgFeastol(scip, 1e-7);
