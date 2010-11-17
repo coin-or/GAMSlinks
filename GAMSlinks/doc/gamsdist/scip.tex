@@ -10,21 +10,21 @@
 \section{Introduction}
 
 \SCIP (\textbf{S}olving \textbf{C}onstraint \textbf{I}nteger \textbf{P}rograms) is developed at the Konrad-Zuse-Zentrum f\"ur Informationstechnik Berlin (ZIB).
-The \SCIP main developer had been Tobias Achterberg, current developers are Timo Berthold, Gerald Gamrath, Stefan Heinz, Thorsten Koch, Stefan Vigerske, Robert Waniek, Michael Winkler, and Kati Wolter.
-Since \SCIP is distributed under the ZIB Academic License, it is only available for users with a \GAMS academic license.
+The \SCIP main developer had been Tobias Achterberg, current developers are Timo Berthold, Gerald Gamrath, Stefan Heinz, Gregor Hendel, Thorsten Koch, Stefan Vigerske, Robert Waniek, Michael Winkler, and Kati Wolter.
+Since \SCIP is distributed under the ZIB Academic License, it is only available for users with a \textbf{\GAMS academic license}.
 
 \SCIP is a framework for Constraint Integer Programming oriented towards the needs of Mathematical Programming experts who want to have total control of the solution process and access detailed information down to the guts of the solver.
 \SCIP can also be used as a pure MIP solver or as a framework for branch-cut-and-price.
 Within \GAMS, the MIP and MIQCP solving facilities of \SCIP are available.
 
-For more detailed information, we refer to \cite{Achterberg2007,Ach09,AchBeKoWo08,Berthold2006,BertholdHeinzVigerske2009,Wolter2006} and the \SCIP web site \url{http://scip.zib.de}.
+For more detailed information, we refer to \cite{Achterberg2007,Ach09,AchBeKoWo08,Berthold2006,BertholdHeinzVigerske2009,Wolter2006} and the \SCIP web site \url{http://scip.zib.de}, especially the list of papers listed at \url{http://scip.zib.de/related.shtml}.
 
-\GAMS/\SCIP uses the COIN-OR linear solver \textsc{CLP} as LP solver and the COIN-OR Interior Point Optimizer \textsc{Ipopt}~\cite{WaBi06} as nonlinear solver.
+\GAMS/\SCIP uses the linear solver \textsc{SoPlex} \cite{Wunderling1996} as LP solver and the COIN-OR Interior Point Optimizer \textsc{Ipopt}~\cite{WaBi06} as nonlinear solver.
 
 \section{Model requirements}
 
-\SCIP supports continuous, binary, and integer variables, special ordered sets, and branching priorities.
-Semi-continuous or semi-integer variables (see chapter 17.1 of the \GAMS User's Guide) and indicator constraints are not supported yet.
+\SCIP supports continuous, binary, integer, semi-continuous, and semi-integer variables, special ordered sets, and branching priorities.
+Indicator constraints are not supported by the interface yet.
 
 \section{Usage}
 
@@ -76,12 +76,13 @@ It causes \GAMS/\SCIP to disable probing during presolve and to turn off all cut
 \section{Detailed Options Description}
 
 \SCIP supports a large set of options.
-Sample option files can be obtained from \\ \url{http://www.gams.com/~svigerske/scip1.2}.
+Sample option files can be obtained from \\ \url{http://www.gams.com/~svigerske/scip2.0}.
 
 % Further, there is a set of options that are specific to the \GAMS/\SCIP interface.
 % , most of them for control of the \GAMS BCH facility.
 
-In the following we give a detailed list of \SCIP options.
+In the following we give a detailed list of some \SCIP options.
+A list of all SCIP options can be obtained from \\ \url{http://scip.zib.de/doc/html/PARAMETERS.html}.
 
 \input{optscip_a}
 

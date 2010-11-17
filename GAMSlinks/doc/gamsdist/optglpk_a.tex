@@ -49,9 +49,9 @@ Use a steepest edge pricing rule.
 
 Sets the method for the LP basis factorization.
 
-If you observe that GLPK reports numerical instabilities than you could try to use a more stable factorization method.
+If you observe poor performce, then you may try setting the factorization method to forresttomlin.
 
-\textsl{(default = forresttomlin)}
+\textsl{(default = givens)}
 \begin{itemize}
 \item[forresttomlin] 
 Does a LU factorization followed by Forrest-Tomlin updates.

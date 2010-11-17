@@ -1,6 +1,6 @@
 \printoptioncategory{Algorithm choice}
 \printoption{algorithm}%
-{B-BB, B-OA, B-QG, B-Hyb, B-Ecp, B-iFP}%
+{\ttfamily B-BB, B-OA, B-QG, B-Hyb, B-Ecp, B-iFP}%
 {B-BB}%
 {Choice of the algorithm.\\
 This will preset some of the options of bonmin depending on the algorithm choice.}%
@@ -49,7 +49,7 @@ Specify the amount by which cutoff is decremented below a new best upper-bound (
 {}
 
 \printoption{enable\_dynamic\_nlp}%
-{no, yes}%
+{\ttfamily no, yes}%
 {no}%
 {Enable dynamic linear and quadratic rows addition in nlp}%
 {}
@@ -69,7 +69,7 @@ value 0 deactivates option.}%
 {}
 
 \printoption{nlp\_failure\_behavior}%
-{stop, fathom}%
+{\ttfamily stop, fathom}%
 {stop}%
 {Set the behavior when an NLP or a series of NLP are unsolved by Ipopt (we call unsolved an NLP for which Ipopt is not able to guarantee optimality within the specified tolerances).\\
 If set to "fathom", the algorithm will fathom the node when Ipopt fails to find a solution to the nlp at that node whithin the specified tolerances. The algorithm then becomes a heuristic, and the user will be warned that the solution might not be optimal.}%
@@ -85,7 +85,7 @@ If set to "fathom", the algorithm will fathom the node when Ipopt fails to find 
 }
 
 \printoption{node\_comparison}%
-{best-bound, depth-first, breadth-first, dynamic, best-guess}%
+{\ttfamily best-bound, depth-first, breadth-first, dynamic, best-guess}%
 {best-bound}%
 {Choose the node selection strategy.\\
 Choose the strategy for selecting the next node to be processed.}%
@@ -149,7 +149,7 @@ value 0 deactivates option}%
 {}
 
 \printoption{tree\_search\_strategy}%
-{top-node, dive, probed-dive, dfs-dive, dfs-dive-dynamic}%
+{\ttfamily top-node, dive, probed-dive, dfs-dive, dfs-dive-dynamic}%
 {probed-dive}%
 {Pick a strategy for traversing the tree\\
 All strategies can be used in conjunction with any of the node comparison functions. Options which affect dfs-dive are max-backtracks-in-dive and max-dive-depth. The dfs-dive won't work in a non-convex problem where objective does not decrease down branches.}%
@@ -168,7 +168,7 @@ All strategies can be used in conjunction with any of the node comparison functi
 }
 
 \printoption{variable\_selection}%
-{most-fractional, strong-branching, reliability-branching, curvature-estimator, qp-strong-branching, lp-strong-branching, nlp-strong-branching, osi-simple, osi-strong, random}%
+{\ttfamily most-fractional, strong-branching, reliability-branching, curvature-estimator, qp-strong-branching, lp-strong-branching, nlp-strong-branching, osi-simple, osi-strong, random}%
 {strong-branching}%
 {Chooses variable selection strategy}%
 {\begin{list}{}{
@@ -225,8 +225,8 @@ A frequency of 0 amounts to to never solve the NLP relaxation.}%
 
 \printoptioncategory{Feasibility checker using OA cuts}
 \printoption{feas\_check\_cut\_types}%
-{outer-approximations, Benders}%
-{outer-approximations}%
+{\ttfamily outer-approx, Benders}%
+{outer-approx}%
 {Choose the type of cuts generated when an integer feasible solution is found\\
 If it seems too much memory is used should try Benders to use less}%
 {\begin{list}{}{
@@ -235,13 +235,13 @@ If it seems too much memory is used should try Benders to use less}%
 \setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\texttt{outer-approximations}] Generate a set of Outer Approximations cuts.
+\item[\texttt{outer-approx}] Generate a set of Outer Approximations cuts.
 \item[\texttt{Benders}] Generate a single Benders cut.
 \end{list}
 }
 
 \printoption{feas\_check\_discard\_policy}%
-{detect-cycles, keep-all, treated-as-normal}%
+{\ttfamily detect-cycles, keep-all, treated-as-normal}%
 {detect-cycles}%
 {How cuts from feasibility checker are discarded\\
 Normally to avoid cycle cuts from feasibility checker should not be discarded in the node where they are generated. However Cbc sometimes does it if no care is taken which can lead to an infinite loop in Bonmin (usualy on simple problems). To avoid this one can instruct Cbc to never discard a cut but if we do that for all cuts it can lead to memory problems. The default policy here is to detect cycles and only then impose to Cbc to keep the cut. The two other alternative are to instruct Cbc to keep all cuts or to just ignore the problem and hope for the best}%
@@ -265,6 +265,13 @@ It seems that sometimes generating too many oa cuts slows down the optimization 
 {}
 
 \printoptioncategory{MILP Solver}
+\printoption{cpx\_parallel\_strategy}%
+{$-1\leq\textrm{integer}\leq1$}%
+{$0$}%
+{Strategy of parallel search mode in CPLEX.\\
+-1 = opportunistic, 0 = automatic, 1 = deterministic (refer to CPLEX documentation)}%
+{}
+
 \printoption{milp\_solver}%
 {Cbc\_D, Cbc\_Par, Cplex}%
 {Cbc\_D}%
@@ -281,6 +288,28 @@ It seems that sometimes generating too many oa cuts slows down the optimization 
 \item[\texttt{Cplex}] IBM CPLEX
 \end{list}
 }
+
+\printoption{milp\_strategy}%
+{\ttfamily find\_good\_sol, solve\_to\_optimality}%
+{find\_good\_sol}%
+{Choose a strategy for MILPs.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{find\_good\_sol}] Stop sub milps when a solution improving the incumbent is found
+\item[\texttt{solve\_to\_optimality}] Solve MILPs to optimality
+\end{list}
+}
+
+\printoption{number\_cpx\_threads}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{Set number of threads to use with cplex.\\
+(refer to CPLEX documentation)}%
+{}
 
 \printoptioncategory{MILP cutting planes in hybrid algorithm (B-Hyb)}
 \printoption{2mir\_cuts}%
@@ -306,7 +335,7 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 
 \printoption{cover\_cuts}%
 {$-100\leq\textrm{integer}$}%
-{$-5$}%
+{$0$}%
 {Frequency (in terms of nodes) for generating cover cuts in branch-and-cut\\
 See option \texttt{2mir\_cuts} for the meaning of k.}%
 {}
@@ -346,50 +375,65 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 {Norm of feasibility pump objective function}%
 {}
 
+\printoption{fp\_pass\_infeasible}%
+{\ttfamily no, yes}%
+{no}%
+{Say whether feasibility pump should claim to converge or not}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{no}] When master MILP is infeasible just bail out (don't stop all algorithm). This is the option for using in B-Hyb.
+\item[\texttt{yes}] Claim convergence, numerically dangerous.
+\end{list}
+}
+
 \printoption{heuristic\_RINS}%
-{no, yes}%
+{\ttfamily no, yes}%
 {no}%
 {if yes runs the RINS heuristic}%
 {
 }
 
 \printoption{heuristic\_dive\_MIP\_fractional}%
-{no, yes}%
+{\ttfamily no, yes}%
 {no}%
 {if yes runs the Dive MIP Fractional heuristic}%
 {
 }
 
 \printoption{heuristic\_dive\_MIP\_vectorLength}%
-{no, yes}%
+{\ttfamily no, yes}%
 {no}%
 {if yes runs the Dive MIP VectorLength heuristic}%
 {
 }
 
 \printoption{heuristic\_dive\_fractional}%
-{no, yes}%
+{\ttfamily no, yes}%
 {no}%
 {if yes runs the Dive Fractional heuristic}%
 {
 }
 
 \printoption{heuristic\_dive\_vectorLength}%
-{no, yes}%
+{\ttfamily no, yes}%
 {no}%
 {if yes runs the Dive VectorLength heuristic}%
 {
 }
 
 \printoption{heuristic\_feasibility\_pump}%
-{no, yes}%
+{\ttfamily no, yes}%
 {no}%
 {whether the heuristic feasibility pump should be used}%
 {
 }
 
 \printoption{pump\_for\_minlp}%
-{no, yes}%
+{\ttfamily no, yes}%
 {no}%
 {if yes runs FP for MINLP}%
 {
@@ -397,7 +441,7 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 
 \printoptioncategory{NLP interface}
 \printoption{warm\_start}%
-{none, optimum, interior\_point}%
+{\ttfamily none, optimum, interior\_point}%
 {none}%
 {Select the warm start method\\
 This will affect the function getWarmStart(), and as a consequence the warm starting in the various algorithms.}%
@@ -449,7 +493,7 @@ When Ipopt fails to solve a continuous NLP sub-problem, if $k > 0$, the algorith
 {}
 
 \printoption{random\_point\_type}%
-{Jon, Andreas, Claudia}%
+{\ttfamily Jon, Andreas, Claudia}%
 {Jon}%
 {method to choose a random starting point}%
 {\begin{list}{}{
@@ -493,7 +537,7 @@ A depth of 0 amounts to to never solve the NLP relaxation.}%
 {}
 
 \printoption{dynamic\_def\_cutoff\_decr}%
-{no, yes}%
+{\ttfamily no, yes}%
 {no}%
 {Do you want to define the parameter cutoff\_decr dynamically?}%
 {
@@ -541,14 +585,14 @@ The algorithm will solve the root node with $k$ random starting points and will 
 
 \printoptioncategory{Outer Approximation Decomposition (B-OA)}
 \printoption{oa\_decomposition}%
-{no, yes}%
+{\ttfamily no, yes}%
 {no}%
 {If yes do initial OA decomposition}%
 {}
 
 \printoptioncategory{Outer Approximation cuts generation}
 \printoption{add\_only\_violated\_oa}%
-{no, yes}%
+{\ttfamily no, yes}%
 {no}%
 {Do we add all OA cuts or only the ones violated by current point?}%
 {\begin{list}{}{
@@ -563,7 +607,7 @@ The algorithm will solve the root node with $k$ random starting points and will 
 }
 
 \printoption{oa\_cuts\_scope}%
-{local, global}%
+{\ttfamily local, global}%
 {global}%
 {Specify if OA cuts added are to be set globally or locally valid}%
 {\begin{list}{}{
@@ -627,7 +671,7 @@ Set the level of output of the linear programming sub-solver in B-Hyb or B-QG : 
 {}
 
 \printoption{milp\_log\_level}%
-{$0\leq\textrm{integer}\leq3$}%
+{$0\leq\textrm{integer}\leq4$}%
 {$0$}%
 {specify MILP solver log level.\\
 Set the level of output of the MILP subsolver in OA : 0 - none, 1 - minimal, 2 - normal low, 3 - normal high}%
@@ -668,7 +712,7 @@ Set the level of output of OA decomposition solver : 0 - none, 1 - normal, 2 - v
 
 \printoptioncategory{Strong branching setup}
 \printoption{candidate\_sort\_criterion}%
-{best-ps-cost, worst-ps-cost, most-fractional, least-fractional}%
+{\ttfamily best-ps-cost, worst-ps-cost, most-fractional, least-fractional}%
 {best-ps-cost}%
 {Choice of the criterion to choose candidates in strong-branching}%
 {\begin{list}{}{
@@ -728,7 +772,7 @@ The default value is that of "number\_before\_trust"}%
 {}
 
 \printoption{trust\_strong\_branching\_for\_pseudo\_cost}%
-{no, yes}%
+{\ttfamily no, yes}%
 {yes}%
 {Whether or not to trust strong branching results for updating pseudo costs.}%
 {}

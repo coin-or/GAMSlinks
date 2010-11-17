@@ -35,7 +35,7 @@
 #include <iostream>
 #include <fstream>
 
-#if COIN_HAS_BONMIN
+#if COIN_HAS_IPOPT
 #include "IpIpoptApplication.hpp"
 #endif
 
@@ -254,7 +254,7 @@ void printOption(std::ostream& out,
 			
 		case OPTTYPE_ENUM: {
 			std::string tmp;
-			out << "{\\ttfamily";
+			out << "{\\ttfamily ";
 			for (ENUMVAL::const_iterator it(enumvals.begin()); it != enumvals.end(); ++it) {
 				if (it != enumvals.begin())
 					out << ", ";
@@ -407,7 +407,7 @@ void printIpoptOptions() {
   				tmpstr = (*it_opt)->DefaultString();
   				defaultval.stringval = tmpstr.c_str();
 
-  				const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->StringSettings());
+  				const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
   				if( settings.size() == 1 && settings[0].value_ == "*") {
   					opttype = OPTTYPE_STRING;
   					
@@ -589,17 +589,17 @@ void printBonminOptions() {
   		if ((*it_opt)->Name() == "nlp_log_at_root")
   			defaultval = makeValidLatexNumber(Ipopt::J_ITERSUMMARY);
   		else if ((*it_opt)->Name() == "allowable_gap")
-  			defaultval = "\\MYGAMS \\texttt{optca}";
+  			defaultval = "\\GAMS \\texttt{optca}";
   		else if ((*it_opt)->Name() == "allowable_fraction_gap")
-  			defaultval = "\\MYGAMS \\texttt{optcr}";
+  			defaultval = "\\GAMS \\texttt{optcr}";
   		else if ((*it_opt)->Name() == "node_limit")
-  			defaultval = "\\MYGAMS \\texttt{nodlim}";
+  			defaultval = "\\GAMS \\texttt{nodlim}";
   		else if ((*it_opt)->Name() == "time_limit")
-  			defaultval = "\\MYGAMS \\texttt{reslim}";
+  			defaultval = "\\GAMS \\texttt{reslim}";
       else if ((*it_opt)->Name() == "iteration_limit")
-         defaultval = "\\MYGAMS \\texttt{iterlim}";
+         defaultval = "\\GAMS \\texttt{iterlim}";
   		else if ((*it_opt)->Name() == "cutoff")
-  			defaultval = "\\MYGAMS \\texttt{cutoff}";
+  			defaultval = "\\GAMS \\texttt{cutoff}";
   		  		
   		tabfile << typestring << " & ";
   		tabfile << defaultval << " & ";
@@ -660,7 +660,7 @@ void printBonminOptions() {
   				tmpstr = (*it_opt)->DefaultString();
   				defaultval.stringval = tmpstr.c_str();
 
-  				const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->StringSettings());
+  				const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
   				if( settings.size() == 1 && settings[0].value_ == "*") {
   					opttype = OPTTYPE_STRING;
   					
@@ -776,7 +776,7 @@ void printCouenneOptions() {
   				tmpstr = (*it_opt)->DefaultString();
   				defaultval.stringval = tmpstr.c_str();
 
-  				const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->StringSettings());
+  				const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
   				if( settings.size() == 1 && settings[0].value_ == "*") {
   					opttype = OPTTYPE_STRING;
   					
@@ -846,6 +846,8 @@ void printSCIPOptions() {
 	categname["lp"] = "LP";
 	categname["memory"] = "Memory";
 	categname["misc"] = "Micellaneous";
+	categname["nlp"] = "Nonlinear Programming Relaxation";
+	categname["nlpi"] = "Nonlinear Programming Solver interfaces";
 	categname["nodeselection"] = "Node Selection";
 	categname["numerics"] = "Tolerances";
 	categname["presolving"] = "Presolving";
@@ -884,6 +886,8 @@ void printSCIPOptions() {
 
   	if (category == "reading" ||
   			category == "pricing" ||
+  			category == "nlp" ||
+  			category == "nlpi" ||
   			category == "vbc")
   		continue;
 

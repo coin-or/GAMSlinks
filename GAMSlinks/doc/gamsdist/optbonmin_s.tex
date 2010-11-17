@@ -1,7 +1,7 @@
-\topcaption{\label{tab:bonminoptions}
+\topcaption{\label{tab:bonminoptions} 
 List of options and compatibility with the different algorithms.
 }
-\tablehead{\hline
+\tablehead{\hline 
 Option & type &  default & {\tt B-BB} & {\tt B-OA} & {\tt B-QG} & {\tt B-Hyb} & {\tt B-Ecp} & {\tt B-iFP} & {\tt Cbc\_Par} \\
 \hline}
 \tabletail{\hline \multicolumn{10}{|r|}{continued on next page}\\\hline}
@@ -42,20 +42,23 @@ filmint\_ecp\_cuts & $\mathbb{Z}$ & $0$ & --& --& $\checkmark$& $\checkmark$& --
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Feasibility checker using OA cuts}\\
 \hline
-feas\_check\_cut\_types & string & outer-approximations & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
+feas\_check\_cut\_types & string & outer-approx & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
 feas\_check\_discard\_policy & string & detect-cycles & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
 generate\_benders\_after\_so\_many\_oa & $\mathbb{Z}$ & $5000$ & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{MILP Solver}\\
 \hline
+cpx\_parallel\_strategy & $\mathbb{Z}$ & $0$ & --& --& --& --& --& --& $\checkmark$\\
 milp\_solver & string & Cbc\_D & --& --& --& --& --& --& $\checkmark$\\
+milp\_strategy & string & find\_good\_sol & --& --& --& --& --& --& $\checkmark$\\
+number\_cpx\_threads & $\mathbb{Z}$ & $0$ & --& --& --& --& --& --& $\checkmark$\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{MILP cutting planes in hybrid algorithm (B-Hyb)}\\
 \hline
 2mir\_cuts & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 Gomory\_cuts & $\mathbb{Z}$ & $-5$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 clique\_cuts & $\mathbb{Z}$ & $-5$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
-cover\_cuts & $\mathbb{Z}$ & $-5$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+cover\_cuts & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 flow\_cover\_cuts & $\mathbb{Z}$ & $-5$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 lift\_and\_project\_cuts & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 mir\_cuts & $\mathbb{Z}$ & $-5$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
@@ -64,6 +67,7 @@ reduce\_and\_split\_cuts & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& 
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{MINLP Heuristics}\\
 \hline
 feasibility\_pump\_objective\_norm & $\mathbb{Z}$ & $1$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+fp\_pass\_infeasible & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 heuristic\_RINS & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
 heuristic\_dive\_MIP\_fractional & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
 heuristic\_dive\_MIP\_vectorLength & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\

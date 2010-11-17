@@ -30,6 +30,12 @@
 {should branching on binary variables be preferred?}%
 {}
 
+\printoption{branching/clamp}%
+{$0\leq\textrm{real}\leq0.5$}%
+{$0.2$}%
+{minimal relative distance of branching point to bounds when branching on a continuous variable}%
+{}
+
 \printoption{branching/allfullstrong/priority}%
 {$-536870912\leq\textrm{integer}\leq536870911$}%
 {$-1000$}%
@@ -82,6 +88,12 @@
 {$0\leq\textrm{real}\leq1$}%
 {$1$}%
 {maximal relative distance from current node's dual bound to primal bound compared to best node's dual bound for applying branching rule (0.0: only on current best node, 1.0: on all nodes)}%
+{}
+
+\printoption{branching/inference/useweightedsum}%
+{boolean}%
+{TRUE}%
+{should a weighted sum of inference, conflict and cutoff weigths be used?}%
 {}
 
 \printoption{branching/mostinf/priority}%
@@ -138,6 +150,12 @@
 {maximal relative distance from current node's dual bound to primal bound compared to best node's dual bound for applying branching rule (0.0: only on current best node, 1.0: on all nodes)}%
 {}
 
+\printoption{branching/pscost/strategy}%
+{character}%
+{r}%
+{strategy for computing score of external branching candidates (b: rb-int-br, r: rb-int-br-rev, i: rb-inf)}%
+{}
+
 \printoption{branching/random/priority}%
 {$-536870912\leq\textrm{integer}\leq536870911$}%
 {$-100000$}%
@@ -154,6 +172,12 @@
 {$0\leq\textrm{real}\leq1$}%
 {$1$}%
 {maximal relative distance from current node's dual bound to primal bound compared to best node's dual bound for applying branching rule (0.0: only on current best node, 1.0: on all nodes)}%
+{}
+
+\printoption{branching/random/seed}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{initial random seed value}%
 {}
 
 \printoption{branching/relpscost/priority}%
@@ -344,6 +368,12 @@
 {frequency for propagating domains (-1: never, 0: only in root node)}%
 {}
 
+\printoption{constraints/countsols/active}%
+{boolean}%
+{FALSE}%
+{is the constraint handler active?}%
+{}
+
 \printoption{constraints/countsols/sparsetest}%
 {boolean}%
 {TRUE}%
@@ -356,12 +386,6 @@
 {is it allowed to discard solutions?}%
 {}
 
-\printoption{constraints/countsols/active}%
-{boolean}%
-{FALSE}%
-{is the constraint handler active?}%
-{}
-
 \printoption{constraints/countsols/collect}%
 {boolean}%
 {FALSE}%
@@ -372,6 +396,66 @@
 {$-1\leq\textrm{integer}\leq-1$}%
 {$-1$}%
 {counting stops, if the given number of solutions were found (-1: no limit)}%
+{}
+
+\printoption{constraints/cumulative/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/cumulative/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$5$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/cumulative/usebinvars}%
+{boolean}%
+{FALSE}%
+{should the binary representation be used?}%
+{}
+
+\printoption{constraints/cumulative/usecoretimes}%
+{boolean}%
+{TRUE}%
+{should coretimes be propagated?}%
+{}
+
+\printoption{constraints/cumulative/usecoretimesholes}%
+{boolean}%
+{FALSE}%
+{should coretimes be propagated to detect holes?}%
+{}
+
+\printoption{constraints/cumulative/localcuts}%
+{boolean}%
+{FALSE}%
+{should cuts be added only locally?}%
+{}
+
+\printoption{constraints/cumulative/usecovercuts}%
+{boolean}%
+{TRUE}%
+{should covering cuts be added every node?}%
+{}
+
+\printoption{constraints/cumulative/useedgefinding}%
+{boolean}%
+{FALSE}%
+{should edge finding be used?}%
+{}
+
+\printoption{constraints/cumulative/useenergeticreasoning}%
+{boolean}%
+{FALSE}%
+{should energetic reasoning be used?}%
+{}
+
+\printoption{constraints/cumulative/cutsasconss}%
+{boolean}%
+{TRUE}%
+{should the cumulative constraint create cuts as knapsack constraints?}%
 {}
 
 \printoption{constraints/indicator/sepafreq}%
@@ -440,6 +524,24 @@
 {maximal number of cuts separated per separation round in the root node}%
 {}
 
+\printoption{constraints/linking/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/linking/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/linking/linearize}%
+{boolean}%
+{FALSE}%
+{this constraint will not propagate or separate, linear and setppc are used?}%
+{}
+
 \printoption{constraints/logicor/sepafreq}%
 {$-1\leq\textrm{integer}$}%
 {$0$}%
@@ -470,6 +572,18 @@
 {frequency for propagating domains (-1: never, 0: only in root node)}%
 {}
 
+\printoption{constraints/orbitope/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$5$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/orbitope/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
 \printoption{constraints/quadratic/sepafreq}%
 {$-1\leq\textrm{integer}$}%
 {$2$}%
@@ -480,12 +594,6 @@
 {$-1\leq\textrm{integer}$}%
 {$10$}%
 {frequency for propagating domains (-1: never, 0: only in root node)}%
-{}
-
-\printoption{constraints/quadratic/replacesqrbinary}%
-{boolean}%
-{TRUE}%
-{whether a square of a binary variables should be replaced by the binary variable}%
 {}
 
 \printoption{constraints/quadratic/replacebinaryprod}%
@@ -500,12 +608,6 @@
 {empathy level for using the AND constraint handler: 0 always avoid using AND; 1 use AND sometimes; 2 use AND as often as possible}%
 {}
 
-\printoption{constraints/quadratic/disaggregate}%
-{boolean}%
-{TRUE}%
-{whether quadratic constraints consisting of several quadratic blocks should be disaggregated in several constraints}%
-{}
-
 \printoption{constraints/quadratic/minefficacy}%
 {$0\leq\textrm{real}$}%
 {$0.0001$}%
@@ -518,12 +620,6 @@
 {whether a quadratic constraint should be scaled w.r.t. the current gradient norm when checking for feasibility}%
 {}
 
-\printoption{constraints/quadratic/fastpropagate}%
-{boolean}%
-{TRUE}%
-{whether a propagation should be used that is faster in case of bilinear term, but also less efficient}%
-{}
-
 \printoption{constraints/quadratic/cutmaxrange}%
 {$0\leq\textrm{real}$}%
 {$10^{ 10}$}%
@@ -533,19 +629,19 @@
 \printoption{constraints/quadratic/linearizenlpsol}%
 {boolean}%
 {TRUE}%
-{whether convex quadratic constraints should be linearized in a solution found by the NLP or RENSNL heuristic}%
+{whether convex quadratic constraints should be linearized in a solution found by the NLP or RENS heuristic}%
 {}
 
-\printoption{constraints/quadratic/strategy}%
-{character}%
-{r}%
-{strategy to use for selecting branching variable: b: rb-int-br, r: rb-int-br-rev, i: rb-inf}%
+\printoption{constraints/quadratic/checkcurvature}%
+{boolean}%
+{TRUE}%
+{whether multivariate quadratic functions should be checked for convexity/concavity}%
 {}
 
-\printoption{constraints/quadratic/mindistbrpointtobound}%
-{$0.0001\leq\textrm{real}\leq0.5$}%
-{$0.2$}%
-{minimal fractional distance of branching point to variable bounds; a value of 0.5 leads to branching always in the middle of a bounded domain}%
+\printoption{constraints/quadratic/linfeasshift}%
+{boolean}%
+{TRUE}%
+{whether to try to make solutions in check function feasible by shifting a linear variable (esp. useful if constraint was actually objective function)}%
 {}
 
 \printoption{constraints/setppc/sepafreq}%
@@ -606,6 +702,60 @@
 {$-1\leq\textrm{integer}$}%
 {$1$}%
 {frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/soc/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/soc/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$20$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/quadratic/upgrade/soc}%
+{boolean}%
+{TRUE}%
+{enable quadratic upgrading for constraint handler $<$soc$>$}%
+{}
+
+\printoption{constraints/soc/nauxvars}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{number of auxiliary variables to use when creating a linear outer approx. of a SOC3 constraint; 0 to turn off}%
+{}
+
+\printoption{constraints/soc/glineur}%
+{boolean}%
+{TRUE}%
+{whether the Glineur Outer Approximation should be used instead of Ben-Tal Nemirovski}%
+{}
+
+\printoption{constraints/soc/linearizenlpsol}%
+{boolean}%
+{TRUE}%
+{whether SOC constraints should be linearized in a solution found by the NLP or RENS heuristic}%
+{}
+
+\printoption{constraints/soc/minefficacy}%
+{$0\leq\textrm{real}$}%
+{$0.0001$}%
+{minimal efficacy of a cut to be added to LP in separation}%
+{}
+
+\printoption{constraints/soc/linfeasshift}%
+{boolean}%
+{TRUE}%
+{whether to try to make solutions feasible in check by shifting the variable on the right hand side}%
+{}
+
+\printoption{constraints/soc/nlpform}%
+{character}%
+{s}%
+{which formulation to use when adding a SOC constraint to the NLP (q: nonconvex quadratic form, s: convex sqrt form, e: convex exponential-sqrt form)}%
 {}
 
 \printoption{constraints/varbound/sepafreq}%
@@ -711,6 +861,12 @@
 {display activation status of display column $<$lpiterations$>$ (0: off, 1: auto, 2:on)}%
 {}
 
+\printoption{display/lpavgiterations/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$lpavgiterations$>$ (0: off, 1: auto, 2:on)}%
+{}
+
 \printoption{display/memused/active}%
 {$0\leq\textrm{integer}\leq2$}%
 {$1$}%
@@ -739,6 +895,12 @@
 {$0\leq\textrm{integer}\leq2$}%
 {$1$}%
 {display activation status of display column $<$nfrac$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/nexternbranchcands/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$nexternbranchcands$>$ (0: off, 1: auto, 2:on)}%
 {}
 
 \printoption{display/vars/active}%
@@ -924,7 +1086,7 @@
 
 \printoption{heuristics/crossover/freqofs}%
 {$0\leq\textrm{integer}$}%
-{$10$}%
+{$0$}%
 {frequency offset for calling primal heuristic $<$crossover$>$}%
 {}
 
@@ -1012,22 +1174,52 @@
 {maximal fraction of diving LP iterations compared to node LP iterations}%
 {}
 
-\printoption{heuristics/feaspump/maxlpiterofs}%
-{$0\leq\textrm{integer}$}%
-{$1000$}%
-{additional number of allowed LP iterations}%
-{}
-
 \printoption{heuristics/feaspump/objfactor}%
 {$0\leq\textrm{real}\leq1$}%
 {$1$}%
 {factor by which the regard of the objective is decreased in each round, 1.0 for dynamic}%
 {}
 
+\printoption{heuristics/feaspump/alphadiff}%
+{$0\leq\textrm{real}\leq1$}%
+{$1$}%
+{threshold difference for the convex parameter to perform perturbation}%
+{}
+
+\printoption{heuristics/feaspump/maxlpiterofs}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{additional number of allowed LP iterations}%
+{}
+
+\printoption{heuristics/feaspump/neighborhoodsize}%
+{$1\leq\textrm{integer}$}%
+{$18$}%
+{radius (using Manhattan metric) of the neighborhood to be searched in stage 3}%
+{}
+
 \printoption{heuristics/feaspump/beforecuts}%
 {boolean}%
 {TRUE}%
 {should the feasibility pump be called at root node before cut separation?}%
+{}
+
+\printoption{heuristics/feaspump2/usefp20}%
+{boolean}%
+{FALSE}%
+{should an iterative round-and-propagate scheme be used to find the integral points?}%
+{}
+
+\printoption{heuristics/feaspump2/pertsolfound}%
+{boolean}%
+{TRUE}%
+{should a random perturbation be performed if a feasible solution was found?}%
+{}
+
+\printoption{heuristics/feaspump2/stage3}%
+{boolean}%
+{FALSE}%
+{should we solve a local branching sub-MIP if no solution could be found?}%
 {}
 
 \printoption{heuristics/fixandinfer/freq}%
@@ -1234,72 +1426,6 @@
 {percentage of integer variables that have to be fixed }%
 {}
 
-\printoption{heuristics/nlp/freq}%
-{$-1\leq\textrm{integer}$}%
-{$10$}%
-{frequency for calling primal heuristic $<$nlp$>$ (-1: never, 0: only at depth freqofs)}%
-{}
-
-\printoption{heuristics/nlp/freqofs}%
-{$0\leq\textrm{integer}$}%
-{$0$}%
-{frequency offset for calling primal heuristic $<$nlp$>$}%
-{}
-
-\printoption{heuristics/nlp/nlpverblevel}%
-{$0\leq\textrm{integer}\leq2$}%
-{$0$}%
-{verbosity level of NLP solver}%
-{}
-
-\printoption{heuristics/nlp/nlpiterlimit}%
-{$0\leq\textrm{integer}$}%
-{$0$}%
-{iteration limit of NLP solver; 0 to use solver default}%
-{}
-
-\printoption{heuristics/nlp/nlptimelimit}%
-{$0\leq\textrm{real}$}%
-{$0$}%
-{time limit of NLP solver; 0 to use solver default}%
-{}
-
-\printoption{heuristics/nlp/resolvetolfactor}%
-{$0\leq\textrm{real}\leq1$}%
-{$0.01$}%
-{if SCIP does not accept a solution which the NLP solver thinks is feasible, the feasibility tolerance is reduced by this factor and the NLP resolved (set to 1. to turn off resolve}%
-{}
-
-\printoption{heuristics/nlp/resolvefromscratch}%
-{boolean}%
-{TRUE}%
-{whether a resolve of an NLP due to disagreement of feasibility should be from the original starting point or the infeasible solution}%
-{}
-
-\printoption{heuristics/nlp/iteroffset}%
-{$0\leq\textrm{integer}$}%
-{$500$}%
-{number of iterations added to the contingent of the total number of iterations}%
-{}
-
-\printoption{heuristics/nlp/iterquotient}%
-{$0\leq\textrm{real}$}%
-{$0.1$}%
-{contingent of NLP iterations in relation to the number of nodes in SCIP}%
-{}
-
-\printoption{heuristics/nlp/itermin}%
-{$0\leq\textrm{integer}$}%
-{$300$}%
-{contingent of NLP iterations in relation to the number of nodes in SCIP}%
-{}
-
-\printoption{heuristics/nlp/varboundexplicit}%
-{boolean}%
-{TRUE}%
-{whether variable bound constraints should be handled explicitly before solving NLP instead of adding them to the NLP}%
-{}
-
 \printoption{heuristics/objpscostdiving/freq}%
 {$-1\leq\textrm{integer}$}%
 {$20$}%
@@ -1474,6 +1600,18 @@
 {frequency offset for calling primal heuristic $<$rounding$>$}%
 {}
 
+\printoption{heuristics/shiftandpropagate/freq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for calling primal heuristic $<$shiftandpropagate$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/shiftandpropagate/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$shiftandpropagate$>$}%
+{}
+
 \printoption{heuristics/shifting/freq}%
 {$-1\leq\textrm{integer}$}%
 {$10$}%
@@ -1498,6 +1636,72 @@
 {frequency offset for calling primal heuristic $<$simplerounding$>$}%
 {}
 
+\printoption{heuristics/subnlp/freq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for calling primal heuristic $<$subnlp$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/subnlp/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$subnlp$>$}%
+{}
+
+\printoption{heuristics/subnlp/nlpverblevel}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{verbosity level of NLP solver}%
+{}
+
+\printoption{heuristics/subnlp/nlpiterlimit}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{iteration limit of NLP solver; 0 to use solver default}%
+{}
+
+\printoption{heuristics/subnlp/nlptimelimit}%
+{$0\leq\textrm{real}$}%
+{$0$}%
+{time limit of NLP solver; 0 to use solver default}%
+{}
+
+\printoption{heuristics/subnlp/nlpsolver}%
+{string}%
+{}%
+{name of an NLP solver to use (empty value means to use solver with highest priority)}%
+{}
+
+\printoption{heuristics/subnlp/iteroffset}%
+{$0\leq\textrm{integer}$}%
+{$500$}%
+{number of iterations added to the contingent of the total number of iterations}%
+{}
+
+\printoption{heuristics/subnlp/iterquotient}%
+{$0\leq\textrm{real}$}%
+{$0.1$}%
+{contingent of NLP iterations in relation to the number of nodes in SCIP}%
+{}
+
+\printoption{heuristics/subnlp/itermin}%
+{$0\leq\textrm{integer}$}%
+{$300$}%
+{contingent of NLP iterations in relation to the number of nodes in SCIP}%
+{}
+
+\printoption{heuristics/subnlp/runalways}%
+{boolean}%
+{FALSE}%
+{whether to run NLP heuristic always if starting point available (does not use iteroffset,iterquot,itermin)}%
+{}
+
+\printoption{heuristics/subnlp/forbidfixings}%
+{boolean}%
+{TRUE}%
+{whether to add constraints that forbid specific fixings that turned out to be infeasible}%
+{}
+
 \printoption{heuristics/trivial/freq}%
 {$-1\leq\textrm{integer}$}%
 {$0$}%
@@ -1520,6 +1724,60 @@
 {$0\leq\textrm{integer}$}%
 {$0$}%
 {frequency offset for calling primal heuristic $<$trysol$>$}%
+{}
+
+\printoption{heuristics/twoopt/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling primal heuristic $<$twoopt$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/twoopt/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$twoopt$>$}%
+{}
+
+\printoption{heuristics/undercover/freq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for calling primal heuristic $<$undercover$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/undercover/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$undercover$>$}%
+{}
+
+\printoption{heuristics/undercover/fixingalts}%
+{string}%
+{li}%
+{prioritized sequence of fixing values used ('l'p relaxation, 'n'lp relaxation, 'i'ncumbent solution)}%
+{}
+
+\printoption{heuristics/undercover/nodesofs}%
+{$0\leq\textrm{integer}\leq-1$}%
+{$500$}%
+{number of nodes added to the contingent of the total nodes}%
+{}
+
+\printoption{heuristics/undercover/nodesquot}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.1$}%
+{contingent of sub problem nodes in relation to the number of nodes of the original problem}%
+{}
+
+\printoption{heuristics/undercover/onlyconvexify}%
+{boolean}%
+{FALSE}%
+{should we only fix variables in order to obtain a convex problem?}%
+{}
+
+\printoption{heuristics/undercover/postnlp}%
+{boolean}%
+{TRUE}%
+{should the nlp heuristic be called to polish a feasible solution?}%
 {}
 
 \printoption{heuristics/veclendiving/freq}%
@@ -1550,6 +1808,18 @@
 {boolean}%
 {TRUE}%
 {use one level of backtracking if infeasibility is encountered?}%
+{}
+
+\printoption{heuristics/zirounding/freq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for calling primal heuristic $<$zirounding$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/zirounding/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$zirounding$>$}%
 {}
 
 \printoptioncategory{Limits}
@@ -1607,6 +1877,12 @@
 {maximal number of solutions to store in the solution storage}%
 {}
 
+\printoption{limits/restarts}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{solving stops, if the given number of restarts was triggered (-1: no limit)}%
+{}
+
 \printoptioncategory{LP}
 \printoption{lp/solvefreq}%
 {$-1\leq\textrm{integer}$}%
@@ -1650,6 +1926,30 @@
 {boolean}%
 {TRUE}%
 {should the CTRL-C interrupt be caught by SCIP?}%
+{}
+
+\printoption{misc/usevartable}%
+{boolean}%
+{TRUE}%
+{should a hashtable be used to map from variable names to variables?}%
+{}
+
+\printoption{misc/useconstable}%
+{boolean}%
+{TRUE}%
+{should a hashtable be used to map from constraint names to constraints?}%
+{}
+
+\printoption{misc/usesmalltables}%
+{boolean}%
+{FALSE}%
+{should smaller hashtables be used? yields better performance for small problems with about 100 variables}%
+{}
+
+\printoption{misc/permutationseed}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{seed value for permuting the problem after the problem was transformed (-1: no permutation)}%
 {}
 
 \printoptioncategory{Node Selection}
@@ -1703,8 +2003,14 @@
 
 \printoption{nodeselection/restartdfs/selectbestfreq}%
 {$0\leq\textrm{integer}$}%
-{$1000$}%
-{frequency for selecting the best node instead of the deepest one (0: never)}%
+{$100$}%
+{frequency for selecting the best node instead of the deepest one}%
+{}
+
+\printoption{nodeselection/restartdfs/countonlyleafs}%
+{boolean}%
+{TRUE}%
+{count only leaf nodes (otherwise all nodes)?}%
 {}
 
 \printoptioncategory{Tolerances}
@@ -1723,20 +2029,20 @@
 \printoption{numerics/feastol}%
 {$10^{-17}\leq\textrm{real}\leq0.001$}%
 {$10^{- 6}$}%
-{LP feasibility tolerance for constraints}%
+{feasibility tolerance for constraints}%
 {}
 
 \printoption{numerics/dualfeastol}%
 {$10^{-17}\leq\textrm{real}\leq0.001$}%
 {$10^{- 9}$}%
-{LP feasibility tolerance for reduced costs}%
+{feasibility tolerance for reduced costs in LP solution}%
 {}
 
 \printoptioncategory{Presolving}
 \printoption{presolving/maxrounds}%
 {$-1\leq\textrm{integer}$}%
 {$-1$}%
-{maximal number of presolving rounds (-1: unlimited)}%
+{maximal number of presolving rounds (-1: unlimited, 0: off)}%
 {}
 
 \printoption{presolving/maxrestarts}%
@@ -1818,6 +2124,12 @@
 {frequency for calling propagator $<$rootredcost$>$ (-1: never, 0: only in root node)}%
 {}
 
+\printoption{propagating/vbounds/freq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for calling propagator $<$vbounds$>$ (-1: never, 0: only in root node)}%
+{}
+
 \printoptioncategory{Separation}
 \printoption{separating/maxbounddist}%
 {$0\leq\textrm{real}\leq1$}%
@@ -1895,6 +2207,114 @@
 {$-1\leq\textrm{integer}$}%
 {$10$}%
 {maximal number of clique cuts separated per separation round (-1: no limit)}%
+{}
+
+\printoption{separating/cgmip/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling separator $<$cgmip$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{separating/cgmip/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{maximal number of cgmip separation rounds per node (-1: unlimited)}%
+{}
+
+\printoption{separating/cgmip/maxroundsroot}%
+{$-1\leq\textrm{integer}$}%
+{$50$}%
+{maximal number of cgmip separation rounds in the root node (-1: unlimited)}%
+{}
+
+\printoption{separating/cgmip/dynamiccuts}%
+{boolean}%
+{TRUE}%
+{should generated cuts be removed from the LP if they are no longer tight?}%
+{}
+
+\printoption{separating/cgmip/nodelimit}%
+{$-1\leq\textrm{integer}\leq-1$}%
+{$10000$}%
+{node limit for sub-MIP (-1: unlimited)}%
+{}
+
+\printoption{separating/cgmip/usecmir}%
+{boolean}%
+{TRUE}%
+{use CMIR-generator (otherwise add cut directly)?}%
+{}
+
+\printoption{separating/cgmip/cmirownbounds}%
+{boolean}%
+{FALSE}%
+{tell CMIR-generator which bounds to used in rounding?}%
+{}
+
+\printoption{separating/cgmip/allowlocal}%
+{boolean}%
+{FALSE}%
+{allow to generate local cuts?}%
+{}
+
+\printoption{separating/cgmip/onlyintvars}%
+{boolean}%
+{FALSE}%
+{generate cuts for problems with only integer variables?}%
+{}
+
+\printoption{separating/cgmip/onlyactiverows}%
+{boolean}%
+{TRUE}%
+{use only active rows to generate cuts?}%
+{}
+
+\printoption{separating/cgmip/usecutpool}%
+{boolean}%
+{TRUE}%
+{use cutpool to store CG-cuts even if the are not efficient?}%
+{}
+
+\printoption{separating/cgmip/primalseparation}%
+{boolean}%
+{TRUE}%
+{only separate cuts that are tight for the best feasible solution?}%
+{}
+
+\printoption{separating/cgmip/onlyrankone}%
+{boolean}%
+{FALSE}%
+{whether only rank 1 inequalities should be separated}%
+{}
+
+\printoption{separating/cgmip/earlyterm}%
+{boolean}%
+{TRUE}%
+{terminate separation if a violated (but possibly sub-optimal) cut has been found?}%
+{}
+
+\printoption{separating/cgmip/addviolationcons}%
+{boolean}%
+{TRUE}%
+{add constraint to subscip that only allows violated cuts?}%
+{}
+
+\printoption{separating/cgmip/addviolconshdlr}%
+{boolean}%
+{FALSE}%
+{add constraint handler to filter out violated cuts?}%
+{}
+
+\printoption{separating/cgmip/conshdlrusenorm}%
+{boolean}%
+{TRUE}%
+{should the violation constraint handler use the norm of a cut to check for feasibility?}%
+{}
+
+\printoption{separating/cgmip/objlone}%
+{boolean}%
+{FALSE}%
+{should the objective of the sub-MIP minimize the l1-norm of the multipliers?}%
 {}
 
 \printoption{separating/cmir/freq}%
@@ -2041,6 +2461,54 @@
 {maximal number of mcf cuts separated per separation round in the root node  -- default separation}%
 {}
 
+\printoption{separating/oddcycle/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling separator $<$oddcycle$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{separating/oddcycle/useclassical}%
+{boolean}%
+{TRUE}%
+{should classical search method by Groetschel, Lovasz, Schrijver be used? Otherwise use levelgraph method by Hoffman, Padberg.}%
+{}
+
+\printoption{separating/oddcycle/liftoddcycles}%
+{boolean}%
+{FALSE}%
+{should odd cycle cuts be lifted?}%
+{}
+
+\printoption{separating/oddcycle/maxsepacuts}%
+{$0\leq\textrm{integer}$}%
+{$5000$}%
+{maximal number of oddcycle cuts separated per separation round}%
+{}
+
+\printoption{separating/oddcycle/maxsepacutsroot}%
+{$0\leq\textrm{integer}$}%
+{$5000$}%
+{maximal number of oddcycle cuts separated per separation round in the root node}%
+{}
+
+\printoption{separating/oddcycle/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{maximal number of oddcycle separation rounds per node (-1: unlimited)}%
+{}
+
+\printoption{separating/oddcycle/maxroundsroot}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{maximal number of oddcycle separation rounds in the root node (-1: unlimited)}%
+{}
+
+\printoption{separating/rapidlearning/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling separator $<$rapidlearning$>$ (-1: never, 0: only in root node)}%
+{}
+
 \printoption{separating/redcost/freq}%
 {$-1\leq\textrm{integer}$}%
 {$1$}%
@@ -2139,8 +2607,8 @@
 
 \printoption{separating/zerohalf/preprocessing/ppmethods}%
 {string}%
-{CXRGXIM}%
-{preprocessing methods and ordering:\\   \#                      'd' columns with small LP solution,\\    \#                      'G' modified Gaussian elimination,\\     \#                      'i' identical columns,\\   \#                      'I' identical rows,\\   \#                      'L' large slack rows,\\   \#                      'M' large slack rows (minslack),\\   \#                      's' column singletons,\\   \#                      'X' add trivial zerohalf cuts,\\   \#                      'z' zero columns,\\   \#                      'Z' zero rows,\\   \#                      'C' fast {'z','s'},\\   \#                      'R' fast {'Z','L','I'}\\   \#                      \\                         \#                      '-' no preprocessing                     }%
+{CXGXIM}%
+{preprocessing methods and ordering:\\   \#                      'd' columns with small LP solution,\\    \#                      'G' modified Gaussian elimination,\\     \#                      'i' identical columns,\\   \#                      'I' identical rows,\\   \#                      'L' large slack rows,\\   \#                      'M' large slack rows (minslack),\\   \#                      's' column singletons,\\   \#                      'X' add trivial zerohalf cuts,\\   \#                      'z' zero columns,\\   \#                      'Z' zero rows,\\   \#                      'C' fast {'z','s'},\\   \#                      'R' fast {'Z','L','I'}\\   \#                      \\                         \#                      '-' no preprocessing}%
 {}
 
 \printoption{separating/zerohalf/separating/forcecutstolp}%
