@@ -641,10 +641,15 @@ CouenneProblem* GamsCouenne::setupProblem() {
 CouenneProblem* GamsCouenne::setupProblemNew() {
 	CouenneProblem* prob = new CouenneProblem(NULL, NULL, jnlst);
 
+#if GMOAPIVERSION >= 8
+	if (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp) 
+	   gmoWantQSet(gmo, 1);
+#else
 	if (gmoQMaker(gmo, 0.5) < 0) { // negative number is error; positive number is number of nonquadratic nonlinear equations
 		gevLogStat(gev, "ERROR: Problems extracting information on quadratic functions in GMO.");
 		return NULL;
 	}
+#endif
 
 	int nz, nlnz;
 

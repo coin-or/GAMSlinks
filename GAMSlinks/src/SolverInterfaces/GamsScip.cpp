@@ -482,10 +482,14 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 		SCIP_CALL( SCIPgetBoolParam(scip, "gams/names", &names) );
 
 	if (gmoNLNZ(gmo) || gmoObjNLNZ(gmo)) {
+#if GMOAPIVERSION >= 8
+	   gmoWantQSet(gmo, 1);
+#else
 		if (gmoQMaker(gmo, 0.5) < 0) { // negative number is error; positive number is number of nonquadratic nonlinear equations
 			gevLogStat(gev, "ERROR: Problems extracting information on quadratic functions in GMO.");
 			return SCIP_READERROR;
 		}
+#endif
 	}
 
 	vars = new SCIP_VAR*[gmoN(gmo)];
