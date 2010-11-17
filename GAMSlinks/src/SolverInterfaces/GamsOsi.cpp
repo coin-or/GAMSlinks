@@ -1602,7 +1602,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 		if (isLP())
 			gmoSetHeadnTail(gmo, Hiterused, osi->getIterationCount());
 		gmoSetHeadnTail(gmo, Hresused, cputime);
-#if STEFAN
+#ifdef STEFAN
 		gmoSetHeadnTail(gmo, Tmipbest, model->getBestPossibleObjValue());
 		gmoSetHeadnTail(gmo, Tmipnod, model->getNodeCount());
 #endif
@@ -1636,7 +1636,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 			snprintf(buffer, 255, "MIP solution: %21.10g   (%g seconds)", gmoGetHeadnTail(gmo, Hobjval), cputime);
 			gevLogStat(gev, buffer);
 		}
-#if STEFAN
+#ifdef STEFAN
 		snprintf(buffer, 255, "Best possible: %20.10g", model->getBestPossibleObjValue());
 		gevLogStat(gev, buffer);
 		if (model->bestSolution()) {
