@@ -349,7 +349,7 @@ If you need to use \GAMS/\CBC with BCH, please consider to use a \GAMS system of
 \subsection{Options}
 
 Among all \CBC options, the following \GAMS parameters are currently supported in \CBC:
-\hyperlink{reslim}{reslim}, \hyperlink{iterlim}{iterlim}, \hyperlink{nodlim}{nodlim}, \hyperlink{optca}{optca}, \hyperlink{optcr}{optcr}, \hyperlink{increment}{cheat}, \hyperlink{cutoff}{cutoff}.
+\hyperlink{reslim}{reslim}, \hyperlink{iterlim}{iterlim}, \hyperlink{nodlim}{nodlim}, \hyperlink{optca}{optca}, \hyperlink{optcr}{optcr}, \hyperlink{increment}{cheat}, \hyperlink{cutoff}{cutoff}, \hyperlink{threads}{threads} (only on non-Windows systems).
 
 In the following, we summarize all available \CBC options.
 \input{optcbc_s}  %TODO update?
@@ -693,7 +693,7 @@ In order to use the remote solver service in an \emph{asynchronous} fashion, one
 \section{\OSICPLEX, \OSIGLPK, \OSIGUROBI, \OSIMOSEK, \OSIXPRESS}
 
 The ``bare bone'' solver links \GAMS/\OSICPLEX, \GAMS/\OSIGLPK, \GAMS/\OSIGUROBI, \GAMS/\OSIMOSEK, and \GAMS/\OSIXPRESS
-allow users to solve their \GAMS models with a \GLPK or a standalone license of \CPLEX, \GUROBI, \MOSEK, or \XPRESS.
+allow users to solve their \GAMS models with \GLPK or a standalone license of \CPLEX, \GUROBI, \MOSEK, or \XPRESS.
 The links use the COIN-OR Open Solver Interface (\OSI) to communicate with these solvers.
 The \OSICPLEX link has been written primarily by Tobias Achterberg,
 the \OSIGLPK link has been written by Vivian De Smedt, Braden Hunsaker, and Lou Hafer,
@@ -718,9 +718,10 @@ The following statement can be used inside your \GAMS program to specify using \
 
 The above statement should appear before the Solve statement.
 
-The links support the general \GAMS options \texttt{reslim}, \texttt{optca} (except for \OSIGLPK), \texttt{optcr}, \texttt{nodlim}, and \texttt{iterlim}.
+The links support the general \GAMS options \texttt{reslim}, \texttt{optca} (except for \OSIGLPK), \texttt{optcr}, \texttt{nodlim}, \texttt{iterlim}, and \texttt{threads} (except for \OSIGLPK).
 For \OSICPLEX, \OSIGUROBI, \OSIMOSEK, and \OSIXPRESS an option file in the format required by the solver can be provided via the \GAMS \texttt{optfile} option.
-For \OSIGLPK, an \GAMS option file can be provided, see Section~\ref{sub:glpkoptions} for details.
+For \OSIGLPK, an \GAMS option file can be provided.
+See Section~\ref{sub:osioptions} for details.
 
 If a MIP is solved via one of the \OSI links, only primal solution values are reported by default.
 To receive also the dual values for the LP that is obtained from the MIP by fixing all discrete variables, the \GAMS option \texttt{integer1} can be set to a nonzero value. Note that this may lead to solving another LP after the MIP solve has finished.
@@ -732,8 +733,19 @@ Setting the \GAMS option \texttt{integer3} to a nonzero value leads to writing t
 The name of the MPS file is chosen to be the name of the \GAMS model file with the extension \texttt{.gms} replaced by \texttt{.mps}.
 This option may be useful for debugging purposes.
 
-\subsection{\OSIGLPK Options}
-\label{sub:glpkoptions}
+\subsection{Option files}
+\label{sub:osioptions}
+
+\subsubsection{\OSICPLEX Options}
+In an \OSICPLEX option file, each line lists one option setting, where the option name and value are separated by space.\\
+Example:
+\begin{verbatim}
+CPX_PARAM_ADVIND                 0
+CPX_PARAM_TUNINGTILIM            2.00000000000000e+02
+CPX_PARAM_MIPDISPLAY             4
+\end{verbatim}
+
+\subsubsection{\OSIGLPK Options}
 
 The \OSIGLPK option file consists of one option or comment per line.
 An asterisk (*) at the beginning of a line causes the entire line to be ignored.
@@ -745,6 +757,39 @@ Following is an example options file osiglpk.opt.
 It will cause \OSIGLPK to use Givens rotation updates for the factorization. (This option setting might help to avoid numerical difficulties in some cases.)
 
 \input{optglpk_a}
+
+\subsubsection{\OSIGUROBI Options}
+In an \OSICPLEX option file, each line lists one option setting, where the option name and value are separated by space.
+
+Example:
+\begin{verbatim}
+Cuts 2
+Heuristics 0.1
+\end{verbatim}
+
+\subsubsection{\OSIMOSEK Options}
+An \OSIMOSEK option file begins with the line \texttt{BEGIN MOSEK} and terminates with \texttt{END MOSEK}.
+Comments are introduced with an '\%', empty lines are ignored.
+Each other line starts with a MOSEK parameter value, followed by space, and a value for that parameter.
+
+Example:
+\begin{verbatim}
+BEGIN MOSEK
+% disable probing and solve the root node by the interior point solver
+MSK_IPAR_MIO_PRESOLVE_PROBING MSK_OFF
+MSK_IPAR_MIO_ROOT_OPTIMIZER   MSK_OPTIMIZER_INTPNT
+END MOSEK
+\end{verbatim}
+
+\subsubsection{\OSIXPRESS Options}
+In an \OSIXPRESS option file, each line lists one option setting, where the option name and value are separated by an equal sign.
+
+Example:
+\begin{verbatim}
+MIPLOG = 3
+HEURFREQ = 2
+\end{verbatim}
+
 
 \bibliographystyle{plain}
 \bibliography{coin_scip}
