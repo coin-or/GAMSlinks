@@ -1128,7 +1128,8 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					} else {
 						double bound;
 						GRBgetdblattr(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL), GRB_DBL_ATTR_OBJBOUND, &bound);
-						if(fabs(bound - osi->getObjValue()) < 1e-9) {
+						if(fabs(bound - osi->getObjValue()) < 1e-9 ||
+						   fabs(bound - osi->getObjValue())/(fabs(osi->getObjValue()) + 1.0e-10) < 1e-9) {
 							gevLogStat(gev, "Solved to optimality.");
 							gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
 						} else {
