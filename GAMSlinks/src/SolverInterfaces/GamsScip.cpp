@@ -899,8 +899,10 @@ SCIP_RETCODE GamsScip::setupInitialBasis() {
                   rstat[j] = SCIP_BASESTAT_LOWER;
                   break;
 				   case equ_N:
-                  rstat[j] = SCIP_BASESTAT_ZERO;
-				      break;
+                  gevLogStat(gev, "Cannot setup initial basis in presence of free rows.");
+                  delete[] cstat;
+                  delete[] rstat;
+				      return SCIP_OKAY;
 				   default: /* equ_X or equ_C */
 		            gevLogStat(gev, "ERROR: unsupported equation type.");
 		            delete[] cstat;
@@ -920,8 +922,10 @@ SCIP_RETCODE GamsScip::setupInitialBasis() {
 			         rstat[j] = SCIP_BASESTAT_LOWER;
 			         break;
 			      case equ_N:
-			         rstat[j] = SCIP_BASESTAT_ZERO;
-			         break;
+                  gevLogStat(gev, "Cannot setup initial basis in presence of free rows.");
+                  delete[] cstat;
+                  delete[] rstat;
+                  return SCIP_OKAY;
 			      default: /* equ_X or equ_C */
 			      gevLogStat(gev, "ERROR: unsupported equation type.");
 			      delete[] cstat;
