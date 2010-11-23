@@ -890,13 +890,44 @@ SCIP_RETCODE GamsScip::setupInitialBasis() {
 				if (nbas < gmoM(gmo)) {
 					rstat[j] = SCIP_BASESTAT_BASIC;
 					++nbas;
-				} else
-					rstat[j] = gmoGetEquTypeOne(gmo, j) == equ_L ? SCIP_BASESTAT_UPPER : SCIP_BASESTAT_LOWER;
+				} else switch (gmoGetEquTypeOne(gmo, j)) {
+				   case equ_L:
+				      rstat[j] = SCIP_BASESTAT_UPPER;
+				      break;
+               case equ_E:
+				   case equ_G:
+                  rstat[j] = SCIP_BASESTAT_LOWER;
+                  break;
+				   case equ_N:
+                  rstat[j] = SCIP_BASESTAT_ZERO;
+				      break;
+				   default: /* equ_X or equ_C */
+		            gevLogStat(gev, "ERROR: unsupported equation type.");
+		            delete[] cstat;
+		            delete[] rstat;
+		            return SCIP_ERROR;
+				}
 				break;
 			case Bstat_Lower:
 			case Bstat_Upper:
 			case Bstat_Super:
-				rstat[j] = gmoGetEquTypeOne(gmo, j) == equ_L ? SCIP_BASESTAT_UPPER : SCIP_BASESTAT_LOWER;
+			   switch (gmoGetEquTypeOne(gmo, j)) {
+			      case equ_L:
+			         rstat[j] = SCIP_BASESTAT_UPPER;
+			         break;
+			      case equ_E:
+			      case equ_G:
+			         rstat[j] = SCIP_BASESTAT_LOWER;
+			         break;
+			      case equ_N:
+			         rstat[j] = SCIP_BASESTAT_ZERO;
+			         break;
+			      default: /* equ_X or equ_C */
+			      gevLogStat(gev, "ERROR: unsupported equation type.");
+			      delete[] cstat;
+			      delete[] rstat;
+			      return SCIP_ERROR;
+			   }
 				break;
 			default:
 				gevLogStat(gev, "ERROR: invalid basis indicator for row.");
