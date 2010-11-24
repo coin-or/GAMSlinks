@@ -442,7 +442,9 @@ SCIP_RETCODE GamsScip::setupSCIPParameters() {
        */
       SCIP_CALL( SCIPsetRealParam(scip, "separating/minorthoroot", 0.4) );
    }
-
+   if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
+     SCIP_CALL( SCIPsetBoolParam(scip, "presolving/donotmultaggr", TRUE) );
+   }
 	SCIPchgFeastol(scip, 1e-7);
 
 	SCIP_CALL( SCIPaddBoolParam(scip, "gams/names",            "whether the gams dictionary should be read and col/row names be given to scip",         NULL, FALSE, FALSE, NULL, NULL) );
