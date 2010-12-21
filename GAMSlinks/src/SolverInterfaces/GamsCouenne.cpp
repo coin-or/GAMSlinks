@@ -1357,7 +1357,10 @@ CouenneProblem* GamsCouenne::setupProblemMIQQP() {
 	double isMin = (gmoSense(gmo) == Obj_Min) ? 1 : -1;
 
 	memset(linear, 0, gmoN(gmo)*sizeof(double));
-#if GMOAPIVERSION >= 8
+#if GMOAPIVERSION >= 9
+   irc = gmoEvalGradObj(gmo, null, &constant, linear, &dummy, &nerror);
+   assert(0 == irc);
+#elif GMOAPIVERSION == 8
 	irc = gmoEvalObjGrad(gmo, null, &constant, linear, &dummy, &nerror);
 	assert(0 == irc);
 #else

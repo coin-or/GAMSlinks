@@ -281,14 +281,20 @@ bool GamsNLP::eval_f(Index n, const Number* x, bool new_x, Number& obj_value) {
     gmoEvalNewPoint(gmo, x);
   int nerror;
   int rc;
-#if GMOAPIVERSION >= 8
+#if GMOAPIVERSION >= 9
+  rc = gmoEvalFuncObj(gmo, x, &obj_value, &nerror);
+#elif GMOAPIVERSION == 8
   rc = gmoEvalObjFunc(gmo, x, &obj_value, &nerror);
 #else
   rc = gmoEvalObjFunc(gmo, x, &obj_value);
   nerror = rc;
 #endif
-  
+
+#if GMOAPIVERSION <= 8
   if (EvalRCSYSTEM == rc) {
+#else
+  if (rc) {
+#endif
     char buffer[255];
     sprintf(buffer, "Error detected in evaluation of objective function!\n"
             "rc = %d\n"
@@ -315,14 +321,20 @@ bool GamsNLP::eval_grad_f (Index n, const Number* x, bool new_x, Number* grad_f)
   double gx;
   int nerror;
   int rc;
-#if GMOAPIVERSION >= 8
+#if GMOAPIVERSION >= 9
+  rc = gmoEvalGradObj(gmo, x, &val, grad_f, &gx, &nerror);
+#elif GMOAPIVERSION == 8
   rc = gmoEvalObjGrad(gmo, x, &val, grad_f, &gx, &nerror);
 #else
   rc = gmoEvalObjGrad(gmo, x, &val, grad_f, &gx);
   nerror = rc;
 #endif
 
+#if GMOAPIVERSION <= 8
   if (rc == EvalRCSYSTEM) {
+#else
+  if (rc) {
+#endif
     char buffer[255];
     sprintf(buffer, "Error detected in GAMS evaluation of objective gradient!\n"
             "rc = %d\n"
@@ -353,7 +365,11 @@ bool GamsNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
     rc = gmoEvalFunc(gmo, i, x, &g[i]);
     nerror = rc;
 #endif
+#if GMOAPIVERSION <= 8
     if (rc == EvalRCSYSTEM) {
+#else
+    if (rc) {
+#endif
       char buffer[255];
       sprintf(buffer, "Error detected in evaluation of constraint %d!\nrc = %d\nExiting from subroutine - eval_g\n", i, rc);
       gevLogStatPChar(gev, buffer);
@@ -421,7 +437,11 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
       rc = gmoEvalGrad(gmo, rownr, x, &val, grad, &gx);
       nerror = rc;
 #endif
-      if (EvalRCSYSTEM == rc) {
+#if GMOAPIVERSION <= 8
+      if (rc == EvalRCSYSTEM) {
+#else
+      if (rc) {
+#endif
         char buffer[255];
         sprintf(buffer, "Error detected in evaluation of gradient for constraint %d!\nrc = %d\nExiting from subroutine - eval_jac_g\n", rownr, rc);
         gevLogStatPChar(gev, buffer);
