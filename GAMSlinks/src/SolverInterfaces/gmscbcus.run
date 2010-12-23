@@ -1,5 +1,5 @@
 #!/bin/sh
-# execute CBCD
+# execute CBC
 
 # parameters:
 #    $1 : scratch directory

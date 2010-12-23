@@ -37,10 +37,21 @@ AC_ARG_WITH([gamssystem],
   ])
 AM_CONDITIONAL([COIN_HAS_GAMSSYSTEM], [test "$GAMS_PATH" != UNAVAILABLE])
 AC_SUBST(GAMS_PATH)
-if test "$GAMS_PATH" = UNAVAILABLE; then
-  AC_MSG_NOTICE([no GAMS system found, tests will not work])
-fi
 
+GAMS_VERSION="23.6" 
+if test "$GAMS_PATH" = UNAVAILABLE; then
+  AC_MSG_NOTICE([no GAMS system found, tests will not work, assuming build for GAMS version $GAMS_VERSION])
+else
+  AC_MSG_CHECKING([for gams version number])
+  GAMS_VERSION=""
+  [GAMS_VERSION=`grep -m 1 "Installation of" ${GAMS_PATH}/gamsinst.log | sed -e 's/.* \([0-9][0-9]*\.[0-9][0-9]*\)\.[0-9][0-9]* .*/\1/'`]
+  if test "x$GAMS_VERSION" != x ; then
+    AC_MSG_RESULT([$GAMS_VERSION])
+  else
+    AC_MSG_RESULT([unknown, assuming version $GAMS_VERSION])
+  fi
+fi
+AC_SUBST(GAMS_VERSION)
 
 #check on which architecture we are running
 #on Linux we use LEG/LNX if gfortran is used as F77/F90 compiler, otherwise we use LEI/LX3 and hope the user has the Intel Fortran libraries 
@@ -125,8 +136,30 @@ case $GAMSIO_CODE in
       AC_MSG_ERROR([GAMS I/O libraries with system code $GAMSIO_CODE not supported.])
 esac
 
+CIA_FLAG=""
+case $build in
+  x86_64-*-linux-*)
+    CIA_FLAG=-DCIA_LEX
+  ;;
+  i?86-*-linux-*)
+  ;;
+  *-cygwin* | *-mingw32*)
+  ;;
+  *-mingw64*)
+    CIA_FLAG=-DCIA_WEX
+  ;;
+  i?86-*-darwin*)
+    CIA_FLAG=-DCIA_DAR
+  ;;
+  i?86-*-solaris*)
+  ;;
+  *)
+    AC_MSG_WARN([Build type $build unknown. Assuming 32bit Linux system.])
+esac
+
 AC_SUBST(GAMSIO_CODE)
 AC_SUBST(GAMSIO_CIA)
+AC_SUBST(CIA_FLAG)
 AM_CONDITIONAL([GAMSIO_IS_DARWIN], [test x"$gamsio_system"  = xDarwin])
 AM_CONDITIONAL([GAMSIO_IS_UNIX],   [test x"$gamsio_system" != xWindows])
 AM_CONDITIONAL([GAMSIO_IS_WINDOWS],[test x"$gamsio_system"  = xWindows])
@@ -139,8 +172,8 @@ else
   gamsio_objdir=../ThirdParty/GAMSIO
 fi
 gamsio_srcdir=`$CYGPATH_W $abs_source_dir/$gamsio_objdir/$GAMSIO_CODE | sed -e sX\\\\\\\\X/Xg`
-gamsio_objdir=`cd $gamsio_objdir; pwd`
-gamsio_objdir=`$CYGPATH_W $gamsio_objdir | sed -e sX\\\\\\\\X/Xg`
+#gamsio_objdir=`cd $gamsio_objdir; pwd`
+#gamsio_objdir=`$CYGPATH_W $gamsio_objdir | sed -e sX\\\\\\\\X/Xg`
 AC_CHECK_FILE([$gamsio_srcdir/iolib.h],[coin_has_gamsio=yes],[
   coin_has_gamsio=no
 	AC_MSG_WARN([no GAMS I/O libraries in ThirdParty/GAMSIO/$GAMSIO_CODE found. You can download them by calling get.GAMSIO $GAMSIO_CODE.])

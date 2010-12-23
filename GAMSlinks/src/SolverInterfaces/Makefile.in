@@ -90,43 +90,43 @@ noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
 @COIN_HAS_CPX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_8 = $(OSIOBJDIR)/src/OsiCpx/libOsiCpx.la
 #  libGamsCoin_la_LDFLAGS  += $(CPXLIB)
 @COIN_HAS_CPX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_9 = -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiCpx` -I`$(CYGPATH_W) $(CPXINCDIR)`
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_10 = gmsocpux.out
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_11 = gmsocpux.out gmsocpus.run install/gmsocpun.dat
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_12 = gmsocpnx
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_13 = gmsocpnx.exe gmsocpnt.cmd install/gmsocpnt.dat
-@COIN_HAS_CPX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_14 = gmsocpnt.cmd gmsocpus.run install/gmsocpnt.dat install/gmsocpun.dat
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_10 = gmszcpux.out
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_11 = gmszcpux.out gmszcpus.run install/gmszcpun.dat
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_12 = gmszcpnx
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_13 = gmszcpnx.exe gmszcpnt.cmd install/gmszcpnt.dat
+@COIN_HAS_CPX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_14 = gmszcpnt.cmd gmszcpus.run install/gmszcpnt.dat install/gmszcpun.dat
 @COIN_HAS_GLPK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_15 = $(OSIOBJDIR)/src/OsiGlpk/libOsiGlpk.la
 @COIN_HAS_GLPK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_16 = -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGlpk` -I`$(CYGPATH_W) $(GLPKINCDIR)`
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_17 = gmsoglux.out
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_18 = gmsoglux.out gmsoglus.run install/gmsoglun.dat
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_19 = gmsoglnx
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_20 = gmsoglnx.exe gmsoglnt.cmd install/gmsoglnt.dat
-@COIN_HAS_GLPK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_21 = optglpk.def
-@COIN_HAS_GLPK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_22 = optglpk.def optglpk.gms optglpk.txt gmsoglnt.cmd gmsoglus.run install/gmsoglnt.dat install/gmsoglun.dat
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_17 = gmszglux.out
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_18 = gmszglux.out gmszglus.run install/gmszglun.dat
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_19 = gmszglnx
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_20 = gmszglnx.exe gmszglnt.cmd install/gmszglnt.dat
+@COIN_HAS_GLPK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_21 = optmyglpk.def
+@COIN_HAS_GLPK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_22 = optmyglpk.def optmyglpk.gms optmyglpk.txt gmszglnt.cmd gmszglus.run install/gmszglnt.dat install/gmszglun.dat
 @COIN_HAS_GRB_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_23 = $(OSIOBJDIR)/src/OsiGrb/libOsiGrb.la
 #  libGamsCoin_la_LDFLAGS  += $(GRBLIB)
 @COIN_HAS_GRB_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_24 = -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiGrb` -I`$(CYGPATH_W) $(GRBINCDIR)`
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_25 = gmsoguux.out
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_26 = gmsoguux.out gmsoguus.run install/gmsoguun.dat
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_27 = gmsogunx
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_28 = gmsogunx.exe gmsogunt.cmd install/gmsogunt.dat
-@COIN_HAS_GRB_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_29 = gmsogunt.cmd gmsoguus.run install/gmsogunt.dat install/gmsoguun.dat
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_25 = gmszguux.out
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_26 = gmszguux.out gmszguus.run install/gmszguun.dat
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_27 = gmszgunx
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_28 = gmszgunx.exe gmszgunt.cmd install/gmszgunt.dat
+@COIN_HAS_GRB_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_29 = gmszgunt.cmd gmszguus.run install/gmszgunt.dat install/gmszguun.dat
 @COIN_HAS_MSK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_30 = $(OSIOBJDIR)/src/OsiMsk/libOsiMsk.la
 #  libGamsCoin_la_LDFLAGS  += $(MSKLIB)
 @COIN_HAS_MSK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_31 = -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiMsk` -I`$(CYGPATH_W) $(MSKINCDIR)`
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_32 = gmsomsux.out
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_33 = gmsomsux.out gmsomsus.run install/gmsomsun.dat
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_34 = gmsomsnx
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_35 = gmsomsnx.exe gmsomsnt.cmd install/gmsomsnt.dat
-@COIN_HAS_MSK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_36 = gmsomsnt.cmd gmsomsus.run install/gmsomsnt.dat install/gmsomsun.dat
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_32 = gmszmkux.out
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_33 = gmszmkux.out gmszmkus.run install/gmszmkun.dat
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_34 = gmszmknx
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_35 = gmszmknx.exe gmszmknt.cmd install/gmszmknt.dat
+@COIN_HAS_MSK_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_36 = gmszmknt.cmd gmszmkus.run install/gmszmknt.dat install/gmszmkun.dat
 @COIN_HAS_XPR_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_37 = $(OSIOBJDIR)/src/OsiXpr/libOsiXpr.la 
 #  libGamsCoin_la_LDFLAGS  += $(XPRLIB)
 @COIN_HAS_XPR_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_38 = -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiXpr` -I`$(CYGPATH_W) $(XPRINCDIR)`
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_39 = gmsoxpux.out
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_40 = gmsoxpux.out gmsoxpus.run install/gmsoxpun.dat
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_41 = gmsoxpnx
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_42 = gmsoxpnx.exe gmsoxpnt.cmd install/gmsoxpnt.dat
-@COIN_HAS_XPR_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_43 = gmsoxpnt.cmd gmsoxpus.run install/gmsoxpnt.dat install/gmsoxpun.dat
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_39 = gmszxpux.out
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_40 = gmszxpux.out gmszxpus.run install/gmszxpun.dat
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_41 = gmszxpnx
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_42 = gmszxpnx.exe gmszxpnt.cmd install/gmszxpnt.dat
+@COIN_HAS_XPR_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__append_43 = gmszxpnt.cmd gmszxpus.run install/gmszxpnt.dat install/gmszxpun.dat
 @GAMSLINKS_BUILD_CBC_TRUE@am__append_44 = GamsCbc.cpp
 @GAMSLINKS_BUILD_CBC_TRUE@am__append_45 = \
 @GAMSLINKS_BUILD_CBC_TRUE@ -I`$(CYGPATH_W) $(CGLSRCDIR)/src` \
@@ -151,8 +151,8 @@ noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__append_48 = gmscbcux.out gmscbcus.run install/gmscbcun.dat
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__append_49 = gmscbcnx
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__append_50 = gmscbcnx.exe gmscbcnt.cmd install/gmscbcnt.dat
-@GAMSLINKS_BUILD_CBC_TRUE@am__append_51 = optcbcd.def
-@GAMSLINKS_BUILD_CBC_TRUE@am__append_52 = optcbcd.def optcbcd.gms optcbcd.txt gmscbcnt.cmd gmscbcus.run install/gmscbcnt.dat install/gmscbcun.dat
+@GAMSLINKS_BUILD_CBC_TRUE@am__append_51 = optmycbc.def
+@GAMSLINKS_BUILD_CBC_TRUE@am__append_52 = optmycbc.def optmycbc.gms optmycbc.txt gmscbcnt.cmd gmscbcus.run install/gmscbcnt.dat install/gmscbcun.dat
 @GAMSLINKS_BUILD_IPOPT_TRUE@am__append_53 = GamsIpopt.cpp GamsNLP.cpp GamsJournal.cpp
 @GAMSLINKS_BUILD_IPOPT_TRUE@am__append_54 = \
 @GAMSLINKS_BUILD_IPOPT_TRUE@ -I`$(CYGPATH_W) $(IPOPTSRCDIR)/src/Interfaces` \
@@ -165,11 +165,11 @@ noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
 
 @GAMSLINKS_BUILD_IPOPT_TRUE@am__append_55 = $(IPOPTOBJDIR)/src/Interfaces/libipopt.la 
 @GAMSLINKS_BUILD_IPOPT_TRUE@am__append_56 = `cat $(IPOPTOBJDIR)/src/Interfaces/ipopt_addlibs_cpp.txt`
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_57 = gmsipdux.out
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_58 = gmsipdux.out gmsipdus.run install/gmsipdun.dat
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_59 = gmsipdnx
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_60 = gmsipdnx.exe gmsipdnt.cmd install/gmsipdnt.dat
-@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_61 = gmsipdnt.cmd gmsipdus.run install/gmsipdnt.dat install/gmsipdun.dat
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_57 = gmsip_ux.out
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_58 = gmsip_ux.out gmsip_us.run install/gmsip_un.dat
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_59 = gmsip_nx
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_60 = gmsip_nx.exe gmsip_nt.cmd install/gmsip_nt.dat
+@GAMSLINKS_BUILD_IPOPT_TRUE@am__append_61 = gmsip_nt.cmd gmsip_us.run install/gmsip_nt.dat install/gmsip_un.dat
 @GAMSLINKS_BUILD_SCIP_TRUE@am__append_62 = GamsScip.cpp
 @GAMSLINKS_BUILD_SCIP_TRUE@am__append_63 = \
 @GAMSLINKS_BUILD_SCIP_TRUE@ -I`$(CYGPATH_W) $(CLPSRCDIR)/src` \
@@ -180,11 +180,11 @@ noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
 @COIN_BUILD_SCIP_FALSE@@GAMSLINKS_BUILD_SCIP_TRUE@am__append_65 = $(SCIPLIB)
 @COIN_BUILD_SOPLEX_TRUE@@COIN_HAS_SOPLEX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__append_66 = $(SOPLEXOBJDIR)/libcoinsoplex.la
 @COIN_BUILD_SOPLEX_FALSE@@COIN_HAS_SOPLEX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__append_67 = $(SOPLEXLIB)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__append_68 = gmsscdux.out
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__append_69 = gmsscdux.out gmsscdus.run install/gmsscdun.dat
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__append_70 = gmsscdnx
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__append_71 = gmsscdnx.exe gmsscdnt.cmd install/gmsscdnt.dat
-@GAMSLINKS_BUILD_SCIP_TRUE@am__append_72 = gmsscdnt.cmd gmsscdus.run install/gmsscdnt.dat install/gmsscdun.dat
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__append_68 = gmssc_ux.out
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__append_69 = gmssc_ux.out gmssc_us.run install/gmssc_un.dat
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__append_70 = gmssc_nx
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__append_71 = gmssc_nx.exe gmssc_nt.cmd install/gmssc_nt.dat
+@GAMSLINKS_BUILD_SCIP_TRUE@am__append_72 = gmssc_nt.cmd gmssc_us.run install/gmssc_nt.dat install/gmssc_un.dat
 @GAMSLINKS_BUILD_BONMIN_TRUE@am__append_73 = GamsBonmin.cpp GamsMINLP.cpp
 @GAMSLINKS_BUILD_BONMIN_TRUE@am__append_74 = \
 @GAMSLINKS_BUILD_BONMIN_TRUE@ -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms` \
@@ -193,11 +193,11 @@ noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
 @GAMSLINKS_BUILD_BONMIN_TRUE@ -I`$(CYGPATH_W) $(BONMINOBJDIR)/inc`
 
 @GAMSLINKS_BUILD_BONMIN_TRUE@am__append_75 = $(BONMINOBJDIR)/src/CbcBonmin/libbonmin.la
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_76 = gmsbmdux.out
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_77 = gmsbmdux.out gmsbmdus.run install/gmsbmdun.dat
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_78 = gmsbmdnx
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_79 = gmsbmdnx.exe gmsbmdnt.cmd install/gmsbmdnt.dat
-@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_80 = gmsbmdnt.cmd gmsbmdus.run install/gmsbmdnt.dat install/gmsbmdun.dat
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_76 = gmsbm_ux.out
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_77 = gmsbm_ux.out gmsbm_us.run install/gmsbm_un.dat
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_78 = gmsbm_nx
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_79 = gmsbm_nx.exe gmsbm_nt.cmd install/gmsbm_nt.dat
+@GAMSLINKS_BUILD_BONMIN_TRUE@am__append_80 = gmsbm_nt.cmd gmsbm_us.run install/gmsbm_nt.dat install/gmsbm_un.dat
 @GAMSLINKS_BUILD_COUENNE_TRUE@am__append_81 = GamsCouenne.cpp
 @GAMSLINKS_BUILD_COUENNE_TRUE@am__append_82 = \
 @GAMSLINKS_BUILD_COUENNE_TRUE@  -I`$(CYGPATH_W) $(BONMINSRCDIR)/src/Algorithms/OaGenerators` \
@@ -241,12 +241,12 @@ noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_3) \
 @GAMSLINKS_BUILD_OS_TRUE@ $(OSOBJDIR)/src/OSAgent/libOSAgent.la
 
 @GAMSLINKS_BUILD_OS_TRUE@am__append_92 = `cat $(OSOBJDIR)/os_addlibs.txt`
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_93 = gmsosdux.out
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_94 = gmsosdux.out gmsosdus.run install/gmsosdun.dat
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_95 = gmsosdnx
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_96 = gmsosdnx.exe gmsosdnt.cmd install/gmsosdnt.dat
-@GAMSLINKS_BUILD_OS_TRUE@am__append_97 = optosd.def
-@GAMSLINKS_BUILD_OS_TRUE@am__append_98 = optosd.def optosd.gms optosd.txt gmsosdnt.cmd gmsosdus.run install/gmsosdnt.dat install/gmsosdun.dat
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_93 = gmsos_ux.out
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_94 = gmsos_ux.out gmsos_us.run install/gmsos_un.dat
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_95 = gmsos_nx
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__append_96 = gmsos_nx.exe gmsos_nt.cmd install/gmsos_nt.dat
+@GAMSLINKS_BUILD_OS_TRUE@am__append_97 = optmyos.def
+@GAMSLINKS_BUILD_OS_TRUE@am__append_98 = optmyos.def optmyos.gms optmyos.txt gmsos_nt.cmd gmsos_us.run install/gmsos_nt.dat install/gmsos_un.dat
 DIST_COMMON = $(am__includecoin_HEADERS_DIST) \
 	$(srcdir)/../../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -331,39 +331,40 @@ am_libGamsCoin_la_OBJECTS = libGamsCoin_la-GamsSolver.lo \
 	$(am__objects_4) $(am__objects_5) $(am__objects_6) \
 	$(am__objects_7)
 libGamsCoin_la_OBJECTS = $(am_libGamsCoin_la_OBJECTS)
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_1 = gmsocpux.out$(EXEEXT)
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_2 = gmsocpnx$(EXEEXT)
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_3 = gmsoglux.out$(EXEEXT)
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_4 = gmsoglnx$(EXEEXT)
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_5 = gmsoguux.out$(EXEEXT)
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_6 = gmsogunx$(EXEEXT)
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_7 = gmsomsux.out$(EXEEXT)
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_8 = gmsomsnx$(EXEEXT)
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_9 = gmsoxpux.out$(EXEEXT)
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_10 = gmsoxpnx$(EXEEXT)
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_1 = gmszcpux.out$(EXEEXT)
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_2 = gmszcpnx$(EXEEXT)
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_3 = gmszglux.out$(EXEEXT)
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_4 = gmszglnx$(EXEEXT)
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_5 = gmszguux.out$(EXEEXT)
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_6 = gmszgunx$(EXEEXT)
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_7 = gmszmkux.out$(EXEEXT)
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_8 = gmszmknx$(EXEEXT)
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_9 = gmszxpux.out$(EXEEXT)
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am__EXEEXT_10 = gmszxpnx$(EXEEXT)
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__EXEEXT_11 = gmscbcux.out$(EXEEXT)
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am__EXEEXT_12 = gmscbcnx$(EXEEXT)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__EXEEXT_13 = gmsipdux.out$(EXEEXT)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__EXEEXT_14 = gmsipdnx$(EXEEXT)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__EXEEXT_15 = gmsscdux.out$(EXEEXT)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__EXEEXT_16 = gmsscdnx$(EXEEXT)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__EXEEXT_17 = gmsbmdux.out$(EXEEXT)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__EXEEXT_18 = gmsbmdnx$(EXEEXT)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__EXEEXT_13 = gmsip_ux.out$(EXEEXT)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am__EXEEXT_14 = gmsip_nx$(EXEEXT)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__EXEEXT_15 = gmssc_ux.out$(EXEEXT)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am__EXEEXT_16 = gmssc_nx$(EXEEXT)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__EXEEXT_17 = gmsbm_ux.out$(EXEEXT)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am__EXEEXT_18 = gmsbm_nx$(EXEEXT)
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am__EXEEXT_19 = gmscouux.out$(EXEEXT)
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am__EXEEXT_20 = gmscounx$(EXEEXT)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__EXEEXT_21 = gmsosdux.out$(EXEEXT)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__EXEEXT_22 = gmsosdnx$(EXEEXT)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__EXEEXT_21 = gmsos_ux.out$(EXEEXT)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am__EXEEXT_22 = gmsos_nx$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
-am__gmsbmdnx_SOURCES_DIST = gmsmain.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am_gmsbmdnx_OBJECTS = gmsbmdnx-gmsmain.$(OBJEXT)
-gmsbmdnx_OBJECTS = $(am_gmsbmdnx_OBJECTS)
+am__gmsbm_nx_SOURCES_DIST = gmsmain.cpp
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am_gmsbm_nx_OBJECTS = gmsbm_nx-gmsmain.$(OBJEXT)
+gmsbm_nx_OBJECTS = $(am_gmsbm_nx_OBJECTS)
 @COIN_HAS_LIBLTDL_FALSE@am__DEPENDENCIES_15 = libGamsCoin.la
 @COIN_HAS_LIBLTDL_TRUE@am__DEPENDENCIES_15 = ../GamsUtils/gevmcc.lo \
 @COIN_HAS_LIBLTDL_TRUE@	../GamsUtils/gmomcc.lo \
+@COIN_HAS_LIBLTDL_TRUE@	../GamsUtils/gclgms.lo \
 @COIN_HAS_LIBLTDL_TRUE@	$(LIBLTDLOBJDIR)/libltdlc.la
-am__gmsbmdux_out_SOURCES_DIST = gmsmain.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am_gmsbmdux_out_OBJECTS = gmsbmdux_out-gmsmain.$(OBJEXT)
-gmsbmdux_out_OBJECTS = $(am_gmsbmdux_out_OBJECTS)
+am__gmsbm_ux_out_SOURCES_DIST = gmsmain.cpp
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@am_gmsbm_ux_out_OBJECTS = gmsbm_ux_out-gmsmain.$(OBJEXT)
+gmsbm_ux_out_OBJECTS = $(am_gmsbm_ux_out_OBJECTS)
 am__gmscbcnx_SOURCES_DIST = gmsmain.cpp
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@am_gmscbcnx_OBJECTS = gmscbcnx-gmsmain.$(OBJEXT)
 gmscbcnx_OBJECTS = $(am_gmscbcnx_OBJECTS)
@@ -376,54 +377,54 @@ gmscounx_OBJECTS = $(am_gmscounx_OBJECTS)
 am__gmscouux_out_SOURCES_DIST = gmsmain.cpp
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@am_gmscouux_out_OBJECTS = gmscouux_out-gmsmain.$(OBJEXT)
 gmscouux_out_OBJECTS = $(am_gmscouux_out_OBJECTS)
-am__gmsipdnx_SOURCES_DIST = gmsmain.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am_gmsipdnx_OBJECTS = gmsipdnx-gmsmain.$(OBJEXT)
-gmsipdnx_OBJECTS = $(am_gmsipdnx_OBJECTS)
-am__gmsipdux_out_SOURCES_DIST = gmsmain.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am_gmsipdux_out_OBJECTS = gmsipdux_out-gmsmain.$(OBJEXT)
-gmsipdux_out_OBJECTS = $(am_gmsipdux_out_OBJECTS)
-am__gmsocpnx_SOURCES_DIST = gmsmain.cpp
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmsocpnx_OBJECTS = gmsocpnx-gmsmain.$(OBJEXT)
-gmsocpnx_OBJECTS = $(am_gmsocpnx_OBJECTS)
-am__gmsocpux_out_SOURCES_DIST = gmsmain.cpp
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmsocpux_out_OBJECTS = gmsocpux_out-gmsmain.$(OBJEXT)
-gmsocpux_out_OBJECTS = $(am_gmsocpux_out_OBJECTS)
-am__gmsoglnx_SOURCES_DIST = gmsmain.cpp
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmsoglnx_OBJECTS = gmsoglnx-gmsmain.$(OBJEXT)
-gmsoglnx_OBJECTS = $(am_gmsoglnx_OBJECTS)
-am__gmsoglux_out_SOURCES_DIST = gmsmain.cpp
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmsoglux_out_OBJECTS = gmsoglux_out-gmsmain.$(OBJEXT)
-gmsoglux_out_OBJECTS = $(am_gmsoglux_out_OBJECTS)
-am__gmsogunx_SOURCES_DIST = gmsmain.cpp
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmsogunx_OBJECTS = gmsogunx-gmsmain.$(OBJEXT)
-gmsogunx_OBJECTS = $(am_gmsogunx_OBJECTS)
-am__gmsoguux_out_SOURCES_DIST = gmsmain.cpp
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmsoguux_out_OBJECTS = gmsoguux_out-gmsmain.$(OBJEXT)
-gmsoguux_out_OBJECTS = $(am_gmsoguux_out_OBJECTS)
-am__gmsomsnx_SOURCES_DIST = gmsmain.cpp
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmsomsnx_OBJECTS = gmsomsnx-gmsmain.$(OBJEXT)
-gmsomsnx_OBJECTS = $(am_gmsomsnx_OBJECTS)
-am__gmsomsux_out_SOURCES_DIST = gmsmain.cpp
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmsomsux_out_OBJECTS = gmsomsux_out-gmsmain.$(OBJEXT)
-gmsomsux_out_OBJECTS = $(am_gmsomsux_out_OBJECTS)
-am__gmsosdnx_SOURCES_DIST = gmsmain.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am_gmsosdnx_OBJECTS = gmsosdnx-gmsmain.$(OBJEXT)
-gmsosdnx_OBJECTS = $(am_gmsosdnx_OBJECTS)
-am__gmsosdux_out_SOURCES_DIST = gmsmain.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am_gmsosdux_out_OBJECTS = gmsosdux_out-gmsmain.$(OBJEXT)
-gmsosdux_out_OBJECTS = $(am_gmsosdux_out_OBJECTS)
-am__gmsoxpnx_SOURCES_DIST = gmsmain.cpp
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmsoxpnx_OBJECTS = gmsoxpnx-gmsmain.$(OBJEXT)
-gmsoxpnx_OBJECTS = $(am_gmsoxpnx_OBJECTS)
-am__gmsoxpux_out_SOURCES_DIST = gmsmain.cpp
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmsoxpux_out_OBJECTS = gmsoxpux_out-gmsmain.$(OBJEXT)
-gmsoxpux_out_OBJECTS = $(am_gmsoxpux_out_OBJECTS)
-am__gmsscdnx_SOURCES_DIST = gmsmain.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am_gmsscdnx_OBJECTS = gmsscdnx-gmsmain.$(OBJEXT)
-gmsscdnx_OBJECTS = $(am_gmsscdnx_OBJECTS)
-am__gmsscdux_out_SOURCES_DIST = gmsmain.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am_gmsscdux_out_OBJECTS = gmsscdux_out-gmsmain.$(OBJEXT)
-gmsscdux_out_OBJECTS = $(am_gmsscdux_out_OBJECTS)
+am__gmsip_nx_SOURCES_DIST = gmsmain.cpp
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am_gmsip_nx_OBJECTS = gmsip_nx-gmsmain.$(OBJEXT)
+gmsip_nx_OBJECTS = $(am_gmsip_nx_OBJECTS)
+am__gmsip_ux_out_SOURCES_DIST = gmsmain.cpp
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@am_gmsip_ux_out_OBJECTS = gmsip_ux_out-gmsmain.$(OBJEXT)
+gmsip_ux_out_OBJECTS = $(am_gmsip_ux_out_OBJECTS)
+am__gmsos_nx_SOURCES_DIST = gmsmain.cpp
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am_gmsos_nx_OBJECTS = gmsos_nx-gmsmain.$(OBJEXT)
+gmsos_nx_OBJECTS = $(am_gmsos_nx_OBJECTS)
+am__gmsos_ux_out_SOURCES_DIST = gmsmain.cpp
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@am_gmsos_ux_out_OBJECTS = gmsos_ux_out-gmsmain.$(OBJEXT)
+gmsos_ux_out_OBJECTS = $(am_gmsos_ux_out_OBJECTS)
+am__gmssc_nx_SOURCES_DIST = gmsmain.cpp
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am_gmssc_nx_OBJECTS = gmssc_nx-gmsmain.$(OBJEXT)
+gmssc_nx_OBJECTS = $(am_gmssc_nx_OBJECTS)
+am__gmssc_ux_out_SOURCES_DIST = gmsmain.cpp
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@am_gmssc_ux_out_OBJECTS = gmssc_ux_out-gmsmain.$(OBJEXT)
+gmssc_ux_out_OBJECTS = $(am_gmssc_ux_out_OBJECTS)
+am__gmszcpnx_SOURCES_DIST = gmsmain.cpp
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmszcpnx_OBJECTS = gmszcpnx-gmsmain.$(OBJEXT)
+gmszcpnx_OBJECTS = $(am_gmszcpnx_OBJECTS)
+am__gmszcpux_out_SOURCES_DIST = gmsmain.cpp
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmszcpux_out_OBJECTS = gmszcpux_out-gmsmain.$(OBJEXT)
+gmszcpux_out_OBJECTS = $(am_gmszcpux_out_OBJECTS)
+am__gmszglnx_SOURCES_DIST = gmsmain.cpp
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmszglnx_OBJECTS = gmszglnx-gmsmain.$(OBJEXT)
+gmszglnx_OBJECTS = $(am_gmszglnx_OBJECTS)
+am__gmszglux_out_SOURCES_DIST = gmsmain.cpp
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmszglux_out_OBJECTS = gmszglux_out-gmsmain.$(OBJEXT)
+gmszglux_out_OBJECTS = $(am_gmszglux_out_OBJECTS)
+am__gmszgunx_SOURCES_DIST = gmsmain.cpp
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmszgunx_OBJECTS = gmszgunx-gmsmain.$(OBJEXT)
+gmszgunx_OBJECTS = $(am_gmszgunx_OBJECTS)
+am__gmszguux_out_SOURCES_DIST = gmsmain.cpp
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmszguux_out_OBJECTS = gmszguux_out-gmsmain.$(OBJEXT)
+gmszguux_out_OBJECTS = $(am_gmszguux_out_OBJECTS)
+am__gmszmknx_SOURCES_DIST = gmsmain.cpp
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmszmknx_OBJECTS = gmszmknx-gmsmain.$(OBJEXT)
+gmszmknx_OBJECTS = $(am_gmszmknx_OBJECTS)
+am__gmszmkux_out_SOURCES_DIST = gmsmain.cpp
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmszmkux_out_OBJECTS = gmszmkux_out-gmsmain.$(OBJEXT)
+gmszmkux_out_OBJECTS = $(am_gmszmkux_out_OBJECTS)
+am__gmszxpnx_SOURCES_DIST = gmsmain.cpp
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmszxpnx_OBJECTS = gmszxpnx-gmsmain.$(OBJEXT)
+gmszxpnx_OBJECTS = $(am_gmszxpnx_OBJECTS)
+am__gmszxpux_out_SOURCES_DIST = gmsmain.cpp
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@am_gmszxpux_out_OBJECTS = gmszxpux_out-gmsmain.$(OBJEXT)
+gmszxpux_out_OBJECTS = $(am_gmszxpux_out_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -434,30 +435,30 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libGamsCoin_la_SOURCES) $(gmsbmdnx_SOURCES) \
-	$(gmsbmdux_out_SOURCES) $(gmscbcnx_SOURCES) \
+SOURCES = $(libGamsCoin_la_SOURCES) $(gmsbm_nx_SOURCES) \
+	$(gmsbm_ux_out_SOURCES) $(gmscbcnx_SOURCES) \
 	$(gmscbcux_out_SOURCES) $(gmscounx_SOURCES) \
-	$(gmscouux_out_SOURCES) $(gmsipdnx_SOURCES) \
-	$(gmsipdux_out_SOURCES) $(gmsocpnx_SOURCES) \
-	$(gmsocpux_out_SOURCES) $(gmsoglnx_SOURCES) \
-	$(gmsoglux_out_SOURCES) $(gmsogunx_SOURCES) \
-	$(gmsoguux_out_SOURCES) $(gmsomsnx_SOURCES) \
-	$(gmsomsux_out_SOURCES) $(gmsosdnx_SOURCES) \
-	$(gmsosdux_out_SOURCES) $(gmsoxpnx_SOURCES) \
-	$(gmsoxpux_out_SOURCES) $(gmsscdnx_SOURCES) \
-	$(gmsscdux_out_SOURCES)
+	$(gmscouux_out_SOURCES) $(gmsip_nx_SOURCES) \
+	$(gmsip_ux_out_SOURCES) $(gmsos_nx_SOURCES) \
+	$(gmsos_ux_out_SOURCES) $(gmssc_nx_SOURCES) \
+	$(gmssc_ux_out_SOURCES) $(gmszcpnx_SOURCES) \
+	$(gmszcpux_out_SOURCES) $(gmszglnx_SOURCES) \
+	$(gmszglux_out_SOURCES) $(gmszgunx_SOURCES) \
+	$(gmszguux_out_SOURCES) $(gmszmknx_SOURCES) \
+	$(gmszmkux_out_SOURCES) $(gmszxpnx_SOURCES) \
+	$(gmszxpux_out_SOURCES)
 DIST_SOURCES = $(am__libGamsCoin_la_SOURCES_DIST) \
-	$(am__gmsbmdnx_SOURCES_DIST) $(am__gmsbmdux_out_SOURCES_DIST) \
+	$(am__gmsbm_nx_SOURCES_DIST) $(am__gmsbm_ux_out_SOURCES_DIST) \
 	$(am__gmscbcnx_SOURCES_DIST) $(am__gmscbcux_out_SOURCES_DIST) \
 	$(am__gmscounx_SOURCES_DIST) $(am__gmscouux_out_SOURCES_DIST) \
-	$(am__gmsipdnx_SOURCES_DIST) $(am__gmsipdux_out_SOURCES_DIST) \
-	$(am__gmsocpnx_SOURCES_DIST) $(am__gmsocpux_out_SOURCES_DIST) \
-	$(am__gmsoglnx_SOURCES_DIST) $(am__gmsoglux_out_SOURCES_DIST) \
-	$(am__gmsogunx_SOURCES_DIST) $(am__gmsoguux_out_SOURCES_DIST) \
-	$(am__gmsomsnx_SOURCES_DIST) $(am__gmsomsux_out_SOURCES_DIST) \
-	$(am__gmsosdnx_SOURCES_DIST) $(am__gmsosdux_out_SOURCES_DIST) \
-	$(am__gmsoxpnx_SOURCES_DIST) $(am__gmsoxpux_out_SOURCES_DIST) \
-	$(am__gmsscdnx_SOURCES_DIST) $(am__gmsscdux_out_SOURCES_DIST)
+	$(am__gmsip_nx_SOURCES_DIST) $(am__gmsip_ux_out_SOURCES_DIST) \
+	$(am__gmsos_nx_SOURCES_DIST) $(am__gmsos_ux_out_SOURCES_DIST) \
+	$(am__gmssc_nx_SOURCES_DIST) $(am__gmssc_ux_out_SOURCES_DIST) \
+	$(am__gmszcpnx_SOURCES_DIST) $(am__gmszcpux_out_SOURCES_DIST) \
+	$(am__gmszglnx_SOURCES_DIST) $(am__gmszglux_out_SOURCES_DIST) \
+	$(am__gmszgunx_SOURCES_DIST) $(am__gmszguux_out_SOURCES_DIST) \
+	$(am__gmszmknx_SOURCES_DIST) $(am__gmszmkux_out_SOURCES_DIST) \
+	$(am__gmszxpnx_SOURCES_DIST) $(am__gmszxpux_out_SOURCES_DIST)
 am__includecoin_HEADERS_DIST =  \
 	$(IPOPTSRCDIR)/src/Algorithm/IpIpoptCalculatedQuantities.hpp \
 	$(IPOPTSRCDIR)/src/Algorithm/IpIpoptNLP.hpp \
@@ -632,6 +633,7 @@ GAMSLINKS_BUILD_SCIP_FALSE = @GAMSLINKS_BUILD_SCIP_FALSE@
 GAMSLINKS_BUILD_SCIP_TRUE = @GAMSLINKS_BUILD_SCIP_TRUE@
 GAMS_ADDLIBS = @GAMS_ADDLIBS@
 GAMS_PATH = @GAMS_PATH@
+GAMS_VERSION = @GAMS_VERSION@
 GLPKINCDIR = @GLPKINCDIR@
 GLPKLIB = @GLPKLIB@
 GLPKOBJDIR = @GLPKOBJDIR@
@@ -785,13 +787,13 @@ EXTRA_DIST = $(am__append_14) $(am__append_22) $(am__append_29) \
 DISTCLEANFILES = $(am__append_100) $(VPATH_DISTCLEANFILES)
 
 # these flags are required for compiling every library and executable  
-COMMON_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/../GamsUtils`
+COMMON_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` -I`$(CYGPATH_W) $(srcdir)/../GamsUtils/$(GAMS_VERSION)`
 @COIN_HAS_LIBLTDL_FALSE@GMSXXX_CPPFLAGS = $(COMMON_CPPFLAGS)
 
 # these flags are common when compiling and linking the executables
 @COIN_HAS_LIBLTDL_TRUE@GMSXXX_CPPFLAGS = -I`$(CYGPATH_W) $(LIBLTDLSRCDIR)` $(COMMON_CPPFLAGS)
 @COIN_HAS_LIBLTDL_FALSE@GMSXXX_LDADD = libGamsCoin.la
-@COIN_HAS_LIBLTDL_TRUE@GMSXXX_LDADD = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo $(LIBLTDLOBJDIR)/libltdlc.la
+@COIN_HAS_LIBLTDL_TRUE@GMSXXX_LDADD = ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo ../GamsUtils/gclgms.lo $(LIBLTDLOBJDIR)/libltdlc.la
 @COIN_HAS_LIBLTDL_FALSE@GMSXXX_LDFLAGS = -rpath $(libdir) 
 @COIN_HAS_LIBLTDL_TRUE@GMSXXX_LDFLAGS = -rpath $(libdir) -dlopen libGamsCoin.la
 lib_LTLIBRARIES = libGamsCoin.la
@@ -822,56 +824,56 @@ gamsinstallfiles = $(am__append_11) $(am__append_13) $(am__append_18) \
 	$(am__append_77) $(am__append_79) $(am__append_85) \
 	$(am__append_87) $(am__append_94) $(am__append_96) \
 	$(am__append_97)
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsocpux_out_SOURCES = gmsmain.cpp
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsocpux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiCplex\" -DCREATEFUNCNAME=createNewGamsOsiCplex
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsocpux_out_LDADD = $(GMSXXX_LDADD)
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsocpux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsocpux_out_DEPENDENCIES = libGamsCoin.la
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsocpnx_SOURCES = gmsmain.cpp
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsocpnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiCplex\" -DCREATEFUNCNAME=createNewGamsOsiCplex
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsocpnx_LDADD = $(GMSXXX_LDADD)
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsocpnx_LDFLAGS = $(GMSXXX_LDFLAGS)
-@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsocpnx_DEPENDENCIES = libGamsCoin.la
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoglux_out_SOURCES = gmsmain.cpp
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoglux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGlpk\" -DCREATEFUNCNAME=createNewGamsOsiGlpk
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoglux_out_LDADD = $(GMSXXX_LDADD)
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoglux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoglux_out_DEPENDENCIES = libGamsCoin.la
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoglnx_SOURCES = gmsmain.cpp
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoglnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGlpk\" -DCREATEFUNCNAME=createNewGamsOsiGlpk
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoglnx_LDADD = $(GMSXXX_LDADD)
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoglnx_LDFLAGS = $(GMSXXX_LDFLAGS)
-@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoglnx_DEPENDENCIES = libGamsCoin.la
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoguux_out_SOURCES = gmsmain.cpp
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoguux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGurobi\" -DCREATEFUNCNAME=createNewGamsOsiGurobi
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoguux_out_LDADD = $(GMSXXX_LDADD)
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoguux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoguux_out_DEPENDENCIES = libGamsCoin.la
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsogunx_SOURCES = gmsmain.cpp
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsogunx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGurobi\" -DCREATEFUNCNAME=createNewGamsOsiGurobi
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsogunx_LDADD = $(GMSXXX_LDADD)
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsogunx_LDFLAGS = $(GMSXXX_LDFLAGS)
-@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsogunx_DEPENDENCIES = libGamsCoin.la
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsomsux_out_SOURCES = gmsmain.cpp
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsomsux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiMosek\" -DCREATEFUNCNAME=createNewGamsOsiMosek
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsomsux_out_LDADD = $(GMSXXX_LDADD)
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsomsux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsomsux_out_DEPENDENCIES = libGamsCoin.la
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsomsnx_SOURCES = gmsmain.cpp
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsomsnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiMosek\" -DCREATEFUNCNAME=createNewGamsOsiMosek
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsomsnx_LDADD = $(GMSXXX_LDADD)
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsomsnx_LDFLAGS = $(GMSXXX_LDFLAGS)
-@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsomsnx_DEPENDENCIES = libGamsCoin.la
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoxpux_out_SOURCES = gmsmain.cpp
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoxpux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiXpress\" -DCREATEFUNCNAME=createNewGamsOsiXpress
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoxpux_out_LDADD = $(GMSXXX_LDADD)
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoxpux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoxpux_out_DEPENDENCIES = libGamsCoin.la
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoxpnx_SOURCES = gmsmain.cpp
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoxpnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiXpress\" -DCREATEFUNCNAME=createNewGamsOsiXpress
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoxpnx_LDADD = $(GMSXXX_LDADD)
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoxpnx_LDFLAGS = $(GMSXXX_LDFLAGS)
-@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmsoxpnx_DEPENDENCIES = libGamsCoin.la
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszcpux_out_SOURCES = gmsmain.cpp
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszcpux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiCplex\" -DCREATEFUNCNAME=createNewGamsOsiCplex
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszcpux_out_LDADD = $(GMSXXX_LDADD)
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszcpux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszcpux_out_DEPENDENCIES = libGamsCoin.la
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszcpnx_SOURCES = gmsmain.cpp
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszcpnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiCplex\" -DCREATEFUNCNAME=createNewGamsOsiCplex
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszcpnx_LDADD = $(GMSXXX_LDADD)
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszcpnx_LDFLAGS = $(GMSXXX_LDFLAGS)
+@COIN_HAS_CPX_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszcpnx_DEPENDENCIES = libGamsCoin.la
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszglux_out_SOURCES = gmsmain.cpp
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszglux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGlpk\" -DCREATEFUNCNAME=createNewGamsOsiGlpk
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszglux_out_LDADD = $(GMSXXX_LDADD)
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszglux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszglux_out_DEPENDENCIES = libGamsCoin.la
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszglnx_SOURCES = gmsmain.cpp
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszglnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGlpk\" -DCREATEFUNCNAME=createNewGamsOsiGlpk
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszglnx_LDADD = $(GMSXXX_LDADD)
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszglnx_LDFLAGS = $(GMSXXX_LDFLAGS)
+@COIN_HAS_GLPK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszglnx_DEPENDENCIES = libGamsCoin.la
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszguux_out_SOURCES = gmsmain.cpp
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszguux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGurobi\" -DCREATEFUNCNAME=createNewGamsOsiGurobi
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszguux_out_LDADD = $(GMSXXX_LDADD)
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszguux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszguux_out_DEPENDENCIES = libGamsCoin.la
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszgunx_SOURCES = gmsmain.cpp
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszgunx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiGurobi\" -DCREATEFUNCNAME=createNewGamsOsiGurobi
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszgunx_LDADD = $(GMSXXX_LDADD)
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszgunx_LDFLAGS = $(GMSXXX_LDFLAGS)
+@COIN_HAS_GRB_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszgunx_DEPENDENCIES = libGamsCoin.la
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszmkux_out_SOURCES = gmsmain.cpp
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszmkux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiMosek\" -DCREATEFUNCNAME=createNewGamsOsiMosek
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszmkux_out_LDADD = $(GMSXXX_LDADD)
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszmkux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszmkux_out_DEPENDENCIES = libGamsCoin.la
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszmknx_SOURCES = gmsmain.cpp
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszmknx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiMosek\" -DCREATEFUNCNAME=createNewGamsOsiMosek
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszmknx_LDADD = $(GMSXXX_LDADD)
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszmknx_LDFLAGS = $(GMSXXX_LDFLAGS)
+@COIN_HAS_MSK_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszmknx_DEPENDENCIES = libGamsCoin.la
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszxpux_out_SOURCES = gmsmain.cpp
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszxpux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiXpress\" -DCREATEFUNCNAME=createNewGamsOsiXpress
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszxpux_out_LDADD = $(GMSXXX_LDADD)
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszxpux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszxpux_out_DEPENDENCIES = libGamsCoin.la
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszxpnx_SOURCES = gmsmain.cpp
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszxpnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiXpress\" -DCREATEFUNCNAME=createNewGamsOsiXpress
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszxpnx_LDADD = $(GMSXXX_LDADD)
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszxpnx_LDFLAGS = $(GMSXXX_LDFLAGS)
+@COIN_HAS_XPR_TRUE@@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OSI_TRUE@gmszxpnx_DEPENDENCIES = libGamsCoin.la
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_SOURCES = gmsmain.cpp
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Cbc\" -DCREATEFUNCNAME=createNewGamsCbc
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_CBC_TRUE@gmscbcux_out_LDADD = $(GMSXXX_LDADD)
@@ -896,36 +898,36 @@ gamsinstallfiles = $(am__append_11) $(am__append_13) $(am__append_18) \
 @GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/Interfaces/IpTNLPAdapter.hpp \
 @GAMSLINKS_BUILD_IPOPT_TRUE@  $(IPOPTSRCDIR)/src/Algorithm/IpOrigIpoptNLP.hpp
 
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_SOURCES = gmsmain.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Ipopt\" -DCREATEFUNCNAME=createNewGamsIpopt
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_LDADD = $(GMSXXX_LDADD)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdux_out_DEPENDENCIES = libGamsCoin.la
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_SOURCES = gmsmain.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Ipopt\" -DCREATEFUNCNAME=createNewGamsIpopt
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_LDADD = $(GMSXXX_LDADD)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_LDFLAGS = $(GMSXXX_LDFLAGS)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsipdnx_DEPENDENCIES = libGamsCoin.la
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmsscdux_out_SOURCES = gmsmain.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmsscdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Scip\" -DCREATEFUNCNAME=createNewGamsScip
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmsscdux_out_LDADD = $(GMSXXX_LDADD)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmsscdux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmsscdux_out_DEPENDENCIES = libGamsCoin.la
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmsscdnx_SOURCES = gmsmain.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmsscdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Scip\" -DCREATEFUNCNAME=createNewGamsScip
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmsscdnx_LDADD = $(GMSXXX_LDADD)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmsscdnx_LDFLAGS = $(GMSXXX_LDFLAGS)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmsscdnx_DEPENDENCIES = libGamsCoin.la
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdux_out_SOURCES = gmsmain.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Bonmin\" -DCREATEFUNCNAME=createNewGamsBonmin
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdux_out_LDADD = $(GMSXXX_LDADD)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdux_out_DEPENDENCIES = libGamsCoin.la
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdnx_SOURCES = gmsmain.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Bonmin\" -DCREATEFUNCNAME=createNewGamsBonmin
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdnx_LDADD = $(GMSXXX_LDADD)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdnx_LDFLAGS = $(GMSXXX_LDFLAGS)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbmdnx_DEPENDENCIES = libGamsCoin.la
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsip_ux_out_SOURCES = gmsmain.cpp
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsip_ux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Ipopt\" -DCREATEFUNCNAME=createNewGamsIpopt
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsip_ux_out_LDADD = $(GMSXXX_LDADD)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsip_ux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsip_ux_out_DEPENDENCIES = libGamsCoin.la
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsip_nx_SOURCES = gmsmain.cpp
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsip_nx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Ipopt\" -DCREATEFUNCNAME=createNewGamsIpopt
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsip_nx_LDADD = $(GMSXXX_LDADD)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsip_nx_LDFLAGS = $(GMSXXX_LDFLAGS)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_IPOPT_TRUE@gmsip_nx_DEPENDENCIES = libGamsCoin.la
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmssc_ux_out_SOURCES = gmsmain.cpp
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmssc_ux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Scip\" -DCREATEFUNCNAME=createNewGamsScip
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmssc_ux_out_LDADD = $(GMSXXX_LDADD)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmssc_ux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmssc_ux_out_DEPENDENCIES = libGamsCoin.la
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmssc_nx_SOURCES = gmsmain.cpp
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmssc_nx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Scip\" -DCREATEFUNCNAME=createNewGamsScip
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmssc_nx_LDADD = $(GMSXXX_LDADD)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmssc_nx_LDFLAGS = $(GMSXXX_LDFLAGS)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_SCIP_TRUE@gmssc_nx_DEPENDENCIES = libGamsCoin.la
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbm_ux_out_SOURCES = gmsmain.cpp
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbm_ux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Bonmin\" -DCREATEFUNCNAME=createNewGamsBonmin
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbm_ux_out_LDADD = $(GMSXXX_LDADD)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbm_ux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbm_ux_out_DEPENDENCIES = libGamsCoin.la
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbm_nx_SOURCES = gmsmain.cpp
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbm_nx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Bonmin\" -DCREATEFUNCNAME=createNewGamsBonmin
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbm_nx_LDADD = $(GMSXXX_LDADD)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbm_nx_LDFLAGS = $(GMSXXX_LDFLAGS)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_BONMIN_TRUE@gmsbm_nx_DEPENDENCIES = libGamsCoin.la
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscouux_out_SOURCES = gmsmain.cpp
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscouux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"Couenne\" -DCREATEFUNCNAME=createNewGamsCouenne
 @GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscouux_out_LDADD = $(GMSXXX_LDADD)
@@ -936,16 +938,16 @@ gamsinstallfiles = $(am__append_11) $(am__append_13) $(am__append_18) \
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscounx_LDADD = $(GMSXXX_LDADD)
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscounx_LDFLAGS = $(GMSXXX_LDFLAGS)
 @GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_COUENNE_TRUE@gmscounx_DEPENDENCIES = libGamsCoin.la
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdux_out_SOURCES = gmsmain.cpp
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OS\" -DCREATEFUNCNAME=createNewGamsOS
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdux_out_LDADD = $(GMSXXX_LDADD)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
-@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdux_out_DEPENDENCIES = libGamsCoin.la
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdnx_SOURCES = gmsmain.cpp
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdnx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OS\" -DCREATEFUNCNAME=createNewGamsOS
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdnx_LDADD = $(GMSXXX_LDADD)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdnx_LDFLAGS = $(GMSXXX_LDFLAGS)
-@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsosdnx_DEPENDENCIES = libGamsCoin.la
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsos_ux_out_SOURCES = gmsmain.cpp
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsos_ux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OS\" -DCREATEFUNCNAME=createNewGamsOS
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsos_ux_out_LDADD = $(GMSXXX_LDADD)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsos_ux_out_LDFLAGS = $(GMSXXX_LDFLAGS)
+@GAMSIO_IS_UNIX_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsos_ux_out_DEPENDENCIES = libGamsCoin.la
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsos_nx_SOURCES = gmsmain.cpp
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsos_nx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OS\" -DCREATEFUNCNAME=createNewGamsOS
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsos_nx_LDADD = $(GMSXXX_LDADD)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsos_nx_LDFLAGS = $(GMSXXX_LDFLAGS)
+@GAMSIO_IS_WINDOWS_TRUE@@GAMSLINKS_BUILD_OS_TRUE@gmsos_nx_DEPENDENCIES = libGamsCoin.la
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 DocFiles = README AUTHORS LICENSE
 DocInstallDir = $(prefix)/share/doc/coin/$(PACKAGE_NAME)
@@ -1018,12 +1020,12 @@ clean-noinstPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-gmsbmdnx$(EXEEXT): $(gmsbmdnx_OBJECTS) $(gmsbmdnx_DEPENDENCIES) 
-	@rm -f gmsbmdnx$(EXEEXT)
-	$(CXXLINK) $(gmsbmdnx_LDFLAGS) $(gmsbmdnx_OBJECTS) $(gmsbmdnx_LDADD) $(LIBS)
-gmsbmdux.out$(EXEEXT): $(gmsbmdux_out_OBJECTS) $(gmsbmdux_out_DEPENDENCIES) 
-	@rm -f gmsbmdux.out$(EXEEXT)
-	$(CXXLINK) $(gmsbmdux_out_LDFLAGS) $(gmsbmdux_out_OBJECTS) $(gmsbmdux_out_LDADD) $(LIBS)
+gmsbm_nx$(EXEEXT): $(gmsbm_nx_OBJECTS) $(gmsbm_nx_DEPENDENCIES) 
+	@rm -f gmsbm_nx$(EXEEXT)
+	$(CXXLINK) $(gmsbm_nx_LDFLAGS) $(gmsbm_nx_OBJECTS) $(gmsbm_nx_LDADD) $(LIBS)
+gmsbm_ux.out$(EXEEXT): $(gmsbm_ux_out_OBJECTS) $(gmsbm_ux_out_DEPENDENCIES) 
+	@rm -f gmsbm_ux.out$(EXEEXT)
+	$(CXXLINK) $(gmsbm_ux_out_LDFLAGS) $(gmsbm_ux_out_OBJECTS) $(gmsbm_ux_out_LDADD) $(LIBS)
 gmscbcnx$(EXEEXT): $(gmscbcnx_OBJECTS) $(gmscbcnx_DEPENDENCIES) 
 	@rm -f gmscbcnx$(EXEEXT)
 	$(CXXLINK) $(gmscbcnx_LDFLAGS) $(gmscbcnx_OBJECTS) $(gmscbcnx_LDADD) $(LIBS)
@@ -1036,54 +1038,54 @@ gmscounx$(EXEEXT): $(gmscounx_OBJECTS) $(gmscounx_DEPENDENCIES)
 gmscouux.out$(EXEEXT): $(gmscouux_out_OBJECTS) $(gmscouux_out_DEPENDENCIES) 
 	@rm -f gmscouux.out$(EXEEXT)
 	$(CXXLINK) $(gmscouux_out_LDFLAGS) $(gmscouux_out_OBJECTS) $(gmscouux_out_LDADD) $(LIBS)
-gmsipdnx$(EXEEXT): $(gmsipdnx_OBJECTS) $(gmsipdnx_DEPENDENCIES) 
-	@rm -f gmsipdnx$(EXEEXT)
-	$(CXXLINK) $(gmsipdnx_LDFLAGS) $(gmsipdnx_OBJECTS) $(gmsipdnx_LDADD) $(LIBS)
-gmsipdux.out$(EXEEXT): $(gmsipdux_out_OBJECTS) $(gmsipdux_out_DEPENDENCIES) 
-	@rm -f gmsipdux.out$(EXEEXT)
-	$(CXXLINK) $(gmsipdux_out_LDFLAGS) $(gmsipdux_out_OBJECTS) $(gmsipdux_out_LDADD) $(LIBS)
-gmsocpnx$(EXEEXT): $(gmsocpnx_OBJECTS) $(gmsocpnx_DEPENDENCIES) 
-	@rm -f gmsocpnx$(EXEEXT)
-	$(CXXLINK) $(gmsocpnx_LDFLAGS) $(gmsocpnx_OBJECTS) $(gmsocpnx_LDADD) $(LIBS)
-gmsocpux.out$(EXEEXT): $(gmsocpux_out_OBJECTS) $(gmsocpux_out_DEPENDENCIES) 
-	@rm -f gmsocpux.out$(EXEEXT)
-	$(CXXLINK) $(gmsocpux_out_LDFLAGS) $(gmsocpux_out_OBJECTS) $(gmsocpux_out_LDADD) $(LIBS)
-gmsoglnx$(EXEEXT): $(gmsoglnx_OBJECTS) $(gmsoglnx_DEPENDENCIES) 
-	@rm -f gmsoglnx$(EXEEXT)
-	$(CXXLINK) $(gmsoglnx_LDFLAGS) $(gmsoglnx_OBJECTS) $(gmsoglnx_LDADD) $(LIBS)
-gmsoglux.out$(EXEEXT): $(gmsoglux_out_OBJECTS) $(gmsoglux_out_DEPENDENCIES) 
-	@rm -f gmsoglux.out$(EXEEXT)
-	$(CXXLINK) $(gmsoglux_out_LDFLAGS) $(gmsoglux_out_OBJECTS) $(gmsoglux_out_LDADD) $(LIBS)
-gmsogunx$(EXEEXT): $(gmsogunx_OBJECTS) $(gmsogunx_DEPENDENCIES) 
-	@rm -f gmsogunx$(EXEEXT)
-	$(CXXLINK) $(gmsogunx_LDFLAGS) $(gmsogunx_OBJECTS) $(gmsogunx_LDADD) $(LIBS)
-gmsoguux.out$(EXEEXT): $(gmsoguux_out_OBJECTS) $(gmsoguux_out_DEPENDENCIES) 
-	@rm -f gmsoguux.out$(EXEEXT)
-	$(CXXLINK) $(gmsoguux_out_LDFLAGS) $(gmsoguux_out_OBJECTS) $(gmsoguux_out_LDADD) $(LIBS)
-gmsomsnx$(EXEEXT): $(gmsomsnx_OBJECTS) $(gmsomsnx_DEPENDENCIES) 
-	@rm -f gmsomsnx$(EXEEXT)
-	$(CXXLINK) $(gmsomsnx_LDFLAGS) $(gmsomsnx_OBJECTS) $(gmsomsnx_LDADD) $(LIBS)
-gmsomsux.out$(EXEEXT): $(gmsomsux_out_OBJECTS) $(gmsomsux_out_DEPENDENCIES) 
-	@rm -f gmsomsux.out$(EXEEXT)
-	$(CXXLINK) $(gmsomsux_out_LDFLAGS) $(gmsomsux_out_OBJECTS) $(gmsomsux_out_LDADD) $(LIBS)
-gmsosdnx$(EXEEXT): $(gmsosdnx_OBJECTS) $(gmsosdnx_DEPENDENCIES) 
-	@rm -f gmsosdnx$(EXEEXT)
-	$(CXXLINK) $(gmsosdnx_LDFLAGS) $(gmsosdnx_OBJECTS) $(gmsosdnx_LDADD) $(LIBS)
-gmsosdux.out$(EXEEXT): $(gmsosdux_out_OBJECTS) $(gmsosdux_out_DEPENDENCIES) 
-	@rm -f gmsosdux.out$(EXEEXT)
-	$(CXXLINK) $(gmsosdux_out_LDFLAGS) $(gmsosdux_out_OBJECTS) $(gmsosdux_out_LDADD) $(LIBS)
-gmsoxpnx$(EXEEXT): $(gmsoxpnx_OBJECTS) $(gmsoxpnx_DEPENDENCIES) 
-	@rm -f gmsoxpnx$(EXEEXT)
-	$(CXXLINK) $(gmsoxpnx_LDFLAGS) $(gmsoxpnx_OBJECTS) $(gmsoxpnx_LDADD) $(LIBS)
-gmsoxpux.out$(EXEEXT): $(gmsoxpux_out_OBJECTS) $(gmsoxpux_out_DEPENDENCIES) 
-	@rm -f gmsoxpux.out$(EXEEXT)
-	$(CXXLINK) $(gmsoxpux_out_LDFLAGS) $(gmsoxpux_out_OBJECTS) $(gmsoxpux_out_LDADD) $(LIBS)
-gmsscdnx$(EXEEXT): $(gmsscdnx_OBJECTS) $(gmsscdnx_DEPENDENCIES) 
-	@rm -f gmsscdnx$(EXEEXT)
-	$(CXXLINK) $(gmsscdnx_LDFLAGS) $(gmsscdnx_OBJECTS) $(gmsscdnx_LDADD) $(LIBS)
-gmsscdux.out$(EXEEXT): $(gmsscdux_out_OBJECTS) $(gmsscdux_out_DEPENDENCIES) 
-	@rm -f gmsscdux.out$(EXEEXT)
-	$(CXXLINK) $(gmsscdux_out_LDFLAGS) $(gmsscdux_out_OBJECTS) $(gmsscdux_out_LDADD) $(LIBS)
+gmsip_nx$(EXEEXT): $(gmsip_nx_OBJECTS) $(gmsip_nx_DEPENDENCIES) 
+	@rm -f gmsip_nx$(EXEEXT)
+	$(CXXLINK) $(gmsip_nx_LDFLAGS) $(gmsip_nx_OBJECTS) $(gmsip_nx_LDADD) $(LIBS)
+gmsip_ux.out$(EXEEXT): $(gmsip_ux_out_OBJECTS) $(gmsip_ux_out_DEPENDENCIES) 
+	@rm -f gmsip_ux.out$(EXEEXT)
+	$(CXXLINK) $(gmsip_ux_out_LDFLAGS) $(gmsip_ux_out_OBJECTS) $(gmsip_ux_out_LDADD) $(LIBS)
+gmsos_nx$(EXEEXT): $(gmsos_nx_OBJECTS) $(gmsos_nx_DEPENDENCIES) 
+	@rm -f gmsos_nx$(EXEEXT)
+	$(CXXLINK) $(gmsos_nx_LDFLAGS) $(gmsos_nx_OBJECTS) $(gmsos_nx_LDADD) $(LIBS)
+gmsos_ux.out$(EXEEXT): $(gmsos_ux_out_OBJECTS) $(gmsos_ux_out_DEPENDENCIES) 
+	@rm -f gmsos_ux.out$(EXEEXT)
+	$(CXXLINK) $(gmsos_ux_out_LDFLAGS) $(gmsos_ux_out_OBJECTS) $(gmsos_ux_out_LDADD) $(LIBS)
+gmssc_nx$(EXEEXT): $(gmssc_nx_OBJECTS) $(gmssc_nx_DEPENDENCIES) 
+	@rm -f gmssc_nx$(EXEEXT)
+	$(CXXLINK) $(gmssc_nx_LDFLAGS) $(gmssc_nx_OBJECTS) $(gmssc_nx_LDADD) $(LIBS)
+gmssc_ux.out$(EXEEXT): $(gmssc_ux_out_OBJECTS) $(gmssc_ux_out_DEPENDENCIES) 
+	@rm -f gmssc_ux.out$(EXEEXT)
+	$(CXXLINK) $(gmssc_ux_out_LDFLAGS) $(gmssc_ux_out_OBJECTS) $(gmssc_ux_out_LDADD) $(LIBS)
+gmszcpnx$(EXEEXT): $(gmszcpnx_OBJECTS) $(gmszcpnx_DEPENDENCIES) 
+	@rm -f gmszcpnx$(EXEEXT)
+	$(CXXLINK) $(gmszcpnx_LDFLAGS) $(gmszcpnx_OBJECTS) $(gmszcpnx_LDADD) $(LIBS)
+gmszcpux.out$(EXEEXT): $(gmszcpux_out_OBJECTS) $(gmszcpux_out_DEPENDENCIES) 
+	@rm -f gmszcpux.out$(EXEEXT)
+	$(CXXLINK) $(gmszcpux_out_LDFLAGS) $(gmszcpux_out_OBJECTS) $(gmszcpux_out_LDADD) $(LIBS)
+gmszglnx$(EXEEXT): $(gmszglnx_OBJECTS) $(gmszglnx_DEPENDENCIES) 
+	@rm -f gmszglnx$(EXEEXT)
+	$(CXXLINK) $(gmszglnx_LDFLAGS) $(gmszglnx_OBJECTS) $(gmszglnx_LDADD) $(LIBS)
+gmszglux.out$(EXEEXT): $(gmszglux_out_OBJECTS) $(gmszglux_out_DEPENDENCIES) 
+	@rm -f gmszglux.out$(EXEEXT)
+	$(CXXLINK) $(gmszglux_out_LDFLAGS) $(gmszglux_out_OBJECTS) $(gmszglux_out_LDADD) $(LIBS)
+gmszgunx$(EXEEXT): $(gmszgunx_OBJECTS) $(gmszgunx_DEPENDENCIES) 
+	@rm -f gmszgunx$(EXEEXT)
+	$(CXXLINK) $(gmszgunx_LDFLAGS) $(gmszgunx_OBJECTS) $(gmszgunx_LDADD) $(LIBS)
+gmszguux.out$(EXEEXT): $(gmszguux_out_OBJECTS) $(gmszguux_out_DEPENDENCIES) 
+	@rm -f gmszguux.out$(EXEEXT)
+	$(CXXLINK) $(gmszguux_out_LDFLAGS) $(gmszguux_out_OBJECTS) $(gmszguux_out_LDADD) $(LIBS)
+gmszmknx$(EXEEXT): $(gmszmknx_OBJECTS) $(gmszmknx_DEPENDENCIES) 
+	@rm -f gmszmknx$(EXEEXT)
+	$(CXXLINK) $(gmszmknx_LDFLAGS) $(gmszmknx_OBJECTS) $(gmszmknx_LDADD) $(LIBS)
+gmszmkux.out$(EXEEXT): $(gmszmkux_out_OBJECTS) $(gmszmkux_out_DEPENDENCIES) 
+	@rm -f gmszmkux.out$(EXEEXT)
+	$(CXXLINK) $(gmszmkux_out_LDFLAGS) $(gmszmkux_out_OBJECTS) $(gmszmkux_out_LDADD) $(LIBS)
+gmszxpnx$(EXEEXT): $(gmszxpnx_OBJECTS) $(gmszxpnx_DEPENDENCIES) 
+	@rm -f gmszxpnx$(EXEEXT)
+	$(CXXLINK) $(gmszxpnx_LDFLAGS) $(gmszxpnx_OBJECTS) $(gmszxpnx_LDADD) $(LIBS)
+gmszxpux.out$(EXEEXT): $(gmszxpux_out_OBJECTS) $(gmszxpux_out_DEPENDENCIES) 
+	@rm -f gmszxpux.out$(EXEEXT)
+	$(CXXLINK) $(gmszxpux_out_LDFLAGS) $(gmszxpux_out_OBJECTS) $(gmszxpux_out_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -1091,28 +1093,28 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsbmdnx-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsbmdux_out-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsbm_nx-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsbm_ux_out-gmsmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmscbcnx-gmsmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmscbcux_out-gmsmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmscounx-gmsmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmscouux_out-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsipdnx-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsipdux_out-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsocpnx-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsocpux_out-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsoglnx-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsoglux_out-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsogunx-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsoguux_out-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsomsnx-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsomsux_out-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsosdnx-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsosdux_out-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsoxpnx-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsoxpux_out-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsscdnx-gmsmain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsscdux_out-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsip_nx-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsip_ux_out-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsos_nx-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmsos_ux_out-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmssc_nx-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmssc_ux_out-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmszcpnx-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmszcpux_out-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmszglnx-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmszglux_out-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmszgunx-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmszguux_out-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmszmknx-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmszmkux_out-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmszxpnx-gmsmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmszxpux_out-gmsmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsBonmin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsCbc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libGamsCoin_la-GamsCouenne.Plo@am__quote@
@@ -1247,33 +1249,33 @@ libGamsCoin_la-GamsOSxL.lo: GamsOSxL.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGamsCoin_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libGamsCoin_la-GamsOSxL.lo `test -f 'GamsOSxL.cpp' || echo '$(srcdir)/'`GamsOSxL.cpp
 
-gmsbmdnx-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbmdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsbmdnx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsbmdnx-gmsmain.Tpo" -c -o gmsbmdnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsbmdnx-gmsmain.Tpo" "$(DEPDIR)/gmsbmdnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsbmdnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsbmdnx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmsbm_nx-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbm_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsbm_nx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsbm_nx-gmsmain.Tpo" -c -o gmsbm_nx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsbm_nx-gmsmain.Tpo" "$(DEPDIR)/gmsbm_nx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsbm_nx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsbm_nx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbmdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsbmdnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbm_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsbm_nx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsbmdnx-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbmdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsbmdnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsbmdnx-gmsmain.Tpo" -c -o gmsbmdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsbmdnx-gmsmain.Tpo" "$(DEPDIR)/gmsbmdnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsbmdnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsbmdnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmsbm_nx-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbm_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsbm_nx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsbm_nx-gmsmain.Tpo" -c -o gmsbm_nx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsbm_nx-gmsmain.Tpo" "$(DEPDIR)/gmsbm_nx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsbm_nx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsbm_nx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbmdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsbmdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbm_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsbm_nx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsbmdux_out-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbmdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsbmdux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsbmdux_out-gmsmain.Tpo" -c -o gmsbmdux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsbmdux_out-gmsmain.Tpo" "$(DEPDIR)/gmsbmdux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsbmdux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsbmdux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmsbm_ux_out-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbm_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsbm_ux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsbm_ux_out-gmsmain.Tpo" -c -o gmsbm_ux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsbm_ux_out-gmsmain.Tpo" "$(DEPDIR)/gmsbm_ux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsbm_ux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsbm_ux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbmdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsbmdux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbm_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsbm_ux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsbmdux_out-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbmdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsbmdux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsbmdux_out-gmsmain.Tpo" -c -o gmsbmdux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsbmdux_out-gmsmain.Tpo" "$(DEPDIR)/gmsbmdux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsbmdux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsbmdux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmsbm_ux_out-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbm_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsbm_ux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsbm_ux_out-gmsmain.Tpo" -c -o gmsbm_ux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsbm_ux_out-gmsmain.Tpo" "$(DEPDIR)/gmsbm_ux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsbm_ux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsbm_ux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbmdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsbmdux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsbm_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsbm_ux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
 gmscbcnx-gmsmain.o: gmsmain.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmscbcnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmscbcnx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmscbcnx-gmsmain.Tpo" -c -o gmscbcnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
@@ -1331,229 +1333,229 @@ gmscouux_out-gmsmain.obj: gmsmain.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmscouux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmscouux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsipdnx-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsipdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsipdnx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsipdnx-gmsmain.Tpo" -c -o gmsipdnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsipdnx-gmsmain.Tpo" "$(DEPDIR)/gmsipdnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsipdnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsipdnx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmsip_nx-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsip_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsip_nx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsip_nx-gmsmain.Tpo" -c -o gmsip_nx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsip_nx-gmsmain.Tpo" "$(DEPDIR)/gmsip_nx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsip_nx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsip_nx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsipdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsipdnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsip_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsip_nx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsipdnx-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsipdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsipdnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsipdnx-gmsmain.Tpo" -c -o gmsipdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsipdnx-gmsmain.Tpo" "$(DEPDIR)/gmsipdnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsipdnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsipdnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmsip_nx-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsip_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsip_nx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsip_nx-gmsmain.Tpo" -c -o gmsip_nx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsip_nx-gmsmain.Tpo" "$(DEPDIR)/gmsip_nx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsip_nx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsip_nx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsipdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsipdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsip_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsip_nx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsipdux_out-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsipdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsipdux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsipdux_out-gmsmain.Tpo" -c -o gmsipdux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsipdux_out-gmsmain.Tpo" "$(DEPDIR)/gmsipdux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsipdux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsipdux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmsip_ux_out-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsip_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsip_ux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsip_ux_out-gmsmain.Tpo" -c -o gmsip_ux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsip_ux_out-gmsmain.Tpo" "$(DEPDIR)/gmsip_ux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsip_ux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsip_ux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsipdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsipdux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsip_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsip_ux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsipdux_out-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsipdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsipdux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsipdux_out-gmsmain.Tpo" -c -o gmsipdux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsipdux_out-gmsmain.Tpo" "$(DEPDIR)/gmsipdux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsipdux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsipdux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmsip_ux_out-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsip_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsip_ux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsip_ux_out-gmsmain.Tpo" -c -o gmsip_ux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsip_ux_out-gmsmain.Tpo" "$(DEPDIR)/gmsip_ux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsip_ux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsip_ux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsipdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsipdux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsip_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsip_ux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsocpnx-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsocpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsocpnx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsocpnx-gmsmain.Tpo" -c -o gmsocpnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsocpnx-gmsmain.Tpo" "$(DEPDIR)/gmsocpnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsocpnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsocpnx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmsos_nx-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsos_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsos_nx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsos_nx-gmsmain.Tpo" -c -o gmsos_nx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsos_nx-gmsmain.Tpo" "$(DEPDIR)/gmsos_nx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsos_nx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsos_nx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsocpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsocpnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsos_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsos_nx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsocpnx-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsocpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsocpnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsocpnx-gmsmain.Tpo" -c -o gmsocpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsocpnx-gmsmain.Tpo" "$(DEPDIR)/gmsocpnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsocpnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsocpnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmsos_nx-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsos_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsos_nx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsos_nx-gmsmain.Tpo" -c -o gmsos_nx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsos_nx-gmsmain.Tpo" "$(DEPDIR)/gmsos_nx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsos_nx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsos_nx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsocpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsocpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsos_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsos_nx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsocpux_out-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsocpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsocpux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsocpux_out-gmsmain.Tpo" -c -o gmsocpux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsocpux_out-gmsmain.Tpo" "$(DEPDIR)/gmsocpux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsocpux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsocpux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmsos_ux_out-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsos_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsos_ux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsos_ux_out-gmsmain.Tpo" -c -o gmsos_ux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsos_ux_out-gmsmain.Tpo" "$(DEPDIR)/gmsos_ux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsos_ux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsos_ux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsocpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsocpux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsos_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsos_ux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsocpux_out-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsocpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsocpux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsocpux_out-gmsmain.Tpo" -c -o gmsocpux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsocpux_out-gmsmain.Tpo" "$(DEPDIR)/gmsocpux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsocpux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsocpux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmsos_ux_out-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsos_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsos_ux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsos_ux_out-gmsmain.Tpo" -c -o gmsos_ux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsos_ux_out-gmsmain.Tpo" "$(DEPDIR)/gmsos_ux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsos_ux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsos_ux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsocpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsocpux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsos_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsos_ux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsoglnx-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoglnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoglnx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsoglnx-gmsmain.Tpo" -c -o gmsoglnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsoglnx-gmsmain.Tpo" "$(DEPDIR)/gmsoglnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsoglnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsoglnx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmssc_nx-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmssc_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmssc_nx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmssc_nx-gmsmain.Tpo" -c -o gmssc_nx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmssc_nx-gmsmain.Tpo" "$(DEPDIR)/gmssc_nx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmssc_nx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmssc_nx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoglnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsoglnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmssc_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmssc_nx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsoglnx-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoglnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoglnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsoglnx-gmsmain.Tpo" -c -o gmsoglnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsoglnx-gmsmain.Tpo" "$(DEPDIR)/gmsoglnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsoglnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsoglnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmssc_nx-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmssc_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmssc_nx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmssc_nx-gmsmain.Tpo" -c -o gmssc_nx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmssc_nx-gmsmain.Tpo" "$(DEPDIR)/gmssc_nx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmssc_nx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmssc_nx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoglnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsoglnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmssc_nx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmssc_nx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsoglux_out-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoglux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoglux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsoglux_out-gmsmain.Tpo" -c -o gmsoglux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsoglux_out-gmsmain.Tpo" "$(DEPDIR)/gmsoglux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsoglux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsoglux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmssc_ux_out-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmssc_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmssc_ux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmssc_ux_out-gmsmain.Tpo" -c -o gmssc_ux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmssc_ux_out-gmsmain.Tpo" "$(DEPDIR)/gmssc_ux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmssc_ux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmssc_ux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoglux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsoglux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmssc_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmssc_ux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsoglux_out-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoglux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoglux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsoglux_out-gmsmain.Tpo" -c -o gmsoglux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsoglux_out-gmsmain.Tpo" "$(DEPDIR)/gmsoglux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsoglux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsoglux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmssc_ux_out-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmssc_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmssc_ux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmssc_ux_out-gmsmain.Tpo" -c -o gmssc_ux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmssc_ux_out-gmsmain.Tpo" "$(DEPDIR)/gmssc_ux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmssc_ux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmssc_ux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoglux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsoglux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmssc_ux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmssc_ux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsogunx-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsogunx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsogunx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsogunx-gmsmain.Tpo" -c -o gmsogunx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsogunx-gmsmain.Tpo" "$(DEPDIR)/gmsogunx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsogunx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsogunx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmszcpnx-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszcpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszcpnx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmszcpnx-gmsmain.Tpo" -c -o gmszcpnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszcpnx-gmsmain.Tpo" "$(DEPDIR)/gmszcpnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszcpnx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszcpnx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsogunx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsogunx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszcpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszcpnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsogunx-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsogunx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsogunx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsogunx-gmsmain.Tpo" -c -o gmsogunx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsogunx-gmsmain.Tpo" "$(DEPDIR)/gmsogunx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsogunx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsogunx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmszcpnx-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszcpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszcpnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmszcpnx-gmsmain.Tpo" -c -o gmszcpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszcpnx-gmsmain.Tpo" "$(DEPDIR)/gmszcpnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszcpnx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszcpnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsogunx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsogunx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszcpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszcpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsoguux_out-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoguux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoguux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsoguux_out-gmsmain.Tpo" -c -o gmsoguux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsoguux_out-gmsmain.Tpo" "$(DEPDIR)/gmsoguux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsoguux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsoguux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmszcpux_out-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszcpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszcpux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmszcpux_out-gmsmain.Tpo" -c -o gmszcpux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszcpux_out-gmsmain.Tpo" "$(DEPDIR)/gmszcpux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszcpux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszcpux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoguux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsoguux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszcpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszcpux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsoguux_out-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoguux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoguux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsoguux_out-gmsmain.Tpo" -c -o gmsoguux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsoguux_out-gmsmain.Tpo" "$(DEPDIR)/gmsoguux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsoguux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsoguux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmszcpux_out-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszcpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszcpux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmszcpux_out-gmsmain.Tpo" -c -o gmszcpux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszcpux_out-gmsmain.Tpo" "$(DEPDIR)/gmszcpux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszcpux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszcpux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoguux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsoguux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszcpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszcpux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsomsnx-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsomsnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsomsnx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsomsnx-gmsmain.Tpo" -c -o gmsomsnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsomsnx-gmsmain.Tpo" "$(DEPDIR)/gmsomsnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsomsnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsomsnx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmszglnx-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszglnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszglnx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmszglnx-gmsmain.Tpo" -c -o gmszglnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszglnx-gmsmain.Tpo" "$(DEPDIR)/gmszglnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszglnx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszglnx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsomsnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsomsnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszglnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszglnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsomsnx-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsomsnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsomsnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsomsnx-gmsmain.Tpo" -c -o gmsomsnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsomsnx-gmsmain.Tpo" "$(DEPDIR)/gmsomsnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsomsnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsomsnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmszglnx-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszglnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszglnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmszglnx-gmsmain.Tpo" -c -o gmszglnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszglnx-gmsmain.Tpo" "$(DEPDIR)/gmszglnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszglnx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszglnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsomsnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsomsnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszglnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszglnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsomsux_out-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsomsux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsomsux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsomsux_out-gmsmain.Tpo" -c -o gmsomsux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsomsux_out-gmsmain.Tpo" "$(DEPDIR)/gmsomsux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsomsux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsomsux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmszglux_out-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszglux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszglux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmszglux_out-gmsmain.Tpo" -c -o gmszglux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszglux_out-gmsmain.Tpo" "$(DEPDIR)/gmszglux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszglux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszglux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsomsux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsomsux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszglux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszglux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsomsux_out-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsomsux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsomsux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsomsux_out-gmsmain.Tpo" -c -o gmsomsux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsomsux_out-gmsmain.Tpo" "$(DEPDIR)/gmsomsux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsomsux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsomsux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmszglux_out-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszglux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszglux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmszglux_out-gmsmain.Tpo" -c -o gmszglux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszglux_out-gmsmain.Tpo" "$(DEPDIR)/gmszglux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszglux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszglux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsomsux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsomsux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszglux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszglux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsosdnx-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsosdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsosdnx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsosdnx-gmsmain.Tpo" -c -o gmsosdnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsosdnx-gmsmain.Tpo" "$(DEPDIR)/gmsosdnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsosdnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsosdnx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmszgunx-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszgunx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszgunx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmszgunx-gmsmain.Tpo" -c -o gmszgunx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszgunx-gmsmain.Tpo" "$(DEPDIR)/gmszgunx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszgunx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszgunx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsosdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsosdnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszgunx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszgunx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsosdnx-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsosdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsosdnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsosdnx-gmsmain.Tpo" -c -o gmsosdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsosdnx-gmsmain.Tpo" "$(DEPDIR)/gmsosdnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsosdnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsosdnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmszgunx-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszgunx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszgunx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmszgunx-gmsmain.Tpo" -c -o gmszgunx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszgunx-gmsmain.Tpo" "$(DEPDIR)/gmszgunx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszgunx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszgunx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsosdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsosdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszgunx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszgunx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsosdux_out-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsosdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsosdux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsosdux_out-gmsmain.Tpo" -c -o gmsosdux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsosdux_out-gmsmain.Tpo" "$(DEPDIR)/gmsosdux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsosdux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsosdux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmszguux_out-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszguux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszguux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmszguux_out-gmsmain.Tpo" -c -o gmszguux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszguux_out-gmsmain.Tpo" "$(DEPDIR)/gmszguux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszguux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszguux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsosdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsosdux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszguux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszguux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsosdux_out-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsosdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsosdux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsosdux_out-gmsmain.Tpo" -c -o gmsosdux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsosdux_out-gmsmain.Tpo" "$(DEPDIR)/gmsosdux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsosdux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsosdux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmszguux_out-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszguux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszguux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmszguux_out-gmsmain.Tpo" -c -o gmszguux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszguux_out-gmsmain.Tpo" "$(DEPDIR)/gmszguux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszguux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszguux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsosdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsosdux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszguux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszguux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsoxpnx-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoxpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoxpnx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsoxpnx-gmsmain.Tpo" -c -o gmsoxpnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsoxpnx-gmsmain.Tpo" "$(DEPDIR)/gmsoxpnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsoxpnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsoxpnx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmszmknx-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszmknx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszmknx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmszmknx-gmsmain.Tpo" -c -o gmszmknx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszmknx-gmsmain.Tpo" "$(DEPDIR)/gmszmknx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszmknx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszmknx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoxpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsoxpnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszmknx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszmknx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsoxpnx-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoxpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoxpnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsoxpnx-gmsmain.Tpo" -c -o gmsoxpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsoxpnx-gmsmain.Tpo" "$(DEPDIR)/gmsoxpnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsoxpnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsoxpnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmszmknx-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszmknx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszmknx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmszmknx-gmsmain.Tpo" -c -o gmszmknx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszmknx-gmsmain.Tpo" "$(DEPDIR)/gmszmknx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszmknx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszmknx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoxpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsoxpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszmknx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszmknx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsoxpux_out-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoxpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoxpux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsoxpux_out-gmsmain.Tpo" -c -o gmsoxpux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsoxpux_out-gmsmain.Tpo" "$(DEPDIR)/gmsoxpux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsoxpux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsoxpux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmszmkux_out-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszmkux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszmkux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmszmkux_out-gmsmain.Tpo" -c -o gmszmkux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszmkux_out-gmsmain.Tpo" "$(DEPDIR)/gmszmkux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszmkux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszmkux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoxpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsoxpux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszmkux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszmkux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsoxpux_out-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoxpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsoxpux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsoxpux_out-gmsmain.Tpo" -c -o gmsoxpux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsoxpux_out-gmsmain.Tpo" "$(DEPDIR)/gmsoxpux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsoxpux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsoxpux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmszmkux_out-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszmkux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszmkux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmszmkux_out-gmsmain.Tpo" -c -o gmszmkux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszmkux_out-gmsmain.Tpo" "$(DEPDIR)/gmszmkux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszmkux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszmkux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsoxpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsoxpux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszmkux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszmkux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsscdnx-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsscdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsscdnx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsscdnx-gmsmain.Tpo" -c -o gmsscdnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsscdnx-gmsmain.Tpo" "$(DEPDIR)/gmsscdnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsscdnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsscdnx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmszxpnx-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszxpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszxpnx-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmszxpnx-gmsmain.Tpo" -c -o gmszxpnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszxpnx-gmsmain.Tpo" "$(DEPDIR)/gmszxpnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszxpnx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszxpnx-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsscdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsscdnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszxpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszxpnx-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsscdnx-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsscdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsscdnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsscdnx-gmsmain.Tpo" -c -o gmsscdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsscdnx-gmsmain.Tpo" "$(DEPDIR)/gmsscdnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsscdnx-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsscdnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmszxpnx-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszxpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszxpnx-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmszxpnx-gmsmain.Tpo" -c -o gmszxpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszxpnx-gmsmain.Tpo" "$(DEPDIR)/gmszxpnx-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszxpnx-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszxpnx-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsscdnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsscdnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszxpnx_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszxpnx-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
-gmsscdux_out-gmsmain.o: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsscdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsscdux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmsscdux_out-gmsmain.Tpo" -c -o gmsscdux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsscdux_out-gmsmain.Tpo" "$(DEPDIR)/gmsscdux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsscdux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsscdux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
+gmszxpux_out-gmsmain.o: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszxpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszxpux_out-gmsmain.o -MD -MP -MF "$(DEPDIR)/gmszxpux_out-gmsmain.Tpo" -c -o gmszxpux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszxpux_out-gmsmain.Tpo" "$(DEPDIR)/gmszxpux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszxpux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszxpux_out-gmsmain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsscdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsscdux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszxpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszxpux_out-gmsmain.o `test -f 'gmsmain.cpp' || echo '$(srcdir)/'`gmsmain.cpp
 
-gmsscdux_out-gmsmain.obj: gmsmain.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsscdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmsscdux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmsscdux_out-gmsmain.Tpo" -c -o gmsscdux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmsscdux_out-gmsmain.Tpo" "$(DEPDIR)/gmsscdux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmsscdux_out-gmsmain.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmsscdux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
+gmszxpux_out-gmsmain.obj: gmsmain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszxpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gmszxpux_out-gmsmain.obj -MD -MP -MF "$(DEPDIR)/gmszxpux_out-gmsmain.Tpo" -c -o gmszxpux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/gmszxpux_out-gmsmain.Tpo" "$(DEPDIR)/gmszxpux_out-gmsmain.Po"; else rm -f "$(DEPDIR)/gmszxpux_out-gmsmain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gmsmain.cpp' object='gmszxpux_out-gmsmain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmsscdux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmsscdux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gmszxpux_out_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gmszxpux_out-gmsmain.obj `if test -f 'gmsmain.cpp'; then $(CYGPATH_W) 'gmsmain.cpp'; else $(CYGPATH_W) '$(srcdir)/gmsmain.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

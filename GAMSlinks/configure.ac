@@ -12,9 +12,9 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([GAMSlinks],[0.4],[https://projects.coin-or.org/GAMSlinks/newticket])
+AC_INIT([GAMSlinks],[trunk],[https://projects.coin-or.org/GAMSlinks/newticket])
 
-AC_COPYRIGHT([Copyright (C) 2006-2009 GAMS Development and others 
+AC_COPYRIGHT([Copyright (C) 2006-2011 GAMS Development and others 
 All Rights Reserved.
 This file is part of the open source package Coin which is distributed
 under the Common Public License.])
@@ -205,11 +205,6 @@ ADDLIBS=${ADDLIBS_save}
 ####################################
 
 AC_COIN_HAVE_GAMS
-if test $coin_has_gamsio = no; then
-  AC_MSG_ERROR([need GAMS I/O libraries to build GAMSlinks])
-fi
-#AC_COIN_USE_GAMS
-#AC_DEFINE_UNQUOTED([GAMSIO_PATH],["$gamsio_srcdir"],[The path of the GAMS I/O libraries])
 
 # at least for running gdb, pthread may need to be linked into executables
 case $GAMSIO_CODE in
@@ -218,28 +213,6 @@ case $GAMSIO_CODE in
     ;;
 esac
 AC_SUBST(GAMS_ADDLIBS)
-
-CIA_FLAG=""
-case $build in
-  x86_64-*-linux-*)
-    CIA_FLAG=-DCIA_LEX
-  ;;
-  i?86-*-linux-*)
-  ;;
-  *-cygwin* | *-mingw32*)
-  ;;
-  *-mingw64*)
-    CIA_FLAG=-DCIA_WEX
-  ;;
-  i?86-*-darwin*)
-    CIA_FLAG=-DCIA_DAR
-  ;;
-  i?86-*-solaris*)
-  ;;
-  *)
-    AC_MSG_WARN([Build type $build unknown. Assuming 32bit Linux system.])
-esac
-AC_SUBST(CIA_FLAG)
 
 #############################################################################
 # Check which solvers we build and which interfaces we can (and want) build #
@@ -372,53 +345,53 @@ AM_CONDITIONAL([GAMSLINKS_BUILD_COUENNE],[test $gamslinks_build_couenne = 1])
 # In case this is a VPATH configuration we need to make sure that the
 # GAMS solver installation files are available in the VPATH directory.
 
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsbmdus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsbmdnt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsbmdun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsbmdnt.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsbm_us.run)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsbm_nt.cmd)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsbm_un.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsbm_nt.dat)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/gmscbcus.run)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/gmscbcnt.cmd)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmscbcun.dat)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmscbcnt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/optcbcd.def)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/optmycbc.def)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/gmscouus.run)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/gmscount.cmd)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmscouun.dat)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmscount.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsipdus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsipdnt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsipdun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsipdnt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsosdus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsosdnt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsosdun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsosdnt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/optosd.def)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsocpus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsocpnt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsocpun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsocpnt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsoglus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsoglnt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsoglun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsoglnt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/optglpk.def)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsoguus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsogunt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsoguun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsogunt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsomsus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsomsnt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsomsun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsomsnt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsoxpus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsoxpnt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsoxpun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsoxpnt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsscdus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsscdnt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsscdun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsscdnt.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsip_us.run)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsip_nt.cmd)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsip_un.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsip_nt.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsos_us.run)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsos_nt.cmd)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsos_un.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsos_nt.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/optmyos.def)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszcpus.run)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszcpnt.cmd)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszcpun.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszcpnt.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszglus.run)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszglnt.cmd)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszglun.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszglnt.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/optmyglpk.def)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszguus.run)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszgunt.cmd)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszguun.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszgunt.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszmkus.run)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszmknt.cmd)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszmkun.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszmknt.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszxpus.run)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszxpnt.cmd)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszxpun.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszxpnt.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmssc_us.run)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/gmssc_nt.cmd)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmssc_un.dat)
+AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmssc_nt.dat)
 AC_COIN_VPATH_LINK(src/Cbc/gmscc_us.run)
 AC_COIN_VPATH_LINK(src/Cbc/gmscc_nt.cmd)
 AC_COIN_VPATH_LINK(src/Cbc/install/gmscc_un.dat)

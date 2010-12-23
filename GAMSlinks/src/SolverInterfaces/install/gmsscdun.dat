@@ -1,8 +1,0 @@
-id           ScipD
-license_id   00 01 02
-capabilities LP RMIP MIP QCP RMIQCP MIQCP
-file_type    2112
-dictionary_file 4
-run_file     gmsscdus.run
-exe_file     gmsscdux.out
-special      2

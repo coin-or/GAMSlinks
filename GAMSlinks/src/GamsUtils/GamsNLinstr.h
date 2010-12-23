@@ -18,6 +18,10 @@
 
 #include "GAMSlinksConfig.h"
 
+// GAMS
+#include "gmomcc.h"
+#include "gevmcc.h"
+
 #if defined(__cplusplus)
 extern "C" {
 #endif

@@ -13,7 +13,7 @@
 
 
 * development stuff
-id		COUENNE
+id		MYCOUENNE
 full_name	GAMS/COUENNE
 license_id	FR
 capabilities	LP RMIP MIP NLP RMINLP DNLP MINLP QCP RMIQCP MIQCP

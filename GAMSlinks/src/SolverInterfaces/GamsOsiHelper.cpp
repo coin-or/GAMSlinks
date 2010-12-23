@@ -18,17 +18,17 @@
 #endif
 #endif
 
-#if GMOAPIVERSION < 8
-#define Hresused     HresUsed
-#define Hobjval      HobjVal
-#endif
-
 #include "CoinHelperFunctions.hpp"
 #include "CoinWarmStartBasis.hpp"
 #include "OsiSolverInterface.hpp"
 
 #include "gmomcc.h"
 #include "gevmcc.h"
+
+#if GMOAPIVERSION < 8
+#define Hresused     HresUsed
+#define Hobjval      HobjVal
+#endif
 
 bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 	struct gevRec* gev = (gevRec*)gmoEnvironment(gmo);

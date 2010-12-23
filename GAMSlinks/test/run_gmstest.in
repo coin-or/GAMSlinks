@@ -46,60 +46,53 @@ solvers="'dummy'"
 SMP=
 skiplist=
 if test @gamslinks_build_ipopt@ = 1 ; then
-  solvers="$solvers , 'IpoptD'"
-  SMP="$SMP SMP('IpoptD', 'LP') = yes;"
-  SMP="$SMP SMP('IpoptD', 'QCP') = yes;"
-  SMP="$SMP SMP('IpoptD', 'NLP') = yes;"
-  SMP="$SMP SMP('IpoptD', 'RMIP') = yes;"
-  SMP="$SMP SMP('IpoptD', 'RMIQCP') = yes;"
-  SMP="$SMP SMP('IpoptD', 'RMINLP') = yes;"
+  solvers="$solvers , 'MyIpopt'"
+  SMP="$SMP SMP('MyIpopt', 'LP') = yes;"
+  SMP="$SMP SMP('MyIpopt', 'QCP') = yes;"
+  SMP="$SMP SMP('MyIpopt', 'NLP') = yes;"
+  SMP="$SMP SMP('MyIpopt', 'RMIP') = yes;"
+  SMP="$SMP SMP('MyIpopt', 'RMIQCP') = yes;"
+  SMP="$SMP SMP('MyIpopt', 'RMINLP') = yes;"
 fi
 
-#if test @gamslinks_build_glpk@ = 1 ; then
-#  solvers="$solvers , 'Glpk'"
-#  SMP="$SMP SMP('Glpk', 'LP') = yes;"
-#  SMP="$SMP SMP('Glpk', 'MIP') = yes;"
-#  SMP="$SMP SMP('Glpk', 'RMIP') = yes;"
-#fi
-
 if test @gamslinks_build_cbc@ = 1 ; then
-  solvers="$solvers , 'Cbcd'"
-  SMP="$SMP SMP('Cbcd', 'LP') = yes;"
-  SMP="$SMP SMP('Cbcd', 'MIP') = yes;"
-  SMP="$SMP SMP('Cbcd', 'RMIP') = yes;"
+  solvers="$solvers , 'MyCbc'"
+  SMP="$SMP SMP('MyCbc', 'LP') = yes;"
+  SMP="$SMP SMP('MyCbc', 'MIP') = yes;"
+  SMP="$SMP SMP('MyCbc', 'RMIP') = yes;"
 fi
 
 if test @gamslinks_build_bonmin@ = 1 ; then
-  solvers="$solvers , 'BonminD'"
-  SMP="$SMP SMP('BonminD', 'LP') = yes;"
-  SMP="$SMP SMP('BonminD', 'MIP') = yes;"
-  SMP="$SMP SMP('BonminD', 'RMIP') = yes;"
-  SMP="$SMP SMP('BonminD', 'NLP') = yes;"
-  SMP="$SMP SMP('BonminD', 'MINLP') = yes;"
-  SMP="$SMP SMP('BonminD', 'RMINLP') = yes;"
-  SMP="$SMP SMP('BonminD', 'QCP') = yes;"
-  SMP="$SMP SMP('BonminD', 'MIQCP') = yes;"
-  SMP="$SMP SMP('BonminD', 'RMIQCP') = yes;"
+  solvers="$solvers , 'MyBonmin'"
+  SMP="$SMP SMP('MyBonmin', 'LP') = yes;"
+  SMP="$SMP SMP('MyBonmin', 'MIP') = yes;"
+  SMP="$SMP SMP('MyBonmin', 'RMIP') = yes;"
+  SMP="$SMP SMP('MyBonmin', 'NLP') = yes;"
+  SMP="$SMP SMP('MyBonmin', 'MINLP') = yes;"
+  SMP="$SMP SMP('MyBonmin', 'RMINLP') = yes;"
+  SMP="$SMP SMP('MyBonmin', 'QCP') = yes;"
+  SMP="$SMP SMP('MyBonmin', 'MIQCP') = yes;"
+  SMP="$SMP SMP('MyBonmin', 'RMIQCP') = yes;"
 fi
 
 if test @gamslinks_build_couenne@ = 1 ; then
-  solvers="$solvers , 'Couenne'"
-  SMP="$SMP SMP('Couenne', 'LP') = yes;"
-  SMP="$SMP SMP('Couenne', 'MIP') = yes;"
-  SMP="$SMP SMP('Couenne', 'RMIP') = yes;"
-  SMP="$SMP SMP('Couenne', 'NLP') = yes;"
-  SMP="$SMP SMP('Couenne', 'MINLP') = yes;"
-  SMP="$SMP SMP('Couenne', 'RMINLP') = yes;"
-  SMP="$SMP SMP('Couenne', 'QCP') = yes;"
-  SMP="$SMP SMP('Couenne', 'MIQCP') = yes;"
-  SMP="$SMP SMP('Couenne', 'RMIQCP') = yes;"
+  solvers="$solvers , 'MyCouenne'"
+  SMP="$SMP SMP('MyCouenne', 'LP') = yes;"
+  SMP="$SMP SMP('MyCouenne', 'MIP') = yes;"
+  SMP="$SMP SMP('MyCouenne', 'RMIP') = yes;"
+  SMP="$SMP SMP('MyCouenne', 'NLP') = yes;"
+  SMP="$SMP SMP('MyCouenne', 'MINLP') = yes;"
+  SMP="$SMP SMP('MyCouenne', 'RMINLP') = yes;"
+  SMP="$SMP SMP('MyCouenne', 'QCP') = yes;"
+  SMP="$SMP SMP('MyCouenne', 'MIQCP') = yes;"
+  SMP="$SMP SMP('MyCouenne', 'RMIQCP') = yes;"
 fi
 
 if test @gamslinks_build_scip@ = 1 ; then
-  solvers="$solvers , 'ScipD'"
-  SMP="$SMP SMP('ScipD', 'LP') = yes;"
-  SMP="$SMP SMP('ScipD', 'MIP') = yes;"
-  SMP="$SMP SMP('ScipD', 'RMIP') = yes;"
+  solvers="$solvers , 'MyScip'"
+  SMP="$SMP SMP('MyScip', 'LP') = yes;"
+  SMP="$SMP SMP('MyScip', 'MIP') = yes;"
+  SMP="$SMP SMP('MyScip', 'RMIP') = yes;"
 fi
 
 # create driver generator

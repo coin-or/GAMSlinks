@@ -11,14 +11,14 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST =
 
 lib_LTLIBRARIES = libGamsUtils.la
-libGamsUtils_la_SOURCES = GamsOptions.cpp GamsNLinstr.c optcc.c gdxcc.c gmomcc.c gevmcc.c
+libGamsUtils_la_SOURCES = GamsOptions.cpp GamsNLinstr.c \
+  $(GAMS_VERSION)/optcc.c $(GAMS_VERSION)/gdxcc.c $(GAMS_VERSION)/gmomcc.c $(GAMS_VERSION)/gevmcc.c $(GAMS_VERSION)/gclgms.c
 libGamsUtils_la_LDFLAGS =
-#libGamsUtils_la_LIBADD = $(GAMSIO_OBJDIR)/libGamsJoat.la $(GAMSIO_OBJDIR)/libGamsGDX.la $(GAMSIO_OBJDIR)/libGamsOptions.la
 
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = GamsGDX.hpp GamsOptions.hpp GamsNLinstr.h
 
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` $(CIA_FLAG)
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/$(GAMS_VERSION)` $(CIA_FLAG)
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 

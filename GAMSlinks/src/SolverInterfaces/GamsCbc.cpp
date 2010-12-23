@@ -113,7 +113,7 @@ int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #ifdef GAMS_BUILD
 		options.readOptionsFile("cbc",  gmoOptFile(gmo) ? buffer : NULL);
 #else
-		options.readOptionsFile("cbcd", gmoOptFile(gmo) ? buffer : NULL);
+		options.readOptionsFile("mycbc", gmoOptFile(gmo) ? buffer : NULL);
 #endif
 	}
 	if (!options.isDefined("reslim"))  options.setDouble ("reslim",  gevGetDblOpt(gev, gevResLim));

@@ -1,8 +1,0 @@
-id           OsiMosek
-license_id   00 01 02
-capabilities LP RMIP MIP
-file_type    2112
-dictionary_file 4
-run_file     gmsomsnt.cmd
-exe_file     gmsomsnx.exe
-special      2

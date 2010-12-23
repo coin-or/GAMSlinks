@@ -244,7 +244,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #ifdef GAMS_BUILD
 	    options.readOptionsFile("glpk", gmoOptFile(gmo) ? buffer : NULL);
 #else
-	    options.readOptionsFile("glpk", gmoOptFile(gmo) ? buffer : NULL);
+	    options.readOptionsFile("myglpk", gmoOptFile(gmo) ? buffer : NULL);
 #endif
 	  }
 	  if (options.isDefined("reslim"))  gevSetDblOpt(gev, gevResLim,  options.getDouble ("reslim"));

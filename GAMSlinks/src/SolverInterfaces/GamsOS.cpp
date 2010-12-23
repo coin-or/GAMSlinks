@@ -88,7 +88,7 @@ int GamsOS::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #ifdef GAMS_BUILD
 		gamsopt.readOptionsFile("os",  gmoOptFile(gmo) ? buffer : NULL);
 #else
-		gamsopt.readOptionsFile("osd", gmoOptFile(gmo) ? buffer : NULL);
+		gamsopt.readOptionsFile("myos", gmoOptFile(gmo) ? buffer : NULL);
 #endif
 	}
 
