@@ -847,7 +847,7 @@ SCIP_RETCODE GamsScip::setupInitialBasis() {
 
 	int nbas = 0;
 	for (int j = 0; j < gmoN(gmo); ++j) {
-#if GMOAPIVERSION >= 0
+#if GMOAPIVERSION >= 8
 		switch (gmoGetVarStatOne(gmo, j)) {
 			case Bstat_Basic:
 #else
@@ -943,8 +943,11 @@ SCIP_RETCODE GamsScip::setupInitialBasis() {
 		}
 	}
 
-	SCIP_CALL( SCIPlpiSetBase(lpi, cstat, rstat) );
-	SCIP_CALL( SCIPlpiSetIntpar(lpi, SCIP_LPPAR_FROMSCRATCH, FALSE) );
+	/* set only basis if complete, otherwise Soplex may get confused (or gives assert if in debug mode) */
+	if (nbas == gmoM(gmo)) {
+	   SCIP_CALL( SCIPlpiSetBase(lpi, cstat, rstat) );
+	   SCIP_CALL( SCIPlpiSetIntpar(lpi, SCIP_LPPAR_FROMSCRATCH, FALSE) );
+	}
 
 	delete[] cstat;
 	delete[] rstat;
@@ -1047,9 +1050,6 @@ SCIP_RETCODE GamsScip::processLPSolution(double time) {
 		SCIPlpiGetBase(lpi, colbasstat, rowbasstat);
 
 		for (int i = 0; i < gmoN(gmo); ++i) {
-//			if (gmoGetVarTypeOne(gmo, i) != var_X)
-//				colbasstat[i] = SMAG_BASSTAT_SUPERBASIC;
-//			else
 			switch(colbasstat[i]) {
 				case SCIP_BASESTAT_LOWER: colbasstat[i] = Bstat_Lower; break;
 				case SCIP_BASESTAT_UPPER: colbasstat[i] = Bstat_Upper; break;
