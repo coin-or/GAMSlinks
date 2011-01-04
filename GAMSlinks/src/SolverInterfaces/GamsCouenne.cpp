@@ -266,9 +266,12 @@ int GamsCouenne::callSolver() {
 
  	CouenneProblem* problem;
 #if GMOAPIVERSION >= 7
- 	if( !(gevGetIntOpt(gev, gevInteger1) & 0x1) )
-		problem = setupProblemNew();
- 	else
+ 	if( !(gevGetIntOpt(gev, gevInteger1) & 0x1) ) {
+ 	   if( gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp )
+ 	      problem = setupProblemNew();
+ 	   else
+ 	      problem = setupProblem();
+ 	} else
 #endif
  	if (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp)
  		problem = setupProblemMIQQP();
