@@ -86,7 +86,7 @@ The COIN-OR project leader for \BONMIN is Pierre Bonami.
 \item {B-OA}: an outer-approximation based decomposition algorithm based on iterating solving and improving of a MIP relaxation and solving NLP subproblems~\cite{DuGr86,FlLe94}; this algorithm is similar to the one implemented in the solver \textsc{DICOPT}
 \item {B-QG}: an outer-approximation based branch-and-cut algorithm based on solving a continuous linear program at each node of the search tree, improving the linear program by outer approximation, and branching on integer variables~\cite{QeGr92}.
 \item {B-Hyb}: a branch-and-bound algorithm which is a hybrid of B-BB and B-QG and is based on solving either a continuous nonlinear or a continuous linear program at each node of the search tree, improving the linear program by outer approximation, and branching on integer variables~\cite{BBCCGLLLMSW}
-\item {B-Ecp}: another outer-approximation based branch-and-cut algorithm inspired by the settings used in the solver \textsc{FilMINT}~\cite{AbLeLi07}
+\item {B-Ecp}: a Kelley's outer-approximation based branch-and-cut algorithm inspired by the settings used in the solver \textsc{FilMINT}~\cite{AbLeLi07}
 \item {B-iFP}: an iterated feasibility pump algorithm~\cite{BoCoLoMa06}
 \end{itemize}
 The algorithms are exact when the problem is \textbf{convex}, otherwise they are heuristics.

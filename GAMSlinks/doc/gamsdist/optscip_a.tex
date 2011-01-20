@@ -608,10 +608,16 @@
 {empathy level for using the AND constraint handler: 0 always avoid using AND; 1 use AND sometimes; 2 use AND as often as possible}%
 {}
 
-\printoption{constraints/quadratic/minefficacy}%
+\printoption{constraints/quadratic/minefficacysepa}%
 {$0\leq\textrm{real}$}%
 {$0.0001$}%
-{minimal efficacy for a cut to be added to the LP; overwrites separating/efficacy}%
+{minimal efficacy for a cut to be added to the LP during separation; overwrites separating/efficacy}%
+{}
+
+\printoption{constraints/quadratic/minefficacyenfo}%
+{$0\leq\textrm{real}$}%
+{$2 \cdot 10^{- 6}$}%
+{minimal target efficacy of a cut in order to add it to relaxation during enforcement (may be ignored)}%
 {}
 
 \printoption{constraints/quadratic/scaling}%
@@ -754,8 +760,8 @@
 
 \printoption{constraints/soc/nlpform}%
 {character}%
-{s}%
-{which formulation to use when adding a SOC constraint to the NLP (q: nonconvex quadratic form, s: convex sqrt form, e: convex exponential-sqrt form)}%
+{a}%
+{which formulation to use when adding a SOC constraint to the NLP (a: automatic, q: nonconvex quadratic form, s: convex sqrt form, e: convex exponential-sqrt form)}%
 {}
 
 \printoption{constraints/varbound/sepafreq}%
@@ -2003,14 +2009,8 @@
 
 \printoption{nodeselection/restartdfs/selectbestfreq}%
 {$0\leq\textrm{integer}$}%
-{$100$}%
+{$0$}%
 {frequency for selecting the best node instead of the deepest one}%
-{}
-
-\printoption{nodeselection/restartdfs/countonlyleafs}%
-{boolean}%
-{TRUE}%
-{count only leaf nodes (otherwise all nodes)?}%
 {}
 
 \printoptioncategory{Tolerances}
@@ -2632,7 +2632,7 @@
 \printoption{separating/zerohalf/separating/sepamethods}%
 {string}%
 {2g}%
-{separating methods and ordering:\\   \#                      '!' stop further processing if a cut was found,\\   \#                      '2' exact polynomial time algorithm (only if matrix has max 2 odd entries per row),\\   \#                      'e' enumeration heuristics (k=1: try all preprocessed rows),\\   \#                      'E' enumeration heuristics (k=2: try all combinations of up to two preprocessed rows),\\   \#                      'g' Extended Gaussian elimination heuristics,\\   \#                      's' auxiliary IP heuristics (i.e. number of solved nodes is limited)\\   \#                      'S' auxiliary IP exact      (i.e. unlimited number of nodes)\\   \#                      \\   \#                      '-' no processing                     }%
+{separating methods and ordering:\\   \#                      '!' stop further processing if a cut was found,\\   \#                      '2' exact polynomial time algorithm (only if matrix has max 2 odd entries per row),\\   \#                      'e' enumeration heuristics (k=1: try all preprocessed rows),\\   \#                      'E' enumeration heuristics (k=2: try all combinations of up to two preprocessed rows),\\   \#                      'g' Extended Gaussian elimination heuristics,\\   \#                      's' auxiliary IP heuristics (i.e. number of solved nodes is limited)\\   \#                      'S' auxiliary IP exact      (i.e. unlimited number of nodes)\\   \#                      \\   \#                      '-' no processing}%
 {}
 
 \printoption{separating/zerohalf/separating/auxip/settingsfile}%
@@ -2662,7 +2662,7 @@
 \printoption{separating/zerohalf/separating/auxip/objective}%
 {character}%
 {v}%
-{auxiliary IP objective:\\   \#                      'v' maximize cut violation,\\   \#                      'u' minimize number of aggregated rows in cut,\\   \#                      'w' minimize number of aggregated rows in cut\\   \#                          weighted by the number of rows in the aggregation,\\   \#                      'p' maximize cut violation and penalize a high number\\   \#                          of aggregated rows in the cut weighted by the number\\   \#                          of rows in the aggregation and the penalty factor p                     }%
+{auxiliary IP objective:\\   \#                      'v' maximize cut violation,\\   \#                      'u' minimize number of aggregated rows in cut,\\   \#                      'w' minimize number of aggregated rows in cut\\   \#                          weighted by the number of rows in the aggregation,\\   \#                      'p' maximize cut violation and penalize a high number\\   \#                          of aggregated rows in the cut weighted by the number\\   \#                          of rows in the aggregation and the penalty factor p}%
 {}
 
 \printoptioncategory{Timing}
