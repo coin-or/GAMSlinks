@@ -33,9 +33,6 @@
 /* Define to 1 if the Cplex package is available */
 #undef COIN_HAS_CPX
 
-/* Define to 1 if the DyLP package is used */
-#undef COIN_HAS_DYLP
-
 /* Define to 1 if the GAMSlinks package is used */
 #undef COIN_HAS_GAMSLINKS
 
@@ -68,12 +65,6 @@
 
 /* Define to 1 if the Soplex package is available */
 #undef COIN_HAS_SPX
-
-/* Define to 1 if the SYMPHONY package is used */
-#undef COIN_HAS_SYMPHONY
-
-/* Define to 1 if the Vol package is used */
-#undef COIN_HAS_VOL
 
 /* Define to 1 if the Xpress package is available */
 #undef COIN_HAS_XPR

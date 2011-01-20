@@ -51,16 +51,9 @@ distclean-local:
 #                  Installation of the addlibs file                    #
 ########################################################################
 
-addlibsfile1 = gamsio_addlibs.txt
-addlibsfile2 = smagio_addlibs.txt
-
 install-exec-local: install-doc
-	$(install_sh_DATA) $(addlibsfile1) $(DESTDIR)$(libdir)/$(addlibsfile1)
-	$(install_sh_DATA) $(addlibsfile2) $(DESTDIR)$(libdir)/$(addlibsfile2)
 
 uninstall-local: uninstall-doc
-	rm -f $(DESTDIR)$(libdir)/$(addlibsfile1)
-	rm -f $(DESTDIR)$(libdir)/$(addlibsfile2)
 
 ########################################################################
 #                         Maintainer Stuff                             #

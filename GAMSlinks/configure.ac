@@ -85,9 +85,6 @@ AC_COIN_HAS_PROJECT(Cgl)
 AC_COIN_HAS_PROJECT(CoinUtils)
 AC_COIN_HAS_PROJECT(Osi)
 AC_COIN_HAS_PROJECT(Clp)
-AC_COIN_HAS_PROJECT(Vol)
-AC_COIN_HAS_PROJECT(DyLP)
-AC_COIN_HAS_PROJECT(SYMPHONY)
 AC_COIN_HAS_PROJECT(Cbc)
 AC_COIN_HAS_PROJECT(Ipopt)
 AC_COIN_HAS_PROJECT(Bonmin)
@@ -138,9 +135,9 @@ AC_CHECK_DECL([va_copy],[AC_DEFINE([HAVE_VA_COPY],[1],
 # stricmp and strcasecmp; snprintf; vsnprintf #
 ###############################################
 
-AC_CHECK_FUNCS([stricmp strcasecmp],[break],,)
-AC_CHECK_FUNCS([snprintf _snprintf],[break],,)
-AC_CHECK_FUNCS([vsnprintf _vsnprintf],[break],,)
+AC_CHECK_FUNCS([stricmp strcasecmp],[break])
+AC_CHECK_FUNCS([snprintf _snprintf],[break])
+AC_CHECK_FUNCS([vsnprintf _vsnprintf],[break])
 
 ##########################################################################
 
@@ -240,27 +237,6 @@ else
 fi
 AC_SUBST(coin_build_glpk)
 
-if test "x$coin_has_dylp" != xunavailable && test "x$coin_has_dylp" != xskipping ; then
-  coin_build_dylp=1
-else
-  coin_build_dylp=0
-fi
-AC_SUBST(coin_build_dylp)
-
-if test "x$coin_has_symphony" != xunavailable && test "x$coin_has_symphony" != xskipping ; then
-  coin_build_symphony=1
-else
-  coin_build_symphony=0
-fi
-AC_SUBST(coin_build_symphony)
-
-if test "x$coin_has_vol" != xunavailable && test "x$coin_has_vol" != skipping ; then
-  coin_build_vol=1
-else
-  coin_build_vol=0
-fi
-AC_SUBST(coin_build_vol)
-
 if test "x$coin_has_ipopt" != "xunavailable" && test "x$coin_has_ipopt" != "xskipping"; then
   gamslinks_build_ipopt=1
 else
@@ -301,7 +277,7 @@ AM_CONDITIONAL([GAMSLINKS_BUILD_BONMIN],[test $gamslinks_build_bonmin = 1])
 
 if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
    test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping &&
-   ( test $coin_build_dylp = 1 || test $coin_build_symphony = 1 || test $coin_build_vol = 1 || test $coin_build_cbc = 1 || test $coin_has_cpx = true ) ; then
+   ( test $coin_has_glpk = true || test $coin_has_cpx = true || test $coin_has_msk = true || test $coin_has_grb = true || test $coin_has_xpr = true ) ; then
   gamslinks_build_osi=1
 else
   gamslinks_build_osi=0
@@ -321,7 +297,7 @@ AM_CONDITIONAL([GAMSLINKS_BUILD_OS], [test $gamslinks_build_os = 1])
 
 if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
    test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping &&
-   test "x$coin_has_scip" = xtrue && (test $use_thirdpartyscip = 0 || (test $coin_build_clp = 1 && test $gamslinks_build_ipopt = 1)) ; then
+   test "x$coin_has_scip" = xtrue && (test $use_thirdpartyscip = 0 || (test $coin_build_clp = 1 && test $gamslinks_build_ipopt = 1) || (test $coin_has_soplex = true && test $gamslinks_build_ipopt = 1)) ; then
   gamslinks_build_scip=1
 else
   gamslinks_build_scip=0
@@ -392,38 +368,6 @@ AC_COIN_VPATH_LINK(src/SolverInterfaces/gmssc_us.run)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/gmssc_nt.cmd)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmssc_un.dat)
 AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmssc_nt.dat)
-AC_COIN_VPATH_LINK(src/Cbc/gmscc_us.run)
-AC_COIN_VPATH_LINK(src/Cbc/gmscc_nt.cmd)
-AC_COIN_VPATH_LINK(src/Cbc/install/gmscc_un.dat)
-AC_COIN_VPATH_LINK(src/Cbc/install/gmscc_nt.dat)
-AC_COIN_VPATH_LINK(src/Cbc/optcbc.def)
-AC_COIN_VPATH_LINK(src/Glpk/gmscg_us.run)
-AC_COIN_VPATH_LINK(src/Glpk/gmscg_nt.cmd)
-AC_COIN_VPATH_LINK(src/Glpk/install/gmscg_un.dat)
-AC_COIN_VPATH_LINK(src/Glpk/install/gmscg_nt.dat)
-AC_COIN_VPATH_LINK(src/Glpk/optglpk.def)
-AC_COIN_VPATH_LINK(src/Osi/gmsosius.run)
-AC_COIN_VPATH_LINK(src/Osi/gmsosint.cmd)
-AC_COIN_VPATH_LINK(src/Osi/install/gmsosiun.dat)
-AC_COIN_VPATH_LINK(src/Osi/install/gmsosint.dat)
-AC_COIN_VPATH_LINK(src/Osi/optosi.def)
-AC_COIN_VPATH_LINK(src/Ipopt/gmsip_us.run)
-AC_COIN_VPATH_LINK(src/Ipopt/gmsip_nt.cmd)
-AC_COIN_VPATH_LINK(src/Ipopt/install/gmsip_un.dat)
-AC_COIN_VPATH_LINK(src/Ipopt/install/gmsip_nt.dat)
-AC_COIN_VPATH_LINK(src/Bonmin/gmsbm_us.run)
-AC_COIN_VPATH_LINK(src/Bonmin/gmsbm_nt.cmd)
-AC_COIN_VPATH_LINK(src/Bonmin/install/gmsbm_un.dat)
-AC_COIN_VPATH_LINK(src/Bonmin/install/gmsbm_nt.dat)
-AC_COIN_VPATH_LINK(src/OS/gmsos_us.run)
-AC_COIN_VPATH_LINK(src/OS/gmsos_nt.cmd)
-AC_COIN_VPATH_LINK(src/OS/install/gmsos_un.dat)
-AC_COIN_VPATH_LINK(src/OS/install/gmsos_nt.dat)
-AC_COIN_VPATH_LINK(src/OS/optos.def)
-AC_COIN_VPATH_LINK(src/SCIP/gmssc_us.run)
-AC_COIN_VPATH_LINK(src/SCIP/gmssc_nt.cmd)
-AC_COIN_VPATH_LINK(src/SCIP/install/gmssc_un.dat)
-AC_COIN_VPATH_LINK(src/SCIP/install/gmssc_nt.dat)
 AC_COIN_VPATH_LINK(examples/adbench/gmsad_us.run)
 AC_COIN_VPATH_LINK(examples/adbench/gmsad_nt.cmd)
 AC_COIN_VPATH_LINK(examples/adbench/install/gmsad_un.dat)
@@ -436,17 +380,9 @@ AC_COIN_VPATH_LINK(examples/adbench/install/gmsad_nt.dat)
 AC_LANG_POP(C++)
 
 AC_CONFIG_FILES([Makefile
-                 gamsio_addlibs.txt smagio_addlibs.txt gams_addlibs.txt
+                 gams_addlibs.txt
                  src/Makefile
-                 src/GamsIO/Makefile
                  src/GamsUtils/Makefile
-                 src/Cbc/Makefile
-                 src/Glpk/Makefile
-                 src/Osi/Makefile
-                 src/Ipopt/Makefile
-                 src/Bonmin/Makefile
-                 src/OS/Makefile
-                 src/SCIP/Makefile
                  src/SolverInterfaces/Makefile
                  test/Makefile
                  examples/adbench/Makefile

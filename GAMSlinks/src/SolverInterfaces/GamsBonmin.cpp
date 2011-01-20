@@ -330,6 +330,10 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		//first_osi_tminlp.initialize(roptions, options, journalist, "bonmin.", smagminlp);
 		first_osi_tminlp.initialize(roptions, options, journalist, GetRawPtr(minlp));
 		first_osi_tminlp.passInMessageHandler(msghandler);
+//		double* sol = new double[gmoN(gmo)];
+//    gmoGetVarL(gmo, sol);
+//		first_osi_tminlp.activateRowCutDebugger(sol);
+//		delete[] sol;
 		bonmin_setup->initialize(first_osi_tminlp); // this will clone first_osi_tminlp
   } catch(CoinError &error) {
   	char buf[1024];

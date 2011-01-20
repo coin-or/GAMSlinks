@@ -471,7 +471,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS F77 ADD_FFLAGS DBG_FFLAGS OPT_FFLAGS FFLAGS ac_ct_F77 MPIF77 FLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR GAMSLINKSDOCDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE LIBLTDLSRCDIR LIBLTDLOBJDIR LIBLTDLDOCDIR COIN_HAS_LIBLTDL_TRUE COIN_HAS_LIBLTDL_FALSE CGLSRCDIR CGLOBJDIR CGLDOCDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COINUTILSDOCDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR OSIDOCDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR CLPDOCDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE VOLSRCDIR VOLOBJDIR VOLDOCDIR COIN_HAS_VOL_TRUE COIN_HAS_VOL_FALSE DYLPSRCDIR DYLPOBJDIR DYLPDOCDIR COIN_HAS_DYLP_TRUE COIN_HAS_DYLP_FALSE SYMPHONYSRCDIR SYMPHONYOBJDIR SYMPHONYDOCDIR COIN_HAS_SYMPHONY_TRUE COIN_HAS_SYMPHONY_FALSE CBCSRCDIR CBCOBJDIR CBCDOCDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR IPOPTDOCDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR BONMINDOCDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE CPPADSRCDIR CPPADOBJDIR CPPADDOCDIR COIN_HAS_CPPAD_TRUE COIN_HAS_CPPAD_FALSE COUENNESRCDIR COUENNEOBJDIR COUENNEDOCDIR COIN_HAS_COUENNE_TRUE COIN_HAS_COUENNE_FALSE OSSRCDIR OSOBJDIR OSDOCDIR COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE GLPKOBJDIR COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE SOPLEXINCDIR SOPLEXLIB COIN_HAS_SOPLEX_TRUE COIN_HAS_SOPLEX_FALSE SOPLEXOBJDIR COIN_BUILD_SOPLEX_TRUE COIN_BUILD_SOPLEX_FALSE SCIPINCDIR SCIPLIB COIN_HAS_SCIP_TRUE COIN_HAS_SCIP_FALSE SCIPOBJDIR COIN_BUILD_SCIP_TRUE COIN_BUILD_SCIP_FALSE CPXINCDIR CPXLIB COIN_HAS_CPX_TRUE COIN_HAS_CPX_FALSE GRBINCDIR GRBLIB COIN_HAS_GRB_TRUE COIN_HAS_GRB_FALSE SPXINCDIR SPXLIB COIN_HAS_SPX_TRUE COIN_HAS_SPX_FALSE XPRINCDIR XPRLIB COIN_HAS_XPR_TRUE COIN_HAS_XPR_FALSE MSKINCDIR MSKLIB COIN_HAS_MSK_TRUE COIN_HAS_MSK_FALSE gamspath COIN_HAS_GAMSSYSTEM_TRUE COIN_HAS_GAMSSYSTEM_FALSE GAMS_PATH GAMS_VERSION GAMSIO_CODE GAMSIO_CIA CIA_FLAG GAMSIO_IS_DARWIN_TRUE GAMSIO_IS_DARWIN_FALSE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE GAMSIO_PRESENT_TRUE GAMSIO_PRESENT_FALSE GAMS_ADDLIBS coin_build_clp coin_build_cbc coin_build_glpk coin_build_dylp coin_build_symphony coin_build_vol gamslinks_build_ipopt GAMSLINKS_BUILD_IPOPT_TRUE GAMSLINKS_BUILD_IPOPT_FALSE gamslinks_build_glpk GAMSLINKS_BUILD_GLPK_TRUE GAMSLINKS_BUILD_GLPK_FALSE gamslinks_build_cbc GAMSLINKS_BUILD_CBC_TRUE GAMSLINKS_BUILD_CBC_FALSE gamslinks_build_bonmin GAMSLINKS_BUILD_BONMIN_TRUE GAMSLINKS_BUILD_BONMIN_FALSE gamslinks_build_osi GAMSLINKS_BUILD_OSI_TRUE GAMSLINKS_BUILD_OSI_FALSE gamslinks_build_os GAMSLINKS_BUILD_OS_TRUE GAMSLINKS_BUILD_OS_FALSE gamslinks_build_scip GAMSLINKS_BUILD_SCIP_TRUE GAMSLINKS_BUILD_SCIP_FALSE gamslinks_build_couenne GAMSLINKS_BUILD_COUENNE_TRUE GAMSLINKS_BUILD_COUENNE_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ADDLIBS FADDLIBS ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE EGREP LN_S CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX MPICXX CXXLIBS F77 ADD_FFLAGS DBG_FFLAGS OPT_FFLAGS FFLAGS ac_ct_F77 MPIF77 FLIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS GAMSLINKSSRCDIR GAMSLINKSOBJDIR GAMSLINKSDOCDIR COIN_HAS_GAMSLINKS_TRUE COIN_HAS_GAMSLINKS_FALSE LIBLTDLSRCDIR LIBLTDLOBJDIR LIBLTDLDOCDIR COIN_HAS_LIBLTDL_TRUE COIN_HAS_LIBLTDL_FALSE CGLSRCDIR CGLOBJDIR CGLDOCDIR COIN_HAS_CGL_TRUE COIN_HAS_CGL_FALSE COINUTILSSRCDIR COINUTILSOBJDIR COINUTILSDOCDIR COIN_HAS_COINUTILS_TRUE COIN_HAS_COINUTILS_FALSE OSISRCDIR OSIOBJDIR OSIDOCDIR COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE CLPSRCDIR CLPOBJDIR CLPDOCDIR COIN_HAS_CLP_TRUE COIN_HAS_CLP_FALSE CBCSRCDIR CBCOBJDIR CBCDOCDIR COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPTSRCDIR IPOPTOBJDIR IPOPTDOCDIR COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMINSRCDIR BONMINOBJDIR BONMINDOCDIR COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE CPPADSRCDIR CPPADOBJDIR CPPADDOCDIR COIN_HAS_CPPAD_TRUE COIN_HAS_CPPAD_FALSE COUENNESRCDIR COUENNEOBJDIR COUENNEDOCDIR COIN_HAS_COUENNE_TRUE COIN_HAS_COUENNE_FALSE OSSRCDIR OSOBJDIR OSDOCDIR COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE GLPKINCDIR GLPKLIB COIN_HAS_GLPK_TRUE COIN_HAS_GLPK_FALSE GLPKOBJDIR COIN_BUILD_GLPK_TRUE COIN_BUILD_GLPK_FALSE SOPLEXINCDIR SOPLEXLIB COIN_HAS_SOPLEX_TRUE COIN_HAS_SOPLEX_FALSE SOPLEXOBJDIR COIN_BUILD_SOPLEX_TRUE COIN_BUILD_SOPLEX_FALSE SCIPINCDIR SCIPLIB COIN_HAS_SCIP_TRUE COIN_HAS_SCIP_FALSE SCIPOBJDIR COIN_BUILD_SCIP_TRUE COIN_BUILD_SCIP_FALSE CPXINCDIR CPXLIB COIN_HAS_CPX_TRUE COIN_HAS_CPX_FALSE GRBINCDIR GRBLIB COIN_HAS_GRB_TRUE COIN_HAS_GRB_FALSE SPXINCDIR SPXLIB COIN_HAS_SPX_TRUE COIN_HAS_SPX_FALSE XPRINCDIR XPRLIB COIN_HAS_XPR_TRUE COIN_HAS_XPR_FALSE MSKINCDIR MSKLIB COIN_HAS_MSK_TRUE COIN_HAS_MSK_FALSE gamspath COIN_HAS_GAMSSYSTEM_TRUE COIN_HAS_GAMSSYSTEM_FALSE GAMS_PATH GAMS_VERSION GAMSIO_CODE GAMSIO_CIA CIA_FLAG GAMSIO_IS_DARWIN_TRUE GAMSIO_IS_DARWIN_FALSE GAMSIO_IS_UNIX_TRUE GAMSIO_IS_UNIX_FALSE GAMSIO_IS_WINDOWS_TRUE GAMSIO_IS_WINDOWS_FALSE GAMSIO_PRESENT_TRUE GAMSIO_PRESENT_FALSE GAMS_ADDLIBS coin_build_clp coin_build_cbc coin_build_glpk gamslinks_build_ipopt GAMSLINKS_BUILD_IPOPT_TRUE GAMSLINKS_BUILD_IPOPT_FALSE gamslinks_build_glpk GAMSLINKS_BUILD_GLPK_TRUE GAMSLINKS_BUILD_GLPK_FALSE gamslinks_build_cbc GAMSLINKS_BUILD_CBC_TRUE GAMSLINKS_BUILD_CBC_FALSE gamslinks_build_bonmin GAMSLINKS_BUILD_BONMIN_TRUE GAMSLINKS_BUILD_BONMIN_FALSE gamslinks_build_osi GAMSLINKS_BUILD_OSI_TRUE GAMSLINKS_BUILD_OSI_FALSE gamslinks_build_os GAMSLINKS_BUILD_OS_TRUE GAMSLINKS_BUILD_OS_FALSE gamslinks_build_scip GAMSLINKS_BUILD_SCIP_TRUE GAMSLINKS_BUILD_SCIP_FALSE gamslinks_build_couenne GAMSLINKS_BUILD_COUENNE_TRUE GAMSLINKS_BUILD_COUENNE_FALSE LIBEXT VPATH_DISTCLEANFILES LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -22385,180 +22385,6 @@ fi
 echo "$as_me:$LINENO: result: $coin_has_clp" >&5
 echo "${ECHO_T}$coin_has_clp" >&6
 
-echo "$as_me:$LINENO: checking for COIN project Vol" >&5
-echo $ECHO_N "checking for COIN project Vol... $ECHO_C" >&6
-
-# First check, if the sub-project is actually available (ToDo: allow
-# other locations)
-
-coin_has_vol=unavailable
-if test x"$COIN_SKIP_PROJECTS" != x; then
-  for dir in $COIN_SKIP_PROJECTS; do
-    if test $dir = Vol; then
-      coin_has_vol=skipping
-    fi
-  done
-fi
-
-if test $coin_has_vol != skipping; then
-  if test $PACKAGE_TARNAME = vol; then
-    coin_has_vol=.
-  else
-    if test -d $srcdir/../Vol; then
-      coin_has_vol=../Vol
-    fi
-  fi
-fi
-
-if test $coin_has_vol != unavailable &&
-   test $coin_has_vol != skipping; then
-  # Set the #define if the component is available
-
-cat >>confdefs.h <<\_ACEOF
-#define COIN_HAS_VOL 1
-_ACEOF
-
-
-  # Set the variables for source and object code location
-
-  VOLSRCDIR=`cd $srcdir/$coin_has_vol; pwd`
-
-  VOLOBJDIR=`pwd`/$coin_has_vol
-
-  VOLDOCDIR=$abs_lib_dir/../share/doc/coin/Vol
-fi
-
-  # Define the Makefile conditional
-
-
-if test $coin_has_vol != unavailable &&
-                test $coin_has_vol != skipping; then
-  COIN_HAS_VOL_TRUE=
-  COIN_HAS_VOL_FALSE='#'
-else
-  COIN_HAS_VOL_TRUE='#'
-  COIN_HAS_VOL_FALSE=
-fi
-
-echo "$as_me:$LINENO: result: $coin_has_vol" >&5
-echo "${ECHO_T}$coin_has_vol" >&6
-
-echo "$as_me:$LINENO: checking for COIN project DyLP" >&5
-echo $ECHO_N "checking for COIN project DyLP... $ECHO_C" >&6
-
-# First check, if the sub-project is actually available (ToDo: allow
-# other locations)
-
-coin_has_dylp=unavailable
-if test x"$COIN_SKIP_PROJECTS" != x; then
-  for dir in $COIN_SKIP_PROJECTS; do
-    if test $dir = DyLP; then
-      coin_has_dylp=skipping
-    fi
-  done
-fi
-
-if test $coin_has_dylp != skipping; then
-  if test $PACKAGE_TARNAME = dylp; then
-    coin_has_dylp=.
-  else
-    if test -d $srcdir/../DyLP; then
-      coin_has_dylp=../DyLP
-    fi
-  fi
-fi
-
-if test $coin_has_dylp != unavailable &&
-   test $coin_has_dylp != skipping; then
-  # Set the #define if the component is available
-
-cat >>confdefs.h <<\_ACEOF
-#define COIN_HAS_DYLP 1
-_ACEOF
-
-
-  # Set the variables for source and object code location
-
-  DYLPSRCDIR=`cd $srcdir/$coin_has_dylp; pwd`
-
-  DYLPOBJDIR=`pwd`/$coin_has_dylp
-
-  DYLPDOCDIR=$abs_lib_dir/../share/doc/coin/DyLP
-fi
-
-  # Define the Makefile conditional
-
-
-if test $coin_has_dylp != unavailable &&
-                test $coin_has_dylp != skipping; then
-  COIN_HAS_DYLP_TRUE=
-  COIN_HAS_DYLP_FALSE='#'
-else
-  COIN_HAS_DYLP_TRUE='#'
-  COIN_HAS_DYLP_FALSE=
-fi
-
-echo "$as_me:$LINENO: result: $coin_has_dylp" >&5
-echo "${ECHO_T}$coin_has_dylp" >&6
-
-echo "$as_me:$LINENO: checking for COIN project SYMPHONY" >&5
-echo $ECHO_N "checking for COIN project SYMPHONY... $ECHO_C" >&6
-
-# First check, if the sub-project is actually available (ToDo: allow
-# other locations)
-
-coin_has_symphony=unavailable
-if test x"$COIN_SKIP_PROJECTS" != x; then
-  for dir in $COIN_SKIP_PROJECTS; do
-    if test $dir = SYMPHONY; then
-      coin_has_symphony=skipping
-    fi
-  done
-fi
-
-if test $coin_has_symphony != skipping; then
-  if test $PACKAGE_TARNAME = symphony; then
-    coin_has_symphony=.
-  else
-    if test -d $srcdir/../SYMPHONY; then
-      coin_has_symphony=../SYMPHONY
-    fi
-  fi
-fi
-
-if test $coin_has_symphony != unavailable &&
-   test $coin_has_symphony != skipping; then
-  # Set the #define if the component is available
-
-cat >>confdefs.h <<\_ACEOF
-#define COIN_HAS_SYMPHONY 1
-_ACEOF
-
-
-  # Set the variables for source and object code location
-
-  SYMPHONYSRCDIR=`cd $srcdir/$coin_has_symphony; pwd`
-
-  SYMPHONYOBJDIR=`pwd`/$coin_has_symphony
-
-  SYMPHONYDOCDIR=$abs_lib_dir/../share/doc/coin/SYMPHONY
-fi
-
-  # Define the Makefile conditional
-
-
-if test $coin_has_symphony != unavailable &&
-                test $coin_has_symphony != skipping; then
-  COIN_HAS_SYMPHONY_TRUE=
-  COIN_HAS_SYMPHONY_FALSE='#'
-else
-  COIN_HAS_SYMPHONY_TRUE='#'
-  COIN_HAS_SYMPHONY_FALSE=
-fi
-
-echo "$as_me:$LINENO: result: $coin_has_symphony" >&5
-echo "${ECHO_T}$coin_has_symphony" >&6
-
 echo "$as_me:$LINENO: checking for COIN project Cbc" >&5
 echo $ECHO_N "checking for COIN project Cbc... $ECHO_C" >&6
 
@@ -28525,27 +28351,6 @@ else
 fi
 
 
-if test "x$coin_has_dylp" != xunavailable && test "x$coin_has_dylp" != xskipping ; then
-  coin_build_dylp=1
-else
-  coin_build_dylp=0
-fi
-
-
-if test "x$coin_has_symphony" != xunavailable && test "x$coin_has_symphony" != xskipping ; then
-  coin_build_symphony=1
-else
-  coin_build_symphony=0
-fi
-
-
-if test "x$coin_has_vol" != xunavailable && test "x$coin_has_vol" != skipping ; then
-  coin_build_vol=1
-else
-  coin_build_vol=0
-fi
-
-
 if test "x$coin_has_ipopt" != "xunavailable" && test "x$coin_has_ipopt" != "xskipping"; then
   gamslinks_build_ipopt=1
 else
@@ -28622,7 +28427,7 @@ fi
 
 if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
    test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping &&
-   ( test $coin_build_dylp = 1 || test $coin_build_symphony = 1 || test $coin_build_vol = 1 || test $coin_build_cbc = 1 || test $coin_has_cpx = true ) ; then
+   ( test $coin_has_glpk = true || test $coin_has_cpx = true || test $coin_has_msk = true || test $coin_has_grb = true || test $coin_has_xpr = true ) ; then
   gamslinks_build_osi=1
 else
   gamslinks_build_osi=0
@@ -28660,7 +28465,7 @@ fi
 
 if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
    test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping &&
-   test "x$coin_has_scip" = xtrue && (test $use_thirdpartyscip = 0 || (test $coin_build_clp = 1 && test $gamslinks_build_ipopt = 1)) ; then
+   test "x$coin_has_scip" = xtrue && (test $use_thirdpartyscip = 0 || (test $coin_build_clp = 1 && test $gamslinks_build_ipopt = 1) || (test $coin_has_soplex = true && test $gamslinks_build_ipopt = 1)) ; then
   gamslinks_build_scip=1
 else
   gamslinks_build_scip=0
@@ -28949,166 +28754,6 @@ fi
 
 
 if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Cbc/gmscc_us.run"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Cbc/gmscc_nt.cmd"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Cbc/install/gmscc_un.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Cbc/install/gmscc_nt.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Cbc/optcbc.def"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Glpk/gmscg_us.run"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Glpk/gmscg_nt.cmd"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Glpk/install/gmscg_un.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Glpk/install/gmscg_nt.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Glpk/optglpk.def"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Osi/gmsosius.run"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Osi/gmsosint.cmd"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Osi/install/gmsosiun.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Osi/install/gmsosint.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Osi/optosi.def"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Ipopt/gmsip_us.run"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Ipopt/gmsip_nt.cmd"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Ipopt/install/gmsip_un.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Ipopt/install/gmsip_nt.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Bonmin/gmsbm_us.run"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Bonmin/gmsbm_nt.cmd"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Bonmin/install/gmsbm_un.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/Bonmin/install/gmsbm_nt.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/OS/gmsos_us.run"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/OS/gmsos_nt.cmd"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/OS/install/gmsos_un.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/OS/install/gmsos_nt.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/OS/optos.def"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/SCIP/gmssc_us.run"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/SCIP/gmssc_nt.cmd"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/SCIP/install/gmssc_un.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
-  coin_vpath_link_files="$coin_vpath_link_files src/SCIP/install/gmssc_nt.dat"
-fi
-
-
-if test $coin_vpath_config = yes; then
   coin_vpath_link_files="$coin_vpath_link_files examples/adbench/gmsad_us.run"
 fi
 
@@ -29139,7 +28784,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-                                                                                                                                                                                              ac_config_files="$ac_config_files Makefile gamsio_addlibs.txt smagio_addlibs.txt gams_addlibs.txt src/Makefile src/GamsIO/Makefile src/GamsUtils/Makefile src/Cbc/Makefile src/Glpk/Makefile src/Osi/Makefile src/Ipopt/Makefile src/Bonmin/Makefile src/OS/Makefile src/SCIP/Makefile src/SolverInterfaces/Makefile test/Makefile examples/adbench/Makefile examples/osil2gms/Makefile doc/optdoc/Makefile"
+                                                                                          ac_config_files="$ac_config_files Makefile gams_addlibs.txt src/Makefile src/GamsUtils/Makefile src/SolverInterfaces/Makefile test/Makefile examples/adbench/Makefile examples/osil2gms/Makefile doc/optdoc/Makefile"
 
           ac_config_files="$ac_config_files test/run_quality"
 
@@ -29378,27 +29023,6 @@ if test -z "${COIN_HAS_CLP_TRUE}" && test -z "${COIN_HAS_CLP_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_CLP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"COIN_HAS_CLP\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-if test -z "${COIN_HAS_VOL_TRUE}" && test -z "${COIN_HAS_VOL_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_VOL\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"COIN_HAS_VOL\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-if test -z "${COIN_HAS_DYLP_TRUE}" && test -z "${COIN_HAS_DYLP_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_DYLP\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"COIN_HAS_DYLP\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-if test -z "${COIN_HAS_SYMPHONY_TRUE}" && test -z "${COIN_HAS_SYMPHONY_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_SYMPHONY\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"COIN_HAS_SYMPHONY\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -30085,19 +29709,9 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-  "gamsio_addlibs.txt" ) CONFIG_FILES="$CONFIG_FILES gamsio_addlibs.txt" ;;
-  "smagio_addlibs.txt" ) CONFIG_FILES="$CONFIG_FILES smagio_addlibs.txt" ;;
   "gams_addlibs.txt" ) CONFIG_FILES="$CONFIG_FILES gams_addlibs.txt" ;;
   "src/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-  "src/GamsIO/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/GamsIO/Makefile" ;;
   "src/GamsUtils/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/GamsUtils/Makefile" ;;
-  "src/Cbc/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Cbc/Makefile" ;;
-  "src/Glpk/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Glpk/Makefile" ;;
-  "src/Osi/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Osi/Makefile" ;;
-  "src/Ipopt/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Ipopt/Makefile" ;;
-  "src/Bonmin/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Bonmin/Makefile" ;;
-  "src/OS/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/OS/Makefile" ;;
-  "src/SCIP/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/SCIP/Makefile" ;;
   "src/SolverInterfaces/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/SolverInterfaces/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   "examples/adbench/Makefile" ) CONFIG_FILES="$CONFIG_FILES examples/adbench/Makefile" ;;
@@ -30327,21 +29941,6 @@ s,@CLPOBJDIR@,$CLPOBJDIR,;t t
 s,@CLPDOCDIR@,$CLPDOCDIR,;t t
 s,@COIN_HAS_CLP_TRUE@,$COIN_HAS_CLP_TRUE,;t t
 s,@COIN_HAS_CLP_FALSE@,$COIN_HAS_CLP_FALSE,;t t
-s,@VOLSRCDIR@,$VOLSRCDIR,;t t
-s,@VOLOBJDIR@,$VOLOBJDIR,;t t
-s,@VOLDOCDIR@,$VOLDOCDIR,;t t
-s,@COIN_HAS_VOL_TRUE@,$COIN_HAS_VOL_TRUE,;t t
-s,@COIN_HAS_VOL_FALSE@,$COIN_HAS_VOL_FALSE,;t t
-s,@DYLPSRCDIR@,$DYLPSRCDIR,;t t
-s,@DYLPOBJDIR@,$DYLPOBJDIR,;t t
-s,@DYLPDOCDIR@,$DYLPDOCDIR,;t t
-s,@COIN_HAS_DYLP_TRUE@,$COIN_HAS_DYLP_TRUE,;t t
-s,@COIN_HAS_DYLP_FALSE@,$COIN_HAS_DYLP_FALSE,;t t
-s,@SYMPHONYSRCDIR@,$SYMPHONYSRCDIR,;t t
-s,@SYMPHONYOBJDIR@,$SYMPHONYOBJDIR,;t t
-s,@SYMPHONYDOCDIR@,$SYMPHONYDOCDIR,;t t
-s,@COIN_HAS_SYMPHONY_TRUE@,$COIN_HAS_SYMPHONY_TRUE,;t t
-s,@COIN_HAS_SYMPHONY_FALSE@,$COIN_HAS_SYMPHONY_FALSE,;t t
 s,@CBCSRCDIR@,$CBCSRCDIR,;t t
 s,@CBCOBJDIR@,$CBCOBJDIR,;t t
 s,@CBCDOCDIR@,$CBCDOCDIR,;t t
@@ -30433,9 +30032,6 @@ s,@GAMS_ADDLIBS@,$GAMS_ADDLIBS,;t t
 s,@coin_build_clp@,$coin_build_clp,;t t
 s,@coin_build_cbc@,$coin_build_cbc,;t t
 s,@coin_build_glpk@,$coin_build_glpk,;t t
-s,@coin_build_dylp@,$coin_build_dylp,;t t
-s,@coin_build_symphony@,$coin_build_symphony,;t t
-s,@coin_build_vol@,$coin_build_vol,;t t
 s,@gamslinks_build_ipopt@,$gamslinks_build_ipopt,;t t
 s,@GAMSLINKS_BUILD_IPOPT_TRUE@,$GAMSLINKS_BUILD_IPOPT_TRUE,;t t
 s,@GAMSLINKS_BUILD_IPOPT_FALSE@,$GAMSLINKS_BUILD_IPOPT_FALSE,;t t

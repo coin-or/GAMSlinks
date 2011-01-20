@@ -59,8 +59,7 @@ DIST_COMMON = README $(am__configure_deps) \
 	$(srcdir)/../config.sub $(srcdir)/../install-sh \
 	$(srcdir)/../ltmain.sh $(srcdir)/../missing \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/gams_addlibs.txt.in $(srcdir)/gamsio_addlibs.txt.in \
-	$(srcdir)/smagio_addlibs.txt.in $(top_srcdir)/configure \
+	$(srcdir)/gams_addlibs.txt.in $(top_srcdir)/configure \
 	$(top_srcdir)/inc/config_gamslinks.h.in AUTHORS
 @HAVE_EXTERNALS_TRUE@am__append_2 = Externals
 @HAVE_EXTERNALS_TRUE@am__append_3 = .Externals-stamp
@@ -76,8 +75,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno configure.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/inc/config_gamslinks.h
-CONFIG_CLEAN_FILES = gamsio_addlibs.txt smagio_addlibs.txt \
-	gams_addlibs.txt
+CONFIG_CLEAN_FILES = gams_addlibs.txt
 SOURCES =
 DIST_SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
@@ -159,8 +157,6 @@ COIN_HAS_CPPAD_FALSE = @COIN_HAS_CPPAD_FALSE@
 COIN_HAS_CPPAD_TRUE = @COIN_HAS_CPPAD_TRUE@
 COIN_HAS_CPX_FALSE = @COIN_HAS_CPX_FALSE@
 COIN_HAS_CPX_TRUE = @COIN_HAS_CPX_TRUE@
-COIN_HAS_DYLP_FALSE = @COIN_HAS_DYLP_FALSE@
-COIN_HAS_DYLP_TRUE = @COIN_HAS_DYLP_TRUE@
 COIN_HAS_GAMSLINKS_FALSE = @COIN_HAS_GAMSLINKS_FALSE@
 COIN_HAS_GAMSLINKS_TRUE = @COIN_HAS_GAMSLINKS_TRUE@
 COIN_HAS_GAMSSYSTEM_FALSE = @COIN_HAS_GAMSSYSTEM_FALSE@
@@ -185,10 +181,6 @@ COIN_HAS_SOPLEX_FALSE = @COIN_HAS_SOPLEX_FALSE@
 COIN_HAS_SOPLEX_TRUE = @COIN_HAS_SOPLEX_TRUE@
 COIN_HAS_SPX_FALSE = @COIN_HAS_SPX_FALSE@
 COIN_HAS_SPX_TRUE = @COIN_HAS_SPX_TRUE@
-COIN_HAS_SYMPHONY_FALSE = @COIN_HAS_SYMPHONY_FALSE@
-COIN_HAS_SYMPHONY_TRUE = @COIN_HAS_SYMPHONY_TRUE@
-COIN_HAS_VOL_FALSE = @COIN_HAS_VOL_FALSE@
-COIN_HAS_VOL_TRUE = @COIN_HAS_VOL_TRUE@
 COIN_HAS_XPR_FALSE = @COIN_HAS_XPR_FALSE@
 COIN_HAS_XPR_TRUE = @COIN_HAS_XPR_TRUE@
 COUENNEDOCDIR = @COUENNEDOCDIR@
@@ -213,9 +205,6 @@ DBG_CXXFLAGS = @DBG_CXXFLAGS@
 DBG_FFLAGS = @DBG_FFLAGS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
-DYLPDOCDIR = @DYLPDOCDIR@
-DYLPOBJDIR = @DYLPOBJDIR@
-DYLPSRCDIR = @DYLPSRCDIR@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -323,13 +312,7 @@ SOPLEXOBJDIR = @SOPLEXOBJDIR@
 SPXINCDIR = @SPXINCDIR@
 SPXLIB = @SPXLIB@
 STRIP = @STRIP@
-SYMPHONYDOCDIR = @SYMPHONYDOCDIR@
-SYMPHONYOBJDIR = @SYMPHONYOBJDIR@
-SYMPHONYSRCDIR = @SYMPHONYSRCDIR@
 VERSION = @VERSION@
-VOLDOCDIR = @VOLDOCDIR@
-VOLOBJDIR = @VOLOBJDIR@
-VOLSRCDIR = @VOLSRCDIR@
 VPATH_DISTCLEANFILES = @VPATH_DISTCLEANFILES@
 XPRINCDIR = @XPRINCDIR@
 XPRLIB = @XPRLIB@
@@ -362,10 +345,7 @@ build_os = @build_os@
 build_vendor = @build_vendor@
 coin_build_cbc = @coin_build_cbc@
 coin_build_clp = @coin_build_clp@
-coin_build_dylp = @coin_build_dylp@
 coin_build_glpk = @coin_build_glpk@
-coin_build_symphony = @coin_build_symphony@
-coin_build_vol = @coin_build_vol@
 datadir = @datadir@
 exec_prefix = @exec_prefix@
 gamslinks_build_bonmin = @gamslinks_build_bonmin@
@@ -404,12 +384,6 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = src $(am__append_1)
 EXTRA_DIST = README LICENSE AUTHORS $(am__append_2)
-
-########################################################################
-#                  Installation of the addlibs file                    #
-########################################################################
-addlibsfile1 = gamsio_addlibs.txt
-addlibsfile2 = smagio_addlibs.txt
 
 ########################################################################
 #                         Maintainer Stuff                             #
@@ -472,10 +446,6 @@ $(top_srcdir)/inc/config_gamslinks.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_
 
 distclean-hdr:
 	-rm -f inc/config_gamslinks.h inc/stamp-h1
-gamsio_addlibs.txt: $(top_builddir)/config.status $(srcdir)/gamsio_addlibs.txt.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-smagio_addlibs.txt: $(top_builddir)/config.status $(srcdir)/smagio_addlibs.txt.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
 gams_addlibs.txt: $(top_builddir)/config.status $(srcdir)/gams_addlibs.txt.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
@@ -887,13 +857,13 @@ clean-local:
 distclean-local:
 	if test -r test/Makefile; then cd test; $(MAKE) distclean; fi
 
+########################################################################
+#                  Installation of the addlibs file                    #
+########################################################################
+
 install-exec-local: install-doc
-	$(install_sh_DATA) $(addlibsfile1) $(DESTDIR)$(libdir)/$(addlibsfile1)
-	$(install_sh_DATA) $(addlibsfile2) $(DESTDIR)$(libdir)/$(addlibsfile2)
 
 uninstall-local: uninstall-doc
-	rm -f $(DESTDIR)$(libdir)/$(addlibsfile1)
-	rm -f $(DESTDIR)$(libdir)/$(addlibsfile2)
 
 install-doc: $(DocFiles)
 	test -z "$(DocInstallDir)" || $(mkdir_p) "$(DESTDIR)$(DocInstallDir)"
