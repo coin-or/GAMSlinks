@@ -877,7 +877,7 @@ void printSCIPOptions() {
   	if (strcmp(paramname, "numerics/infinity") == 0)
   		continue;
   	
-  	char* catend = strchr(paramname, '/');
+  	const char* catend = strchr(paramname, '/');
   	std::string category;
   	if (catend != NULL)
   		category = std::string(paramname, 0, catend - paramname);
