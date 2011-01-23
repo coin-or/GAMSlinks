@@ -279,6 +279,11 @@ const TMINLP::BranchingInfo* GamsMINLP::branchingInfo() const {
 	return NULL;
 }
 
+/** Say if problem has a linear objective (for OA) */
+bool GamsMINLP::hasLinearObjective() {
+	return gmoObjNLNZ(gmo) == 0;
+}
+
 void GamsMINLP::finalize_solution(TMINLP::SolverReturn status, Index n, const Number* x, Number obj_value) {
   solver_status = SolveStat_Normal;
   switch (status) {

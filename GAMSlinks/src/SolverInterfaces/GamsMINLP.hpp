@@ -143,6 +143,9 @@ public:
 	/** Provides information about branching priorities. 
 	 */
   const Bonmin::TMINLP::BranchingInfo* branchingInfo() const;
+
+  /** Say if problem has a linear objective (for OA) */
+  bool hasLinearObjective();
 };
 
 #endif /*GAMSMINLP_HPP_*/
