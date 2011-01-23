@@ -14,3 +14,4 @@ ThirdParty/Blas https://projects.coin-or.org/svn/BuildTools/ThirdParty/Blas/stab
 ThirdParty/Glpk https://projects.coin-or.org/svn/BuildTools/ThirdParty/Glpk/stable/1.6
 ThirdParty/Lapack https://projects.coin-or.org/svn/BuildTools/ThirdParty/Lapack/stable/1.1
 ThirdParty/Mumps https://projects.coin-or.org/svn/BuildTools/ThirdParty/Mumps/stable/1.2
+ThirdParty/Metis https://projects.coin-or.org/svn/BuildTools/ThirdParty/Metis/stable/1.0
