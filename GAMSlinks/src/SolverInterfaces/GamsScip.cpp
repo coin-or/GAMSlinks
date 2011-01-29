@@ -218,12 +218,12 @@ int GamsScip::callSolver() {
 			}
 		}
 
-  	if (scipret == SCIP_OKAY)
-  		scipret = processLPSolution(gevTimeDiffStart(gev) - starttime);
-
 		gevLogPChar(gev, spxoutput.str().c_str());
 		spxoutput.str(std::string());
 		spxoutput.clear();
+
+  	if (scipret == SCIP_OKAY)
+  		scipret = processLPSolution(gevTimeDiffStart(gev) - starttime);
 
 	} else {
 		scipret = setupStartPoint();
