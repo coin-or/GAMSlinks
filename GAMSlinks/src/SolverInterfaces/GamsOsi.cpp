@@ -109,10 +109,17 @@ static int CPXPUBLIC cpxinfocallback(CPXCENVptr cpxenv, void* cbdata, int wheref
 
 #ifdef COIN_HAS_GRB
 static int __stdcall grbcallback(GRBmodel* model, void* qcbdata, int where, void* usrdata) {
+  if (where == GRB_CB_MESSAGE) {
+  	char* msg;
+    GRBcbget(qcbdata, where, GRB_CB_MSG_STRING, &msg);
+    gevLogPChar((gevHandle_t)usrdata, msg);
+  }
+
 #if GEVAPIVERSION >= 4
 	if (gevTerminateGet((gevHandle_t)usrdata))
 		GRBterminate(model);
 #endif
+
 	return 0;
 }
 #endif
@@ -406,8 +413,8 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	osi->passInMessageHandler(msghandler);
 	osi->setHintParam(OsiDoReducePrint, true,  OsiHintTry);
 
-	/* gurobi does not support message callbacks (yet), so we turn off message printing if lo=2 */
-	if (gevGetIntOpt(gev, gevLogOption) == 0 || (solverid == GUROBI && gevGetIntOpt(gev, gevLogOption) == 2))
+	/* for gurobi we print messages via our own callback, which means to disable its usual output */
+	if (gevGetIntOpt(gev, gevLogOption) == 0 || solverid == GUROBI)
 		msghandler->setLogLevel(0);
 
 	if (!setupProblem(*osi)) {
