@@ -52,6 +52,9 @@
 #if COIN_HAS_CLP
 #include "ClpSimplex.hpp" // for passing in message handler
 #endif
+#if COIN_HAS_SOPLEX
+#include "spxout.h"  // for passing in output stringstream
+#endif
 
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
@@ -205,6 +208,9 @@ int GamsScip::callSolver() {
 			// if the initial basis is singular, Soplex do not solve the LP, so we try again by solving from scratch
 			if( !SCIPlpiIsStable(lpi) && gmoHaveBasis(gmo) )
 			{
+				gevLogPChar(gev, spxoutput.str().c_str());
+				spxoutput.str(std::string());
+				spxoutput.clear();
 	      gevLogStat(gev, "\nTrying again, now starting from scratch...");
 			  scipret = SCIPlpiSetIntpar(lpi, SCIP_LPPAR_FROMSCRATCH, TRUE);
 			  assert(scipret == SCIP_OKAY);
@@ -214,6 +220,10 @@ int GamsScip::callSolver() {
 
   	if (scipret == SCIP_OKAY)
   		scipret = processLPSolution(gevTimeDiffStart(gev) - starttime);
+
+		gevLogPChar(gev, spxoutput.str().c_str());
+		spxoutput.str(std::string());
+		spxoutput.clear();
 
 	} else {
 		scipret = setupStartPoint();
@@ -291,6 +301,29 @@ SCIP_RETCODE GamsScip::setupLPI() {
 		gamsmsghandler->setLogLevel(1); // SCIP has set Clp's loglevel to 2, but then it might print to stdout
 		((ClpSimplex*)SCIPlpiGetSolverPointer(lpi))->passInMessageHandler(gamsmsghandler);
 	} else
+#endif
+#if COIN_HAS_SOPLEX
+  if(strncmp(SCIPlpiGetSolverName(), "SoPlex", 6) == 0)
+  {
+  	if (gevGetIntOpt(gev, gevLogOption) == 0)
+  		SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, 0);
+  	else
+  	{
+  		SCIPlpiSetIntpar(lpi, SCIP_LPPAR_LPINFO, 1);
+  		if (gevGetIntOpt(gev, gevLogOption) == 2)
+  		{
+  			spxoutput.str(std::string());
+  			spxoutput.clear();
+  			soplex::spxout.setStream(soplex::SPxOut::ERROR, spxoutput);
+  			soplex::spxout.setStream(soplex::SPxOut::WARNING, spxoutput);
+  			soplex::spxout.setStream(soplex::SPxOut::INFO1, spxoutput);
+  			soplex::spxout.setStream(soplex::SPxOut::INFO2, spxoutput);
+  			soplex::spxout.setStream(soplex::SPxOut::INFO3, spxoutput);
+  			soplex::spxout.setStream(soplex::SPxOut::DEBUG, spxoutput);
+  		}
+  	}
+  }
+  else
 #endif
 	{
      /* enable output iff lo=1 or =3 */

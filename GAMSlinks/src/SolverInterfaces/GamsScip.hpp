@@ -15,6 +15,8 @@
 #include "scip/type_retcode.h"
 #include "scip/type_message.h"
 
+#include <sstream>
+
 class GamsMessageHandler;
 
 typedef struct Scip             SCIP;
@@ -38,6 +40,7 @@ private:
    SCIP_VAR**          vars;
 
    SCIP_LPI*           lpi;
+   std::ostringstream  spxoutput;
 
    char                scip_message[300];
 

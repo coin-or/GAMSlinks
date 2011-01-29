@@ -325,6 +325,7 @@ libGamsCoin_la_LDFLAGS  += $(SCIPLIB)
 endif 
 
 if COIN_HAS_SOPLEX
+libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(SOPLEXINCDIR)`
 if COIN_BUILD_SOPLEX
 libGamsCoin_la_LIBADD   += $(SOPLEXOBJDIR)/libcoinsoplex.la
 else
