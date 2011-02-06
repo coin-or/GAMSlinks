@@ -47,6 +47,10 @@
 #define Hobjval      HobjVal
 #endif
 
+#if GMOAPIVERSION > 8
+#define gmoWantQSet gmoUseQSet
+#endif
+
 #include "GamsMessageHandler.hpp"
 
 #if COIN_HAS_CLP

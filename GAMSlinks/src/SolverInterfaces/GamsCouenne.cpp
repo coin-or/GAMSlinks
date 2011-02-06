@@ -48,6 +48,10 @@
 #define Hobjval      HobjVal
 #endif
 
+#if GMOAPIVERSION > 8
+#define gmoWantQSet gmoUseQSet
+#endif
+
 #include "GamsMINLP.hpp"
 #include "GamsJournal.hpp"
 #include "GamsMessageHandler.hpp"
