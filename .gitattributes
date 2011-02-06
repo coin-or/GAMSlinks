@@ -108,6 +108,7 @@ GAMSlinks/src/GamsUtils/23.6/gmomcc.c -text
 GAMSlinks/src/GamsUtils/23.6/gmomcc.h -text
 GAMSlinks/src/GamsUtils/23.6/optcc.c -text
 GAMSlinks/src/GamsUtils/23.6/optcc.h -text
+GAMSlinks/src/GamsUtils/GamsCompatibility.h -text
 GAMSlinks/src/GamsUtils/GamsGDX.cpp -text
 GAMSlinks/src/GamsUtils/GamsGDX.hpp -text
 GAMSlinks/src/GamsUtils/GamsLibLoader.c -text

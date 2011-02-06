@@ -51,6 +51,8 @@ extern "C" GamsSolver* STDCALL CREATEFUNCNAME (void);
 #include "gmomcc.h"
 #include "gevmcc.h"
 
+#include "GamsCompatibility.h"
+
 int main(int argc, char** argv) {
 #ifdef HAVE_WINDOWS_H
   SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);

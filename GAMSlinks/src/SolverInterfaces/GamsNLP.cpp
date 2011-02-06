@@ -41,11 +41,7 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 
-#if GMOAPIVERSION < 8
-#define Hresused     HresUsed
-#define Hdomused     HdomUsed
-#define Hobjval      HobjVal
-#endif
+#include "GamsCompatibility.h"
 
 using namespace Ipopt;
 

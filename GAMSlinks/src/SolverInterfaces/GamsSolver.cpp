@@ -35,6 +35,8 @@
 #include "gmspal.h"
 #endif
 
+#include "GamsCompatibility.h"
+
 GamsSolver::~GamsSolver() {
 	if (need_unload_gmo) {
 		assert(gmoLibraryLoaded());

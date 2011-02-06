@@ -25,10 +25,7 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 
-#if GMOAPIVERSION < 8
-#define Hresused     HresUsed
-#define Hobjval      HobjVal
-#endif
+#include "GamsCompatibility.h"
 
 bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 	struct gevRec* gev = (gevRec*)gmoEnvironment(gmo);

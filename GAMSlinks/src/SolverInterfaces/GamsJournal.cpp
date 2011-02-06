@@ -11,6 +11,8 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 
+#include "GamsCompatibility.h"
+
 #ifdef HAVE_CSTDIO
 #include <cstdio>
 #else

@@ -22,6 +22,8 @@
 #include "gmspal.h"  /* for audit line */
 #endif
 
+#include "GamsCompatibility.h"
+
 #include <string>
 #include <fstream>
 #include <iostream>

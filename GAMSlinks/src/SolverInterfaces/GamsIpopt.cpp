@@ -64,6 +64,8 @@ extern "C" {
 #include "gmspal.h"  /* for audit line */
 #endif
 
+#include "GamsCompatibility.h"
+
 using namespace Ipopt;
 
 GamsIpopt::GamsIpopt()

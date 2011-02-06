@@ -35,23 +35,8 @@
 #ifdef GAMS_BUILD
 #include "gmspal.h"  /* for audit line */
 #endif
-/* value for not available/applicable */
-#if GMOAPIVERSION >= 7
-#define GMS_SV_NA     gmoValNA(gmo)
-#else
-#define GMS_SV_NA     2.0E300
-#endif
 
-#if GMOAPIVERSION < 8
-#define Hresused     HresUsed
-#define Hdomused     HdomUsed
-#define Hobjval      HobjVal
-#endif
-
-#if GMOAPIVERSION > 8
-#define gmoWantQSet gmoUseQSet
-#endif
-
+#include "GamsCompatibility.h"
 #include "GamsMINLP.hpp"
 #include "GamsJournal.hpp"
 #include "GamsMessageHandler.hpp"

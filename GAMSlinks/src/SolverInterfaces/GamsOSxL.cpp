@@ -29,17 +29,8 @@
 
 #include "gmomcc.h"
 #include "gevmcc.h"
-/* value for not available/applicable */
-#if GMOAPIVERSION >= 7
-#define GMS_SV_NA     gmoValNA(gmo)
-#else
-#define GMS_SV_NA     2.0E300
-#endif
 
-#if GMOAPIVERSION < 8
-#define Hresused     HresUsed
-#define Hobjval      HobjVal
-#endif
+#include "GamsCompatibility.h"
 
 GamsOSxL::GamsOSxL(gmoHandle_t gmo_)
 : gmo(gmo_), gev(gmo_ ? (gevRec*)gmoEnvironment(gmo_) : NULL), gmo_is_our(false), osinstance(NULL)
