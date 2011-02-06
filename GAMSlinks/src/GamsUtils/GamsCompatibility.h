@@ -38,6 +38,7 @@
 
 #define var_X  gmovar_X
 #define var_B  gmovar_B
+#define var_I  gmovar_I
 #define var_S1 gmovar_S1
 #define var_S2 gmovar_S2
 #define var_SC gmovar_SC
