@@ -93,6 +93,8 @@
 #define ModelStat_InfeasibleLocal      gmoModelStat_InfeasibleLocal
 #define ModelStat_InfeasibleIntermed   gmoModelStat_InfeasibleIntermed
 #define ModelStat_NonOptimalIntermed   gmoModelStat_NonOptimalIntermed
+#define ModelStat_Integer              gmoModelStat_Integer
+#define ModelStat_NonIntegerIntermed   gmoModelStat_NonIntegerIntermed
 #define ModelStat_IntegerInfeasible    gmoModelStat_IntegerInfeasible
 #define ModelStat_LicenseError         gmoModelStat_LicenseError
 #define ModelStat_ErrorUnknown         gmoModelStat_ErrorUnknown
