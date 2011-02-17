@@ -95,8 +95,6 @@ GamsScip::~GamsScip() {
 int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gmo = gmo_;
 	assert(gmo);
-	assert(!scip);
-	assert(!lpi);
 
 	if (getGmoReady())
 		return 1;
@@ -270,11 +268,12 @@ SCIP_RETCODE GamsScip::freeLPI() {
    if(strncmp(SCIPlpiGetSolverName(), "SoPlex", 6) == 0)
    {
      soplex::spxout.setStream(soplex::SPxOut::ERROR, std::cerr);
-     soplex::spxout.setStream(soplex::SPxOut::WARNING, std::cout);
+     soplex::spxout.setStream(soplex::SPxOut::WARNING, std::cerr);
      soplex::spxout.setStream(soplex::SPxOut::INFO1, std::cout);
      soplex::spxout.setStream(soplex::SPxOut::INFO2, std::cout);
      soplex::spxout.setStream(soplex::SPxOut::INFO3, std::cout);
      soplex::spxout.setStream(soplex::SPxOut::DEBUG, std::cout);
+     soplex::Param::setVerbose(0);
    }
 #endif
 
