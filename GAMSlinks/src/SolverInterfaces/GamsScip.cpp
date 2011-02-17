@@ -161,9 +161,15 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	if( gamsmsghandler == NULL )
 	   gamsmsghandler = new GamsMessageHandler(gev);
 
-  assert(scipmsghandler == NULL);
-  SCIP_CALL_ABORT( SCIPcreateMessagehdlr(&scipmsghandler, FALSE, GamsScipPrintWarningOrError, GamsScipPrintWarningOrError, GamsScipPrintInfoOrDialog, GamsScipPrintInfoOrDialog, (SCIP_MESSAGEHDLRDATA*)this) );
-  SCIP_CALL_ABORT( SCIPsetMessagehdlr(scipmsghandler) );
+  if( scipmsghandler == NULL )
+  {
+    SCIP_CALL_ABORT( SCIPcreateMessagehdlr(&scipmsghandler, FALSE, GamsScipPrintWarningOrError, GamsScipPrintWarningOrError, GamsScipPrintInfoOrDialog, GamsScipPrintInfoOrDialog, (SCIP_MESSAGEHDLRDATA*)this) );
+    SCIP_CALL_ABORT( SCIPsetMessagehdlr(scipmsghandler) );
+  }
+
+  /* free SCIP or LPI from previous readyAPI call, if any */
+  SCIP_CALL_ABORT( freeSCIP() );
+  SCIP_CALL_ABORT( freeLPI() );
 
   SCIP_RETCODE scipret;
 	if (isLP())
