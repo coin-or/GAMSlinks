@@ -259,7 +259,19 @@ SCIP_RETCODE GamsScip::freeLPI() {
    if( lpi != NULL ) {
       SCIP_CALL( SCIPlpiFree(&lpi) );
    }
-   
+
+#if COIN_HAS_SOPLEX
+   if(strncmp(SCIPlpiGetSolverName(), "SoPlex", 6) == 0)
+   {
+     soplex::spxout.setStream(soplex::SPxOut::ERROR, std::cerr);
+     soplex::spxout.setStream(soplex::SPxOut::WARNING, std::cout);
+     soplex::spxout.setStream(soplex::SPxOut::INFO1, std::cout);
+     soplex::spxout.setStream(soplex::SPxOut::INFO2, std::cout);
+     soplex::spxout.setStream(soplex::SPxOut::INFO3, std::cout);
+     soplex::spxout.setStream(soplex::SPxOut::DEBUG, std::cout);
+   }
+#endif
+
    return SCIP_OKAY;
 }
 
