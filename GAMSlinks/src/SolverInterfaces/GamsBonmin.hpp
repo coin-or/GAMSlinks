@@ -34,9 +34,6 @@ private:
 	GamsIpopt*             gamsipopt;
 	GamsCbc*               gamscbc;
 
-	void writeSolution(Bonmin::OsiTMINLPInterface& osi_tminlp, int itercount);
-	void writeSolutionNoDual(Bonmin::OsiTMINLPInterface& osi_tminlp, int itercount);
-
 	bool isNLP();
 	bool isMIP();
 

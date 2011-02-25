@@ -363,62 +363,93 @@ int GamsBonmin::callSolver() {
 		minlp->nlp->clockStart = gevTimeDiffStart(gev);
 		bb(*bonmin_setup); //process parameters and do branch and bound
 
+		/* store solve statistics */
+		gmoSetHeadnTail(gmo, Hresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+		gmoSetHeadnTail(gmo, Tmipnod, bb.numNodes());
+		gmoSetHeadnTail(gmo, Hiterused, bb.iterationCount());
+		gmoSetHeadnTail(gmo, Hdomused,  minlp->nlp->domviolations);
 		double best_bound = (gmoSense(gmo) == Obj_Min) ? bb.bestBound() : -bb.bestBound();
 		if (best_bound > -1e200 && best_bound < 1e200)
 			gmoSetHeadnTail(gmo, Tmipbest, best_bound);
-		gmoSetHeadnTail(gmo, Tmipnod, bb.numNodes());
+		gmoModelStatSet(gmo, minlp->model_status);
+		gmoSolveStatSet(gmo, minlp->solver_status);
 
-		OsiTMINLPInterface& osi_tminlp(*bonmin_setup->nonlinearSolver());
+		/* store primal solution in gmo */
 		if (bb.bestSolution()) {
 			char buf[100];
 			snprintf(buf, 100, "\nBonmin finished. Found feasible point. Objective function value = %g.", bb.bestObj());
 			gevLogStat(gev, buf);
 
-			bool has_free_var = false;
+			gmoSetHeadnTail(gmo, Hobjval, (gmoSense(gmo) == Obj_Min ? 1 : -1) * bb.bestObj());
+
+			double* negLambda = new double[gmoM(gmo)];
+			memset(negLambda, 0, gmoM(gmo)*sizeof(double));
+
+			gmoSetSolution2(gmo, bb.bestSolution(), negLambda);
+
+			delete[] negLambda;
+		} else {
+			gevLogStat(gev, "\nBonmin finished. No feasible point found.");
+		}
+
+		/* resolve MINLP with discrete variables fixed */
+		if (bb.bestSolution() && gmoNDisc(gmo) < gmoN(gmo)) {
+			OsiTMINLPInterface& osi_tminlp(*bonmin_setup->nonlinearSolver());
 			for (Index i = 0; i < gmoN(gmo); ++i)
 				if (gmoGetVarTypeOne(gmo, i) != var_X)
 					osi_tminlp.setColBounds(i, bb.bestSolution()[i], bb.bestSolution()[i]);
-				else if ((!has_free_var) && osi_tminlp.getColUpper()[i]-osi_tminlp.getColLower()[i] > 1e-5)
-					has_free_var = true;
 			osi_tminlp.setColSolution(bb.bestSolution());
 
-			if (!has_free_var) {
-				gevLog(gev, "All variables are discrete. Dual variables for fixed problem will be not available.");
-				osi_tminlp.initialSolve(); // this will only evaluate the constraints, so we get correct row levels
-				writeSolutionNoDual(osi_tminlp, bb.iterationCount());
-			} else {
-				gevLog(gev, "Resolve with fixed discrete variables to get dual values.");
-				bool error_in_fixedsolve = false;
-				try {
-					osi_tminlp.initialSolve();
-					error_in_fixedsolve = !osi_tminlp.isProvenOptimal();
-				} catch (TNLPSolver::UnsolvedError *E) { // there has been a failure to solve a problem with Ipopt
-					char buf[1024];
-					snprintf(buf, 1024, "Error: %s exited with error %s", E->solverName().c_str(), E->errorName().c_str());
-					gevLogStat(gev, buf);
-					error_in_fixedsolve = true;
-				}
-				if (!error_in_fixedsolve) {
-					writeSolution(osi_tminlp, bb.iterationCount());
-				} else {
-					gevLogStat(gev, "Problems solving fixed problem. Dual variables for NLP subproblem not available.");
-					writeSolutionNoDual(osi_tminlp, bb.iterationCount());
-				}
+			gevLog(gev, "Resolve with fixed discrete variables to get dual values.");
+			bool error_in_fixedsolve = false;
+			try {
+				osi_tminlp.initialSolve();
+				error_in_fixedsolve = !osi_tminlp.isProvenOptimal();
+			} catch (TNLPSolver::UnsolvedError *E) { // there has been a failure to solve a problem with Ipopt
+				char buf[1024];
+				snprintf(buf, 1024, "Error: %s exited with error %s", E->solverName().c_str(), E->errorName().c_str());
+				gevLogStat(gev, buf);
+				error_in_fixedsolve = true;
 			}
-		} else {
-			gevLogStat(gev, "\nBonmin finished. No feasible point found.");
-			gmoSolveStatSet(gmo, minlp->solver_status);
-			gmoModelStatSet(gmo, minlp->model_status);
-			gmoSetHeadnTail(gmo, Hiterused, bb.iterationCount());
-			gmoSetHeadnTail(gmo, Hdomused,  minlp->nlp->domviolations);
-			gmoSetHeadnTail(gmo, Hresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+			int isMin = gmoSense(gmo) == Obj_Min ? 1 : -1;
+			if (!error_in_fixedsolve && fabs(gmoGetHeadnTail(gmo, Hobjval) - isMin*osi_tminlp.getObjValue()) > 1e-4) {
+				gevLog(gev, "Warning: Optimal value of NLP subproblem differ from best MINLP value reported by Bonmin.\n Will not replace solution, dual values will not be available.\n");
+			} else if (!error_in_fixedsolve) {
+				int n = gmoN(gmo);
+				int m = gmoM(gmo);
+
+				const double* lambda = osi_tminlp.getRowPrice();
+				const double* z_L    = lambda+m;
+				const double* z_U    = z_L+n;
+
+				double* colMarg    = new double[n];
+				for (Index i = 0; i < n; ++i) {
+					// if, e.g., x_i has no lower bound, then the dual z_L[i] is -infinity
+					colMarg[i]    = 0;
+					if (z_L[i] > gmoMinf(gmo)) colMarg[i] += isMin*z_L[i];
+					if (z_U[i] < gmoPinf(gmo)) colMarg[i] -= isMin*z_U[i];
+				}
+
+				double* negLambda  = new double[m];
+			  for (Index i = 0;  i < m;  i++)
+			  	negLambda[i] = -isMin*lambda[i];
+
+				gmoSetSolution(gmo, osi_tminlp.getColSolution(), colMarg, negLambda, osi_tminlp.getRowActivity());
+				gmoSetHeadnTail(gmo, Hobjval,  isMin*osi_tminlp.getObjValue());
+				gmoSetHeadnTail(gmo, Hdomused, minlp->nlp->domviolations);
+
+				delete[] colMarg;
+				delete[] negLambda;
+			} else {
+				gevLogStat(gev, "Problems solving fixed problem. Dual variables for NLP subproblem not available.");
+			}
 		}
 
 		gevLogStat(gev, "");
 		char buf[1024];
-		double best_val = gmoSense(gmo) == Obj_Min ? osi_tminlp.getObjValue() : -osi_tminlp.getObjValue();
+		double best_val = gmoGetHeadnTail(gmo, Hobjval);
 		if (bb.bestSolution()) {
-			snprintf(buf, 1024, "MINLP solution: %20.10g   (%d nodes, %g seconds)", best_val, bb.numNodes(), gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+			snprintf(buf, 1024, "MINLP solution: %20.10g   (%d nodes, %g seconds)", best_val, (int)gmoGetHeadnTail(gmo, Tmipnod), gmoGetHeadnTail(gmo, Hresused));
 			gevLogStat(gev, buf);
 		}
 		if (best_bound > -1e200 && best_bound < 1e200) {
@@ -457,64 +488,6 @@ int GamsBonmin::callSolver() {
 	}
 
 	return 0;
-}
-
-void GamsBonmin::writeSolution(OsiTMINLPInterface& osi_tminlp, int itercount) {
-	int n = gmoN(gmo);
-	int m = gmoM(gmo);
-	int isMin = gmoSense(gmo) == Obj_Min ? 1 : -1;
-
-	const double* lambda = osi_tminlp.getRowPrice();
-	const double* z_L    = lambda+m;
-	const double* z_U    = z_L+n;
-
-	double* colMarg    = new double[n];
-	for (Index i = 0; i < n; ++i) {
-		// if, e.g., x_i has no lower bound, then the dual z_L[i] is -infinity
-		colMarg[i]    = 0;
-		if (z_L[i] > gmoMinf(gmo)) colMarg[i] += isMin*z_L[i];
-		if (z_U[i] < gmoPinf(gmo)) colMarg[i] -= isMin*z_U[i];
-	}
-
-	double* negLambda  = new double[m];
-  for (Index i = 0;  i < m;  i++) {
-  	negLambda[i] = -isMin*lambda[i];
-  }
-
-	gmoSetSolution(gmo, osi_tminlp.getColSolution(), colMarg, negLambda, osi_tminlp.getRowActivity());
-	gmoSetHeadnTail(gmo, Hobjval,   isMin*osi_tminlp.getObjValue());
-	gmoSetHeadnTail(gmo, Hiterused, itercount);
-	gmoSetHeadnTail(gmo, Hresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
-	gmoSetHeadnTail(gmo, Hdomused,  minlp->nlp->domviolations);
-
-	gmoModelStatSet(gmo, minlp->model_status);
-	gmoSolveStatSet(gmo, minlp->solver_status);
-
-	delete[] colMarg;
-	delete[] negLambda;
-}
-
-void GamsBonmin::writeSolutionNoDual(OsiTMINLPInterface& osi_tminlp, int itercount) {
-	int n = gmoN(gmo);
-	int m = gmoM(gmo);
-	int isMin = gmoSense(gmo) == Obj_Min ? 1 : -1;
-
-	double* colMarg   = new double[n];
-	double* negLambda = new double[m];
-	memset(colMarg,   0, n*sizeof(double));
-	memset(negLambda, 0, m*sizeof(double));
-
-	gmoSetSolution(gmo, osi_tminlp.getColSolution(), colMarg, negLambda, osi_tminlp.getRowActivity());
-	gmoSetHeadnTail(gmo, Hobjval,   isMin*osi_tminlp.getObjValue());
-	gmoSetHeadnTail(gmo, Hiterused, itercount);
-	gmoSetHeadnTail(gmo, Hresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
-	gmoSetHeadnTail(gmo, Hdomused,  minlp->nlp->domviolations);
-
-	gmoModelStatSet(gmo, minlp->model_status);
-	gmoSolveStatSet(gmo, minlp->solver_status);
-
-	delete[] colMarg;
-	delete[] negLambda;
 }
 
 bool GamsBonmin::isNLP() {
