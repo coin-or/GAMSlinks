@@ -58,7 +58,7 @@ general.(
   mircuts         .b.(def 0)
 * GAMS options
   reslim          .r.(def 1000)
-  iterlim         .i.(def 10000)
+  iterlim         .i.(def 2000000000)
   optcr           .r.(def 0.1)
 *  cutoff          .r.(def 0, lo mindouble)
 * immediates

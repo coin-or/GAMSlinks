@@ -734,9 +734,6 @@ bool GamsOsi::setupParameters() {
 
       // GLPK LP parameters
 
-		  if (!osiglpk->setIntParam(OsiMaxNumIteration, options.getInteger("iterlim")))
-		    gevLogStat(gev, "Failed to set iteration limit for GLPK.");
-
 		  if (!osiglpk->setDblParam(OsiDualTolerance, options.getDouble("tol_dual")))
 		    gevLogStat(gev, "Failed to set dual tolerance for GLPK.");
 

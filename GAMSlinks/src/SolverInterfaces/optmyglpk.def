@@ -39,7 +39,7 @@ cliquecuts boolean 0 1 1 1 clique cuts
 gomorycuts boolean 0 1 1 1 gomorys mixed-integer cuts
 mircuts boolean 0 0 1 1 mixed-integer rounding cuts
 reslim double 0 1000 0 maxdouble 1 1 resource limit
-iterlim integer 0 10000 0 maxint 1 1 iteration limit
+iterlim integer 0 2000000000 0 maxint 1 1 iteration limit
 optcr double 0 0.1 0 maxdouble 1 1 relative stopping tolerance on MIP gap
 nobounds immediate nobounds 0 1 ignores bounds on options
 readfile immediate readfile 0 1 read secondary option file
