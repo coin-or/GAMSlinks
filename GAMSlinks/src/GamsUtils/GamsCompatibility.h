@@ -14,9 +14,9 @@
 #endif
 
 /* value for not available/applicable */
-#if GMOAPIVERSION >= 7
+#if GMOAPIVERSION >= 7 && GMOAPIVERSION <= 8
 #define GMS_SV_NA     gmoValNA(gmo)
-#else
+#elif GMOAPIVERSION < 7
 #define GMS_SV_NA     2.0E300
 #endif
 
