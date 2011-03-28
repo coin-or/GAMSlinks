@@ -640,7 +640,7 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 	SCIP_Real* quadcoefs = NULL;
 	int*    qrow = NULL;
 	int*    qcol = NULL;
-	if (gmoMaxQnz(gmo) || gmoObjQNZ(gmo)) {
+	if (gmoNLNZ(gmo) || gmoObjNLNZ(gmo)) {
 		SCIP_CALL( SCIPallocBufferArray(scip, &quadvars1, gmoMaxQnz(gmo)) );
 		SCIP_CALL( SCIPallocBufferArray(scip, &quadvars2, gmoMaxQnz(gmo)) );
 		SCIP_CALL( SCIPallocBufferArray(scip, &quadcoefs, gmoMaxQnz(gmo)) );
@@ -1224,10 +1224,6 @@ bool GamsScip::isLP() {
 	if (gmoNLNZ(gmo))
 		return false;
 	if (gmoObjNLNZ(gmo))
-		return false;
-	if (gmoObjQNZ(gmo))
-		return false;
-	if (gmoMaxQnz(gmo))
 		return false;
 	int numSos1, numSos2, nzSos;
 	gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);
