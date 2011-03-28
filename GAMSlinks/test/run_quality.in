@@ -65,8 +65,10 @@ if test @gamslinks_build_glpk@ = 1 ; then
   skiplist="$skiplist skip('MyOsiGlpk','sl4sos1a')=yes;"
   skiplist="$skiplist skip('MyOsiGlpk','semicon1')=yes;"
   skiplist="$skiplist skip('MyOsiGlpk','sl4scon1')=yes;"
+  skiplist="$skiplist skip('MyOsiGlpk','mip02')=yes;"
+  skiplist="$skiplist skip('MyOsiGlpk','mip03')=yes;"
   testlist[${#testlist[@]}]="--solver myosiglpk --suite lp"
-  testlist[${#testlist[@]}]="--solver myosiglpk --suite mip user1=rmip=myosiglpk"
+  testlist[${#testlist[@]}]="--solver myosiglpk --suite mip user1=\"--MIPMCHECKS=0 rmip=myosiglpk\""
 
   #from GAMS 22.7 on, slvstdskip has been renamed to slvstdoutskip
   if grep -q slvstdskip quality.gms ; then
@@ -114,6 +116,7 @@ if test @gamslinks_build_scip@ = 1 ; then
   skiplist="$skiplist skip('MyScip','sl4lp03')=yes;"
   skiplist="$skiplist skip('MyScip','semicon1')=yes;"
   skiplist="$skiplist skip('MyScip','sl4scon1')=yes;"
+  skiplist="$skiplist skip('MyScip','mip02')=yes;"
   #skiplist="$skiplist skip('MyScip','qcp02')=yes;"
   testlist[${#testlist[@]}]="--solver myscip --suite lp"
   testlist[${#testlist[@]}]="--solver myscip --suite mip user1=\"--MIPMCHECKS=0 rmip=myscip\""
