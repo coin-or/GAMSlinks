@@ -634,10 +634,11 @@ bool GamsOsi::setupStartingPoint() {
 		if ((solverid != GUROBI && solverid != MOSEK) || nbas == gmoM(gmo)) {
 			if (!osi->setWarmStart(&basis)) {
 				gevLogStat(gev, "Failed to set initial basis. Exiting ...");
+				gmoHaveBasisSet(gmo, 0);
 				delete[] varlevel;
 				delete[] rowprice;
 				return false;
-			} else if (solverid == GUROBI ) {
+			} else if (solverid == GUROBI || solverid == GLPK) {
 				gevLog(gev, "Registered advanced basis. This turns off presolve!");
 				gevLog(gev, "In case of poor performance consider turning off advanced basis registration via GAMS option BRatio=1.");
 			} else {
@@ -645,10 +646,12 @@ bool GamsOsi::setupStartingPoint() {
 			}
 		} else {
 			gevLog(gev, "Did not attempt to register incomplete basis.\n");
+         gmoHaveBasisSet(gmo, 0);
 		}
 	} catch (CoinError error) {
 		gevLogStatPChar(gev, "Exception caught when setting initial basis: ");
 		gevLogStat(gev, error.message().c_str());
+      gmoHaveBasisSet(gmo, 0);
 		delete[] varlevel;
 		delete[] rowprice;
 		return false;
@@ -755,7 +758,11 @@ bool GamsOsi::setupParameters() {
 		  options.getString("startalg", buffer);
 		  osiglpk->setHintParam(OsiDoDualInInitial, (strcmp(buffer, "dual")==0), OsiForceDo);
 
-		  osiglpk->setHintParam(OsiDoPresolveInInitial, options.getBool("presolve"), OsiForceDo);
+		  /* if a user basis was set, then disable presolve, otherwise it is discarded */
+		  if( !gmoHaveBasis(gmo) )
+		     osiglpk->setHintParam(OsiDoPresolveInInitial, options.getBool("presolve"), OsiForceDo);
+		  else
+		     osiglpk->setHintParam(OsiDoPresolveInInitial, false, OsiForceDo);
 
 		  options.getString("pricing", buffer);
 		  if (strcmp(buffer, "textbook")==0)
