@@ -38,6 +38,7 @@ private:
    SCIP*               scip;
    SCIP_MESSAGEHDLR*   scipmsghandler;
    SCIP_VAR**          vars;
+   SCIP_VAR*           objvar;
 
    SCIP_LPI*           lpi;
    std::ostringstream  spxoutput;

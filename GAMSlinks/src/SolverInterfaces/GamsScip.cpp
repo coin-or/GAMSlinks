@@ -76,7 +76,7 @@ SCIP_DECL_MESSAGEINFO(GamsScipPrintInfoOrDialog) {
 }
 
 GamsScip::GamsScip()
-: gmo(NULL), gev(NULL), isDemo(false), gamsmsghandler(NULL), scip(NULL), scipmsghandler(NULL), vars(NULL), lpi(NULL)
+: gmo(NULL), gev(NULL), isDemo(false), gamsmsghandler(NULL), scip(NULL), scipmsghandler(NULL), vars(NULL), objvar(NULL), lpi(NULL)
 {
   sprintf(scip_message, "SCIP version %d.%d.%d.%d [LP solver: %s]\n%s\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion(), SCIPsubversion(), SCIPlpiGetSolverName(), SCIP_COPYRIGHT);
 }
@@ -289,6 +289,8 @@ SCIP_RETCODE GamsScip::freeSCIP() {
 #endif
          delete[] vars;
       }
+      if( objvar != NULL )
+      	SCIP_CALL( SCIPreleaseVar(scip, &objvar) );
       SCIP_CALL( SCIPfree(&scip) );
    }
 
@@ -514,6 +516,7 @@ SCIP_RETCODE GamsScip::setupSCIPParameters() {
 SCIP_RETCODE GamsScip::setupMIQCP() {
 	assert(scip != NULL);
 	assert(vars == NULL);
+	assert(objvar == NULL);
 
 	char buffer[256];
 
@@ -740,7 +743,6 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 
 	// TODO if there was cancelation (e.g., qcp04), then it could actually be a linear objective, which is indicated by gmoGetObjOrder(gmo) == order_L
 	if (gmoObjNLNZ(gmo)) { // make constraint to represent objective function
-		SCIP_VAR* objvar = NULL;
 		int nz, /*nlnz,*/ qnz, qdiagnz;
 		double lhs, rhs;
 		if (gmoGetObjOrder(gmo) != order_L && gmoGetObjOrder(gmo) != order_Q) {
@@ -802,8 +804,6 @@ SCIP_RETCODE GamsScip::setupMIQCP() {
 				TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
 		SCIP_CALL( SCIPaddCons(scip, con) );
 		SCIP_CALL( SCIPreleaseCons(scip, &con) );
-
-		SCIP_CALL( SCIPreleaseVar(scip, &objvar) );
 
 	} else if (!SCIPisZero(scip, gmoObjConst(gmo))) {
 		SCIP_VAR* objconst;
@@ -1014,11 +1014,20 @@ SCIP_RETCODE GamsScip::setupStartPoint() {
 	gmoGetVarL(gmo, vals);
 
 	SCIP_CALL( SCIPsetSolVals(scip, sol, gmoN(gmo), vars, vals) );
+	if( objvar != NULL )
+	{
+		double objval;
+		int numErr;
+		gmoEvalObjFunc(gmo, vals, &objval, &numErr);
+		if( numErr == 0 )
+			SCIP_CALL( SCIPsetSolVal(scip, sol, objvar, objval) );
+	}
 
 	SCIPfreeBufferArray(scip, &vals);
+	gmoSetHeadnTail(gmo, Hobjval, SCIPgetSolOrigObj(scip, sol));
 
 	SCIP_Bool stored;
-	SCIP_CALL( SCIPtrySolFree(scip, &sol, FALSE, TRUE, TRUE, TRUE, &stored) );
+	SCIP_CALL( SCIPtrySolFree(scip, &sol, TRUE, TRUE, TRUE, TRUE, &stored) );
 
 	if (stored)
 		gevLog(gev, "Feasible initial solution used to initialize primal bound.");
