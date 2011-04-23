@@ -1027,7 +1027,7 @@ SCIP_RETCODE GamsScip::setupStartPoint() {
 	gmoSetHeadnTail(gmo, Hobjval, SCIPgetSolOrigObj(scip, sol));
 
 	SCIP_Bool stored;
-	SCIP_CALL( SCIPtrySolFree(scip, &sol, TRUE, TRUE, TRUE, TRUE, &stored) );
+	SCIP_CALL( SCIPtrySolFree(scip, &sol, FALSE, TRUE, TRUE, TRUE, &stored) );
 
 	if (stored)
 		gevLog(gev, "Feasible initial solution used to initialize primal bound.");
