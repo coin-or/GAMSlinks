@@ -28099,10 +28099,11 @@ fi
 
 
 
-GAMS_VERSION="23.6"
+GAMS_VERSION_DEFAULT="23.6"
 if test "$GAMS_PATH" = UNAVAILABLE; then
   { echo "$as_me:$LINENO: no GAMS system found, tests will not work, assuming build for GAMS version $GAMS_VERSION" >&5
 echo "$as_me: no GAMS system found, tests will not work, assuming build for GAMS version $GAMS_VERSION" >&6;}
+  GAMS_VERSION="$GAMS_VERSION_DEFAULT"
 else
   echo "$as_me:$LINENO: checking for gams version number" >&5
 echo $ECHO_N "checking for gams version number... $ECHO_C" >&6
@@ -28112,6 +28113,7 @@ echo $ECHO_N "checking for gams version number... $ECHO_C" >&6
     echo "$as_me:$LINENO: result: $GAMS_VERSION" >&5
 echo "${ECHO_T}$GAMS_VERSION" >&6
   else
+    GAMS_VERSION="$GAMS_VERSION_DEFAULT"
     echo "$as_me:$LINENO: result: unknown, assuming version $GAMS_VERSION" >&5
 echo "${ECHO_T}unknown, assuming version $GAMS_VERSION" >&6
   fi
