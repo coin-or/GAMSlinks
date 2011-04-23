@@ -28,6 +28,7 @@
 
 #if GMOAPIVERSION > 8
 #define gmoWantQSet gmoUseQSet
+#define gmoEvalObjFunc gmoEvalFuncObj
 
 #define equ_E gmoequ_E
 #define equ_G gmoequ_G
