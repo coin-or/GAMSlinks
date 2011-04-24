@@ -181,6 +181,33 @@ endif
   EXTRA_DIST       += gmszmknt.cmd gmszmkus.run install/gmszmknt.dat install/gmszmkun.dat
 endif
 
+if COIN_HAS_SPX
+  libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiSpx/libOsiSpx.la
+  libGamsCoin_la_CPPFLAGS += -I`$(CYGPATH_W) $(OSISRCDIR)/src/OsiSpx` -I`$(CYGPATH_W) $(SPXINCDIR)`
+
+if GAMSIO_IS_UNIX
+  noinst_PROGRAMS      += gmszspux.out
+  gmszspux_out_SOURCES  = gmsmain.cpp
+  gmszspux_out_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiSoplex\" -DCREATEFUNCNAME=createNewGamsOsiSoplex
+  gmszspux_out_LDADD    = $(GMSXXX_LDADD)
+  gmszspux_out_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmszspux_out_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles     += gmszspux.out gmszspus.run install/gmszspun.dat
+endif
+
+if GAMSIO_IS_WINDOWS
+  noinst_PROGRAMS  += gmszmknx
+  gmszmknx_SOURCES  = gmsmain.cpp
+  gmszmknx_CPPFLAGS = $(GMSXXX_CPPFLAGS) -DSOLVERNAME=\"OsiMosek\" -DCREATEFUNCNAME=createNewGamsOsiMosek
+  gmszmknx_LDADD    = $(GMSXXX_LDADD)
+  gmszmknx_LDFLAGS  = $(GMSXXX_LDFLAGS)
+  gmszmknx_DEPENDENCIES = libGamsCoin.la
+  gamsinstallfiles += gmszmknx.exe gmszmknt.cmd install/gmszmknt.dat
+endif
+
+  EXTRA_DIST       += gmszmknt.cmd gmszmkus.run install/gmszmknt.dat install/gmszmkun.dat
+endif
+
 if COIN_HAS_XPR
   libGamsCoin_la_LIBADD   += $(OSIOBJDIR)/src/OsiXpr/libOsiXpr.la 
 #  libGamsCoin_la_LDFLAGS  += $(XPRLIB)

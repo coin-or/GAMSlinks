@@ -42,7 +42,7 @@ coin_soplexsrcdir=$abs_source_dir/$coin_soplexobjdir
 # Check for the requested component. If the user specified an external SOPLEX
 # library don't force a ThirdParty build, let the error propagate.
 # this macro defined SOPLEXLIB, SOPLEXINCDIR.
-AC_COIN_HAS_USER_LIBRARY([Soplex],[SOPLEX],[soplex/src/soplex.h])
+AC_COIN_HAS_USER_LIBRARY([Soplex],[SOPLEX],[soplex.h])
 
 # If the user has supplied an external library (coin_has_soplex=true), use it.
 # Otherwise, we consider a build in ThirdParty/SoPlex.

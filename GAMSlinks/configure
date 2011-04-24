@@ -26716,12 +26716,12 @@ echo "${ECHO_T}no" >&6
 # If argument 3 (file) is given, check for the file. Typically this will be a
 # header file, but that's not assumed.
 
-    if test -r $SOPLEXINCDIR/soplex/src/soplex.h; then
+    if test -r $SOPLEXINCDIR/soplex.h; then
 
   :
 else
-  { { echo "$as_me:$LINENO: error: Cannot find file soplex/src/soplex.h in $SOPLEXINCDIR" >&5
-echo "$as_me: error: Cannot find file soplex/src/soplex.h in $SOPLEXINCDIR" >&2;}
+  { { echo "$as_me:$LINENO: error: Cannot find file soplex.h in $SOPLEXINCDIR" >&5
+echo "$as_me: error: Cannot find file soplex.h in $SOPLEXINCDIR" >&2;}
    { (exit 1); exit 1; }; }
   :
 fi
@@ -28712,6 +28712,26 @@ fi
 
 if test $coin_vpath_config = yes; then
   coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/install/gmszmknt.dat"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/gmszspus.run"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/gmszspnt.cmd"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/install/gmszspun.dat"
+fi
+
+
+if test $coin_vpath_config = yes; then
+  coin_vpath_link_files="$coin_vpath_link_files src/SolverInterfaces/install/gmszspnt.dat"
 fi
 
 

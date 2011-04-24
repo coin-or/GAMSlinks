@@ -13,12 +13,14 @@
 #include "GamsSolver.hpp"
 #include "GamsOptions.hpp"
 
+#include <sstream>
+
 class GamsMessageHandler;
 class OsiSolverInterface;
 
 class GamsOsi : public GamsSolver {
 public:
-	typedef enum { CBC, CPLEX, GLPK, GUROBI, MOSEK, XPRESS } OSISOLVER;
+	typedef enum { CBC, CPLEX, GLPK, GUROBI, MOSEK, SOPLEX, XPRESS } OSISOLVER;
 private:
 	struct gmoRec* gmo;
 	struct gevRec* gev;
@@ -28,6 +30,7 @@ private:
 	GamsMessageHandler* msghandler;
 	OsiSolverInterface* osi;
 	OSISOLVER           solverid;
+  std::ostringstream  spxoutput;
 
 	char osi_message[200];
 
@@ -62,6 +65,8 @@ extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiGlpk();
 extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiGurobi();
 
 extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiMosek();
+
+extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiSoplex();
 
 extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiXpress();
 

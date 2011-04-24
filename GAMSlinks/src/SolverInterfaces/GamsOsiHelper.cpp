@@ -29,17 +29,6 @@
 
 bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 	struct gevRec* gev = (gevRec*)gmoEnvironment(gmo);
-	switch (gmoSense(gmo)) {
-		case Obj_Min:
-			solver.setObjSense(1.0);
-			break;
-		case Obj_Max:
-			solver.setObjSense(-1.0);
-			break;
-		default:
-			gevLogStat(gev, "Error: Unsupported objective sense.");
-			return false;
-	}
 
 	// objective
 	double* objcoeff = new double[gmoN(gmo)];
@@ -129,6 +118,19 @@ bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
 	delete[] rowsense;
 	delete[] rhs;
 	delete[] rowrng;
+
+	// objective sense
+	switch (gmoSense(gmo)) {
+		case Obj_Min:
+			solver.setObjSense(1.0);
+			break;
+		case Obj_Max:
+			solver.setObjSense(-1.0);
+			break;
+		default:
+			gevLogStat(gev, "Error: Unsupported objective sense.");
+			return false;
+	}
 
 	// tell solver which variables are discrete
 	if (gmoNDisc(gmo)) {

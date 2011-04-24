@@ -10,8 +10,9 @@
 #include "GamsOsiCplex.h"
 #include "GamsOsiGlpk.h"
 #include "GamsOsiGurobi.h"
-#include "GamsOsiXpress.h"
 #include "GamsOsiMosek.h"
+#include "GamsOsiSoplex.h"
+#include "GamsOsiXpress.h"
 
 #ifdef HAVE_CSTDLIB
 #include <cstdlib>
@@ -72,14 +73,21 @@ extern "C" {
 #include "gurobi_c.h" // to get version numbers
 }
 #endif
+#ifdef COIN_HAS_MSK
+#include "OsiMskSolverInterface.hpp"
+#include "mosek.h"
+#endif
+#ifdef COIN_HAS_SPX
+#include "OsiSpxSolverInterface.hpp"
+#include "spxout.h"  // for passing in output stringstream
+#ifndef SOPLEX_SUBVERSION
+#define SOPLEX_SUBVERSION 0
+#endif
+#endif
 #ifdef COIN_HAS_XPR
 #include "OsiXprSolverInterface.hpp"
 #include "xprs.h"
 extern "C" void STDCALL XPRScommand(XPRSprob, char*);
-#endif
-#ifdef COIN_HAS_MSK
-#include "OsiMskSolverInterface.hpp"
-#include "mosek.h"
 #endif
 
 static int glpkprint(void* info, const char* msg) {
@@ -170,6 +178,12 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 			break;
 #endif
 
+#ifdef COIN_HAS_SPX
+		case SOPLEX:
+			sprintf(osi_message, "OsiSoplex (Osi library trunk, SoPlex library %d.%d.%d.%d)\nOsi link written by T. Achterberg, A. Gleixner, and W. Huang. Osi is part of COIN-OR.\n", SOPLEX_VERSION/100, (SOPLEX_VERSION%100)/10, SOPLEX_VERSION%10, SOPLEX_SUBVERSION);
+			break;
+#endif
+
 #ifdef COIN_HAS_XPR
 		case XPRESS:
 			sprintf(osi_message, "OsiXpress (Osi library 0.102, FICO Xpress-Optimizer library %d)\nOsi is part of COIN-OR.\n", XPVERSION);
@@ -185,6 +199,19 @@ GamsOsi::GamsOsi(GamsOsi::OSISOLVER solverid_)
 GamsOsi::~GamsOsi() {
 	delete osi;
 	delete msghandler;
+
+#ifdef COIN_HAS_SPX
+	if (solverid == SOPLEX)
+	{
+		soplex::spxout.setStream(soplex::SPxOut::ERROR, std::cerr);
+		soplex::spxout.setStream(soplex::SPxOut::WARNING, std::cerr);
+		soplex::spxout.setStream(soplex::SPxOut::INFO1, std::cout);
+		soplex::spxout.setStream(soplex::SPxOut::INFO2, std::cout);
+		soplex::spxout.setStream(soplex::SPxOut::INFO3, std::cout);
+		soplex::spxout.setStream(soplex::SPxOut::DEBUG, std::cout);
+		soplex::Param::setVerbose(soplex::SPxOut::ERROR);
+	}
+#endif
 }
 
 int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
@@ -205,6 +232,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 	gev = (gevRec*)gmoEnvironment(gmo);
 
+#if 0
 #ifdef GAMS_BUILD
 	switch( solverid )
 	{
@@ -228,6 +256,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	gevLogStat(gev, "");
 	gevLogStat(gev, buffer);
 	gevStatAudit(gev, buffer);
+#endif
 #endif
 
 	gevLogStat(gev, "");
@@ -347,6 +376,37 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #endif
 			} break;
 
+			case SOPLEX: {
+#ifdef COIN_HAS_SPX
+#ifdef GAMS_BUILD
+#define GEVPTR gev
+/* bad bad bad */
+#undef SUB_FR
+#define SUB_SC
+#include "cmagic2.h"
+				if (licenseCheck(gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo))) {
+					// model larger than demo and no solver-specific license; check if we have an academic license
+					int isAcademic = 0;
+					licenseQueryOption("GAMS", "ACADEMIC", &isAcademic);
+					if (!isAcademic) {
+						char msg[256];
+						while (licenseGetMessage(msg, sizeof(msg)))
+							gevLogStat(gev, msg);
+						gevLogStat(gev, "*** Use of SOPLEX is limited to academic users.");
+						gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");
+						gmoSolveStatSet(gmo, SolveStat_License);
+						gmoModelStatSet(gmo, ModelStat_LicenseError);
+						return 1;
+					}
+				}
+#endif
+				osi = new OsiSpxSolverInterface();
+#else
+				gevLogStat(gev, "GamsOsi compiled without Osi/Soplex interface.\n");
+				return 1;
+#endif
+			} break;
+
 			case XPRESS: {
 #ifdef COIN_HAS_XPR
             char msg[1024];
@@ -431,6 +491,37 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	}
 #endif
 
+#ifdef COIN_HAS_MSK
+	if (solverid == MOSEK) {
+		OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
+		assert(osimsk != NULL);
+
+		MSK_putcallbackfunc(osimsk->getLpPtr(), mskcallback, (void*)gev);
+	}
+#endif
+
+#ifdef COIN_HAS_SPX
+  if (solverid == SOPLEX) {
+		OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
+		assert(osispx != NULL);
+
+		soplex::Param::setVerbose(soplex::SPxOut::INFO1);
+		if (gevGetIntOpt(gev, gevLogOption) == 0) {
+			soplex::Param::setVerbose(soplex::SPxOut::ERROR);
+		} else if (gevGetIntOpt(gev, gevLogOption) == 2) {
+			spxoutput.str(std::string());
+			spxoutput.clear();
+			soplex::spxout.setStream(soplex::SPxOut::ERROR, spxoutput);
+			soplex::spxout.setStream(soplex::SPxOut::WARNING, spxoutput);
+			soplex::spxout.setStream(soplex::SPxOut::INFO1, spxoutput);
+			soplex::spxout.setStream(soplex::SPxOut::INFO2, spxoutput);
+			soplex::spxout.setStream(soplex::SPxOut::INFO3, spxoutput);
+			soplex::spxout.setStream(soplex::SPxOut::DEBUG, spxoutput);
+		}
+
+  }
+#endif
+
 #ifdef COIN_HAS_XPR
 	if (solverid == XPRESS) {
 		OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
@@ -438,15 +529,6 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 	  XPRSsetcbgloballog(osixpr->getLpPtr(), xprcallback, (void*)gev);
 	  XPRSsetcblplog(osixpr->getLpPtr(), xprcallback, (void*)gev);
-	}
-#endif
-
-#ifdef COIN_HAS_MSK
-	if (solverid == MOSEK) {
-		OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
-		assert(osimsk != NULL);
-
-		MSK_putcallbackfunc(osimsk->getLpPtr(), mskcallback, (void*)gev);
 	}
 #endif
 
@@ -474,7 +556,10 @@ int GamsOsi::callSolver() {
   	gmoNameInput(gmo, buffer);
   	//gevLogPChar(gev, "Writing MPS file ");
   	//gevLog(gev, buffer);
-  	osi->writeMps(buffer);
+  	if (gevGetIntOpt(gev, gevInteger3) & 0x1)
+  		osi->writeMps(buffer);
+  	if (gevGetIntOpt(gev, gevInteger3) & 0x2)
+  		osi->writeLp(buffer);
   }
 
 	double start_cputime  = CoinCpuTime();
@@ -492,6 +577,12 @@ int GamsOsi::callSolver() {
 
 	double end_cputime  = CoinCpuTime();
 	double end_walltime = CoinWallclockTime();
+
+	if( solverid == SOPLEX ) {
+		gevLogPChar(gev, spxoutput.str().c_str());
+		spxoutput.str(std::string());
+		spxoutput.clear();
+	}
 
 	gevLogStat(gev, "");
 	bool solwritten;
@@ -511,6 +602,13 @@ int GamsOsi::callSolver() {
 bool GamsOsi::setupProblem(OsiSolverInterface& solver) {
 	if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI) || gmoGetVarTypeCnt(gmo, var_S1) || gmoGetVarTypeCnt(gmo, var_S2)) {
 		gevLogStat(gev, "SOS, semicontinuous, and semiinteger variables not supported by OSI. Aborting...\n");
+		gmoSolveStatSet(gmo, SolveStat_Capability);
+		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+		return false;
+	}
+
+	if (solverid == SOPLEX && !isLP()) {
+		gevLogStat(gev, "Binary and integer variables not supported by SoPlex. Aborting...\n");
 		gmoSolveStatSet(gmo, SolveStat_Capability);
 		gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
 		return false;
@@ -607,7 +705,7 @@ bool GamsOsi::setupStartingPoint() {
 					basis.setArtifStatus(j, CoinWarmStartBasis::basic);
 					++nbas;
 				} else
-					basis.setArtifStatus(j, gmoGetEquTypeOne(gmo, j) == equ_G ? CoinWarmStartBasis::atLowerBound : CoinWarmStartBasis::atUpperBound);
+					basis.setArtifStatus(j, gmoGetEquTypeOne(gmo, j) == equ_G ? CoinWarmStartBasis::atUpperBound : CoinWarmStartBasis::atLowerBound);
 				break;
 #if GMOAPIVERSION >= 8
 			case Bstat_Lower:
@@ -616,7 +714,7 @@ bool GamsOsi::setupStartingPoint() {
 #else
 			case 1:
 #endif
-				basis.setArtifStatus(j, gmoGetEquTypeOne(gmo, j) == equ_G ? CoinWarmStartBasis::atLowerBound : CoinWarmStartBasis::atUpperBound);
+				basis.setArtifStatus(j, gmoGetEquTypeOne(gmo, j) == equ_G ? CoinWarmStartBasis::atUpperBound : CoinWarmStartBasis::atLowerBound);
 				break;
 			default:
 				gevLogStat(gev, "Error: invalid basis indicator for row.");
@@ -631,7 +729,7 @@ bool GamsOsi::setupStartingPoint() {
 			osi->setColSolution(varlevel);
 			osi->setRowPrice(rowprice);
 		}
-		if ((solverid != GUROBI && solverid != MOSEK) || nbas == gmoM(gmo)) {
+		if ((solverid != GUROBI && solverid != MOSEK && solverid != SOPLEX) || nbas == gmoM(gmo)) {
 			if (!osi->setWarmStart(&basis)) {
 				gevLogStat(gev, "Failed to set initial basis. Exiting ...");
 				gmoHaveBasisSet(gmo, 0);
@@ -646,7 +744,7 @@ bool GamsOsi::setupStartingPoint() {
 			}
 		} else {
 			gevLog(gev, "Did not attempt to register incomplete basis.\n");
-         gmoHaveBasisSet(gmo, 0);
+			gmoHaveBasisSet(gmo, 0);
 		}
 	} catch (CoinError error) {
 		gevLogStatPChar(gev, "Exception caught when setting initial basis: ");
@@ -867,6 +965,15 @@ bool GamsOsi::setupParameters() {
 
 			break;
 		}
+#endif
+
+#ifdef COIN_HAS_SPX
+		case SOPLEX: {
+			OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
+			assert(osispx != NULL);
+
+			osispx->setTimeLimit(reslim);
+		} break;
 #endif
 
 #ifdef COIN_HAS_XPR
@@ -1549,6 +1656,22 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 		}
 #endif
 
+#ifdef COIN_HAS_SPX
+		case SOPLEX: {
+			OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
+			assert(osispx);
+
+			if (osispx->isTimeLimitReached()) {
+				gmoSolveStatSet(gmo, SolveStat_Resource);
+				gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+				gevLogStat(gev, "Timelimit reached.");
+				break;
+			}
+
+			/* for all other cases, continue as in default */
+		}
+#endif
+
 		default:
 			try {
 				gevLogStat(gev, "");
@@ -1721,7 +1844,7 @@ bool GamsOsi::solveFixed() {
 	#endif
 
 			default:
-				gevLogStat(gev, "Encountered unsupported solver id in setupParameters.");
+				gevLogStat(gev, "Encountered unsupported solver id in solveFixed.");
 				return false;
 		}
 	}
@@ -1771,6 +1894,10 @@ DllExport GamsOsi* STDCALL createNewGamsOsiMosek() {
 	return new GamsOsi(GamsOsi::MOSEK);
 }
 
+DllExport GamsOsi* STDCALL createNewGamsOsiSoplex() {
+	return new GamsOsi(GamsOsi::SOPLEX);
+}
+
 DllExport GamsOsi* STDCALL createNewGamsOsiXpress() {
 	return new GamsOsi(GamsOsi::XPRESS);
 }
@@ -1818,5 +1945,6 @@ DllExport GamsOsi* STDCALL createNewGamsOsiXpress() {
 osi_C_interface(ocp, GamsOsi::CPLEX)
 osi_C_interface(ogl, GamsOsi::GLPK)
 osi_C_interface(ogu, GamsOsi::GUROBI)
-osi_C_interface(oxp, GamsOsi::XPRESS)
 osi_C_interface(omk, GamsOsi::MOSEK)
+osi_C_interface(osp, GamsOsi::SOPLEX)
+osi_C_interface(oxp, GamsOsi::XPRESS)
