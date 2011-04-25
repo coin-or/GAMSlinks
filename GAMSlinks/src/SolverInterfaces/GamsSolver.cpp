@@ -37,6 +37,10 @@
 
 #include "GamsCompatibility.h"
 
+#ifdef BLAS_IS_GOTOBLAS
+extern "C" void goto_set_num_threads(int);
+#endif
+
 GamsSolver::~GamsSolver() {
 	if (need_unload_gmo) {
 		assert(gmoLibraryLoaded());
@@ -133,5 +137,12 @@ bool GamsSolver::registerGamsCplexLicense(struct gmoRec* gmo) {
   return true;
 #else
   return true;
+#endif
+}
+
+/** Sets number of threads to use in GotoBlas. */
+void GamsSolver::setNumThreadsGotoBlas(int nthreads) {
+#ifdef BLAS_IS_GOTOBLAS
+	goto_set_num_threads(nthreads);
 #endif
 }

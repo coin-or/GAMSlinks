@@ -338,6 +338,8 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return -1;
 	}
 
+	setNumThreadsGotoBlas(gevThreads(gev));
+
  	return 0;
 }
 

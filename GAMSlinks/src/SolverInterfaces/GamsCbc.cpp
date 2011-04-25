@@ -1116,15 +1116,20 @@ bool GamsCbc::setupParameters() {
 #else
 		gevLogStat(gev, "Warning: CBC has not been compiled with multithreading support. Option threads ignored.");
 #endif
-#if GEVAPIVERSION >= 4
 	} else if (gevThreads(gev) > 1) {
 #ifdef CBC_THREAD
 		par_list.push_back("-threads");
 		sprintf(buffer, "%d", gevThreads(gev));
 		par_list.push_back(buffer);
 #endif
-#endif
 	}
+
+#ifdef CBC_THREAD
+	// if Cbc may do multithreading, then we do not want to do blas going into multithreading too
+	setNumThreadsGotoBlas(1);
+#else
+	setNumThreadsGotoBlas(gevThreads(gev));
+#endif
 
 	// special options set by user and passed unseen to CBC
 	if (options.isDefined("special")) {

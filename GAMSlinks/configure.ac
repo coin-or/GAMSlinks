@@ -184,6 +184,20 @@ AC_ARG_ENABLE([cbc-parallel],,
   AC_DEFINE([CBC_THREAD],[1],[Define to 1 if the SMP version of CBC is compiled])
 )
 
+########################
+# GOTOBLAS recognition #
+########################
+
+LIBS_save="$LIBS"
+ADDLIBS_save="$ADDLIBS"
+LIBS="$BLAS_LIBS $LIBS"
+AC_COIN_HAS_BLAS
+AC_CHECK_FUNC([goto_set_num_threads],
+  AC_DEFINE([BLAS_IS_GOTOBLAS],[1],[Define to 1 if the Blas library is GotoBlas])
+)
+LIBS="$LIBS_save"
+ADDLIBS="$ADDLIBS_save"
+
 #################################
 # LP/MIP Solvers for Gams/OSI   #
 #################################

@@ -239,6 +239,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
  	gmoPinfSet(gmo, ipoptinf);
 
 // 	printOptions();
+	setNumThreadsGotoBlas(gevThreads(gev));
 
  	return 0;
 }

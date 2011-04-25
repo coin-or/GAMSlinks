@@ -47,6 +47,9 @@ public:
 	 */
 	bool registerGamsCplexLicense(struct gmoRec* gmo);
 
+	/** Sets number of threads to use in GotoBlas. */
+	void setNumThreadsGotoBlas(int nthreads);
+
 	/** Initialization of solver interface and solver.
 	 * Loads problem into solver.
 	 */
