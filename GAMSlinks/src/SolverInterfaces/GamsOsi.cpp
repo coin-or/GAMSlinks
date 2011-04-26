@@ -249,7 +249,7 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #include "coinlibdCL9svn.h"
 			break;
 		case SOPLEX:
-			auditSetLineLib("OsiSoplex auditline not setup yet");
+#include "coinlibdCLBsvn.h"
 			break;
 		case XPRESS:
 #include "coinlibdCLAsvn.h"
