@@ -55,12 +55,23 @@ GamsNLP::GamsNLP (gmoHandle_t gmo_)
   assert(gev);
 
   domviollimit = gevGetIntOpt(gev, gevDomLim);
+
+  reset_eval_counter();
 }
 
 GamsNLP::~GamsNLP() {
   delete[] iRowStart;
   delete[] jCol;
   delete[] grad;
+}
+
+void GamsNLP::reset_eval_counter() {
+  nevalobj      = 0;
+  nevalobjgrad  = 0;
+  nevalcons     = 0;
+  nevalconsjac  = 0;
+  nevallaghess  = 0;
+  nevalnewpoint = 0;
 }
 
 bool GamsNLP::get_nlp_info(Index& n, Index& m, Index& jac_nnz, Index& nnz_h_lag, TNLP::IndexStyleEnum &index_style) {
@@ -273,8 +284,11 @@ bool GamsNLP::get_list_of_nonlinear_variables(Ipopt::Index num_nonlin_vars, Ipop
 bool GamsNLP::eval_f(Index n, const Number* x, bool new_x, Number& obj_value) {
   assert(n == gmoN(gmo));
 
-  if (new_x)
+  if (new_x) {
     gmoEvalNewPoint(gmo, x);
+    ++nevalnewpoint;
+  }
+
   int nerror;
   int rc;
 #if GMOAPIVERSION >= 9
@@ -303,14 +317,18 @@ bool GamsNLP::eval_f(Index n, const Number* x, bool new_x, Number& obj_value) {
     return false;
   }
 
+  ++nevalobj;
+
   return true;
 }
 
 bool GamsNLP::eval_grad_f (Index n, const Number* x, bool new_x, Number* grad_f) {
   assert(n == gmoN(gmo));
 
-  if (new_x)
+  if (new_x) {
     gmoEvalNewPoint(gmo, x);
+    ++nevalnewpoint;
+  }
 
   memset(grad_f, 0, n*sizeof(double));
   double val;
@@ -343,6 +361,8 @@ bool GamsNLP::eval_grad_f (Index n, const Number* x, bool new_x, Number* grad_f)
     return false;
   }
 
+  ++nevalobjgrad;
+
   return true;
 }
 
@@ -350,8 +370,10 @@ bool GamsNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
   assert(n == gmoN(gmo));
   assert(m == gmoM(gmo));
 
-  if (new_x)
+  if (new_x) {
     gmoEvalNewPoint(gmo, x);
+    ++nevalnewpoint;
+  }
 
   int nerror, rc;
   for (int i = 0; i < m; ++i) {
@@ -376,6 +398,8 @@ bool GamsNLP::eval_g(Index n, const Number *x, bool new_x, Index m, Number *g) {
       return false;
     }
   }
+
+    ++nevalcons;
 
   return true;
 } // GamsNLP::eval_g
@@ -417,8 +441,10 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
     assert(NULL != this->jCol);
     assert(NULL != grad);
 
-    if (new_x)
+    if (new_x) {
+      ++nevalnewpoint;
       gmoEvalNewPoint(gmo, x);
+    }
 
     double val;
     double gx;
@@ -456,6 +482,8 @@ bool GamsNLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index n
 //      	values[k] = grad[this->jCol[k]];
     }
     assert(k == nele_jac);
+
+    ++nevalconsjac;
   }
 
   return true;
@@ -474,15 +502,16 @@ bool GamsNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor, In
 
     gmoHessLagStruct(gmo, iRow, jCol);
 
-  }
-  else { // return the values. This is a symmetric matrix, fill the lower left triangle only.
+  } else { // return the values. This is a symmetric matrix, fill the lower left triangle only.
     assert(NULL != x);
     assert(NULL != lambda);
     assert(NULL == iRow);
     assert(NULL == jCol);
 
-    if (new_x)
+    if (new_x) {
+      ++nevalnewpoint;
       gmoEvalNewPoint(gmo, x);
+    }
 
     // for GAMS lambda would need to be multiplied by -1, we do this via the constraint weight
     int nerror;
@@ -503,6 +532,8 @@ bool GamsNLP::eval_h(Index n, const Number *x, bool new_x, Number obj_factor, In
       ++domviolations;
       return false;
     }
+
+    ++nevallaghess;
   }
 
   return true;

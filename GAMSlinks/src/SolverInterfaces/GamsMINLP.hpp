@@ -42,6 +42,9 @@ private:
 	int* hess_iRow;
 	int* hess_jCol;
 
+	long nevalsinglecons;
+  long nevalsingleconsgrad;
+
   /** Internal routine to initialize sosinfo and branchinginfo.
    */
   void setupPrioritiesSOS();
@@ -53,6 +56,17 @@ public:
 	GamsMINLP(struct gmoRec* gmo);
 
   ~GamsMINLP();
+
+  virtual void reset_eval_counter();
+
+  long get_numeval_obj()            const { return nlp->get_numeval_obj(); }
+  long get_numeval_objgrad()        const { return nlp->get_numeval_objgrad(); }
+  long get_numeval_cons()           const { return nlp->get_numeval_cons(); }
+  long get_numeval_consjac()        const { return nlp->get_numeval_consjac(); }
+  long get_numeval_laghess()        const { return nlp->get_numeval_laghess(); }
+  long get_numeval_newpoint()       const { return nlp->get_numeval_newpoint(); }
+  long get_numeval_singlecons()     const { return nevalsinglecons; }
+  long get_numeval_singleconsgrad() const { return nevalsingleconsgrad; }
 
   /** Method to return some info about the nlp */
   bool get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,

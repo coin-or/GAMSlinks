@@ -167,10 +167,10 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	bonmin_setup->setOptionsAndJournalist(roptions, options, journalist);
   bonmin_setup->registerOptions();
 
-	roptions->SetRegisteringCategory("Linear Solver", Bonmin::RegisteredOptions::IpoptCategory);
+  bonmin_setup->roptions()->SetRegisteringCategory("Linear Solver", Bonmin::RegisteredOptions::IpoptCategory);
 #ifdef HAVE_HSL_LOADER
 	// add option to specify path to hsl library
-  bonmin_setup->roptions()->AddStringOption1("hsl_library", // name
+	bonmin_setup->roptions()->AddStringOption1("hsl_library", // name
 			"path and filename of HSL library for dynamic load",  // short description
 			"", // default value
 			"*", // setting1
@@ -190,6 +190,12 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 			"Note, that you still need to specify to use pardiso as linear_solver."
 	);
 #endif
+
+  bonmin_setup->roptions()->SetRegisteringCategory("Output and log-level options", Bonmin::RegisteredOptions::BonminCategory);
+  bonmin_setup->roptions()->AddStringOption2("print_funceval_statistics",
+      "whether to print statistics on number of evaluations of GAMS functions/gradients/Hessian",
+      "no",
+      "no", "", "yes", "", "");
 
   // add options specific to BCH heuristic callback
 //TODO  BCHsetupOptions(*bonmin_setup.roptions());
@@ -392,6 +398,22 @@ int GamsBonmin::callSolver() {
 			delete[] negLambda;
 		} else {
 			gevLogStat(gev, "\nBonmin finished. No feasible point found.");
+		}
+
+		int printnevals;
+		bonmin_setup->options()->GetEnumValue("print_funceval_statistics", printnevals, "bonmin.");
+		if( printnevals ) {
+		  char buffer[100];
+		  gevLog(gev, "");
+		  sprintf(buffer, "Number of evaluations at new points              = %ld", minlp->get_numeval_newpoint()); gevLog(gev, buffer);
+		  sprintf(buffer, "Number of objective function evaluations         = %ld", minlp->get_numeval_obj()); gevLog(gev, buffer);
+		  sprintf(buffer, "Number of objective gradient evaluations         = %ld", minlp->get_numeval_objgrad()); gevLog(gev, buffer);
+		  sprintf(buffer, "Number of all constraint functions evaluations   = %ld", minlp->get_numeval_cons()); gevLog(gev, buffer);
+		  sprintf(buffer, "Number of constraint jacobian evaluations        = %ld", minlp->get_numeval_consjac()); gevLog(gev, buffer);
+		  sprintf(buffer, "Number of single constraint function evaluations = %ld", minlp->get_numeval_singlecons()); gevLog(gev, buffer);
+		  sprintf(buffer, "Number of single constraint gradient evaluations = %ld", minlp->get_numeval_singleconsgrad()); gevLog(gev, buffer);
+		  sprintf(buffer, "Number of Lagrangian hessian evaluations         = %ld", minlp->get_numeval_laghess()); gevLog(gev, buffer);
+		  gevLog(gev, "");
 		}
 
 		/* resolve MINLP with discrete variables fixed */

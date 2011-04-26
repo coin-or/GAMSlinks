@@ -284,6 +284,14 @@ int GamsIpopt::callSolver() {
   		gevLogStat(gev, "Failed to unload Pardiso library.");
 #endif
 
+//  SmartPtr<GamsNLP> nlp_ = dynamic_cast<GamsNLP*>(GetRawPtr(nlp));
+//  printf("Number of evaluations at new points:              %ld\n", nlp_->get_numeval_newpoint());
+//  printf("Number of objective function evaluations:         %ld\n", nlp_->get_numeval_obj());
+//  printf("Number of objective gradient evaluations:         %ld\n", nlp_->get_numeval_objgrad());
+//  printf("Number of all constraint functions evaluations:   %ld\n", nlp_->get_numeval_cons());
+//  printf("Number of constraint jacobian evaluations:        %ld\n", nlp_->get_numeval_consjac());
+//  printf("Number of Lagrangian hessian evaluations:         %ld\n", nlp_->get_numeval_laghess());
+
 	return 0;
 }
 

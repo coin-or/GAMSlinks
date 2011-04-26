@@ -31,6 +31,13 @@ private:
 	int* jCol;
 	double* grad;
 
+	long nevalobj;
+	long nevalobjgrad;
+	long nevalcons;
+	long nevalconsjac;
+	long nevallaghess;
+	long nevalnewpoint;
+
 public:
 	double div_iter_tol;
 	double scaled_conviol_tol;
@@ -41,6 +48,15 @@ public:
 	GamsNLP (struct gmoRec* gmo);
 
   ~GamsNLP();
+
+  virtual void reset_eval_counter();
+
+  long get_numeval_obj()      const { return nevalobj; }
+  long get_numeval_objgrad()  const { return nevalobjgrad; }
+  long get_numeval_cons()     const { return nevalcons; }
+  long get_numeval_consjac()  const { return nevalconsjac; }
+  long get_numeval_laghess()  const { return nevallaghess; }
+  long get_numeval_newpoint() const { return nevalnewpoint; }
 
   /** Method to return some info about the nlp */
   bool get_nlp_info(Ipopt::Index& n, Ipopt::Index& m, Ipopt::Index& nnz_jac_g,

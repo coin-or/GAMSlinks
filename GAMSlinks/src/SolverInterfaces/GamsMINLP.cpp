@@ -37,11 +37,19 @@ GamsMINLP::	GamsMINLP(struct gmoRec* gmo_)
 	nlp = new GamsNLP(gmo);
 
   setupPrioritiesSOS();
+
+  reset_eval_counter();
 }
 
 GamsMINLP::~GamsMINLP() {
 	delete[] hess_iRow;
 	delete[] hess_jCol;
+}
+
+void GamsMINLP::reset_eval_counter() {
+  nlp->reset_eval_counter();
+  nevalsinglecons = 0;
+  nevalsingleconsgrad = 0;
 }
 
 void GamsMINLP::setupPrioritiesSOS() {
@@ -179,8 +187,10 @@ bool GamsMINLP::eval_jac_g (Index n, const Number *x, bool new_x, Index m, Index
 bool GamsMINLP::eval_gi(Index n, const Number* x, bool new_x, Index i, Number& gi) {
 	assert(n == gmoN(gmo));
 
-	if (new_x)
+	if (new_x) {
 		gmoEvalNewPoint(gmo, x);
+		++nlp->nevalnewpoint;
+	}
 
 	int rc;
 	int nerror;
@@ -201,6 +211,8 @@ bool GamsMINLP::eval_gi(Index n, const Number* x, bool new_x, Index i, Number& g
     ++nlp->domviolations;
     return false;
   }
+
+  ++nevalsinglecons;
 
 	return true;
 }
@@ -223,8 +235,10 @@ bool GamsMINLP::eval_grad_gi(Index n, const Number* x, bool new_x, Index i, Inde
     assert(NULL == jCol);
     assert(NULL != nlp->grad);
 
-  	if (new_x)
+  	if (new_x) {
+  	  ++nlp->nevalnewpoint;
   		gmoEvalNewPoint(gmo, x);
+  	}
 
   	double val;
   	double gx;
@@ -251,6 +265,8 @@ bool GamsMINLP::eval_grad_gi(Index n, const Number* x, bool new_x, Index i, Inde
    int next = nlp->iRowStart[i+1];
    for (int k = nlp->iRowStart[i]; k < next; ++k, ++values)
       *values = nlp->grad[nlp->jCol[k]];
+
+   ++nevalsingleconsgrad;
   }
 
   return true;
