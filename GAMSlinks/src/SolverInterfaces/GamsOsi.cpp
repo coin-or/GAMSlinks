@@ -505,8 +505,8 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 #ifdef COIN_HAS_SPX
   if (solverid == SOPLEX) {
-		OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
-		assert(osispx != NULL);
+		//OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
+		//assert(osispx != NULL);
 
 		soplex::Param::setVerbose(soplex::SPxOut::INFO1);
 		if (gevGetIntOpt(gev, gevLogOption) == 0) {
@@ -1023,6 +1023,8 @@ bool GamsOsi::setupParameters() {
 
 bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solution) {
 	char buffer[255];
+	double objest = GMS_SV_NA;
+	int nnodes = 0;
 
 	write_solution = false;
 
@@ -1031,6 +1033,11 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 		case CPLEX: {
 			OsiCpxSolverInterface* osicpx = dynamic_cast<OsiCpxSolverInterface*>(osi);
 			assert(osicpx);
+			if (!isLP()) {
+				CPXgetbestobjval(osicpx->getEnvironmentPtr(), osicpx->getLpPtr(OsiCpxSolverInterface::KEEPCACHED_ALL), &objest);
+      	objest += gmoObjConst(gmo);
+				nnodes = CPXgetnodecnt(osicpx->getEnvironmentPtr(), osicpx->getLpPtr(OsiCpxSolverInterface::KEEPCACHED_ALL));
+			}
 			int stat = CPXgetstat( osicpx->getEnvironmentPtr(), osicpx->getLpPtr(OsiCpxSolverInterface::KEEPCACHED_ALL) );
 			switch (stat) {
 				case CPX_STAT_OPTIMAL:
@@ -1038,6 +1045,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 				case CPXMIP_OPTIMAL:
 				case CPXMIP_OPTIMAL_INFEAS:
 					write_solution = true;
+					objest = osicpx->getObjValue();
 					gmoSolveStatSet(gmo, SolveStat_Normal);
 					gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
 					if (stat == CPX_STAT_OPTIMAL_INFEAS || stat == CPXMIP_OPTIMAL_INFEAS)
@@ -1196,7 +1204,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
             gevLogStat(gev, "Model infeasible.");
             gmoSolveStatSet(gmo, SolveStat_Normal);
             gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
-         } else if (osiglpk->isProvenDualInfeasible()) { // GAMS doesn't have dual infeasible, so we hope for the best and call it unbounded
+         } else if (osiglpk->isProvenDualInfeasible()) {
             gevLogStat(gev, "Model unbounded.");
             gmoSolveStatSet(gmo, SolveStat_Normal);
             gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
@@ -1205,6 +1213,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
             gevLogStat(gev, "Optimal solution found.");
             gmoSolveStatSet(gmo, SolveStat_Normal);
             gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
+            objest = osiglpk->getObjValue();
          } else if (osiglpk->isFeasible()) {
             write_solution = true;
             gevLogStat(gev, "Feasible solution found.");
@@ -1231,24 +1240,24 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 			GRBgetintattr(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL), GRB_INT_ATTR_SOLCOUNT, &nrsol);
 		  GRBgetintattr(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL), GRB_INT_ATTR_STATUS, &stat);
 			write_solution = nrsol;
+			if (!isLP()) {
+				double nodecount;
+				GRBgetdblattr(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL), GRB_DBL_ATTR_OBJBOUND, &objest);
+      	objest += gmoObjConst(gmo);
+		    GRBgetdblattr(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL), GRB_DBL_ATTR_NODECOUNT, &nodecount);
+		    nnodes = (int)nodecount;
+			}
 			switch (stat) {
 				case GRB_OPTIMAL:
 					assert(nrsol);
 					gmoSolveStatSet(gmo, SolveStat_Normal);
-					if (isLP()) {
+					if (isLP() || fabs(objest - osi->getObjValue()) < 1e-9 ||
+						  fabs(objest - osi->getObjValue())/(fabs(osi->getObjValue()) + 1.0e-10) < 1e-9) {
 						gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
 						gevLogStat(gev, "Solved to optimality.");
 					} else {
-						double bound;
-						GRBgetdblattr(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL), GRB_DBL_ATTR_OBJBOUND, &bound);
-						if(fabs(bound - osi->getObjValue()) < 1e-9 ||
-						   fabs(bound - osi->getObjValue())/(fabs(osi->getObjValue()) + 1.0e-10) < 1e-9) {
-							gevLogStat(gev, "Solved to optimality.");
-							gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
-						} else {
-							gevLogStat(gev, "Solved to optimality within tolerances.");
-							gmoModelStatSet(gmo, ModelStat_Integer);
-						}
+						gevLogStat(gev, "Solved to optimality within tolerances.");
+						gmoModelStatSet(gmo, ModelStat_Integer);
 					}
 					break;
 
@@ -1395,6 +1404,12 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					gevLogStat(gev, "Failure retrieving solution status.");
 					break;
 				}
+				int nrelax;
+	      MSK_getintinf(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IINF_MIO_NUM_RELAX, &nrelax);
+	      if( nrelax > 0 ) {
+	      	MSK_getdouinf(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DINF_MIO_OBJ_BOUND, &objest);
+	      	objest += gmoObjConst(gmo);
+	      }
 			}
 
 		  MSK_getsolution(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), solution, &probstatus, &solstatus,
@@ -1423,8 +1438,9 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 					gevLogStat(gev, "Solved to feasibility.");
 					break;
 
-        case MSK_SOL_STA_OPTIMAL:
         case MSK_SOL_STA_INTEGER_OPTIMAL:
+        	objest = osimsk->getObjValue(); /* in case instance was solved in presolve, i.e., without solving a relaxation */
+        case MSK_SOL_STA_OPTIMAL:
         	write_solution = true;
 					gmoSolveStatSet(gmo, SolveStat_Normal);
 					gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
@@ -1580,6 +1596,9 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 				}
 			} else {
 				XPRSgetintattrib(osixpr->getLpPtr(), XPRS_MIPSTATUS, &status);
+		    XPRSgetdblattrib(osixpr->getLpPtr(), XPRS_BESTBOUND, &objest);
+		    XPRSgetintattrib(osixpr->getLpPtr(), XPRS_NODES,     &nnodes);
+		    objest += gmoObjConst(gmo);
 				switch (status) {
 					case XPRS_MIP_LP_NOT_OPTIMAL:
 						gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
@@ -1609,9 +1628,7 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 
 					case XPRS_MIP_OPTIMAL:
 						write_solution = true;
-						double bestBound;
-				    XPRSgetdblattrib(osixpr->getLpPtr(), XPRS_BESTBOUND, &bestBound);
-				    if(fabs(bestBound - osixpr->getObjValue()) < 1e-9) {
+				    if(fabs(objest - osixpr->getObjValue()) < 1e-9) {
 				    	gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
 				    	gevLogStat(gev, "Solved to optimality.");
 				    } else {
@@ -1732,10 +1749,8 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 		if (isLP())
 			gmoSetHeadnTail(gmo, Hiterused, osi->getIterationCount());
 		gmoSetHeadnTail(gmo, Hresused, cputime);
-#ifdef STEFAN
-		gmoSetHeadnTail(gmo, Tmipbest, model->getBestPossibleObjValue());
-		gmoSetHeadnTail(gmo, Tmipnod, model->getNodeCount());
-#endif
+		gmoSetHeadnTail(gmo, Tmipbest, objest);
+		gmoSetHeadnTail(gmo, Tmipnod, nnodes);
 	} catch (CoinError error) {
 		gevLogStatPChar(gev, "Exception caught when requesting solution statistics: ");
 		gevLogStat(gev, error.message().c_str());
@@ -1763,19 +1778,22 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 
 	if (!isLP()) {
 		if (write_solution) {
-			snprintf(buffer, 255, "MIP solution: %21.10g   (%g seconds)", gmoGetHeadnTail(gmo, Hobjval), cputime);
+			if( solverid != GLPK && solverid != MOSEK )
+				snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %g seconds)", osi->getObjValue(), nnodes, cputime);
+			else
+				snprintf(buffer, 255, "MIP solution: %15.6e   (%g seconds)", osi->getObjValue(), cputime);
 			gevLogStat(gev, buffer);
 		}
-#ifdef STEFAN
-		snprintf(buffer, 255, "Best possible: %20.10g", model->getBestPossibleObjValue());
-		gevLogStat(gev, buffer);
-		if (model->bestSolution()) {
-			snprintf(buffer, 255, "Absolute gap: %21.5g   (absolute tolerance optca: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()), options.getDouble("optca"));
+		if (objest != GMS_SV_NA && objest > -osi->getInfinity() && objest < osi->getInfinity()) {
+			snprintf(buffer, 255, "Best possible: %14.6e", objest);
 			gevLogStat(gev, buffer);
-			snprintf(buffer, 255, "Relative gap: %21.5g   (relative tolerance optcr: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()) / CoinMax(CoinAbs(model->getBestPossibleObjValue()), 1.), options.getDouble("optcr"));
-			gevLogStat(gev, buffer);
+			if (write_solution) {
+				snprintf(buffer, 255, "Absolute gap: %15.6e   (absolute tolerance optca: %g)", CoinAbs(osi->getObjValue() - objest), gevGetDblOpt(gev, gevOptCA));
+				gevLogStat(gev, buffer);
+				snprintf(buffer, 255, "Relative gap: %14.6f%%   (relative tolerance optcr: %g%%)", 100*CoinAbs(osi->getObjValue() - objest) / CoinMax(CoinAbs(objest), 1.), 100*gevGetDblOpt(gev, gevOptCR));
+				gevLogStat(gev, buffer);
+			}
 		}
-#endif
 	}
 
 	return true;

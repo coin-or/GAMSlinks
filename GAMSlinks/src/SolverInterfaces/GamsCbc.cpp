@@ -1312,17 +1312,17 @@ bool GamsCbc::writeSolution(double cputime, double walltime) {
 	if (!isLP()) {
 		if (model->bestSolution()) {
 			if (options.getInteger("threads") > 1)
-				snprintf(buffer, 255, "MIP solution: %21.10g   (%d nodes, %.2f CPU seconds, %.2f wall clock seconds)", model->getObjValue(), model->getNodeCount(), cputime, walltime);
+				snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %.2f CPU seconds, %.2f wall clock seconds)", model->getObjValue(), model->getNodeCount(), cputime, walltime);
 			else
-				snprintf(buffer, 255, "MIP solution: %21.10g   (%d nodes, %g seconds)", model->getObjValue(), model->getNodeCount(), cputime);
+				snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %g seconds)", model->getObjValue(), model->getNodeCount(), cputime);
 			gevLogStat(gev, buffer);
 		}
-		snprintf(buffer, 255, "Best possible: %20.10g", model->getBestPossibleObjValue());
+		snprintf(buffer, 255, "Best possible: %14.6e", model->getBestPossibleObjValue());
 		gevLogStat(gev, buffer);
 		if (model->bestSolution()) {
-			snprintf(buffer, 255, "Absolute gap: %21.5g   (absolute tolerance optca: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()), options.getDouble("optca"));
+			snprintf(buffer, 255, "Absolute gap: %15.6e   (absolute tolerance optca: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()), options.getDouble("optca"));
 			gevLogStat(gev, buffer);
-			snprintf(buffer, 255, "Relative gap: %21.5g   (relative tolerance optcr: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()) / CoinMax(CoinAbs(model->getBestPossibleObjValue()), 1.), options.getDouble("optcr"));
+			snprintf(buffer, 255, "Relative gap: %14.6f%%   (relative tolerance optcr: %g%%)", 100* CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()) / CoinMax(CoinAbs(model->getBestPossibleObjValue()), 1.), 100*options.getDouble("optcr"));
 			gevLogStat(gev, buffer);
 		}
 	}
