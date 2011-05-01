@@ -1,5 +1,5 @@
 *
-* optglpk.def
+* optmyglpk.def
 *
 
 startalg enumstr 0 "primal" 1 1 LP solver for root node
@@ -17,11 +17,6 @@ factorization enumstr 0 "givens" 1 1 basis factorization method
  "forresttomlin" 1
  "bartelsgolub" 1
  "givens" 1
-initbasis enumstr 0 "advanced" 1 1 method for initial basis
- "standard" 1
- "advanced" 1
- "bixby" 1
- "user" 1
 tol_dual double 0 1e-7 0 maxdouble 1 1 dual feasibility tolerance
 tol_primal double 0 1e-7 0 maxdouble 1 1 primal feasibility tolerance
 tol_integer double 0 1e-5 0 maxdouble 1 1 integer feasibility tolerance

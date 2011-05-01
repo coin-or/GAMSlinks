@@ -17,7 +17,7 @@ set g OsiGlpk Option Groups /
       scaling                scaling method
       pricing                pricing method
       factorization          basis factorization method
-      initbasis              method for initial basis
+*      initbasis              method for initial basis
       tol_dual               dual feasibility tolerance
       tol_primal             primal feasibility tolerance
       tol_integer            integer feasibility tolerance
@@ -45,7 +45,7 @@ general.(
   scaling         .s.(def meanequilibrium)
   pricing         .s.(def steepestedge)
   factorization   .s.(def givens)
-  initbasis       .s.(def advanced)
+*  initbasis       .s.(def advanced)
   tol_dual        .r.(def 1e-7)
   tol_primal      .r.(def 1e-7)
   tol_integer     .r.(def 1e-5)
@@ -78,10 +78,10 @@ $onempty
   factorization.( forresttomlin
                   bartelsgolub
                   givens           )
-  initbasis.(     standard
-                  advanced
-                  bixby            
-                  user             )
+*  initbasis.(     standard
+*                  advanced
+*                  bixby            
+*                  user             )
   backtracking.(  depthfirst       
                   breadthfirst     
                   bestprojection   )

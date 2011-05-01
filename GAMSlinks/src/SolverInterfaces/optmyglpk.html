@@ -1,9 +1,9 @@
 <html>
 <head>
-<title>OSIGLPK Options</title>
+<title>MYGLPK Options</title>
 </head>
 <body>
-<h2>OSIGLPK Options</h2>
+<h2>MYGLPK Options</h2>
 GAMS/OsiGlpk brings the open source LP/MIP solver Glpk from the GNU Open Software foundation to the broad audience of GAMS users.
 The code has been written primarily by A. Makhorin.
 The GAMS interface for Glpk is maintained by Stefan Vigerske, Humboldt University, in a COIN-OR project called GAMSlinks.
@@ -15,9 +15,9 @@ For more information visit the web site for
 <a href="https://projects.coin-or.org/GAMSlinks">GAMSlinks</a>.<BR>
 For documentation of GAMS parameters, see the <A href="http://www.gams.com/docs/parame.htm">GAMS parameters documentation</A>.
 <p>For more information about this solver please inspect the
-complete <a href="docs/solvers/coin.pdf">OSIGLPK manual</a>.
+complete <a href="docs/solvers/coin.pdf">MYGLPK manual</a>.
 
-<h2>Summary of OSIGLPK Options</h2>
+<h2>Summary of MYGLPK Options</h2>
 <table>
 <tr><th height=75 valign=bottom colspan=2 align=left><h3>General Options</h3></th></tr>
 <tr><td><a href="#backtracking">
@@ -38,9 +38,6 @@ factorization</a></td>
 <tr><td><a href="#gomorycuts">
 gomorycuts</a></td>
 <td>gomorys mixed-integer cuts</td></tr>
-<tr><td><a href="#initbasis">
-initbasis</a></td>
-<td>method for initial basis</td></tr>
 <tr><td><a href="#iterlim">
 iterlim</a></td>
 <td>iteration limit</td></tr>
@@ -74,7 +71,7 @@ tol_integer</a></td>
 <tr><td><a href="#tol_primal">
 tol_primal</a></td>
 <td>primal feasibility tolerance</td></tr></table>
-<h2>Detailed Descriptions of OSIGLPK Options</h2>
+<h2>Detailed Descriptions of MYGLPK Options</h2>
 
 <h4><a name="backtracking">
 backtracking</a>
@@ -85,11 +82,11 @@ Determines which method to use for the backtracking heuristic.
 <br><i>(default = bestprojection)</i>
 <table>
 <tr valign="top"><td width=20 align=right>depthfirst</td><td>.
-Let OSIGLPK use a depth first search.</td></tr>
+Let GLPK use a depth first search.</td></tr>
 <tr valign="top"><td width=20 align=right>breadthfirst</td><td>.
-Let OSIGLPK use a breadth first search.</td></tr>
+Let GLPK use a breadth first search.</td></tr>
 <tr valign="top"><td width=20 align=right>bestprojection</td><td>.
-Let OSIGLPK use a best projection heuristic.</td></tr>
+Let GLPK use a best projection heuristic.</td></tr>
 </table>
 
 <h4><a name="cliquecuts">
@@ -141,7 +138,7 @@ factorization</a>
 <i> (string)</i> basis factorization method</h4><p>
 
 Sets the method for the LP basis factorization.<BR>
-If you observe that OSIGLPK reports numerical instabilities than you could try to use a more stable factorization method.
+If you observe that GLPK reports numerical instabilities than you could try to use a more stable factorization method.
 
 <br><i>(default = givens)</i>
 <table>
@@ -168,26 +165,6 @@ Whether to enable Gomorys mixed-integer linear cuts.
 Turn off gomory cuts</td></tr>
 <tr valign="top"><td width=20 align=right>1</td><td>.
 Turn on gomory cuts</td></tr>
-</table>
-
-<h4><a name="initbasis">
-initbasis</a>
-<i> (string)</i> method for initial basis</h4><p>
-
-Sets the method that computes the initial basis.
-Setting this option has only effect if the <a href="#presolve">presolver</a> is turned off, which is on by default.
-
-<br><i>(default = advanced)</i>
-<table>
-<tr valign="top"><td width=20 align=right>standard</td><td>.
-Uses the standard initial basis of all slacks.</td></tr>
-<tr valign="top"><td width=20 align=right>advanced</td><td>.
-Computes an advanced initial basis.</td></tr>
-<tr valign="top"><td width=20 align=right>bixby</td><td>.
-Uses Bixby's initial basis.</td></tr>
-<tr valign="top"><td width=20 align=right>user</td><td>.
-Uses basis provided by GAMS.
-Note that a feasible basis need to be given, otherwise Glpk will fail.</td></tr>
 </table>
 
 <h4><a name="iterlim">
@@ -269,11 +246,11 @@ Note that scaling is only applied when the presolver is turned off (which by def
 <tr valign="top"><td width=20 align=right>off</td><td>.
 Turn off scaling.</td></tr>
 <tr valign="top"><td width=20 align=right>equilibrium</td><td>.
-Let OSIGLPK use an equilibrium scaling method.</td></tr>
+Let GLPK use an equilibrium scaling method.</td></tr>
 <tr valign="top"><td width=20 align=right>mean</td><td>.
-Let OSIGLPK use a geometric mean scaling method.</td></tr>
+Let GLPK use a geometric mean scaling method.</td></tr>
 <tr valign="top"><td width=20 align=right>meanequilibrium</td><td>.
-Let OSIGLPK use first a geometric mean scaling, then an equilibrium scaling.</td></tr>
+Let GLPK use first a geometric mean scaling, then an equilibrium scaling.</td></tr>
 </table>
 
 <h4><a name="startalg">
@@ -285,9 +262,9 @@ This option determines whether a primal or dual simplex algorithm should be used
 <br><i>(default = primal)</i>
 <table>
 <tr valign="top"><td width=20 align=right>primal</td><td>.
-Let OSIGLPK use a primal simplex algorithm.</td></tr>
+Let GLPK use a primal simplex algorithm.</td></tr>
 <tr valign="top"><td width=20 align=right>dual</td><td>.
-Let OSIGLPK use a dual simplex algorithm.</td></tr>
+Let GLPK use a dual simplex algorithm.</td></tr>
 </table>
 
 <h4><a name="tol_dual">
