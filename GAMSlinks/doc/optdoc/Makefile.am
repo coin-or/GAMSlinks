@@ -14,6 +14,8 @@ optdoc_SOURCES = optdoc.cpp
 
 optdoc_LDADD = ../../src/SolverInterfaces/libGamsCoin.la
 
+LIBS += `cat $(OSIOBJDIR)/osi_addlibs.txt $(COINUTILSOBJDIR)/coinutils_addlibs.txt`
+
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/../../src`
 
 if COIN_HAS_IPOPT

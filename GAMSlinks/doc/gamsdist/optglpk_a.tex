@@ -64,24 +64,24 @@ Does a LU factorization followed by a Schur complement and Givens rotation updat
 This method is slower than Forrest-Tomlin, but more stable.
 \end{itemize}
 
-\item[\label{initbasis}\hypertarget{initbasis}
-{\textbf{initbasis (\slshape{string})}}]\hspace{1.0in}
-
-Sets the method that computes the initial basis.
-Setting this option has only effect if the \hyperlink{presolve}{presolver} is turned off, which is on by default.
-
-\textsl{(default = advanced)}
-\begin{itemize}
-\item[standard] 
-Uses the standard initial basis of all slacks.
-\item[advanced] 
-Computes an advanced initial basis.
-\item[bixby] 
-Uses Bixby's initial basis.
-\item[user] 
-Uses basis provided by GAMS.
-Note that a feasible basis need to be given, otherwise Glpk will fail.
-\end{itemize}
+% \item[\label{initbasis}\hypertarget{initbasis}
+% {\textbf{initbasis (\slshape{string})}}]\hspace{1.0in}
+% 
+% Sets the method that computes the initial basis.
+% Setting this option has only effect if the \hyperlink{presolve}{presolver} is turned off, which is on by default.
+% 
+% \textsl{(default = advanced)}
+% \begin{itemize}
+% \item[standard] 
+% Uses the standard initial basis of all slacks.
+% \item[advanced] 
+% Computes an advanced initial basis.
+% \item[bixby] 
+% Uses Bixby's initial basis.
+% \item[user] 
+% Uses basis provided by GAMS.
+% Note that a feasible basis need to be given, otherwise Glpk will fail.
+% \end{itemize}
 
 \item[\label{glpktol_dual}\hypertarget{glpktol_dual}
 {\textbf{tol\_dual (\slshape{real})}}]\hspace{1.0in}

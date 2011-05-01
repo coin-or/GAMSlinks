@@ -27,11 +27,13 @@
 \newcommand{\OSIGUROBI}{\textsc{OsiGurobi}\xspace}
 \newcommand{\OSIGLPK}{\textsc{OsiGlpk}\xspace}
 \newcommand{\OSIMOSEK}{\textsc{OsiMosek}\xspace}
+\newcommand{\OSISOPLEX}{\textsc{OsiSoplex}\xspace}
 \newcommand{\OSIXPRESS}{\textsc{OsiXpress}\xspace}
 \newcommand{\CPLEX}{\textsc{CPLEX}\xspace}
 \newcommand{\GUROBI}{\textsc{GUROBI}\xspace}
 \newcommand{\GLPK}{\textsc{GLPK}\xspace}
 \newcommand{\MOSEK}{\textsc{MOSEK}\xspace}
+\newcommand{\SOPLEX}{\textsc{SoPlex}\xspace}
 \newcommand{\XPRESS}{\textsc{XPRESS}\xspace}
 
 \chapter{COIN-OR}
@@ -63,7 +65,7 @@ Available solvers and tools include:
 (model types: LP, RMIP, DNLP, NLP, RMINLP, QCP, RMIQCP)
 \item \OS: Optimization Services\\
 (model types: LP, RMIP, MIP, DNLP, NLP, RMINLP, MINLP, QCP, RMIQCP, MIQCP)
-\item \OSICPLEX, \OSIGLPK, \OSIGUROBI, \OSIMOSEK, \OSIXPRESS: Open Solver Interface\\
+\item \OSICPLEX, \OSIGLPK, \OSIGUROBI, \OSIMOSEK, \OSISOPLEX, \OSIXPRESS: Open Solver Interface\\
 (model types: LP, RMIP, MIP)
 \end{itemize}
 
@@ -86,14 +88,14 @@ The COIN-OR project leader for \BONMIN is Pierre Bonami.
 \item {B-OA}: an outer-approximation based decomposition algorithm based on iterating solving and improving of a MIP relaxation and solving NLP subproblems~\cite{DuGr86,FlLe94}; this algorithm is similar to the one implemented in the solver \textsc{DICOPT}
 \item {B-QG}: an outer-approximation based branch-and-cut algorithm based on solving a continuous linear program at each node of the search tree, improving the linear program by outer approximation, and branching on integer variables~\cite{QeGr92}.
 \item {B-Hyb}: a branch-and-bound algorithm which is a hybrid of B-BB and B-QG and is based on solving either a continuous nonlinear or a continuous linear program at each node of the search tree, improving the linear program by outer approximation, and branching on integer variables~\cite{BBCCGLLLMSW}
-\item {B-Ecp}: a Kelley's outer-approximation based branch-and-cut algorithm inspired by the settings used in the solver \textsc{FilMINT}~\cite{AbLeLi07}
+\item {B-ECP}: a Kelley's outer-approximation based branch-and-cut algorithm inspired by the settings used in the solver \textsc{FilMINT}~\cite{AbLeLi07}
 \item {B-iFP}: an iterated feasibility pump algorithm~\cite{BoCoLoMa06}
 \end{itemize}
 The algorithms are exact when the problem is \textbf{convex}, otherwise they are heuristics.
 
 For convex MINLPs, experiments on a reasonably large test set of problems have shown that B-Hyb is the algorithm of choice (it solved most of the problems in 3 hours of computing time).
-Nevertheless, there are cases where B-OA is much faster than B-Hyb and others where B-BB is interesting.
-B-QG and B-Ecp corresponds mainly to a specific parameter setting of B-Hyb but they can be faster in some cases.
+Nevertheless, there are cases where B-OA (especially when used with CPLEX as MIP subproblem solver) is much faster than B-Hyb and others where B-BB is interesting.
+B-QG and B-ECP corresponds mainly to a specific parameter setting of B-Hyb but they can be faster in some cases.
 B-iFP is more tailored at finding quickly good solutions to very hard convex MINLP.
 For \textbf{nonconvex} MINLPs, it is strongly recommended to use B-BB (the outer-approximation algorithms have not been tailored to treat nonconvex problems at this point).
 Although even B-BB is only a heuristic for such problems, several options are available to try and improve the quality of the solutions it provides.
@@ -110,8 +112,8 @@ Most of the \BONMIN documentation in this section is taken from the \BONMIN manu
 \BONMIN can handle mixed-integer nonlinear programming models which functions should be twice continuously differentiable.
 The \BONMIN link in \GAMS supports continuous, binary, and integer variables, special ordered sets, branching priorities, but no semi-continuous or semi-integer variables (see chapter 17.1 of the \GAMS User's Guide).
 
-If \GAMS/\BONMIN is called for a model with only continuous variables, the interface directly calls \IPOPT.
-If \GAMS/\BONMIN is called for a model with only linear equations, the interface directly calls \CBC.
+If \GAMS/\BONMIN is called for a model with only continuous variables, the interface switches over to \IPOPT.
+If \GAMS/\BONMIN is called for a model with only linear equations, the interface switches over to \CBC.
 
 \subsection{Usage}
 
@@ -137,7 +139,7 @@ Specifying \texttt{optfile=1} let \GAMS/\BONMIN read \texttt{bonmin.opt}, \textt
 The format of the option file is the same as for \IPOPT (see Section \ref{sub:ipoptoptionspec}).
 
 The most important option in \BONMIN is the choice of the solution algorithm.
-This can be set by using the option named \texttt{bonmin.algorithm} which can be set to \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, \texttt{B-Hyb}, \texttt{B-Ecp}, or \texttt{B-iFP} (its default value is \texttt{B-BB}).
+This can be set by using the option named \texttt{bonmin.algorithm} which can be set to \texttt{B-BB}, \texttt{B-OA}, \texttt{B-QG}, \texttt{B-Hyb}, \texttt{B-ECP}, or \texttt{B-iFP} (its default value is \texttt{B-BB}).
 Depending on the value of this option, certain other options may be available or not, cf.\ Section~\ref{sub:bonminalloptions}.
 
 An example of a \texttt{bonmin.opt} file is the following:
@@ -156,6 +158,7 @@ and sets the print level for \IPOPT to $6$.
 
 \GAMS/\BONMIN understands currently the following \GAMS parameters: \texttt{reslim} (time limit), \texttt{iterlim} (iteration limit), \texttt{nodlim} (node limit), \texttt{cutoff}, \texttt{optca} (absolute gap tolerance), and \texttt{optcr} (relative gap tolerance).
 One can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your \GAMS program, e.g. \verb+Option nodlim=1000;+.
+Further, under Linux, the option \texttt{threads} can be used to control the number of threads used in the linear algebra routines of \IPOPT.
 
 \subsubsection{Passing options to local search based heuristics and OA generators}
 Several parts of the algorithms in \BONMIN are based on solving a simplified version of the problem with another instance of \BONMIN:
@@ -398,6 +401,7 @@ The format of the option file is the same as for \IPOPT (see Section~\ref{sub:ip
 
 \GAMS/\COUENNE understands currently the following \GAMS parameters: \texttt{reslim} (time limit), \texttt{nodlim} (node limit), \texttt{cutoff}, \texttt{optca} (absolute gap tolerance), and \texttt{optcr} (relative gap tolerance).
 One can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your \GAMS program, e.g. \verb+Option nodlim=1000;+.
+Further, under Linux, the option \texttt{threads} can be used to control the number of threads used in the linear algebra routines of \IPOPT.
 
 \subsection{Detailed Options Description}
 \label{sub:couenneoptions}
@@ -441,7 +445,9 @@ If \IPOPT was specified as the default solver during \GAMS installation, the abo
 
 The performance and robustness of \IPOPT on larger models heavily relies on the used solver for sparse symmetric indefinite linear systems.
 \GAMS/\IPOPT includes the sparse solver MUMPS 4.9~\cite{AmestoyDuffKosterLExcellent2001,AmestoyGuermoucheLExcellentPralet2006}.
-The user can provide the Parallel Sparse Direct Solver PARDISO or routines from the Harwell Subroutine Library (HSL) as shared (or dynamic) libraries to replace MUMPS.
+The user can provide the 
+% Parallel Sparse Direct Solver PARDISO or 
+routines from the Harwell Subroutine Library (HSL) as shared (or dynamic) libraries to replace MUMPS.
 
 \paragraph{Using Harwell Subroutine Library routines with \GAMS/\IPOPT.}
 
@@ -459,18 +465,18 @@ The HSL routines \texttt{MA27}, \texttt{MA28}, and \texttt{MC19} are available a
 Note that it is your responsibility to ensure that you are entitled to download and use these routines!
 You can build a shared library using the ThirdParty/HSL project at COIN-OR.
 
-\paragraph{Using PARDISO with \GAMS/\IPOPT.}
-Setting the option \texttt{linear\_solver} to \texttt{pardiso}, let \GAMS/\IPOPT attempt to load the linear solver PARDISO from the library \texttt{libpardiso.so} (Unix-Systems), \texttt{libpardiso.dylib} (MacOS X), or \texttt{libpardiso.dll} (Windows), respectively.
-You can also specify the path and name for this library with the option \texttt{pardiso\_library}.
-For example,
-\begin{verbatim}
- linear_solver   pardiso
- pardiso_library /my/path/to/the/pardisolib/mypardisolib.so
-\end{verbatim}
-tells \IPOPT to use the linear solver PARDISO from the library \texttt{mypardisolib.so} under the specified path.
-
-PARDISO is available as compiled shared library for several platforms at \texttt{http://www.pardiso-project.org}.
-Note that it is your responsibility to ensure that you are entitled to download and use this package!
+% \paragraph{Using PARDISO with \GAMS/\IPOPT.}
+% Setting the option \texttt{linear\_solver} to \texttt{pardiso}, let \GAMS/\IPOPT attempt to load the linear solver PARDISO from the library \texttt{libpardiso.so} (Unix-Systems), \texttt{libpardiso.dylib} (MacOS X), or \texttt{libpardiso.dll} (Windows), respectively.
+% You can also specify the path and name for this library with the option \texttt{pardiso\_library}.
+% For example,
+% \begin{verbatim}
+%  linear_solver   pardiso
+%  pardiso_library /my/path/to/the/pardisolib/mypardisolib.so
+% \end{verbatim}
+% tells \IPOPT to use the linear solver PARDISO from the library \texttt{mypardisolib.so} under the specified path.
+% 
+% PARDISO is available as compiled shared library for several platforms at \texttt{http://www.pardiso-project.org}.
+% Note that it is your responsibility to ensure that you are entitled to download and use this package!
 
 
 \subsubsection{Specification of Options}
@@ -506,6 +512,7 @@ is a valid \texttt{ipopt.opt} file.
 
 \GAMS/\IPOPT understand currently the following \GAMS parameters: \texttt{reslim} (time limit), \texttt{iterlim} (iteration limit), \texttt{domlim} (domain violation limit).
 You can set them either on the command line, e.g. \verb+iterlim=500+, or inside your \GAMS program, e.g. \verb+Option iterlim=500;+.
+Further, under Linux, the option \texttt{threads} can be used to control the number of threads used in the basic linear algebra routines.
 
 
 \subsection{Output}
@@ -690,15 +697,16 @@ In order to use the remote solver service in an \emph{asynchronous} fashion, one
 
 \input{optosd_a}
 
-\section{\OSICPLEX, \OSIGLPK, \OSIGUROBI, \OSIMOSEK, \OSIXPRESS}
+\section{\OSICPLEX, \OSIGLPK, \OSIGUROBI, \OSIMOSEK, \OSISOPLEX, \OSIXPRESS}
 
-The ``bare bone'' solver links \GAMS/\OSICPLEX, \GAMS/\OSIGLPK, \GAMS/\OSIGUROBI, \GAMS/\OSIMOSEK, and \GAMS/\OSIXPRESS
-allow users to solve their \GAMS models with \GLPK or a standalone license of \CPLEX, \GUROBI, \MOSEK, or \XPRESS.
+The ``bare bone'' solver links \GAMS/\OSICPLEX, \GAMS/\OSIGLPK, \GAMS/\OSIGUROBI, \GAMS/\OSIMOSEK, \GAMS/\OSISOPLEX, and \GAMS/\OSIXPRESS
+allow users to solve their \GAMS models with \GLPK, \SOPLEX, or a standalone license of \CPLEX, \GUROBI, \MOSEK, or \XPRESS.
 The links use the COIN-OR Open Solver Interface (\OSI) to communicate with these solvers.
 The \OSICPLEX link has been written primarily by Tobias Achterberg,
 the \OSIGLPK link has been written by Vivian De Smedt, Braden Hunsaker, and Lou Hafer,
 the \OSIGUROBI link has been written primarily by Stefan Vigerske,
 the \OSIMOSEK link has been written primarily by Bo Jensen, and
+the \OSISOPLEX link has been written primarily by Tobias Achterberg, Ambros M.\ Gleixner, and Wei Huang, and
 the \OSIXPRESS link has been written primarily by John Doe.
 Matthew Saltzman is the COIN-OR project leader for \OSI.
 
@@ -708,6 +716,7 @@ For more information we refer to the \OSI web site \texttt{https://projects.coin
 
 The \OSI links support linear equations and continuous, binary, and integer variables.
 Semicontinuous and Semiinteger variables, special ordered sets, branching priorities, and indicator constraints are not supported by \OSI.
+\OSISOPLEX solves only LPs, no MIPs.
 
 \subsection{Usage}
 
@@ -718,7 +727,7 @@ The following statement can be used inside your \GAMS program to specify using \
 
 The above statement should appear before the Solve statement.
 
-The links support the general \GAMS options \texttt{reslim}, \texttt{optca} (except for \OSIGLPK), \texttt{optcr}, \texttt{nodlim}, \texttt{iterlim}, and \texttt{threads} (except for \OSIGLPK).
+The links support the general \GAMS options \texttt{reslim}, \texttt{optca} (except for \OSIGLPK), \texttt{optcr}, \texttt{nodlim}, \texttt{iterlim}, and \texttt{threads} (except for \OSIGLPK and \OSISOPLEX).
 For \OSICPLEX, \OSIGUROBI, \OSIMOSEK, and \OSIXPRESS an option file in the format required by the solver can be provided via the \GAMS \texttt{optfile} option.
 For \OSIGLPK, an \GAMS option file can be provided.
 See Section~\ref{sub:osioptions} for details.
@@ -733,6 +742,8 @@ Setting the \GAMS option \texttt{integer3} to a nonzero value leads to writing t
 The name of the MPS file is chosen to be the name of the \GAMS model file with the extension \texttt{.gms} replaced by \texttt{.mps}.
 This option may be useful for debugging purposes.
 
+For \OSICPLEX and \OSIGUROBI, setting the \GAMS option \texttt{integer4} to a nonzero value leads to passing the variable level values (\texttt{.l} suffix) to the MIP solver as initial solution. This is analog to the \texttt{mipstart} option of the full \CPLEX and \GUROBI links.
+
 \subsection{Option files}
 \label{sub:osioptions}
 
@@ -740,8 +751,8 @@ This option may be useful for debugging purposes.
 In an \OSICPLEX option file, each line lists one option setting, where the option name and value are separated by space.\\
 Example:
 \begin{verbatim}
-CPX_PARAM_ADVIND                 0
-CPX_PARAM_TUNINGTILIM            2.00000000000000e+02
+CPX_PARAM_MIPEMPHASIS            2
+CPX_PARAM_HEURFREQ               42
 CPX_PARAM_MIPDISPLAY             4
 \end{verbatim}
 

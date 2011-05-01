@@ -30,7 +30,7 @@ Indicator constraints are not supported by the interface yet.
 
 The following statement can be used inside your \GAMS program to specify using \SCIP
 \begin{verbatim}
-  Option MIP = SCIP;     { or LP or RMIP or QCP or RMIQCP or MIQCP }
+  Option MIP = SCIP;     { or QCP or RMIQCP or MIQCP }
 \end{verbatim}
 
 The above statement should appear before the Solve statement.
@@ -56,8 +56,9 @@ If you need to use \GAMS/\SCIP with BCH, please consider to use a \GAMS system o
 \subsubsection{Specification of \SCIP Options}
 
 \GAMS/\SCIP currently supports the \GAMS parameters \texttt{reslim}, \texttt{iterlim}, \texttt{nodlim}, \texttt{optcr}, and \texttt{optca}.
+Further, under Linux, the option \texttt{threads} can be used to control the number of threads used in the linear algebra routines of \textsc{Ipopt}.
 
-For a MIP, QCP, or MIQCP solve the user can specify options by a \SCIP options file.
+Options can be specified by a \SCIP options file.
 A \SCIP options file consists of one option or comment per line.
 A pound sign (\#) at the beginning of a line causes the entire line to be ignored.
 Otherwise, the line will be interpreted as an option name and value separated by an equal sign (=) and any amount of white space (blanks or tabs).
