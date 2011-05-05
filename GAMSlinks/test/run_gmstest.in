@@ -112,9 +112,10 @@ notest('273') = yes;
 notest('287') = yes;
 notest('288') = yes;
 notest('289') = yes;
-*skip logmip tests because they do not even compile
+*skip logmip tests because we do not have this solver
 notest(s)\$(ord(s)>=332 and ord(s)<=337) = yes;
-*skip ship because of couenne
+*skip abel and ship because of couenne (unbounded relaxation)
+notest('64') = yes;
 notest('22') = yes;
 *skip worst.111, procmean.301, mlbeta.302, mlgamma.303 because some functions in there are not supported by Couenne
 notest('111') = yes;
