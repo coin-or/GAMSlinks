@@ -42,7 +42,7 @@ extern "C" void goto_set_num_threads(int);
 #endif
 
 #ifdef HAVE_MKL_SETNUMTHREADS
-extern "C" MKL_Domain_Set_Num_Threads(int,int);
+extern "C" void MKL_Domain_Set_Num_Threads(int, int);
 //extern "C" void MKL_Set_Num_Threads(int);
 #endif
 
