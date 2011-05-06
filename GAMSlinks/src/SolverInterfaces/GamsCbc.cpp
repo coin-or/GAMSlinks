@@ -1126,9 +1126,9 @@ bool GamsCbc::setupParameters() {
 
 #ifdef CBC_THREAD
 	// if Cbc may do multithreading, then we do not want to do blas going into multithreading too
-	setNumThreadsGotoBlas(1);
+	setNumThreadsBlas(1);
 #else
-	setNumThreadsGotoBlas(gevThreads(gev));
+	setNumThreadsBlas(gevThreads(gev));
 #endif
 
 	// special options set by user and passed unseen to CBC

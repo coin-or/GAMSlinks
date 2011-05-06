@@ -184,16 +184,19 @@ AC_ARG_ENABLE([cbc-parallel],,
   AC_DEFINE([CBC_THREAD],[1],[Define to 1 if the SMP version of CBC is compiled])
 )
 
-########################
-# GOTOBLAS recognition #
-########################
+#############################
+# parallel BLAS recognition #
+#############################
 
 LIBS_save="$LIBS"
 ADDLIBS_save="$ADDLIBS"
 LIBS="$BLAS_LIBS $LIBS"
 AC_COIN_HAS_BLAS
 AC_CHECK_FUNC([goto_set_num_threads],
-  AC_DEFINE([BLAS_IS_GOTOBLAS],[1],[Define to 1 if the Blas library is GotoBlas])
+  AC_DEFINE([HAVE_GOTO_SETNUMTHREADS],[1],[Define to 1 if the Blas library has goto_set_num_threads])
+)
+AC_CHECK_FUNC([MKL_Domain_Set_Num_Threads],
+  AC_DEFINE([HAVE_MKL_SETNUMTHREADS],[1],[Define to 1 if the Blas library has mkl_set_num_threads])
 )
 LIBS="$LIBS_save"
 ADDLIBS="$ADDLIBS_save"

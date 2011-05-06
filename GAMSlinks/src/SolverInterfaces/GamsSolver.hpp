@@ -15,6 +15,10 @@
 /** An abstract interface to a solver that takes Gams Modeling Objects (GMO) as input.
  */
 class GamsSolver {
+public:
+  /** Sets number of threads to use in basic linear algebra routines. */
+  static void setNumThreadsBlas(int nthreads);
+
 private:
 	bool need_unload_gmo;
 	bool need_unload_gev;
@@ -46,9 +50,6 @@ public:
 	 * @return True if license was registered or no CPLEX available.
 	 */
 	bool registerGamsCplexLicense(struct gmoRec* gmo);
-
-	/** Sets number of threads to use in GotoBlas. */
-	void setNumThreadsGotoBlas(int nthreads);
 
 	/** Initialization of solver interface and solver.
 	 * Loads problem into solver.

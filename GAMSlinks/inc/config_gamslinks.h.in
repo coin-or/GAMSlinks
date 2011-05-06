@@ -1,8 +1,5 @@
 /* inc/config_gamslinks.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Define to 1 if the Blas library is GotoBlas */
-#undef BLAS_IS_GOTOBLAS
-
 /* Define to 1 if the SMP version of CBC is compiled */
 #undef CBC_THREAD
 
@@ -128,6 +125,9 @@
 /* Define to 1 if you have the <errno.h> header file. */
 #undef HAVE_ERRNO_H
 
+/* Define to 1 if the Blas library has goto_set_num_threads */
+#undef HAVE_GOTO_SETNUMTHREADS
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -139,6 +139,9 @@
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
+
+/* Define to 1 if the Blas library has mkl_set_num_threads */
+#undef HAVE_MKL_SETNUMTHREADS
 
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF

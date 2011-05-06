@@ -759,7 +759,7 @@ bool GamsOsi::setupParameters() {
 			osicbc->getModelPtr()->setIntParam(CbcModel::CbcMaxNumNode,           nodelim);
 			osicbc->getModelPtr()->setDblParam(CbcModel::CbcAllowableGap,         optca);
 			osicbc->getModelPtr()->setDblParam(CbcModel::CbcAllowableFractionGap, optcr);
-			setNumThreadsGotoBlas(gevThreads(gev));
+			setNumThreadsBlas(gevThreads(gev));
 		} break;
 #endif
 
