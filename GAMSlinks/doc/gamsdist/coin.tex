@@ -158,7 +158,7 @@ and sets the print level for \IPOPT to $6$.
 
 \GAMS/\BONMIN understands currently the following \GAMS parameters: \texttt{reslim} (time limit), \texttt{iterlim} (iteration limit), \texttt{nodlim} (node limit), \texttt{cutoff}, \texttt{optca} (absolute gap tolerance), and \texttt{optcr} (relative gap tolerance).
 One can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your \GAMS program, e.g. \verb+Option nodlim=1000;+.
-Further, under Linux, the option \texttt{threads} can be used to control the number of threads used in the linear algebra routines of \IPOPT.
+Further, under Linux and Windows, the option \texttt{threads} can be used to control the number of threads used in the linear algebra routines of \IPOPT.
 
 \subsubsection{Passing options to local search based heuristics and OA generators}
 Several parts of the algorithms in \BONMIN are based on solving a simplified version of the problem with another instance of \BONMIN:
@@ -401,7 +401,7 @@ The format of the option file is the same as for \IPOPT (see Section~\ref{sub:ip
 
 \GAMS/\COUENNE understands currently the following \GAMS parameters: \texttt{reslim} (time limit), \texttt{nodlim} (node limit), \texttt{cutoff}, \texttt{optca} (absolute gap tolerance), and \texttt{optcr} (relative gap tolerance).
 One can set them either on the command line, e.g. \verb+nodlim=1000+, or inside your \GAMS program, e.g. \verb+Option nodlim=1000;+.
-Further, under Linux, the option \texttt{threads} can be used to control the number of threads used in the linear algebra routines of \IPOPT.
+Further, under Linux and Windows, the option \texttt{threads} can be used to control the number of threads used in the linear algebra routines of \IPOPT.
 
 \subsection{Detailed Options Description}
 \label{sub:couenneoptions}
@@ -512,7 +512,7 @@ is a valid \texttt{ipopt.opt} file.
 
 \GAMS/\IPOPT understand currently the following \GAMS parameters: \texttt{reslim} (time limit), \texttt{iterlim} (iteration limit), \texttt{domlim} (domain violation limit).
 You can set them either on the command line, e.g. \verb+iterlim=500+, or inside your \GAMS program, e.g. \verb+Option iterlim=500;+.
-Further, under Linux, the option \texttt{threads} can be used to control the number of threads used in the basic linear algebra routines.
+Further, under Linux and Windows, the option \texttt{threads} can be used to control the number of threads used in the basic linear algebra routines.
 
 
 \subsection{Output}
