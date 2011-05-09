@@ -727,9 +727,8 @@ void printCouenneOptions() {
   	if (regoptions->categoriesInfo(category)==Bonmin::RegisteredOptions::BonminCategory) continue;
   	if (regoptions->categoriesInfo(category)==Bonmin::RegisteredOptions::UndocumentedCategory) continue;
 
-		if (it->second->Name()=="lp_solver" ||
-				it->second->Name()=="couenne_check" ||
-            it->second->Name()=="enable_sos" ||
+		if (it->second->Name()=="couenne_check" ||
+        it->second->Name()=="enable_sos" ||
 				it->second->Name()=="test_mode")
 			continue;
 

@@ -436,6 +436,21 @@ Solve as many nlp's at the nodes for each level of the tree. Nodes are randomly 
 If -1, apply at every node (expensive!). If 0, apply at root node only. If k$>$=0, apply with probability $2^{(k - level)}$, level being the current depth of the B\&B tree.}%
 {}
 
+\printoption{lp\_solver}%
+{\ttfamily clp, cplex}%
+{clp}%
+{Linear Programming solver for the linear relaxation.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{clp}] Use the Coin-OR Open Source solver CLP
+\item[\texttt{cplex}] Use the commercial solver Cplex (license is needed)
+\end{list}
+}
+
 \printoption{minlp\_disj\_cuts}%
 {$-99\leq\textrm{integer}$}%
 {$0$}%
