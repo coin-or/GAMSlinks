@@ -334,14 +334,13 @@ int GamsCouenne::callSolver() {
 		}
 
 
+#ifdef COIN_HAS_CPX
 		options->GetStringValue("lp_solver", s, "");
-		if (s == "cplex") {
-//#ifdef COIN_HAS_CPX
-//    if (s == "cplex" && (!checkLicense(gmo) || !registerGamsCplexLicense(gmo))) {
-//#endif
-		  gevLogStat(gev, "CPLEX as LP solver not supported currently.\n");
+    if (s == "cplex" && (!checkLicense(gmo) || !registerGamsCplexLicense(gmo))) {
+		  gevLogStat(gev, "CPLEX as LP solver chosen, but no CPLEX license available. Aborting.\n");
 		  return 1;
 		}
+#endif
 
 		CouenneInterface* ci = new CouenneInterface;
 		ci->initialize(roptions, options, jnlst, GetRawPtr(minlp));
