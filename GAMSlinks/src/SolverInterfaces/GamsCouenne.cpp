@@ -239,7 +239,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
  	gmoPinfSet(gmo, ipoptinf);
 
 // 	printOptions();
-	setNumThreadsBlas(gevThreads(gev));
+	setNumThreadsBlas(gev, gevThreads(gev));
 
  	return 0;
 }
@@ -409,15 +409,22 @@ int GamsCouenne::callSolver() {
 
 		gevLogStat(gev, "");
 		if (bb.bestSolution()) {
-			snprintf(buffer, 1024, "MINLP solution: %20.10g   (%d nodes, %g seconds)", best_val, bb.numNodes(), gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+			snprintf(buffer, 1024, "Best solution: %15.6e   (%d nodes, %g seconds)", best_val, bb.numNodes(), gevTimeDiffStart(gev) - minlp->nlp->clockStart);
 			gevLogStat(gev, buffer);
 		}
 		if (best_bound > -1e200 && best_bound < 1e200) {
-			snprintf(buffer, 1024, "Best possible: %21.10g\n", best_bound);
+			snprintf(buffer, 1024, "Best possible: %15.6e\n", best_bound);
 			gevLogStat(gev, buffer);
 
 			if (bb.bestSolution()) {
-				snprintf(buffer, 1024, "Absolute gap: %22.5g\nRelative gap: %22.5g\n", CoinAbs(best_val-best_bound), CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.));
+				double optca;
+				double optcr;
+			  options->GetNumericValue("allowable_gap", optca, "bonmin.");
+			  options->GetNumericValue("allowable_fraction_gap", optcr, "bonmin.");
+
+				snprintf(buffer, 255, "Absolute gap: %16.6e   (absolute tolerance optca: %g)", CoinAbs(best_val-best_bound), optca);
+				gevLogStat(gev, buffer);
+				snprintf(buffer, 255, "Relative gap: %15.6f%%   (relative tolerance optcr: %g%%)", CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.0), optcr);
 				gevLogStat(gev, buffer);
 			}
 		}

@@ -344,7 +344,7 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return -1;
 	}
 
-	setNumThreadsBlas(gevThreads(gev));
+	setNumThreadsBlas(gev, gevThreads(gev));
 
  	return 0;
 }
@@ -473,15 +473,22 @@ int GamsBonmin::callSolver() {
 		char buf[1024];
 		double best_val = gmoGetHeadnTail(gmo, Hobjval);
 		if (bb.bestSolution()) {
-			snprintf(buf, 1024, "MINLP solution: %20.10g   (%d nodes, %g seconds)", best_val, (int)gmoGetHeadnTail(gmo, Tmipnod), gmoGetHeadnTail(gmo, Hresused));
+			snprintf(buf, 1024, "Best solution: %15.6e   (%d nodes, %g seconds)", best_val, (int)gmoGetHeadnTail(gmo, Tmipnod), gmoGetHeadnTail(gmo, Hresused));
 			gevLogStat(gev, buf);
 		}
 		if (best_bound > -1e200 && best_bound < 1e200) {
-			snprintf(buf, 1024, "Best possible: %21.10g\n", best_bound);
+			snprintf(buf, 1024, "Best possible: %15.6e   (only reliable for convex models)\n", best_bound);
 			gevLogStat(gev, buf);
 
 			if (bb.bestSolution()) {
-				snprintf(buf, 1024, "Absolute gap: %22.5g\nRelative gap: %22.5g\n", CoinAbs(best_val-best_bound), CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.));
+				double optca;
+				double optcr;
+				bonmin_setup->options()->GetNumericValue("allowable_gap", optca, "bonmin.");
+				bonmin_setup->options()->GetNumericValue("allowable_fraction_gap", optcr, "bonmin.");
+
+				snprintf(buf, 255, "Absolute gap: %16.6e   (absolute tolerance optca: %g)", CoinAbs(best_val-best_bound), optca);
+				gevLogStat(gev, buf);
+				snprintf(buf, 255, "Relative gap: %15.6f%%   (relative tolerance optcr: %g%%)", CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.0), optcr);
 				gevLogStat(gev, buf);
 			}
 		}

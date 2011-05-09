@@ -184,8 +184,6 @@ int GamsScip::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		return 1;
 	}
 
-	setNumThreadsBlas(gevThreads(gev));
-
 	return 0;
 }
 
@@ -486,6 +484,7 @@ SCIP_RETCODE GamsScip::setupSCIPParameters() {
        * setting minorthoroot to 0.4 helps in this case to ensure that the linearization in the global optimum makes its way into the LP
        */
       SCIP_CALL( SCIPsetRealParam(scip, "separating/minorthoroot", 0.4) );
+    	setNumThreadsBlas(gev, gevThreads(gev));
    }
    if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
      SCIP_CALL( SCIPsetBoolParam(scip, "presolving/donotmultaggr", TRUE) );

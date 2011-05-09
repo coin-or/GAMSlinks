@@ -46,11 +46,21 @@ extern "C" void MKL_Domain_Set_Num_Threads(int, int);
 //extern "C" void MKL_Set_Num_Threads(int);
 #endif
 
-void GamsSolver::setNumThreadsBlas(int nthreads) {
+void GamsSolver::setNumThreadsBlas(struct gevRec* gev, int nthreads) {
 #ifdef HAVE_GOTO_SETNUMTHREADS
+	if (gev != NULL && nthreads > 1) {
+		char msg[100];
+		sprintf(msg, "Limit number of threads in GotoBLAS to %d.\n", nthreads);
+		gevLogPChar(gev, msg);
+	}
   goto_set_num_threads(nthreads);
 #endif
 #ifdef HAVE_MKL_SETNUMTHREADS
+	if (gev != NULL && nthreads > 1) {
+		char msg[100];
+		sprintf(msg, "Limit number of threads in MKL BLAS to %d.\n", nthreads);
+		gevLogPChar(gev, msg);
+	}
   MKL_Domain_Set_Num_Threads(nthreads, 1); // 1 = Blas
 #endif
 }

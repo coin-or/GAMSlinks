@@ -17,7 +17,7 @@
 class GamsSolver {
 public:
   /** Sets number of threads to use in basic linear algebra routines. */
-  static void setNumThreadsBlas(int nthreads);
+  static void setNumThreadsBlas(struct gevRec* gev, int nthreads);
 
 private:
 	bool need_unload_gmo;

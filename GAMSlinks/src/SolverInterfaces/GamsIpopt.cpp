@@ -213,7 +213,7 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	}
 #endif
 
-	setNumThreadsBlas(gevThreads(gev));
+	setNumThreadsBlas(gev, gevThreads(gev));
 
 	return 0;
 }
