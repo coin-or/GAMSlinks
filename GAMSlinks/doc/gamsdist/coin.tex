@@ -742,7 +742,7 @@ Setting the \GAMS option \texttt{integer3} to a nonzero value leads to writing t
 The name of the MPS file is chosen to be the name of the \GAMS model file with the extension \texttt{.gms} replaced by \texttt{.mps}.
 This option may be useful for debugging purposes.
 
-For \OSICPLEX and \OSIGUROBI, setting the \GAMS option \texttt{integer4} to a nonzero value leads to passing the variable level values (\texttt{.l} suffix) to the MIP solver as initial solution. This is analog to the \texttt{mipstart} option of the full \CPLEX and \GUROBI links.
+For \OSICPLEX, \OSIGUROBI, and \OSIXPRESS, setting the \GAMS option \texttt{integer4} to a nonzero value leads to passing the variable level values (\texttt{.l} suffix) to the MIP solver as initial solution. This is analog to the \texttt{mipstart} option of the full \CPLEX and \GUROBI links and the \texttt{loadmipsol} option of the full \XPRESS link.
 
 \subsection{Option files}
 \label{sub:osioptions}

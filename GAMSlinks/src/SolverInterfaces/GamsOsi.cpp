@@ -730,7 +730,7 @@ bool GamsOsi::setupStartingPoint() {
 	}
 
 	/* pass column solution for mipstart */
-	if (!isLP() && gevGetIntOpt(gev, gevInteger4) && (solverid == CPLEX || solverid == GUROBI))
+	if (!isLP() && gevGetIntOpt(gev, gevInteger4) && (solverid == CPLEX || solverid == GUROBI || solverid == XPRESS))
 	{
 		double* varlevel = new double[gmoN(gmo)];
 		gmoGetVarL(gmo, varlevel);
@@ -978,6 +978,9 @@ bool GamsOsi::setupParameters() {
 			XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPABSSTOP, optca);
 #if GEVAPIVERSION >= 4
 			XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_THREADS, gevThreads(gev));
+#endif
+#ifdef GAMS_BUILD
+			osixpr->setMipStart(gevGetIntOpt(gev, gevInteger4));
 #endif
 			if (gmoOptFile(gmo)) {
 				char buffer[4096];
