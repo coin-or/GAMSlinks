@@ -488,7 +488,7 @@ int GamsBonmin::callSolver() {
 
 				snprintf(buf, 255, "Absolute gap: %16.6e   (absolute tolerance optca: %g)", CoinAbs(best_val-best_bound), optca);
 				gevLogStat(gev, buf);
-				snprintf(buf, 255, "Relative gap: %15.6f%%   (relative tolerance optcr: %g%%)", CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.0), optcr);
+				snprintf(buf, 255, "Relative gap: %15.6f%%   (relative tolerance optcr: %g%%)", 100*CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.0), optcr);
 				gevLogStat(gev, buf);
 			}
 		}
