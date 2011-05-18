@@ -145,7 +145,7 @@
 #define Proc_minlp  gmoProc_minlp
 #define Proc_qcp    gmoProc_qcp
 #define Proc_miqcp  gmoProc_miqcp
-#define Proc_rmiqcp gmoProc_none
+#define Proc_rmiqcp gmoProc_rmiqcp
 #define Proc_emp    gmoProc_emp
 #endif
 
