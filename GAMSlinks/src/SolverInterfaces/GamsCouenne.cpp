@@ -255,13 +255,17 @@ int GamsCouenne::callSolver() {
 	char buffer[1024];
 
  	CouenneProblem* problem;
-#if GMOAPIVERSION >= 7
+#if GMOAPIVERSION >= 9
  	if( !(gevGetIntOpt(gev, gevInteger1) & 0x1) ) {
      problem = setupProblemNew();
-// 	   if( gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp )
-// 	      problem = setupProblemNew();
-// 	   else
-// 	      problem = setupProblem();
+ 	} else
+#elif GMOAPIVERSION >= 7
+ 	if( !(gevGetIntOpt(gev, gevInteger1) & 0x1) ) {
+     problem = setupProblemNew();
+ 	   if( gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp )
+ 	      problem = setupProblemNew();
+ 	   else
+ 	      problem = setupProblem();
  	} else
 #endif
  	if (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp)
