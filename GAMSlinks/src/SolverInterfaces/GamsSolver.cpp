@@ -135,7 +135,7 @@ bool GamsSolver::registerGamsCplexLicense(struct gmoRec* gmo) {
 #if defined(COIN_HAS_CPX) && defined(GAMS_BUILD)
   gevRec* gev = (gevRec*)gmoEnvironment(gmo);
 
-/* bad bad bad */ 
+/* bad bad bad */
 #undef SUB_FR
 #define GEVPTR gev
 #define SUB_OC
@@ -156,6 +156,14 @@ bool GamsSolver::registerGamsCplexLicense(struct gmoRec* gmo) {
         gevLogStat(gev,"*** MIP option not licensed. Can solve continuous models only.");
         return false;
       }
+    }
+  } else {
+    int isLicMIP=0, isLicCP=1;
+    licenseQueryOption("CPLEX","MIP", &isLicMIP);
+    licenseQueryOption("CPLEX","GMSLICE", &isLicCP);
+    if (0==isLicMIP && 1==isLicCP && gmoNDisc(gmo)) {
+      gevLogStat(gev,"*** MIP option not licensed. Can solve continuous models only.");
+      return false;
     }
   }
   return true;
