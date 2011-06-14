@@ -335,6 +335,14 @@ void printIpoptOptions() {
 			"Note, that you still need to specify to use pardiso as linear_solver."
 	);
 	
+	ipopt->RegOptions()->SetRegisteringCategory("Output");
+	ipopt->RegOptions()->AddStringOption2("print_eval_error",
+		"whether to print information about function evaluation errors into the listing file",
+	  "no",
+	  "no", "",
+	  "yes", "",
+	  ""
+	);
 
   const Ipopt::RegisteredOptions::RegOptionsList& optionlist(ipopt->RegOptions()->RegisteredOptionsList());
     
