@@ -56,6 +56,11 @@ GamsNLP::GamsNLP (gmoHandle_t gmo_)
 
   domviollimit = gevGetIntOpt(gev, gevDomLim);
 
+#if GMOAPIVERSION >= 9
+  /* stop fast in case of eval errors, since we do not look into values anyway */
+  gmoEvalErrorMethodSet(gmo, gmoEVALERRORMETHOD_FASTSTOP);
+#endif
+
   reset_eval_counter();
 }
 
