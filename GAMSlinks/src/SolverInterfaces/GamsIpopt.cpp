@@ -152,6 +152,26 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	);
 #endif
 
+#if GMOAPIVERSION >= 9
+//	ipopt->RegOptions()->SetRegisteringCategory("NLP");
+//	ipopt->RegOptions()->AddStringOption2("halt_on_eval_error",
+//		"whether to stop Ipopt as soon as a function evaluation error occurs",
+//	  "no",
+//	  "no", "",
+//	  "yes", "",
+//	  ""
+//	);
+
+	ipopt->RegOptions()->SetRegisteringCategory("Output");
+	ipopt->RegOptions()->AddStringOption2("print_eval_error",
+		"whether to print information about function evaluation errors into the listing file",
+	  "no",
+	  "no", "",
+	  "yes", "",
+	  ""
+	);
+#endif
+
 	if (gmoOptFile(gmo)) {
 	 	ipopt->Options()->SetStringValue("print_user_options", "yes", true, true);
 		gmoNameOptFile(gmo, buffer);
@@ -211,6 +231,19 @@ int GamsIpopt::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 		  return -1;
 		}
 	}
+#endif
+
+#if GMOAPIVERSION >= 9
+//	std::string haltonerror;
+//	ipopt->Options()->GetStringValue("halt_on_eval_error", haltonerror, "");
+//	if (haltonerror == "yes")
+//		gmoEvalErrorMethodSet(gmo, gmoEVALERRORMETHOD_FASTSTOP);
+//	else
+//		gmoEvalErrorMethodSet(gmo, gmoEVALERRORMETHOD_KEEPGOING);
+
+	std::string printevalerror;
+	ipopt->Options()->GetStringValue("print_eval_error", printevalerror, "");
+	gmoEvalErrorNoMsg(gmo, printevalerror == "no");
 #endif
 
 	setNumThreadsBlas(gev, gevThreads(gev));

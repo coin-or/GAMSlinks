@@ -201,6 +201,17 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	);
 #endif
 
+#if GMOAPIVERSION >= 9
+	roptions->SetRegisteringCategory("Output");
+	roptions->AddStringOption2("print_eval_error",
+		"whether to print information about function evaluation errors into the listing file",
+	  "no",
+	  "no", "",
+	  "yes", "",
+	  ""
+	);
+#endif
+
 	// Change some options
 	options->SetNumericValue("bound_relax_factor", 1e-10, true, true);
 #if GMOAPIVERSION >= 7
@@ -237,6 +248,12 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
  	options->GetNumericValue("nlp_upper_bound_inf", ipoptinf, "");
  	options->SetNumericValue("nlp_upper_bound_inf", ipoptinf, false, true); /* to disallow clobber */
  	gmoPinfSet(gmo, ipoptinf);
+
+#if GMOAPIVERSION >= 9
+	std::string printevalerror;
+	options->GetStringValue("print_eval_error", printevalerror, "");
+	gmoEvalErrorNoMsg(gmo, printevalerror == "no");
+#endif
 
 // 	printOptions();
 	setNumThreadsBlas(gev, gevThreads(gev));

@@ -197,6 +197,17 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
       "no",
       "no", "", "yes", "", "");
 
+#if GMOAPIVERSION >= 9
+	bonmin_setup->roptions()->SetRegisteringCategory("Output");
+	bonmin_setup->roptions()->AddStringOption2("print_eval_error",
+		"whether to print information about function evaluation errors into the listing file",
+	  "no",
+	  "no", "",
+	  "yes", "",
+	  ""
+	);
+#endif
+
   // add options specific to BCH heuristic callback
 //TODO  BCHsetupOptions(*bonmin_setup.roptions());
 //  printOptions(journalist, bonmin_setup.roptions());
@@ -310,6 +321,12 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 			return 1;
 		}
 	}
+
+#if GMOAPIVERSION >= 9
+	std::string printevalerror;
+	bonmin_setup->options()->GetStringValue("print_eval_error", printevalerror, "");
+	gmoEvalErrorNoMsg(gmo, printevalerror == "no");
+#endif
 
 	msghandler = new GamsMessageHandler(gev);
 //	GamsBCH* bch = NULL;
