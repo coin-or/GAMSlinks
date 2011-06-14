@@ -202,7 +202,7 @@ int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 #endif
 
 #if GMOAPIVERSION >= 9
-	roptions->SetRegisteringCategory("Output");
+	roptions->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
 	roptions->AddStringOption2("print_eval_error",
 		"whether to print information about function evaluation errors into the listing file",
 	  "no",

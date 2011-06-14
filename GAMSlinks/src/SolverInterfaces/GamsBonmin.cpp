@@ -198,7 +198,7 @@ int GamsBonmin::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
       "no", "", "yes", "", "");
 
 #if GMOAPIVERSION >= 9
-	bonmin_setup->roptions()->SetRegisteringCategory("Output");
+	bonmin_setup->roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
 	bonmin_setup->roptions()->AddStringOption2("print_eval_error",
 		"whether to print information about function evaluation errors into the listing file",
 	  "no",
