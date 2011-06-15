@@ -13,11 +13,6 @@
 #error "gmomcc.h need to be included before this file to have GMOAPIVERSION defined"
 #endif
 
-#if GMOAPIVERSION > 8
-#define gmoGetVarNameOne(a, b, c)  gmoGetVarNameOne(a, b, "", c)
-#define gmoGetEquNameOne(a, b, c)  gmoGetEquNameOne(a, b, "", c)
-#endif
-
 /* value for not available/applicable */
 #if GMOAPIVERSION >= 7 && GMOAPIVERSION <= 8
 #define GMS_SV_NA     gmoValNA(gmo)
@@ -70,7 +65,6 @@
 #define Cstat_UnBnd  gmoCstat_UnBnd
 
 #define ObjType_Var gmoObjType_Var
-#define ObjType_Equ gmoObjType_Equ
 #define ObjType_Fun gmoObjType_Fun
 
 #define IFace_Processed gmoIFace_Processed
