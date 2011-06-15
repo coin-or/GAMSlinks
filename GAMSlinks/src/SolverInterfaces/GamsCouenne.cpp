@@ -278,7 +278,6 @@ int GamsCouenne::callSolver() {
  	} else
 #elif GMOAPIVERSION >= 7
  	if( !(gevGetIntOpt(gev, gevInteger1) & 0x1) ) {
-     problem = setupProblemNew();
  	   if( gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp )
  	      problem = setupProblemNew();
  	   else
