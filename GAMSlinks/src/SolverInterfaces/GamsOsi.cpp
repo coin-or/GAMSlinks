@@ -353,8 +353,8 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 
 				if (MSK_makeenv(&mskenv,NULL, NULL,NULL,NULL)) {
 					gevLogStat(gev, "Failed to create Mosek environment.");
-					gmoSolveStatSet(gmo, SolveStat_SetupErr);
-					gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+					gmoSolveStatSet(gmo, SolveStat_License);
+					gmoModelStatSet(gmo, ModelStat_LicenseError);
 					return 1;
 				}
 				rc = gevmoseklice(gev,mskenv,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo), 0, &initType);
@@ -362,9 +362,9 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 					gevLogStat(gev, "Trying to use Mosek standalone license.\n");
 
 				if (MSK_initenv(mskenv)) {
-					gevLogStat(gev, "Failed to initialize Mosek environment.");
-					gmoSolveStatSet(gmo, SolveStat_SetupErr);
-					gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+					gevLogStat(gev, "Failed to initialize Mosek environment. Maybe you do not have a license?");
+					gmoSolveStatSet(gmo, SolveStat_License);
+					gmoModelStatSet(gmo, ModelStat_LicenseError);
 					return 1;
 				}
 				osi = new OsiMskSolverInterface(mskenv);
@@ -422,8 +422,8 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 				OsiXprSolverInterface* osixpr = new OsiXprSolverInterface(0,0);
 				if (!osixpr->getNumInstances()) {
 					gevLogStat(gev, "Failed to setup XPRESS instance. Maybe you do not have a license?\n");
-					gmoSolveStatSet(gmo, SolveStat_SetupErr);
-					gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+					gmoSolveStatSet(gmo, SolveStat_License);
+					gmoModelStatSet(gmo, ModelStat_LicenseError);
 					return 1;
 				}
 				osi = osixpr;
