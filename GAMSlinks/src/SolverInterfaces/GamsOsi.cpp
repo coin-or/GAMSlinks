@@ -443,12 +443,12 @@ int GamsOsi::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
 	} catch (CoinError error) {
 		gevLogStatPChar(gev, "Exception caught when creating Osi interface: ");
 		gevLogStat(gev, error.message().c_str());
-		if( error.message().find("license") == std::string::npos ) {
-		   gmoSolveStatSet(gmo, SolveStat_SetupErr);
-		   gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-		} else {
+		if( solverid == CPLEX || solverid == GUROBI || solverid == MOSEK || solverid == XPRESS ) {
          gmoSolveStatSet(gmo, SolveStat_License);
          gmoModelStatSet(gmo, ModelStat_LicenseError);
+		} else {
+         gmoSolveStatSet(gmo, SolveStat_SetupErr);
+         gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
 		}
 		return 1;
 	} catch (...) {
