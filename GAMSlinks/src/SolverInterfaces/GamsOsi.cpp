@@ -1370,6 +1370,14 @@ bool GamsOsi::writeSolution(double cputime, double walltime, bool& write_solutio
 			OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
 			assert(osimsk);
 
+			if( osimsk->isLicenseError() )
+			{
+            gmoSolveStatSet(gmo, SolveStat_License);
+            gmoModelStatSet(gmo, ModelStat_LicenseError);
+            gevLogStat(gev, "Stopped with license error.");
+            break;
+			}
+
 			MSKprostae probstatus;
 			MSKsolstae solstatus;
 		  MSKsoltypee solution;
