@@ -135,7 +135,9 @@ case $GAMSIO_CODE in
       GAMSIO_CIA=CIA_SIS
     ;;
   *)
-      AC_MSG_ERROR([GAMS I/O libraries with system code $GAMSIO_CODE not supported.])
+      gamsio_system=Linux
+      GAMSIO_CIA=CIA_NA
+      AC_MSG_WARN([GAMS I/O libraries with system code $GAMSIO_CODE not supported.])
 esac
 
 CIA_FLAG=""

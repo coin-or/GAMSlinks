@@ -30444,9 +30444,10 @@ case $GAMSIO_CODE in
       GAMSIO_CIA=CIA_SIS
     ;;
   *)
-      { { echo "$as_me:$LINENO: error: GAMS I/O libraries with system code $GAMSIO_CODE not supported." >&5
-echo "$as_me: error: GAMS I/O libraries with system code $GAMSIO_CODE not supported." >&2;}
-   { (exit 1); exit 1; }; }
+      gamsio_system=Linux
+      GAMSIO_CIA=CIA_NA
+      { echo "$as_me:$LINENO: WARNING: GAMS I/O libraries with system code $GAMSIO_CODE not supported." >&5
+echo "$as_me: WARNING: GAMS I/O libraries with system code $GAMSIO_CODE not supported." >&2;}
 esac
 
 CIA_FLAG=""
