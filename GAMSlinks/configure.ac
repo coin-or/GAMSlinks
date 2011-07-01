@@ -293,8 +293,7 @@ AC_SUBST(gamslinks_build_bonmin)
 AM_CONDITIONAL([GAMSLINKS_BUILD_BONMIN],[test $gamslinks_build_bonmin = 1])
 
 if test "x$coin_has_coinutils" != xunavailable && test "x$coin_has_coinutils" != xskipping &&
-   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping &&
-   ( test $coin_has_glpk = true || test $coin_has_cpx = true || test $coin_has_msk = true || test $coin_has_grb = true || test $coin_has_xpr = true ) ; then
+   test "x$coin_has_osi" != xunavailable && test "x$coin_has_osi" != skipping ; then
   gamslinks_build_osi=1
 else
   gamslinks_build_osi=0
