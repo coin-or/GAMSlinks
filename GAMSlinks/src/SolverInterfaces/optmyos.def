@@ -1,10 +1,10 @@
 *
-* optosd.def
+* optmyos.def
 *
 
 readosol string 0 "" 1 1 read the solver options from an OSoL file
-writeosil string 0 "" 1 1 write the problem instance as OSiL file
-writeosrl string 0 "" 1 1 write the optimization result as OSrL file
+writeosil string.opt 0 "osil.xml" 1 1 write the problem instance as OSiL file
+writeosrl string.opt 0 "osrl.xml" 1 1 write the optimization result as OSrL file
 service string 0 "" 1 1 address of an Optimization Services Agent for a remote solve
 solver string 0 "" 1 1 specification of a solver
 nobounds immediate nobounds 0 1 ignores bounds on options

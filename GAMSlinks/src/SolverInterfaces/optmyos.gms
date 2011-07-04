@@ -5,7 +5,11 @@ set g OS Option Groups /
       /
     e / '-1' /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
-    t / I Integer, R Real, S String, B Binary /
+    t / I   Integer
+        R   Real
+        S   String
+        B   Binary
+        SD  String with defaults /
     o Options /
       readosol               read the solver options from an OSoL file
       writeosil              write the problem instance as OSiL file
@@ -22,8 +26,8 @@ $onembedded
 optdata(g,o,t,f) /
 general.(
   readosol         .s.(def '')
-  writeosil        .s.(def '')
-  writeosrl        .s.(def '')
+  writeosil        .sd.(def 'osil.xml')
+  writeosrl        .sd.(def 'osrl.xml')
   service          .s.(def '')
   solver           .s.(def '')
 * GAMS options
@@ -44,3 +48,7 @@ $offempty
 $onempty
  oep(o) enum options for documentation only / /;
 $offempty
+
+*** big fudge
+set optvalue(o); optvalue(o) = sum(optdata(g,o,'SD',f), yes);
+optdata(g,o,'S',f) $= optdata(g,o,'SD',f); optdata(g,o,'SD',f) = no;
