@@ -1090,13 +1090,13 @@ bool GamsCbc::setupParameters() {
 			par_list.push_back("-preprocess");
 			par_list.push_back(value);
 		} else {
-			gevLogStat(gev, "Unsupported value for option 'coststrategy'. Ignoring this option");
+			gevLogStat(gev, "Unsupported value for option 'preprocess'. Ignoring this option");
 		}
-	} /* else if (gm.nSemiContinuous()) {
-		myout << "CBC integer preprocessing does not handle semicontinuous variables correct (yet), thus we switch it off." << CoinMessageEol;
+	} else if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
+		gevLogStat(gev, "CBC integer preprocessing does not handle semicontinuous variables correct, thus we switch it off.");
 		par_list.push_back("-preprocess");
 		par_list.push_back("off");
-	} */
+	}
 
 	if (options.isDefined("increment")) {
 		par_list.push_back("-increment");
