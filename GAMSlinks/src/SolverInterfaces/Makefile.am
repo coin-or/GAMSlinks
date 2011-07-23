@@ -31,7 +31,7 @@ else
 endif
 
 if COIN_HAS_OSI
-#  libGamsCoin_la_SOURCES += GamsOsi.cpp GamsOsiHelper.cpp GamsMessageHandler.cpp
+  libGamsCoin_la_SOURCES += GamsMessageHandler.cpp GamsOsiHelper.cpp #GamsOsi.cpp 
 endif
 
 if COIN_HAS_OSICPX

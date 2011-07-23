@@ -1,51 +1,54 @@
-// Copyright (C) GAMS Development and others 2009
+// Copyright (C) GAMS Development and others 2009-2011
 // All Rights Reserved.
-// This code is published under the Common Public License.
-//
-// $Id$
+// This code is published under the Eclipse Public License.
 //
 // Author: Stefan Vigerske
 
 #ifndef GAMSMESSAGEHANDLER_HPP_
 #define GAMSMESSAGEHANDLER_HPP_
 
-#include "GAMSlinksConfig.h"
 #include "CoinMessageHandler.hpp"
 
 struct gevRec;
 
-/** A CoinUtils message handler that writes using the routines of a Gams Modeling Object.
- */
-class GamsMessageHandler : public CoinMessageHandler {
+/** message handler that writes via the Gams Environment */
+class GamsMessageHandler : public CoinMessageHandler
+{
 private:
-	struct gevRec* gev;
+	struct gevRec*        gev;                /**< GAMS environment */
+
 public:
-	/** Constructor.
-	 * @param gev_ A Gams Environment Object to access the GAMS status- and logfile.
-	 */
-  GamsMessageHandler(struct gevRec* gev_);
+  GamsMessageHandler(
+     struct gevRec*      gev_                /**< GAMS environment */
+  )
+  : gev(gev_)
+  { }
 
-  /** Sets the detail level of the current message.
-   * @param detail Detail level.
+  /** sets detail level of current message */
+  void setCurrentDetail(
+     int                 detail              /**< new detail level */
+  )
+  {
+     currentMessage_.setDetail(detail);
+  }
+
+  /** gives detail level of current message */
+  int getCurrentDetail() const
+  {
+     return currentMessage_.detail();
+  }
+
+  /** prints message from the message buffer
+   * Removes all newlines at the end of the message buffer.
+   * If currentMessage().detail() is smaller then 2, the message is written to logfile and statusfile, otherwise it is written only to the logfile.
    */
-  void setCurrentDetail(int detail);
-
-  /** Returns the detail level of the current message.
-   * @return Detail level.
-   */
-  int getCurrentDetail() const;
-
-	/** Prints the message from the message buffer.
-	 * Removes all newlines at the end of the message buffer.
-	 * If currentMessage().detail() is smaller then 2, the message is written to logfile and statusfile, otherwise it is written only to the logfile.
-	 * @return Zero.
-	 */
   int print();
 
-  /** Creates a copy of this message handler.
-   */
-  CoinMessageHandler* clone() const { return new GamsMessageHandler(gev); }
+  /** creates a copy of this message handler */
+  CoinMessageHandler* clone() const
+  {
+     return new GamsMessageHandler(gev);
+  }
 };
-
 
 #endif /*GAMSMESSAGEHANDLER_HPP_*/

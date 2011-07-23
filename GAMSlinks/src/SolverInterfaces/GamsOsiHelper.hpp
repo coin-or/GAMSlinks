@@ -1,28 +1,29 @@
-// Copyright (C) GAMS Development and others 2009
+// Copyright (C) GAMS Development and others 2009-2011
 // All Rights Reserved.
-// This code is published under the Common Public License.
-//
-// $Id$
+// This code is published under the Eclipse Public License.
 //
 // Author: Stefan Vigerske
 
 #ifndef GAMSOSIHELPER_HPP_
 #define GAMSOSIHELPER_HPP_
 
-#include "GAMSlinksConfig.h"
-
 class OsiSolverInterface;
 struct gmoRec;
 
-/** Loads the problem from GMO into OSI.
- * @return True on success, false on failure.
+/** loads a problem from GMO into OSI
+ * @return true on success, false on failure
  */
-bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver);
+bool gamsOsiLoadProblem(
+   struct gmoRec*        gmo,                /**< GAMS modeling object */
+   OsiSolverInterface&   solver              /**< OSI solver interface */
+);
 
-/** Stores a solution from OSI in GMO.
- * @param swapRowStatus whether the status of nonbasic variables should be swapped between lower and upper
- * @return True on success, false on failure.
+/** stores a solution (including dual values and basis status) from OSI in GMO
+ * @return true on success, false on failure
  */
-bool gamsOsiStoreSolution(struct gmoRec* gmo, const OsiSolverInterface& solver, bool swapRowStatus = false);
+bool gamsOsiStoreSolution(
+   struct gmoRec*        gmo,                /**< GAMS modeling object */
+   const OsiSolverInterface& solver          /**< OSI solver interface */
+);
 
 #endif /*GAMSOSIHELPER_HPP_*/

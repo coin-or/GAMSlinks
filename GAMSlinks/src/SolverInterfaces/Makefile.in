@@ -53,36 +53,35 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-
-#  libGamsCoin_la_SOURCES += GamsOsi.cpp GamsOsiHelper.cpp GamsMessageHandler.cpp
-@COIN_HAS_OSICPX_TRUE@am__append_1 = gmszcp$(SCRIPTSUFFIX)
-@COIN_HAS_OSIGLPK_TRUE@am__append_2 = gmszgl$(SCRIPTSUFFIX) optmyglpk.def
-@COIN_HAS_OSIGRB_TRUE@am__append_3 = gmszgu$(SCRIPTSUFFIX)
-@COIN_HAS_OSIMSK_TRUE@am__append_4 = gmszmk$(SCRIPTSUFFIX)
-@COIN_HAS_OSISPX_TRUE@am__append_5 = gmszsp$(SCRIPTSUFFIX)
-@COIN_HAS_OSIXPR_TRUE@am__append_6 = gmszxp$(SCRIPTSUFFIX)
+@COIN_HAS_OSI_TRUE@am__append_1 = GamsMessageHandler.cpp GamsOsiHelper.cpp #GamsOsi.cpp 
+@COIN_HAS_OSICPX_TRUE@am__append_2 = gmszcp$(SCRIPTSUFFIX)
+@COIN_HAS_OSIGLPK_TRUE@am__append_3 = gmszgl$(SCRIPTSUFFIX) optmyglpk.def
+@COIN_HAS_OSIGRB_TRUE@am__append_4 = gmszgu$(SCRIPTSUFFIX)
+@COIN_HAS_OSIMSK_TRUE@am__append_5 = gmszmk$(SCRIPTSUFFIX)
+@COIN_HAS_OSISPX_TRUE@am__append_6 = gmszsp$(SCRIPTSUFFIX)
+@COIN_HAS_OSIXPR_TRUE@am__append_7 = gmszxp$(SCRIPTSUFFIX)
 
 #  libGamsCoin_la_SOURCES += GamsCbc.cpp
-@COIN_HAS_CBC_TRUE@am__append_7 = gmscbc$(SCRIPTSUFFIX) optmycbc.def
+@COIN_HAS_CBC_TRUE@am__append_8 = gmscbc$(SCRIPTSUFFIX) optmycbc.def
 
 #  libGamsCoin_la_SOURCES += GamsIpopt.cpp GamsNLP.cpp GamsJournal.cpp
-@COIN_HAS_IPOPT_TRUE@am__append_8 = gmsip_$(SCRIPTSUFFIX)
+@COIN_HAS_IPOPT_TRUE@am__append_9 = gmsip_$(SCRIPTSUFFIX)
 
 #  libGamsCoin_la_SOURCES += GamsScip.cpp
-@COIN_HAS_SCIP_TRUE@am__append_9 = gmssc_$(SCRIPTSUFFIX)
+@COIN_HAS_SCIP_TRUE@am__append_10 = gmssc_$(SCRIPTSUFFIX)
 
 #  libGamsCoin_la_SOURCES += GamsBonmin.cpp GamsMINLP.cpp
-@COIN_HAS_BONMIN_TRUE@am__append_10 = gmsbm_$(SCRIPTSUFFIX)
+@COIN_HAS_BONMIN_TRUE@am__append_11 = gmsbm_$(SCRIPTSUFFIX)
 
 #  libGamsCoin_la_SOURCES += GamsCouenne.cpp
-@COIN_HAS_COUENNE_TRUE@am__append_11 = gmscou$(SCRIPTSUFFIX)
+@COIN_HAS_COUENNE_TRUE@am__append_12 = gmscou$(SCRIPTSUFFIX)
 
 #  libGamsCoin_la_SOURCES += GamsOS.cpp GamsOSxL.cpp
-@COIN_HAS_OS_TRUE@am__append_12 = gmsos_$(SCRIPTSUFFIX) optmyos.def
+@COIN_HAS_OS_TRUE@am__append_13 = gmsos_$(SCRIPTSUFFIX) optmyos.def
 DIST_COMMON = $(srcdir)/../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_13 = Dependencies
-@HAVE_EXTERNALS_TRUE@am__append_14 = .Dependencies-stamp
+@HAVE_EXTERNALS_TRUE@am__append_14 = Dependencies
+@HAVE_EXTERNALS_TRUE@am__append_15 = .Dependencies-stamp
 subdir = src/SolverInterfaces
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
@@ -102,7 +101,11 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
-am_libGamsCoin_la_OBJECTS = GamsSolver.lo
+am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp \
+	GamsMessageHandler.cpp GamsOsiHelper.cpp
+@COIN_HAS_OSI_TRUE@am__objects_1 = GamsMessageHandler.lo \
+@COIN_HAS_OSI_TRUE@	GamsOsiHelper.lo
+am_libGamsCoin_la_OBJECTS = GamsSolver.lo $(am__objects_1)
 libGamsCoin_la_OBJECTS = $(am_libGamsCoin_la_OBJECTS)
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 SCRIPTS = $(bin_SCRIPTS)
@@ -117,7 +120,7 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libGamsCoin_la_SOURCES)
-DIST_SOURCES = $(libGamsCoin_la_SOURCES)
+DIST_SOURCES = $(am__libGamsCoin_la_SOURCES_DIST)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -396,8 +399,8 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = $(am__append_13)
-DISTCLEANFILES = $(am__append_14) $(VPATH_DISTCLEANFILES)
+EXTRA_DIST = $(am__append_14)
+DISTCLEANFILES = $(am__append_15) $(VPATH_DISTCLEANFILES)
 AM_CPPFLAGS = $(GAMSSOLVERLIB_CFLAGS) \
   -I`$(CYGPATH_W) $(srcdir)/..` \
   -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` \
@@ -406,14 +409,14 @@ AM_CPPFLAGS = $(GAMSSOLVERLIB_CFLAGS) \
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 lib_LTLIBRARIES = libGamsCoin.la
-libGamsCoin_la_SOURCES = GamsSolver.cpp
+libGamsCoin_la_SOURCES = GamsSolver.cpp $(am__append_1)
 libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo ../GamsUtils/gclgms.lo $(GAMSSOLVERLIBS_LIBS)
 libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo ../GamsUtils/gclgms.lo $(GAMSSOLVERLIBS_DEPENDENCIES)
 libGamsCoin_la_LDFLAGS = -module -no-undefined
-bin_SCRIPTS = $(am__append_1) $(am__append_2) $(am__append_3) \
-	$(am__append_4) $(am__append_5) $(am__append_6) \
-	$(am__append_7) $(am__append_8) $(am__append_9) \
-	$(am__append_10) $(am__append_11) $(am__append_12)
+bin_SCRIPTS = $(am__append_2) $(am__append_3) $(am__append_4) \
+	$(am__append_5) $(am__append_6) $(am__append_7) \
+	$(am__append_8) $(am__append_9) $(am__append_10) \
+	$(am__append_11) $(am__append_12) $(am__append_13)
 @COIN_IS_WINDOWS_FALSE@SCRIPTSUFFIX = us.run
 @COIN_IS_WINDOWS_TRUE@SCRIPTSUFFIX = nt.cmd
 DocFiles = README AUTHORS LICENSE
@@ -506,6 +509,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSolver.Plo@am__quote@
 
 .cpp.o:
