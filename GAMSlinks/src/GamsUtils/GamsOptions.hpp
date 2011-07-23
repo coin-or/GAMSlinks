@@ -1,8 +1,6 @@
-// Copyright (C) GAMS Development and others 2009
+// Copyright (C) GAMS Development and others 2009-2011
 // All Rights Reserved.
-// This code is published under the Common Public License.
-//
-// $Id$
+// This code is published under the Eclipse Public License.
 //
 // Author:  Stefan Vigerske
 
@@ -10,15 +8,8 @@
 #define GAMSOPTIONS_HPP_
 
 #include "GAMSlinksConfig.h"
-#ifdef HAVE_CSTDLIB
+
 #include <cstdlib>
-#else
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#else
-#error "don't have header file for stdlib"
-#endif
-#endif
 
 struct gmoRec;
 struct gevRec;

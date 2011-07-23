@@ -31291,7 +31291,7 @@ else
   echo "$as_me:$LINENO: checking for gams version number" >&5
 echo $ECHO_N "checking for gams version number... $ECHO_C" >&6
   GAMS_VERSION=""
-  GAMS_VERSION=`grep "Installation of" ${GAMS_PATH}/gamsinst.log | head -1 | sed -e 's/.* \([0-9][0-9]*\.[0-9][0-9]*\)\.[0-9][0-9]* .*/\1/'`
+  GAMS_VERSION=`sed -e 's/... \([0-9][0-9]*\.[0-9][0-9]*\)\.[0-9][0-9]* .*/\1/' ${GAMS_PATH}/gamsstmp.txt`
   if test "x$GAMS_VERSION" != x ; then
     echo "$as_me:$LINENO: result: $GAMS_VERSION" >&5
 echo "${ECHO_T}$GAMS_VERSION" >&6
@@ -31879,12 +31879,11 @@ fi
 # END PART #
 ############
 
-#                 src/GamsUtils/Makefile
 #                 src/SolverInterfaces/Makefile
 #                 examples/adbench/Makefile
 #                 examples/osil2gms/Makefile
 #                 doc/optdoc/Makefile
-                              ac_config_files="$ac_config_files Makefile src/Makefile test/Makefile"
+                                        ac_config_files="$ac_config_files Makefile src/Makefile src/GamsUtils/Makefile test/Makefile"
 
           ac_config_files="$ac_config_files test/run_quality"
 
@@ -32745,6 +32744,7 @@ do
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "src/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+  "src/GamsUtils/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/GamsUtils/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   "test/run_quality" ) CONFIG_FILES="$CONFIG_FILES test/run_quality" ;;
   "test/run_gmstest" ) CONFIG_FILES="$CONFIG_FILES test/run_gmstest" ;;

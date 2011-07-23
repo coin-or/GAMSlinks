@@ -1,29 +1,15 @@
-// Copyright (C) GAMS Development and others 2011
-// All Rights Reserved.
-// This code is published under the Common Public License.
-//
-// $Id: GamsScip.cpp 976 2011-02-06 14:47:08Z stefan $
-//
-// Author: Stefan Vigerske
+/* Copyright (C) GAMS Development and others 2011
+ * All Rights Reserved.
+ * This code is published under the Eclipse Public License.
+ *
+ * Author: Stefan Vigerske
+ */
 
 #ifndef GAMSCOMPATIBILITY_H_
 #define GAMSCOMPATIBILITY_H_
 
 #ifndef GMOAPIVERSION
 #error "gmomcc.h need to be included before this file to have GMOAPIVERSION defined"
-#endif
-
-/* value for not available/applicable */
-#if GMOAPIVERSION >= 7 && GMOAPIVERSION <= 8
-#define GMS_SV_NA     gmoValNA(gmo)
-#elif GMOAPIVERSION < 7
-#define GMS_SV_NA     2.0E300
-#endif
-
-#if GMOAPIVERSION < 8
-#define Hresused     HresUsed
-#define Hdomused     HdomUsed
-#define Hobjval      HobjVal
 #endif
 
 #if GMOAPIVERSION > 8

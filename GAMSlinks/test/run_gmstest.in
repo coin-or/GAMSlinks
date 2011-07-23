@@ -1,15 +1,12 @@
 #!/bin/bash
-# Copyright (C) 2008 GAMS Development and others
+# Copyright (C) 2008-2011 GAMS Development and others
 # All Rights Reserved.
-# This file is distributed under the Common Public License.
-#
-## $Id$
+# This file is distributed under the Eclipse Public License.
 #
 # Author: Stefan Vigerske
 
 srcdir="@srcdir@"
 gamspath="@GAMS_PATH@"
-cia=`echo @GAMSIO_CIA@ | cut -c 5-`
 
 if test "x$gamspath" = xUNAVAILABLE; then
   echo "No GAMS system available."

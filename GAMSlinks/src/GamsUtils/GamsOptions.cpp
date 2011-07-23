@@ -1,52 +1,15 @@
-// Copyright (C) GAMS Development and others 2009
+// Copyright (C) GAMS Development and others 2009-2011
 // All Rights Reserved.
-// This code is published under the Common Public License.
-//
-// $Id$
+// This code is published under the Eclipse Public License.
 //
 // Author: Stefan Vigerske
 
 #include "GamsOptions.hpp"
 
-#ifdef HAVE_CSTDLIB
 #include <cstdlib>
-#else
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#else
-#error "don't have header file for stdlib"
-#endif
-#endif
-
-#ifdef HAVE_CSTDIO
 #include <cstdio>
-#else
-#ifdef HAVE_STDIO_H
-#include <stdio.h>
-#else
-#error "don't have header file for stdio"
-#endif
-#endif
-
-#ifdef HAVE_CASSERT
 #include <cassert>
-#else
-#ifdef HAVE_ASSERT_H
-#include <assert.h>
-#else
-#error "don't have header file for assert"
-#endif
-#endif
-
-#ifdef HAVE_CSTRING
 #include <cstring>
-#else
-#ifdef HAVE_STRING_H
-#include <string.h>
-#else
-#error "don't have header file for string"
-#endif
-#endif
 
 #ifndef HAVE_SNPRINTF
 #ifdef HAVE__SNPRINTF
@@ -82,7 +45,7 @@ bool GamsOptions::initOpt(const char* solvername) {
 
 	gevGetStrOpt(gev, gevNameSysDir, buffer);
 	buffer[511] = '\0';
-	int len = strlen(buffer);
+	size_t len = strlen(buffer);
 	if (snprintf(buffer+len, 512-len, "opt%s.def", solvername) >= 512) {
 		gevLogStatPChar(gev, "\n*** Path to GAMS system directory too long.\n");
 		return false;

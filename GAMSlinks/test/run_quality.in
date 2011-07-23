@@ -1,15 +1,12 @@
 #!/bin/bash
-# Copyright (C) GAMS Development and others 2008-2009
+# Copyright (C) GAMS Development and others 2008-2011
 # All Rights Reserved.
-# This file is distributed under the Common Public License.
-#
-## $Id$
+# This file is distributed under the Eclipse Public License.
 #
 # Author: Stefan Vigerske
 
 srcdir="@srcdir@"
 gamspath="@GAMS_PATH@"
-cia=`echo @GAMSIO_CIA@ | cut -c 5-`
 
 if test "x$gamspath" = xUNAVAILABLE; then
   echo "No GAMS system available."
@@ -144,7 +141,7 @@ for (( i=0 ; i<${#testlist[@]} ; i++ )) ; do
 		echo "Test " ${testlist[$i]} " passed."
 	else
 		testfailed=1
-		rename ${cia}_qa_ failed_test_$i_ ${cia}_qa_* 
+		rename _qa_ failed_test_$i_ *_qa_* 
 		mv failures_qa.gms failures_qa_$i.gms    
 		echo "Test " ${testlist[$i]} " failed. Content of failures_qa_$i.gms:" 1>&2
 		cat failures_qa_$i.gms 1>&2

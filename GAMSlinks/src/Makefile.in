@@ -18,9 +18,7 @@
 # All Rights Reserved.
 # This file is distributed under the Eclipse Public License.
 #
-#
 # Author: Stefan Vigerske
-# Template from: Andreas Waechter
 
 # Copyright (C) 2006, 2007 International Business Machines and others.
 # All Rights Reserved.
@@ -352,7 +350,7 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = #GamsUtils SolverInterfaces
+SUBDIRS = GamsUtils #SolverInterfaces
 EXTRA_DIST = $(am__append_1)
 DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)
 includecoindir = $(includedir)/coin

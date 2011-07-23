@@ -219,13 +219,13 @@ AC_COIN_VPATH_LINK(examples/adbench/install/gmsad_nt.dat)
 # END PART #
 ############
 
-#                 src/GamsUtils/Makefile
 #                 src/SolverInterfaces/Makefile
 #                 examples/adbench/Makefile
 #                 examples/osil2gms/Makefile
 #                 doc/optdoc/Makefile
 AC_CONFIG_FILES([Makefile
                  src/Makefile
+                 src/GamsUtils/Makefile
                  test/Makefile
                 ])
 AC_CONFIG_FILES([test/run_quality], [chmod +x test/run_quality])

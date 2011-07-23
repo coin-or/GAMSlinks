@@ -2,14 +2,11 @@
 # All Rights Reserved.
 # This file is distributed under the Eclipse Public License.
 #
-## $Id$
-#
 # Author: Stefan Vigerske
-# Template from: Andreas Waechter
 
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = #GamsUtils SolverInterfaces
+SUBDIRS = GamsUtils #SolverInterfaces
 
 EXTRA_DIST =
 
