@@ -14,18 +14,9 @@
 #ifndef GAMSNLINSTR_H_
 #define GAMSNLINSTR_H_
 
-#include "GAMSlinksConfig.h"
-
-#include "gmomcc.h"
-#include "gevmcc.h"
-
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
-/** The opcodes of GAMS nonlinear expressions.
- */
-typedef enum GamsOpCode_ {
+/** GAMS nonlinear expressions opcodes */
+typedef enum
+{
 	nlNoOp     =  0, /* no operation */
 	nlPushV    =  1, /* push variable */
 	nlPushI    =  2, /* push immediate (constant) */
@@ -60,13 +51,13 @@ typedef enum GamsOpCode_ {
 	MAXINS     = 31
 } GamsOpCode;
 
-/** Names of GAMS nonlinear expressions for printing.
- */
+/** GAMS nonlinear expression opcode names as strings */
 extern const char* GamsOpCodeName[MAXINS];
 
-/** The codes of GAMS nonlinear functions.
- */
-typedef enum GamsFuncCode_ {fnmapval=0,fnceil,fnfloor,fnround,
+/** GAMS nonlinear function codes */
+typedef enum
+{
+    fnmapval=0,fnceil,fnfloor,fnround,
     fnmod,fntrunc,fnsign,fnmin,
     fnmax,fnsqr,fnexp,fnlog,
     fnlog10,fnsqrt,fnabs,fncos,
@@ -98,20 +89,13 @@ typedef enum GamsFuncCode_ {fnmapval=0,fnceil,fnfloor,fnround,
     fnarcsin,fnarctan2,fnsleep,fnheapf,
     fncohandle,fngamsrel,fnpoly,
     fnlicensestatus,fnlicenselevel,fnheaplimit,
-    fndummy} GamsFuncCode;
+    fndummy
+} GamsFuncCode;
 
+/** gives opcode from a GAMS instruction */
+#define getGamsInstrOpCode(instr) ((GamsOpCode)((instr)>>26))
 
-/** Gives the opcode of a GAMS nonlinear instruction.
- */
-GamsOpCode getInstrOpCode(unsigned int instr);
-
-/** Gives the address in a GAMS nonlinear instruction.
- * The address will be 0-based.
- */
-int getInstrAddress(unsigned int instr);
-
-#if defined(__cplusplus)
-} /* extern "C" */
-#endif
+/** gives (0-based) address from a GAMS instruction */
+#define getGamsInstrAddress(instr) (((instr) & 67108863)-1)
 
 #endif /*GAMSNLINSTR_H_*/

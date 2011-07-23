@@ -2,103 +2,127 @@
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
-// Author:  Stefan Vigerske
+// Author: Stefan Vigerske
 
 #ifndef GAMSOPTIONS_HPP_
 #define GAMSOPTIONS_HPP_
 
-#include "GAMSlinksConfig.h"
-
 #include <cstdlib>
 
-struct gmoRec;
 struct gevRec;
 struct optRec;
 
 /** Wrapper class for GAMS option file handler.
  * Provides methods to simplify reading and setting of options.
+ * Reads the file "<systemdir>/opt<solvername>.def" to retrieve list of supported options.
  */
-class GamsOptions {
+class GamsOptions
+{
 private:
-	struct gmoRec* gmo;
-	struct gevRec* gev;
-	struct optRec* optionshandle; // handle for options
+   struct gevRec*        gev;                /**< GAMS environment */
+   struct optRec*        optionshandle;      /**< GAMS options handler object */
 
-	bool opt_is_own;
+   bool                  opt_is_own;         /**< have we created the optionshandle? */
 
-	bool initOpt(const char* solvername);
+   /** initializes options object (create options handler, read options definitions file) */
+   bool initOpt(
+      const char*        solvername          /**< name of solver which options definitions file should be read */
+   );
+
+   /** print message queue from options handler */
+   void printOptMessages();
 
 public:
-	/** Constructor for GamsOptions class.
-	 * Initialization of options handle.
-	 * Reading of the file "<systemdir>/opt<solvername>.def" to learn which options are supported.
-	 * @param gmo_ A Gams Modeling Object to get access to the system directory name and other stuff. Can be NULL and set later by setGMO.
-	 * @param opt_ A Gams Optionfile handler. If NULL and setOpt is not called, an own one might be created.
-	 */
-	GamsOptions(struct gmoRec* gmo_ = NULL, struct optRec* opt_ = NULL);
+   GamsOptions(
+      struct gevRec*     gev_ = NULL,        /**< GAMS environment to get access to the system directory name and other stuff, can be NULL and set later by setGEV */
+      struct optRec*     opt_ = NULL         /**< GAMS options handler, if NULL and setOpt is not called, an own one might be created */
+   )
+   : gev(gev_),
+     optionshandle(opt_),
+     opt_is_own(false)
+   { }
 
-	/** Destructor.
-	 */
-	~GamsOptions();
+   ~GamsOptions();
 
-	void setGMO(struct gmoRec* gmo_);
-	void setOpt(struct optRec* opt_);
+   /** set GAMS environment */
+   void setGEV(
+      struct gevRec*     gev_                /**< GAMS environment */
+   )
+   {
+      gev = gev_;
+   }
 
-	/** Reads an options file.
-	 * @param solvername The name of your solver.
-	 * @param optfilename Giving NULL for optfilename will read nothing and returns true.
-	 */
-	bool readOptionsFile(const char* solvername, const char* optfilename);
+   /** set GAMS options handler */
+   void setOpt(
+      struct optRec*     opt_                /**< GAMS options handler */
+   );
 
-	/** Checks whether an option exists.
-	 * @return True, if the option exists, i.e., defined in the options definition file. False otherwise.
-	 */
-	bool isKnown(const char* optname);
-	/** Checks whether the user specified some option.
-	 * @param optname The name of the option.
-	 * @return True, if the option had been specified in the option file.
-	 */
-	bool isDefined(const char *optname);
-//	bool optDefinedRecent(const char *optname);
+   /** read an options file */
+   bool readOptionsFile(
+      const char*        solvername,         /**< name of solver */
+      const char*        optfilename         /**< name of option file, or NULL to read nothing */
+   );
 
-	/** Gets the value of a boolean option.
-	 * @param optname The name of the option.
-	 */
-	inline bool getBool(const char* optname) { return getInteger(optname); }
-	/** Gets the value of an integer option.
-	 * @param optname The name of the option.
-	 */
-	int getInteger(const char *optname);
-	/** Gets the value of a real (double) option.
-	 * @param optname The name of the option.
-	 */
-	double getDouble(const char *optname);
-	/** Gets the value of a string option.
-	 * @param optname The name of the option.
-	 * @param buffer A buffer where the value can be stored (it should be large enough).
-	 */
-	char* getString(const char *optname, char *buffer);
+   /** checks whether an option exists */
+   bool isKnown(
+      const char*        optname             /**< name of option to check */
+   );
 
-	/** Sets the value of a boolean option.
-	 * @param optname The name of the option.
-	 * @param bval The value to set.
-	 */
-	inline void setBool(const char *optname, bool bval) { setInteger(optname, bval ? 1 : 0); }
-	/** Sets the value of an integer option.
-	 * @param optname The name of the option.
-	 * @param ival The value to set.
-	 */
-	void setInteger(const char *optname, int ival);
-	/** Sets the value of a double option.
-	 * @param optname The name of the option.
-	 * @param dval The value to set.
-	 */
-	void setDouble(const char *optname, double dval);
-	/** Sets the value of a string option.
-	 * @param optname The name of the option.
-	 * @param sval The value to set.
-	 */
-	void setString(const char *optname, const char *sval);
+   /** checks whether user specified an option */
+   bool isDefined(
+      const char*        optname             /**< name of option to check */
+   );
+
+   /** get value of a boolean option */
+   inline bool getBool(
+      const char*        optname             /**< name of option to check */
+   )
+   {
+      return getInteger(optname) != 0;
+   }
+
+   /** get value of an integer option */
+   int getInteger(
+      const char*        optname             /**< name of option to check */
+   );
+
+   /** gets value of a real (double) option */
+   double getDouble(
+      const char*        optname             /**< name of option to check */
+   );
+
+   /** gets value of a string option */
+   char* getString(
+      const char*        optname,            /**< name of option to check */
+      char*              buffer              /**< buffer where value can be stored (it should be large enough) */
+   );
+
+   /** sets value of a boolean option */
+   inline void setBool(
+      const char*        optname,            /**< name of option to set */
+      bool               bval                /**< new value of option */
+   )
+   {
+      setInteger(optname, bval != 0 ? 1 : 0);
+   }
+
+   /** sets the value of an integer option */
+   void setInteger(
+      const char*        optname,            /**< name of option to set */
+      int                ival                /**< new value of option */
+   );
+
+   /** sets the value of a double option */
+   void setDouble(
+      const char*        optname,            /**< name of option to set */
+      double             dval                /**< new value of option */
+   );
+
+   /** sets the value of a string option */
+   void setString(
+      const char*        optname,            /**< name of option to set */
+      const char*        sval                /**< new value of option */
+   );
 };
 
 #endif /*GAMSOPTIONS_HPP_*/

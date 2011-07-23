@@ -12,9 +12,9 @@
 */
 
 #include "GamsNLinstr.h"
-#include <stdlib.h>
 
-const char* GamsOpCodeName[MAXINS] = {
+const char* GamsOpCodeName[MAXINS] =
+{
    "nlNoOp",
    "nlPushV",
    "nlPushI",
@@ -47,18 +47,3 @@ const char* GamsOpCodeName[MAXINS] = {
    "nlInvoc",
    "nlStackIn"
 };
-
-/** Gives the opcode of a GAMS nonlinear instruction.
- */
-GamsOpCode getInstrOpCode(unsigned int instr) {
-	int iinstr = instr>>26;
-/*	assert(iinstr < MAXINS); */
-	return (GamsOpCode)iinstr;
-}
-
-/** Gives the address in a GAMS nonlinear instruction.
- * The address will be 0-based.
- */
-int getInstrAddress(unsigned int instr) {
-	return (instr & 67108863)-1;
-}
