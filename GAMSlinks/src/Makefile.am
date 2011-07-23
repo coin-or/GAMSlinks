@@ -6,7 +6,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = GamsUtils #SolverInterfaces
+SUBDIRS = GamsUtils SolverInterfaces
 
 EXTRA_DIST =
 

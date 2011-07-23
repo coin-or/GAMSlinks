@@ -471,7 +471,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE have_svnversion GAMSLINKS_SVN_REV CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT COIN_CC_IS_CL_TRUE COIN_CC_IS_CL_FALSE MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX COIN_CXX_IS_CL_TRUE COIN_CXX_IS_CL_FALSE MPICXX EGREP LN_S INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS PKG_CONFIG ac_pt_PKG_CONFIG COIN_HAS_PKGCONFIG_TRUE COIN_HAS_PKGCONFIG_FALSE COIN_PKG_CONFIG_PATH COIN_PKG_CONFIG_PATH_UNINSTALLED OSI_LIBS OSI_CFLAGS OSI_DATA OSI_DEPENDENCIES OSI_LIBS_INSTALLED OSI_CFLAGS_INSTALLED OSI_DATA_INSTALLED GAMSSOLVERLIB_CFLAGS GAMSSOLVERLIB_LIBS GAMSSOLVERLIB_PCLIBS GAMSSOLVERLIB_PCREQUIRES GAMSSOLVERLIB_DEPENDENCIES GAMSSOLVERLIB_CFLAGS_INSTALLED GAMSSOLVERLIB_LIBS_INSTALLED COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE OSICPX_LIBS OSICPX_CFLAGS OSICPX_DATA OSICPX_DEPENDENCIES OSICPX_LIBS_INSTALLED OSICPX_CFLAGS_INSTALLED OSICPX_DATA_INSTALLED COIN_HAS_OSICPX_TRUE COIN_HAS_OSICPX_FALSE OSIGLPK_LIBS OSIGLPK_CFLAGS OSIGLPK_DATA OSIGLPK_DEPENDENCIES OSIGLPK_LIBS_INSTALLED OSIGLPK_CFLAGS_INSTALLED OSIGLPK_DATA_INSTALLED COIN_HAS_OSIGLPK_TRUE COIN_HAS_OSIGLPK_FALSE OSIGRB_LIBS OSIGRB_CFLAGS OSIGRB_DATA OSIGRB_DEPENDENCIES OSIGRB_LIBS_INSTALLED OSIGRB_CFLAGS_INSTALLED OSIGRB_DATA_INSTALLED COIN_HAS_OSIGRB_TRUE COIN_HAS_OSIGRB_FALSE OSIMSK_LIBS OSIMSK_CFLAGS OSIMSK_DATA OSIMSK_DEPENDENCIES OSIMSK_LIBS_INSTALLED OSIMSK_CFLAGS_INSTALLED OSIMSK_DATA_INSTALLED COIN_HAS_OSIMSK_TRUE COIN_HAS_OSIMSK_FALSE OSISPX_LIBS OSISPX_CFLAGS OSISPX_DATA OSISPX_DEPENDENCIES OSISPX_LIBS_INSTALLED OSISPX_CFLAGS_INSTALLED OSISPX_DATA_INSTALLED COIN_HAS_OSISPX_TRUE COIN_HAS_OSISPX_FALSE OSIXPR_LIBS OSIXPR_CFLAGS OSIXPR_DATA OSIXPR_DEPENDENCIES OSIXPR_LIBS_INSTALLED OSIXPR_CFLAGS_INSTALLED OSIXPR_DATA_INSTALLED COIN_HAS_OSIXPR_TRUE COIN_HAS_OSIXPR_FALSE CBC_LIBS CBC_CFLAGS CBC_DATA CBC_DEPENDENCIES CBC_LIBS_INSTALLED CBC_CFLAGS_INSTALLED CBC_DATA_INSTALLED COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPT_LIBS IPOPT_CFLAGS IPOPT_DATA IPOPT_DEPENDENCIES IPOPT_LIBS_INSTALLED IPOPT_CFLAGS_INSTALLED IPOPT_DATA_INSTALLED COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMIN_LIBS BONMIN_CFLAGS BONMIN_DATA BONMIN_DEPENDENCIES BONMIN_LIBS_INSTALLED BONMIN_CFLAGS_INSTALLED BONMIN_DATA_INSTALLED COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE COUENNE_LIBS COUENNE_CFLAGS COUENNE_DATA COUENNE_DEPENDENCIES COUENNE_LIBS_INSTALLED COUENNE_CFLAGS_INSTALLED COUENNE_DATA_INSTALLED COIN_HAS_COUENNE_TRUE COIN_HAS_COUENNE_FALSE OS_LIBS OS_CFLAGS OS_DATA OS_DEPENDENCIES OS_LIBS_INSTALLED OS_CFLAGS_INSTALLED OS_DATA_INSTALLED COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE SCIP_LIBS SCIP_CFLAGS SCIP_DATA SCIP_DEPENDENCIES SCIP_LIBS_INSTALLED SCIP_CFLAGS_INSTALLED SCIP_DATA_INSTALLED COIN_HAS_SCIP_TRUE COIN_HAS_SCIP_FALSE gamspath COIN_HAS_GAMSSYSTEM_TRUE COIN_HAS_GAMSSYSTEM_FALSE GAMS_PATH GAMS_VERSION LIBEXT VPATH_DISTCLEANFILES ABSBUILDDIR LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os ALWAYS_FALSE_TRUE ALWAYS_FALSE_FALSE have_svnversion GAMSLINKS_SVN_REV CDEFS ADD_CFLAGS DBG_CFLAGS OPT_CFLAGS sol_cc_compiler CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT COIN_CC_IS_CL_TRUE COIN_CC_IS_CL_FALSE MPICC CXXDEFS ADD_CXXFLAGS DBG_CXXFLAGS OPT_CXXFLAGS CXX CXXFLAGS ac_ct_CXX COIN_CXX_IS_CL_TRUE COIN_CXX_IS_CL_FALSE MPICXX EGREP LN_S INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBTOOLM4 have_autoconf have_automake have_svn BUILDTOOLSDIR AUX_DIR abs_source_dir abs_lib_dir abs_include_dir abs_bin_dir HAVE_EXTERNALS_TRUE HAVE_EXTERNALS_FALSE host host_cpu host_vendor host_os ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL ac_c_preproc_warn_flag ac_cxx_preproc_warn_flag RPATH_FLAGS LT_LDFLAGS PKG_CONFIG ac_pt_PKG_CONFIG COIN_HAS_PKGCONFIG_TRUE COIN_HAS_PKGCONFIG_FALSE COIN_PKG_CONFIG_PATH COIN_PKG_CONFIG_PATH_UNINSTALLED OSI_LIBS OSI_CFLAGS OSI_DATA OSI_DEPENDENCIES OSI_LIBS_INSTALLED OSI_CFLAGS_INSTALLED OSI_DATA_INSTALLED GAMSSOLVERLIB_CFLAGS GAMSSOLVERLIB_LIBS GAMSSOLVERLIB_PCLIBS GAMSSOLVERLIB_PCREQUIRES GAMSSOLVERLIB_DEPENDENCIES GAMSSOLVERLIB_CFLAGS_INSTALLED GAMSSOLVERLIB_LIBS_INSTALLED COIN_HAS_OSI_TRUE COIN_HAS_OSI_FALSE OSICPX_LIBS OSICPX_CFLAGS OSICPX_DATA OSICPX_DEPENDENCIES OSICPX_LIBS_INSTALLED OSICPX_CFLAGS_INSTALLED OSICPX_DATA_INSTALLED COIN_HAS_OSICPX_TRUE COIN_HAS_OSICPX_FALSE OSIGLPK_LIBS OSIGLPK_CFLAGS OSIGLPK_DATA OSIGLPK_DEPENDENCIES OSIGLPK_LIBS_INSTALLED OSIGLPK_CFLAGS_INSTALLED OSIGLPK_DATA_INSTALLED COIN_HAS_OSIGLPK_TRUE COIN_HAS_OSIGLPK_FALSE OSIGRB_LIBS OSIGRB_CFLAGS OSIGRB_DATA OSIGRB_DEPENDENCIES OSIGRB_LIBS_INSTALLED OSIGRB_CFLAGS_INSTALLED OSIGRB_DATA_INSTALLED COIN_HAS_OSIGRB_TRUE COIN_HAS_OSIGRB_FALSE OSIMSK_LIBS OSIMSK_CFLAGS OSIMSK_DATA OSIMSK_DEPENDENCIES OSIMSK_LIBS_INSTALLED OSIMSK_CFLAGS_INSTALLED OSIMSK_DATA_INSTALLED COIN_HAS_OSIMSK_TRUE COIN_HAS_OSIMSK_FALSE OSISPX_LIBS OSISPX_CFLAGS OSISPX_DATA OSISPX_DEPENDENCIES OSISPX_LIBS_INSTALLED OSISPX_CFLAGS_INSTALLED OSISPX_DATA_INSTALLED COIN_HAS_OSISPX_TRUE COIN_HAS_OSISPX_FALSE OSIXPR_LIBS OSIXPR_CFLAGS OSIXPR_DATA OSIXPR_DEPENDENCIES OSIXPR_LIBS_INSTALLED OSIXPR_CFLAGS_INSTALLED OSIXPR_DATA_INSTALLED COIN_HAS_OSIXPR_TRUE COIN_HAS_OSIXPR_FALSE CBC_LIBS CBC_CFLAGS CBC_DATA CBC_DEPENDENCIES CBC_LIBS_INSTALLED CBC_CFLAGS_INSTALLED CBC_DATA_INSTALLED COIN_HAS_CBC_TRUE COIN_HAS_CBC_FALSE IPOPT_LIBS IPOPT_CFLAGS IPOPT_DATA IPOPT_DEPENDENCIES IPOPT_LIBS_INSTALLED IPOPT_CFLAGS_INSTALLED IPOPT_DATA_INSTALLED COIN_HAS_IPOPT_TRUE COIN_HAS_IPOPT_FALSE BONMIN_LIBS BONMIN_CFLAGS BONMIN_DATA BONMIN_DEPENDENCIES BONMIN_LIBS_INSTALLED BONMIN_CFLAGS_INSTALLED BONMIN_DATA_INSTALLED COIN_HAS_BONMIN_TRUE COIN_HAS_BONMIN_FALSE COUENNE_LIBS COUENNE_CFLAGS COUENNE_DATA COUENNE_DEPENDENCIES COUENNE_LIBS_INSTALLED COUENNE_CFLAGS_INSTALLED COUENNE_DATA_INSTALLED COIN_HAS_COUENNE_TRUE COIN_HAS_COUENNE_FALSE OS_LIBS OS_CFLAGS OS_DATA OS_DEPENDENCIES OS_LIBS_INSTALLED OS_CFLAGS_INSTALLED OS_DATA_INSTALLED COIN_HAS_OS_TRUE COIN_HAS_OS_FALSE SCIP_LIBS SCIP_CFLAGS SCIP_DATA SCIP_DEPENDENCIES SCIP_LIBS_INSTALLED SCIP_CFLAGS_INSTALLED SCIP_DATA_INSTALLED COIN_HAS_SCIP_TRUE COIN_HAS_SCIP_FALSE gamspath COIN_HAS_GAMSSYSTEM_TRUE COIN_HAS_GAMSSYSTEM_FALSE GAMS_PATH GAMS_VERSION COIN_IS_WINDOWS_TRUE COIN_IS_WINDOWS_FALSE LIBEXT VPATH_DISTCLEANFILES ABSBUILDDIR LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -31305,573 +31305,26 @@ fi
 
 
 
-##############################################################################
-#                VPATH links for GAMS installation files                     #
-##############################################################################
+####################
+# Windos or *nix ? #
+####################
 
-# In case this is a VPATH configuration we need to make sure that the
-# GAMS solver installation files are available in the VPATH directory.
+case $build in
+  *-cygwin* | *-mingw* )
+    coin_is_windows=yes
+  ;;
+  *)
+    coin_is_windows=no
+  ;;
+esac
 
-#TODO
 
-echo "$as_me:$LINENO: checking whether this is a VPATH configuration" >&5
-echo $ECHO_N "checking whether this is a VPATH configuration... $ECHO_C" >&6
-if test `cd $srcdir; pwd` != `pwd`; then
-  coin_vpath_config=yes;
+if test $coin_is_windows = yes; then
+  COIN_IS_WINDOWS_TRUE=
+  COIN_IS_WINDOWS_FALSE='#'
 else
-  coin_vpath_config=no;
-fi
-echo "$as_me:$LINENO: result: $coin_vpath_config" >&5
-echo "${ECHO_T}$coin_vpath_config" >&6
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmsbm_us.run"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmsbm_nt.cmd"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmsbm_un.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmsbm_nt.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmscbcus.run"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmscbcnt.cmd"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmscbcun.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmscbcnt.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/optmycbc.def"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmscouus.run"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmscount.cmd"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmscouun.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmscount.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmsip_us.run"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmsip_nt.cmd"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmsip_un.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmsip_nt.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmsos_us.run"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmsos_nt.cmd"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmsos_un.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmsos_nt.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/optmyos.def"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmszcpus.run"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmszcpnt.cmd"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmszcpun.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmszcpnt.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmszglus.run"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmszglnt.cmd"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmszglun.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmszglnt.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/optmyglpk.def"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmszguus.run"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmszgunt.cmd"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmszguun.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmszgunt.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmszmkus.run"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmszmknt.cmd"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmszmkun.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmszmknt.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmszspus.run"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmszspnt.cmd"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmszspun.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmszspnt.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmszxpus.run"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmszxpnt.cmd"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmszxpun.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmszxpnt.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmssc_us.run"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/gmssc_nt.cmd"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmssc_un.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="src/SolverInterfaces/install/gmssc_nt.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="examples/adbench/gmsad_us.run"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="examples/adbench/gmsad_nt.cmd"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="examples/adbench/install/gmsad_un.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
-fi
-
-
-
-# Allow for newlines in the parameter
-if test $coin_vpath_config = yes; then
-  cvl_tmp="examples/adbench/install/gmsad_nt.dat"
-  for file in $cvl_tmp ; do
-    coin_vpath_link_files="$coin_vpath_link_files $file"
-  done
+  COIN_IS_WINDOWS_TRUE='#'
+  COIN_IS_WINDOWS_FALSE=
 fi
 
 
@@ -31879,11 +31332,10 @@ fi
 # END PART #
 ############
 
-#                 src/SolverInterfaces/Makefile
 #                 examples/adbench/Makefile
 #                 examples/osil2gms/Makefile
 #                 doc/optdoc/Makefile
-                                        ac_config_files="$ac_config_files Makefile src/Makefile src/GamsUtils/Makefile test/Makefile"
+                                                  ac_config_files="$ac_config_files Makefile src/Makefile src/GamsUtils/Makefile src/SolverInterfaces/Makefile test/Makefile"
 
           ac_config_files="$ac_config_files test/run_quality"
 
@@ -32295,6 +31747,13 @@ if test -z "${COIN_HAS_GAMSSYSTEM_TRUE}" && test -z "${COIN_HAS_GAMSSYSTEM_FALSE
   { { echo "$as_me:$LINENO: error: conditional \"COIN_HAS_GAMSSYSTEM\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"COIN_HAS_GAMSSYSTEM\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${COIN_IS_WINDOWS_TRUE}" && test -z "${COIN_IS_WINDOWS_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"COIN_IS_WINDOWS\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"COIN_IS_WINDOWS\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -32745,6 +32204,7 @@ do
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "src/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
   "src/GamsUtils/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/GamsUtils/Makefile" ;;
+  "src/SolverInterfaces/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/SolverInterfaces/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   "test/run_quality" ) CONFIG_FILES="$CONFIG_FILES test/run_quality" ;;
   "test/run_gmstest" ) CONFIG_FILES="$CONFIG_FILES test/run_gmstest" ;;
@@ -33074,6 +32534,8 @@ s,@COIN_HAS_GAMSSYSTEM_TRUE@,$COIN_HAS_GAMSSYSTEM_TRUE,;t t
 s,@COIN_HAS_GAMSSYSTEM_FALSE@,$COIN_HAS_GAMSSYSTEM_FALSE,;t t
 s,@GAMS_PATH@,$GAMS_PATH,;t t
 s,@GAMS_VERSION@,$GAMS_VERSION,;t t
+s,@COIN_IS_WINDOWS_TRUE@,$COIN_IS_WINDOWS_TRUE,;t t
+s,@COIN_IS_WINDOWS_FALSE@,$COIN_IS_WINDOWS_FALSE,;t t
 s,@LIBEXT@,$LIBEXT,;t t
 s,@VPATH_DISTCLEANFILES@,$VPATH_DISTCLEANFILES,;t t
 s,@ABSBUILDDIR@,$ABSBUILDDIR,;t t

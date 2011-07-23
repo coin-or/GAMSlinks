@@ -151,81 +151,31 @@ AC_LANG_POP(C++)
 
 AC_COIN_HAVE_GAMS
 
-##############################################################################
-#                VPATH links for GAMS installation files                     #
-##############################################################################
+####################
+# Windos or *nix ? #
+####################
 
-# In case this is a VPATH configuration we need to make sure that the
-# GAMS solver installation files are available in the VPATH directory.
-
-#TODO
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsbm_us.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsbm_nt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsbm_un.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsbm_nt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmscbcus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmscbcnt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmscbcun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmscbcnt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/optmycbc.def)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmscouus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmscount.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmscouun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmscount.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsip_us.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsip_nt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsip_un.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsip_nt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsos_us.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmsos_nt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsos_un.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmsos_nt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/optmyos.def)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszcpus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszcpnt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszcpun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszcpnt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszglus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszglnt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszglun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszglnt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/optmyglpk.def)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszguus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszgunt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszguun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszgunt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszmkus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszmknt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszmkun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszmknt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszspus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszspnt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszspun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszspnt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszxpus.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmszxpnt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszxpun.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmszxpnt.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmssc_us.run)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/gmssc_nt.cmd)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmssc_un.dat)
-AC_COIN_VPATH_LINK(src/SolverInterfaces/install/gmssc_nt.dat)
-AC_COIN_VPATH_LINK(examples/adbench/gmsad_us.run)
-AC_COIN_VPATH_LINK(examples/adbench/gmsad_nt.cmd)
-AC_COIN_VPATH_LINK(examples/adbench/install/gmsad_un.dat)
-AC_COIN_VPATH_LINK(examples/adbench/install/gmsad_nt.dat)
+case $build in
+  *-cygwin* | *-mingw* )
+    coin_is_windows=yes
+  ;;
+  *)
+    coin_is_windows=no
+  ;;
+esac
+AM_CONDITIONAL(COIN_IS_WINDOWS, test $coin_is_windows = yes)  
 
 ############
 # END PART #
 ############
 
-#                 src/SolverInterfaces/Makefile
 #                 examples/adbench/Makefile
 #                 examples/osil2gms/Makefile
 #                 doc/optdoc/Makefile
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/GamsUtils/Makefile
+                 src/SolverInterfaces/Makefile
                  test/Makefile
                 ])
 AC_CONFIG_FILES([test/run_quality], [chmod +x test/run_quality])
