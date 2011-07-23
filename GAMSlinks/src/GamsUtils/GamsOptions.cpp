@@ -11,8 +11,6 @@
 #include <cassert>
 #include <cstring>
 
-#include "GAMSlinksConfig.h"
-
 #include "gevmcc.h"
 #include "optcc.h"
 
