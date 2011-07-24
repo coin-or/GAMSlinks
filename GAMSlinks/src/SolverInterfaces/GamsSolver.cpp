@@ -115,53 +115,91 @@ bool GamsSolver::checkLicense(
 #endif
 }
 
+bool GamsSolver::checkAcademicLicense(
+   struct gmoRec*     gmo                 /**< GAMS modeling object */
+)
+{
+   assert(gmo != NULL);
+#ifdef GAMS_BUILD
+   gevRec* gev = (gevRec*)gmoEnvironment(gmo);
+
+#define GEVPTR gev
+/* bad bad bad */
+#ifdef SUB_FR
+#undef SUB_FR
+#endif
+#define SUB_SC
+#include "cmagic2.h"
+   if( licenseCheck(gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo)) )
+   {
+      // model larger than demo and no solver-specific license; check if we have an academic license
+      int isAcademic = 0;
+      licenseQueryOption("GAMS", "ACADEMIC", &isAcademic);
+      if( !isAcademic )
+      {
+         char msg[256];
+         while( licenseGetMessage(msg, sizeof(msg)) )
+            gevLogStat(gev, msg);
+         return false;
+      }
+   }
+#undef SUB_OC
+#undef GEVPTR
+#endif
+
+   return true;
+}
+
 bool GamsSolver::registerGamsCplexLicense(
    struct gmoRec*     gmo                 /**< GAMS modeling object */
 )
 {
+   assert(gmo != NULL);
 #if defined(COIN_HAS_OSICPX) && defined(GAMS_BUILD)
-  gevRec* gev = (gevRec*)gmoEnvironment(gmo);
+   gevRec* gev = (gevRec*)gmoEnvironment(gmo);
 
-/* bad bad bad */
-#undef SUB_FR
 #define GEVPTR gev
+   /* bad bad bad */
+#ifdef SUB_FR
+#undef SUB_FR
+#endif
 #define SUB_OC
 #include "cmagic2.h"
-  if( licenseCheck(gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo)) )
-  {
-     if( licenseCheckSubSys(2, "CPCL") )
-     {
-        gevLogStat(gev,"***");
-        gevLogStat(gev,"*** LICENSE ERROR:");
-        gevLogStat(gev,"*** See http://www.gams.com/osicplex/ for OsiCplex licensing information.");
-        gevLogStat(gev,"***");
-        return false;
-     }
-     else
-     {
-        int isLicMIP = 0;
-        int isLicCP  = 1;
-        licenseQueryOption("CPLEX", "MIP",     &isLicMIP);
-        licenseQueryOption("CPLEX", "GMSLICE", &isLicCP);
-        if( 0 == isLicMIP && 1 == isLicCP && gmoNDisc(gmo))
-        {
-           gevLogStat(gev,"*** MIP option not licensed. Can solve continuous models only.");
-           return false;
-        }
-     }
-  }
-  else
-  {
-     int isLicMIP = 0;
-     int isLicCP  = 1;
-     licenseQueryOption("CPLEX", "MIP",     &isLicMIP);
-     licenseQueryOption("CPLEX", "GMSLICE", &isLicCP);
-     if( 0 == isLicMIP && 1 == isLicCP && gmoNDisc(gmo) )
-     {
-        gevLogStat(gev,"*** MIP option not licensed. Can solve continuous models only.");
-        return false;
-     }
-  }
+   if( licenseCheck(gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo)) )
+   {
+      if( licenseCheckSubSys(2, "CPCL") )
+      {
+         gevLogStat(gev,"***");
+         gevLogStat(gev,"*** LICENSE ERROR:");
+         gevLogStat(gev,"*** See http://www.gams.com/osicplex/ for OsiCplex licensing information.");
+         gevLogStat(gev,"***");
+         return false;
+      }
+      else
+      {
+         int isLicMIP = 0;
+         int isLicCP  = 1;
+         licenseQueryOption("CPLEX", "MIP",     &isLicMIP);
+         licenseQueryOption("CPLEX", "GMSLICE", &isLicCP);
+         if( 0 == isLicMIP && 1 == isLicCP && gmoNDisc(gmo))
+         {
+            gevLogStat(gev,"*** MIP option not licensed. Can solve continuous models only.");
+            return false;
+         }
+      }
+   }
+   else
+   {
+      int isLicMIP = 0;
+      int isLicCP  = 1;
+      licenseQueryOption("CPLEX", "MIP",     &isLicMIP);
+      licenseQueryOption("CPLEX", "GMSLICE", &isLicCP);
+      if( 0 == isLicMIP && 1 == isLicCP && gmoNDisc(gmo) )
+      {
+         gevLogStat(gev,"*** MIP option not licensed. Can solve continuous models only.");
+         return false;
+      }
+   }
 #undef SUB_OC
 #undef GEVPTR
 #endif

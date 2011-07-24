@@ -19,7 +19,8 @@
 
 bool gamsOsiLoadProblem(
    struct gmoRec*        gmo,                /**< GAMS modeling object */
-   OsiSolverInterface&   solver              /**< OSI solver interface */
+   OsiSolverInterface&   solver,             /**< OSI solver interface */
+   bool                  setupnames          /**< should col/row names be setup in Osi? */
 )
 {
    assert(gmo != NULL);
@@ -156,7 +157,22 @@ bool gamsOsiLoadProblem(
 	gmoNameInput(gmo, inputname);
 	solver.setStrParam(OsiProbName, inputname);
 
-	// TODO column/row names?
+   // setup column/row names, if available
+   if( setupnames && gmoDict(gmo) != NULL )
+   {
+      solver.setIntParam(OsiNameDiscipline, 2);
+      char buffer[255]; // TODO how long should var/col names be
+      for( int j = 0; j < gmoN(gmo); ++j )
+      {
+         gmoGetVarNameOne(gmo, j, buffer);
+         solver.setColName(j, buffer);
+      }
+      for( int j = 0; j < gmoM(gmo); ++j )
+      {
+         gmoGetEquNameOne(gmo, j, buffer);
+         solver.setRowName(j, buffer);
+      }
+   }
 
 	return true;
 }

@@ -15,7 +15,8 @@ struct gmoRec;
  */
 bool gamsOsiLoadProblem(
    struct gmoRec*        gmo,                /**< GAMS modeling object */
-   OsiSolverInterface&   solver              /**< OSI solver interface */
+   OsiSolverInterface&   solver,             /**< OSI solver interface */
+   bool                  setupnames          /**< should col/row names be setup in Osi? */
 );
 
 /** stores a solution (including dual values and basis status) from OSI in GMO

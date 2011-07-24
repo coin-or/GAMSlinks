@@ -1,9 +1,7 @@
 # Copyright (C) 2006-2011 GAMS Development
 # All Rights Reserved.
 # This file is distributed under the Eclipse Public License.
-
-## $Id$
-
+#
 # Author:  Stefan Vigerske
 
 AUTOMAKE_OPTIONS = foreign

@@ -53,7 +53,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@COIN_HAS_OSI_TRUE@am__append_1 = GamsMessageHandler.cpp GamsOsiHelper.cpp #GamsOsi.cpp 
+@COIN_HAS_OSI_TRUE@am__append_1 = GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp 
 @COIN_HAS_OSICPX_TRUE@am__append_2 = gmszcp$(SCRIPTSUFFIX)
 @COIN_HAS_OSIGLPK_TRUE@am__append_3 = gmszgl$(SCRIPTSUFFIX) optmyglpk.def
 @COIN_HAS_OSIGRB_TRUE@am__append_4 = gmszgu$(SCRIPTSUFFIX)
@@ -101,10 +101,11 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
+am__DEPENDENCIES_1 =
 am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp \
-	GamsMessageHandler.cpp GamsOsiHelper.cpp
+	GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp
 @COIN_HAS_OSI_TRUE@am__objects_1 = GamsMessageHandler.lo \
-@COIN_HAS_OSI_TRUE@	GamsOsiHelper.lo
+@COIN_HAS_OSI_TRUE@	GamsOsiHelper.lo GamsOsi.lo
 am_libGamsCoin_la_OBJECTS = GamsSolver.lo $(am__objects_1)
 libGamsCoin_la_OBJECTS = $(am_libGamsCoin_la_OBJECTS)
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
@@ -410,8 +411,8 @@ AM_CPPFLAGS = $(GAMSSOLVERLIB_CFLAGS) \
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 lib_LTLIBRARIES = libGamsCoin.la
 libGamsCoin_la_SOURCES = GamsSolver.cpp $(am__append_1)
-libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo ../GamsUtils/gclgms.lo $(GAMSSOLVERLIBS_LIBS)
-libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo ../GamsUtils/gclgms.lo $(GAMSSOLVERLIBS_DEPENDENCIES)
+libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_LIBS)
+libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_DEPENDENCIES)
 libGamsCoin_la_LDFLAGS = -module -no-undefined
 bin_SCRIPTS = $(am__append_2) $(am__append_3) $(am__append_4) \
 	$(am__append_5) $(am__append_6) $(am__append_7) \
@@ -510,6 +511,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSolver.Plo@am__quote@
 

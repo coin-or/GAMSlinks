@@ -39,6 +39,13 @@ public:
       struct gmoRec*     gmo                 /**< GAMS modeling object */
    );
 
+   /** calls GAMS academic license check, if build by GAMS
+    * @return True if license check was skipped or an academic GAMS license was found
+    */
+   bool checkAcademicLicense(
+      struct gmoRec*     gmo                 /**< GAMS modeling object */
+   );
+
    /** registers a GAMS/CPLEX license, if build by GAMS
     * @return True if license was registered or no CPLEX available
     */
@@ -69,9 +76,6 @@ public:
 
    /** initiate solving and storing solution information in GMO object */
    virtual int callSolver() = 0;
-
-   /** gives a string about the solver name, version, and authors */
-   virtual const char* getWelcomeMessage() = 0;
 };
 
 typedef GamsSolver* STDCALL createNewGamsSolver_t(void);

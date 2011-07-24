@@ -19,8 +19,8 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 
 lib_LTLIBRARIES = libGamsCoin.la
 libGamsCoin_la_SOURCES      = GamsSolver.cpp
-libGamsCoin_la_LIBADD       = ../GamsUtils/libGamsUtils.la ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo ../GamsUtils/gclgms.lo $(GAMSSOLVERLIBS_LIBS)
-libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la ../GamsUtils/gevmcc.lo ../GamsUtils/gmomcc.lo ../GamsUtils/gclgms.lo $(GAMSSOLVERLIBS_DEPENDENCIES)
+libGamsCoin_la_LIBADD       = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_LIBS)
+libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_DEPENDENCIES)
 libGamsCoin_la_LDFLAGS      = -module -no-undefined
 
 bin_SCRIPTS =
@@ -31,7 +31,7 @@ else
 endif
 
 if COIN_HAS_OSI
-  libGamsCoin_la_SOURCES += GamsMessageHandler.cpp GamsOsiHelper.cpp #GamsOsi.cpp 
+  libGamsCoin_la_SOURCES += GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp 
 endif
 
 if COIN_HAS_OSICPX
