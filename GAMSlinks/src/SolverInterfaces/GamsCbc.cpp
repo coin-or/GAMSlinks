@@ -1,39 +1,17 @@
-// Copyright (C) GAMS Development and others 2009
+// Copyright (C) GAMS Development and others 2009-2011
 // All Rights Reserved.
-// This code is published under the Common Public License.
-//
-// $Id$
+// This code is published under the Eclipse Public License.
 //
 // Author: Stefan Vigerske
 
 #include "GamsCbc.hpp"
 #include "GamsCbc.h"
 
-#ifdef HAVE_CSTDLIB
 #include <cstdlib>
-#else
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#else
-#error "don't have header file for stdlib"
-#endif
-#endif
-
-#ifdef HAVE_CSTRING
 #include <cstring>
-#else
-#ifdef HAVE_STRING_H
-#include <string.h>
-#else
-#error "don't have header file for string"
-#endif
-#endif
-
-// some STD templates to simplify Johns parameter handling for us
 #include <list>
 #include <string>
 
-// GAMS
 #include "gmomcc.h"
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
@@ -42,479 +20,504 @@
 
 #include "GamsCompatibility.h"
 
+#include "GamsOptions.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
 
 // For Branch and bound
+#include "CbcConfig.h"
 #include "CbcModel.hpp"
-#include "CbcBranchActual.hpp" //for CbcSOS
-#include "CbcBranchLotsize.hpp" //for CbcLotsize
+#include "CbcBranchActual.hpp"  // for CbcSOS
+#include "CbcBranchLotsize.hpp" // for CbcLotsize
 
 #include "OsiClpSolverInterface.hpp"
 #include "CoinHelperFunctions.hpp"
 #include "CoinTime.hpp"
 
-
-GamsCbc::GamsCbc()
-: gmo(NULL), gev(NULL), msghandler(NULL), model(NULL), cbc_argc(0), cbc_args(NULL)
+GamsCbc::~GamsCbc()
 {
-	strcpy(cbc_message, "COIN-OR Branch and Cut (CBC Library 2.4)\nwritten by J. Forrest\n");
-}
-
-GamsCbc::~GamsCbc() {
 	delete model;
 	delete msghandler;
-	for (int i = 0; i < cbc_argc; ++i)
+	for( int i = 0; i < cbc_argc; ++i )
 		free(cbc_args[i]);
 	delete[] cbc_args;
 }
 
-int GamsCbc::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
-	char buffer[1024];
+int GamsCbc::readyAPI(
+   struct gmoRec*     gmo_,               /**< GAMS modeling object */
+   struct optRec*     opt_                /**< GAMS options object */
+)
+{
+   gmo = gmo_;
+   assert(gmo != NULL);
+   opt = opt_;
 
-	gmo = gmo_;
-	assert(gmo);
-	
-	delete model;
+   delete model;
 
-	if (getGmoReady())
-		return 1;
+   if( getGmoReady() )
+      return 1;
 
-	if (getGevReady())
-		return 1;
+   if( getGevReady() )
+      return 1;
 
-	gev = (gevRec*)gmoEnvironment(gmo);
+   gev = (gevRec*)gmoEnvironment(gmo);
+   assert(gev != NULL);
 
 #ifdef GAMS_BUILD
 #include "coinlibdCL1svn.h"
-	auditGetLine(buffer, sizeof(buffer));
-	gevLogStat(gev, "");
-	gevLogStat(gev, buffer);
-	gevStatAudit(gev, buffer);
+   auditGetLine(buffer, sizeof(buffer));
+   gevLogStat(gev, "");
+   gevLogStat(gev, buffer);
+   gevStatAudit(gev, buffer);
 #endif
 
-	gevLogStat(gev, "");
-	gevLogStatPChar(gev, getWelcomeMessage());
+   gevLogStatPChar(gev, "\nCOIN-OR Branch and Cut (CBC Library "CBC_VERSION")\nwritten by J. Forrest\n");
 
-	options.setGMO(gmo);
-	if (opt) {
-		options.setOpt(opt);
-	} else {
-		gmoNameOptFile(gmo, buffer);
-#ifdef GAMS_BUILD
-		options.readOptionsFile("cbc",  gmoOptFile(gmo) ? buffer : NULL);
-#else
-		options.readOptionsFile("mycbc", gmoOptFile(gmo) ? buffer : NULL);
-#endif
-	}
-	if (!options.isDefined("reslim"))  options.setDouble ("reslim",  gevGetDblOpt(gev, gevResLim));
-	if (!options.isDefined("iterlim")) options.setInteger("iterlim", gevGetIntOpt(gev, gevIterLim));
-	if (!options.isDefined("nodlim") && gevGetIntOpt(gev, gevNodeLim))  options.setInteger("nodlim", gevGetIntOpt(gev, gevNodeLim));
-	if (!options.isDefined("nodelim") && options.isDefined("nodlim"))   options.setInteger("nodelim", options.getInteger("nodlim"));
-	if (!options.isDefined("optca"))   options.setDouble ("optca",   gevGetDblOpt(gev, gevOptCA));
-	if (!options.isDefined("optcr"))   options.setDouble ("optcr",   gevGetDblOpt(gev, gevOptCR));
-#if GMOAPIVERSION >= 7
-	if (!options.isDefined("cutoff")    && gevGetIntOpt(gev, gevUseCutOff)) options.setDouble("cutoff",    gevGetDblOpt(gev, gevCutOff));
-	if (!options.isDefined("increment") && gevGetIntOpt(gev, gevUseCheat))  options.setDouble("increment", gevGetDblOpt(gev, gevCheat));
-#endif
-	OsiClpSolverInterface solver;
-
-	gmoPinfSet(gmo,  solver.getInfinity());
-	gmoMinfSet(gmo, -solver.getInfinity());
-	gmoObjReformSet(gmo, 1);
-	gmoObjStyleSet(gmo, ObjType_Fun);
-  gmoIndexBaseSet(gmo, 0);
-
-   if (msghandler == NULL) {
+   if( msghandler == NULL )
+   {
       msghandler = new GamsMessageHandler(gev);
       msghandler->setLogLevel(0,1);
       msghandler->setLogLevel(2,0);
       msghandler->setLogLevel(3,0);
    }
-   msghandler->setLogLevel(1,isLP());
 
-	if (!setupProblem(solver)) {
-		gevLogStat(gev, "Error setting up problem...");
-		return -1;
-	}
-
-	// write MPS file
-	if (options.isDefined("writemps")) {
-		options.getString("writemps", buffer);
-		gevLogStatPChar(gev, "\nWriting MPS file ");
-		gevLogStat(gev, buffer);
-  	solver.writeMps(buffer, "", (gmoSense(gmo) == Obj_Min) ? 1.0 : -1.0);
-	}
-
-	model = new CbcModel(solver);
-	model->passInMessageHandler(msghandler);
-
-	/* workaround problem with cbc messages and own message handler:
-	 * Setting own message handler makes all message handlers in Cbc/Clp/OsiClp equal.
-	 * Thus, when Cbc sets the loglevel for Clp to 0, it also does so for Cbc.
-	 * Setting the messages of all messages of interest to -1 gets them printed again.
-	 */
-//	model->messages().setDetailMessages(-1,1,7);
-//	model->messages().setDetailMessages(-1,9,15);
-//	model->messages().setDetailMessages(-1,16,21);
-//	model->messages().setDetailMessages(-1,26,39);
-//	model->messages().setDetailMessages(-1,40,46);
-
-	CbcMain0(*model);
-  // Switch off most output
-//	model->solver()->setHintParam(OsiDoReducePrint, true, OsiHintTry);
-
-	if (gmoN(gmo)) {
-		if (!setupPrioritiesSOSSemiCon()) {
-			gevLogStat(gev, "Error setting up priorities, SOS, or semicontinuous variables.");
-			return -1;
-		}
-		if (!setupStartingPoint()) {
-			gevLogStat(gev, "Error setting up starting point.");
-			return -1;
-		}
-	}
-	if (!setupParameters()) {
-		gevLogStat(gev, "Error setting up CBC parameters.");
-		return -1;
-	}
-
-	return 0;
+   return 0;
 }
 
-//int GamsCbc::haveModifyProblem() {
-//	return 0;
-//}
-//
-//int GamsCbc::modifyProblem() {
-//	assert(false);
-//	return -1;
-//}
+int GamsCbc::callSolver()
+{
+   assert(gmo != NULL);
+   assert(gev != NULL);
 
-int GamsCbc::callSolver() {
+   delete model;
+
+   gmoSolveStatSet(gmo, gmoSolveStat_Solver);
+   gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+
+   /* set MIP */
+   if( !setupProblem() )
+   {
+      gevLogStat(gev, "Error setting up problem. Aborting...");
+      return -1;
+   }
+
+   /* initialize Cbc, I guess */
+   CbcMain0(*model);
+
+   bool mipstart;
+   bool multithread;
+   if( !setupParameters(mipstart, multithread) )
+   {
+      gevLogStat(gev, "Error setting up CBC parameters. Aborting...");
+      return -1;
+   }
+   assert(cbc_args != NULL);
+   assert(cbc_argc > 0);
+
+   if( !setupStartingPoint(mipstart) )
+   {
+      gevLogStat(gev, "Error setting up starting point. Aborting...");
+      return -1;
+   }
+
 	gevLogStat(gev, "\nCalling CBC main solution routine...");
-
-	//TODO? reset iteration and time counter in Cbc?
-	//TODO? was user allowed to change options between readyAPI and callSolver?
 
 	double start_cputime  = CoinCpuTime();
 	double start_walltime = CoinWallclockTime();
 
-//	myout.setCurrentDetail(2);
 	CbcMain1(cbc_argc, const_cast<const char**>(cbc_args), *model);
 
 	double end_cputime  = CoinCpuTime();
 	double end_walltime = CoinWallclockTime();
 
-	double* varlow = NULL;
-	double* varup  = NULL;
-	if (!isLP() && model->bestSolution()) { // solve again with fixed noncontinuous variables and original bounds on continuous variables
-		//TODO parameter to turn this off or do only if cbc reduced bounds
-		gevLog(gev, "Resolve with fixed noncontinuous variables.");
-		varlow = new double[gmoN(gmo)];
-		varup  = new double[gmoN(gmo)];
+   writeSolution(end_cputime - start_cputime, end_walltime - start_walltime, multithread);
+
+   // solve again with fixed noncontinuous variables and original bounds on continuous variables
+   // TODO parameter to turn this off or do only if cbc reduced bounds
+	if( !isLP() && model->bestSolution() )
+	{
+		gevLog(gev, "Resolve with fixed discrete variables.");
+
+		double* varlow = new double[gmoN(gmo)];
+		double* varup  = new double[gmoN(gmo)];
 		gmoGetVarLower(gmo, varlow);
 		gmoGetVarUpper(gmo, varup);
-		for (int i = 0; i < gmoN(gmo); ++i)
-			if ((enum gmoVarType)gmoGetVarTypeOne(gmo, i) != var_X)
+		for( int i = 0; i < gmoN(gmo); ++i )
+			if( (enum gmoVarType)gmoGetVarTypeOne(gmo, i) != gmovar_X )
 				varlow[i] = varup[i] = model->bestSolution()[i];
 		model->solver()->setColLower(varlow);
 		model->solver()->setColUpper(varup);
 
-		model->solver()->messageHandler()->setLogLevel(1);
+		model->solver()->messageHandler()->setLogLevel(1, 1);
 		model->solver()->resolve();
-		if (!model->solver()->isProvenOptimal()) {
-			gevLog(gev, "Resolve failed, values for dual variables will be unavailable.");
-			model->solver()->setColSolution(model->bestSolution());
+		if( model->solver()->isProvenOptimal() )
+		{
+	      if( !gamsOsiStoreSolution(gmo, *model->solver()) )
+	      {
+	         gevLogStat(gev, "Failed to store LP solution. Only primal solution values will be available in GAMS solution file.\n");
+	      }
 		}
+		else
+		{
+		   gevLog(gev, "Resolve failed, values for dual variables will not be available.");
+		}
+
+	   delete[] varlow;
+	   delete[] varup;
 	}
 
-	writeSolution(end_cputime - start_cputime, end_walltime - start_walltime);
-
-	if (!isLP() && model->bestSolution()) { // reset original bounds
-		gmoGetVarLower(gmo, varlow);
-		gmoGetVarUpper(gmo, varup);
-		model->solver()->setColLower(varlow);
-		model->solver()->setColUpper(varup);
-	}
-	delete[] varlow;
-	delete[] varup;
+	delete model;
 
 	return 0;
 }
 
-bool GamsCbc::setupProblem(OsiSolverInterface& solver) {
-	if (!gamsOsiLoadProblem(gmo, solver))
+bool GamsCbc::setupProblem()
+{
+   OsiClpSolverInterface solver;
+
+   int* cbcprior = NULL;
+
+   CbcObject** sosobjects = NULL;
+   int numSos = 0;
+
+   CbcObject** semiobjects = NULL;
+   int numSemi = 0;
+
+   gmoPinfSet(gmo,  solver.getInfinity());
+   gmoMinfSet(gmo, -solver.getInfinity());
+   gmoObjReformSet(gmo, 1);
+   gmoObjStyleSet(gmo, gmoObjType_Fun);
+   gmoIndexBaseSet(gmo, 0);
+
+	if( !gamsOsiLoadProblem(gmo, solver, true) )
 		return false;
 
-	// Cbc thinks in terms of lotsize objects, and for those the lower bound has to be 0
-	if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI))
-		for (int i = 0; i < gmoN(gmo); ++i)
-			if (gmoGetVarTypeOne(gmo, i) == var_SC || gmoGetVarTypeOne(gmo, i) == var_SI)
-				solver.setColLower(i, 0.);
-
-	if (!gmoN(gmo)) {
-		gevLog(gev, "Problem has no columns. Adding fake column...");
-		CoinPackedVector vec(0);
-		solver.addCol(vec, -solver.getInfinity(), solver.getInfinity(), 0.);
-	}
-
-	if (gmoDict(gmo)) { // set variable and constraint names
-		solver.setIntParam(OsiNameDiscipline, 2);
-		char buffer[256];
-		std::string stbuffer;
-		for (int j = 0; j < gmoN(gmo); ++j) {
-			gmoGetVarNameOne(gmo, j, buffer);
-			stbuffer = buffer;
-			solver.setColName(j, stbuffer);
-		}
-		for (int j = 0; j < gmoM(gmo); ++j) {
-			gmoGetEquNameOne(gmo, j, buffer);
-			stbuffer = buffer;
-			solver.setRowName(j, stbuffer);
-		}
-	}
-
-	return true;
-}
-
-bool GamsCbc::setupPrioritiesSOSSemiCon() {
-	assert(model);
-
+   // assemble integer variable branching priorities
 	// range of priority values
-	double minprior =  model->solver()->getInfinity();
-	double maxprior = -model->solver()->getInfinity();
-	// take care of integer variable branching priorities
-	if (gmoPriorOpt(gmo)) {
-		// first check which range of priorities is given
-		for (int i = 0; i < gmoN(gmo); ++i) {
-			if (gmoGetVarTypeOne(gmo, i) == var_X) continue; // gams forbids branching priorities for continuous variables
-			if (gmoGetVarPriorOne(gmo,i) < minprior) minprior = gmoGetVarPriorOne(gmo,i);
-			if (gmoGetVarPriorOne(gmo,i) > maxprior) maxprior = gmoGetVarPriorOne(gmo,i);
-		}
-		if (minprior!=maxprior) {
-			int* cbcprior = new int[gmoNDisc(gmo)];
-			int j = 0;
-			for (int i = 0; i < gmoN(gmo); ++i) {
-				if (gmoGetVarTypeOne(gmo, i) == var_X) continue; // gams forbids branching priorities for continuous variables
-				// we map gams priorities into the range {1,..,1000}
-				// (1000 is standard priority in Cbc, and 1 is highest priority)
-				assert(j < gmoNDisc(gmo));
-				cbcprior[j++]=1+(int)(999*(gmoGetVarPriorOne(gmo,i)-minprior)/(maxprior-minprior));
-			}
-			model->passInPriorities(cbcprior, false);
-			delete[] cbcprior;
-		}
+	double minprior =  solver.getInfinity();
+	double maxprior = -solver.getInfinity();
+	if( gmoPriorOpt(gmo) && gmoNDisc(gmo) > 0 )
+	{
+	   // first check which range of priorities is given
+	   for (int i = 0; i < gmoN(gmo); ++i)
+	   {
+	      if( gmoGetVarTypeOne(gmo, i) == gmovar_X )
+	         continue; // gams forbids branching priorities for continuous variables
+	      if( gmoGetVarPriorOne(gmo,i) < minprior )
+	         minprior = gmoGetVarPriorOne(gmo,i);
+	      if( gmoGetVarPriorOne(gmo,i) > maxprior )
+	         maxprior = gmoGetVarPriorOne(gmo,i);
+	   }
+	   if( minprior != maxprior )
+	   {
+	      cbcprior = new int[gmoNDisc(gmo)];
+	      int j = 0;
+	      for( int i = 0; i < gmoN(gmo); ++i )
+	      {
+	         if( gmoGetVarTypeOne(gmo, i) == gmovar_X )
+	            continue; // gams forbids branching priorities for continuous variables
+	         // we map gams priorities into the range {1,..,1000}
+	         // (1000 is standard priority in Cbc, and 1 is highest priority)
+	         assert(j < gmoNDisc(gmo));
+	         cbcprior[j++] = 1 + (int)(999* (gmoGetVarPriorOne(gmo,i) - minprior) / (maxprior - minprior));
+	      }
+	      assert(j == gmoNDisc(gmo));
+	   }
 	}
 
-	// Tell solver which variables belong to SOS of type 1 or 2
-	int numSos1, numSos2, nzSos, numSos;
+	// assemble SOS of type 1 or 2
+	int numSos1, numSos2, nzSos;
 	gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);
 	numSos = numSos1 + numSos2;
-	if (nzSos) {
-		CbcObject** objects = new CbcObject*[numSos];
+	if( nzSos > 0 )
+	{
+	   sosobjects = new CbcObject*[numSos];
 
-		int* sostype = new int[numSos];
-		int* sosbeg  = new int[numSos+1];
-		int* sosind  = new int[nzSos];
-		double* soswt = new double[nzSos];
+	   int* sostype  = new int[numSos];
+	   int* sosbeg   = new int[numSos+1];
+	   int* sosind   = new int[nzSos];
+	   double* soswt = new double[nzSos];
 
-		gmoGetSosConstraints(gmo, sostype, sosbeg, sosind, soswt);
+	   gmoGetSosConstraints(gmo, sostype, sosbeg, sosind, soswt);
 
-		int*    which   = new int[CoinMin(gmoN(gmo), nzSos)];
-		double* weights = new double[CoinMin(gmoN(gmo), nzSos)];
+	   int*    which   = new int[CoinMin(gmoN(gmo), nzSos)];
+	   double* weights = new double[CoinMin(gmoN(gmo), nzSos)];
 
-		for (int i = 0; i < numSos; ++i) {
-			int k = 0;
-			for (int j = sosbeg[i]; j < sosbeg[i+1]; ++j, ++k) {
-				which[k]   = sosind[j];
-				weights[k] = soswt[j];
-				assert(gmoGetVarTypeOne(gmo, sosind[j]) == (sostype[i] == 1 ? var_S1 : var_S2));
-			}
-			objects[i] = new CbcSOS(model, k, which, weights, i, sostype[i]);
-			objects[i]->setPriority(gmoN(gmo)-k); // branch on long sets first
-		}
+	   for( int i = 0; i < numSos; ++i )
+	   {
+	      int k = 0;
+	      for( int j = sosbeg[i]; j < sosbeg[i+1]; ++j, ++k )
+	      {
+	         which[k]   = sosind[j];
+	         weights[k] = soswt[j];
+	         assert(gmoGetVarTypeOne(gmo, sosind[j]) == (sostype[i] == 1 ? gmovar_S1 : gmovar_S2));
+	      }
+	      sosobjects[i] = new CbcSOS(model, k, which, weights, i, sostype[i]);
+	      sosobjects[i]->setPriority(gmoN(gmo)-k); // branch on long sets first
+	   }
 
-		delete[] which;
-		delete[] weights;
+	   delete[] which;
+	   delete[] weights;
+	   delete[] sostype;
+	   delete[] sosbeg;
+	   delete[] sosind;
+	   delete[] soswt;
+	}
 
-	  model->addObjects(numSos, objects);
-	  for (int i = 0; i < numSos; ++i)
-			delete objects[i];
-		delete[] objects;
-  }
+	// assemble semicontinuous and semiinteger variables
+	numSemi = gmoGetVarTypeCnt(gmo, gmovar_SC) + gmoGetVarTypeCnt(gmo, gmovar_SI);
+	if( numSemi > 0)
+	{
+	   semiobjects = new CbcObject*[numSemi];
+	   int object_nr = 0;
+	   double points[4];
+	   points[0] = 0.;
+	   points[1] = 0.;
+	   for( int i = 0; i < gmoN(gmo); ++i )
+	   {
+	      enum gmoVarType vartype = (enum gmoVarType)gmoGetVarTypeOne(gmo, i);
+	      if( vartype != gmovar_SC && vartype != gmovar_SI )
+	         continue;
 
-	int numSemi = gmoGetVarTypeCnt(gmo, var_SC) + gmoGetVarTypeCnt(gmo, var_SI); // number of semicontinuous and semiinteger variables
-  if (numSemi) {
-		CbcObject** objects = new CbcObject*[numSemi];
-		int object_nr = 0;
-		double points[4];
-		points[0] = 0.;
-		points[1] = 0.;
-		for (int i = 0; i < gmoN(gmo); ++i) {
-			enum gmoVarType vartype = (enum gmoVarType)gmoGetVarTypeOne(gmo, i);
-			if (vartype != var_SC && vartype != var_SI)
-				continue;
+	      double varlb = gmoGetVarLowerOne(gmo, i);
+	      double varub = gmoGetVarUpperOne(gmo, i);
 
-			double varlb = gmoGetVarLowerOne(gmo, i);
-			double varub = gmoGetVarUpperOne(gmo, i);
+	      if( vartype == gmovar_SI && varub - varlb <= 1000 )
+	      {
+	         // model lotsize for discrete variable as a set of integer values
+	         int len = (int)(varub - varlb + 2);
+	         double* points2 = new double[len];
+	         points2[0] = 0.;
+	         int j = 1;
+	         for( int p = (int)varlb; p <= varub; ++p, ++j )
+	            points2[j] = (double)p;
+	         semiobjects[object_nr] = new CbcLotsize(model, i, len, points2, false);
+	         delete[] points2;
+	      }
+	      else
+	      {
+	         // lotsize for continuous variable or integer with large upper bounds
+	         if( vartype == gmovar_SI )
+	            gevLogStat(gev, "Warning: Support of semiinteger variables with a range larger than 1000 is experimental.\n");
+	         points[2] = varlb;
+	         points[3] = varub;
+	         if( varlb == varub ) // var. can be only 0 or varlb
+	            semiobjects[object_nr] = new CbcLotsize(model, i, 2, points+1, false);
+	         else // var. can be 0 or in the range between low and upper
+	            semiobjects[object_nr] = new CbcLotsize(model, i, 2, points,   true );
+	      }
 
-			if (vartype == var_SI && varub - varlb <= 1000) { // model lotsize for discrete variable as a set of integer values
-				int len = (int)(varub - varlb + 2);
-				double* points2 = new double[len];
-				points2[0] = 0.;
-				int j = 1;
-				for (int p = (int)varlb; p <= varub; ++p, ++j)
-					points2[j] = (double)p;
-				objects[object_nr] = new CbcLotsize(model, i, len, points2, false);
-				delete[] points2;
+	      // set actual lower bound of variable in solver
+         solver.setColLower(i, 0.0);
 
-			} else { // lotsize for continuous variable or integer with large upper bounds
-				if (vartype == var_SI)
-					gevLogStat(gev, "Warning: Support of semiinteger variables with a range larger than 1000 is experimental.\n");
-				points[2] = varlb;
-				points[3] = varub;
-				if (varlb == varub) // var. can be only 0 or varlb
-					objects[object_nr] = new CbcLotsize(model, i, 2, points+1, false);
-				else // var. can be 0 or in the range between low and upper
-					objects[object_nr] = new CbcLotsize(model, i, 2, points,   true );
-			}
+	      ++object_nr;
+	   }
+	   assert(object_nr == numSemi);
+	}
 
-			++object_nr;
-		}
-		assert(object_nr == numSemi);
-	  model->addObjects(object_nr, objects);
-	  for (int i = 0; i < object_nr; ++i)
-			delete objects[i];
-		delete[] objects;
-  }
+   if( gmoN(gmo) == 0 )
+   {
+      gevLog(gev, "Problem has no columns. Adding fake column...");
+      CoinPackedVector vec(0);
+      solver.addCol(vec, -solver.getInfinity(), solver.getInfinity(), 0.0);
+   }
+
+   /* setup CbcModel */
+	model = new CbcModel(solver);
+
+	msghandler->setLogLevel(1, isLP()); /* we want LP output if we solve an LP */
+	model->passInMessageHandler(msghandler);
+
+	/* pass in branching priorities */
+	model->passInPriorities(cbcprior, false);
+	delete[] cbcprior;
+
+	/* pass in SOS objects */
+	model->addObjects(numSos, sosobjects);
+	for( int i = 0; i < numSos; ++i )
+	   delete sosobjects[i];
+   delete[] sosobjects;
+
+   /* pass in lotsize objects */
+   model->addObjects(numSemi, semiobjects);
+   for( int i = 0; i < numSemi; ++i )
+      delete semiobjects[i];
+   delete[] semiobjects;
 
 	return true;
 }
 
-bool GamsCbc::setupStartingPoint() {
-	double* varlevel = NULL;
-	if (gmoHaveBasis(gmo)) {
-		varlevel         = new double[gmoN(gmo)];
-		double* rowprice = new double[gmoM(gmo)];
-		int* cstat       = new int[gmoN(gmo)];
-		int* rstat       = new int[gmoM(gmo)];
+bool GamsCbc::setupStartingPoint(
+   bool                  mipstart            /**< should an initial primal solution been setup? */
+)
+{
+   assert(gmo != NULL);
+   assert(model != NULL);
 
-		gmoGetVarL(gmo, varlevel);
-		gmoGetEquM(gmo, rowprice);
+   bool    retcode = true;
+   double* varlevel = NULL;
+   double* rowprice = NULL;
+   int*    cstat    = NULL;
+   int*    rstat    = NULL;
 
-	  int nbas = 0;
-		for (int j = 0; j < gmoN(gmo); ++j) {
-#if GMOAPIVERSION >= 8
-			switch (gmoGetVarStatOne(gmo, j)) {
-            case Bstat_Basic:
-#else
-			switch (gmoGetVarBasOne(gmo, j)) {
-            case 0: // this seem to mean that variable should be basic
-#endif
-					if (nbas < gmoM(gmo)) {
-						cstat[j] = 1; // basic
-						++nbas;
-					} else if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
-						cstat[j] = 0; // superbasic = free
-					else if (gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) || fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
-						cstat[j] = 3; // nonbasic at lower bound
-					else
-						cstat[j] = 2; // nonbasic at upper bound
-					break;
-#if GMOAPIVERSION >= 8
-				case Bstat_Lower:
-				case Bstat_Upper:
-				case Bstat_Super:
-#else
-				case 1:
-#endif
-					if (gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo))
-						cstat[j] = 0; // superbasic = free
-					if (gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) || fabs(gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j)) < fabs(gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j)))
-						cstat[j] = 3; // nonbasic at lower bound
-					else
-						cstat[j] = 2; // nonbasic at upper bound
-					break;
-				default:
-					gevLogStat(gev, "Error: invalid basis indicator for column.");
-					delete[] cstat;
-					delete[] rstat;
-					delete[] rowprice;
-					delete[] varlevel;
-					return false;
-			}
-		}
+   if( gmoHaveBasis(gmo) )
+   {
+      varlevel = new double[gmoN(gmo)];
+      rowprice = new double[gmoM(gmo)];
+      cstat    = new int[gmoN(gmo)];
+      rstat    = new int[gmoM(gmo)];
 
-		for (int j = 0; j< gmoM(gmo); ++j) {
-#if GMOAPIVERSION >= 8
-         switch (gmoGetEquStatOne(gmo, j)) {
-            case Bstat_Basic:
-#else
-         switch (gmoGetEquBasOne(gmo, j)) {
-            case 0:
-#endif
-					if (nbas < gmoM(gmo)) {
-						rstat[j] = 1; // basic
-						++nbas;
-					} else
-						rstat[j] = gmoGetEquTypeOne(gmo, j) == equ_L ? 3 : 2; // nonbasic at some bound
-					break;
-#if GMOAPIVERSION >= 8
-				case Bstat_Lower:
-				case Bstat_Upper:
-				case Bstat_Super:
-#else
-				case 1:
-#endif
-					rstat[j] = gmoGetEquTypeOne(gmo, j) == equ_L ? 3 : 2; // nonbasic at some bound
-					break;
-				default:
-					gevLogStat(gev, "Error: invalid basis indicator for row.");
-					delete[] cstat;
-					delete[] rstat;
-					delete[] rowprice;
-					delete[] varlevel;
-					return false;
-			}
-		}
+      gmoGetVarL(gmo, varlevel);
+      gmoGetEquM(gmo, rowprice);
 
-		model->solver()->setColSolution(varlevel);
-		model->solver()->setRowPrice(rowprice);
-		// this call initializes ClpSimplex data structures, which can produce an error if CLP does not like the model
-		if (model->solver()->setBasisStatus(cstat, rstat)) {
-			gevLogStat(gev, "Failed to set initial basis. Probably CLP abandoned the model. Exiting ...");
-			delete[] varlevel;
-			delete[] rowprice;
-			delete[] cstat;
-			delete[] rstat;
-			return false;
-		}
+      int nbas = 0;
+      for( int j = 0; j < gmoN(gmo); ++j )
+      {
+         switch( gmoGetVarStatOne(gmo, j) )
+         {
+            case gmoBstat_Basic:
+               if( nbas < gmoM(gmo) )
+               {
+                  cstat[j] = 1; // basic
+                  ++nbas;
+               }
+               else if( gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) )
+                  cstat[j] = 0; // superbasic = free
+               else if( gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) || gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j) < gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j) )
+                  cstat[j] = 3; // nonbasic at lower bound
+               else
+                  cstat[j] = 2; // nonbasic at upper bound
+               break;
 
-		delete[] rowprice;
-		delete[] cstat;
-		delete[] rstat;
-	}
+            case gmoBstat_Lower:
+            case gmoBstat_Upper:
+            case gmoBstat_Super:
+               if( gmoGetVarLowerOne(gmo, j) <= gmoMinf(gmo) && gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) )
+                  cstat[j] = 0; // superbasic = free
+               if( gmoGetVarUpperOne(gmo, j) >= gmoPinf(gmo) || gmoGetVarLOne(gmo, j) - gmoGetVarLowerOne(gmo, j) < gmoGetVarUpperOne(gmo, j) - gmoGetVarLOne(gmo, j) )
+                  cstat[j] = 3; // nonbasic at lower bound
+               else
+                  cstat[j] = 2; // nonbasic at upper bound
+               break;
 
-	if (gmoModelType(gmo) != Proc_lp && gmoModelType(gmo) != Proc_rmip && options.getBool("mipstart")) {
-		double objval = 0.;
-		if (!varlevel) {
-			varlevel = new double[gmoN(gmo)];
-			gmoGetVarL(gmo, varlevel);
-		}
-		const double* objcoeff = model->solver()->getObjCoefficients();
-		for (int i = 0; i < gmoN(gmo); ++i)
-			objval += objcoeff[i] * varlevel[i];
-		gevLogPChar(gev, "Letting CBC try user-given column levels as initial MIP solution:");
-		model->setBestSolution(varlevel, gmoN(gmo), objval, true);
-	}
+            default:
+               gevLogStat(gev, "Error: invalid basis indicator for column.");
+               retcode = false;
+               goto TERMINATE;
+         }
+      }
 
-	delete[] varlevel;
+      for( int j = 0; j< gmoM(gmo); ++j )
+      {
+         switch( gmoGetEquStatOne(gmo, j) )
+         {
+            case gmoBstat_Basic:
+               if( nbas < gmoM(gmo) )
+               {
+                  rstat[j] = 1; // basic
+                  ++nbas;
+               }
+               else
+               {
+                  rstat[j] = gmoGetEquTypeOne(gmo, j) == gmoequ_L ? 3 : 2; // nonbasic at some bound
+               }
+               break;
 
-	return true;
+            case gmoBstat_Lower:
+            case gmoBstat_Upper:
+            case gmoBstat_Super:
+               rstat[j] = gmoGetEquTypeOne(gmo, j) == gmoequ_L ? 3 : 2; // nonbasic at some bound
+               break;
+
+            default:
+               gevLogStat(gev, "Error: invalid basis indicator for row.");
+               retcode = false;
+               goto TERMINATE;
+         }
+      }
+
+      model->solver()->setColSolution(varlevel);
+      model->solver()->setRowPrice(rowprice);
+
+      // this call initializes ClpSimplex data structures, which can produce an error if CLP does not like the model
+      if( model->solver()->setBasisStatus(cstat, rstat) ) {
+         gevLogStat(gev, "Failed to set initial basis. Probably CLP abandoned the model.");
+         retcode = false;
+         goto TERMINATE;
+      }
+   }
+
+   if( mipstart && gmoModelType(gmo) != gmoProc_lp && gmoModelType(gmo) != gmoProc_rmip )
+   {
+      double objval = 0.0;
+      if( varlevel == NULL )
+      {
+         varlevel = new double[gmoN(gmo)];
+         gmoGetVarL(gmo, varlevel);
+      }
+      const double* objcoeff = model->solver()->getObjCoefficients();
+      for( int i = 0; i < gmoN(gmo); ++i )
+         objval += objcoeff[i] * varlevel[i];
+      gevLogPChar(gev, "Letting CBC try user-given column levels as initial MIP solution:");
+      model->setBestSolution(varlevel, gmoN(gmo), objval, true);
+   }
+
+TERMINATE:
+   delete[] varlevel;
+   delete[] rowprice;
+   delete[] cstat;
+   delete[] rstat;
+
+   return retcode;
 }
 
-bool GamsCbc::setupParameters() {
+bool GamsCbc::setupParameters(
+   bool&                 mipstart,           /**< variable where to store whether the mipstart option has been set */
+   bool&                 multithread         /**< variable where to store whether multiple threads should be used */
+)
+{
+   assert(gmo != NULL);
+   assert(gev != NULL);
+
+   GamsOptions options(gev, opt);
+
+   if( opt == NULL )
+   {
+      // initialize options object by getting defaults from options settings file and optionally read user options file
+      char* optfilename = NULL;
+      if( gmoOptFile(gmo) > 0 )
+      {
+         char buffer[1024];
+         gmoNameOptFile(gmo, buffer);
+         optfilename = buffer;
+      }
+#ifdef GAMS_BUILD
+      options.readOptionsFile("cbc", optfilename);
+#else
+      options.readOptionsFile("mycbc", optfilename);
+#endif
+   }
+
+   // set GAMS options for those not set in options file
+   if( !options.isDefined("reslim") )
+      options.setDouble("reslim", gevGetDblOpt(gev, gevResLim));
+   if( !options.isDefined("iterlim") && gevGetIntOpt(gev, gevIterLim) != ITERLIM_INFINITY )
+      options.setInteger("iterlim", gevGetIntOpt(gev, gevIterLim));
+   if( !options.isDefined("nodlim") && gevGetIntOpt(gev, gevNodeLim) > 0 )
+      options.setInteger("nodlim", gevGetIntOpt(gev, gevNodeLim));
+   if( !options.isDefined("nodelim") && options.isDefined("nodlim") )
+      options.setInteger("nodelim", options.getInteger("nodlim"));
+   if( !options.isDefined("optca") )
+      options.setDouble("optca", gevGetDblOpt(gev, gevOptCA));
+   if( !options.isDefined("optcr") )
+      options.setDouble ("optcr", gevGetDblOpt(gev, gevOptCR));
+   if( !options.isDefined("cutoff") && gevGetIntOpt(gev, gevUseCutOff) )
+      options.setDouble("cutoff", gevGetDblOpt(gev, gevCutOff));
+   if( !options.isDefined("increment") && gevGetIntOpt(gev, gevUseCheat) )
+      options.setDouble("increment", gevGetDblOpt(gev, gevCheat));
+   if( !options.isDefined("threads") )
+      options.setInteger("threads", gevThreads(gev));
+
 	//note: does not seem to work via Osi: OsiDoPresolveInInitial, OsiDoDualInInitial
 
 	// Some tolerances and limits
@@ -522,8 +525,8 @@ bool GamsCbc::setupParameters() {
 	model->solver()->setDblParam(OsiPrimalTolerance, options.getDouble("tol_primal"));
 	model->solver()->setDblParam(OsiDualTolerance,   options.getDouble("tol_dual"));
 
-	// iteration limit only for LPs
-	if (isLP())
+	// iteration limit, if set
+	if( options.isDefined("iterlim") )
 		model->solver()->setIntParam(OsiMaxNumIteration, options.getInteger("iterlim"));
 
 	// MIP parameters
@@ -531,10 +534,9 @@ bool GamsCbc::setupParameters() {
 	model->setDblParam(CbcModel::CbcAllowableGap,         options.getDouble ("optca"));
 	model->setDblParam(CbcModel::CbcAllowableFractionGap, options.getDouble ("optcr"));
 	model->setDblParam(CbcModel::CbcIntegerTolerance,     options.getDouble ("tol_integer"));
-	if (options.isDefined("cutoff"))
+	if( options.isDefined("cutoff") )
 		model->setCutoff(model->solver()->getObjSense() * options.getDouble("cutoff")); // Cbc assumes a minimization problem here
 	model->setPrintFrequency(options.getInteger("printfrequency"));
-//	model.solver()->setIntParam(OsiMaxNumIterationHotStart,100);
 
 	std::list<std::string> par_list;
 
@@ -1092,7 +1094,7 @@ bool GamsCbc::setupParameters() {
 		} else {
 			gevLogStat(gev, "Unsupported value for option 'preprocess'. Ignoring this option");
 		}
-	} else if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
+	} else if (gmoGetVarTypeCnt(gmo, gmovar_SC) || gmoGetVarTypeCnt(gmo, gmovar_SI)) {
 		gevLogStat(gev, "CBC integer preprocessing does not handle semicontinuous variables correct, thus we switch it off.");
 		par_list.push_back("-preprocess");
 		par_list.push_back("off");
@@ -1104,32 +1106,23 @@ bool GamsCbc::setupParameters() {
 		par_list.push_back(buffer);
 	}
 
-	if (options.isDefined("threads")) {
-#ifdef CBC_THREAD
-//		if (options.getInteger("threads") > 1 && (options.isDefined("usercutcall") || options.isDefined("userheurcall"))) {  //TODO
-//			myout << "Cannot use BCH in multithread mode. Option threads ignored." << CoinMessageEol;
-//		} else {
-			par_list.push_back("-threads");
-			sprintf(buffer, "%d", options.getInteger("threads"));
-			par_list.push_back(buffer);
-//		}
-#else
-		gevLogStat(gev, "Warning: CBC has not been compiled with multithreading support. Option threads ignored.");
-#endif
-	} else if (gevThreads(gev) > 1) {
-#ifdef CBC_THREAD
-		par_list.push_back("-threads");
-		sprintf(buffer, "%d", gevThreads(gev));
-		par_list.push_back(buffer);
-#endif
-	}
+   int nthreads = options.getInteger("threads");
+	if( nthreads > 1 ) {
+	   par_list.push_back("-threads");
+	   sprintf(buffer, "%d", nthreads);
+	   par_list.push_back(buffer);
 
-#ifdef CBC_THREAD
-	// if Cbc may do multithreading, then we do not want to do blas going into multithreading too
-	setNumThreadsBlas(gev, 1);
-#else
-	setNumThreadsBlas(gev, gevThreads(gev));
-#endif
+	   // TODO print warning if Cbc compiled without multithreading support (how to know?)
+	   //  gevLogStat(gev, "Warning: CBC has not been compiled with multithreading support. Option threads ignored.");
+
+	   // no Blas multithreading if Cbc is doing multithreading
+	   setNumThreadsBlas(gev, 1);
+	}
+	else
+	{
+	   // allow Blas multithreading
+	   setNumThreadsBlas(gev, gevThreads(gev));
+	}
 
 	// special options set by user and passed unseen to CBC
 	if (options.isDefined("special")) {
@@ -1166,13 +1159,13 @@ bool GamsCbc::setupParameters() {
 	} else
 		par_list.push_back("-solve");
 
-	int par_list_length = par_list.size();
+	size_t par_list_length = par_list.size();
 	if( cbc_args != NULL ) {
       for (int i = 0; i < cbc_argc; ++i)
          free(cbc_args[i]);
       delete[] cbc_args;
 	}
-	cbc_argc = par_list_length+2;
+	cbc_argc = (int)par_list_length+2;
 	cbc_args = new char*[cbc_argc];
 	cbc_args[0] = strdup("GAMS/CBC");
 	int i = 1;
@@ -1180,138 +1173,192 @@ bool GamsCbc::setupParameters() {
 		cbc_args[i] = strdup(it->c_str());
 	cbc_args[i++] = strdup("-quit");
 
+   mipstart = options.getBool("mipstart");
+   multithread = nthreads > 1;
+
+   // write MPS file
+   if( options.isDefined("writemps") )
+   {
+      char buffer[1024];
+      options.getString("writemps", buffer);
+      gevLogStatPChar(gev, "\nWriting MPS file ");
+      gevLogStat(gev, buffer);
+      model->solver()->writeMps(buffer, "", (gmoSense(gmo) == gmoObj_Min) ? 1.0 : -1.0);
+   }
+
 	return true;
 }
 
-bool GamsCbc::writeSolution(double cputime, double walltime) {
+bool GamsCbc::writeSolution(
+   double             cputime,            /**< CPU time spend by solver */
+   double             walltime,           /**< wallclock time spend by solver */
+   bool               multithread         /**< did we solve the MIP in multithread mode */
+)
+{
 	bool write_solution = false;
-	char buffer[255];
 
 	gevLogStat(gev, "");
-	if (isLP()) { // if Cbc solved an LP, the solution status is not correctly stored in the CbcModel, we have to look into the solver
-		if (model->solver()->isProvenDualInfeasible()) {
-			gmoSolveStatSet(gmo, SolveStat_Normal);
-			gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
+	if( isLP() )
+	{
+	   // if Cbc solved an LP, the solution status is not correctly stored in the CbcModel, we have to look into the solver
+		if( model->solver()->isProvenDualInfeasible() )
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_Normal);
+			gmoModelStatSet(gmo, gmoModelStat_UnboundedNoSolution);
 			gevLogStat(gev, "Model unbounded.");
-
-		} else if (model->solver()->isProvenPrimalInfeasible()) {
-			gmoSolveStatSet(gmo, SolveStat_Normal);
-			gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+		}
+		else if( model->solver()->isProvenPrimalInfeasible() )
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_Normal);
+			gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
 			gevLogStat(gev, "Model infeasible.");
-
-		} else if (model->solver()->isAbandoned()) {
-			gmoSolveStatSet(gmo, SolveStat_SolverErr);
-			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+		}
+		else if( model->solver()->isAbandoned() )
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
+			gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
 			gevLogStat(gev, "Model abandoned.");
 
-		} else if (model->solver()->isProvenOptimal()) {
+		}
+		else if( model->solver()->isProvenOptimal() )
+		{
 			write_solution = true;
-			gmoSolveStatSet(gmo, SolveStat_Normal);
-			gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
+			gmoSolveStatSet(gmo, gmoSolveStat_Normal);
+			gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
 			gevLogStat(gev, "Solved to optimality.");
-
-		} else if (model->isSecondsLimitReached()) {
-			gmoSolveStatSet(gmo, SolveStat_Resource);
-			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+		}
+		else if( model->isSecondsLimitReached() )
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_Resource);
+			gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
 			gevLogStat(gev, "Time limit reached.");
-
-		} else if (model->solver()->isIterationLimitReached()) {
-			gmoSolveStatSet(gmo, SolveStat_Iteration);
-			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+		}
+		else if( model->solver()->isIterationLimitReached() )
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
+			gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
 			gevLogStat(gev, "Iteration limit reached.");
-
-		} else if (model->solver()->isPrimalObjectiveLimitReached()) {
-			gmoSolveStatSet(gmo, SolveStat_Solver);
-			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+		}
+		else if( model->solver()->isPrimalObjectiveLimitReached() )
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_Solver);
+			gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
 			gevLogStat(gev, "Primal objective limit reached.");
-
-		} else if (model->solver()->isDualObjectiveLimitReached()) {
-			gmoSolveStatSet(gmo, SolveStat_Solver);
-			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+		}
+		else if( model->solver()->isDualObjectiveLimitReached() )
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_Solver);
+			gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
 			gevLogStat(gev, "Dual objective limit reached.");
-
-		} else {
-			gmoSolveStatSet(gmo, SolveStat_Solver);
-			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+		}
+		else
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_Solver);
+			gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
 			gevLogStat(gev, "Model status unknown, no feasible solution found.");
-			gevLogStat(gev, buffer);
 		}
 
-	} else { // solved a MIP
-		if (model->solver()->isProvenDualInfeasible()) {
-			gmoSolveStatSet(gmo, SolveStat_Normal);
-			gmoModelStatSet(gmo, ModelStat_UnboundedNoSolution);
+	}
+	else
+	{
+	   // solved a MIP
+		if( model->solver()->isProvenDualInfeasible() )
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_Normal);
+			gmoModelStatSet(gmo, gmoModelStat_UnboundedNoSolution);
 			gevLogStat(gev, "Model unbounded.");
-
-		} else if (model->isAbandoned()) {
-			gmoSolveStatSet(gmo, SolveStat_SolverErr);
-			gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+		}
+		else if( model->isAbandoned() )
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
+			gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
 			gevLogStat(gev, "Model abandoned.");
-
-		} else if (model->isProvenOptimal()) {
+		}
+		else if( model->isProvenOptimal() )
+		{
 			write_solution = true;
-			gmoSolveStatSet(gmo, SolveStat_Normal);
-			if (options.getDouble("optca") > 0 || options.getDouble("optcr") > 0) {
-				gmoModelStatSet(gmo, ModelStat_Integer);
+			gmoSolveStatSet(gmo, gmoSolveStat_Normal);
+			if( options.getDouble("optca") > 0 || options.getDouble("optcr") > 0 )
+			{
+				gmoModelStatSet(gmo, gmoModelStat_Integer);
 				gevLogStat(gev, "Solved to optimality (within gap tolerances optca and optcr).");
-			} else {
-				gmoModelStatSet(gmo, ModelStat_OptimalGlobal);
+			}
+			else
+			{
+				gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
 				gevLogStat(gev, "Solved to optimality.");
 			}
-
-		} else if (model->isNodeLimitReached()) {
-			gmoSolveStatSet(gmo, SolveStat_Iteration);
-			if (model->bestSolution()) {
+		}
+		else if( model->isNodeLimitReached() )
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
+			if( model->bestSolution() )
+			{
 				write_solution = true;
-				gmoModelStatSet(gmo, ModelStat_Integer);
+				gmoModelStatSet(gmo, gmoModelStat_Integer);
 				gevLogStat(gev, "Node limit reached. Have feasible solution.");
-			} else {
-				gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+			}
+			else
+			{
+				gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
 				gevLogStat(gev, "Node limit reached. No feasible solution found.");
 			}
-
-		} else if (model->isSecondsLimitReached()) {
-			gmoSolveStatSet(gmo, SolveStat_Resource);
-			if (model->bestSolution()) {
+		}
+		else if( model->isSecondsLimitReached() )
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_Resource);
+			if( model->bestSolution() )
+			{
 				write_solution = true;
-				gmoModelStatSet(gmo, ModelStat_Integer);
+				gmoModelStatSet(gmo, gmoModelStat_Integer);
 				gevLogStat(gev, "Time limit reached. Have feasible solution.");
-			} else {
-				gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
+			}
+			else
+			{
+				gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
 				gevLogStat(gev, "Time limit reached. No feasible solution found.");
 			}
-
-		} else if (model->isProvenInfeasible()) {
-			gmoSolveStatSet(gmo, SolveStat_Normal);
-			gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
+		}
+		else if( model->isProvenInfeasible() )
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_Normal);
+			gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
 			gevLogStat(gev, "Model infeasible.");
-
-		} else {
-			gmoSolveStatSet(gmo, SolveStat_Solver);
-			if (model->bestSolution()) {
+		}
+		else
+		{
+			gmoSolveStatSet(gmo, gmoSolveStat_Solver);
+			if( model->bestSolution() )
+			{
 				write_solution = true;
-				gmoModelStatSet(gmo, ModelStat_Integer);
+				gmoModelStatSet(gmo, gmoModelStat_Integer);
 				gevLogStat(gev, "Model status unknown, but have feasible solution.");
-			} else {
-				gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
+			}
+			else
+			{
+				gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
 				gevLogStat(gev, "Model status unknown, no feasible solution found.");
 			}
+		   char buffer[255];
 			sprintf(buffer, "CBC primary status: %d secondary status: %d\n", model->status(), model->secondaryStatus());
 			gevLogStat(gev, buffer);
 		}
 	}
 
-	gmoSetHeadnTail(gmo, Hiterused, model->getIterationCount());
-	gmoSetHeadnTail(gmo, Hresused, options.getInteger("threads") > 1 ? walltime : cputime);
-	gmoSetHeadnTail(gmo, Tmipbest, model->getBestPossibleObjValue());
-	gmoSetHeadnTail(gmo, Tmipnod, model->getNodeCount());
+	gmoSetHeadnTail(gmo, gmoHiterused, model->getIterationCount());
+	gmoSetHeadnTail(gmo, gmoHresused,  multithread ? walltime : cputime);
+	gmoSetHeadnTail(gmo, gmoTmipbest,  model->getBestPossibleObjValue());
+	gmoSetHeadnTail(gmo, gmoTmipnod,   model->getNodeCount());
 
-	if (write_solution && !gamsOsiStoreSolution(gmo, *model->solver(), false))
+	if( write_solution && !gamsOsiStoreSolution(gmo, *model->solver()) )
 		return false;
 
-	if (!isLP()) {
-		if (model->bestSolution()) {
-			if (options.getInteger("threads") > 1)
+	if( !isLP() )
+	{
+	   char buffer[255];
+		if( model->bestSolution() )
+		{
+			if( multithread )
 				snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %.2f CPU seconds, %.2f wall clock seconds)", model->getObjValue(), model->getNodeCount(), cputime, walltime);
 			else
 				snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %g seconds)", model->getObjValue(), model->getNodeCount(), cputime);
@@ -1319,7 +1366,8 @@ bool GamsCbc::writeSolution(double cputime, double walltime) {
 		}
 		snprintf(buffer, 255, "Best possible: %14.6e", model->getBestPossibleObjValue());
 		gevLogStat(gev, buffer);
-		if (model->bestSolution()) {
+		if( model->bestSolution() )
+		{
 			snprintf(buffer, 255, "Absolute gap: %15.6e   (absolute tolerance optca: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()), options.getDouble("optca"));
 			gevLogStat(gev, buffer);
 			snprintf(buffer, 255, "Relative gap: %14.6f%%   (relative tolerance optcr: %g%%)", 100* CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()) / CoinMax(CoinAbs(model->getBestPossibleObjValue()), 1.), 100*options.getDouble("optcr"));
@@ -1330,59 +1378,67 @@ bool GamsCbc::writeSolution(double cputime, double walltime) {
 	return true;
 }
 
-bool GamsCbc::isLP() {
-	if (gmoModelType(gmo) == Proc_lp)
-		return true;
-	if (gmoModelType(gmo) == Proc_rmip)
-		return true;
-	if (gmoNDisc(gmo))
-		return false;
-	int numSos1, numSos2, nzSos;
-	gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);
-	if (nzSos)
-		return false;
-	return true;
+bool GamsCbc::isLP()
+{
+   if( gmoModelType(gmo) == gmoProc_lp )
+      return true;
+   if( gmoModelType(gmo) == gmoProc_rmip )
+      return true;
+   if( gmoNDisc(gmo) )
+      return false;
+   int numSos1, numSos2, nzSos;
+   gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);
+   if( nzSos )
+      return false;
+   return true;
 }
 
-DllExport GamsCbc* STDCALL createNewGamsCbc() {
+DllExport GamsCbc* STDCALL createNewGamsCbc()
+{
 	return new GamsCbc();
 }
 
-DllExport int STDCALL cbcCallSolver(cbcRec_t *Cptr) {
+DllExport int STDCALL cbcCallSolver(cbcRec_t *Cptr)
+{
 	assert(Cptr != NULL);
 	return ((GamsCbc*)Cptr)->callSolver();
 }
 
-DllExport int STDCALL cbcModifyProblem(cbcRec_t *Cptr) {
+DllExport int STDCALL cbcModifyProblem(cbcRec_t *Cptr)
+{
 	assert(Cptr != NULL);
 	return ((GamsCbc*)Cptr)->modifyProblem();
 }
 
-DllExport int STDCALL cbcHaveModifyProblem(cbcRec_t *Cptr) {
+DllExport int STDCALL cbcHaveModifyProblem(cbcRec_t *Cptr)
+{
 	assert(Cptr != NULL);
 	return ((GamsCbc*)Cptr)->haveModifyProblem();
 }
 
-DllExport int STDCALL cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) {
+DllExport int STDCALL cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr)
+{
 	assert(Cptr != NULL);
 	assert(Gptr != NULL);
 	char msg[256];
-	if (!gmoGetReady(msg, sizeof(msg)))
+	if( !gmoGetReady(msg, sizeof(msg)) )
 		return 1;
-	if (!gevGetReady(msg, sizeof(msg)))
+	if( !gevGetReady(msg, sizeof(msg)) )
 		return 1;
 	return ((GamsCbc*)Cptr)->readyAPI(Gptr, Optr);
 }
 
-DllExport void STDCALL cbcFree(cbcRec_t **Cptr) {
+DllExport void STDCALL cbcFree(cbcRec_t **Cptr)
+{
 	assert(Cptr != NULL);
 	delete (GamsCbc*)*Cptr;
 	*Cptr = NULL;
 }
 
-DllExport void STDCALL cbcCreate(cbcRec_t **Cptr, char *msgBuf, int msgBufLen) {
+DllExport void STDCALL cbcCreate(cbcRec_t **Cptr, char *msgBuf, int msgBufLen)
+{
 	assert(Cptr != NULL);
 	*Cptr = (cbcRec_t*) new GamsCbc();
-	if (msgBufLen && msgBuf)
+	if( msgBufLen && msgBuf )
 		msgBuf[0] = 0;
 }

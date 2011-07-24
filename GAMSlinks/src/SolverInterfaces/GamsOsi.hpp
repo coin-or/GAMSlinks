@@ -50,7 +50,7 @@ private:
 	   double             cputime,            /**< CPU time spend by solver */
 	   double             walltime,           /**< wallclock time spend by solver */
 	   bool&              solwritten          /**< whether a solution has been passed to GMO */
-	   );
+	);
 
 	/** resolves with discrete variables fixed */
 	bool solveFixed();

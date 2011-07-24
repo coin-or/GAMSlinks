@@ -22,6 +22,7 @@
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
 #include "gevlice.h"
+#include "gmspal.h"  /* for audit line */
 #endif
 
 #include "GamsCompatibility.h"
@@ -29,6 +30,7 @@
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
 
+#include "OsiSolverInterface.hpp"
 #include "CoinHelperFunctions.hpp"
 #include "CoinTime.hpp"
 #include "CoinPackedVector.hpp"
@@ -410,12 +412,6 @@ int GamsOsi::callSolver()
    assert(osi != NULL);
    assert(msghandler != NULL);
 
-   gmoPinfSet(gmo,  osi->getInfinity());
-   gmoMinfSet(gmo, -osi->getInfinity());
-   gmoObjReformSet(gmo, 1);
-   gmoObjStyleSet(gmo, gmoObjType_Fun);
-   gmoIndexBaseSet(gmo, 0);
-
    if( !setupProblem() )
    {
       gevLogStat(gev, "Error setting up problem. Aborting...");
@@ -510,6 +506,12 @@ bool GamsOsi::setupProblem()
    assert(gmo != NULL);
    assert(gev != NULL);
    assert(osi != NULL);
+
+   gmoPinfSet(gmo,  osi->getInfinity());
+   gmoMinfSet(gmo, -osi->getInfinity());
+   gmoObjReformSet(gmo, 1);
+   gmoObjStyleSet(gmo, gmoObjType_Fun);
+   gmoIndexBaseSet(gmo, 0);
 
 	if( gmoGetVarTypeCnt(gmo, gmovar_SC) || gmoGetVarTypeCnt(gmo, gmovar_SI) || gmoGetVarTypeCnt(gmo, gmovar_S1) || gmoGetVarTypeCnt(gmo, gmovar_S2) )
 	{
