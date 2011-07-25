@@ -17,12 +17,13 @@ typedef void oglRec_t;
 extern "C" {
 #endif
 
-	DllExport int  STDCALL oglCallSolver(oglRec_t *Cptr);
-	DllExport int  STDCALL oglModifyProblem(oglRec_t *Cptr);
-	DllExport int  STDCALL oglHaveModifyProblem(oglRec_t *Cptr);
-	DllExport int  STDCALL oglReadyAPI(oglRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
-	DllExport void STDCALL oglFree(oglRec_t **Cptr);
-	DllExport void STDCALL oglCreate(oglRec_t **Cptr, char *msgBuf, int msgBufLen);
+DllExport int  STDCALL oglCallSolver(oglRec_t *Cptr);
+DllExport int  STDCALL oglModifyProblem(oglRec_t *Cptr);
+DllExport int  STDCALL oglHaveModifyProblem(oglRec_t *Cptr);
+DllExport int  STDCALL oglReadyAPI(oglRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
+DllExport void STDCALL oglFree(oglRec_t **Cptr);
+DllExport void STDCALL oglCreate(oglRec_t **Cptr, char *msgBuf, int msgBufLen);
+DllExport void STDCALL oglXCreate(oglRec_t **Cptr);
 
 #if defined(__cplusplus)
 }

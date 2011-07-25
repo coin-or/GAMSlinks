@@ -2169,6 +2169,11 @@ DllExport GamsOsi* STDCALL createNewGamsOsiXpress()
 		*Cptr = (xxx ## Rec_t*) new GamsOsi(yyy); \
 		if( msgBufLen && msgBuf ) \
 			msgBuf[0] = 0; \
+	} \
+	DllExport void STDCALL xxx ## XCreate(xxx ## Rec_t **Cptr) \
+	{ \
+	   assert(Cptr != NULL); \
+	   *Cptr = (xxx ## Rec_t*) new GamsOsi(yyy); \
 	}
 
 osi_C_interface(ocp, GamsOsi::CPLEX)

@@ -17,12 +17,13 @@ typedef void ocpRec_t;
 extern "C" {
 #endif
 
-	DllExport int  STDCALL ocpCallSolver(ocpRec_t *Cptr);
-	DllExport int  STDCALL ocpModifyProblem(ocpRec_t *Cptr);
-	DllExport int  STDCALL ocpHaveModifyProblem(ocpRec_t *Cptr);
-	DllExport int  STDCALL ocpReadyAPI(ocpRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
-	DllExport void STDCALL ocpFree(ocpRec_t **Cptr);
-	DllExport void STDCALL ocpCreate(ocpRec_t **Cptr, char *msgBuf, int msgBufLen);
+DllExport int  STDCALL ocpCallSolver(ocpRec_t *Cptr);
+DllExport int  STDCALL ocpModifyProblem(ocpRec_t *Cptr);
+DllExport int  STDCALL ocpHaveModifyProblem(ocpRec_t *Cptr);
+DllExport int  STDCALL ocpReadyAPI(ocpRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
+DllExport void STDCALL ocpFree(ocpRec_t **Cptr);
+DllExport void STDCALL ocpCreate(ocpRec_t **Cptr, char *msgBuf, int msgBufLen);
+DllExport void STDCALL ocpXCreate(ocpRec_t **Cptr);
 
 #if defined(__cplusplus)
 }

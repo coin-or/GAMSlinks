@@ -17,12 +17,13 @@ typedef void omkRec_t;
 extern "C" {
 #endif
 
-	DllExport int  STDCALL omkCallSolver(omkRec_t *Cptr);
-	DllExport int  STDCALL omkModifyProblem(omkRec_t *Cptr);
-	DllExport int  STDCALL omkHaveModifyProblem(omkRec_t *Cptr);
-	DllExport int  STDCALL omkReadyAPI(omkRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
-	DllExport void STDCALL omkFree(omkRec_t **Cptr);
-	DllExport void STDCALL omkCreate(omkRec_t **Cptr, char *msgBuf, int msgBufLen);
+DllExport int  STDCALL omkCallSolver(omkRec_t *Cptr);
+DllExport int  STDCALL omkModifyProblem(omkRec_t *Cptr);
+DllExport int  STDCALL omkHaveModifyProblem(omkRec_t *Cptr);
+DllExport int  STDCALL omkReadyAPI(omkRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
+DllExport void STDCALL omkFree(omkRec_t **Cptr);
+DllExport void STDCALL omkCreate(omkRec_t **Cptr, char *msgBuf, int msgBufLen);
+DllExport void STDCALL omkXCreate(omkRec_t **Cptr);
 
 #if defined(__cplusplus)
 }

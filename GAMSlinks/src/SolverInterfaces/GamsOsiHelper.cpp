@@ -267,7 +267,7 @@ bool gamsOsiStoreSolution(
                }
          for( int j = 0; j < gmoM(gmo); ++j )
          {
-            switch (wsb->getArtifStatus(j))
+            switch( wsb->getArtifStatus(j) )
             {
                // for Cbc, the basis status seem to be flipped in CoinWarmStartBasis, but not in getBasisStatus
                case CoinWarmStartBasis::atLowerBound: rowBasis[j] = gmoBstat_Upper; break;

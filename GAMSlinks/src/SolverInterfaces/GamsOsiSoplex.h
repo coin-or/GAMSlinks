@@ -17,12 +17,13 @@ typedef void ospRec_t;
 extern "C" {
 #endif
 
-	DllExport int  STDCALL ospCallSolver(ospRec_t *Cptr);
-	DllExport int  STDCALL ospModifyProblem(ospRec_t *Cptr);
-	DllExport int  STDCALL ospHaveModifyProblem(ospRec_t *Cptr);
-	DllExport int  STDCALL ospReadyAPI(ospRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
-	DllExport void STDCALL ospFree(ospRec_t **Cptr);
-	DllExport void STDCALL ospCreate(ospRec_t **Cptr, char *msgBuf, int msgBufLen);
+DllExport int  STDCALL ospCallSolver(ospRec_t *Cptr);
+DllExport int  STDCALL ospModifyProblem(ospRec_t *Cptr);
+DllExport int  STDCALL ospHaveModifyProblem(ospRec_t *Cptr);
+DllExport int  STDCALL ospReadyAPI(ospRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr);
+DllExport void STDCALL ospFree(ospRec_t **Cptr);
+DllExport void STDCALL ospCreate(ospRec_t **Cptr, char *msgBuf, int msgBufLen);
+DllExport void STDCALL ospXCreate(ospRec_t **Cptr);
 
 #if defined(__cplusplus)
 }
