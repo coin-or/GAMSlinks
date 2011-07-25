@@ -153,7 +153,7 @@ bool gamsOsiLoadProblem(
 	   delete[] discrind;
 	}
 
-	char inputname[1024];
+	char inputname[GMS_SSSIZE];
 	gmoNameInput(gmo, inputname);
 	solver.setStrParam(OsiProbName, inputname);
 
@@ -161,7 +161,7 @@ bool gamsOsiLoadProblem(
    if( setupnames && gmoDict(gmo) != NULL )
    {
       solver.setIntParam(OsiNameDiscipline, 2);
-      char buffer[255]; // TODO how long should var/col names be
+      char buffer[GMS_SSSIZE];
       for( int j = 0; j < gmoN(gmo); ++j )
       {
          gmoGetVarNameOne(gmo, j, buffer);
@@ -200,7 +200,7 @@ bool gamsOsiStoreSolution(
    int* colBasis = new int[solver.getNumCols()];
    int* rowBasis = new int[solver.getNumRows()];
 
-   // workaround for gmo if there are no rows or columns  TODO: still needed?
+   // workaround for gmo if there are no rows or columns
    double dummy2;
    if( !gmoN(gmo) )
    {
@@ -286,15 +286,11 @@ bool gamsOsiStoreSolution(
       delete ws;
    }
 
-   /* empty array for not having variable/equation status TODO: still needed? */
-   int* dummy = CoinCopyOfArray((int*)NULL, CoinMax(gmoN(gmo), gmoM(gmo)), 0);
-
    gmoSetHeadnTail(gmo, gmoHobjval, solver.getObjValue());
-   gmoSetSolution8(gmo, colLevel, colMargin, rowMargin, rowLevel, colBasis, dummy, rowBasis, dummy);
+   gmoSetSolution8(gmo, colLevel, colMargin, rowMargin, rowLevel, colBasis, NULL, rowBasis, NULL);
 
    delete[] colBasis;
    delete[] rowBasis;
-   delete[] dummy;
 
    return true;
 }

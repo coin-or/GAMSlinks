@@ -94,7 +94,7 @@ public:
    /** gets value of a string option */
    char* getString(
       const char*        optname,            /**< name of option to check */
-      char*              buffer              /**< buffer where value can be stored (it should be large enough) */
+      char*              buffer              /**< buffer where value can be stored, should have size at least GMS_SSSIZE (256) */
    );
 
    /** sets value of a boolean option */

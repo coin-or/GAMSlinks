@@ -11,6 +11,7 @@
 #include <cassert>
 #include <cstring>
 
+#include "gclgms.h"
 #include "gevmcc.h"
 #include "optcc.h"
 
@@ -43,7 +44,8 @@ bool GamsOptions::initOpt(
    }
    opt_is_own = true;
 
-   gevGetStrOpt(gev, gevNameSysDir, buffer); /* TODO how long does the buffer need to be at least? */
+   assert(sizeof(buffer) >= GMS_SSSIZE);
+   gevGetStrOpt(gev, gevNameSysDir, buffer);
    buffer[511] = '\0';
    size_t len = strlen(buffer);
    if( snprintf(buffer+len, 512-len, "opt%s.def", solvername) >= 512 )
@@ -70,11 +72,11 @@ void GamsOptions::printOptMessages()
    if( optMessageCount(optionshandle) == 0 )
       return;
 
-   char buffer[255];
+   char buffer[GMS_SSSIZE];
    int itype;
    for( int i = 1; i <= optMessageCount(optionshandle); ++i )
    {
-      optGetMessage(optionshandle, i, buffer, &itype);  /* TODO how large does the buffer need to be here? */
+      optGetMessage(optionshandle, i, buffer, &itype);
       if( itype <= optMsgFileLeave || itype == optMsgUserError )
          gevLogStat(gev, buffer);
    }
@@ -172,7 +174,7 @@ int GamsOptions::getInteger(
 #ifndef NDEBUG
    assert(optionshandle != NULL);
 
-   int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType, ival;
+   int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType;
 
    assert(optFindStr(optionshandle, optname, &i, &refNum) > 0);
    optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
@@ -189,7 +191,7 @@ double GamsOptions::getDouble(
 #ifndef NDEBUG
    assert(optionshandle != NULL);
 
-   int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType, ival;
+   int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType;
 
    assert(optFindStr(optionshandle, optname, &i, &refNum) > 0);
    optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
@@ -201,13 +203,13 @@ double GamsOptions::getDouble(
 
 char* GamsOptions::getString(
    const char*        optname,            /**< name of option to check */
-   char*              buffer              /**< buffer where value can be stored (it should be large enough) */
+   char*              buffer              /**< buffer where value can be stored, should have size at least GMS_SSSIZE (256) */
 )
 {
 #ifndef NDEBUG
    assert(optionshandle != NULL);
 
-   int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType, ival;
+   int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType;
 
    assert(optFindStr(optionshandle, optname, &i, &refNum) > 0);
    optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
@@ -225,7 +227,7 @@ void GamsOptions::setInteger(
 #ifndef NDEBUG
    assert(optionshandle != NULL);
 
-   int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType, ival;
+   int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType;
 
    assert(optFindStr(optionshandle, optname, &i, &refNum) > 0);
    optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
@@ -244,7 +246,7 @@ void GamsOptions::setDouble(
 #ifndef NDEBUG
    assert(optionshandle != NULL);
 
-   int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType, ival;
+   int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType;
 
    assert(optFindStr(optionshandle, optname, &i, &refNum) > 0);
    optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
@@ -263,7 +265,7 @@ void GamsOptions::setString(
 #ifndef NDEBUG
    assert(optionshandle != NULL);
 
-   int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType, ival;
+   int i, refNum, isDefined, isDefinedRecent, dataType, optType, subType;
 
    assert(optFindStr(optionshandle, optname, &i, &refNum) > 0);
    optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);

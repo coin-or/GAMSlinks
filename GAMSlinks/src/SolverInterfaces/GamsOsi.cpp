@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "gclgms.h"
 #include "gmomcc.h"
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
@@ -439,7 +440,7 @@ int GamsOsi::callSolver()
    if( gevGetIntOpt(gev, gevInteger3) )
    {
       // TODO may allow native format? put row/column names?
-      char buffer[1024];
+      char buffer[GMS_SSSIZE];
       gmoNameInput(gmo, buffer);
       if (gevGetIntOpt(gev, gevInteger3) & 0x1)
       {
@@ -689,7 +690,7 @@ bool GamsOsi::setupParameters()
 
          if( gmoOptFile(gmo) > 0 )
          {
-            char buffer[4096];
+            char buffer[GMS_SSSIZE];
             gmoNameOptFile(gmo, buffer);
             gevLogStatPChar(gev, "Let CPLEX read option file "); gevLogStat(gev, buffer);
             int ret = CPXreadcopyparam(osicpx->getEnvironmentPtr(), buffer);
@@ -711,7 +712,7 @@ bool GamsOsi::setupParameters()
 #ifdef COIN_HAS_OSIGLPK
       case GLPK:
       {
-         char buffer[1024];
+         char buffer[GMS_SSSIZE];
 
          OsiGlpkSolverInterface* osiglpk = dynamic_cast<OsiGlpkSolverInterface*>(osi);
          assert(osiglpk != NULL);
@@ -856,7 +857,7 @@ bool GamsOsi::setupParameters()
 
          if( gmoOptFile(gmo) > 0 )
          {
-            char buffer[4096];
+            char buffer[GMS_SSSIZE];
             gmoNameOptFile(gmo, buffer);
             gevLogStatPChar(gev, "Let GUROBI read option file "); gevLogStat(gev, buffer);
             int ret = GRBreadparams(grbenv, buffer);
@@ -891,7 +892,7 @@ bool GamsOsi::setupParameters()
 
          if( gmoOptFile(gmo) > 0 )
          {
-            char buffer[4096];
+            char buffer[GMS_SSSIZE];
             gmoNameOptFile(gmo, buffer);
             gevLogStatPChar(gev, "Let MOSEK read option file "); gevLogStat(gev, buffer);
             MSK_putstrparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_SPAR_PARAM_READ_FILE_NAME, buffer);
@@ -931,7 +932,7 @@ bool GamsOsi::setupParameters()
 
          if( gmoOptFile(gmo) > 0 )
          {
-            char buffer[4096];
+            char buffer[GMS_SSSIZE];
             gmoNameOptFile(gmo, buffer);
             gevLogStatPChar(gev, "Let XPRESS process option file "); gevLogStat(gev, buffer);
             std::ifstream optfile(buffer);
@@ -1090,7 +1091,6 @@ bool GamsOsi::writeSolution(
    assert(gev != NULL);
    assert(osi != NULL);
 
-	char buffer[255];
 	double objest = GMS_SV_NA;
 	int nnodes = 0;
 
@@ -1937,11 +1937,11 @@ bool GamsOsi::writeSolution(
 	   else
 	   {
 	      // is MIP -> store only primal values here
-	      double* rowprice = CoinCopyOfArrayOrZero((double*)NULL, gmoM(gmo));
+	      double* rowprice = CoinCopyOfArrayOrZero((double*)NULL, gmoM(gmo)); // dummy rowprice
 	      try
 	      {
 	         gmoSetHeadnTail(gmo, gmoHobjval, osi->getObjValue());
-	         gmoSetSolution2(gmo, osi->getColSolution(), rowprice);  //TODO can I give NULL for rowprice?
+	         gmoSetSolution2(gmo, osi->getColSolution(), rowprice);
 	      }
 	      catch( CoinError& error )
 	      {
@@ -1955,6 +1955,7 @@ bool GamsOsi::writeSolution(
 
 	if( !isLP() )
 	{
+	   char buffer[255];
 	   if( solwritten )
 	   {
 	      if( solverid != GLPK && solverid != MOSEK )

@@ -12,6 +12,7 @@
 #include <list>
 #include <string>
 
+#include "gclgms.h"
 #include "gmomcc.h"
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
@@ -540,7 +541,7 @@ bool GamsCbc::setupParameters(
 
 	std::list<std::string> par_list;
 
-	char buffer[255];
+	char buffer[GMS_SSSIZE];
 
 	// LP parameters
 
@@ -1257,7 +1258,6 @@ bool GamsCbc::writeSolution(
 			gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
 			gevLogStat(gev, "Model status unknown, no feasible solution found.");
 		}
-
 	}
 	else
 	{
