@@ -34,58 +34,34 @@ if COIN_HAS_OSI
   libGamsCoin_la_SOURCES += GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp 
 endif
 
-if COIN_HAS_OSICPX
-  bin_SCRIPTS += gmszcp$(SCRIPTSUFFIX)
-endif
-
 if COIN_HAS_OSIGLPK
-  bin_SCRIPTS += gmszgl$(SCRIPTSUFFIX) optmyglpk.def
-endif
-
-if COIN_HAS_OSIGRB
-  bin_SCRIPTS += gmszgu$(SCRIPTSUFFIX)
-endif
-
-if COIN_HAS_OSIMSK
-  bin_SCRIPTS += gmszmk$(SCRIPTSUFFIX)
-endif
-
-if COIN_HAS_OSISPX
-  bin_SCRIPTS += gmszsp$(SCRIPTSUFFIX)
-endif
-
-if COIN_HAS_OSIXPR
-  bin_SCRIPTS += gmszxp$(SCRIPTSUFFIX)
+  bin_SCRIPTS += optmyglpk.def
 endif
 
 if COIN_HAS_CBC
 #  libGamsCoin_la_SOURCES += GamsCbc.cpp
-  bin_SCRIPTS += gmscbc$(SCRIPTSUFFIX) optmycbc.def
+  bin_SCRIPTS += optmycbc.def
 endif
 
 if COIN_HAS_IPOPT
 #  libGamsCoin_la_SOURCES += GamsIpopt.cpp GamsNLP.cpp GamsJournal.cpp
-  bin_SCRIPTS += gmsip_$(SCRIPTSUFFIX)
 endif
 
 if COIN_HAS_SCIP
 #  libGamsCoin_la_SOURCES += GamsScip.cpp
-  bin_SCRIPTS += gmssc_$(SCRIPTSUFFIX)
 endif
 
 if COIN_HAS_BONMIN
 #  libGamsCoin_la_SOURCES += GamsBonmin.cpp GamsMINLP.cpp
-  bin_SCRIPTS += gmsbm_$(SCRIPTSUFFIX)
 endif
 
 if COIN_HAS_COUENNE
 #  libGamsCoin_la_SOURCES += GamsCouenne.cpp
-  bin_SCRIPTS += gmscou$(SCRIPTSUFFIX)
 endif
 
 if COIN_HAS_OS
 #  libGamsCoin_la_SOURCES += GamsOS.cpp GamsOSxL.cpp
-  bin_SCRIPTS += gmsos_$(SCRIPTSUFFIX) optmyos.def
+  bin_SCRIPTS += optmyos.def
 endif
 
 include ../../BuildTools/Makemain.inc

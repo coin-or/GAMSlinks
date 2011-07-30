@@ -5,12 +5,6 @@
 // Author: Stefan Vigerske
 
 #include "GamsOsi.hpp"
-#include "GamsOsiCplex.h"
-#include "GamsOsiGlpk.h"
-#include "GamsOsiGurobi.h"
-#include "GamsOsiMosek.h"
-#include "GamsOsiSoplex.h"
-#include "GamsOsiXpress.h"
 
 #include "GAMSlinksConfig.h"
 #include "OsiConfig.h"
@@ -2095,90 +2089,44 @@ bool GamsOsi::isLP() {
 	return true;
 }
 
-DllExport GamsOsi* STDCALL createNewGamsOsiCplex()
-{
-	return new GamsOsi(GamsOsi::CPLEX);
-}
+#ifdef COIN_HAS_OSICPX
+#define GAMSSOLVERC_ID         ocp
+#define GAMSSOLVERC_CLASS      GamsOsi
+#define GAMSSOLVERC_CONSTRARGS GamsOsi::CPLEX
+#include "GamsSolverC_tpl.cpp"
+#endif
 
-DllExport GamsOsi* STDCALL createNewGamsOsiGlpk()
-{
-   return new GamsOsi(GamsOsi::GLPK);
-}
+#ifdef COIN_HAS_OSIGLPK
+#define GAMSSOLVERC_ID         ogl
+#define GAMSSOLVERC_CLASS      GamsOsi
+#define GAMSSOLVERC_CONSTRARGS GamsOsi::GLPK
+#include "GamsSolverC_tpl.cpp"
+#endif
 
-DllExport GamsOsi* STDCALL createNewGamsOsiGurobi()
-{
-   return new GamsOsi(GamsOsi::GUROBI);
-}
+#ifdef COIN_HAS_OSIGRB
+#define GAMSSOLVERC_ID         ogu
+#define GAMSSOLVERC_CLASS      GamsOsi
+#define GAMSSOLVERC_CONSTRARGS GamsOsi::GUROBI
+#include "GamsSolverC_tpl.cpp"
+#endif
 
-DllExport GamsOsi* STDCALL createNewGamsOsiMosek()
-{
-	return new GamsOsi(GamsOsi::MOSEK);
-}
+#ifdef COIN_HAS_OSIMSK
+#define GAMSSOLVERC_ID         omk
+#define GAMSSOLVERC_CLASS      GamsOsi
+#define GAMSSOLVERC_CONSTRARGS GamsOsi::MOSEK
+#include "GamsSolverC_tpl.cpp"
+#endif
 
-DllExport GamsOsi* STDCALL createNewGamsOsiSoplex()
-{
-	return new GamsOsi(GamsOsi::SOPLEX);
-}
+#ifdef COIN_HAS_OSISPX
+#define GAMSSOLVERC_ID         osp
+#define GAMSSOLVERC_CLASS      GamsOsi
+#define GAMSSOLVERC_CONSTRARGS GamsOsi::SOPLEX
+#include "GamsSolverC_tpl.cpp"
+#endif
 
-DllExport GamsOsi* STDCALL createNewGamsOsiXpress()
-{
-	return new GamsOsi(GamsOsi::XPRESS);
-}
-
-#define osi_C_interface( xxx, yyy ) \
-	DllExport int STDCALL xxx ## CallSolver(xxx ## Rec_t *Cptr) \
-	{ \
-		assert(Cptr != NULL); \
-		return ((GamsOsi*)Cptr)->callSolver(); \
-	} \
-	\
-	DllExport int STDCALL xxx ## ModifyProblem(xxx ## Rec_t *Cptr) \
-	{ \
-		assert(Cptr != NULL); \
-		return ((GamsOsi*)Cptr)->modifyProblem(); \
-	} \
-	\
-	DllExport int STDCALL xxx ## HaveModifyProblem(xxx ## Rec_t *Cptr) \
-	{ \
-		assert(Cptr != NULL); \
-		return ((GamsOsi*)Cptr)->haveModifyProblem(); \
-	} \
-	\
-	DllExport int STDCALL xxx ## ReadyAPI(xxx ## Rec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) \
-	{ \
-		assert(Cptr != NULL); \
-		assert(Gptr != NULL); \
-		char msg[256]; \
-		if( !gmoGetReady(msg, sizeof(msg)) ) \
-			return 1; \
-		if( !gevGetReady(msg, sizeof(msg)) ) \
-			return 1; \
-		return ((GamsOsi*)Cptr)->readyAPI(Gptr, Optr); \
-	} \
-	\
-	DllExport void STDCALL xxx ## Free(xxx ## Rec_t **Cptr) \
-	{ \
-		assert(Cptr != NULL); \
-		delete (GamsOsi*)*Cptr; \
-		*Cptr = NULL; \
-	} \
-	\
-	DllExport void STDCALL xxx ## Create(xxx ## Rec_t **Cptr, char *msgBuf, int msgBufLen) \
-	{ \
-		assert(Cptr != NULL); \
-		*Cptr = (xxx ## Rec_t*) new GamsOsi(yyy); \
-		if( msgBufLen && msgBuf ) \
-			msgBuf[0] = 0; \
-	} \
-	DllExport void STDCALL xxx ## XCreate(xxx ## Rec_t **Cptr) \
-	{ \
-	   assert(Cptr != NULL); \
-	   *Cptr = (xxx ## Rec_t*) new GamsOsi(yyy); \
-	}
-
-osi_C_interface(ocp, GamsOsi::CPLEX)
-osi_C_interface(ogl, GamsOsi::GLPK)
-osi_C_interface(ogu, GamsOsi::GUROBI)
-osi_C_interface(omk, GamsOsi::MOSEK)
-osi_C_interface(osp, GamsOsi::SOPLEX)
-osi_C_interface(oxp, GamsOsi::XPRESS)
+#ifdef COIN_HAS_OSIXPR
+#define GAMSSOLVERC_ID         oxp
+#define GAMSSOLVERC_CLASS      GamsOsi
+#define GAMSSOLVERC_CONSTRARGS GamsOsi::XPRESS
+#include "GamsSolverC_tpl.cpp"
+#endif

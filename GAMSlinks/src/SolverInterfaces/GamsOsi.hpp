@@ -81,16 +81,4 @@ public:
 	int callSolver();
 };
 
-extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiCplex();
-
-extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiGlpk();
-
-extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiGurobi();
-
-extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiMosek();
-
-extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiSoplex();
-
-extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiXpress();
-
 #endif

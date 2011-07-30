@@ -1,8 +1,0 @@
-id           MyScip
-license_id   00 01 02
-capabilities LP RMIP MIP QCP RMIQCP MIQCP
-file_type    2112
-dictionary_file 4
-run_file     gmssc_nt.cmd
-exe_file     gmssc_nx.exe
-special      2

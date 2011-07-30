@@ -7,7 +7,9 @@
 #ifndef GAMSSOLVER_HPP_
 #define GAMSSOLVER_HPP_
 
-#include "GamsSolver.h"
+typedef struct gmoRec* gmoHandle_t;
+typedef struct gevRec* gevHandle_t;
+typedef struct optRec* optHandle_t;
 
 /** abstract interface to a solver that takes Gams Modeling Objects (GMO) as input */
 class GamsSolver
@@ -77,7 +79,5 @@ public:
    /** initiate solving and storing solution information in GMO object */
    virtual int callSolver() = 0;
 };
-
-typedef GamsSolver* STDCALL createNewGamsSolver_t(void);
 
 #endif /*GAMSSOLVER_HPP_*/
