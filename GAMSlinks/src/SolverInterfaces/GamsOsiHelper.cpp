@@ -157,7 +157,7 @@ bool gamsOsiLoadProblem(
 	gmoNameInput(gmo, inputname);
 	solver.setStrParam(OsiProbName, inputname);
 
-   // setup column/row names, if available
+   // setup column/row/obj names, if available
    if( setupnames && gmoDict(gmo) != NULL )
    {
       solver.setIntParam(OsiNameDiscipline, 2);
@@ -172,6 +172,8 @@ bool gamsOsiLoadProblem(
          gmoGetEquNameOne(gmo, j, buffer);
          solver.setRowName(j, buffer);
       }
+      gmoGetObjName(gmo, buffer);
+      solver.setObjName(buffer);
    }
 
 	return true;
