@@ -29,6 +29,7 @@
 #include "CoinHelperFunctions.hpp"
 #include "CoinTime.hpp"
 #include "CoinPackedVector.hpp"
+#include "CoinWarmStartBasis.hpp"
 
 #ifdef COIN_HAS_OSICPX
 #include "OsiCpxSolverInterface.hpp"
@@ -206,7 +207,7 @@ int GamsOsi::readyAPI(
       default:
          sprintf(buffer, "Osi library "OSI_VERSION".\n");
    }
-   gevLogStatPChar(gev, buffer);
+   gevLogStat(gev, buffer);
 
 #ifdef GAMS_BUILD
    if( !checkLicense(gmo) )
