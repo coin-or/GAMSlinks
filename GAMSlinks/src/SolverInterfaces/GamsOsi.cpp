@@ -11,6 +11,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <cmath>
 
 #include "gclgms.h"
 #include "gmomcc.h"
@@ -97,7 +98,7 @@ static int MSKAPI mskcallback(MSKtask_t task, MSKuserhandle_t handle, MSKcallbac
 #ifdef COIN_HAS_OSIXPR
 #include "OsiXprSolverInterface.hpp"
 #include "xprs.h"
-extern "C" void STDCALL XPRScommand(XPRSprob, char*);
+extern "C" void XPRS_CC XPRScommand(XPRSprob, char*);
 
 static int XPRS_CC xprcallback(XPRSprob prob, void* vUserDat)
 {
