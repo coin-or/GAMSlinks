@@ -141,8 +141,7 @@ int GamsCbc::callSolver()
    writeSolution(end_cputime - start_cputime, end_walltime - start_walltime);
 
    // solve again with fixed noncontinuous variables and original bounds on continuous variables
-   // TODO parameter to turn this off or do only if cbc reduced bounds
-   if( !isLP() && model->bestSolution() )
+   if( !isLP() && model->bestSolution() && solvefinal )
    {
       gevLog(gev, "\nResolve with fixed discrete variables.");
 
@@ -549,650 +548,284 @@ bool GamsCbc::setupParameters()
    std::list<std::string> par_list;
 
    char buffer[GMS_SSSIZE];
+   std::map<std::string, std::string> stringenummap;
+
+#define CHECKOPT2_INT(NAMEGAMS, NAMECBC) \
+   if( options.isDefined(NAMEGAMS) ) \
+   { \
+      par_list.push_back("-"NAMECBC); \
+      sprintf(buffer, "%d", options.getInteger(NAMEGAMS)); \
+      par_list.push_back(buffer); \
+   }
+
+#define CHECKOPT_INT(NAME) CHECKOPT2_INT(NAME, NAME)
+
+#define CHECKOPT2_DOUBLE(NAMEGAMS, NAMECBC) \
+   if( options.isDefined(NAMEGAMS) ) \
+   { \
+      par_list.push_back("-"NAMECBC); \
+      sprintf(buffer, "%g", options.getDouble(NAMEGAMS)); \
+      par_list.push_back(buffer); \
+   }
+
+#define CHECKOPT_DOUBLE(NAME) CHECKOPT2_DOUBLE(NAME, NAME)
+
+#define CHECKOPT2_BOOL(NAMEGAMS, NAMECBC) \
+   if( options.isDefined(NAMEGAMS) ) \
+   { \
+      par_list.push_back("-"NAMECBC); \
+      par_list.push_back(options.getBool(NAMEGAMS) ? "on" : "off"); \
+   }
+
+#define CHECKOPT_BOOL(NAME) CHECKOPT2_BOOL(NAME, NAME)
+
+#define CHECKOPT2_STRINGENUM(NAMEGAMS, NAMECBC) \
+   if( options.isDefined(NAMEGAMS) ) \
+   { \
+      char* value = options.getString(NAMEGAMS, buffer); \
+      if( value == NULL ) \
+      { \
+         gevLogStatPChar(gev, "Cannot read value for option '"NAMEGAMS"'. Ignoring this option.\n"); \
+      } \
+      else \
+      { \
+         std::map<std::string, std::string>::iterator it(stringenummap.find(value)); \
+         if( it == stringenummap.end() ) \
+         { \
+            gevLogStatPChar(gev, "Unsupported value for option '"NAMEGAMS"'. Ignoring this option.\n"); \
+         } \
+         else \
+         { \
+            par_list.push_back("-"NAMECBC); \
+            par_list.push_back(it->second.length() > 0 ? it->second : it->first); \
+         } \
+      } \
+   }
+
+#define CHECKOPT_STRINGENUM(NAME) CHECKOPT2_STRINGENUM(NAME, NAME)
 
    // LP parameters
+   CHECKOPT2_INT("idiotcrash",  "idiotCrash")
+   CHECKOPT2_INT("sprintcrash", "sprintCrash")
+   else
+      CHECKOPT2_INT("sifting", "sprintCrash");
 
-   if( options.isDefined("idiotcrash") )
-   {
-      par_list.push_back("-idiotCrash");
-      sprintf(buffer, "%d", options.getInteger("idiotcrash"));
-      par_list.push_back(buffer);
-   }
+   stringenummap.clear();
+   stringenummap["on"]  = "on";
+   stringenummap["off"] = "off";
+   stringenummap["solow_halim"] = "so";
+   stringenummap["halim_solow"] = "ha";
+   CHECKOPT_STRINGENUM("crash")
 
-   if( options.isDefined("sprintcrash") )
-   {
-      par_list.push_back("-sprintCrash");
-      sprintf(buffer, "%d", options.getInteger("sprintcrash"));
-      par_list.push_back(buffer);
-   }
-   else if( options.isDefined("sifting") )
-   {
-      // synonym for sprintCrash
-      par_list.push_back("-sprintCrash");
-      sprintf(buffer, "%d", options.getInteger("sifting"));
-      par_list.push_back(buffer);
-   }
+   CHECKOPT2_INT("maxfactor", "maxFactor")
+   CHECKOPT_BOOL("crossover") // should be revised if we can do quadratic
 
-   if( options.isDefined("crash") )
-   {
-      char* value = options.getString("crash", buffer);
-      if( value == NULL )
-      {
-         gevLogStat(gev, "Cannot read value for option 'crash'. Ignoring this option");
-      }
-      else
-      {
-         if( strcmp(value, "off") == 0 || strcmp(value, "on") == 0 )
-         {
-            par_list.push_back("-crash");
-            par_list.push_back(value);
-         }
-         else if( strcmp(value, "solow_halim") == 0 )
-         {
-            par_list.push_back("-crash");
-            par_list.push_back("so");
-         }
-         else if( strcmp(value, "halim_solow") == 0 )
-         {
-            par_list.push_back("-crash");
-            par_list.push_back("ha");
-         }
-         else
-         {
-            gevLogStat(gev, "Unsupported value for option 'crash'. Ignoring this option");
-         }
-      }
-   }
+   stringenummap.clear();
+   stringenummap["auto"];
+   stringenummap["dantzig"];
+   stringenummap["partial"];
+   stringenummap["steepest"];
+   CHECKOPT2_STRINGENUM("dualpivot", "dualPivot")
 
-   if( options.isDefined("maxfactor") )
-   {
-      par_list.push_back("-maxFactor");
-      sprintf(buffer, "%d", options.getInteger("maxfactor"));
-      par_list.push_back(buffer);
-   }
+   stringenummap.clear();
+   stringenummap["auto"];
+   stringenummap["exact"];
+   stringenummap["dantzig"];
+   stringenummap["partial"];
+   stringenummap["steepest"];
+   stringenummap["change"];
+   stringenummap["sprint"];
+   CHECKOPT2_STRINGENUM("primalpivot", "primalPivot")
 
-   if( options.isDefined("crossover") )
-   {
-      // should be revised if we can do quadratic
-      par_list.push_back("-crossover");
-      par_list.push_back(options.getBool("crossover") ? "on" : "off");
-   }
+   CHECKOPT2_BOOL("perturbation", "perturb")
 
-   if( options.isDefined("dualpivot") )
-   {
-      char* value = options.getString("dualpivot", buffer);
-      if( value == NULL )
-      {
-         gevLogStat(gev, "Cannot read value for option 'dualpivot'. Ignoring this option");
-      }
-      else
-      {
-         if( strcmp(value, "auto")     == 0 ||
-            strcmp(value, "dantzig")  == 0 ||
-            strcmp(value, "partial")  == 0 ||
-            strcmp(value, "steepest") == 0) {
-            par_list.push_back("-dualPivot");
-            par_list.push_back(value);
-         } else {
-            gevLogStat(gev, "Unsupported value for option 'dualpivot'. Ignoring this option");
-         }
-      }
-   }
+   stringenummap.clear();
+   stringenummap["auto"];
+   stringenummap["off"];
+   stringenummap["equilibrium"];
+   stringenummap["geometric"];
+   CHECKOPT_STRINGENUM("scaling")
 
-   if (options.isDefined("primalpivot")) {
-      char* value = options.getString("primalpivot", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'primalpivot'. Ignoring this option");
-      } else {
-         if (strcmp(value, "auto")     == 0 ||
-            strcmp(value, "exact")    == 0 ||
-            strcmp(value, "dantzig")  == 0 ||
-            strcmp(value, "partial")  == 0 ||
-            strcmp(value, "steepest") == 0 ||
-            strcmp(value, "change")   == 0 ||
-            strcmp(value, "sprint")   == 0) {
-            par_list.push_back("-primalPivot");
-            par_list.push_back(value);
-         } else {
-            gevLogStat(gev, "Unsupported value for option 'primalpivot'. Ignoring this option");
-         }
-      }
-   }
-
-   if (options.isDefined("perturbation")) {
-      par_list.push_back("-perturb");
-      par_list.push_back(options.getBool("perturbation") ? "on" : "off");
-   }
-
-   if (options.isDefined("scaling")) {
-      char* value = options.getString("scaling", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'scaling'. Ignoring this option");
-      } else if
-      (strcmp(value, "auto")        == 0 ||
-         strcmp(value, "off")         == 0 ||
-         strcmp(value, "equilibrium") == 0 ||
-         strcmp(value, "geometric")   == 0) {
-         par_list.push_back("-scaling");
-         par_list.push_back(value);
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'scaling'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("presolve")) {
-      par_list.push_back("-presolve");
-      par_list.push_back(options.getBool("presolve") ? "on" : "off");
-   }
-
-   if (options.isDefined("tol_presolve")) {
-      par_list.push_back("-preTolerance");
-      sprintf(buffer, "%g", options.getDouble("tol_presolve"));
-      par_list.push_back(buffer);
-   }
-
-   if (options.isDefined("passpresolve")) {
-      par_list.push_back("-passpresolve");
-      sprintf(buffer, "%d", options.getInteger("passpresolve"));
-      par_list.push_back(buffer);
-   }
+   CHECKOPT_BOOL("presolve")
+   CHECKOPT2_DOUBLE("tol_presolve", "preTolerance")
+   CHECKOPT_INT("passpresolve")
 
    // MIP parameters
 
-   if (options.isDefined("strategy")) {
-      par_list.push_back("-strategy");
-      sprintf(buffer, "%d", options.getInteger("strategy"));
-      par_list.push_back(buffer);
-   }
+   CHECKOPT_INT("strategy")
+   CHECKOPT2_INT("sollim", "maxSolutions")
+   CHECKOPT2_INT("strongbranching", "strongBranching")
+   CHECKOPT2_INT("trustpseudocosts", "trustPseudoCosts")
+   CHECKOPT2_INT("cutdepth", "cutDepth")
+   CHECKOPT2_INT("cut_passes_root", "passCuts")
+   CHECKOPT2_INT("cut_passes_tree", "passTree")
 
-   if (options.isDefined("sollim")) {
-      par_list.push_back("-maxSolutions");
-      sprintf(buffer, "%d", options.getInteger("sollim"));
-      par_list.push_back(buffer);
-   }
+   stringenummap.clear();
+   stringenummap["off"];
+   stringenummap["on"];
+   stringenummap["root"];
+   stringenummap["ifmove"];
+   stringenummap["forceon"] = "forceOn";
+   CHECKOPT2_STRINGENUM("cuts", "cutsOnOff")
+   CHECKOPT2_STRINGENUM("cliquecuts", "cliqueCuts")
+   CHECKOPT2_STRINGENUM("flowcovercuts", "flowCoverCuts")
+   CHECKOPT2_STRINGENUM("gomorycuts", "gomoryCuts")
+   CHECKOPT2_STRINGENUM("knapsackcuts", "knapsackCuts")
+   CHECKOPT2_STRINGENUM("liftandprojectcuts", "liftAndProjectCuts")
+   CHECKOPT2_STRINGENUM("mircuts", "mixedIntegerRoundingCuts")
+   CHECKOPT2_STRINGENUM("reduceandsplitcuts", "reduceAndSplitCuts")
+   CHECKOPT2_STRINGENUM("residualcapacitycuts", "residualCapacityCuts")
+   CHECKOPT2_STRINGENUM("twomircuts", "twoMirCuts")
 
-   if (options.isDefined("strongbranching")) {
-      par_list.push_back("-strongBranching");
-      sprintf(buffer, "%d", options.getInteger("strongbranching"));
-      par_list.push_back(buffer);
-   }
+   stringenummap["forceonbut"] = "forceOnBut";
+   stringenummap["forceonstrong"] = "forceOnStrong";
+   stringenummap["forceonbutstrong"] = "forceOnButStrong";
+   CHECKOPT2_STRINGENUM("probingcuts", "probingCuts")
 
-   if (options.isDefined("trustpseudocosts")) {
-      par_list.push_back("-trustPseudoCosts");
-      sprintf(buffer, "%d", options.getInteger("trustpseudocosts"));
-      par_list.push_back(buffer);
-   }
+   CHECKOPT2_BOOL("heuristics", "heuristicsOnOff")
+   CHECKOPT2_BOOL("combinesolutions", "combineSolutions")
+   CHECKOPT2_BOOL("dins", "Dins")
+   CHECKOPT2_BOOL("divingrandom", "DivingSome")
+   CHECKOPT2_BOOL("divingcoefficient", "DivingCoefficient")
+   CHECKOPT2_BOOL("divingfractional", "DivingFractional")
+   CHECKOPT2_BOOL("divingguided", "DivingGuided")
+   CHECKOPT2_BOOL("divinglinesearch", "DivingLineSearch")
+   CHECKOPT2_BOOL("divingpseudocost", "DivingPseudoCost")
+   CHECKOPT2_BOOL("divingvectorlength", "DivingVectorLength")
+   CHECKOPT2_BOOL("feaspump", "feasibilityPump")
+   CHECKOPT2_INT("feaspump_passes", "passFeasibilityPump")
+   CHECKOPT2_BOOL("localtreesearch", "localTreeSearch")
+   CHECKOPT2_BOOL("naiveheuristics", "naiveHeuristics")
+   CHECKOPT2_BOOL("pivotandfix", "pivotAndFix")
+   CHECKOPT2_BOOL("randomizedrounding", "randomizedRounding")
+   CHECKOPT2_BOOL("rens", "Rens")
+   CHECKOPT2_BOOL("rins", "Rins")
+   CHECKOPT2_BOOL("roundingheuristic", "roundingHeuristic")
+   CHECKOPT_BOOL("vubheuristic");
 
-   if (options.isDefined("cutdepth")) {
-      par_list.push_back("-cutDepth");
-      sprintf(buffer, "%d", options.getInteger("cutdepth"));
-      par_list.push_back(buffer);
-   }
+   stringenummap.clear();
+   stringenummap["on"];
+   stringenummap["off"];
+   stringenummap["root"];
+   CHECKOPT2_STRINGENUM("greedyheuristic", "greedyHeuristic")
 
-   if (options.isDefined("cut_passes_root")) {
-      par_list.push_back("-passCuts");
-      sprintf(buffer, "%d", options.getInteger("cut_passes_root"));
-      par_list.push_back(buffer);
-   }
+   stringenummap.clear();
+   stringenummap["off"];
+   stringenummap["priorities"];
+   stringenummap["length"];
+   stringenummap["columnorder"];
+   stringenummap["binaryfirst"] = "01first";
+   stringenummap["binarylast"] = "01last";
+   CHECKOPT2_STRINGENUM("coststrategy", "costStrategy")
 
-   if (options.isDefined("cut_passes_tree")) {
-      par_list.push_back("-passTree");
-      sprintf(buffer, "%d", options.getInteger("cut_passes_tree"));
-      par_list.push_back(buffer);
-   }
+   stringenummap.clear();
+   stringenummap["hybrid"];
+   stringenummap["fewest"];
+   stringenummap["depth"];
+   stringenummap["upfewest"];
+   stringenummap["downfewest"];
+   stringenummap["updepth"];
+   stringenummap["downdepth"];
+   CHECKOPT2_STRINGENUM("nodestrategy", "nodeStrategy")
 
-   if (options.isDefined("cuts")) {
-      char* value = options.getString("cuts", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'cuts'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")    == 0 ||
-         strcmp(value, "on")     == 0 ||
-         strcmp(value, "root")   == 0 ||
-         strcmp(value, "ifmove") == 0 ) {
-         par_list.push_back("-cutsOnOff");
-         par_list.push_back(value);
-      } else if (strcmp(value, "forceon") == 0) {
-         par_list.push_back("-cutsOnOff");
-         par_list.push_back("forceOn");
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'cuts'. Ignoring this option");
-      }
-   }
+   stringenummap.clear();
+   stringenummap["off"];
+   stringenummap["on"];
+   stringenummap["equal"];
+   stringenummap["equalall"];
+   stringenummap["sos"];
+   stringenummap["trysos"];
+   CHECKOPT_STRINGENUM("preprocess")
+// should happen automatically now:
+//   if (gmoGetVarTypeCnt(gmo, gmovar_SC) || gmoGetVarTypeCnt(gmo, gmovar_SI)) {
+//      gevLogStat(gev, "CBC integer preprocessing does not handle semicontinuous variables correct, thus we switch it off.");
+//      par_list.push_back("-preprocess");
+//      par_list.push_back("off");
+//   }
 
-   if (options.isDefined("cliquecuts")) {
-      char* value = options.getString("cliquecuts", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'cliquecuts'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")    == 0 ||
-         strcmp(value, "on")     == 0 ||
-         strcmp(value, "root")   == 0 ||
-         strcmp(value, "ifmove") == 0) {
-         par_list.push_back("-cliqueCuts");
-         par_list.push_back(value);
-      } else if (strcmp(value, "forceon") == 0) {
-         par_list.push_back("-cliqueCuts");
-         par_list.push_back("forceOn");
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'cliquecuts'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("flowcovercuts")) {
-      char* value = options.getString("flowcovercuts", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'flowcovercuts'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")    == 0 ||
-         strcmp(value, "on")     == 0 ||
-         strcmp(value, "root")   == 0 ||
-         strcmp(value, "ifmove") == 0) {
-         par_list.push_back("-flowCoverCuts");
-         par_list.push_back(value);
-      } else if (strcmp(value, "forceon") == 0) {
-         par_list.push_back("-flowCoverCuts");
-         par_list.push_back("forceOn");
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'flowcovercuts'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("gomorycuts")) {
-      char* value = options.getString("gomorycuts", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'gomorycuts'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")    == 0 ||
-         strcmp(value, "on")     == 0 ||
-         strcmp(value, "root")   == 0 ||
-         strcmp(value, "ifmove") == 0 ) {
-         par_list.push_back("-gomoryCuts");
-         par_list.push_back(value);
-      } else if (strcmp(value, "forceon")==0) {
-         par_list.push_back("-gomoryCuts");
-         par_list.push_back("forceOn");
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'gomorycuts'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("knapsackcuts")) {
-      char* value = options.getString("knapsackcuts", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'knapsackcuts'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")    == 0 ||
-         strcmp(value, "on")     == 0 ||
-         strcmp(value, "root")   == 0 ||
-         strcmp(value, "ifmove") == 0 ) {
-         par_list.push_back("-knapsackCuts");
-         par_list.push_back(value);
-      } else if (strcmp(value, "forceon") == 0) {
-         par_list.push_back("-knapsackCuts");
-         par_list.push_back("forceOn");
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'knapsackcuts'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("liftandprojectcuts")) {
-      char* value = options.getString("liftandprojectcuts", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'liftandprojectcuts'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")    == 0 ||
-         strcmp(value, "on")     == 0 ||
-         strcmp(value, "root")   == 0 ||
-         strcmp(value, "ifmove") == 0 ) {
-         par_list.push_back("-liftAndProjectCuts");
-         par_list.push_back(value);
-      } else if (strcmp(value, "forceon") == 0) {
-         par_list.push_back("-liftAndProjectCuts");
-         par_list.push_back("forceOn");
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'liftandprojectcuts'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("mircuts")) {
-      char* value = options.getString("mircuts", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'mircuts'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")    == 0 ||
-         strcmp(value, "on")     == 0 ||
-         strcmp(value, "root")   == 0 ||
-         strcmp(value, "ifmove") == 0 ) {
-         par_list.push_back("-mixedIntegerRoundingCuts");
-         par_list.push_back(value);
-      } else if (strcmp(value, "forceon") == 0) {
-         par_list.push_back("-mixedIntegerRoundingCuts");
-         par_list.push_back("forceOn");
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'mircuts'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("probingcuts")) {
-      char* value = options.getString("probingcuts", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'probingcuts'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")    == 0 ||
-         strcmp(value, "on")     == 0 ||
-         strcmp(value, "root")   == 0 ||
-         strcmp(value, "ifmove") == 0 ) {
-         par_list.push_back("-probingCuts");
-         par_list.push_back(value);
-      } else if (strcmp(value, "forceon") == 0) {
-         par_list.push_back("-probingCuts");
-         par_list.push_back("forceOn");
-      } else if (strcmp(value, "forceonbut") == 0) {
-         par_list.push_back("-probingCuts");
-         par_list.push_back("forceOnBut");
-      } else if (strcmp(value, "forceonstrong") == 0) {
-         par_list.push_back("-probingCuts");
-         par_list.push_back("forceOnStrong");
-      } else if (strcmp(value, "forceonbutstrong") == 0) {
-         par_list.push_back("-probingCuts");
-         par_list.push_back("forceOnButStrong");
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'probingcuts'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("reduceandsplitcuts")) {
-      char* value = options.getString("reduceandsplitcuts", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'reduceandsplitcuts'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")    == 0 ||
-         strcmp(value, "on")     == 0 ||
-         strcmp(value, "root")   == 0 ||
-         strcmp(value, "ifmove") == 0 ) {
-         par_list.push_back("-reduceAndSplitCuts");
-         par_list.push_back(value);
-      } else if (strcmp(value, "forceon") == 0) {
-         par_list.push_back("-reduceAndSplitCuts");
-         par_list.push_back("forceOn");
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'reduceandsplitcuts'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("residualcapacitycuts")) {
-      char* value = options.getString("residualcapacitycuts", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'residualcapacitycuts'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")    == 0 ||
-         strcmp(value, "on")     == 0 ||
-         strcmp(value, "root")   == 0 ||
-         strcmp(value, "ifmove") == 0 ) {
-         par_list.push_back("-residualCapacityCuts");
-         par_list.push_back(value);
-      } else if (strcmp(value, "forceon") == 0) {
-         par_list.push_back("-residualCapacityCuts");
-         par_list.push_back("forceOn");
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'residualcapacitycuts'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("twomircuts")) {
-      char* value = options.getString("twomircuts", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'twomircuts'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")     == 0 ||
-         strcmp(value, "on")      == 0 ||
-         strcmp(value, "root")    == 0 ||
-         strcmp(value, "ifmove")  == 0 ||
-         strcmp(value, "forceon") == 0 ) {
-         par_list.push_back("-twoMirCuts");
-         par_list.push_back(value);
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'twomircuts'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("heuristics")) {
-      par_list.push_back("-heuristicsOnOff");
-      par_list.push_back(options.getBool("heuristics") ? "on" : "off");
-   }
-
-   if (options.isDefined("combinesolutions")) {
-      par_list.push_back("-combineSolution");
-      par_list.push_back(options.getBool("combinesolutions") ? "on" : "off");
-   }
-
-   if (options.isDefined("dins")) {
-      par_list.push_back("-Dins");
-      par_list.push_back(options.getBool("dins") ? "on" : "off");
-   }
-
-   if (options.isDefined("divingrandom")) {
-      par_list.push_back("-DivingSome");
-      par_list.push_back(options.getBool("divingrandom") ? "on" : "off");
-   }
-   if (options.isDefined("divingcoefficient")) {
-      par_list.push_back("-DivingCoefficient");
-      par_list.push_back(options.getBool("divingcoefficient") ? "on" : "off");
-   }
-   if (options.isDefined("divingfractional")) {
-      par_list.push_back("-DivingFractional");
-      par_list.push_back(options.getBool("divingfractional") ? "on" : "off");
-   }
-   if (options.isDefined("divingguided")) {
-      par_list.push_back("-DivingGuided");
-      par_list.push_back(options.getBool("divingguided") ? "on" : "off");
-   }
-   if (options.isDefined("divinglinesearch")) {
-      par_list.push_back("-DivingLineSearch");
-      par_list.push_back(options.getBool("divinglinesearch") ? "on" : "off");
-   }
-   if (options.isDefined("divingpseudocost")) {
-      par_list.push_back("-DivingPseudoCost");
-      par_list.push_back(options.getBool("divingpseudocost") ? "on" : "off");
-   }
-   if (options.isDefined("divingvectorlength")) {
-      par_list.push_back("-DivingVectorLength");
-      par_list.push_back(options.getBool("divingvectorlength") ? "on" : "off");
-   }
-
-   if (options.isDefined("feaspump")) {
-      par_list.push_back("-feasibilityPump");
-      par_list.push_back(options.getBool("feaspump") ? "on" : "off");
-   }
-
-   if (options.isDefined("feaspump_passes")) {
-      par_list.push_back("-passFeasibilityPump");
-      sprintf(buffer, "%d", options.getInteger("feaspump_passes"));
-      par_list.push_back(buffer);
-   }
-
-   if (options.isDefined("greedyheuristic")) {
-      char* value = options.getString("greedyheuristic", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'greedyheuristic'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")  == 0 ||
-         strcmp(value, "on")   == 0 ||
-         strcmp(value, "root") == 0 ) {
-         par_list.push_back("-greedyHeuristic");
-         par_list.push_back(value);
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'greedyheuristic'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("localtreesearch")) {
-      par_list.push_back("-localTreeSearch");
-      par_list.push_back(options.getBool("localtreesearch") ? "on" : "off");
-   }
-
-   if (options.isDefined("naiveheuristics")) {
-      par_list.push_back("-naiveHeuristics");
-      par_list.push_back(options.getBool("naiveheuristics") ? "on" : "off");
-   }
-
-   if (options.isDefined("pivotandfix")) {
-      par_list.push_back("-pivotAndFix");
-      par_list.push_back(options.getBool("pivotandfix") ? "on" : "off");
-   }
-
-   if (options.isDefined("randomizedrounding")) {
-      par_list.push_back("-randomizedRounding");
-      par_list.push_back(options.getBool("randomizedrounding") ? "on" : "off");
-   }
-
-   if (options.isDefined("rens")) {
-      par_list.push_back("-Rens");
-      par_list.push_back(options.getBool("rens") ? "on" : "off");
-   }
-
-   if (options.isDefined("rins")) {
-      par_list.push_back("-Rins");
-      par_list.push_back(options.getBool("rins") ? "on" : "off");
-   }
-
-   if (options.isDefined("roundingheuristic")) {
-      par_list.push_back("-roundingHeuristic");
-      par_list.push_back(options.getBool("roundingheuristic") ? "on" : "off");
-   }
-
-   if (options.isDefined("vubheuristic")) {
-      par_list.push_back("-vubheuristic");
-      sprintf(buffer, "%d", options.getInteger("vubheuristic"));
-      par_list.push_back(buffer);
-   }
-
-   if (options.isDefined("coststrategy")) {
-      char* value = options.getString("coststrategy", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'coststrategy'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")         == 0 ||
-         strcmp(value, "priorities")  == 0 ||
-         strcmp(value, "length")      == 0 ||
-         strcmp(value, "columnorder") == 0 ) {
-         par_list.push_back("-costStrategy");
-         par_list.push_back(value);
-      } else if (strcmp(value, "binaryfirst") == 0) {
-         par_list.push_back("-costStrategy");
-         par_list.push_back("01first");
-      } else if (strcmp(value, "binarylast") == 0) {
-         par_list.push_back("-costStrategy");
-         par_list.push_back("01last");
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'coststrategy'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("nodestrategy")) {
-      char* value=options.getString("nodestrategy", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'nodestrategy'. Ignoring this option");
-      } else if
-      ( strcmp(value, "hybrid")     == 0 ||
-         strcmp(value, "fewest")     == 0 ||
-         strcmp(value, "depth")      == 0 ||
-         strcmp(value, "upfewest")   == 0 ||
-         strcmp(value, "downfewest") == 0 ||
-         strcmp(value, "updepth")    == 0 ||
-         strcmp(value, "downdepth")  == 0 ) {
-         par_list.push_back("-nodeStrategy");
-         par_list.push_back(value);
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'nodestrategy'. Ignoring this option");
-      }
-   }
-
-   if (options.isDefined("preprocess")) {
-      char* value = options.getString("preprocess", buffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'preprocess'. Ignoring this option");
-      } else if
-      ( strcmp(value, "off")      == 0 ||
-         strcmp(value, "on")       == 0 ||
-         strcmp(value, "equal")    == 0 ||
-         strcmp(value, "equalall") == 0 ||
-         strcmp(value, "sos")      == 0 ||
-         strcmp(value, "trysos")   == 0 ) {
-         par_list.push_back("-preprocess");
-         par_list.push_back(value);
-      } else {
-         gevLogStat(gev, "Unsupported value for option 'preprocess'. Ignoring this option");
-      }
-   } else if (gmoGetVarTypeCnt(gmo, gmovar_SC) || gmoGetVarTypeCnt(gmo, gmovar_SI)) {
-      gevLogStat(gev, "CBC integer preprocessing does not handle semicontinuous variables correct, thus we switch it off.");
-      par_list.push_back("-preprocess");
-      par_list.push_back("off");
-   }
-
-   if (options.isDefined("increment")) {
-      par_list.push_back("-increment");
-      sprintf(buffer, "%g", options.getDouble("increment"));
-      par_list.push_back(buffer);
-   }
+   CHECKOPT_DOUBLE("increment")
 
    nthreads = options.getInteger("threads");
-   if( nthreads > 1 ) {
+   if( nthreads > 1 && CbcModel::haveMultiThreadSupport() )
+   {
       par_list.push_back("-threads");
       sprintf(buffer, "%d", nthreads);
       par_list.push_back(buffer);
-
-      // TODO print warning if Cbc compiled without multithreading support (how to know?)
-      //  gevLogStat(gev, "Warning: CBC has not been compiled with multithreading support. Option threads ignored.");
 
       // no Blas multithreading if Cbc is doing multithreading
       setNumThreadsBlas(gev, 1);
    }
    else
    {
+      if( nthreads > 1 )
+         gevLogStat(gev, "Warning: Multithreading support not available in CBC.");
+
       // allow Blas multithreading
-      setNumThreadsBlas(gev, gevThreads(gev));
+      setNumThreadsBlas(gev, nthreads);
+      nthreads = 1;
    }
 
    // special options set by user and passed unseen to CBC
-   if (options.isDefined("special")) {
-      char longbuffer[10000];
-      char* value = options.getString("special", longbuffer);
-      if (!value) {
-         gevLogStat(gev, "Cannot read value for option 'special'. Ignoring this option");
-      } else {
-         char* tok = strtok(value, " ");
-         while (tok) {
+   if( options.isDefined("special") )
+   {
+      char* value = options.getString("special", buffer);
+      if( value == NULL )
+      {
+         gevLogStatPChar(gev, "Cannot read value for option 'special'. Ignoring this option.\n");
+      }
+      else
+      {
+         char* tok = strtok_r(value, " ", &value);
+         while( tok != NULL )
+         {
             par_list.push_back(tok);
-            tok = strtok(NULL, " ");
+            tok = strtok_r(NULL, " ", &value);
          }
       }
    }
 
    // algorithm for root node and solve command
-
-   if (options.isDefined("startalg")) {
+   if( options.isDefined("startalg") )
+   {
       char* value = options.getString("startalg", buffer);
-      if (!value) {
+      if( value == NULL )
+      {
          gevLogStat(gev, "Cannot read value for option 'startalg'. Ignoring this option");
-      } else if (strcmp(value, "primal")  == 0) {
+      }
+      else if( strcmp(value, "primal") == 0 )
+      {
          par_list.push_back("-primalSimplex");
-      } else if (strcmp(value, "dual")    == 0) {
+      }
+      else if( strcmp(value, "dual") == 0 )
+      {
          par_list.push_back("-dualSimplex");
-      } else if (strcmp(value, "barrier") == 0) {
+      }
+      else if( strcmp(value, "barrier") == 0 )
+      {
          par_list.push_back("-barrier");
-      } else {
+      }
+      else
+      {
          gevLogStat(gev, "Unsupported value for option 'startalg'. Ignoring this option");
       }
-      if (!isLP())
+      if( !isLP() )
          par_list.push_back("-solve");
-   } else
+   }
+   else
       par_list.push_back("-solve");
+
+#undef CHECKOPT_INT
+#undef CHECKOPT2_INT
+#undef CHECKOPT_DOUBLE
+#undef CHECKOPT2_DOUBLE
+#undef CHECKOPT_BOOL
+#undef CHECKOPT2_BOOL
+#undef CHECKOPT_STRINGENUM
+#undef CHECKOPT2_STRINGENUM
 
    size_t par_list_length = par_list.size();
    if( cbc_args != NULL ) {
-      for (int i = 0; i < cbc_argc; ++i)
+      for( int i = 0; i < cbc_argc; ++i )
          free(cbc_args[i]);
       delete[] cbc_args;
    }
@@ -1200,18 +833,18 @@ bool GamsCbc::setupParameters()
    cbc_args = new char*[cbc_argc];
    cbc_args[0] = strdup("GAMS/CBC");
    int i = 1;
-   for (std::list<std::string>::iterator it(par_list.begin()); it != par_list.end(); ++it, ++i)
+   for( std::list<std::string>::iterator it(par_list.begin()); it != par_list.end(); ++it, ++i )
       cbc_args[i] = strdup(it->c_str());
    cbc_args[i++] = strdup("-quit");
 
    mipstart = options.getBool("mipstart");
+   solvefinal = options.getBool("solvefinal");
 
    // whether to write MPS file
    free(writemps);
    writemps = NULL;
    if( options.isDefined("writemps") )
    {
-      char buffer[GMS_SSSIZE];
       options.getString("writemps", buffer);
       writemps = strdup(buffer);
    }

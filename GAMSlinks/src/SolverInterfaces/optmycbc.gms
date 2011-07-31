@@ -20,7 +20,6 @@ set g Cbc Option Groups /
     o Options /
       writemps               create MPS file for problem
       special                options passed unseen to CBC
-      names                  specifies whether variable and equation names should be given to CBC 
 *LP options
       idiotcrash             idiot crash
       sprintcrash            sprint crash
@@ -87,6 +86,7 @@ set g Cbc Option Groups /
       preprocess             integer presolve
       printfrequency         frequency of status prints
       increment              increment of cutoff when new incumbent
+      solvefinal             final solve of MIP with fixed discrete variables
 $ontext
       usercutcall      The GAMS command line to call the cut generator
       usercutfirst     Calls the cut generator for the first n nodes
@@ -128,7 +128,6 @@ optdata(g,o,t,f) /
 general.(
   writemps             .s.(def '')
   special              .s.(def '')
-  names                .b.(def 0)
 * GAMS options
   reslim          .r.(def 1000)
   iterlim         .i.(def 10000)
@@ -172,6 +171,7 @@ mipgeneral.(
   optca                .r.(def 0)
   optcr                .r.(def 0.1)
   cutoff               .r.(def 0, lo mindouble)
+  solvefinal           .b.(def 1)
 )
 mipcuts.(
   cutdepth             .i.(def -1, lo -1, up 999999)
@@ -309,7 +309,7 @@ $offtext
    nodestrategy.(   hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth )
    preprocess.(     off, on, equal, equalall, sos, trysos )
    printfrequency.(  0 )
-   names.(           0, 1)
+   solvefinal.(      0, 1)
 *   usercutnewint.(   0, 1)
 *   userheurnewint.(   0, 1)
  /
@@ -326,8 +326,8 @@ $offtext
                      increment  'GAMS cheat'
                      cut_passes_root '100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop in the objective function value is small) if it has less than 5000 columns, and 20 passes otherwise.'
                    /
- oep(o) / mipstart, crossover, perturbation, presolve, names, printfrequency,
+ oep(o) / mipstart, crossover, perturbation, presolve, printfrequency,
     heuristics, combinesolutions, dins, divingrandom, divingcoefficient, divingfractional, divingguided, divinglinesearch, divingpseudocost, divingvectorlength,
-    feaspump, localtreesearch, naiveheuristics, pivotandfix, randomizedrounding, rens, rins, roundingheuristic
+    feaspump, localtreesearch, naiveheuristics, pivotandfix, randomizedrounding, rens, rins, roundingheuristic, solvefinal
 *    ,usercutnewint, userheurnewint
     /;

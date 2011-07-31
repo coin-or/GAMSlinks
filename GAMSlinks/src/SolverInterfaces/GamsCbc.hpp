@@ -32,6 +32,7 @@ private:
    bool                  mipstart;           /**< whether to pass primal solution to MIP solve */
    int                   nthreads;           /**< number of threads to use */
    char*                 writemps;           /**< name of mps file to write instance to */
+   bool                  solvefinal;         /**< whether to solve MIP with fixed discrete variables finally */
 
    bool setupProblem();
 
@@ -59,7 +60,8 @@ public:
      optca(0.0),
      mipstart(false),
      nthreads(1),
-     writemps(NULL)
+     writemps(NULL),
+     solvefinal(true)
    { }
 
    ~GamsCbc();

@@ -1,9 +1,9 @@
 <html>
 <head>
-<title>CBCD Options</title>
+<title>MYCBC Options</title>
 </head>
 <body>
-<h2>CBCD Options</h2>
+<h2>MYCBC Options</h2>
 GAMS/CoinCBC brings the open source LP/MIP solver Cbc from the COIN-OR foundation to the broad audience of GAMS users.<BR>
 CBC (COIN-OR branch and cut) is an open-source mixed integer programming solver working with the COIN-OR LP solver CLP and the COIN-OR Cut generator libraries CGL.
 The code has been written primarily by John J. Forrest, who is the COIN-OR project leader for CBC.
@@ -26,17 +26,14 @@ Hopefully good solutions were obtained fairly early in the search so the importa
 See whether strong branching did a good job - or did it just take a lot of iterations.
 Adjust the options strongbranching and trustpseudocosts.
 <p>For more information about this solver please inspect the
-complete <a href="docs/solvers/coin.pdf">CBCD manual</a>.
+complete <a href="docs/solvers/coin.pdf">MYCBC manual</a>.
 
-<h2>Summary of CBCD Options</h2>
+<h2>Summary of MYCBC Options</h2>
 <table>
 <tr><th height=75 valign=bottom colspan=2 align=left><h3>General Options</h3></th></tr>
 <tr><td><a href="#iterlim">
 iterlim</a></td>
 <td>iteration limit</td></tr>
-<tr><td><a href="#names">
-names</a></td>
-<td>specifies whether variable and equation names should be given to CBC</td></tr>
 <tr><td><a href="#reslim">
 reslim</a></td>
 <td>resource limit</td></tr>
@@ -132,6 +129,9 @@ printfrequency</a></td>
 <tr><td><a href="#sollim">
 sollim</a></td>
 <td>limit on number of solutions</td></tr>
+<tr><td><a href="#solvefinal">
+solvefinal</a></td>
+<td>final solve of MIP with fixed discrete variables</td></tr>
 <tr><td><a href="#strategy">
 strategy</a></td>
 <td>switches on groups of features</td></tr>
@@ -254,7 +254,7 @@ roundingheuristic</a></td>
 <tr><td><a href="#vubheuristic">
 vubheuristic</a></td>
 <td>VUB heuristic</td></tr></table>
-<h2>Detailed Descriptions of CBCD Options</h2>
+<h2>Detailed Descriptions of MYCBC Options</h2>
 
 <h4><a name="cliquecuts">
 cliquecuts</a>
@@ -740,22 +740,6 @@ Turns the naive heuristics off.</td></tr>
 Turns the naive heuristics on.</td></tr>
 </table>
 
-<h4><a name="names">
-names</a>
-<i> (integer)</i> specifies whether variable and equation names should be given to CBC</h4><p>
-
-This option causes GAMS names for the variables and equations to be loaded into Cbc.
-These names will then be used for error messages, log entries, and so forth.
-Turning names off may help if memory is very tight.
-
-<br><i>(default = 0)</i>
-<table>
-<tr valign="top"><td width=20 align=right>0</td><td>.
-Do not load variable and equation names.</td></tr>
-<tr valign="top"><td width=20 align=right>1</td><td>.
-Load variable and equation names.</td></tr>
-</table>
-
 <h4><a name="nodelim">
 nodelim</a>
 <i> (integer)</i> node limit</h4><p>
@@ -991,7 +975,7 @@ Reference: K. Anderson, G. Cornuejols, and Yanjun Li, Reduce-and-Split Cuts: Imp
 rens</a>
 <i> (integer)</i> relaxation enforced neighborhood search</h4><p>
 
-This parameter controls the use of the relaxation enforced neighborhood search heuristic.<BR>
+This parameter controls the use of the relaxation enforced neighborhood search heuristic.
 
 <br><i>(default = 0)</i>
 <table>
@@ -1092,6 +1076,17 @@ A limit on number of feasible solutions that CBC should find for a MIP.
 <table>
 <tr valign="top"><td width=20 align=right>-1</td><td>.
 No limit on the number of feasible solutions.</td></tr>
+</table>
+
+<h4><a name="solvefinal">
+solvefinal</a>
+<i> (integer)</i> final solve of MIP with fixed discrete variables</h4><p>
+
+
+<br><i>(default = 1)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td></td></tr>
 </table>
 
 <h4><a name="special">
