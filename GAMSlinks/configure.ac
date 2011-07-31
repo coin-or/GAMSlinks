@@ -107,15 +107,11 @@ AC_COIN_CHECK_HEADER([windows.h])
 # va_copy #
 ###########
 
-AC_CHECK_DECL([va_copy],[AC_DEFINE([HAVE_VA_COPY],[1],
-                                   [Define to 1 if va_copy is available])],,[
-#ifdef HAVE_CSTDARG
-# include <cstdarg>
-#else
-# ifdef HAVE_STDARG_H
-#  include <stdarg.h>
-# endif
-#endif])
+AC_CHECK_DECL([va_copy],
+  [AC_DEFINE([HAVE_VA_COPY],[1],[Define to 1 if va_copy is available])],,
+  [
+#include <cstdarg>
+  ])
 
 ###############################################
 # stricmp and strcasecmp; snprintf; vsnprintf #

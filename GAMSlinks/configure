@@ -30598,13 +30598,8 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-#ifdef HAVE_CSTDARG
-# include <cstdarg>
-#else
-# ifdef HAVE_STDARG_H
-#  include <stdarg.h>
-# endif
-#endif
+#include <cstdarg>
+
 
 int
 main ()
