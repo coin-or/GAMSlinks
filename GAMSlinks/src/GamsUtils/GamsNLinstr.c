@@ -9,7 +9,7 @@
    Thus, there is no warranty that a code based on this file is going to work fine
    after changes in the GAMS I/O libraries as provided by GAMS.
    GAMS is NOT obligated to issue a warning when it changes the NL instructions.
-*/
+ */
 
 #include "GamsNLinstr.h"
 

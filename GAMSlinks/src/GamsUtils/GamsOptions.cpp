@@ -87,18 +87,18 @@ void GamsOptions::setOpt(
    struct optRec*     opt_                /**< GAMS options handler */
 )
 {
-	assert(!optionshandle);
+   assert(!optionshandle);
 
-	char buffer[512];
-	if( !optGetReady(buffer, 512) )
-	{
-		gevLogStatPChar(gev, "\n*** Could not load optionfile library: ");
-		gevLogStat(gev, buffer);
-		return;
-	}
+   char buffer[512];
+   if( !optGetReady(buffer, 512) )
+   {
+      gevLogStatPChar(gev, "\n*** Could not load optionfile library: ");
+      gevLogStat(gev, buffer);
+      return;
+   }
 
-	opt_is_own = false;
-	optionshandle = opt_;
+   opt_is_own = false;
+   optionshandle = opt_;
 }
 
 bool GamsOptions::readOptionsFile(
