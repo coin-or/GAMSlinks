@@ -296,3 +296,85 @@ bool gamsOsiStoreSolution(
 
    return true;
 }
+
+/** writes the problem stored in an OSI into LP and MPS files
+ * set the first bit of formatflags for using writeMps, the second bit for using writeLp, and/or the third for using writeMpsNative
+ */
+void gamsOsiWriteProblem(
+   struct gmoRec*        gmo,                /**< GAMS modeling object */
+   OsiSolverInterface&   solver,             /**< OSI solver interface */
+   unsigned int          formatflags         /**< in which formats to write the instance */
+)
+{
+   if( formatflags == 0 )
+      return;
+
+   struct gevRec* gev;
+   char buffer[GMS_SSSIZE+30];
+   double objoffset;
+
+   gev = (struct gevRec*)gmoEnvironment(gmo);
+   assert(gev != NULL);
+
+   solver.getDblParam(OsiObjOffset, objoffset);
+   if( objoffset != 0.0 )
+   {
+      snprintf(buffer, sizeof(buffer), "Ignoring objective offset %.20g when writing instance.\n", objoffset);
+      gevLogPChar(gev, buffer);
+   }
+
+   gmoNameInput(gmo, buffer);
+
+   if( formatflags & 0x1 )
+   {
+      gevLogPChar(gev, "Writing MPS file ");
+      gevLogPChar(gev, buffer);
+      gevLogPChar(gev, ".mps\n");
+      solver.writeMps(buffer, "mps", solver.getObjSense());
+   }
+
+   if( formatflags & 0x2 )
+   {
+      gevLogPChar(gev, "Writing LP file ");
+      gevLogPChar(gev, buffer);
+      gevLogPChar(gev, ".lp\n");
+      solver.writeLp(buffer, "lp", 1e-9, 10, 15, 0.0, true);
+   }
+
+   if( formatflags & 0x4 )
+   {
+      strcat(buffer, "_native.mps");
+      gevLogPChar(gev, "Writing native MPS file ");
+      gevLog(gev, buffer);
+
+      assert(gmoN(gmo) <= solver.getNumCols());
+      assert(gmoM(gmo) <= solver.getNumRows());
+      char** colnames;
+      char** rownames;
+      int nameDiscipline;
+      if( !solver.getIntParam(OsiNameDiscipline, nameDiscipline) )
+         nameDiscipline = 0;
+      if( nameDiscipline == 2 )
+      {
+         colnames = new char*[gmoN(gmo)];
+         rownames = new char*[gmoM(gmo)+1];
+         for( int i = 0; i < gmoN(gmo); ++i )
+            colnames[i] = strdup(solver.getColName(i).c_str());
+         for( int i = 0; i < gmoM(gmo); ++i )
+            rownames[i] = strdup(solver.getRowName(i).c_str());
+         rownames[gmoM(gmo)] = strdup(solver.getObjName().c_str());
+      }
+
+      solver.writeMpsNative(buffer, const_cast<const char**>(rownames), const_cast<const char**>(colnames), 2, 2, solver.getObjSense());
+
+      if( nameDiscipline == 2 )
+      {
+         for( int i = 0; i < gmoN(gmo); ++i )
+            free(colnames[i]);
+         for( int i = 0; i < gmoM(gmo)+1; ++i )
+            free(rownames[i]);
+         delete[] colnames;
+         delete[] rownames;
+      }
+   }
+}

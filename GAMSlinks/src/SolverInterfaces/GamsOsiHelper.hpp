@@ -27,4 +27,13 @@ bool gamsOsiStoreSolution(
    const OsiSolverInterface& solver          /**< OSI solver interface */
 );
 
+/** writes the problem stored in an OSI into LP and MPS files
+ * set the first bit of formatflags for using writeMps, the second bit for using writeLp, and/or the third for using writeMpsNative
+ */
+void gamsOsiWriteProblem(
+   struct gmoRec*        gmo,                /**< GAMS modeling object */
+   OsiSolverInterface&   solver,             /**< OSI solver interface */
+   unsigned int          formatflags         /**< in which formats to write the instance */
+);
+
 #endif /*GAMSOSIHELPER_HPP_*/

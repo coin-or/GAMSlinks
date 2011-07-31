@@ -431,61 +431,7 @@ int GamsOsi::callSolver()
       return -1;
    }
 
-   /* write instance as LP and/or MPS file */
-   if( gevGetIntOpt(gev, gevInteger3) > 0 )
-   {
-      int writeopt = gevGetIntOpt(gev, gevInteger3);
-      char buffer[GMS_SSSIZE+30];
-      gmoNameInput(gmo, buffer);
-      if( writeopt & 0x1 )
-      {
-         gevLogPChar(gev, "Writing MPS file ");
-         gevLogPChar(gev, buffer);
-         gevLogPChar(gev, ".mps\n");
-         osi->writeMps(buffer, "mps", osi->getObjSense());
-      }
-      if( writeopt & 0x2 )
-      {
-         gevLogPChar(gev, "Writing LP file ");
-         gevLogPChar(gev, buffer);
-         gevLogPChar(gev, ".lp\n");
-         osi->writeLp(buffer, "lp", 1e-9, 10, 15, 0.0, true);
-      }
-      if( writeopt & 0x4 )
-      {
-         strcat(buffer, "_native.mps");
-         gevLogPChar(gev, "Writing native MPS file ");
-         gevLog(gev, buffer);
-
-         char** colnames;
-         char** rownames;
-         int nameDiscipline;
-         if( !osi->getIntParam(OsiNameDiscipline, nameDiscipline) )
-            nameDiscipline = 0;
-         if( nameDiscipline == 2 )
-         {
-            colnames = new char*[osi->getNumCols()];
-            rownames = new char*[osi->getNumRows()+1];
-            for( int i = 0; i < osi->getNumCols(); ++i )
-               colnames[i] = strdup(osi->getColName(i).c_str());
-            for( int i = 0; i < osi->getNumRows(); ++i )
-               rownames[i] = strdup(osi->getRowName(i).c_str());
-            rownames[osi->getNumRows()] = strdup(osi->getObjName().c_str());
-         }
-
-         osi->writeMpsNative(buffer, const_cast<const char**>(rownames), const_cast<const char**>(colnames), 2, 2, osi->getObjSense());
-
-         if( nameDiscipline == 2 )
-         {
-            for( int i = 0; i < osi->getNumCols(); ++i )
-               free(colnames[i]);
-            for( int i = 0; i < osi->getNumRows()+1; ++i )
-               free(rownames[i]);
-            delete[] colnames;
-            delete[] rownames;
-         }
-      }
-   }
+   gamsOsiWriteProblem(gmo, *osi, gevGetIntOpt(gev, gevInteger3));
 
 	double start_cputime  = CoinCpuTime();
 	double start_walltime = CoinWallclockTime();
