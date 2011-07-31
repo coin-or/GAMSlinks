@@ -22,54 +22,54 @@ private:
    struct gevRec*        gev;                /**< GAMS environment */
    struct optRec*        opt;                /**< GAMS options object */
 
-	GamsMessageHandler*   msghandler;         /**< message handler */
-	CbcModel*             model;              /**< CBC model object */
-	int                   cbc_argc;           /**< number of parameters to pass to CBC */
-	char**                cbc_args;           /**< parameters to pass to CBC */
+   GamsMessageHandler*   msghandler;         /**< message handler */
+   CbcModel*             model;              /**< CBC model object */
+   int                   cbc_argc;           /**< number of parameters to pass to CBC */
+   char**                cbc_args;           /**< parameters to pass to CBC */
 
-	double                optcr;              /**< relative optimality tolerance */
-	double                optca;              /**< absolute optimality tolerance */
-	bool                  mipstart;           /**< whether to pass primal solution to MIP solve */
-	int                   nthreads;           /**< number of threads to use */
-	char*                 writemps;           /**< name of mps file to write instance to */
+   double                optcr;              /**< relative optimality tolerance */
+   double                optca;              /**< absolute optimality tolerance */
+   bool                  mipstart;           /**< whether to pass primal solution to MIP solve */
+   int                   nthreads;           /**< number of threads to use */
+   char*                 writemps;           /**< name of mps file to write instance to */
 
-	bool setupProblem();
+   bool setupProblem();
 
-	bool setupStartingPoint();
+   bool setupStartingPoint();
 
-	bool setupParameters();
+   bool setupParameters();
 
    bool writeSolution(
       double             cputime,            /**< CPU time spend by solver */
       double             walltime            /**< wallclock time spend by solver */
    );
 
-	bool isLP();
+   bool isLP();
 
 public:
-	GamsCbc()
-	: gmo(NULL),
-	  gev(NULL),
-	  opt(NULL),
-	  msghandler(NULL),
-	  model(NULL),
-	  cbc_argc(0),
-	  cbc_args(NULL),
-	  optcr(0.0),
-	  optca(0.0),
-	  mipstart(false),
-	  nthreads(1),
-	  writemps(NULL)
-	{ }
+   GamsCbc()
+   : gmo(NULL),
+     gev(NULL),
+     opt(NULL),
+     msghandler(NULL),
+     model(NULL),
+     cbc_argc(0),
+     cbc_args(NULL),
+     optcr(0.0),
+     optca(0.0),
+     mipstart(false),
+     nthreads(1),
+     writemps(NULL)
+   { }
 
-	~GamsCbc();
+   ~GamsCbc();
 
    int readyAPI(
       struct gmoRec*     gmo_,               /**< GAMS modeling object */
       struct optRec*     opt_                /**< GAMS options object */
    );
 
-	int callSolver();
+   int callSolver();
 };
 
 #endif /*GAMSCBC_HPP_*/

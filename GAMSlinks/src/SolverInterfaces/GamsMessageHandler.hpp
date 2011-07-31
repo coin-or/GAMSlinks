@@ -15,40 +15,40 @@ struct gevRec;
 class GamsMessageHandler : public CoinMessageHandler
 {
 private:
-	struct gevRec*        gev;                /**< GAMS environment */
+   struct gevRec*        gev;                /**< GAMS environment */
 
 public:
-  GamsMessageHandler(
-     struct gevRec*      gev_                /**< GAMS environment */
-  )
-  : gev(gev_)
-  { }
+   GamsMessageHandler(
+      struct gevRec*     gev_                /**< GAMS environment */
+   )
+   : gev(gev_)
+   { }
 
-  /** sets detail level of current message */
-  void setCurrentDetail(
-     int                 detail              /**< new detail level */
-  )
-  {
-     currentMessage_.setDetail(detail);
-  }
+   /** sets detail level of current message */
+   void setCurrentDetail(
+      int                detail              /**< new detail level */
+   )
+   {
+      currentMessage_.setDetail(detail);
+   }
 
-  /** gives detail level of current message */
-  int getCurrentDetail() const
-  {
-     return currentMessage_.detail();
-  }
+   /** gives detail level of current message */
+   int getCurrentDetail() const
+   {
+      return currentMessage_.detail();
+   }
 
-  /** prints message from the message buffer
-   * Removes all newlines at the end of the message buffer.
-   * If currentMessage().detail() is smaller then 2, the message is written to logfile and statusfile, otherwise it is written only to the logfile.
-   */
-  int print();
+   /** prints message from the message buffer
+    * Removes all newlines at the end of the message buffer.
+    * If currentMessage().detail() is smaller then 2, the message is written to logfile and statusfile, otherwise it is written only to the logfile.
+    */
+   int print();
 
-  /** creates a copy of this message handler */
-  CoinMessageHandler* clone() const
-  {
-     return new GamsMessageHandler(gev);
-  }
+   /** creates a copy of this message handler */
+   CoinMessageHandler* clone() const
+   {
+      return new GamsMessageHandler(gev);
+   }
 };
 
 #endif /*GAMSMESSAGEHANDLER_HPP_*/
