@@ -23,6 +23,9 @@ libGamsCoin_la_LIBADD       = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_LIBS)
 libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_DEPENDENCIES)
 libGamsCoin_la_LDFLAGS      = -module -no-undefined
 
+includecoindir = $(includedir)/coin
+includecoin_HEADERS = 
+
 bin_SCRIPTS =
 if COIN_IS_WINDOWS
   SCRIPTSUFFIX=nt.cmd
@@ -31,7 +34,8 @@ else
 endif
 
 if COIN_HAS_OSI
-  libGamsCoin_la_SOURCES += GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp 
+  libGamsCoin_la_SOURCES += GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp
+  includecoin_HEADERS    += GamsMessageHandler.hpp GamsOsiHelper.hpp GamsOsi.hpp
 endif
 
 if COIN_HAS_OSIGLPK
@@ -40,6 +44,7 @@ endif
 
 if COIN_HAS_CBC
   libGamsCoin_la_SOURCES += GamsCbc.cpp
+  includecoin_HEADERS    += GamsCbc.hpp
   bin_SCRIPTS += optmycbc.def
 endif
 

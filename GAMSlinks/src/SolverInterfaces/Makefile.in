@@ -31,6 +31,7 @@
 ########################################################################
 
 
+
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -53,10 +54,12 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@COIN_HAS_OSI_TRUE@am__append_1 = GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp 
-@COIN_HAS_OSIGLPK_TRUE@am__append_2 = optmyglpk.def
-@COIN_HAS_CBC_TRUE@am__append_3 = GamsCbc.cpp
-@COIN_HAS_CBC_TRUE@am__append_4 = optmycbc.def
+@COIN_HAS_OSI_TRUE@am__append_1 = GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp
+@COIN_HAS_OSI_TRUE@am__append_2 = GamsMessageHandler.hpp GamsOsiHelper.hpp GamsOsi.hpp
+@COIN_HAS_OSIGLPK_TRUE@am__append_3 = optmyglpk.def
+@COIN_HAS_CBC_TRUE@am__append_4 = GamsCbc.cpp
+@COIN_HAS_CBC_TRUE@am__append_5 = GamsCbc.hpp
+@COIN_HAS_CBC_TRUE@am__append_6 = optmycbc.def
 
 #  libGamsCoin_la_SOURCES += GamsIpopt.cpp GamsNLP.cpp GamsJournal.cpp
 
@@ -67,11 +70,12 @@ host_triplet = @host@
 #  libGamsCoin_la_SOURCES += GamsCouenne.cpp
 
 #  libGamsCoin_la_SOURCES += GamsOS.cpp GamsOSxL.cpp
-@COIN_HAS_OS_TRUE@am__append_5 = optmyos.def
-DIST_COMMON = $(srcdir)/../../BuildTools/Makemain.inc \
-	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_6 = Dependencies
-@HAVE_EXTERNALS_TRUE@am__append_7 = .Dependencies-stamp
+@COIN_HAS_OS_TRUE@am__append_7 = optmyos.def
+DIST_COMMON = $(am__includecoin_HEADERS_DIST) \
+	$(srcdir)/../../BuildTools/Makemain.inc $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
+@HAVE_EXTERNALS_TRUE@am__append_8 = Dependencies
+@HAVE_EXTERNALS_TRUE@am__append_9 = .Dependencies-stamp
 subdir = src/SolverInterfaces
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
@@ -88,7 +92,8 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
+	"$(DESTDIR)$(includecoindir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
@@ -115,6 +120,10 @@ CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libGamsCoin_la_SOURCES)
 DIST_SOURCES = $(am__libGamsCoin_la_SOURCES_DIST)
+am__includecoin_HEADERS_DIST = GamsMessageHandler.hpp \
+	GamsOsiHelper.hpp GamsOsi.hpp GamsCbc.hpp
+includecoinHEADERS_INSTALL = $(INSTALL_HEADER)
+HEADERS = $(includecoin_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -393,8 +402,8 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = $(am__append_6)
-DISTCLEANFILES = $(am__append_7) $(VPATH_DISTCLEANFILES)
+EXTRA_DIST = $(am__append_8)
+DISTCLEANFILES = $(am__append_9) $(VPATH_DISTCLEANFILES)
 AM_CPPFLAGS = $(GAMSSOLVERLIB_CFLAGS) \
   -I`$(CYGPATH_W) $(srcdir)/..` \
   -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` \
@@ -404,11 +413,13 @@ AM_CPPFLAGS = $(GAMSSOLVERLIB_CFLAGS) \
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 lib_LTLIBRARIES = libGamsCoin.la
 libGamsCoin_la_SOURCES = GamsSolver.cpp $(am__append_1) \
-	$(am__append_3)
+	$(am__append_4)
 libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_LIBS)
 libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_DEPENDENCIES)
 libGamsCoin_la_LDFLAGS = -module -no-undefined
-bin_SCRIPTS = $(am__append_2) $(am__append_4) $(am__append_5)
+includecoindir = $(includedir)/coin
+includecoin_HEADERS = $(am__append_2) $(am__append_5)
+bin_SCRIPTS = $(am__append_3) $(am__append_6) $(am__append_7)
 @COIN_IS_WINDOWS_FALSE@SCRIPTSUFFIX = us.run
 @COIN_IS_WINDOWS_TRUE@SCRIPTSUFFIX = nt.cmd
 DocFiles = README AUTHORS LICENSE
@@ -537,6 +548,23 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
+install-includecoinHEADERS: $(includecoin_HEADERS)
+	@$(NORMAL_INSTALL)
+	test -z "$(includecoindir)" || $(mkdir_p) "$(DESTDIR)$(includecoindir)"
+	@list='$(includecoin_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(includecoinHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(includecoindir)/$$f'"; \
+	  $(includecoinHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(includecoindir)/$$f"; \
+	done
+
+uninstall-includecoinHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(includecoin_HEADERS)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(includecoindir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(includecoindir)/$$f"; \
+	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -616,9 +644,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(SCRIPTS)
+all-am: Makefile $(LTLIBRARIES) $(SCRIPTS) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includecoindir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -667,7 +695,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-includecoinHEADERS
 
 install-exec-am: install-binSCRIPTS install-libLTLIBRARIES
 
@@ -695,21 +723,22 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binSCRIPTS uninstall-info-am \
-	uninstall-libLTLIBRARIES
+uninstall-am: uninstall-binSCRIPTS uninstall-includecoinHEADERS \
+	uninstall-info-am uninstall-libLTLIBRARIES
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
 	clean-libLTLIBRARIES clean-libtool ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-binSCRIPTS install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-libLTLIBRARIES install-man \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-binSCRIPTS uninstall-info-am \
+	install-data-am install-exec install-exec-am \
+	install-includecoinHEADERS install-info install-info-am \
+	install-libLTLIBRARIES install-man install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-binSCRIPTS \
+	uninstall-includecoinHEADERS uninstall-info-am \
 	uninstall-libLTLIBRARIES
 
 
