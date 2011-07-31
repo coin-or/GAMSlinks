@@ -5,7 +5,6 @@
 // Author: Stefan Vigerske
 
 #include "GamsCbc.hpp"
-#include "GamsCbc.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -42,6 +41,8 @@ GamsCbc::~GamsCbc()
 	for( int i = 0; i < cbc_argc; ++i )
 		free(cbc_args[i]);
 	delete[] cbc_args;
+
+	free(writemps);
 }
 
 int GamsCbc::readyAPI(
@@ -91,6 +92,7 @@ int GamsCbc::callSolver()
    assert(gev != NULL);
 
    delete model;
+   model = NULL;
 
    gmoSolveStatSet(gmo, gmoSolveStat_Solver);
    gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
@@ -105,9 +107,7 @@ int GamsCbc::callSolver()
    /* initialize Cbc, I guess */
    CbcMain0(*model);
 
-   bool mipstart;
-   bool multithread;
-   if( !setupParameters(mipstart, multithread) )
+   if( !setupParameters() )
    {
       gevLogStat(gev, "Error setting up CBC parameters. Aborting...");
       return -1;
@@ -115,10 +115,17 @@ int GamsCbc::callSolver()
    assert(cbc_args != NULL);
    assert(cbc_argc > 0);
 
-   if( !setupStartingPoint(mipstart) )
+   if( !setupStartingPoint() )
    {
       gevLogStat(gev, "Error setting up starting point. Aborting...");
       return -1;
+   }
+
+   if( writemps != NULL )
+   {
+      gevLogStatPChar(gev, "\nWriting MPS file ");
+      gevLogStat(gev, writemps);
+      model->solver()->writeMps(writemps, "", model->solver()->getObjSense());
    }
 
 	gevLogStat(gev, "\nCalling CBC main solution routine...");
@@ -131,13 +138,13 @@ int GamsCbc::callSolver()
 	double end_cputime  = CoinCpuTime();
 	double end_walltime = CoinWallclockTime();
 
-   writeSolution(end_cputime - start_cputime, end_walltime - start_walltime, multithread);
+   writeSolution(end_cputime - start_cputime, end_walltime - start_walltime);
 
    // solve again with fixed noncontinuous variables and original bounds on continuous variables
    // TODO parameter to turn this off or do only if cbc reduced bounds
 	if( !isLP() && model->bestSolution() )
 	{
-		gevLog(gev, "Resolve with fixed discrete variables.");
+		gevLog(gev, "\nResolve with fixed discrete variables.");
 
 		double* varlow = new double[gmoN(gmo)];
 		double* varup  = new double[gmoN(gmo)];
@@ -168,6 +175,7 @@ int GamsCbc::callSolver()
 	}
 
 	delete model;
+	model = NULL;
 
 	return 0;
 }
@@ -348,9 +356,7 @@ bool GamsCbc::setupProblem()
 	return true;
 }
 
-bool GamsCbc::setupStartingPoint(
-   bool                  mipstart            /**< should an initial primal solution been setup? */
-)
+bool GamsCbc::setupStartingPoint()
 {
    assert(gmo != NULL);
    assert(model != NULL);
@@ -450,7 +456,9 @@ bool GamsCbc::setupStartingPoint(
 
    if( mipstart && gmoModelType(gmo) != gmoProc_lp && gmoModelType(gmo) != gmoProc_rmip )
    {
-      double objval = 0.0;
+      double objval;
+      model->solver()->getDblParam(OsiObjOffset, objval);
+      objval = -objval;
       if( varlevel == NULL )
       {
          varlevel = new double[gmoN(gmo)];
@@ -459,7 +467,7 @@ bool GamsCbc::setupStartingPoint(
       const double* objcoeff = model->solver()->getObjCoefficients();
       for( int i = 0; i < gmoN(gmo); ++i )
          objval += objcoeff[i] * varlevel[i];
-      gevLogPChar(gev, "Letting CBC try user-given column levels as initial MIP solution:");
+      gevLogPChar(gev, "Letting CBC try user-given column levels as initial MIP solution: ");
       model->setBestSolution(varlevel, gmoN(gmo), objval, true);
    }
 
@@ -472,10 +480,7 @@ TERMINATE:
    return retcode;
 }
 
-bool GamsCbc::setupParameters(
-   bool&                 mipstart,           /**< variable where to store whether the mipstart option has been set */
-   bool&                 multithread         /**< variable where to store whether multiple threads should be used */
-)
+bool GamsCbc::setupParameters()
 {
    assert(gmo != NULL);
    assert(gev != NULL);
@@ -531,9 +536,11 @@ bool GamsCbc::setupParameters(
 		model->solver()->setIntParam(OsiMaxNumIteration, options.getInteger("iterlim"));
 
 	// MIP parameters
+	optca = options.getDouble("optca");
+	optcr = options.getDouble("optcr");
 	model->setIntParam(CbcModel::CbcMaxNumNode,           options.getInteger("nodelim"));
-	model->setDblParam(CbcModel::CbcAllowableGap,         options.getDouble ("optca"));
-	model->setDblParam(CbcModel::CbcAllowableFractionGap, options.getDouble ("optcr"));
+	model->setDblParam(CbcModel::CbcAllowableGap,         optca);
+	model->setDblParam(CbcModel::CbcAllowableFractionGap, optcr);
 	model->setDblParam(CbcModel::CbcIntegerTolerance,     options.getDouble ("tol_integer"));
 	if( options.isDefined("cutoff") )
 		model->setCutoff(model->solver()->getObjSense() * options.getDouble("cutoff")); // Cbc assumes a minimization problem here
@@ -1107,7 +1114,7 @@ bool GamsCbc::setupParameters(
 		par_list.push_back(buffer);
 	}
 
-   int nthreads = options.getInteger("threads");
+   nthreads = options.getInteger("threads");
 	if( nthreads > 1 ) {
 	   par_list.push_back("-threads");
 	   sprintf(buffer, "%d", nthreads);
@@ -1175,16 +1182,15 @@ bool GamsCbc::setupParameters(
 	cbc_args[i++] = strdup("-quit");
 
    mipstart = options.getBool("mipstart");
-   multithread = nthreads > 1;
 
-   // write MPS file
+   // whether to write MPS file
+   free(writemps);
+   writemps = NULL;
    if( options.isDefined("writemps") )
    {
-      char buffer[1024];
+      char buffer[GMS_SSSIZE];
       options.getString("writemps", buffer);
-      gevLogStatPChar(gev, "\nWriting MPS file ");
-      gevLogStat(gev, buffer);
-      model->solver()->writeMps(buffer, "", (gmoSense(gmo) == gmoObj_Min) ? 1.0 : -1.0);
+      writemps = strdup(buffer);
    }
 
 	return true;
@@ -1192,8 +1198,7 @@ bool GamsCbc::setupParameters(
 
 bool GamsCbc::writeSolution(
    double             cputime,            /**< CPU time spend by solver */
-   double             walltime,           /**< wallclock time spend by solver */
-   bool               multithread         /**< did we solve the MIP in multithread mode */
+   double             walltime            /**< wallclock time spend by solver */
 )
 {
 	bool write_solution = false;
@@ -1278,7 +1283,7 @@ bool GamsCbc::writeSolution(
 		{
 			write_solution = true;
 			gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-			if( options.getDouble("optca") > 0 || options.getDouble("optcr") > 0 )
+			if( optca > 0.0 || optcr > 0.0 )
 			{
 				gmoModelStatSet(gmo, gmoModelStat_Integer);
 				gevLogStat(gev, "Solved to optimality (within gap tolerances optca and optcr).");
@@ -1346,7 +1351,7 @@ bool GamsCbc::writeSolution(
 	}
 
 	gmoSetHeadnTail(gmo, gmoHiterused, model->getIterationCount());
-	gmoSetHeadnTail(gmo, gmoHresused,  multithread ? walltime : cputime);
+	gmoSetHeadnTail(gmo, gmoHresused,  nthreads > 1 ? walltime : cputime);
 	gmoSetHeadnTail(gmo, gmoTmipbest,  model->getBestPossibleObjValue());
 	gmoSetHeadnTail(gmo, gmoTmipnod,   model->getNodeCount());
 
@@ -1358,7 +1363,7 @@ bool GamsCbc::writeSolution(
 	   char buffer[255];
 		if( model->bestSolution() )
 		{
-			if( multithread )
+			if( nthreads > 1 )
 				snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %.2f CPU seconds, %.2f wall clock seconds)", model->getObjValue(), model->getNodeCount(), cputime, walltime);
 			else
 				snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %g seconds)", model->getObjValue(), model->getNodeCount(), cputime);
@@ -1368,9 +1373,9 @@ bool GamsCbc::writeSolution(
 		gevLogStat(gev, buffer);
 		if( model->bestSolution() )
 		{
-			snprintf(buffer, 255, "Absolute gap: %15.6e   (absolute tolerance optca: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()), options.getDouble("optca"));
+			snprintf(buffer, 255, "Absolute gap: %15.6e   (absolute tolerance optca: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()), optca);
 			gevLogStat(gev, buffer);
-			snprintf(buffer, 255, "Relative gap: %14.6f%%   (relative tolerance optcr: %g%%)", 100* CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()) / CoinMax(CoinAbs(model->getBestPossibleObjValue()), 1.), 100*options.getDouble("optcr"));
+			snprintf(buffer, 255, "Relative gap: %14.6f%%   (relative tolerance optcr: %g%%)", 100* CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()) / CoinMax(CoinAbs(model->getBestPossibleObjValue()), 1.), 100*optcr);
 			gevLogStat(gev, buffer);
 		}
 	}
@@ -1393,52 +1398,6 @@ bool GamsCbc::isLP()
    return true;
 }
 
-DllExport GamsCbc* STDCALL createNewGamsCbc()
-{
-	return new GamsCbc();
-}
-
-DllExport int STDCALL cbcCallSolver(cbcRec_t *Cptr)
-{
-	assert(Cptr != NULL);
-	return ((GamsCbc*)Cptr)->callSolver();
-}
-
-DllExport int STDCALL cbcModifyProblem(cbcRec_t *Cptr)
-{
-	assert(Cptr != NULL);
-	return ((GamsCbc*)Cptr)->modifyProblem();
-}
-
-DllExport int STDCALL cbcHaveModifyProblem(cbcRec_t *Cptr)
-{
-	assert(Cptr != NULL);
-	return ((GamsCbc*)Cptr)->haveModifyProblem();
-}
-
-DllExport int STDCALL cbcReadyAPI(cbcRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr)
-{
-	assert(Cptr != NULL);
-	assert(Gptr != NULL);
-	char msg[256];
-	if( !gmoGetReady(msg, sizeof(msg)) )
-		return 1;
-	if( !gevGetReady(msg, sizeof(msg)) )
-		return 1;
-	return ((GamsCbc*)Cptr)->readyAPI(Gptr, Optr);
-}
-
-DllExport void STDCALL cbcFree(cbcRec_t **Cptr)
-{
-	assert(Cptr != NULL);
-	delete (GamsCbc*)*Cptr;
-	*Cptr = NULL;
-}
-
-DllExport void STDCALL cbcCreate(cbcRec_t **Cptr, char *msgBuf, int msgBufLen)
-{
-	assert(Cptr != NULL);
-	*Cptr = (cbcRec_t*) new GamsCbc();
-	if( msgBufLen && msgBuf )
-		msgBuf[0] = 0;
-}
+#define GAMSSOLVERC_ID         cbc
+#define GAMSSOLVERC_CLASS      GamsCbc
+#include "GamsSolverC_tpl.cpp"

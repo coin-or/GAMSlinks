@@ -55,9 +55,8 @@ build_triplet = @build@
 host_triplet = @host@
 @COIN_HAS_OSI_TRUE@am__append_1 = GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp 
 @COIN_HAS_OSIGLPK_TRUE@am__append_2 = optmyglpk.def
-
-#  libGamsCoin_la_SOURCES += GamsCbc.cpp
-@COIN_HAS_CBC_TRUE@am__append_3 = optmycbc.def
+@COIN_HAS_CBC_TRUE@am__append_3 = GamsCbc.cpp
+@COIN_HAS_CBC_TRUE@am__append_4 = optmycbc.def
 
 #  libGamsCoin_la_SOURCES += GamsIpopt.cpp GamsNLP.cpp GamsJournal.cpp
 
@@ -68,11 +67,11 @@ host_triplet = @host@
 #  libGamsCoin_la_SOURCES += GamsCouenne.cpp
 
 #  libGamsCoin_la_SOURCES += GamsOS.cpp GamsOSxL.cpp
-@COIN_HAS_OS_TRUE@am__append_4 = optmyos.def
+@COIN_HAS_OS_TRUE@am__append_5 = optmyos.def
 DIST_COMMON = $(srcdir)/../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
-@HAVE_EXTERNALS_TRUE@am__append_5 = Dependencies
-@HAVE_EXTERNALS_TRUE@am__append_6 = .Dependencies-stamp
+@HAVE_EXTERNALS_TRUE@am__append_6 = Dependencies
+@HAVE_EXTERNALS_TRUE@am__append_7 = .Dependencies-stamp
 subdir = src/SolverInterfaces
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
@@ -94,10 +93,13 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp \
-	GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp
+	GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp \
+	GamsCbc.cpp
 @COIN_HAS_OSI_TRUE@am__objects_1 = GamsMessageHandler.lo \
 @COIN_HAS_OSI_TRUE@	GamsOsiHelper.lo GamsOsi.lo
-am_libGamsCoin_la_OBJECTS = GamsSolver.lo $(am__objects_1)
+@COIN_HAS_CBC_TRUE@am__objects_2 = GamsCbc.lo
+am_libGamsCoin_la_OBJECTS = GamsSolver.lo $(am__objects_1) \
+	$(am__objects_2)
 libGamsCoin_la_OBJECTS = $(am_libGamsCoin_la_OBJECTS)
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 SCRIPTS = $(bin_SCRIPTS)
@@ -391,8 +393,8 @@ sol_cc_compiler = @sol_cc_compiler@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = $(am__append_5)
-DISTCLEANFILES = $(am__append_6) $(VPATH_DISTCLEANFILES)
+EXTRA_DIST = $(am__append_6)
+DISTCLEANFILES = $(am__append_7) $(VPATH_DISTCLEANFILES)
 AM_CPPFLAGS = $(GAMSSOLVERLIB_CFLAGS) \
   -I`$(CYGPATH_W) $(srcdir)/..` \
   -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` \
@@ -401,11 +403,12 @@ AM_CPPFLAGS = $(GAMSSOLVERLIB_CFLAGS) \
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 lib_LTLIBRARIES = libGamsCoin.la
-libGamsCoin_la_SOURCES = GamsSolver.cpp $(am__append_1)
+libGamsCoin_la_SOURCES = GamsSolver.cpp $(am__append_1) \
+	$(am__append_3)
 libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_LIBS)
 libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_DEPENDENCIES)
 libGamsCoin_la_LDFLAGS = -module -no-undefined
-bin_SCRIPTS = $(am__append_2) $(am__append_3) $(am__append_4)
+bin_SCRIPTS = $(am__append_2) $(am__append_4) $(am__append_5)
 @COIN_IS_WINDOWS_FALSE@SCRIPTSUFFIX = us.run
 @COIN_IS_WINDOWS_TRUE@SCRIPTSUFFIX = nt.cmd
 DocFiles = README AUTHORS LICENSE
@@ -498,6 +501,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCbc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@

@@ -27,18 +27,21 @@ private:
 	int                   cbc_argc;           /**< number of parameters to pass to CBC */
 	char**                cbc_args;           /**< parameters to pass to CBC */
 
+	double                optcr;              /**< relative optimality tolerance */
+	double                optca;              /**< absolute optimality tolerance */
+	bool                  mipstart;           /**< whether to pass primal solution to MIP solve */
+	int                   nthreads;           /**< number of threads to use */
+	char*                 writemps;           /**< name of mps file to write instance to */
+
 	bool setupProblem();
-	bool setupStartingPoint(
-	   bool               mipstart            /**< should an initial primal solution been setup? */
-	);
-	bool setupParameters(
-	   bool&              mipstart,           /**< variable where to store whether the mipstart option has been set */
-      bool&              multithread         /**< variable where to store whether multiple threads should be used */
-	);
+
+	bool setupStartingPoint();
+
+	bool setupParameters();
+
    bool writeSolution(
       double             cputime,            /**< CPU time spend by solver */
-      double             walltime,           /**< wallclock time spend by solver */
-      bool               multithread         /**< did we solve the MIP in multithread mode */
+      double             walltime            /**< wallclock time spend by solver */
    );
 
 	bool isLP();
@@ -51,7 +54,12 @@ public:
 	  msghandler(NULL),
 	  model(NULL),
 	  cbc_argc(0),
-	  cbc_args(NULL)
+	  cbc_args(NULL),
+	  optcr(0.0),
+	  optca(0.0),
+	  mipstart(false),
+	  nthreads(1),
+	  writemps(NULL)
 	{ }
 
 	~GamsCbc();
@@ -63,7 +71,5 @@ public:
 
 	int callSolver();
 };
-
-extern "C" DllExport GamsCbc* STDCALL createNewGamsCbc();
 
 #endif /*GAMSCBC_HPP_*/

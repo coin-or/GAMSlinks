@@ -39,7 +39,7 @@ if COIN_HAS_OSIGLPK
 endif
 
 if COIN_HAS_CBC
-#  libGamsCoin_la_SOURCES += GamsCbc.cpp
+  libGamsCoin_la_SOURCES += GamsCbc.cpp
   bin_SCRIPTS += optmycbc.def
 endif
 
