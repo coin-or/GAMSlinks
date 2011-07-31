@@ -49,7 +49,8 @@ if COIN_HAS_CBC
 endif
 
 if COIN_HAS_IPOPT
-  libGamsCoin_la_SOURCES += GamsJournal.cpp GamsNLP.cpp #GamsIpopt.cpp 
+  libGamsCoin_la_SOURCES += GamsJournal.cpp GamsNLP.cpp GamsIpopt.cpp 
+  includecoin_HEADERS    += GamsJournal.hpp GamsNLP.hpp GamsIpopt.hpp
 endif
 
 if COIN_HAS_SCIP

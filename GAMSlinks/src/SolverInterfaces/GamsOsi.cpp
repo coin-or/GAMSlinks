@@ -230,8 +230,8 @@ int GamsOsi::readyAPI(
             OsiCpxSolverInterface* osicpx;
             if( !registerGamsCplexLicense(gmo) )
             {
-               gmoSolveStatSet(gmo, SolveStat_License);
-               gmoModelStatSet(gmo, ModelStat_LicenseError);
+               gmoSolveStatSet(gmo, gmoSolveStat_License);
+               gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
             }
             osicpx = new OsiCpxSolverInterface;
@@ -344,8 +344,8 @@ int GamsOsi::readyAPI(
             if( !osixpr->getNumInstances() )
             {
                gevLogStat(gev, "Failed to setup XPRESS instance. Maybe you do not have a license?\n");
-               gmoSolveStatSet(gmo, SolveStat_License);
-               gmoModelStatSet(gmo, ModelStat_LicenseError);
+               gmoSolveStatSet(gmo, gmoSolveStat_License);
+               gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
             }
             osi = osixpr;
@@ -1325,7 +1325,7 @@ bool GamsOsi::writeSolution(
          {
             case GRB_OPTIMAL:
                assert(nrsol);
-               gmoSolveStatSet(gmo, SolveStat_Normal);
+               gmoSolveStatSet(gmo, gmoSolveStat_Normal);
                if( isLP() ||
                   fabs(objest - osi->getObjValue()) < 1e-9 ||
                   fabs(objest - osi->getObjValue())/(fabs(osi->getObjValue()) + 1.0e-10) < 1e-9 )
@@ -1391,7 +1391,7 @@ bool GamsOsi::writeSolution(
                break;
 
             case GRB_TIME_LIMIT:
-               gmoSolveStatSet(gmo, SolveStat_Resource);
+               gmoSolveStatSet(gmo, gmoSolveStat_Resource);
                if( nrsol )
                {
                   gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
@@ -1405,7 +1405,7 @@ bool GamsOsi::writeSolution(
                break;
 
             case GRB_SOLUTION_LIMIT:
-               gmoSolveStatSet(gmo, SolveStat_Solver);
+               gmoSolveStatSet(gmo, gmoSolveStat_Solver);
                if( nrsol )
                {
                   gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
@@ -1419,7 +1419,7 @@ bool GamsOsi::writeSolution(
                break;
 
             case GRB_INTERRUPTED:
-               gmoSolveStatSet(gmo, SolveStat_User);
+               gmoSolveStatSet(gmo, gmoSolveStat_User);
                if( nrsol )
                {
                   gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
@@ -1433,7 +1433,7 @@ bool GamsOsi::writeSolution(
                break;
 
             case GRB_NUMERIC:
-               gmoSolveStatSet(gmo, SolveStat_Solver);
+               gmoSolveStatSet(gmo, gmoSolveStat_Solver);
                if( nrsol )
                {
                   gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
@@ -1447,7 +1447,7 @@ bool GamsOsi::writeSolution(
                break;
 
             case GRB_SUBOPTIMAL:
-               gmoSolveStatSet(gmo, SolveStat_Solver);
+               gmoSolveStatSet(gmo, gmoSolveStat_Solver);
                if( nrsol )
                {
                   gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
@@ -1800,7 +1800,7 @@ bool GamsOsi::writeSolution(
                break;
 
             default:
-               gmoSolveStatSet(gmo, SolveStat_SystemErr);
+               gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
                gevLogStat(gev, "Unknown stop status.");
                break;
          }
