@@ -31,8 +31,8 @@ AC_SUBST(GAMS_PATH)
 
 GAMS_VERSION_DEFAULT="23.7" 
 if test "$GAMS_PATH" = UNAVAILABLE; then
-  AC_MSG_NOTICE([no GAMS system found, tests will not work, assuming build for GAMS version $GAMS_VERSION])
   GAMS_VERSION="$GAMS_VERSION_DEFAULT" 
+  AC_MSG_NOTICE([no GAMS system found, tests will not work, assuming build for GAMS version $GAMS_VERSION])
 else
   AC_MSG_CHECKING([for gams version number])
   GAMS_VERSION=""
