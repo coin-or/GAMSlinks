@@ -126,7 +126,7 @@ int GamsIpopt::callSolver()
    {
       int do2dir = 1;
       int dohess = 1;
-      gmoHessLoad(gmo, 0, &do2dir, &dohess); // TODO make "0" a parameter (like rvhess in CONOPT)
+      gmoHessLoad(gmo, 0, &do2dir, &dohess);
       if( !dohess )
       {
          gevLogStat(gev, "Failed to initialize Hessian structure. We continue with a limited-memory Hessian approximation!");
@@ -144,7 +144,6 @@ int GamsIpopt::callSolver()
    ApplicationReturnStatus status;
    try
    {
-      // TODO reoptimize if problem is just modified
       status = ipopt->OptimizeTNLP(nlp);
    }
    catch( IpoptException& e )
