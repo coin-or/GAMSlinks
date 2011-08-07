@@ -49,7 +49,7 @@ public:
    ~GamsNLP();
 
    /** resets counter on function/gradient/hessian evaluations */
-   virtual void reset_eval_counter();
+   void reset_eval_counter();
 
    /** gives number of objective function evaluations */
    long get_numeval_obj()      const { return nevalobj; }

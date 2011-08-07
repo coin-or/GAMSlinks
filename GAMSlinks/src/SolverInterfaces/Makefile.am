@@ -58,7 +58,7 @@ if COIN_HAS_SCIP
 endif
 
 if COIN_HAS_BONMIN
-#  libGamsCoin_la_SOURCES += GamsBonmin.cpp GamsMINLP.cpp
+  libGamsCoin_la_SOURCES += GamsMINLP.cpp GamsBonmin.cpp
 endif
 
 if COIN_HAS_COUENNE
