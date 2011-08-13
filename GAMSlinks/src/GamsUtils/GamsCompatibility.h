@@ -12,6 +12,11 @@
 #error "gmomcc.h need to be included before this file to have GMOAPIVERSION defined"
 #endif
 
+#if GMOAPIVERSION >= 10
+#define gmoMaxSingleFNL gmoNLCodeSizeMaxRow
+#define gmoMaxQnz       gmoMaxQNZ
+#endif
+
 #if GMOAPIVERSION > 8
 #define gmoWantQSet gmoUseQSet
 #define gmoEvalObjFunc gmoEvalFuncObj
