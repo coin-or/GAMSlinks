@@ -86,12 +86,6 @@ int GamsSolver::getGevReady()
    return 0;
 }
 
-GamsSolver::~GamsSolver()
-{
-   gmoLibraryUnload();
-   gevLibraryUnload();
-}
-
 bool GamsSolver::checkLicense(
    struct gmoRec*     gmo                 /**< GAMS modeling object */
 )

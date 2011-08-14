@@ -37,13 +37,13 @@ DllExport void STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,XFree)(void** Cptr)
    assert(Cptr != NULL);
    delete (GAMSSOLVERC_CLASS*)*Cptr;
    *Cptr = NULL;
+   gmoLibraryUnload();
+   gevLibraryUnload();
 }
 
 DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,free)(void** Cptr)
 {
-   assert(Cptr != NULL);
-   delete (GAMSSOLVERC_CLASS*)*Cptr;
-   *Cptr = NULL;
+   GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,XFree)(Cptr);
    return 1;
 }
 

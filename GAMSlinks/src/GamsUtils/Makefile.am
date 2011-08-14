@@ -26,5 +26,3 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 
 # Files that are generated and should be cleaned with make distclean
 DISTCLEANFILES =
-
-include ../../BuildTools/Makemain.inc

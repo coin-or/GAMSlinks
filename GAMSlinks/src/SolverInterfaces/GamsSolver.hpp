@@ -31,9 +31,6 @@ public:
     */
    static int getGevReady();
 
-   /** may unload GEV and GMO libraries */
-   virtual ~GamsSolver();
-
    /** calls GAMS license check, if build by GAMS
     * @return True if license check was skipped or successful
     */

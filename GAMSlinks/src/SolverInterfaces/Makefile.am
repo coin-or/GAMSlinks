@@ -9,7 +9,7 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST     =
 DISTCLEANFILES =
 
-AM_CPPFLAGS = $(GAMSSOLVERLIB_CFLAGS) \
+AM_CPPFLAGS = \
   -I`$(CYGPATH_W) $(srcdir)/..` \
   -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` \
   -I`$(CYGPATH_W) $(srcdir)/../GamsUtils/$(GAMS_VERSION)` \
@@ -69,5 +69,3 @@ if COIN_HAS_OS
 #  libGamsCoin_la_SOURCES += GamsOS.cpp GamsOSxL.cpp
   bin_SCRIPTS += optmyos.def
 endif
-
-include ../../BuildTools/Makemain.inc
