@@ -35,8 +35,7 @@ int GamsIpopt::readyAPI(
    gmo = gmo_;
    assert(gmo != NULL);
 
-   /* free a previous NLP and Ipopt instance, if existing */
-   nlp   = NULL;
+   /* free a previous Ipopt instance, if existing */
    ipopt = NULL;
 
    if( getGmoReady() || getGevReady() )
@@ -67,10 +66,7 @@ int GamsIpopt::readyAPI(
    ipopt->RegOptions()->AddStringOption2("print_eval_error",
       "whether to print information about function evaluation errors into the listing file",
       "no",
-      "no", "",
-      "yes", "",
-      ""
-   );
+      "no", "", "yes", "");
 
    return 0;
 }
@@ -85,6 +81,7 @@ int GamsIpopt::callSolver()
    gmoObjReformSet(gmo, 1);
    gmoIndexBaseSet(gmo, 0);
 
+   // change some option defaults
    ipopt->Options()->clear();
    ipopt->Options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
    ipopt->Options()->SetIntegerValue("max_iter", gevGetIntOpt(gev, gevIterLim), true, true);
@@ -96,6 +93,7 @@ int GamsIpopt::callSolver()
    if( gmoSense(gmo) == gmoObj_Max )
       ipopt->Options()->SetNumericValue("obj_scaling_factor", -1.0, true, true);
 
+   // read user options, if given
    if( gmoOptFile(gmo) > 0 )
    {
       char buffer[GMS_SSSIZE];
@@ -106,20 +104,20 @@ int GamsIpopt::callSolver()
    else
       ipopt->Initialize("");
 
+   // process options and setup NLP
    double ipoptinf;
    ipopt->Options()->GetNumericValue("nlp_lower_bound_inf", ipoptinf, "");
    gmoMinfSet(gmo, ipoptinf);
    ipopt->Options()->GetNumericValue("nlp_upper_bound_inf", ipoptinf, "");
    gmoPinfSet(gmo, ipoptinf);
 
-   SmartPtr<GamsNLP> nlp_ = new GamsNLP(gmo);
-   nlp = GetRawPtr(nlp_);
-
-   ipopt->Options()->GetNumericValue("diverging_iterates_tol", nlp_->div_iter_tol, "");
+   SmartPtr<GamsNLP> nlp = new GamsNLP(gmo);
+   ipopt->Options()->GetNumericValue("diverging_iterates_tol", nlp->div_iter_tol, "");
    // or should we also check the tolerance for acceptable points?
-   ipopt->Options()->GetNumericValue("tol", nlp_->scaled_conviol_tol, "");
-   ipopt->Options()->GetNumericValue("constr_viol_tol", nlp_->unscaled_conviol_tol, "");
+   ipopt->Options()->GetNumericValue("tol", nlp->scaled_conviol_tol, "");
+   ipopt->Options()->GetNumericValue("constr_viol_tol", nlp->unscaled_conviol_tol, "");
 
+   // initialize GMO hessian, if required
    std::string hess_approx;
    ipopt->Options()->GetStringValue("hessian_approximation", hess_approx, "");
    if( hess_approx == "exact" )
@@ -134,17 +132,18 @@ int GamsIpopt::callSolver()
       }
    }
 
-   std::string printevalerror;
-   ipopt->Options()->GetStringValue("print_eval_error", printevalerror, "");
-   gmoEvalErrorNoMsg(gmo, printevalerror == "no");
+   bool printevalerror;
+   ipopt->Options()->GetBoolValue("print_eval_error", printevalerror, "");
+   gmoEvalErrorNoMsg(gmo, printevalerror);
 
    setNumThreadsBlas(gev, gevThreads(gev));
 
-   nlp_->clockStart = gevTimeDiffStart(gev);
+   // solve NLP
+   nlp->clockStart = gevTimeDiffStart(gev);
    ApplicationReturnStatus status;
    try
    {
-      status = ipopt->OptimizeTNLP(nlp);
+      status = ipopt->OptimizeTNLP(GetRawPtr(nlp));
    }
    catch( IpoptException& e )
    {
@@ -152,6 +151,7 @@ int GamsIpopt::callSolver()
       gevLogStat(gev, e.Message().c_str());
    }
 
+   // process solution status
    switch( status )
    {
       case Solve_Succeeded:

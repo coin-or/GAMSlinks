@@ -85,16 +85,20 @@ int GamsBonmin::readyAPI(
    bonmin_setup->roptions()->AddStringOption2("print_funceval_statistics",
       "whether to print statistics on number of evaluations of GAMS functions/gradients/Hessian",
       "no",
-      "no", "", "yes", "", "");
+      "no", "", "yes", "");
 
    bonmin_setup->roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
    bonmin_setup->roptions()->AddStringOption2("print_eval_error",
       "whether to print information about function evaluation errors into the listing file",
       "no",
-      "no", "",
-      "yes", "",
-      ""
-   );
+      "no", "", "yes", "");
+
+   bonmin_setup->roptions()->SetRegisteringCategory("NLP interface", Bonmin::RegisteredOptions::BonminCategory);
+   bonmin_setup->roptions()->AddStringOption2("solvefinal",
+      "whether to solve MINLP with discrete variables fixed to solution values after solve",
+      "yes",
+      "no", "", "yes", "",
+      "If enabled, then the dual values from the resolved NLP are made available in GAMS.");
 
    return 0;
 }
@@ -146,6 +150,7 @@ int GamsBonmin::callSolver()
    }
 
    // Change some options
+   bonmin_setup->options()->clear();
    bonmin_setup->options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
    bonmin_setup->options()->SetIntegerValue("bonmin.nlp_log_at_root", Ipopt::J_ITERSUMMARY, true, true);
    if( gevGetIntOpt(gev, gevUseCutOff) )
@@ -161,6 +166,7 @@ int GamsBonmin::callSolver()
    if( gmoNLM(gmo) == 0 && (gmoModelType(gmo) == gmoProc_qcp || gmoModelType(gmo) == gmoProc_rmiqcp || gmoModelType(gmo) == gmoProc_miqcp) )
       bonmin_setup->options()->SetStringValue("hessian_constant", "yes", true, true);
 
+   // process options file
    try
    {
       if( gmoOptFile(gmo) )
@@ -192,6 +198,7 @@ int GamsBonmin::callSolver()
       return -1;
    }
 
+   // check for GAMS/CPLEX license, if required
    std::string parvalue;
 #ifdef COIN_HAS_OSICPX
    std::string prefixes[7] = { "", "bonmin", "oa_decomposition.", "pump_for_minlp.", "rins.", "rens.", "local_branch." };
@@ -212,13 +219,11 @@ int GamsBonmin::callSolver()
    bonmin_setup->options()->GetNumericValue("nlp_upper_bound_inf", ipoptinf, "");
    gmoPinfSet(gmo, ipoptinf);
 
+   // setup MINLP
    SmartPtr<GamsMINLP> minlp = new GamsMINLP(gmo);
-
    bonmin_setup->options()->GetNumericValue("diverging_iterates_tol", minlp->nlp->div_iter_tol, "");
-   //	// or should we also check the tolerance for acceptable points?
-   //	bonmin_setup.options()->GetNumericValue("tol", mysmagminlp->scaled_conviol_tol, "");
-   //	bonmin_setup.options()->GetNumericValue("constr_viol_tol", mysmagminlp->unscaled_conviol_tol, "");
 
+   // initialize Hessian in GMO, if required
    bool hessian_is_approx = false;
    bonmin_setup->options()->GetStringValue("hessian_approximation", parvalue, "");
    if( parvalue == "exact" )
@@ -247,20 +252,21 @@ int GamsBonmin::callSolver()
       }
    }
 
-   std::string printevalerror;
-   bonmin_setup->options()->GetStringValue("print_eval_error", printevalerror, "");
-   gmoEvalErrorNoMsg(gmo, printevalerror == "no");
+   bool printevalerror;
+   bonmin_setup->options()->GetBoolValue("print_eval_error", printevalerror, "");
+   gmoEvalErrorNoMsg(gmo, printevalerror);
 
-   if( msghandler != NULL )
+   if( msghandler == NULL )
       msghandler = new GamsMessageHandler(gev);
 
+   // initialize Bonmin for current MINLP and options
    // the easiest would be to call bonmin_setup.initializeBonmin(minlp), but then we cannot set the message handler
    // so we do the following
    try
    {
       OsiTMINLPInterface first_osi_tminlp;
-      first_osi_tminlp.initialize(bonmin_setup->roptions(), bonmin_setup->options(), bonmin_setup->journalist(), GetRawPtr(minlp));
       first_osi_tminlp.passInMessageHandler(msghandler);
+      first_osi_tminlp.initialize(bonmin_setup->roptions(), bonmin_setup->options(), bonmin_setup->journalist(), GetRawPtr(minlp));
       // double* sol = new double[gmoN(gmo)];
       // gmoGetVarL(gmo, sol);
       // first_osi_tminlp.activateRowCutDebugger(sol);
@@ -272,7 +278,7 @@ int GamsBonmin::callSolver()
       char buf[1024];
       snprintf(buf, 1024, "%s::%s\n%s\n", error.className().c_str(), error.methodName().c_str(), error.message().c_str());
       gevLogStatPChar(gev, buf);
-      return 1;
+      return 0;
    }
    catch( std::bad_alloc )
    {
@@ -287,7 +293,7 @@ int GamsBonmin::callSolver()
 
    setNumThreadsBlas(gev, gevThreads(gev));
 
-
+   // try solving
    try
    {
       Bab bb;
@@ -306,7 +312,7 @@ int GamsBonmin::callSolver()
       gmoModelStatSet(gmo, minlp->model_status);
       gmoSolveStatSet(gmo, minlp->solver_status);
 
-      /* store primal solution in gmo */
+      // store primal solution in gmo
       if( bb.bestSolution() != NULL )
       {
          char buf[100];
@@ -327,8 +333,9 @@ int GamsBonmin::callSolver()
          gevLogStat(gev, "\nBonmin finished. No feasible point found.");
       }
 
-      int printnevals;
-      bonmin_setup->options()->GetEnumValue("print_funceval_statistics", printnevals, "bonmin.");
+      // print eval statistics, if requested
+      bool printnevals;
+      bonmin_setup->options()->GetBoolValue("print_funceval_statistics", printnevals, "bonmin.");
       if( printnevals )
       {
          char buffer[100];
@@ -344,19 +351,23 @@ int GamsBonmin::callSolver()
          gevLog(gev, "");
       }
 
-      /* resolve MINLP with discrete variables fixed */
-      if( bb.bestSolution() != NULL && gmoNDisc(gmo) < gmoN(gmo) )
+      // resolve MINLP with discrete variables fixed
+      bool solvefinal;
+      bonmin_setup->options()->GetBoolValue("solvefinal", solvefinal, "bonmin.");
+      if( solvefinal && bb.bestSolution() != NULL && gmoNDisc(gmo) < gmoN(gmo) )
       {
+         gevLog(gev, "Resolve with fixed discrete variables to get dual values.");
+
          OsiTMINLPInterface& osi_tminlp(*bonmin_setup->nonlinearSolver());
          for( Index i = 0; i < gmoN(gmo); ++i )
             if( gmoGetVarTypeOne(gmo, i) != gmovar_X )
                osi_tminlp.setColBounds(i, bb.bestSolution()[i], bb.bestSolution()[i]);
          osi_tminlp.setColSolution(bb.bestSolution());
 
-         gevLog(gev, "Resolve with fixed discrete variables to get dual values.");
          bool error_in_fixedsolve = false;
          try
          {
+            bonmin_setup->options()->SetStringValue("print_user_options", "no", true, true);
             osi_tminlp.initialSolve();
             error_in_fixedsolve = !osi_tminlp.isProvenOptimal();
          }
@@ -413,6 +424,7 @@ int GamsBonmin::callSolver()
          }
       }
 
+      // print solving outcome (primal/dual bounds, gap)
       gevLogStat(gev, "");
       char buf[1024];
       double best_val = gmoGetHeadnTail(gmo, gmoHobjval);
@@ -447,7 +459,7 @@ int GamsBonmin::callSolver()
       gevLogStat(gev, buf);
       gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
       gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
-      return 1;
+      return 0;
    }
    catch( TNLPSolver::UnsolvedError* E)
    {
@@ -457,7 +469,7 @@ int GamsBonmin::callSolver()
       gevLogStat(gev, buf);
       gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
       gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
-      return 1;
+      return 0;
    }
    catch( std::bad_alloc )
    {
@@ -503,7 +515,7 @@ bool GamsBonmin::isNLP()
 
 bool GamsBonmin::isMIP()
 {
-   return gmoNLNZ(gmo) == 0 && gmoObjNLNZ(gmo) == 0;
+   return gmoNLNZ(gmo) == 0 && (gmoObjStyle(gmo) == gmoObjType_Var || gmoObjNLNZ(gmo) == 0);
 }
 
 #define GAMSSOLVERC_ID         bon

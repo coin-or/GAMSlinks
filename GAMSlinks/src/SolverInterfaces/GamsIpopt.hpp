@@ -19,7 +19,6 @@ private:
    struct gevRec*         gev;                /**< GAMS environment */
 
    Ipopt::SmartPtr<Ipopt::IpoptApplication> ipopt;
-   Ipopt::SmartPtr<Ipopt::TNLP>             nlp;
 
 public:
    GamsIpopt()
