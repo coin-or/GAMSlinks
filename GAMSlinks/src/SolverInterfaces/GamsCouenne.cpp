@@ -7,1669 +7,1239 @@
 // Author: Stefan Vigerske
 
 #include "GamsCouenne.hpp"
-#include "GamsCouenne.h"
-
-#ifdef HAVE_CSTDIO
-#include <cstdio>
-#else
-#ifdef HAVE_STDIO_H
-#include <stdio.h>
-#else
-#error "don't have header file for stdio"
-#endif
-#endif
-
-#ifdef HAVE_CSTRING
-#include <cstring>
-#else
-#ifdef HAVE_STRING_H
-#include <string.h>
-#else
-#error "don't have header file for string"
-#endif
-#endif
-
-// GAMS
-#include "gmomcc.h"
-#include "gevmcc.h"
-#ifdef GAMS_BUILD
-#include "gmspal.h"  /* for audit line */
-#endif
-
-#include "GamsCompatibility.h"
 #include "GamsMINLP.hpp"
 #include "GamsJournal.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsNLinstr.h"
 #include "GamsCbc.hpp"
+#include "GAMSlinksConfig.h"
+
+#include <cstdio>
+#include <cstring>
+#include <list>
+
+// GAMS
+#include "gmomcc.h"
+#include "gevmcc.h"
+#include "gclgms.h"
+#ifdef GAMS_BUILD
+#include "gmspal.h"  /* for audit line */
+#endif
+
+#include "GamsCompatibility.h"
 
 #include "BonCbc.hpp"
 #include "BonCouenneSetup.hpp"
 #include "BonCouenneInterface.hpp"
 #include "CouenneProblem.hpp"
 #include "CouenneTypes.hpp"
-#include "exprClone.hpp"
-#include "exprGroup.hpp"
-#include "exprAbs.hpp"
-#include "exprConst.hpp"
-#include "exprCos.hpp"
-#include "exprDiv.hpp"
-#include "exprExp.hpp"
-#include "exprInv.hpp"
-#include "exprLog.hpp"
-#include "exprMax.hpp"
-#include "exprMin.hpp"
-#include "exprMul.hpp"
-#include "exprOpp.hpp"
-#include "exprPow.hpp"
-#include "exprSin.hpp"
-#include "exprSub.hpp"
-#include "exprSum.hpp"
-#include "exprVar.hpp"
+#include "CouenneExprClone.hpp"
+#include "CouenneExprGroup.hpp"
+#include "CouenneExprAbs.hpp"
+#include "CouenneExprConst.hpp"
+#include "CouenneExprCos.hpp"
+#include "CouenneExprDiv.hpp"
+#include "CouenneExprExp.hpp"
+#include "CouenneExprInv.hpp"
+#include "CouenneExprLog.hpp"
+#include "CouenneExprMax.hpp"
+#include "CouenneExprMin.hpp"
+#include "CouenneExprMul.hpp"
+#include "CouenneExprOpp.hpp"
+#include "CouenneExprPow.hpp"
+#include "CouenneExprSin.hpp"
+#include "CouenneExprSub.hpp"
+#include "CouenneExprSum.hpp"
+#include "CouenneExprVar.hpp"
 //#include "exprQuad.hpp"
 //#include "lqelems.hpp"
 
-// to be sure to get (or not get) HAVE_M??? and HAVE_PARDISO defined
-#include "IpoptConfig.h"
-
-extern "C" {
-#ifndef HAVE_MA27
-#define HAVE_HSL_LOADER
-#else
-# ifndef HAVE_MA28
-# define HAVE_HSL_LOADER
-# else
-#  ifndef HAVE_MA57
-#  define HAVE_HSL_LOADER
-#  else
-#   ifndef HAVE_MC19
-#   define HAVE_HSL_LOADER
-#   endif
-#  endif
-# endif
-#endif
-#ifdef HAVE_HSL_LOADER
-#include "HSLLoader.h"
-#endif
-#ifndef HAVE_PARDISO
-#include "PardisoLoader.h"
-#endif
-}
-
+using namespace Couenne;
 using namespace Bonmin;
 using namespace Ipopt;
-using namespace std;
 
-GamsCouenne::GamsCouenne()
-: gmo(NULL), gev(NULL), gamscbc(NULL)
+GamsCouenne::~GamsCouenne()
 {
-	strcpy(couenne_message, "COIN-OR Couenne (Couenne Library 0.3)\nwritten by P. Belotti\n");
+   delete couenne_setup;
+   delete msghandler;
 }
 
-GamsCouenne::~GamsCouenne() {
-	delete gamscbc;
-}
+int GamsCouenne::readyAPI(
+   struct gmoRec*     gmo,                /**< GAMS modeling object */
+   struct optRec*     opt                 /**< GAMS options object */
+)
+{
+   this->gmo = gmo;
+   assert(gmo != NULL);
 
-int GamsCouenne::readyAPI(struct gmoRec* gmo_, struct optRec* opt) {
-	gmo = gmo_;
-	assert(gmo);
-	
-	minlp = NULL;
-	delete gamscbc;
+   if( getGmoReady() || getGevReady() )
+      return 1;
 
-	if (getGmoReady())
-		return 1;
-
-	if (getGevReady())
-		return 1;
-	gev = (gevRec*)gmoEnvironment(gmo);
+   gev = (gevRec*)gmoEnvironment(gmo);
+   assert(gev != NULL);
 
 #ifdef GAMS_BUILD
-	char buffer[256];
+   char buffer[256];
 #include "coinlibdCL2svn.h"
-	auditGetLine(buffer, sizeof(buffer));
-	gevLogStat(gev, "");
-	gevLogStat(gev, buffer);
-	gevStatAudit(gev, buffer);
+   auditGetLine(buffer, sizeof(buffer));
+   gevLogStat(gev, "");
+   gevLogStat(gev, buffer);
+   gevStatAudit(gev, buffer);
 #endif
 
-	gevLogStat(gev, "");
-	gevLogStatPChar(gev, getWelcomeMessage());
+   gevLogStatPChar(gev, "\nCOIN-OR Couenne (Couenne Library "COUENNE_VERSION")\nwritten by P. Belotti\n\n");
 
-	gmoObjStyleSet(gmo, ObjType_Fun);
-	gmoObjReformSet(gmo, 1);
- 	gmoIndexBaseSet(gmo, 0);
+   delete couenne_setup;
+   couenne_setup = new CouenneSetup();
 
- 	if (isMIP()) {
- 		gevLogStat(gev, "Problem is linear. Passing over to Cbc.");
- 		gamscbc = new GamsCbc();
- 		return gamscbc->readyAPI(gmo, opt);
- 	}
+   SmartPtr<Journalist> jnlst = new Journalist();
+   SmartPtr<Journal> jrnl = new GamsJournal(gev, "console", J_ITERSUMMARY, J_STRONGWARNING);
+   jrnl->SetPrintLevel(J_DBG, J_NONE);
+   if( !jnlst->AddJournal(jrnl) )
+      gevLogStat(gev, "Failed to register GamsJournal for IPOPT output.");
 
- 	if (!gmoN(gmo)) {
- 		gevLogStat(gev, "Error: Bonmin requires variables.");
- 		return 1;
- 	}
+   SmartPtr<Bonmin::RegisteredOptions> roptions = new Bonmin::RegisteredOptions();
+   SmartPtr<Ipopt::OptionsList> options = new Ipopt::OptionsList(GetRawPtr(roptions), jnlst);
 
-  if (gmoGetVarTypeCnt(gmo, var_SC) || gmoGetVarTypeCnt(gmo, var_SI)) {
-    gevLogStat(gev, "ERROR: Semicontinuous and semiinteger variables not supported by Couenne.\n");
-    gmoSolveStatSet(gmo, SolveStat_Capability);
-    gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-    return 1;
-  }
+   couenne_setup->setOptionsAndJournalist(roptions, options, jnlst);
+   couenne_setup->registerOptions();
 
- 	for (int i = 0; i < gmoN(gmo); ++i)
-		if (gmoGetVarTypeOne(gmo, i) == var_SC || gmoGetVarTypeOne(gmo, i) == var_SI) {
-			gevLogStat(gev, "Error: Semicontinuous and semiinteger variables not supported by Couenne.");
-			return 1;
-		}
+   couenne_setup->roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
+   couenne_setup->roptions()->AddStringOption2("print_eval_error",
+      "whether to print information about function evaluation errors into the listing file",
+      "no",
+      "no", "", "yes", "");
 
-  minlp = new GamsMINLP(gmo);
-  minlp->in_couenne = true;
-
-	jnlst = new Ipopt::Journalist();
- 	SmartPtr<Journal> jrnl = new GamsJournal(gev, "console", J_ITERSUMMARY, J_STRONGWARNING);
-	jrnl->SetPrintLevel(J_DBG, J_NONE);
-	if (!jnlst->AddJournal(jrnl))
-		gevLogStat(gev, "Failed to register GamsJournal for IPOPT output.");
-
-	roptions = new Bonmin::RegisteredOptions();
-	options = new Ipopt::OptionsList(GetRawPtr(roptions), jnlst);
-
-	CouenneSetup::registerAllOptions(roptions);
-	roptions->SetRegisteringCategory("Linear Solver", Bonmin::RegisteredOptions::IpoptCategory);
-#ifdef HAVE_HSL_LOADER
-	// add option to specify path to hsl library
-  roptions->AddStringOption1("hsl_library", // name
-			"path and filename of HSL library for dynamic load",  // short description
-			"", // default value
-			"*", // setting1
-			"path (incl. filename) of HSL library", // description1
-			"Specify the path to a library that contains HSL routines and can be load via dynamic linking. "
-			"Note, that you still need to specify to use the corresponding routines (ma27, ...) by setting the corresponding options, e.g., ``linear_solver''."
-	);
-#endif
-#ifndef HAVE_PARDISO
-	// add option to specify path to pardiso library
-  roptions->AddStringOption1("pardiso_library", // name
-			"path and filename of Pardiso library for dynamic load",  // short description
-			"", // default value
-			"*", // setting1
-			"path (incl. filename) of Pardiso library", // description1
-			"Specify the path to a Pardiso library that and can be load via dynamic linking. "
-			"Note, that you still need to specify to use pardiso as linear_solver."
-	);
-#endif
-
-#if GMOAPIVERSION >= 9
-	roptions->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
-	roptions->AddStringOption2("print_eval_error",
-		"whether to print information about function evaluation errors into the listing file",
-	  "no",
-	  "no", "",
-	  "yes", "",
-	  ""
-	);
-#endif
-
-	// Change some options
-	options->SetNumericValue("bound_relax_factor", 1e-10, true, true);
-#if GMOAPIVERSION >= 7
-  if (gevGetIntOpt(gev, gevUseCutOff))
-  	options->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == Obj_Min ? gevGetDblOpt(gev, gevCutOff) : -gevGetDblOpt(gev, gevCutOff), true, true);
-#endif
-  options->SetNumericValue("bonmin.allowable_gap", gevGetDblOpt(gev, gevOptCA), true, true);
- 	options->SetNumericValue("bonmin.allowable_fraction_gap", gevGetDblOpt(gev, gevOptCR), true, true);
- 	if (gevGetIntOpt(gev, gevNodeLim))
- 		options->SetIntegerValue("bonmin.node_limit", gevGetIntOpt(gev, gevNodeLim), true, true);
- 	options->SetNumericValue("bonmin.time_limit", gevGetDblOpt(gev, gevResLim), true, true);
- 	options->SetIntegerValue("bonmin.problem_print_level", J_STRONGWARNING, true, true); /* otherwise Couenne prints the problem to stdout */
-
-  // workaround for bug in couenne reformulation: if there are tiny constants, delete_redundant might setup a nonstandard reformulation (e.g., using x*x instead of x^2)
-  // thus, we change the default of delete_redundant to off in this case
-  bool havetinyconst = false;
-	int constantlen = gmoNLConst(gmo);
-	double* constants = (double*)gmoPPool(gmo);
-	for (int i = 0; i < constantlen; ++i)
-		if (CoinAbs(constants[i]) < COUENNE_EPS) {
-			havetinyconst = true;
-			break;
-		}
-	if (havetinyconst)
-    options->SetStringValue("delete_redundant", "no", "couenne.");
-
-	if (gmoNLM(gmo) == 0  && (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp))
-		options->SetStringValue("hessian_constant", "yes", true, true);
-
-  double ipoptinf;
- 	options->GetNumericValue("nlp_lower_bound_inf", ipoptinf, "");
- 	options->SetNumericValue("nlp_lower_bound_inf", ipoptinf, false, true); /* to disallow clobber */
- 	gmoMinfSet(gmo, ipoptinf);
- 	options->GetNumericValue("nlp_upper_bound_inf", ipoptinf, "");
- 	options->SetNumericValue("nlp_upper_bound_inf", ipoptinf, false, true); /* to disallow clobber */
- 	gmoPinfSet(gmo, ipoptinf);
-
-#if GMOAPIVERSION >= 9
-	std::string printevalerror;
-	options->GetStringValue("print_eval_error", printevalerror, "");
-	gmoEvalErrorNoMsg(gmo, printevalerror == "no");
-#endif
-
-// 	printOptions();
-	setNumThreadsBlas(gev, gevThreads(gev));
-
- 	return 0;
+   return 0;
 }
 
-int GamsCouenne::callSolver() {
-	assert(gmo);
+int GamsCouenne::callSolver()
+{
+   assert(gmo != NULL);
+   assert(couenne_setup != NULL);
 
- 	if (isMIP()) {
- 		assert(gamscbc);
- 		return gamscbc->callSolver();
- 	}
+   if( isMIP() && gmoOptFile(gmo) == 0 )
+   {
+      gevLogStat(gev, "Problem is linear. Passing over to Cbc.");
+      GamsCbc cbc;
+      int retcode;
+      retcode = cbc.readyAPI(gmo, NULL);
+      if( retcode == 0 )
+         retcode = cbc.callSolver();
+      return retcode;
+   }
 
-	char buffer[1024];
+   gmoObjStyleSet(gmo, gmoObjType_Fun);
+   gmoObjReformSet(gmo, 1);
+   gmoIndexBaseSet(gmo, 0);
+   // get rid of free rows
+   if( gmoGetEquTypeCnt(gmo, gmoequ_N) )
+      gmoSetNRowPerm(gmo);
 
- 	CouenneProblem* problem;
-#if GMOAPIVERSION >= 9
- 	if( !(gevGetIntOpt(gev, gevInteger1) & 0x1) ) {
-     problem = setupProblemNew();
- 	} else
-#elif GMOAPIVERSION >= 7
- 	if( !(gevGetIntOpt(gev, gevInteger1) & 0x1) ) {
- 	   if( gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp )
- 	      problem = setupProblemNew();
- 	   else
- 	      problem = setupProblem();
- 	} else
+   if( gmoN(gmo) == 0 )
+   {
+      gevLogStat(gev, "Error: Couenne requires variables.");
+      gmoSolveStatSet(gmo, gmoSolveStat_Capability);
+      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+      return 0;
+   }
+
+   if( gmoGetVarTypeCnt(gmo, gmovar_SC) > 0 || gmoGetVarTypeCnt(gmo, gmovar_SI) > 0 )
+   {
+      gevLogStat(gev, "ERROR: Semicontinuous and semiinteger variables not supported by Couenne.\n");
+      gmoSolveStatSet(gmo, gmoSolveStat_Capability);
+      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+      return 0;
+   }
+
+   // TODO: can Couenne handle SOS?
+   if( gmoGetVarTypeCnt(gmo, gmovar_S1) > 0 || gmoGetVarTypeCnt(gmo, gmovar_S2) > 0 )
+   {
+      gevLogStat(gev, "ERROR: Special ordered sets not supported by Couenne.\n");
+      gmoSolveStatSet(gmo, gmoSolveStat_Capability);
+      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+      return 0;
+   }
+
+   // Change some options
+   couenne_setup->options()->clear();
+   couenne_setup->options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
+   if( gevGetIntOpt(gev, gevUseCutOff) )
+      couenne_setup->options()->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == gmoObj_Min ? gevGetDblOpt(gev, gevCutOff) : -gevGetDblOpt(gev, gevCutOff), true, true);
+   couenne_setup->options()->SetNumericValue("bonmin.allowable_gap", gevGetDblOpt(gev, gevOptCA), true, true);
+   couenne_setup->options()->SetNumericValue("bonmin.allowable_fraction_gap", gevGetDblOpt(gev, gevOptCR), true, true);
+   if( gevGetIntOpt(gev, gevNodeLim) > 0 )
+      couenne_setup->options()->SetIntegerValue("bonmin.node_limit", gevGetIntOpt(gev, gevNodeLim), true, true);
+   couenne_setup->options()->SetNumericValue("bonmin.time_limit", gevGetDblOpt(gev, gevResLim), true, true);
+   if( gevGetIntOpt(gev, gevIterLim) < ITERLIM_INFINITY )
+      couenne_setup->options()->SetIntegerValue("bonmin.iteration_limit", gevGetIntOpt(gev, gevIterLim), true, true);
+   couenne_setup->options()->SetIntegerValue("bonmin.problem_print_level", J_STRONGWARNING, true, true); /* otherwise Couenne prints the problem to stdout */
+
+   // workaround for bug in couenne reformulation: if there are tiny constants, delete_redundant might setup a nonstandard reformulation (e.g., using x*x instead of x^2)
+   // thus, we change the default of delete_redundant to off in this case
+   double* constants = (double*)gmoPPool(gmo);
+   int constantlen = gmoNLConst(gmo);
+   for( int i = 0; i < constantlen; ++i )
+      if( CoinAbs(constants[i]) < COUENNE_EPS )
+      {
+         couenne_setup->options()->SetStringValue("delete_redundant", "no", "couenne.");
+         break;
+      }
+
+   if( gmoNLM(gmo) == 0 && (gmoModelType(gmo) == gmoProc_qcp || gmoModelType(gmo) == gmoProc_rmiqcp || gmoModelType(gmo) == gmoProc_miqcp) )
+      couenne_setup->options()->SetStringValue("hessian_constant", "yes", true, true);
+
+   // forbid overwriting Ipopt's default for +/-infinity... why did I do this?
+//   double ipoptinf;
+//   options->GetNumericValue("nlp_lower_bound_inf", ipoptinf, "");
+//   options->SetNumericValue("nlp_lower_bound_inf", ipoptinf, false, true);
+//   gmoMinfSet(gmo, ipoptinf);
+//   options->GetNumericValue("nlp_upper_bound_inf", ipoptinf, "");
+//   options->SetNumericValue("nlp_upper_bound_inf", ipoptinf, false, true);
+//   gmoPinfSet(gmo, ipoptinf);
+
+   // set GMO's and Ipopt's value for infinity to Couenne's value for infinity
+   gmoMinfSet(gmo, -COUENNE_INFINITY);
+   gmoPinfSet(gmo,  COUENNE_INFINITY);
+   couenne_setup->options()->SetNumericValue("nlp_lower_bound_inf", -COUENNE_INFINITY, false, true);
+   couenne_setup->options()->SetNumericValue("nlp_upper_bound_inf",  COUENNE_INFINITY, false, true);
+
+   // process options file
+   try
+   {
+      if( gmoOptFile(gmo) )
+      {
+         char buffer[GMS_SSSIZE];
+         couenne_setup->options()->SetStringValue("print_user_options", "yes", true, true);
+         gmoNameOptFile(gmo, buffer);
+         couenne_setup->BabSetupBase::readOptionsFile(buffer);
+      }
+      else
+      {
+         // need to let Couenne read something, otherwise it will try to read its default option file couenne.opt
+         couenne_setup->readOptionsString(std::string());
+      }
+   }
+   catch( IpoptException& error )
+   {
+      gevLogStat(gev, error.Message().c_str());
+      return 1;
+   }
+   catch( std::bad_alloc )
+   {
+      gevLogStat(gev, "Error: Not enough memory\n");
+      return -1;
+   }
+   catch( ... )
+   {
+      gevLogStat(gev, "Error: Unknown exception thrown.\n");
+      return -1;
+   }
+
+   // check for CPLEX license, if used
+   std::string parvalue;
+#ifdef COIN_HAS_OSICPX
+   couenne_setup->options()->GetStringValue("lp_solver", parvalue, "");
+   if( parvalue == "cplex" && (!checkLicense(gmo) || !registerGamsCplexLicense(gmo)) )
+   {
+      gevLogStat(gev, "CPLEX as LP solver chosen, but no CPLEX license available. Aborting.\n");
+      gmoSolveStatSet(gmo, gmoSolveStat_License);
+      gmoModelStatSet(gmo, gmoModelStat_LicenseError);
+      return 1;
+   }
 #endif
- 	if (gmoModelType(gmo) == Proc_qcp || gmoModelType(gmo) == Proc_rmiqcp || gmoModelType(gmo) == Proc_miqcp)
- 		problem = setupProblemMIQQP();
- 	else
- 		problem = setupProblem();
- 	if (!problem) {
- 		gevLogStat(gev, "Error in setting up problem for Couenne.\n");
- 		//TODO should check more careful whether it was really an unsupported nonlinear function
-    gmoSolveStatSet(gmo, SolveStat_Capability);
-    gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
- 		return 1;
- 	}
- 	if( gevGetIntOpt(gev, gevInteger1) & 0x2 )
- 		problem->print();
 
-	try {
-		Bab bb;
-		bb.setUsingCouenne(true);
-
-		CouenneSetup couenne;
-		couenne.setOptionsAndJournalist(roptions, options, jnlst);
-
-		if (gmoOptFile(gmo)) {
-			options->SetStringValue("print_user_options", "yes", true, true);
-			gmoNameOptFile(gmo, buffer);
-			couenne.BabSetupBase::readOptionsFile(buffer);
-		} else // need to call readOptionsFile so that Couenne does not try reading couenne.opt later
-			couenne.BabSetupBase::readOptionsFile("");
-	   problem->initOptions(options);
-
-		std::string libpath;
-#ifdef HAVE_HSL_LOADER
-		if (options->GetStringValue("hsl_library", libpath, "")) {
-			if (LSL_loadHSL(libpath.c_str(), buffer, 1024) != 0) {
-				gevLogStatPChar(gev, "Failed to load HSL library at user specified path: ");
-				gevLogStat(gev, buffer);
-			  return -1;
-			}
-		}
-#endif
-#ifndef HAVE_PARDISO
-		if (options->GetStringValue("pardiso_library", libpath, "")) {
-			if (LSL_loadPardisoLib(libpath.c_str(), buffer, 1024) != 0) {
-				gevLogStatPChar(gev, "Failed to load Pardiso library at user specified path: ");
-				gevLogStat(gev, buffer);
-			  return -1;
-			}
-		}
+   // check for academic license of SCIP, if used
+#ifdef COIN_HAS_SCIP
+   bool usescip;
+   couenne_setup->options()->GetBoolValue("feas_pump_usescip", usescip, "couenne.");
+   if( usescip && !checkAcademicLicense(gmo) )
+   {
+      gevLogStat(gev, "*** Use of SCIP is limited to academic users.");
+      gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");
+      gevLogStat(gev, "Disabling use of SCIP in feasibility pump.");
+      couenne_setup->options()->SetStringValue("feas_pump_usescip", "no", false, false);
+      return 1;
+   }
 #endif
 
-		options->GetNumericValue("diverging_iterates_tol", minlp->nlp->div_iter_tol, "");
-	//	// or should we also check the tolerance for acceptable points?
-	//	bonmin_setup.options()->GetNumericValue("tol", mysmagminlp->scaled_conviol_tol, "");
-	//	bonmin_setup.options()->GetNumericValue("constr_viol_tol", mysmagminlp->unscaled_conviol_tol, "");
+   bool printevalerror;
+   couenne_setup->options()->GetBoolValue("print_eval_error", printevalerror, "");
+   gmoEvalErrorNoMsg(gmo, printevalerror);
 
-		std::string s;
-		options->GetStringValue("hessian_approximation", s, "");
-		if (s == "exact") {
-			int do2dir = 1;
-			int dohess = 1;
-#if GMOAPIVERSION >= 8
-			gmoHessLoad(gmo, 0, &do2dir, &dohess); // TODO make "0" a parameter (like rvhess in CONOPT)
-#else
-         gmoHessLoad(gmo, 0, -1, &do2dir, &dohess); // TODO make "0" a parameter (like rvhess in CONOPT)
-#endif
-			if (!dohess) { // TODO make "-1" a parameter (like rvhess in CONOPT)
-				gevLogStat(gev, "Failed to initialize Hessian structure. We continue with a limited-memory Hessian approximation!");
-				options->SetStringValue("hessian_approximation", "limited-memory");
-		  }
-		}
+   // initialize Hessian in GMO, if required
+   bool hessian_is_approx = false;
+   couenne_setup->options()->GetStringValue("hessian_approximation", parvalue, "");
+   if( parvalue == "exact" )
+   {
+      int do2dir = 1;
+      int dohess = 1;
+      gmoHessLoad(gmo, 0, &do2dir, &dohess);
+      if( !dohess )
+      {
+         gevLogStat(gev, "Failed to initialize Hessian structure. We continue with a limited-memory Hessian approximation!");
+         couenne_setup->options()->SetStringValue("hessian_approximation", "limited-memory");
+         hessian_is_approx = true;
+      }
+   }
+   else
+      hessian_is_approx = true;
 
+   // setup Couenne Problem
+   CouenneProblem* problem = setupProblem();
+   if( problem == NULL )
+   {
+      gevLogStat(gev, "Error in setting up problem for Couenne.\n");
+      gmoSolveStatSet(gmo, gmoSolveStat_Capability);
+      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+      return 1;
+   }
 
-#ifdef COIN_HAS_CPX
-		options->GetStringValue("lp_solver", s, "");
-    if (s == "cplex" && (!checkLicense(gmo) || !registerGamsCplexLicense(gmo))) {
-		  gevLogStat(gev, "CPLEX as LP solver chosen, but no CPLEX license available. Aborting.\n");
-		  return 1;
-		}
-#endif
+   // setup MINLP
+   SmartPtr<GamsMINLP> minlp = new GamsMINLP(gmo);
+   minlp->in_couenne = true;
+   couenne_setup->options()->GetNumericValue("diverging_iterates_tol", minlp->nlp->div_iter_tol, "");
 
-		CouenneInterface* ci = new CouenneInterface;
-		ci->initialize(roptions, options, jnlst, GetRawPtr(minlp));
-		GamsMessageHandler* msghandler = new GamsMessageHandler(gev);
-		ci->passInMessageHandler(msghandler);
+   setNumThreadsBlas(gev, gevThreads(gev));
 
-		minlp->nlp->clockStart = gevTimeDiffStart(gev);
+   if( msghandler == NULL )
+      msghandler = new GamsMessageHandler(gev);
 
-		char** argv = NULL;
-		if (!couenne.InitializeCouenne(argv, problem, ci)) {
-			gevLogStat(gev, "Reformulation finds model infeasible.\n");
-			gmoSolveStatSet(gmo, SolveStat_Normal);
-			gmoModelStatSet(gmo, ModelStat_InfeasibleNoSolution);
-			return 0;
-		}
+   char buffer[1024];
+   try
+   {
+      // setup CouenneInterface, so that we can pass in our message handler
+      CouenneInterface* ci = new CouenneInterface;
+      ci->initialize(couenne_setup->roptions(), couenne_setup->options(), couenne_setup->journalist(), GetRawPtr(minlp));
+      ci->passInMessageHandler(msghandler);
 
-		double preprocessTime = gevTimeDiffStart(gev) - minlp->nlp->clockStart;
+      minlp->nlp->clockStart = gevTimeDiffStart(gev);
 
-		snprintf(buffer, 1024, "Couenne initialized (%g seconds).", preprocessTime);
-		gevLogStat(gev, buffer);
+      // initialize Couenne, e.g., reformulate problem
+      if( !couenne_setup->InitializeCouenne(NULL, problem, GetRawPtr(minlp), ci) )
+      {
+         gevLogStat(gev, "Reformulation finds model infeasible.\n");
+         gmoSolveStatSet(gmo, gmoSolveStat_Normal);
+         gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
+         delete problem;
+         return 0;
+      }
 
-		double reslim = gevGetDblOpt(gev, gevResLim);
-		if (preprocessTime >= reslim) {
-			gevLogStat(gev, "Time is up.\n");
-			gmoSolveStatSet(gmo, SolveStat_Resource);
-			gmoModelStatSet(gmo, ModelStat_NoSolutionReturned);
-			return 0;
-		}
+      // check time usage and reduce timelimit for B&B accordingly
+      double preprocessTime = gevTimeDiffStart(gev) - minlp->nlp->clockStart;
 
-		options->SetNumericValue("bonmin.time_limit", reslim - preprocessTime, true, true);
-    couenne.setDoubleParameter(BabSetupBase::MaxTime, reslim - preprocessTime);
+      snprintf(buffer, 1024, "Couenne initialized (%g seconds).\n\n", preprocessTime);
+      gevLogStatPChar(gev, buffer);
 
-		bb(couenne); // do branch and bound
+      double reslim = gevGetDblOpt(gev, gevResLim);
+      if( preprocessTime >= reslim )
+      {
+         gevLogStat(gev, "Time is up.\n");
+         gmoSolveStatSet(gmo, gmoSolveStat_Resource);
+         gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+         return 0;
+      }
 
-		double best_val = bb.model().getObjValue();
-		double best_bound = bb.model().getBestPossibleObjValue();
-		if (gmoSense(gmo) == Obj_Max) {
-			best_val   *= -1;
-			best_bound *= -1;
-		}
+      couenne_setup->options()->SetNumericValue("bonmin.time_limit", reslim - preprocessTime, true, true);
+      couenne_setup->setDoubleParameter(BabSetupBase::MaxTime, reslim - preprocessTime);
 
-		if (bb.bestSolution()) {
-			snprintf(buffer, 100, "\nCouenne finished. Found feasible point. Objective function value = %g.", best_val);
-			gevLogStat(gev, buffer);
+      // do branch and bound
+      Bab bb;
+      bb.setUsingCouenne(true);
+      bb(*couenne_setup);
 
-			double* negLambda = new double[gmoM(gmo)];
-			memset(negLambda, 0, gmoM(gmo)*sizeof(double));
+      // check optimization outcome
+      double best_val   = minlp->isMin * bb.bestObj(); // bb.model().getObjValue();
+      double best_bound = minlp->isMin * bb.bestBound(); //bb.model().getBestPossibleObjValue();
 
-			gmoSetSolution2(gmo, bb.bestSolution(), negLambda);
-			gmoSetHeadnTail(gmo, Hobjval,   best_val);
+      gmoSetHeadnTail(gmo, gmoHresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+      gmoSetHeadnTail(gmo, gmoTmipnod,   bb.numNodes());
+      gmoSetHeadnTail(gmo, gmoHiterused, bb.iterationCount());
+      gmoSetHeadnTail(gmo, gmoHdomused,  static_cast<double>(minlp->nlp->domviolations));
+      if( best_bound > -1e200 && best_bound < 1e200 )
+         gmoSetHeadnTail(gmo, gmoTmipbest, best_bound);
+      gmoModelStatSet(gmo, minlp->model_status);
+      gmoSolveStatSet(gmo, minlp->solver_status);
 
-			delete[] negLambda;
-		} else {
-      gmoSetHeadnTail(gmo, Hobjval, GMS_SV_NA);
-			gevLogStat(gev, "\nCouenne finished. No feasible point found.");
-		}
+      if( bb.bestSolution() != NULL )
+      {
+         snprintf(buffer, sizeof(buffer), "\nCouenne finished. Found feasible solution. Objective function value = %g.", best_val);
+         gevLogStat(gev, buffer);
 
-		if (best_bound > -1e200 && best_bound < 1e200)
-			gmoSetHeadnTail(gmo, Tmipbest, best_bound);
-		gmoSetHeadnTail(gmo, Tmipnod, bb.numNodes());
-		gmoSetHeadnTail(gmo, Hiterused, bb.iterationCount());
-		gmoSetHeadnTail(gmo, Hresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
-		gmoSetHeadnTail(gmo, Hdomused,  minlp->nlp->domviolations);
-		gmoSolveStatSet(gmo, minlp->solver_status);
-		gmoModelStatSet(gmo, minlp->model_status);
+         double* negLambda = new double[gmoM(gmo)];
+         memset(negLambda, 0, gmoM(gmo)*sizeof(double));
 
-		gevLogStat(gev, "");
-		if (bb.bestSolution()) {
-			snprintf(buffer, 1024, "Best solution: %15.6e   (%d nodes, %g seconds)", best_val, bb.numNodes(), gevTimeDiffStart(gev) - minlp->nlp->clockStart);
-			gevLogStat(gev, buffer);
-		}
-		if (best_bound > -1e200 && best_bound < 1e200) {
-			snprintf(buffer, 1024, "Best possible: %15.6e\n", best_bound);
-			gevLogStat(gev, buffer);
+         gmoSetSolution2(gmo, bb.bestSolution(), negLambda);
+         gmoSetHeadnTail(gmo, gmoHobjval, best_val);
 
-			if (bb.bestSolution()) {
-				double optca;
-				double optcr;
-			  options->GetNumericValue("allowable_gap", optca, "bonmin.");
-			  options->GetNumericValue("allowable_fraction_gap", optcr, "bonmin.");
+         delete[] negLambda;
+      }
+      else
+      {
+         gevLogStat(gev, "\nCouenne finished. No feasible solution found.");
+      }
 
-				snprintf(buffer, 255, "Absolute gap: %16.6e   (absolute tolerance optca: %g)", CoinAbs(best_val-best_bound), optca);
-				gevLogStat(gev, buffer);
-				snprintf(buffer, 255, "Relative gap: %15.6f%%   (relative tolerance optcr: %g%%)", 100*CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.0), optcr);
-				gevLogStat(gev, buffer);
-			}
-		}
+      // print solving outcome (primal/dual bounds, gap)
+      gevLogStat(gev, "");
+      if( bb.bestSolution() != NULL )
+      {
+         snprintf(buffer, sizeof(buffer), "Best solution: %15.6e   (%d nodes, %g seconds)", best_val, bb.numNodes(), gmoGetHeadnTail(gmo, gmoHresused));
+         gevLogStat(gev, buffer);
+      }
+      if( best_bound > -1e200 && best_bound < 1e200 )
+      {
+         snprintf(buffer, sizeof(buffer), "Best possible: %15.6e\n", best_bound);
+         gevLogStat(gev, buffer);
 
-	} catch (IpoptException error) {
-		gevLogStat(gev, error.Message().c_str());
-		gmoSolveStatSet(gmo, SolveStat_SolverErr);
-		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-	  return -1;
-  } catch(CoinError &error) {
-  	snprintf(buffer, 1024, "%s::%s\n%s", error.className().c_str(), error.methodName().c_str(), error.message().c_str());
-		gevLogStat(gev, buffer);
-		gmoSolveStatSet(gmo, SolveStat_SolverErr);
-		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-	  return 1;
-  } catch (TNLPSolver::UnsolvedError *E) { 	// there has been a failure to solve a problem with Ipopt.
-		snprintf(buffer, 1024, "Error: %s exited with error %s", E->solverName().c_str(), E->errorName().c_str());
-		gevLogStat(gev, buffer);
-		gmoSolveStatSet(gmo, SolveStat_SolverErr);
-		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-		return 1;
-	} catch (std::bad_alloc) {
-		gevLogStat(gev, "Error: Not enough memory!");
-		gmoSolveStatSet(gmo, SolveStat_SystemErr);
-		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-		return -1;
-	} catch (...) {
-		gevLogStat(gev, "Error: Unknown exception thrown.\n");
-		gmoSolveStatSet(gmo, SolveStat_SystemErr);
-		gmoModelStatSet(gmo, ModelStat_ErrorNoSolution);
-		return -1;
-	}
+         if( bb.bestSolution() != NULL )
+         {
+            double optca;
+            double optcr;
+            couenne_setup->options()->GetNumericValue("allowable_gap", optca, "bonmin.");
+            couenne_setup->options()->GetNumericValue("allowable_fraction_gap", optcr, "bonmin.");
 
-	return 0;
+            snprintf(buffer, sizeof(buffer), "Absolute gap: %16.6e   (absolute tolerance optca: %g)", CoinAbs(best_val-best_bound), optca);
+            gevLogStat(gev, buffer);
+            snprintf(buffer, sizeof(buffer), "Relative gap: %15.6f%%   (relative tolerance optcr: %g%%)", 100*CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.0), optcr);
+            gevLogStat(gev, buffer);
+         }
+      }
+   }
+   catch( CoinError& error )
+   {
+      char buf[1024];
+      snprintf(buf, 1024, "%s::%s\n%s", error.className().c_str(), error.methodName().c_str(), error.message().c_str());
+      gevLogStat(gev, buf);
+      gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
+      gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+      return -1;
+   }
+   catch( IpoptException& error )
+   {
+      gevLogStat(gev, error.Message().c_str());
+      gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
+      gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+      return -1;
+   }
+   catch( TNLPSolver::UnsolvedError* E)
+   {
+      // there has been a failure to solve a problem with Ipopt.
+      char buf[1024];
+      snprintf(buf, 1024, "Error: %s exited with error %s", E->solverName().c_str(), E->errorName().c_str());
+      gevLogStat(gev, buf);
+      gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
+      gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+      return 0;
+   }
+   catch( std::bad_alloc )
+   {
+      gevLogStat(gev, "Error: Not enough memory!");
+      gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
+      gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+      return -1;
+   }
+   catch( ... )
+   {
+      gevLogStat(gev, "Error: Unknown exception thrown.\n");
+      gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
+      gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+      return -1;
+   }
+
+   return 0;
 }
 
-bool GamsCouenne::isMIP() {
-	return !gmoNLNZ(gmo) && !gmoObjNLNZ(gmo);
+bool GamsCouenne::isMIP()
+{
+   return gmoNLNZ(gmo) == 0 && (gmoObjStyle(gmo) == gmoObjType_Var || gmoObjNLNZ(gmo) == 0);
 }
 
-CouenneProblem* GamsCouenne::setupProblem() {
-	CouenneProblem* prob = new CouenneProblem(NULL, NULL, jnlst);
+CouenneProblem* GamsCouenne::setupProblem()
+{
+   assert(gmo != NULL);
+   assert(couenne_setup != NULL);
 
-	//add variables
-	for (int i = 0; i < gmoN(gmo); ++i) {
-		switch (gmoGetVarTypeOne(gmo, i)) {
-			case var_X:
-				prob->addVariable(false, prob->domain());
-				break;
-			case var_B:
-			case var_I:
-				prob->addVariable(true, prob->domain());
-				break;
-			case var_S1:
-			case var_S2:
-		  	//TODO prob->addVariable(false, prob->domain());
-		  	gevLogStat(gev, "Special ordered sets not supported by Gams/Couenne link yet.");
-		  	return NULL;
-			case var_SC:
-			case var_SI:
-		  	gevLogStat(gev, "Semicontinuous and semiinteger variables not supported by Couenne.");
-		  	return NULL;
-			default:
-		  	gevLogStat(gev, "Unknown variable type.");
-		  	return NULL;
-		}
-	}
+   CouenneProblem* prob = new CouenneProblem(NULL, NULL, couenne_setup->journalist());
+   CouenneProblem* prob_ = NULL;
 
-	// add variable bounds and initial values
-	CouNumber* x_ = new CouNumber[gmoN(gmo)];
-	CouNumber* lb = new CouNumber[gmoN(gmo)];
-	CouNumber* ub = new CouNumber[gmoN(gmo)];
+   gmoUseQSet(gmo, 1);
 
-	gmoGetVarL(gmo, x_);
-	gmoGetVarLower(gmo, lb);
-	gmoGetVarUpper(gmo, ub);
+   double isMin = (gmoSense(gmo) == gmoObj_Min) ? 1.0 : -1.0;
 
-	// translate from gmoM/Pinf to Couenne infinity
-	for (int i = 0; i < gmoN(gmo); ++i)	{
-		if (lb[i] <= gmoMinf(gmo))
-			lb[i] = -COUENNE_INFINITY;
-		if (ub[i] >= gmoPinf(gmo))
-			ub[i] =  COUENNE_INFINITY;
-	}
+   int nz;
+   int nlnz;
 
-	prob->domain()->push(gmoN(gmo), x_, lb, ub);
+   double* lincoefs  = new double[gmoN(gmo)];
+   int*    lincolidx = new int[gmoN(gmo)];
+   int*    nlflag    = new int[gmoN(gmo)];
 
-	delete[] x_;
-	delete[] lb;
-	delete[] ub;
+   double* quadcoefs = new double[gmoMaxQnz(gmo)];
+   int* qrow         = new int[gmoMaxQnz(gmo)];
+   int* qcol         = new int[gmoMaxQnz(gmo)];
+   int qnz;
 
+   int* opcodes = new int[gmoMaxSingleFNL(gmo)+1];
+   int* fields  = new int[gmoMaxSingleFNL(gmo)+1];
+   int constantlen = gmoNLConst(gmo);
+   double* constants = (double*)gmoPPool(gmo);
+   int codelen;
 
-	int* opcodes = new int[gmoMaxSingleFNL(gmo)+1];
-	int* fields  = new int[gmoMaxSingleFNL(gmo)+1];
-	int constantlen = gmoNLConst(gmo);
-	double* constants = (double*)gmoPPool(gmo); //new double[gmoNLConst(gmo)];
-	int codelen;
+   double* x_ = new double[gmoN(gmo)];
+   double* lb = new double[gmoN(gmo)];
+   double* ub = new double[gmoN(gmo)];
 
-//	memcpy(constants, gmoPPool(gmo), constantlen*sizeof(double));
-//	for (int i = 0; i < constantlen; ++i)
-//		if (fabs(constants[i]) < COUENNE_EPS)
-//			constants[i] = 0.;
+   exprGroup::lincoeff lin;
+   expression* body = NULL;
 
-	exprGroup::lincoeff lin;
-	expression *body = NULL;
+   // add variables
+   for( int i = 0; i < gmoN(gmo); ++i )
+   {
+      switch( gmoGetVarTypeOne(gmo, i) )
+      {
+         case gmovar_X:
+            prob->addVariable(false, prob->domain());
+            break;
+         case gmovar_B:
+         case gmovar_I:
+            prob->addVariable(true, prob->domain());
+            break;
+         case gmovar_S1:
+         case gmovar_S2:
+            gevLogStat(gev, "Special ordered sets not supported by Gams/Couenne link yet.");
+            goto TERMINATE;
+         case gmovar_SC:
+         case gmovar_SI:
+            gevLogStat(gev, "Semicontinuous and semiinteger variables not supported by Couenne.");
+            goto TERMINATE;
+         default:
+            gevLogStat(gev, "Unknown variable type.");
+            goto TERMINATE;
+      }
+   }
 
-	// add objective function: first linear part, then nonlinear
-	double isMin = (gmoSense(gmo) == Obj_Min) ? 1 : -1;
+   // add variable bounds and initial values
+   gmoGetVarL(gmo, x_);
+   gmoGetVarLower(gmo, lb);
+   gmoGetVarUpper(gmo, ub);
+   prob->domain()->push(gmoN(gmo), x_, lb, ub);
 
-	lin.reserve(gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
+   // add objective function
+   gmoGetObjSparse(gmo, lincolidx, lincoefs, nlflag, &nz, &nlnz);
 
-	int* colidx = new int[gmoObjNZ(gmo)];
-	double* val = new double[gmoObjNZ(gmo)];
-	int* nlflag = new int[gmoObjNZ(gmo)];
-	int dummy;
+   if( gmoGetObjOrder(gmo) <= gmoorder_Q )
+   {
+      // linear or quadratic objective
+      lin.reserve(nz);
+      for( int i = 0; i < nz; ++i )
+         lin.push_back(std::pair<exprVar*, CouNumber>(prob->Var(lincolidx[i]), isMin*lincoefs[i]));
 
-	if (gmoObjNZ(gmo)) nlflag[0] = 0; // workaround for gmo bug
-	gmoGetObjSparse(gmo, colidx, val, nlflag, &dummy, &dummy);
-	for (int i = 0; i < gmoObjNZ(gmo); ++i) {
-		if (nlflag[i])
-			continue;
-		lin.push_back(pair<exprVar*, CouNumber>(prob->Var(colidx[i]), isMin*val[i]));
-	}
-  assert((int)lin.size() == gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
-
-	delete[] colidx;
-	delete[] val;
-	delete[] nlflag;
-
-	if (gmoObjNLNZ(gmo)) {
-		gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
-
-		expression** nl = new expression*[1];
-		nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
-		if (!nl[0])
-			return NULL;
-
-		double objjacval = isMin*gmoObjJacVal(gmo);
-		//std::clog << "obj jac val: " << objjacval << std::endl;
-		if (objjacval == 1.) { // scale by -1/objjacval = negate
-			nl[0] = new exprOpp(nl[0]);
-		} else if (objjacval != -1.) { // scale by -1/objjacval
-			nl[0] = new exprMul(nl[0], new exprConst(-1/objjacval));
-		}
-
-		body = new exprGroup(isMin*gmoObjConst(gmo), lin, nl, 1);
-	} else {
-		body = new exprGroup(isMin*gmoObjConst(gmo), lin, NULL, 0);
-	}
-
-	prob->addObjective(body, "min");
-
-	int nz = gmoNZ(gmo);
-	double* values  = new double[nz];
-	int* rowstarts  = new int[gmoM(gmo)+1];
-	int* colindexes = new int[nz];
-	int* nlflags    = new int[nz];
-
-	gmoGetMatrixRow(gmo, rowstarts, colindexes, values, nlflags);
-	rowstarts[gmoM(gmo)] = nz;
-
-	for (int i = 0; i < gmoM(gmo); ++i) {
-		lin.clear();
-		lin.reserve(rowstarts[i+1] - rowstarts[i]);
-		for (int j = rowstarts[i]; j < rowstarts[i+1]; ++j) {
-			if (nlflags[j])
-				continue;
-			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(colindexes[j]), values[j]));
-		}
-#if defined(GAMS_BUILD) || defined(GMOAPIVERSION)
-		if (gmoGetEquOrderOne(gmo, i) > order_L) {
-#else
-		if (gmoNLfunc(gmo, i)) {
-#endif
-			gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields);
-			expression** nl = new expression*[1];
-			nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
-			if (!nl[0])
-				return NULL;
-			body = new exprGroup(0., lin, nl, 1);
-		} else {
-			body = new exprGroup(0., lin, NULL, 0);
-		}
-
-		switch (gmoGetEquTypeOne(gmo, i)) {
-			case equ_E:
-				prob->addEQConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
-				break;
-			case equ_L:
-				prob->addLEConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
-				break;
-			case equ_G:
-				prob->addGEConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
-				break;
-			case equ_N:
-				// TODO I doubt that adding a RNG constraint with -infty/infty bounds would work here
-				gevLogStat(gev, "Free constraints not supported by Gams/Couenne link yet. Constraint ignored.");
-				break;
-		}
-	}
-
-	delete[] opcodes;
-	delete[] fields;
-	delete[] values;
-	delete[] rowstarts;
-	delete[] colindexes;
-	delete[] nlflags;
-//	delete[] constants;
-
-	return prob;
-}
-
-CouenneProblem* GamsCouenne::setupProblemNew() {
-	CouenneProblem* prob = new CouenneProblem(NULL, NULL, jnlst);
-
-#if GMOAPIVERSION >= 8
-	gmoWantQSet(gmo, 1);
-#else
-	if (gmoQMaker(gmo, 0.5) < 0) { // negative number is error; positive number is number of nonquadratic nonlinear equations
-		gevLogStat(gev, "ERROR: Problems extracting information on quadratic functions in GMO.");
-		return NULL;
-	}
-#endif
-
-	int nz, nlnz;
-
-	double* lincoefs  = new double[gmoN(gmo)];
-	int*    lincolidx = new int[gmoN(gmo)];
-	int*    nlflag    = new int[gmoN(gmo)];
-
-	double* quadcoefs = new double[gmoMaxQnz(gmo)];
-	int* qrow =  new int[gmoMaxQnz(gmo)];
-	int* qcol =  new int[gmoMaxQnz(gmo)];
-	int qnz, qdiagnz;
-
-	int* opcodes = new int[gmoMaxSingleFNL(gmo)+1];
-	int* fields  = new int[gmoMaxSingleFNL(gmo)+1];
-	int constantlen = gmoNLConst(gmo);
-	double* constants = (double*)gmoPPool(gmo); //new double[gmoNLConst(gmo)];
-	int codelen;
-
-	//	memcpy(constants, gmoPPool(gmo), constantlen*sizeof(double));
-	//	for (int i = 0; i < constantlen; ++i)
-	//		if (fabs(constants[i]) < COUENNE_EPS)
-	//			constants[i] = 0.;
-
-	exprGroup::lincoeff lin;
-	expression *body = NULL;
-
-	// add variables
-	for (int i = 0; i < gmoN(gmo); ++i) {
-		switch (gmoGetVarTypeOne(gmo, i)) {
-			case var_X:
-				prob->addVariable(false, prob->domain());
-				break;
-			case var_B:
-			case var_I:
-				prob->addVariable(true, prob->domain());
-				break;
-			case var_S1:
-			case var_S2:
-		  	//TODO prob->addVariable(false, prob->domain());
-		  	gevLogStat(gev, "Special ordered sets not supported by Gams/Couenne link yet.");
-		  	return NULL;
-			case var_SC:
-			case var_SI:
-		  	gevLogStat(gev, "Semicontinuous and semiinteger variables not supported by Couenne.");
-		  	return NULL;
-			default:
-		  	gevLogStat(gev, "Unknown variable type.");
-		  	return NULL;
-		}
-	}
-
-	// add variable bounds and initial values
-	CouNumber* x_ = new CouNumber[gmoN(gmo)];
-	CouNumber* lb = new CouNumber[gmoN(gmo)];
-	CouNumber* ub = new CouNumber[gmoN(gmo)];
-
-	gmoGetVarL(gmo, x_);
-	gmoGetVarLower(gmo, lb);
-	gmoGetVarUpper(gmo, ub);
-
-	// translate from gmoM/Pinf to Couenne infinity
-	for (int i = 0; i < gmoN(gmo); ++i)	{
-		if (lb[i] <= gmoMinf(gmo))
-			lb[i] = -COUENNE_INFINITY;
-		if (ub[i] >= gmoPinf(gmo))
-			ub[i] =  COUENNE_INFINITY;
-	}
-
-	prob->domain()->push(gmoN(gmo), x_, lb, ub);
-
-	delete[] x_;
-	delete[] lb;
-	delete[] ub;
-
-	// add objective function
-	double isMin = (gmoSense(gmo) == Obj_Min) ? 1 : -1;
-	gmoGetObjSparse(gmo, lincolidx, lincoefs, nlflag, &nz, &nlnz);
-
-	if (gmoGetObjOrder(gmo) <= order_Q) {
-		lin.reserve(nz);
-		for (int i = 0; i < nz; ++i)
-			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[i]), isMin*lincoefs[i]));
-
-		if( gmoGetObjOrder(gmo) == order_Q ) {
-#if GMOAPIVERSION >= 8
+      if( gmoGetObjOrder(gmo) == gmoorder_Q )
+      {
+         // TODO: use exprQuad?
          qnz = gmoObjQNZ(gmo);
          gmoGetObjQ(gmo, qcol, qrow, quadcoefs);
-#else
-         gmoGetObjQ(gmo, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
-#endif
-			expression** quadpart = new expression*[qnz];
+         expression** quadpart = new expression*[qnz];
 
-			for (int j = 0; j < qnz; ++j) {
-				assert(qcol[j] >= 0);
-				assert(qrow[j] >= 0);
-				assert(qcol[j] < gmoN(gmo));
-				assert(qrow[j] < gmoN(gmo));
-				if (qcol[j] == qrow[j]) {
-					quadcoefs[j] /= 2.0; // for some strange reason, the coefficients on the diagonal are multiplied by 2 in GMO.
-					quadpart[j] = new exprPow(new exprClone(prob->Var(qcol[j])), new exprConst(2.));
-				} else {
-					quadpart[j] = new exprMul(new exprClone(prob->Var(qcol[j])), new exprClone(prob->Var(qrow[j])));
-				}
-				quadcoefs[j] *= isMin;
-				if (quadcoefs[j] == -1.0)
-					quadpart[j] = new exprOpp(quadpart[j]);
-				else if (quadcoefs[j] != 1.0)
-					quadpart[j] = new exprMul(quadpart[j], new exprConst(quadcoefs[j]));
-			}
+         for( int j = 0; j < qnz; ++j )
+         {
+            assert(qcol[j] >= 0);
+            assert(qrow[j] >= 0);
+            assert(qcol[j] < gmoN(gmo));
+            assert(qrow[j] < gmoN(gmo));
+            if( qcol[j] == qrow[j] )
+            {
+               quadcoefs[j] /= 2.0; // for some strange reason, the coefficients on the diagonal are multiplied by 2 in GMO
+               quadpart[j] = new exprPow(new exprClone(prob->Var(qcol[j])), new exprConst(2.0));
+            }
+            else
+            {
+               quadpart[j] = new exprMul(new exprClone(prob->Var(qcol[j])), new exprClone(prob->Var(qrow[j])));
+            }
+            quadcoefs[j] *= isMin;
+            if( quadcoefs[j] == -1.0 )
+               quadpart[j] = new exprOpp(quadpart[j]);
+            else if( quadcoefs[j] != 1.0 )
+               quadpart[j] = new exprMul(quadpart[j], new exprConst(quadcoefs[j]));
+         }
 
-			body = new exprGroup(isMin*gmoObjConst(gmo), lin, quadpart, qnz);
+         body = new exprGroup(isMin*gmoObjConst(gmo), lin, quadpart, qnz);
+      }
+      else
+      {
+         body = new exprGroup(isMin*gmoObjConst(gmo), lin, NULL, 0);
+      }
+   }
+   else
+   {
+      // general nonlinear objective
+      lin.reserve(nz-nlnz);
+      for( int i = 0; i < nz; ++i )
+      {
+         if( nlflag[i] )
+            continue;
+         lin.push_back(std::pair<exprVar*, CouNumber>(prob->Var(lincolidx[i]), isMin*lincoefs[i]));
+      }
 
-		} else {
-			body = new exprGroup(isMin*gmoObjConst(gmo), lin, NULL, 0);
-		}
+      gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
 
-	} else { /* general nonlinear objective */
-		lin.reserve(nz-nlnz);
-		for (int i = 0; i < nz; ++i) {
-			if (nlflag[i])
-				continue;
-			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[i]), isMin*lincoefs[i]));
-		}
+      expression** nl = new expression*[1];
+      if( gevGetIntOpt(gev, gevInteger1) & 0x4 )
+         std::clog << "parse instructions for objective" << std::endl;
+      nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
+      if( nl[0] == NULL )
+         goto TERMINATE;
 
-		gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
+      // multiply with -isMin/objjacval
+      double objjacval = isMin*gmoObjJacVal(gmo);
+      if( objjacval == 1.0 )
+         nl[0] = new exprOpp(nl[0]);
+      else if( objjacval != -1.0 )
+         nl[0] = new exprMul(nl[0], new exprConst(-1.0/objjacval));
 
-		expression** nl = new expression*[1];
-		nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
-		if (!nl[0])
-			return NULL;
+      body = new exprGroup(isMin*gmoObjConst(gmo), lin, nl, 1);
+   }
 
-		double objjacval = isMin*gmoObjJacVal(gmo);
-		//std::clog << "obj jac val: " << objjacval << std::endl;
-		if (objjacval == 1.) { // scale by -1/objjacval = negate
-			nl[0] = new exprOpp(nl[0]);
-		} else if (objjacval != -1.) { // scale by -1/objjacval
-			nl[0] = new exprMul(nl[0], new exprConst(-1/objjacval));
-		}
+   prob->addObjective(body, "min");
 
-		body = new exprGroup(isMin*gmoObjConst(gmo), lin, nl, 1);
-	}
+   // add constraints
+   for( int i = 0; i < gmoM(gmo); ++i )
+   {
+      gmoGetRowSparse(gmo, i, lincolidx, lincoefs, nlflag, &nz, &nlnz);
+      lin.clear();
 
-	prob->addObjective(body, "min");
+      if( gmoGetEquOrderOne(gmo, i) <= gmoorder_Q )
+      {
+         // linear or quadratic constraint
+         lin.reserve(nz);
+         for (int j = 0; j < nz; ++j)
+            lin.push_back(std::pair<exprVar*, CouNumber>(prob->Var(lincolidx[j]), lincoefs[j]));
 
-	for (int i = 0; i < gmoM(gmo); ++i) {
-		gmoGetRowSparse(gmo, i, lincolidx, lincoefs, nlflag, &nz, &nlnz);
-		lin.clear();
-
-		if (gmoGetEquOrderOne(gmo, i) <= order_Q) {
-			lin.reserve(nz);
-			for (int j = 0; j < nz; ++j)
-				lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[j]), lincoefs[j]));
-
-			if( gmoGetEquOrderOne(gmo, i) == order_Q ) {
-#if GMOAPIVERSION >= 8
+         if( gmoGetEquOrderOne(gmo, i) == gmoorder_Q ) {
             qnz = gmoGetRowQNZOne(gmo,i);
             gmoGetRowQ(gmo, i, qcol, qrow, quadcoefs);
-#else
-            gmoGetRowQ(gmo, i, &qnz, &qdiagnz, qcol, qrow, quadcoefs);
-#endif
-				expression** quadpart = new expression*[qnz];
+            expression** quadpart = new expression*[qnz];
 
-				for (int j = 0; j < qnz; ++j) {
-					assert(qcol[j] >= 0);
-					assert(qrow[j] >= 0);
-					assert(qcol[j] < gmoN(gmo));
-					assert(qrow[j] < gmoN(gmo));
-					if (qcol[j] == qrow[j]) {
-						quadcoefs[j] /= 2.0; // for some strange reason, the coefficients on the diagonal are multiplied by 2 in GMO.
-						quadpart[j] = new exprPow(new exprClone(prob->Var(qcol[j])), new exprConst(2.));
-					} else {
-						quadpart[j] = new exprMul(new exprClone(prob->Var(qcol[j])), new exprClone(prob->Var(qrow[j])));
-					}
-					if (quadcoefs[j] == -1.0)
-						quadpart[j] = new exprOpp(quadpart[j]);
-					else if (quadcoefs[j] != 1.0)
-						quadpart[j] = new exprMul(quadpart[j], new exprConst(quadcoefs[j]));
-				}
+            for( int j = 0; j < qnz; ++j )
+            {
+               assert(qcol[j] >= 0);
+               assert(qrow[j] >= 0);
+               assert(qcol[j] < gmoN(gmo));
+               assert(qrow[j] < gmoN(gmo));
+               if( qcol[j] == qrow[j] )
+               {
+                  quadcoefs[j] /= 2.0; // for some strange reason, the coefficients on the diagonal are multiplied by 2 in GMO.
+                  quadpart[j] = new exprPow(new exprClone(prob->Var(qcol[j])), new exprConst(2.0));
+               }
+               else
+               {
+                  quadpart[j] = new exprMul(new exprClone(prob->Var(qcol[j])), new exprClone(prob->Var(qrow[j])));
+               }
+               if( quadcoefs[j] == -1.0 )
+                  quadpart[j] = new exprOpp(quadpart[j]);
+               else if( quadcoefs[j] != 1.0 )
+                  quadpart[j] = new exprMul(quadpart[j], new exprConst(quadcoefs[j]));
+            }
 
-				body = new exprGroup(0, lin, quadpart, qnz);
+            body = new exprGroup(0, lin, quadpart, qnz);
+         }
+         else
+         {
+            body = new exprGroup(0, lin, NULL, 0);
+         }
+      }
+      else
+      {
+         // general nonlinear constraint
+         lin.reserve(nz-nlnz);
+         for( int j = 0; j < nz; ++j )
+         {
+            if( nlflag[j] )
+               continue;
+            lin.push_back(std::pair<exprVar*, CouNumber>(prob->Var(lincolidx[j]), lincoefs[j]));
+         }
 
-			} else {
-				body = new exprGroup(0, lin, NULL, 0);
-			}
+         gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields);
+         expression** nl = new expression*[1];
+         if( gevGetIntOpt(gev, gevInteger1) & 0x4 )
+            std::clog << "parse instructions for constraint " << i << std::endl;
+         nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
+         if( nl[0] == NULL )
+            goto TERMINATE;
 
-		} else { /* general nonlinear constraint */
-			lin.reserve(nz-nlnz);
-			for (int j = 0; j < nz; ++j) {
-				if (nlflag[j])
-					continue;
-				lin.push_back(pair<exprVar*, CouNumber>(prob->Var(lincolidx[j]), lincoefs[j]));
-			}
+         body = new exprGroup(0, lin, nl, 1);
+      }
 
-			gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields);
-			expression** nl = new expression*[1];
-			nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
-			if (!nl[0])
-				return NULL;
+      switch( gmoGetEquTypeOne(gmo, i) )
+      {
+         case gmoequ_E:
+            prob->addEQConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
+            break;
+         case gmoequ_L:
+            prob->addLEConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
+            break;
+         case gmoequ_G:
+            prob->addGEConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
+            break;
+         case gmoequ_N:
+            // ignore free constraints, should have been permutated out anyway
+            break;
+         default:
+            gevLogStat(gev, "unsupported constraint type\n");
+            goto TERMINATE;
+      }
+   }
 
-			body = new exprGroup(0, lin, nl, 1);
-		}
+   if( gevGetIntOpt(gev, gevInteger1) & 0x2 )
+      prob->print();
+   prob->initOptions(couenne_setup->options());
 
-		switch (gmoGetEquTypeOne(gmo, i)) {
-			case equ_E:
-				prob->addEQConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
-				break;
-			case equ_L:
-				prob->addLEConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
-				break;
-			case equ_G:
-				prob->addGEConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
-				break;
-			case equ_N:
-				// TODO I doubt that adding a RNG constraint with -infty/infty bounds would work here
-				gevLogStat(gev, "Free constraints not supported by Gams/Couenne link yet. Constraint ignored.");
-				break;
-		}
-	}
+   // if we made it until here, then we are successful, so store prob in prob_
+   prob_ = prob;
 
-  delete[] lincolidx;
-	delete[] lincoefs;
-	delete[] nlflag;
+TERMINATE:
+   delete[] lincolidx;
+   delete[] lincoefs;
+   delete[] nlflag;
 
-	delete[] quadcoefs;
-	delete[] qrow;
-	delete[] qcol;
+   delete[] quadcoefs;
+   delete[] qrow;
+   delete[] qcol;
 
-	delete[] opcodes;
-	delete[] fields;
-//	delete[] constants;
+   delete[] opcodes;
+   delete[] fields;
 
-#if GMOAPIVERSION >= 7
-	gmoWantQSet(gmo, 0);
-#endif
+   delete[] x_;
+   delete[] lb;
+   delete[] ub;
 
-	return prob;
+   if( prob_ == NULL )
+      delete prob;
+
+   gmoUseQSet(gmo, 0);
+
+   return prob_;
 }
 
-expression* GamsCouenne::parseGamsInstructions(CouenneProblem* prob, int codelen, int* opcodes, int* fields, int constantlen, double* constants) {
-	const bool debugoutput = false;
+Couenne::expression* GamsCouenne::parseGamsInstructions(
+   Couenne::CouenneProblem* prob,         /**< Couenne problem that holds variables */
+   int                codelen,            /**< length of GAMS instructions */
+   int*               opcodes,            /**< opcodes of GAMS instructions */
+   int*               fields,             /**< fields of GAMS instructions */
+   int                constantlen,        /**< length of GAMS constants pool */
+   double*            constants           /**< GAMS constants pool */
+)
+{
+   bool debugoutput = gevGetIntOpt(gev, gevInteger1) & 0x4;
+#define debugout if( debugoutput ) std::clog
 
-	list<expression*> stack;
+   std::list<expression*> stack;
 
-	int nargs = -1;
+   int nargs = -1;
 
-	for (int pos = 0; pos < codelen; ++pos)
-	{
-		GamsOpCode opcode = (GamsOpCode)opcodes[pos];
-		int address = fields[pos]-1;
+   for( int pos = 0; pos < codelen; ++pos )
+   {
+      GamsOpCode opcode = (GamsOpCode)opcodes[pos];
+      int address = fields[pos]-1;
 
-		if (debugoutput) std::clog << '\t' << GamsOpCodeName[opcode] << ": ";
+      debugout << '\t' << GamsOpCodeName[opcode] << ": ";
 
-		expression* exp = NULL;
+      expression* exp = NULL;
 
-		switch(opcode) {
-			case nlNoOp : { // no operation
-				if (debugoutput) std::clog << "ignored" << std::endl;
-			} break;
-			case nlPushV : { // push variable
-				address = gmoGetjSolver(gmo, address);
-				if (debugoutput) std::clog << "push variable " << address << std::endl;
-				exp = new exprClone(prob->Variables()[address]);
-			} break;
-			case nlPushI : { // push constant
-				if (debugoutput) std::clog << "push constant " << constants[address] << std::endl;
-				exp = new exprConst(constants[address]);
-			} break;
-			case nlStore: { // store row
-				if (debugoutput) std::clog << "ignored" << std::endl;
-			} break;
-			case nlAdd : { // add
-				if (debugoutput) std::clog << "add" << std::endl;
-				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = stack.back(); stack.pop_back();
-				exp = new exprSum(term1, term2);
-			} break;
-			case nlAddV: { // add variable
-				address = gmoGetjSolver(gmo, address);
-				if (debugoutput) std::clog << "add variable " << address << std::endl;
+      switch( opcode )
+      {
+         case nlNoOp:   // no operation
+         case nlStore:  // store row
+         case nlHeader: // header
+         {
+            debugout << "ignored" << std::endl;
+            break;
+         }
 
-				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = new exprClone(prob->Variables()[address]);
-				exp = new exprSum(term1, term2);
-			} break;
-			case nlAddI: { // add immediate
-				if (debugoutput) std::clog << "add constant " << constants[address] << std::endl;
+         case nlPushV: // push variable
+         {
+            address = gmoGetjSolver(gmo, address);
+            debugout << "push variable " << address << std::endl;
+            exp = new exprClone(prob->Variables()[address]);
+            break;
+         }
 
-				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = new exprConst(constants[address]);
-				exp = new exprSum(term1, term2);
-			} break;
-			case nlSub: { // minus
-				if (debugoutput) std::clog << "minus" << std::endl;
-				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = stack.back(); stack.pop_back();
-				exp = new exprSub(term2, term1);
-			} break;
-			case nlSubV: { // subtract variable
-				address = gmoGetjSolver(gmo, address);
-				if (debugoutput) std::clog << "substract variable " << address << std::endl;
+         case nlPushI: // push constant
+         {
+            debugout << "push constant " << constants[address] << std::endl;
+            exp = new exprConst(constants[address]);
+            break;
+         }
 
-				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = new exprClone(prob->Variables()[address]);
-				exp = new exprSub(term1, term2);
-			} break;
-			case nlSubI: { // subtract immediate
-				if (debugoutput) std::clog << "substract constant " << constants[address] << std::endl;
+         case nlPushZero: // push zero
+         {
+            debugout << "push constant zero" << std::endl;
+            exp = new exprConst(0.0);
+            break;
+         }
 
-				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = new exprConst(constants[address]);
-				exp = new exprSub(term1, term2);
-			} break;
-			case nlMul: { // multiply
-				if (debugoutput) std::clog << "multiply" << std::endl;
+         case nlAdd: // add
+         {
+            debugout << "add" << std::endl;
 
-				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = stack.back(); stack.pop_back();
-				exp = new exprMul(term1, term2);
-			} break;
-			case nlMulV: { // multiply variable
-				address = gmoGetjSolver(gmo, address);
-				if (debugoutput) std::clog << "multiply variable " << address << std::endl;
+            expression* term1 = stack.back(); stack.pop_back();
+            expression* term2 = stack.back(); stack.pop_back();
+            exp = new exprSum(term1, term2);
+            break;
+         }
 
-				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = new exprClone(prob->Variables()[address]);
-				exp = new exprMul(term1, term2);
-			} break;
-			case nlMulI: { // multiply immediate
-				if (debugoutput) std::clog << "multiply constant " << constants[address] << std::endl;
+         case nlAddV: // add variable
+         {
+            address = gmoGetjSolver(gmo, address);
+            debugout << "add variable " << address << std::endl;
 
-				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = new exprConst(constants[address]);
-				exp = new exprMul(term1, term2);
-			} break;
-			case nlDiv: { // divide
-				if (debugoutput) std::clog << "divide" << std::endl;
+            expression* term1 = stack.back(); stack.pop_back();
+            expression* term2 = new exprClone(prob->Variables()[address]);
+            exp = new exprSum(term1, term2);
+            break;
+         }
 
-				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = stack.back(); stack.pop_back();
-				if (term2->Type() == CONST)
-					exp = new exprMul(term2, new exprInv(term1));
-				else
-					exp = new exprDiv(term2, term1);
-			} break;
-			case nlDivV: { // divide variable
-				address = gmoGetjSolver(gmo, address);
-				if (debugoutput) std::clog << "divide variable " << address << std::endl;
+         case nlAddI: // add immediate
+         {
+            debugout << "add constant " << constants[address] << std::endl;
 
-				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = new exprClone(prob->Variables()[address]);
-				if (term1->Type() == CONST)
-					exp = new exprMul(term1, new exprInv(term2));
-				else
-					exp = new exprDiv(term1, term2);
-			} break;
-			case nlDivI: { // divide immediate
-				if (debugoutput) std::clog << "divide constant " << constants[address] << std::endl;
+            expression* term1 = stack.back(); stack.pop_back();
+            expression* term2 = new exprConst(constants[address]);
+            exp = new exprSum(term1, term2);
+            break;
+         }
 
-				expression* term1 = stack.back(); stack.pop_back();
-				expression* term2 = new exprConst(constants[address]);
-				exp = new exprDiv(term1, term2);
-			} break;
-			case nlUMin: { // unary minus
-				if (debugoutput) std::clog << "negate" << std::endl;
+         case nlSub: // minus
+         {
+            debugout << "minus" << std::endl;
+            expression* term1 = stack.back(); stack.pop_back();
+            expression* term2 = stack.back(); stack.pop_back();
+            exp = new exprSub(term2, term1);
+            break;
+         }
 
-				expression* term = stack.back(); stack.pop_back();
-				exp = new exprOpp(term);
-			} break;
-			case nlUMinV: { // unary minus variable
-				address = gmoGetjSolver(gmo, address);
-				if (debugoutput) std::clog << "push negated variable " << address << std::endl;
+         case nlSubV: // substract variable
+         {
+            address = gmoGetjSolver(gmo, address);
+            debugout << "substract variable " << address << std::endl;
 
-				exp = new exprOpp(new exprClone(prob->Variables()[address]));
-			} break;
-			case nlCallArg1 :
-			case nlCallArg2 :
-			case nlCallArgN : {
-				if (debugoutput) std::clog << "call function ";
-				GamsFuncCode func = GamsFuncCode(address+1); // here the shift by one was not a good idea
+            expression* term1 = stack.back(); stack.pop_back();
+            expression* term2 = new exprClone(prob->Variables()[address]);
+            exp = new exprSub(term1, term2);
+            break;
+         }
 
-				switch (func) {
-					case fnmin : {
-						if (debugoutput) std::clog << "min" << std::endl;
+         case nlSubI: // substract immediate
+         {
+            debugout << "substract constant " << constants[address] << std::endl;
 
-						expression* term1 = stack.back(); stack.pop_back();
-						expression* term2 = stack.back(); stack.pop_back();
-						exp = new exprMin(term1, term2);
-					} break;
-					case fnmax : {
-						if (debugoutput) std::clog << "max" << std::endl;
+            expression* term1 = stack.back(); stack.pop_back();
+            expression* term2 = new exprConst(constants[address]);
+            exp = new exprSub(term1, term2);
+            break;
+         }
 
-						expression* term1 = stack.back(); stack.pop_back();
-						expression* term2 = stack.back(); stack.pop_back();
-						exp = new exprMax(term1, term2);
-					} break;
-					case fnsqr : {
-						if (debugoutput) std::clog << "square" << std::endl;
+         case nlMul: // multiply
+         {
+            debugout << "multiply" << std::endl;
 
-						expression* term = stack.back(); stack.pop_back();
-						exp = new exprPow(term, new exprConst(2.));
-					} break;
-					case fnexp:
-					case fnslexp:
-					case fnsqexp: {
-						if (debugoutput) std::clog << "exp" << std::endl;
+            expression* term1 = stack.back(); stack.pop_back();
+            expression* term2 = stack.back(); stack.pop_back();
+            exp = new exprMul(term1, term2);
+            break;
+         }
 
-						expression* term = stack.back(); stack.pop_back();
-						exp = new exprExp(term);
-					} break;
-					case fnlog : {
-						if (debugoutput) std::clog << "ln" << std::endl;
+         case nlMulV: // multiply variable
+         {
+            address = gmoGetjSolver(gmo, address);
+            debugout << "multiply variable " << address << std::endl;
 
-						expression* term = stack.back(); stack.pop_back();
-						exp = new exprLog(term);
-					} break;
-					case fnlog10:
-					case fnsllog10:
-					case fnsqlog10: {
-						if (debugoutput) std::clog << "log10 = ln * 1/ln(10)" << std::endl;
+            expression* term1 = stack.back(); stack.pop_back();
+            expression* term2 = new exprClone(prob->Variables()[address]);
+            exp = new exprMul(term1, term2);
+            break;
+         }
 
-						expression* term = stack.back(); stack.pop_back();
-						exp = new exprMul(new exprLog(term), new exprConst(1./log(10.)));
-					} break;
-					case fnlog2 : {
-						if (debugoutput) std::clog << "log2 = ln * 1/ln(2)" << std::endl;
+         case nlMulI: // multiply immediate
+         {
+            debugout << "multiply constant " << constants[address] << std::endl;
 
-						expression* term = stack.back(); stack.pop_back();
-						exp = new exprMul(new exprLog(term), new exprConst(1./log(2.)));
-					} break;
-					case fnsqrt: {
-						if (debugoutput) std::clog << "sqrt" << std::endl;
+            expression* term1 = stack.back(); stack.pop_back();
+            expression* term2 = new exprConst(constants[address]);
+            exp = new exprMul(term1, term2);
+            break;
+         }
 
-						expression* term = stack.back(); stack.pop_back();
-						exp = new exprPow(term, new exprConst(.5));
-					} break;
-					case fnabs: {
-						if (debugoutput) std::clog << "abs" << std::endl;
+         case nlMulIAdd: // multiply immediate add
+         {
+            debugout << "multiply constant " << constants[address] << " and add " << std::endl;
 
-						expression* term = stack.back(); stack.pop_back();
-						exp = new exprAbs(term);
-					} break;
-					case fncos: {
-						if (debugoutput) std::clog << "cos" << std::endl;
+            expression* term1 = stack.back(); stack.pop_back();
+            term1 = new exprMul(term1, new exprConst(constants[address]));
+            expression* term2 = stack.back(); stack.pop_back();
 
-						expression* term = stack.back(); stack.pop_back();
-						exp = new exprCos(term);
-					} break;
-					case fnsin: {
-						if (debugoutput) std::clog << "sin" << std::endl;
+            exp = new exprSum(term1, term2);
+            break;
+         }
 
-						expression* term = stack.back(); stack.pop_back();
-						exp = new exprSin(term);
-					} break;
-					case fnpower:
-					case fnrpower: { // x ^ y
-						if (debugoutput) std::clog << "power" << std::endl;
+         case nlDiv: // divide
+         {
+            debugout << "divide" << std::endl;
 
-						expression* term1 = stack.back(); stack.pop_back();
-						expression* term2 = stack.back(); stack.pop_back();
-						if (term1->Type() == CONST)
-							exp = new exprPow(term2, term1);
-						else
-							exp = new exprExp(new exprMul(new exprLog(term2), term1));
-					} break;
-					case fncvpower: { // constant ^ x
-						if (debugoutput) std::clog << "power" << std::endl;
+            expression* term1 = stack.back(); stack.pop_back();
+            expression* term2 = stack.back(); stack.pop_back();
+            if( term2->Type() == CONST )
+               exp = new exprMul(term2, new exprInv(term1));
+            else
+               exp = new exprDiv(term2, term1);
+            break;
+         }
 
-						expression* term1 = stack.back(); stack.pop_back();
-						expression* term2 = stack.back(); stack.pop_back();
+         case nlDivV: // divide variable
+         {
+            address = gmoGetjSolver(gmo, address);
+            debugout << "divide variable " << address << std::endl;
 
-						assert(term2->Type() == CONST);
-						exp = new exprExp(new exprMul(new exprConst(log(((exprConst*)term2)->Value())), term1));
-						delete term2;
-					} break;
-					case fnvcpower: { // x ^ constant
-						if (debugoutput) std::clog << "power" << std::endl;
+            expression* term1 = stack.back(); stack.pop_back();
+            expression* term2 = new exprClone(prob->Variables()[address]);
+            if( term1->Type() == CONST )
+               exp = new exprMul(term1, new exprInv(term2));
+            else
+               exp = new exprDiv(term1, term2);
+            break;
+         }
 
-						expression* term1 = stack.back(); stack.pop_back();
-						expression* term2 = stack.back(); stack.pop_back();
-						assert(term1->Type() == CONST);
-						exp = new exprPow(term2, term1);
-					} break;
-					case fnpi: {
-						if (debugoutput) std::clog << "pi" << std::endl;
-						//TODO
-						assert(false);
-					} break;
-					case fndiv:
-					case fndiv0: {
-						expression* term1 = stack.back(); stack.pop_back();
-						expression* term2 = stack.back(); stack.pop_back();
-						if (term2->Type() == CONST)
-							exp = new exprMul(term2, new exprInv(term1));
-						else
-							exp = new exprDiv(term2, term1);
-					} break;
-					case fnslrec: // 1/x
-					case fnsqrec: { // 1/x
-						if (debugoutput) std::clog << "divide" << std::endl;
+         case nlDivI: // divide immediate
+         {
+            debugout << "divide constant " << constants[address] << std::endl;
 
-						expression* term = stack.back(); stack.pop_back();
-						exp = new exprInv(term);
-					} break;
-			    case fnpoly: { /* simple polynomial */
-						if (debugoutput) std::clog << "polynom of degree " << nargs-1 << std::endl;
-						assert(nargs >= 0);
-						switch (nargs) {
-							case 0:
-								delete stack.back(); stack.pop_back(); // delete variable of polynom
-								exp = new exprConst(0.);
-								break;
-							case 1: // "constant" polynom
-								exp = stack.back(); stack.pop_back();
-								delete stack.back(); stack.pop_back(); // delete variable of polynom
-								break;
-							default: { // polynom is at least linear
-								std::vector<expression*> coeff(nargs);
-								while (nargs) {
-									assert(!stack.empty());
-									coeff[nargs-1] = stack.back();
-									stack.pop_back();
-									--nargs;
-								}
-								assert(!stack.empty());
-								expression* var = stack.back(); stack.pop_back();
-								expression** monoms = new expression*[coeff.size()];
-								monoms[0] = coeff[0];
-								monoms[1] = new exprMul(coeff[1], var);
-								for (size_t i = 2; i < coeff.size(); ++i)
-									monoms[i] = new exprMul(coeff[i], new exprPow(new exprClone(var), new exprConst(i)));
-								exp = new exprSum(monoms, coeff.size());
-							}
-						}
-						nargs = -1;
-			    } break;
-					case fnceil: case fnfloor: case fnround:
-					case fnmod: case fntrunc: case fnsign:
-					case fnarctan: case fnerrf: case fndunfm:
-					case fndnorm: case fnerror: case fnfrac: case fnerrorl:
-			    case fnfact /* factorial */:
-			    case fnunfmi /* uniform random number */:
-			    case fnncpf /* fischer: sqrt(x1^2+x2^2+2*x3) */:
-			    case fnncpcm /* chen-mangasarian: x1-x3*ln(1+exp((x1-x2)/x3))*/:
-			    case fnentropy /* x*ln(x) */: case fnsigmoid /* 1/(1+exp(-x)) */:
-			    case fnboolnot: case fnbooland:
-			    case fnboolor: case fnboolxor: case fnboolimp:
-			    case fnbooleqv: case fnrelopeq: case fnrelopgt:
-			    case fnrelopge: case fnreloplt: case fnrelople:
-			    case fnrelopne: case fnifthen:
-			    case fnedist /* euclidian distance */:
-			    case fncentropy /* x*ln((x+d)/(y+d))*/:
-			    case fngamma: case fnloggamma: case fnbeta:
-			    case fnlogbeta: case fngammareg: case fnbetareg:
-			    case fnsinh: case fncosh: case fntanh:
-			    case fnsignpower /* sign(x)*abs(x)^c */:
-			    case fnncpvusin /* veelken-ulbrich */:
-			    case fnncpvupow /* veelken-ulbrich */:
-			    case fnbinomial:
-			    case fntan: case fnarccos:
-			    case fnarcsin: case fnarctan2 /* arctan(x2/x1) */:
-					default : {
-						char buffer[256];
-						sprintf(buffer, "Gams function code %d not supported.", func);
-						gevLogStat(gev, buffer);
-						return NULL;
-					}
-				}
-			} break;
-			case nlMulIAdd: {
-				if (debugoutput) std::clog << "multiply constant " << constants[address] << " and add " << std::endl;
+            expression* term1 = stack.back(); stack.pop_back();
+            expression* term2 = new exprConst(constants[address]);
+            exp = new exprDiv(term1, term2);
+            break;
+         }
 
-				expression* term1 = stack.back(); stack.pop_back();
-				term1 = new exprMul(term1, new exprConst(constants[address]));
-				expression* term2 = stack.back(); stack.pop_back();
+         case nlUMin: // unary minus
+         {
+            debugout << "negate" << std::endl;
 
-				exp = new exprSum(term1, term2);
-			} break;
-			case nlFuncArgN : {
-				nargs = address;
-				if (debugoutput) std::clog << nargs << " arguments" << std::endl;
-			} break;
-#if GMOAPIVERSION < 8
-			case nlArg: {
-				if (debugoutput) std::clog << "ignored" << std::endl;
-			} break;
-#endif
-			case nlHeader: { // header
-				if (debugoutput) std::clog << "ignored" << std::endl;
-			} break;
-			case nlPushZero: {
-				if (debugoutput) std::clog << "push constant zero" << std::endl;
-				exp = new exprConst(0.);
-			} break;
-#if GMOAPIVERSION < 8
-			case nlStoreS: { // store scaled row
-				if (debugoutput) std::clog << "ignored" << std::endl;
-			} break;
-#endif
-			default: {
-				char buffer[256];
-				sprintf(buffer, "Gams instruction %d not supported.", opcode);
-				gevLogStat(gev, buffer);
-				return NULL;
-			}
-		}
+            expression* term = stack.back(); stack.pop_back();
+            exp = new exprOpp(term);
+            break;
+         }
 
-		if (exp)
-			stack.push_back(exp);
-	}
+         case nlUMinV: // unary minus variable
+         {
+            address = gmoGetjSolver(gmo, address);
+            debugout << "push negated variable " << address << std::endl;
 
-	assert(stack.size() == 1);
-	return stack.back();
+            exp = new exprOpp(new exprClone(prob->Variables()[address]));
+            break;
+         }
+
+         case nlFuncArgN: // number of function arguments
+         {
+            nargs = address;
+            debugout << nargs << " arguments" << std::endl;
+            break;
+         }
+
+         case nlCallArg1 :
+         case nlCallArg2 :
+         case nlCallArgN :
+         {
+            debugout << "call function ";
+
+            switch( GamsFuncCode(address+1) )  // undo shift by 1
+            {
+               case fnmin:
+               {
+                  debugout << "min" << std::endl;
+
+                  expression* term1 = stack.back(); stack.pop_back();
+                  expression* term2 = stack.back(); stack.pop_back();
+                  exp = new exprMin(term1, term2);
+                  break;
+               }
+
+               case fnmax:
+               {
+                  debugout << "max" << std::endl;
+
+                  expression* term1 = stack.back(); stack.pop_back();
+                  expression* term2 = stack.back(); stack.pop_back();
+                  exp = new exprMax(term1, term2);
+                  break;
+               }
+
+               case fnsqr:
+               {
+                  debugout << "square" << std::endl;
+
+                  expression* term = stack.back(); stack.pop_back();
+                  exp = new exprPow(term, new exprConst(2.0));
+                  break;
+               }
+
+               case fnexp:
+               case fnslexp:
+               case fnsqexp:
+               {
+                  debugout << "exp" << std::endl;
+
+                  expression* term = stack.back(); stack.pop_back();
+                  exp = new exprExp(term);
+                  break;
+               }
+
+               case fnlog:
+               {
+                  debugout << "ln" << std::endl;
+
+                  expression* term = stack.back(); stack.pop_back();
+                  exp = new exprLog(term);
+                  break;
+               }
+
+               case fnlog10:
+               case fnsllog10:
+               case fnsqlog10:
+               {
+                  debugout << "log10 = ln * 1/ln(10)" << std::endl;
+
+                  expression* term = stack.back(); stack.pop_back();
+                  exp = new exprMul(new exprLog(term), new exprConst(1.0/log(10.0)));
+                  break;
+               }
+
+               case fnlog2 :
+               {
+                  debugout << "log2 = ln * 1/ln(2)" << std::endl;
+
+                  expression* term = stack.back(); stack.pop_back();
+                  exp = new exprMul(new exprLog(term), new exprConst(1.0/log(2.0)));
+                  break;
+               }
+
+               case fnsqrt:
+               {
+                  debugout << "sqrt" << std::endl;
+
+                  expression* term = stack.back(); stack.pop_back();
+                  exp = new exprPow(term, new exprConst(0.5));
+                  break;
+               }
+
+               case fnabs:
+               {
+                  debugout << "abs" << std::endl;
+
+                  expression* term = stack.back(); stack.pop_back();
+                  exp = new exprAbs(term);
+                  break;
+               }
+
+               case fncos:
+               {
+                  debugout << "cos" << std::endl;
+
+                  expression* term = stack.back(); stack.pop_back();
+                  exp = new exprCos(term);
+                  break;
+               }
+
+               case fnsin:
+               {
+                  debugout << "sin" << std::endl;
+
+                  expression* term = stack.back(); stack.pop_back();
+                  exp = new exprSin(term);
+                  break;
+               }
+
+               case fnpower:  // x ^ y
+               case fnrpower: // x ^ y
+               {
+                  debugout << "power(x,y) = exp(log(y)*x)" << std::endl;
+
+                  expression* term1 = stack.back(); stack.pop_back();
+                  expression* term2 = stack.back(); stack.pop_back();
+                  if( term1->Type() == CONST )
+                     exp = new exprPow(term2, term1);
+                  else
+                     exp = new exprExp(new exprMul(new exprLog(term2), term1));
+                  break;
+               }
+
+               case fncvpower: // constant ^ x
+               {
+                  debugout << "power(a,x) = exp(log(a)*x)" << std::endl;
+
+                  expression* term1 = stack.back(); stack.pop_back();
+                  expression* term2 = stack.back(); stack.pop_back();
+
+                  assert(term2->Type() == CONST);
+                  exp = new exprExp(new exprMul(new exprConst(log(((exprConst*)term2)->Value())), term1));
+                  delete term2;
+                  break;
+               }
+
+               case fnvcpower: // x ^ constant
+               {
+                  debugout << "power(x,a)" << std::endl;
+
+                  expression* term1 = stack.back(); stack.pop_back();
+                  expression* term2 = stack.back(); stack.pop_back();
+                  assert(term1->Type() == CONST);
+                  exp = new exprPow(term2, term1);
+                  break;
+               }
+
+               case fnsignpower: // sign(x)*abs(x)^c = x * abs(x)^(c-1)
+               {
+                  debugout << "signed power" << std::endl;
+                  expression* term1 = stack.back(); stack.pop_back();
+                  expression* term2 = stack.back(); stack.pop_back();
+
+                  assert(term1->Type() == CONST);
+                  exp = new exprMul(term2, new exprPow(new exprAbs(new exprClone(term2)), new exprConst(((exprConst*)term1)->Value() - 1.0)));
+                  delete term1;
+                  break;
+               }
+
+               case fnpi:
+               {
+                  debugout << "pi" << std::endl;
+                  exp = new exprConst(M_PI);
+                  break;
+               }
+
+               case fndiv:
+               case fndiv0:
+               {
+                  debugout << "divide" << std::endl;
+                  expression* term1 = stack.back(); stack.pop_back();
+                  expression* term2 = stack.back(); stack.pop_back();
+                  if( term2->Type() == CONST )
+                     exp = new exprMul(term2, new exprInv(term1));
+                  else
+                     exp = new exprDiv(term2, term1);
+                  break;
+               }
+
+               case fnslrec: // 1/x
+               case fnsqrec: // 1/x
+               {
+                  debugout << "reciproce" << std::endl;
+
+                  expression* term = stack.back(); stack.pop_back();
+                  exp = new exprInv(term);
+                  break;
+               }
+
+               case fnpoly: /* univariate polynomial */
+               {
+                  debugout << "univariate polynomial of degree " << nargs-1 << std::endl;
+                  assert(nargs >= 0);
+                  switch( nargs )
+                  {
+                     case 0:
+                        delete stack.back(); stack.pop_back(); // delete variable of polynomial
+                        exp = new exprConst(0.0);
+                        break;
+
+                     case 1: // "constant" polynomial
+                        exp = stack.back(); stack.pop_back();
+                        delete stack.back(); stack.pop_back(); // delete variable of polynomial
+                        break;
+
+                     default: // polynomial is at least linear
+                     {
+                        std::vector<expression*> coeff(nargs);
+                        while( nargs )
+                        {
+                           assert(!stack.empty());
+                           coeff[nargs-1] = stack.back();
+                           stack.pop_back();
+                           --nargs;
+                        }
+                        assert(!stack.empty());
+                        expression* var = stack.back(); stack.pop_back();
+                        expression** monomials = new expression*[coeff.size()];
+                        monomials[0] = coeff[0];
+                        monomials[1] = new exprMul(coeff[1], var);
+                        for( size_t i = 2; i < coeff.size(); ++i )
+                           monomials[i] = new exprMul(coeff[i], new exprPow(new exprClone(var), new exprConst(static_cast<double>(i))));
+                        exp = new exprSum(monomials, static_cast<int>(coeff.size()));
+                     }
+                  }
+                  nargs = -1;
+                  break;
+               }
+
+               // TODO some more we could handle
+               case fnceil: case fnfloor: case fnround:
+               case fnmod: case fntrunc: case fnsign:
+               case fnarctan: case fnerrf: case fndunfm:
+               case fndnorm: case fnerror: case fnfrac: case fnerrorl:
+               case fnfact /* factorial */:
+               case fnunfmi /* uniform random number */:
+               case fnncpf /* fischer: sqrt(x1^2+x2^2+2*x3) */:
+               case fnncpcm /* chen-mangasarian: x1-x3*ln(1+exp((x1-x2)/x3))*/:
+               case fnentropy /* x*ln(x) */: case fnsigmoid /* 1/(1+exp(-x)) */:
+               case fnboolnot: case fnbooland:
+               case fnboolor: case fnboolxor: case fnboolimp:
+               case fnbooleqv: case fnrelopeq: case fnrelopgt:
+               case fnrelopge: case fnreloplt: case fnrelople:
+               case fnrelopne: case fnifthen:
+               case fnedist /* euclidian distance */:
+               case fncentropy /* x*ln((x+d)/(y+d))*/:
+               case fngamma: case fnloggamma: case fnbeta:
+               case fnlogbeta: case fngammareg: case fnbetareg:
+               case fnsinh: case fncosh: case fntanh:
+               case fnncpvusin /* veelken-ulbrich */:
+               case fnncpvupow /* veelken-ulbrich */:
+               case fnbinomial:
+               case fntan: case fnarccos:
+               case fnarcsin: case fnarctan2 /* arctan(x2/x1) */:
+               default:
+               {
+                  char buffer[256];
+                  sprintf(buffer, "Gams function code %d not supported.", address+1);
+                  gevLogStat(gev, buffer);
+                  while( !stack.empty() )
+                  {
+                     delete stack.back();
+                     stack.pop_back();
+                  }
+                  return NULL;
+               }
+            }
+            break;
+         }
+
+         default:
+         {
+            char buffer[256];
+            sprintf(buffer, "Gams opcode %d not supported.", opcode);
+            gevLogStat(gev, buffer);
+            while( !stack.empty() )
+            {
+               delete stack.back();
+               stack.pop_back();
+            }
+            return NULL;
+         }
+      }
+
+      if( exp != NULL )
+         stack.push_back(exp);
+   }
+
+   assert(stack.size() == 1);
+   return stack.back();
+#undef debugout
 }
 
-CouenneProblem* GamsCouenne::setupProblemMIQQP() {
-//	printf("using MIQQP problem setup method\n");
-
-	int do2dir = 1;
-	int dohess = 1;
-#if GMOAPIVERSION >= 8
-	gmoHessLoad(gmo, 0, &do2dir, &dohess);
-#else
-   gmoHessLoad(gmo, 0, -1, &do2dir, &dohess);
-#endif
-	if (!dohess) {
-		gevLogStat(gev, "Failed to initialize Hessian structure. Trying usual setupProblem.");
-		return setupProblem();
-  }
-
-	CouenneProblem* prob = new CouenneProblem(NULL, NULL, jnlst);
-
-	//add variables
-	for (int i = 0; i < gmoN(gmo); ++i) {
-		switch (gmoGetVarTypeOne(gmo, i)) {
-			case var_X:
-				prob->addVariable(false, prob->domain());
-				break;
-			case var_B:
-			case var_I:
-				prob->addVariable(true, prob->domain());
-				break;
-			case var_S1:
-			case var_S2:
-		  	//TODO prob->addVariable(false, prob->domain());
-		  	gevLogStat(gev, "Special ordered sets not supported by Gams/Couenne link yet.");
-		  	return NULL;
-			case var_SC:
-			case var_SI:
-		  	gevLogStat(gev, "Semicontinuous and semiinteger variables not supported by Couenne.");
-		  	return NULL;
-			default:
-		  	gevLogStat(gev, "Unknown variable type.");
-		  	return NULL;
-		}
-	}
-
-	// add variable bounds and initial values
-	CouNumber* x_ = new CouNumber[gmoN(gmo)];
-	CouNumber* lb = new CouNumber[gmoN(gmo)];
-	CouNumber* ub = new CouNumber[gmoN(gmo)];
-
-	gmoGetVarL(gmo, x_);
-	gmoGetVarLower(gmo, lb);
-	gmoGetVarUpper(gmo, ub);
-
-	// translate from gmoM/Pinf to Couenne infinity
-	for (int i = 0; i < gmoN(gmo); ++i)	{
-		if (lb[i] <= gmoMinf(gmo))
-			lb[i] = -COUENNE_INFINITY;
-		if (ub[i] >= gmoPinf(gmo))
-			ub[i] =  COUENNE_INFINITY;
-	}
-
-	prob->domain()->push(gmoN(gmo), x_, lb, ub);
-
-	delete[] x_;
-	delete[] lb;
-	delete[] ub;
-
-	exprGroup::lincoeff lin;
-	expression *body = NULL;
-//	std::vector<quadElem> qcoeff;
-
-  lin.reserve(gmoN(gmo));
-//  qcoeff.reserve(gmoHessLagNz(gmo));
-
-	double* null   = new double[gmoN(gmo)];
-	double* lambda = new double[gmoM(gmo)];
-	for (int i = 0; i < gmoN(gmo); ++i)
-		null[i] = 0.;
-	for (int i = 0; i < gmoM(gmo); ++i)
-		lambda[i] = 0.;
-
-	double constant, dummy;
-	double* linear = new double[gmoN(gmo)];
-	int nerror, irc;
-
-	int* hess_iRow   = new int[gmoHessLagNz(gmo)];
-	int* hess_jCol   = new int[gmoHessLagNz(gmo)];
-	double* hess_val = new double[gmoHessLagNz(gmo)];
-
-	gmoHessLagStruct(gmo, hess_iRow, hess_jCol);
-
-	// add objective function
-
-	double isMin = (gmoSense(gmo) == Obj_Min) ? 1 : -1;
-
-	memset(linear, 0, gmoN(gmo)*sizeof(double));
-#if GMOAPIVERSION >= 9
-   irc = gmoEvalGradObj(gmo, null, &constant, linear, &dummy, &nerror);
-   assert(0 == irc);
-#elif GMOAPIVERSION == 8
-	irc = gmoEvalObjGrad(gmo, null, &constant, linear, &dummy, &nerror);
-	assert(0 == irc);
-#else
-   nerror = gmoEvalObjGrad(gmo, null, &constant, linear, &dummy);
-#endif
-   assert(0 == nerror);
-   
-	for (int i = 0; i < gmoN(gmo); ++i) {
-		if (!linear[i])
-			continue;
-		lin.push_back(pair<exprVar*, CouNumber>(prob->Var(i), isMin*linear[i]));
-	}
-  assert((int)lin.size() == gmoObjNZ(gmo));
-
-	if (gmoObjNLNZ(gmo)) {
-		memset(hess_val, 0, gmoHessLagNz(gmo)*sizeof(double));
-#if GMOAPIVERSION >= 8
-		irc = gmoHessLagValue(gmo, null, lambda, hess_val, isMin, 0., &nerror);
-#else
-      nerror = gmoHessLagValue(gmo, null, lambda, hess_val, isMin, 0.);
-      irc = 0;
-#endif
-		if (irc || nerror) {
-			gevLogStat(gev, "Error evaluation hessian of objective function.\n");
-			return NULL;
-		}
-
-		int nzcount = 0;
-		for (int i = 0; i < gmoHessLagNz(gmo); ++i) {
-			if (hess_val[i])
-				++nzcount;
-		}
-
-		expression** summands = new expression*[nzcount];
-		int k = 0;
-		for (int i = 0; i < gmoHessLagNz(gmo); ++i) {
-			if (!hess_val[i])
-				continue;
-			double coeff = hess_val[i];
-			if (hess_iRow[i] == hess_jCol[i]) {
-				summands[k] = new exprPow(new exprClone(prob->Var(hess_iRow[i])), new exprConst(2.));
-				if (coeff != 2.)
-					summands[k] = new exprMul(new exprConst(coeff/2.), summands[k]);
-			} else if (coeff == 1.) {
-				summands[k] = new exprMul(new exprClone(prob->Var(hess_iRow[i])), new exprClone(prob->Var(hess_jCol[i])));
-			} else {
-				expression** prod = new expression*[3];
-				prod[0] = new exprConst(coeff);
-				prod[1] = new exprClone(prob->Var(hess_iRow[i]));
-				prod[2] = new exprClone(prob->Var(hess_jCol[i]));
-				summands[k] = new exprMul(prod, 3);
-			}
-			++k;
-		}
-
-		body = new exprGroup(isMin*constant, lin, summands, nzcount);
-
-//		for (int i = 0; i < gmoHessLagNz(gmo); ++i) {
-//			if (!hess_val[i])
-//				continue;
-//			qcoeff.push_back(quadElem(prob->Var(hess_iRow[i]), prob->Var(hess_jCol[i]),
-//				(hess_iRow[i] == hess_jCol[i] ? 0.5 : 1) * 2 * hess_val[i]));
-//		}
-
-//	  body = new exprQuad(isMin*constant, lin, qcoeff, NULL, 0);
-	} else {
-	  body = new exprGroup(isMin*constant, lin, NULL, 0);
-	}
-
-	prob->addObjective(body, "min");
-
-	// add constraints
-
-	for (int i = 0; i < gmoM(gmo); ++i) {
-		lin.resize(0);
-//		qcoeff.clear();
-
-		memset(linear, 0, gmoN(gmo)*sizeof(double));
-#if GMOAPIVERSION >= 8
-		irc = gmoEvalGrad(gmo, i, null, &constant, linear, &dummy, &nerror);
-		assert(0 == irc);
-#else
-      nerror = gmoEvalGrad(gmo, i, null, &constant, linear, &dummy);
-#endif
-		assert(nerror == 0);
-
-		for (int j = 0; j < gmoN(gmo); ++j) {
-			if (!linear[j])
-				continue;
-			lin.push_back(pair<exprVar*, CouNumber>(prob->Var(j), linear[j]));
-		}
-
-#if defined(GAMS_BUILD) || defined(GMOAPIVERSION)
-		if (gmoGetEquOrderOne(gmo, i) > order_L)
-#else
-		if (gmoNLfunc(gmo, i))
-#endif
-		{
-			lambda[i] = -1.;
-			memset(hess_val, 0, gmoHessLagNz(gmo)*sizeof(double));
-#if GMOAPIVERSION >= 8
-         irc = gmoHessLagValue(gmo, null, lambda, hess_val, 0., 1., &nerror);
-#else
-         nerror = gmoHessLagValue(gmo, null, lambda, hess_val, 0., 1.);
-			irc = 0;
-#endif
-			lambda[i] = 0.;
-			if (irc || nerror) {
-				gevLogStat(gev, "Error evaluation hessian of constraint function.\n");
-				return NULL;
-			}
-
-			int nzcount = 0;
-			for (int j = 0; j < gmoHessLagNz(gmo); ++j) {
-				if (hess_val[j])
-					++nzcount;
-			}
-
-			expression** summands = new expression*[nzcount];
-			int k = 0;
-			for (int j = 0; j < gmoHessLagNz(gmo); ++j) {
-				if (!hess_val[j])
-					continue;
-				double coeff = hess_val[j];
-				if (hess_iRow[j] == hess_jCol[j]) {
-					summands[k] = new exprPow(new exprClone(prob->Var(hess_iRow[j])), new exprConst(2.));
-					if (coeff != 2.)
-						summands[k] = new exprMul(new exprConst(coeff/2.), summands[k]);
-				} else if (coeff == 1.) {
-					summands[k] = new exprMul(new exprClone(prob->Var(hess_iRow[j])), new exprClone(prob->Var(hess_jCol[j])));
-				} else {
-					expression** prod = new expression*[3];
-					prod[0] = new exprConst(coeff);
-					prod[1] = new exprClone(prob->Var(hess_iRow[j]));
-					prod[2] = new exprClone(prob->Var(hess_jCol[j]));
-					summands[k] = new exprMul(prod, 3);
-				}
-				++k;
-			}
-
-			body = new exprGroup(constant, lin, summands, nzcount);
-
-//			for (int j = 0; j < gmoHessLagNz(gmo); ++j) {
-//				if (!hess_val[j])
-//					continue;
-//				qcoeff.push_back(quadElem(prob->Var(hess_iRow[j]), prob->Var(hess_jCol[j]),
-//					(hess_iRow[j] == hess_jCol[j] ? 0.5 : 1) * 2 * hess_val[j]));
-//			}
-//
-//		  body = new exprQuad(constant, lin, qcoeff, NULL, 0);
-		} else {
-		  body = new exprGroup(constant, lin, NULL, 0);
-		}
-
-		switch (gmoGetEquTypeOne(gmo, i)) {
-			case equ_E:
-				prob->addEQConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
-				break;
-			case equ_L:
-				prob->addLEConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
-				break;
-			case equ_G:
-				prob->addGEConstraint(body, new exprConst(gmoGetRhsOne(gmo, i)));
-				break;
-			case equ_N:
-				// TODO I doubt that adding a RNG constraint with -infty/infty bounds would work here
-				gevLogStat(gev, "Free constraints not supported by Gams/Couenne link yet. Constraint ignored.");
-				break;
-		}
-	}
-
-	delete[] null;
-	delete[] lambda;
-	delete[] linear;
-	delete[] hess_iRow;
-	delete[] hess_jCol;
-	delete[] hess_val;
-
-	return prob;
-}
-
-void GamsCouenne::printOptions() {
-	const Bonmin::RegisteredOptions::RegOptionsList& optionlist(roptions->RegisteredOptionsList());
-
-	std::ofstream tabfile("couenne_options_table.tex");
-	roptions->writeLatexOptionsTable(tabfile, Bonmin::RegisteredOptions::CouenneCategory);
-
-	// options sorted by category
-	std::map<std::string, std::list<SmartPtr<RegisteredOption> > > opts;
-
-	for (Bonmin::RegisteredOptions::RegOptionsList::const_iterator it(optionlist.begin()); it!=optionlist.end(); ++it) {
-		//  	jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "%s %s %d\n", it->first.c_str(), it->second->RegisteringCategory().c_str(), regoptions->categoriesInfo(it->second->RegisteringCategory()));
-
-		std::string category(it->second->RegisteringCategory());
-
-		if (category.empty()) continue;
-		// skip ipopt and bonmin options
-		if (roptions->categoriesInfo(category)==Bonmin::RegisteredOptions::IpoptCategory) continue;
-		if (roptions->categoriesInfo(category)==Bonmin::RegisteredOptions::BonminCategory) continue;
-
-//		if (it->second->Name()=="nlp_solver" ||
-//				it->second->Name()=="file_solution" ||
-//				it->second->Name()=="sos_constraints")
-//			continue;
-//
-//		if (category=="Bonmin ecp based strong branching")
-//			category="ECP based strong branching";
-//		if (category=="MILP cutting planes in hybrid")
-//			category+=" algorithm (B-Hyb)";
-//		if (category=="Nlp solution robustness")
-//			category="NLP solution robustness";
-//		if (category=="Nlp solve options in B-Hyb")
-//			category="NLP solves in hybrid algorithm (B-Hyb)";
-//		if (category=="Options for MILP subsolver in OA decomposition" || category=="Options for OA decomposition")
-//			category="Outer Approximation Decomposition (B-OA)";
-//		if (category=="Options for ecp cuts generation")
-//			category="ECP cuts generation";
-//		if (category=="Options for non-convex problems")
-//			category="Nonconvex problems";
-//		if (category=="Output ond log-levels ptions")
-//			category="Output";
-//		if (category=="nlp interface option")
-//			category="NLP interface";
-//
-//		if (it->second->Name()=="oa_cuts_log_level" ||
-//				it->second->Name()=="nlp_log_level" ||
-//				it->second->Name()=="milp_log_level" ||
-//				it->second->Name()=="oa_log_level" ||
-//				it->second->Name()=="oa_log_frequency")
-//			category="Output";
-
-		opts[category].push_back(it->second);
-	}
-
-	for (std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ!=opts.end(); ++it_categ) {
-		std::string category(it_categ->first);
-		//  	jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "category %s:\n", it_categ->first.c_str());
-		jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "\\subsubsection{%s}\n", category.c_str());
-		for (std::string::size_type spacepos = category.find(' '); spacepos != std::string::npos; spacepos = category.find(' '))
-			category[spacepos]='_';
-		jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "\\label{sec:%s}\n\n", category.c_str());
-
-		for (std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt!=it_categ->second.end(); ++it_opt) {
-			//    	jnlst->Printf(J_SUMMARY, J_DOCUMENTATION, "   %s\n", (*it_opt)->Name().c_str());
-			(*it_opt)->OutputLatexDescription(*jnlst);
-		}
-	}
-}
-
-
-DllExport GamsCouenne* STDCALL createNewGamsCouenne() {
-	return new GamsCouenne();
-}
-
-DllExport int STDCALL couCallSolver(couRec_t *Cptr) {
-	assert(Cptr != NULL);
-	return ((GamsCouenne*)Cptr)->callSolver();
-}
-
-DllExport int STDCALL couModifyProblem(couRec_t *Cptr) {
-	assert(Cptr != NULL);
-	return ((GamsCouenne*)Cptr)->modifyProblem();
-}
-
-DllExport int STDCALL couHaveModifyProblem(couRec_t *Cptr) {
-	assert(Cptr != NULL);
-	return ((GamsCouenne*)Cptr)->haveModifyProblem();
-}
-
-DllExport int STDCALL couReadyAPI(couRec_t *Cptr, gmoHandle_t Gptr, optHandle_t Optr) {
-	assert(Cptr != NULL);
-	assert(Gptr != NULL);
-	char msg[256];
-	if (!gmoGetReady(msg, sizeof(msg)))
-		return 1;
-	if (!gevGetReady(msg, sizeof(msg)))
-		return 1;
-	return ((GamsCouenne*)Cptr)->readyAPI(Gptr, Optr);
-}
-
-DllExport void STDCALL couFree(couRec_t **Cptr) {
-	assert(Cptr != NULL);
-	delete (GamsCouenne*)*Cptr;
-	*Cptr = NULL;
-}
-
-DllExport void STDCALL couCreate(couRec_t **Cptr, char *msgBuf, int msgBufLen) {
-	assert(Cptr != NULL);
-	*Cptr = (couRec_t*) new GamsCouenne();
-	if (msgBufLen && msgBuf)
-		msgBuf[0] = 0;
-}
+#define GAMSSOLVERC_ID         cou
+#define GAMSSOLVERC_CLASS      GamsCouenne
+#include "GamsSolverC_tpl.cpp"

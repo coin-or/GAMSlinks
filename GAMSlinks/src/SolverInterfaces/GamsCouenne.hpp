@@ -1,72 +1,60 @@
-// Copyright (C) GAMS Development and others 2009
+// Copyright (C) GAMS Development and others 2009-2011
 // All Rights Reserved.
-// This code is published under the Common Public License.
-//
-// $Id$
+// This code is published under the Eclipse Public License.
 //
 // Author: Stefan Vigerske
 
 #ifndef GAMSCOUENNE_HPP_
 #define GAMSCOUENNE_HPP_
 
-#include "GAMSlinksConfig.h"
-#include "GamsSolver.hpp"
-#include "GamsMINLP.hpp"
+#include <cstdlib>
 
-#include "IpSmartPtr.hpp"
+#include "GamsSolver.hpp"
 
 class GamsMessageHandler;
-namespace Bonmin {
-	class OsiTMINLPInterface;
-	class RegisteredOptions;
-}
-namespace Ipopt {
-	class Journalist;
-	class OptionsList;
-}
+namespace Couenne
+{
 class CouenneProblem;
+class CouenneSetup;
 class expression;
-class GamsCbc;
+}
 
-class GamsCouenne: public GamsSolver {
+class GamsCouenne: public GamsSolver
+{
 private:
-	struct gmoRec* gmo;
-	struct gevRec* gev;
-		
-	char           couenne_message[100];
+   struct gmoRec*        gmo;                /**< GAMS modeling object */
+   struct gevRec*        gev;                /**< GAMS environment */
 
-	Ipopt::SmartPtr<Ipopt::Journalist> jnlst;
-	Ipopt::SmartPtr<Bonmin::RegisteredOptions> roptions;
-	Ipopt::SmartPtr<Ipopt::OptionsList> options;
-	
-	Ipopt::SmartPtr<GamsMINLP> minlp;
-//	CouenneProblem*            problem;
-	
-	GamsCbc*       gamscbc;
+   Couenne::CouenneSetup* couenne_setup;     /**< Couenne solver application */
+   GamsMessageHandler*   msghandler;         /**< COIN-OR message handler for GAMS */
 
-	bool isMIP();
-  CouenneProblem* setupProblem();
-  CouenneProblem* setupProblemMIQQP();
-  CouenneProblem* setupProblemNew();
-  expression* parseGamsInstructions(CouenneProblem* prob, int codelen, int* opcodes, int* fields, int constantlen, double* constants);
-  void printOptions();
+   bool isMIP();
+   Couenne::CouenneProblem* setupProblem();
+   Couenne::expression* parseGamsInstructions(
+      Couenne::CouenneProblem* prob,         /**< Couenne problem that holds variables */
+      int                codelen,            /**< length of GAMS instructions */
+      int*               opcodes,            /**< opcodes of GAMS instructions */
+      int*               fields,             /**< fields of GAMS instructions */
+      int                constantlen,        /**< length of GAMS constants pool */
+      double*            constants           /**< GAMS constants pool */
+   );
 
 public:
-	GamsCouenne();
-	~GamsCouenne();
-	
-	int readyAPI(struct gmoRec* gmo, struct optRec* opt);
-	
-//	int haveModifyProblem();
-	
-//	int modifyProblem();
-	
-	int callSolver();
-	
-	const char* getWelcomeMessage() { return couenne_message; }
+   GamsCouenne()
+   : gmo(NULL),
+     gev(NULL),
+     couenne_setup(NULL),
+     msghandler(NULL)
+   { }
 
-}; // GamsCouenne
+   ~GamsCouenne();
 
-extern "C" DllExport GamsCouenne* STDCALL createNewGamsCouenne();
+   int readyAPI(
+      struct gmoRec*     gmo,                /**< GAMS modeling object */
+      struct optRec*     opt                 /**< GAMS options object */
+   );
+
+   int callSolver();
+};
 
 #endif /*GAMSCOUENNE_HPP_*/

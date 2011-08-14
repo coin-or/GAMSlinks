@@ -49,8 +49,6 @@ int GamsBonmin::readyAPI(
    if( getGmoReady() || getGevReady() )
       return 1;
 
-   delete bonmin_setup;
-
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
@@ -65,6 +63,7 @@ int GamsBonmin::readyAPI(
 
    gevLogStatPChar(gev, "\nCOIN-OR Bonmin (Bonmin Library "BONMIN_VERSION")\nwritten by P. Bonami\n");
 
+   delete bonmin_setup;
    bonmin_setup = new BonminSetup();
 
    // instead of initializeOptionsAndJournalist we do it our own way, so we can use a GamsJournal
@@ -106,6 +105,7 @@ int GamsBonmin::readyAPI(
 int GamsBonmin::callSolver()
 {
    assert(gmo != NULL);
+   assert(bonmin_setup != NULL);
 
    if( isMIP() && gmoOptFile(gmo) == 0 )
    {
@@ -138,7 +138,7 @@ int GamsBonmin::callSolver()
       gevLogStat(gev, "Error: Bonmin requires variables.");
       gmoSolveStatSet(gmo, gmoSolveStat_Capability);
       gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
-      return 1;
+      return 0;
    }
 
    if( gmoGetVarTypeCnt(gmo, gmovar_SC) > 0 || gmoGetVarTypeCnt(gmo, gmovar_SI) > 0 )
@@ -146,7 +146,7 @@ int GamsBonmin::callSolver()
       gevLogStat(gev, "ERROR: Semicontinuous and semiinteger variables not supported by Bonmin.\n");
       gmoSolveStatSet(gmo, gmoSolveStat_Capability);
       gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
-      return 1;
+      return 0;
    }
 
    // Change some options
@@ -256,46 +256,28 @@ int GamsBonmin::callSolver()
    bonmin_setup->options()->GetBoolValue("print_eval_error", printevalerror, "");
    gmoEvalErrorNoMsg(gmo, printevalerror);
 
+   setNumThreadsBlas(gev, gevThreads(gev));
+
    if( msghandler == NULL )
       msghandler = new GamsMessageHandler(gev);
 
-   // initialize Bonmin for current MINLP and options
-   // the easiest would be to call bonmin_setup.initializeBonmin(minlp), but then we cannot set the message handler
-   // so we do the following
    try
    {
-      OsiTMINLPInterface first_osi_tminlp;
-      first_osi_tminlp.passInMessageHandler(msghandler);
-      first_osi_tminlp.initialize(bonmin_setup->roptions(), bonmin_setup->options(), bonmin_setup->journalist(), GetRawPtr(minlp));
-      // double* sol = new double[gmoN(gmo)];
-      // gmoGetVarL(gmo, sol);
-      // first_osi_tminlp.activateRowCutDebugger(sol);
-      // delete[] sol;
-      bonmin_setup->initialize(first_osi_tminlp); // this will clone first_osi_tminlp
-   }
-   catch( CoinError& error )
-   {
-      char buf[1024];
-      snprintf(buf, 1024, "%s::%s\n%s\n", error.className().c_str(), error.methodName().c_str(), error.message().c_str());
-      gevLogStatPChar(gev, buf);
-      return 0;
-   }
-   catch( std::bad_alloc )
-   {
-      gevLogStat(gev, "Error: Not enough memory!");
-      return -1;
-   }
-   catch( ... )
-   {
-      gevLogStat(gev, "Error: Unknown exception thrown!");
-      return -1;
-   }
+      // initialize Bonmin for current MINLP and options
+      // the easiest would be to call bonmin_setup.initializeBonmin(minlp), but then we cannot set the message handler
+      // so we do the following
+      {
+         OsiTMINLPInterface first_osi_tminlp;
+         first_osi_tminlp.passInMessageHandler(msghandler);
+         first_osi_tminlp.initialize(bonmin_setup->roptions(), bonmin_setup->options(), bonmin_setup->journalist(), GetRawPtr(minlp));
+         // double* sol = new double[gmoN(gmo)];
+         // gmoGetVarL(gmo, sol);
+         // first_osi_tminlp.activateRowCutDebugger(sol);
+         // delete[] sol;
+         bonmin_setup->initialize(first_osi_tminlp); // this will clone first_osi_tminlp
+      }
 
-   setNumThreadsBlas(gev, gevThreads(gev));
-
-   // try solving
-   try
-   {
+      // try solving
       Bab bb;
 
       minlp->nlp->clockStart = gevTimeDiffStart(gev);
@@ -316,21 +298,20 @@ int GamsBonmin::callSolver()
       if( bb.bestSolution() != NULL )
       {
          char buf[100];
-         snprintf(buf, 100, "\nBonmin finished. Found feasible point. Objective function value = %g.", bb.bestObj());
+         snprintf(buf, 100, "\nBonmin finished. Found feasible solution. Objective function value = %g.", bb.bestObj());
          gevLogStat(gev, buf);
-
-         gmoSetHeadnTail(gmo, gmoHobjval, minlp->isMin * bb.bestObj());
 
          double* negLambda = new double[gmoM(gmo)];
          memset(negLambda, 0, gmoM(gmo)*sizeof(double));
 
          gmoSetSolution2(gmo, bb.bestSolution(), negLambda);
+         gmoSetHeadnTail(gmo, gmoHobjval, minlp->isMin * bb.bestObj());
 
          delete[] negLambda;
       }
       else
       {
-         gevLogStat(gev, "\nBonmin finished. No feasible point found.");
+         gevLogStat(gev, "\nBonmin finished. No feasible solution found.");
       }
 
       // print eval statistics, if requested
@@ -459,7 +440,14 @@ int GamsBonmin::callSolver()
       gevLogStat(gev, buf);
       gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
       gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
-      return 0;
+      return -1;
+   }
+   catch( IpoptException& error )
+   {
+      gevLogStat(gev, error.Message().c_str());
+      gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
+      gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+      return -1;
    }
    catch( TNLPSolver::UnsolvedError* E)
    {

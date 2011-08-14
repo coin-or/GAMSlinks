@@ -62,7 +62,7 @@ if COIN_HAS_BONMIN
 endif
 
 if COIN_HAS_COUENNE
-#  libGamsCoin_la_SOURCES += GamsCouenne.cpp
+  libGamsCoin_la_SOURCES += GamsCouenne.cpp
 endif
 
 if COIN_HAS_OS
