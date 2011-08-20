@@ -13,8 +13,9 @@
 #endif
 
 #if GMOAPIVERSION >= 10
-#define gmoMaxSingleFNL gmoNLCodeSizeMaxRow
-#define gmoMaxQnz       gmoMaxQNZ
+#define gmoMaxSingleFNL        gmoNLCodeSizeMaxRow
+#define gmoMaxQnz              gmoMaxQNZ
+#define gmoEvalErrorNoMsg(a,b) gmoEvalErrorMsg(a,!(b))
 #endif
 
 #if GMOAPIVERSION > 8
