@@ -28,6 +28,8 @@
 
 #include "GamsCompatibility.h"
 
+#include "CbcBranchActual.hpp"  // for CbcSOS
+#include "CbcBranchLotsize.hpp" // for CbcLotsize
 #include "BonCbc.hpp"
 #include "BonCouenneSetup.hpp"
 #include "BonCouenneInterface.hpp"
@@ -144,6 +146,8 @@ int GamsCouenne::callSolver()
       return 0;
    }
 
+   // Couenne cannot handle semicontinuous, semiinteger or SOS
+   // we could pass the CbcObjects to the B&B model, but it seems that the constraints need to be present also in CouenneProblem, which seems not possible in general
    if( gmoGetVarTypeCnt(gmo, gmovar_SC) > 0 || gmoGetVarTypeCnt(gmo, gmovar_SI) > 0 )
    {
       gevLogStat(gev, "ERROR: Semicontinuous and semiinteger variables not supported by Couenne.\n");
@@ -152,7 +156,6 @@ int GamsCouenne::callSolver()
       return 0;
    }
 
-   // TODO: can Couenne handle SOS?
    if( gmoGetVarTypeCnt(gmo, gmovar_S1) > 0 || gmoGetVarTypeCnt(gmo, gmovar_S2) > 0 )
    {
       gevLogStat(gev, "ERROR: Special ordered sets not supported by Couenne.\n");
@@ -308,15 +311,20 @@ int GamsCouenne::callSolver()
    char buffer[1024];
    try
    {
+      Bab bb;
+
       // setup CouenneInterface, so that we can pass in our message handler
       CouenneInterface* ci = new CouenneInterface;
       ci->initialize(couenne_setup->roptions(), couenne_setup->options(), couenne_setup->journalist(), GetRawPtr(minlp));
       ci->passInMessageHandler(msghandler);
 
+      // not sufficient to support SOS/SemiCon/SemiInt: passSOSSemiCon(ci, &bb.model());
+
       minlp->nlp->clockStart = gevTimeDiffStart(gev);
 
       // initialize Couenne, e.g., reformulate problem
-      if( !couenne_setup->InitializeCouenne(NULL, problem, GetRawPtr(minlp), ci) )
+      // pass also bb in case user enabled recoginition of SOS in problem
+      if( !couenne_setup->InitializeCouenne(NULL, problem, GetRawPtr(minlp), ci, &bb) )
       {
          gevLogStat(gev, "Reformulation finds model infeasible.\n");
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
@@ -344,7 +352,6 @@ int GamsCouenne::callSolver()
       couenne_setup->setDoubleParameter(BabSetupBase::MaxTime, reslim - preprocessTime);
 
       // do branch and bound
-      Bab bb;
       bb.setUsingCouenne(true);
       bb(*couenne_setup);
 
@@ -484,33 +491,37 @@ CouenneProblem* GamsCouenne::setupProblem()
    double* constants = (double*)gmoPPool(gmo);
    int codelen;
 
+   exprGroup::lincoeff lin;
+   expression* body = NULL;
+
    double* x_ = new double[gmoN(gmo)];
    double* lb = new double[gmoN(gmo)];
    double* ub = new double[gmoN(gmo)];
 
-   exprGroup::lincoeff lin;
-   expression* body = NULL;
+   gmoGetVarL(gmo, x_);
+   gmoGetVarLower(gmo, lb);
+   gmoGetVarUpper(gmo, ub);
 
    // add variables
    for( int i = 0; i < gmoN(gmo); ++i )
    {
       switch( gmoGetVarTypeOne(gmo, i) )
       {
+         case gmovar_SC:
+            lb[i] = 0.0;
          case gmovar_X:
+         case gmovar_S1:
+         case gmovar_S2:
             prob->addVariable(false, prob->domain());
             break;
+
+         case gmovar_SI:
+            ub[i] = 0.0;
          case gmovar_B:
          case gmovar_I:
             prob->addVariable(true, prob->domain());
             break;
-         case gmovar_S1:
-         case gmovar_S2:
-            gevLogStat(gev, "Special ordered sets not supported by Gams/Couenne link yet.");
-            goto TERMINATE;
-         case gmovar_SC:
-         case gmovar_SI:
-            gevLogStat(gev, "Semicontinuous and semiinteger variables not supported by Couenne.");
-            goto TERMINATE;
+
          default:
             gevLogStat(gev, "Unknown variable type.");
             goto TERMINATE;
@@ -518,9 +529,6 @@ CouenneProblem* GamsCouenne::setupProblem()
    }
 
    // add variable bounds and initial values
-   gmoGetVarL(gmo, x_);
-   gmoGetVarLower(gmo, lb);
-   gmoGetVarUpper(gmo, ub);
    prob->domain()->push(gmoN(gmo), x_, lb, ub);
 
    // add objective function
@@ -1238,6 +1246,112 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
    assert(stack.size() == 1);
    return stack.back();
 #undef debugout
+}
+
+void GamsCouenne::passSOSSemiCon(
+   Couenne::CouenneInterface* ci,            /**< Couenne interface where to add objects for SOS and semicon constraints */
+   CbcModel*             cbcmodel            /**< CBC model used for B&B */
+   )
+{
+   assert(dynamic_cast<OsiSolverInterface*>(ci) != NULL);
+
+   // assemble SOS of type 1 or 2
+   int numSos1, numSos2, nzSos;
+   gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);
+   if( nzSos > 0 )
+   {
+      int numSos = numSos1 + numSos2;
+      OsiObject** sosobjects = new OsiObject*[numSos];
+
+      int* sostype  = new int[numSos];
+      int* sosbeg   = new int[numSos+1];
+      int* sosind   = new int[nzSos];
+      double* soswt = new double[nzSos];
+
+      gmoGetSosConstraints(gmo, sostype, sosbeg, sosind, soswt);
+
+      int*    which   = new int[CoinMin(gmoN(gmo), nzSos)];
+      double* weights = new double[CoinMin(gmoN(gmo), nzSos)];
+
+      for( int i = 0; i < numSos; ++i )
+      {
+         int k = 0;
+         for( int j = sosbeg[i]; j < sosbeg[i+1]; ++j, ++k )
+         {
+            which[k]   = sosind[j];
+            weights[k] = soswt[j];
+            assert(gmoGetVarTypeOne(gmo, sosind[j]) == (sostype[i] == 1 ? gmovar_S1 : gmovar_S2));
+         }
+         sosobjects[i] = new CbcSOS(cbcmodel, k, which, weights, i, sostype[i]);
+         sosobjects[i]->setPriority(gmoN(gmo)-k); // branch on long sets first
+      }
+
+      delete[] which;
+      delete[] weights;
+      delete[] sostype;
+      delete[] sosbeg;
+      delete[] sosind;
+      delete[] soswt;
+
+      (dynamic_cast<OsiSolverInterface*>(ci))->addObjects(numSos, sosobjects);
+      for( int i = 0; i < numSos; ++i )
+         delete sosobjects[i];
+      delete[] sosobjects;
+   }
+
+   // assemble semicontinuous and semiinteger variables
+   int numSemi = gmoGetVarTypeCnt(gmo, gmovar_SC) + gmoGetVarTypeCnt(gmo, gmovar_SI);
+   if( numSemi > 0)
+   {
+      OsiObject** semiobjects = new OsiObject*[numSemi];
+      int object_nr = 0;
+      double points[4];
+      points[0] = 0.;
+      points[1] = 0.;
+      for( int i = 0; i < gmoN(gmo); ++i )
+      {
+         enum gmoVarType vartype = (enum gmoVarType)gmoGetVarTypeOne(gmo, i);
+         if( vartype != gmovar_SC && vartype != gmovar_SI )
+            continue;
+
+         double varlb = gmoGetVarLowerOne(gmo, i);
+         double varub = gmoGetVarUpperOne(gmo, i);
+
+         if( vartype == gmovar_SI && varub - varlb <= 1000 )
+         {
+            // model lotsize for discrete variable as a set of integer values
+            int len = (int)(varub - varlb + 2);
+            double* points2 = new double[len];
+            points2[0] = 0.;
+            int j = 1;
+            for( int p = (int)varlb; p <= varub; ++p, ++j )
+               points2[j] = (double)p;
+            semiobjects[object_nr] = new CbcLotsize(cbcmodel, i, len, points2, false);
+            delete[] points2;
+         }
+         else
+         {
+            // lotsize for continuous variable or integer with large upper bounds
+            if( vartype == gmovar_SI )
+               gevLogStat(gev, "Warning: Support of semiinteger variables with a range larger than 1000 is experimental.\n");
+            points[2] = varlb;
+            points[3] = varub;
+            if( varlb == varub ) // var. can be only 0 or varlb
+               semiobjects[object_nr] = new CbcLotsize(cbcmodel, i, 2, points+1, false);
+            else // var. can be 0 or in the range between low and upper
+               semiobjects[object_nr] = new CbcLotsize(cbcmodel, i, 2, points,   true );
+         }
+
+         ++object_nr;
+      }
+      assert(object_nr == numSemi);
+
+      /* pass in lotsize objects */
+      (dynamic_cast<OsiSolverInterface*>(ci))->addObjects(numSemi, semiobjects);
+      for( int i = 0; i < numSemi; ++i )
+         delete semiobjects[i];
+      delete[] semiobjects;
+   }
 }
 
 #define GAMSSOLVERC_ID         cou

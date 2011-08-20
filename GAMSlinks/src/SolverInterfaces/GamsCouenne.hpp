@@ -12,8 +12,10 @@
 #include "GamsSolver.hpp"
 
 class GamsMessageHandler;
+class CbcModel;
 namespace Couenne
 {
+class CouenneInterface;
 class CouenneProblem;
 class CouenneSetup;
 class expression;
@@ -37,6 +39,11 @@ private:
       int*               fields,             /**< fields of GAMS instructions */
       int                constantlen,        /**< length of GAMS constants pool */
       double*            constants           /**< GAMS constants pool */
+   );
+   /** passes OsiObjects for SOS, semicontinuous, and semiinteger variables to CouenneInterface */
+   void passSOSSemiCon(
+      Couenne::CouenneInterface* ci,         /**< Couenne interface where to add objects for SOS and semicon constraints */
+      CbcModel*          cbcmodel            /**< CBC model used for B&B */
    );
 
 public:
