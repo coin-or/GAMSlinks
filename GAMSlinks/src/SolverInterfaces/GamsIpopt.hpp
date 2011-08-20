@@ -12,6 +12,7 @@
 #include "IpTNLP.hpp"
 #include "IpIpoptApplication.hpp"
 
+/** GAMS interface to Ipopt */
 class GamsIpopt : public GamsSolver
 {
 private:

@@ -17,6 +17,7 @@ namespace Bonmin
 class BonminSetup;
 }
 
+/** GAMS interface to Bonmin */
 class GamsBonmin : public GamsSolver
 {
 private:

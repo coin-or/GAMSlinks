@@ -87,7 +87,7 @@ void GamsOptions::setOpt(
    struct optRec*     opt_                /**< GAMS options handler */
 )
 {
-   assert(!optionshandle);
+   assert(optionshandle == NULL);
 
    char buffer[512];
    if( !optGetReady(buffer, 512) )

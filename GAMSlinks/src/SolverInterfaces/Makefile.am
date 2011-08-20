@@ -66,6 +66,6 @@ if COIN_HAS_COUENNE
 endif
 
 if COIN_HAS_OS
-#  libGamsCoin_la_SOURCES += GamsOS.cpp GamsOSxL.cpp
+  libGamsCoin_la_SOURCES += GamsOS.cpp GamsOSxL.cpp
   bin_SCRIPTS += optmyos.def
 endif

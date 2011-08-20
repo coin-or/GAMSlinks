@@ -56,9 +56,8 @@ host_triplet = @host@
 #  libGamsCoin_la_SOURCES += GamsScip.cpp
 @COIN_HAS_BONMIN_TRUE@am__append_9 = GamsMINLP.cpp GamsBonmin.cpp
 @COIN_HAS_COUENNE_TRUE@am__append_10 = GamsCouenne.cpp
-
-#  libGamsCoin_la_SOURCES += GamsOS.cpp GamsOSxL.cpp
-@COIN_HAS_OS_TRUE@am__append_11 = optmyos.def
+@COIN_HAS_OS_TRUE@am__append_11 = GamsOS.cpp GamsOSxL.cpp
+@COIN_HAS_OS_TRUE@am__append_12 = optmyos.def
 subdir = src/SolverInterfaces
 DIST_COMMON = $(am__includecoin_HEADERS_DIST) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -85,7 +84,8 @@ am__DEPENDENCIES_1 =
 am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp \
 	GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp \
 	GamsCbc.cpp GamsJournal.cpp GamsNLP.cpp GamsIpopt.cpp \
-	GamsMINLP.cpp GamsBonmin.cpp GamsCouenne.cpp
+	GamsMINLP.cpp GamsBonmin.cpp GamsCouenne.cpp GamsOS.cpp \
+	GamsOSxL.cpp
 @COIN_HAS_OSI_TRUE@am__objects_1 = GamsMessageHandler.lo \
 @COIN_HAS_OSI_TRUE@	GamsOsiHelper.lo GamsOsi.lo
 @COIN_HAS_CBC_TRUE@am__objects_2 = GamsCbc.lo
@@ -93,9 +93,10 @@ am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp \
 @COIN_HAS_IPOPT_TRUE@	GamsIpopt.lo
 @COIN_HAS_BONMIN_TRUE@am__objects_4 = GamsMINLP.lo GamsBonmin.lo
 @COIN_HAS_COUENNE_TRUE@am__objects_5 = GamsCouenne.lo
+@COIN_HAS_OS_TRUE@am__objects_6 = GamsOS.lo GamsOSxL.lo
 am_libGamsCoin_la_OBJECTS = GamsSolver.lo $(am__objects_1) \
 	$(am__objects_2) $(am__objects_3) $(am__objects_4) \
-	$(am__objects_5)
+	$(am__objects_5) $(am__objects_6)
 libGamsCoin_la_OBJECTS = $(am_libGamsCoin_la_OBJECTS)
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 SCRIPTS = $(bin_SCRIPTS)
@@ -406,13 +407,13 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 lib_LTLIBRARIES = libGamsCoin.la
 libGamsCoin_la_SOURCES = GamsSolver.cpp $(am__append_1) \
 	$(am__append_4) $(am__append_7) $(am__append_9) \
-	$(am__append_10)
+	$(am__append_10) $(am__append_11)
 libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_LIBS)
 libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_DEPENDENCIES)
 libGamsCoin_la_LDFLAGS = -module -no-undefined
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = $(am__append_2) $(am__append_5) $(am__append_8)
-bin_SCRIPTS = $(am__append_3) $(am__append_6) $(am__append_11)
+bin_SCRIPTS = $(am__append_3) $(am__append_6) $(am__append_12)
 @COIN_IS_WINDOWS_FALSE@SCRIPTSUFFIX = us.run
 @COIN_IS_WINDOWS_TRUE@SCRIPTSUFFIX = nt.cmd
 all: all-am
@@ -511,6 +512,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMINLP.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsNLP.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOS.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOSxL.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSolver.Plo@am__quote@

@@ -15,6 +15,7 @@
 class GamsMessageHandler;
 class OsiSolverInterface;
 
+/** GAMS interface to solvers with Osi interface */
 class GamsOsi : public GamsSolver
 {
 public:

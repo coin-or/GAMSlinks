@@ -15,6 +15,7 @@ class CbcModel;
 class GamsMessageHandler;
 class OsiSolverInterface;
 
+/** GAMS interface to CBC */
 class GamsCbc : public GamsSolver
 {
 private:

@@ -38,9 +38,12 @@ public:
       struct optRec*     opt_ = NULL         /**< GAMS options handler, if NULL and setOpt is not called, an own one might be created */
    )
    : gev(gev_),
-     optionshandle(opt_),
-     opt_is_own(false)
-   { }
+     optionshandle(NULL),
+     opt_is_own(true)
+   {
+      if( opt_ != NULL )
+         setOpt(opt_);
+   }
 
    ~GamsOptions();
 

@@ -21,6 +21,7 @@ class CouenneSetup;
 class expression;
 }
 
+/** GAMS interface to Couenne */
 class GamsCouenne: public GamsSolver
 {
 private:
