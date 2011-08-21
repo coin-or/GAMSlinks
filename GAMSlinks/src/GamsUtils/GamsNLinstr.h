@@ -92,10 +92,4 @@ typedef enum
    fndummy
 } GamsFuncCode;
 
-/** gives opcode from a GAMS instruction */
-#define getGamsInstrOpCode(instr) ((GamsOpCode)((instr)>>26))
-
-/** gives (0-based) address from a GAMS instruction */
-#define getGamsInstrAddress(instr) (((instr) & 67108863)-1)
-
 #endif /*GAMSNLINSTR_H_*/

@@ -10,7 +10,7 @@
 #
 # Copyright (C) 2006-2011 GAMS Development and others
 # All Rights Reserved.
-# This file is part of the open source package Coin which is distributed
+# This file is part of the open source package GAMSlinks which is distributed
 # under the Eclipse Public License.
 ## --------------------- ##
 ## M4sh Initialization.  ##
@@ -1350,7 +1350,7 @@ gives unlimited permission to copy, distribute and modify it.
 
 Copyright (C) 2006-2011 GAMS Development and others
 All Rights Reserved.
-This file is part of the open source package Coin which is distributed
+This file is part of the open source package GAMSlinks which is distributed
 under the Eclipse Public License.
 _ACEOF
   exit 0

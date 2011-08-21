@@ -14,7 +14,7 @@ AC_INIT([GAMSlinks],[trunk],[https://projects.coin-or.org/GAMSlinks/newticket])
 
 AC_COPYRIGHT([Copyright (C) 2006-2011 GAMS Development and others
 All Rights Reserved.
-This file is part of the open source package Coin which is distributed
+This file is part of the open source package GAMSlinks which is distributed
 under the Eclipse Public License.])
 
 # List one file in the package so that the configure script can test
