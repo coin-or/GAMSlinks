@@ -43,18 +43,20 @@
 /** data for gmo reader */
 struct SCIP_ReaderData
 {
-   gmoHandle_t gmo;
-   gevHandle_t gev;
+   gmoHandle_t           gmo;                /**< GAMS model object */
+   gevHandle_t           gev;                /**< GAMS environment */
 };
 
 /** problem data */
 struct SCIP_ProbData
 {
-   gmoHandle_t gmo;
-   gevHandle_t gev;
-   SCIP_VAR**  vars;
+   gmoHandle_t           gmo;                /**< GAMS model object */
+   gevHandle_t           gev;                /**< GAMS environment */
+   SCIP_VAR**            vars;               /**< SCIP variables as corresponding to GMO variables */
+   SCIP_VAR*             objvar;             /**< SCIP variable used to model objective function */
+   SCIP_VAR*             objconst;           /**< SCIP variable used to model objective constant */
 #if 0
-   char*       conssattrfile;
+   char*                 conssattrfile;
 #endif
 };
 
@@ -78,6 +80,16 @@ SCIP_DECL_PROBDELORIG(probdataDelOrigGmo)
       SCIP_CALL( SCIPreleaseVar(scip, &(*probdata)->vars[i]) );
    }
    SCIPfreeMemoryArray(scip, &(*probdata)->vars);
+
+   if( (*probdata)->objvar != NULL )
+   {
+      SCIP_CALL( SCIPreleaseVar(scip, &(*probdata)->objvar) );
+   }
+
+   if( (*probdata)->objconst != NULL )
+   {
+      SCIP_CALL( SCIPreleaseVar(scip, &(*probdata)->objconst) );
+   }
 
    SCIPfreeMemory(scip, probdata);
 
@@ -980,6 +992,7 @@ SCIP_RETCODE createProblem(
 
    /* create SCIP problem */
    SCIP_CALL( SCIPallocMemory(scip, &probdata) );
+   BMSclearMemory(probdata);
    probdata->gmo = gmo;
    probdata->gev = gev;
 
@@ -991,7 +1004,7 @@ SCIP_RETCODE createProblem(
 
    /* initialize QMaker, if nonlinear */
    if( gmoNLNZ(gmo) > 0 || objnonlinear )
-      gmoWantQSet(gmo, 1);
+      gmoUseQSet(gmo, 1);
 
    SCIP_CALL( SCIPallocMemoryArray(scip, &probdata->vars, gmoN(gmo)) );
    vars = probdata->vars;
@@ -1325,24 +1338,23 @@ SCIP_RETCODE createProblem(
    if( objnonlinear )
    {
       /* make constraint out of nonlinear objective function */
-      SCIP_VAR* objvar = NULL;
       int j, nz, nlnz, qnz;
       double lhs, rhs;
       
       assert(gmoGetObjOrder(gmo) == gmoorder_L || gmoGetObjOrder(gmo) == gmoorder_Q || gmoGetObjOrder(gmo) == gmoorder_NL);
 
-      SCIP_CALL( SCIPcreateVar(scip, &objvar, "xobj", -SCIPinfinity(scip), SCIPinfinity(scip), 1.0, SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL, NULL) );
-      SCIP_CALL( SCIPaddVar(scip, objvar) );
+      SCIP_CALL( SCIPcreateVar(scip, &probdata->objvar, "xobj", -SCIPinfinity(scip), SCIPinfinity(scip), 1.0, SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL, NULL) );
+      SCIP_CALL( SCIPaddVar(scip, probdata->objvar) );
       SCIPdebugMessage("added objective variable ");
-      SCIPdebug( SCIPprintVar(scip, objvar, NULL) );
+      SCIPdebug( SCIPprintVar(scip, probdata->objvar, NULL) );
 
-      if( gmoGetObjOrder(gmo) != order_NL )
+      if( gmoGetObjOrder(gmo) != gmoorder_NL )
       {
          gmoGetObjSparse(gmo, indices, coefs, NULL, &nz, &nlnz);
          for( j = 0; j < nz; ++j )
             consvars[j] = vars[indices[j]];
 
-         consvars[nz] = objvar;
+         consvars[nz] = probdata->objvar;
          coefs[nz] = -1.0;
          ++nz;
 
@@ -1394,7 +1406,7 @@ SCIP_RETCODE createProblem(
             }
          }
 
-         consvars[linnz] = objvar;
+         consvars[linnz] = probdata->objvar;
          coefs[linnz] = -1.0;
          ++linnz;
 
@@ -1431,17 +1443,14 @@ SCIP_RETCODE createProblem(
       SCIPdebugMessage("added objective constraint ");
       SCIPdebug( SCIPprintCons(scip, con, NULL) );
       SCIP_CALL( SCIPreleaseCons(scip, &con) );
-      SCIP_CALL( SCIPreleaseVar(scip, &objvar) );
    }
    else if( !SCIPisZero(scip, gmoObjConst(gmo)) )
    {
       /* handle constant term in linear objective by adding a fixed variable */
-      SCIP_VAR* objconst;
-      SCIP_CALL( SCIPcreateVar(scip, &objconst, "objconst", 1.0, 1.0, gmoObjConst(gmo), SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL, NULL) );
-      SCIP_CALL( SCIPaddVar(scip, objconst) );
+      SCIP_CALL( SCIPcreateVar(scip, &probdata->objconst, "objconst", 1.0, 1.0, gmoObjConst(gmo), SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL, NULL) );
+      SCIP_CALL( SCIPaddVar(scip, probdata->objconst) );
       SCIPdebugMessage("added variable for objective constant: ");
-      SCIPdebug( SCIPprintVar(scip, objconst, NULL) );
-      SCIP_CALL( SCIPreleaseVar(scip, &objconst) );
+      SCIPdebug( SCIPprintVar(scip, probdata->objconst, NULL) );
    }
 
    if( gmoSense(gmo) == gmoObj_Max )
@@ -1468,7 +1477,7 @@ SCIP_RETCODE createProblem(
 
    /* deinitialize QMaker, if nonlinear */
    if( gmoNLNZ(gmo) > 0 || objnonlinear )
-      gmoWantQSet(gmo, 0);
+      gmoUseQSet(gmo, 0);
 
    return SCIP_OKAY;
 }
@@ -1506,7 +1515,24 @@ SCIP_RETCODE tryGmoSol(
    gmoGetVarL(gmo, vals);
 
    SCIP_CALL( SCIPsetSolVals(scip, sol, gmoN(gmo), probdata->vars, vals) );
-   /* TODO if we have an extra objective variable, then need to set its value here too */
+
+   /* if we have extra variable for objective, then need to set its value too */
+   if( probdata->objvar != NULL )
+   {
+      double objval;
+      int numErr;
+      gmoEvalFuncObj(gmo, vals, &objval, &numErr);
+      if( numErr == 0 )
+      {
+         SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objvar, objval) );
+      }
+   }
+
+   /* if we have extra variable for objective constant, then need to set its value to 1.0 here too */
+   if( probdata->objconst != NULL )
+   {
+      SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objconst, 1.0) );
+   }
 
    SCIPfreeBufferArray(scip, &vals);
 
