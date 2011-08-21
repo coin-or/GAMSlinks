@@ -67,6 +67,7 @@ int GamsCbc::readyAPI(
 
 #ifdef GAMS_BUILD
 #include "coinlibdCL1svn.h"
+   char buffer[512];
    auditGetLine(buffer, sizeof(buffer));
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);

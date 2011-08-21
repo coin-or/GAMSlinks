@@ -110,7 +110,8 @@ bool GamsSolver::checkLicense(
 }
 
 bool GamsSolver::checkAcademicLicense(
-   struct gmoRec*     gmo                 /**< GAMS modeling object */
+   struct gmoRec*     gmo,                /**< GAMS modeling object */
+   bool&              isdemo              /**< bool to indicate whether check succeeded because model fit into demo size */
 )
 {
    assert(gmo != NULL);
@@ -127,6 +128,7 @@ bool GamsSolver::checkAcademicLicense(
    if( licenseCheck(gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo)) )
    {
       // model larger than demo and no solver-specific license; check if we have an academic license
+      isdemo = false;
       int isAcademic = 0;
       licenseQueryOption("GAMS", "ACADEMIC", &isAcademic);
       if( !isAcademic )
@@ -137,8 +139,18 @@ bool GamsSolver::checkAcademicLicense(
          return false;
       }
    }
+   else
+   {
+      // model fits into demo size
+      int isAcademic = 0;
+      licenseQueryOption("GAMS", "ACADEMIC", &isAcademic);
+      // if we have no academic license, then this check succeeds only because model fits into demo limitations, so indicate this
+      isdemo = !isAcademic;
+   }
 #undef SUB_OC
 #undef GEVPTR
+#else
+   isdemo = false;
 #endif
 
    return true;

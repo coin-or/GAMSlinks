@@ -212,6 +212,8 @@ GAMSlinks/src/SolverInterfaces/optmyos.def -text
 GAMSlinks/src/SolverInterfaces/optmyos.gms -text
 GAMSlinks/src/SolverInterfaces/optmyos.html -text
 GAMSlinks/src/SolverInterfaces/optmyos.txt -text
+GAMSlinks/src/SolverInterfaces/scip/reader_gmo.c -text
+GAMSlinks/src/SolverInterfaces/scip/reader_gmo.h -text
 GAMSlinks/src/config.h.in -text
 GAMSlinks/src/config_gamslinks.h.in -text
 GAMSlinks/test/Makefile.am -text

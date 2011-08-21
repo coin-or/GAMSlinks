@@ -52,12 +52,15 @@ host_triplet = @host@
 @COIN_HAS_CBC_TRUE@am__append_6 = optmycbc.def
 @COIN_HAS_IPOPT_TRUE@am__append_7 = GamsJournal.cpp GamsNLP.cpp GamsIpopt.cpp 
 @COIN_HAS_IPOPT_TRUE@am__append_8 = GamsJournal.hpp GamsNLP.hpp GamsIpopt.hpp
-
-#  libGamsCoin_la_SOURCES += GamsScip.cpp
-@COIN_HAS_BONMIN_TRUE@am__append_9 = GamsMINLP.cpp GamsBonmin.cpp
-@COIN_HAS_COUENNE_TRUE@am__append_10 = GamsCouenne.cpp
-@COIN_HAS_OS_TRUE@am__append_11 = GamsOS.cpp GamsOSxL.cpp
-@COIN_HAS_OS_TRUE@am__append_12 = optmyos.def
+@COIN_HAS_SCIP_TRUE@am__append_9 = GamsScip.cpp scip/reader_gmo.c
+@COIN_HAS_SCIP_TRUE@am__append_10 = GamsScip.hpp
+@COIN_HAS_BONMIN_TRUE@am__append_11 = GamsMINLP.cpp GamsBonmin.cpp
+@COIN_HAS_BONMIN_TRUE@am__append_12 = GamsMINLP.hpp GamsBonmin.hpp
+@COIN_HAS_COUENNE_TRUE@am__append_13 = GamsCouenne.cpp
+@COIN_HAS_COUENNE_TRUE@am__append_14 = GamsCouenne.hpp
+@COIN_HAS_OS_TRUE@am__append_15 = GamsOS.cpp GamsOSxL.cpp
+@COIN_HAS_OS_TRUE@am__append_16 = GamsOS.hpp GamsOSxL.hpp
+@COIN_HAS_OS_TRUE@am__append_17 = optmyos.def
 subdir = src/SolverInterfaces
 DIST_COMMON = $(am__includecoin_HEADERS_DIST) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -84,24 +87,33 @@ am__DEPENDENCIES_1 =
 am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp \
 	GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp \
 	GamsCbc.cpp GamsJournal.cpp GamsNLP.cpp GamsIpopt.cpp \
-	GamsMINLP.cpp GamsBonmin.cpp GamsCouenne.cpp GamsOS.cpp \
-	GamsOSxL.cpp
+	GamsScip.cpp scip/reader_gmo.c GamsMINLP.cpp GamsBonmin.cpp \
+	GamsCouenne.cpp GamsOS.cpp GamsOSxL.cpp
 @COIN_HAS_OSI_TRUE@am__objects_1 = GamsMessageHandler.lo \
 @COIN_HAS_OSI_TRUE@	GamsOsiHelper.lo GamsOsi.lo
 @COIN_HAS_CBC_TRUE@am__objects_2 = GamsCbc.lo
 @COIN_HAS_IPOPT_TRUE@am__objects_3 = GamsJournal.lo GamsNLP.lo \
 @COIN_HAS_IPOPT_TRUE@	GamsIpopt.lo
-@COIN_HAS_BONMIN_TRUE@am__objects_4 = GamsMINLP.lo GamsBonmin.lo
-@COIN_HAS_COUENNE_TRUE@am__objects_5 = GamsCouenne.lo
-@COIN_HAS_OS_TRUE@am__objects_6 = GamsOS.lo GamsOSxL.lo
+@COIN_HAS_SCIP_TRUE@am__objects_4 = GamsScip.lo reader_gmo.lo
+@COIN_HAS_BONMIN_TRUE@am__objects_5 = GamsMINLP.lo GamsBonmin.lo
+@COIN_HAS_COUENNE_TRUE@am__objects_6 = GamsCouenne.lo
+@COIN_HAS_OS_TRUE@am__objects_7 = GamsOS.lo GamsOSxL.lo
 am_libGamsCoin_la_OBJECTS = GamsSolver.lo $(am__objects_1) \
 	$(am__objects_2) $(am__objects_3) $(am__objects_4) \
-	$(am__objects_5) $(am__objects_6)
+	$(am__objects_5) $(am__objects_6) $(am__objects_7)
 libGamsCoin_la_OBJECTS = $(am_libGamsCoin_la_OBJECTS)
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 SCRIPTS = $(bin_SCRIPTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
@@ -114,7 +126,8 @@ SOURCES = $(libGamsCoin_la_SOURCES)
 DIST_SOURCES = $(am__libGamsCoin_la_SOURCES_DIST)
 am__includecoin_HEADERS_DIST = GamsMessageHandler.hpp \
 	GamsOsiHelper.hpp GamsOsi.hpp GamsCbc.hpp GamsJournal.hpp \
-	GamsNLP.hpp GamsIpopt.hpp
+	GamsNLP.hpp GamsIpopt.hpp GamsScip.hpp GamsMINLP.hpp \
+	GamsBonmin.hpp GamsCouenne.hpp GamsOS.hpp GamsOSxL.hpp
 includecoinHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(includecoin_HEADERS)
 ETAGS = etags
@@ -399,6 +412,7 @@ EXTRA_DIST =
 DISTCLEANFILES = 
 AM_CPPFLAGS = \
   -I`$(CYGPATH_W) $(srcdir)/..` \
+  -I`$(CYGPATH_W) $(srcdir)/scip` \
   -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` \
   -I`$(CYGPATH_W) $(srcdir)/../GamsUtils/$(GAMS_VERSION)` \
   $(GAMSSOLVERLIB_CFLAGS)
@@ -407,19 +421,21 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 lib_LTLIBRARIES = libGamsCoin.la
 libGamsCoin_la_SOURCES = GamsSolver.cpp $(am__append_1) \
 	$(am__append_4) $(am__append_7) $(am__append_9) \
-	$(am__append_10) $(am__append_11)
+	$(am__append_11) $(am__append_13) $(am__append_15)
 libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_LIBS)
 libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_DEPENDENCIES)
 libGamsCoin_la_LDFLAGS = -module -no-undefined
 includecoindir = $(includedir)/coin
-includecoin_HEADERS = $(am__append_2) $(am__append_5) $(am__append_8)
-bin_SCRIPTS = $(am__append_3) $(am__append_6) $(am__append_12)
+includecoin_HEADERS = $(am__append_2) $(am__append_5) $(am__append_8) \
+	$(am__append_10) $(am__append_12) $(am__append_14) \
+	$(am__append_16)
+bin_SCRIPTS = $(am__append_3) $(am__append_6) $(am__append_17)
 @COIN_IS_WINDOWS_FALSE@SCRIPTSUFFIX = us.run
 @COIN_IS_WINDOWS_TRUE@SCRIPTSUFFIX = nt.cmd
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .lo .o .obj
+.SUFFIXES: .c .cpp .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -516,7 +532,37 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOSxL.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsScip.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSolver.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_gmo.Plo@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	if $(LTCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Plo"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+reader_gmo.lo: scip/reader_gmo.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT reader_gmo.lo -MD -MP -MF "$(DEPDIR)/reader_gmo.Tpo" -c -o reader_gmo.lo `test -f 'scip/reader_gmo.c' || echo '$(srcdir)/'`scip/reader_gmo.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/reader_gmo.Tpo" "$(DEPDIR)/reader_gmo.Plo"; else rm -f "$(DEPDIR)/reader_gmo.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='scip/reader_gmo.c' object='reader_gmo.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_gmo.lo `test -f 'scip/reader_gmo.c' || echo '$(srcdir)/'`scip/reader_gmo.c
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

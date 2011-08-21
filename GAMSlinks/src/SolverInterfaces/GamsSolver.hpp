@@ -32,17 +32,19 @@ public:
    static int getGevReady();
 
    /** calls GAMS license check, if build by GAMS
-    * @return True if license check was skipped or successful
+    * @return True if license check was skipped or successful or model fits into demo size restrictions
     */
    bool checkLicense(
       struct gmoRec*     gmo                 /**< GAMS modeling object */
    );
 
    /** calls GAMS academic license check, if build by GAMS
-    * @return True if license check was skipped or an academic GAMS license was found
+    * @return True if license check was skipped or an academic GAMS license was found or model fits into demo size restrictions
+    * If model fits into demo size limitations but also an academic license is available, isdemo is set to false.
     */
    bool checkAcademicLicense(
-      struct gmoRec*     gmo                 /**< GAMS modeling object */
+      struct gmoRec*     gmo,                /**< GAMS modeling object */
+      bool&              isdemo              /**< bool to indicate whether check succeeded because model fit into demo size */
    );
 
    /** registers a GAMS/CPLEX license, if build by GAMS

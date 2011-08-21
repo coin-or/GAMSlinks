@@ -11,6 +11,7 @@ DISTCLEANFILES =
 
 AM_CPPFLAGS = \
   -I`$(CYGPATH_W) $(srcdir)/..` \
+  -I`$(CYGPATH_W) $(srcdir)/scip` \
   -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` \
   -I`$(CYGPATH_W) $(srcdir)/../GamsUtils/$(GAMS_VERSION)` \
   $(GAMSSOLVERLIB_CFLAGS)
@@ -54,18 +55,22 @@ if COIN_HAS_IPOPT
 endif
 
 if COIN_HAS_SCIP
-#  libGamsCoin_la_SOURCES += GamsScip.cpp
+  libGamsCoin_la_SOURCES += GamsScip.cpp scip/reader_gmo.c
+  includecoin_HEADERS    += GamsScip.hpp
 endif
 
 if COIN_HAS_BONMIN
   libGamsCoin_la_SOURCES += GamsMINLP.cpp GamsBonmin.cpp
+  includecoin_HEADERS    += GamsMINLP.hpp GamsBonmin.hpp
 endif
 
 if COIN_HAS_COUENNE
   libGamsCoin_la_SOURCES += GamsCouenne.cpp
+  includecoin_HEADERS    += GamsCouenne.hpp
 endif
 
 if COIN_HAS_OS
   libGamsCoin_la_SOURCES += GamsOS.cpp GamsOSxL.cpp
+  includecoin_HEADERS    += GamsOS.hpp GamsOSxL.hpp
   bin_SCRIPTS += optmyos.def
 endif

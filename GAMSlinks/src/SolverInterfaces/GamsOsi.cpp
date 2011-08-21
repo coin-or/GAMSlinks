@@ -313,7 +313,8 @@ int GamsOsi::readyAPI(
          case SOPLEX:
          {
 #ifdef COIN_HAS_OSISPX
-            if( !checkAcademicLicense(gmo) )
+            bool isdemo;
+            if( !checkAcademicLicense(gmo, isdemo) )
             {
                gevLogStat(gev, "*** Use of SOPLEX is limited to academic users.");
                gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");
