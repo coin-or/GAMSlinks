@@ -135,6 +135,12 @@ bool GamsOSxL::createOSInstance()
             case gmovar_I:
                vartypes[i] = 'I';
                break;
+            case gmovar_SC:
+               vartypes[i] = 'D';
+               break;
+            case gmovar_SI:
+               vartypes[i] = 'J';
+               break;
             default:
             {
                gevLogStat(gev, "Error: Unsupported variable type.");

@@ -70,10 +70,9 @@ int GamsOS::callSolver()
    gmoObjStyleSet(gmo, gmoObjType_Fun);
    gmoIndexBaseSet(gmo, 0);
 
-   // TODO are some of these supported now?
-   if( gmoGetVarTypeCnt(gmo, gmovar_S1) || gmoGetVarTypeCnt(gmo, gmovar_S2) || gmoGetVarTypeCnt(gmo, gmovar_SC) || gmoGetVarTypeCnt(gmo, gmovar_SI) )
+   if( gmoGetVarTypeCnt(gmo, gmovar_S1) || gmoGetVarTypeCnt(gmo, gmovar_S2) )
    {
-      gevLogStat(gev, "Error: Semicontinuous and semiinteger variables and special ordered sets not supported by OS.");
+      gevLogStat(gev, "Error: Special ordered sets not supported by OS.");
       gmoSolveStatSet(gmo, gmoSolveStat_Capability);
       gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
       return 1;
