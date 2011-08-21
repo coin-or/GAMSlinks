@@ -24,28 +24,30 @@
 #include "scip/scipdefplugins.h"
 #include "reader_gmo.h"
 
-SCIP_DECL_MESSAGEERROR(GamsScipPrintWarningOrError)
+static
+SCIP_DECL_MESSAGEERROR(GamsScipPrintLogStat)
 {
    assert(SCIPmessagehdlrGetData(messagehdlr) != NULL);
    assert(file != NULL);
    if( file != stderr )
       fprintf(file, msg);
    else
-      gevLogStatPChar(((GamsScip*)SCIPmessagehdlrGetData(messagehdlr))->gev, msg);
+      gevLogStatPChar((gevHandle_t)SCIPmessagehdlrGetData(messagehdlr), msg);
 }
 
-SCIP_DECL_MESSAGEINFO(GamsScipPrintInfo)
+static
+SCIP_DECL_MESSAGEINFO(GamsScipPrintLog)
 {
    assert(SCIPmessagehdlrGetData(messagehdlr) != NULL);
    assert(file != NULL);
    if( file != stdout )
       fprintf(file, msg);
    else
-      gevLogPChar(((GamsScip*)SCIPmessagehdlrGetData(messagehdlr))->gev, msg);
+      gevLogPChar((gevHandle_t)SCIPmessagehdlrGetData(messagehdlr), msg);
 }
 
 static
-SCIP_DECL_MESSAGEINFO(GamsScipPrintDialog)
+SCIP_DECL_MESSAGEINFO(GamsScipPrintStdout)
 {
    assert(file != NULL);
    fputs(msg, file);
@@ -210,7 +212,10 @@ SCIP_RETCODE GamsScip::setupSCIP()
 {
    if( scipmsghandler == NULL )
    {
-      SCIP_CALL_ABORT( SCIPcreateMessagehdlr(&scipmsghandler, FALSE, GamsScipPrintWarningOrError, GamsScipPrintWarningOrError, GamsScipPrintDialog, GamsScipPrintInfo, (SCIP_MESSAGEHDLRDATA*)this) );
+      /* print dialog messages to stdout if lo=1 or lo=3, but through gev if lo=0 or lo=2 */
+      SCIP_CALL_ABORT( SCIPcreateMessagehdlr(&scipmsghandler, FALSE,
+         GamsScipPrintLogStat, GamsScipPrintLogStat, gevGetIntOpt(gev, gevLogOption) % 2 ? GamsScipPrintStdout : GamsScipPrintLog, GamsScipPrintLog,
+         (SCIP_MESSAGEHDLRDATA*)gev) );
       SCIP_CALL_ABORT( SCIPsetMessagehdlr(scipmsghandler) );
    }
 

@@ -12,21 +12,13 @@
 #include <cstdlib>
 
 #include "scip/type_retcode.h"
-#include "scip/type_message.h"
-
-class GamsMessageHandler;
 
 typedef struct Scip             SCIP;
 typedef struct SCIP_Messagehdlr SCIP_MESSAGEHDLR;
-typedef struct SCIP_Var         SCIP_VAR;
-typedef struct SCIP_LPi         SCIP_LPI;
 
 /** GAMS interface to SCIP */
 class GamsScip : public GamsSolver
 {
-   friend SCIP_DECL_MESSAGEERROR(GamsScipPrintWarningOrError);
-   friend SCIP_DECL_MESSAGEINFO(GamsScipPrintInfo);
-
 private:
    struct gmoRec*        gmo;                /**< GAMS modeling object */
    struct gevRec*        gev;                /**< GAMS environment */
@@ -35,18 +27,8 @@ private:
    SCIP*                 scip;               /**< SCIP structure */
    SCIP_MESSAGEHDLR*     scipmsghandler;     /**< SCIP message handler to write through GEV */
 
-   SCIP_RETCODE freeLPI();
-   SCIP_RETCODE freeSCIP();
-   SCIP_RETCODE setupLPI();
    SCIP_RETCODE setupSCIP();
-   SCIP_RETCODE setupSCIPParameters();
-   SCIP_RETCODE setupMIQCP();
-   SCIP_RETCODE setupInitialBasis();
-   SCIP_RETCODE setupStartPoint();
-   SCIP_RETCODE processLPSolution(double time);
-   SCIP_RETCODE processMIQCPSolution();
-
-   bool isLP();
+   SCIP_RETCODE freeSCIP();
 
 public:
    GamsScip()

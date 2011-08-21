@@ -2216,6 +2216,12 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
       SCIP_CALL( SCIPsetIntParam(scip, "limits/solutions", 1) );
    }
 
+   /* if log is not kept, then can also set SCIP verblevel to 0 */
+   if( gevGetIntOpt(gev, gevLogOption) == 0 )
+   {
+      SCIP_CALL( SCIPsetIntParam(scip, "display/verblevel", 0) );
+   }
+
 #ifdef _WIN32
    SCIP_CALL( SCIPsetIntParam(scip, "display/width", 80) );
    SCIP_CALL( SCIPsetIntParam(scip, "display/lpavgiterations/active", 0) );
