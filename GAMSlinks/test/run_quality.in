@@ -42,83 +42,65 @@ solvers=
 skiplist=
 stdskiplist=
 declare -a testlist
-if test @gamslinks_build_ipopt@ = 1 ; then
-  solvers="$solvers , MyIpopt"
-  skiplist="$skiplist skip('MyIpopt','lp03')=yes;"
-  skiplist="$skiplist skip('MyIpopt','sl4lp03')=yes;"
-  skiplist="$skiplist skip('MyIpopt','lp10')=yes;"
-  skiplist="$skiplist skip('MyIpopt','sl4lp10')=yes;"
-  skiplist="$skiplist skip('MyIpopt','lp13')=yes;"
-  testlist[${#testlist[@]}]="--solver myipopt --suite lp"
-  testlist[${#testlist[@]}]="--solver myipopt --suite nlp"
-  testlist[${#testlist[@]}]="--solver myipopt --suite qcp"
-fi
+@COIN_HAS_IPOPT_TRUE@solvers="$solvers , MyIpopt"
+@COIN_HAS_IPOPT_TRUE@skiplist="$skiplist skip('MyIpopt','lp03')=yes;"
+@COIN_HAS_IPOPT_TRUE@skiplist="$skiplist skip('MyIpopt','sl4lp03')=yes;"
+@COIN_HAS_IPOPT_TRUE@skiplist="$skiplist skip('MyIpopt','lp10')=yes;"
+@COIN_HAS_IPOPT_TRUE@skiplist="$skiplist skip('MyIpopt','sl4lp10')=yes;"
+@COIN_HAS_IPOPT_TRUE@skiplist="$skiplist skip('MyIpopt','lp13')=yes;"
+@COIN_HAS_IPOPT_TRUE@testlist[${#testlist[@]}]="--solver myipopt --suite lp"
+@COIN_HAS_IPOPT_TRUE@testlist[${#testlist[@]}]="--solver myipopt --suite nlp"
+@COIN_HAS_IPOPT_TRUE@testlist[${#testlist[@]}]="--solver myipopt --suite qcp"
 
-if test @gamslinks_build_glpk@ = 1 ; then
-  solvers="$solvers , MyOsiGlpk"
-  skiplist="$skiplist skip('MyOsiGlpk','lp10')=yes;"
-  skiplist="$skiplist skip('MyOsiGlpk','sl4lp10')=yes;"
-  skiplist="$skiplist skip('MyOsiGlpk','sos1a')=yes;"
-  skiplist="$skiplist skip('MyOsiGlpk','sl4sos1a')=yes;"
-  skiplist="$skiplist skip('MyOsiGlpk','semicon1')=yes;"
-  skiplist="$skiplist skip('MyOsiGlpk','sl4scon1')=yes;"
-  skiplist="$skiplist skip('MyOsiGlpk','mip02')=yes;"
-  skiplist="$skiplist skip('MyOsiGlpk','mip03')=yes;"
-  testlist[${#testlist[@]}]="--solver myosiglpk --suite lp"
-  testlist[${#testlist[@]}]="--solver myosiglpk --suite mip user1=\"--MIPMCHECKS=0 rmip=myosiglpk\""
+@COIN_HAS_OSISPX_TRUE@solvers="$solvers , MyOsiSoplex"
+@COIN_HAS_OSISPX_TRUE@testlist[${#testlist[@]}]="--solver myosisoplex --suite lp"
 
-  #from GAMS 22.7 on, slvstdskip has been renamed to slvstdoutskip
-  if grep -q slvstdskip quality.gms ; then
-    stdskiplist="$stdskiplist slvstdskip('MyOsiGlpk')=yes;"
-  else
-    stdskiplist="$stdskiplist slvstdoutskip('MyOsiGlpk')=yes;"
-  fi
-fi
+@COIN_HAS_OSIGLPK_TRUE@solvers="$solvers , MyOsiGlpk"
+@COIN_HAS_OSIGLPK_TRUE@skiplist="$skiplist skip('MyOsiGlpk','lp10')=yes;"
+@COIN_HAS_OSIGLPK_TRUE@skiplist="$skiplist skip('MyOsiGlpk','sl4lp10')=yes;"
+@COIN_HAS_OSIGLPK_TRUE@skiplist="$skiplist skip('MyOsiGlpk','sos1a')=yes;"
+@COIN_HAS_OSIGLPK_TRUE@skiplist="$skiplist skip('MyOsiGlpk','sl4sos1a')=yes;"
+@COIN_HAS_OSIGLPK_TRUE@skiplist="$skiplist skip('MyOsiGlpk','semicon1')=yes;"
+@COIN_HAS_OSIGLPK_TRUE@skiplist="$skiplist skip('MyOsiGlpk','sl4scon1')=yes;"
+@COIN_HAS_OSIGLPK_TRUE@skiplist="$skiplist skip('MyOsiGlpk','mip02')=yes;"
+@COIN_HAS_OSIGLPK_TRUE@skiplist="$skiplist skip('MyOsiGlpk','mip03')=yes;"
+@COIN_HAS_OSIGLPK_TRUE@testlist[${#testlist[@]}]="--solver myosiglpk --suite lp"
+@COIN_HAS_OSIGLPK_TRUE@testlist[${#testlist[@]}]="--solver myosiglpk --suite mip user1=\"--MIPMCHECKS=0 rmip=myosiglpk\""
+@COIN_HAS_OSIGLPK_TRUE@#stdskiplist="$stdskiplist slvstdoutskip('MyOsiGlpk')=yes;"
 
-if test @gamslinks_build_cbc@ = 1 ; then
-  solvers="$solvers , MyCbc"
-  testlist[${#testlist[@]}]="--solver mycbc --suite lp"
-  testlist[${#testlist[@]}]="--solver mycbc --suite mip user1=rmip=mycbc"
-  skiplist="$skiplist skip('MyCbc','lp03')=yes;"
-  skiplist="$skiplist skip('MyCbc','sl4lp03')=yes;"
-fi
+@COIN_HAS_CBC_TRUE@solvers="$solvers , MyCbc"
+@COIN_HAS_CBC_TRUE@testlist[${#testlist[@]}]="--solver mycbc --suite lp"
+@COIN_HAS_CBC_TRUE@testlist[${#testlist[@]}]="--solver mycbc --suite mip user1=rmip=mycbc"
+@COIN_HAS_CBC_TRUE@skiplist="$skiplist skip('MyCbc','lp03')=yes;"
+@COIN_HAS_CBC_TRUE@skiplist="$skiplist skip('MyCbc','sl4lp03')=yes;"
 
-if test @gamslinks_build_bonmin@ = 1 ; then
-  solvers="$solvers , MyBonmin"
-  skiplist="$skiplist skip('MyBonmin','lp03')=yes;"
-  skiplist="$skiplist skip('MyBonmin','sl4lp03')=yes;"
-  testlist[${#testlist[@]}]="--solver mybonmin --suite lp"
-  testlist[${#testlist[@]}]="--solver mybonmin --suite mip user1=rmip=mybonmin"
-  testlist[${#testlist[@]}]="--solver mybonmin --suite nlp"
-  testlist[${#testlist[@]}]="--solver mybonmin --suite qcp"
-fi
+@COIN_HAS_BONMIN_TRUE@solvers="$solvers , MyBonmin"
+@COIN_HAS_BONMIN_TRUE@skiplist="$skiplist skip('MyBonmin','lp03')=yes;"
+@COIN_HAS_BONMIN_TRUE@skiplist="$skiplist skip('MyBonmin','sl4lp03')=yes;"
+@COIN_HAS_BONMIN_TRUE@testlist[${#testlist[@]}]="--solver mybonmin --suite lp"
+@COIN_HAS_BONMIN_TRUE@testlist[${#testlist[@]}]="--solver mybonmin --suite mip user1=rmip=mybonmin"
+@COIN_HAS_BONMIN_TRUE@testlist[${#testlist[@]}]="--solver mybonmin --suite nlp"
+@COIN_HAS_BONMIN_TRUE@testlist[${#testlist[@]}]="--solver mybonmin --suite qcp"
 
-if test @gamslinks_build_couenne@ = 1 ; then
-  solvers="$solvers , MyCouenne"
-  skiplist="$skiplist skip('MyCouenne','lp03')=yes;"
-  skiplist="$skiplist skip('MyCouenne','sl4lp03')=yes;"
-  skiplist="$skiplist skip('MyCouenne','nlpqcp01')=yes;"
-  skiplist="$skiplist skip('MyCouenne','nlpqcp02')=yes;"
-  skiplist="$skiplist skip('MyCouenne','qcp01')=yes;"
-  skiplist="$skiplist skip('MyCouenne','qcp02')=yes;"
-  testlist[${#testlist[@]}]="--solver mycouenne --suite lp"
-  testlist[${#testlist[@]}]="--solver mycouenne --suite mip user1=rmip=mycouenne"
-  testlist[${#testlist[@]}]="--solver mycouenne --suite nlp user1=\"--MCHECKS=0\""
-  testlist[${#testlist[@]}]="--solver mycouenne --suite qcp user1=\"--QPMCHECKS=0 reslim=60\""
-fi
+@COIN_HAS_COUENNE_TRUE@solvers="$solvers , MyCouenne"
+@COIN_HAS_COUENNE_TRUE@skiplist="$skiplist skip('MyCouenne','lp03')=yes;"
+@COIN_HAS_COUENNE_TRUE@skiplist="$skiplist skip('MyCouenne','sl4lp03')=yes;"
+@COIN_HAS_COUENNE_TRUE@skiplist="$skiplist skip('MyCouenne','nlpqcp01')=yes;"
+@COIN_HAS_COUENNE_TRUE@skiplist="$skiplist skip('MyCouenne','nlpqcp02')=yes;"
+@COIN_HAS_COUENNE_TRUE@skiplist="$skiplist skip('MyCouenne','qcp01')=yes;"
+@COIN_HAS_COUENNE_TRUE@skiplist="$skiplist skip('MyCouenne','qcp02')=yes;"
+@COIN_HAS_COUENNE_TRUE@testlist[${#testlist[@]}]="--solver mycouenne --suite lp"
+@COIN_HAS_COUENNE_TRUE@testlist[${#testlist[@]}]="--solver mycouenne --suite mip user1=rmip=mycouenne"
+@COIN_HAS_COUENNE_TRUE@testlist[${#testlist[@]}]="--solver mycouenne --suite nlp user1=\"--MCHECKS=0 reslim=60\""
+@COIN_HAS_COUENNE_TRUE@testlist[${#testlist[@]}]="--solver mycouenne --suite qcp user1=\"--QPMCHECKS=0 reslim=60\""
 
-if test @gamslinks_build_scip@ = 1 ; then
-  solvers="$solvers , MyScip"
-  skiplist="$skiplist skip('MyScip','lp03')=yes;"
-  skiplist="$skiplist skip('MyScip','sl4lp03')=yes;"
-  skiplist="$skiplist skip('MyScip','semicon1')=yes;"
-  skiplist="$skiplist skip('MyScip','sl4scon1')=yes;"
-  skiplist="$skiplist skip('MyScip','mip02')=yes;"
-  #skiplist="$skiplist skip('MyScip','qcp02')=yes;"
-  testlist[${#testlist[@]}]="--solver myscip --suite lp"
-  testlist[${#testlist[@]}]="--solver myscip --suite mip user1=\"--MIPMCHECKS=0 rmip=myscip\""
-  testlist[${#testlist[@]}]="--solver myscip --suite qcp user1=\"--QPMCHECKS=0 --TESTTOL=1e-3\""
-fi
+@COIN_HAS_SCIP_TRUE@solvers="$solvers , MyScip"
+@COIN_HAS_SCIP_TRUE@#skiplist="$skiplist skip('MyScip','semicon1')=yes;"
+@COIN_HAS_SCIP_TRUE@#skiplist="$skiplist skip('MyScip','sl4scon1')=yes;"
+@COIN_HAS_SCIP_TRUE@#skiplist="$skiplist skip('MyScip','mip02')=yes;"
+@COIN_HAS_SCIP_TRUE@#skiplist="$skiplist skip('MyScip','qcp02')=yes;"
+@COIN_HAS_SCIP_TRUE@testlist[${#testlist[@]}]="--solver myscip --suite mip user1=\"--MIPMCHECKS=0\""
+@COIN_HAS_SCIP_TRUE@testlist[${#testlist[@]}]="--solver myscip --suite qcp user1=\"--QPMCHECKS=0 --TESTTOL=1e-3\""
 
 echo "Patch quality test driver to get COIN solvers and skip list in." 
 #We add our solvers to the list of master solvers,
