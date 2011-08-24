@@ -184,14 +184,6 @@ bool GamsCbc::setupProblem()
 {
    OsiClpSolverInterface solver;
 
-   int* cbcprior = NULL;
-
-   CbcObject** sosobjects = NULL;
-   int numSos = 0;
-
-   CbcObject** semiobjects = NULL;
-   int numSemi = 0;
-
    gmoPinfSet(gmo,  solver.getInfinity());
    gmoMinfSet(gmo, -solver.getInfinity());
    gmoObjReformSet(gmo, 1);
@@ -200,6 +192,19 @@ bool GamsCbc::setupProblem()
 
    if( !gamsOsiLoadProblem(gmo, solver, true) )
       return false;
+
+   if( gmoN(gmo) == 0 )
+   {
+      gevLog(gev, "Problem has no columns. Adding fake column...");
+      CoinPackedVector vec(0);
+      solver.addCol(vec, -solver.getInfinity(), solver.getInfinity(), 0.0);
+   }
+
+   // setup CbcModel
+   model = new CbcModel(solver);
+
+   msghandler->setLogLevel(1, isLP()); // we want LP output if we solve an LP
+   model->passInMessageHandler(msghandler);
 
    // assemble integer variable branching priorities
    // range of priority values
@@ -219,7 +224,7 @@ bool GamsCbc::setupProblem()
       }
       if( minprior != maxprior )
       {
-         cbcprior = new int[gmoNDisc(gmo)];
+         int* cbcprior = new int[gmoNDisc(gmo)];
          int j = 0;
          for( int i = 0; i < gmoN(gmo); ++i )
          {
@@ -231,16 +236,19 @@ bool GamsCbc::setupProblem()
             cbcprior[j++] = 1 + (int)(999* (gmoGetVarPriorOne(gmo,i) - minprior) / (maxprior - minprior));
          }
          assert(j == gmoNDisc(gmo));
+
+         model->passInPriorities(cbcprior, false);
+         delete[] cbcprior;
       }
    }
 
    // assemble SOS of type 1 or 2
    int numSos1, numSos2, nzSos;
    gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);
-   numSos = numSos1 + numSos2;
    if( nzSos > 0 )
    {
-      sosobjects = new CbcObject*[numSos];
+      int numSos = numSos1 + numSos2;
+      CbcObject** sosobjects = new CbcObject*[numSos];
 
       int* sostype  = new int[numSos];
       int* sosbeg   = new int[numSos+1];
@@ -265,6 +273,11 @@ bool GamsCbc::setupProblem()
          sosobjects[i]->setPriority(gmoN(gmo)-k); // branch on long sets first
       }
 
+      model->addObjects(numSos, sosobjects);
+
+      for( int i = 0; i < numSos; ++i )
+         delete sosobjects[i];
+      delete[] sosobjects;
       delete[] which;
       delete[] weights;
       delete[] sostype;
@@ -274,10 +287,10 @@ bool GamsCbc::setupProblem()
    }
 
    // assemble semicontinuous and semiinteger variables
-   numSemi = gmoGetVarTypeCnt(gmo, gmovar_SC) + gmoGetVarTypeCnt(gmo, gmovar_SI);
+   int numSemi = gmoGetVarTypeCnt(gmo, gmovar_SC) + gmoGetVarTypeCnt(gmo, gmovar_SI);
    if( numSemi > 0)
    {
-      semiobjects = new CbcObject*[numSemi];
+      CbcObject** semiobjects = new CbcObject*[numSemi];
       int object_nr = 0;
       double points[4];
       points[0] = 0.;
@@ -322,36 +335,13 @@ bool GamsCbc::setupProblem()
          ++object_nr;
       }
       assert(object_nr == numSemi);
+
+      model->addObjects(numSemi, semiobjects);
+
+      for( int i = 0; i < numSemi; ++i )
+         delete semiobjects[i];
+      delete[] semiobjects;
    }
-
-   if( gmoN(gmo) == 0 )
-   {
-      gevLog(gev, "Problem has no columns. Adding fake column...");
-      CoinPackedVector vec(0);
-      solver.addCol(vec, -solver.getInfinity(), solver.getInfinity(), 0.0);
-   }
-
-   /* setup CbcModel */
-   model = new CbcModel(solver);
-
-   msghandler->setLogLevel(1, isLP()); /* we want LP output if we solve an LP */
-   model->passInMessageHandler(msghandler);
-
-   /* pass in branching priorities */
-   model->passInPriorities(cbcprior, false);
-   delete[] cbcprior;
-
-   /* pass in SOS objects */
-   model->addObjects(numSos, sosobjects);
-   for( int i = 0; i < numSos; ++i )
-      delete sosobjects[i];
-   delete[] sosobjects;
-
-   /* pass in lotsize objects */
-   model->addObjects(numSemi, semiobjects);
-   for( int i = 0; i < numSemi; ++i )
-      delete semiobjects[i];
-   delete[] semiobjects;
 
    return true;
 }
