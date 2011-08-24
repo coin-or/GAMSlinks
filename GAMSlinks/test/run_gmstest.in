@@ -86,6 +86,8 @@ alias(t,tt);
 
 *skip FARM because it uses DECIS which writes to stdout - always
 notest('199') = yes;
+*skip kqkpsdp because it calls csdp which writes to stdout
+notest('355') = yes;
 *skip QP7 and EMFL because of conic equations
 notest('271') = yes;
 notest('273') = yes;
