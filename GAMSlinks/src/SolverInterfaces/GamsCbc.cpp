@@ -182,34 +182,36 @@ int GamsCbc::callSolver()
 
 bool GamsCbc::setupProblem()
 {
-   OsiClpSolverInterface solver;
-
-   gmoPinfSet(gmo,  solver.getInfinity());
-   gmoMinfSet(gmo, -solver.getInfinity());
-   gmoObjReformSet(gmo, 1);
-   gmoObjStyleSet(gmo, gmoObjType_Fun);
-   gmoIndexBaseSet(gmo, 0);
-
-   if( !gamsOsiLoadProblem(gmo, solver, true) )
-      return false;
-
-   if( gmoN(gmo) == 0 )
    {
-      gevLog(gev, "Problem has no columns. Adding fake column...");
-      CoinPackedVector vec(0);
-      solver.addCol(vec, -solver.getInfinity(), solver.getInfinity(), 0.0);
-   }
+      OsiClpSolverInterface solver;
 
-   // setup CbcModel
-   model = new CbcModel(solver);
+      gmoPinfSet(gmo,  solver.getInfinity());
+      gmoMinfSet(gmo, -solver.getInfinity());
+      gmoObjReformSet(gmo, 1);
+      gmoObjStyleSet(gmo, gmoObjType_Fun);
+      gmoIndexBaseSet(gmo, 0);
+
+      if( !gamsOsiLoadProblem(gmo, solver, true) )
+         return false;
+
+      if( gmoN(gmo) == 0 )
+      {
+         gevLog(gev, "Problem has no columns. Adding fake column...");
+         CoinPackedVector vec(0);
+         solver.addCol(vec, -solver.getInfinity(), solver.getInfinity(), 0.0);
+      }
+
+      // setup CbcModel
+      model = new CbcModel(solver);
+   }
 
    msghandler->setLogLevel(1, isLP()); // we want LP output if we solve an LP
    model->passInMessageHandler(msghandler);
 
    // assemble integer variable branching priorities
    // range of priority values
-   double minprior =  solver.getInfinity();
-   double maxprior = -solver.getInfinity();
+   double minprior =  model->solver()->getInfinity();
+   double maxprior = -model->solver()->getInfinity();
    if( gmoPriorOpt(gmo) && gmoNDisc(gmo) > 0 )
    {
       // first check which range of priorities is given
@@ -330,7 +332,7 @@ bool GamsCbc::setupProblem()
          }
 
          // set actual lower bound of variable in solver
-         solver.setColLower(i, 0.0);
+         model->solver()->setColLower(i, 0.0);
 
          ++object_nr;
       }
