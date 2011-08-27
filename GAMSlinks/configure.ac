@@ -131,14 +131,15 @@ AM_CONDITIONAL(COIN_IS_WINDOWS, test $coin_is_windows = yes)
 # END PART #
 ############
 
-#                 examples/adbench/Makefile
-#                 examples/osil2gms/Makefile
-#                 doc/optdoc/Makefile
+# examples/adbench/Makefile
+# examples/osil2gms/Makefile
+
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/GamsUtils/Makefile
                  src/SolverInterfaces/Makefile
                  test/Makefile
+                 doc/optdoc/Makefile
                 ])
 AC_CONFIG_FILES([test/run_quality], [chmod +x test/run_quality])
 AC_CONFIG_FILES([test/run_gmstest], [chmod +x test/run_gmstest])

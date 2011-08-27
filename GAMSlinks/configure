@@ -28041,10 +28041,10 @@ fi
 # END PART #
 ############
 
-#                 examples/adbench/Makefile
-#                 examples/osil2gms/Makefile
-#                 doc/optdoc/Makefile
-                                                  ac_config_files="$ac_config_files Makefile src/Makefile src/GamsUtils/Makefile src/SolverInterfaces/Makefile test/Makefile"
+# examples/adbench/Makefile
+# examples/osil2gms/Makefile
+
+                                                            ac_config_files="$ac_config_files Makefile src/Makefile src/GamsUtils/Makefile src/SolverInterfaces/Makefile test/Makefile doc/optdoc/Makefile"
 
           ac_config_files="$ac_config_files test/run_quality"
 
@@ -28915,6 +28915,7 @@ do
   "src/GamsUtils/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/GamsUtils/Makefile" ;;
   "src/SolverInterfaces/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/SolverInterfaces/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
+  "doc/optdoc/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/optdoc/Makefile" ;;
   "test/run_quality" ) CONFIG_FILES="$CONFIG_FILES test/run_quality" ;;
   "test/run_gmstest" ) CONFIG_FILES="$CONFIG_FILES test/run_gmstest" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
