@@ -126,7 +126,7 @@ int GamsCbc::callSolver()
    {
       gevLogStatPChar(gev, "\nWriting MPS file ");
       gevLogStat(gev, writemps);
-      model->solver()->writeMps(writemps, "", model->solver()->getObjSense());
+      model->solver()->writeMps(writemps, "", 1.0);
    }
 
    gevLogStat(gev, "\nCalling CBC main solution routine...");

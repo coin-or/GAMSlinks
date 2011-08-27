@@ -330,7 +330,7 @@ void gamsOsiWriteProblem(
       gevLogPChar(gev, "Writing MPS file ");
       gevLogPChar(gev, buffer);
       gevLogPChar(gev, ".mps\n");
-      solver.writeMps(buffer, "mps", solver.getObjSense());
+      solver.writeMps(buffer, "mps", 1.0);
    }
 
    if( formatflags & 0x2 )
@@ -365,7 +365,7 @@ void gamsOsiWriteProblem(
          rownames[gmoM(gmo)] = strdup(solver.getObjName().c_str());
       }
 
-      solver.writeMpsNative(buffer, const_cast<const char**>(rownames), const_cast<const char**>(colnames), 2, 2, solver.getObjSense());
+      solver.writeMpsNative(buffer, const_cast<const char**>(rownames), const_cast<const char**>(colnames), 2, 2, 1.0);
 
       if( nameDiscipline == 2 )
       {
