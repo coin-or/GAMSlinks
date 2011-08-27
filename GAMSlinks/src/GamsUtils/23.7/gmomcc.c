@@ -1093,7 +1093,11 @@ loadSym (soHandle_t h, const char *sym, char **errMsg)
       tripSym = sym;
     } /* end switch */
 #if defined(_WIN32)
-    s = GetProcAddress (h, tripSym);
+#  if defined(HAVE_INTPTR_T)
+    s = (void *)(intptr_t)GetProcAddress (h, tripSym);
+#  else
+    s = (void *)GetProcAddress (h, tripSym);
+#  endif
     if (NULL != s) {
       return s;
     }
@@ -1111,8 +1115,13 @@ loadSym (soHandle_t h, const char *sym, char **errMsg)
 } /* loadSym */
 
 /* TNAME = type name, ENAME = exported name */
-#define LOADIT(TNAME,ENAME) symName = ENAME; TNAME = (TNAME##_t)(intptr_t) loadSym (h, symName, &errMsg); if (NULL == TNAME) goto symMissing
-#define LOADIT_ERR_OK(TNAME,ENAME) symName = ENAME; TNAME = (TNAME##_t)(intptr_t) loadSym (h, symName, &errMsg)
+#if defined(HAVE_INTPTR_T)
+#  define LOADIT(TNAME,ENAME) symName = ENAME; TNAME = (TNAME##_t) (intptr_t) loadSym (h, symName, &errMsg); if (NULL == TNAME) goto symMissing
+#  define LOADIT_ERR_OK(TNAME,ENAME) symName = ENAME; TNAME = (TNAME##_t) (intptr_t) loadSym (h, symName, &errMsg)
+#else
+#  define LOADIT(TNAME,ENAME) symName = ENAME; TNAME = (TNAME##_t) loadSym (h, symName, &errMsg); if (NULL == TNAME) goto symMissing
+#  define LOADIT_ERR_OK(TNAME,ENAME) symName = ENAME; TNAME = (TNAME##_t) loadSym (h, symName, &errMsg)
+#endif
 
 #if ! defined(GMS_DLL_BASENAME)
 # define GMS_DLL_BASENAME "joatdclib"
@@ -1171,7 +1180,7 @@ static int
 XLibraryLoad (const char *dllName, char *errBuf, int errBufSize)
 {
   char *errMsg;
-  char *symName;
+  const char *symName;
   int rc, elen, cl;
   char *ebuf;
 
@@ -1563,15 +1572,20 @@ libloader(const char *dllPath, const char *dllName, char *msgBuf, int msgBufSize
   struct utsname uts;
 
   myrc = uname(&uts);
-  if (myrc)
-  {
+  if (myrc) {
     strcpy(msgBuf,"Error, cannot define library name suffix");
     return 0;
   }
-  if (0==strcmp(uts.sysname,"AIX")) /* assume AIX is 64-bit */
+  if (0 == strcmp(uts.sysname, "AIX")) /* assume AIX is 64-bit */
     strcpy (gms_dll_suffix, "64");
-  else
-  {
+  else if (0 == strcmp(uts.sysname, "Darwin")) {
+    /* keep Darwin test in here: fat binaries must check at run time */
+    if (8 == (int)sizeof(void *))
+      strcpy (gms_dll_suffix, "64");
+    else
+      strcpy (gms_dll_suffix, "");
+  }
+  else {
     strcpy(msgBuf,"Error, cannot define library name suffix");
     return 0;
   }

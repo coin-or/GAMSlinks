@@ -16,7 +16,7 @@ libGamsUtils_la_LDFLAGS =
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = GamsCompatibility.h GamsOptions.hpp GamsNLinstr.h
 
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/$(GAMS_VERSION)`
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/$(GAMS_VERSION)` $(GAMSLIBCFLAGS)
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 

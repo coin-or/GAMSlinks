@@ -192,6 +192,7 @@ EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+GAMSLIBCFLAGS = @GAMSLIBCFLAGS@
 GAMSLINKS_SVN_REV = @GAMSLINKS_SVN_REV@
 GAMSSOLVERLIB_CFLAGS = @GAMSSOLVERLIB_CFLAGS@
 GAMSSOLVERLIB_CFLAGS_INSTALLED = @GAMSSOLVERLIB_CFLAGS_INSTALLED@
@@ -376,7 +377,7 @@ libGamsUtils_la_SOURCES = GamsOptions.cpp GamsNLinstr.c \
 libGamsUtils_la_LDFLAGS = 
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = GamsCompatibility.h GamsOptions.hpp GamsNLinstr.h
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/$(GAMS_VERSION)`
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/$(GAMS_VERSION)` $(GAMSLIBCFLAGS)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 
 ########################################################################

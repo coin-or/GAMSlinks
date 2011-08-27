@@ -103,6 +103,19 @@ AC_COIN_CHECK_CXX_CHEADER(errno)
 AC_COIN_CHECK_CXX_CHEADER(math)
 AC_COIN_CHECK_HEADER([windows.h])
 
+AC_LANG_POP(C++)
+
+AC_LANG_PUSH(C)
+
+############
+# intptr_t #
+############
+
+# check if intptr_t is available, which can be used to avoid errors when compiling hte GAMS library loader codes
+GAMSLIBCFLAGS=
+AC_CHECK_TYPE([intptr_t],[GAMSLIBCFLAGS=-DHAVE_INTPTR_T])
+AC_SUBST(GAMSLIBCFLAGS)
+
 ###########
 # va_copy #
 ###########
@@ -137,7 +150,7 @@ if test $coin_has_ipopt = yes ; then
   LIBS="$LIBS_save"
 fi
 
-AC_LANG_POP(C++)
+AC_LANG_POP(C)
 
 ###############
 # GAMS system #

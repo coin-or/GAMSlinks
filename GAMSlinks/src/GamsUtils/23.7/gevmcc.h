@@ -133,7 +133,7 @@ typedef void (GEV_CALLCONV *Tgevlswrite_t) (const char *msg, int mode, void *usr
 int  GEV_CALLCONV d_gevInitEnvironmentLegacy (gevHandle_t pgev, const char *cntrfile);
 void  GEV_CALLCONV d_gevRegisterWriteCallback (gevHandle_t pgev, Tgevlswrite_t lsw, int logenabled, void *usrmem);
 void  GEV_CALLCONV d_gevCompleteEnvironment (gevHandle_t pgev, void *pA, void *ivec, void *rvec, void *svec);
-int  GEV_CALLCONV d_gevSwitchLogStat (gevHandle_t pgev, int lo, const char *logfn, int logappend, const char *statfn, Tgevlswrite_t lsw, void *usrmem, void **lshandle);
+int  GEV_CALLCONV d_gevSwitchLogStat (gevHandle_t pgev, int lo, const char *logfn, int logappend, const char *statfn, int statappend, Tgevlswrite_t lsw, void *usrmem, void **lshandle);
 int  GEV_CALLCONV d_gevRestoreLogStat (gevHandle_t pgev, void **lshandle);
 void  GEV_CALLCONV d_gevLog (gevHandle_t pgev, const char *s);
 void  GEV_CALLCONV d_gevLogPChar (gevHandle_t pgev, const char *p);
@@ -204,7 +204,7 @@ typedef void  (GEV_CALLCONV *gevRegisterWriteCallback_t) (gevHandle_t pgev, Tgev
 GEV_FUNCPTR(gevRegisterWriteCallback);
 typedef void  (GEV_CALLCONV *gevCompleteEnvironment_t) (gevHandle_t pgev, void *pA, void *ivec, void *rvec, void *svec);
 GEV_FUNCPTR(gevCompleteEnvironment);
-typedef int  (GEV_CALLCONV *gevSwitchLogStat_t) (gevHandle_t pgev, int lo, const char *logfn, int logappend, const char *statfn, Tgevlswrite_t lsw, void *usrmem, void **lshandle);
+typedef int  (GEV_CALLCONV *gevSwitchLogStat_t) (gevHandle_t pgev, int lo, const char *logfn, int logappend, const char *statfn, int statappend, Tgevlswrite_t lsw, void *usrmem, void **lshandle);
 GEV_FUNCPTR(gevSwitchLogStat);
 typedef int  (GEV_CALLCONV *gevRestoreLogStat_t) (gevHandle_t pgev, void **lshandle);
 GEV_FUNCPTR(gevRestoreLogStat);
