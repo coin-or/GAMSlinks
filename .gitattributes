@@ -94,8 +94,6 @@ GAMSlinks/src/GamsIO/SmagJournal.hpp -text
 GAMSlinks/src/GamsIO/SmagStricmp.c -text
 GAMSlinks/src/GamsUtils/23.7/gclgms.c -text
 GAMSlinks/src/GamsUtils/23.7/gclgms.h -text
-GAMSlinks/src/GamsUtils/23.7/gdxcc.c -text
-GAMSlinks/src/GamsUtils/23.7/gdxcc.h -text
 GAMSlinks/src/GamsUtils/23.7/gevmcc.c -text
 GAMSlinks/src/GamsUtils/23.7/gevmcc.h -text
 GAMSlinks/src/GamsUtils/23.7/gmomcc.c -text
@@ -103,8 +101,6 @@ GAMSlinks/src/GamsUtils/23.7/gmomcc.h -text
 GAMSlinks/src/GamsUtils/23.7/optcc.c -text
 GAMSlinks/src/GamsUtils/23.7/optcc.h -text
 GAMSlinks/src/GamsUtils/GamsCompatibility.h -text
-GAMSlinks/src/GamsUtils/GamsGDX.cpp -text
-GAMSlinks/src/GamsUtils/GamsGDX.hpp -text
 GAMSlinks/src/GamsUtils/GamsNLinstr.c -text
 GAMSlinks/src/GamsUtils/GamsNLinstr.h -text
 GAMSlinks/src/GamsUtils/GamsOptions.cpp -text

@@ -66,7 +66,7 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libGamsUtils_la_LIBADD =
 am_libGamsUtils_la_OBJECTS = GamsOptions.lo GamsNLinstr.lo optcc.lo \
-	gdxcc.lo gmomcc.lo gevmcc.lo gclgms.lo
+	gmomcc.lo gevmcc.lo gclgms.lo
 libGamsUtils_la_OBJECTS = $(am_libGamsUtils_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -371,7 +371,7 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = 
 lib_LTLIBRARIES = libGamsUtils.la
 libGamsUtils_la_SOURCES = GamsOptions.cpp GamsNLinstr.c \
-  $(GAMS_VERSION)/optcc.c $(GAMS_VERSION)/gdxcc.c $(GAMS_VERSION)/gmomcc.c $(GAMS_VERSION)/gevmcc.c $(GAMS_VERSION)/gclgms.c
+  $(GAMS_VERSION)/optcc.c $(GAMS_VERSION)/gmomcc.c $(GAMS_VERSION)/gevmcc.c $(GAMS_VERSION)/gclgms.c
 
 libGamsUtils_la_LDFLAGS = 
 includecoindir = $(includedir)/coin
@@ -457,7 +457,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsNLinstr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOptions.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gclgms.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdxcc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gevmcc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmomcc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optcc.Plo@am__quote@
@@ -489,13 +488,6 @@ optcc.lo: $(GAMS_VERSION)/optcc.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_VERSION)/optcc.c' object='optcc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o optcc.lo `test -f '$(GAMS_VERSION)/optcc.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/optcc.c
-
-gdxcc.lo: $(GAMS_VERSION)/gdxcc.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gdxcc.lo -MD -MP -MF "$(DEPDIR)/gdxcc.Tpo" -c -o gdxcc.lo `test -f '$(GAMS_VERSION)/gdxcc.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/gdxcc.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/gdxcc.Tpo" "$(DEPDIR)/gdxcc.Plo"; else rm -f "$(DEPDIR)/gdxcc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_VERSION)/gdxcc.c' object='gdxcc.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gdxcc.lo `test -f '$(GAMS_VERSION)/gdxcc.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/gdxcc.c
 
 gmomcc.lo: $(GAMS_VERSION)/gmomcc.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gmomcc.lo -MD -MP -MF "$(DEPDIR)/gmomcc.Tpo" -c -o gmomcc.lo `test -f '$(GAMS_VERSION)/gmomcc.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/gmomcc.c; \
