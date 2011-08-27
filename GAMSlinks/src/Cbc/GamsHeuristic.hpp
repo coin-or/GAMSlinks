@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsHeuristic.hpp 374 2008-03-02 12:02:50Z stefan $
 //
 // Author: Stefan Vigerske
 

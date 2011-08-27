@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsCoinOsi.cpp 616 2009-02-01 17:59:13Z stefan $
 //
 // Author: Stefan Vigerske
 

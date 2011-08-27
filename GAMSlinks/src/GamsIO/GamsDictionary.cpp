@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsDictionary.cpp 414 2008-03-23 17:05:12Z stefan $
 //
 // Author: Stefan Vigerske
 

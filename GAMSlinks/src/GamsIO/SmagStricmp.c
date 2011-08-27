@@ -2,7 +2,7 @@
  All Rights Reserved.
  This code is published under the Common Public License.
 
- $Id$
+ $Id: SmagStricmp.c 469 2008-06-27 16:42:54Z stefan $
 
  Author: Stefan Vigerske
 */

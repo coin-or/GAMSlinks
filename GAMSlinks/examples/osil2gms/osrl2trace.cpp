@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: osrl2trace.cpp 773 2009-10-07 09:51:47Z stefan $
 //
 // Author: Stefan Vigerske
 

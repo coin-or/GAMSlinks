@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsFinalize.hpp 204 2007-09-23 12:15:10Z stefan $
 //
 // Authors:  Michael Bussieck, Stefan Vigerske
 

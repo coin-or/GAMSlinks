@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsCutGenerator.cpp 448 2008-05-29 12:46:53Z stefan $
 //
 // Author: Stefan Vigerske
 

@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: SmagJournal.cpp 535 2008-08-29 19:35:58Z stefan $
 //
 // Author: Stefan Vigerske
 

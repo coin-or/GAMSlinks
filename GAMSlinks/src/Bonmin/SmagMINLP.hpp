@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: SmagMINLP.hpp 652 2009-04-11 17:14:51Z stefan $
 //
 // Authors:  Steve Dirkse, Stefan Vigerske
 

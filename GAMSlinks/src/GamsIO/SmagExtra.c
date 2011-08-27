@@ -2,7 +2,7 @@
  All Rights Reserved.
  This code is published under the Common Public License.
 
- $Id$
+ $Id: SmagExtra.c 503 2008-08-11 18:20:39Z stefan $
 
  Author: Stefan Vigerske
 */

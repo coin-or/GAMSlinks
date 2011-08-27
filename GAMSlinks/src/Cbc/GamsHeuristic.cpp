@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsHeuristic.cpp 297 2008-01-03 18:15:55Z stefan $
 //
 // Author: Stefan Vigerske
 

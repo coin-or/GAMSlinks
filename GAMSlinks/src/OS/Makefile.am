@@ -2,7 +2,7 @@
 # All Rights Reserved.
 # This file is distributed under the Common Public License.
 #
-## $Id$
+## $Id: Makefile.am 868 2010-03-14 20:26:09Z stefan $
 #
 # Author: Stefan Vigerske
 

@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsHandlerIOLib.cpp 510 2008-08-16 19:31:27Z stefan $
 //
 // Author: Stefan Vigerske
 

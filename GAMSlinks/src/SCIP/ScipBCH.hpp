@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: ScipBCH.hpp 738 2009-09-09 16:18:27Z stefan $
 //
 // Author: Stefan Vigerske
 

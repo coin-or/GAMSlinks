@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: SmagJournal.hpp 298 2008-01-04 14:03:20Z stefan $
 //
 // Author: Stefan Vigerske
 // from the IpFileJournal class in IPOPT

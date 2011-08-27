@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsMessageHandler.cpp 479 2008-07-13 15:31:35Z stefan $
 //
 // Author: Stefan Vigerske
 

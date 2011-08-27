@@ -2,7 +2,7 @@
    All Rights Reserved.
    This code is published under the Common Public License.
 
-   $Id$
+   $Id: GamsNLinstr.c 592 2008-11-12 14:11:00Z stefan $
 
    Author: Stefan Vigerske
 

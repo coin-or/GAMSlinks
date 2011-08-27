@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsCoinCbc.cpp 801 2009-11-05 20:09:33Z stefan $
 //
 // Authors: Michael Bussieck, Stefan Vigerske
 

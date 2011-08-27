@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsIpopt.cpp 801 2009-11-05 20:09:33Z stefan $
 //
 // Authors:  Steve Dirkse, Stefan Vigerske
 

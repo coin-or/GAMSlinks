@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsCoinGlpk.cpp 625 2009-03-22 13:21:12Z stefan $
 //
 // Authors: Michael Bussieck, Stefan Vigerske
 

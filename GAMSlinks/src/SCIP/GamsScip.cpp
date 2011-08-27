@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsScip.cpp 879 2010-03-27 15:00:26Z stefan $
 //
 // Author: Stefan Vigerske
 

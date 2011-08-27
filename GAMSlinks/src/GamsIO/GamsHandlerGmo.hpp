@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsHandlerGmo.hpp 571 2008-09-28 14:20:17Z stefan $
 //
 // Author: Stefan Vigerske
 

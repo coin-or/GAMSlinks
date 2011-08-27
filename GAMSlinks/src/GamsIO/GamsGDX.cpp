@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsGDX.cpp 511 2008-08-16 19:35:52Z stefan $
 //
 // Author: Stefan Vigerske
 

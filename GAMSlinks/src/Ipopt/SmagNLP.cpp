@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: SmagNLP.cpp 693 2009-07-17 11:07:55Z stefan $
 //
 // Authors: Steve Dirkse, Stefan Vigerske
 

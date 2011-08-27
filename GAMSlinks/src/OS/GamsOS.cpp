@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsOS.cpp 884 2010-03-28 11:40:23Z stefan $
 //
 // Authors:  Stefan Vigerske
 

@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: adbench.cpp 598 2008-12-01 19:14:17Z stefan $
 //
 // Author: Stefan Vigerske
 

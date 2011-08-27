@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: GamsOptions.cpp 568 2008-09-28 10:21:51Z stefan $
 //
 // Author: Stefan Vigerske
 

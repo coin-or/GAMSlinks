@@ -2,7 +2,7 @@
 // All Rights Reserved.
 // This code is published under the Common Public License.
 //
-// $Id$
+// $Id: Smag2OSiL.hpp 599 2008-12-03 17:50:13Z stefan $
 //
 // Author: Stefan Vigerske
 
