@@ -28,15 +28,11 @@ AC_CONFIG_SRCDIR(src/SolverInterfaces/GamsSolver.hpp)
 AC_PREFIX_DEFAULT([`pwd`])
 
 #############################################################################
-#                         Standard build tool stuff                         #
+#                         Standard build tools stuff                        #
 #############################################################################
 
 # Get the system type
 AC_CANONICAL_BUILD
-
-#turn off warnings and pedantic mode since it seem to make trouble with gams *cc files
-#gcc 4.2.1 error: ISO C forbids conversion of object pointer to function pointer type
-#coin_skip_warn_cflags=yes
 
 # If this project depends on external projects, the Externals file in
 # the source root directory contains definition of where to find those
@@ -47,18 +43,11 @@ AC_COIN_PROJECTDIR_INIT(GAMSlinks)
 # Check if user wants to produce debugging code
 AC_COIN_DEBUG_COMPILE(GAMSlinks)
 
-# We need egrep and ln -s somewhere
-#AC_PROG_EGREP
-#AC_PROG_LN_S
-
 # Get the name of the C compiler and appropriate compiler options
 AC_COIN_PROG_CC
 
 # Get the name of the C++ compiler and appropriate compiler options
 AC_COIN_PROG_CXX
-
-# Find out how to call Fortran from C and determine Fortran runtime libraries
-#AC_COIN_F77_WRAPPERS
 
 # Initialize automake and libtool
 AC_COIN_INIT_AUTO_TOOLS
@@ -83,61 +72,27 @@ AC_COIN_CHECK_PACKAGE(OS,      [os],         [GamsSolverLib])
 AC_COIN_CHECK_PACKAGE(SCIP,    [coinscip],   [GamsSolverLib])
 
 ############################################################################
-#                   Stuff that we need for C++ programs                    #
+#                          Check for system specifics                      #
 ############################################################################
 
-AC_LANG_PUSH(C++)
-
-################
-# Header Files #
-################
-
-AC_COIN_CHECK_CXX_CHEADER(assert)
-AC_COIN_CHECK_CXX_CHEADER(stdio)
-AC_COIN_CHECK_CXX_CHEADER(stdlib)
-AC_COIN_CHECK_CXX_CHEADER(string)
-AC_COIN_CHECK_CXX_CHEADER(stdarg)
-AC_COIN_CHECK_CXX_CHEADER(limits)
-AC_COIN_CHECK_CXX_CHEADER(ctype)
-AC_COIN_CHECK_CXX_CHEADER(errno)
-AC_COIN_CHECK_CXX_CHEADER(math)
-AC_COIN_CHECK_HEADER([windows.h])
-
-AC_LANG_POP(C++)
-
 AC_LANG_PUSH(C)
-
-############
-# intptr_t #
-############
 
 # check if intptr_t is available, which can be used to avoid errors when compiling hte GAMS library loader codes
 GAMSLIBCFLAGS=
 AC_CHECK_TYPE([intptr_t],[GAMSLIBCFLAGS=-DHAVE_INTPTR_T])
 AC_SUBST(GAMSLIBCFLAGS)
 
-###########
-# va_copy #
-###########
-
+# check if va_copy is available, to be used in GamsJournal
 AC_CHECK_DECL([va_copy],
   [AC_DEFINE([HAVE_VA_COPY],[1],[Define to 1 if va_copy is available])],,
   [
 #include <cstdarg>
   ])
 
-###############################################
-# stricmp and strcasecmp; snprintf; vsnprintf #
-###############################################
-
-AC_CHECK_FUNCS([stricmp strcasecmp],  [break])
-AC_CHECK_FUNCS([snprintf _snprintf],  [break])
+# check if vsnprintf or _vsnprintf is available, to be used in GamsJournal
 AC_CHECK_FUNCS([vsnprintf _vsnprintf],[break])
 
-#############################
-# parallel BLAS recognition #
-#############################
-
+# if we have Ipopt, check if we have GotoBlas or MKL Blas functions to set number of threads
 if test $coin_has_ipopt = yes ; then
   LIBS_save="$LIBS"
   LIBS="$IPOPT_LIBS $LIBS"
