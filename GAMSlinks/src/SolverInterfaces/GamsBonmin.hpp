@@ -1,58 +1,51 @@
-// Copyright (C) GAMS Development and others 2009
+// Copyright (C) GAMS Development and others 2009-2011
 // All Rights Reserved.
-// This code is published under the Common Public License.
-//
-// $Id$
+// This code is published under the Eclipse Public License.
 //
 // Author: Stefan Vigerske
 
 #ifndef GAMSBONMIN_HPP_
 #define GAMSBONMIN_HPP_
 
-#include "GAMSlinksConfig.h"
+#include <cstdlib>
+
 #include "GamsSolver.hpp"
-#include "GamsMINLP.hpp"
 
 class GamsMessageHandler;
-class GamsIpopt;
-class GamsCbc;
-namespace Bonmin {
-	class BonminSetup;
-	class OsiTMINLPInterface;
+namespace Bonmin
+{
+class BonminSetup;
 }
 
-class GamsBonmin : public GamsSolver {
+/** GAMS interface to Bonmin */
+class GamsBonmin : public GamsSolver
+{
 private:
-	struct gmoRec* gmo;
-	struct gevRec* gev;
+	struct gmoRec*        gmo;                /**< GAMS modeling object */
+	struct gevRec*        gev;                /**< GAMS environment */
 
-	char           bonmin_message[100];
-
-	GamsMessageHandler*    msghandler;
-	Ipopt::SmartPtr<GamsMINLP> minlp;
-	Bonmin::BonminSetup*   bonmin_setup;
-	GamsIpopt*             gamsipopt;
-	GamsCbc*               gamscbc;
+   Bonmin::BonminSetup*  bonmin_setup;       /**< Bonmin solver application */
+	GamsMessageHandler*   msghandler;         /**< COIN-OR message handler for GAMS */
 
 	bool isNLP();
 	bool isMIP();
 
 public:
-	GamsBonmin();
+	GamsBonmin()
+	: gmo(NULL),
+	  gev(NULL),
+	  bonmin_setup(NULL),
+	  msghandler(NULL)
+	{ }
+
 	~GamsBonmin();
 
-	int readyAPI(struct gmoRec* gmo, struct optRec* opt);
-
-//	int haveModifyProblem();
-
-//	int modifyProblem();
+   int readyAPI(
+      struct gmoRec*     gmo,                /**< GAMS modeling object */
+      struct optRec*     opt                 /**< GAMS options object */
+   );
 
 	int callSolver();
+};
 
-	const char* getWelcomeMessage() { return bonmin_message; }
-
-}; // GamsBonmin
-
-extern "C" DllExport GamsBonmin* STDCALL createNewGamsBonmin();
-
-#endif /*GAMSBONMIN_HPP_*/
+#endif /* GAMSBONMIN_HPP_ */

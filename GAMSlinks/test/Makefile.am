@@ -1,8 +1,6 @@
-# Copyright (C) GAMS Development and others 2008
+# Copyright (C) 2008-2011 GAMS Development and others
 # All Rights Reserved.
-# This file is distributed under the Common Public License.
-#
-## $Id$
+# This file is distributed under the Eclipse Public License.
 #
 # Author: Stefan Vigerske
 
@@ -23,4 +21,4 @@ clean-local:
 
 DISTCLEANFILES = 
 
-include ../../BuildTools/Makemain.inc
+include ../BuildTools/Makemain.inc

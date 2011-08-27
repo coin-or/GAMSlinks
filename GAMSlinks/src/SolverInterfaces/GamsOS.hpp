@@ -1,54 +1,56 @@
-// Copyright (C) GAMS Development and others 2009
+// Copyright (C) GAMS Development and others 2009-2011
 // All Rights Reserved.
-// This code is published under the Common Public License.
-//
-// $Id$
+// This code is published under the Eclipse Public License.
 //
 // Authors:  Stefan Vigerske
 
 #ifndef GAMSOS_HPP_
 #define GAMSOS_HPP_
 
-#include "GAMSlinksConfig.h"
 #include "GamsSolver.hpp"
-#include "GamsOptions.hpp"
+
 #include <string>
 
+class GamsOptions;
 class OSInstance;
 class OSResult;
 
-/* Interface between a GAMS and Optimization Services (OS).
- */
-class GamsOS : public GamsSolver {
+/** GAMS interface to Optimization Services (OS) */
+class GamsOS : public GamsSolver
+{
 private:
-	struct gmoRec* gmo;
-	struct gevRec* gev;
+   struct gmoRec*        gmo;                /**< GAMS modeling object */
+   struct gevRec*        gev;                /**< GAMS environment */
+   struct optRec*        opt;                /**< GAMS options object */
 
-	char           os_message[200];
+   bool remoteSolve(
+      OSInstance*        osinstance,         /**< Optimization Services instance */
+      std::string&       osol,               /**< Optimization Services options string in OSoL format */
+      GamsOptions&       gamsopt             /**< GAMS options object */
+   );
 
-	GamsOptions    gamsopt;
-	OSInstance*    osinstance;
-
-	std::string getSolverName(bool isnonlinear, bool isdiscrete);
-	bool localSolve(OSInstance* osinstance, std::string& osol);
-	bool remoteSolve(OSInstance* osinstance, std::string& osol);
-	bool processResult(std::string* osrl, OSResult* osresult);
+   bool processResult(
+      std::string*       osrl,               /**< optimization result as string in OSrL format */
+      OSResult*          osresult,           /**< optimization result as object */
+      GamsOptions&       gamsopt             /**< GAMS options object */
+   );
 
 public:
-	GamsOS();
-	~GamsOS();
+   GamsOS()
+   : gmo(NULL),
+     gev(NULL),
+     opt(NULL)
+   { }
 
-	int readyAPI(struct gmoRec* gmo, struct optRec* opt);
+   ~GamsOS()
+   { }
 
-//	int haveModifyProblem();
+   int readyAPI(
+      struct gmoRec*     gmo,                /**< GAMS modeling object */
+      struct optRec*     opt                 /**< GAMS options object */
+   );
 
-//	int modifyProblem();
-
-	int callSolver();
-
-	const char* getWelcomeMessage() { return os_message; }
+   int callSolver();
 };
-
-extern "C" DllExport GamsOS* STDCALL createNewGamsOS();
 
 #endif /*GAMSOS_HPP_*/

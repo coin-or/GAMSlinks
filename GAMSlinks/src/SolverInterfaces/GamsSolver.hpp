@@ -1,82 +1,82 @@
-// Copyright (C) GAMS Development and others 2009
+// Copyright (C) GAMS Development and others 2009-2011
 // All Rights Reserved.
-// This code is published under the Common Public License.
-//
-// $Id$
+// This code is published under the Eclipse Public License.
 //
 // Author: Stefan Vigerske
 
 #ifndef GAMSSOLVER_HPP_
 #define GAMSSOLVER_HPP_
 
-#include "GAMSlinksConfig.h"
-#include "GamsSolver.h"
+typedef struct gmoRec* gmoHandle_t;
+typedef struct gevRec* gevHandle_t;
+typedef struct optRec* optHandle_t;
 
-/** An abstract interface to a solver that takes Gams Modeling Objects (GMO) as input.
- */
-class GamsSolver {
+/** abstract interface to a solver that takes Gams Modeling Objects (GMO) as input */
+class GamsSolver
+{
 public:
-  /** Sets number of threads to use in basic linear algebra routines. */
-  static void setNumThreadsBlas(struct gevRec* gev, int nthreads);
+   /** sets number of threads to use in basic linear algebra routines */
+   static void setNumThreadsBlas(
+      struct gevRec*      gev,                /**< GAMS environment */
+      int                 nthreads            /**< number of threads for BLAS routines */
+   );
 
-private:
-	bool need_unload_gmo;
-	bool need_unload_gev;
-public:
-	GamsSolver()
-	: need_unload_gmo(false), need_unload_gev(false)
-	{ }
+   /** ensure that GMO library has been loaded
+    * @return nonzero on failure, 0 on success
+    */
+   static int getGmoReady();
 
-	/** Unloads GMO library, if we loaded it.
-	 */
-	virtual ~GamsSolver();
+   /** ensure that GEV library has been loaded
+    * @return nonzero on failure, 0 on success
+    */
+   static int getGevReady();
 
-	/** Loads the GMO library, if not already loaded.
-	 * @return Nonzero on failure, 0 on success.
-	 */
-	int getGmoReady();
+   /** calls GAMS license check, if build by GAMS
+    * @return True if license check was skipped or successful or model fits into demo size restrictions
+    */
+   bool checkLicense(
+      struct gmoRec*     gmo                 /**< GAMS modeling object */
+   );
 
-	/** Loads the GEV library, if not already loaded.
-	 * @return Nonzero on failure, 0 on success.
-	 */
-	int getGevReady();
+   /** calls GAMS academic license check, if build by GAMS
+    * @return True if license check was skipped or an academic GAMS license was found or model fits into demo size restrictions
+    * If model fits into demo size limitations but also an academic license is available, isdemo is set to false.
+    */
+   bool checkAcademicLicense(
+      struct gmoRec*     gmo,                /**< GAMS modeling object */
+      bool&              isdemo              /**< bool to indicate whether check succeeded because model fit into demo size */
+   );
 
-	/** Calls the GAMS license check, if build by GAMS.
-	 * @return True if license check was skipped or successful.
-	 */
-	bool checkLicense(struct gmoRec* gmo);
+   /** registers a GAMS/CPLEX license, if build by GAMS
+    * @return True if license was registered or no CPLEX available
+    */
+   bool registerGamsCplexLicense(
+      struct gmoRec*     gmo                 /**< GAMS modeling object */
+   );
 
-	/** Registers a GAMS/CPLEX license, if build by GAMS.
-	 * @return True if license was registered or no CPLEX available.
-	 */
-	bool registerGamsCplexLicense(struct gmoRec* gmo);
+   /** initialization of solver interface and solver
+    * The method should do initializes necessary for solving a given model.
+    * In case of an error, the method should return with a nonzero return code.
+    */
+   virtual int readyAPI(
+      struct gmoRec*     gmo,                /**< GAMS modeling object */
+      struct optRec*     opt                 /**< GAMS options object */
+   ) = 0;
 
-	/** Initialization of solver interface and solver.
-	 * Loads problem into solver.
-	 */
-	virtual int readyAPI(struct gmoRec* gmo, struct optRec* opt) = 0;
+   /** indicates whether the solver interface and solver supports the modifyProblem call */
+   virtual int haveModifyProblem()
+   {
+      return -1;
+   }
 
-	/** Indicates whether the solver interface and solver supports the modifyProblem call.
-	 * Default: no
-	 */
-	virtual int haveModifyProblem() { return -1; }
+   /** notifies solver that the GMO object has been modified and changes should be passed forward to the solver */
+   virtual int modifyProblem()
+   {
+      return -1;
+   }
 
-	/** Notify solver that the GMO object has been modified and changes should be passed forward to the solver.
-	 * Default: do nothing
-	 */
-	virtual int modifyProblem() { return -1; }
-
-	/** Solves instance.
-	 * Store solution information in GMO object.
-	 */
-	virtual int callSolver() = 0;
-
-	/** Get a string about the solver name, version, and authors.
-	 */
-	virtual const char* getWelcomeMessage() = 0;
-
-}; // class GamsSolver
-
-typedef GamsSolver* STDCALL createNewGamsSolver_t(void);
+   /** initiate solving and storing solution information in GMO object */
+   virtual int callSolver() = 0;
+};
 
 #endif /*GAMSSOLVER_HPP_*/

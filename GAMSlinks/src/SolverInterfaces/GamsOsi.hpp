@@ -1,15 +1,12 @@
-// Copyright (C) GAMS Development and others 2009
+// Copyright (C) GAMS Development and others 2009-2011
 // All Rights Reserved.
-// This code is published under the Common Public License.
-//
-// $Id$
+// This code is published under the Eclipse Public License.
 //
 // Author: Stefan Vigerske
 
 #ifndef GAMSOSI_HPP_
 #define GAMSOSI_HPP_
 
-#include "GAMSlinksConfig.h"
 #include "GamsSolver.hpp"
 #include "GamsOptions.hpp"
 
@@ -18,56 +15,71 @@
 class GamsMessageHandler;
 class OsiSolverInterface;
 
-class GamsOsi : public GamsSolver {
+/** GAMS interface to solvers with Osi interface */
+class GamsOsi : public GamsSolver
+{
 public:
-	typedef enum { CBC, CPLEX, GLPK, GUROBI, MOSEK, SOPLEX, XPRESS } OSISOLVER;
+   typedef enum { CPLEX, GLPK, GUROBI, MOSEK, SOPLEX, XPRESS } OSISOLVER;
+
 private:
-	struct gmoRec* gmo;
-	struct gevRec* gev;
+   struct gmoRec*        gmo;                /**< GAMS modeling object */
+   struct gevRec*        gev;                /**< GAMS environment */
+   struct optRec*        opt;                /**< GAMS options object */
 
-	GamsOptions    options;
+   GamsMessageHandler*   msghandler;         /**< message handler */
+   OsiSolverInterface*   osi;                /**< solver interface */
+   OSISOLVER             solverid;           /**< ID of used solver */
+   std::ostringstream    spxoutput;          /**< SoPlex output buffer */
 
-	GamsMessageHandler* msghandler;
-	OsiSolverInterface* osi;
-	OSISOLVER           solverid;
-  std::ostringstream  spxoutput;
+   /** loads problem from GMO into OSI */
+   bool setupProblem();
 
-	char osi_message[200];
+   /** sets up warm start information (initial solution or basis) */
+   bool setupStartingPoint();
 
-	bool setupProblem(OsiSolverInterface& solver);
-	bool setupStartingPoint();
-	bool setupParameters();
-	bool writeSolution(double cputime, double walltime, bool& solwritten);
-	bool solveFixed();
+   /** sets up solver parameters */
+   bool setupParameters();
 
-	bool isLP();
+   /** sets up solver callbacks */
+   bool setupCallbacks();
+
+   /** clears solver callbacks, if needed */
+   bool clearCallbacks();
+
+   /** writes solution from OSI into GMO */
+   bool writeSolution(
+      double             cputime,            /**< CPU time spend by solver */
+      double             walltime,           /**< wallclock time spend by solver */
+      bool&              solwritten          /**< whether a solution has been passed to GMO */
+   );
+
+   /** resolves with discrete variables fixed */
+   bool solveFixed();
+
+   /** indicates whether instance is an LP */
+   bool isLP();
 
 public:
-	GamsOsi(OSISOLVER solverid_);
-	~GamsOsi();
+   /** constructs GamsOsi interface for a specific solver */
+   GamsOsi(
+      OSISOLVER          solverid_           /**< ID of underlying LP/MIP solver */
+   )
+   : gmo(NULL),
+     gev(NULL),
+     opt(NULL),
+     msghandler(NULL),
+     osi(NULL),
+     solverid(solverid_)
+   { }
 
-	int readyAPI(struct gmoRec* gmo, struct optRec* opt);
+   ~GamsOsi();
 
-//	int haveModifyProblem();
+   int readyAPI(
+      struct gmoRec*     gmo_,               /**< GAMS modeling object */
+      struct optRec*     opt_                /**< GAMS options object */
+   );
 
-//	int modifyProblem();
+   int callSolver();
+};
 
-	int callSolver();
-
-	const char* getWelcomeMessage() { return osi_message; }
-
-}; // GamsOsi
-
-extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiCplex();
-
-extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiGlpk();
-
-extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiGurobi();
-
-extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiMosek();
-
-extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiSoplex();
-
-extern "C" DllExport GamsOsi* STDCALL createNewGamsOsiXpress();
-
-#endif /*GAMSOSI_HPP_*/
+#endif

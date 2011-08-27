@@ -1,22 +1,12 @@
-// Copyright (C) GAMS Development and others 2009
+// Copyright (C) GAMS Development and others 2009-2011
 // All Rights Reserved.
-// This code is published under the Common Public License.
-//
-// $Id$
+// This code is published under the Eclipse Public License.
 //
 // Author: Stefan Vigerske
 
 #include "GamsOsiHelper.hpp"
 
-#ifdef HAVE_CSTDLIB
 #include <cstdlib>
-#else
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#else
-#error "don't have header file for stdlib"
-#endif
-#endif
 
 #include "CoinHelperFunctions.hpp"
 #include "CoinWarmStartBasis.hpp"
@@ -27,229 +17,364 @@
 
 #include "GamsCompatibility.h"
 
-bool gamsOsiLoadProblem(struct gmoRec* gmo, OsiSolverInterface& solver) {
-	struct gevRec* gev = (gevRec*)gmoEnvironment(gmo);
+bool gamsOsiLoadProblem(
+   struct gmoRec*        gmo,                /**< GAMS modeling object */
+   OsiSolverInterface&   solver,             /**< OSI solver interface */
+   bool                  setupnames          /**< should col/row names be setup in Osi? */
+)
+{
+   assert(gmo != NULL);
 
-	// objective
-	double* objcoeff = new double[gmoN(gmo)];
-#if GMOAPIVERSION >= 8
-	gmoGetObjVector(gmo, objcoeff, NULL);
-#else
-	gmoGetObjVector(gmo, objcoeff);
-#endif
-	solver.setDblParam(OsiObjOffset, -gmoObjConst(gmo)); // strange, but cbc seem to wanna have the constant with different sign
-//	printf("obj constant: %g\n", gmoObjConst(gmo));
+   struct gevRec* gev = (gevRec*)gmoEnvironment(gmo);
+   assert(gev != NULL);
 
-	// matrix
-	int nz = gmoNZ(gmo);
-	double* values  = new double[nz];
-	int* colstarts  = new int[gmoN(gmo)+1];
-	int* rowindexes = new int[nz];
-	int* nlflags    = new int[nz];
+   // objective
+   double* objcoeff = new double[gmoN(gmo)];
+   gmoGetObjVector(gmo, objcoeff, NULL);
+   solver.setDblParam(OsiObjOffset, -gmoObjConst(gmo));
 
-	gmoGetMatrixCol(gmo, colstarts, rowindexes, values, nlflags);
-	colstarts[gmoN(gmo)] = nz;
+   // matrix
+   int nz = gmoNZ(gmo);
+   double* values  = new double[nz];
+   int* colstarts  = new int[gmoN(gmo)+1];
+   int* rowindexes = new int[nz];
+   int* nlflags    = new int[nz];
 
-	// squeeze zero elements
-	int shift = 0;
-	for (int col = 0; col < gmoN(gmo); ++col) {
-		colstarts[col+1] -= shift;
-		int k = colstarts[col];
-		while (k < colstarts[col+1]) {
-			values[k] = values[k+shift];
-			rowindexes[k] = rowindexes[k+shift];
-			if (!values[k]) {
-				++shift;
-				--colstarts[col+1];
-			} else {
-				++k;
-			}
-		}
-	}
-	nz -= shift;
+   gmoGetMatrixCol(gmo, colstarts, rowindexes, values, nlflags);
+   colstarts[gmoN(gmo)] = nz;
 
-	// variable bounds
-	double* varlow = new double[gmoN(gmo)];
-	double* varup  = new double[gmoN(gmo)];
-	gmoGetVarLower(gmo, varlow);
-	gmoGetVarUpper(gmo, varup);
+   // squeeze zero elements
+   int shift = 0;
+   for( int col = 0; col < gmoN(gmo); ++col )
+   {
+      colstarts[col+1] -= shift;
+      for( int k = colstarts[col]; k < colstarts[col+1]; )
+      {
+         values[k] = values[k+shift];
+         rowindexes[k] = rowindexes[k+shift];
+         if( !values[k] )
+         {
+            ++shift;
+            --colstarts[col+1];
+         }
+         else
+         {
+            ++k;
+         }
+      }
+   }
+   nz -= shift;
 
-	// right-hand-side and row sense
-	double* rhs    = new double[gmoM(gmo)];
-	int* rowtype   = new int[gmoM(gmo)];
-	char* rowsense = new char[gmoM(gmo)];
-	gmoGetRhs(gmo, rhs);
-	gmoGetEquType(gmo, rowtype);
-	for (int i = 0; i < gmoM(gmo); ++i)
-		switch ((enum gmoEquType)rowtype[i]) {
-			case equ_E: rowsense[i] = 'E'; break;
-			case equ_G: rowsense[i] = 'G'; break;
-			case equ_L: rowsense[i] = 'L'; break;
-			case equ_N: rowsense[i] = 'N'; break;
-			case equ_C:
-				gevLogStat(gev, "Error: Conic constraints not supported by OSI.");
-				return false;
-			default:
-				gevLogStat(gev, "Error: Unsupported row type.");
-				return false;
-		}
-	double* rowrng = CoinCopyOfArrayOrZero((double*)NULL, gmoM(gmo));
+   // variable bounds
+   double* varlow = new double[gmoN(gmo)];
+   double* varup  = new double[gmoN(gmo)];
+   gmoGetVarLower(gmo, varlow);
+   gmoGetVarUpper(gmo, varup);
 
-//	printf("%d columns:\n", gmoN(gmo));
-//	for (int i = 0; i < gmoN(gmo); ++i)
-//		printf("lb %g\t ub %g\t obj %g\t colstart %d\n", varlow[i], varup[i], objcoeff[i], colstarts[i]);
-//	printf("%d rows:\n", gmoM(gmo));
-//	for (int i = 0; i < gmoM(gmo); ++i)
-//		printf("rhs %g\t sense %c\t rng %g\n", rhs[i], rowsense[i], rowrng[i]);
-//	printf("%d nonzero values:", nz);
-//	for (int i = 0; i < nz; ++i)
-//		printf("%d:%g ", rowindexes[i], values[i]);
+   // row sense
+   char* rowsense = new char[gmoM(gmo)];
+   for( int i = 0; i < gmoM(gmo); ++i )
+      switch( (enum gmoEquType)gmoGetEquTypeOne(gmo, i) )
+      {
+         case gmoequ_E: rowsense[i] = 'E'; break;
+         case gmoequ_G: rowsense[i] = 'G'; break;
+         case gmoequ_L: rowsense[i] = 'L'; break;
+         case gmoequ_N: rowsense[i] = 'N'; break;
+         case gmoequ_C:
+            gevLogStat(gev, "Error: Conic constraints not supported by OSI.");
+            return false;
+         default:
+            gevLogStat(gev, "Error: Unsupported equation type.");
+            return false;
+      }
+   // right-hand-side
+   double* rhs = new double[gmoM(gmo)];
+   gmoGetRhs(gmo, rhs);
 
-	solver.loadProblem(gmoN(gmo), gmoM(gmo), colstarts, rowindexes, values, varlow, varup, objcoeff, rowsense, rhs, rowrng);
+   //	printf("%d columns:\n", gmoN(gmo));
+   //	for (int i = 0; i < gmoN(gmo); ++i)
+   //		printf("lb %g\t ub %g\t obj %g\t colstart %d\n", varlow[i], varup[i], objcoeff[i], colstarts[i]);
+   //	printf("%d rows:\n", gmoM(gmo));
+   //	for (int i = 0; i < gmoM(gmo); ++i)
+   //		printf("rhs %g\t sense %c\t rng %g\n", rhs[i], rowsense[i], rowrng[i]);
+   //	printf("%d nonzero values:", nz);
+   //	for (int i = 0; i < nz; ++i)
+   //		printf("%d:%g ", rowindexes[i], values[i]);
 
-	delete[] colstarts;
-	delete[] rowindexes;
-	delete[] values;
-	delete[] nlflags;
-	delete[] varlow;
-	delete[] varup;
-	delete[] objcoeff;
-	delete[] rowtype;
-	delete[] rowsense;
-	delete[] rhs;
-	delete[] rowrng;
+   solver.loadProblem(gmoN(gmo), gmoM(gmo), colstarts, rowindexes, values, varlow, varup, objcoeff, rowsense, rhs, NULL);
 
-	// objective sense
-	switch (gmoSense(gmo)) {
-		case Obj_Min:
-			solver.setObjSense(1.0);
-			break;
-		case Obj_Max:
-			solver.setObjSense(-1.0);
-			break;
-		default:
-			gevLogStat(gev, "Error: Unsupported objective sense.");
-			return false;
-	}
+   delete[] colstarts;
+   delete[] rowindexes;
+   delete[] values;
+   delete[] nlflags;
+   delete[] varlow;
+   delete[] varup;
+   delete[] objcoeff;
+   delete[] rowsense;
+   delete[] rhs;
 
-	// tell solver which variables are discrete
-	if (gmoNDisc(gmo)) {
-		int* discrind = new int[gmoNDisc(gmo)];
-		int j = 0;
-		for (int i = 0; i < gmoN(gmo); ++i) {
-			switch ((enum gmoVarType)gmoGetVarTypeOne(gmo, i)) {
-				case var_B:  // binary
-				case var_I:  // integer
-				case var_SI: // semiinteger
-					assert(j < gmoNDisc(gmo));
-					discrind[j++] = i;
-					break;
-				case var_X:  // probably this means continuous variable
-				case var_S1: // in SOS1
-				case var_S2: // in SOS2
-				case var_SC: // semicontinuous
-					break;
-			}
-		}
-		solver.setInteger(discrind, j);
-		delete[] discrind;
-	}
+   // objective sense
+   switch( gmoSense(gmo) )
+   {
+      case gmoObj_Min:
+         solver.setObjSense(1.0);
+         break;
+      case gmoObj_Max:
+         solver.setObjSense(-1.0);
+         break;
+      default:
+         gevLogStat(gev, "Error: Unsupported objective sense.");
+         return false;
+   }
 
-	char inputname[1024];
-	gmoNameInput(gmo, inputname);
-	solver.setStrParam(OsiProbName, inputname);
+   // tell solver which variables are discrete
+   if( gmoNDisc(gmo) )
+   {
+      int* discrind = new int[gmoNDisc(gmo)];
+      int j = 0;
+      for( int i = 0; i < gmoN(gmo); ++i )
+      {
+         switch( (enum gmoVarType)gmoGetVarTypeOne(gmo, i) )
+         {
+            case gmovar_B:  // binary
+            case gmovar_I:  // integer
+            case gmovar_SI: // semiinteger
+               assert(j < gmoNDisc(gmo));
+               discrind[j++] = i;
+               break;
+            case gmovar_X:  // probably this means continuous variable
+            case gmovar_S1: // in SOS1
+            case gmovar_S2: // in SOS2
+            case gmovar_SC: // semicontinuous
+               break;
+         }
+      }
+      solver.setInteger(discrind, j);
+      delete[] discrind;
+   }
 
-	return true;
+   char inputname[GMS_SSSIZE];
+   gmoNameInput(gmo, inputname);
+   solver.setStrParam(OsiProbName, inputname);
+
+   // setup column/row/obj names, if available
+   if( setupnames && gmoDict(gmo) != NULL )
+   {
+      solver.setIntParam(OsiNameDiscipline, 2);
+      char buffer[GMS_SSSIZE];
+      for( int j = 0; j < gmoN(gmo); ++j )
+      {
+         gmoGetVarNameOne(gmo, j, buffer);
+         solver.setColName(j, buffer);
+      }
+      for( int j = 0; j < gmoM(gmo); ++j )
+      {
+         gmoGetEquNameOne(gmo, j, buffer);
+         solver.setRowName(j, buffer);
+      }
+      gmoGetObjName(gmo, buffer);
+      solver.setObjName(buffer);
+   }
+
+   return true;
 }
 
+bool gamsOsiStoreSolution(
+   struct gmoRec*        gmo,                /**< GAMS modeling object */
+   const OsiSolverInterface& solver          /**< OSI solver interface */
+)
+{
+   assert(gmo != NULL);
 
-bool gamsOsiStoreSolution(struct gmoRec* gmo, const OsiSolverInterface& solver, bool swapRowStatus) {
-	struct gevRec* gev = (gevRec*)gmoEnvironment(gmo);
-	const double* colLevel  = solver.getColSolution();
-	const double* colMargin = solver.getReducedCost();
-	const double* rowLevel  = solver.getRowActivity();
-	const double* rowMargin = solver.getRowPrice();
+   struct gevRec* gev = (gevRec*)gmoEnvironment(gmo);
+   assert(gev != NULL);
 
-	assert(!gmoN(gmo) || colLevel);
-	assert(!gmoN(gmo) || colMargin);
-	assert(!gmoM(gmo) || rowLevel);
-	assert(!gmoM(gmo) || rowMargin);
+   const double* colLevel  = solver.getColSolution();
+   const double* colMargin = solver.getReducedCost();
+   const double* rowLevel  = solver.getRowActivity();
+   const double* rowMargin = solver.getRowPrice();
 
-	int* colBasis = new int[solver.getNumCols()];
-	int* rowBasis = new int[solver.getNumRows()];
-	int* dummy    = CoinCopyOfArray((int*)NULL, CoinMax(gmoN(gmo), gmoM(gmo)), 0);
-	double dummy2;
+   assert(gmoN(gmo) == 0 || colLevel);
+   assert(gmoN(gmo) == 0 || colMargin);
+   assert(gmoM(gmo) == 0 || rowLevel);
+   assert(gmoM(gmo) == 0 || rowMargin);
 
-	// workaround for gmo if there are not rows (or columns)
-	if (!gmoN(gmo)) {
-		colLevel  = &dummy2;
-		colMargin = &dummy2;
-	}
-	if (!gmoM(gmo)) {
-		rowLevel  = &dummy2;
-		rowMargin = &dummy2;
-	}
+   int* colBasis = new int[solver.getNumCols()];
+   int* rowBasis = new int[solver.getNumRows()];
 
-	if (solver.optimalBasisIsAvailable()) {
-		solver.getBasisStatus(colBasis, rowBasis);
+   // workaround for gmo if there are no rows or columns
+   double dummy2;
+   if( !gmoN(gmo) )
+   {
+      colLevel  = &dummy2;
+      colMargin = &dummy2;
+   }
+   if( !gmoM(gmo) )
+   {
+      rowLevel  = &dummy2;
+      rowMargin = &dummy2;
+   }
 
-		// translate from OSI codes to GAMS codes
-		for (int j = 0; j < gmoN(gmo); ++j) {
-			// only for fully continuous variables we can give a reliable basis status
-			if (gmoGetVarTypeOne(gmo, j) != var_X)
-				colBasis[j] = Bstat_Super;
-			else switch (colBasis[j]) {
-				case 3: colBasis[j] = (fabs(colLevel[j] - gmoGetVarLowerOne(gmo, j)) > 1e-6) ? Bstat_Super : Bstat_Lower; break; // change to super if value is not on bound as it should be
-				case 2: colBasis[j] = (fabs(colLevel[j] - gmoGetVarUpperOne(gmo, j)) > 1e-6) ? Bstat_Super : Bstat_Upper; break;
-				case 1: colBasis[j] = Bstat_Basic; break;
-				case 0: colBasis[j] = Bstat_Super; break;
-				default: gevLogStat(gev, "Column basis status unknown!"); return false;
-			}
-		}
-		for (int i = 0; i < gmoM(gmo); ++i) {
-			switch (rowBasis[i]) {
-				case 2: rowBasis[i] = swapRowStatus ? Bstat_Upper : Bstat_Lower; break;
-				case 3: rowBasis[i] = swapRowStatus ? Bstat_Lower : Bstat_Upper; break;
-				case 1: rowBasis[i] = Bstat_Basic; break;
-				case 0: rowBasis[i] = Bstat_Super; break;
-				default: gevLogStat(gev, "Row basis status unknown!"); return false;
-			}
-		}
-	} else {
-		const CoinWarmStartBasis* wsb = dynamic_cast<const CoinWarmStartBasis*>(solver.getWarmStart());
-		if (wsb) {
-			for (int j = 0; j < gmoN(gmo); ++j)
-				if (gmoGetVarTypeOne(gmo, j) != var_X)
-					colBasis[j] = Bstat_Super;
-				else switch (wsb->getStructStatus(j)) {
-					case CoinWarmStartBasis::atLowerBound: colBasis[j] = (fabs(colLevel[j] - gmoGetVarLowerOne(gmo, j)) > 1e-6) ? Bstat_Super : Bstat_Lower; break; // change to super if value is not on bound as it should be
-					case CoinWarmStartBasis::atUpperBound: colBasis[j] = (fabs(colLevel[j] - gmoGetVarUpperOne(gmo, j)) > 1e-6) ? Bstat_Super : Bstat_Upper; break;
-					case CoinWarmStartBasis::basic:        colBasis[j] = Bstat_Basic; break;
-					case CoinWarmStartBasis::isFree:       colBasis[j] = Bstat_Super; break;
-					default: gevLogStat(gev, "Column basis status unknown!"); return false;
-				}
-			for (int j = 0; j < gmoM(gmo); ++j) {
-				switch (wsb->getArtifStatus(j)) {
-					case CoinWarmStartBasis::atLowerBound: rowBasis[j] = (!swapRowStatus) ? Bstat_Upper : Bstat_Lower; break; // for Cbc, the basis status seem to be flipped in CoinWarmStartBasis, but not in getBasisStatus
-					case CoinWarmStartBasis::atUpperBound: rowBasis[j] = (!swapRowStatus) ? Bstat_Lower : Bstat_Upper; break;
-					case CoinWarmStartBasis::basic:        rowBasis[j] = Bstat_Basic; break;
-					case CoinWarmStartBasis::isFree:       rowBasis[j] = Bstat_Super; break;
-					default: gevLogStat(gev, "Row basis status unknown!"); return false;
-				}
-			}
-			delete wsb;
-		} else {
-			CoinFillN(colBasis, gmoN(gmo), (int)Bstat_Super);
-			CoinFillN(rowBasis, gmoM(gmo), (int)Bstat_Super);
-		}
-	}
+   if( solver.optimalBasisIsAvailable() )
+   {
+      solver.getBasisStatus(colBasis, rowBasis);
 
-	gmoSetHeadnTail(gmo, Hobjval, solver.getObjValue());
-	gmoSetSolution8(gmo, colLevel, colMargin, rowMargin, rowLevel, colBasis, dummy, rowBasis, dummy);
+      // translate from OSI codes to GAMS codes
+      for( int j = 0; j < gmoN(gmo); ++j )
+      {
+         // only for fully continuous variables we can give a reliable basis status
+         if( gmoGetVarTypeOne(gmo, j) != gmovar_X )
+            colBasis[j] = gmoBstat_Super;
+         else
+            switch( colBasis[j] )
+            {
+               // change onbound to super if value is not on bound as it should be
+               case 3: colBasis[j] = (colLevel[j] > gmoGetVarLowerOne(gmo, j) + 1e-6) ? gmoBstat_Super : gmoBstat_Lower; break;
+               case 2: colBasis[j] = (colLevel[j] < gmoGetVarUpperOne(gmo, j) - 1e-6) ? gmoBstat_Super : gmoBstat_Upper; break;
+               case 1: colBasis[j] = gmoBstat_Basic; break;
+               case 0: colBasis[j] = gmoBstat_Super; break;
+               default: gevLogStat(gev, "Column basis status unknown!"); return false;
+            }
+      }
+      for( int i = 0; i < gmoM(gmo); ++i )
+      {
+         switch( rowBasis[i] )
+         {
+            case 2: rowBasis[i] = gmoBstat_Lower; break;
+            case 3: rowBasis[i] = gmoBstat_Upper; break;
+            case 1: rowBasis[i] = gmoBstat_Basic; break;
+            case 0: rowBasis[i] = gmoBstat_Super; break;
+            default: gevLogStat(gev, "Row basis status unknown!"); return false;
+         }
+      }
+   }
+   else
+   {
+      CoinWarmStart* ws = solver.getWarmStart();
+      CoinWarmStartBasis* wsb = dynamic_cast<CoinWarmStartBasis*>(ws);
+      if( wsb != NULL )
+      {
+         for( int j = 0; j < gmoN(gmo); ++j )
+            if( gmoGetVarTypeOne(gmo, j) != gmovar_X )
+               colBasis[j] = gmoBstat_Super;
+            else
+               switch( wsb->getStructStatus(j) )
+               {
+                  // change onbound to super if value is not on bound as it should be
+                  case CoinWarmStartBasis::atLowerBound: colBasis[j] = (colLevel[j] > gmoGetVarLowerOne(gmo, j) + 1e-6) ? gmoBstat_Super : gmoBstat_Lower; break; // change to super if value is not on bound as it should be
+                  case CoinWarmStartBasis::atUpperBound: colBasis[j] = (colLevel[j] < gmoGetVarUpperOne(gmo, j) - 1e-6) ? gmoBstat_Super : gmoBstat_Upper; break;
+                  case CoinWarmStartBasis::basic:        colBasis[j] = gmoBstat_Basic; break;
+                  case CoinWarmStartBasis::isFree:       colBasis[j] = gmoBstat_Super; break;
+                  default: gevLogStat(gev, "Column basis status unknown!"); return false;
+               }
+         for( int j = 0; j < gmoM(gmo); ++j )
+         {
+            switch( wsb->getArtifStatus(j) )
+            {
+               // for Cbc, the basis status seem to be flipped in CoinWarmStartBasis, but not in getBasisStatus
+               case CoinWarmStartBasis::atLowerBound: rowBasis[j] = gmoBstat_Upper; break;
+               case CoinWarmStartBasis::atUpperBound: rowBasis[j] = gmoBstat_Lower; break;
+               case CoinWarmStartBasis::basic:        rowBasis[j] = gmoBstat_Basic; break;
+               case CoinWarmStartBasis::isFree:       rowBasis[j] = gmoBstat_Super; break;
+               default: gevLogStat(gev, "Row basis status unknown!"); return false;
+            }
+         }
+      }
+      else
+      {
+         CoinFillN(colBasis, gmoN(gmo), (int)gmoBstat_Super);
+         CoinFillN(rowBasis, gmoM(gmo), (int)gmoBstat_Super);
+      }
+      delete ws;
+   }
 
-	delete[] colBasis;
-	delete[] rowBasis;
-	delete[] dummy;
+   gmoSetHeadnTail(gmo, gmoHobjval, solver.getObjValue());
+   gmoSetSolution8(gmo, colLevel, colMargin, rowMargin, rowLevel, colBasis, NULL, rowBasis, NULL);
 
-	return true;
+   delete[] colBasis;
+   delete[] rowBasis;
+
+   return true;
+}
+
+/** writes the problem stored in an OSI into LP and MPS files
+ * set the first bit of formatflags for using writeMps, the second bit for using writeLp, and/or the third for using writeMpsNative
+ */
+void gamsOsiWriteProblem(
+   struct gmoRec*        gmo,                /**< GAMS modeling object */
+   OsiSolverInterface&   solver,             /**< OSI solver interface */
+   unsigned int          formatflags         /**< in which formats to write the instance */
+)
+{
+   if( formatflags == 0 )
+      return;
+
+   struct gevRec* gev;
+   char buffer[GMS_SSSIZE+30];
+   double objoffset;
+
+   gev = (struct gevRec*)gmoEnvironment(gmo);
+   assert(gev != NULL);
+
+   solver.getDblParam(OsiObjOffset, objoffset);
+   if( objoffset != 0.0 )
+   {
+      snprintf(buffer, sizeof(buffer), "Ignoring objective offset %.20g when writing instance.\n", objoffset);
+      gevLogPChar(gev, buffer);
+   }
+
+   gmoNameInput(gmo, buffer);
+
+   if( formatflags & 0x1 )
+   {
+      gevLogPChar(gev, "Writing MPS file ");
+      gevLogPChar(gev, buffer);
+      gevLogPChar(gev, ".mps\n");
+      solver.writeMps(buffer, "mps", 1.0);
+   }
+
+   if( formatflags & 0x2 )
+   {
+      gevLogPChar(gev, "Writing LP file ");
+      gevLogPChar(gev, buffer);
+      gevLogPChar(gev, ".lp\n");
+      solver.writeLp(buffer, "lp", 1e-9, 10, 15, 0.0, true);
+   }
+
+   if( formatflags & 0x4 )
+   {
+      strcat(buffer, "_native.mps");
+      gevLogPChar(gev, "Writing native MPS file ");
+      gevLog(gev, buffer);
+
+      assert(gmoN(gmo) <= solver.getNumCols());
+      assert(gmoM(gmo) <= solver.getNumRows());
+      char** colnames;
+      char** rownames;
+      int nameDiscipline;
+      if( !solver.getIntParam(OsiNameDiscipline, nameDiscipline) )
+         nameDiscipline = 0;
+      if( nameDiscipline == 2 )
+      {
+         colnames = new char*[gmoN(gmo)];
+         rownames = new char*[gmoM(gmo)+1];
+         for( int i = 0; i < gmoN(gmo); ++i )
+            colnames[i] = strdup(solver.getColName(i).c_str());
+         for( int i = 0; i < gmoM(gmo); ++i )
+            rownames[i] = strdup(solver.getRowName(i).c_str());
+         rownames[gmoM(gmo)] = strdup(solver.getObjName().c_str());
+      }
+
+      solver.writeMpsNative(buffer, const_cast<const char**>(rownames), const_cast<const char**>(colnames), 2, 2, 1.0);
+
+      if( nameDiscipline == 2 )
+      {
+         for( int i = 0; i < gmoN(gmo); ++i )
+            free(colnames[i]);
+         for( int i = 0; i < gmoM(gmo)+1; ++i )
+            free(rownames[i]);
+         delete[] colnames;
+         delete[] rownames;
+      }
+   }
 }

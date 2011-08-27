@@ -1,9 +1,7 @@
-# Copyright (C) 2006-2009 GAMS Development and others
+# Copyright (C) 2006-2011 GAMS Development and others
 # All Rights Reserved.
-# This file is distributed under the Common Public License.
-
-## $Id$
-
+# This file is distributed under the Eclipse Public License.
+#
 # Author:  Stefan Vigerske
 
 #############################################################################
@@ -12,14 +10,12 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([GAMSlinks],[0.4],[https://projects.coin-or.org/GAMSlinks/newticket])
+AC_INIT([GAMSlinks],[trunk],[https://projects.coin-or.org/GAMSlinks/newticket])
 
-AC_COPYRIGHT([Copyright (C) 2006-2008 GAMS Development and others
+AC_COPYRIGHT([Copyright (C) 2006-2011 GAMS Development and others
 All Rights Reserved.
-This file is part of the open source package Coin which is distributed
-under the Common Public License.])
-
-AC_REVISION(0.9)
+This file is part of the open source package GAMSlinks which is distributed
+under the Eclipse Public License.])
 
 # List one file in the package so that the configure script can test
 # whether the package is actually there
@@ -35,22 +31,7 @@ AC_PREFIX_DEFAULT([`pwd`])
 #              Create the libtool script for the subdirectories             #
 #############################################################################
 
-AC_LIBTOOL_DLOPEN
-AC_LIBLTDL_CONVENIENCE
 AC_COIN_CREATE_LIBTOOL
-
-#############################################################################
-#             Check which ThirdParty sources are available                  #
-#############################################################################
-
-#AC_COIN_THIRDPARTY_SUBDIRS([GAMSIO],[ThirdParty/GAMSIO],[get.GAMSIO])
-AC_COIN_THIRDPARTY_SUBDIRS([Glpk],[ThirdParty/Glpk],[glpk/src/glplpx01.c])
-AC_COIN_THIRDPARTY_SUBDIRS([Blas],[ThirdParty/Blas],[daxpy.f])
-AC_COIN_THIRDPARTY_SUBDIRS([Lapack],[ThirdParty/Lapack],[LAPACK/SRC/dlarf.f])
-AC_COIN_THIRDPARTY_SUBDIRS([Metis],[ThirdParty/Metis],[metis-4.0/Lib/balance.c])
-AC_COIN_THIRDPARTY_SUBDIRS([HSL],[ThirdParty/HSL],[configure.ac])
-AC_COIN_THIRDPARTY_SUBDIRS([Mumps],[ThirdParty/Mumps],[MUMPS/src/dmumps_part1.F])
-AC_COIN_THIRDPARTY_SUBDIRS([Soplex],[ThirdParty/SoPlex],[soplex/src/soplex.h])
 
 #############################################################################
 #                  Check which subprojects are there                        #
@@ -58,19 +39,25 @@ AC_COIN_THIRDPARTY_SUBDIRS([Soplex],[ThirdParty/SoPlex],[soplex/src/soplex.h])
 
 #we want SCIP to be build after CoinUtils, Clp, Ipopt, and CppAD in order to use them there 
 
-AC_COIN_MAIN_SUBDIRS(libltdl)
-AC_COIN_MAIN_SUBDIRS(CoinUtils)
-AC_COIN_MAIN_SUBDIRS(Clp)
-AC_COIN_MAIN_SUBDIRS(Ipopt)
-AC_COIN_MAIN_SUBDIRS(cppad)
-AC_COIN_THIRDPARTY_SUBDIRS([Scip],[ThirdParty/SCIP],[scip/src/scip/scip.h])
-AC_COIN_MAIN_SUBDIRS(Cgl)
-AC_COIN_MAIN_SUBDIRS(Osi)
-AC_COIN_MAIN_SUBDIRS(Cbc)
-AC_COIN_MAIN_SUBDIRS(Bonmin)
-AC_COIN_MAIN_SUBDIRS(Couenne)
-AC_COIN_MAIN_SUBDIRS(OS)
-AC_COIN_MAIN_SUBDIRS(GAMSlinks)
+AC_COIN_MAIN_PACKAGEDIR(Blas,     ThirdParty,[daxpy.f])
+AC_COIN_MAIN_PACKAGEDIR(Lapack,   ThirdParty,[LAPACK/SRC/dlarf.f])
+AC_COIN_MAIN_PACKAGEDIR(Glpk,     ThirdParty,[glpk/src/glplpx01.c])
+AC_COIN_MAIN_PACKAGEDIR(Metis,    ThirdParty,[metis-4.0/Lib/balance.c])
+AC_COIN_MAIN_PACKAGEDIR(HSL,      ThirdParty,[configure.ac])
+AC_COIN_MAIN_PACKAGEDIR(Mumps,    ThirdParty,[MUMPS/src/dmumps_part1.F])
+AC_COIN_MAIN_PACKAGEDIR(SoPlex,   ThirdParty,[soplex/src/soplex.h])
+AC_COIN_MAIN_PACKAGEDIR(CoinUtils)
+AC_COIN_MAIN_PACKAGEDIR(Osi)
+AC_COIN_MAIN_PACKAGEDIR(Clp)
+AC_COIN_MAIN_PACKAGEDIR(Cgl)
+AC_COIN_MAIN_PACKAGEDIR(Cbc)
+AC_COIN_MAIN_PACKAGEDIR(Ipopt)
+AC_COIN_MAIN_PACKAGEDIR(cppad)
+AC_COIN_MAIN_PACKAGEDIR(SCIP,     ThirdParty,[scip/src/scip/scip.h])
+AC_COIN_MAIN_PACKAGEDIR(Bonmin)
+AC_COIN_MAIN_PACKAGEDIR(Couenne)
+AC_COIN_MAIN_PACKAGEDIR(OS)
+AC_COIN_MAIN_PACKAGEDIR(GAMSlinks)
 
 ##############################################################################
 #                   Finishing up by writing all the output                   #

@@ -1,16 +1,13 @@
-// Copyright (C) GAMS Development and others 2008-2010
+// Copyright (C) GAMS Development and others 2008-2011
 // All Rights Reserved.
-// This code is published under the Common Public License.
-//
-// $Id$
+// This code is published under the Eclipse Public License.
 //
 // Author: Stefan Vigerske
 
 #ifndef GAMSOSXL_HPP_
 #define GAMSOSXL_HPP_
 
-#include "GAMSlinksConfig.h"
-
+#include <cstdlib>
 #include <string>
 
 class OSInstance;
@@ -20,66 +17,95 @@ class OSResult;
 struct gmoRec;
 struct gevRec;
 
-/** Converting between GAMS Modeling Object (GMO) and OS entities (OSiL, OSrL).
- */
+/** converting between GAMS Modeling Object (GMO) and OS entities (OSiL, OSrL) */
 class GamsOSxL {
 private:
-	struct gmoRec* gmo;
-	struct gevRec* gev;
+   struct gmoRec*        gmo;                /**< GAMS modeling object */
+   struct gevRec*        gev;                /**< GAMS environment */
 
-	bool gmo_is_our;
+   bool                  gmo_is_our;         /**< whether the object owns the GMO object */
 
-	OSnLNode* parseGamsInstructions(int codelen, int* opcodes, int* fields, int constantlen, double* constants);
+   OSnLNode* parseGamsInstructions(
+      int                codelen,            /**< length of GAMS instructions */
+      int*               opcodes,            /**< opcodes of GAMS instructions */
+      int*               fields,             /**< fields of GAMS instructions */
+      int                constantlen,        /**< length of GAMS constants pool */
+      double*            constants           /**< GAMS constants pool */
+   );
 
-	OSInstance *osinstance;
+   OSInstance*           osinstance;         /**< Optimization Services Instance object */
+
 public:
+   GamsOSxL(
+      struct gmoRec*     gmo_ = NULL         /**< GAMS modeling object, or NULL if set later */
+   )
+   : gmo(NULL),
+     gev(NULL),
+     gmo_is_our(false),
+     osinstance(NULL)
+   {
+      if( gmo_ != NULL )
+         setGMO(gmo_);
+   }
 
-	/** Constructor.
-	 * @param gmo_ A Gams Modeling Object, or NULL if set later.
-	 */
-	GamsOSxL(struct gmoRec* gmo_);
+   /** constructor for creating an GMO object from a compiled GAMS model */
+   GamsOSxL(
+      const char*        datfile             /**< name of file with compiled GAMS model */
+   )
+   : gmo(NULL),
+     gev(NULL),
+     gmo_is_our(false),
+     osinstance(NULL)
+   {
+      initGMO(datfile);
+   }
 
-	/** Constructor.
-	 * @param datfile Name of a file containing a compiled GAMS model.
-	 */
-	GamsOSxL(const char* datfile);
+   ~GamsOSxL();
 
-	~GamsOSxL();
+   /** sets Gams Modeling Object
+    * Can only be used if not GMO has been set already.
+    */
+   void setGMO(
+      struct gmoRec*     gmo_                /**< GAMS modeling object */
+   );
 
-	/** Sets Gams Modeling Object.
-	 * Can only be used if not GMO has been set already.
-	 */
-	void setGMO(struct gmoRec* gmo_);
+   /** initializes GMO from a file containing a compiled GAMS model */
+   bool initGMO(
+      const char*        datfile             /**< name of file with compiled GAMS model */
+   );
 
-	/** Initializes GMO from a file containing a compiled GAMS model
-	 */
-	bool initGMO(const char* datfile);
+   /** creates an OSInstance from the GAMS modeling object
+    * returns whether the instance has been created successfully
+    */
+   bool createOSInstance();
 
- 	/** Creates an OSInstance from the GAMS modeling object
- 	 * @return whether the instance is created successfully.
- 	 */
-	bool createOSInstance();
+   /** returns OSInstance and moves ownership to calling function
+    * this object forgets about the instance
+    */
+   OSInstance* takeOverOSInstance()
+   {
+      OSInstance* osinstance_ = osinstance;
+      osinstance = NULL;
+      return osinstance_;
+   }
 
-	/** Gives OSInstance and ownership to calling function.
-	 * This object forgets about the created instance.
-	 */
-	OSInstance* takeOverOSInstance();
+   /** returns OSInstances but keeps ownership
+    * destructor will free OSInstance
+    */
+   OSInstance* getOSInstance()
+   {
+      return osinstance;
+   }
 
-	/** Gives OSInstances but keeps ownership.
-	 * Destruction will destruct OSInstance.
-	 */
-	OSInstance* getOSInstance() { return osinstance; }
+   /** stores a solution in GMO with the result given as OSResult object */
+   void writeSolution(
+      OSResult&          osresult            /**< optimization result as OSResult object */
+   );
 
-  /** Writes a solution into a GMO with the result given as OSResult object.
-   * @param osresult Optimization result as object.
-   */
-  void writeSolution(OSResult& osresult);
-
-  /** Writes a solution into a GMO with the result given as osrl string.
-   * @param osrl Optimization result as string.
-   */
-  void writeSolution(std::string& osrl);
+   /** stores a solution in GMO with the result given as osrl string */
+   void writeSolution(
+      std::string&       osrl                /**< optimization result as string in OSrL format */
+   );
 };
-
 
 #endif /*GAMSOSXL_HPP_*/

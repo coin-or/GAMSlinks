@@ -1,1 +1,0 @@
-../../SoPlex/m4/ac_coin_soplex.m4

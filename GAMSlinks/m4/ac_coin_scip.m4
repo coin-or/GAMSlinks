@@ -1,1 +1,0 @@
-../../ThirdParty/SCIP/m4/ac_coin_scip.m4

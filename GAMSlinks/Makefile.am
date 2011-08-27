@@ -1,8 +1,6 @@
-# Copyright (C) GAMS Development 2007
+# Copyright (C) GAMS Development 2007-2011
 # All Rights Reserved.
-# This file is distributed under the Common Public License.
-#
-## $Id$
+# This file is distributed under the Eclipse Public License.
 #
 # Author: Stefan Vigerske
 # Template from: Andreas Waechter
@@ -15,12 +13,7 @@ if ALWAYS_FALSE
   SUBDIRS += test
 endif
 
-EXTRA_DIST = \
-	README \
-	LICENSE \
-	AUTHORS
-
-# tmpdir = tmpdir
+EXTRA_DIST = README LICENSE AUTHORS
 
 test: all
 	cd test; $(MAKE) test
@@ -47,10 +40,6 @@ clean-local:
 distclean-local:
 	if test -r test/Makefile; then cd test; $(MAKE) distclean; fi
 
-########################################################################
-#                  Installation of the addlibs file                    #
-########################################################################
-
 install-exec-local: install-doc
 
 uninstall-local: uninstall-doc
@@ -62,4 +51,4 @@ uninstall-local: uninstall-doc
 # Files that are generated and should be cleaned with make distclean
 DISTCLEANFILES =
 
-include ../BuildTools/Makemain.inc
+include BuildTools/Makemain.inc
