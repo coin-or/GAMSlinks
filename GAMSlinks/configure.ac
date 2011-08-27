@@ -95,7 +95,7 @@ AC_CHECK_FUNCS([vsnprintf _vsnprintf],[break])
 # if we have Ipopt, check if we have GotoBlas or MKL Blas functions to set number of threads
 if test $coin_has_ipopt = yes ; then
   LIBS_save="$LIBS"
-  LIBS="$IPOPT_LIBS $LIBS"
+  LIBS=[`echo $IPOPT_LIBS $LIBS | sed -e 's/[^ ]*.la / /g'`]
   AC_CHECK_FUNC([goto_set_num_threads],
     AC_DEFINE([HAVE_GOTO_SETNUMTHREADS],[1],[Define to 1 if the Blas library has goto_set_num_threads])
   )
