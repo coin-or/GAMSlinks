@@ -89,7 +89,8 @@ AC_CHECK_DECL([va_copy],
 #include <cstdarg>
   ])
 
-# check if vsnprintf or _vsnprintf is available, to be used in GamsJournal
+# check for snprintf variants
+AC_CHECK_FUNCS([snprintf _snprintf],[break])
 AC_CHECK_FUNCS([vsnprintf _vsnprintf],[break])
 
 # if we have Ipopt, check if we have GotoBlas or MKL Blas functions to set number of threads

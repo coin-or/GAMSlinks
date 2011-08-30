@@ -14,6 +14,15 @@
 
 #ifdef GAMSLINKS_BUILD
 #include "config.h"
+
+#ifndef HAVE_SNPRINTF
+#ifdef HAVE__SNPRINTF
+#define snprintf _snprintf
+#else
+#error "Do not have snprintf of _snprintf."
+#endif
+#endif
+
 #else
 #include "config_gamslinks.h"
 #endif
