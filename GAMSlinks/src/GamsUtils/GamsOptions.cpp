@@ -159,7 +159,7 @@ bool GamsOptions::isDefined(
 
       optGetInfoNr(optionshandle, i, &isDefined, &isDefinedRecent, &refNum, &dataType, &optType, &subType);
 
-      return isDefined;
+      return (bool)isDefined;
    }
 
    gevLogStatPChar(gev, "*** Internal Error. Unknown option ");

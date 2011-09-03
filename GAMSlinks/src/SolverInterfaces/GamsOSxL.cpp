@@ -408,7 +408,7 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
    double*            constants           /**< GAMS constants pool */
 )
 {
-   bool debugoutput = gevGetIntOpt(gev, gevInteger1) & 0x4;
+   bool debugoutput = (bool)(gevGetIntOpt(gev, gevInteger1) & 0x4);
 #define debugout if( debugoutput ) std::clog
 
    std::vector<OSnLNode*> nlNodeVec;
