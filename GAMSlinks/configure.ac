@@ -93,6 +93,9 @@ AC_CHECK_DECL([va_copy],
 AC_CHECK_FUNCS([snprintf _snprintf],[break])
 AC_CHECK_FUNCS([vsnprintf _vsnprintf],[break])
 
+# check for strtok variants
+AC_CHECK_FUNCS([strtok_r strtok_s strtok],[break])
+
 # if we have Ipopt, check if we have GotoBlas or MKL Blas functions to set number of threads
 if test $coin_has_ipopt = yes ; then
   LIBS_save="$LIBS"

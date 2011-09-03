@@ -23,6 +23,18 @@
 #endif
 #endif
 
+#ifndef HAVE_STRTOK_R
+#ifdef HAVE_STRTOK_S
+#define strtok_r strtok_s
+#else
+#ifdef HAVE_STRTOK
+#define strtok_r(a,b,c) strtok(a,b)
+#else
+#error "Do not have strtok_r, strtok_s, or strtok."
+#endif
+#endif
+#endif
+
 #else
 #include "config_gamslinks.h"
 #endif

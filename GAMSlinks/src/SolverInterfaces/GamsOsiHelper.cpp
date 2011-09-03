@@ -5,6 +5,7 @@
 // Author: Stefan Vigerske
 
 #include "GamsOsiHelper.hpp"
+#include "GAMSlinksConfig.h"
 
 #include <cstdlib>
 
