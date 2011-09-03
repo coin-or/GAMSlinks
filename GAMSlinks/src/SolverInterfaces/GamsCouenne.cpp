@@ -743,7 +743,7 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
    double*            constants           /**< GAMS constants pool */
 )
 {
-   bool debugoutput = (bool)(gevGetIntOpt(gev, gevInteger1) & 0x4);
+   bool debugoutput = gevGetIntOpt(gev, gevInteger1) & 0x4;
 #define debugout if( debugoutput ) std::clog
 
    std::list<expression*> stack;

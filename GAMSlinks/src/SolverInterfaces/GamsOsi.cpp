@@ -514,7 +514,7 @@ bool GamsOsi::setupProblem()
    if( gmoGetEquTypeCnt(gmo, gmoequ_N) )
       gmoSetNRowPerm(gmo);
 
-   if( !gamsOsiLoadProblem(gmo, *osi, (bool)gevGetIntOpt(gev, gevInteger2)) )
+   if( !gamsOsiLoadProblem(gmo, *osi, gevGetIntOpt(gev, gevInteger2)) )
       return false;
 
    return true;
@@ -666,7 +666,7 @@ bool GamsOsi::setupParameters()
          CPXsetdblparam(osicpx->getEnvironmentPtr(), CPX_PARAM_EPGAP, optcr);
          CPXsetdblparam(osicpx->getEnvironmentPtr(), CPX_PARAM_EPAGAP, optca);
          CPXsetintparam(osicpx->getEnvironmentPtr(), CPX_PARAM_THREADS, gevThreads(gev));
-         osicpx->setMipStart((bool)gevGetIntOpt(gev, gevInteger4));
+         osicpx->setMipStart(gevGetIntOpt(gev, gevInteger4));
 
          if( gmoOptFile(gmo) > 0 )
          {
@@ -833,7 +833,7 @@ bool GamsOsi::setupParameters()
          GRBsetdblparam(grbenv, GRB_DBL_PAR_MIPGAP, optcr);
          GRBsetdblparam(grbenv, GRB_DBL_PAR_MIPGAPABS, optca);
          GRBsetintparam(grbenv, GRB_INT_PAR_THREADS, gevThreads(gev));
-         osigrb->setMipStart((bool)gevGetIntOpt(gev, gevInteger4));
+         osigrb->setMipStart(gevGetIntOpt(gev, gevInteger4));
 
          if( gmoOptFile(gmo) > 0 )
          {
@@ -908,7 +908,7 @@ bool GamsOsi::setupParameters()
          XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPRELSTOP, optcr);
          XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPABSSTOP, optca);
          XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_THREADS, gevThreads(gev));
-         osixpr->setMipStart((bool)gevGetIntOpt(gev, gevInteger4));
+         osixpr->setMipStart(gevGetIntOpt(gev, gevInteger4));
 
          if( gmoOptFile(gmo) > 0 )
          {
@@ -1311,11 +1311,10 @@ bool GamsOsi::writeSolution(
       {
          OsiGrbSolverInterface* osigrb = dynamic_cast<OsiGrbSolverInterface*>(osi);
          assert(osigrb != NULL);
-         int stat;
-         int nrsol;
+         int stat, nrsol;
          GRBgetintattr(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL), GRB_INT_ATTR_SOLCOUNT, &nrsol);
          GRBgetintattr(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL), GRB_INT_ATTR_STATUS, &stat);
-         solwritten = nrsol > 0;
+         solwritten = nrsol;
          if( !isLP() )
          {
             double nodecount;
