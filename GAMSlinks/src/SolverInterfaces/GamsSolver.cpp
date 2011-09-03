@@ -130,7 +130,7 @@ bool GamsSolver::checkAcademicLicense(
       // model larger than demo and no solver-specific license; check if we have an academic license
       isdemo = false;
       int isAcademic = 0;
-      licenseQueryOption("GAMS", "ACADEMIC", &isAcademic);
+      licenseQueryOption(const_cast<char*>("GAMS"), const_cast<char*>("ACADEMIC"), &isAcademic);
       if( !isAcademic )
       {
          char msg[256];
@@ -143,7 +143,7 @@ bool GamsSolver::checkAcademicLicense(
    {
       // model fits into demo size
       int isAcademic = 0;
-      licenseQueryOption("GAMS", "ACADEMIC", &isAcademic);
+      licenseQueryOption(const_cast<char*>("GAMS"), const_cast<char*>("ACADEMIC"), &isAcademic);
       // if we have no academic license, then this check succeeds only because model fits into demo limitations, so indicate this
       isdemo = !isAcademic;
    }
@@ -173,7 +173,7 @@ bool GamsSolver::registerGamsCplexLicense(
 #include "cmagic2.h"
    if( licenseCheck(gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo)) )
    {
-      if( licenseCheckSubSys(2, "CPCL") )
+      if( licenseCheckSubSys(2, const_cast<char*>("CPCL")) )
       {
          gevLogStat(gev,"***");
          gevLogStat(gev,"*** LICENSE ERROR:");
@@ -185,8 +185,8 @@ bool GamsSolver::registerGamsCplexLicense(
       {
          int isLicMIP = 0;
          int isLicCP  = 1;
-         licenseQueryOption("CPLEX", "MIP",     &isLicMIP);
-         licenseQueryOption("CPLEX", "GMSLICE", &isLicCP);
+         licenseQueryOption(const_cast<char*>("CPLEX"), const_cast<char*>("MIP"),     &isLicMIP);
+         licenseQueryOption(const_cast<char*>("CPLEX"), const_cast<char*>("GMSLICE"), &isLicCP);
          if( 0 == isLicMIP && 1 == isLicCP && gmoNDisc(gmo))
          {
             gevLogStat(gev,"*** MIP option not licensed. Can solve continuous models only.");
@@ -198,8 +198,8 @@ bool GamsSolver::registerGamsCplexLicense(
    {
       int isLicMIP = 0;
       int isLicCP  = 1;
-      licenseQueryOption("CPLEX", "MIP",     &isLicMIP);
-      licenseQueryOption("CPLEX", "GMSLICE", &isLicCP);
+      licenseQueryOption(const_cast<char*>("CPLEX"), const_cast<char*>("MIP"),     &isLicMIP);
+      licenseQueryOption(const_cast<char*>("CPLEX"), const_cast<char*>("GMSLICE"), &isLicCP);
       if( 0 == isLicMIP && 1 == isLicCP && gmoNDisc(gmo) )
       {
          gevLogStat(gev,"*** MIP option not licensed. Can solve continuous models only.");

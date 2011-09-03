@@ -155,6 +155,9 @@ int GamsOsi::readyAPI(
       case XPRESS:
 #include "coinlibdCLAsvn.h"
          break;
+      default:
+         gevLogStat("Error: Do not have auditline for solver %d\n", solverid);
+         return -1;
    }
    auditGetLine(buffer, sizeof(buffer));
    gevLogStat(gev, "");
@@ -277,7 +280,6 @@ int GamsOsi::readyAPI(
 #ifdef GAMS_BUILD
             MSKenv_t mskenv;
             MKlicenseInit_t initType;
-            int rc;
 
             if( MSK_makeenv(&mskenv,NULL, NULL,NULL,NULL) )
             {

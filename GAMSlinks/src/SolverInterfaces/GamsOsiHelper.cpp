@@ -351,8 +351,8 @@ void gamsOsiWriteProblem(
 
       assert(gmoN(gmo) <= solver.getNumCols());
       assert(gmoM(gmo) <= solver.getNumRows());
-      char** colnames;
-      char** rownames;
+      char** colnames = NULL;
+      char** rownames = NULL;
       int nameDiscipline;
       if( !solver.getIntParam(OsiNameDiscipline, nameDiscipline) )
          nameDiscipline = 0;
