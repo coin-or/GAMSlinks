@@ -156,7 +156,7 @@ int GamsOsi::readyAPI(
 #include "coinlibdCLAsvn.h"
          break;
       default:
-         gevLogStat("Error: Do not have auditline for solver %d\n", solverid);
+         gevLogStat(gev, "Error: Do not have auditline for solver %d\n", solverid);
          return -1;
    }
    auditGetLine(buffer, sizeof(buffer));
