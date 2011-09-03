@@ -9,11 +9,6 @@
 #error You need to define GAMSSOLVERC_ID
 #endif
 
-/* check that corresponding solver class is defined */
-#ifndef GAMSSOLVERC_CLASS
-#error You need to define GAMSSOLVERC_CLASS
-#endif
-
 #if defined(_WIN32)
 # if ! defined(STDCALL)
 #  define STDCALL   __stdcall
@@ -48,13 +43,27 @@
 #define GAMSSOLVERC_CONCAT3(a, b, c) GAMSSOLVERC_CONCAT3_(a, b, c)
 #endif
 
-typedef struct gmoRec* gmoHandle_t;
-typedef struct gevRec* gevHandle_t;
-typedef struct optRec* optHandle_t;
-
 #if defined(__cplusplus)
 extern "C" {
 #endif
+
+#ifdef GAMS_BUILD
+
+typedef void GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,Rec_t);
+
+DllExport int  STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen);
+
+DllExport void STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,Free)(void** Cptr);
+
+DllExport int  STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,CallSolver)(void* Cptr);
+
+DllExport int  STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,HaveModifyProblem)(void* Cptr);
+
+DllExport int  STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,ModifyProblem)(void* Cptr);
+
+DllExport int  STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,ReadyAPI)(void* Cptr, struct gmoRec* Gptr, struct optRec* Optr);
+
+#else
 
 DllExport void STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,XCreate)(void** Cptr);
 
@@ -78,7 +87,9 @@ DllExport int  STDCALL GAMSSOLVERC_CONCAT3(C__,GAMSSOLVERC_ID,HaveModifyProblem)
 
 DllExport int  STDCALL GAMSSOLVERC_CONCAT3(C__,GAMSSOLVERC_ID,ModifyProblem)(void* Cptr);
 
-DllExport int  STDCALL GAMSSOLVERC_CONCAT3(C__,GAMSSOLVERC_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr);
+DllExport int  STDCALL GAMSSOLVERC_CONCAT3(C__,GAMSSOLVERC_ID,ReadyAPI)(void* Cptr, struct gmoRec* Gptr, struct optRec* Optr);
+
+#endif
 
 #if defined(__cplusplus)
 }

@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <cstdarg>
 #include <cassert>
+#include <cstring>
 
 #ifndef HAVE_VSNPRINTF
 #ifdef HAVE__VSNPRINTF

@@ -16,6 +16,7 @@
 #include "gevmcc.h"
 
 #include "GamsCompatibility.h"
+#include "GAMSlinksConfig.h"
 
 bool gamsOsiLoadProblem(
    struct gmoRec*        gmo,                /**< GAMS modeling object */

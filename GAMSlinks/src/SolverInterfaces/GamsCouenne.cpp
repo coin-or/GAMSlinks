@@ -12,9 +12,15 @@
 #include "GamsCbc.hpp"
 #include "GAMSlinksConfig.h"
 
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <list>
+
+// dos compiler does not know PI
+#ifndef M_PI
+#define M_PI           3.141592653589793238462643
+#endif
 
 // GAMS
 #include "gmomcc.h"

@@ -143,9 +143,6 @@ int GamsOsi::readyAPI(
       case CPLEX:
 #include "coinlibdCL7svn.h"
          break;
-      case GLPK:
-#include "coinlibdCL6svn.h"
-         break;
       case GUROBI:
 #include "coinlibdCL8svn.h"
          break;
@@ -213,8 +210,8 @@ int GamsOsi::readyAPI(
 #ifdef GAMS_BUILD
    if( !checkLicense(gmo) )
    {
-      gmoSolveStatSet(gmo, SolveStat_License);
-      gmoModelStatSet(gmo, ModelStat_LicenseError);
+      gmoSolveStatSet(gmo, gmoSolveStat_License);
+      gmoModelStatSet(gmo, gmoModelStat_LicenseError);
       return 1;
    }
 #endif
@@ -285,8 +282,8 @@ int GamsOsi::readyAPI(
             if( MSK_makeenv(&mskenv,NULL, NULL,NULL,NULL) )
             {
                gevLogStat(gev, "Failed to create Mosek environment.");
-               gmoSolveStatSet(gmo, SolveStat_License);
-               gmoModelStatSet(gmo, ModelStat_LicenseError);
+               gmoSolveStatSet(gmo, gmoSolveStat_License);
+               gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
             }
             if( gevmoseklice(gev, mskenv, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType) )
@@ -295,8 +292,8 @@ int GamsOsi::readyAPI(
             if( MSK_initenv(mskenv) )
             {
                gevLogStat(gev, "Failed to initialize Mosek environment. Maybe you do not have a license?");
-               gmoSolveStatSet(gmo, SolveStat_License);
-               gmoModelStatSet(gmo, ModelStat_LicenseError);
+               gmoSolveStatSet(gmo, gmoSolveStat_License);
+               gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
             }
             osi = new OsiMskSolverInterface(mskenv);
@@ -396,8 +393,10 @@ int GamsOsi::readyAPI(
    osi->passInMessageHandler(msghandler);
    osi->setHintParam(OsiDoReducePrint, true,  OsiHintTry);
 
-   /* for gurobi we print messages via our own callback, which means to disable its usual output */
-   if( solverid == GUROBI && gevGetIntOpt(gev, gevLogOption) == 0 )
+   /* for gurobi we print messages via our own callback, which means to disable its usual output
+      also if output is disabled in general, we can set the loglevel to 0
+    */
+   if( solverid == GUROBI || gevGetIntOpt(gev, gevLogOption) == 0 )
       msghandler->setLogLevel(0);
 
    return 0;

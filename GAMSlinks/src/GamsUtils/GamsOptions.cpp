@@ -5,6 +5,7 @@
 // Author: Stefan Vigerske
 
 #include "GamsOptions.hpp"
+#include "GAMSlinksConfig.h"
 
 #include <cstdlib>
 #include <cstdio>

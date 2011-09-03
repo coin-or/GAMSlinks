@@ -14,6 +14,10 @@
 #ifndef GAMSNLINSTR_H_
 #define GAMSNLINSTR_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** GAMS nonlinear expressions opcodes */
 typedef enum
 {
@@ -91,5 +95,9 @@ typedef enum
    fnlicensestatus,fnlicenselevel,fnheaplimit,
    fndummy
 } GamsFuncCode;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /*GAMSNLINSTR_H_*/

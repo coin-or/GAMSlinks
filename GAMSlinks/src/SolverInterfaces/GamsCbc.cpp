@@ -20,6 +20,7 @@
 
 #include "GamsCompatibility.h"
 
+#include "GAMSlinksConfig.h"
 #include "GamsOptions.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"

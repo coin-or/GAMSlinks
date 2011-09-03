@@ -9,10 +9,68 @@
 
 #include "GamsSolverC_tpl.h"
 
+/* check that corresponding solver class is defined */
+#ifndef GAMSSOLVERC_CLASS
+#error You need to define GAMSSOLVERC_CLASS
+#endif
+
 /* check whether constructor arguments are given */
 #ifndef GAMSSOLVERC_CONSTRARGS
 #define GAMSSOLVERC_CONSTRARGS
 #endif
+
+#ifdef GAMS_BUILD
+
+DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
+{
+   assert(Cptr != NULL);
+   assert(msgBufLen > 0);
+   assert(msgBuf != NULL);
+
+   *Cptr = (void*) new GAMSSOLVERC_CLASS(GAMSSOLVERC_CONSTRARGS);
+   msgBuf[0] = 0;
+
+   return 1;
+}
+
+DllExport void STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,Free)(void** Cptr)
+{
+   assert(Cptr != NULL);
+   delete (GAMSSOLVERC_CLASS*)*Cptr;
+   *Cptr = NULL;
+}
+
+DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,CallSolver)(void* Cptr)
+{
+   assert(Cptr != NULL);
+   return ((GAMSSOLVERC_CLASS*)Cptr)->callSolver();
+}
+
+DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,HaveModifyProblem)(void* Cptr)
+{
+   assert(Cptr != NULL);
+   return ((GAMSSOLVERC_CLASS*)Cptr)->haveModifyProblem();
+}
+
+DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,ModifyProblem)(void* Cptr)
+{
+   assert(Cptr != NULL);
+   return ((GAMSSOLVERC_CLASS*)Cptr)->modifyProblem();
+}
+
+DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr)
+{
+   assert(Cptr != NULL);
+   assert(Gptr != NULL);
+   char msg[256];
+   if( !gmoGetReady(msg, sizeof(msg)) )
+      return 1;
+   if( !gevGetReady(msg, sizeof(msg)) )
+      return 1;
+   return ((GAMSSOLVERC_CLASS*)Cptr)->readyAPI(Gptr, Optr);
+}
+
+#else
 
 DllExport void STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,XCreate)(void** Cptr)
 {
@@ -105,6 +163,8 @@ DllExport int STDCALL GAMSSOLVERC_CONCAT3(C__,GAMSSOLVERC_ID,ReadyAPI)(void* Cpt
       return 1;
    return ((GAMSSOLVERC_CLASS*)Cptr)->readyAPI(Gptr, Optr);
 }
+
+#endif
 
 #undef GAMSSOLVERC_ID
 #undef GAMSSOLVERC_CLASS
