@@ -9,12 +9,12 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST =
 
 lib_LTLIBRARIES = libGamsUtils.la
-libGamsUtils_la_SOURCES = GamsOptions.cpp GamsNLinstr.c \
+libGamsUtils_la_SOURCES = GamsOptions.cpp GamsNLinstr.c GamsBBTrace.c \
   $(GAMS_VERSION)/optcc.c $(GAMS_VERSION)/gmomcc.c $(GAMS_VERSION)/gevmcc.c $(GAMS_VERSION)/gclgms.c
 libGamsUtils_la_LDFLAGS =
 
 includecoindir = $(includedir)/coin
-includecoin_HEADERS = GamsCompatibility.h GamsOptions.hpp GamsNLinstr.h
+includecoin_HEADERS = GamsCompatibility.h GamsOptions.hpp GamsNLinstr.h GamsBBTrace.h
 
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/$(GAMS_VERSION)` $(GAMSLIBCFLAGS)
 

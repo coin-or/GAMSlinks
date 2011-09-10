@@ -55,7 +55,7 @@ if COIN_HAS_IPOPT
 endif
 
 if COIN_HAS_SCIP
-  libGamsCoin_la_SOURCES += GamsScip.cpp scip/reader_gmo.c
+  libGamsCoin_la_SOURCES += GamsScip.cpp scip/reader_gmo.c scip/event_bbtrace.c
   includecoin_HEADERS    += GamsScip.hpp
 endif
 
