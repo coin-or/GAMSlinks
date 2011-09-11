@@ -87,6 +87,9 @@ set g Cbc Option Groups /
       printfrequency         frequency of status prints
       increment              increment of cutoff when new incumbent
       solvefinal             final solve of MIP with fixed discrete variables
+      miptrace               name of trace file for branch-and-bound information
+      miptracenodefreq       frequency in number of nodes for writing to mip trace file
+      miptracetimefreq       frequency in seconds for writing to mip trace file
 $ontext
       usercutcall      The GAMS command line to call the cut generator
       usercutfirst     Calls the cut generator for the first n nodes
@@ -172,6 +175,9 @@ mipgeneral.(
   optcr                .r.(def 0.1)
   cutoff               .r.(def 0, lo mindouble)
   solvefinal           .b.(def 1)
+  miptrace             .s.(def '')
+  miptracenodefreq     .i.(def 100)
+  miptracetimefreq     .r.(def 5)
 )
 mipcuts.(
   cutdepth             .i.(def -1, lo -1, up 999999)

@@ -24,6 +24,7 @@
 #include "GamsOptions.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
+#include "GamsCbcHeurBBTrace.hpp"
 
 // For Branch and bound
 #include "CbcConfig.h"
@@ -130,6 +131,23 @@ int GamsCbc::callSolver()
       model->solver()->writeMps(writemps, "", 1.0);
    }
 
+   GAMS_BBTRACE* bbtrace;
+   if( miptrace != NULL && miptrace[0] )
+   {
+      int rc;
+      rc = GAMSbbtraceCreate(&bbtrace, miptrace, "CBC "CBC_VERSION, model->getInfinity(), miptracenodefreq, miptracetimefreq);
+      if( rc != 0 )
+      {
+         gevLogStat(gev, "Initializing miptrace failed.\n");
+         GAMSbbtraceFree(&bbtrace);
+      }
+      else
+      {
+         GamsCbcHeurBBTrace traceheur(bbtrace);
+         model->addHeuristic(&traceheur, "MIPtrace writing heurisitc", -1);
+      }
+   }
+
    gevLogStat(gev, "\nCalling CBC main solution routine...");
 
    double start_cputime  = CoinCpuTime();
@@ -139,6 +157,11 @@ int GamsCbc::callSolver()
 
    double end_cputime  = CoinCpuTime();
    double end_walltime = CoinWallclockTime();
+
+   if( bbtrace != NULL )
+   {
+      GAMSbbtraceFree(&bbtrace);
+   }
 
    writeSolution(end_cputime - start_cputime, end_walltime - start_walltime);
 
@@ -842,6 +865,17 @@ bool GamsCbc::setupParameters()
       options.getString("writemps", buffer);
       writemps = strdup(buffer);
    }
+
+   // whether to write MIP trace file
+   free(miptrace);
+   miptrace = NULL;
+   if( options.isDefined("miptrace") )
+   {
+      options.getString("miptrace", buffer);
+      miptrace = strdup(buffer);
+   }
+   miptracenodefreq = options.getInteger("miptracenodefreq");
+   miptracetimefreq = options.getDouble("miptracetimefreq");
 
    return true;
 }

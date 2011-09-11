@@ -170,6 +170,7 @@ GAMSlinks/src/SolverInterfaces/GamsBonmin.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsBonmin.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsCbc.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsCbc.hpp -text
+GAMSlinks/src/SolverInterfaces/GamsCbcHeurBBTrace.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsCouenne.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsCouenne.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsIpopt.cpp -text

@@ -34,6 +34,9 @@ private:
    int                   nthreads;           /**< number of threads to use */
    char*                 writemps;           /**< name of mps file to write instance to */
    bool                  solvefinal;         /**< whether to solve MIP with fixed discrete variables finally */
+   char*                 miptrace;           /**< name of trace file to write branch-and-bound info to */
+   int                   miptracenodefreq;   /**< node frequency for mip trace */
+   double                miptracetimefreq;   /**< time frequency for mip trace */
 
    bool setupProblem();
 
@@ -62,7 +65,10 @@ public:
      mipstart(false),
      nthreads(1),
      writemps(NULL),
-     solvefinal(true)
+     solvefinal(true),
+     miptrace(NULL),
+     miptracenodefreq(100),
+     miptracetimefreq(5.0)
    { }
 
    ~GamsCbc();
