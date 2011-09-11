@@ -19,6 +19,7 @@
 
 #include "gmomcc.h"
 #include "gevmcc.h"
+#include "gdxcc.h"
 #include "GamsCompatibility.h"
 #include "GamsNLinstr.h"
 
@@ -1639,6 +1640,80 @@ SCIP_RETCODE writeGmoSolution(
    gmoSetHeadnTail(gmo, gmoTmipnod,  (int)SCIPgetNNodes(scip));
    gmoSetHeadnTail(gmo, gmoHresused, SCIPgetSolvingTime(scip));
 
+   if( nrsol > 1)
+   {
+      char* indexfilename;
+
+      SCIP_CALL( SCIPgetStringParam(scip, "gams/dumpsolutions", &indexfilename) );
+      if( indexfilename != NULL && indexfilename[0] )
+      {
+         char buffer[SCIP_MAXSTRLEN];
+         gdxHandle_t gdx;
+         int rc;
+
+         if( !gdxCreate(&gdx, buffer, sizeof(buffer)) )
+         {
+            SCIPerrorMessage("failed to load GDX I/O library: %s\n", buffer);
+            return SCIP_OKAY;
+         }
+
+         SCIPinfoMessage(scip, NULL, "\nDumping %d alternate solutions:\n", nrsol-1);
+         /* create index GDX file */
+         if( gdxOpenWrite(gdx, indexfilename, "SCIP DumpSolutions Index File", &rc) == 0 )
+         {
+            rc = gdxGetLastError(gdx);
+            gdxErrorStr(gdx, rc, buffer);
+            SCIPerrorMessage("problem writing GDX file %s: %d\n", indexfilename, buffer);
+         }
+         else
+         {
+            gdxStrIndexPtrs_t keys;
+            gdxStrIndex_t     keysX;
+            gdxValues_t       vals;
+            SCIP_Real* collev;
+            int sloc;
+            int i;
+
+            /* create index file */
+            GDXSTRINDEXPTRS_INIT(keysX, keys);
+            gdxDataWriteStrStart(gdx, "index", "Dumpsolutions index", 1, dt_set, 0);
+            for( i = 1; i < nrsol; ++i)
+            {
+               (void) SCIPsnprintf(buffer, SCIP_MAXSTRLEN, "soln_%s_p%d.gdx", "scip", i);
+               gdxAddSetText(gdx, buffer, &sloc);
+               (void) SCIPsnprintf(keys[0], GMS_SSSIZE, "file%d", i);
+               vals[GMS_VAL_LEVEL] = sloc;
+               gdxDataWriteStr(gdx, (const char**)keys, vals);
+            }
+            gdxDataWriteDone(gdx);
+            gdxClose(gdx);
+
+            SCIP_CALL( SCIPallocBufferArray(scip, &collev, gmoN(gmo)) );
+
+            /* create point files */
+            for( i = 1; i < nrsol; ++i)
+            {
+               (void) SCIPsnprintf(buffer, SCIP_MAXSTRLEN, "soln_%s_p%d.gdx", "scip", i);
+
+               SCIP_CALL( SCIPgetSolVals(scip, SCIPgetSols(scip)[i], gmoN(gmo), probdata->vars, collev) );
+               gmoSetVarL(gmo, collev);
+               if( gmoUnloadSolutionGDX(gmo, buffer, 0, 1, 0) )
+               {
+                  SCIPerrorMessage("Problems creating point file %s\n", buffer);
+               }
+               else
+               {
+                  SCIPinfoMessage(scip, NULL, "Created point file %s\n", buffer);
+               }
+            }
+
+            SCIPfreeBufferArray(scip, &collev);
+         }
+
+         gdxFree(&gdx);
+      }
+   }
+
    return SCIP_OKAY;
 }
 
@@ -2084,6 +2159,10 @@ SCIP_RETCODE SCIPincludeReaderGmo(
          readerCopyGmo,
          readerFreeGmo, readerReadGmo, readerWriteGmo,
          readerdata) );
+
+   SCIP_CALL( SCIPaddStringParam(scip, "gams/dumpsolutions",
+      "name of solutions index gdx file for writing all solutions",
+      NULL, FALSE, "", NULL, NULL) );
 
    /* get parent dialog "write" */
    if( SCIPdialogFindEntry(SCIPgetRootDialog(scip), "write", &parentdialog) != 1 )
