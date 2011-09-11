@@ -131,7 +131,7 @@ int GamsCbc::callSolver()
       model->solver()->writeMps(writemps, "", 1.0);
    }
 
-   GAMS_BBTRACE* bbtrace;
+   GAMS_BBTRACE* bbtrace = NULL;
    if( miptrace != NULL && miptrace[0] )
    {
       int rc;
