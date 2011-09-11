@@ -38,7 +38,15 @@ extern
 void GAMSbbtraceAddLine(
    GAMS_BBTRACE*         bbtrace,            /**< GAMS branch-and-bound trace data structure */
    long int              nnodes,             /**< number of enumerated nodes so far */
-   double                seconds,            /**< elapsed time in seconds */
+   double                dualbnd,            /**< current dual bound */
+   double                primalbnd           /**< current primal bound */
+);
+
+/** adds end line to GAMS branch-and-bound trace file */
+extern
+void GAMSbbtraceAddEndLine(
+   GAMS_BBTRACE*         bbtrace,            /**< GAMS branch-and-bound trace data structure */
+   long int              nnodes,             /**< number of enumerated nodes so far */
    double                dualbnd,            /**< current dual bound */
    double                primalbnd           /**< current primal bound */
 );

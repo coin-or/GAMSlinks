@@ -159,7 +159,12 @@ int GamsCbc::callSolver()
    double end_walltime = CoinWallclockTime();
 
    if( bbtrace != NULL )
+   {
+      GAMSbbtraceAddEndLine(bbtrace, model->getNodeCount(),
+         model->getBestPossibleObjValue(),
+         model->getSolutionCount() > 0 ? model->getObjValue() : model->getObjSense() * model->getInfinity());
       GAMSbbtraceFree(&bbtrace);
+   }
 
    writeSolution(end_cputime - start_cputime, end_walltime - start_walltime);
 

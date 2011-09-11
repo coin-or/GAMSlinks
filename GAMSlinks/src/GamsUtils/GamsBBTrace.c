@@ -11,6 +11,34 @@
 #include <stdio.h>
 #include <assert.h>
 
+#if defined(_MSC_VER)
+
+#include <sys/types.h>
+#include <sys/timeb.h>
+
+static
+double getTime()
+{
+   struct _timeb timebuffer;
+   _ftime_s(&timebuffer);
+   return timebuffer.time + timebuffer.millitm / 1000.0;
+}
+
+#else
+
+#include <sys/time.h>
+
+static
+double getTime()
+{
+   struct timeval tv;
+   gettimeofday(&tv, NULL);
+   return tv.tv_sec + tv.tv_usec / 1000000.0;
+}
+
+#endif
+
+/** GAMS branch-and-bound tracing structure */
 struct GAMS_bbtrace
 {
    FILE*                 tracefile;          /**< trace file */
@@ -18,6 +46,7 @@ struct GAMS_bbtrace
    int                   nodefreq;           /**< interval in number of nodes when to write N-lines to trace files */
    double                timefreq;           /**< interval in seconds when to write T-lines to trace files */
    long int              linecount;          /**< line counter */
+   double                starttime;          /**< time when the S-line was written */
    double                lasttime;           /**< last time when a T-line was written */
 };
 
@@ -55,7 +84,8 @@ int GAMSbbtraceCreate(
    (*bbtrace)->timefreq = timefreq;
 
    (*bbtrace)->linecount = 1;
-   (*bbtrace)->lasttime = 0.0;
+   (*bbtrace)->starttime = 0.0;
+   (*bbtrace)->lasttime  = 0.0;
 
    return 0;
 }
@@ -90,12 +120,12 @@ void addLine(
    fprintf(bbtrace->tracefile, "%ld, %c, %ld, %g", bbtrace->linecount, seriesid, nnodes, seconds);
 
    if( primalbnd > -bbtrace->infinity && primalbnd < bbtrace->infinity )
-      fprintf(bbtrace->tracefile, ", %g", primalbnd);
+      fprintf(bbtrace->tracefile, ", %.10g", primalbnd);
    else
       fputs(", na", bbtrace->tracefile);
 
    if( dualbnd > -bbtrace->infinity && dualbnd < bbtrace->infinity )
-      fprintf(bbtrace->tracefile, ", %g", dualbnd);
+      fprintf(bbtrace->tracefile, ", %.10g", dualbnd);
    else
       fputs(", na", bbtrace->tracefile);
 
@@ -108,30 +138,49 @@ void addLine(
 void GAMSbbtraceAddLine(
    GAMS_BBTRACE*         bbtrace,            /**< GAMS branch-and-bound trace data structure */
    long int              nnodes,             /**< number of enumerated nodes so far */
-   double                seconds,            /**< elapsed time in seconds */
+   double                dualbnd,            /**< current dual bound */
+   double                primalbnd           /**< current primal bound */
+)
+{
+   double time;
+
+   assert(bbtrace != NULL);
+   assert(bbtrace->tracefile != NULL);
+
+   time = getTime();
+
+   if( bbtrace->linecount == 1 )
+   {
+      addLine(bbtrace, 'S', nnodes, 0.0, dualbnd, primalbnd);
+      bbtrace->starttime = time;
+      bbtrace->lasttime = time;
+   }
+   else if( bbtrace->nodefreq > 0 && (nnodes % bbtrace->nodefreq == 0) )
+   {
+      addLine(bbtrace, 'N', nnodes, time - bbtrace->starttime, dualbnd, primalbnd);
+   }
+
+   if( bbtrace->timefreq > 0.0 && (time - bbtrace->lasttime >= bbtrace->timefreq) )
+   {
+      addLine(bbtrace, 'T', nnodes, time - bbtrace->starttime, dualbnd, primalbnd);
+      bbtrace->lasttime = time;
+   }
+
+   fflush(bbtrace->tracefile);
+}
+
+/** adds end line to GAMS branch-and-bound trace file */
+void GAMSbbtraceAddEndLine(
+   GAMS_BBTRACE*         bbtrace,            /**< GAMS branch-and-bound trace data structure */
+   long int              nnodes,             /**< number of enumerated nodes so far */
    double                dualbnd,            /**< current dual bound */
    double                primalbnd           /**< current primal bound */
 )
 {
    assert(bbtrace != NULL);
    assert(bbtrace->tracefile != NULL);
-   assert(seconds >= bbtrace->lasttime);
 
-   if( bbtrace->linecount == 1 )
-   {
-      addLine(bbtrace, 'S', nnodes, seconds, dualbnd, primalbnd);
-   }
-
-   if( bbtrace->nodefreq > 0 && (nnodes % bbtrace->nodefreq == 0) )
-   {
-      addLine(bbtrace, 'N', nnodes, seconds, dualbnd, primalbnd);
-   }
-
-   if( bbtrace->timefreq > 0.0 && (seconds - bbtrace->lasttime >= bbtrace->timefreq) )
-   {
-      addLine(bbtrace, 'T', nnodes, seconds, dualbnd, primalbnd);
-      bbtrace->lasttime = seconds;
-   }
+   addLine(bbtrace, 'E', nnodes, getTime() - bbtrace->starttime, dualbnd, primalbnd);
 
    fflush(bbtrace->tracefile);
 }

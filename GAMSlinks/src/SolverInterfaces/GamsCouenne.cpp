@@ -405,8 +405,8 @@ int GamsCouenne::callSolver()
       bb(*couenne_setup);
 
       // check optimization outcome
-      double best_val   = minlp->isMin * bb.bestObj(); // bb.model().getObjValue();
-      double best_bound = minlp->isMin * bb.bestBound(); //bb.model().getBestPossibleObjValue();
+      double best_val   = minlp->isMin * bb.bestObj();
+      double best_bound = minlp->isMin * bb.bestBound();
 
       gmoSetHeadnTail(gmo, gmoHresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
       gmoSetHeadnTail(gmo, gmoTmipnod,   bb.numNodes());
@@ -416,6 +416,10 @@ int GamsCouenne::callSolver()
          gmoSetHeadnTail(gmo, gmoTmipbest, best_bound);
       gmoModelStatSet(gmo, minlp->model_status);
       gmoSolveStatSet(gmo, minlp->solver_status);
+
+      if( bbtrace != NULL )
+         GAMSbbtraceAddEndLine(bbtrace, bb.numNodes(), best_bound,
+            bb.bestSolution() != NULL ? minlp->isMin * bb.bestObj() : minlp->isMin * bb.model().getInfinity());
 
       if( bb.bestSolution() != NULL )
       {

@@ -131,6 +131,10 @@ SCIP_DECL_EVENTEXIT(eventExitBBtrace)
 
    SCIP_CALL( SCIPdropEvent(scip, SCIP_EVENTTYPE_NODESOLVED, eventhdlr, (SCIP_EVENTDATA*)eventhdlrdata->bbtrace, eventhdlrdata->filterpos) );
 
+   GAMSbbtraceAddEndLine(eventhdlrdata->bbtrace, SCIPgetNTotalNodes(scip),
+      SCIPgetDualbound(scip),
+      SCIPgetNSols(scip) > 0 ? SCIPgetSolOrigObj(scip, SCIPgetBestSol(scip)) : SCIPgetObjsense(scip) * SCIPinfinity(scip));
+
    GAMSbbtraceFree(&eventhdlrdata->bbtrace);
    assert(eventhdlrdata->bbtrace == NULL);
 
@@ -192,14 +196,9 @@ SCIP_DECL_EVENTEXEC(eventExecBBtrace)
    assert(SCIPeventGetType(event) & SCIP_EVENTTYPE_NODESOLVED);
    assert(eventdata != NULL);
 
-   dualbnd = SCIPgetDualbound(scip);
-
-   if( SCIPgetNSols(scip) > 0 )
-      primalbnd = SCIPgetSolOrigObj(scip, SCIPgetBestSol(scip));
-   else
-      primalbnd = SCIPgetObjsense(scip) * SCIPinfinity(scip);
-
-   GAMSbbtraceAddLine((GAMS_BBTRACE*)eventdata, SCIPgetNTotalNodes(scip), SCIPgetSolvingTime(scip), dualbnd, primalbnd);
+   GAMSbbtraceAddLine((GAMS_BBTRACE*)eventdata, SCIPgetNTotalNodes(scip),
+      SCIPgetDualbound(scip),
+      SCIPgetNSols(scip) > 0 ? SCIPgetSolOrigObj(scip, SCIPgetBestSol(scip)) : SCIPgetObjsense(scip) * SCIPinfinity(scip));
 
    return SCIP_OKAY;
 }

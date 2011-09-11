@@ -339,6 +339,10 @@ int GamsBonmin::callSolver()
       gmoModelStatSet(gmo, minlp->model_status);
       gmoSolveStatSet(gmo, minlp->solver_status);
 
+      if( bbtrace != NULL )
+         GAMSbbtraceAddEndLine(bbtrace, bb.numNodes(), best_bound,
+            bb.bestSolution() != NULL ? minlp->isMin * bb.bestObj() : minlp->isMin * bb.model().getInfinity());
+
       // store primal solution in gmo
       if( bb.bestSolution() != NULL )
       {
