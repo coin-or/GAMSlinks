@@ -14,8 +14,6 @@ extern "C" {
 
 typedef struct GAMS_bbtrace GAMS_BBTRACE;    /**< GAMS branch-and-bound trace data structure */
 
-#define GAMSBBTRACE_INFINITY 1e+100          /**< GAMS bbtrace value for infinity */
-
 /** creates a GAMS branch-and-bound trace data structure and initializes trace file for writing
  * @return 0, if successful; nonzero, if failure
  */
@@ -24,6 +22,7 @@ int GAMSbbtraceCreate(
    GAMS_BBTRACE**        bbtrace,            /**< buffer to store pointer of GAMS branch-and-bound trace data structure */
    const char*           filename,           /**< name of trace file to write */
    const char*           solverid,           /**< solver identifier string */
+   double                infinity,           /**< solver value for infinity */
    int                   nodefreq,           /**< interval in number of nodes when to write N-lines to trace files, 0 to disable N-lines */
    double                timefreq            /**< interval in seconds when to write T-lines to trace files, 0 to disable T-lines */
 );

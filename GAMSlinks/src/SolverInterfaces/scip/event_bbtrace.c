@@ -101,7 +101,7 @@ SCIP_DECL_EVENTINIT(eventInitBBtrace)
 #else
    (void) SCIPsnprintf(solverid, sizeof(solverid), "SCIP %d.%d.%d", SCIP_VERSION/100, (SCIP_VERSION%100)/10, SCIP_VERSION%10);
 #endif
-   rc = GAMSbbtraceCreate(&eventhdlrdata->bbtrace, eventhdlrdata->filename, solverid, eventhdlrdata->nodefreq, eventhdlrdata->timefreq);
+   rc = GAMSbbtraceCreate(&eventhdlrdata->bbtrace, eventhdlrdata->filename, solverid, SCIPinfinity(scip), eventhdlrdata->nodefreq, eventhdlrdata->timefreq);
    if( rc != 0 )
    {
       SCIPerrorMessage("GAMSbbtraceCreate returned with error %d, trace file name = %s\n", rc, eventhdlrdata->filename);
@@ -193,15 +193,11 @@ SCIP_DECL_EVENTEXEC(eventExecBBtrace)
    assert(eventdata != NULL);
 
    dualbnd = SCIPgetDualbound(scip);
-   if( SCIPisInfinity(scip,  dualbnd) )
-      dualbnd =  GAMSBBTRACE_INFINITY;
-   if( SCIPisInfinity(scip, -dualbnd) )
-      dualbnd = -GAMSBBTRACE_INFINITY;
 
    if( SCIPgetNSols(scip) > 0 )
       primalbnd = SCIPgetSolOrigObj(scip, SCIPgetBestSol(scip));
    else
-      primalbnd = SCIPgetObjsense(scip) * GAMSBBTRACE_INFINITY;
+      primalbnd = SCIPgetObjsense(scip) * SCIPinfinity(scip);
 
    GAMSbbtraceAddLine((GAMS_BBTRACE*)eventdata, SCIPgetNTotalNodes(scip), SCIPgetSolvingTime(scip), dualbnd, primalbnd);
 

@@ -14,6 +14,7 @@
 struct GAMS_bbtrace
 {
    FILE*                 tracefile;          /**< trace file */
+   double                infinity;           /**< solver value for infinity */
    int                   nodefreq;           /**< interval in number of nodes when to write N-lines to trace files */
    double                timefreq;           /**< interval in seconds when to write T-lines to trace files */
    long int              linecount;          /**< line counter */
@@ -27,6 +28,7 @@ int GAMSbbtraceCreate(
    GAMS_BBTRACE**        bbtrace,            /**< buffer to store pointer of GAMS branch-and-bound trace data structure */
    const char*           filename,           /**< name of trace file to write */
    const char*           solverid,           /**< solver identifier string */
+   double                infinity,           /**< solver value for infinity */
    int                   nodefreq,           /**< interval in number of nodes when to write N-lines to trace files, 0 to disable N-lines */
    double                timefreq            /**< interval in seconds when to write T-lines to trace files, 0 to disable T-lines */
 )
@@ -48,6 +50,7 @@ int GAMSbbtraceCreate(
    fprintf((*bbtrace)->tracefile, "* fields are lineNum, seriesID, node, seconds, bestFound, bestBound\n");
    fflush((*bbtrace)->tracefile);
 
+   (*bbtrace)->infinity = infinity;
    (*bbtrace)->nodefreq = nodefreq;
    (*bbtrace)->timefreq = timefreq;
 
@@ -86,12 +89,12 @@ void addLine(
 {
    fprintf(bbtrace->tracefile, "%ld, %c, %ld, %g", bbtrace->linecount, seriesid, nnodes, seconds);
 
-   if( primalbnd > -GAMSBBTRACE_INFINITY && primalbnd < GAMSBBTRACE_INFINITY )
+   if( primalbnd > -bbtrace->infinity && primalbnd < bbtrace->infinity )
       fprintf(bbtrace->tracefile, ", %g", primalbnd);
    else
       fputs(", na", bbtrace->tracefile);
 
-   if( dualbnd > -GAMSBBTRACE_INFINITY && dualbnd < GAMSBBTRACE_INFINITY )
+   if( dualbnd > -bbtrace->infinity && dualbnd < bbtrace->infinity )
       fprintf(bbtrace->tracefile, ", %g", dualbnd);
    else
       fputs(", na", bbtrace->tracefile);
