@@ -43,6 +43,13 @@ void GAMSbbtraceAddLine(
    double                primalbnd           /**< current primal bound */
 );
 
+/** set a new value for infinity */
+extern
+void GAMSbbtraceSetInfinity(
+   GAMS_BBTRACE*         bbtrace,            /**< GAMS branch-and-bound trace data structure */
+   double                infinity            /**< new value for infinity */
+);
+
 #ifdef __cplusplus
 }
 #endif

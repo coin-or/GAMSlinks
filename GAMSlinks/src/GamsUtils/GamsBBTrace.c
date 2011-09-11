@@ -135,3 +135,14 @@ void GAMSbbtraceAddLine(
 
    fflush(bbtrace->tracefile);
 }
+
+/** set a new value for infinity */
+void GAMSbbtraceSetInfinity(
+   GAMS_BBTRACE*         bbtrace,            /**< GAMS branch-and-bound trace data structure */
+   double                infinity            /**< new value for infinity */
+)
+{
+   assert(bbtrace != NULL);
+
+   bbtrace->infinity = infinity;
+}

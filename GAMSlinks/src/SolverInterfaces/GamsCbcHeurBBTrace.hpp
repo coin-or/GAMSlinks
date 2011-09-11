@@ -17,17 +17,22 @@ class GamsCbcHeurBBTrace : public CbcHeuristic
 {
 private:
    GAMS_BBTRACE*         bbtrace;            /**< GAMS bbtrace data structure */
+   double                objfactor;          /**< multiplier for objective function values */
+   double                starttime;          /**< time when started */
 
 public:
    GamsCbcHeurBBTrace(
-      GAMS_BBTRACE*      bbtrace_            /**< GAMS bbtrace data structure */
+      GAMS_BBTRACE*      bbtrace_,           /**< GAMS bbtrace data structure */
+      double             objfactor_ = 1.0    /**< multiplier for objective function values */
    )
-   : bbtrace(bbtrace_)
+   : bbtrace(bbtrace_),
+     objfactor(objfactor_),
+     starttime(CoinGetTimeOfDay())
    { }
 
    CbcHeuristic* clone() const
    {
-      return new GamsCbcHeurBBTrace(bbtrace);
+      return new GamsCbcHeurBBTrace(bbtrace, objfactor);
    }
 
    void resetModel(
@@ -41,13 +46,16 @@ public:
    )
    {
       double primalbnd;
+      double dualbnd;
+
+      dualbnd = objfactor * model_->getBestPossibleObjValue();
 
       if( model_->getSolutionCount() > 0 )
-         primalbnd = model_->getObjValue();
+         primalbnd = objfactor * model_->getObjValue();
       else
-         primalbnd = model_->getObjSense() * model_->getInfinity();
+         primalbnd = (objfactor > 0.0 ? 1.0 : -1.0) * model_->getObjSense() * model_->getInfinity();
 
-      GAMSbbtraceAddLine(bbtrace, model_->getNodeCount(), CoinGetTimeOfDay(), model_->getBestPossibleObjValue(), primalbnd);
+      GAMSbbtraceAddLine(bbtrace, model_->getNodeCount(), CoinGetTimeOfDay() - starttime, dualbnd, primalbnd);
 
       return 0;
    }

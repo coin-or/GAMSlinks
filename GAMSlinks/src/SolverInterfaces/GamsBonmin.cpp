@@ -10,6 +10,7 @@
 #include "GamsMessageHandler.hpp"
 #include "GamsCbc.hpp"  // in case we need to solve an LP or MIP
 #include "GamsIpopt.hpp" // in case we need to solve an NLP
+#include "GamsCbcHeurBBTrace.hpp"
 #include "GAMSlinksConfig.h"
 
 #include "BonminConfig.h"
@@ -91,6 +92,18 @@ int GamsBonmin::readyAPI(
       "whether to print information about function evaluation errors into the listing file",
       "no",
       "no", "", "yes", "");
+
+   bonmin_setup->roptions()->AddStringOption1("miptrace",
+      "name of file for writing branch-and-bound progress information",
+      "", "*", "");
+
+   bonmin_setup->roptions()->AddLowerBoundedIntegerOption("miptracenodefreq",
+      "frequency in number of nodes for writing branch-and-bound progress information",
+      0, 100, "giving 0 disables writing of N-lines to trace file");
+
+   bonmin_setup->roptions()->AddLowerBoundedNumberOption("miptracetimefreq",
+      "frequency in seconds for writing branch-and-bound progress information",
+      0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
 
    bonmin_setup->roptions()->SetRegisteringCategory("NLP interface", Bonmin::RegisteredOptions::BonminCategory);
    bonmin_setup->roptions()->AddStringOption2("solvefinal",
@@ -252,11 +265,40 @@ int GamsBonmin::callSolver()
       }
    }
 
+   // check whether evaluation errors should be printed in status file
    bool printevalerror;
    bonmin_setup->options()->GetBoolValue("print_eval_error", printevalerror, "");
    gmoEvalErrorNoMsg(gmo, printevalerror);
 
+   // set number of threads in blas in ipopt
    setNumThreadsBlas(gev, gevThreads(gev));
+
+   // initialize bbtrace, if activated
+   GAMS_BBTRACE* bbtrace = NULL;
+   std::string miptrace;
+   bonmin_setup->options()->GetStringValue("miptrace", miptrace, "");
+   if( miptrace != "" )
+   {
+      int nodefreq;
+      double timefreq;
+      int rc;
+
+      bonmin_setup->options()->GetIntegerValue("miptracenodefreq", nodefreq, "");
+      bonmin_setup->options()->GetNumericValue("miptracetimefreq", timefreq, "");
+      rc = GAMSbbtraceCreate(&bbtrace, miptrace.c_str(), "Bonmin "BONMIN_VERSION, ipoptinf, nodefreq, timefreq);
+      if( rc != 0 )
+      {
+         gevLogStat(gev, "Initializing miptrace failed.");
+         GAMSbbtraceFree(&bbtrace);
+      }
+      else
+      {
+         bonmin_setup->heuristics().push_back(BabSetupBase::HeuristicMethod());
+         BabSetupBase::HeuristicMethod& heurmeth(bonmin_setup->heuristics().back());
+         heurmeth.heuristic = new GamsCbcHeurBBTrace(bbtrace, minlp->isMin);
+         heurmeth.id = "MIPtrace writing heuristic";
+      }
+   }
 
    if( msghandler == NULL )
       msghandler = new GamsMessageHandler(gev);
@@ -275,6 +317,9 @@ int GamsBonmin::callSolver()
          // first_osi_tminlp.activateRowCutDebugger(sol);
          // delete[] sol;
          bonmin_setup->initialize(first_osi_tminlp); // this will clone first_osi_tminlp
+
+         if( bbtrace != NULL )
+            GAMSbbtraceSetInfinity(bbtrace, first_osi_tminlp.getInfinity());
       }
 
       // try solving
@@ -473,6 +518,9 @@ int GamsBonmin::callSolver()
       gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
       return -1;
    }
+
+   if( bbtrace != NULL )
+      GAMSbbtraceFree(&bbtrace);
 
    return 0;
 }

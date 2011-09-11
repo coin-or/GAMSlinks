@@ -138,7 +138,7 @@ int GamsCbc::callSolver()
       rc = GAMSbbtraceCreate(&bbtrace, miptrace, "CBC "CBC_VERSION, model->getInfinity(), miptracenodefreq, miptracetimefreq);
       if( rc != 0 )
       {
-         gevLogStat(gev, "Initializing miptrace failed.\n");
+         gevLogStat(gev, "Initializing miptrace failed.");
          GAMSbbtraceFree(&bbtrace);
       }
       else
@@ -159,9 +159,7 @@ int GamsCbc::callSolver()
    double end_walltime = CoinWallclockTime();
 
    if( bbtrace != NULL )
-   {
       GAMSbbtraceFree(&bbtrace);
-   }
 
    writeSolution(end_cputime - start_cputime, end_walltime - start_walltime);
 
