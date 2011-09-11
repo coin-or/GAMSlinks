@@ -10,6 +10,7 @@
 #include "GamsMessageHandler.hpp"
 #include "GamsNLinstr.h"
 #include "GamsCbc.hpp"
+#include "GamsCbcHeurBBTrace.hpp"
 #include "GAMSlinksConfig.h"
 
 #include <cmath>
@@ -115,6 +116,18 @@ int GamsCouenne::readyAPI(
       "whether to print information about function evaluation errors into the listing file",
       "no",
       "no", "", "yes", "");
+
+   couenne_setup->roptions()->AddStringOption1("miptrace",
+      "name of file for writing branch-and-bound progress information",
+      "", "*", "");
+
+   couenne_setup->roptions()->AddLowerBoundedIntegerOption("miptracenodefreq",
+      "frequency in number of nodes for writing branch-and-bound progress information",
+      0, 100, "giving 0 disables writing of N-lines to trace file");
+
+   couenne_setup->roptions()->AddLowerBoundedNumberOption("miptracetimefreq",
+      "frequency in seconds for writing branch-and-bound progress information",
+      0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
 
    return 0;
 }
@@ -311,6 +324,33 @@ int GamsCouenne::callSolver()
 
    setNumThreadsBlas(gev, gevThreads(gev));
 
+   // initialize bbtrace, if activated
+   GAMS_BBTRACE* bbtrace = NULL;
+   std::string miptrace;
+   couenne_setup->options()->GetStringValue("miptrace", miptrace, "");
+   if( miptrace != "" )
+   {
+      int nodefreq;
+      double timefreq;
+      int rc;
+
+      couenne_setup->options()->GetIntegerValue("miptracenodefreq", nodefreq, "");
+      couenne_setup->options()->GetNumericValue("miptracetimefreq", timefreq, "");
+      rc = GAMSbbtraceCreate(&bbtrace, miptrace.c_str(), "Couenne "COUENNE_VERSION, COUENNE_INFINITY, nodefreq, timefreq);
+      if( rc != 0 )
+      {
+         gevLogStat(gev, "Initializing miptrace failed.");
+         GAMSbbtraceFree(&bbtrace);
+      }
+      else
+      {
+         couenne_setup->heuristics().push_back(BabSetupBase::HeuristicMethod());
+         BabSetupBase::HeuristicMethod& heurmeth(couenne_setup->heuristics().back());
+         heurmeth.heuristic = new GamsCbcHeurBBTrace(bbtrace, minlp->isMin);
+         heurmeth.id = "MIPtrace writing heuristic";
+      }
+   }
+
    if( msghandler == NULL )
       msghandler = new GamsMessageHandler(gev);
 
@@ -336,7 +376,7 @@ int GamsCouenne::callSolver()
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
          gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
          delete problem;
-         return 0;
+         goto TERMINATE;
       }
 
       // check time usage and reduce timelimit for B&B accordingly
@@ -351,11 +391,14 @@ int GamsCouenne::callSolver()
          gevLogStat(gev, "Time is up.\n");
          gmoSolveStatSet(gmo, gmoSolveStat_Resource);
          gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
-         return 0;
+         goto TERMINATE;
       }
 
       couenne_setup->options()->SetNumericValue("bonmin.time_limit", reslim - preprocessTime, true, true);
       couenne_setup->setDoubleParameter(BabSetupBase::MaxTime, reslim - preprocessTime);
+
+      if( bbtrace != NULL )
+         GAMSbbtraceSetInfinity(bbtrace, couenne_setup->continuousSolver()->getInfinity());
 
       // do branch and bound
       bb.setUsingCouenne(true);
@@ -458,6 +501,10 @@ int GamsCouenne::callSolver()
       gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
       return -1;
    }
+
+TERMINATE:
+   if( bbtrace != NULL )
+      GAMSbbtraceFree(&bbtrace);
 
    return 0;
 }
