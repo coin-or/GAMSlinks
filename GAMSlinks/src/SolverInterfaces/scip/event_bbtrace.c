@@ -189,9 +189,6 @@ SCIP_DECL_EVENTDELETE(eventDeleteBBtrace)
 static
 SCIP_DECL_EVENTEXEC(eventExecBBtrace)
 {  /*lint --e{715}*/
-   SCIP_Real dualbnd;
-   SCIP_Real primalbnd;
-
    assert(event != NULL);
    assert(SCIPeventGetType(event) & SCIP_EVENTTYPE_NODESOLVED);
    assert(eventdata != NULL);
