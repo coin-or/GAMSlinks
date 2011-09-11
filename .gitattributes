@@ -94,6 +94,8 @@ GAMSlinks/src/GamsIO/SmagJournal.hpp -text
 GAMSlinks/src/GamsIO/SmagStricmp.c -text
 GAMSlinks/src/GamsUtils/23.7/gclgms.c -text
 GAMSlinks/src/GamsUtils/23.7/gclgms.h -text
+GAMSlinks/src/GamsUtils/23.7/gdxcc.c -text
+GAMSlinks/src/GamsUtils/23.7/gdxcc.h -text
 GAMSlinks/src/GamsUtils/23.7/gevmcc.c -text
 GAMSlinks/src/GamsUtils/23.7/gevmcc.h -text
 GAMSlinks/src/GamsUtils/23.7/gmomcc.c -text

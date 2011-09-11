@@ -10,7 +10,7 @@ EXTRA_DIST =
 
 lib_LTLIBRARIES = libGamsUtils.la
 libGamsUtils_la_SOURCES = GamsOptions.cpp GamsNLinstr.c GamsBBTrace.c \
-  $(GAMS_VERSION)/optcc.c $(GAMS_VERSION)/gmomcc.c $(GAMS_VERSION)/gevmcc.c $(GAMS_VERSION)/gclgms.c
+  $(GAMS_VERSION)/optcc.c $(GAMS_VERSION)/gmomcc.c $(GAMS_VERSION)/gevmcc.c $(GAMS_VERSION)/gclgms.c $(GAMS_VERSION)/gdxcc.c
 libGamsUtils_la_LDFLAGS =
 
 includecoindir = $(includedir)/coin
