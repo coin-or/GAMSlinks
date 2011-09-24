@@ -452,8 +452,8 @@ int GamsOsi::callSolver()
       gevLogStatPChar(gev, "Exception caught when solving problem: ");
       gevLogStat(gev, error.message().c_str());
 
-      gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
-      gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+      gmoSolveStatSet(gmo, gmoSolveStat_Solver);
+      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
       failure = true;
    }
 
