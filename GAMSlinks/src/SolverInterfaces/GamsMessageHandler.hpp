@@ -14,7 +14,7 @@ struct gevRec;
 /** message handler that writes via the Gams Environment */
 class GamsMessageHandler : public CoinMessageHandler
 {
-private:
+protected:
    struct gevRec*        gev;                /**< GAMS environment */
 
 public:

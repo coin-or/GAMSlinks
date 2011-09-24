@@ -12,7 +12,7 @@
 #include <cstdlib>
 
 class CbcModel;
-class GamsMessageHandler;
+class GamsCbcMessageHandler;
 class OsiSolverInterface;
 
 /** GAMS interface to CBC */
@@ -23,7 +23,7 @@ private:
    struct gevRec*        gev;                /**< GAMS environment */
    struct optRec*        opt;                /**< GAMS options object */
 
-   GamsMessageHandler*   msghandler;         /**< message handler */
+   GamsCbcMessageHandler* msghandler;        /**< message handler */
    CbcModel*             model;              /**< CBC model object */
    int                   cbc_argc;           /**< number of parameters to pass to CBC */
    char**                cbc_args;           /**< parameters to pass to CBC */

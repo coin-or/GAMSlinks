@@ -36,6 +36,69 @@
 #include "CoinHelperFunctions.hpp"
 #include "CoinTime.hpp"
 
+/** CBC callback, used for updating model pointer
+ * forward declaration, so we can define a static function as friend of special message handler
+ */
+static
+int cbcCallBack(
+   CbcModel*          model,              /**< CBC model that calls this function */
+   int                whereFrom           /**< indicator at which time in the CBC algorithm it is called */
+);
+
+/** specification of GamsMessageHandler that omits messages from mini B&B in Cbc */
+class GamsCbcMessageHandler : public GamsMessageHandler
+{
+   friend int cbcCallBack(
+      CbcModel*          model,              /**< CBC model that calls this function */
+      int                whereFrom           /**< indicator at which time in the CBC algorithm it is called */
+   );
+
+private:
+   CbcModel*             model;              /**< CBC model, or NULL */
+
+public:
+   GamsCbcMessageHandler(
+      struct gevRec*     gev_,               /**< GAMS environment */
+      CbcModel*          model_ = NULL       /**< CBC model */
+   )
+   : GamsMessageHandler(gev_),
+     model(model_)
+   { }
+
+   /** call print message of upper class, if not in mini B&B */
+   int print()
+   {
+      if( model != NULL && model->waitingForMiniBranchAndBound() )
+         return 0;
+      return GamsMessageHandler::print();
+   }
+
+   /** creates a copy of this message handler */
+   CoinMessageHandler* clone() const
+   {
+      return new GamsCbcMessageHandler(gev, model);
+   }
+};
+
+static
+int cbcCallBack(
+   CbcModel*          model,              /**< CBC model that calls this function */
+   int                whereFrom           /**< indicator at which time in the CBC algorithm it is called */
+)
+{
+   if( whereFrom == 3 ) /* just before B&B */
+   {
+      /* reset model in message handler */
+      GamsCbcMessageHandler* handler;
+
+      handler = dynamic_cast<GamsCbcMessageHandler*>(model->messageHandler());
+      assert(handler != NULL);
+      handler->model = model;
+   }
+
+   return 0;
+}
+
 GamsCbc::~GamsCbc()
 {
    delete model;
@@ -80,7 +143,7 @@ int GamsCbc::readyAPI(
 
    if( msghandler == NULL )
    {
-      msghandler = new GamsMessageHandler(gev);
+      msghandler = new GamsCbcMessageHandler(gev);
       msghandler->setLogLevel(0,1);
       msghandler->setLogLevel(2,0);
       msghandler->setLogLevel(3,0);
@@ -153,7 +216,7 @@ int GamsCbc::callSolver()
    double start_cputime  = CoinCpuTime();
    double start_walltime = CoinWallclockTime();
 
-   CbcMain1(cbc_argc, const_cast<const char**>(cbc_args), *model);
+   CbcMain1(cbc_argc, const_cast<const char**>(cbc_args), *model, cbcCallBack);
 
    double end_cputime  = CoinCpuTime();
    double end_walltime = CoinWallclockTime();
