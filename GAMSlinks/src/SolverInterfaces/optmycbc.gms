@@ -85,6 +85,7 @@ set g Cbc Option Groups /
       nodestrategy           how to select nodes
       preprocess             integer presolve
       printfrequency         frequency of status prints
+      loglevel               CBC loglevel
       increment              increment of cutoff when new incumbent
       solvefinal             final solve of MIP with fixed discrete variables
       miptrace               name of trace file for branch-and-bound information
@@ -168,6 +169,7 @@ mipgeneral.(
   preprocess           .s.(def on)
   threads              .i.(def 1, lo 0)
   printfrequency       .i.(def 0)
+  loglevel             .i.(def 1)
   increment            .r.(def 0)
   nodelim              .i.(def maxint)
   nodlim               .i.(def maxint)

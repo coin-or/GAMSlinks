@@ -144,9 +144,6 @@ int GamsCbc::readyAPI(
    if( msghandler == NULL )
    {
       msghandler = new GamsCbcMessageHandler(gev);
-      msghandler->setLogLevel(0,1);
-      msghandler->setLogLevel(2,0);
-      msghandler->setLogLevel(3,0);
    }
 
    return 0;
@@ -295,11 +292,10 @@ bool GamsCbc::setupProblem()
       model = new CbcModel(solver);
    }
 
-   msghandler->setLogLevel(1, isLP()); // we want LP output if we solve an LP
    model->passInMessageHandler(msghandler);
-   // disable RINS initialization output
+   // disable RINS initialization output for loglevel <= 2
    assert(model->messages().numberMessages_ > CBC_FPUMP1);
-   model->messages().message_[CBC_FPUMP1]->setDetail(2);
+   model->messages().message_[CBC_FPUMP1]->setDetail(3);
 
    // assemble integer variable branching priorities
    // range of priority values
@@ -945,6 +941,14 @@ bool GamsCbc::setupParameters()
    }
    miptracenodefreq = options.getInteger("miptracenodefreq");
    miptracetimefreq = options.getDouble("miptracetimefreq");
+
+   // when to print which messages
+   // loglevel default is 1, so enable CBC output by default, CoinUtils and CGL if loglevel >= 3, and CLP if loglevel >= 5 or >= 1 if problem is an LP
+   int loglevel = options.getInteger("loglevel");
+   msghandler->setLogLevel(0, loglevel);   // CBC output
+   msghandler->setLogLevel(1, isLP() ? loglevel : loglevel-4); // CLP output
+   msghandler->setLogLevel(2, loglevel-2); // CoinUtils output, like COIN_PRESOLVE_STATS
+   msghandler->setLogLevel(3, loglevel-2); // CGL output, like CGL_PROCESS_STATS2
 
    return true;
 }
