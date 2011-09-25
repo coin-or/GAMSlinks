@@ -438,6 +438,7 @@ int GamsOsi::callSolver()
 
    double start_cputime  = CoinCpuTime();
    double start_walltime = CoinWallclockTime();
+   bool cpxsubproberror = false;
    bool failure = false;
 
    try
@@ -449,12 +450,21 @@ int GamsOsi::callSolver()
    }
    catch( CoinError& error )
    {
-      gevLogStatPChar(gev, "Exception caught when solving problem: ");
-      gevLogStat(gev, error.message().c_str());
+      // if cplex terminates because a subproblem could not be solved (error 3019),
+      // then we want writeSolution to draw its conclusions from the subproblem status
+      if( error.message() == "CPXmipopt returned error 3019" )
+      {
+         cpxsubproberror = true;
+      }
+      else
+      {
+         gevLogStatPChar(gev, "Exception caught when solving problem: ");
+         gevLogStat(gev, error.message().c_str());
+         failure = true;
+      }
 
       gmoSolveStatSet(gmo, gmoSolveStat_Solver);
       gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
-      failure = true;
    }
 
    double end_cputime  = CoinCpuTime();
@@ -471,7 +481,7 @@ int GamsOsi::callSolver()
    {
       gevLogStat(gev, "");
       bool solwritten;
-      writeSolution(end_cputime - start_cputime, end_walltime - start_walltime, solwritten);
+      writeSolution(end_cputime - start_cputime, end_walltime - start_walltime, cpxsubproberror, solwritten);
 
       if( !isLP() && gevGetIntOpt(gev, gevInteger1) && solwritten )
          solveFixed();
@@ -1064,6 +1074,7 @@ bool GamsOsi::clearCallbacks()
 bool GamsOsi::writeSolution(
    double             cputime,            /**< CPU time spend by solver */
    double             walltime,           /**< wallclock time spend by solver */
+   bool               cpxsubproberr,      /**< has an error in solving a CPLEX subproblem occured? */
    bool&              solwritten          /**< whether a solution has been passed to GMO */
 )
 {
@@ -1089,7 +1100,11 @@ bool GamsOsi::writeSolution(
             objest += gmoObjConst(gmo);
             nnodes = CPXgetnodecnt(osicpx->getEnvironmentPtr(), osicpx->getLpPtr(OsiCpxSolverInterface::KEEPCACHED_ALL));
          }
-         int stat = CPXgetstat( osicpx->getEnvironmentPtr(), osicpx->getLpPtr(OsiCpxSolverInterface::KEEPCACHED_ALL) );
+         int stat;
+         if( cpxsubproberr )
+            stat = CPXgetsubstat( osicpx->getEnvironmentPtr(), osicpx->getLpPtr(OsiCpxSolverInterface::KEEPCACHED_ALL) );
+         else
+            stat = CPXgetstat( osicpx->getEnvironmentPtr(), osicpx->getLpPtr(OsiCpxSolverInterface::KEEPCACHED_ALL) );
          switch( stat )
          {
             case CPX_STAT_OPTIMAL:

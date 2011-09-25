@@ -50,6 +50,7 @@ private:
    bool writeSolution(
       double             cputime,            /**< CPU time spend by solver */
       double             walltime,           /**< wallclock time spend by solver */
+      bool               cpxsubproberr,      /**< has an error in solving a CPLEX subproblem occured? */
       bool&              solwritten          /**< whether a solution has been passed to GMO */
    );
 
