@@ -297,6 +297,9 @@ bool GamsCbc::setupProblem()
 
    msghandler->setLogLevel(1, isLP()); // we want LP output if we solve an LP
    model->passInMessageHandler(msghandler);
+   // disable RINS initialization output
+   assert(model->messages().numberMessages_ > CBC_FPUMP1);
+   model->messages().message_[CBC_FPUMP1]->setDetail(2);
 
    // assemble integer variable branching priorities
    // range of priority values
