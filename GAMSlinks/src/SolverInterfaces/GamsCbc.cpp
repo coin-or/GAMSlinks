@@ -95,6 +95,15 @@ int cbcCallBack(
       assert(handler != NULL);
       handler->model = model;
    }
+   else if( whereFrom == 4 ) /* just after B&B */
+   {
+      /* clear model in message handler */
+      GamsCbcMessageHandler* handler;
+
+      handler = dynamic_cast<GamsCbcMessageHandler*>(model->messageHandler());
+      assert(handler != NULL);
+      handler->model = NULL;
+   }
 
    return 0;
 }
