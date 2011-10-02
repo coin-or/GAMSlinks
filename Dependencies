@@ -16,4 +16,4 @@ ThirdParty/Lapack https://projects.coin-or.org/svn/BuildTools/ThirdParty/Lapack/
 ThirdParty/Mumps  https://projects.coin-or.org/svn/BuildTools/ThirdParty/Mumps/stable/1.4
 ThirdParty/Metis  https://projects.coin-or.org/svn/BuildTools/ThirdParty/Metis/stable/1.2
 ThirdParty/SoPlex https://projects.coin-or.org/svn/BuildTools/ThirdParty/SoPlex/stable/1.0
-ThirdParty/SCIP   https://projects.coin-or.org/svn/BuildTools/ThirdParty/SCIP/stable/1.0
+ThirdParty/SCIP   https://projects.coin-or.org/svn/BuildTools/ThirdParty/SCIP/trunk

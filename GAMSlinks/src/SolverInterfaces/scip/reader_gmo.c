@@ -26,11 +26,9 @@
 #include "scip/cons_linear.h"
 #include "scip/cons_bounddisjunction.h"
 #include "scip/cons_quadratic.h"
+#include "scip/cons_nonlinear.h"
 #include "scip/cons_sos1.h"
 #include "scip/cons_sos2.h"
-#if 0
-#include "cons_nonlinear.h"
-#endif
 
 #define READER_NAME             "gmoreader"
 #define READER_DESC             "Gams Control file reader (using GMO API)"
@@ -164,7 +162,6 @@ SCIP_DECL_PROBCOPY(probdataCopyGmo)
  */
 
 
-#if 0
 /** ensures that an array of variables has at least a given length */
 static
 SCIP_RETCODE ensureVarsSize(
@@ -933,7 +930,6 @@ SCIP_RETCODE makeExprtree(
 
    return SCIP_OKAY;
 }
-#endif
 
 /** creates a SCIP problem from a GMO */
 static
@@ -1288,7 +1284,6 @@ SCIP_RETCODE createProblem(
             break;
          }
 
-#if 0
          case gmoorder_NL:
          {
             /* nonlinear constraint */
@@ -1317,13 +1312,6 @@ SCIP_RETCODE createProblem(
             SCIP_CALL( SCIPexprtreeFree(&exprtree) );
             break;
          }
-#else
-         case gmoorder_NL:
-         {
-            SCIPerrorMessage("General nonlinear constraints not supported by SCIP yet.\n");
-            return SCIP_INVALIDDATA;
-         }
-#endif
 
          default:
             SCIPerrorMessage("Unexpected equation order.\n");
@@ -1388,7 +1376,6 @@ SCIP_RETCODE createProblem(
             TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
       }
       else
-#if 0
       {
          SCIP_Real objfactor;
          int linnz;
@@ -1411,7 +1398,7 @@ SCIP_RETCODE createProblem(
          coefs[linnz] = -1.0;
          ++linnz;
 
-         objfactor = -(gmoSense(gmo) == Obj_Min ? 1.0 : -1.0) / gmoObjJacVal(gmo);
+         objfactor = -(gmoSense(gmo) == gmoObj_Min ? 1.0 : -1.0) / gmoObjJacVal(gmo);
 
          gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
          /* @todo put objfactor as nonlincoef in SCIPcreateConsNonlinear */
@@ -1433,12 +1420,6 @@ SCIP_RETCODE createProblem(
 
          SCIP_CALL( SCIPexprtreeFree(&exprtree) );
       }
-#else
-      {
-         SCIPerrorMessage("General nonlinear objective not supported by SCIP yet.\n");
-         return SCIP_INVALIDDATA;
-      }
-#endif
 
       SCIP_CALL( SCIPaddCons(scip, con) );
       SCIPdebugMessage("added objective constraint ");
