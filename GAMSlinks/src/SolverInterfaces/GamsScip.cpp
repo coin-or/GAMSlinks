@@ -201,9 +201,20 @@ int GamsScip::callSolver()
       char buffer[256];
       sprintf(buffer, "Error %d in call of SCIP function\n", scipret);
       gevLogStatPChar(gev, buffer);
-      gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
-      gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
-      return 1;
+      if( scipret == SCIP_READERROR )
+      {
+         /* if it's readerror, then we guess that it comes from encountering an unsupported gams instruction in the gmo readers makeExprtree method
+          * we also do not return with nonzero then
+          */
+         gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+         gmoSolveStatSet(gmo, gmoSolveStat_Capability);
+      }
+      else
+      {
+         gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+         gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
+         return 1;
+      }
    }
 
    return 0;

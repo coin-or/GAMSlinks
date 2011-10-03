@@ -87,9 +87,10 @@ declare -a testlist
 
 @COIN_HAS_SCIP_TRUE@solvers="$solvers , MyScip"
 @COIN_HAS_SCIP_TRUE@skiplist="$skiplist skip('MyScip','mip02')=yes;"
-@COIN_HAS_SCIP_TRUE@skiplist="$skiplist skip('MyScip','qcp05')=yes;"
+@COIN_HAS_SCIP_TRUE@skiplist="$skiplist skip('MyScip','nlplp02')=yes;"
 @COIN_HAS_SCIP_TRUE@testlist[${#testlist[@]}]="--solver myscip --suite mip user1=\"--MIPMCHECKS=0\""
 @COIN_HAS_SCIP_TRUE@testlist[${#testlist[@]}]="--solver myscip --suite qcp user1=\"--QPMCHECKS=0 --TESTTOL=1e-3\""
+@COIN_HAS_SCIP_TRUE@testlist[${#testlist[@]}]="--solver myscip --suite nlp user1=\"--QPMCHECKS=0 --TESTTOL=1e-3 --MCHECKS=0\""
 
 echo "Patch quality test driver to get COIN solvers and skip list in." 
 # We add our solvers to the list of master solvers and put our solver-model skiplist and our skiplist for stdout tests somewhere.

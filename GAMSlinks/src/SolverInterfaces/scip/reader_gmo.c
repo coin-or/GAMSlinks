@@ -725,7 +725,7 @@ SCIP_RETCODE makeExprtree(
                   SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_SQRT, term1) );
                   break;
                }
-
+#if 0
                case fncos:
                {
                   SCIPdebugPrintf("cos\n");
@@ -761,7 +761,7 @@ SCIP_RETCODE makeExprtree(
                   SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_TAN, term1) );
                   break;
                }
-
+#endif
                case fnpower: /* x ^ y */
                case fnrpower: /* x ^ y */
                case fncvpower: /* constant ^ x */
@@ -798,6 +798,30 @@ SCIP_RETCODE makeExprtree(
                      SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_LOG, term2) );
                      SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MUL, e, term1) );
                      SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_EXP, e) );
+                  }
+
+                  break;
+               }
+
+               case fnsignpower: /* sign(x)*abs(x)^c */
+               {
+                  SCIPdebugPrintf("signpower\n");
+
+                  assert(stackpos >= 2);
+                  term1 = stack[stackpos-1];
+                  --stackpos;
+                  term2 = stack[stackpos-1];
+                  --stackpos;
+
+                  if( SCIPexprGetOperator(term1) == SCIP_EXPR_CONST )
+                  {
+                     SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_SIGNPOWER, term2, SCIPexprGetOpReal(term1)) );
+                     SCIPexprFreeDeep(blkmem, &term1);
+                  }
+                  else
+                  {
+                     SCIPerrorMessage("signpower with non-constant exponent not supported.\n");
+                     return SCIP_ERROR;
                   }
 
                   break;
@@ -852,6 +876,76 @@ SCIP_RETCODE makeExprtree(
                   break;
                }
 
+               case fnpoly: /* univariate polynomial */
+               {
+                  SCIPdebugPrintf("univariate polynomial of degree %d\n", nargs-1);
+                  assert(nargs >= 0);
+                  switch( nargs )
+                  {
+                     case 0:
+                     {
+                        term1 = stack[stackpos-1];
+                        --stackpos;
+
+                        SCIPexprFreeDeep(blkmem, &term1);
+                        SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_CONST, 0.0) );
+                        break;
+                     }
+
+                     case 1: /* "constant" polynomial */
+                     {
+                        e = stack[stackpos-1];
+                        --stackpos;
+
+                        /* delete variable of polynomial */
+                        SCIPexprFreeDeep(blkmem, &stack[stackpos-1]);
+                        --stackpos;
+
+                        break;
+                     }
+
+                     default: /* polynomial is at least linear */
+                     {
+                        SCIP_EXPRDATA_MONOMIAL** monomials;
+                        SCIP_Real exponent;
+                        SCIP_Real constant;
+                        int zero;
+
+                        SCIP_CALL( SCIPallocBufferArray(scip, &monomials, nargs-1) );
+
+                        zero = 0;
+                        while( nargs > 0 )
+                        {
+                           assert(stackpos > 0);
+
+                           term1 = stack[stackpos-1];
+                           assert(SCIPexprGetOperator(term1) == SCIP_EXPR_CONST);
+
+                           if( nargs > 1 )
+                           {
+                              exponent = (SCIP_Real)(nargs-1);
+                              SCIP_CALL( SCIPexprCreateMonomial(blkmem, &monomials[nargs-2], SCIPexprGetOpReal(term1), 1, &zero, &exponent) );
+                           }
+                           else
+                              constant = SCIPexprGetOpReal(term1);
+
+                           SCIPexprFreeDeep(blkmem, &term1);
+                           --stackpos;
+                        }
+
+                        assert(stackpos > 0);
+                        term1 = stack[stackpos-1];
+                        --stackpos;
+
+                        SCIP_CALL( SCIPexprCreatePolynomial(blkmem, &e, 1, &term1, nargs-1, monomials, constant, FALSE) );
+
+                        SCIPfreeBufferArray(scip, &monomials);
+                     }
+                  }
+                  nargs = -1;
+                  break;
+               }
+
                /* @todo some of these we could also support */
                case fnerrf:
                case fnceil: case fnfloor: case fnround:
@@ -873,18 +967,16 @@ SCIP_RETCODE makeExprtree(
                case fngamma: case fnloggamma: case fnbeta:
                case fnlogbeta: case fngammareg: case fnbetareg:
                case fnsinh: case fncosh: case fntanh:
-               case fnsignpower /* sign(x)*abs(x)^c */:
                case fnncpvusin /* veelken-ulbrich */:
                case fnncpvupow /* veelken-ulbrich */:
                case fnbinomial:
                case fnarccos:
                case fnarcsin: case fnarctan2 /* arctan(x2/x1) */:
-               case fnpoly: /* simple polynomial */
                default :
                {
                   SCIPdebugPrintf("nr. %d - unsupported. Error.\n", (int)func);
                   SCIPerrorMessage("GAMS function %d not supported\n", func);
-                  return SCIP_ERROR;
+                  return SCIP_READERROR;
                }
             }
             break;
@@ -894,7 +986,7 @@ SCIP_RETCODE makeExprtree(
          default:
          {
             SCIPerrorMessage("GAMS opcode %d not supported - Error.\n", opcode);
-            return SCIP_ERROR;
+            return SCIP_READERROR;
          }
       }
 
@@ -2293,16 +2385,8 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
       /* set some MINLP specific options */
       gevLogPChar(gev, "\nEnable some MINLP specific settings.\n");
       SCIP_CALL( SCIPsetIntParam(scip, "display/nexternbranchcands/active", 2) );
-      SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/crossover/uselprows", FALSE) );
-      SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/dins/uselprows", FALSE) );
-      SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/rens/uselprows", FALSE) );
-      SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/rins/uselprows", FALSE) );
-      SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/localbranching/uselprows", FALSE) );
-      SCIP_CALL( SCIPsetBoolParam(scip, "heuristics/mutation/uselprows", FALSE) );
-      /* a convex QP like qcp1 cannot be solved by separation in the LP solution solely
-       * setting minorthoroot to 0.4 helps in this case to ensure that the linearization in the global optimum makes its way into the LP
-       */
-      SCIP_CALL( SCIPsetRealParam(scip, "separating/minorthoroot", 0.4) );
+      /* a convex QP like qcp1 cannot be solved efficiantly by separation in the LP solution solely */
+      SCIP_CALL( SCIPsetIntParam(scip, "constraints/quadratic/maxsepanlprounds", 1) );
    }
 
    if( gmoOptFile(gmo) > 0 )
