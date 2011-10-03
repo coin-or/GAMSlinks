@@ -29,6 +29,7 @@
 #include "scip/cons_nonlinear.h"
 #include "scip/cons_sos1.h"
 #include "scip/cons_sos2.h"
+#include "scip/heur_subnlp.h"
 
 #define READER_NAME             "gmoreader"
 #define READER_DESC             "Gams Control file reader (using GMO API)"
@@ -54,9 +55,6 @@ struct SCIP_ProbData
    SCIP_VAR**            vars;               /**< SCIP variables as corresponding to GMO variables */
    SCIP_VAR*             objvar;             /**< SCIP variable used to model objective function */
    SCIP_VAR*             objconst;           /**< SCIP variable used to model objective constant */
-#if 0
-   char*                 conssattrfile;
-#endif
 };
 
 /*
@@ -194,7 +192,6 @@ SCIP_RETCODE makeExprtree(
    int*                  fields,
    int                   constantlen,
    SCIP_Real*            constants,
-   SCIP_Real             factor,             /**< a factor to multiply the resulting expression with */
    SCIP_EXPRTREE**       exprtree            /**< buffer where to store expression tree */
 )
 {
@@ -1006,13 +1003,6 @@ SCIP_RETCODE makeExprtree(
    /* there should be exactly one element on the stack, which will be the root of our expression tree */
    assert(stackpos == 1);
 
-   /* multiply expression on stack with factor, if not trivial */
-   if( factor != 1.0 )
-   {
-      SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_CONST, factor) );
-      SCIP_CALL( SCIPexprCreate(blkmem, &stack[0], SCIP_EXPR_MUL, stack[0], e) );
-   }
-
    SCIP_CALL( SCIPexprtreeCreate(blkmem, exprtree, stack[0], nvars, 0, NULL) );
    SCIP_CALL( SCIPexprtreeSetVars(*exprtree, nvars, vars) );
 
@@ -1396,7 +1386,7 @@ SCIP_RETCODE createProblem(
             }
 
             gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields);
-            SCIP_CALL( makeExprtree(scip, codelen, opcodes, fields, gmoNLConst(gmo), (SCIP_Real*)gmoPPool(gmo), 1.0, &exprtree) );
+            SCIP_CALL( makeExprtree(scip, codelen, opcodes, fields, gmoNLConst(gmo), (SCIP_Real*)gmoPPool(gmo), &exprtree) );
 
             SCIP_CALL( SCIPcreateConsNonlinear(scip, &con, buffer, linnz, consvars, coefs, 1, &exprtree, NULL, lhs, rhs,
                   TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
@@ -1493,8 +1483,7 @@ SCIP_RETCODE createProblem(
          objfactor = -(gmoSense(gmo) == gmoObj_Min ? 1.0 : -1.0) / gmoObjJacVal(gmo);
 
          gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
-         /* @todo put objfactor as nonlincoef in SCIPcreateConsNonlinear */
-         SCIP_CALL( makeExprtree(scip, codelen, opcodes, fields, gmoNLConst(gmo), (SCIP_Real*)gmoPPool(gmo), objfactor, &exprtree) );
+         SCIP_CALL( makeExprtree(scip, codelen, opcodes, fields, gmoNLConst(gmo), (SCIP_Real*)gmoPPool(gmo), &exprtree) );
 
          if( gmoSense(gmo) == gmoObj_Min )
          {
@@ -1507,7 +1496,7 @@ SCIP_RETCODE createProblem(
             rhs = SCIPinfinity(scip);
          }
 
-         SCIP_CALL( SCIPcreateConsNonlinear(scip, &con, "objective", linnz, consvars, coefs, 1, &exprtree, NULL, lhs, rhs,
+         SCIP_CALL( SCIPcreateConsNonlinear(scip, &con, "objective", linnz, consvars, coefs, 1, &exprtree, &objfactor, lhs, rhs,
                TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
 
          SCIP_CALL( SCIPexprtreeFree(&exprtree) );
@@ -1616,6 +1605,110 @@ SCIP_RETCODE tryGmoSol(
    return SCIP_OKAY;
 }
 
+/** resolves solution stored in GMO by NLP solver */
+static
+SCIP_RETCODE resolveNLP(
+   SCIP*                 scip                /**< SCIP data structure */
+)
+{
+   gmoHandle_t gmo;
+   SCIP_PROBDATA* probdata;
+   SCIP_SOL* sol;
+   SCIP_Real* solvals;
+   SCIP_Bool feasible;
+   SCIP_Bool success;
+   SCIP_HEUR* heursubnlp;
+   int orignlpverblevel;
+   SCIP_Real origfeastol;
+
+   assert(scip != NULL);
+
+   if( SCIPgetNContVars(scip) == 0 )
+   {
+      SCIPdebugMessage("solution not feasible for original problem, but transformed SCIP problem has no continuous variables\n");
+      return SCIP_OKAY;
+   }
+
+   if( SCIPgetNNlpis(scip) == 0 )
+   {
+      SCIPdebugMessage("solution not feasible for original problem, but have no NLP solver\n");
+      return SCIP_OKAY;
+   }
+
+   heursubnlp = SCIPfindHeur(scip, "subnlp");
+   if( heursubnlp == NULL )
+   {
+      SCIPdebugMessage("solution not feasible for original problem, but NLP heuristic not available\n");
+      return SCIP_OKAY;
+   }
+
+   SCIPinfoMessage(scip, NULL, "Solve MINLP from original problem with fixed discrete variables to repair constraint violations.\n");
+
+   if( SCIPisTransformed(scip) )
+   {
+      SCIP_CALL( SCIPfreeTransform(scip) );
+   }
+   SCIP_CALL( SCIPtransformProb(scip) );
+
+   probdata = SCIPgetProbData(scip);
+   assert(probdata != NULL);
+   gmo = probdata->gmo;
+
+   SCIP_CALL( SCIPallocBufferArray(scip, &solvals, gmoN(gmo)) );
+   gmoGetVarL(gmo, solvals);
+
+   SCIP_CALL( SCIPcreateSol(scip, &sol, NULL) );
+   SCIP_CALL( SCIPsetSolVals(scip, sol, gmoN(gmo), probdata->vars, solvals) );
+   if( probdata->objvar != NULL )
+   {
+      SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objvar, gmoGetHeadnTail(gmo, gmoHobjval)) );
+   }
+
+   origfeastol = SCIPfeastol(scip);
+   SCIP_CALL( SCIPgetIntParam(scip, "heuristics/subnlp/nlpverblevel", &orignlpverblevel) );
+   SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/nlpverblevel", 1) );
+   SCIP_CALL( SCIPsetRealParam(scip, "numerics/feastol", origfeastol / 100.0) );
+
+   SCIP_CALL( SCIPresolveSolHeurSubNlp(scip, heursubnlp, sol, &success, 100, 10.0) );
+
+   SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/nlpverblevel", orignlpverblevel) );
+   SCIP_CALL( SCIPsetRealParam(scip, "numerics/feastol", origfeastol) );
+
+   if( success )
+   {
+      SCIP_CALL( SCIPcheckSolOrig(scip, sol, &feasible, FALSE, FALSE) );
+      if( feasible )
+      {
+         SCIP_Real* lambda;
+
+         SCIPinfoMessage(scip, NULL, "Updated solution is feasible, objective = %.15e. Storing in GMO.\n", SCIPgetSolOrigObj(scip, sol));
+
+         SCIP_CALL( SCIPgetSolVals(scip, sol, gmoN(gmo), probdata->vars, solvals) );
+         SCIP_CALL( SCIPallocBufferArray(scip, &lambda, gmoM(gmo)) );
+         BMSclearMemoryArray(lambda, gmoM(gmo));
+
+         gmoSetSolution2(gmo, solvals, lambda);
+         gmoSetHeadnTail(gmo, gmoHobjval, SCIPgetSolOrigObj(scip, sol));
+
+         SCIPfreeBufferArray(scip, &lambda);
+      }
+      else
+      {
+         SCIPinfoMessage(scip, NULL, "Updated solution still not feasible, objective = %.15e. Violated constraints:\n", SCIPgetSolOrigObj(scip, sol));
+         SCIP_CALL( SCIPcheckSolOrig(scip, sol, &feasible, TRUE, TRUE) );
+      }
+   }
+   else
+   {
+      SCIPinfoMessage(scip, NULL, "Failed to resolve NLP.\n");
+   }
+
+   SCIP_CALL( SCIPfreeSol(scip, &sol) );
+   SCIPfreeBufferArray(scip, &solvals);
+
+   return SCIP_OKAY;
+}
+
 /** stores solve information (solution, statistics) in a GMO */
 static
 SCIP_RETCODE writeGmoSolution(
@@ -1686,33 +1779,11 @@ SCIP_RETCODE writeGmoSolution(
          break;
    }
 
-   if( nrsol > 0 )
-   {
-      SCIP_SOL* sol;
-      SCIP_Real* collev;
-      SCIP_Real* lambda;
-
-      sol = SCIPgetBestSol(scip);
-      assert(sol != NULL);
-
-      SCIP_CALL( SCIPallocBufferArray(scip, &collev, gmoN(gmo)) );
-      SCIP_CALL( SCIPallocBufferArray(scip, &lambda, gmoM(gmo)) );
-      BMSclearMemoryArray(lambda, gmoM(gmo));
-
-      SCIP_CALL( SCIPgetSolVals(scip, sol, gmoN(gmo), probdata->vars, collev) );
-      gmoSetSolution2(gmo, collev, lambda);
-
-      SCIPfreeBufferArray(scip, &collev);
-      SCIPfreeBufferArray(scip, &lambda);
-
-      gmoSetHeadnTail(gmo, gmoHobjval, SCIPgetSolOrigObj(scip, sol));
-   }
-
    if( SCIPgetStage(scip) == SCIP_STAGE_SOLVING || SCIPgetStage(scip) == SCIP_STAGE_SOLVED )
       gmoSetHeadnTail(gmo, gmoTmipbest, SCIPgetDualbound(scip));
    gmoSetHeadnTail(gmo, gmoTmipnod,  (int)SCIPgetNNodes(scip));
-   gmoSetHeadnTail(gmo, gmoHresused, SCIPgetSolvingTime(scip));
 
+   /* dump all solutions, if more than one found and parameter is set */
    if( nrsol > 1)
    {
       char* indexfilename;
@@ -1786,6 +1857,51 @@ SCIP_RETCODE writeGmoSolution(
          gdxFree(&gdx);
       }
    }
+
+   /* pass best solution to gmo, if any */
+   if( nrsol > 0 )
+   {
+      SCIP_SOL* sol;
+      SCIP_Real* collev;
+      SCIP_Real* lambda;
+
+      sol = SCIPgetBestSol(scip);
+      assert(sol != NULL);
+
+      SCIP_CALL( SCIPallocBufferArray(scip, &collev, gmoN(gmo)) );
+      SCIP_CALL( SCIPallocBufferArray(scip, &lambda, gmoM(gmo)) );
+      BMSclearMemoryArray(lambda, gmoM(gmo));
+
+      SCIP_CALL( SCIPgetSolVals(scip, sol, gmoN(gmo), probdata->vars, collev) );
+      gmoSetSolution2(gmo, collev, lambda);
+
+      SCIPfreeBufferArray(scip, &collev);
+      SCIPfreeBufferArray(scip, &lambda);
+
+      gmoSetHeadnTail(gmo, gmoHobjval, SCIPgetSolOrigObj(scip, sol));
+
+      /* if we have an MINLP with continuous variables, check if best solution is really feasible and try to repair otherwise */
+      if( (gmoObjNLNZ(gmo) != 0 || gmoNLNZ(gmo) != 0) && gmoNDisc(gmo) < gmoN(gmo) &&
+          (SCIPgetStage(scip) != SCIP_STAGE_SOLVING || SCIPhasContinuousNonlinearitiesPresent(scip)) )
+      {
+         SCIP_Bool resolvenlp;
+
+         SCIP_CALL( SCIPgetBoolParam(scip, "gams/resolvenlp", &resolvenlp) );
+
+         if( resolvenlp )
+         {
+            SCIP_Bool feasible;
+
+            SCIP_CALL( SCIPcheckSolOrig(scip, sol, &feasible, FALSE, FALSE) );
+            if( !feasible )
+            {
+               SCIP_CALL( resolveNLP(scip) );
+            }
+         }
+      }
+   }
+
+   gmoSetHeadnTail(gmo, gmoHresused, SCIPgetSolvingTime(scip));
 
    return SCIP_OKAY;
 }
@@ -2237,6 +2353,10 @@ SCIP_RETCODE SCIPincludeReaderGmo(
       "name of solutions index gdx file for writing all solutions",
       NULL, FALSE, "", NULL, NULL) );
 
+   SCIP_CALL( SCIPaddBoolParam(scip, "gams/resolvenlp",
+      "whether to resolve MINLP with fixed discrete variables if best solution violates some constraints",
+      NULL, FALSE, TRUE, NULL, NULL) );
+
    /* get parent dialog "write" */
    if( SCIPdialogFindEntry(SCIPgetRootDialog(scip), "write", &parentdialog) != 1 )
    {
@@ -2294,12 +2414,6 @@ SCIP_RETCODE SCIPincludeReaderGmo(
             DIALOG_SETTINGSLOADGAMS_NAME, DIALOG_SETTINGSLOADGAMS_DESC, DIALOG_SETTINGSLOADGAMS_ISSUBMENU, NULL) );
       SCIP_CALL( SCIPaddDialogEntry(scip, parentdialog, dialog) );
       SCIP_CALL( SCIPreleaseDialog(scip, &dialog) );
-
-#if 0
-      SCIP_CALL( SCIPaddStringParam(scip, "constraints/attrfile",
-         "name of file that specifies constraint attributes",
-         NULL, FALSE, "", NULL, NULL) );
-#endif
    }
 
    return SCIP_OKAY;
@@ -2401,15 +2515,6 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
          SCIPwarningMessage("Reading of optionfile %s failed with SCIP return code <%d>!\n", optfilename, ret);
       }
    }
-
-#if 0
-   SCIP_CALL( SCIPgetStringParam(scip, "constraints/attrfile", &attrfile) );
-   if( attrfile && *attrfile != '\0' )
-   {
-      /* find a nicer way to call the ca-filereader */
-      SCIP_CALL( SCIPreadProb(scip, attrfile, "ca") );
-   }
-#endif
 
    return SCIP_OKAY;
 }

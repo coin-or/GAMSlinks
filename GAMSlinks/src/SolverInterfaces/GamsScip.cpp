@@ -169,9 +169,27 @@ int GamsScip::callSolver()
    SCIP_Bool mipstart;
    SCIP_CALL_ABORT( SCIPgetBoolParam(scip, "gams/mipstart", &mipstart) );
 
+   char* attrfile = NULL;
+#if 0
+   SCIP_CALL( SCIPgetStringParam(scip, "constraints/attrfile", &attrfile) );
+#endif
 
    // setup commands to be executed by SCIP
    SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, "readgams") );              // setup model
+
+   if( attrfile != NULL && *attrfile != '\0' )
+   {
+      char buffer[SCIP_MAXSTRLEN + 10];
+      size_t len;
+
+      len = strlen(attrfile);
+      if( len >= 3 && strcmp(&attrfile[len-3], ".ca") == 0 )
+         (void) SCIPsnprintf(buffer, sizeof(buffer), "read %g", attrfile);
+      else
+         (void) SCIPsnprintf(buffer, sizeof(buffer), "read %g ca", attrfile);
+      SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, buffer) );               // process constraints attribute file
+   }
+
    SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, "disp param") );            // display non-default parameter settings
 
    if( mipstart )
@@ -188,7 +206,6 @@ int GamsScip::callSolver()
          SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, "disp statistics") ); // display solution statistics
       }
       SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, "write gamssol") );      // pass solution to GMO
-      SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, "checksol") );           // check if solution is feasible w.r.t. original problem
 
       SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, "quit") );               // quit shell
    }
@@ -254,6 +271,11 @@ SCIP_RETCODE GamsScip::setupSCIP()
       SCIP_CALL( SCIPaddBoolParam(scip, "gams/interactive",
          "whether a SCIP shell should be opened instead of issuing a solve command",
          NULL, FALSE, FALSE, NULL, NULL) );
+#if 0
+      SCIP_CALL( SCIPaddStringParam(scip, "constraints/attrfile",
+         "name of file that specifies constraint attributes",
+         NULL, FALSE, "", NULL, NULL) );
+#endif
 
       // refresh dialogs in SCIP shell
       SCIP_CALL( SCIPincludeDialogDefault(scip) );
