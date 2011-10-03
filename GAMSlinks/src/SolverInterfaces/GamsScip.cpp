@@ -166,9 +166,6 @@ int GamsScip::callSolver()
    SCIP_Bool printstat;
    SCIP_CALL_ABORT( SCIPgetBoolParam(scip, "gams/printstatistics", &printstat) );
 
-   SCIP_Bool mipstart;
-   SCIP_CALL_ABORT( SCIPgetBoolParam(scip, "gams/mipstart", &mipstart) );
-
    char* attrfile = NULL;
 #if 0
    SCIP_CALL( SCIPgetStringParam(scip, "constraints/attrfile", &attrfile) );
@@ -191,11 +188,6 @@ int GamsScip::callSolver()
    }
 
    SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, "disp param") );            // display non-default parameter settings
-
-   if( mipstart )
-   {
-      SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, "trygamssol") );         // pass GMO solution to SCIP
-   }
 
    if( !interactive )
    {
@@ -262,9 +254,6 @@ SCIP_RETCODE GamsScip::setupSCIP()
        * "whether the problem should be solved with fixed discrete variables to get dual values",
        * NULL, FALSE, TRUE,  NULL, NULL) );
        */
-      SCIP_CALL( SCIPaddBoolParam(scip, "gams/mipstart",
-         "whether to try initial point as first primal solution",
-         NULL, FALSE, TRUE,  NULL, NULL) );
       SCIP_CALL( SCIPaddBoolParam(scip, "gams/printstatistics",
          "whether to print statistics on a MIP solve",
          NULL, FALSE, FALSE, NULL, NULL) );

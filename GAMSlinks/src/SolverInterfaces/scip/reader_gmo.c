@@ -45,6 +45,7 @@ struct SCIP_ReaderData
 {
    gmoHandle_t           gmo;                /**< GAMS model object */
    gevHandle_t           gev;                /**< GAMS environment */
+   SCIP_Bool             mipstart;           /**< whether to try initial point as first primal solution */
 };
 
 /** problem data */
@@ -1531,76 +1532,52 @@ SCIP_RETCODE createProblem(
    SCIPfreeBufferArrayNull(scip, &opcodes);
    SCIPfreeBufferArrayNull(scip, &fields);
    
-
    /* set objective limit, if enabled */
    if( gevGetIntOpt(gev, gevUseCutOff) )
    {
       SCIP_CALL( SCIPsetObjlimit(scip, gevGetDblOpt(gev, gevCutOff)) );
    }
 
+   /* set initial solution, if allowed */
+   if( readerdata->mipstart )
+   {
+      SCIP_SOL* sol;
+      SCIP_Real* vals;
+      SCIP_Bool stored;
+
+      SCIP_CALL( SCIPcreateOrigSol(scip, &sol, NULL) );
+
+      SCIP_CALL( SCIPallocBufferArray(scip, &vals, gmoN(gmo)) );
+      gmoGetVarL(gmo, vals);
+
+      SCIP_CALL( SCIPsetSolVals(scip, sol, gmoN(gmo), probdata->vars, vals) );
+
+      /* if we have extra variable for objective, then need to set its value too */
+      if( probdata->objvar != NULL )
+      {
+         double objval;
+         int numErr;
+         gmoEvalFuncObj(gmo, vals, &objval, &numErr);
+         if( numErr == 0 )
+         {
+            SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objvar, objval) );
+         }
+      }
+
+      /* if we have extra variable for objective constant, then need to set its value to 1.0 here too */
+      if( probdata->objconst != NULL )
+      {
+         SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objconst, 1.0) );
+      }
+
+      SCIP_CALL( SCIPaddSolFree(scip, &sol, &stored) );
+
+      SCIPfreeBufferArray(scip, &vals);
+   }
+
    /* deinitialize QMaker, if nonlinear */
    if( gmoNLNZ(gmo) > 0 || objnonlinear )
       gmoUseQSet(gmo, 0);
-
-   return SCIP_OKAY;
-}
-
-/** tries to pass solution stored in GMO to SCIP */
-static
-SCIP_RETCODE tryGmoSol(
-   SCIP*                 scip,               /**< SCIP data structure */
-   SCIP_Bool*            stored              /**< buffer to store whether solution has been stored by SCIP */
-   )
-{
-   gmoHandle_t gmo;
-   gevHandle_t gev;
-   SCIP_SOL* sol;
-   SCIP_Real* vals;
-   SCIP_PROBDATA* probdata;
-
-   assert(scip != NULL);
-   assert(stored != NULL);
-
-   probdata = SCIPgetProbData(scip);
-   assert(probdata != NULL);
-   assert(probdata->gmo != NULL);
-   assert(probdata->gev != NULL);
-   assert(probdata->vars != NULL);
-
-   gmo = probdata->gmo;
-   gev = probdata->gev;
-
-   SCIP_CALL( SCIPtransformProb(scip) );
-
-   SCIP_CALL( SCIPcreateOrigSol(scip, &sol, NULL) );
-
-   SCIP_CALL( SCIPallocBufferArray(scip, &vals, gmoN(gmo)) );
-   gmoGetVarL(gmo, vals);
-
-   SCIP_CALL( SCIPsetSolVals(scip, sol, gmoN(gmo), probdata->vars, vals) );
-
-   /* if we have extra variable for objective, then need to set its value too */
-   if( probdata->objvar != NULL )
-   {
-      double objval;
-      int numErr;
-      gmoEvalFuncObj(gmo, vals, &objval, &numErr);
-      if( numErr == 0 )
-      {
-         SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objvar, objval) );
-      }
-   }
-
-   /* if we have extra variable for objective constant, then need to set its value to 1.0 here too */
-   if( probdata->objconst != NULL )
-   {
-      SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objconst, 1.0) );
-   }
-
-   SCIPfreeBufferArray(scip, &vals);
-
-   /* print constraint violations if one-bit of integer5 is set */
-   SCIP_CALL( SCIPtrySolFree(scip, &sol, gevGetIntOpt(gev, gevInteger5) & 0x1, TRUE, TRUE, TRUE, stored) );
 
    return SCIP_OKAY;
 }
@@ -1644,6 +1621,11 @@ SCIP_RETCODE resolveNLP(
 
    SCIPinfoMessage(scip, NULL, "Solve MINLP from original problem with fixed discrete variables to repair constraint violations.\n");
 
+   origfeastol = SCIPfeastol(scip);
+   SCIP_CALL( SCIPgetIntParam(scip, "heuristics/subnlp/nlpverblevel", &orignlpverblevel) );
+   SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/nlpverblevel", 1) );
+   SCIP_CALL( SCIPsetRealParam(scip, "numerics/feastol", origfeastol / 100.0) );
+
    if( SCIPisTransformed(scip) )
    {
       SCIP_CALL( SCIPfreeTransform(scip) );
@@ -1663,11 +1645,10 @@ SCIP_RETCODE resolveNLP(
    {
       SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objvar, gmoGetHeadnTail(gmo, gmoHobjval)) );
    }
-
-   origfeastol = SCIPfeastol(scip);
-   SCIP_CALL( SCIPgetIntParam(scip, "heuristics/subnlp/nlpverblevel", &orignlpverblevel) );
-   SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/nlpverblevel", 1) );
-   SCIP_CALL( SCIPsetRealParam(scip, "numerics/feastol", origfeastol / 100.0) );
+   if( probdata->objconst != NULL )
+   {
+      SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objconst, 1.0) );
+   }
 
    SCIP_CALL( SCIPresolveSolHeurSubNlp(scip, heursubnlp, sol, &success, 100, 10.0) );
 
@@ -2121,79 +2102,6 @@ SCIP_DECL_DIALOGEXEC(dialogExecReadGams)
 
 
 /*
- * Reading solution from GMO and pass to SCIP
- */
-
-#define DIALOG_TRYGAMSSOL_NAME               "trygamssol"
-#define DIALOG_TRYGAMSSOL_DESC               "passes solution from GAMS Modeling Object to SCIP"
-#define DIALOG_TRYGAMSSOL_ISSUBMENU          FALSE
-
-/** copy method for dialog plugins (called when SCIP copies plugins) */
-#if 0
-static
-SCIP_DECL_DIALOGCOPY(dialogCopyTryGamsSol)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of TryGamsSol dialog not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
-
-   return SCIP_OKAY;
-}
-#else
-#define dialogCopyTryGamsSol NULL
-#endif
-
-/** destructor of dialog to free user data (called when the dialog is not captured anymore) */
-#if 0
-static
-SCIP_DECL_DIALOGFREE(dialogFreeTryGamsSol)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of TryGamsSol dialog not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
-
-   return SCIP_OKAY;
-}
-#else
-#define dialogFreeTryGamsSol NULL
-#endif
-
-/** description output method of dialog */
-#if 0
-static
-SCIP_DECL_DIALOGDESC(dialogDescTryGamsSol)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of TryGamsSol dialog not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
-
-   return SCIP_OKAY;
-}
-#else
-#define dialogDescTryGamsSol NULL
-#endif
-
-
-/** execution method of dialog */
-static
-SCIP_DECL_DIALOGEXEC(dialogExecTryGamsSol)
-{  /*lint --e{715}*/
-   SCIP_Bool stored;
-
-   assert(dialoghdlr != NULL);
-   assert(dialog != NULL);
-   assert(scip != NULL);
-   assert(SCIPgetStage(scip) >= SCIP_STAGE_PROBLEM);
-
-   SCIP_CALL( SCIPdialoghdlrAddHistory(dialoghdlr, dialog, NULL, FALSE) );
-
-   SCIP_CALL( tryGmoSol(scip, &stored) );
-   SCIPinfoMessage(scip, NULL, "Initial GAMS solution %s by SCIP.\n", stored ? "accepted" : "rejected");
-
-   *nextdialog = SCIPdialoghdlrGetRoot(dialoghdlr);
-
-   return SCIP_OKAY;
-}
-
-
-/*
  * Writing solution information to GMO dialog
  */
 
@@ -2357,6 +2265,10 @@ SCIP_RETCODE SCIPincludeReaderGmo(
       "whether to resolve MINLP with fixed discrete variables if best solution violates some constraints",
       NULL, FALSE, TRUE, NULL, NULL) );
 
+   SCIP_CALL( SCIPaddBoolParam(scip, "gams/mipstart",
+      "whether to try GAMS variable level values as initial primal solution",
+      &readerdata->mipstart, FALSE, TRUE, NULL, NULL) );
+
    /* get parent dialog "write" */
    if( SCIPdialogFindEntry(SCIPgetRootDialog(scip), "write", &parentdialog) != 1 )
    {
@@ -2383,17 +2295,6 @@ SCIP_RETCODE SCIPincludeReaderGmo(
             dialogCopyWriteGamsSol, dialogExecWriteGamsSol, dialogDescWriteGamsSol, dialogFreeWriteGamsSol,
             DIALOG_WRITEGAMSSOL_NAME, DIALOG_WRITEGAMSSOL_DESC, DIALOG_WRITEGAMSSOL_ISSUBMENU, NULL) );
       SCIP_CALL( SCIPaddDialogEntry(scip, parentdialog, dialog) );
-      SCIP_CALL( SCIPreleaseDialog(scip, &dialog) );
-   }
-
-
-   /* create, include, and release dialog */
-   if( !SCIPdialogHasEntry(SCIPgetRootDialog(scip), DIALOG_TRYGAMSSOL_NAME) )
-   {
-      SCIP_CALL( SCIPincludeDialog(scip, &dialog,
-            dialogCopyTryGamsSol, dialogExecTryGamsSol, dialogDescTryGamsSol, dialogFreeTryGamsSol,
-            DIALOG_TRYGAMSSOL_NAME, DIALOG_TRYGAMSSOL_DESC, DIALOG_TRYGAMSSOL_ISSUBMENU, NULL) );
-      SCIP_CALL( SCIPaddDialogEntry(scip, SCIPgetRootDialog(scip), dialog) );
       SCIP_CALL( SCIPreleaseDialog(scip, &dialog) );
    }
 
