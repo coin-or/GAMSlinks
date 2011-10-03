@@ -105,7 +105,6 @@ GAMSlinks/src/GamsUtils/23.7/optcc.h -text
 GAMSlinks/src/GamsUtils/GamsBBTrace.c -text
 GAMSlinks/src/GamsUtils/GamsBBTrace.h -text
 GAMSlinks/src/GamsUtils/GamsCompatibility.h -text
-GAMSlinks/src/GamsUtils/GamsNLinstr.c -text
 GAMSlinks/src/GamsUtils/GamsNLinstr.h -text
 GAMSlinks/src/GamsUtils/GamsOptions.cpp -text
 GAMSlinks/src/GamsUtils/GamsOptions.hpp -text

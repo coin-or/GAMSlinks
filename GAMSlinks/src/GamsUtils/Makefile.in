@@ -65,8 +65,8 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includecoindir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libGamsUtils_la_LIBADD =
-am_libGamsUtils_la_OBJECTS = GamsOptions.lo GamsNLinstr.lo \
-	GamsBBTrace.lo optcc.lo gmomcc.lo gevmcc.lo gclgms.lo gdxcc.lo
+am_libGamsUtils_la_OBJECTS = GamsOptions.lo GamsBBTrace.lo optcc.lo \
+	gmomcc.lo gevmcc.lo gclgms.lo gdxcc.lo
 libGamsUtils_la_OBJECTS = $(am_libGamsUtils_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -371,7 +371,7 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = 
 lib_LTLIBRARIES = libGamsUtils.la
-libGamsUtils_la_SOURCES = GamsOptions.cpp GamsNLinstr.c GamsBBTrace.c \
+libGamsUtils_la_SOURCES = GamsOptions.cpp GamsBBTrace.c \
   $(GAMS_VERSION)/optcc.c $(GAMS_VERSION)/gmomcc.c $(GAMS_VERSION)/gevmcc.c $(GAMS_VERSION)/gclgms.c $(GAMS_VERSION)/gdxcc.c
 
 libGamsUtils_la_LDFLAGS = 
@@ -456,7 +456,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsBBTrace.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsNLinstr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOptions.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gclgms.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdxcc.Plo@am__quote@

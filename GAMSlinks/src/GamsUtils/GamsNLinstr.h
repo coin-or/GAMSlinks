@@ -56,7 +56,40 @@ typedef enum
 } GamsOpCode;
 
 /** GAMS nonlinear expression opcode names as strings */
-extern const char* GamsOpCodeName[MAXINS];
+static const char* GamsOpCodeName[MAXINS] =
+{
+   "nlNoOp",
+   "nlPushV",
+   "nlPushI",
+   "nlStore",
+   "nlAdd",
+   "nlAddV",
+   "nlAddI",
+   "nlSub",
+   "nlSubV",
+   "nlSubI",
+   "nlMul",
+   "nlMulV",
+   "nlMulI",
+   "nlDiv",
+   "nlDivV",
+   "nlDivI",
+   "nlUMin",
+   "nlUMinV",
+   "nlHeader",
+   "nlEnd",
+   "nlCallArg1",
+   "nlCallArg2",
+   "nlCallArgN",
+   "nlFuncArgN",
+   "nlMulIAdd",
+   "nlPushZero",
+   "nlChk",
+   "nlAddO",
+   "nlPushO",
+   "nlInvoc",
+   "nlStackIn"
+};
 
 /** GAMS nonlinear function codes */
 typedef enum
