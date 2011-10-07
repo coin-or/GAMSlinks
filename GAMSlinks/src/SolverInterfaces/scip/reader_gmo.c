@@ -2398,10 +2398,7 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
    if( gmoNLNZ(gmo) > 0 || (gmoObjStyle(gmo) == gmoObjType_Fun && gmoObjNLNZ(gmo) > 0) )
    {
       /* set some MINLP specific options */
-      gevLogPChar(gev, "\nEnable some MINLP specific settings.\n");
       SCIP_CALL( SCIPsetIntParam(scip, "display/nexternbranchcands/active", 2) );
-      /* a convex QP like qcp1 cannot be solved efficiantly by separation in the LP solution solely */
-      SCIP_CALL( SCIPsetIntParam(scip, "constraints/quadratic/maxsepanlprounds", 1) );
    }
 
    if( gmoOptFile(gmo) > 0 )
