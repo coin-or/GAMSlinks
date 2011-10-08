@@ -248,6 +248,8 @@ SCIP_RETCODE makeExprtree(
    SCIP_CALL( SCIPallocBufferArray(scip, &vars, varssize) );
    SCIP_CALL( SCIPhashmapCreate(&var2idx, blkmem, SCIPcalcHashtableSize(SCIPgetNVars(scip))) );
 
+   nargs = -1;
+
    for( pos = 0; pos < codelen; ++pos )
    {
       opcode = (GamsOpCode)opcodes[pos];
@@ -918,6 +920,7 @@ SCIP_RETCODE makeExprtree(
                         SCIP_CALL( SCIPallocBufferArray(scip, &monomials, nargs-1) );
 
                         zero = 0;
+                        constant = 0.0;
                         while( nargs > 0 )
                         {
                            assert(stackpos > 0);
