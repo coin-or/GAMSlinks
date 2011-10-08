@@ -14,6 +14,12 @@
 /*---+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2*/
 
 #include <assert.h>
+#include <math.h>
+
+// dos compiler does not know PI
+#ifndef M_PI
+#define M_PI           3.141592653589793238462643
+#endif
 
 #include "reader_gmo.h"
 
