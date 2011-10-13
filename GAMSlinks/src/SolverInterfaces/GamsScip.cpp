@@ -265,9 +265,6 @@ SCIP_RETCODE GamsScip::setupSCIP()
          "name of file that specifies constraint attributes",
          NULL, FALSE, "", NULL, NULL) );
 #endif
-
-      // refresh dialogs in SCIP shell
-      SCIP_CALL( SCIPincludeDialogDefault(scip) );
    }
    else
    {
