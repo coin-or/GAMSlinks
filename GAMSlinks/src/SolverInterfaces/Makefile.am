@@ -27,7 +27,7 @@ libGamsCoin_la_LDFLAGS      = -module -no-undefined
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = 
 
-bin_SCRIPTS =
+bin_SCRIPTS = gamsinst.sh
 if COIN_IS_WINDOWS
   SCRIPTSUFFIX=nt.cmd
 else

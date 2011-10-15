@@ -563,7 +563,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/.. $(distdir)/BuildTools $(distdir)/m4 $(distdir)/test
+	$(mkdir_p) $(distdir)/.. $(distdir)/BuildTools $(distdir)/m4 $(distdir)/src/SolverInterfaces $(distdir)/test
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -806,13 +806,8 @@ test: all
 
 unitTest: test
 
-@COIN_HAS_GAMSSYSTEM_TRUE@gams-install: install
-@COIN_HAS_GAMSSYSTEM_TRUE@	echo "Installation of solvers in GAMS distribution at @GAMS_PATH@."
-@COIN_HAS_GAMSSYSTEM_TRUE@	cp $(DESTDIR)$(bindir)/gms*_.zip "@GAMS_PATH@"
-@COIN_HAS_GAMSSYSTEM_TRUE@	cd "@GAMS_PATH@"; ./gamsinst -a
-@COIN_HAS_GAMSSYSTEM_FALSE@gams-install: 
-@COIN_HAS_GAMSSYSTEM_FALSE@	echo "Installation of solvers in GAMS distribution fails because path of GAMS system not known."
-@COIN_HAS_GAMSSYSTEM_FALSE@	exit 1
+gams-install: install
+	$(bindir)/gamsinst.sh
 
 .PHONY: test unitTest gams-install
 

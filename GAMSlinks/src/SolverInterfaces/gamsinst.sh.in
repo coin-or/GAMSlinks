@@ -1,0 +1,166 @@
+#!/bin/bash
+# Copyright (C) 2011 GAMS Development and others
+# All Rights Reserved.
+# This file is distributed under the Eclipse Public License.
+#
+# Author: Michael Bussieck, Stefan Vigerske
+
+gamspath="@GAMS_PATH@"
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+libdir="@libdir@"
+
+@COIN_IS_WINDOWS_TRUE@gmscmp=${gamspath}/gmscmpNT.txt
+@COIN_IS_WINDOWS_FALSE@gmscmp=${gamspath}/gmscmpun.txt
+
+@COIN_IS_WINDOWS_TRUE@libname="libGamsCoin.dll";
+@COIN_IS_WINDOWS_FALSE@libname="libGamsCoin.so";
+
+gmscmporig=${gmscmp}.orig
+gmscmpbak=${gmscmp}.bak
+
+if ! test -r $gmscmp ;
+then
+   echo "File $gmscmp not found or not readable, cannot edit."
+   exit 1
+fi
+
+if ! test -e "${libdir}/$libname"
+then
+   echo "Solver library $libdir/$libname not found, cannot install."
+   exit 1
+fi
+
+echo "Editing $gmscmp"
+
+# keep backup of original gmscmpun.txt file
+if ! test -r $gmscmporig
+then
+   cp $gmscmp $gmscmporig
+fi
+
+# keep backup of current gmscmpun.txt file
+cp -f $gmscmp $gmscmpbak
+
+awk -vlibname=$libname '
+BEGIN {
+   fileType      = 111; 
+   dictType      = 0; 
+   licCodes      = "0001020304"; 
+   defaultOkFlag = 1;
+   hiddenFlag    = 0;
+   @COIN_IS_WINDOWS_TRUE@scriptCmd  = "gmsgennt.cmd";
+   @COIN_IS_WINDOWS_TRUE@execCmd    = "gmsgennx.exe";
+   @COIN_IS_WINDOWS_FALSE@scriptCmd = "gmsgenus.run";
+   @COIN_IS_WINDOWS_FALSE@execCmd   = "gmsgenux.out";
+
+   @COIN_HAS_BONMIN_TRUE@written["MYBONMIN"] = 0;
+   @COIN_HAS_BONMIN_TRUE@libid["MYBONMIN"] = "bon";
+   @COIN_HAS_BONMIN_TRUE@dicttype["MYBONMIN"] = 0;
+   @COIN_HAS_BONMIN_TRUE@modeltypes["MYBONMIN"] = "MIP MIQCP MINLP";
+
+   @COIN_HAS_CBC_TRUE@written["MYCBC"] = 0;
+   @COIN_HAS_CBC_TRUE@libid["MYCBC"] = "cbc";
+   @COIN_HAS_CBC_TRUE@dicttype["MYCBC"] = 5;
+   @COIN_HAS_CBC_TRUE@modeltypes["MYCBC"] = "LP RMIP MIP";
+
+   @COIN_HAS_COUENNE_TRUE@written["MYCOUENNE"] = 0;
+   @COIN_HAS_COUENNE_TRUE@libid["MYCOUENNE"] = "cou";
+   @COIN_HAS_COUENNE_TRUE@dicttype["MYCOUENNE"] = 0;
+   @COIN_HAS_COUENNE_TRUE@modeltypes["MYCOUENNE"] = "QCP RMIQCP NLP DNLP RMINLP CNS MIQCP MINLP";
+
+   @COIN_HAS_IPOPT_TRUE@written["MYIPOPT"] = 0;
+   @COIN_HAS_IPOPT_TRUE@libid["MYIPOPT"] = "ipo";
+   @COIN_HAS_IPOPT_TRUE@dicttype["MYIPOPT"] = 0;
+   @COIN_HAS_IPOPT_TRUE@modeltypes["MYIPOPT"] = "LP RMIP NLP DNLP RMINLP QCP RMIQCP";
+
+   @COIN_HAS_OS_TRUE@written["MYOS"] = 0;
+   @COIN_HAS_OS_TRUE@libid["MYOS"] = "os_";
+   @COIN_HAS_OS_TRUE@dicttype["MYOS"] = 5;
+   @COIN_HAS_OS_TRUE@modeltypes["MYOS"] = "LP RMIP MIP QCP RMIQCP NLP DNLP RMINLP CNS MIQCP MINLP";
+
+   @COIN_HAS_OSICPX_TRUE@written["MYOSICPLEX"] = 0;
+   @COIN_HAS_OSICPX_TRUE@libid["MYOSICPLEX"] = "ocp";
+   @COIN_HAS_OSICPX_TRUE@dicttype["MYOSICPLEX"] = 5;
+   @COIN_HAS_OSICPX_TRUE@modeltypes["MYOSICPLEX"] = "LP RMIP MIP";
+
+   @COIN_HAS_OSIGLPK_TRUE@written["MYOSIGLPK"] = 0;
+   @COIN_HAS_OSIGLPK_TRUE@libid["MYOSIGLPK"] = "ogl";
+   @COIN_HAS_OSIGLPK_TRUE@dicttype["MYOSIGLPK"] = 5;
+   @COIN_HAS_OSIGLPK_TRUE@modeltypes["MYOSIGLPK"] = "LP RMIP MIP";
+
+   @COIN_HAS_OSIGRB_TRUE@written["MYOSIGUROBI"] = 0;
+   @COIN_HAS_OSIGRB_TRUE@libid["MYOSIGUROBI"] = "ogu";
+   @COIN_HAS_OSIGRB_TRUE@dicttype["MYOSIGUROBI"] = 5;
+   @COIN_HAS_OSIGRB_TRUE@modeltypes["MYOSIGUROBI"] = "LP RMIP MIP";
+
+   @COIN_HAS_OSIMSK_TRUE@written["MYOSIMOSEK"] = 0;
+   @COIN_HAS_OSIMSK_TRUE@libid["MYOSIMOSEK"] = "omk";
+   @COIN_HAS_OSIMSK_TRUE@dicttype["MYOSIMOSEK"] = 5;
+   @COIN_HAS_OSIMSK_TRUE@modeltypes["MYOSIMOSEK"] = "LP RMIP MIP";
+
+   @COIN_HAS_OSISPX_TRUE@written["MYOSISOPLEX"] = 0;
+   @COIN_HAS_OSISPX_TRUE@libid["MYOSISOPLEX"] = "osp";
+   @COIN_HAS_OSISPX_TRUE@dicttype["MYOSISOPLEX"] = 5;
+   @COIN_HAS_OSISPX_TRUE@modeltypes["MYOSISOPLEX"] = "LP RMIP";
+
+   @COIN_HAS_OSIXPR_TRUE@written["MYOSIXPRESS"] = 0;
+   @COIN_HAS_OSIXPR_TRUE@libid["MYOSIXPRESS"] = "oxp";
+   @COIN_HAS_OSIXPR_TRUE@dicttype["MYOSIXPRESS"] = 5;
+   @COIN_HAS_OSIXPR_TRUE@modeltypes["MYOSIXPRESS"] = "LP RMIP MIP";
+
+   @COIN_HAS_SCIP_TRUE@written["MYSCIP"] = 0;
+   @COIN_HAS_SCIP_TRUE@libid["MYSCIP"] = "scp";
+   @COIN_HAS_SCIP_TRUE@dicttype["MYSCIP"] = 5;
+   @COIN_HAS_SCIP_TRUE@modeltypes["MYSCIP"] = "RMIP MIP QCP RMIQCP NLP DNLP RMINLP CNS MIQCP MINLP";
+
+   startBlock = 0;
+}
+
+function writeConfig(solverID) {
+   print solverID, fileType, dicttype[solverID], licCodes, defaultOkFlag, hiddenFlag, "2", modeltypes[solverID];
+   print scriptCmd;
+   print execCmd;
+   print libname, libid[solverID], "1";
+   written[solverID] = 1;
+}
+
+(/^*/ || /^ *$/) { print $0 }
+
+/^DEFAULTS/ {
+   for( solverID in written )
+      if( !written[solverID] )
+      {
+         writeConfig(solverID)
+         print "";
+      }
+   print;
+   next;
+}
+
+!(/^*/ || /^ *$/) {
+   if( startBlock < 0 )
+   {
+      startBlock++;
+      next;
+   }
+   if( $1 in written && !written[$1] )
+   {
+      writeConfig($1)
+      startBlock = -($7+1);
+      next;
+   }
+   print;
+}
+' $gmscmpbak > $gmscmp
+
+
+echo "Installing ${libdir}/$libname in $gamspath"
+
+if test -e "${gamspath}/$libname" ;
+then
+   rm -f "${gamspath}/$libname"
+fi
+@COIN_IS_WINDOWS_TRUE@cp "${libdir}/$libname" "${gamspath}/$libname"
+@COIN_IS_WINDOWS_FALSE@ln -s "${libdir}/$libname" "${gamspath}/$libname"

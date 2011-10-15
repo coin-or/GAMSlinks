@@ -63,7 +63,7 @@ host_triplet = @host@
 @COIN_HAS_OS_TRUE@am__append_17 = optmyos.def
 subdir = src/SolverInterfaces
 DIST_COMMON = $(am__includecoin_HEADERS_DIST) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in
+	$(srcdir)/Makefile.in $(srcdir)/gamsinst.sh.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
 	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
@@ -72,7 +72,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h \
 	$(top_builddir)/src/config_gamslinks.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = gamsinst.sh
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -432,7 +432,8 @@ includecoindir = $(includedir)/coin
 includecoin_HEADERS = $(am__append_2) $(am__append_5) $(am__append_8) \
 	$(am__append_10) $(am__append_12) $(am__append_14) \
 	$(am__append_16)
-bin_SCRIPTS = $(am__append_3) $(am__append_6) $(am__append_17)
+bin_SCRIPTS = gamsinst.sh $(am__append_3) $(am__append_6) \
+	$(am__append_17)
 @COIN_IS_WINDOWS_FALSE@SCRIPTSUFFIX = us.run
 @COIN_IS_WINDOWS_TRUE@SCRIPTSUFFIX = nt.cmd
 all: all-am
@@ -468,6 +469,8 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+gamsinst.sh: $(top_builddir)/config.status $(srcdir)/gamsinst.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
 	test -z "$(libdir)" || $(mkdir_p) "$(DESTDIR)$(libdir)"

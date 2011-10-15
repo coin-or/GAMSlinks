@@ -142,6 +142,7 @@ AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/GamsUtils/Makefile
                  src/SolverInterfaces/Makefile
+                 src/SolverInterfaces/gamsinst.sh
                  test/Makefile
                  doc/optdoc/Makefile
                 ])

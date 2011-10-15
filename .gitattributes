@@ -200,6 +200,7 @@ GAMSlinks/src/SolverInterfaces/GamsSolverC_tpl.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsSolverC_tpl.h -text
 GAMSlinks/src/SolverInterfaces/Makefile.am -text
 GAMSlinks/src/SolverInterfaces/Makefile.in -text
+GAMSlinks/src/SolverInterfaces/gamsinst.sh.in -text
 GAMSlinks/src/SolverInterfaces/optmycbc.def -text
 GAMSlinks/src/SolverInterfaces/optmycbc.gms -text
 GAMSlinks/src/SolverInterfaces/optmycbc.html -text
