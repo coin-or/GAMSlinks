@@ -561,7 +561,7 @@ SCIP_RETCODE makeExprtree(
             --stackpos;
 
             SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_CONST, constants[address]) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MUL, term1, term2) );
+            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_DIV, term1, term2) );
             break;
          }
 
