@@ -2402,12 +2402,18 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
    SCIP_CALL( SCIPsetIntParam(scip, "display/width", 80) );
    SCIP_CALL( SCIPsetIntParam(scip, "display/lpavgiterations/active", 0) );
    SCIP_CALL( SCIPsetIntParam(scip, "display/maxdepth/active", 0) );
+   SCIP_CALL( SCIPsetIntParam(scip, "display/time/active", 2) );
 #endif
 
+   /* enable column on number of branching on nonlinear variables, if any */
    if( gmoNLNZ(gmo) > 0 || (gmoObjStyle(gmo) == gmoObjType_Fun && gmoObjNLNZ(gmo) > 0) )
    {
-      /* set some MINLP specific options */
       SCIP_CALL( SCIPsetIntParam(scip, "display/nexternbranchcands/active", 2) );
+   }
+   /* make sure column on number of branching on fractional variables is shown, if any */
+   if( gmoNDisc(gmo) > 0 )
+   {
+      SCIP_CALL( SCIPsetIntParam(scip, "display/nfrac/active", 2) );
    }
 
    if( gmoOptFile(gmo) > 0 )
