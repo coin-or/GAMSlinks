@@ -203,23 +203,42 @@ int GamsScip::callSolver()
    }
 
 
-   // start SCIP
+   // run SCIP
    scipret = SCIPstartInteraction(scip);
-   if( scipret != SCIP_OKAY )
+
+   // evaluate SCIP return code
+   switch( scipret )
    {
-      char buffer[256];
-      sprintf(buffer, "Error %d in call of SCIP function\n", scipret);
-      gevLogStatPChar(gev, buffer);
-      if( scipret == SCIP_READERROR )
-      {
+      case SCIP_OKAY:
+         break;
+
+      case SCIP_READERROR:
          /* if it's readerror, then we guess that it comes from encountering an unsupported gams instruction in the gmo readers makeExprtree method
-          * we also do not return with nonzero then
+          * we still return with zero then
           */
          gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
          gmoSolveStatSet(gmo, gmoSolveStat_Capability);
-      }
-      else
+         break;
+
+      case SCIP_LPERROR:
+      case SCIP_MAXDEPTHLEVEL:
+         /* if SCIP failed due to internal error (forced LP solve failed, max depth level reached), also return zero */
+         gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+         gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
+         break;
+
+      case SCIP_NOMEMORY:
+         /* there is no extra solver status for running out of memory, but memory is a resource, so return this */
+         gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+         gmoSolveStatSet(gmo, gmoSolveStat_Resource);
+         break;
+
+      default:
       {
+         char buffer[256];
+         sprintf(buffer, "Error %d in call of SCIP function\n", scipret);
+         gevLogStatPChar(gev, buffer);
+
          gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
          gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
          return 1;
