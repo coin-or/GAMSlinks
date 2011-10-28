@@ -47,7 +47,7 @@ bool GamsOptions::initOpt(
 
    assert(sizeof(buffer) >= GMS_SSSIZE);
    gevGetStrOpt(gev, gevNameSysDir, buffer);
-   buffer[511] = '\0';
+   buffer[sizeof(buffer)-1] = '\0';
    size_t len = strlen(buffer);
    if( snprintf(buffer+len, 512-len, "opt%s.def", solvername) >= 512 )
    {

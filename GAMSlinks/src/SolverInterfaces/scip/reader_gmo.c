@@ -15,6 +15,7 @@
 
 #include <assert.h>
 #include <math.h>
+#include <string.h>
 
 /* dos compiler does not know PI */
 #ifndef M_PI
@@ -26,6 +27,7 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 #include "gdxcc.h"
+#include "optcc.h"
 #include "GamsCompatibility.h"
 #include "GamsNLinstr.h"
 
@@ -33,6 +35,7 @@
 #include "scip/cons_bounddisjunction.h"
 #include "scip/cons_quadratic.h"
 #include "scip/cons_nonlinear.h"
+#include "scip/cons_indicator.h"
 #include "scip/cons_sos1.h"
 #include "scip/cons_sos2.h"
 #include "scip/heur_subnlp.h"
@@ -52,6 +55,7 @@ struct SCIP_ReaderData
    gmoHandle_t           gmo;                /**< GAMS model object */
    gevHandle_t           gev;                /**< GAMS environment */
    SCIP_Bool             mipstart;           /**< whether to try initial point as first primal solution */
+   char*                 indicatorfile;      /**< name of GAMS options file that contains definitions on indicators */
 };
 
 /** problem data */
@@ -1052,6 +1056,11 @@ SCIP_RETCODE createProblem(
    SCIP_PROBDATA* probdata;
    int* opcodes;
    int* fields;
+   int nindics;
+   int* indicrows;
+   int* indiccols;
+   int* indiconvals;
+   int indicidx;
    
    assert(scip != NULL);
    assert(readerdata != NULL);
@@ -1094,6 +1103,68 @@ SCIP_RETCODE createProblem(
    /* initialize QMaker, if nonlinear */
    if( gmoNLNZ(gmo) > 0 || objnonlinear )
       gmoUseQSet(gmo, 1);
+
+   /* get data on indicator constraints from options object */
+   nindics = 0;
+   indicrows = NULL;
+   indiccols = NULL;
+   indiconvals = NULL;
+#if GMOAPIVERSION >= 10
+   if( readerdata->indicatorfile != NULL && *readerdata->indicatorfile != '\0' )
+   {
+      optHandle_t opt;
+      int itype;
+
+      if( !optCreate(&opt, buffer, sizeof(buffer)) )
+      {
+         SCIPerrorMessage("*** Could not create optionfile handle: %s\n", buffer);
+         return SCIP_ERROR;
+      }
+
+      gevGetStrOpt(gev, gevNameSysDir, buffer);
+      if( strlen(buffer) > 500 )
+      {
+         SCIPerrorMessage("*** Path to GAMS system directory too long.");
+         return SCIP_ERROR;
+      }
+      strcat(buffer, "optscip.def");
+
+      if( optReadDefinition(opt, buffer) )
+      {
+         for( i = 1; i <= optMessageCount(opt); ++i )
+         {
+            optGetMessage(opt, i, buffer, &itype);
+            if( itype <= optMsgFileLeave || itype == optMsgUserError )
+               gevLogStat(gev, buffer);
+         }
+         optClearMessages(opt);
+         return SCIP_ERROR;
+      }
+
+      optReadParameterFile(opt, readerdata->indicatorfile);
+      for( i = 1; i <= optMessageCount(opt); ++i )
+      {
+         optGetMessage(opt, i, buffer, &itype);
+         if( itype <= optMsgFileLeave || itype == optMsgUserError )
+            gevLogStat(gev, buffer);
+      }
+      optClearMessages(opt);
+
+      if( optIndicatorCount(opt, &i) > 0 )
+      {
+         SCIP_CALL( SCIPallocBufferArray(scip, &indicrows, gmoM(gmo)) );
+         SCIP_CALL( SCIPallocBufferArray(scip, &indiccols, gmoM(gmo)) );
+         SCIP_CALL( SCIPallocBufferArray(scip, &indiconvals, gmoM(gmo)) );
+         if( gmoGetIndicatorMap(gmo, opt, 1, &nindics, indicrows, indiccols, indiconvals) != 0 )
+         {
+            SCIPerrorMessage("failed to get indicator mapping\n");
+            return SCIP_ERROR;
+         }
+      }
+
+      optFree(&opt);
+   }
+#endif
 
    SCIP_CALL( SCIPallocMemoryArray(scip, &probdata->vars, gmoN(gmo)) );
    vars = probdata->vars;
@@ -1261,6 +1332,7 @@ SCIP_RETCODE createProblem(
    
    /* setup regular constraints */
    SCIP_CALL( SCIPallocBufferArray(scip, &indices, gmoN(gmo)) );
+   indicidx = 0;
    
    /* alloc some memory, if nonlinear */
    if( gmoNLNZ(gmo) > 0 || objnonlinear )
@@ -1342,8 +1414,52 @@ SCIP_RETCODE createProblem(
             for( j = 0; j < nz; ++j )
                consvars[j] = vars[indices[j]];
 
-            SCIP_CALL( SCIPcreateConsLinear(scip, &con, buffer, nz, consvars, coefs, lhs, rhs,
-                  TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
+            /* create indicator constraint, if we are at one */
+            if( indicidx < nindics && indicrows[indicidx] == i )
+            {
+               SCIP_VAR* binvar;
+
+               binvar = vars[indiccols[indicidx]];
+               if( SCIPvarGetType(binvar) != SCIP_VARTYPE_BINARY )
+               {
+                  SCIPerrorMessage("Indicator variable <%s> is not of binary type.\n", SCIPvarGetName(binvar));
+                  return SCIP_ERROR;
+               }
+
+               assert(indiconvals[indicidx] == 0 || indiconvals[indicidx] == 1);
+               if( indiconvals[indicidx] == 0 )
+               {
+                  SCIP_CALL( SCIPgetNegatedVar(scip, binvar, &binvar) );
+               }
+
+               if( !SCIPisInfinity(scip, rhs) )
+               {
+                  SCIP_CALL( SCIPcreateConsIndicator(scip, &con, buffer, binvar, nz, consvars, coefs, rhs,
+                     TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
+
+                  if( !SCIPisInfinity(scip, -lhs) )
+                  {
+                     SCIP_CALL( SCIPaddCons(scip, con) );
+                     SCIPdebugMessage("added constraint ");
+                     SCIPdebug( SCIPprintCons(scip, con, NULL) );
+                     SCIP_CALL( SCIPreleaseCons(scip, &con) );
+                  }
+               }
+               if( !SCIPisInfinity(scip, -lhs) )
+               {
+                  for( j = 0; j < nz; ++j )
+                     coefs[j] = -coefs[j];
+                  SCIP_CALL( SCIPcreateConsIndicator(scip, &con, buffer, binvar, nz, consvars, coefs, -lhs,
+                     TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
+               }
+
+               ++indicidx;
+            }
+            else
+            {
+               SCIP_CALL( SCIPcreateConsLinear(scip, &con, buffer, nz, consvars, coefs, lhs, rhs,
+                     TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
+            }
 
             break;
          }
@@ -1414,6 +1530,13 @@ SCIP_RETCODE createProblem(
       SCIPdebugMessage("added constraint ");
       SCIPdebug( SCIPprintCons(scip, con, NULL) );
       SCIP_CALL( SCIPreleaseCons(scip, &con) );
+
+      /* @todo do something about this */
+      if( indicidx < nindics && indicrows[indicidx] == i )
+      {
+         SCIPerrorMessage("Only linear constraints can be indicatored, currently.\n");
+         return SCIP_ERROR;
+      }
    }
    
    if( objnonlinear )
@@ -1540,7 +1663,10 @@ SCIP_RETCODE createProblem(
    SCIPfreeBufferArrayNull(scip, &qcol);
    SCIPfreeBufferArrayNull(scip, &opcodes);
    SCIPfreeBufferArrayNull(scip, &fields);
-   
+   SCIPfreeBufferArrayNull(scip, &indicrows);
+   SCIPfreeBufferArrayNull(scip, &indiccols);
+   SCIPfreeBufferArrayNull(scip, &indiconvals);
+
    /* set objective limit, if enabled */
    if( gevGetIntOpt(gev, gevUseCutOff) )
    {
@@ -2277,6 +2403,10 @@ SCIP_RETCODE SCIPincludeReaderGmo(
    SCIP_CALL( SCIPaddBoolParam(scip, "gams/mipstart",
       "whether to try GAMS variable level values as initial primal solution",
       &readerdata->mipstart, FALSE, TRUE, NULL, NULL) );
+
+   SCIP_CALL( SCIPaddStringParam(scip, "gams/indicatorfile",
+      "name of GAMS options file that contains definitions on indicators",
+      &readerdata->indicatorfile, FALSE, "", NULL, NULL) );
 
    /* get parent dialog "write" */
    if( SCIPdialogFindEntry(SCIPgetRootDialog(scip), "write", &parentdialog) != 1 )
