@@ -80,6 +80,10 @@ skiplist=
 @COIN_HAS_SCIP_TRUE@SMP="$SMP SMP('MyScip', 'RMINLP') = yes;"
 @COIN_HAS_SCIP_TRUE@SMP="$SMP SMP('MyScip', 'MINLP') = yes;"
 
+@COIN_HAS_OSISPX_TRUE@solvers="$solvers , 'MyOsiSoplex'"
+@COIN_HAS_OSISPX_TRUE@SMP="$SMP SMP('MyOsiSoplex', 'LP') = yes;"
+@COIN_HAS_OSISPX_TRUE@SMP="$SMP SMP('MyOsiSoplex', 'RMIP') = yes;"
+
 # create driver generator
 tee > coin_gmstest.set <<EOF 
 \$include gamsmod.inc
