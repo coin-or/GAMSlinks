@@ -12,25 +12,6 @@ If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are genera
 See option \texttt{2mir\_cuts} for the meaning of k.}%
 {}
 
-\printoption{aggressive\_fbbt}%
-{\ttfamily no, yes}%
-{yes}%
-{Aggressive feasibility-based bound tightening (to use with NLP points)\\
-Aggressive FBBT is a version of probing that also allows to reduce the solution set, although it is not as quick as FBBT. It can be applied up to a certain depth of the B\&B tree -- see ``log\_num\_abt\_per\_level''. In general, this option is useful but can be switched off if a problem is too large and seems not to benefit from it.}%
-{}
-
-\printoption{art\_cutoff}%
-{$\textrm{real}$}%
-{$\infty$}%
-{Artificial cutoff.}%
-{}
-
-\printoption{art\_lower}%
-{$\textrm{real}$}%
-{$-\infty$}%
-{Artificial lower bound.}%
-{}
-
 \printoption{boundtightening\_print\_level}%
 {$-2\leq\textrm{integer}\leq12$}%
 {$0$}%
@@ -238,7 +219,7 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 {$1\leq\textrm{integer}$}%
 {$2000$}%
 {Priority of continuous variable branching\\
-When branching, this is compared to the priority of integer variables, whose priority is fixed to 1000, and SOS, whose priority is 10. Higher values mean smaller priority, so if this parameter is set to 1001 or higher, if a branch-and-bound node has at least one integer variable whose value is fractional, then branching will be performed on that variable.}%
+When branching, this is compared to the priority of integer variables, whose priority is given by int\_var\_priority, and SOS, whose priority is 10. Higher values mean smaller priority.}%
 {}
 
 \printoption{convexification\_cuts}%
@@ -365,6 +346,12 @@ A value of -1 means that generation can be done at all nodes}%
 {Enable OsiSolverInterface::tightenBounds () -- warning: it has caused some trouble to Couenne}%
 {}
 
+\printoption{enable\_sos}%
+{\ttfamily no, yes}%
+{no}%
+{Use Special Ordered Sets (SOS) as indicated in the MINLP model}%
+{}
+
 \printoption{estimate\_select}%
 {\ttfamily normal, product}%
 {normal}%
@@ -380,11 +367,160 @@ A value of -1 means that generation can be done at all nodes}%
 \end{list}
 }
 
+\printoption{feas\_pump\_convcuts}%
+{\ttfamily integrated, external, postcut, none}%
+{none}%
+{Separate MILP-feasible, MINLP-infeasible solution during or after MILP solver.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{integrated}] Done within the MILP solver in a branch-and-cut fashion
+\item[\texttt{external}] Done after the MILP solver, in a Benders-like fashion
+\item[\texttt{postcut}] Do one round of cuts and proceed with NLP
+\item[\texttt{none}] Just proceed to the NLP
+\end{list}
+}
+
+\printoption{feas\_pump\_heuristic}%
+{\ttfamily no, yes}%
+{no}%
+{Apply the nonconvex Feasibility Pump\\
+An implementation of the Feasibility Pump for nonconvex MINLPs}%
+{}
+
+\printoption{feas\_pump\_iter}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{Number of iterations in the main Feasibility Pump loop\\
+-1 means no limit}%
+{}
+
+\printoption{feas\_pump\_level}%
+{$-1\leq\textrm{integer}$}%
+{$3$}%
+{Specify the logarithm of the number of feasibility pumps to perform on average for each level of given depth of the tree.\\
+Solve as many nlp's at the nodes for each level of the tree. Nodes are randomly selected. If for a given level there are less nodes than this number nlp are solved for every nodes. For example if parameter is 8, nlp's are solved for all node until level 8, then for half the node at level 9, 1/4 at level 10.... Set to -1 to perform at all nodes.}%
+{}
+
+\printoption{feas\_pump\_milpmethod}%
+{$-1\leq\textrm{integer}\leq4$}%
+{$-1$}%
+{How should the integral solution be constructed?\\
+0: automatic, 1: aggressive heuristics, large node limit, 2: default, node limit, 3: RENS, 4: Objective Feasibility Pump,  -1: solve MILP completely}%
+{}
+
+\printoption{feas\_pump\_mult\_dist\_milp}%
+{$0\leq\textrm{real}\leq1$}%
+{$0$}%
+{Weight of the distance in the distance function of the milp problem\\
+0: no weight, 1: full weight}%
+{}
+
+\printoption{feas\_pump\_mult\_dist\_nlp}%
+{$0\leq\textrm{real}\leq1$}%
+{$0$}%
+{Weight of the distance in the distance function of the nlp problem\\
+0: no weight, 1: full weight}%
+{}
+
+\printoption{feas\_pump\_mult\_hess\_milp}%
+{$0\leq\textrm{real}\leq1$}%
+{$0$}%
+{Weight of the Hessian in the distance function of the milp problem\\
+0: no weight, 1: full weight}%
+{}
+
+\printoption{feas\_pump\_mult\_hess\_nlp}%
+{$0\leq\textrm{real}\leq1$}%
+{$0$}%
+{Weight of the Hessian in the distance function of the nlp problem\\
+0: no weight, 1: full weight}%
+{}
+
+\printoption{feas\_pump\_mult\_objf\_milp}%
+{$0\leq\textrm{real}\leq1$}%
+{$0$}%
+{Weight of the original objective function in the distance function of the milp problem\\
+0: no weight, 1: full weight}%
+{}
+
+\printoption{feas\_pump\_mult\_objf\_nlp}%
+{$0\leq\textrm{real}\leq1$}%
+{$0$}%
+{Weight of the original objective function in the distance function of the nlp problem\\
+0: no weight, 1: full weight}%
+{}
+
+\printoption{feas\_pump\_nseprounds}%
+{$1\leq\textrm{integer}\leq100000$}%
+{$4$}%
+{Number of rounds that separate convexification cuts. Must be at least 1}%
+{}
+
+\printoption{feas\_pump\_poolcomp}%
+{$0\leq\textrm{integer}\leq2$}%
+{$0$}%
+{Priority field to compare solutions in FP pool\\
+0: total number of infeasible objects (integer and nonlinear), 1: maximum infeasibility (integer or nonlinear), 2: objective value.}%
+{}
+
+\printoption{feas\_pump\_tabumgt}%
+{\ttfamily pool, perturb, cut, none}%
+{pool}%
+{Retrieval of MILP solutions when the one returned is unsatisfactory}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{pool}] Use a solution pool and replace unsatisfactory solution with Euclidean-closest in pool
+\item[\texttt{perturb}] Randomly perturb unsatisfactory solution
+\item[\texttt{cut}] Separate convexification cuts
+\item[\texttt{none}] Bail out of feasibility pump
+\end{list}
+}
+
+\printoption{feas\_pump\_usescip}%
+{\ttfamily no, yes}%
+{yes}%
+{Should SCIP be used to solve the MILPs?
+ Note, that SCIP is only available for GAMS users with an academic GAMS license.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{no}] Use Cbc's branch-and-cut to solve the MILP
+\item[\texttt{yes}] Use SCIP's branch-and-cut or heuristics (see feas\_pump\_milpmethod option) to solve the MILP
+\end{list}
+}
+
+\printoption{feas\_pump\_vardist}%
+{\ttfamily integer, all, int-postprocess}%
+{integer}%
+{Distance computed on integer-only or on both types of variables, in different flavors.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{integer}] Only compute the distance based on integer coordinates (use post-processing if numerical errors occur)
+\item[\texttt{all}] Compute the distance using continuous and integer variables
+\item[\texttt{int-postprocess}] Use a post-processing fixed-IP LP to determine a closest-point solution
+\end{list}
+}
+
 \printoption{feas\_tolerance}%
 {$\textrm{real}$}%
 {$10^{- 5}$}%
 {Tolerance for constraints/auxiliary variables\\
-Default value is zero.}%
+Default value is 1e-5.}%
 {}
 
 \printoption{feasibility\_bt}%
@@ -394,11 +530,80 @@ Default value is zero.}%
 A pre-processing technique to reduce the bounding box, before the generation of linearization cuts. This is a quick and effective way to reduce the solution set, and it is highly recommended to keep it active.}%
 {}
 
+\printoption{fixpoint\_bt}%
+{$-99\leq\textrm{integer}$}%
+{$0$}%
+{The frequency (in terms of nodes) at which Fix Point Bound Tightening is performed.\\
+A frequency of 0 (default) means these cuts are never generated. Any positive number n instructs Couenne to generate them at every n nodes of the B\&B tree. A negative number -n means that generation should be attempted at the root node, and if successful it can be repeated at every n nodes, otherwise it is stopped altogether.}%
+{}
+
+\printoption{fixpoint\_bt\_model}%
+{\ttfamily extended, compact}%
+{compact}%
+{Choose whether to add an extended fixpoint LP model or a more compact one.}%
+{}
+
 \printoption{flow\_covers\_cuts}%
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency k (in terms of nodes) for generating flow\_covers\_cuts cuts in branch-and-cut.\\
 See option \texttt{2mir\_cuts} for the meaning of k.}%
+{}
+
+\printoption{int\_var\_priority}%
+{$1\leq\textrm{integer}$}%
+{$1000$}%
+{Priority of integer variable branching\\
+When branching, this is compared to the priority of continuous variables, whose priority is given by cont\_var\_priority, and SOS, whose priority is 10. Higher values mean smaller priority.}%
+{}
+
+\printoption{iterative\_rounding\_aggressiveness}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{Aggressiveness of the Iterative Rounding heuristic\\
+Set the aggressiveness of the heuristic; i.e., how many iterations should be run, and with which parameters. The maximum time can be overridden by setting the \_time and \_time\_firstcall options. 0 = non aggressive, 1 = standard (default), 2 = aggressive.}%
+{}
+
+\printoption{iterative\_rounding\_base\_lbrhs}%
+{$0\leq\textrm{integer}$}%
+{$15$}%
+{Base rhs of the local branching constraint for Iterative Rounding\\
+Base rhs for the local branching constraint that defines a neighbourhood of the local incumbent. The base rhs is modified by the algorithm according to variable bounds. This corresponds to k' in the paper. Default 15.}%
+{}
+
+\printoption{iterative\_rounding\_heuristic}%
+{\ttfamily no, yes}%
+{no}%
+{Do we use the Iterative Rounding heuristic\\
+If enabled, a heuristic based on Iterative Rounding is used to find feasible solutions for the problem. The heuristic may take some time, but usually finds good solutions. Recommended if you want good upper bounds and have Cplex. Not recommended if you do not have Cplex}%
+{}
+
+\printoption{iterative\_rounding\_num\_fir\_points}%
+{$1\leq\textrm{integer}$}%
+{$5$}%
+{Max number of points rounded at the beginning of Iterative Rounding\\
+Number of different points (obtained solving a log-barrier problem) that the heuristic will try to round at most, during its execution at the root node (i.e. the F-IR heuristic). Default 5.}%
+{}
+
+\printoption{iterative\_rounding\_omega}%
+{$0<\textrm{real}<1$}%
+{$0.2$}%
+{Omega parameter of the Iterative Rounding heuristic\\
+Set the omega parameter of the heuristic, which represents a multiplicative factor for the minimum log-barrier parameter of the NLP which is solved to obtain feasible points. This corresponds to $\omega'$ in the paper. Default 0.2.}%
+{}
+
+\printoption{iterative\_rounding\_time}%
+{$\textrm{real}$}%
+{$-1$}%
+{Specify the maximum time allowed for the Iterative Rounding heuristic\\
+Maximum CPU time employed by the Iterative Rounding heuristic; if no solution found in this time, failure is reported. This overrides the CPU time set by Aggressiveness if positive.}%
+{}
+
+\printoption{iterative\_rounding\_time\_firstcall}%
+{$\textrm{real}$}%
+{$-1$}%
+{Specify the maximum time allowed for the Iterative Rounding heuristic when no feasible solution is known\\
+Maximum CPU time employed by the Iterative Rounding heuristic when no solution is known; if no solution found in this time, failure is reported.This overrides the CPU time set by Aggressiveness if  posive.}%
 {}
 
 \printoption{lift\_and\_project\_cuts}%
@@ -408,18 +613,18 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 See option \texttt{2mir\_cuts} for the meaning of k.}%
 {}
 
+\printoption{local\_branching\_heuristic}%
+{\ttfamily no, yes}%
+{no}%
+{Apply local branching heuristic\\
+A local-branching heuristic based is used to find feasible solutions.}%
+{}
+
 \printoption{local\_optimization\_heuristic}%
 {\ttfamily no, yes}%
 {yes}%
-{Do we search for local solutions of NLP's\\
+{Search for local solutions of MINLPs\\
 If enabled, a heuristic based on Ipopt is used to find feasible solutions for the problem. It is highly recommended that this option is left enabled, as it would be difficult to find feasible solutions otherwise.}%
-{}
-
-\printoption{log\_num\_abt\_per\_level}%
-{$-1\leq\textrm{integer}$}%
-{$2$}%
-{Specify the frequency (in terms of nodes) for aggressive bound tightening.\\
-If -1, apply at every node (expensive!). If 0, apply at root node only. If k$>$=0, apply with probability $2^{(k - level)}$, level being the current depth of the B\&B tree.}%
 {}
 
 \printoption{log\_num\_local\_optimization\_per\_level}%
@@ -427,13 +632,6 @@ If -1, apply at every node (expensive!). If 0, apply at root node only. If k$>$=
 {$2$}%
 {Specify the logarithm of the number of local optimizations to perform on average for each level of given depth of the tree.\\
 Solve as many nlp's at the nodes for each level of the tree. Nodes are randomly selected. If for a given level there are less nodes than this number nlp are solved for every nodes. For example if parameter is 8, nlp's are solved for all node until level 8, then for half the node at level 9, 1/4 at level 10.... Value -1 specify to perform at all nodes.}%
-{}
-
-\printoption{log\_num\_obbt\_per\_level}%
-{$-1\leq\textrm{integer}$}%
-{$1$}%
-{Specify the frequency (in terms of nodes) for optimality-based bound tightening.\\
-If -1, apply at every node (expensive!). If 0, apply at root node only. If k$>$=0, apply with probability $2^{(k - level)}$, level being the current depth of the B\&B tree.}%
 {}
 
 \printoption{lp\_solver}%
@@ -465,29 +663,39 @@ A frequency of 0 (default) means these cuts are never generated. Any positive nu
 See option \texttt{2mir\_cuts} for the meaning of k.}%
 {}
 
+\printoption{multilinear\_separation}%
+{\ttfamily none, simple, tight}%
+{tight}%
+{Separation for multilinear terms\\
+Type of separation for multilinear terms where the dependent variable is also bounded}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{none}] No separation -- just use the four McCormick inequalities
+\item[\texttt{simple}] Use one considering lower curve only
+\item[\texttt{tight}] Use one considering both curves pi(x) = l\_{k+1} and pi(x) = u\_{k+1}
+\end{list}
+}
+
 \printoption{nlpheur\_print\_level}%
 {$-2\leq\textrm{integer}\leq12$}%
 {$0$}%
 {Output level for NLP heuristic in Couenne}%
 {}
 
-\printoption{opt\_window}%
-{$\textrm{real}$}%
-{$\infty$}%
-{Window around known optimum.}%
-{}
-
-\printoption{optimality\_bt}%
-{\ttfamily no, yes}%
-{yes}%
-{Optimality-based (expensive) bound tightening (OBBT)\\
-This is another bound reduction technique aiming at reducing the solution set by looking at the initial LP relaxation. This technique is computationally expensive, and should be used only when necessary.}%
-{}
-
 \printoption{orbital\_branching}%
 {\ttfamily yes, no}%
 {no}%
 {detect symmetries and apply orbital branching}%
+{}
+
+\printoption{output\_level}%
+{$-2\leq\textrm{integer}\leq12$}%
+{$0$}%
+{Output level}%
 {}
 
 \printoption{probing\_cuts}%
@@ -499,7 +707,7 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 
 \printoption{problem\_print\_level}%
 {$-2\leq\textrm{integer}\leq12$}%
-{$1$}%
+{$0$}%
 {Output level for problem manipulation code in Couenne}%
 {}
 
@@ -543,13 +751,6 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 \end{list}
 }
 
-\printoption{redcost\_bt}%
-{\ttfamily no, yes}%
-{yes}%
-{Reduced cost bound tightening\\
-This bound reduction technique uses the reduced costs of the LP in order to infer better variable bounds.}%
-{}
-
 \printoption{reduce\_split\_cuts}%
 {$-100\leq\textrm{integer}$}%
 {$0$}%
@@ -563,21 +764,38 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 {Output level for reformulating problems in Couenne}%
 {}
 
-\printoption{use\_quadratic}%
-{\ttfamily no, yes}%
-{no}%
-{Use quadratic expressions and related exprQuad class\\
-If enabled, then quadratic forms are not reformulated and therefore decomposed as a sum of auxiliary variables, each associated with a bilinear term, but rather taken as a whole expression. Envelopes for these expressions are generated through alpha-convexification.}%
-{\begin{list}{}{
-\setlength{\parsep}{0em}
-\setlength{\leftmargin}{5ex}
-\setlength{\labelwidth}{2ex}
-\setlength{\itemindent}{0ex}
-\setlength{\topsep}{0pt}}
-\item[\texttt{no}] Use an auxiliary for each bilinear term
-\item[\texttt{yes}] Create only one auxiliary for a quadratic expression
-\end{list}
-}
+\printoption{trust\_strong}%
+{\ttfamily yes, no}%
+{yes}%
+{Fathom strong branching LPs when their bound is above the cutoff}%
+{}
+
+\printoption{two\_implied\_bt}%
+{$-99\leq\textrm{integer}$}%
+{$0$}%
+{The frequency (in terms of nodes) at which Couenne two-implied bounds are tightened.\\
+A frequency of 0 (default) means these cuts are never generated. Any positive number n instructs Couenne to generate them at every n nodes of the B\&B tree. A negative number -n means that generation should be attempted at the root node, and if successful it can be repeated at every n nodes, otherwise it is stopped altogether.}%
+{}
+
+\printoption{two\_implied\_max\_trials}%
+{$1\leq\textrm{integer}$}%
+{$2$}%
+{The number of iteration at each call to the cut generator.}%
+{}
+
+\printoption{twoimpl\_depth\_level}%
+{$-1\leq\textrm{integer}$}%
+{$5$}%
+{Depth of the B\&B tree when to start decreasing the chance of running this algorithm.\\
+This has a similar behavior as log\_num\_obbt\_per\_level. A value of -1 means that generation can be done at all nodes.}%
+{}
+
+\printoption{twoimpl\_depth\_stop}%
+{$-1\leq\textrm{integer}$}%
+{$20$}%
+{Depth of the B\&B tree where separation is stopped.\\
+A value of -1 means that generation can be done at all nodes}%
+{}
 
 \printoption{violated\_cuts\_only}%
 {\ttfamily no, yes}%

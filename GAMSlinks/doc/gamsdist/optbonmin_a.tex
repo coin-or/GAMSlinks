@@ -135,6 +135,13 @@ A value of 0 disables pseudo costs.}%
 Set the number of variables on which to do strong branching.}%
 {}
 
+\printoption{read\_solution\_file}%
+{\ttfamily no, yes}%
+{no}%
+{Read a file with the optimal solution to test if algorithms cuts it.\\
+For Debugging purposes only.}%
+{}
+
 \printoption{solution\_limit}%
 {$0\leq\textrm{integer}$}%
 {$\infty$}%
@@ -168,7 +175,7 @@ All strategies can be used in conjunction with any of the node comparison functi
 }
 
 \printoption{variable\_selection}%
-{\ttfamily most-fractional, strong-branching, reliability-branching, curvature-estimator, qp-strong-branching, lp-strong-branching, nlp-strong-branching, osi-simple, osi-strong, random}%
+{\ttfamily most-fractional, strong-branching, reliability-branching, qp-strong-branching, lp-strong-branching, nlp-strong-branching, osi-simple, osi-strong, random}%
 {strong-branching}%
 {Chooses variable selection strategy}%
 {\begin{list}{}{
@@ -180,7 +187,6 @@ All strategies can be used in conjunction with any of the node comparison functi
 \item[\texttt{most-fractional}] Choose most fractional variable
 \item[\texttt{strong-branching}] Perform strong branching
 \item[\texttt{reliability-branching}] Use reliability branching
-\item[\texttt{curvature-estimator}] Use curvature estimation to select branching variable
 \item[\texttt{qp-strong-branching}] Perform strong branching with QP approximation
 \item[\texttt{lp-strong-branching}] Perform strong branching with LP approximation
 \item[\texttt{nlp-strong-branching}] Perform strong branching with NLP approximation
@@ -316,7 +322,7 @@ It seems that sometimes generating too many oa cuts slows down the optimization 
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency (in terms of nodes) for generating 2-MIR cuts in branch-and-cut\\
-If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are generated every -k nodes but Cbc may decide to stop generating cuts, if not enough are generated at the root node, if k=-99 generate cuts only at the root node, if k=0 or 100 do not generate cuts.}%
+If $k > 0$, cuts are generated every k nodes, if $-99 < k < 0$ cuts are generated every $-k$ nodes but Cbc may decide to stop generating cuts, if not enough are generated at the root node, if $k=-99$ generate cuts only at the root node, if $k=0$ or $100$ do not generate cuts.}%
 {}
 
 \printoption{Gomory\_cuts}%
@@ -441,7 +447,7 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 
 \printoptioncategory{NLP interface}
 \printoption{warm\_start}%
-{\ttfamily none, optimum, interior\_point}%
+{\ttfamily none, fake\_basis, optimum, interior\_point}%
 {none}%
 {Select the warm start method\\
 This will affect the function getWarmStart(), and as a consequence the warm starting in the various algorithms.}%
@@ -451,7 +457,8 @@ This will affect the function getWarmStart(), and as a consequence the warm star
 \setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\texttt{none}] No warm start
+\item[\texttt{none}] No warm start, just start NLPs from optimal solution of the root relaxation
+\item[\texttt{fake\_basis}] builds fake basis, useful for cut management in Cbc (warm start is the same as in none)
 \item[\texttt{optimum}] Warm start with direct parent optimum
 \item[\texttt{interior\_point}] Warm start with an interior point of direct parent
 \end{list}
@@ -507,6 +514,12 @@ When Ipopt fails to solve a continuous NLP sub-problem, if $k > 0$, the algorith
 \item[\texttt{Claudia}] perturb the starting point using the perturbation radius suffix information
 \end{list}
 }
+
+\printoption{resolve\_on\_small\_infeasibility}%
+{$0\leq\textrm{real}$}%
+{$0$}%
+{If a locally infeasible problem is infeasible by less than this, resolve it with initial starting point.}%
+{}
 
 \printoptioncategory{NLP solves in hybrid algorithm (B-Hyb)}
 \printoption{nlp\_solve\_frequency}%

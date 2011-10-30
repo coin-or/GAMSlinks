@@ -540,8 +540,7 @@ void printBonminOptions()
 
       if( it->second->Name() == "nlp_solver" ||
           it->second->Name() == "file_solution" ||
-          it->second->Name() == "sos_constraints" ||
-          it->second->Name() == "cplex_number_threads"
+          it->second->Name() == "sos_constraints"
         )
          continue;
 
@@ -773,7 +772,7 @@ void printBonminOptions()
          else if( (*it_opt)->Name() == "time_limit" )
             defaultval.realval = 1000;
          else if( it_categ->first == "MILP cutting planes in hybrid algorithm (B-Hyb)" && (*it_opt)->Name() != "2mir_cuts" )
-            longdescr = "See option \\texttt{2mir\\_cuts} for the meaning of k.";
+            longdescr = "See option \\texttt{2mir_cuts} for the meaning of k.";
 
          printOption(optfile, (*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
             opttype, defaultval, minval, minval_strict, maxval, maxval_strict, enumval);
@@ -826,6 +825,7 @@ void printCouenneOptions()
    bool minval_strict, maxval_strict;
    ENUMVAL enumval;
    std::string tmpstr;
+   std::string longdescr;
 
    std::ofstream optfile("optcouenne_a.tex");
 
@@ -891,7 +891,11 @@ void printCouenneOptions()
             }
          }
 
-         printOption(optfile, (*it_opt)->Name(), (*it_opt)->ShortDescription(), (*it_opt)->LongDescription(),
+         longdescr = (*it_opt)->LongDescription();
+         if( longdescr.find("cuts are generated every k nodes") != std::string::npos && (*it_opt)->Name() != "2mir_cuts" )
+            longdescr = "See option \\texttt{2mir_cuts} for the meaning of k.";
+
+         printOption(optfile, (*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
             opttype, defaultval, minval, minval_strict, maxval, maxval_strict, enumval);
       }
    }

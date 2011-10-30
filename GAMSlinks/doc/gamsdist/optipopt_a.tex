@@ -397,7 +397,7 @@ Usually, the barrier parameter is driven to zero and the termination test for co
 {$0<\textrm{real}$}%
 {$10^{- 8}$}%
 {Desired convergence tolerance (relative).\\
-Determines the convergence tolerance for the algorithm.  The algorithm terminates successfully, if the (scaled) NLP error becomes smaller than this value, and if the (absolute) criteria according to "dual\_inf\_tol", "primal\_inf\_tol", and "cmpl\_inf\_tol" are met.  (This is epsilon\_tol in Eqn. (6) in implementation paper).  See also "acceptable\_tol" as a second termination criterion.  Note, some other algorithmic features also use this quantity to determine thresholds etc.}%
+Determines the convergence tolerance for the algorithm.  The algorithm terminates successfully, if the (scaled) NLP error becomes smaller than this value, and if the (absolute) criteria according to "dual\_inf\_tol", "primal\_inf\_tol", and "compl\_inf\_tol" are met.  (This is epsilon\_tol in Eqn. (6) in implementation paper).  See also "acceptable\_tol" as a second termination criterion.  Note, some other algorithmic features also use this quantity to determine thresholds etc.}%
 {}
 
 \printoptioncategory{Hessian Approximation}
@@ -500,6 +500,22 @@ This option determines the number of most recent iterations that are taken into 
 {Threshold for successive iterations where update is skipped.\\
 If the update is skipped more than this number of successive iterations, we quasi-Newton approximation is reset.}%
 {}
+
+\printoption{limited\_memory\_special\_for\_resto}%
+{\ttfamily no, yes}%
+{no}%
+{Determines if the quasi-Newton updates should be special during the restoration phase.\\
+Until Nov 2010, Ipopt used a special update during the restoration phase, but it turned out that this does not work well.  The new default uses the regular update procedure and it improves results.  If for some reason you want to get back to the original update, set this option to "yes".}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{no}] use the same update as in regular iterations
+\item[\texttt{yes}] use the a special update during restoration phase
+\end{list}
+}
 
 \printoption{limited\_memory\_update\_type}%
 {\ttfamily bfgs, sr1}%
@@ -767,6 +783,23 @@ If the dual variables deviate from their primal estimates, a correction is perfo
 This option determines how much a second order correction step must reduce the constraint violation so that further correction steps are attempted.  (See Step A-5.9 of Algorithm A in the implementation paper.)}%
 {}
 
+\printoption{line\_search\_method}%
+{\ttfamily filter, cg-penalty, penalty}%
+{filter}%
+{Globalization method used in backtracking line search\\
+Only the "filter" choice is officially supported.  But sometimes, good results might be obtained with the other choices.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{filter}] Filter method
+\item[\texttt{cg-penalty}] Chen-Goldfarb penalty function
+\item[\texttt{penalty}] Standard penalty function
+\end{list}
+}
+
 \printoption{max\_filter\_resets}%
 {$0\leq\textrm{integer}$}%
 {$5$}%
@@ -925,13 +958,6 @@ This option determines the number of trial iterations allowed before the watchdo
 {}
 
 \printoptioncategory{Linear Solver}
-\printoption{hsl\_library}%
-{string}%
-{}%
-{path and filename of HSL library for dynamic load\\
-Specify the path to a library that contains HSL routines and can be load via dynamic linking. Note, that you still need to specify to use the corresponding routines (ma27, ...) by setting the corresponding options, e.g., ``linear\_solver''.}%
-{}
-
 \printoption{linear\_scaling\_on\_demand}%
 {\ttfamily no, yes}%
 {yes}%
@@ -949,13 +975,10 @@ This option is only important if a linear scaling method (e.g., mc19) is used.  
 }
 
 \printoption{linear\_solver}%
-{\ttfamily ma27, ma57, mumps}%
-% {\ttfamily ma27, ma57, pardiso, mumps}%
+{\ttfamily ma27, ma57, pardiso, mumps}%
 {ma27}%
 {Linear solver used for step computations.\\
-% Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). Note, that in order to use MA27, MA57, or Pardiso, a library with HSL or Pardiso code need to be provided (see Section 5.2 and options "hsl\_library" and "pardiso\_library").
-Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). Note, that in order to use MA27 or MA57, a library with HSL code need to be provided (see Section 5.2 and the option "hsl\_library").
-}%
+Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). Note, that in order to use MA27, MA57, or Pardiso, a library with HSL or Pardiso code need to be provided (see Section 5.2).}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -964,7 +987,7 @@ Determines which linear algebra package is to be used for the solution of the au
 \setlength{\topsep}{0pt}}
 \item[\texttt{ma27}] use the Harwell routine MA27
 \item[\texttt{ma57}] use the Harwell routine MA57
-% \item[\texttt{pardiso}] use the Pardiso package
+\item[\texttt{pardiso}] use the Pardiso package
 \item[\texttt{mumps}] use MUMPS package
 \end{list}
 }
@@ -985,13 +1008,6 @@ Determines the method used to compute symmetric scaling factors for the augmente
 \item[\texttt{slack-based}] use the slack values
 \end{list}
 }
-
-% \printoption{pardiso\_library}%
-% {string}%
-% {}%
-% {path and filename of PARDISO library for dynamic load\\
-% Specify the path to a PARDISO library that and can be load via dynamic linking. Note, that you still need to specify to use pardiso as linear\_solver.}%
-% {}
 
 \printoptioncategory{MA27 Linear Solver}
 \printoption{ma27\_ignore\_singularity}%
@@ -1369,6 +1385,22 @@ If a positive number is chosen, the scaling factor the objective function is com
 {}
 
 \printoptioncategory{Output}
+\printoption{inf\_pr\_output}%
+{\ttfamily internal, original}%
+{original}%
+{Determines what value is printed in the "inf\_pr" output column.\\
+Ipopt works with a reformulation of the original problem, where slacks are introduced and the problem might have been scaled.  The choice "internal" prints out the constraint violation of this formulation. With "original" the true constraint violation in the original NLP is printed.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{internal}] max-norm of violation of internal equality constraints
+\item[\texttt{original}] maximal constraint violation in original NLP
+\end{list}
+}
+
 \printoption{print\_eval\_error}%
 {\ttfamily no, yes}%
 {no}%
@@ -1379,7 +1411,7 @@ If a positive number is chosen, the scaling factor the objective function is com
 {\ttfamily no, yes}%
 {no}%
 {Enables printing of additional info string at end of iteration output.\\
-This string contains some insider information about the current iteration.}%
+This string contains some insider information about the current iteration.  For details, look for "Diagnostic Tags" in the Ipopt documentation.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -1430,154 +1462,154 @@ This option must be set for the inexact algorithm}%
 \end{list}
 }
 
-% \printoptioncategory{Pardiso Linear Solver}
-% \printoption{pardiso\_iter\_coarse\_size}%
-% {$1\leq\textrm{integer}$}%
-% {$5000$}%
-% {Maximum Size of Coarse Grid Matrix\\
-% DPARM(3)}%
-% {}
-% 
-% \printoption{pardiso\_iter\_dropping\_factor}%
-% {$0<\textrm{real}<1$}%
-% {$0.5$}%
-% {dropping value for incomplete factor\\
-% DPARM(5)}%
-% {}
-% 
-% \printoption{pardiso\_iter\_dropping\_schur}%
-% {$0<\textrm{real}<1$}%
-% {$0.1$}%
-% {dropping value for sparsify schur complement factor\\
-% DPARM(6)}%
-% {}
-% 
-% \printoption{pardiso\_iter\_inverse\_norm\_factor}%
-% {$1<\textrm{real}$}%
-% {$5 \cdot 10^{  6}$}%
-% {\\
-% DPARM(8)}%
-% {}
-% 
-% \printoption{pardiso\_iter\_max\_levels}%
-% {$1\leq\textrm{integer}$}%
-% {$10000$}%
-% {Maximum Size of Grid Levels\\
-% DPARM(4)}%
-% {}
-% 
-% \printoption{pardiso\_iter\_max\_row\_fill}%
-% {$1\leq\textrm{integer}$}%
-% {$10000000$}%
-% {max fill for each row\\
-% DPARM(7)}%
-% {}
-% 
-% \printoption{pardiso\_iter\_relative\_tol}%
-% {$0<\textrm{real}<1$}%
-% {$10^{- 6}$}%
-% {Relative Residual Convergence\\
-% DPARM(2)}%
-% {}
-% 
-% \printoption{pardiso\_iterative}%
-% {\ttfamily no, yes}%
-% {no}%
-% {Switch on iterative solver in Pardiso library}%
-% {}
-% 
-% \printoption{pardiso\_matching\_strategy}%
-% {\ttfamily complete, complete+2x2, constraints}%
-% {complete+2x2}%
-% {Matching strategy to be used by Pardiso\\
-% This is IPAR(13) in Pardiso manual.  This option is only available if Ipopt has been compiled with Pardiso.}%
-% {\begin{list}{}{
-% \setlength{\parsep}{0em}
-% \setlength{\leftmargin}{5ex}
-% \setlength{\labelwidth}{2ex}
-% \setlength{\itemindent}{0ex}
-% \setlength{\topsep}{0pt}}
-% \item[\texttt{complete}] Match complete (IPAR(13)=1)
-% \item[\texttt{complete+2x2}] Match complete+2x2 (IPAR(13)=2)
-% \item[\texttt{constraints}] Match constraints (IPAR(13)=3)
-% \end{list}
-% }
-% 
-% \printoption{pardiso\_max\_droptol\_corrections}%
-% {$1\leq\textrm{integer}$}%
-% {$4$}%
-% {Maximal number of decreases of drop tolerance during one solve.\\
-% This is relevant only for iterative Pardiso options.}%
-% {}
-% 
-% \printoption{pardiso\_max\_iter}%
-% {$1\leq\textrm{integer}$}%
-% {$500$}%
-% {Maximum number of Krylov-Subspace Iteration\\
-% DPARM(1)}%
-% {}
-% 
-% \printoption{pardiso\_msglvl}%
-% {$0\leq\textrm{integer}$}%
-% {$0$}%
-% {Pardiso message level\\
-% This determines the amount of analysis output from the Pardiso solver. This is MSGLVL in the Pardiso manual.}%
-% {}
-% 
-% \printoption{pardiso\_out\_of\_core\_power}%
-% {$0\leq\textrm{integer}$}%
-% {$0$}%
-% {Enables out-of-core variant of Pardiso\\
-% Setting this option to a positive integer k makes Pardiso work in the out-of-core variant where the factor is split in 2\^k subdomains.  This is IPARM(50) in the Pardiso manual.  This option is only available if Ipopt has been compiled with Pardiso.}%
-% {}
-% 
-% \printoption{pardiso\_redo\_symbolic\_fact\_only\_if\_inertia\_wrong}%
-% {\ttfamily no, yes}%
-% {no}%
-% {Toggle for handling case when elements were perturbed by Pardiso.\\
-% This option is only available if Ipopt has been compiled with Pardiso.}%
-% {\begin{list}{}{
-% \setlength{\parsep}{0em}
-% \setlength{\leftmargin}{5ex}
-% \setlength{\labelwidth}{2ex}
-% \setlength{\itemindent}{0ex}
-% \setlength{\topsep}{0pt}}
-% \item[\texttt{no}] Always redo symbolic factorization when elements were perturbed
-% \item[\texttt{yes}] Only redo symbolic factorization when elements were perturbed if also the inertia was wrong
-% \end{list}
-% }
-% 
-% \printoption{pardiso\_repeated\_perturbation\_means\_singular}%
-% {\ttfamily no, yes}%
-% {no}%
-% {Interpretation of perturbed elements.\\
-% This option is only available if Ipopt has been compiled with Pardiso.}%
-% {\begin{list}{}{
-% \setlength{\parsep}{0em}
-% \setlength{\leftmargin}{5ex}
-% \setlength{\labelwidth}{2ex}
-% \setlength{\itemindent}{0ex}
-% \setlength{\topsep}{0pt}}
-% \item[\texttt{no}] Don't assume that matrix is singular if elements were perturbed after recent symbolic factorization
-% \item[\texttt{yes}] Assume that matrix is singular if elements were perturbed after recent symbolic factorization
-% \end{list}
-% }
-% 
-% \printoption{pardiso\_skip\_inertia\_check}%
-% {\ttfamily no, yes}%
-% {no}%
-% {Always pretent inertia is correct.\\
-% Setting this option to "yes" essentially disables inertia check. This option makes the algorithm non-robust and easily fail, but it might give some insight into the necessity of inertia control.}%
-% {\begin{list}{}{
-% \setlength{\parsep}{0em}
-% \setlength{\leftmargin}{5ex}
-% \setlength{\labelwidth}{2ex}
-% \setlength{\itemindent}{0ex}
-% \setlength{\topsep}{0pt}}
-% \item[\texttt{no}] check inertia
-% \item[\texttt{yes}] skip inertia check
-% \end{list}
-% }
+\printoptioncategory{Pardiso Linear Solver}
+\printoption{pardiso\_iter\_coarse\_size}%
+{$1\leq\textrm{integer}$}%
+{$5000$}%
+{Maximum Size of Coarse Grid Matrix\\
+DPARM(3)}%
+{}
+
+\printoption{pardiso\_iter\_dropping\_factor}%
+{$0<\textrm{real}<1$}%
+{$0.5$}%
+{dropping value for incomplete factor\\
+DPARM(5)}%
+{}
+
+\printoption{pardiso\_iter\_dropping\_schur}%
+{$0<\textrm{real}<1$}%
+{$0.1$}%
+{dropping value for sparsify schur complement factor\\
+DPARM(6)}%
+{}
+
+\printoption{pardiso\_iter\_inverse\_norm\_factor}%
+{$1<\textrm{real}$}%
+{$5 \cdot 10^{  6}$}%
+{\\
+DPARM(8)}%
+{}
+
+\printoption{pardiso\_iter\_max\_levels}%
+{$1\leq\textrm{integer}$}%
+{$10$}%
+{Maximum Size of Grid Levels\\
+DPARM(4)}%
+{}
+
+\printoption{pardiso\_iter\_max\_row\_fill}%
+{$1\leq\textrm{integer}$}%
+{$10000000$}%
+{max fill for each row\\
+DPARM(7)}%
+{}
+
+\printoption{pardiso\_iter\_relative\_tol}%
+{$0<\textrm{real}<1$}%
+{$10^{- 6}$}%
+{Relative Residual Convergence\\
+DPARM(2)}%
+{}
+
+\printoption{pardiso\_iterative}%
+{\ttfamily no, yes}%
+{no}%
+{Switch on iterative solver in Pardiso library}%
+{}
+
+\printoption{pardiso\_matching\_strategy}%
+{\ttfamily complete, complete+2x2, constraints}%
+{complete+2x2}%
+{Matching strategy to be used by Pardiso\\
+This is IPAR(13) in Pardiso manual.  This option is only available if Ipopt has been compiled with Pardiso.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{complete}] Match complete (IPAR(13)=1)
+\item[\texttt{complete+2x2}] Match complete+2x2 (IPAR(13)=2)
+\item[\texttt{constraints}] Match constraints (IPAR(13)=3)
+\end{list}
+}
+
+\printoption{pardiso\_max\_droptol\_corrections}%
+{$1\leq\textrm{integer}$}%
+{$4$}%
+{Maximal number of decreases of drop tolerance during one solve.\\
+This is relevant only for iterative Pardiso options.}%
+{}
+
+\printoption{pardiso\_max\_iter}%
+{$1\leq\textrm{integer}$}%
+{$500$}%
+{Maximum number of Krylov-Subspace Iteration\\
+DPARM(1)}%
+{}
+
+\printoption{pardiso\_msglvl}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{Pardiso message level\\
+This determines the amount of analysis output from the Pardiso solver. This is MSGLVL in the Pardiso manual.}%
+{}
+
+\printoption{pardiso\_out\_of\_core\_power}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{Enables out-of-core variant of Pardiso\\
+Setting this option to a positive integer k makes Pardiso work in the out-of-core variant where the factor is split in 2\^k subdomains.  This is IPARM(50) in the Pardiso manual.  This option is only available if Ipopt has been compiled with Pardiso.}%
+{}
+
+\printoption{pardiso\_redo\_symbolic\_fact\_only\_if\_inertia\_wrong}%
+{\ttfamily no, yes}%
+{no}%
+{Toggle for handling case when elements were perturbed by Pardiso.\\
+This option is only available if Ipopt has been compiled with Pardiso.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{no}] Always redo symbolic factorization when elements were perturbed
+\item[\texttt{yes}] Only redo symbolic factorization when elements were perturbed if also the inertia was wrong
+\end{list}
+}
+
+\printoption{pardiso\_repeated\_perturbation\_means\_singular}%
+{\ttfamily no, yes}%
+{no}%
+{Interpretation of perturbed elements.\\
+This option is only available if Ipopt has been compiled with Pardiso.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{no}] Don't assume that matrix is singular if elements were perturbed after recent symbolic factorization
+\item[\texttt{yes}] Assume that matrix is singular if elements were perturbed after recent symbolic factorization
+\end{list}
+}
+
+\printoption{pardiso\_skip\_inertia\_check}%
+{\ttfamily no, yes}%
+{no}%
+{Always pretend inertia is correct.\\
+Setting this option to "yes" essentially disables inertia check. This option makes the algorithm non-robust and easily fail, but it might give some insight into the necessity of inertia control.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{no}] check inertia
+\item[\texttt{yes}] skip inertia check
+\end{list}
+}
 
 \printoptioncategory{Restoration Phase}
 \printoption{bound\_mult\_reset\_threshold}%
@@ -1661,11 +1693,25 @@ If the soft restoration phase is performed for more than so many iterations in a
 The restoration phase algorithm is performed, until a point is found that is acceptable to the filter and the infeasibility has been reduced by at least the fraction given by this option.}%
 {}
 
+\printoption{resto\_failure\_feasibility\_threshold}%
+{$0\leq\textrm{real}$}%
+{$0$}%
+{Threshold for primal infeasibility to declare failure of restoration phase.\\
+If the restoration phase is terminated because of the "acceptable" termination criteria and the primal infeasibility is smaller than this value, the restoration phase is declared to have failed.  The default value is 1e2*tol, where tol is the general termination tolerance.}%
+{}
+
 \printoption{resto\_penalty\_parameter}%
 {$0<\textrm{real}$}%
 {$1000$}%
 {Penalty parameter in the restoration phase objective function.\\
 This is the parameter rho in equation (31a) in the Ipopt implementation paper.}%
+{}
+
+\printoption{resto\_proximity\_weight}%
+{$0\leq\textrm{real}$}%
+{$1$}%
+{Weighting factor for the proximity term in restoration phase objective.\\
+This determines how the parameter zera in equation (29a) in the implementation paper is computed.  zeta here is resto\_proximity\_weight*sqrt(mu), where mu is the current barrier parameter.}%
 {}
 
 \printoption{soft\_resto\_pderror\_reduction\_factor}%

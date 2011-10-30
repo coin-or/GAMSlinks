@@ -369,7 +369,7 @@ int GamsCouenne::callSolver()
       minlp->nlp->clockStart = gevTimeDiffStart(gev);
 
       // initialize Couenne, e.g., reformulate problem
-      // pass also bb in case user enabled recoginition of SOS in problem
+      // pass also bb in case user enabled recognition of SOS in problem
       if( !couenne_setup->InitializeCouenne(NULL, problem, GetRawPtr(minlp), ci, &bb) )
       {
          gevLogStat(gev, "Reformulation finds model infeasible.\n");

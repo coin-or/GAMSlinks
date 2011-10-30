@@ -17,9 +17,9 @@ allowable\_fraction\_gap & $\mathbb{Q}$ & \GAMS \texttt{optcr} & $\checkmark$& $
 allowable\_gap & $\mathbb{Q}$ & \GAMS \texttt{optca} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 cutoff & $\mathbb{Q}$ & \GAMS \texttt{cutoff} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 cutoff\_decr & $\mathbb{Q}$ & $10^{- 5}$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
-enable\_dynamic\_nlp & string & no & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
+enable\_dynamic\_nlp & string & no & $\checkmark$& --& --& --& --& --& --\\
 integer\_tolerance & $\mathbb{Q}$ & $10^{- 6}$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
-iteration\_limit & $\mathbb{Z}$ & $\infty$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+iteration\_limit & $\mathbb{Z}$ & \GAMS \texttt{iterlim} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 nlp\_failure\_behavior & string & stop & $\checkmark$& --& --& --& --& --& --\\
 node\_comparison & string & best-bound & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
 node\_limit & $\mathbb{Z}$ & \GAMS \texttt{nodlim} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
@@ -27,6 +27,7 @@ num\_cut\_passes & $\mathbb{Z}$ & $1$ & --& --& $\checkmark$& $\checkmark$& $\ch
 num\_cut\_passes\_at\_root & $\mathbb{Z}$ & $20$ & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
 number\_before\_trust & $\mathbb{Z}$ & $8$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 number\_strong\_branch & $\mathbb{Z}$ & $20$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+read\_solution\_file & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 solution\_limit & $\mathbb{Z}$ & $\infty$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 time\_limit & $\mathbb{Q}$ & \GAMS \texttt{reslim} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 tree\_search\_strategy & string & probed-dive & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
@@ -88,6 +89,7 @@ num\_iterations\_suspect & $\mathbb{Z}$ & $-1$ & $\checkmark$& $\checkmark$& $\c
 num\_retry\_unsolved\_random\_point & $\mathbb{Z}$ & $0$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 random\_point\_perturbation\_interval & $\mathbb{Q}$ & $1$ & $\checkmark$& --& --& --& --& --& --\\
 random\_point\_type & string & Jon & $\checkmark$& --& --& --& --& --& --\\
+resolve\_on\_small\_infeasibility & $\mathbb{Q}$ & $0$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{NLP solves in hybrid algorithm (B-Hyb)}\\
 \hline
