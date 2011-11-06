@@ -250,7 +250,7 @@ int GamsScip::callSolver()
 
 SCIP_RETCODE GamsScip::setupSCIP()
 {
-   if( scipmsghandler == NULL )
+   if( scipmsghandler == NULL && gev != NULL )
    {
       /* print dialog messages to stdout if lo=1 or lo=3, but through gev if lo=0 or lo=2 */
       SCIP_CALL_ABORT( SCIPcreateMessagehdlr(&scipmsghandler, FALSE,

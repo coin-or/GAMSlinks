@@ -33,6 +33,7 @@
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
 #include "scip/pub_paramset.h"
+#include "GamsScip.hpp"
 #endif
 
 enum OPTTYPE
@@ -73,7 +74,7 @@ void makeValidLatexString(
          str.insert(i, "\\");
          i += 2;
       }
-      else if( (str[i] == '<' || str[i] == '>') && (numdollar % 2 == 0) )
+      else if( (str[i] == '<' || str[i] == '>' || str[i] == '|') && (numdollar % 2 == 0) )
       {
          str.insert(i, "$");
          str.insert(i+2, "$");
@@ -151,14 +152,13 @@ std::string makeValidLatexNumber(
 }
 
 static
-int LongintToInt(
-   long int              value
+int ScipLongintToInt(
+   SCIP_Longint              value
 )
 {
-   //TODO what is INT_MAX for long int ?
-   if( value > INT_MAX )
+   if( value >=  SCIP_LONGINT_MAX )
       return INT_MAX;
-   if( value < -INT_MAX )
+   if( value <= -SCIP_LONGINT_MAX )
       return -INT_MAX;
    //	if (value > INT_MAX) {
    //		std::cout << "Warning, chop long int value " << value << " to max integer = " << INT_MAX << std::endl;
@@ -904,26 +904,39 @@ void printCouenneOptions()
 #endif
 
 #if COIN_HAS_SCIP
-static
+bool ScipParamCompare(SCIP_PARAM* a, SCIP_PARAM* b)
+{
+   /* move advanced parameters to end */
+   if( SCIPparamIsAdvanced(a) == SCIPparamIsAdvanced(b) )
+   {
+#if 0
+      int nslasha = 0;
+      for( const char* c = SCIPparamGetName(a); *c ; ++c )
+         if( *c == '/' )
+            ++nslasha;
+      int nslashb = 0;
+      for( const char* c = SCIPparamGetName(b); *c ; ++c )
+         if( *c == '/' )
+            ++nslashb;
+
+      if( nslasha == nslashb )
+         return strcasecmp(SCIPparamGetName(a), SCIPparamGetName(b)) < 0;
+      return nslasha < nslashb;
+#else
+      return strcasecmp(SCIPparamGetName(a), SCIPparamGetName(b)) < 0;
+#endif
+   }
+   return SCIPparamIsAdvanced(b);
+}
+
 void printSCIPOptions()
 {
+   GamsScip* gamsscip;
    SCIP* scip;
 
-   // TODO use setupSCIP from GamsScip
-   SCIP_CALL_ABORT( SCIPcreate(&scip) );
-   SCIP_CALL_ABORT( SCIPincludeDefaultPlugins(scip) );
-   //SCIP_CALL_ABORT( SCIPincludeReaderGmo(scip) );
-
-   SCIP_CALL_ABORT( SCIPaddBoolParam(scip, "gams/mipstart",
-      "This option controls the use of advanced starting values for mixed integer programs. "
-      "A setting of TRUE indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.",
-      NULL, FALSE, TRUE,  NULL, NULL) );
-   SCIP_CALL_ABORT( SCIPaddBoolParam(scip, "gams/printstatistics",
-      "Turning on this option indicates that statistics like the number of generated cuts of each type or the calls of heuristics are printed after solving finished.",
-      NULL, FALSE, FALSE, NULL, NULL) );
-   SCIP_CALL_ABORT( SCIPaddBoolParam(scip, "gams/interactive",
-      "whether a SCIP shell should be opened instead of issuing a solve command (this option is not available in demo mode)",
-      NULL, FALSE, FALSE, NULL, NULL) );
+   gamsscip = new GamsScip();
+   gamsscip->setupSCIP();
+   scip = gamsscip->scip;
 
    static std::map<std::string, std::string> categname;
    categname[" gams"] = "GAMS interface specific options";
@@ -961,11 +974,24 @@ void printSCIPOptions()
    for( int i = 0; i < nparams; ++i )
    {
       param = params[i];
-      if( SCIPparamIsAdvanced(param) )
-         continue;
       const char* paramname = SCIPparamGetName(param);
 
       if( strcmp(paramname, "numerics/infinity") == 0 )
+         continue;
+
+      if( strcmp(paramname, "display/lpcond") == 0 )
+         continue;
+
+      if( strstr(paramname, "constraints/conjunction")   == paramname ||
+          strstr(paramname, "constraints/countsols")     == paramname ||
+          strstr(paramname, "constraints/cumulative")    == paramname ||
+          strstr(paramname, "constraints/disjunction")   == paramname ||
+          strstr(paramname, "constraints/linking")       == paramname ||
+          strstr(paramname, "constraints/or")            == paramname ||
+          strstr(paramname, "constraints/orbitope")      == paramname ||
+          strstr(paramname, "constraints/pseudoboolean") == paramname ||
+          strstr(paramname, "constraints/xor")           == paramname
+         )
          continue;
 
       const char* catend = strchr(paramname, '/');
@@ -995,6 +1021,8 @@ void printSCIPOptions()
          std::cerr << "Do not have name for SCIP option category " << it_categ->first << std::endl;
       printOptionCategoryStart(optfile, categname[it_categ->first]);
 
+      it_categ->second.sort(ScipParamCompare);
+      bool hadadvanced = false;
       for( std::list<SCIP_PARAM*>::iterator it_param(it_categ->second.begin()); it_param != it_categ->second.end(); ++it_param)
       {
          param = *it_param;
@@ -1021,9 +1049,9 @@ void printSCIPOptions()
             case SCIP_PARAMTYPE_LONGINT:
             {
                opttype = OPTTYPE_INTEGER;
-               minval.intval = LongintToInt(SCIPparamGetLongintMin(param));
-               maxval.intval = LongintToInt(SCIPparamGetLongintMax(param));
-               defaultval.intval = LongintToInt(SCIPparamGetLongintDefault(param));
+               minval.intval = ScipLongintToInt(SCIPparamGetLongintMin(param));
+               maxval.intval = ScipLongintToInt(SCIPparamGetLongintMax(param));
+               defaultval.intval = ScipLongintToInt(SCIPparamGetLongintDefault(param));
                break;
             }
 
@@ -1060,12 +1088,19 @@ void printSCIPOptions()
          else if( strcmp(SCIPparamGetName(param), "limits/absgap") == 0 )
             defaultval.realval = 0.0;
 
-         printOption(optfile, SCIPparamGetName(param), SCIPparamGetDesc(param), SCIPparamIsAdvanced(param) ? "This is an advanced option." : "",
+         if( !hadadvanced && SCIPparamIsAdvanced(param) )
+         {
+            printOptionCategoryStart(optfile, categname[it_categ->first] + " (advanced options)");
+            hadadvanced = true;
+         }
+         printOption(optfile, SCIPparamGetName(param), SCIPparamGetDesc(param), "",
             opttype, defaultval, minval, false, maxval, false, enumval, true);
       }
    }
 
    optfile.close();
+
+   delete gamsscip;
 }
 #endif
 

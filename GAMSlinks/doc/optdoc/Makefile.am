@@ -12,7 +12,7 @@ optdoc_SOURCES = optdoc.cpp
 
 optdoc_LDADD = ../../src/SolverInterfaces/libGamsCoin.la
 
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/../../src` $(GAMSSOLVERLIB_CFLAGS)
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/../../src` -I`$(CYGPATH_W) $(srcdir)/../../src/SolverInterfaces` $(GAMSSOLVERLIB_CFLAGS)
 
 ########################################################################
 #                         Maintainer Stuff                             #
