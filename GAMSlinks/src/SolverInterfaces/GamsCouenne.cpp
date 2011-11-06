@@ -111,12 +111,6 @@ int GamsCouenne::readyAPI(
    couenne_setup->setOptionsAndJournalist(roptions, options, jnlst);
    couenne_setup->registerOptions();
 
-   couenne_setup->roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
-   couenne_setup->roptions()->AddStringOption2("print_eval_error",
-      "whether to print information about function evaluation errors into the listing file",
-      "no",
-      "no", "", "yes", "");
-
    couenne_setup->roptions()->AddStringOption1("miptrace",
       "name of file for writing branch-and-bound progress information",
       "", "*", "");
@@ -128,6 +122,13 @@ int GamsCouenne::readyAPI(
    couenne_setup->roptions()->AddLowerBoundedNumberOption("miptracetimefreq",
       "frequency in seconds for writing branch-and-bound progress information",
       0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
+
+
+   couenne_setup->roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
+   couenne_setup->roptions()->AddStringOption2("print_eval_error",
+      "whether to print information about function evaluation errors into the listing file",
+      "no",
+      "no", "", "yes", "");
 
    return 0;
 }

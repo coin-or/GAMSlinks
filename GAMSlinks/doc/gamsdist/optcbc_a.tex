@@ -39,7 +39,7 @@ The parameter value is the name of the MPS file.
 \item[\label{special}\hypertarget{special}
 {\textbf{special (\slshape{string})}}]\hspace{1.0in}
 
-This parameter let you specify CBC options which are not supported by the GAMS/CoinCBC interface.
+This parameter let you specify CBC options which are not supported by the GAMS/CBC interface.
 
 The string value given to this parameter is split up into parts at each space and added to the array of parameters given to CBC (in front of the -solve command).
 Hence, you can use it like the command line parameters for the CBC standalone version.
@@ -450,6 +450,33 @@ If this option is not set then it CBC will try and work one out.
 E.g., if all objective coefficients are multiples of 0.01 and only integer variables have entries in objective then this can be set to 0.01.
 
 \textsl{(default = GAMS cheat)}
+
+\item[\label{solvefinal}\hypertarget{solvefinal}
+{\textbf{solvefinal (\slshape{integer})}}]\hspace{1.0in}
+
+whether the MIP with discrete variables fixed to solution values should be solved after CBC finished
+
+\textsl{(default = 1)}
+
+\item[\label{miptrace}\hypertarget{miptrace}
+{\textbf{miptrace (\slshape{string})}}]\hspace{1.0in}
+
+Name of file for writing branch-and-bound progress information during solve.
+
+
+\item[\label{miptracenodefreq}\hypertarget{miptracenodefreq}
+{\textbf{miptracenodefreq (\slshape{integer})}}]\hspace{1.0in}
+
+frequency in number of nodes for writing branch-and-bound progress information
+
+\textsl{(default = 100)}
+
+\item[\label{miptracetimefreq}\hypertarget{miptracetimefreq}
+{\textbf{miptracetimefreq (\slshape{real})}}]\hspace{1.0in}
+
+frequency in seconds for writing branch-and-bound progress information
+
+\textsl{(default = 5)}
 
 \item[\label{nodelim}\hypertarget{nodelim}
 {\textbf{nodelim (\slshape{integer})}}]\hspace{1.0in}

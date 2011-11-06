@@ -707,6 +707,7 @@ Turns the local tree search on.</td></tr>
 loglevel</a>
 <i> (integer)</i> CBC loglevel</h4><p>
 
+Amount of output to print by CBC.
 
 <br><i>(default = 1)</i>
 
@@ -739,12 +740,14 @@ Try to use the initial variable levels as a MIP starting solution.</td></tr>
 miptrace</a>
 <i> (string)</i> name of trace file for branch-and-bound information</h4><p>
 
+Name of file for writing branch-and-bound progress information during solve.
 
 
 <h4><a name="miptracenodefreq">
 miptracenodefreq</a>
 <i> (integer)</i> frequency in number of nodes for writing to mip trace file</h4><p>
 
+frequency in number of nodes for writing branch-and-bound progress information
 
 <br><i>(default = 100)</i>
 
@@ -752,6 +755,7 @@ miptracenodefreq</a>
 miptracetimefreq</a>
 <i> (real)</i> frequency in seconds for writing to mip trace file</h4><p>
 
+frequency in seconds for writing branch-and-bound progress information
 
 <br><i>(default = 5)</i>
 
@@ -1132,7 +1136,7 @@ solvefinal</a>
 special</a>
 <i> (string)</i> options passed unseen to CBC</h4><p>
 
-This parameter let you specify CBC options which are not supported by the GAMS/CoinCBC interface.<BR>
+This parameter let you specify CBC options which are not supported by the GAMS/CBC interface.<BR>
 The string value given to this parameter is split up into parts at each space and added to the array of parameters given to CBC (in front of the -solve command).
 Hence, you can use it like the command line parameters for the CBC standalone version.
 

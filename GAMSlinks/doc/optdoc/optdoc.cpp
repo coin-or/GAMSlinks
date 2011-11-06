@@ -521,6 +521,37 @@ void printBonminOptions()
    bonmin_setup.setOptionsAndJournalist(regoptions, options, journalist);
    bonmin_setup.registerOptions();
 
+   bonmin_setup.roptions()->SetRegisteringCategory("Output and log-level options", Bonmin::RegisteredOptions::BonminCategory);
+   bonmin_setup.roptions()->AddStringOption2("print_funceval_statistics",
+      "whether to print statistics on number of evaluations of GAMS functions/gradients/Hessian",
+      "no",
+      "no", "", "yes", "");
+
+   bonmin_setup.roptions()->AddStringOption1("miptrace",
+      "name of file for writing branch-and-bound progress information",
+      "", "*", "");
+
+   bonmin_setup.roptions()->AddLowerBoundedIntegerOption("miptracenodefreq",
+      "frequency in number of nodes for writing branch-and-bound progress information",
+      0, 100, "giving 0 disables writing of N-lines to trace file");
+
+   bonmin_setup.roptions()->AddLowerBoundedNumberOption("miptracetimefreq",
+      "frequency in seconds for writing branch-and-bound progress information",
+      0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
+
+   bonmin_setup.roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
+   bonmin_setup.roptions()->AddStringOption2("print_eval_error",
+      "whether to print information about function evaluation errors into the listing file",
+      "no",
+      "no", "", "yes", "");
+
+   bonmin_setup.roptions()->SetRegisteringCategory("NLP interface", Bonmin::RegisteredOptions::BonminCategory);
+   bonmin_setup.roptions()->AddStringOption2("solvefinal",
+      "whether to solve MINLP with discrete variables fixed to solution values after solve",
+      "yes",
+      "no", "", "yes", "",
+      "If enabled, then the dual values from the resolved NLP are made available in GAMS.");
+
    const Bonmin::RegisteredOptions::RegOptionsList& optionlist(regoptions->RegisteredOptionsList());
 
    // options sorted by category
@@ -793,6 +824,18 @@ void printCouenneOptions()
    options->SetRegisteredOptions(GetRawPtr(regoptions));
 
    Couenne::CouenneSetup::registerAllOptions(regoptions);
+
+   regoptions->AddStringOption1("miptrace",
+      "name of file for writing branch-and-bound progress information",
+      "", "*", "");
+
+   regoptions->AddLowerBoundedIntegerOption("miptracenodefreq",
+      "frequency in number of nodes for writing branch-and-bound progress information",
+      0, 100, "giving 0 disables writing of N-lines to trace file");
+
+   regoptions->AddLowerBoundedNumberOption("miptracetimefreq",
+      "frequency in seconds for writing branch-and-bound progress information",
+      0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
 
    const Bonmin::RegisteredOptions::RegOptionsList& optionlist(regoptions->RegisteredOptionsList());
 

@@ -446,6 +446,13 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 }
 
 \printoptioncategory{NLP interface}
+\printoption{solvefinal}%
+{\ttfamily no, yes}%
+{yes}%
+{whether to solve MINLP with discrete variables fixed to solution values after solve\\
+If enabled, then the dual values from the resolved NLP are made available in GAMS.}%
+{}
+
 \printoption{warm\_start}%
 {\ttfamily none, fake\_basis, optimum, interior\_point}%
 {none}%
@@ -690,6 +697,26 @@ Set the level of output of the linear programming sub-solver in B-Hyb or B-QG : 
 Set the level of output of the MILP subsolver in OA : 0 - none, 1 - minimal, 2 - normal low, 3 - normal high}%
 {}
 
+\printoption{miptrace}%
+{string}%
+{}%
+{name of file for writing branch-and-bound progress information}%
+{}
+
+\printoption{miptracenodefreq}%
+{$0\leq\textrm{integer}$}%
+{$100$}%
+{frequency in number of nodes for writing branch-and-bound progress information\\
+giving 0 disables writing of N-lines to trace file}%
+{}
+
+\printoption{miptracetimefreq}%
+{$0\leq\textrm{real}$}%
+{$5$}%
+{frequency in seconds for writing branch-and-bound progress information\\
+giving 0.0 disables writing of T-lines to trace file}%
+{}
+
 \printoption{nlp\_log\_at\_root}%
 {$0\leq\textrm{integer}\leq12$}%
 {$5$}%
@@ -721,6 +748,12 @@ Set the level of output of the OsiTMINLPInterface : 0 - none, 1 - normal, 2 - ve
 {$1$}%
 {specify OA iterations log level.\\
 Set the level of output of OA decomposition solver : 0 - none, 1 - normal, 2 - verbose}%
+{}
+
+\printoption{print\_funceval\_statistics}%
+{\ttfamily no, yes}%
+{no}%
+{whether to print statistics on number of evaluations of GAMS functions/gradients/Hessian}%
 {}
 
 \printoptioncategory{Strong branching setup}

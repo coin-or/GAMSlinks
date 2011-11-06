@@ -656,6 +656,26 @@ Solve as many nlp's at the nodes for each level of the tree. Nodes are randomly 
 A frequency of 0 (default) means these cuts are never generated. Any positive number n instructs Couenne to generate them at every n nodes of the B\&B tree. A negative number -n means that generation should be attempted at the root node, and if successful it can be repeated at every n nodes, otherwise it is stopped altogether.}%
 {}
 
+\printoption{miptrace}%
+{string}%
+{}%
+{name of file for writing branch-and-bound progress information}%
+{}
+
+\printoption{miptracenodefreq}%
+{$0\leq\textrm{integer}$}%
+{$100$}%
+{frequency in number of nodes for writing branch-and-bound progress information\\
+giving 0 disables writing of N-lines to trace file}%
+{}
+
+\printoption{miptracetimefreq}%
+{$0\leq\textrm{real}$}%
+{$5$}%
+{frequency in seconds for writing branch-and-bound progress information\\
+giving 0.0 disables writing of T-lines to trace file}%
+{}
+
 \printoption{mir\_cuts}%
 {$-100\leq\textrm{integer}$}%
 {$0$}%

@@ -79,6 +79,7 @@ pump\_for\_minlp & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\che
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{NLP interface}\\
 \hline
+solvefinal & string & yes & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 warm\_start & string & none & $\checkmark$& --& --& --& --& --& --\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{NLP solution robustness}\\
@@ -127,11 +128,15 @@ fp\_log\_frequency & $\mathbb{Q}$ & $100$ & --& --& $\checkmark$& $\checkmark$& 
 fp\_log\_level & $\mathbb{Z}$ & $1$ & --& --& $\checkmark$& $\checkmark$& --& --& --\\
 lp\_log\_level & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 milp\_log\_level & $\mathbb{Z}$ & $0$ & --& --& --& --& --& --& $\checkmark$\\
+miptrace & string &  & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+miptracenodefreq & $\mathbb{Z}$ & $100$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+miptracetimefreq & $\mathbb{Q}$ & $5$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 nlp\_log\_at\_root & $\mathbb{Z}$ & 5 & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
 nlp\_log\_level & $\mathbb{Z}$ & $1$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 oa\_cuts\_log\_level & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 oa\_log\_frequency & $\mathbb{Q}$ & $100$ & $\checkmark$& --& --& $\checkmark$& $\checkmark$& --& --\\
 oa\_log\_level & $\mathbb{Z}$ & $1$ & $\checkmark$& --& --& $\checkmark$& $\checkmark$& --& --\\
+print\_funceval\_statistics & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Strong branching setup}\\
 \hline

@@ -87,12 +87,6 @@ int GamsBonmin::readyAPI(
       "no",
       "no", "", "yes", "");
 
-   bonmin_setup->roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
-   bonmin_setup->roptions()->AddStringOption2("print_eval_error",
-      "whether to print information about function evaluation errors into the listing file",
-      "no",
-      "no", "", "yes", "");
-
    bonmin_setup->roptions()->AddStringOption1("miptrace",
       "name of file for writing branch-and-bound progress information",
       "", "*", "");
@@ -104,6 +98,12 @@ int GamsBonmin::readyAPI(
    bonmin_setup->roptions()->AddLowerBoundedNumberOption("miptracetimefreq",
       "frequency in seconds for writing branch-and-bound progress information",
       0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
+
+   bonmin_setup->roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
+   bonmin_setup->roptions()->AddStringOption2("print_eval_error",
+      "whether to print information about function evaluation errors into the listing file",
+      "no",
+      "no", "", "yes", "");
 
    bonmin_setup->roptions()->SetRegisteringCategory("NLP interface", Bonmin::RegisteredOptions::BonminCategory);
    bonmin_setup->roptions()->AddStringOption2("solvefinal",

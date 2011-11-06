@@ -32,7 +32,7 @@ Maximum time in seconds.
 
 
 special
-This parameter let you specify CBC options which are not supported by the GAMS/CoinCBC interface.<BR>
+This parameter let you specify CBC options which are not supported by the GAMS/CBC interface.<BR>
 The string value given to this parameter is split up into parts at each space and added to the array of parameters given to CBC (in front of the -solve command).
 Hence, you can use it like the command line parameters for the CBC standalone version.
 
@@ -869,6 +869,26 @@ Do not load variable and equation names.
 
 names.1
 Load variable and equation names.
+
+
+loglevel
+Amount of output to print by CBC.
+
+
+miptrace
+Name of file for writing branch-and-bound progress information during solve.
+
+
+miptracenodefreq
+frequency in number of nodes for writing branch-and-bound progress information
+
+
+miptracetimefreq
+frequency in seconds for writing branch-and-bound progress information
+
+
+solvefinal
+whether the MIP with discrete variables fixed to solution values should be solved after CBC finished
 
 
 userheurfreq
