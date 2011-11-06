@@ -10,12 +10,12 @@
 \section{Introduction}
 
 \SCIP (\textbf{S}olving \textbf{C}onstraint \textbf{I}nteger \textbf{P}rograms) is developed at the Konrad-Zuse-Zentrum f\"ur Informationstechnik Berlin (ZIB).
-The \SCIP main developer had been Tobias Achterberg, current developers are Timo Berthold, Gerald Gamrath, Stefan Heinz, Gregor Hendel, Thorsten Koch, Stefan Vigerske, Robert Waniek, Michael Winkler, and Kati Wolter.
+The \SCIP main developer had been Tobias Achterberg, current main developers are Timo Berthold, Gerald Gamrath, Stefan Heinz, Marc Pfetsch, Stefan Vigerske, and Kati Wolter.
 Since \SCIP is distributed under the ZIB Academic License, it is only available for users with a \textbf{\GAMS academic license}.
 
 \SCIP is a framework for Constraint Integer Programming oriented towards the needs of Mathematical Programming experts who want to have total control of the solution process and access detailed information down to the guts of the solver.
-\SCIP can also be used as a pure MIP solver or as a framework for branch-cut-and-price.
-Within \GAMS, the MIP and MIQCP solving facilities of \SCIP are available.
+\SCIP can also be used as a pure MIP or MINLP solver or as a framework for branch-cut-and-price.
+Within \GAMS, the MIP and MINLP solving facilities of \SCIP are available.
 
 For more detailed information, we refer to \cite{Achterberg2007,Ach09,AchBeKoWo08,Berthold2006,BertholdHeinzVigerske2009,Wolter2006} and the \SCIP web site \url{http://scip.zib.de}, especially the list of papers listed at \url{http://scip.zib.de/related.shtml}.
 
@@ -23,21 +23,17 @@ For more detailed information, we refer to \cite{Achterberg2007,Ach09,AchBeKoWo0
 
 \section{Model requirements}
 
-\SCIP supports continuous, binary, integer, semi-continuous, and semi-integer variables, special ordered sets, and branching priorities.
-Indicator constraints are not supported by the interface yet.
+\SCIP supports continuous, binary, integer, semi-continuous, semi-integer, and indicator variables, special ordered sets, and branching priorities for discrete variables.
 
 \section{Usage}
 
 The following statement can be used inside your \GAMS program to specify using \SCIP
 \begin{verbatim}
-  Option MIP = SCIP;     { or QCP or RMIQCP or MIQCP }
+  Option MIP = SCIP;     { or QCP or NLP or MIQCP or MINLP or ... }
 \end{verbatim}
 
 The above statement should appear before the Solve statement.
 If \SCIP was specified as the default solver during \GAMS installation, the above statement is not necessary.
-
-If a continuous linear program (LP or RMIP) is given to \GAMS/\SCIP, the linear programming solver is called directly.
-In this case, it is not possible to provide an option file.
 
 % \GAMS/\SCIP supports the \GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
 % The \GAMS BCH facility automates all major steps necessary to define, execute, and control the use of user defined routines within the framework of general purpose MIP codes.
@@ -53,7 +49,7 @@ In this case, it is not possible to provide an option file.
 \GAMS/\SCIP currently does not support the \GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
 If you need to use \GAMS/\SCIP with BCH, please consider to use a \GAMS system of version $\leq 23.3$, available at \url{http://www.gams.com/download/download_old.htm}.
 
-\subsubsection{Specification of \SCIP Options}
+\subsection{Specification of \SCIP Options}
 
 \GAMS/\SCIP currently supports the \GAMS parameters \texttt{reslim}, \texttt{iterlim}, \texttt{nodlim}, \texttt{optcr}, and \texttt{optca}.
 Further, under Linux and Windows, the option \texttt{threads} can be used to control the number of threads used in the linear algebra routines of \textsc{Ipopt}.
@@ -74,16 +70,119 @@ A small example for a scip.opt file is:
 It causes \GAMS/\SCIP to disable probing during presolve and to turn off all cut generators.
 % and to use a user defined cut generator.
 
+\subsection{Specification of Indicators}
+
+Indicators are a modeling tool to specify that certain equations in a model must only be satisfied if certain binary variables take a specified value.
+Indicators are not supported by the \GAMS language, but can be passed to \SCIP via a separate file.
+The name of that file is specified via the option \texttt{gams/indicatorfile} in a \SCIP option file.
+
+The indicator specification file declares for some equations, for which value of which binary variables the equation is ``swichted on''. The syntax is
+\begin{verbatim}
+  indic equation$variable onval
+\end{verbatim}
+where equation is the name of the equation, variable is the name of the binary variable, and onval is either 0 or 1.
+The line specifies that \texttt{equation} has to hold whenever variable \texttt{variable} takes value \texttt{onval}.
+
+For example, assume a \GAMS model contains a set of equations of the form
+\begin{verbatim}
+  equ1(i,j,k)$(ord(i)<ord(j)).. lhs =l= rhs;
+\end{verbatim}
+To specify that they only have to be satisfied if a binary variable \begin{verbatim}bin1(i,k)\end{verbatim} takes the value 1, the indicator specification file should contain the line
+\begin{verbatim}
+  indic equ1(i,j,k)$bin1(i,k) 1
+\end{verbatim}
+
+More documentation can be found at \url{http://www.gams.com/solvers/cpxindic.htm}.
+In difference to the \GAMS/CPLEX interface, the indicator specifications need to be in a separate file for \SCIP.
+
+Currently, indicators can only be used for linear equations.
+
+\section{Special Features}
+
+\subsection{\SCIP interactive shell}
+
+The interactive shell in \SCIP is a powerful tool that allows the user to display various information (e.g., branching statistics, presolved model), load emphasis settings, interrupt a solve to change parameters or trigger a restart, write the model in various file formats, start {\SCIP}s solution counter, and many more things.
+
+When setting the option \texttt{gams/interactive} to \texttt{TRUE}, the \GAMS/\SCIP interface opens the interactive shell of \SCIP after having load the \GAMS problem and parameters.
+The command \texttt{help} prints a list of available commands.
+
+A tutorial on using the \SCIP shell is available at \url{http://scip.zib.de/doc/html/SHELL.html}.
+
+\subsection{Emphasis Settings}
+
+\SCIP includes various emphasis settings, which are predefined values for a set of \SCIP parameters.
+Such predefined settings are available for setting the effort that \SCIP should spend for, e.g., presolving, separation, or heuristics.
+
+The emphasis settings are not available as single parameters, but can be set via {\SCIP}s interactive shell.
+E.g., writing \texttt{set heuristics emphasis} in the shell displays the available emphasis settings for heuristics (aggressive, fast, off) and expects the user to input which setting to use.
+Further, general emphasis settings are available in the \texttt{set emphasis} menu, some of them giving predefined settings similar to the CPLEX option \texttt{mipemphasis}.
+
+Further, settings file that specify all available emphasis settings are available at \url{http://www.gams.com/~svigerske/scip2.1}.
+
+\subsection{Solution Pool}
+
+When \SCIP solves a problem, it may find several solutions, whereof only the best one is available to the \GAMS user via the variable level values in the \GAMS model.
+If the option \texttt{gams/dumpsolutions} is specified, then all alternative solutions found by \SCIP are writting into GDX files and an index file with the name given by the \texttt{dumpsolutions} option is written.
+
+The \GAMS testlib model \href{http://www.gams.com/testlib/libhtml/dumpsol.htm}{\texttt{dumpsol}} shows an example use for this option via GUROBI. It can easily be adapted to be used with \SCIP.
+
+\subsection{Branch-and-Bound tracing}
+
+The option \texttt{gams/miptrace/file} can be used to specify the name of a file where information about the progress of the tree search in \SCIP are stored. The file is created and updated during the solution process, so it may also be used to monitor the progress of \SCIP while it still solves the model.
+
+New entries are written periodically, depending on how many nodes have been processed or how much time has been elapsed since the last entry was written. Each entry contains information on the current primal and dual bound.
+
+% A tree search tracing file may look as follows
+% \begin{verbatim}
+% * miptrace file miptrace.trc: ID = SCIP 2.1.0
+% * fields are lineNum, seriesID, node, seconds, bestFound, bestBound
+% 1, S, 1, 0, -9, 7
+% 2, N, 100, 0.79908, -2, 6.638331819
+% 3, N, 200, 0.939009, 1, 6.638331819
+% 4, N, 300, 1.16929, 1, 6
+% 5, N, 400, 1.35119, 1, 6
+% ...
+% 30, E, 2818, 4.67619, 1, 1
+% * miptrace file closed
+% \end{verbatim}
+% The first entry is just a line number. The second entry indicates whether the line was written because the branch-and-bound 'S'tarted, a number of 'N'odes have been processed, a number of seconds have
+
+\subsection{Notes on solving MINLPs with SCIP}
+
+\SCIP includes capabilities to handle nonlinear equations specified that are specified via algebraic expressions.
+Thus, external functions are not supported. Also not all \GAMS operands are supported yet, including trigonometric functions ($\sin$, $\cos$, $\ldots$).
+
+Note, that the support of MINLPs in \SCIP is still a very new feature and thus in a \textbf{BETA} stage.
+Especially for badly formulated models, \SCIP may produce no or wrong solutions.
+
+Nonconvex MINLPs are solved by \SCIP via a spatial branch-and-bound algorithm using convex relaxations.
+The tightness of a convex relaxation depends heavily on the variable bounds, thus tight bounds for the nonlinear variables are cruicial for \SCIP.
+
+\subsubsection{Special options for convex MINLPs}
+
+Convex MINLPs are much easier to solve for \SCIP, provided it recognizes the convexity of the model. So far, only a simple convexity check is implemented in \SCIP, which may not give a conclusive answer in all cases.
+However, the option \texttt{constraints/nonlinear/assumeconvex = TRUE} can be used to tell \SCIP that it should assume all nonlinear constraints to be of convex type. This may help to improve solving times for convex MINLPs considerably.
+
+Another useful feature especially for convex MINLPs is to enable the generation of cuts in the solution of the NLP relaxation in the root node and to consider using these cuts during the whole solution process. This is achieved by the parameters
+\begin{verbatim}
+constraints/quadratic/sepanlpmincont = 0
+constraints/soc/sepanlpmincont = 0
+constraints/nonlinear/sepanlpmincont = 0
+constraints/abspower/sepanlpmincont = 0
+separating/poolfreq = 1
+\end{verbatim}
+
+
 \section{Detailed Options Description}
 
 \SCIP supports a large set of options.
-Sample option files can be obtained from \\ \url{http://www.gams.com/~svigerske/scip2.0}.
+Sample option files can be obtained from \\ \url{http://www.gams.com/~svigerske/scip2.1}.
 
 % Further, there is a set of options that are specific to the \GAMS/\SCIP interface.
 % , most of them for control of the \GAMS BCH facility.
 
-In the following we give a detailed list of some \SCIP options.
-A list of all SCIP options can be obtained from \\ \url{http://scip.zib.de/doc/html/PARAMETERS.html}.
+In the following we give a detailed list of most \SCIP options.
+% A list of all SCIP options can be obtained from \\ \url{http://scip.zib.de/doc/html/PARAMETERS.html}.
 
 \input{optscip_a}
 
