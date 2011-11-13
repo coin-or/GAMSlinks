@@ -398,6 +398,8 @@ int GamsBonmin::callSolver()
          try
          {
             bonmin_setup->options()->SetStringValue("print_user_options", "no", true, true);
+            // let Ipopt handle fixed variables as constraints, so we get dual values for it, which seems to be expected by GAMS
+            bonmin_setup->options()->SetStringValue("fixed_variable_treatment", "make_constraint", true, true);
             osi_tminlp.initialSolve();
             error_in_fixedsolve = !osi_tminlp.isProvenOptimal();
          }
@@ -419,9 +421,9 @@ int GamsBonmin::callSolver()
             int n = gmoN(gmo);
             int m = gmoM(gmo);
 
-            const double* lambda = osi_tminlp.getRowPrice();
-            const double* z_L    = lambda+m;
+            const double* z_L    = osi_tminlp.getRowPrice();
             const double* z_U    = z_L+n;
+            const double* lambda = z_U+n;
 
             double* colMarg    = new double[n];
             for( Index i = 0; i < n; ++i )
