@@ -214,6 +214,8 @@ GAMSlinks/src/SolverInterfaces/optmyos.html -text
 GAMSlinks/src/SolverInterfaces/optmyos.txt -text
 GAMSlinks/src/SolverInterfaces/scip/event_bbtrace.c -text
 GAMSlinks/src/SolverInterfaces/scip/event_bbtrace.h -text
+GAMSlinks/src/SolverInterfaces/scip/prop_defaultbounds.c -text
+GAMSlinks/src/SolverInterfaces/scip/prop_defaultbounds.h -text
 GAMSlinks/src/SolverInterfaces/scip/reader_gmo.c -text
 GAMSlinks/src/SolverInterfaces/scip/reader_gmo.h -text
 GAMSlinks/src/config.h.in -text

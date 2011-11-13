@@ -24,6 +24,7 @@
 #include "scip/scipdefplugins.h"
 #include "reader_gmo.h"
 #include "event_bbtrace.h"
+#include "prop_defaultbounds.h"
 
 static
 SCIP_DECL_MESSAGEERROR(GamsScipPrintLogStat)
@@ -268,6 +269,7 @@ SCIP_RETCODE GamsScip::setupSCIP()
       SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
       SCIP_CALL( SCIPincludeReaderGmo(scip) );
       SCIP_CALL( SCIPincludeEventHdlrBBtrace(scip) );
+      /* SCIP_CALL( SCIPincludePropDefaultBounds(scip) ); */
 
       /* SCIP_CALL( SCIPaddBoolParam(scip, "gams/solvefinal",
        * "whether the problem should be solved with fixed discrete variables to get dual values",
