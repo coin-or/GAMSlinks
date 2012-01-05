@@ -87,7 +87,11 @@ For example, assume a \GAMS model contains a set of equations of the form
 \begin{verbatim}
   equ1(i,j,k)$(ord(i)<ord(j)).. lhs =l= rhs;
 \end{verbatim}
-To specify that they only have to be satisfied if a binary variable \begin{verbatim}bin1(i,k)\end{verbatim} takes the value 1, the indicator specification file should contain the line
+To specify that they only have to be satisfied if a binary variable
+\begin{verbatim}
+bin1(i,k)
+\end{verbatim}
+takes the value 1, the indicator specification file should contain the line
 \begin{verbatim}
   indic equ1(i,j,k)$bin1(i,k) 1
 \end{verbatim}
