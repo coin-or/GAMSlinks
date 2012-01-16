@@ -2546,6 +2546,11 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
       SCIP_CALL( SCIPsetIntParam(scip, "display/nfrac/active", 2) );
    }
 
+#if SCIP_VERSION > 210
+   /* don't print reason why start solution is infeasible, per default */
+   SCIP_CALL( SCIPsetBoolParam(scip, "misc/printreason", FALSE) );
+#endif
+
    if( gmoOptFile(gmo) > 0 )
    {
       char optfilename[1024];
