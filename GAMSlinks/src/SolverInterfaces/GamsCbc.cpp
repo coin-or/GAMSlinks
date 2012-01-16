@@ -1049,7 +1049,10 @@ bool GamsCbc::writeSolution(
       {
          write_solution = true;
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-         if( optca > 0.0 || optcr > 0.0 )
+         if( (optca > 0.0 || optcr > 0.0) &&
+            (fabs(model->getBestPossibleObjValue()) >= 1e50 ||
+             fabs(model->getBestPossibleObjValue() - model->getObjValue()) > 1e-9 * CoinMax(1.0, fabs(model->getObjValue())))
+         )
          {
             gmoModelStatSet(gmo, gmoModelStat_Integer);
             gevLogStat(gev, "Solved to optimality (within gap tolerances optca and optcr).");
