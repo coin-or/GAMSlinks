@@ -212,3 +212,36 @@ bool GamsSolver::registerGamsCplexLicense(
 
    return true;
 }
+
+bool GamsSolver::checkIpoptLicense(
+   struct gmoRec*     gmo                 /**< GAMS modeling object */
+)
+{
+   assert(gmo != NULL);
+#if defined(GAMS_BUILD)
+   gevRec* gev = (gevRec*)gmoEnvironment(gmo);
+
+#define GEVPTR gev
+   /* bad bad bad */
+#ifdef SUB_FR
+#undef SUB_FR
+#endif
+#define SUB_IP
+#include "cmagic2.h"
+   if( licenseCheck(gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo)) )
+   {
+      return false;
+   }
+   else
+   {
+      if( licenseCheckSubSys(1, const_cast<char*>("IP")) )
+         return false;
+      else
+         return true;
+   }
+#undef SUB_IP
+#undef GEVPTR
+#endif
+
+   return true;
+}

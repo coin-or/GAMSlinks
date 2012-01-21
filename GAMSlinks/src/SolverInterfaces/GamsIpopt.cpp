@@ -21,6 +21,7 @@
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
 #include "gmspal.h"  /* for audit line */
+extern "C" void HSLGAMSInit();
 #endif
 
 #include "GamsCompatibility.h"
@@ -51,9 +52,17 @@ int GamsIpopt::readyAPI(
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+
+   ipoptLicensed = checkIpoptLicense(gmo) && (2651979 != gevGetIntOpt(gev,gevInteger1));
+   if( ipoptLicensed )
+     HSLGAMSInit();
 #endif
 
-   gevLogStatPChar(gev, "\nCOIN-OR Interior Point Optimizer (Ipopt Library "IPOPT_VERSION")\nwritten by A. Waechter\n");
+   gevLogStatPChar(gev, "\nCOIN-OR Interior Point Optimizer (Ipopt Library "IPOPT_VERSION")\n");
+   if( ipoptLicensed )
+     gevLogStatPChar(gev, "written by A. Waechter, commercially supported by GAMS Development Corp.\n");
+   else
+     gevLogStatPChar(gev, "written by A. Waechter\n");
 
    ipopt = new IpoptApplication(false);
 
@@ -87,6 +96,9 @@ int GamsIpopt::callSolver()
    ipopt->Options()->SetIntegerValue("max_iter", gevGetIntOpt(gev, gevIterLim), true, true);
    ipopt->Options()->SetNumericValue("max_cpu_time", gevGetDblOpt(gev, gevResLim), true, true);
    ipopt->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
+   if( ipoptLicensed )
+     ipopt->Options()->SetStringValue("linear_solver", "ma27", true, true);
+
    // if we have linear rows and a quadratic objective, then the hessian of the Lag.func. is constant, and Ipopt can make use of this
    if( gmoNLM(gmo) == 0 && (gmoModelType(gmo) == gmoProc_qcp || gmoModelType(gmo) == gmoProc_rmiqcp) )
       ipopt->Options()->SetStringValue("hessian_constant", "yes", true, true);

@@ -54,6 +54,13 @@ public:
       struct gmoRec*     gmo                 /**< GAMS modeling object */
    );
 
+   /** checks for GAMS/Ipopt commercial license
+    * @return True if Ipopt commercial license was found, false otherwise (even for demo models).
+    */
+   bool checkIpoptLicense(
+      struct gmoRec*     gmo                 /**< GAMS modeling object */
+   );
+
    /** initialization of solver interface and solver
     * The method should do initializes necessary for solving a given model.
     * In case of an error, the method should return with a nonzero return code.

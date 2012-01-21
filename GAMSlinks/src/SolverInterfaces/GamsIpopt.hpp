@@ -19,12 +19,14 @@ private:
    struct gmoRec*         gmo;                /**< GAMS modeling object */
    struct gevRec*         gev;                /**< GAMS environment */
 
+   bool ipoptLicensed;
    Ipopt::SmartPtr<Ipopt::IpoptApplication> ipopt;
 
 public:
    GamsIpopt()
    : gmo(NULL),
-     gev(NULL)
+     gev(NULL),
+     ipoptLicensed(false)
    { }
 
    int readyAPI(

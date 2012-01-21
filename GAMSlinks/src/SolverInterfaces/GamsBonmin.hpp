@@ -26,6 +26,7 @@ private:
 
    Bonmin::BonminSetup*  bonmin_setup;       /**< Bonmin solver application */
 	GamsMessageHandler*   msghandler;         /**< COIN-OR message handler for GAMS */
+   bool                  ipoptLicensed;      /**< whether a commercial Ipopt license is available */
 
 	bool isNLP();
 	bool isMIP();
@@ -35,7 +36,8 @@ public:
 	: gmo(NULL),
 	  gev(NULL),
 	  bonmin_setup(NULL),
-	  msghandler(NULL)
+	  msghandler(NULL),
+	  ipoptLicensed(false)
 	{ }
 
 	~GamsBonmin();

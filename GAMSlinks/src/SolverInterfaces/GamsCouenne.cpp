@@ -29,6 +29,7 @@
 #include "gclgms.h"
 #ifdef GAMS_BUILD
 #include "gmspal.h"  /* for audit line */
+extern "C" void HSLGAMSInit();
 #endif
 
 #include "GamsCompatibility.h"
@@ -92,6 +93,10 @@ int GamsCouenne::readyAPI(
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+
+   ipoptLicensed = checkIpoptLicense(gmo) && (2651979 != gevGetIntOpt(gev, gevInteger1));
+   if( ipoptLicensed )
+     HSLGAMSInit();
 #endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Couenne (Couenne Library "COUENNE_VERSION")\nwritten by P. Belotti\n\n");
@@ -195,6 +200,8 @@ int GamsCouenne::callSolver()
    if( gevGetIntOpt(gev, gevIterLim) < ITERLIM_INFINITY )
       couenne_setup->options()->SetIntegerValue("bonmin.iteration_limit", gevGetIntOpt(gev, gevIterLim), true, true);
    couenne_setup->options()->SetIntegerValue("bonmin.problem_print_level", J_STRONGWARNING, true, true); /* otherwise Couenne prints the problem to stdout */
+   if( ipoptLicensed )
+     couenne_setup->options()->SetStringValue("linear_solver", "ma27", true, true);
 
    // workaround for bug in couenne reformulation: if there are tiny constants, delete_redundant might setup a nonstandard reformulation (e.g., using x*x instead of x^2)
    // thus, we change the default of delete_redundant to off in this case
@@ -649,7 +656,7 @@ CouenneProblem* GamsCouenne::setupProblem()
       gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
 
       expression** nl = new expression*[1];
-      if( gevGetIntOpt(gev, gevInteger1) & 0x4 )
+      if( (gevGetIntOpt(gev, gevInteger1) & 0x4) && (2651979 != gevGetIntOpt(gev, gevInteger1)) )
          std::clog << "parse instructions for objective" << std::endl;
       nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
       if( nl[0] == NULL )
@@ -726,7 +733,7 @@ CouenneProblem* GamsCouenne::setupProblem()
 
          gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields);
          expression** nl = new expression*[1];
-         if( gevGetIntOpt(gev, gevInteger1) & 0x4 )
+         if( (gevGetIntOpt(gev, gevInteger1)) & 0x4 && (2651979 != gevGetIntOpt(gev, gevInteger1)) )
             std::clog << "parse instructions for constraint " << i << std::endl;
          nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
          if( nl[0] == NULL )
@@ -755,7 +762,7 @@ CouenneProblem* GamsCouenne::setupProblem()
       }
    }
 
-   if( gevGetIntOpt(gev, gevInteger1) & 0x2 )
+   if( (gevGetIntOpt(gev, gevInteger1) & 0x2) && (2651979 != gevGetIntOpt(gev, gevInteger1)) )
       prob->print();
    prob->initOptions(couenne_setup->options());
 
@@ -795,7 +802,7 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
    double*            constants           /**< GAMS constants pool */
 )
 {
-   bool debugoutput = gevGetIntOpt(gev, gevInteger1) & 0x4;
+   bool debugoutput = (gevGetIntOpt(gev, gevInteger1) & 0x4) && (2651979 != gevGetIntOpt(gev, gevInteger1));
 #define debugout if( debugoutput ) std::clog
 
    std::list<expression*> stack;

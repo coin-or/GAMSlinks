@@ -26,6 +26,7 @@
 #include "gclgms.h"
 #ifdef GAMS_BUILD
 #include "gmspal.h"  /* for audit line */
+extern "C" void HSLGAMSInit();
 #endif
 
 #include "GamsCompatibility.h"
@@ -60,6 +61,10 @@ int GamsBonmin::readyAPI(
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+
+   ipoptLicensed = checkIpoptLicense(gmo) && (2651979 != gevGetIntOpt(gev,gevInteger1));
+   if( ipoptLicensed )
+     HSLGAMSInit();
 #endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Bonmin (Bonmin Library "BONMIN_VERSION")\nwritten by P. Bonami\n");
@@ -178,6 +183,9 @@ int GamsBonmin::callSolver()
 
    if( gmoNLM(gmo) == 0 && (gmoModelType(gmo) == gmoProc_qcp || gmoModelType(gmo) == gmoProc_rmiqcp || gmoModelType(gmo) == gmoProc_miqcp) )
       bonmin_setup->options()->SetStringValue("hessian_constant", "yes", true, true);
+
+   if( ipoptLicensed )
+      bonmin_setup->options()->SetStringValue("linear_solver", "ma27", true, true);
 
    // process options file
    try
