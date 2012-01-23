@@ -1666,7 +1666,7 @@ SCIP_RETCODE createProblem(
    SCIPfreeBufferArrayNull(scip, &indicrows);
    SCIPfreeBufferArrayNull(scip, &indiccols);
    SCIPfreeBufferArrayNull(scip, &indiconvals);
-
+   
    /* set objective limit, if enabled */
    if( gevGetIntOpt(gev, gevUseCutOff) )
    {
@@ -1732,6 +1732,8 @@ SCIP_RETCODE resolveNLP(
    SCIP_HEUR* heursubnlp;
    int orignlpverblevel;
    SCIP_Real origfeastol;
+   SCIP_Real mainsoltime;
+   SCIP_CLOCK* resolveclock;
 
    assert(scip != NULL);
 
@@ -1785,7 +1787,12 @@ SCIP_RETCODE resolveNLP(
       SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objconst, 1.0) );
    }
 
+   SCIP_CALL( SCIPcreateClock(scip, &resolveclock) );
+   SCIP_CALL( SCIPstartClock(scip, resolveclock) );
+
    SCIP_CALL( SCIPresolveSolHeurSubNlp(scip, heursubnlp, sol, &success, 100, 10.0) );
+
+   SCIP_CALL( SCIPstopClock(scip, resolveclock) );
 
    SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/nlpverblevel", orignlpverblevel) );
    SCIP_CALL( SCIPsetRealParam(scip, "numerics/feastol", origfeastol) );
@@ -1821,6 +1828,12 @@ SCIP_RETCODE resolveNLP(
 
    SCIP_CALL( SCIPfreeSol(scip, &sol) );
    SCIPfreeBufferArray(scip, &solvals);
+
+   /* add time for NLP resolve to reported solving time */
+   mainsoltime = gmoGetHeadnTail(gmo, gmoHresused);
+   gmoSetHeadnTail(gmo, gmoHresused, mainsoltime + SCIPgetClockTime(scip, resolveclock));
+
+   SCIP_CALL( SCIPfreeClock(scip, &resolveclock) );
 
    return SCIP_OKAY;
 }
@@ -1898,6 +1911,7 @@ SCIP_RETCODE writeGmoSolution(
    if( SCIPgetStage(scip) == SCIP_STAGE_SOLVING || SCIPgetStage(scip) == SCIP_STAGE_SOLVED )
       gmoSetHeadnTail(gmo, gmoTmipbest, SCIPgetDualbound(scip));
    gmoSetHeadnTail(gmo, gmoTmipnod,  (int)SCIPgetNNodes(scip));
+   gmoSetHeadnTail(gmo, gmoHresused, SCIPgetSolvingTime(scip));
 
    /* dump all solutions, if more than one found and parameter is set */
    if( nrsol > 1)
@@ -2016,8 +2030,6 @@ SCIP_RETCODE writeGmoSolution(
          }
       }
    }
-
-   gmoSetHeadnTail(gmo, gmoHresused, SCIPgetSolvingTime(scip));
 
    return SCIP_OKAY;
 }
@@ -2153,7 +2165,7 @@ SCIP_DECL_READERWRITE(readerWriteGmo)
 #endif
 
 /*
- * Reading solution from GMO and pass to SCIP
+ * Constructs SCIP problem from the one in GMO.
  */
 
 #define DIALOG_READGAMS_NAME                 "readgams"
@@ -2538,6 +2550,7 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
    /* enable column on number of branching on nonlinear variables, if any */
    if( gmoNLNZ(gmo) > 0 || (gmoObjStyle(gmo) == gmoObjType_Fun && gmoObjNLNZ(gmo) > 0) )
    {
+      /* enable column on number of branching on continuous variables */
       SCIP_CALL( SCIPsetIntParam(scip, "display/nexternbranchcands/active", 2) );
    }
    /* make sure column on number of branching on fractional variables is shown, if any */
