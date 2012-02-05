@@ -97,7 +97,10 @@ int GamsIpopt::callSolver()
    ipopt->Options()->SetNumericValue("max_cpu_time", gevGetDblOpt(gev, gevResLim), true, true);
    ipopt->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
    if( ipoptLicensed )
-     ipopt->Options()->SetStringValue("linear_solver", "ma27", true, true);
+   {
+      ipopt->Options()->SetStringValue("linear_solver", "ma27", true, true);
+      ipopt->Options()->SetStringValue("linear_system_scaling", "mc19", true, true);
+   }
 
    // if we have linear rows and a quadratic objective, then the hessian of the Lag.func. is constant, and Ipopt can make use of this
    if( gmoNLM(gmo) == 0 && (gmoModelType(gmo) == gmoProc_qcp || gmoModelType(gmo) == gmoProc_rmiqcp) )

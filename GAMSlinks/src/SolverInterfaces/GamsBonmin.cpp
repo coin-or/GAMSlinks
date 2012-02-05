@@ -185,7 +185,10 @@ int GamsBonmin::callSolver()
       bonmin_setup->options()->SetStringValue("hessian_constant", "yes", true, true);
 
    if( ipoptLicensed )
+   {
       bonmin_setup->options()->SetStringValue("linear_solver", "ma27", true, true);
+      bonmin_setup->options()->SetStringValue("linear_system_scaling", "mc19", true, true);
+   }
 
    // process options file
    try
