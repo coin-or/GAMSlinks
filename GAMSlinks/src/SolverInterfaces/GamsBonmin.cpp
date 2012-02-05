@@ -311,6 +311,9 @@ int GamsBonmin::callSolver()
    if( msghandler == NULL )
       msghandler = new GamsMessageHandler(gev);
 
+   if( minlp->isMin == -1 )
+      gevLog(gev, "Note: Maximization problem reformulated as minimization problem for Bonmin, objective values are negated in output.");
+
    try
    {
       // initialize Bonmin for current MINLP and options
@@ -355,7 +358,7 @@ int GamsBonmin::callSolver()
       if( bb.bestSolution() != NULL )
       {
          char buf[100];
-         snprintf(buf, 100, "\nBonmin finished. Found feasible solution. Objective function value = %g.", bb.bestObj());
+         snprintf(buf, 100, "\nBonmin finished. Found feasible solution. Objective function value = %g.", minlp->isMin * bb.bestObj());
          gevLogStat(gev, buf);
 
          double* negLambda = new double[gmoM(gmo)];
