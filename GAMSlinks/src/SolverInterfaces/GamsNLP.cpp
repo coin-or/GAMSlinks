@@ -672,63 +672,57 @@ void GamsNLP::finalize_solution(
          write_solution = true;
          break;
 
+      case USER_REQUESTED_STOP:
       case STOP_AT_TINY_STEP:
       case RESTORATION_FAILURE:
-         if( cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol )
-         {
-            gevLog(gev, "Having feasible solution.");
-            gmoModelStatSet(gmo, gmoModelStat_NonOptimalIntermed);
-         }
-         else
-         {
-            gevLog(gev, "Current point is not feasible.");
-            gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
-         }
-         gmoSolveStatSet(gmo, gmoSolveStat_Solver); // terminated by solver (normal completion not allowed by GAMS philosophy here: its not normal when it stops with an intermediate point)
-         write_solution = true;
-         break;
-
       case MAXITER_EXCEEDED:
-         if( cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol )
-         {
-            gevLog(gev, "Having feasible solution.");
-            gmoModelStatSet(gmo, gmoModelStat_NonOptimalIntermed);
-         }
-         else
-         {
-            gevLog(gev, "Current point is not feasible.");
-            gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
-         }
-         gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
-         write_solution = true;
-         break;
-
       case CPUTIME_EXCEEDED:
-         if( cq->curr_nlp_constraint_violation(NORM_MAX) < scaled_conviol_tol && cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < unscaled_conviol_tol )
+         /* decide on solver status */
+         switch( status )
+         {
+            case USER_REQUESTED_STOP:
+               if( domviollimit > 0 && domviolations >= domviollimit )
+               {
+                  gevLogStat(gev, "Domain violation limit exceeded!");
+                  gmoSolveStatSet(gmo, gmoSolveStat_EvalError);
+               }
+               else
+               {
+                  gmoSolveStatSet(gmo, gmoSolveStat_User);
+               }
+               break;
+            case STOP_AT_TINY_STEP:
+            case RESTORATION_FAILURE:
+               gmoSolveStatSet(gmo, gmoSolveStat_Solver); // terminated by solver (normal completion not allowed by GAMS philosophy here: its not normal when it stops with an intermediate point)
+               break;
+            case MAXITER_EXCEEDED:
+               gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
+               break;
+            case CPUTIME_EXCEEDED:
+               gmoSolveStatSet(gmo, gmoSolveStat_Resource);
+               break;
+         }
+         /* decide on model status: check if current point is feasible */
+         if( cq->curr_nlp_constraint_violation(NORM_MAX) > scaled_conviol_tol )
+         {
+            char buffer[300];
+            snprintf(buffer, sizeof(buffer), "Current point is not feasible: scaled constraint violation (%g) is larger than tol (%g).\n", cq->curr_nlp_constraint_violation(NORM_MAX), scaled_conviol_tol);
+            gevLog(gev, buffer);
+            gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
+         }
+         else if( cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) > unscaled_conviol_tol )
+         {
+            char buffer[300];
+            snprintf(buffer, sizeof(buffer), "Current point is not feasible: unscaled constraint violation (%g) is larger than constr_viol_tol (%g).\n", cq->unscaled_curr_nlp_constraint_violation(NORM_MAX), unscaled_conviol_tol);
+            gevLog(gev, buffer);
+            gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
+         }
+         else
          {
             gevLog(gev, "Having feasible solution.");
             gmoModelStatSet(gmo, gmoModelStat_NonOptimalIntermed);
          }
-         else
-         {
-            gevLog(gev, "Current point is not feasible.");
-            gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
-         }
-         gmoSolveStatSet(gmo, gmoSolveStat_Resource);
-         write_solution = true;
-         break;
-
-      case USER_REQUESTED_STOP:
-         if( domviollimit > 0 && domviolations >= domviollimit )
-         {
-            gevLogStat(gev, "Domain violation limit exceeded!");
-            gmoSolveStatSet(gmo, gmoSolveStat_EvalError);
-         }
-         else
-         {
-            gmoSolveStatSet(gmo, gmoSolveStat_User);
-         }
-         gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
+         /* in any case, we write the current point */
          write_solution = true;
          break;
 
