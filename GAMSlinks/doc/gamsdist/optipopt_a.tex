@@ -975,10 +975,13 @@ This option is only important if a linear scaling method (e.g., mc19) is used.  
 }
 
 \printoption{linear\_solver}%
-{\ttfamily ma27, ma57, pardiso, mumps}%
+{\ttfamily ma27, ma57, ma86, pardiso, mumps}%
 {ma27}%
 {Linear solver used for step computations.\\
-Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). Note, that in order to use MA27, MA57, or Pardiso, a library with HSL or Pardiso code need to be provided (see Section 5.2).}%
+Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions).
+Note, that in order to use MA27, MA57, or MA86, a commercially supported Gams/Ipopt license or a library with HSL code need to be available.
+If no commerical Gams/Ipopt license is available, the default linear solver is mumps.
+For using Pardiso, a pardiso library need to be provided.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -987,6 +990,7 @@ Determines which linear algebra package is to be used for the solution of the au
 \setlength{\topsep}{0pt}}
 \item[\texttt{ma27}] use the Harwell routine MA27
 \item[\texttt{ma57}] use the Harwell routine MA57
+\item[\texttt{ma86}] use the Harwell routine MA86
 \item[\texttt{pardiso}] use the Pardiso package
 \item[\texttt{mumps}] use MUMPS package
 \end{list}
@@ -996,7 +1000,9 @@ Determines which linear algebra package is to be used for the solution of the au
 {\ttfamily none, mc19, slack-based}%
 {mc19}%
 {Method for scaling the linear system.\\
-Determines the method used to compute symmetric scaling factors for the augmented system (see also the "linear\_scaling\_on\_demand" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. This value is only available if Ipopt has been compiled with MC19.}%
+Determines the method used to compute symmetric scaling factors for the augmented system (see also the "linear\_scaling\_on\_demand" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers.
+Note, that in order to use MC19, a commercially supported Gams/Ipopt license or a library with HSL code need to be available.
+If no commerical Gams/Ipopt license is available, the default scaling method is slack-based.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
