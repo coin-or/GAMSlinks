@@ -35,10 +35,23 @@ private:
    long int              nevallaghess;       /**< number of lagrangian hessian evaluations */
    long int              nevalnewpoint;      /**< number of evaluations at new points */
 
+   double                mininfeas;          /**< minimal infeasibility */
+   double*               mininfeasprimals;   /**< primal values in minimal infeasible solution */
+   double*               mininfeasdualeqs;   /**< dual values for equations in minimal infeasible solution */
+   double*               mininfeasduallbs;   /**< dual values for variable lower bounds in minimal infeasible solution */
+   double*               mininfeasdualubs;   /**< dual values for variable lower bounds in minimal infeasible solution */
+   double*               mininfeasscaledviol;/**< scaled constraint violation in in minimal infeasible solution */
+   double*               mininfeascomplxlb;  /**< complementarity in variable lower bounds in minimal infeasible solution */
+   double*               mininfeascomplxub;  /**< complementarity in variable upper bounds in minimal infeasible solution */
+   double*               mininfeascomplglb;  /**< complementarity in constraint lower bounds in minimal infeasible solution */
+   double*               mininfeascomplgub;  /**< complementarity in constraint upper bounds in minimal infeasible solution */
+   int                   mininfeasiter;      /**< iteration number of minimal infeasible solution */
+
 public:
    double                div_iter_tol;       /**< value above which divergence is claimed */
    double                scaled_conviol_tol; /**< scaled constraint violation tolerance */
    double                unscaled_conviol_tol; /**< unscaled constraint violation tolerance */
+   bool                  reportmininfeas;    /**< should an intermediate solution with minimal primal infeasibility be reported if final solution is not feasible? */
    double                clockStart;         /**< time when optimization started */
    long int              domviolations;      /**< number of domain violations */
 

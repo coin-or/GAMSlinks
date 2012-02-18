@@ -1157,6 +1157,83 @@ If 1 is chosen, the suggested amount of work space is used.  However, choosing a
 This is ICNTL(16) in MA57.}%
 {}
 
+\printoptioncategory{MA86 Linear Solver}
+\printoption{ma86\_nemin}%
+{$1\leq\textrm{integer}$}%
+{$32$}%
+{Node Amalgamation parameter\\
+Two nodes in elimination tree are merged if result has fewer than ma86\_nemin variables.}%
+{}
+
+\printoption{ma86\_order}%
+{\ttfamily auto, amd, metis}%
+{auto}%
+{Controls type of ordering used by HSL\_MA86\\
+This option controls ordering for the solver HSL\_MA86.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{auto}] Try both AMD and MeTiS, pick best
+\item[\texttt{amd}] Use the HSL\_MC68 approximate minimum degree algorithm
+\item[\texttt{metis}] Use the MeTiS nested dissection algorithm (if available)
+\end{list}
+}
+
+\printoption{ma86\_print\_level}%
+{$\textrm{integer}$}%
+{$-1$}%
+{Debug printing level for the linear solver MA86\\
+Meep}%
+{}
+
+\printoption{ma86\_scaling}%
+{\ttfamily none, mc64, mc77}%
+{mc64}%
+{Controls scaling of matrix\\
+This option controls scaling for the solver HSL\_MA86.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{none}] Do not scale the linear system matrix
+\item[\texttt{mc64}] Scale linear system matrix using MC64
+\item[\texttt{mc77}] Scale linear system matrix using MC77 [1,3,0]
+\end{list}
+}
+
+\printoption{ma86\_small}%
+{$0\leq\textrm{real}$}%
+{$10^{-20}$}%
+{Zero Pivot Threshold\\
+Any pivot less than ma86\_small is treated as zero.}%
+{}
+
+\printoption{ma86\_static}%
+{$0\leq\textrm{real}$}%
+{$0$}%
+{Static Pivoting Threshold\\
+See MA86 documentation. Either ma86\_static=0.0 or ma86\_static$>$ma86\_small. ma86\_static=0.0 disables static pivoting.}%
+{}
+
+\printoption{ma86\_u}%
+{$0\leq\textrm{real}\leq0.5$}%
+{$10^{- 8}$}%
+{Pivoting Threshold\\
+See MA86 documentation.}%
+{}
+
+\printoption{ma86\_umax}%
+{$0\leq\textrm{real}\leq0.5$}%
+{$0.0001$}%
+{Maximum Pivoting Threshold\\
+Maximum value to which u will be increased to improve quality.}%
+{}
+
 \printoptioncategory{Mumps Linear Solver}
 \printoption{mumps\_dep\_tol}%
 {$\textrm{real}$}%
@@ -1410,7 +1487,7 @@ Ipopt works with a reformulation of the original problem, where slacks are intro
 \printoption{print\_eval\_error}%
 {\ttfamily no, yes}%
 {no}%
-{whether to print information about function evaluation errors into the listing file}%
+{Switch to enable printing information about function evaluation errors into the GAMS listing file.}%
 {}
 
 \printoption{print\_info\_string}%
@@ -1467,6 +1544,13 @@ This option must be set for the inexact algorithm}%
 \item[\texttt{yes}] replace variable bounds by inequality constraints
 \end{list}
 }
+
+\printoption{report\_mininfeas\_solution}%
+{\ttfamily no, yes}%
+{no}%
+{Switch to report intermediate solution with minimal constraint violation to GAMS if the final solution is not feasible.\\
+This option allows to obtain the most feasible solution found by Ipopt during the iteration process, if it stops at a (locally) infeasible solution, due to a limit (time, iterations, ...), or with a failure in the restoration phase.}%
+{}
 
 \printoptioncategory{Pardiso Linear Solver}
 \printoption{pardiso\_iter\_coarse\_size}%
@@ -1903,21 +1987,6 @@ If the residual test ratio is larger than this value after failed iterative refi
 {same as bound\_push for the regular initializer.}%
 {}
 
-\printoption{warm\_start\_entire\_iterate}%
-{\ttfamily no, yes}%
-{no}%
-{Tells algorithm whether to use the GetWarmStartIterate method in the NLP.}%
-{\begin{list}{}{
-\setlength{\parsep}{0em}
-\setlength{\leftmargin}{5ex}
-\setlength{\labelwidth}{2ex}
-\setlength{\itemindent}{0ex}
-\setlength{\topsep}{0pt}}
-\item[\texttt{no}] call GetStartingPoint in the NLP
-\item[\texttt{yes}] call GetWarmStartIterate in the NLP
-\end{list}
-}
-
 \printoption{warm\_start\_init\_point}%
 {\ttfamily no, yes}%
 {no}%
@@ -1945,22 +2014,6 @@ Indicates whether this optimization should use a warm start initialization, wher
 {$10^{  6}$}%
 {Maximum initial value for the equality multipliers.}%
 {}
-
-\printoption{warm\_start\_same\_structure}%
-{\ttfamily no, yes}%
-{no}%
-{Indicates whether a problem with a structure identical to the previous one is to be solved.\\
-If "yes" is chosen, then the algorithm assumes that an NLP is now to be solved, whose structure is identical to one that already was considered (with the same NLP object).}%
-{\begin{list}{}{
-\setlength{\parsep}{0em}
-\setlength{\leftmargin}{5ex}
-\setlength{\labelwidth}{2ex}
-\setlength{\itemindent}{0ex}
-\setlength{\topsep}{0pt}}
-\item[\texttt{no}] Assume this is a new problem.
-\item[\texttt{yes}] Assume this is problem has known structure
-\end{list}
-}
 
 \printoption{warm\_start\_slack\_bound\_frac}%
 {$0<\textrm{real}\leq0.5$}%

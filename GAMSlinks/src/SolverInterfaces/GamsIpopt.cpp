@@ -73,9 +73,14 @@ int GamsIpopt::readyAPI(
 
    ipopt->RegOptions()->SetRegisteringCategory("Output");
    ipopt->RegOptions()->AddStringOption2("print_eval_error",
-      "whether to print information about function evaluation errors into the listing file",
+      "Switch to enable printing information about function evaluation errors into the GAMS listing file.",
       "no",
       "no", "", "yes", "");
+   ipopt->RegOptions()->AddStringOption2("report_mininfeas_solution",
+      "Switch to report intermediate solution with minimal constraint violation to GAMS if the final solution is not feasible.",
+      "no",
+      "no", "", "yes", "",
+      "This option allows to obtain the most feasible solution found by Ipopt during the iteration process, if it stops at a (locally) infeasible solution, due to a limit (time, iterations, ...), or with a failure in the restoration phase.");
 
    return 0;
 }
@@ -96,6 +101,7 @@ int GamsIpopt::callSolver()
    ipopt->Options()->SetIntegerValue("max_iter", gevGetIntOpt(gev, gevIterLim), true, true);
    ipopt->Options()->SetNumericValue("max_cpu_time", gevGetDblOpt(gev, gevResLim), true, true);
    ipopt->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
+   ipopt->Options()->SetStringValue("ma86_order", "auto", true, true);
    if( ipoptLicensed )
    {
       ipopt->Options()->SetStringValue("linear_solver", "ma27", true, true);
@@ -150,6 +156,8 @@ int GamsIpopt::callSolver()
    bool printevalerror;
    ipopt->Options()->GetBoolValue("print_eval_error", printevalerror, "");
    gmoEvalErrorNoMsg(gmo, printevalerror);
+
+   ipopt->Options()->GetBoolValue("report_mininfeas_solution", nlp->reportmininfeas, "");
 
    setNumThreadsBlas(gev, gevThreads(gev));
 

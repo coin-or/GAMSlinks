@@ -88,31 +88,31 @@ int GamsBonmin::readyAPI(
 
    bonmin_setup->roptions()->SetRegisteringCategory("Output and log-level options", Bonmin::RegisteredOptions::BonminCategory);
    bonmin_setup->roptions()->AddStringOption2("print_funceval_statistics",
-      "whether to print statistics on number of evaluations of GAMS functions/gradients/Hessian",
+      "Switch to enable printing statistics on number of evaluations of GAMS functions/gradients/Hessian.",
       "no",
       "no", "", "yes", "");
 
    bonmin_setup->roptions()->AddStringOption1("miptrace",
-      "name of file for writing branch-and-bound progress information",
+      "Name of file for writing branch-and-bound progress information.",
       "", "*", "");
 
    bonmin_setup->roptions()->AddLowerBoundedIntegerOption("miptracenodefreq",
-      "frequency in number of nodes for writing branch-and-bound progress information",
+      "Frequency in number of nodes for writing branch-and-bound progress information.",
       0, 100, "giving 0 disables writing of N-lines to trace file");
 
    bonmin_setup->roptions()->AddLowerBoundedNumberOption("miptracetimefreq",
-      "frequency in seconds for writing branch-and-bound progress information",
+      "Frequency in seconds for writing branch-and-bound progress information.",
       0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
 
    bonmin_setup->roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
    bonmin_setup->roptions()->AddStringOption2("print_eval_error",
-      "whether to print information about function evaluation errors into the listing file",
+      "Switch to enable printing information about function evaluation errors into the GAMS listing file.",
       "no",
       "no", "", "yes", "");
 
    bonmin_setup->roptions()->SetRegisteringCategory("NLP interface", Bonmin::RegisteredOptions::BonminCategory);
    bonmin_setup->roptions()->AddStringOption2("solvefinal",
-      "whether to solve MINLP with discrete variables fixed to solution values after solve",
+      "Switch to disable solving MINLP with discrete variables fixed to solution values after solve.",
       "yes",
       "no", "", "yes", "",
       "If enabled, then the dual values from the resolved NLP are made available in GAMS.");
@@ -170,6 +170,7 @@ int GamsBonmin::callSolver()
    // Change some options
    bonmin_setup->options()->clear();
    bonmin_setup->options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
+   bonmin_setup->options()->SetStringValue("ma86_order", "auto", true, true);
    bonmin_setup->options()->SetIntegerValue("bonmin.nlp_log_at_root", Ipopt::J_ITERSUMMARY, true, true);
    if( gevGetIntOpt(gev, gevUseCutOff) )
       bonmin_setup->options()->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == gmoObj_Min ? gevGetDblOpt(gev, gevCutOff) : -gevGetDblOpt(gev, gevCutOff), true, true);

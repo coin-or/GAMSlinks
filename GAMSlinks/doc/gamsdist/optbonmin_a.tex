@@ -449,7 +449,7 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 \printoption{solvefinal}%
 {\ttfamily no, yes}%
 {yes}%
-{whether to solve MINLP with discrete variables fixed to solution values after solve\\
+{Switch to disable solving MINLP with discrete variables fixed to solution values after solve.\\
 If enabled, then the dual values from the resolved NLP are made available in GAMS.}%
 {}
 
@@ -700,20 +700,20 @@ Set the level of output of the MILP subsolver in OA : 0 - none, 1 - minimal, 2 -
 \printoption{miptrace}%
 {string}%
 {}%
-{name of file for writing branch-and-bound progress information}%
+{Name of file for writing branch-and-bound progress information.}%
 {}
 
 \printoption{miptracenodefreq}%
 {$0\leq\textrm{integer}$}%
 {$100$}%
-{frequency in number of nodes for writing branch-and-bound progress information\\
+{Frequency in number of nodes for writing branch-and-bound progress information.\\
 giving 0 disables writing of N-lines to trace file}%
 {}
 
 \printoption{miptracetimefreq}%
 {$0\leq\textrm{real}$}%
 {$5$}%
-{frequency in seconds for writing branch-and-bound progress information\\
+{Frequency in seconds for writing branch-and-bound progress information.\\
 giving 0.0 disables writing of T-lines to trace file}%
 {}
 
@@ -753,7 +753,7 @@ Set the level of output of OA decomposition solver : 0 - none, 1 - normal, 2 - v
 \printoption{print\_funceval\_statistics}%
 {\ttfamily no, yes}%
 {no}%
-{whether to print statistics on number of evaluations of GAMS functions/gradients/Hessian}%
+{Switch to enable printing statistics on number of evaluations of GAMS functions/gradients/Hessian.}%
 {}
 
 \printoptioncategory{Strong branching setup}

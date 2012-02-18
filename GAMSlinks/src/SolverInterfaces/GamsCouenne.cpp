@@ -117,21 +117,21 @@ int GamsCouenne::readyAPI(
    couenne_setup->registerOptions();
 
    couenne_setup->roptions()->AddStringOption1("miptrace",
-      "name of file for writing branch-and-bound progress information",
+      "Name of file for writing branch-and-bound progress information.",
       "", "*", "");
 
    couenne_setup->roptions()->AddLowerBoundedIntegerOption("miptracenodefreq",
-      "frequency in number of nodes for writing branch-and-bound progress information",
+      "Frequency in number of nodes for writing branch-and-bound progress information.",
       0, 100, "giving 0 disables writing of N-lines to trace file");
 
    couenne_setup->roptions()->AddLowerBoundedNumberOption("miptracetimefreq",
-      "frequency in seconds for writing branch-and-bound progress information",
+      "Frequency in seconds for writing branch-and-bound progress information.",
       0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
 
 
    couenne_setup->roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
    couenne_setup->roptions()->AddStringOption2("print_eval_error",
-      "whether to print information about function evaluation errors into the listing file",
+      "Switch to enable printing information about function evaluation errors into the GAMS listing file.",
       "no",
       "no", "", "yes", "");
 
@@ -190,6 +190,7 @@ int GamsCouenne::callSolver()
    // Change some options
    couenne_setup->options()->clear();
    couenne_setup->options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
+   couenne_setup->options()->SetStringValue("ma86_order", "auto", true, true);
    if( gevGetIntOpt(gev, gevUseCutOff) )
       couenne_setup->options()->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == gmoObj_Min ? gevGetDblOpt(gev, gevCutOff) : -gevGetDblOpt(gev, gevCutOff), true, true);
    couenne_setup->options()->SetNumericValue("bonmin.allowable_gap", gevGetDblOpt(gev, gevOptCA), true, true);

@@ -359,9 +359,14 @@ void printIpoptOptions()
 
    ipopt->RegOptions()->SetRegisteringCategory("Output");
    ipopt->RegOptions()->AddStringOption2("print_eval_error",
-      "whether to print information about function evaluation errors into the listing file",
+      "Switch to enable printing information about function evaluation errors into the GAMS listing file.",
       "no",
       "no", "", "yes", "");
+   ipopt->RegOptions()->AddStringOption2("report_mininfeas_solution",
+      "Switch to report intermediate solution with minimal constraint violation to GAMS if the final solution is not feasible.",
+      "no",
+      "no", "", "yes", "",
+      "This option allows to obtain the most feasible solution found by Ipopt during the iteration process, if it stops at a (locally) infeasible solution, due to a limit (time, iterations, ...), or with a failure in the restoration phase.");
 
    const Ipopt::RegisteredOptions::RegOptionsList& optionlist(ipopt->RegOptions()->RegisteredOptionsList());
 
@@ -388,7 +393,9 @@ void printIpoptOptions()
           it->second->Name() == "print_user_options" ||
           it->second->Name() == "nlp_lower_bound_inf" ||
           it->second->Name() == "nlp_upper_bound_inf" ||
-          it->second->Name() == "skip_finalize_solution_call"
+          it->second->Name() == "skip_finalize_solution_call" ||
+          it->second->Name() == "warm_start_entire_iterate" ||
+          it->second->Name() == "warm_start_same_structure"
         )
          continue;
 
@@ -497,6 +504,8 @@ void printIpoptOptions()
             defaultval.realval = 1000;
          else if( (*it_opt)->Name() == "mu_strategy" )
             defaultval.stringval = "adaptive";
+         else if( (*it_opt)->Name() == "ma86_order" )
+            defaultval.stringval = "auto";
 
          printOption(optfile, (*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
             opttype, defaultval, minval, minval_strict, maxval, maxval_strict, enumval);
@@ -523,31 +532,25 @@ void printBonminOptions()
 
    bonmin_setup.roptions()->SetRegisteringCategory("Output and log-level options", Bonmin::RegisteredOptions::BonminCategory);
    bonmin_setup.roptions()->AddStringOption2("print_funceval_statistics",
-      "whether to print statistics on number of evaluations of GAMS functions/gradients/Hessian",
+      "Switch to enable printing statistics on number of evaluations of GAMS functions/gradients/Hessian.",
       "no",
       "no", "", "yes", "");
 
    bonmin_setup.roptions()->AddStringOption1("miptrace",
-      "name of file for writing branch-and-bound progress information",
+      "Name of file for writing branch-and-bound progress information.",
       "", "*", "");
 
    bonmin_setup.roptions()->AddLowerBoundedIntegerOption("miptracenodefreq",
-      "frequency in number of nodes for writing branch-and-bound progress information",
+      "Frequency in number of nodes for writing branch-and-bound progress information.",
       0, 100, "giving 0 disables writing of N-lines to trace file");
 
    bonmin_setup.roptions()->AddLowerBoundedNumberOption("miptracetimefreq",
-      "frequency in seconds for writing branch-and-bound progress information",
+      "Frequency in seconds for writing branch-and-bound progress information.",
       0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
-
-   bonmin_setup.roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
-   bonmin_setup.roptions()->AddStringOption2("print_eval_error",
-      "whether to print information about function evaluation errors into the listing file",
-      "no",
-      "no", "", "yes", "");
 
    bonmin_setup.roptions()->SetRegisteringCategory("NLP interface", Bonmin::RegisteredOptions::BonminCategory);
    bonmin_setup.roptions()->AddStringOption2("solvefinal",
-      "whether to solve MINLP with discrete variables fixed to solution values after solve",
+      "Switch to disable solving MINLP with discrete variables fixed to solution values after solve.",
       "yes",
       "no", "", "yes", "",
       "If enabled, then the dual values from the resolved NLP are made available in GAMS.");
@@ -826,15 +829,15 @@ void printCouenneOptions()
    Couenne::CouenneSetup::registerAllOptions(regoptions);
 
    regoptions->AddStringOption1("miptrace",
-      "name of file for writing branch-and-bound progress information",
+      "Name of file for writing branch-and-bound progress information.",
       "", "*", "");
 
    regoptions->AddLowerBoundedIntegerOption("miptracenodefreq",
-      "frequency in number of nodes for writing branch-and-bound progress information",
+      "Frequency in number of nodes for writing branch-and-bound progress information.",
       0, 100, "giving 0 disables writing of N-lines to trace file");
 
    regoptions->AddLowerBoundedNumberOption("miptracetimefreq",
-      "frequency in seconds for writing branch-and-bound progress information",
+      "Frequency in seconds for writing branch-and-bound progress information.",
       0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
 
    const Bonmin::RegisteredOptions::RegOptionsList& optionlist(regoptions->RegisteredOptionsList());
