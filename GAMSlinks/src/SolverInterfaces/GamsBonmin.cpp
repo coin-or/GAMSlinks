@@ -477,12 +477,12 @@ int GamsBonmin::callSolver()
       double best_val = gmoGetHeadnTail(gmo, gmoHobjval);
       if( bb.bestSolution() != NULL )
       {
-         snprintf(buf, 1024, "Best solution: %15.6e   (%d nodes, %g seconds)", best_val, (int)gmoGetHeadnTail(gmo, gmoTmipnod), gmoGetHeadnTail(gmo, gmoHresused));
+         snprintf(buf, 1024, "Best solution: %15.6e   (%d nodes, %g seconds)\n", best_val, (int)gmoGetHeadnTail(gmo, gmoTmipnod), gmoGetHeadnTail(gmo, gmoHresused));
          gevLogStat(gev, buf);
       }
       if( best_bound > -1e200 && best_bound < 1e200 )
       {
-         snprintf(buf, 1024, "Best possible: %15.6e   (only reliable for convex models)\n", best_bound);
+         snprintf(buf, 1024, "Best possible: %15.6e   (only reliable for convex models)", best_bound);
          gevLogStat(gev, buf);
 
          if( bb.bestSolution() != NULL )
@@ -494,7 +494,7 @@ int GamsBonmin::callSolver()
 
             snprintf(buf, 255, "Absolute gap: %16.6e   (absolute tolerance optca: %g)", CoinAbs(best_val-best_bound), optca);
             gevLogStat(gev, buf);
-            snprintf(buf, 255, "Relative gap: %15.6f%%   (relative tolerance optcr: %g%%)", 100*CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.0), optcr);
+            snprintf(buf, 255, "Relative gap: %16.6e   (relative tolerance optcr: %g)", CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.0), optcr);
             gevLogStat(gev, buf);
          }
       }

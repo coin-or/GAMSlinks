@@ -1133,9 +1133,9 @@ bool GamsCbc::writeSolution(
       if( model->bestSolution() )
       {
          if( nthreads > 1 )
-            snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %.2f CPU seconds, %.2f wall clock seconds)", model->getObjValue(), model->getNodeCount(), cputime, walltime);
+            snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %.2f CPU seconds, %.2f wall clock seconds)\n", model->getObjValue(), model->getNodeCount(), cputime, walltime);
          else
-            snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %g seconds)", model->getObjValue(), model->getNodeCount(), cputime);
+            snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %g seconds)\n", model->getObjValue(), model->getNodeCount(), cputime);
          gevLogStat(gev, buffer);
       }
       snprintf(buffer, 255, "Best possible: %14.6e", model->getBestPossibleObjValue());
@@ -1144,7 +1144,7 @@ bool GamsCbc::writeSolution(
       {
          snprintf(buffer, 255, "Absolute gap: %15.6e   (absolute tolerance optca: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()), optca);
          gevLogStat(gev, buffer);
-         snprintf(buffer, 255, "Relative gap: %14.6f%%   (relative tolerance optcr: %g%%)", 100* CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()) / CoinMax(CoinAbs(model->getBestPossibleObjValue()), 1.), 100*optcr);
+         snprintf(buffer, 255, "Relative gap: %15.6e   (relative tolerance optcr: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()) / CoinMax(CoinAbs(model->getBestPossibleObjValue()), 1.), 100*optcr);
          gevLogStat(gev, buffer);
       }
    }

@@ -438,8 +438,7 @@ int GamsCouenne::callSolver()
 
       if( bb.bestSolution() != NULL )
       {
-         snprintf(buffer, sizeof(buffer), "\nCouenne finished. Found feasible solution. Objective function value = %g.", best_val);
-         gevLogStat(gev, buffer);
+         gevLogStat(gev, "\nCouenne finished. Found feasible solution.");
 
          double* negLambda = new double[gmoM(gmo)];
          memset(negLambda, 0, gmoM(gmo)*sizeof(double));
@@ -458,12 +457,12 @@ int GamsCouenne::callSolver()
       gevLogStat(gev, "");
       if( bb.bestSolution() != NULL )
       {
-         snprintf(buffer, sizeof(buffer), "Best solution: %15.6e   (%d nodes, %g seconds)", best_val, bb.numNodes(), gmoGetHeadnTail(gmo, gmoHresused));
+         snprintf(buffer, sizeof(buffer), "Best solution: %15.6e   (%d nodes, %g seconds)\n", best_val, bb.numNodes(), gmoGetHeadnTail(gmo, gmoHresused));
          gevLogStat(gev, buffer);
       }
       if( best_bound > -1e200 && best_bound < 1e200 )
       {
-         snprintf(buffer, sizeof(buffer), "Best possible: %15.6e\n", best_bound);
+         snprintf(buffer, sizeof(buffer), "Best possible: %15.6e", best_bound);
          gevLogStat(gev, buffer);
 
          if( bb.bestSolution() != NULL )
@@ -475,7 +474,7 @@ int GamsCouenne::callSolver()
 
             snprintf(buffer, sizeof(buffer), "Absolute gap: %16.6e   (absolute tolerance optca: %g)", CoinAbs(best_val-best_bound), optca);
             gevLogStat(gev, buffer);
-            snprintf(buffer, sizeof(buffer), "Relative gap: %15.6f%%   (relative tolerance optcr: %g%%)", 100*CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.0), optcr);
+            snprintf(buffer, sizeof(buffer), "Relative gap: %16.6e   (relative tolerance optcr: %g)", CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.0), optcr);
             gevLogStat(gev, buffer);
          }
       }
