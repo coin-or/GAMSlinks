@@ -348,7 +348,7 @@ int GamsBonmin::callSolver()
       gmoSetHeadnTail(gmo, gmoTmipnod,   bb.numNodes());
       gmoSetHeadnTail(gmo, gmoHiterused, bb.iterationCount());
       gmoSetHeadnTail(gmo, gmoHdomused,  static_cast<double>(minlp->nlp->domviolations));
-      double best_bound = minlp->isMin * bb.bestBound();
+      double best_bound = minlp->isMin * bb.model().getBestPossibleObjValue(); //bestBound();
       if( best_bound > -1e200 && best_bound < 1e200 )
          gmoSetHeadnTail(gmo, gmoTmipbest, best_bound);
       gmoModelStatSet(gmo, minlp->model_status);

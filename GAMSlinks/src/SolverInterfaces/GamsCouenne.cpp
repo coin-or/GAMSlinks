@@ -421,7 +421,7 @@ int GamsCouenne::callSolver()
 
       // check optimization outcome
       double best_val   = minlp->isMin * bb.bestObj();
-      double best_bound = minlp->isMin * bb.bestBound();
+      double best_bound = minlp->isMin * bb.model().getBestPossibleObjValue(); //bestBound();
 
       gmoSetHeadnTail(gmo, gmoHresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
       gmoSetHeadnTail(gmo, gmoTmipnod,   bb.numNodes());
