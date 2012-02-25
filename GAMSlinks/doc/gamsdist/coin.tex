@@ -416,7 +416,7 @@ Note that options specific to \IPOPT and \BONMIN are not listed her, see Section
 The code has been written primarily by Andreas W\"achter, who is the COIN-OR project leader for \IPOPT.
 
 \IPOPT implements an interior point line search filter method.
-For more information on the algorithm we refer to~\cite{Waechter2002,WaBi2006} and the \IPOPT web site \url{https://projects.coin-or.org/Ipopt}.
+For more information on the algorithm we refer to~\cite{NoWaWa08,Waechter2002,WaBi05b,WaBi05a,WaBi2006} and the \IPOPT web site \url{https://projects.coin-or.org/Ipopt}.
 Most of the \IPOPT documentation in the section was taken from the \IPOPT manual~\cite{IpoptManual}.
 
 \GAMS/\IPOPT uses \textsc{MUMPS}~\cite{AmestoyDuffKosterLExcellent2001,AmestoyGuermoucheLExcellentPralet2006} as linear solver, cf.~\url{http://graal.ens-lyon.fr/MUMPS}.
@@ -447,18 +447,16 @@ If \IPOPT was specified as the default solver during \GAMS installation, the abo
 The performance and robustness of \IPOPT on larger models heavily relies on the used solver for sparse symmetric indefinite linear systems.
 \GAMS/\IPOPT includes the sparse solver MUMPS~\cite{AmestoyDuffKosterLExcellent2001,AmestoyGuermoucheLExcellentPralet2006}.
 In a commerically licensed \GAMS/\IPOPT version, also the Harwell Subroutine Library (HSL) solvers MA27, MA57, and MA86 are available.
-However, the user can also provide the 
-Parallel Sparse Direct Solver PARDISO or 
-routines from HSL as shared (or dynamic) libraries to replace MUMPS.
+Further, a user can provide the Parallel Sparse Direct Solver PARDISO or routines from HSL as shared (or dynamic) libraries.
 
 \paragraph{Using Harwell Subroutine Library routines with \GAMS/\IPOPT.}
 
-\GAMS/\IPOPT can use the HSL routines \texttt{MA27}, \texttt{MA28}, \texttt{MA57}, and \texttt{MC19} when provided as shared library.
+\GAMS/\IPOPT without commercial license can use the HSL routines \texttt{MA27}, \texttt{MA28}, \texttt{MA57}, and \texttt{MC19} when provided as shared library.
 By telling \IPOPT to use one of these routines (see options \texttt{linear\_solver}, \texttt{linear\_system\_scaling}, \texttt{nlp\_scaling\_method}, \texttt{dependency\_detector}), \GAMS/\IPOPT attempts to load the required routines from the library \texttt{libhsl.so} (Unix-Systems), \texttt{libhsl.dylib} (MacOS X), or \texttt{libhsl.dll} (Windows), respectively.
 
-The HSL routines are available at \url{http://www.hsl.rl.ac.uk}.
+The HSL routines are available at \url{http://www.hsl.rl.ac.uk/ipopt}.
 Note that it is your responsibility to ensure that you are entitled to download and use these routines!
-You can build a shared library using the ThirdParty/HSL project at COIN-OR.
+% You can build a shared library using the ThirdParty/HSL project at COIN-OR.
 
 \paragraph{Using PARDISO with \GAMS/\IPOPT.}
 Setting the option \texttt{linear\_solver} to \texttt{pardiso}, let \GAMS/\IPOPT attempt to load the linear solver PARDISO from the library \texttt{libpardiso.so} (Unix-Systems), \texttt{libpardiso.dylib} (MacOS X), or \texttt{libpardiso.dll} (Windows), respectively.
@@ -522,33 +520,67 @@ and the columns of output are defined as
 \item[iter]
 The current iteration count.
 This includes regular iterations and iterations while in restoration phase.
-If the algorithm is in the restoration phase, the letter r' will be appended to the iteration number.
+If the algorithm is in the restoration phase, the letter \texttt{r} will be appended to the iteration number.
 \item[objective]
 The unscaled objective value at the current point.
 During the restoration phase, this value remains the unscaled objective value for the original problem.
 \item[inf\_pr]
-The scaled primal infeasibility at the current point.
+The unscaled constraint violation at the current point.
+This quantity is the infinity-norm (max) of the (unscaled) constraint violation.
+During the restoration phase, this value remains the constraint violation of the original problem at the current point.
+The option ``\texttt{inf\_pr\_output}'' can be used to switch to the printing of a different quantity.
 During the restoration phase, this value is the primal infeasibility of the original problem at the current point.
 \item[inf\_du]
 The scaled dual infeasibility at the current point.
+This quantity measure the infinity-norm (max) of the internal dual infeasibility \cite[Eq.~(4a)]{WaBi2006}, including inequality constraints reformulated using slack variables and problem scaling.
 During the restoration phase, this is the value of the dual infeasibility for the restoration phase problem.
 \item[lg(mu)]
-$\log_{10}$ of the value of the barrier parameter mu.
+$\log_{10}$ of the value of the barrier parameter $\mu$.
 \item[$\Vert d\Vert$]
 The infinity norm (max) of the primal step (for the original variables $x$ and the internal slack variables $s$).
-During the restoration phase, this value includes the values of additional variables, $p$ and $n$.
+During the restoration phase, this value includes the values of additional variables, $p$ and $n$ \cite[Eq.~(10)]{WaBi2006}.
 \item[lg(rg)]
-$\log_{10}$ of the value of the regularization term for the Hessian of the Lagrangian in the augmented system.
+$\log_{10}$ of the value of the regularization term for the Hessian of the Lagrangian in the augmented system ($\delta_w$ in \cite[Eq.~(26)]{WaBi2006}).
+A dash (``\texttt{-}'') indicates that no regularization was done.
 \item[alpha\_du]
-The stepsize for the dual variables.
+The stepsize for the dual variables ($\alpha^z_k$ in \cite[Eq.~(14c)]{WaBi2006})..
 \item[alpha\_pr]
-The stepsize for the primal variables.
+The stepsize for the primal variables ($\alpha_k$ in \cite[Eq.~(14a)]{WaBi2006}).
+The number is usually followed by a character for additional diagnostic information regarding the step acceptance criterion:
+ \begin{list}{blub}{\itemsep0pt}
+    \item[\texttt{f}] f-type iteration in the filter method w/o second order correction
+    \item[\texttt{F}] f-type iteration in the filter method w/ second order correction
+    \item[\texttt{h}] h-type iteration in the filter method w/o second order correction
+    \item[\texttt{H}] h-type iteration in the filter method w/ second order correction
+    \item[\texttt{k}] penalty value unchanged in merit function method w/o second order correction
+    \item[\texttt{K}] penalty value unchanged in merit function method w/ second order correction
+    \item[\texttt{n}] penalty value updated in merit function method w/o second order correction
+    \item[\texttt{N}] penalty value updated in merit function method w/ second order correction
+    \item[\texttt{R}] Restoration phase just started
+    \item[\texttt{w}] in watchdog procedure
+    \item[\texttt{s}] step accepted in soft restoration phase
+    \item[\texttt{t}/\texttt{T}] tiny step accepted without line search
+    \item[\texttt{r}] some previous iterate restored
+ \end{list}
 \item[ls]
-The number of backtracking line search steps.
+The number of backtracking line search steps (does not include second-order correction steps).
 \end{description}
 
-When the algorithm terminates, \IPOPT will output a message to the screen based on the return status of the call to Optimize.
-The following is a list of the possible output messages to the console, and a brief description.
+Note that the step acceptance mechanisms in \IPOPT consider the
+barrier objective function \cite[Eq.~(3a)]{WaBi2006} which is
+usually different from the value reported in the \texttt{objective}
+column.  Similarly, for the purposes of the step acceptance, the
+constraint violation is measured for the internal problem formulation,
+which includes slack variables for inequality constraints and
+potentially scaling of the constraint functions.  This value, too, is
+usually different from the value reported in \texttt{inf\_pr}.  As a
+consequence, a new iterate might have worse values both for the
+objective function and the constraint violation as reported in the
+iteration output, seemingly contradicting globalization procedure.
+
+
+When the algorithm terminates, \IPOPT will output a message to the screen.
+The following is a list of the possible output messages and a brief description.
 
 \begin{description}
 \item[Optimal Solution Found.] ~
@@ -557,8 +589,12 @@ The following is a list of the possible output messages to the console, and a br
 
 \item[Solved To Acceptable Level.] ~
 
-    This indicates that the algorithm did not converge to the ``desired'' tolerances, but that it was able to obtain a point satisfying the ``acceptable'' tolerance level as specified by acceptable-* options.
+    This indicates that the algorithm did not converge to the ``desired'' tolerances, but that it was able to obtain a point satisfying the ``acceptable'' tolerance level as specified by \texttt{acceptable-*} options.
     This may happen if the desired tolerances are too small for the current problem.
+
+\item[Feasible point for square problem found.] ~
+
+    This message is printed if the problem is ``square'' (i.e., it has as many equality constraints as free variables) and \IPOPT found a feasible point.
 
 \item[Converged to a point of local infeasibility. Problem may be infeasible.] ~
 
@@ -574,16 +610,20 @@ The following is a list of the possible output messages to the console, and a br
 
 \item[Iterates divering; problem might be unbounded.] ~
 
-    This message is printed if the max-norm of the iterates becomes larger than the value of the option diverging\_iterates\_tol.
+    This message is printed if the max-norm of the iterates becomes larger than the value of the option \texttt{diverging\_iterates\_tol}.
     This can happen if the problem is unbounded below and the iterates are diverging.
 
 \item[Stopping optimization at current point as requested by user.] ~
 
-    This message is printed if either the time limit or the domain violation limit is reached.
+    This message is printed if either the Ctrl+C was pressed or the domain violation limit is reached.
 
 \item[Maximum Number of Iterations Exceeded.] ~
 
-    This indicates that \IPOPT has exceeded the maximum number of iterations as specified by the option max\_iter.
+    This indicates that \IPOPT has exceeded the maximum number of iterations as specified by the \IPOPT option \texttt{max\_iter} or the GAMS option \texttt{iterlim}.
+
+\item[Maximum CPU time exceeded.] ~
+
+    This indicates that \IPOPT has exceeded the maximum number of seconds as specified by the \IPOPT option \texttt{max\_cpu\_time} or the GAMS option \texttt{reslim}.
 
 \item[Restoration Failed!] ~
 
@@ -610,6 +650,50 @@ The following is a list of the possible output messages to the console, and a br
     An unknown internal error has occurred. Please notify the authors of the \GAMS/\IPOPT link or \IPOPT (refer to \url{https://projects.coin-or.org/GAMSlinks} or \url{https://projects.coin-or.org/Ipopt}).
 \end{description}
 
+
+\subsection{Diagnostic Tags for \IPOPT}
+
+To print additional diagnostic tags for each iteration of \IPOPT, set
+the options \texttt{print\_info\_string} to \texttt{yes}. With
+this, a tag will appear at the end of an iteration line with the
+following diagnostic meaning that are useful to flag difficulties for
+a particular \IPOPT run.  The following is a list of possible strings:
+\begin{list}{blub}{\itemsep0pt}
+ \item[\texttt{!}] Tighten resto tolerance if only slightly infeasible \cite[Sec.~3.3]{WaBi2006}
+ \item[\texttt{A}] Current iteration is acceptable (alternate termination)
+ \item[\texttt{a}] Perturbation for PD Singularity can't be done, assume singular \cite[Sec.~3.1]{WaBi2006}
+ \item[\texttt{C}] Second Order Correction taken \cite[Sec.~2.4]{WaBi2006}
+ \item[\texttt{Dh}] Hessian degenerate based on multiple iterations \cite[Sec.~3.1]{WaBi2006}
+ \item[\texttt{Dhj}] Hessian/Jacobian degenerate based on multiple iterations \cite[Sec.~3.1]{WaBi2006}
+ \item[\texttt{Dj}] Jacobian degenerate based on multiple iterations \cite[Sec.~3.1]{WaBi2006}
+ \item[\texttt{dx}] $\delta_x$ perturbation too large \cite[Sec.~3.1]{WaBi2006}
+ \item[\texttt{e}] Cutting back $\alpha$ due to evaluation error (in backtracking line search)
+ \item[\texttt{F-}] Filter should be reset, but maximal resets exceeded \cite[Sec.~2.3]{WaBi2006}
+ \item[\texttt{F+}] Resetting filter due to last few rejections of filter \cite[Sec.~2.3]{WaBi2006}
+ \item[\texttt{L}] Degenerate Jacobian, $\delta_c$ already perturbed \cite[Sec.~3.1]{WaBi2006}
+ \item[\texttt{l}] Degenerate Jacobian, $\delta_c$ perturbed \cite[Sec.~3.1]{WaBi2006}
+ \item[\texttt{M}] Magic step taken for slack variables (in backtracking line search)
+ \item[\texttt{Nh}] Hessian not yet degenerate \cite[Sec.~3.1]{WaBi2006}
+ \item[\texttt{Nhj}] Hessian/Jacobian not yet degenerate \cite[Sec.~3.1]{WaBi2006}
+ \item[\texttt{Nj}] Jacobian not yet degenerate \cite[Sec.~3.1]{WaBi2006}
+ \item[\texttt{NW}] Warm start initialization failed (in Warm Start Initialization)
+ \item[\texttt{q}] PD system possibly singular, attempt to improve solution quality \cite[Sec.~3.1]{WaBi2006}
+ \item[\texttt{R}] Solution of restoration phase \cite[Sec.~3.3]{WaBi2006}
+ \item[\texttt{S}] PD system possibly singular, accept current solution \cite[Sec.~3.1]{WaBi2006}
+ \item[\texttt{s}] PD system singular \cite[Sec.~3.1]{WaBi2006}
+ \item[\texttt{s}] Square Problem. Set multipliers to zero (default initialization routine)
+ \item[\texttt{Tmax}] Trial $\theta$ is larger than $\theta_{max}$ (filter parameter \cite[Eq.~(21)]{WaBi2006})
+ \item[\texttt{W}] Watchdog line search procedure successful \cite[Sec.~3.2]{WaBi2006}
+ \item[\texttt{w}] Watchdog line search procedure unsuccessful, stopped \cite[Sec.~3.2]{WaBi2006}
+ \item[\texttt{Wb}] Undoing most recent SR1 update \cite[Sec.~5.4.1]{Biegler2010}
+ \item[\texttt{We}] Skip Limited-Memory Update in restoration phase  \cite[Sec.~5.4.1]{Biegler2010}
+ \item[\texttt{Wp}] Safeguard $B^0 = \sigma I$ for  Limited-Memory Update \cite[Sec.~5.4.1]{Biegler2010}
+ \item[\texttt{Wr}] Resetting Limited-Memory Update \cite[Sec.~5.4.1]{Biegler2010}
+ \item[\texttt{Ws}] Skip Limited-Memory Update since $s^Ty$ is not positive \cite[Sec.~5.4.1]{Biegler2010}
+ \item[\texttt{WS}] Skip Limited-Memory Update since $\Delta x$ is too small \cite[Sec.~5.4.1]{Biegler2010}
+ \item[\texttt{y}] Dual infeasibility, use least square multiplier update (during \IPOPT algorithm)
+ \item[\texttt{z}] Apply correction to bound multiplier if too large (during \IPOPT algorithm)
+\end{list}
 
 \subsection{Detailed Options Description}
 \label{sub:ipoptoptions}
