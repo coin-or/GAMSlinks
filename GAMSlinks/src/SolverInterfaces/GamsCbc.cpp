@@ -14,6 +14,7 @@
 #include "gclgms.h"
 #include "gmomcc.h"
 #include "gevmcc.h"
+#include "gdxcc.h"
 #ifdef GAMS_BUILD
 #include "gmspal.h"  /* for audit line */
 #endif
@@ -117,6 +118,8 @@ GamsCbc::~GamsCbc()
    delete[] cbc_args;
 
    free(writemps);
+   free(miptrace);
+   free(dumpsolutions);
 }
 
 int GamsCbc::readyAPI(
@@ -216,6 +219,9 @@ int GamsCbc::callSolver()
          model->addHeuristic(&traceheur, "MIPtrace writing heurisitc", -1);
       }
    }
+
+   if( dumpsolutions != NULL && maxsol > 0 )
+      model->setMaximumSavedSolutions(maxsol);
 
    gevLogStat(gev, "\nCalling CBC main solution routine...");
 
@@ -959,6 +965,16 @@ bool GamsCbc::setupParameters()
    msghandler->setLogLevel(2, loglevel-2); // CoinUtils output, like COIN_PRESOLVE_STATS
    msghandler->setLogLevel(3, loglevel-2); // CGL output, like CGL_PROCESS_STATS2
 
+   // whether to write other found solutions, and how many of them
+   free(dumpsolutions);
+   dumpsolutions = NULL;
+   if( options.isDefined("dumpsolutions") )
+   {
+      options.getString("dumpsolutions", buffer);
+      dumpsolutions = strdup(buffer);
+   }
+   maxsol = options.getInteger("maxsol");
+
    return true;
 }
 
@@ -1144,9 +1160,78 @@ bool GamsCbc::writeSolution(
       {
          snprintf(buffer, 255, "Absolute gap: %15.6e   (absolute tolerance optca: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()), optca);
          gevLogStat(gev, buffer);
-         snprintf(buffer, 255, "Relative gap: %15.6e   (relative tolerance optcr: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()) / CoinMax(CoinAbs(model->getBestPossibleObjValue()), 1.), 100*optcr);
+         snprintf(buffer, 255, "Relative gap: %15.6e   (relative tolerance optcr: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()) / CoinMax(CoinAbs(model->getBestPossibleObjValue()), 1.), optcr);
          gevLogStat(gev, buffer);
       }
+   }
+
+   if( dumpsolutions != NULL && model->numberSavedSolutions() > 1 )
+   {
+      char buffer[255];
+      gdxHandle_t gdx;
+      int rc;
+
+      if( !gdxCreate(&gdx, buffer, sizeof(buffer)) )
+      {
+         gevLogStatPChar(gev, "failed to load GDX I/O library: ");
+         gevLogStat(gev, buffer);
+         return false;
+      }
+
+      snprintf(buffer, 255, "\nDumping %d alternate solutions:\n", model->numberSavedSolutions()-1);
+      gevLogPChar(gev, buffer);
+      /* create index GDX file */
+      if( gdxOpenWrite(gdx, dumpsolutions, "CBC DumpSolutions Index File", &rc) == 0 )
+      {
+         rc = gdxGetLastError(gdx);
+         gdxErrorStr(gdx, rc, buffer);
+         gevLogStatPChar(gev, "problem writing GDX file: ");
+         gevLogStat(gev, buffer);
+      }
+      else
+      {
+         gdxStrIndexPtrs_t keys;
+         gdxStrIndex_t     keysX;
+         gdxValues_t       vals;
+         int sloc;
+         int i;
+
+         /* create index file */
+         GDXSTRINDEXPTRS_INIT(keysX, keys);
+         gdxDataWriteStrStart(gdx, "index", "Dumpsolutions index", 1, dt_set, 0);
+         for( i = 1; i < model->numberSavedSolutions(); ++i)
+         {
+            snprintf(buffer, 255, "soln_cbc_p%d.gdx", i);
+            gdxAddSetText(gdx, buffer, &sloc);
+            snprintf(keys[0], GMS_SSSIZE, "file%d", i);
+            vals[GMS_VAL_LEVEL] = sloc;
+            gdxDataWriteStr(gdx, const_cast<const char**>(keys), vals);
+         }
+         gdxDataWriteDone(gdx);
+         gdxClose(gdx);
+
+         /* create point files */
+         for( i = 1; i < model->numberSavedSolutions(); ++i)
+         {
+            snprintf(buffer, 255, "soln_cbc_p%d.gdx", i);
+            gmoSetVarL(gmo, model->savedSolution(i));
+            if( gmoUnloadSolutionGDX(gmo, buffer, 0, 1, 0) )
+            {
+               gevLogStat(gev, "Problems creating point file.\n");
+            }
+            else
+            {
+               gevLogPChar(gev, "Created point file ");
+               gevLog(gev, buffer);
+            }
+         }
+      }
+
+      gdxFree(&gdx);
+   }
+   else if( dumpsolutions != NULL && model->numberSavedSolutions() == 1 )
+   {
+      gevLog(gev, "Only one solution found, skip dumping alternate solutions.");
    }
 
    return true;

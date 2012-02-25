@@ -99,12 +99,18 @@ coststrategy</a></td>
 <tr><td><a href="#cutoff">
 cutoff</a></td>
 <td>cutoff for objective function value</td></tr>
+<tr><td><a href="#dumpsolutions">
+dumpsolutions</a></td>
+<td>name of solutions index gdx file for writing alternate solutions</td></tr>
 <tr><td><a href="#increment">
 increment</a></td>
 <td>increment of cutoff when new incumbent</td></tr>
 <tr><td><a href="#loglevel">
 loglevel</a></td>
 <td>CBC loglevel</td></tr>
+<tr><td><a href="#maxsol">
+maxsol</a></td>
+<td>maximal number of solutions to store during search</td></tr>
 <tr><td><a href="#mipstart">
 mipstart</a></td>
 <td>whether it should be tried to use the initial variable levels as initial MIP solution</td></tr>
@@ -547,6 +553,15 @@ Let CLP use the steepest choice method.</td></tr>
 Let CLP use a variant of the steepest choice method which scans only a subset of the primal infeasibilities to select the pivot step.</td></tr>
 </table>
 
+<h4><a name="dumpsolutions">
+dumpsolutions</a>
+<i> (string)</i> name of solutions index gdx file for writing alternate solutions</h4><p>
+
+The name of a solutions index gdx file for writing alternate solutions found by CBC.
+The GDX file specified by this option will contain a set called index that contains the names of GDX files
+with the individual solutions.
+
+
 <h4><a name="feaspump">
 feaspump</a>
 <i> (integer)</i> feasibility pump</h4><p>
@@ -720,6 +735,14 @@ If this is left at the default value of 200 then CLP will guess at a value to us
 CLP may decide to refactorize earlier for accuracy.
 
 <br><i>(default = 200)</i>
+
+<h4><a name="maxsol">
+maxsol</a>
+<i> (integer)</i> maximal number of solutions to store during search</h4><p>
+
+Maximal number of solutions to store during search and to dump into gdx files if dumpsolutions options is set.
+
+<br><i>(default = 100)</i>
 
 <h4><a name="mipstart">
 mipstart</a>

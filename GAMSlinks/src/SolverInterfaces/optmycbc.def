@@ -54,6 +54,8 @@ mipstart boolean 0 0 1 3 whether it should be tried to use the initial variable 
 tol_integer double 0 1e-6 0 maxdouble 1 3 tolerance for integrality
 sollim enumint 0 -1 1 3 limit on number of solutions
  -1 1
+dumpsolutions string 0 "" 1 3 name of solutions index gdx file for writing alternate solutions
+maxsol integer 0 100 0 maxint 1 3 maximal number of solutions to store during search
 strongbranching integer 0 5 0 999999 1 3 strong branching
 trustpseudocosts integer 0 5 -1 2000000 1 3 after howmany nodes we trust the pseudo costs
 cutdepth enumint 0 -1 1 4 depth in tree at which cuts are applied

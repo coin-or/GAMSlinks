@@ -37,6 +37,8 @@ private:
    char*                 miptrace;           /**< name of trace file to write branch-and-bound info to */
    int                   miptracenodefreq;   /**< node frequency for mip trace */
    double                miptracetimefreq;   /**< time frequency for mip trace */
+   char*                 dumpsolutions;      /**< name of solutions index gdx file for writing all solutions */
+   int                   maxsol;             /**< maximal number of solutions to store during search */
 
    bool setupProblem();
 
@@ -68,7 +70,9 @@ public:
      solvefinal(true),
      miptrace(NULL),
      miptracenodefreq(100),
-     miptracetimefreq(5.0)
+     miptracetimefreq(5.0),
+     dumpsolutions(NULL),
+     maxsol(100)
    { }
 
    ~GamsCbc();

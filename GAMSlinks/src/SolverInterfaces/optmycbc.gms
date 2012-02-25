@@ -43,6 +43,8 @@ set g Cbc Option Groups /
       mipstart               whether it should be tried to use the initial variable levels as initial MIP solution
       tol_integer            tolerance for integrality
       sollim                 limit on number of solutions
+      dumpsolutions          name of solutions index gdx file for writing alternate solutions
+      maxsol                 maximal number of solutions to store during search
       strongbranching        strong branching
       trustpseudocosts       after howmany nodes we trust the pseudo costs
       cutdepth               depth in tree at which cuts are applied
@@ -162,6 +164,8 @@ mipgeneral.(
   strategy             .i.(def 1, lo 0, up 2)
   tol_integer          .r.(def 1e-6)
   sollim               .i.(def -1, lo -1, up 2147483647)
+  dumpsolutions        .s.(def '')
+  maxsol               .i.(def 100)
   strongbranching      .i.(def 5, lo 0, up 999999)
   trustpseudocosts     .i.(def 5, lo -1, up 2000000)
   coststrategy         .s.(def off)

@@ -301,6 +301,16 @@ sollim.'-1'
 No limit on the number of feasible solutions.
 
 
+dumpsolutions
+The name of a solutions index gdx file for writing alternate solutions found by CBC.
+The GDX file specified by this option will contain a set called index that contains the names of GDX files
+with the individual solutions.
+
+
+maxsol
+Maximal number of solutions to store during search and to dump into gdx files if dumpsolutions options is set.
+
+
 strongbranching
 Determines the number of variables to look at in strong branching.<BR>
 In order to decide which variable to branch on, the code will choose up to this number of unsatisfied variables and try minimal up and down branches.

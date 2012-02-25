@@ -1937,7 +1937,7 @@ SCIP_RETCODE writeGmoSolution(
          {
             rc = gdxGetLastError(gdx);
             gdxErrorStr(gdx, rc, buffer);
-            SCIPerrorMessage("problem writing GDX file %s: %d\n", indexfilename, buffer);
+            SCIPerrorMessage("problem writing GDX file %s: %s\n", indexfilename, buffer);
          }
          else
          {
@@ -1953,7 +1953,7 @@ SCIP_RETCODE writeGmoSolution(
             gdxDataWriteStrStart(gdx, "index", "Dumpsolutions index", 1, dt_set, 0);
             for( i = 1; i < nrsol; ++i)
             {
-               (void) SCIPsnprintf(buffer, SCIP_MAXSTRLEN, "soln_%s_p%d.gdx", "scip", i);
+               (void) SCIPsnprintf(buffer, SCIP_MAXSTRLEN, "soln_scip_p%d.gdx", i);
                gdxAddSetText(gdx, buffer, &sloc);
                (void) SCIPsnprintf(keys[0], GMS_SSSIZE, "file%d", i);
                vals[GMS_VAL_LEVEL] = sloc;
@@ -1967,7 +1967,7 @@ SCIP_RETCODE writeGmoSolution(
             /* create point files */
             for( i = 1; i < nrsol; ++i)
             {
-               (void) SCIPsnprintf(buffer, SCIP_MAXSTRLEN, "soln_%s_p%d.gdx", "scip", i);
+               (void) SCIPsnprintf(buffer, SCIP_MAXSTRLEN, "soln_scip_p%d.gdx", i);
 
                SCIP_CALL( SCIPgetSolVals(scip, SCIPgetSols(scip)[i], gmoN(gmo), probdata->vars, collev) );
                gmoSetVarL(gmo, collev);
