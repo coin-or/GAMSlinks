@@ -2,26 +2,12 @@
 
 \begin{description}
 
-\item[\label{iterlim}\hypertarget{iterlim}
-{\textbf{iterlim (\slshape{integer})}}]\hspace{1.0in}
-
-For an LP, this is the maximum number of iterations to solve the LP.
-For a MIP, this option is ignored.
-
-\textsl{(default = GAMS iterlim)}
-
 \item[\label{reslim}\hypertarget{reslim}
 {\textbf{reslim (\slshape{real})}}]\hspace{1.0in}
 
-Maximum CPU time in seconds.
+Maximum time in seconds.
 
 \textsl{(default = GAMS reslim)}
-
-\item[\label{writemps}\hypertarget{writemps}
-{\textbf{writemps (\slshape{string})}}]\hspace{1.0in}
-
-Write the problem formulation in MPS format.
-The parameter value is the name of the MPS file.
 
 \item[\label{special}\hypertarget{special}
 {\textbf{special (\slshape{string})}}]\hspace{1.0in}
@@ -31,11 +17,26 @@ This parameter let you specify CBC options which are not supported by the GAMS/C
 The string value given to this parameter is split up into parts at each space and added to the array of parameters given to CBC (in front of the -solve command).
 Hence, you can use it like the command line parameters for the CBC standalone version.
 
+
+\item[\label{writemps}\hypertarget{writemps}
+{\textbf{writemps (\slshape{string})}}]\hspace{1.0in}
+
+Write the problem formulation in MPS format.
+The parameter value is the name of the MPS file.
+
 \end{description}
 
 \subsubsection{LP Options}
 
 \begin{description}
+
+\item[\label{iterlim}\hypertarget{iterlim}
+{\textbf{iterlim (\slshape{integer})}}]\hspace{1.0in}
+
+For an LP, this is the maximum number of iterations to solve the LP.
+For a MIP, this option is ignored.
+
+\textsl{(default = GAMS iterlim)}
 
 \item[\label{idiotcrash}\hypertarget{idiotcrash}
 {\textbf{idiotcrash (\slshape{integer})}}]\hspace{1.0in}
@@ -59,7 +60,6 @@ Switch this method off.
 
 For long and thin problems this method may solve a series of small problems created by taking a subset of the columns.
 Cplex calls it `sifting'.
-
 A positive number determines the number of passes that sprintcrash is called.
 
 \textsl{(default = -1)}
@@ -210,6 +210,16 @@ Turns off the initial presolve.
 Turns on the initial presolve.
 \end{itemize}
 
+\item[\label{passpresolve}\hypertarget{passpresolve}
+{\textbf{passpresolve (\slshape{integer})}}]\hspace{1.0in}
+
+Normally Presolve does 5 passes but you may want to do less to make
+it more lightweight or do more if improvements are still being made.
+As Presolve will return if nothing is being taken out, you should
+not normally need to use this fine tuning.
+
+\textsl{(default = 5)}
+
 \item[\label{tol_dual}\hypertarget{tol_dual}
 {\textbf{tol\_dual (\slshape{real})}}]\hspace{1.0in}
 
@@ -230,16 +240,6 @@ The maximum amount the primal constraints can be violated and still be considere
 The tolerance used in presolve.
 
 \textsl{(default = 1e-8)}
-
-\item[\label{passpresolve}\hypertarget{passpresolve}
-{\textbf{passpresolve (\slshape{integer})}}]\hspace{1.0in}
-
-Normally Presolve does 5 passes but you may want to do less to make
-it more lightweight or do more if improvements are still being made.
-As Presolve will return if nothing is being taken out, you should
-not normally need to use this fine tuning.
-
-\textsl{(default = 5)}
 
 \item[\label{startalg}\hypertarget{startalg}
 {\textbf{startalg (\slshape{string})}}]\hspace{1.0in}
@@ -262,19 +262,20 @@ Let CLP use a primal dual predictor corrector algorithm.
 
 \begin{description}
 
-\item[\label{mipstart}\hypertarget{mipstart}
-{\textbf{mipstart (\slshape{integer})}}]\hspace{1.0in}
+\item[\label{threads}\hypertarget{threads}
+{\textbf{threads (\slshape{integer})}}]\hspace{1.0in}
 
-This option controls the use of advanced starting values for mixed integer programs.
-A setting of 1 indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.
+This option controls the multithreading feature of CBC, which is currently available only on Unix variants.
 
-\textsl{(default = 0)}
-\begin{itemize}
-\item[0] 
-Do not use the initial variable levels.
-\item[1] 
-Try to use the initial variable levels as a MIP starting solution.
-\end{itemize}
+\textsl{(default = GAMS threads)}
+
+A number between 1 and 100 sets the number of threads used for parallel branch and bound.
+A number $100+n$ with $n$ between 1 and 100 says that $n$ threads are used to parallelize the branch and bound, but also heuristics such as RINS which do branch and bound on a reduced model also use threads.
+A number $200+n$ with $n$ between 1 and 100 says that $n$ threads are used to parallelize the branch and bound, but also the cut generators at the root node (i.e., before threads are useful) are run in parallel.
+A number $300+n$ with $n$ between 1 and 100 combines the $100+n$ and $200+n$ options.
+A number $400+n$ with $n$ between 1 and 100 says that $n$ threads are used in sub-trees.
+Thus, $n$ threads are used to parallelize the branch and bound, but also heuristics use threads and the cut generators at the root node are run in parallel.
+The $100+n$, $200+n$, and $300+n$ options are experimental.
 
 \item[\label{strategy}\hypertarget{strategy}
 {\textbf{strategy (\slshape{integer})}}]\hspace{1.0in}
@@ -291,6 +292,20 @@ Use this setting for easy problems.
 This is the default setting.
 \item[2]
 Use this setting for difficult problems.
+\end{itemize}
+
+\item[\label{mipstart}\hypertarget{mipstart}
+{\textbf{mipstart (\slshape{integer})}}]\hspace{1.0in}
+
+This option controls the use of advanced starting values for mixed integer programs.
+A setting of 1 indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] 
+Do not use the initial variable levels.
+\item[1] 
+Try to use the initial variable levels as a MIP starting solution.
 \end{itemize}
 
 \item[\label{tol_integer}\hypertarget{tol_integer}
@@ -310,6 +325,21 @@ A limit on number of feasible solutions that CBC should find for a MIP.
 \item[-1] 
 No limit on the number of feasible solutions.
 \end{itemize}
+
+\item[\label{dumpsolutions}\hypertarget{dumpsolutions}
+{\textbf{dumpsolutions (\slshape{string})}}]\hspace{1.0in}
+
+The name of a solutions index gdx file for writing alternate solutions found by CBC.
+The GDX file specified by this option will contain a set called index that contains the names of GDX files
+with the individual solutions.
+
+
+\item[\label{maxsol}\hypertarget{maxsol}
+{\textbf{maxsol (\slshape{integer})}}]\hspace{1.0in}
+
+Maximal number of solutions to store during search and to dump into gdx files if dumpsolutions options is set.
+
+\textsl{(default = 100)}
 
 \item[\label{strongbranching}\hypertarget{strongbranching}
 {\textbf{strongbranching (\slshape{integer})}}]\hspace{1.0in}
@@ -401,22 +431,6 @@ This option let CBC search for rows with upper bound 1 and where all nonzero coe
 This option is similar to sos, but allows any number integer variables to be outside of the sets.
 \end{itemize}
 
-\item[\label{threads}\hypertarget{threads}
-{\textbf{threads (\slshape{integer})}}]\hspace{1.0in}
-
-This option controls the multithreading feature of CBC, which is currently available only on Unix variants.
-
-\textsl{(default = GAMS threads)}
-
-A number between 1 and 100 sets the number of threads used for parallel branch and bound.
-A number $100+n$ with $n$ between 1 and 100 says that $n$ threads are used to parallelize the branch and bound, but also heuristics such as RINS which do branch and bound on a reduced model also use threads.
-A number $200+n$ with $n$ between 1 and 100 says that $n$ threads are used to parallelize the branch and bound, but also the cut generators at the root node (i.e., before threads are useful) are run in parallel.
-A number $300+n$ with $n$ between 1 and 100 combines the $100+n$ and $200+n$ options.
-A number $400+n$ with $n$ between 1 and 100 says that $n$ threads are used in sub-trees.
-Thus, $n$ threads are used to parallelize the branch and bound, but also heuristics use threads and the cut generators at the root node are run in parallel.
-The $100+n$, $200+n$, and $300+n$ options are experimental.
-
-
 \item[\label{printfrequency}\hypertarget{printfrequency}
 {\textbf{printfrequency (\slshape{integer})}}]\hspace{1.0in}
 
@@ -427,6 +441,13 @@ Controls the number of nodes that are evaluated between status prints.
 \item[0] 
 Automatic choice, which is 100 for large problems and 1000 for small problems.
 \end{itemize}
+
+\item[\label{loglevel}\hypertarget{loglevel}
+{\textbf{loglevel (\slshape{integer})}}]\hspace{1.0in}
+
+Amount of output to print by CBC.
+
+\textsl{(default = 1)}
 
 \item[\label{increment}\hypertarget{increment}
 {\textbf{increment (\slshape{real})}}]\hspace{1.0in}
@@ -444,6 +465,12 @@ E.g., if all objective coefficients are multiples of 0.01 and only integer varia
 whether the MIP with discrete variables fixed to solution values should be solved after CBC finished
 
 \textsl{(default = 1)}
+\begin{itemize}
+\item[0] 
+Turn off the final LP solve.
+\item[1] 
+Turn on the final LP solve.
+\end{itemize}
 
 \item[\label{miptrace}\hypertarget{miptrace}
 {\textbf{miptrace (\slshape{string})}}]\hspace{1.0in}
@@ -920,6 +947,19 @@ Turns the naive heuristics off.
 Turns the naive heuristics on.
 \end{itemize}
 
+\item[\label{pivotandfix}\hypertarget{pivotandfix}
+{\textbf{pivotandfix (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter controls the use of the pivot and fix heuristic.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0]
+Turns the naive pivot and fix heuristic off.
+\item[1]
+Turns the naive pivot and fix heuristic on.
+\end{itemize}
+
 \item[\label{randomizedrounding}\hypertarget{randomizedrounding}
 {\textbf{randomizedrounding (\slshape{integer})}}]\hspace{1.0in}
 
@@ -946,19 +986,6 @@ Turns the relaxation enforced neighborhood search off.
 Turns the relaxation enforced neighborhood search on.
 \end{itemize}
 
-\item[\label{pivotandfix}\hypertarget{pivotandfix}
-{\textbf{pivotandfix (\slshape{integer})}}]\hspace{1.0in}
-
-This parameter controls the use of the pivot and fix heuristic.
-
-\textsl{(default = 0)}
-\begin{itemize}
-\item[0] 
-Turns the naive pivot and fix heuristic off.
-\item[1] 
-Turns the naive pivot and fix heuristic on.
-\end{itemize}
-
 \item[\label{rins}\hypertarget{rins}
 {\textbf{rins (\slshape{integer})}}]\hspace{1.0in}
 
@@ -983,9 +1010,9 @@ This parameter control the use of a simple (but effective) rounding heuristic at
 
 \textsl{(default = 1)}
 \begin{itemize}
-\item[0] 
+\item[0]
 Turns the rounding heuristic off.
-\item[1] 
+\item[1]
 Turns the rounding heuristic on.
 \end{itemize}
 
@@ -998,154 +1025,3 @@ If it is set (between -2 and 20), Cbc will try  and fix some integer variables
 \textsl{(default = -1)}
 
 \end{description}
-
-% \subsubsection{MIP Options for the GAMS Branch Cut and Heuristic Facility}
-% 
-% \begin{description}
-% \item[\label{usercutcall}\hypertarget{usercutcall}
-% {\textbf{usercutcall (\slshape{string})}}]\hspace{1.0in}
-% 
-% The GAMS command line (minus the gams executable name) to call the cut generator.
-% 
-% 
-% \item[\label{usercutfirst}\hypertarget{usercutfirst}
-% {\textbf{usercutfirst (\slshape{integer})}}]\hspace{1.0in}
-% 
-% Calls the cut generator for the first $n$ nodes.
-% 
-% \textsl{(default = 10)}
-% 
-% \item[\label{usercutfreq}\hypertarget{usercutfreq}
-% {\textbf{usercutfreq (\slshape{integer})}}]\hspace{1.0in}
-% 
-% Determines the frequency of the cut generator model calls.
-% 
-% \textsl{(default = 10)}
-% 
-% \item[\label{usercutinterval}\hypertarget{usercutinterval}
-% {\textbf{usercutinterval (\slshape{integer})}}]\hspace{1.0in}
-% 
-% Determines the interval when to apply the multiplier for the frequency of the cut generator model calls.
-% See userheurinterval for details.
-% 
-% \textsl{(default = 100)}
-% 
-% \item[\label{usercutmult}\hypertarget{usercutmult}
-% {\textbf{usercutmult (\slshape{integer})}}]\hspace{1.0in}
-% 
-% Determines the multiplier for the frequency of the cut generator model calls.
-% 
-% \textsl{(default = 2)}
-% 
-% \item[\label{usercutnewint}\hypertarget{usercutnewint}
-% {\textbf{usercutnewint (\slshape{integer})}}]\hspace{1.0in}
-% 
-% Calls the cut generator if the solver found a new integer feasible solution.
-% 
-% \textsl{(default = 1)}
-% \begin{itemize}
-% \item[0]
-% Do not call cut generator because a new integer feasible solution is found.
-% \item[1]
-% Let CBC call the cut generator if a new integer feasible solution is found.
-% \end{itemize}
-% 
-% \item[\label{usergdxin}\hypertarget{usergdxin}
-% {\textbf{usergdxin (\slshape{string})}}]\hspace{1.0in}
-% 
-% The name of the GDX file read back into CBC.
-% 
-% \textsl{(default =} \verb=bchin.gdx=)
-% 
-% \item[\label{usergdxname}\hypertarget{usergdxname}
-% {\textbf{usergdxname (\slshape{string})}}]\hspace{1.0in}
-% 
-% The name of the GDX file exported from the solver with the solution at the node.
-% 
-% \textsl{(default =} \verb=bchout.gdx=)
-% 
-% \item[\label{usergdxnameinc}\hypertarget{usergdxnameinc}
-% {\textbf{usergdxnameinc (\slshape{string})}}]\hspace{1.0in}
-% 
-% The name of the GDX file exported from the solver with the incumbent solution.
-% 
-% \textsl{(default =} \verb=bchout_i.gdx=)
-% 
-% \item[\label{usergdxprefix}\hypertarget{usergdxprefix}
-% {\textbf{usergdxprefix (\slshape{string})}}]\hspace{1.0in}
-% 
-% Prefixes to use for usergdxin, usergdxname, and usergdxnameinc.
-% 
-% 
-% \item[\label{userheurcall}\hypertarget{userheurcall}
-% {\textbf{userheurcall (\slshape{string})}}]\hspace{1.0in}
-% 
-% The GAMS command line (minus the gams executable name) to call the heuristic.
-% 
-% 
-% \item[\label{userheurfirst}\hypertarget{userheurfirst}
-% {\textbf{userheurfirst (\slshape{integer})}}]\hspace{1.0in}
-% 
-% Calls the heuristic for the first n nodes.
-% 
-% \textsl{(default = 10)}
-% 
-% \item[\label{userheurfreq}\hypertarget{userheurfreq}
-% {\textbf{userheurfreq (\slshape{integer})}}]\hspace{1.0in}
-% 
-% Determines the frequency of the heuristic model calls.
-% 
-% \textsl{(default = 10)}
-% 
-% \item[\label{userheurinterval}\hypertarget{userheurinterval}
-% {\textbf{userheurinterval (\slshape{integer})}}]\hspace{1.0in}
-% 
-% Determines the interval when to apply the multiplier for the frequency of the heuristic model calls.
-% For example, for the first 100 (userheurinterval) nodes, the solver call every 10th (userheurfreq) node
-% the heuristic.
-% After 100 nodes, the frequency gets multiplied by 10 (userheurmult), so that for the next 100 node the solver calls the heuristic every 20th node.
-% For nodes 200-300, the heuristic get called every 40th node, for nodes 300-400 every 80th node and after node 400 every 100th node.
-% 
-% \textsl{(default = 100)}
-% 
-% \item[\label{userheurmult}\hypertarget{userheurmult}
-% {\textbf{userheurmult (\slshape{integer})}}]\hspace{1.0in}
-% 
-% Determines the multiplier for the frequency of the heuristic model calls.
-% 
-% \textsl{(default = 2)}
-% 
-% \item[\label{userheurnewint}\hypertarget{userheurnewint}
-% {\textbf{userheurnewint (\slshape{integer})}}]\hspace{1.0in}
-% 
-% Calls the heuristic if the solver found a new integer feasible solution.
-% 
-% \textsl{(default = 1)}
-% \begin{itemize}
-% \item[0]
-% Do not call heuristic because a new integer feasible solution is found.
-% \item[1]
-% Let CBC call the heuristic if a new integer feasible solution is found.
-% \end{itemize}
-% 
-% \item[\label{userheurobjfirst}\hypertarget{userheurobjfirst}
-% {\textbf{userheurobjfirst (\slshape{integer})}}]\hspace{1.0in}
-% 
-% Similar to userheurfirst but only calls the heuristic if the relaxed objective value promises a significant improvement of the current incumbent, i.e., the LP value of the node has to be closer to the best bound than the current incumbent.
-% 
-% \textsl{(default = 0)}
-% 
-% \item[\label{userjobid}\hypertarget{userjobid}
-% {\textbf{userjobid (\slshape{string})}}]\hspace{1.0in}
-% 
-% Postfixes to use for gdxname, gdxnameinc, and gdxin.
-% 
-% 
-% \item[\label{userkeep}\hypertarget{userkeep}
-% {\textbf{userkeep (\slshape{integer})}}]\hspace{1.0in}
-% 
-% Calls gamskeep instead of gams
-% 
-% \textsl{(default = 0)}
-% 
-% \end{description}

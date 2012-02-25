@@ -105,8 +105,6 @@ crossover
 Determines whether CLP should crossover to the simplex algorithm after the barrier algorithm finished.<BR>
 Interior point algorithms do not obtain a basic solution.
 This option will crossover to a basic solution suitable for ranging or branch and cut.
-With the current state of the quadratic solver it may be a good idea to switch off the crossover for quadratic problems (and maybe presolve as well).
-CLP does this.
 
 
 crossover.0
@@ -262,7 +260,6 @@ For an optimal solution, no integer variable may be farther than this from an in
 
 
 strategy
-This turns on newer features.
 Setting strategy to 1 (the default) uses Gomory cuts using tolerance of 0.01 at root,
 does a possible restart after 100 nodes if Cbc can fix many variables and activates
 a diving and RINS heuristic and makes feasibility pump more aggressive.
@@ -899,6 +896,14 @@ frequency in seconds for writing branch-and-bound progress information
 
 solvefinal
 whether the MIP with discrete variables fixed to solution values should be solved after CBC finished
+
+
+solvefinal.0
+Turn off the final LP solve.
+
+
+solvefinal.1
+Turn on the final LP solve.
 
 
 userheurfreq

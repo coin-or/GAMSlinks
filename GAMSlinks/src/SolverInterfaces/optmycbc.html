@@ -31,9 +31,6 @@ complete <a href="docs/solvers/coin.pdf">MYCBC manual</a>.
 <h2>Summary of MYCBC Options</h2>
 <table>
 <tr><th height=75 valign=bottom colspan=2 align=left><h3>General Options</h3></th></tr>
-<tr><td><a href="#iterlim">
-iterlim</a></td>
-<td>iteration limit</td></tr>
 <tr><td><a href="#reslim">
 reslim</a></td>
 <td>resource limit</td></tr>
@@ -56,6 +53,9 @@ dualpivot</a></td>
 <tr><td><a href="#idiotcrash">
 idiotcrash</a></td>
 <td>idiot crash</td></tr>
+<tr><td><a href="#iterlim">
+iterlim</a></td>
+<td>iteration limit</td></tr>
 <tr><td><a href="#maxfactor">
 maxfactor</a></td>
 <td>maximum number of iterations between refactorizations</td></tr>
@@ -349,8 +349,6 @@ crossover</a>
 Determines whether CLP should crossover to the simplex algorithm after the barrier algorithm finished.<BR>
 Interior point algorithms do not obtain a basic solution.
 This option will crossover to a basic solution suitable for ranging or branch and cut.
-With the current state of the quadratic solver it may be a good idea to switch off the crossover for quadratic problems (and maybe presolve as well).
-CLP does this.
 
 <br><i>(default = 1)</i>
 <table>
@@ -1152,8 +1150,10 @@ whether the MIP with discrete variables fixed to solution values should be solve
 
 <br><i>(default = 1)</i>
 <table>
-<tr valign="top"><td width=20 align=right>0</td><td></td></tr>
-<tr valign="top"><td width=20 align=right>1</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+Turn off the final LP solve.</td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+Turn on the final LP solve.</td></tr>
 </table>
 
 <h4><a name="special">
@@ -1201,7 +1201,6 @@ Let CLP use a primal dual predictor corrector algorithm.</td></tr>
 strategy</a>
 <i> (integer)</i> switches on groups of features</h4><p>
 
-This turns on newer features.
 Setting strategy to 1 (the default) uses Gomory cuts using tolerance of 0.01 at root,
 does a possible restart after 100 nodes if Cbc can fix many variables and activates
 a diving and RINS heuristic and makes feasibility pump more aggressive.
@@ -1240,7 +1239,7 @@ A number 400+n with n between 1 and 100 says that n threads are used in sub-tree
 Thus, n threads are used to parallelize the branch and bound, but also heuristics use threads and the cut generators at the root node are run in parallel.
 The 100+n, 200+n, and 300+n options are experimental.
 
-<br><i>(default = 1)</i>
+<br><i>(default = GAMS threads)</i>
 
 <h4><a name="tol_dual">
 tol_dual</a>

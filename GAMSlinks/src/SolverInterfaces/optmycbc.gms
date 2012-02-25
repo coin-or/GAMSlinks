@@ -18,9 +18,11 @@ set g Cbc Option Groups /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
     t / I Integer, R Real, S String, B Binary /
     o Options /
-      writemps               create MPS file for problem
+      reslim                 resource limit
       special                options passed unseen to CBC
+      writemps               create MPS file for problem
 *LP options
+      iterlim                iteration limit
       idiotcrash             idiot crash
       sprintcrash            sprint crash
       sifting                synonym for sprint crash
@@ -37,8 +39,8 @@ set g Cbc Option Groups /
       tol_primal             primal feasibility tolerance
       tol_presolve           tolerance used in presolve
       startalg               LP solver for root node
-      threads                number of threads to use (available on Unix variants only)
 *MIP options
+      threads                number of threads to use (available on Unix variants only)
       strategy               switches on groups of features
       mipstart               whether it should be tried to use the initial variable levels as initial MIP solution
       tol_integer            tolerance for integrality
@@ -47,6 +49,22 @@ set g Cbc Option Groups /
       maxsol                 maximal number of solutions to store during search
       strongbranching        strong branching
       trustpseudocosts       after howmany nodes we trust the pseudo costs
+      coststrategy           how to use costs as priorities
+      nodestrategy           how to select nodes
+      preprocess             integer presolve
+      printfrequency         frequency of status prints
+      loglevel               CBC loglevel
+      increment              increment of cutoff when new incumbent
+      solvefinal             final solve of MIP with fixed discrete variables
+      miptrace               name of trace file for branch-and-bound information
+      miptracenodefreq       frequency in number of nodes for writing to mip trace file
+      miptracetimefreq       frequency in seconds for writing to mip trace file
+      nodelim                node limit
+      nodlim                 node limit
+      optca                  absolute stopping tolerance
+      optcr                  relative stopping tolerance
+      cutoff                 cutoff for objective function value
+*MIP cuts options
       cutdepth               depth in tree at which cuts are applied
       cut_passes_root        number of cut passes at root node
       cut_passes_tree        number of cut passes at nodes in the tree
@@ -56,12 +74,13 @@ set g Cbc Option Groups /
       gomorycuts             Gomory Cuts
       knapsackcuts           Knapsack Cover Cuts
       liftandprojectcuts     Lift and Project Cuts
-      mircuts        		     Mixed Integer Rounding Cuts
+      mircuts                Mixed Integer Rounding Cuts
       twomircuts             Two Phase Mixed Integer Rounding Cuts
       probingcuts            Probing Cuts
       reduceandsplitcuts     Reduce and Split Cuts
       residualcapacitycuts   Residual Capacity Cuts
 *      zerohalfcuts           Zero-Half Cuts
+*MIP heuristics options
       heuristics             global switch for heuristics
       combinesolutions       combine solutions heuristic
       dins                   distance induced neighborhood search
@@ -83,16 +102,6 @@ set g Cbc Option Groups /
       rins                   relaxed induced neighborhood search
       roundingheuristic      rounding heuristic
       vubheuristic           VUB heuristic
-      coststrategy           how to use costs as priorities
-      nodestrategy           how to select nodes
-      preprocess             integer presolve
-      printfrequency         frequency of status prints
-      loglevel               CBC loglevel
-      increment              increment of cutoff when new incumbent
-      solvefinal             final solve of MIP with fixed discrete variables
-      miptrace               name of trace file for branch-and-bound information
-      miptracenodefreq       frequency in number of nodes for writing to mip trace file
-      miptracetimefreq       frequency in seconds for writing to mip trace file
 $ontext
       usercutcall      The GAMS command line to call the cut generator
       usercutfirst     Calls the cut generator for the first n nodes
@@ -116,14 +125,6 @@ $ontext
       userjobid        'Postfixes gdxname, gdxnameinc, and gdxin'
       userkeep         Calls gamskeep instead of gams
 $offtext
-* GAMS options
-      reslim                 resource limit
-      iterlim                iteration limit
-      nodelim                node limit
-      nodlim                 node limit
-      optca                  absolute stopping tolerance
-      optcr                  relative stopping tolerance
-      cutoff                 cutoff for objective function value
 * immediates
       nobounds               ignores bounds on options
       readfile               read secondary option file
@@ -136,12 +137,12 @@ general.(
   special              .s.(def '')
 * GAMS options
   reslim          .r.(def 1000)
-  iterlim         .i.(def 10000)
 * immediates
   nobounds        .b.(def 0)
   readfile        .s.(def '')
 )
 lpoptions.(
+  iterlim              .i.(def 10000)
   idiotcrash           .i.(def -1, lo -1, up 999999)
   sprintcrash          .i.(def -1, lo -1, up 5000000)
   sifting              .i.(def -1, lo -1, up 5000000)
@@ -336,6 +337,7 @@ $offtext
                      optcr      'GAMS optcr'
                      cutoff     'GAMS cutoff'
                      increment  'GAMS cheat'
+                     threads    'GAMS threads'
                      cut_passes_root '100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop in the objective function value is small) if it has less than 5000 columns, and 20 passes otherwise.'
                    /
  oep(o) / mipstart, crossover, perturbation, presolve, printfrequency,
