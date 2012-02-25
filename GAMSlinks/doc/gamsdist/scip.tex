@@ -19,7 +19,7 @@ Within \GAMS, the MIP and MINLP solving facilities of \SCIP are available.
 
 For more detailed information, we refer to \cite{Achterberg2007,Ach09,AchBeKoWo08,Berthold2006,BertholdHeinzVigerske2009,Vi12,Wolter2006} and the \SCIP web site \url{http://scip.zib.de}, especially the list of papers listed at \url{http://scip.zib.de/related.shtml}.
 
-\GAMS/\SCIP uses the linear solver \textsc{SoPlex} \cite{Wunderling1996} as LP solver and the COIN-OR Interior Point Optimizer \textsc{Ipopt}~\cite{WaBi06} as nonlinear solver.
+\GAMS/\SCIP uses the linear solver \textsc{SoPlex} \cite{Wunderling1996} as LP solver, the COIN-OR Interior Point Optimizer \textsc{Ipopt}~\cite{WaBi06} as nonlinear solver, and \textsc{CppAD} to compute derivatives of nonlinear functions.
 
 \section{Model requirements}
 
@@ -51,7 +51,7 @@ If you need to use \GAMS/\SCIP with BCH, please consider to use a \GAMS system o
 
 \subsection{Specification of \SCIP Options}
 
-\GAMS/\SCIP currently supports the \GAMS parameters \texttt{reslim}, \texttt{iterlim}, \texttt{nodlim}, \texttt{optcr}, and \texttt{optca}.
+\GAMS/\SCIP supports the \GAMS parameters \texttt{reslim}, \texttt{iterlim}, \texttt{nodlim}, \texttt{optcr}, and \texttt{optca}.
 Further, under Linux and Windows, the option \texttt{threads} can be used to control the number of threads used in the linear algebra routines of \textsc{Ipopt}.
 
 Options can be specified by a \SCIP options file.
@@ -62,9 +62,9 @@ Further, string values have to be enclosed in quotation marks.
 
 A small example for a scip.opt file is:
 \begin{verbatim}
-  presolving/probing/maxrounds = 0
-  separating/maxrounds         = 0
-  separating/maxroundsroot     = 0
+  propagating/probing/maxprerounds = 0
+  separating/maxrounds             = 0
+  separating/maxroundsroot         = 0
 \end{verbatim}
 %   gams/usercutcall         = "bchcutgen.gms"
 It causes \GAMS/\SCIP to disable probing during presolve and to turn off all cut generators.
