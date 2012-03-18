@@ -48,13 +48,13 @@ SCIP_DECL_MESSAGEINFO(GamsScipPrintLog)
       gevLogPChar((gevHandle_t)SCIPmessagehdlrGetData(messagehdlr), msg);
 }
 
-static
-SCIP_DECL_MESSAGEINFO(GamsScipPrintStdout)
-{
-   assert(file != NULL);
-   fputs(msg, file);
-   fflush(file);
-}
+//static
+//SCIP_DECL_MESSAGEINFO(GamsScipPrintStdout)
+//{
+//   assert(file != NULL);
+//   fputs(msg, file);
+//   fflush(file);
+//}
 
 GamsScip::~GamsScip()
 {
@@ -255,7 +255,7 @@ SCIP_RETCODE GamsScip::setupSCIP()
    {
       /* print dialog messages to stdout if lo=1 or lo=3, but through gev if lo=0 or lo=2 */
       SCIP_CALL_ABORT( SCIPcreateMessagehdlr(&scipmsghandler, FALSE,
-         GamsScipPrintLogStat, GamsScipPrintLogStat, gevGetIntOpt(gev, gevLogOption) % 2 ? GamsScipPrintStdout : GamsScipPrintLog, GamsScipPrintLog,
+         GamsScipPrintLogStat, GamsScipPrintLogStat, GamsScipPrintLog, GamsScipPrintLog,
          (SCIP_MESSAGEHDLRDATA*)gev) );
       SCIP_CALL_ABORT( SCIPsetMessagehdlr(scipmsghandler) );
    }
