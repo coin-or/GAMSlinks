@@ -35,7 +35,8 @@ private:
    long int              nevallaghess;       /**< number of lagrangian hessian evaluations */
    long int              nevalnewpoint;      /**< number of evaluations at new points */
 
-   double                mininfeas;          /**< minimal infeasibility */
+   double                mininfeasconviolsc; /**< scaled constraint violation in minimal infeasible solution */
+   double                mininfeasconviolunsc;/**< unscaled constraint violation in minimal infeasible solution */
    double*               mininfeasprimals;   /**< primal values in minimal infeasible solution */
    double*               mininfeasdualeqs;   /**< dual values for equations in minimal infeasible solution */
    double*               mininfeasduallbs;   /**< dual values for variable lower bounds in minimal infeasible solution */

@@ -134,9 +134,19 @@ int GamsIpopt::callSolver()
 
    SmartPtr<GamsNLP> nlp = new GamsNLP(gmo);
    ipopt->Options()->GetNumericValue("diverging_iterates_tol", nlp->div_iter_tol, "");
-   // or should we also check the tolerance for acceptable points?
-   ipopt->Options()->GetNumericValue("tol", nlp->scaled_conviol_tol, "");
-   ipopt->Options()->GetNumericValue("constr_viol_tol", nlp->unscaled_conviol_tol, "");
+
+   double acceptabletol;
+   double defaulttol;
+
+   // get scaled consviol tolerance as max of acceptable tolerance and tolerance
+   ipopt->Options()->GetNumericValue("acceptable_tol", acceptabletol, "");
+   ipopt->Options()->GetNumericValue("tol", defaulttol, "");
+   nlp->scaled_conviol_tol = std::max(defaulttol, acceptabletol);
+
+   // get unscaled consviol tolerance as max of acceptable constraint violation tolerance and constraint violation tolerance
+   ipopt->Options()->GetNumericValue("acceptable_constr_viol_tol", acceptabletol, "");
+   ipopt->Options()->GetNumericValue("constr_viol_tol", defaulttol, "");
+   nlp->unscaled_conviol_tol = std::max(defaulttol, acceptabletol);
 
    // initialize GMO hessian, if required
    std::string hess_approx;
