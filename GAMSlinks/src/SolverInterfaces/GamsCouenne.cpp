@@ -293,7 +293,6 @@ int GamsCouenne::callSolver()
       gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");
       gevLogStat(gev, "Disabling use of SCIP in feasibility pump.");
       couenne_setup->options()->SetStringValue("feas_pump_usescip", "no", false, false);
-      return 1;
    }
 #endif
 
