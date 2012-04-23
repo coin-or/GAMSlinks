@@ -281,13 +281,15 @@ int GamsCouenne::callSolver()
    }
 #endif
 
-   // check for academic license of SCIP, if used
+   // if feaspump is activated and should use SCIP, check for academic license of SCIP
    // also do not accept demo mode, since we do not know how large the MIPs in the feaspump will be
 #ifdef COIN_HAS_SCIP
    bool usescip;
    bool isdemo;
-   couenne_setup->options()->GetBoolValue("feas_pump_usescip", usescip, "couenne.");
-   if( usescip && !checkAcademicLicense(gmo, isdemo) && !isdemo )
+   couenne_setup->options()->GetBoolValue("feas_pump_heuristic", usescip, "couenne.");
+   if( usescip )
+      couenne_setup->options()->GetBoolValue("feas_pump_usescip", usescip, "couenne.");
+   if( usescip && (!checkAcademicLicense(gmo, isdemo) || isdemo) )
    {
       gevLogStat(gev, "*** Use of SCIP is limited to academic users.");
       gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");
