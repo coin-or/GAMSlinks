@@ -28215,7 +28215,7 @@ fi
 
 
 
-GAMS_VERSION_DEFAULT="23.7"
+GAMS_VERSION_DEFAULT="23.8"
 if test "$GAMS_PATH" = UNAVAILABLE; then
   GAMS_VERSION="$GAMS_VERSION_DEFAULT"
   { echo "$as_me:$LINENO: no GAMS system found, tests will not work, assuming build for GAMS version $GAMS_VERSION" >&5
