@@ -164,3 +164,7 @@ then
 fi
 @COIN_IS_WINDOWS_TRUE@cp "${libdir}/$libname" "${gamspath}/$libname"
 @COIN_IS_WINDOWS_FALSE@ln -s "${libdir}/$libname" "${gamspath}/$libname"
+
+@COIN_HAS_CBC_TRUE@cp @bindir@/optmycbc.def ${gamspath}
+@COIN_HAS_OS_TRUE@cp @bindir@/optmyos.def ${gamspath}
+@COIN_HAS_OSIGLPK_TRUE@cp @bindir@/optmyglpk.def ${gamspath}
