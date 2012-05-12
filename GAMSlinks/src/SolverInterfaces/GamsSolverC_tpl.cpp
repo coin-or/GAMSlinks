@@ -48,8 +48,7 @@ DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,CallSolver)(void* Cptr)
 
 DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,HaveModifyProblem)(void* Cptr)
 {
-   assert(Cptr != NULL);
-   return ((GAMSSOLVERC_CLASS*)Cptr)->haveModifyProblem();
+   return GAMSSOLVERC_CLASS::haveModifyProblem();
 }
 
 DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,ModifyProblem)(void* Cptr)
@@ -142,8 +141,7 @@ DllExport int STDCALL GAMSSOLVERC_CONCAT3(C__,GAMSSOLVERC_ID,CallSolver)(void* C
 
 DllExport int STDCALL GAMSSOLVERC_CONCAT3(C__,GAMSSOLVERC_ID,HaveModifyProblem)(void* Cptr)
 {
-   assert(Cptr != NULL);
-   return ((GAMSSOLVERC_CLASS*)Cptr)->haveModifyProblem();
+   return GAMSSOLVERC_CLASS::haveModifyProblem();
 }
 
 DllExport int STDCALL GAMSSOLVERC_CONCAT3(C__,GAMSSOLVERC_ID,ModifyProblem)(void* Cptr)

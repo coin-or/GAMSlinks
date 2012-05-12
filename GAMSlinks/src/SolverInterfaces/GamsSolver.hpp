@@ -70,12 +70,6 @@ public:
       struct optRec*     opt                 /**< GAMS options object */
    ) = 0;
 
-   /** indicates whether the solver interface and solver supports the modifyProblem call */
-   virtual int haveModifyProblem()
-   {
-      return -1;
-   }
-
    /** notifies solver that the GMO object has been modified and changes should be passed forward to the solver */
    virtual int modifyProblem()
    {

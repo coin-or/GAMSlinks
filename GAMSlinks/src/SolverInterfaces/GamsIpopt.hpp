@@ -35,6 +35,12 @@ public:
    );
 
    int callSolver();
+
+   /** indicates whether the solver interface and solver supports the modifyProblem call */
+   static int haveModifyProblem()
+   {
+      return -1;
+   }
 };
 
 #endif
