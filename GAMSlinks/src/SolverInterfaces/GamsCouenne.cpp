@@ -50,8 +50,8 @@ extern "C" void HSLGAMSInit();
 #include "CouenneExprExp.hpp"
 #include "CouenneExprInv.hpp"
 #include "CouenneExprLog.hpp"
-#include "CouenneExprMax.hpp"
-#include "CouenneExprMin.hpp"
+//#include "CouenneExprMax.hpp"
+//#include "CouenneExprMin.hpp"
 #include "CouenneExprMul.hpp"
 #include "CouenneExprOpp.hpp"
 #include "CouenneExprPow.hpp"
@@ -1031,6 +1031,7 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
 
             switch( GamsFuncCode(address+1) )  // undo shift by 1
             {
+#if 0 /* min and max are not fully implemented in Couenne yet */
                case fnmin:
                {
                   debugout << "min" << std::endl;
@@ -1050,7 +1051,7 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
                   exp = new exprMax(term1, term2);
                   break;
                }
-
+#endif
                case fnsqr:
                {
                   debugout << "square" << std::endl;
@@ -1281,6 +1282,7 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
                case fnbinomial:
                case fntan: case fnarccos:
                case fnarcsin: case fnarctan2 /* arctan(x2/x1) */:
+               case fnmin: case fnmax:
                default:
                {
                   char buffer[256];
