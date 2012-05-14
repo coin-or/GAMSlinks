@@ -619,6 +619,8 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                {
                   debugout << "min" << std::endl;
                   nlNodeVec.push_back(new OSnLNodeMin());
+                  nlNodeVec.back()->inumberOfChildren = 2;
+                  nlNodeVec.back()->m_mChildren = new OSnLNode*[2];
                   break;
                }
 
@@ -626,6 +628,8 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                {
                   debugout << "max" << std::endl;
                   nlNodeVec.push_back(new OSnLNodeMax());
+                  nlNodeVec.back()->inumberOfChildren = 2;
+                  nlNodeVec.back()->m_mChildren = new OSnLNode*[2];
                   break;
                }
 
