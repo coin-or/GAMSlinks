@@ -1115,6 +1115,22 @@ bool GamsCbc::writeSolution(
          gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
          gevLogStat(gev, "Model infeasible.");
       }
+      else if( (model->status() == 1 && model->secondaryStatus() == 3) || model->status() == 5 )
+      {
+         /* secondary status 3 is actually nodelimit, but indicates user interrupt for cbc < r1777 */
+         gmoSolveStatSet(gmo, gmoSolveStat_User);
+         if( model->bestSolution() )
+         {
+            write_solution = true;
+            gmoModelStatSet(gmo, gmoModelStat_Integer);
+            gevLogStat(gev, "User interrupt. Have feasible solution.");
+         }
+         else
+         {
+            gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+            gevLogStat(gev, "User interrupt. No feasible solution found.");
+         }
+      } /* @todo check other primary and secondary status, e.g., for solution limit */
       else
       {
          gmoSolveStatSet(gmo, gmoSolveStat_Solver);
