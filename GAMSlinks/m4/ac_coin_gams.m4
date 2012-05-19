@@ -36,7 +36,7 @@ if test "$GAMS_PATH" = UNAVAILABLE; then
 else
   AC_MSG_CHECKING([for gams version number])
   GAMS_VERSION=""
-  [GAMS_VERSION=`sed -e 's/... \([0-9][0-9]*\.[0-9][0-9]*\)\.[0-9][0-9]* .*/\1/' ${GAMS_PATH}/gamsstmp.txt`]
+  [GAMS_VERSION=`sed -e 's/... \([0-9][0-9]*\.[0-9][0-9]*\)\.[0-9][0-9]* .*/\1/' "${GAMS_PATH}/gamsstmp.txt"`]
   if test "x$GAMS_VERSION" != x ; then
     AC_MSG_RESULT([$GAMS_VERSION])
   else

@@ -28224,7 +28224,7 @@ else
   echo "$as_me:$LINENO: checking for gams version number" >&5
 echo $ECHO_N "checking for gams version number... $ECHO_C" >&6
   GAMS_VERSION=""
-  GAMS_VERSION=`sed -e 's/... \([0-9][0-9]*\.[0-9][0-9]*\)\.[0-9][0-9]* .*/\1/' ${GAMS_PATH}/gamsstmp.txt`
+  GAMS_VERSION=`sed -e 's/... \([0-9][0-9]*\.[0-9][0-9]*\)\.[0-9][0-9]* .*/\1/' "${GAMS_PATH}/gamsstmp.txt"`
   if test "x$GAMS_VERSION" != x ; then
     echo "$as_me:$LINENO: result: $GAMS_VERSION" >&5
 echo "${ECHO_T}$GAMS_VERSION" >&6
