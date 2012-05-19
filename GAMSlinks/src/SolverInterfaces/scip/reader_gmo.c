@@ -39,6 +39,7 @@
 #include "scip/cons_sos1.h"
 #include "scip/cons_sos2.h"
 #include "scip/heur_subnlp.h"
+#include "nlpi/struct_expr.h"
 
 #define READER_NAME             "gmoreader"
 #define READER_DESC             "Gams Control file reader (using GMO API)"
@@ -194,6 +195,224 @@ SCIP_RETCODE ensureVarsSize(
    return SCIP_OKAY;
 }
 
+/** adds new children to a linear expression */
+static
+SCIP_RETCODE exprLinearAdd(
+   BMS_BLKMEM*           blkmem,             /**< block memory */
+   SCIP_EXPR*            expr,               /**< pointer to store resulting expression */
+   int                   nchildren,          /**< number of children to add */
+   SCIP_Real*            coefs,              /**< coefficients of additional children */
+   SCIP_EXPR**           children,           /**< additional children expressions */
+   SCIP_Real             constant            /**< constant to add */
+)
+{
+   SCIP_Real* data;
+
+   assert(blkmem != NULL);
+   assert(expr != NULL);
+   assert(SCIPexprGetOperator(expr) == SCIP_EXPR_LINEAR);
+   assert(nchildren >= 0);
+   assert(coefs != NULL || nchildren == 0);
+   assert(children != NULL || nchildren == 0);
+
+   data = (SCIP_Real*)SCIPexprGetOpData(expr);
+   assert(data != NULL);
+
+   /* handle simple case of adding a constant */
+   if( nchildren == 0 )
+   {
+      data[SCIPexprGetNChildren(expr)] += constant;
+
+      return SCIP_OKAY;
+   }
+
+   /* add new children to expr's children array */
+   SCIP_ALLOC( BMSreallocBlockMemoryArray(blkmem, &expr->children, expr->nchildren, expr->nchildren + nchildren) );
+   BMScopyMemoryArray(&expr->children[expr->nchildren], children, nchildren);
+
+   /* add constant and new coefs to expr's data array */
+   SCIP_ALLOC( BMSreallocBlockMemoryArray(blkmem, &data, expr->nchildren + 1, expr->nchildren + nchildren + 1) );
+   data[expr->nchildren + nchildren] = data[expr->nchildren] + constant;
+   BMScopyMemoryArray(&data[expr->nchildren], coefs, nchildren);
+   expr->data.data = (void*)data;
+
+   expr->nchildren += nchildren;
+
+   return SCIP_OKAY;
+}
+
+/** frees a linear expression, but not its children */
+static
+void exprLinearFree(
+   BMS_BLKMEM*           blkmem,             /**< block memory */
+   SCIP_EXPR**           expr                /**< linear expression to free */
+   )
+{
+   assert(blkmem != NULL);
+   assert(expr != NULL);
+   assert(SCIPexprGetOperator(*expr) == SCIP_EXPR_LINEAR);
+
+   BMSfreeBlockMemoryArray(blkmem, (SCIP_Real**)&(*expr)->data.data, (*expr)->nchildren + 1);
+   BMSfreeBlockMemoryArray(blkmem, &(*expr)->children, (*expr)->nchildren);
+
+   BMSfreeBlockMemory(blkmem, expr);
+}
+
+/** creates an expression from the addition of two given expression, with coefficients, and a constant */
+static
+SCIP_RETCODE exprAdd(
+   BMS_BLKMEM*           blkmem,             /**< block memory */
+   SCIP_EXPR**           expr,               /**< pointer to store resulting expression */
+   SCIP_Real             coef1,              /**< coefficient of first term */
+   SCIP_EXPR*            term1,              /**< expression of first term */
+   SCIP_Real             coef2,              /**< coefficient of second term */
+   SCIP_EXPR*            term2,              /**< expression of second term */
+   SCIP_Real             constant            /**< constant term to add */
+)
+{
+   assert(blkmem != NULL);
+   assert(expr != NULL);
+
+   if( term1 != NULL && SCIPexprGetOperator(term1) == SCIP_EXPR_CONST )
+   {
+      constant += coef1 * SCIPexprGetOpReal(term1);
+      SCIPexprFreeDeep(blkmem, &term1);
+   }
+
+   if( term2 != NULL && SCIPexprGetOperator(term2) == SCIP_EXPR_CONST )
+   {
+      constant += coef2 * SCIPexprGetOpReal(term2);
+      SCIPexprFreeDeep(blkmem, &term2);
+   }
+
+   if( term1 == NULL && term2 == NULL )
+   {
+      SCIP_CALL( SCIPexprCreate(blkmem, expr, SCIP_EXPR_CONST, constant) );
+      return SCIP_OKAY;
+   }
+
+   if( term1 != NULL && SCIPexprGetOperator(term1) == SCIP_EXPR_LINEAR && coef1 != 1.0 )
+   {
+      /* multiply coefficients and constant of linear expression term1 by coef1 */
+      SCIP_Real* coefs;
+      int i;
+
+      coefs = SCIPexprGetLinearCoefs(term1);
+      assert(coefs != NULL);
+
+      for( i = 0; i < SCIPexprGetNChildren(term1); ++i )
+         coefs[i] *= coef1;
+
+      SCIP_CALL( exprLinearAdd(blkmem, term1, 0, NULL, NULL, (coef1-1.0) * SCIPexprGetLinearConstant(term1)) );
+
+      coef1 = 1.0;
+   }
+
+   if( term2 != NULL && SCIPexprGetOperator(term2) == SCIP_EXPR_LINEAR && coef2 != 1.0 )
+   {
+      /* multiply coefficients and constant of linear expression term2 by coef2 */
+      SCIP_Real* coefs;
+      int i;
+
+      coefs = SCIPexprGetLinearCoefs(term2);
+      assert(coefs != NULL);
+
+      for( i = 0; i < SCIPexprGetNChildren(term2); ++i )
+         coefs[i] *= coef2;
+
+      SCIP_CALL( exprLinearAdd(blkmem, term2, 0, NULL, NULL, (coef2-1.0) * SCIPexprGetLinearConstant(term2)) );
+
+      coef2 = 1.0;
+   }
+
+   if( term1 == NULL || term2 == NULL )
+   {
+      if( term1 == NULL )
+      {
+         term1 = term2;
+         coef1 = coef2;
+         term2 = NULL;
+      }
+      if( constant != 0.0 || coef1 != 1.0 )
+      {
+         if( SCIPexprGetOperator(term1) == SCIP_EXPR_LINEAR )
+         {
+            assert(coef1 == 1.0);
+
+            /* add constant to existing linear expression */
+            SCIP_CALL( exprLinearAdd(blkmem, term1, 0, NULL, NULL, constant) );
+            *expr = term1;
+         }
+         else
+         {
+            /* create new linear expression for coef1 * term1 + constant */
+            SCIP_CALL( SCIPexprCreateLinear(blkmem, expr, 1, &term1, &coef1, constant) );
+         }
+      }
+      else
+      {
+         assert(constant == 0.0);
+         assert(coef1 == 1.0);
+         *expr = term1;
+      }
+
+      return SCIP_OKAY;
+   }
+
+   if( SCIPexprGetOperator(term1) == SCIP_EXPR_LINEAR && SCIPexprGetOperator(term2) == SCIP_EXPR_LINEAR )
+   {
+      assert(coef1 == 1.0);
+      assert(coef2 == 1.0);
+
+      SCIP_CALL( exprLinearAdd(blkmem, term1, SCIPexprGetNChildren(term2), SCIPexprGetLinearCoefs(term2), SCIPexprGetChildren(term2), SCIPexprGetLinearConstant(term2) + constant) );
+      exprLinearFree(blkmem, &term2);
+
+      *expr = term1;
+
+      return SCIP_OKAY;
+   }
+
+   if( SCIPexprGetOperator(term2) == SCIP_EXPR_LINEAR )
+   {
+      /* if only term2 is linear, then swap */
+      SCIP_EXPR* tmp;
+
+      tmp = term2;
+      assert(coef2 == 1.0);
+
+      term2 = term1;
+      coef2 = coef1;
+      term1 = tmp;
+      coef1 = 1.0;
+   }
+
+   if( SCIPexprGetOperator(term1) == SCIP_EXPR_LINEAR )
+   {
+      /* add coef2*term2 as extra child to linear expression term1 */
+      assert(coef1 == 1.0);
+
+      SCIP_CALL( exprLinearAdd(blkmem, term1, 1, &coef2, &term2, constant) );
+      *expr = term1;
+
+      return SCIP_OKAY;
+   }
+
+   /* both terms are not linear, then create new linear term for sum */
+   {
+      SCIP_Real coefs[2];
+      SCIP_EXPR* children[2];
+
+      coefs[0] = coef1;
+      coefs[1] = coef2;
+      children[0] = term1;
+      children[1] = term2;
+
+      SCIP_CALL( SCIPexprCreateLinear(blkmem, expr, 2, children, coefs, constant) );
+   }
+
+   return SCIP_OKAY;
+}
+
 /** creates an expression tree from given GAMS nonlinear instructions */
 static
 SCIP_RETCODE makeExprtree(
@@ -323,7 +542,7 @@ SCIP_RETCODE makeExprtree(
             term2 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_PLUS, term1, term2) );
+            SCIP_CALL( exprAdd(blkmem, &e, 1.0, term1, 1.0, term2, 0.0) );
 
             break;
          }
@@ -356,7 +575,8 @@ SCIP_RETCODE makeExprtree(
             }
 
             SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_VARIDX, varidx) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_PLUS, term1, term2) );
+            SCIP_CALL( exprAdd(blkmem, &e, 1.0, term1, 1.0, term2, 0.0) );
+
             break;
          }
 
@@ -368,8 +588,8 @@ SCIP_RETCODE makeExprtree(
             term1 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_CONST, constants[address]) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_PLUS, term1, term2) );
+            SCIP_CALL( exprAdd(blkmem, &e, 1.0, term1, 1.0, NULL, constants[address]) );
+
             break;
          }
 
@@ -383,7 +603,8 @@ SCIP_RETCODE makeExprtree(
             term2 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MINUS, term2, term1) );
+            SCIP_CALL( exprAdd(blkmem, &e, 1.0, term2, -1.0, term1, 0.0) );
+
             break;
          }
 
@@ -415,7 +636,8 @@ SCIP_RETCODE makeExprtree(
             }
 
             SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_VARIDX, varidx) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MINUS, term1, term2) );
+            SCIP_CALL( exprAdd(blkmem, &e, 1.0, term1, -1.0, term2, 0.0) );
+
             break;
          }
 
@@ -427,8 +649,8 @@ SCIP_RETCODE makeExprtree(
             term1 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_CONST, constants[address]) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MINUS, term1, term2) );
+            SCIP_CALL( exprAdd(blkmem, &e, 1.0, term1, 1.0, NULL, -constants[address]) );
+
             break;
          }
 
@@ -486,16 +708,13 @@ SCIP_RETCODE makeExprtree(
             term1 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_CONST, constants[address]) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MUL, term1, term2) );
+            SCIP_CALL( exprAdd(blkmem, &e, constants[address], term1, 1.0, NULL, 0.0) );
+
             break;
          }
 
          case nlMulIAdd:
          {
-            SCIP_EXPR* c;
-            SCIP_EXPR* prod;
-
             SCIPdebugPrintf("multiply constant %g and add\n", constants[address]);
 
             assert(stackpos >= 2);
@@ -504,9 +723,8 @@ SCIP_RETCODE makeExprtree(
             term2 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &c, SCIP_EXPR_CONST, constants[address]) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &prod, SCIP_EXPR_MUL, term1, c) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_PLUS, prod, term2) );
+            SCIP_CALL( exprAdd(blkmem, &e, constants[address], term1, 1.0, term2, 0.0) );
+
             break;
          }
 
@@ -559,13 +777,14 @@ SCIP_RETCODE makeExprtree(
          case nlDivI: /* divide immediate */
          {
             SCIPdebugPrintf("divide constant %g\n", constants[address]);
+            assert(constants[address] != 0.0);
 
             assert(stackpos >= 1);
             term1 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_CONST, constants[address]) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_DIV, term1, term2) );
+            SCIP_CALL( exprAdd(blkmem, &e, 1.0/constants[address], term1, 1.0, NULL, 0.0) );
+
             break;
          }
 
@@ -577,13 +796,15 @@ SCIP_RETCODE makeExprtree(
             term1 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_CONST, -1.0) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MUL, term1, term2) );
+            SCIP_CALL( exprAdd(blkmem, &e, -1.0, term1, 1.0, NULL, 0.0) );
+
             break;
          }
 
          case nlUMinV: /* unary minus variable */
          {
+            SCIP_Real minusone;
+
             address = gmoGetjSolver(gmo, address);
             SCIPdebugPrintf("push negated variable %d = <%s>\n", address, SCIPvarGetName(probdata->vars[address]));
 
@@ -605,9 +826,10 @@ SCIP_RETCODE makeExprtree(
                assert(vars[varidx] = probdata->vars[address]);
             }
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &term1, SCIP_EXPR_CONST, -1.0) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_VARIDX, varidx) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MUL, term1, term2) );
+            minusone = -1.0;
+            SCIP_CALL( SCIPexprCreate(blkmem, &term1, SCIP_EXPR_VARIDX, varidx) );
+            SCIP_CALL( SCIPexprCreateLinear(blkmem, &e, 1, &term1, &minusone, 0.0) );
+
             break;
          }
 
