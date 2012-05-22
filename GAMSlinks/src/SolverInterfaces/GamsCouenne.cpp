@@ -368,7 +368,7 @@ int GamsCouenne::callSolver()
       msghandler = new GamsMessageHandler(gev);
 
    if( minlp->isMin == -1 )
-      gevLog(gev, "Note: Maximization problem reformulated as minimization problem for Bonmin, objective values are negated in output.");
+      gevLog(gev, "Note: Maximization problem reformulated as minimization problem for Couenne, objective values are negated in output.");
 
    char buffer[1024];
    try
