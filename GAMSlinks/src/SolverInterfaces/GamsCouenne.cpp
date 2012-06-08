@@ -36,7 +36,7 @@ extern "C" void HSLGAMSInit();
 
 #include "CbcBranchActual.hpp"  // for CbcSOS
 #include "CbcBranchLotsize.hpp" // for CbcLotsize
-#include "BonCbc.hpp"
+#include "CouenneBab.hpp"
 #include "BonCouenneSetup.hpp"
 #include "BonCouenneInterface.hpp"
 #include "CouenneProblem.hpp"
@@ -373,7 +373,8 @@ int GamsCouenne::callSolver()
    char buffer[1024];
    try
    {
-      Bab bb;
+      CouenneBab bb;
+      bb.setProblem(problem);
 
       // setup CouenneInterface, so that we can pass in our message handler
       CouenneInterface* ci = new CouenneInterface;
@@ -417,7 +418,6 @@ int GamsCouenne::callSolver()
          GAMSbbtraceSetInfinity(bbtrace, couenne_setup->continuousSolver()->getInfinity());
 
       // do branch and bound
-      bb.setUsingCouenne(true);
       bb(*couenne_setup);
 
       // check optimization outcome

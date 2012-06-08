@@ -6,6 +6,7 @@
 
 #include "GamsMINLP.hpp"
 #include "GAMSlinksConfig.h"
+#include "BonminConfig.h"
 
 #include <cstring> // for memcpy
 
@@ -301,16 +302,9 @@ void GamsMINLP::finalize_solution(
       case TMINLP::LIMIT_EXCEEDED:
       {
          if( gevTimeDiffStart(gev) - nlp->clockStart >= gevGetDblOpt(gev, gevResLim) )
-         {
             solver_status = gmoSolveStat_Resource;
-            gevLogStat(gev, "Time limit exceeded.\n");
-         }
-         else
-         {
-            // should be iteration limit = node limit, or user interrupt
+         else // should be iteration limit or node limit, and GAMS only has a status for iteration limit
             solver_status = gmoSolveStat_Iteration;
-            gevLogStat(gev, "Node or iteration limit exceeded or user interrupt, we will report iteration limit in listing file.\n");
-         }
 
          if( x != NULL )
             model_status = (gmoNDisc(gmo) > 0) ? gmoModelStat_Integer : gmoModelStat_OptimalLocal; // integer feasible solution or local optimal
@@ -319,6 +313,20 @@ void GamsMINLP::finalize_solution(
 
          break;
       }
+
+#if BONMIN_VERSION_MINOR > 6
+      case TMINLP::USER_INTERRUPT:
+      {
+         solver_status = gmoSolveStat_User;
+
+         if( x != NULL )
+            model_status = (gmoNDisc(gmo) > 0) ? gmoModelStat_Integer : gmoModelStat_OptimalLocal; // integer feasible solution or local optimal
+         else
+            model_status = gmoModelStat_NoSolutionReturned; // no solution returned
+
+         break;
+      }
+#endif
 
       case TMINLP::MINLP_ERROR:
       {
