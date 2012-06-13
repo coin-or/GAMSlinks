@@ -14,6 +14,16 @@ typedef struct optRec* optHandle_t;
 /** abstract interface to a solver that takes Gams Modeling Objects (GMO) as input */
 class GamsSolver
 {
+protected:
+
+   /** initializes GAMS licensed HSL routines if a commerical Ipopt license is available
+    *
+    * Returns true if a commerical Ipopt license is available, and false otherwise.
+    */
+   bool HSLInit(
+      struct gmoRec*     gmo                 /**< GAMS modeling object */
+   );
+
 public:
    /** sets number of threads to use in basic linear algebra routines */
    static void setNumThreadsBlas(

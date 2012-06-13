@@ -49,6 +49,9 @@ AC_COIN_PROG_CC
 # Get the name of the C++ compiler and appropriate compiler options
 AC_COIN_PROG_CXX
 
+# Get the macros for Fortran naming convention 
+AC_COIN_F77_WRAPPERS
+
 # Initialize automake and libtool
 AC_COIN_INIT_AUTO_TOOLS
 

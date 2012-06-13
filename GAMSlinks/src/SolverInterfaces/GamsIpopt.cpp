@@ -53,9 +53,7 @@ int GamsIpopt::readyAPI(
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
 
-   ipoptLicensed = checkIpoptLicense(gmo) && (2651979 != gevGetIntOpt(gev,gevInteger1));
-   if( ipoptLicensed )
-     HSLGAMSInit();
+   ipoptLicensed = HSLInit(gmo);
 #endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Interior Point Optimizer (Ipopt Library "IPOPT_VERSION")\n");
