@@ -27,11 +27,12 @@ num\_cut\_passes & $\mathbb{Z}$ & $1$ & --& --& $\checkmark$& $\checkmark$& $\ch
 num\_cut\_passes\_at\_root & $\mathbb{Z}$ & $20$ & --& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
 number\_before\_trust & $\mathbb{Z}$ & $8$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 number\_strong\_branch & $\mathbb{Z}$ & $20$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+random\_generator\_seed & $\mathbb{Z}$ & $0$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 read\_solution\_file & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 solution\_limit & $\mathbb{Z}$ & $\infty$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 time\_limit & $\mathbb{Q}$ & \GAMS \texttt{reslim} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 tree\_search\_strategy & string & probed-dive & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
-variable\_selection & string & strong-branching & $\checkmark$& --& --& --& --& --& --\\
+variable\_selection & string & osi-strong & $\checkmark$& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{ECP cuts generation}\\
 \hline
@@ -117,6 +118,7 @@ oa\_decomposition & string & no & --& --& $\checkmark$& $\checkmark$& $\checkmar
 \hline
 add\_only\_violated\_oa & string & no & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 oa\_cuts\_scope & string & global & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+oa\_rhs\_relax & $\mathbb{Q}$ & $10^{- 8}$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 tiny\_element & $\mathbb{Q}$ & $10^{- 8}$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 very\_tiny\_element & $\mathbb{Q}$ & $10^{-17}$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 \hline

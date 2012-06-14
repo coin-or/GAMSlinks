@@ -135,6 +135,12 @@ A value of 0 disables pseudo costs.}%
 Set the number of variables on which to do strong branching.}%
 {}
 
+\printoption{random\_generator\_seed}%
+{$-1\leq\textrm{integer}$}%
+{$42$}%
+{Set seed for random number generator (a value of -1 sets seeds to time since Epoch).}%
+{}
+
 \printoption{read\_solution\_file}%
 {\ttfamily no, yes}%
 {no}%
@@ -176,7 +182,7 @@ All strategies can be used in conjunction with any of the node comparison functi
 
 \printoption{variable\_selection}%
 {\ttfamily most-fractional, strong-branching, reliability-branching, qp-strong-branching, lp-strong-branching, nlp-strong-branching, osi-simple, osi-strong, random}%
-{strong-branching}%
+{osi-strong}%
 {Chooses variable selection strategy}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
@@ -640,6 +646,13 @@ The algorithm will solve the root node with $k$ random starting points and will 
 \item[\texttt{global}] Cuts are treated as globally valid
 \end{list}
 }
+
+\printoption{oa\_rhs\_relax}%
+{$-0\leq\textrm{real}$}%
+{$10^{- 8}$}%
+{Value by which to relax OA cut\\
+RHS of OA constraints will be relaxed by this amount times the absolute value of the initial rhs if it is $>$= 1 (otherwise by this amount).}%
+{}
 
 \printoption{tiny\_element}%
 {$-0\leq\textrm{real}$}%

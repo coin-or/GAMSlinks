@@ -4328,6 +4328,12 @@
 {weight for cutoff score in fixing order}%
 {}
 
+\printoption{heuristics/undercover/fixingorder}%
+{character}%
+{v}%
+{order in which variables should be fixed (increasing 'C'onflict score, decreasing 'c'onflict score, increasing 'V'ariable index, decreasing 'v'ariable index}%
+{}
+
 \printoption{heuristics/undercover/fixintfirst}%
 {boolean}%
 {FALSE}%
@@ -4752,9 +4758,9 @@
 {}
 
 \printoption{lp/rowrepswitch}%
-{$0\leq\textrm{real}$}%
-{$\infty$}%
-{simplex algorithm shall use row representation of the basis if number of rows divided by number of columns exceeds this value}%
+{$-1\leq\textrm{real}$}%
+{$-1$}%
+{simplex algorithm shall use row representation of the basis if number of rows divided by number of columns exceeds this value (-1.0 to disable row representation)}%
 {}
 
 \printoption{lp/scaling}%
@@ -4830,6 +4836,12 @@
 {$-1\leq\textrm{integer}$}%
 {$-1$}%
 {seed value for permuting the problem after the problem was transformed (-1: no permutation)}%
+{}
+
+\printoption{misc/printreason}%
+{boolean}%
+{TRUE}%
+{should the reason be printed if a given start solution is infeasible}%
 {}
 
 \printoption{misc/resetstat}%
@@ -5380,10 +5392,28 @@
 {should propagator be delayed, if other propagators found reductions?}%
 {}
 
-\printoption{propagating/pseudoobj/maxcands}%
-{$-1\leq\textrm{integer}$}%
+\printoption{propagating/pseudoobj/force}%
+{boolean}%
+{FALSE}%
+{should the propagator be forced even active pricer are present?}%
+{}
+
+\printoption{propagating/pseudoobj/maxnewvars}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{number of variable added after the propgatore is reinitialized?}%
+{}
+
+\printoption{propagating/pseudoobj/maxvarsfrac}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.1$}%
+{maximal fraction of none binary variables with non-zero objective without a bound reduction before aborted}%
+{}
+
+\printoption{propagating/pseudoobj/minuseless}%
+{$0\leq\textrm{integer}$}%
 {$100$}%
-{maximal number of variables to look at in a single propagation round (-1: process all variables)}%
+{minimal number of successive none binary variable propagator whithout a bound reduction before aborted}%
 {}
 
 \printoption{propagating/pseudoobj/presoldelay}%
@@ -5400,13 +5430,13 @@
 
 \printoption{propagating/pseudoobj/priority}%
 {$-536870912\leq\textrm{integer}\leq536870911$}%
-{$0$}%
+{$100000$}%
 {priority of propagator $<$pseudoobj$>$}%
 {}
 
 \printoption{propagating/pseudoobj/propcutoffbound}%
 {boolean}%
-{FALSE}%
+{TRUE}%
 {propagate new cutoff bound directly globally}%
 {}
 
