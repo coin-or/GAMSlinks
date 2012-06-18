@@ -102,7 +102,7 @@ int GamsOS::callSolver()
       }
 
       // solvername is usually os or myos, but if we are called from convert, then we want to read the convert option definitions file
-      char* solvername = NULL;
+      const char* solvername = NULL;
       if( calledbyconvert )
          solvername = "convert";
       else
