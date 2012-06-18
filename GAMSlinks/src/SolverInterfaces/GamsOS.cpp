@@ -88,6 +88,8 @@ int GamsOS::callSolver()
 
    char buffer[2*GMS_SSSIZE];
 
+   bool calledbyconvert = (gevGetIntOpt(gev, gevInteger5) == 273);
+
    // setup options object, read options file, if given
    GamsOptions gamsopt(gev, opt);
    if( opt == NULL )
@@ -98,11 +100,18 @@ int GamsOS::callSolver()
          gmoNameOptFile(gmo, buffer);
          optfilename = buffer;
       }
+
+      // solvername is usually os or myos, but if we are called from convert, then we want to read the convert option definitions file
+      char* solvername = NULL;
+      if( calledbyconvert )
+         solvername = "convert";
+      else
 #ifdef GAMS_BUILD
-      gamsopt.readOptionsFile("os",   optfilename);
+         solvername = "os";
 #else
-      gamsopt.readOptionsFile("myos", optfilename);
+         solvername = "myos";
 #endif
+      gamsopt.readOptionsFile(solvername, optfilename);
    }
 
    // setup OSInstance
@@ -119,11 +128,11 @@ int GamsOS::callSolver()
    assert(osinstance != NULL);
 
    // write OSInstance, if desired
-   if( gamsopt.isDefined("writeosil") )
+   if( calledbyconvert || gamsopt.isDefined("writeosil") )
    {
       OSiLWriter osilwriter;
       char osilfilename[GMS_SSSIZE];
-      std::ofstream osilfile(gamsopt.getString("writeosil", osilfilename));
+      std::ofstream osilfile(gamsopt.getString(calledbyconvert ? "OSIL" : "writeosil", osilfilename));
       if( !osilfile.good() )
       {
          sprintf(buffer, "Error opening file %s for writing of instance in OSiL.", osilfilename);
@@ -139,7 +148,7 @@ int GamsOS::callSolver()
 
    // setup options string; read from file, if given
    std::string osol;
-   if( gamsopt.isDefined("readosol") )
+   if( !calledbyconvert && gamsopt.isDefined("readosol") )
    {
       char osolfilename[GMS_SSSIZE];
       std::ifstream osolfile(gamsopt.getString("readosol", osolfilename));
@@ -161,7 +170,7 @@ int GamsOS::callSolver()
       osol = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <osol xmlns=\"os.optimizationservices.org\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"os.optimizationservices.org http://www.optimizationservices.org/schemas/OSoL.xsd\"></osol>";
    }
 
-   if( gamsopt.isDefined("service") )
+   if( !calledbyconvert && gamsopt.isDefined("service") )
    {
       if( !remoteSolve(osinstance, osol, gamsopt) )
       {
@@ -172,7 +181,8 @@ int GamsOS::callSolver()
    }
    else
    {
-      gevLogStatPChar(gev, "\nNo Optimization Services server specified (option 'service').\nSkipping remote solve.\n");
+      if( !calledbyconvert )
+         gevLogStatPChar(gev, "\nNo Optimization Services server specified (option 'service').\nSkipping remote solve.\n");
       gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
       gmoSolveStatSet(gmo, gmoSolveStat_Normal);
    }
