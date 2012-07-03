@@ -12,6 +12,27 @@ If k $>$ 0, cuts are generated every k nodes, if -99 $<$ k $<$ 0 cuts are genera
 See option \texttt{2mir\_cuts} for the meaning of k.}%
 {}
 
+\printoption{aggressive\_fbbt}%
+{\ttfamily no, yes}%
+{yes}%
+{Aggressive feasibility-based bound tightening (to use with NLP points)\\
+Aggressive FBBT is a version of probing that also allows to reduce the solution set, although it is not as quick as FBBT. It can be applied up to a certain depth of the B\&B tree -- see ``log\_num\_abt\_per\_level''. In general, this option is useful but can be switched off if a problem is too large and seems not to benefit from it.}%
+{}
+
+\printoption{art\_cutoff}%
+{$\textrm{real}$}%
+{$\infty$}%
+{Artificial cutoff\\
+Default value is infinity.}%
+{}
+
+\printoption{art\_lower}%
+{$\textrm{real}$}%
+{$-\infty$}%
+{Artificial lower bound\\
+Default value is -COIN\_DBL\_MAX.}%
+{}
+
 \printoption{boundtightening\_print\_level}%
 {$-2\leq\textrm{integer}\leq12$}%
 {$0$}%
@@ -120,63 +141,63 @@ After applying a branching rule and before re-solving the subproblem, apply Boun
 \printoption{branch\_pt\_select\_cube}%
 {\ttfamily common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator cube.
+{Chooses branching point selection strategy for operator cube.\\
 Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
 {}
 
 \printoption{branch\_pt\_select\_div}%
 {\ttfamily common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator div.
+{Chooses branching point selection strategy for operator div.\\
 Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
 {}
 
 \printoption{branch\_pt\_select\_exp}%
 {\ttfamily common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator exp.
+{Chooses branching point selection strategy for operator exp.\\
 Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
 {}
 
 \printoption{branch\_pt\_select\_log}%
 {\ttfamily common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator log.
+{Chooses branching point selection strategy for operator log.\\
 Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
 {}
 
 \printoption{branch\_pt\_select\_negpow}%
 {\ttfamily common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator negpow.
+{Chooses branching point selection strategy for operator negpow.\\
 Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
 {}
 
 \printoption{branch\_pt\_select\_pow}%
 {\ttfamily common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator pow.
+{Chooses branching point selection strategy for operator pow.\\
 Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
 {}
 
 \printoption{branch\_pt\_select\_prod}%
 {\ttfamily common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator prod.
+{Chooses branching point selection strategy for operator prod.\\
 Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
 {}
 
 \printoption{branch\_pt\_select\_sqr}%
 {\ttfamily common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator sqr.
+{Chooses branching point selection strategy for operator sqr.\\
 Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
 {}
 
 \printoption{branch\_pt\_select\_trig}%
 {\ttfamily common, lp-clamped, lp-central, balanced, min-area, mid-point, no-branch}%
 {common}%
-{Chooses branching point selection strategy for operator trig.
+{Chooses branching point selection strategy for operator trig.\\
 Default is to use the value of \texttt{branch\_pt\_select} (value \texttt{common}).}%
 {}
 
@@ -487,8 +508,8 @@ Solve as many nlp's at the nodes for each level of the tree. Nodes are randomly 
 \printoption{feas\_pump\_usescip}%
 {\ttfamily no, yes}%
 {yes}%
-{Should SCIP be used to solve the MILPs?
- Note, that SCIP is only available for GAMS users with an academic GAMS license.}%
+{Should SCIP be used to solve the MILPs?\\
+Note, that SCIP is only available for GAMS users with an academic GAMS license.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -627,6 +648,13 @@ A local-branching heuristic based is used to find feasible solutions.}%
 If enabled, a heuristic based on Ipopt is used to find feasible solutions for the problem. It is highly recommended that this option is left enabled, as it would be difficult to find feasible solutions otherwise.}%
 {}
 
+\printoption{log\_num\_abt\_per\_level}%
+{$-1\leq\textrm{integer}$}%
+{$2$}%
+{Specify the frequency (in terms of nodes) for aggressive bound tightening.\\
+If -1, apply at every node (expensive!). If 0, apply at root node only. If k$>$=0, apply with probability 2\^(k - level), level being the current depth of the B\&B tree.}%
+{}
+
 \printoption{log\_num\_local\_optimization\_per\_level}%
 {$-1\leq\textrm{integer}$}%
 {$2$}%
@@ -634,20 +662,37 @@ If enabled, a heuristic based on Ipopt is used to find feasible solutions for th
 Solve as many nlp's at the nodes for each level of the tree. Nodes are randomly selected. If for a given level there are less nodes than this number nlp are solved for every nodes. For example if parameter is 8, nlp's are solved for all node until level 8, then for half the node at level 9, 1/4 at level 10.... Value -1 specify to perform at all nodes.}%
 {}
 
+\printoption{log\_num\_obbt\_per\_level}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{Specify the frequency (in terms of nodes) for optimality-based bound tightening.\\
+If -1, apply at every node (expensive!). If 0, apply at root node only. If k$>$=0, apply with probability 2\^(k - level), level being the current depth of the B\&B tree.}%
+{}
+
 \printoption{lp\_solver}%
-{\ttfamily clp, cplex}%
+{\ttfamily clp, cplex, gurobi, soplex, xpress-mp}%
 {clp}%
-{Linear Programming solver for the linear relaxation.}%
+{Linear Programming solver for the linearization}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
 \setlength{\labelwidth}{2ex}
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
-\item[\texttt{clp}] Use the Coin-OR Open Source solver CLP
+\item[\texttt{clp}] Use the COIN-OR Open Source solver CLP
 \item[\texttt{cplex}] Use the commercial solver Cplex (license is needed)
+\item[\texttt{gurobi}] Use the commercial solver Gurobi (license is needed)
+\item[\texttt{soplex}] Use the freely available Soplex
+\item[\texttt{xpress-mp}] Use the commercial solver Xpress MP (license is needed)
 \end{list}
 }
+
+\printoption{max\_fbbt\_iter}%
+{$-1\leq\textrm{integer}$}%
+{$3$}%
+{Number of FBBT iterations before stopping even with tightened bounds.\\
+Set to -1 to impose no upper limit}%
+{}
 
 \printoption{minlp\_disj\_cuts}%
 {$-99\leq\textrm{integer}$}%
@@ -706,6 +751,13 @@ Type of separation for multilinear terms where the dependent variable is also bo
 {Output level for NLP heuristic in Couenne}%
 {}
 
+\printoption{optimality\_bt}%
+{\ttfamily no, yes}%
+{yes}%
+{Optimality-based (expensive) bound tightening (OBBT)\\
+This is another bound reduction technique aiming at reducing the solution set by looking at the initial LP relaxation. This technique is computationally expensive, and should be used only when necessary.}%
+{}
+
 \printoption{orbital\_branching}%
 {\ttfamily yes, no}%
 {no}%
@@ -756,6 +808,23 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 {Use distance between LP points to update multipliers of pseudocosts after simulating branching}%
 {}
 
+\printoption{quadrilinear\_decomp}%
+{\ttfamily rAI, tri+bi, bi+tri, hier-bi}%
+{rAI}%
+{type of decomposition for quadrilinear terms (see work by Cafieri, Lee, Liberti)}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{rAI}] Recursive decomposition in bilinear terms (as in Ryoo and Sahinidis): x5 = ((x1 x2) x3) x4)
+\item[\texttt{tri+bi}] Trilinear and bilinear term: x5 = (x1 (x2 x3 x4))
+\item[\texttt{bi+tri}] Bilinear, THEN trilinear term: x5 = ((x1 x2) x3 x4))
+\item[\texttt{hier-bi}] Hierarchical decomposition: x5 = ((x1 x2) (x3 x4))
+\end{list}
+}
+
 \printoption{red\_cost\_branching}%
 {\ttfamily no, yes}%
 {no}%
@@ -770,6 +839,13 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 \item[\texttt{yes}] Use Reduced cost branching with $|\sum \pi\_i a\_{ij}|$
 \end{list}
 }
+
+\printoption{redcost\_bt}%
+{\ttfamily no, yes}%
+{yes}%
+{Reduced cost bound tightening\\
+This bound reduction technique uses the reduced costs of the LP in order to infer better variable bounds.}%
+{}
 
 \printoption{reduce\_split\_cuts}%
 {$-100\leq\textrm{integer}$}%
@@ -816,6 +892,43 @@ This has a similar behavior as log\_num\_obbt\_per\_level. A value of -1 means t
 {Depth of the B\&B tree where separation is stopped.\\
 A value of -1 means that generation can be done at all nodes}%
 {}
+
+\printoption{use\_auxcons}%
+{\ttfamily no, yes}%
+{yes}%
+{Use constraints-defined auxiliaries, i.e. auxiliaries w = f(x) defined by original constraints f(x) - w = 0}%
+{}
+
+\printoption{use\_quadratic}%
+{\ttfamily no, yes}%
+{no}%
+{Use quadratic expressions and related exprQuad class\\
+If enabled, then quadratic forms are not reformulated and therefore decomposed as a sum of auxiliary variables, each associated with a bilinear term, but rather taken as a whole expression. Envelopes for these expressions are generated through alpha-convexification.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{no}] Use an auxiliary for each bilinear term
+\item[\texttt{yes}] Create only one auxiliary for a quadratic expression
+\end{list}
+}
+
+\printoption{use\_semiaux}%
+{\ttfamily no, yes}%
+{yes}%
+{Use semiauxiliaries, i.e. auxiliaries defined as w $>$= f(x) rather than w := f(x))}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{no}] Only use auxiliaries assigned with "=" 
+\item[\texttt{yes}] Use auxiliaries defined by w $<$= f(x), w $>$= f(x), and w = f(x)
+\end{list}
+}
 
 \printoption{violated\_cuts\_only}%
 {\ttfamily no, yes}%

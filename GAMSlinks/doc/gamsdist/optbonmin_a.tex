@@ -285,10 +285,10 @@ It seems that sometimes generating too many oa cuts slows down the optimization 
 {}
 
 \printoption{milp\_solver}%
-{Cbc\_D, Cbc\_Par, Cplex}%
+{\ttfamily Cbc\_D, Cbc\_Par, Cplex}%
 {Cbc\_D}%
 {Choose the subsolver to solve MILP sub-problems in OA decompositions.\\
- To use Cplex, a valid license is required.}%
+To use Cplex, a valid license is required.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -297,7 +297,7 @@ It seems that sometimes generating too many oa cuts slows down the optimization 
 \setlength{\topsep}{0pt}}
 \item[\texttt{Cbc\_D}] Coin Branch and Cut with its default
 \item[\texttt{Cbc\_Par}] Coin Branch and Cut with passed parameters
-\item[\texttt{Cplex}] IBM CPLEX
+\item[\texttt{Cplex}] IBM Cplex
 \end{list}
 }
 
@@ -328,56 +328,56 @@ It seems that sometimes generating too many oa cuts slows down the optimization 
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency (in terms of nodes) for generating 2-MIR cuts in branch-and-cut\\
-If $k > 0$, cuts are generated every k nodes, if $-99 < k < 0$ cuts are generated every $-k$ nodes but Cbc may decide to stop generating cuts, if not enough are generated at the root node, if $k=-99$ generate cuts only at the root node, if $k=0$ or $100$ do not generate cuts.}%
+If $k > 0$, cuts are generated every $k$ nodes, if $-99 < k < 0$ cuts are generated every $-k$ nodes but Cbc may decide to stop generating cuts, if not enough are generated at the root node, if $k=-99$ generate cuts only at the root node, if $k=0$ or $100$ do not generate cuts.}%
 {}
 
 \printoption{Gomory\_cuts}%
 {$-100\leq\textrm{integer}$}%
 {$-5$}%
-{Frequency k (in terms of nodes) for generating Gomory cuts in branch-and-cut.\\
-See option \texttt{2mir\_cuts} for the meaning of k.}%
+{Frequency (in terms of nodes) for generating Gomory cuts in branch-and-cut.\\
+See option \texttt{2mir\_cuts} for a detailed description.}%
 {}
 
 \printoption{clique\_cuts}%
 {$-100\leq\textrm{integer}$}%
 {$-5$}%
 {Frequency (in terms of nodes) for generating clique cuts in branch-and-cut\\
-See option \texttt{2mir\_cuts} for the meaning of k.}%
+See option \texttt{2mir\_cuts} for a detailed description.}%
 {}
 
 \printoption{cover\_cuts}%
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency (in terms of nodes) for generating cover cuts in branch-and-cut\\
-See option \texttt{2mir\_cuts} for the meaning of k.}%
+See option \texttt{2mir\_cuts} for a detailed description.}%
 {}
 
 \printoption{flow\_cover\_cuts}%
 {$-100\leq\textrm{integer}$}%
 {$-5$}%
 {Frequency (in terms of nodes) for generating flow cover cuts in branch-and-cut\\
-See option \texttt{2mir\_cuts} for the meaning of k.}%
+See option \texttt{2mir\_cuts} for a detailed description.}%
 {}
 
 \printoption{lift\_and\_project\_cuts}%
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency (in terms of nodes) for generating lift-and-project cuts in branch-and-cut\\
-See option \texttt{2mir\_cuts} for the meaning of k.}%
+See option \texttt{2mir\_cuts} for a detailed description.}%
 {}
 
 \printoption{mir\_cuts}%
 {$-100\leq\textrm{integer}$}%
 {$-5$}%
 {Frequency (in terms of nodes) for generating MIR cuts in branch-and-cut\\
-See option \texttt{2mir\_cuts} for the meaning of k.}%
+See option \texttt{2mir\_cuts} for a detailed description.}%
 {}
 
 \printoption{reduce\_and\_split\_cuts}%
 {$-100\leq\textrm{integer}$}%
 {$0$}%
 {Frequency (in terms of nodes) for generating reduce-and-split cuts in branch-and-cut\\
-See option \texttt{2mir\_cuts} for the meaning of k.}%
+See option \texttt{2mir\_cuts} for a detailed description.}%
 {}
 
 \printoptioncategory{MINLP Heuristics}
@@ -406,50 +406,43 @@ See option \texttt{2mir\_cuts} for the meaning of k.}%
 {\ttfamily no, yes}%
 {no}%
 {if yes runs the RINS heuristic}%
-{
-}
+{}
 
 \printoption{heuristic\_dive\_MIP\_fractional}%
 {\ttfamily no, yes}%
 {no}%
 {if yes runs the Dive MIP Fractional heuristic}%
-{
-}
+{}
 
 \printoption{heuristic\_dive\_MIP\_vectorLength}%
 {\ttfamily no, yes}%
 {no}%
 {if yes runs the Dive MIP VectorLength heuristic}%
-{
-}
+{}
 
 \printoption{heuristic\_dive\_fractional}%
 {\ttfamily no, yes}%
 {no}%
 {if yes runs the Dive Fractional heuristic}%
-{
-}
+{}
 
 \printoption{heuristic\_dive\_vectorLength}%
 {\ttfamily no, yes}%
 {no}%
 {if yes runs the Dive VectorLength heuristic}%
-{
-}
+{}
 
 \printoption{heuristic\_feasibility\_pump}%
 {\ttfamily no, yes}%
 {no}%
 {whether the heuristic feasibility pump should be used}%
-{
-}
+{}
 
 \printoption{pump\_for\_minlp}%
 {\ttfamily no, yes}%
 {no}%
 {if yes runs FP for MINLP}%
-{
-}
+{}
 
 \printoptioncategory{NLP interface}
 \printoption{solvefinal}%
@@ -566,8 +559,7 @@ A depth of 0 amounts to to never solve the NLP relaxation.}%
 {\ttfamily no, yes}%
 {no}%
 {Do you want to define the parameter cutoff\_decr dynamically?}%
-{
-}
+{}
 
 \printoption{first\_perc\_for\_cutoff\_decr}%
 {$\textrm{real}$}%

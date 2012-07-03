@@ -14,6 +14,7 @@
 #include <map>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 #ifdef COIN_HAS_IPOPT
 #include "IpIpoptApplication.hpp"
@@ -45,6 +46,7 @@ enum OPTTYPE
    OPTTYPE_STRING,
    OPTTYPE_ENUM
 };
+typedef enum OPTTYPE OPTTYPE;
 
 union OPTVAL
 {
@@ -56,6 +58,277 @@ union OPTVAL
 };
 
 typedef std::vector<std::pair<std::string, std::string> > ENUMVAL;
+
+class GamsOptions
+{
+private:
+   class Data
+   {
+   public:
+      std::string        group;
+      std::string        name;
+      std::string        shortdescr;
+      std::string        longdescr;
+      OPTTYPE            type;
+      OPTVAL             defaultval;
+      OPTVAL             minval;
+      OPTVAL             maxval;
+      ENUMVAL            enumval;
+
+      Data(
+         const std::string& group_,
+         const std::string& name_,
+         const std::string& shortdescr_,
+         const std::string& longdescr_,
+         OPTTYPE            type_,
+         OPTVAL             defaultval_,
+         OPTVAL             minval_,
+         OPTVAL             maxval_,
+         const ENUMVAL&     enumval_
+         )
+      : group(group_),
+        name(name_),
+        shortdescr(shortdescr_),
+        longdescr(longdescr_),
+        type(type_),
+        defaultval(defaultval_),
+        minval(minval_),
+        maxval(maxval_),
+        enumval(enumval_)
+      { }
+   };
+
+   std::list<Data>       data;
+   std::set<std::string> groups;
+   std::set<std::string> values;
+
+   std::string           solver;
+   std::string           curgroup;
+
+public:
+   GamsOptions(
+      const std::string& solver_
+      )
+   : solver(solver_)
+   { }
+
+   void setGroup(
+      const std::string& group
+      )
+   {
+      curgroup = group;
+      groups.insert(group);
+   }
+
+   void collect(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      OPTTYPE            type,
+      OPTVAL             defaultval,
+      OPTVAL             minval,
+      OPTVAL             maxval,
+      const ENUMVAL&     enumval
+   )
+   {
+      data.push_back(Data(curgroup, name, shortdescr, longdescr, type, defaultval, minval, maxval, enumval));
+
+      /* replace all double quotes by single quotes */
+      std::replace(data.back().shortdescr.begin(), data.back().shortdescr.end(), '"', '\'');
+
+      switch( type )
+      {
+         case OPTTYPE_BOOL:
+         case OPTTYPE_INTEGER:
+         case OPTTYPE_REAL:
+            break;
+
+         case OPTTYPE_CHAR:
+         {
+            std::string str;
+            str.push_back(defaultval.charval);
+            values.insert(str);
+            break;
+         }
+
+         case OPTTYPE_STRING:
+         {
+            if( defaultval.stringval[0] != '\0' )
+               values.insert(defaultval.stringval);
+            break;
+         }
+
+         case OPTTYPE_ENUM:
+         {
+            if( defaultval.stringval[0] != '\0' )
+               values.insert(defaultval.stringval);
+
+            for( std::vector<std::pair<std::string, std::string> >::iterator e(data.back().enumval.begin()); e != data.back().enumval.end(); ++e )
+            {
+               if( defaultval.stringval[0] != '\0' )
+                  values.insert(e->first);
+
+               /* replace all double quotes by single quotes */
+               std::replace(e->second.begin(), e->second.end(), '"', '\'');
+               if( e->second.length() >= 255 )
+               {
+                  size_t pos = e->second.rfind('.');
+                  if( pos < std::string::npos )
+                     e->second.erase(pos+1, e->second.length());
+                  else
+                     std::cerr << "Could not cut down description of enum value '" << e->first << "' of parameter " << name << ": " << e->second << std::endl;
+               }
+            }
+
+            break;
+         }
+      }
+   }
+
+
+   void write()
+   {
+      std::string filename;
+
+      filename = "opt" + solver + ".gms";
+      std::ofstream f(filename.c_str());
+
+      f << "set e / 1*100 " << std::endl;  // the 1*100 is necessary to get the long description into the html file
+      for( std::set<std::string>::iterator v(values.begin()); v != values.end(); ++v )
+         f << "  '" << *v << "'" << std::endl;
+      f << "/;" << std::endl;
+
+      f << "set f / def Default, lo Lower Bound, up Upper Bound, ref Reference /;" << std::endl;
+      f << "set t / I Integer, R Real, S String, B Binary /;" << std::endl;
+      //f << "set m / %system.gamsopt% /;" << std::endl;
+
+      f << "set g Option Groups /" << std::endl;
+      for( std::set<std::string>::iterator g(groups.begin()); g != groups.end(); ++g )
+      {
+         std::string id(*g);
+         std::replace(id.begin(), id.end(), ' ', '_');
+         std::replace(id.begin(), id.end(), '(', '_');
+         std::replace(id.begin(), id.end(), ')', '_');
+         f << "  gr_" << id << "   '" << *g << "'" << std::endl;
+      }
+      f << "/;" << std::endl;
+
+      f << "set o Solver and Link Options with one-line description /" << std::endl;
+      for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
+         f << "  '" << d->name << "'  \"" << d->shortdescr << '"' << std::endl;
+      f << "/;" << std::endl;
+
+      f << "$onembedded" << std::endl;
+      f << "set optdata(g,o,t,f) /" << std::endl;
+      for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
+      {
+         std::string id(d->group);
+         std::replace(id.begin(), id.end(), ' ', '_');
+         std::replace(id.begin(), id.end(), '(', '_');
+         std::replace(id.begin(), id.end(), ')', '_');
+         f << "  gr_" << id << ".'" << d->name << "'.";
+         switch( d->type )
+         {
+            case OPTTYPE_BOOL:
+               f << "B.(def " << d->defaultval.boolval << ")";
+               break;
+
+            case OPTTYPE_INTEGER:
+               f << "I.(def " << d->defaultval.intval;
+               if( d->minval.intval != -INT_MAX )
+                  f << ", lo " << d->minval.intval;
+               else
+                  f << ", lo minint";
+               if( d->maxval.intval !=  INT_MAX )
+                  f << ", up " << d->maxval.intval;
+               f << ")";
+               break;
+
+            case OPTTYPE_REAL:
+               f << "R.(def " << d->defaultval.realval;
+               if( d->minval.realval != -DBL_MAX )
+                  f << ", lo " << d->minval.realval;
+               else
+                  f << ", lo mindouble";
+               if( d->maxval.realval !=  DBL_MAX )
+                  f << ", up " << d->maxval.realval;
+               f << ")";
+               break;
+
+            case OPTTYPE_CHAR:
+               /* no character type in GAMS option files */
+               f << "S.(def '" << d->defaultval.charval << "')";
+               break;
+
+            case OPTTYPE_STRING:
+            case OPTTYPE_ENUM:
+               f << "S.(def '" << d->defaultval.stringval << "')";
+               break;
+         }
+         f << std::endl;
+      }
+      f << "/;" << std::endl;
+
+      f << "set oe(o,e) /" << std::endl;
+      for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
+      {
+         if( d->type != OPTTYPE_ENUM )
+            continue;
+
+         for( std::vector<std::pair<std::string, std::string> >::iterator e(d->enumval.begin()); e != d->enumval.end(); ++e )
+            f << "  '" << d->name << "'.'" << e->first << "'  \"" << e->second << '"' << std::endl;
+      }
+      f << "/;" << std::endl;
+
+
+      f << "$onempty" << std::endl
+        << "set os(o,*) synonyms  / /;" << std::endl
+        << "set im immediates recognized  / EolFlag , Message /;" << std::endl   /* ???? */
+        << "set strlist(o)        / /;" << std::endl
+        << "set immediate(o,im)   / /;" << std::endl
+        << "set multilist(o,o)    / /;" << std::endl
+        << "set indicator(o)      / /;" << std::endl
+        << "set dotoption(o)      / /;" << std::endl
+        << "set dropdefaults(o)   / /;" << std::endl
+        << "set deprecated(*,*)   / /;" << std::endl
+        << "set ooverwrite(o,f)   / /;" << std::endl
+        << "set orange(o)         / /;" << std::endl
+        << "set odefault(o)       / /;" << std::endl
+        << "set oedepr(o,e)       / /;" << std::endl  /* deprecated enum options */
+        << "set oep(o)            / /;" << std::endl  /* enum options for documentation only */
+        << "set olink(o)          / /;" << std::endl
+        //<< "set om(o,m)           / /;" << std::endl  /* option with GAMS synonym and GAMS initialization */
+        << "$offempty" << std::endl;
+
+
+      f << "set orange(o);" << std::endl
+        << "orange(o) = (sum(g,optdata(g,o,'R','def')) or sum(g,optdata(g,o,'I','def'))) and sum(oe(o,e),1)=0 "
+        << "and sum((g,t),optdata(g,o,t,'up')) and sum((g,t),optdata(g,o,t,'lo')) and not ooverwrite(o,'lo') and not ooverwrite(o,'up');"
+        << std::endl;
+
+      f << "optdata(g,o,t,f)$optdata(g,o,t,'def') $= ooverwrite(o,f);" << std::endl;
+
+      f.close();
+
+
+      filename = "opt" + solver + ".txt_";
+      f.open(filename.c_str());
+      for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
+      {
+         f << d->name << std::endl;
+         f << d->longdescr << std::endl;
+         f << std::endl << std::endl;
+      }
+
+      f.close();
+
+      std::string foldcall = "fold -s "+filename+" > opt"+solver+".txt";
+      system(foldcall.c_str());
+      remove(filename.c_str());
+   }
+
+};
+
 
 using namespace Ipopt;
 
@@ -410,10 +683,15 @@ void printIpoptOptions()
    std::string longdescr;
 
    std::ofstream optfile("optipopt_a.tex");
+   GamsOptions gmsopt("ipopt");
 
    for( std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ != opts.end(); ++it_categ )
    {
+      if( it_categ->first == "MA77 Linear Solver" )
+         continue;
+
       printOptionCategoryStart(optfile, it_categ->first);
+      gmsopt.setGroup(it_categ->first);
 
       for( std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt != it_categ->second.end(); ++it_opt )
       {
@@ -449,8 +727,7 @@ void printIpoptOptions()
 
             case Ipopt::OT_String:
             {
-               tmpstr = (*it_opt)->DefaultString();
-               defaultval.stringval = tmpstr.c_str();
+               defaultval.stringval = (*it_opt)->DefaultString().c_str();
 
                const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
                if( settings.size() == 1 && settings[0].value_ == "*")
@@ -463,26 +740,29 @@ void printIpoptOptions()
                   if( (*it_opt)->Name() == "linear_solver" )
                   {
                      enumval.clear();
-                     for( size_t j = 0; j < settings.size(); ++j )
-                     {
-                        if( settings[j].value_ == "ma27" ||
-                            settings[j].value_ == "ma57" ||
-                            settings[j].value_ == "pardiso" ||
-                            settings[j].value_ == "mumps"
-                          )
-                           enumval.push_back(std::pair<std::string, std::string>(settings[j].value_, settings[j].description_));
-                     }
+                     enumval.push_back(std::pair<std::string, std::string>("ma27", "use the Harwell routine MA27"));
+                     enumval.push_back(std::pair<std::string, std::string>("ma57", "use the Harwell routine MA57"));
+                     enumval.push_back(std::pair<std::string, std::string>("ma86", "use the Harwell routine MA86"));
+                     enumval.push_back(std::pair<std::string, std::string>("pardiso", "use the Pardiso package"));
+                     enumval.push_back(std::pair<std::string, std::string>("mumps", "use MUMPS package"));
+
                      longdescr = "Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). "
-                        "Note, that in order to use MA27, MA57, or Pardiso, a library with HSL or Pardiso code need to be provided (see Section 5.2).";
+                        "Note, that in order to use MA27, MA57, MA86, a commercially supported GAMS/Ipopt license or a library with HSL code need to be available. "
+                        "If no commercial GAMS/Ipopt license is available, the default linear solver is mumps. "
+                        "For using Pardiso, a Pardiso library need to be provided code need to be provided.";
+
+                     defaultval.stringval = "ma27";
                   }
                   else
                   {
+                     if( (*it_opt)->Name() == "linear_system_scaling" )
+                        longdescr = "Determines the method used to compute symmetric scaling factors for the augmented system (see also the \"linear_scaling_on_demand\" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. "
+                           "Note, that in order to use MC19, a commercially supported Gams/Ipopt license or a library with HSL code need to be available. "
+                           "If no commerical GAMS/Ipopt license is available, the default scaling method is slack-based.";
+
                      enumval.resize(settings.size());
-                     size_t offset = 0;
                      for( size_t j = 0; j < settings.size(); ++j )
-                        enumval[j-offset] = std::pair<std::string, std::string>(settings[j].value_, settings[j].description_);
-                     if( offset )
-                        enumval.resize(settings.size()-offset);
+                        enumval[j] = std::pair<std::string, std::string>(settings[j].value_, settings[j].description_);
                   }
                }
 
@@ -509,9 +789,14 @@ void printIpoptOptions()
 
          printOption(optfile, (*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
             opttype, defaultval, minval, minval_strict, maxval, maxval_strict, enumval);
+
+         gmsopt.collect((*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
+            opttype, defaultval, minval, maxval, enumval);
       }
    }
+
    optfile.close();
+   gmsopt.write();
 }
 #endif
 
@@ -559,6 +844,7 @@ void printBonminOptions()
 
    // options sorted by category
    std::map<std::string, std::list<SmartPtr<RegisteredOption> > > opts;
+   GamsOptions gmsopt("bonmin");
 
    for( Bonmin::RegisteredOptions::RegOptionsList::const_iterator it(optionlist.begin()); it != optionlist.end(); ++it )
    {
@@ -730,6 +1016,7 @@ void printBonminOptions()
    for( std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ != opts.end(); ++it_categ )
    {
       printOptionCategoryStart(optfile, it_categ->first);
+      gmsopt.setGroup(it_categ->first);
 
       for( std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt != it_categ->second.end(); ++it_opt )
       {
@@ -772,19 +1059,21 @@ void printBonminOptions()
                {
                   opttype = OPTTYPE_STRING;
                }
+               else if( (*it_opt)->Name().find("heuristic_") == 0 ||
+                  (*it_opt)->Name() == "pump_for_minlp" ||
+                  (*it_opt)->Name() == "dynamic_def_cutoff_decr" )
+               {
+                  opttype = OPTTYPE_ENUM;
+                  enumval.clear();
+                  enumval.push_back(std::pair<std::string, std::string>("no", ""));
+                  enumval.push_back(std::pair<std::string, std::string>("yes", ""));
+               }
                else
                {
                   opttype = OPTTYPE_ENUM;
                   enumval.resize(settings.size());
                   for( size_t j = 0; j < settings.size(); ++j )
-                  {
-                     if( settings[j].value_ == "Cplex" )
-                     {
-                        enumval.resize(j);
-                        break;
-                     }
                      enumval[j] = std::pair<std::string, std::string>(settings[j].value_, settings[j].description_);
-                  }
                }
 
                break;
@@ -808,13 +1097,22 @@ void printBonminOptions()
          else if( (*it_opt)->Name() == "time_limit" )
             defaultval.realval = 1000;
          else if( it_categ->first == "MILP cutting planes in hybrid algorithm (B-Hyb)" && (*it_opt)->Name() != "2mir_cuts" )
-            longdescr = "See option \\texttt{2mir_cuts} for the meaning of k.";
+            longdescr = "See option \\texttt{2mir_cuts} for a detailed description.";
+         else if( (*it_opt)->Name() == "milp_solver" )
+            longdescr = "To use Cplex, a valid license is required.";
+         else if( (*it_opt)->Name() == "resolve_on_small_infeasibility" )
+            longdescr = "";
 
          printOption(optfile, (*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
             opttype, defaultval, minval, minval_strict, maxval, maxval_strict, enumval);
+
+         gmsopt.collect((*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
+            opttype, defaultval, minval, maxval, enumval);
       }
    }
+
    optfile.close();
+   gmsopt.write();
 }
 #endif
 
@@ -862,6 +1160,7 @@ void printCouenneOptions()
          continue;
 
       if( it->second->Name()=="couenne_check" ||
+          it->second->Name()=="opt_window" ||
           it->second->Name()=="test_mode" )
          continue;
 
@@ -875,11 +1174,15 @@ void printCouenneOptions()
    std::string tmpstr;
    std::string longdescr;
 
+   GamsOptions gmsopt("couenne");
+
    std::ofstream optfile("optcouenne_a.tex");
 
    for( std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ != opts.end(); ++it_categ )
    {
-      //  	printOptionCategoryStart(optfile, it_categ->first);
+      // printOptionCategoryStart(optfile, it_categ->first);
+      gmsopt.setGroup(it_categ->first);
+
       for( std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt != it_categ->second.end(); ++it_opt )
       {
          minval_strict = false;
@@ -924,9 +1227,18 @@ void printCouenneOptions()
                else
                {
                   opttype = OPTTYPE_ENUM;
-                  enumval.resize(settings.size());
-                  for( size_t j = 0; j < settings.size(); ++j )
-                     enumval[j] = std::pair<std::string, std::string>(settings[j].value_, settings[j].description_);
+                  if( (*it_opt)->Name().find("branch_pt_select_") == 0 )
+                  {
+                     enumval.clear();
+                     for( size_t j = 0; j < settings.size(); ++j )
+                        enumval.push_back(std::pair<std::string, std::string>(settings[j].value_, ""));
+                  }
+                  else
+                  {
+                     enumval.resize(settings.size());
+                     for( size_t j = 0; j < settings.size(); ++j )
+                        enumval[j] = std::pair<std::string, std::string>(settings[j].value_, settings[j].description_);
+                  }
                }
 
                break;
@@ -942,12 +1254,20 @@ void printCouenneOptions()
          longdescr = (*it_opt)->LongDescription();
          if( longdescr.find("cuts are generated every k nodes") != std::string::npos && (*it_opt)->Name() != "2mir_cuts" )
             longdescr = "See option \\texttt{2mir_cuts} for the meaning of k.";
+         else if( (*it_opt)->Name().find("branch_pt_select_") == 0 )
+            longdescr = longdescr + "Default is to use the value of \\texttt{branch_pt_select} (value \\texttt{common}).";
+         else if( (*it_opt)->Name() == "feas_pump_usescip" )
+            longdescr = "Note, that SCIP is only available for GAMS users with an academic GAMS license.";
 
          printOption(optfile, (*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
             opttype, defaultval, minval, minval_strict, maxval, maxval_strict, enumval);
+
+         gmsopt.collect((*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
+            opttype, defaultval, minval, maxval, enumval);
       }
    }
    optfile.close();
+   gmsopt.write();
 }
 #endif
 
