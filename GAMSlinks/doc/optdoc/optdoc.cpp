@@ -131,6 +131,13 @@ public:
       const ENUMVAL&     enumval
    )
    {
+      /* ignore options with number in beginning, because the GAMS options object cannot handle them so far */
+//      if( isdigit(name[0]) )
+//      {
+//         std::cerr << "Warning: Ignoring " << solver << " option " << name << " for GAMS options file." << std::endl;
+//         return;
+//      }
+
       data.push_back(Data(curgroup, name, shortdescr, longdescr, type, defaultval, minval, maxval, enumval));
 
       /* replace all double quotes by single quotes */
@@ -209,6 +216,7 @@ public:
          std::replace(id.begin(), id.end(), ' ', '_');
          std::replace(id.begin(), id.end(), '(', '_');
          std::replace(id.begin(), id.end(), ')', '_');
+         std::replace(id.begin(), id.end(), '-', '_');
          f << "  gr_" << id << "   '" << *g << "'" << std::endl;
       }
       f << "/;" << std::endl;
@@ -226,6 +234,7 @@ public:
          std::replace(id.begin(), id.end(), ' ', '_');
          std::replace(id.begin(), id.end(), '(', '_');
          std::replace(id.begin(), id.end(), ')', '_');
+         std::replace(id.begin(), id.end(), '-', '_');
          f << "  gr_" << id << ".'" << d->name << "'.";
          switch( d->type )
          {
@@ -234,7 +243,13 @@ public:
                break;
 
             case OPTTYPE_INTEGER:
-               f << "I.(def " << d->defaultval.intval;
+               f << "I.(def ";
+               if( d->defaultval.intval == INT_MAX )
+                  f << "maxint";
+               else if( d->defaultval.intval == -INT_MAX )
+                  f << "minint";
+               else
+                  f << d->defaultval.intval;
                if( d->minval.intval != -INT_MAX )
                   f << ", lo " << d->minval.intval;
                else
@@ -245,7 +260,13 @@ public:
                break;
 
             case OPTTYPE_REAL:
-               f << "R.(def " << d->defaultval.realval;
+               f << "R.(def ";
+               if( d->defaultval.realval == DBL_MAX )
+                  f << "maxdouble";
+               else if( d->defaultval.realval == -DBL_MAX )
+                  f << "mindouble";
+               else
+                  f << d->defaultval.realval;
                if( d->minval.realval != -DBL_MAX )
                   f << ", lo " << d->minval.realval;
                else
