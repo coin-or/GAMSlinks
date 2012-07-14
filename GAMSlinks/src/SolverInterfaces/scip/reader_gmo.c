@@ -2792,6 +2792,7 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
       SCIP_RETCODE ret;
 
       gmoNameOptFile(gmo, optfilename);
+      SCIPinfoMessage(scip, NULL, "\nReading option file %s.\n", optfilename);
       ret = SCIPreadParams(scip, optfilename);
       if( ret != SCIP_OKAY )
       {
