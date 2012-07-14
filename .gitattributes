@@ -111,6 +111,16 @@ GAMSlinks/src/GamsUtils/23.8/gmomcc.c -text
 GAMSlinks/src/GamsUtils/23.8/gmomcc.h -text
 GAMSlinks/src/GamsUtils/23.8/optcc.c -text
 GAMSlinks/src/GamsUtils/23.8/optcc.h -text
+GAMSlinks/src/GamsUtils/23.9/gclgms.c -text
+GAMSlinks/src/GamsUtils/23.9/gclgms.h -text
+GAMSlinks/src/GamsUtils/23.9/gdxcc.c -text
+GAMSlinks/src/GamsUtils/23.9/gdxcc.h -text
+GAMSlinks/src/GamsUtils/23.9/gevmcc.c -text
+GAMSlinks/src/GamsUtils/23.9/gevmcc.h -text
+GAMSlinks/src/GamsUtils/23.9/gmomcc.c -text
+GAMSlinks/src/GamsUtils/23.9/gmomcc.h -text
+GAMSlinks/src/GamsUtils/23.9/optcc.c -text
+GAMSlinks/src/GamsUtils/23.9/optcc.h -text
 GAMSlinks/src/GamsUtils/GamsBBTrace.c -text
 GAMSlinks/src/GamsUtils/GamsBBTrace.h -text
 GAMSlinks/src/GamsUtils/GamsCompatibility.h -text

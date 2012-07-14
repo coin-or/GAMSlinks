@@ -181,30 +181,6 @@ bool GamsSolver::registerGamsCplexLicense(
          gevLogStat(gev,"***");
          return false;
       }
-      else
-      {
-         int isLicMIP = 0;
-         int isLicCP  = 1;
-         licenseQueryOption(const_cast<char*>("CPLEX"), const_cast<char*>("MIP"),     &isLicMIP);
-         licenseQueryOption(const_cast<char*>("CPLEX"), const_cast<char*>("GMSLICE"), &isLicCP);
-         if( 0 == isLicMIP && 1 == isLicCP && gmoNDisc(gmo))
-         {
-            gevLogStat(gev,"*** MIP option not licensed. Can solve continuous models only.");
-            return false;
-         }
-      }
-   }
-   else
-   {
-      int isLicMIP = 0;
-      int isLicCP  = 1;
-      licenseQueryOption(const_cast<char*>("CPLEX"), const_cast<char*>("MIP"),     &isLicMIP);
-      licenseQueryOption(const_cast<char*>("CPLEX"), const_cast<char*>("GMSLICE"), &isLicCP);
-      if( 0 == isLicMIP && 1 == isLicCP && gmoNDisc(gmo) )
-      {
-         gevLogStat(gev,"*** MIP option not licensed. Can solve continuous models only.");
-         return false;
-      }
    }
 #undef SUB_OC
 #undef GEVPTR
