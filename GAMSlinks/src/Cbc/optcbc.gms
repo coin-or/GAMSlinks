@@ -300,7 +300,6 @@ bch.(
    rens.(           0, 1 )
    rins.(           0, 1 )
    roundingheuristic.( 0, 1 )
-   vubheuristic.(    0, 1 )
    coststrategy.(   off, priorities, columnorder, binaryfirst, binarylast, length )
    nodestrategy.(   hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth )
    preprocess.(     off, on, equal, equalall, sos, trysos )

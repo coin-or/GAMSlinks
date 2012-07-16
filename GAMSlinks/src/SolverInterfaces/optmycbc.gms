@@ -317,7 +317,6 @@ $offtext
    rens.(           0, 1 )
    rins.(           0, 1 )
    roundingheuristic.( 0, 1 )
-   vubheuristic.(    0, 1 )
    coststrategy.(   off, priorities, columnorder, binaryfirst, binarylast, length )
    nodestrategy.(   hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth )
    preprocess.(     off, on, equal, equalall, sos, trysos )
@@ -328,7 +327,7 @@ $offtext
  /
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /
- hidden(o)         / NoBounds, ReadFile /
+ hidden(o)         / NoBounds, ReadFile, dumpsolutions, maxsol /
  odefault(o)       / reslim     'GAMS reslim'
                      iterlim    'GAMS iterlim' 
                      nodelim    'GAMS nodlim' 
