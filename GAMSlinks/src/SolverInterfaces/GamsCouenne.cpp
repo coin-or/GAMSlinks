@@ -301,7 +301,6 @@ int GamsCouenne::callSolver()
    gmoEvalErrorNoMsg(gmo, printevalerror);
 
    // initialize Hessian in GMO, if required
-   bool hessian_is_approx = false;
    couenne_setup->options()->GetStringValue("hessian_approximation", parvalue, "");
    if( parvalue == "exact" )
    {
@@ -312,11 +311,8 @@ int GamsCouenne::callSolver()
       {
          gevLogStat(gev, "Failed to initialize Hessian structure. We continue with a limited-memory Hessian approximation!");
          couenne_setup->options()->SetStringValue("hessian_approximation", "limited-memory");
-         hessian_is_approx = true;
       }
    }
-   else
-      hessian_is_approx = true;
 
    // setup Couenne Problem
    CouenneProblem* problem = setupProblem();
