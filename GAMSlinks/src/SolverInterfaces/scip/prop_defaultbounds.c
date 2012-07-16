@@ -365,7 +365,7 @@ SCIP_DECL_PROPINITPRE(propInitpreDefaultBounds)
 
 
 /** presolving deinitialization method of propagator (called after presolving has been finished) */
-#if 1
+#if 0
 static
 SCIP_DECL_PROPEXITPRE(propExitpreDefaultBounds)
 {  /*lint --e{715}*/

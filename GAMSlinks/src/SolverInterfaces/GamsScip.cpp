@@ -26,8 +26,17 @@
 #include "event_bbtrace.h"
 #include "prop_defaultbounds.h"
 
+#if SCIP_VERSION >= 300
 static
-SCIP_DECL_MESSAGEERROR(GamsScipPrintLogStat)
+SCIP_DECL_ERRORPRINTING(printErrorGev)
+{
+   assert(data != NULL);
+   gevLogStatPChar((gevHandle_t)data, msg);
+}
+#endif
+
+static
+SCIP_DECL_MESSAGEWARNING(GamsScipPrintLogStat)
 {
    assert(SCIPmessagehdlrGetData(messagehdlr) != NULL);
    assert(file != NULL);
@@ -48,13 +57,6 @@ SCIP_DECL_MESSAGEINFO(GamsScipPrintLog)
       gevLogPChar((gevHandle_t)SCIPmessagehdlrGetData(messagehdlr), msg);
 }
 
-//static
-//SCIP_DECL_MESSAGEINFO(GamsScipPrintStdout)
-//{
-//   assert(file != NULL);
-//   fputs(msg, file);
-//   fflush(file);
-//}
 
 GamsScip::~GamsScip()
 {
@@ -104,6 +106,11 @@ int GamsScip::readyAPI(
    gevLogStatPChar(gev, buffer);
    gevLogStatPChar(gev, SCIP_COPYRIGHT"\n\n");
 
+   // install or update error printing callback in SCIP to use current gev
+#if SCIP_VERSION >= 300
+   SCIPmessageSetErrorPrinting(printErrorGev, (void*)gev);
+#endif
+
    // setup (or reset) SCIP instance
    SCIP_RETCODE scipret;
    scipret = setupSCIP();
@@ -128,6 +135,7 @@ int GamsScip::readyAPI(
 int GamsScip::callSolver()
 {
    assert(gmo  != NULL);
+   assert(gev  != NULL);
    assert(scip != NULL);
 
    if( gmoGetEquTypeCnt(gmo, gmoequ_C) || gmoGetEquTypeCnt(gmo, gmoequ_B) || gmoGetEquTypeCnt(gmo, gmoequ_X) )
@@ -140,6 +148,11 @@ int GamsScip::callSolver()
 
    // set number of threads for linear algebra routines used in Ipopt
    setNumThreadsBlas(gev, gevThreads(gev));
+
+   // update error printing callback in SCIP to use current gev
+#if SCIP_VERSION >= 300
+   SCIPmessageSetErrorPrinting(printErrorGev, (void*)gev);
+#endif
 
    SCIP_RETCODE scipret;
 
@@ -251,6 +264,7 @@ int GamsScip::callSolver()
 
 SCIP_RETCODE GamsScip::setupSCIP()
 {
+#if SCIP_VERSION < 300
    if( scipmsghandler == NULL && gev != NULL )
    {
       /* print dialog messages to stdout if lo=1 or lo=3, but through gev if lo=0 or lo=2 */
@@ -259,12 +273,24 @@ SCIP_RETCODE GamsScip::setupSCIP()
          (SCIP_MESSAGEHDLRDATA*)gev) );
       SCIP_CALL_ABORT( SCIPsetMessagehdlr(scipmsghandler) );
    }
+#endif
+
 
    if( scip == NULL )
    {
       // if called first time, create a new SCIP instance and include all plugins that we need and setup interface parameters
 
       SCIP_CALL( SCIPcreate(&scip) );
+
+      // create and install our message handler
+#if SCIP_VERSION >= 300
+      SCIP_MESSAGEHDLR* messagehdlr;
+      SCIP_CALL( SCIPmessagehdlrCreate(&messagehdlr, FALSE, NULL, FALSE,
+         GamsScipPrintLogStat, GamsScipPrintLog, GamsScipPrintLog, NULL,
+         (SCIP_MESSAGEHDLRDATA*)gev) );
+      SCIP_CALL( SCIPsetMessagehdlr(scip, messagehdlr) );
+      SCIP_CALL( SCIPmessagehdlrRelease(&messagehdlr) );
+#endif
 
       SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
       SCIP_CALL( SCIPincludeReaderGmo(scip) );
@@ -307,11 +333,13 @@ SCIP_RETCODE GamsScip::freeSCIP()
       SCIP_CALL( SCIPfree(&scip) );
    }
 
+#if SCIP_VERSION < 300
    if( scipmsghandler != NULL )
    {
       SCIP_CALL( SCIPsetDefaultMessagehdlr() );
       SCIP_CALL( SCIPfreeMessagehdlr(&scipmsghandler) );
    }
+#endif
 
    return SCIP_OKAY;
 }

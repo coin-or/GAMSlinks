@@ -427,7 +427,6 @@ SCIP_RETCODE makeExprtree(
 {
    SCIP_PROBDATA* probdata;
    gmoHandle_t   gmo;
-   gevHandle_t   gev;
    BMS_BLKMEM*   blkmem;
    SCIP_HASHMAP* var2idx;
    SCIP_EXPR**   stack;
@@ -454,11 +453,9 @@ SCIP_RETCODE makeExprtree(
    probdata = SCIPgetProbData(scip);
    assert(probdata != NULL);
    assert(probdata->gmo != NULL);
-   assert(probdata->gev != NULL);
    assert(probdata->vars != NULL);
 
    gmo = probdata->gmo;
-   gev = probdata->gev;
 
    blkmem = SCIPblkmem(scip);
 
@@ -2067,18 +2064,15 @@ SCIP_RETCODE writeGmoSolution(
 )
 {
    gmoHandle_t gmo;
-   gevHandle_t gev;
    SCIP_PROBDATA* probdata;
    int nrsol;
 
    probdata = SCIPgetProbData(scip);
    assert(probdata != NULL);
    assert(probdata->gmo  != NULL);
-   assert(probdata->gev  != NULL);
    assert(probdata->vars != NULL);
 
    gmo = probdata->gmo;
-   gev = probdata->gev;
 
    nrsol = SCIPgetNSols(scip);
 
@@ -2234,7 +2228,13 @@ SCIP_RETCODE writeGmoSolution(
 
       /* if we have an MINLP with continuous variables, check if best solution is really feasible and try to repair otherwise */
       if( (gmoObjNLNZ(gmo) != 0 || gmoNLNZ(gmo) != 0) && gmoNDisc(gmo) < gmoN(gmo) &&
-          (SCIPgetStage(scip) != SCIP_STAGE_SOLVING || SCIPhasContinuousNonlinearitiesPresent(scip)) )
+          (SCIPgetStage(scip) != SCIP_STAGE_SOLVING ||
+#if SCIP_VERSION < 300
+             SCIPhasContinuousNonlinearitiesPresent(scip)
+#else
+             SCIPisNLPEnabled(scip)
+#endif
+             ) )
       {
          SCIP_Bool resolvenlp;
 
@@ -2752,7 +2752,11 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
    }
    else
    {
-      SCIPwarningMessage("Value for optca = %g >= value for infinity. Setting solution limit to 1 instead.\n", gevGetDblOpt(gev, gevOptCA));
+      SCIPwarningMessage(
+#if SCIP_VERSION >= 300
+         scip,
+#endif
+         "Value for optca = %g >= value for infinity. Setting solution limit to 1 instead.\n", gevGetDblOpt(gev, gevOptCA));
       SCIP_CALL( SCIPsetIntParam(scip, "limits/solutions", 1) );
    }
 
@@ -2796,7 +2800,11 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
       ret = SCIPreadParams(scip, optfilename);
       if( ret != SCIP_OKAY )
       {
-         SCIPwarningMessage("Reading of optionfile %s failed with SCIP return code <%d>!\n", optfilename, ret);
+         SCIPwarningMessage(
+#if SCIP_VERSION >= 300
+            scip,
+#endif
+            "Reading of optionfile %s failed with SCIP return code <%d>!\n", optfilename, ret);
       }
    }
 
