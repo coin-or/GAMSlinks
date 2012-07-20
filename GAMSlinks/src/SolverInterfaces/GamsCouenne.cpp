@@ -268,9 +268,9 @@ int GamsCouenne::callSolver()
 
    // check for CPLEX license, if used
    std::string parvalue;
-#ifdef COIN_HAS_OSICPX
    couenne_setup->options()->GetStringValue("lp_solver", parvalue, "");
-   if( parvalue == "cplex" && (!checkLicense(gmo) || !registerGamsCplexLicense(gmo)) )
+#ifdef COIN_HAS_OSICPX
+   if( parvalue == "cplex" && !checkLicense(gmo) || !registerGamsCplexLicense(gmo) )
    {
       gevLogStat(gev, "CPLEX as LP solver chosen, but no CPLEX license available. Aborting.\n");
       gmoSolveStatSet(gmo, gmoSolveStat_License);
@@ -278,6 +278,8 @@ int GamsCouenne::callSolver()
       return 1;
    }
 #endif
+   if( parvalue != "clp" )
+      gevLogStat(gev, "WARNING: Changing the LP solver in Couenne may give incorrect results!");
 
    // if feaspump is activated and should use SCIP, check for academic license of SCIP
    // also do not accept demo mode, since we do not know how large the MIPs in the feaspump will be
