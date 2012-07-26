@@ -1832,7 +1832,7 @@ SCIP_RETCODE createProblem(
          coefs[linnz] = -1.0;
          ++linnz;
 
-         objfactor = -(gmoSense(gmo) == gmoObj_Min ? 1.0 : -1.0) / gmoObjJacVal(gmo);
+         objfactor = -1.0 / gmoObjJacVal(gmo);
 
          gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
          SCIP_CALL( makeExprtree(scip, codelen, opcodes, fields, gmoNLConst(gmo), (SCIP_Real*)gmoPPool(gmo), &exprtree) );
