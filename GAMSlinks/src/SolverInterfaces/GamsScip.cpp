@@ -40,10 +40,14 @@ SCIP_DECL_MESSAGEWARNING(GamsScipPrintLogStat)
 {
    assert(SCIPmessagehdlrGetData(messagehdlr) != NULL);
    assert(file != NULL);
+
    if( file != stderr )
       fprintf(file, msg);
    else
-      gevLogStatPChar((gevHandle_t)SCIPmessagehdlrGetData(messagehdlr), msg);
+   {
+      void* gev = (void*)SCIPmessagehdlrGetData(messagehdlr);
+      gevLogStatPChar((gevHandle_t)gev, msg);
+   }
 }
 
 static
@@ -51,10 +55,14 @@ SCIP_DECL_MESSAGEINFO(GamsScipPrintLog)
 {
    assert(SCIPmessagehdlrGetData(messagehdlr) != NULL);
    assert(file != NULL);
+
    if( file != stdout )
       fprintf(file, msg);
    else
-      gevLogPChar((gevHandle_t)SCIPmessagehdlrGetData(messagehdlr), msg);
+   {
+      void* gev = (void*)SCIPmessagehdlrGetData(messagehdlr);
+      gevLogPChar((gevHandle_t)gev, msg);
+   }
 }
 
 

@@ -270,7 +270,7 @@ int GamsCouenne::callSolver()
    std::string parvalue;
    couenne_setup->options()->GetStringValue("lp_solver", parvalue, "");
 #ifdef COIN_HAS_OSICPX
-   if( parvalue == "cplex" && !checkLicense(gmo) || !registerGamsCplexLicense(gmo) )
+   if( parvalue == "cplex" && (!checkLicense(gmo) || !registerGamsCplexLicense(gmo)) )
    {
       gevLogStat(gev, "CPLEX as LP solver chosen, but no CPLEX license available. Aborting.\n");
       gmoSolveStatSet(gmo, gmoSolveStat_License);
