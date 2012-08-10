@@ -152,6 +152,7 @@ int GamsCouenne::callSolver()
       return retcode;
    }
 
+   gmoInterfaceSet(gmo, gmoIFace_Raw);
    gmoObjStyleSet(gmo, gmoObjType_Fun);
    gmoObjReformSet(gmo, 1);
    gmoIndexBaseSet(gmo, 0);
@@ -419,6 +420,10 @@ int GamsCouenne::callSolver()
       // check optimization outcome
       double best_val   = minlp->isMin * bb.bestObj();
       double best_bound = minlp->isMin * bb.model().getBestPossibleObjValue(); //bestBound();
+
+      // correct best_bound, if necessary (works around sideeffect of other workaround in couenne)
+      if( minlp->isMin * best_bound > minlp->isMin * best_val )
+         best_bound = best_val;
 
       gmoSetHeadnTail(gmo, gmoHresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
       gmoSetHeadnTail(gmo, gmoTmipnod,   bb.numNodes());
@@ -759,8 +764,17 @@ CouenneProblem* GamsCouenne::setupProblem()
          case gmoequ_N:
             // ignore free constraints, should have been permutated out anyway
             break;
+         case gmoequ_X:
+            gevLogStat(gev, "External functions not supported by Couenne.\n");
+            goto TERMINATE;
+         case gmoequ_C:
+            gevLogStat(gev, "Conic constraints not supported by Couenne.\n");
+            goto TERMINATE;
+         case gmoequ_B:
+            gevLogStat(gev, "Logic constraints not supported by Couenne.\n");
+            goto TERMINATE;
          default:
-            gevLogStat(gev, "unsupported constraint type\n");
+            gevLogStat(gev, "Unexpected constraint type.\n");
             goto TERMINATE;
       }
    }

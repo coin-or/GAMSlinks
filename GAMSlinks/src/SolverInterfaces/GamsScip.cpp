@@ -146,6 +146,9 @@ int GamsScip::callSolver()
    assert(gev  != NULL);
    assert(scip != NULL);
 
+   /* set interface type so we see =B= and =X= equations */
+   gmoInterfaceSet(gmo, gmoIFace_Raw);
+
    if( gmoGetEquTypeCnt(gmo, gmoequ_C) || gmoGetEquTypeCnt(gmo, gmoequ_B) || gmoGetEquTypeCnt(gmo, gmoequ_X) )
    {
       gevLogStat(gev, "ERROR: Conic and logic constraints and external functions not supported by SCIP interface.\n");
