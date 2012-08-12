@@ -2464,6 +2464,11 @@ SCIP_DECL_DIALOGEXEC(dialogExecReadGams)
       SCIP_CALL( createProblem(scip, readerdata) );
    }
 
+   SCIPverbMessage(scip, SCIP_VERBLEVEL_NORMAL, NULL,
+      "\noriginal problem has %d variables (%d bin, %d int, %d cont) and %d constraints\n",
+      SCIPgetNOrigVars(scip), SCIPgetNOrigBinVars(scip), SCIPgetNOrigIntVars(scip), SCIPgetNOrigContVars(scip),
+      SCIPgetNConss(scip));
+
    *nextdialog = SCIPdialoghdlrGetRoot(dialoghdlr);
 
    return SCIP_OKAY;
@@ -2796,7 +2801,7 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
       SCIP_RETCODE ret;
 
       gmoNameOptFile(gmo, optfilename);
-      SCIPinfoMessage(scip, NULL, "\nReading option file %s.\n", optfilename);
+      SCIPinfoMessage(scip, NULL, "\nreading option file %s\n", optfilename);
       ret = SCIPreadParams(scip, optfilename);
       if( ret != SCIP_OKAY )
       {

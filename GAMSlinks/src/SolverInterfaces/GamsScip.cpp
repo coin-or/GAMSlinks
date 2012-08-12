@@ -179,6 +179,8 @@ int GamsScip::callSolver()
       gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
       return 1;
    }
+   SCIPinfoMessage(scip, NULL, "non-default parameter settings:\n");
+   SCIPwriteParams(scip, NULL, NULL, TRUE);
 
    SCIP_Bool interactive;
    SCIP_CALL_ABORT( SCIPgetBoolParam(scip, "gams/interactive", &interactive) );
@@ -211,8 +213,6 @@ int GamsScip::callSolver()
          (void) SCIPsnprintf(buffer, sizeof(buffer), "read %g ca", attrfile);
       SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, buffer) );               // process constraints attribute file
    }
-
-   SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, "disp param") );            // display non-default parameter settings
 
    if( !interactive )
    {
