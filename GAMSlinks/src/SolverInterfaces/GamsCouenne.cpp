@@ -130,7 +130,7 @@ int GamsCouenne::readyAPI(
    couenne_setup->roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
    couenne_setup->roptions()->AddStringOption2("print_eval_error",
       "Switch to enable printing information about function evaluation errors into the GAMS listing file.",
-      "no",
+      "yes",
       "no", "", "yes", "");
 
    return 0;
@@ -301,7 +301,7 @@ int GamsCouenne::callSolver()
 
    bool printevalerror;
    couenne_setup->options()->GetBoolValue("print_eval_error", printevalerror, "");
-   gmoEvalErrorNoMsg(gmo, printevalerror);
+   gmoEvalErrorNoMsg(gmo, !printevalerror);
 
    // initialize Hessian in GMO, if required
    couenne_setup->options()->GetStringValue("hessian_approximation", parvalue, "");

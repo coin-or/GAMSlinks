@@ -105,7 +105,7 @@ int GamsBonmin::readyAPI(
    bonmin_setup->roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
    bonmin_setup->roptions()->AddStringOption2("print_eval_error",
       "Switch to enable printing information about function evaluation errors into the GAMS listing file.",
-      "no",
+      "yes",
       "no", "", "yes", "");
 
    bonmin_setup->roptions()->SetRegisteringCategory("NLP interface", Bonmin::RegisteredOptions::BonminCategory);
@@ -279,7 +279,7 @@ int GamsBonmin::callSolver()
    // check whether evaluation errors should be printed in status file
    bool printevalerror;
    bonmin_setup->options()->GetBoolValue("print_eval_error", printevalerror, "");
-   gmoEvalErrorNoMsg(gmo, printevalerror);
+   gmoEvalErrorNoMsg(gmo, !printevalerror);
 
    // set number of threads in blas in ipopt
    setNumThreadsBlas(gev, gevThreads(gev));

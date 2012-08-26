@@ -654,7 +654,7 @@ void printIpoptOptions()
    ipopt->RegOptions()->SetRegisteringCategory("Output");
    ipopt->RegOptions()->AddStringOption2("print_eval_error",
       "Switch to enable printing information about function evaluation errors into the GAMS listing file.",
-      "no",
+      "yes",
       "no", "", "yes", "");
    ipopt->RegOptions()->AddStringOption2("report_mininfeas_solution",
       "Switch to report intermediate solution with minimal constraint violation to GAMS if the final solution is not feasible.",
