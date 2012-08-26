@@ -2783,6 +2783,11 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
    {
       /* enable column on number of branching on continuous variables */
       SCIP_CALL( SCIPsetIntParam(scip, "display/nexternbranchcands/active", 2) );
+      /* make sure also column on number of branching on fractional variables is shown, if any */
+      if( gmoNDisc(gmo) > 0 )
+      {
+         SCIP_CALL( SCIPsetIntParam(scip, "display/nfrac/active", 2) );
+      }
    }
    /* make sure column on number of branching on fractional variables is shown, if any */
    if( gmoNDisc(gmo) > 0 )
