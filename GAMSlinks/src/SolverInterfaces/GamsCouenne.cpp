@@ -332,7 +332,8 @@ int GamsCouenne::callSolver()
    minlp->in_couenne = true;
    couenne_setup->options()->GetNumericValue("diverging_iterates_tol", minlp->nlp->div_iter_tol, "");
 
-   setNumThreadsBlas(gev, gevThreads(gev));
+   // set number of threads in linear algebra in ipopt
+   setNumThreadsLinearAlgebra(gev, gevThreads(gev));
 
    // initialize bbtrace, if activated
    GAMS_BBTRACE* bbtrace = NULL;

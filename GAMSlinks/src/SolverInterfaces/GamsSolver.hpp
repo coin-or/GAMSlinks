@@ -25,10 +25,10 @@ protected:
    );
 
 public:
-   /** sets number of threads to use in basic linear algebra routines */
-   static void setNumThreadsBlas(
+   /** sets number of threads to use in linear algebra routines (Blas, Lapack) */
+   static void setNumThreadsLinearAlgebra(
       struct gevRec*      gev,                /**< GAMS environment */
-      int                 nthreads            /**< number of threads for BLAS routines */
+      int                 nthreads            /**< number of threads for linear algebra routines */
    );
 
    /** ensure that GMO library has been loaded

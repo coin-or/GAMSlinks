@@ -167,7 +167,8 @@ int GamsIpopt::callSolver()
 
    ipopt->Options()->GetBoolValue("report_mininfeas_solution", nlp->reportmininfeas, "");
 
-   setNumThreadsBlas(gev, gevThreads(gev));
+   // set number of threads in linear algebra
+   setNumThreadsLinearAlgebra(gev, gevThreads(gev));
 
    // solve NLP
    nlp->clockStart = gevTimeDiffStart(gev);

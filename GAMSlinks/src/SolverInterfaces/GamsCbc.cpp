@@ -849,16 +849,16 @@ bool GamsCbc::setupParameters()
       sprintf(buffer, "%d", nthreads);
       par_list.push_back(buffer);
 
-      // no Blas multithreading if Cbc is doing multithreading
-      setNumThreadsBlas(gev, 1);
+      // no linear algebra multithreading if Cbc is doing multithreading
+      setNumThreadsLinearAlgebra(gev, 1);
    }
    else
    {
       if( nthreads > 1 )
          gevLogStat(gev, "Warning: Multithreading support not available in CBC.");
 
-      // allow Blas multithreading
-      setNumThreadsBlas(gev, nthreads);
+      // allow linear algebra multithreading
+      setNumThreadsLinearAlgebra(gev, nthreads);
       nthreads = 1;
    }
 

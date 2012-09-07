@@ -158,7 +158,7 @@ int GamsScip::callSolver()
    }
 
    // set number of threads for linear algebra routines used in Ipopt
-   setNumThreadsBlas(gev, gevThreads(gev));
+   setNumThreadsLinearAlgebra(gev, gevThreads(gev));
 
    // update error printing callback in SCIP to use current gev
 #if SCIP_VERSION >= 300

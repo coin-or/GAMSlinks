@@ -281,8 +281,8 @@ int GamsBonmin::callSolver()
    bonmin_setup->options()->GetBoolValue("print_eval_error", printevalerror, "");
    gmoEvalErrorNoMsg(gmo, !printevalerror);
 
-   // set number of threads in blas in ipopt
-   setNumThreadsBlas(gev, gevThreads(gev));
+   // set number of threads in linear algebra in ipopt
+   setNumThreadsLinearAlgebra(gev, gevThreads(gev));
 
    // initialize bbtrace, if activated
    GAMS_BBTRACE* bbtrace = NULL;

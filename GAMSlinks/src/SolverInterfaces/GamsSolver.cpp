@@ -24,11 +24,10 @@ extern "C" void goto_set_num_threads(int);
 #endif
 
 #ifdef HAVE_MKL_SETNUMTHREADS
-extern "C" void MKL_Domain_Set_Num_Threads(int, int);
-//extern "C" void MKL_Set_Num_Threads(int);
+extern "C" void MKL_Set_Num_Threads(int);
 #endif
 
-void GamsSolver::setNumThreadsBlas(
+void GamsSolver::setNumThreadsLinearAlgebra(
    struct gevRec*      gev,                /**< GAMS environment */
    int                 nthreads            /**< number of threads for BLAS routines */
 )
@@ -50,7 +49,7 @@ void GamsSolver::setNumThreadsBlas(
       sprintf(msg, "Limit number of threads in MKL BLAS to %d.\n", nthreads);
       gevLogPChar(gev, msg);
    }
-   MKL_Domain_Set_Num_Threads(nthreads, 1); // 1 = Blas
+   MKL_Set_Num_Threads(nthreads);
 #endif
 }
 
