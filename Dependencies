@@ -7,13 +7,12 @@ Cbc               https://projects.coin-or.org/svn/Cbc/stable/2.7/Cbc
 Ipopt             https://projects.coin-or.org/svn/Ipopt/trunk/Ipopt
 Bonmin            https://projects.coin-or.org/svn/Bonmin/stable/1.6/Bonmin
 Couenne           https://projects.coin-or.org/svn/Couenne/stable/0.4/Couenne
-cppad             https://projects.coin-or.org/svn/CppAD/stable/20120101
-OS                https://projects.coin-or.org/svn/OS/stable/2.5/OS
+OS                https://projects.coin-or.org/svn/OS/stable/2.6/OS
 ThirdParty/HSL    https://projects.coin-or.org/svn/BuildTools/ThirdParty/HSL/stable/1.4
 ThirdParty/Blas   https://projects.coin-or.org/svn/BuildTools/ThirdParty/Blas/stable/1.2
 ThirdParty/Glpk   https://projects.coin-or.org/svn/BuildTools/ThirdParty/Glpk/stable/1.8
 ThirdParty/Lapack https://projects.coin-or.org/svn/BuildTools/ThirdParty/Lapack/stable/1.3
 ThirdParty/Mumps  https://projects.coin-or.org/svn/BuildTools/ThirdParty/Mumps/stable/1.4
 ThirdParty/Metis  https://projects.coin-or.org/svn/BuildTools/ThirdParty/Metis/stable/1.2
-ThirdParty/SoPlex https://projects.coin-or.org/svn/BuildTools/ThirdParty/SoPlex/stable/1.1
-ThirdParty/SCIP   https://projects.coin-or.org/svn/BuildTools/ThirdParty/SCIP/stable/1.1
+ThirdParty/SoPlex https://projects.coin-or.org/svn/BuildTools/ThirdParty/SoPlex/trunk
+ThirdParty/SCIP   https://projects.coin-or.org/svn/BuildTools/ThirdParty/SCIP/trunk
