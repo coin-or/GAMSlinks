@@ -414,6 +414,9 @@ int GamsBonmin::callSolver()
             bonmin_setup->options()->SetStringValue("print_user_options", "no", true, true);
             // let Ipopt handle fixed variables as constraints, so we get dual values for it, which seems to be expected by GAMS
             bonmin_setup->options()->SetStringValue("fixed_variable_treatment", "make_constraint", true, true);
+            // since we changed fixed_variable_treatment, the NLP solved within Ipopt takes a different structure
+            // calling disableWarmStart() ensures that IpoptSolver::OptimizeTNLP does not tries to ReOptimize the TNLP
+            osi_tminlp.solver()->disableWarmStart();
             osi_tminlp.initialSolve();
             error_in_fixedsolve = !osi_tminlp.isProvenOptimal();
          }
