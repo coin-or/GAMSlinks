@@ -14,7 +14,7 @@
 #include "gevmcc.h"
 
 #ifdef GAMS_BUILD
-#include "gmspal.h"
+#include "palmcc.h"
 #endif
 
 #include "GamsCompatibility.h"
@@ -85,94 +85,64 @@ int GamsSolver::getGevReady()
    return 0;
 }
 
-bool GamsSolver::checkLicense(
-   struct gmoRec*     gmo                 /**< GAMS modeling object */
+void GamsSolver::initLicensing(
+   struct gmoRec*     gmo,                /**< GAMS modeling object */
+   struct palRec*     pal                 /**< GAMS audit and license object */
+   )
+{
+#ifdef GAMS_BUILD
+   char ll[80];
+   gevRec* gev;
+
+   assert(pal != NULL);
+
+   gev = (gevRec*)gmoEnvironment(gmo);
+
+   palLicenseRegisterGAMS(pal, 1, gevGetStrOpt(gev, "License1", ll));
+   palLicenseRegisterGAMS(pal, 2, gevGetStrOpt(gev, "License2", ll));
+   palLicenseRegisterGAMS(pal, 3, gevGetStrOpt(gev, "License3", ll));
+   palLicenseRegisterGAMS(pal, 4, gevGetStrOpt(gev, "License4", ll));
+   palLicenseRegisterGAMS(pal, 5, gevGetStrOpt(gev, "License5", ll));
+   palLicenseRegisterGAMSDone(pal);
+
+   palLicenseCheck(pal,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo));
+#endif
+}
+
+#if 0
+bool GamsSolver::checkGamsLicense(
+   struct gmoRec*     gmo,                /**< GAMS modeling object */
+   struct palRec*     pal                 /**< GAMS audit and license object */
 )
 {
 #ifdef GAMS_BUILD
    gevRec* gev = (gevRec*)gmoEnvironment(gmo);
-#define GEVPTR gev
-#include "cmagic2.h"
-   if( licenseCheck(gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo)) )
+
+   if( palLicenseCheck(pal,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo)) )
    {
       char msg[256];
       gevLogStat(gev, "The license check failed:");
-      while( licenseGetMessage(msg, sizeof(msg)) )
+      while( palLicenseGetMessage(pal, msg, sizeof(msg)) )
          gevLogStat(gev, msg);
       return false;
    }
-   return true;
-#undef GEVPTR
-#else
-   return true;
 #endif
+   return true;
 }
+#endif
 
-bool GamsSolver::checkAcademicLicense(
+bool GamsSolver::checkCplexLicense(
    struct gmoRec*     gmo,                /**< GAMS modeling object */
-   bool&              isdemo              /**< bool to indicate whether check succeeded because model fit into demo size */
+   struct palRec*     pal                 /**< GAMS audit and license object */
 )
 {
    assert(gmo != NULL);
 #ifdef GAMS_BUILD
    gevRec* gev = (gevRec*)gmoEnvironment(gmo);
 
-#define GEVPTR gev
-/* bad bad bad */
-#ifdef SUB_FR
-#undef SUB_FR
-#endif
-#define SUB_SC
-#include "cmagic2.h"
-   if( licenseCheck(gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo)) )
+   if( !palLicenseIsDemoCheckout(pal) )
    {
-      // model larger than demo and no solver-specific license; check if we have an academic license
-      isdemo = false;
-      int isAcademic = 0;
-      licenseQueryOption(const_cast<char*>("GAMS"), const_cast<char*>("ACADEMIC"), &isAcademic);
-      if( !isAcademic )
-      {
-         char msg[256];
-         while( licenseGetMessage(msg, sizeof(msg)) )
-            gevLogStat(gev, msg);
-         return false;
-      }
-   }
-   else
-   {
-      // model fits into demo size
-      int isAcademic = 0;
-      licenseQueryOption(const_cast<char*>("GAMS"), const_cast<char*>("ACADEMIC"), &isAcademic);
-      // if we have no academic license, then this check succeeds only because model fits into demo limitations, so indicate this
-      isdemo = !isAcademic;
-   }
-#undef SUB_OC
-#undef GEVPTR
-#else
-   isdemo = false;
-#endif
-
-   return true;
-}
-
-bool GamsSolver::registerGamsCplexLicense(
-   struct gmoRec*     gmo                 /**< GAMS modeling object */
-)
-{
-   assert(gmo != NULL);
-#if defined(COIN_HAS_OSICPX) && defined(GAMS_BUILD)
-   gevRec* gev = (gevRec*)gmoEnvironment(gmo);
-
-#define GEVPTR gev
-   /* bad bad bad */
-#ifdef SUB_FR
-#undef SUB_FR
-#endif
-#define SUB_OC
-#include "cmagic2.h"
-   if( licenseCheck(gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo)) )
-   {
-      if( licenseCheckSubSys(2, const_cast<char*>("CPCL")) )
+      if( palLicenseCheckSubSys(pal, const_cast<char*>("OCCPCL")) )
       {
          gevLogStat(gev,"***");
          gevLogStat(gev,"*** LICENSE ERROR:");
@@ -181,41 +151,43 @@ bool GamsSolver::registerGamsCplexLicense(
          return false;
       }
    }
-#undef SUB_OC
-#undef GEVPTR
+#endif
+   return true;
+}
+
+bool GamsSolver::checkIpoptLicense(
+   struct gmoRec*     gmo,                /**< GAMS modeling object */
+   struct palRec*     pal                /**< GAMS audit and license object */
+)
+{
+#ifdef GAMS_BUILD
+   assert(gmo != NULL);
+   if( !palLicenseIsDemoCheckout(pal) )
+   {
+      if( palLicenseCheckSubSys(pal, const_cast<char*>("IP")) )
+         return false;
+      else
+         return true;
+   }
 #endif
 
    return true;
 }
 
-bool GamsSolver::checkIpoptLicense(
-   struct gmoRec*     gmo                 /**< GAMS modeling object */
+bool GamsSolver::checkScipLicense(
+   struct gmoRec*     gmo,                /**< GAMS modeling object */
+   struct palRec*     pal                /**< GAMS audit and license object */
 )
 {
+#ifdef GAMS_BUILD
    assert(gmo != NULL);
-#if defined(GAMS_BUILD)
-   gevRec* gev = (gevRec*)gmoEnvironment(gmo);
-
-#define GEVPTR gev
-   /* bad bad bad */
-#ifdef SUB_FR
-#undef SUB_FR
-#endif
-#define SUB_IP
-#include "cmagic2.h"
-   if( licenseCheck(gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo)) )
+   if( !palLicenseIsDemoCheckout(pal) && !palLicenseIsAcademic(pal) )
    {
-      return false;
-   }
-   else
-   {
-      if( licenseCheckSubSys(1, const_cast<char*>("IP")) )
+      if( palLicenseCheckSubSys(pal, const_cast<char*>("SC")) )
          return false;
       else
          return true;
    }
-#undef SUB_IP
-#undef GEVPTR
 #endif
 
    return true;

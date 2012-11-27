@@ -19,7 +19,7 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
-#include "gmspal.h"  /* for audit line */
+#include "palmcc.h"
 #endif
 
 #include "GamsCompatibility.h"
@@ -46,12 +46,20 @@ int GamsOS::readyAPI(
    assert(gev != NULL);
 
 #ifdef GAMS_BUILD
-#include "coinlibdCL4svn.h"
-   char buffer[256];
-   auditGetLine(buffer, sizeof(buffer));
+   struct palRec*        pal;                /**< GAMS audit and license object */
+   char buffer[GMS_SSSIZE];
+
+   if( !palCreate(&pal, buffer, sizeof(buffer)) )
+      return 1;
+
+#define PALPTR pal
+#include "coinlibdCL4svn.h" 
+   palGetAuditLine(pal,buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+
+   palFree(&pal);
 #endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Optimization Services (OS Library "OS_VERSION")\nwritten by H. Gassmann, J. Ma, and K. Martin\n\n");

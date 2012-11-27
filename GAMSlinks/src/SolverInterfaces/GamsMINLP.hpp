@@ -16,6 +16,7 @@ class GamsCouenneSetup;
 
 struct gmoRec;
 struct gevRec;
+struct palRec;
 
 /** a TMINLP for Bonmin that uses GMO to interface the problem formulation */
 class GamsMINLP : public Bonmin::TMINLP
@@ -27,6 +28,9 @@ class GamsMINLP : public Bonmin::TMINLP
 private:
    struct gmoRec*        gmo;                /**< GAMS modeling object */
    struct gevRec*        gev;                /**< GAMS environment */
+#ifdef GAMS_BUILD
+   struct palRec*        pal;                /**< GAMS audit and license object */
+#endif
    double                isMin;              /**< objective sense (1.0 for minimization, -1.0 for maximization */
 
    bool                  in_couenne;         /**< whether we use this class in Couenne */

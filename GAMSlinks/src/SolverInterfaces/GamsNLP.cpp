@@ -963,13 +963,31 @@ void GamsNLP::finalize_solution(
       double* negLambda = new double[m];
       for( Index i = 0;  i < m;  i++ )
       {
-         rowBasStat[i] = gmoBstat_Super;
-         if( scaled_viol != NULL && fabs(scaled_viol[i]) > scaled_conviol_tol )
+         double viol;
+
+         switch( gmoGetEquTypeOne(gmo, i) )
+         {
+            case gmoequ_E :
+               viol = fabs(g[i] - gmoGetRhsOne(gmo, i));
+               break;
+            case gmoequ_L :
+               viol = g[i] - gmoGetRhsOne(gmo, i);
+               break;
+            case gmoequ_G :
+               viol = gmoGetRhsOne(gmo, i) - g[i];
+               break;
+            default: /* this should never happen */
+               viol = scaled_viol != NULL ? scaled_viol[i] : 0.0;
+               break;
+         }
+         if( viol > unscaled_conviol_tol )
             rowIndic[i] = gmoCstat_Infeas;
          else if( compl_gL != NULL && (fabs(compl_gL[i]) > scaled_conviol_tol || fabs(compl_gU[i]) > scaled_conviol_tol) )
             rowIndic[i] = gmoCstat_NonOpt;
          else
             rowIndic[i] = gmoCstat_OK;
+
+         rowBasStat[i] = gmoBstat_Super;
          negLambda[i] = -lambda[i];
       }
 

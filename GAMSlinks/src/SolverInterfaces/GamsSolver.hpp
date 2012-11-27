@@ -10,19 +10,36 @@
 typedef struct gmoRec* gmoHandle_t;
 typedef struct gevRec* gevHandle_t;
 typedef struct optRec* optHandle_t;
+typedef struct palRec* palHandle_t;
 
 /** abstract interface to a solver that takes Gams Modeling Objects (GMO) as input */
 class GamsSolver
 {
 protected:
 
-   /** initializes GAMS licensed HSL routines if a commerical Ipopt license is available
+   void initLicensing(
+      struct gmoRec*     gmo,                /**< GAMS modeling object */
+      struct palRec*     pal                 /**< GAMS audit and license object */
+      );
+
+   /** initializes GAMS licensed HSL routines if a commercial Ipopt license is available
     *
-    * Returns true if a commerical Ipopt license is available, and false otherwise.
+    * Returns true if a commercial Ipopt license is available, and false otherwise.
     */
+#ifdef GAMS_BUILD
    bool HSLInit(
-      struct gmoRec*     gmo                 /**< GAMS modeling object */
+      struct gmoRec*     gmo,                /**< GAMS modeling object */
+      struct palRec*     pal                 /**< GAMS audit and license object */
    );
+#else
+   bool HSLInit(
+      struct gmoRec*     gmo,                /**< GAMS modeling object */
+      struct palRec*     pal                 /**< GAMS audit and license object */
+   )
+   {
+      return false;
+   }
+#endif
 
 public:
    /** sets number of threads to use in linear algebra routines (Blas, Lapack) */
@@ -41,34 +58,38 @@ public:
     */
    static int getGevReady();
 
+#if 0
    /** calls GAMS license check, if build by GAMS
     * @return True if license check was skipped or successful or model fits into demo size restrictions
     */
-   bool checkLicense(
-      struct gmoRec*     gmo                 /**< GAMS modeling object */
-   );
-
-   /** calls GAMS academic license check, if build by GAMS
-    * @return True if license check was skipped or an academic GAMS license was found or model fits into demo size restrictions
-    * If model fits into demo size limitations but also an academic license is available, isdemo is set to false.
-    */
-   bool checkAcademicLicense(
+   bool checkGamsLicense(
       struct gmoRec*     gmo,                /**< GAMS modeling object */
-      bool&              isdemo              /**< bool to indicate whether check succeeded because model fit into demo size */
+      struct palRec*     pal                 /**< GAMS audit and license object */
    );
+#endif
 
    /** registers a GAMS/CPLEX license, if build by GAMS
     * @return True if license was registered or no CPLEX available
     */
-   bool registerGamsCplexLicense(
-      struct gmoRec*     gmo                 /**< GAMS modeling object */
+   bool checkCplexLicense(
+      struct gmoRec*     gmo,                /**< GAMS modeling object */
+      struct palRec*     pal                 /**< GAMS audit and license object */
    );
 
    /** checks for GAMS/Ipopt commercial license
     * @return True if Ipopt commercial license was found, false otherwise (even for demo models).
     */
    bool checkIpoptLicense(
-      struct gmoRec*     gmo                 /**< GAMS modeling object */
+      struct gmoRec*     gmo,                /**< GAMS modeling object */
+      struct palRec*     pal                 /**< GAMS audit and license object */
+   );
+
+   /** checks for GAMS/Scip commercial license
+    * @return True if Scip commercial license was found, false otherwise (even for demo models).
+    */
+   bool checkScipLicense(
+      struct gmoRec*     gmo,                /**< GAMS modeling object */
+      struct palRec*     pal                 /**< GAMS audit and license object */
    );
 
    /** initialization of solver interface and solver

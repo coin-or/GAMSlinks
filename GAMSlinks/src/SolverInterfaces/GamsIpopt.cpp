@@ -20,8 +20,7 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
-#include "gmspal.h"  /* for audit line */
-extern "C" void HSLGAMSInit();
+#include "palmcc.h"
 #endif
 
 #include "GamsCompatibility.h"
@@ -45,22 +44,48 @@ int GamsIpopt::readyAPI(
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
+   ipoptLicensed = false;
 #ifdef GAMS_BUILD
+   struct palRec* pal;
+   char buffer[GMS_SSSIZE];
+
+   if( !palCreate(&pal, buffer, sizeof(buffer)) )
+      return 1;
+
+#define PALPTR pal
 #include "coinlibdCL3svn.h" 
-   char buffer[1024];
-   auditGetLine(buffer, sizeof(buffer));
+   palGetAuditLine(pal,buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
 
-   ipoptLicensed = HSLInit(gmo);
+   initLicensing(gmo, pal);
+   if( gevGetIntOpt(gev, gevCurSolver) == gevSolver2Id(gev, "ipopth") )
+   {
+      ipoptLicensed = HSLInit(gmo, pal);
+
+      if( !ipoptLicensed  )
+      {
+         gmoSolveStatSet(gmo, gmoSolveStat_License);
+         gmoModelStatSet(gmo, gmoModelStat_LicenseError);
+         gevLogStatPChar(gev, "\nYou may want to try the free version IPOPT instead of IPOPTH.\n\n");
+         return 1;
+      }
+   }
 #endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Interior Point Optimizer (Ipopt Library "IPOPT_VERSION")\n");
    if( ipoptLicensed )
-     gevLogStatPChar(gev, "written by A. Waechter, commercially supported by GAMS Development Corp.\n");
+      gevLogStatPChar(gev, "written by A. Waechter, commercially supported by GAMS Development Corp.\n");
    else
-     gevLogStatPChar(gev, "written by A. Waechter\n");
+      gevLogStatPChar(gev, "written by A. Waechter.\n");
+
+#ifdef GAMS_BUILD
+   if( !ipoptLicensed && checkIpoptLicense(gmo, pal) )
+      gevLogPChar(gev, "\nNote: This is the free version IPOPT, but you could also use the commercially supported and potentially higher performance version IPOPTH.\n");
+
+   palFree(&pal);
+#endif
 
    ipopt = new IpoptApplication(false);
 
@@ -79,6 +104,8 @@ int GamsIpopt::readyAPI(
       "no",
       "no", "", "yes", "",
       "This option allows to obtain the most feasible solution found by Ipopt during the iteration process, if it stops at a (locally) infeasible solution, due to a limit (time, iterations, ...), or with a failure in the restoration phase.");
+
+   gevTerminateInstall(gev);
 
    return 0;
 }

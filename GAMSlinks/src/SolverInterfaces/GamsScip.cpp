@@ -14,7 +14,7 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
-#include "gmspal.h"  /* for audit line */
+#include "palmcc.h"
 #endif
 
 #include "GAMSlinksConfig.h"
@@ -24,7 +24,7 @@
 #include "scip/scipdefplugins.h"
 #include "reader_gmo.h"
 #include "event_bbtrace.h"
-#include "prop_defaultbounds.h"
+/* #include "prop_defaultbounds.h" */
 
 #if SCIP_VERSION >= 300
 static
@@ -70,6 +70,11 @@ GamsScip::~GamsScip()
 {
    SCIP_CALL_ABORT( freeSCIP() );
    assert(scipmsghandler == NULL);
+
+#ifdef GAMS_BUILD
+   if( pal != NULL )
+      palFree(&pal);
+#endif
 }
 
 int GamsScip::readyAPI(
@@ -77,6 +82,8 @@ int GamsScip::readyAPI(
    struct optRec*     opt_                /**< GAMS options object */
 )
 {
+   char buffer[512];
+
    gmo = gmo_;
    assert(gmo != NULL);
 
@@ -86,18 +93,24 @@ int GamsScip::readyAPI(
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
-   char buffer[512];
+   assert(pal == NULL);
 
 #ifdef GAMS_BUILD
-#include "coinlibdCL5svn.h"
-   auditGetLine(buffer, sizeof(buffer));
+   if( !palCreate(&pal, buffer, sizeof(buffer)) )
+      return 1;
+
+#define PALPTR pal
+#include "coinlibdCL5svn.h" 
+   palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+
+   initLicensing(gmo, pal);
 #endif
 
    // check for academic license, or if we run in demo mode
-   if( !checkAcademicLicense(gmo, isDemo) )
+   if( !checkScipLicense(gmo, pal) )
    {
       gevLogStat(gev, "*** Use of SCIP is limited to academic users.");
       gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");
@@ -180,15 +193,17 @@ int GamsScip::callSolver()
       return 1;
    }
    SCIPinfoMessage(scip, NULL, "non-default parameter settings:\n");
-   SCIPwriteParams(scip, NULL, NULL, TRUE);
+   SCIPwriteParams(scip, NULL, FALSE, TRUE);
 
    SCIP_Bool interactive;
    SCIP_CALL_ABORT( SCIPgetBoolParam(scip, "gams/interactive", &interactive) );
-   if( interactive && isDemo )
+#ifdef GAMS_BUILD
+   if( interactive && palLicenseIsDemoCheckout(pal) )
    {
       gevLogStat(gev, "SCIP shell not available in demo mode.\n");
       interactive = FALSE;
    }
+#endif
 
    SCIP_Bool printstat;
    SCIP_CALL_ABORT( SCIPgetBoolParam(scip, "gams/printstatistics", &printstat) );

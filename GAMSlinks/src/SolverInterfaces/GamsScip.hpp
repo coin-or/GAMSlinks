@@ -23,7 +23,7 @@ class GamsScip : public GamsSolver
 private:
    struct gmoRec*        gmo;                /**< GAMS modeling object */
    struct gevRec*        gev;                /**< GAMS environment */
-   bool                  isDemo;             /**< whether we run SCIP in demo mode */
+   struct palRec*        pal;                /**< GAMS audit and license object */
 
    SCIP*                 scip;               /**< SCIP structure */
    SCIP_MESSAGEHDLR*     scipmsghandler;     /**< SCIP message handler to write through GEV */
@@ -35,7 +35,7 @@ public:
    GamsScip()
    : gmo(NULL),
      gev(NULL),
-     isDemo(false),
+     pal(NULL),
      scip(NULL),
      scipmsghandler(NULL)
    { }

@@ -27,6 +27,7 @@ class GamsCouenne: public GamsSolver
 private:
    struct gmoRec*        gmo;                /**< GAMS modeling object */
    struct gevRec*        gev;                /**< GAMS environment */
+   struct palRec*        pal;                /**< GAMS audit and license object */
 
    Couenne::CouenneSetup* couenne_setup;     /**< Couenne solver application */
    GamsMessageHandler*   msghandler;         /**< COIN-OR message handler for GAMS */
@@ -52,6 +53,7 @@ public:
    GamsCouenne()
    : gmo(NULL),
      gev(NULL),
+     pal(NULL),
      couenne_setup(NULL),
      msghandler(NULL),
      ipoptLicensed(false)

@@ -16,7 +16,7 @@
 #include "gevmcc.h"
 #include "gdxcc.h"
 #ifdef GAMS_BUILD
-#include "gmspal.h"  /* for audit line */
+#include "palmcc.h"
 #endif
 
 #include "GamsCompatibility.h"
@@ -143,12 +143,20 @@ int GamsCbc::readyAPI(
    assert(gev != NULL);
 
 #ifdef GAMS_BUILD
+   struct palRec* pal;
+   char buffer[GMS_SSSIZE];
+
+   if( !palCreate(&pal, buffer, sizeof(buffer)) )
+      return 1;
+
+#define PALPTR pal
 #include "coinlibdCL1svn.h"
-   char buffer[512];
-   auditGetLine(buffer, sizeof(buffer));
+   palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+
+   palFree(&pal);
 #endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Branch and Cut (CBC Library "CBC_VERSION")\nwritten by J. Forrest\n");

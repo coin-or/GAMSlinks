@@ -15,6 +15,7 @@
 #include "CoinHelperFunctions.hpp"
 
 #include <cassert>
+#include <cmath>
 
 #include "gmomcc.h"
 #include "gevmcc.h"

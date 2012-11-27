@@ -28,8 +28,7 @@
 #include "gevmcc.h"
 #include "gclgms.h"
 #ifdef GAMS_BUILD
-#include "gmspal.h"  /* for audit line */
-extern "C" void HSLGAMSInit();
+#include "palmcc.h"
 #endif
 
 #include "GamsCompatibility.h"
@@ -70,6 +69,11 @@ GamsCouenne::~GamsCouenne()
 {
    delete couenne_setup;
    delete msghandler;
+
+#ifdef GAMS_BUILD
+   if( pal != NULL )
+      palFree(&pal);
+#endif
 }
 
 int GamsCouenne::readyAPI(
@@ -86,16 +90,24 @@ int GamsCouenne::readyAPI(
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
+   assert(pal == NULL);
+
 #ifdef GAMS_BUILD
-   char buffer[256];
-#include "coinlibdCL2svn.h"
-   auditGetLine(buffer, sizeof(buffer));
+   char buffer[GMS_SSSIZE];
+
+   if( !palCreate(&pal, buffer, sizeof(buffer)) )
+      return 1;
+
+#define PALPTR pal
+#include "coinlibdCL2svn.h" 
+   palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
-
-   ipoptLicensed = HSLInit(gmo);
 #endif
+
+   initLicensing(gmo, pal);
+   ipoptLicensed = HSLInit(gmo, pal);
 
    gevLogStatPChar(gev, "\nCOIN-OR Couenne (Couenne Library "COUENNE_VERSION")\nwritten by P. Belotti\n\n");
 
@@ -271,7 +283,7 @@ int GamsCouenne::callSolver()
    std::string parvalue;
    couenne_setup->options()->GetStringValue("lp_solver", parvalue, "");
 #ifdef COIN_HAS_OSICPX
-   if( parvalue == "cplex" && (!checkLicense(gmo) || !registerGamsCplexLicense(gmo)) )
+   if( parvalue == "cplex" && !checkCplexLicense(gmo, pal) )
    {
       gevLogStat(gev, "CPLEX as LP solver chosen, but no CPLEX license available. Aborting.\n");
       gmoSolveStatSet(gmo, gmoSolveStat_License);
@@ -286,11 +298,10 @@ int GamsCouenne::callSolver()
    // also do not accept demo mode, since we do not know how large the MIPs in the feaspump will be
 #ifdef COIN_HAS_SCIP
    bool usescip;
-   bool isdemo;
    couenne_setup->options()->GetBoolValue("feas_pump_heuristic", usescip, "couenne.");
    if( usescip )
       couenne_setup->options()->GetBoolValue("feas_pump_usescip", usescip, "couenne.");
-   if( usescip && (!checkAcademicLicense(gmo, isdemo) || isdemo) )
+   if( usescip && !checkScipLicense(gmo, pal) )
    {
       gevLogStat(gev, "*** Use of SCIP is limited to academic users.");
       gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");

@@ -18,7 +18,7 @@
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
 #include "gevlice.h"
-#include "gmspal.h"  /* for audit line */
+#include "palmcc.h"
 #endif
 
 #include "GamsCompatibility.h"
@@ -138,6 +138,11 @@ int GamsOsi::readyAPI(
 
    // print GAMS version information
 #ifdef GAMS_BUILD
+   struct palRec* pal;
+   if( !palCreate(&pal, buffer, sizeof(buffer)) )
+      return 1;
+
+#define PALPTR pal
    switch( solverid )
    {
       case CPLEX:
@@ -159,10 +164,12 @@ int GamsOsi::readyAPI(
          gevLogStat(gev, "Error: Do not have auditline for solver\n");
          return -1;
    }
-   auditGetLine(buffer, sizeof(buffer));
+   palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+
+   initLicensing(gmo, pal);
 #endif
 
    // print Osi and solver version information
@@ -210,15 +217,6 @@ int GamsOsi::readyAPI(
    }
    gevLogStat(gev, buffer);
 
-#ifdef GAMS_BUILD
-   if( !checkLicense(gmo) )
-   {
-      gmoSolveStatSet(gmo, gmoSolveStat_License);
-      gmoModelStatSet(gmo, gmoModelStat_LicenseError);
-      return 1;
-   }
-#endif
-
    // initialize Osi and licenses for academic and commercial solvers
    try
    {
@@ -228,12 +226,14 @@ int GamsOsi::readyAPI(
          {
 #ifdef COIN_HAS_OSICPX
             OsiCpxSolverInterface* osicpx;
-            if( !registerGamsCplexLicense(gmo) )
+#ifdef GAMS_BUILD
+            if( !checkCplexLicense(gmo, pal) )
             {
                gmoSolveStatSet(gmo, gmoSolveStat_License);
                gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
             }
+#endif
             osicpx = new OsiCpxSolverInterface;
             osi = osicpx;
 #else
@@ -262,7 +262,7 @@ int GamsOsi::readyAPI(
             GUlicenseInit_t initType;
 
             /* Gurobi license setup */
-            if( gevgurobilice(gev, (void**)&grbenv, NULL, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType) )
+            if( gevgurobilice(gev, pal, (void**)&grbenv, NULL, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType) )
                gevLogStat(gev, "Trying to use Gurobi standalone license.\n");
 #endif
             // this lets OsiGrb take over ownership of grbenv (if not NULL), so it will be freed when osi is deleted
@@ -288,7 +288,7 @@ int GamsOsi::readyAPI(
                gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
             }
-            if( gevmoseklice(gev, mskenv, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType) )
+            if( gevmoseklice(gev, pal, mskenv, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType) )
                gevLogStat(gev, "Trying to use Mosek standalone license.\n");
 
             if( MSK_initenv(mskenv) )
@@ -312,8 +312,8 @@ int GamsOsi::readyAPI(
          case SOPLEX:
          {
 #ifdef COIN_HAS_OSISPX
-            bool isdemo;
-            if( !checkAcademicLicense(gmo, isdemo) )
+#if GAMS_BUILD
+            if( !checkScipLicense(gmo, pal) )
             {
                gevLogStat(gev, "*** Use of SOPLEX is limited to academic users.");
                gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");
@@ -321,6 +321,7 @@ int GamsOsi::readyAPI(
                gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
             }
+#endif
             osi = new OsiSpxSolverInterface();
 #else
             gevLogStat(gev, "GamsOsi compiled without Osi/Soplex interface.\n");
@@ -337,7 +338,7 @@ int GamsOsi::readyAPI(
             XPlicenseInit_t initType;
 
             /* Xpress license setup */
-            if( gevxpresslice(gev, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType, msg, sizeof(msg)) )
+            if( gevxpresslice(gev, pal, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType, msg, sizeof(msg)) )
                gevLogStat(gev, "Trying to use Xpress standalone license.\n");
 #endif
             OsiXprSolverInterface* osixpr = new OsiXprSolverInterface(0,0);
@@ -370,6 +371,9 @@ int GamsOsi::readyAPI(
       gevLogStat(gev, error.message().c_str());
       if( solverid == CPLEX || solverid == GUROBI || solverid == MOSEK || solverid == XPRESS )
       {
+#ifdef GAMS_BUILD
+         palFree(&pal);
+#endif
          gmoSolveStatSet(gmo, gmoSolveStat_License);
          gmoModelStatSet(gmo, gmoModelStat_LicenseError);
       }
@@ -385,6 +389,9 @@ int GamsOsi::readyAPI(
       gevLogStat(gev, "Unknown exception caught when creating Osi interface\n");
       return 1;
    }
+#ifdef GAMS_BUILD
+   palFree(&pal);
+#endif
 
    // setup message handler
    if( msghandler == NULL )
@@ -962,6 +969,7 @@ bool GamsOsi::setupCallbacks()
          OsiCpxSolverInterface* osicpx = dynamic_cast<OsiCpxSolverInterface*>(osi);
          assert(osicpx != NULL);
          CPXsetinfocallbackfunc(osicpx->getEnvironmentPtr(), cpxinfocallback, (void*)gev);
+         gevTerminateInstall(gev);
          break;
       }
 #endif
@@ -981,6 +989,7 @@ bool GamsOsi::setupCallbacks()
          assert(osigrb != NULL);
          if( GRBsetcallbackfunc(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL), grbcallback, (void*)gev) )
             gevLogStat(gev, GRBgeterrormsg(osigrb->getEnvironmentPtr()));
+         gevTerminateInstall(gev);
          break;
       }
 #endif
@@ -991,6 +1000,7 @@ bool GamsOsi::setupCallbacks()
          OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
          assert(osimsk != NULL);
          MSK_putcallbackfunc(osimsk->getLpPtr(), mskcallback, (void*)gev);
+         gevTerminateInstall(gev);
          break;
       }
 #endif
@@ -1025,6 +1035,7 @@ bool GamsOsi::setupCallbacks()
          assert(osixpr != NULL);
          XPRSsetcbgloballog(osixpr->getLpPtr(), xprcallback, (void*)gev);
          XPRSsetcblplog(osixpr->getLpPtr(), xprcallback, (void*)gev);
+         gevTerminateInstall(gev);
          break;
       }
 #endif

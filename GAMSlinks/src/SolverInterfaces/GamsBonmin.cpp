@@ -25,8 +25,7 @@
 #include "gevmcc.h"
 #include "gclgms.h"
 #ifdef GAMS_BUILD
-#include "gmspal.h"  /* for audit line */
-extern "C" void HSLGAMSInit();
+#include "palmcc.h"
 #endif
 
 #include "GamsCompatibility.h"
@@ -38,6 +37,11 @@ GamsBonmin::~GamsBonmin()
 {
    delete bonmin_setup;
    delete msghandler;
+
+#ifdef GAMS_BUILD
+   if( pal != NULL )
+      palFree(&pal);
+#endif
 }
 
 int GamsBonmin::readyAPI(
@@ -54,18 +58,47 @@ int GamsBonmin::readyAPI(
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
+   assert(pal == NULL);
+
+   ipoptLicensed = false;
 #ifdef GAMS_BUILD
-#include "coinlibdCLsvn.h"
-   char buffer[512];
-   auditGetLine(buffer, sizeof(buffer));
+   char buffer[GMS_SSSIZE];
+
+   if( !palCreate(&pal, buffer, sizeof(buffer)) )
+      return 1;
+
+#define PALPTR pal
+#include "coinlibdCLsvn.h" 
+   palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
 
-   ipoptLicensed = HSLInit(gmo);
+   initLicensing(gmo, pal);
+   if( gevGetIntOpt(gev, gevCurSolver) == gevSolver2Id(gev, "bonminh") )
+   {
+      ipoptLicensed = HSLInit(gmo, pal);
+
+      if( !ipoptLicensed  )
+      {
+         gmoSolveStatSet(gmo, gmoSolveStat_License);
+         gmoModelStatSet(gmo, gmoModelStat_LicenseError);
+         gevLogStatPChar(gev, "\nYou may want to try the free version BONMIN instead of BONMINH\n\n");
+         return 1;
+      }
+   }
 #endif
 
-   gevLogStatPChar(gev, "\nCOIN-OR Bonmin (Bonmin Library "BONMIN_VERSION")\nwritten by P. Bonami\n");
+   gevLogStatPChar(gev, "\nCOIN-OR Bonmin (Bonmin Library "BONMIN_VERSION")\n");
+   if( ipoptLicensed )
+      gevLogStatPChar(gev, "written by P. Bonami, with commercially supported IpOpt.\n");
+   else
+      gevLogStatPChar(gev, "written by P. Bonami.\n");
+
+#ifdef GAMS_BUILD
+   if( !ipoptLicensed && checkIpoptLicense(gmo, pal) )
+      gevLogPChar(gev, "\nNote: This is the free version BONMIN, but you could also use the commercially supported and potentially higher performance version BONMINH.\n");
+#endif
 
    delete bonmin_setup;
    bonmin_setup = new BonminSetup();
@@ -225,16 +258,23 @@ int GamsBonmin::callSolver()
    // check for GAMS/CPLEX license, if required
    std::string parvalue;
 #ifdef COIN_HAS_OSICPX
+#ifdef GAMS_BUILD
    std::string prefixes[7] = { "", "bonmin", "oa_decomposition.", "pump_for_minlp.", "rins.", "rens.", "local_branch." };
    for( int i = 0; i < 7; ++i )
    {
       bonmin_setup->options()->GetStringValue("milp_solver", parvalue, prefixes[i]);
-      if( parvalue == "Cplex" && (!checkLicense(gmo) || !registerGamsCplexLicense(gmo)) )
+      if( parvalue == "Cplex" )
       {
-         gevLogStat(gev, "No valid CPLEX license found.");
-         return 1;
+         if( !checkCplexLicense(gmo, pal) )
+         {
+            gevLogStat(gev, "No valid CPLEX license found.");
+            return 1;
+         }
+         else
+            break;
       }
    }
+#endif
 #endif
 
    double ipoptinf;
