@@ -9,9 +9,9 @@ Bonmin            https://projects.coin-or.org/svn/Bonmin/trunk/Bonmin
 Couenne           https://projects.coin-or.org/svn/Couenne/stable/0.4/Couenne
 OS                https://projects.coin-or.org/svn/OS/stable/2.6/OS
 ThirdParty/HSL    https://projects.coin-or.org/svn/BuildTools/ThirdParty/HSL/stable/1.4
-ThirdParty/Blas   https://projects.coin-or.org/svn/BuildTools/ThirdParty/Blas/stable/1.2
-ThirdParty/Glpk   https://projects.coin-or.org/svn/BuildTools/ThirdParty/Glpk/stable/1.8
-ThirdParty/Lapack https://projects.coin-or.org/svn/BuildTools/ThirdParty/Lapack/stable/1.3
+ThirdParty/Blas   https://projects.coin-or.org/svn/BuildTools/ThirdParty/Blas/stable/1.3
+ThirdParty/Glpk   https://projects.coin-or.org/svn/BuildTools/ThirdParty/Glpk/stable/1.9
+ThirdParty/Lapack https://projects.coin-or.org/svn/BuildTools/ThirdParty/Lapack/stable/1.4
 ThirdParty/Mumps  https://projects.coin-or.org/svn/BuildTools/ThirdParty/Mumps/stable/1.4
 ThirdParty/Metis  https://projects.coin-or.org/svn/BuildTools/ThirdParty/Metis/stable/1.2
 ThirdParty/SoPlex https://projects.coin-or.org/svn/BuildTools/ThirdParty/SoPlex/stable/1.2
