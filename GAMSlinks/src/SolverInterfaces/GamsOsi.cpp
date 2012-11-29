@@ -102,7 +102,9 @@ extern "C" void XPRS_CC XPRScommand(XPRSprob, char*);
 
 static int XPRS_CC xprcallback(XPRSprob prob, void* vUserDat)
 {
-   return gevTerminateGet((gevHandle_t)vUserDat);
+   if( gevTerminateGet((gevHandle_t)vUserDat) )
+      XPRSinterrupt(prob, XPRS_STOP_CTRLC);
+   return 0;
 }
 #endif
 
@@ -1034,6 +1036,7 @@ bool GamsOsi::setupCallbacks()
          OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
          assert(osixpr != NULL);
          XPRSsetcbgloballog(osixpr->getLpPtr(), xprcallback, (void*)gev);
+         XPRSsetcbcutlog(osixpr->getLpPtr(), xprcallback, (void*)gev);
          XPRSsetcblplog(osixpr->getLpPtr(), xprcallback, (void*)gev);
          gevTerminateInstall(gev);
          break;
@@ -1683,9 +1686,47 @@ bool GamsOsi::writeSolution(
                }
          }
 
+         switch( osimsk->getRescode() )
+         {
+            case MSK_RES_TRM_MAX_ITERATIONS:
+               gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
+               gevLogStat(gev, "Stopped due to iterations limit.");
+               break;
+
+            case MSK_RES_TRM_MIO_NUM_RELAXS:
+               gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
+               gevLogStat(gev, "Stopped due to node limit.");
+               break;
+
+            case MSK_RES_TRM_MAX_TIME:
+               gmoSolveStatSet(gmo, gmoSolveStat_Resource);
+               gevLogStat(gev, "Stopped due to time limit.");
+               break;
+
+            case MSK_RES_TRM_USER_BREAK:
+            case MSK_RES_TRM_USER_CALLBACK:
+               gmoSolveStatSet(gmo, gmoSolveStat_User);
+               gevLogStat(gev, "Stopped due to user interrupt.");
+               break;
+            /*
+            MSK_RES_TRM_OBJECTIVE_RANGE                    = 4002,
+            MSK_RES_TRM_MIO_NEAR_REL_GAP                   = 4003,
+            MSK_RES_TRM_MIO_NEAR_ABS_GAP                   = 4004,
+            MSK_RES_TRM_STALL                              = 4006,
+            MSK_RES_TRM_MIO_NUM_RELAXS                     = 4008,
+            MSK_RES_TRM_MIO_NUM_BRANCHES                   = 4009,
+            MSK_RES_TRM_NUM_MAX_NUM_INT_SOLUTIONS          = 4015,
+            MSK_RES_TRM_MAX_NUM_SETBACKS                   = 4020,
+            MSK_RES_TRM_NUMERICAL_PROBLEM                  = 4025,
+            MSK_RES_TRM_INTERNAL                           = 4030,
+            MSK_RES_TRM_INTERNAL_STOP                      = 4031
+            */
+         }
+
          break;
       }
 #endif
+
 
 #ifdef COIN_HAS_OSIXPR
       case XPRESS:
