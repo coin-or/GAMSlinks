@@ -12,14 +12,14 @@
 extern "C" {
 #endif
 
-typedef struct GAMS_bbtrace GAMS_BBTRACE;    /**< GAMS branch-and-bound trace data structure */
+typedef struct GAMS_solvetrace GAMS_SOLVETRACE; /**< GAMS solve trace data structure */
 
-/** creates a GAMS branch-and-bound trace data structure and initializes trace file for writing
+/** creates a GAMS solve trace data structure and initializes trace file for writing
  * @return 0, if successful; nonzero, if failure
  */
 extern
-int GAMSbbtraceCreate(
-   GAMS_BBTRACE**        bbtrace,            /**< buffer to store pointer of GAMS branch-and-bound trace data structure */
+int GAMSsolvetraceCreate(
+   GAMS_SOLVETRACE**     solvetrace,         /**< buffer to store pointer of GAMS solve trace data structure */
    const char*           filename,           /**< name of trace file to write */
    const char*           solverid,           /**< solver identifier string */
    double                infinity,           /**< solver value for infinity */
@@ -27,25 +27,25 @@ int GAMSbbtraceCreate(
    double                timefreq            /**< interval in seconds when to write T-lines to trace files, 0 to disable T-lines */
 );
 
-/** closes trace file and frees GAMS branch-and-bound trace data structure */
+/** closes trace file and frees GAMS solve trace data structure */
 extern
-void GAMSbbtraceFree(
-   GAMS_BBTRACE**        bbtrace             /**< pointer to GAMS branch-and-bound trace data structure to be freed */
+void GAMSsolvetraceFree(
+   GAMS_SOLVETRACE**     solvetrace          /**< pointer to GAMS solve trace data structure to be freed */
 );
 
-/** adds line to GAMS branch-and-bound trace file */
+/** adds line to GAMS solve trace file */
 extern
-void GAMSbbtraceAddLine(
-   GAMS_BBTRACE*         bbtrace,            /**< GAMS branch-and-bound trace data structure */
+void GAMSsolvetraceAddLine(
+   GAMS_SOLVETRACE*      solvetrace,         /**< GAMS solve trace data structure */
    long int              nnodes,             /**< number of enumerated nodes so far */
    double                dualbnd,            /**< current dual bound */
    double                primalbnd           /**< current primal bound */
 );
 
-/** adds end line to GAMS branch-and-bound trace file */
+/** adds end line to GAMS solve trace file */
 extern
-void GAMSbbtraceAddEndLine(
-   GAMS_BBTRACE*         bbtrace,            /**< GAMS branch-and-bound trace data structure */
+void GAMSsolvetraceAddEndLine(
+   GAMS_SOLVETRACE*      solvetrace,         /**< GAMS solve trace data structure */
    long int              nnodes,             /**< number of enumerated nodes so far */
    double                dualbnd,            /**< current dual bound */
    double                primalbnd           /**< current primal bound */
@@ -53,8 +53,8 @@ void GAMSbbtraceAddEndLine(
 
 /** set a new value for infinity */
 extern
-void GAMSbbtraceSetInfinity(
-   GAMS_BBTRACE*         bbtrace,            /**< GAMS branch-and-bound trace data structure */
+void GAMSsolvetraceSetInfinity(
+   GAMS_SOLVETRACE*      solvetrace,         /**< GAMS solve trace data structure */
    double                infinity            /**< new value for infinity */
 );
 

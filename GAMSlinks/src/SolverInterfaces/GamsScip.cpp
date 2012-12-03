@@ -24,7 +24,7 @@
 #include "scip/scipdefplugins.h"
 #include "nlpi/nlpi_ipopt.h"
 #include "reader_gmo.h"
-#include "event_bbtrace.h"
+#include "event_solvetrace.h"
 /* #include "prop_defaultbounds.h" */
 
 #if SCIP_VERSION >= 300
@@ -324,7 +324,7 @@ SCIP_RETCODE GamsScip::setupSCIP()
 
       SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
       SCIP_CALL( SCIPincludeReaderGmo(scip) );
-      SCIP_CALL( SCIPincludeEventHdlrBBtrace(scip) );
+      SCIP_CALL( SCIPincludeEventHdlrSolveTrace(scip) );
       /* SCIP_CALL( SCIPincludePropDefaultBounds(scip) ); */
 
       if( ipoptlicensed )

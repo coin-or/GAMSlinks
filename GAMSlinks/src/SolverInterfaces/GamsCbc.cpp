@@ -25,7 +25,7 @@
 #include "GamsOptions.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
-#include "GamsCbcHeurBBTrace.hpp"
+#include "GamsCbcHeurSolveTrace.hpp"
 
 // For Branch and bound
 #include "CbcConfig.h"
@@ -211,20 +211,20 @@ int GamsCbc::callSolver()
       model->solver()->writeMps(writemps, "", 1.0);
    }
 
-   GAMS_BBTRACE* bbtrace = NULL;
+   GAMS_SOLVETRACE* solvetrace = NULL;
    if( miptrace != NULL && miptrace[0] )
    {
       int rc;
-      rc = GAMSbbtraceCreate(&bbtrace, miptrace, "CBC "CBC_VERSION, model->getInfinity(), miptracenodefreq, miptracetimefreq);
+      rc = GAMSsolvetraceCreate(&solvetrace, miptrace, "CBC "CBC_VERSION, model->getInfinity(), miptracenodefreq, miptracetimefreq);
       if( rc != 0 )
       {
          gevLogStat(gev, "Initializing miptrace failed.");
-         GAMSbbtraceFree(&bbtrace);
+         GAMSsolvetraceFree(&solvetrace);
       }
       else
       {
-         GamsCbcHeurBBTrace traceheur(bbtrace);
-         model->addHeuristic(&traceheur, "MIPtrace writing heurisitc", -1);
+         GamsCbcHeurSolveTrace traceheur(solvetrace);
+         model->addHeuristic(&traceheur, "Solvetrace writing heuristic", -1);
       }
    }
 
@@ -241,12 +241,12 @@ int GamsCbc::callSolver()
    double end_cputime  = CoinCpuTime();
    double end_walltime = CoinWallclockTime();
 
-   if( bbtrace != NULL )
+   if( solvetrace != NULL )
    {
-      GAMSbbtraceAddEndLine(bbtrace, model->getNodeCount(),
+      GAMSsolvetraceAddEndLine(solvetrace, model->getNodeCount(),
          model->getBestPossibleObjValue(),
          model->getSolutionCount() > 0 ? model->getObjValue() : model->getObjSense() * model->getInfinity());
-      GAMSbbtraceFree(&bbtrace);
+      GAMSsolvetraceFree(&solvetrace);
    }
 
    writeSolution(end_cputime - start_cputime, end_walltime - start_walltime);

@@ -52,7 +52,7 @@ host_triplet = @host@
 @COIN_HAS_CBC_TRUE@am__append_6 = optmycbc.def
 @COIN_HAS_IPOPT_TRUE@am__append_7 = GamsJournal.cpp GamsNLP.cpp GamsIpopt.cpp 
 @COIN_HAS_IPOPT_TRUE@am__append_8 = GamsJournal.hpp GamsNLP.hpp GamsIpopt.hpp
-@COIN_HAS_SCIP_TRUE@am__append_9 = GamsScip.cpp scip/reader_gmo.c scip/event_bbtrace.c scip/prop_defaultbounds.c
+@COIN_HAS_SCIP_TRUE@am__append_9 = GamsScip.cpp scip/reader_gmo.c scip/event_solvetrace.c scip/prop_defaultbounds.c
 @COIN_HAS_SCIP_TRUE@am__append_10 = GamsScip.hpp
 @COIN_HAS_BONMIN_TRUE@am__append_11 = GamsMINLP.cpp GamsBonmin.cpp
 @COIN_HAS_BONMIN_TRUE@am__append_12 = GamsMINLP.hpp GamsBonmin.hpp
@@ -87,7 +87,7 @@ am__DEPENDENCIES_1 =
 am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp \
 	GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp \
 	GamsCbc.cpp GamsJournal.cpp GamsNLP.cpp GamsIpopt.cpp \
-	GamsScip.cpp scip/reader_gmo.c scip/event_bbtrace.c \
+	GamsScip.cpp scip/reader_gmo.c scip/event_solvetrace.c \
 	scip/prop_defaultbounds.c GamsMINLP.cpp GamsBonmin.cpp \
 	GamsCouenne.cpp GamsOS.cpp GamsOSxL.cpp
 @COIN_HAS_OSI_TRUE@am__objects_1 = GamsMessageHandler.lo \
@@ -96,7 +96,7 @@ am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp \
 @COIN_HAS_IPOPT_TRUE@am__objects_3 = GamsJournal.lo GamsNLP.lo \
 @COIN_HAS_IPOPT_TRUE@	GamsIpopt.lo
 @COIN_HAS_SCIP_TRUE@am__objects_4 = GamsScip.lo reader_gmo.lo \
-@COIN_HAS_SCIP_TRUE@	event_bbtrace.lo prop_defaultbounds.lo
+@COIN_HAS_SCIP_TRUE@	event_solvetrace.lo prop_defaultbounds.lo
 @COIN_HAS_BONMIN_TRUE@am__objects_5 = GamsMINLP.lo GamsBonmin.lo
 @COIN_HAS_COUENNE_TRUE@am__objects_6 = GamsCouenne.lo
 @COIN_HAS_OS_TRUE@am__objects_7 = GamsOS.lo GamsOSxL.lo
@@ -541,7 +541,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsScip.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSolver.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/event_bbtrace.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/event_solvetrace.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prop_defaultbounds.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_gmo.Plo@am__quote@
 
@@ -573,12 +573,12 @@ reader_gmo.lo: scip/reader_gmo.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o reader_gmo.lo `test -f 'scip/reader_gmo.c' || echo '$(srcdir)/'`scip/reader_gmo.c
 
-event_bbtrace.lo: scip/event_bbtrace.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT event_bbtrace.lo -MD -MP -MF "$(DEPDIR)/event_bbtrace.Tpo" -c -o event_bbtrace.lo `test -f 'scip/event_bbtrace.c' || echo '$(srcdir)/'`scip/event_bbtrace.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/event_bbtrace.Tpo" "$(DEPDIR)/event_bbtrace.Plo"; else rm -f "$(DEPDIR)/event_bbtrace.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='scip/event_bbtrace.c' object='event_bbtrace.lo' libtool=yes @AMDEPBACKSLASH@
+event_solvetrace.lo: scip/event_solvetrace.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT event_solvetrace.lo -MD -MP -MF "$(DEPDIR)/event_solvetrace.Tpo" -c -o event_solvetrace.lo `test -f 'scip/event_solvetrace.c' || echo '$(srcdir)/'`scip/event_solvetrace.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/event_solvetrace.Tpo" "$(DEPDIR)/event_solvetrace.Plo"; else rm -f "$(DEPDIR)/event_solvetrace.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='scip/event_solvetrace.c' object='event_solvetrace.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o event_bbtrace.lo `test -f 'scip/event_bbtrace.c' || echo '$(srcdir)/'`scip/event_bbtrace.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o event_solvetrace.lo `test -f 'scip/event_solvetrace.c' || echo '$(srcdir)/'`scip/event_solvetrace.c
 
 prop_defaultbounds.lo: scip/prop_defaultbounds.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT prop_defaultbounds.lo -MD -MP -MF "$(DEPDIR)/prop_defaultbounds.Tpo" -c -o prop_defaultbounds.lo `test -f 'scip/prop_defaultbounds.c' || echo '$(srcdir)/'`scip/prop_defaultbounds.c; \

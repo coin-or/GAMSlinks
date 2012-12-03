@@ -121,12 +121,12 @@ GAMSlinks/src/GamsUtils/23.9/gmomcc.c -text
 GAMSlinks/src/GamsUtils/23.9/gmomcc.h -text
 GAMSlinks/src/GamsUtils/23.9/optcc.c -text
 GAMSlinks/src/GamsUtils/23.9/optcc.h -text
-GAMSlinks/src/GamsUtils/GamsBBTrace.c -text
-GAMSlinks/src/GamsUtils/GamsBBTrace.h -text
 GAMSlinks/src/GamsUtils/GamsCompatibility.h -text
 GAMSlinks/src/GamsUtils/GamsNLinstr.h -text
 GAMSlinks/src/GamsUtils/GamsOptions.cpp -text
 GAMSlinks/src/GamsUtils/GamsOptions.hpp -text
+GAMSlinks/src/GamsUtils/GamsSolveTrace.c -text
+GAMSlinks/src/GamsUtils/GamsSolveTrace.h -text
 GAMSlinks/src/GamsUtils/Makefile.am -text
 GAMSlinks/src/GamsUtils/Makefile.in -text
 GAMSlinks/src/Glpk/GamsCoinGlpk.cpp -text
@@ -190,7 +190,7 @@ GAMSlinks/src/SolverInterfaces/GamsBonmin.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsBonmin.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsCbc.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsCbc.hpp -text
-GAMSlinks/src/SolverInterfaces/GamsCbcHeurBBTrace.hpp -text
+GAMSlinks/src/SolverInterfaces/GamsCbcHeurSolveTrace.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsCouenne.cpp -text
 GAMSlinks/src/SolverInterfaces/GamsCouenne.hpp -text
 GAMSlinks/src/SolverInterfaces/GamsIpopt.cpp -text
@@ -232,8 +232,8 @@ GAMSlinks/src/SolverInterfaces/optmyos.def -text
 GAMSlinks/src/SolverInterfaces/optmyos.gms -text
 GAMSlinks/src/SolverInterfaces/optmyos.html -text
 GAMSlinks/src/SolverInterfaces/optmyos.txt -text
-GAMSlinks/src/SolverInterfaces/scip/event_bbtrace.c -text
-GAMSlinks/src/SolverInterfaces/scip/event_bbtrace.h -text
+GAMSlinks/src/SolverInterfaces/scip/event_solvetrace.c -text
+GAMSlinks/src/SolverInterfaces/scip/event_solvetrace.h -text
 GAMSlinks/src/SolverInterfaces/scip/prop_defaultbounds.c -text
 GAMSlinks/src/SolverInterfaces/scip/prop_defaultbounds.h -text
 GAMSlinks/src/SolverInterfaces/scip/reader_gmo.c -text

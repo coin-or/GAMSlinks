@@ -10,7 +10,7 @@
 #include "GamsMessageHandler.hpp"
 #include "GamsCbc.hpp"  // in case we need to solve an LP or MIP
 #include "GamsIpopt.hpp" // in case we need to solve an NLP
-#include "GamsCbcHeurBBTrace.hpp"
+#include "GamsCbcHeurSolveTrace.hpp"
 #include "GAMSlinksConfig.h"
 
 #include "BonminConfig.h"
@@ -324,8 +324,8 @@ int GamsBonmin::callSolver()
    // set number of threads in linear algebra in ipopt
    setNumThreadsLinearAlgebra(gev, gevThreads(gev));
 
-   // initialize bbtrace, if activated
-   GAMS_BBTRACE* bbtrace = NULL;
+   // initialize solvetrace, if activated
+   GAMS_SOLVETRACE* solvetrace = NULL;
    std::string miptrace;
    bonmin_setup->options()->GetStringValue("miptrace", miptrace, "");
    if( miptrace != "" )
@@ -336,18 +336,18 @@ int GamsBonmin::callSolver()
 
       bonmin_setup->options()->GetIntegerValue("miptracenodefreq", nodefreq, "");
       bonmin_setup->options()->GetNumericValue("miptracetimefreq", timefreq, "");
-      rc = GAMSbbtraceCreate(&bbtrace, miptrace.c_str(), "Bonmin "BONMIN_VERSION, ipoptinf, nodefreq, timefreq);
+      rc = GAMSsolvetraceCreate(&solvetrace, miptrace.c_str(), "Bonmin "BONMIN_VERSION, ipoptinf, nodefreq, timefreq);
       if( rc != 0 )
       {
          gevLogStat(gev, "Initializing miptrace failed.");
-         GAMSbbtraceFree(&bbtrace);
+         GAMSsolvetraceFree(&solvetrace);
       }
       else
       {
          bonmin_setup->heuristics().push_back(BabSetupBase::HeuristicMethod());
          BabSetupBase::HeuristicMethod& heurmeth(bonmin_setup->heuristics().back());
-         heurmeth.heuristic = new GamsCbcHeurBBTrace(bbtrace, minlp->isMin);
-         heurmeth.id = "MIPtrace writing heuristic";
+         heurmeth.heuristic = new GamsCbcHeurSolveTrace(solvetrace, minlp->isMin);
+         heurmeth.id = "Solvetrace writing heuristic";
       }
    }
 
@@ -372,8 +372,8 @@ int GamsBonmin::callSolver()
          // delete[] sol;
          bonmin_setup->initialize(first_osi_tminlp); // this will clone first_osi_tminlp
 
-         if( bbtrace != NULL )
-            GAMSbbtraceSetInfinity(bbtrace, first_osi_tminlp.getInfinity());
+         if( solvetrace != NULL )
+            GAMSsolvetraceSetInfinity(solvetrace, first_osi_tminlp.getInfinity());
       }
 
       // try solving
@@ -393,8 +393,8 @@ int GamsBonmin::callSolver()
       gmoModelStatSet(gmo, minlp->model_status);
       gmoSolveStatSet(gmo, minlp->solver_status);
 
-      if( bbtrace != NULL )
-         GAMSbbtraceAddEndLine(bbtrace, bb.numNodes(), best_bound,
+      if( solvetrace != NULL )
+         GAMSsolvetraceAddEndLine(solvetrace, bb.numNodes(), best_bound,
             bb.bestSolution() != NULL ? minlp->isMin * bb.bestObj() : minlp->isMin * bb.model().getInfinity());
 
       // store primal solution in gmo
@@ -582,8 +582,8 @@ int GamsBonmin::callSolver()
       return -1;
    }
 
-   if( bbtrace != NULL )
-      GAMSbbtraceFree(&bbtrace);
+   if( solvetrace != NULL )
+      GAMSsolvetraceFree(&solvetrace);
 
    return 0;
 }

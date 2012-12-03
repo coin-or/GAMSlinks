@@ -5,21 +5,21 @@
  * Author: Stefan Vigerske
  */
 
-/**@file   event_bbtrace.c
+/**@file   event_solvetrace.c
  * @ingroup EVENTS 
- * @brief  eventhdlr to write GAMS branch-and-bound trace file
+ * @brief  event handler to write GAMS solve trace file
  * @author Stefan Vigerske
  */
 
 /*--+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2*/
 
-#include "event_bbtrace.h"
-#include "GamsBBTrace.h"
+#include "event_solvetrace.h"
+#include "GamsSolveTrace.h"
 
 #include <assert.h>
 
-#define EVENTHDLR_NAME         "bbtrace"
-#define EVENTHDLR_DESC         "event handler to write GAMS branch-and-bound trace file"
+#define EVENTHDLR_NAME         "solvetrace"
+#define EVENTHDLR_DESC         "event handler to write GAMS solve trace file"
 
 
 /*
@@ -29,7 +29,7 @@
 /** event handler data */
 struct SCIP_EventhdlrData
 {
-   GAMS_BBTRACE*         bbtrace;            /**< GAMS bbtrace object */
+   GAMS_SOLVETRACE*      solvetrace;         /**< GAMS solve trace object */
    char*                 filename;           /**< name of trace file */
    int                   nodefreq;           /**< node frequency of writing to trace file */
    SCIP_Real             timefreq;           /**< time frequency of writing to trace file */
@@ -51,40 +51,40 @@ struct SCIP_EventhdlrData
 /** copy method for event handler plugins (called when SCIP copies plugins) */
 #if 0
 static
-SCIP_DECL_EVENTCOPY(eventCopyBBtrace)
+SCIP_DECL_EVENTCOPY(eventCopySolveTrace)
 {  /*lint --e{715}*/
-   SCIPerrorMessage("method of bbtrace dialog not implemented yet\n");
+   SCIPerrorMessage("method of solvetrace dialog not implemented yet\n");
    SCIPABORT(); /*lint --e{527}*/
 
    return SCIP_OKAY;
 }
 #else
-#define eventCopyBBtrace NULL
+#define eventCopySolveTrace NULL
 #endif
 
 /** destructor of event handler to free user data (called when SCIP is exiting) */
 #if 1
 static
-SCIP_DECL_EVENTFREE(eventFreeBBtrace)
+SCIP_DECL_EVENTFREE(eventFreeSolveTrace)
 {  /*lint --e{715}*/
    SCIP_EVENTHDLRDATA* eventhdlrdata;
 
    eventhdlrdata = SCIPeventhdlrGetData(eventhdlr);
    assert(eventhdlrdata != NULL);
-   assert(eventhdlrdata->bbtrace == NULL);
+   assert(eventhdlrdata->solvetrace == NULL);
 
    SCIPfreeMemory(scip, &eventhdlrdata);
 
    return SCIP_OKAY;
 }
 #else
-#define eventFreeBBtrace NULL
+#define eventFreeSolveTrace NULL
 #endif
 
 /** initialization method of event handler (called after problem was transformed) */
 #if 1
 static
-SCIP_DECL_EVENTINIT(eventInitBBtrace)
+SCIP_DECL_EVENTINIT(eventInitSolveTrace)
 {  /*lint --e{715}*/
    SCIP_EVENTHDLRDATA* eventhdlrdata;
    char solverid[20];
@@ -101,125 +101,125 @@ SCIP_DECL_EVENTINIT(eventInitBBtrace)
 #else
    (void) SCIPsnprintf(solverid, sizeof(solverid), "SCIP %d.%d.%d", SCIP_VERSION/100, (SCIP_VERSION%100)/10, SCIP_VERSION%10);
 #endif
-   rc = GAMSbbtraceCreate(&eventhdlrdata->bbtrace, eventhdlrdata->filename, solverid, SCIPinfinity(scip), eventhdlrdata->nodefreq, eventhdlrdata->timefreq);
+   rc = GAMSsolvetraceCreate(&eventhdlrdata->solvetrace, eventhdlrdata->filename, solverid, SCIPinfinity(scip), eventhdlrdata->nodefreq, eventhdlrdata->timefreq);
    if( rc != 0 )
    {
-      SCIPerrorMessage("GAMSbbtraceCreate returned with error %d, trace file name = %s\n", rc, eventhdlrdata->filename);
+      SCIPerrorMessage("GAMSsolvetraceCreate returned with error %d, trace file name = %s\n", rc, eventhdlrdata->filename);
       return SCIP_ERROR;
    }
 
-   SCIP_CALL( SCIPcatchEvent(scip, SCIP_EVENTTYPE_NODESOLVED, eventhdlr, (SCIP_EVENTDATA*)eventhdlrdata->bbtrace, &eventhdlrdata->filterpos) );
+   SCIP_CALL( SCIPcatchEvent(scip, SCIP_EVENTTYPE_NODESOLVED, eventhdlr, (SCIP_EVENTDATA*)eventhdlrdata->solvetrace, &eventhdlrdata->filterpos) );
 
    return SCIP_OKAY;
 }
 #else
-#define eventInitBBtrace NULL
+#define eventInitSolveTrace NULL
 #endif
 
 /** deinitialization method of event handler (called before transformed problem is freed) */
 #if 1
 static
-SCIP_DECL_EVENTEXIT(eventExitBBtrace)
+SCIP_DECL_EVENTEXIT(eventExitSolveTrace)
 {  /*lint --e{715}*/
    SCIP_EVENTHDLRDATA* eventhdlrdata;
 
    eventhdlrdata = SCIPeventhdlrGetData(eventhdlr);
    assert(eventhdlrdata != NULL);
 
-   if( eventhdlrdata->bbtrace == NULL )
+   if( eventhdlrdata->solvetrace == NULL )
       return SCIP_OKAY;
 
-   SCIP_CALL( SCIPdropEvent(scip, SCIP_EVENTTYPE_NODESOLVED, eventhdlr, (SCIP_EVENTDATA*)eventhdlrdata->bbtrace, eventhdlrdata->filterpos) );
+   SCIP_CALL( SCIPdropEvent(scip, SCIP_EVENTTYPE_NODESOLVED, eventhdlr, (SCIP_EVENTDATA*)eventhdlrdata->solvetrace, eventhdlrdata->filterpos) );
 
-   GAMSbbtraceAddEndLine(eventhdlrdata->bbtrace, SCIPgetNTotalNodes(scip),
+   GAMSsolvetraceAddEndLine(eventhdlrdata->solvetrace, SCIPgetNTotalNodes(scip),
       SCIPgetDualbound(scip),
       SCIPgetNSols(scip) > 0 ? SCIPgetSolOrigObj(scip, SCIPgetBestSol(scip)) : SCIPgetObjsense(scip) * SCIPinfinity(scip));
 
-   GAMSbbtraceFree(&eventhdlrdata->bbtrace);
-   assert(eventhdlrdata->bbtrace == NULL);
+   GAMSsolvetraceFree(&eventhdlrdata->solvetrace);
+   assert(eventhdlrdata->solvetrace == NULL);
 
    return SCIP_OKAY;
 }
 #else
-#define eventExitBBtrace NULL
+#define eventExitSolveTrace NULL
 #endif
 
 /** solving process initialization method of event handler (called when branch and bound process is about to begin) */
 #if 0
 static
-SCIP_DECL_EVENTINITSOL(eventInitsolBBtrace)
+SCIP_DECL_EVENTINITSOL(eventInitsolSolveTrace)
 {  /*lint --e{715}*/
-   SCIPerrorMessage("method of bbtrace event handler not implemented yet\n");
+   SCIPerrorMessage("method of solvetrace event handler not implemented yet\n");
    SCIPABORT(); /*lint --e{527}*/
 
    return SCIP_OKAY;
 }
 #else
-#define eventInitsolBBtrace NULL
+#define eventInitsolSolveTrace NULL
 #endif
 
 /** solving process deinitialization method of event handler (called before branch and bound process data is freed) */
 #if 0
 static
-SCIP_DECL_EVENTEXITSOL(eventExitsolBBtrace)
+SCIP_DECL_EVENTEXITSOL(eventExitsolSolveTrace)
 {  /*lint --e{715}*/
-   SCIPerrorMessage("method of bbtrace event handler not implemented yet\n");
+   SCIPerrorMessage("method of solvetrace event handler not implemented yet\n");
    SCIPABORT(); /*lint --e{527}*/
 
    return SCIP_OKAY;
 }
 #else
-#define eventExitsolBBtrace NULL
+#define eventExitsolSolveTrace NULL
 #endif
 
 /** frees specific event data */
 #if 0
 static
-SCIP_DECL_EVENTDELETE(eventDeleteBBtrace)
+SCIP_DECL_EVENTDELETE(eventDeleteSolveTrace)
 {  /*lint --e{715}*/
    assert(eventhdlr != NULL);
 
    return SCIP_OKAY;
 }
 #else
-#define eventDeleteBBtrace NULL
+#define eventDeleteSolveTrace NULL
 #endif
 
 /** execution method of event handler */
 static
-SCIP_DECL_EVENTEXEC(eventExecBBtrace)
+SCIP_DECL_EVENTEXEC(eventExecSolveTrace)
 {  /*lint --e{715}*/
    assert(event != NULL);
    assert(SCIPeventGetType(event) & SCIP_EVENTTYPE_NODESOLVED);
    assert(eventdata != NULL);
 
-   GAMSbbtraceAddLine((GAMS_BBTRACE*)eventdata, SCIPgetNTotalNodes(scip),
+   GAMSsolvetraceAddLine((GAMS_SOLVETRACE*)eventdata, SCIPgetNTotalNodes(scip),
       SCIPgetDualbound(scip),
       SCIPgetNSols(scip) > 0 ? SCIPgetSolOrigObj(scip, SCIPgetBestSol(scip)) : SCIPgetObjsense(scip) * SCIPinfinity(scip));
 
    return SCIP_OKAY;
 }
 
-/** creates event handler for bbtrace event */
-SCIP_RETCODE SCIPincludeEventHdlrBBtrace(
+/** creates event handler for solvetrace event */
+SCIP_RETCODE SCIPincludeEventHdlrSolveTrace(
    SCIP*                 scip                /**< SCIP data structure */
    )
 {
    SCIP_EVENTHDLRDATA* eventhdlrdata;
 
-   /* create bbtrace event handler data */
+   /* create solvetrace event handler data */
    SCIP_CALL( SCIPallocMemory(scip, &eventhdlrdata) );
-   eventhdlrdata->bbtrace = NULL;
+   eventhdlrdata->solvetrace = NULL;
    eventhdlrdata->filename = NULL;
 
    /* include event handler into SCIP */
    SCIP_CALL( SCIPincludeEventhdlr(scip, EVENTHDLR_NAME, EVENTHDLR_DESC,
-         eventCopyBBtrace,
-         eventFreeBBtrace, eventInitBBtrace, eventExitBBtrace,
-         eventInitsolBBtrace, eventExitsolBBtrace, eventDeleteBBtrace, eventExecBBtrace,
+         eventCopySolveTrace,
+         eventFreeSolveTrace, eventInitSolveTrace, eventExitSolveTrace,
+         eventInitsolSolveTrace, eventExitsolSolveTrace, eventDeleteSolveTrace, eventExecSolveTrace,
          eventhdlrdata) );
 
-   /* add bbtrace event handler parameters */
+   /* add solvetrace event handler parameters */
    SCIP_CALL( SCIPaddStringParam(scip, "gams/miptrace/file",
       "name of file where to write branch-and-bound trace information too",
       &eventhdlrdata->filename, FALSE, "", NULL, NULL) );

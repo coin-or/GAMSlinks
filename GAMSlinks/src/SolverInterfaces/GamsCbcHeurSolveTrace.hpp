@@ -4,33 +4,33 @@
 //
 // Author: Stefan Vigerske
 
-#ifndef GAMSCBCHEURBBTRACE_HPP_
-#define GAMSCBCHEURBBTRACE_HPP_
+#ifndef GAMSCBCHEURSOLVETRACE_HPP_
+#define GAMSCBCHEURSOLVETRACE_HPP_
 
 #include "CbcHeuristic.hpp"
 #include "CbcModel.hpp"
-#include "GamsBBTrace.h"
+#include "GamsSolveTrace.h"
 #include "CoinTime.hpp"
 
-/** CbcHeuristic that reports bounds to a GAMS branch-and-bound trace object */
-class GamsCbcHeurBBTrace : public CbcHeuristic
+/** CbcHeuristic that reports bounds to a GAMS solve trace object */
+class GamsCbcHeurSolveTrace : public CbcHeuristic
 {
 private:
-   GAMS_BBTRACE*         bbtrace;            /**< GAMS bbtrace data structure */
+   GAMS_SOLVETRACE*      solvetrace;         /**< GAMS solve trace data structure */
    double                objfactor;          /**< multiplier for objective function values */
 
 public:
-   GamsCbcHeurBBTrace(
-      GAMS_BBTRACE*      bbtrace_,           /**< GAMS bbtrace data structure */
+   GamsCbcHeurSolveTrace(
+      GAMS_SOLVETRACE*   solvetrace_,        /**< GAMS solve trace data structure */
       double             objfactor_ = 1.0    /**< multiplier for objective function values */
    )
-   : bbtrace(bbtrace_),
+   : solvetrace(solvetrace_),
      objfactor(objfactor_)
    { }
 
    CbcHeuristic* clone() const
    {
-      return new GamsCbcHeurBBTrace(bbtrace, objfactor);
+      return new GamsCbcHeurSolveTrace(solvetrace, objfactor);
    }
 
    void resetModel(
@@ -43,7 +43,7 @@ public:
       double*            newSolution
    )
    {
-      GAMSbbtraceAddLine(bbtrace, model_->getNodeCount(),
+      GAMSsolvetraceAddLine(solvetrace, model_->getNodeCount(),
          objfactor * model_->getBestPossibleObjValue(),
          model_->getSolutionCount() > 0 ? objfactor * model_->getObjValue() : (objfactor > 0.0 ? 1.0 : -1.0) * model_->getObjSense() * model_->getInfinity());
 
@@ -53,4 +53,4 @@ public:
    using CbcHeuristic::solution;
 };
 
-#endif // GAMSCBCHEURBBTRACE_HPP_
+#endif // GAMSCBCHEURSOLVETRACE_HPP_

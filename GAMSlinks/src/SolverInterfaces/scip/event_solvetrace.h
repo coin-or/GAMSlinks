@@ -6,14 +6,14 @@
  */
 
 /**@file   event_bbtrace.h
- * @brief  eventhdlr to write GAMS branch-and-bound trace file
+ * @brief  event handler to write GAMS solve trace file
  * @author Stefan Vigerske
  */
 
 /*---+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2*/
 
-#ifndef __SCIP_EVENT_BBTRACE_H__
-#define __SCIP_EVENT_BBTRACE_H__
+#ifndef __SCIP_EVENT_SOLVETRACE_H__
+#define __SCIP_EVENT_SOLVETRACE_H__
 
 #include "scip/scip.h"
 
@@ -21,9 +21,9 @@
 extern "C" {
 #endif
 
-/** creates event handler for bbtrace event */
+/** creates event handler for solve trace event */
 extern
-SCIP_RETCODE SCIPincludeEventHdlrBBtrace(
+SCIP_RETCODE SCIPincludeEventHdlrSolveTrace(
    SCIP*                 scip                /**< SCIP data structure */
    );
 

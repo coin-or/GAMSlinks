@@ -10,7 +10,7 @@
 #include "GamsMessageHandler.hpp"
 #include "GamsNLinstr.h"
 #include "GamsCbc.hpp"
-#include "GamsCbcHeurBBTrace.hpp"
+#include "GamsCbcHeurSolveTrace.hpp"
 #include "GAMSlinksConfig.h"
 
 #include <cmath>
@@ -347,8 +347,8 @@ int GamsCouenne::callSolver()
    // set number of threads in linear algebra in ipopt
    setNumThreadsLinearAlgebra(gev, gevThreads(gev));
 
-   // initialize bbtrace, if activated
-   GAMS_BBTRACE* bbtrace = NULL;
+   // initialize solvetrace, if activated
+   GAMS_SOLVETRACE* solvetrace = NULL;
    std::string miptrace;
    couenne_setup->options()->GetStringValue("miptrace", miptrace, "");
    if( miptrace != "" )
@@ -359,18 +359,18 @@ int GamsCouenne::callSolver()
 
       couenne_setup->options()->GetIntegerValue("miptracenodefreq", nodefreq, "");
       couenne_setup->options()->GetNumericValue("miptracetimefreq", timefreq, "");
-      rc = GAMSbbtraceCreate(&bbtrace, miptrace.c_str(), "Couenne "COUENNE_VERSION, COUENNE_INFINITY, nodefreq, timefreq);
+      rc = GAMSsolvetraceCreate(&solvetrace, miptrace.c_str(), "Couenne "COUENNE_VERSION, COUENNE_INFINITY, nodefreq, timefreq);
       if( rc != 0 )
       {
          gevLogStat(gev, "Initializing miptrace failed.");
-         GAMSbbtraceFree(&bbtrace);
+         GAMSsolvetraceFree(&solvetrace);
       }
       else
       {
          couenne_setup->heuristics().push_back(BabSetupBase::HeuristicMethod());
          BabSetupBase::HeuristicMethod& heurmeth(couenne_setup->heuristics().back());
-         heurmeth.heuristic = new GamsCbcHeurBBTrace(bbtrace, minlp->isMin);
-         heurmeth.id = "MIPtrace writing heuristic";
+         heurmeth.heuristic = new GamsCbcHeurSolveTrace(solvetrace, minlp->isMin);
+         heurmeth.id = "Solvetrace writing heuristic";
       }
    }
 
@@ -424,8 +424,8 @@ int GamsCouenne::callSolver()
       couenne_setup->options()->SetNumericValue("bonmin.time_limit", reslim - preprocessTime, true, true);
       couenne_setup->setDoubleParameter(BabSetupBase::MaxTime, reslim - preprocessTime);
 
-      if( bbtrace != NULL )
-         GAMSbbtraceSetInfinity(bbtrace, couenne_setup->continuousSolver()->getInfinity());
+      if( solvetrace != NULL )
+         GAMSsolvetraceSetInfinity(solvetrace, couenne_setup->continuousSolver()->getInfinity());
 
       // do branch and bound
       bb(*couenne_setup);
@@ -447,8 +447,8 @@ int GamsCouenne::callSolver()
       gmoModelStatSet(gmo, minlp->model_status);
       gmoSolveStatSet(gmo, minlp->solver_status);
 
-      if( bbtrace != NULL )
-         GAMSbbtraceAddEndLine(bbtrace, bb.numNodes(), best_bound,
+      if( solvetrace != NULL )
+         GAMSsolvetraceAddEndLine(solvetrace, bb.numNodes(), best_bound,
             bb.bestSolution() != NULL ? minlp->isMin * bb.bestObj() : minlp->isMin * bb.model().getInfinity());
 
       if( bb.bestSolution() != NULL )
@@ -536,8 +536,8 @@ int GamsCouenne::callSolver()
    }
 
 TERMINATE:
-   if( bbtrace != NULL )
-      GAMSbbtraceFree(&bbtrace);
+   if( solvetrace != NULL )
+      GAMSsolvetraceFree(&solvetrace);
 
    return 0;
 }
