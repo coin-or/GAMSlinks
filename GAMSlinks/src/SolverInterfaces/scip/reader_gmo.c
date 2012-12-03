@@ -2764,6 +2764,10 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
          "Value for optca = %g >= value for infinity. Setting solution limit to 1 instead.\n", gevGetDblOpt(gev, gevOptCA));
       SCIP_CALL( SCIPsetIntParam(scip, "limits/solutions", 1) );
    }
+   if( gevGetDblOpt(gev, gevWorkSpace) > 0.0 )
+   {
+      SCIP_CALL( SCIPsetRealParam(scip, "limits/memory", gevGetDblOpt(gev, gevWorkSpace)) );
+   }
 
    /* if log is not kept, then can also set SCIP verblevel to 0 */
    if( gevGetIntOpt(gev, gevLogOption) == 0 )
