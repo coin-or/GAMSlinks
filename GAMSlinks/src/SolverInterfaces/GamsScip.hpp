@@ -27,6 +27,7 @@ private:
 
    SCIP*                 scip;               /**< SCIP structure */
    SCIP_MESSAGEHDLR*     scipmsghandler;     /**< SCIP message handler to write through GEV */
+   bool                  ipoptlicensed;      /**< whether a commercial Ipopt license is available */
 
    SCIP_RETCODE setupSCIP();
    SCIP_RETCODE freeSCIP();
@@ -37,7 +38,8 @@ public:
      gev(NULL),
      pal(NULL),
      scip(NULL),
-     scipmsghandler(NULL)
+     scipmsghandler(NULL),
+     ipoptlicensed(false)
    { }
 
    ~GamsScip();

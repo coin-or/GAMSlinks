@@ -22,6 +22,7 @@
 
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
+#include "nlpi/nlpi_ipopt.h"
 #include "reader_gmo.h"
 #include "event_bbtrace.h"
 /* #include "prop_defaultbounds.h" */
@@ -95,6 +96,7 @@ int GamsScip::readyAPI(
 
    assert(pal == NULL);
 
+   ipoptlicensed = false;
 #ifdef GAMS_BUILD
    if( !palCreate(&pal, buffer, sizeof(buffer)) )
       return 1;
@@ -118,6 +120,8 @@ int GamsScip::readyAPI(
       gmoModelStatSet(gmo, gmoModelStat_LicenseError);
       return 1;
    }
+
+   ipoptlicensed = HSLInit(gmo, pal);
 
    // print version info and copyright
    if( SCIPsubversion() > 0 )
@@ -301,10 +305,10 @@ SCIP_RETCODE GamsScip::setupSCIP()
    }
 #endif
 
-
    if( scip == NULL )
    {
       // if called first time, create a new SCIP instance and include all plugins that we need and setup interface parameters
+      SCIP_NLPI* nlpiipopt;
 
       SCIP_CALL( SCIPcreate(&scip) );
 
@@ -322,6 +326,16 @@ SCIP_RETCODE GamsScip::setupSCIP()
       SCIP_CALL( SCIPincludeReaderGmo(scip) );
       SCIP_CALL( SCIPincludeEventHdlrBBtrace(scip) );
       /* SCIP_CALL( SCIPincludePropDefaultBounds(scip) ); */
+
+      if( ipoptlicensed )
+      {
+         nlpiipopt = SCIPfindNlpi(scip, "ipopt");
+         if( nlpiipopt != NULL )
+         {
+            SCIPsetModifiedDefaultSettingsIpopt(nlpiipopt, "linear_solver ma27\nlinear_system_scaling mc19\n");
+            SCIP_CALL( SCIPincludeExternalCodeInformation(scip, "HSL MA27 and MC19", "Harwell Subroutine Libraries (www.hsl.rl.ac.uk) from commercially supported Ipopt") );
+         }
+      }
 
       /* SCIP_CALL( SCIPaddBoolParam(scip, "gams/solvefinal",
        * "whether the problem should be solved with fixed discrete variables to get dual values",

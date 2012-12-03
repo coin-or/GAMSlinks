@@ -60,7 +60,7 @@ int GamsBonmin::readyAPI(
 
    assert(pal == NULL);
 
-   ipoptLicensed = false;
+   ipoptlicensed = false;
 #ifdef GAMS_BUILD
    char buffer[GMS_SSSIZE];
 
@@ -77,9 +77,9 @@ int GamsBonmin::readyAPI(
    initLicensing(gmo, pal);
    if( gevGetIntOpt(gev, gevCurSolver) == gevSolver2Id(gev, "bonminh") )
    {
-      ipoptLicensed = HSLInit(gmo, pal);
+      ipoptlicensed = HSLInit(gmo, pal);
 
-      if( !ipoptLicensed  )
+      if( !ipoptlicensed  )
       {
          gmoSolveStatSet(gmo, gmoSolveStat_License);
          gmoModelStatSet(gmo, gmoModelStat_LicenseError);
@@ -90,13 +90,13 @@ int GamsBonmin::readyAPI(
 #endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Bonmin (Bonmin Library "BONMIN_VERSION")\n");
-   if( ipoptLicensed )
+   if( ipoptlicensed )
       gevLogStatPChar(gev, "written by P. Bonami, with commercially supported IpOpt.\n");
    else
       gevLogStatPChar(gev, "written by P. Bonami.\n");
 
 #ifdef GAMS_BUILD
-   if( !ipoptLicensed && checkIpoptLicense(gmo, pal) )
+   if( !ipoptlicensed && checkIpoptLicense(gmo, pal) )
       gevLogPChar(gev, "\nNote: This is the free version BONMIN, but you could also use the commercially supported and potentially higher performance version BONMINH.\n");
 #endif
 
@@ -217,7 +217,7 @@ int GamsBonmin::callSolver()
    if( gmoNLM(gmo) == 0 && (gmoModelType(gmo) == gmoProc_qcp || gmoModelType(gmo) == gmoProc_rmiqcp || gmoModelType(gmo) == gmoProc_miqcp) )
       bonmin_setup->options()->SetStringValue("hessian_constant", "yes", true, true);
 
-   if( ipoptLicensed )
+   if( ipoptlicensed )
    {
       bonmin_setup->options()->SetStringValue("linear_solver", "ma27", true, true);
       bonmin_setup->options()->SetStringValue("linear_system_scaling", "mc19", true, true);

@@ -107,7 +107,7 @@ int GamsCouenne::readyAPI(
 #endif
 
    initLicensing(gmo, pal);
-   ipoptLicensed = HSLInit(gmo, pal);
+   ipoptlicensed = HSLInit(gmo, pal);
 
    gevLogStatPChar(gev, "\nCOIN-OR Couenne (Couenne Library "COUENNE_VERSION")\nwritten by P. Belotti\n\n");
 
@@ -212,10 +212,11 @@ int GamsCouenne::callSolver()
    if( gevGetIntOpt(gev, gevIterLim) < ITERLIM_INFINITY )
       couenne_setup->options()->SetIntegerValue("bonmin.iteration_limit", gevGetIntOpt(gev, gevIterLim), true, true);
    couenne_setup->options()->SetIntegerValue("bonmin.problem_print_level", J_STRONGWARNING, true, true); /* otherwise Couenne prints the problem to stdout */
-   if( ipoptLicensed )
+   if( ipoptlicensed )
    {
       couenne_setup->options()->SetStringValue("linear_solver", "ma27", true, true);
       couenne_setup->options()->SetStringValue("linear_system_scaling", "mc19", true, true);
+      //gevLog(gev, "Enabled use of HSL MA27 and MC19 from commercially supported Ipopt.\n");
    }
 
    // workaround for bug in couenne reformulation: if there are tiny constants, delete_redundant might setup a nonstandard reformulation (e.g., using x*x instead of x^2)

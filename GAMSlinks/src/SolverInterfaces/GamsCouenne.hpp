@@ -31,7 +31,7 @@ private:
 
    Couenne::CouenneSetup* couenne_setup;     /**< Couenne solver application */
    GamsMessageHandler*   msghandler;         /**< COIN-OR message handler for GAMS */
-   bool                  ipoptLicensed;      /**< whether a commercial Ipopt license is available */
+   bool                  ipoptlicensed;      /**< whether a commercial Ipopt license is available */
 
    bool isMIP();
    Couenne::CouenneProblem* setupProblem();
@@ -56,7 +56,7 @@ public:
      pal(NULL),
      couenne_setup(NULL),
      msghandler(NULL),
-     ipoptLicensed(false)
+     ipoptlicensed(false)
    { }
 
    ~GamsCouenne();

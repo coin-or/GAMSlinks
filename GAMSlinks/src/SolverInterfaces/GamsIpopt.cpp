@@ -44,7 +44,7 @@ int GamsIpopt::readyAPI(
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
-   ipoptLicensed = false;
+   ipoptlicensed = false;
 #ifdef GAMS_BUILD
    struct palRec* pal;
    char buffer[GMS_SSSIZE];
@@ -62,9 +62,9 @@ int GamsIpopt::readyAPI(
    initLicensing(gmo, pal);
    if( gevGetIntOpt(gev, gevCurSolver) == gevSolver2Id(gev, "ipopth") )
    {
-      ipoptLicensed = HSLInit(gmo, pal);
+      ipoptlicensed = HSLInit(gmo, pal);
 
-      if( !ipoptLicensed  )
+      if( !ipoptlicensed  )
       {
          gmoSolveStatSet(gmo, gmoSolveStat_License);
          gmoModelStatSet(gmo, gmoModelStat_LicenseError);
@@ -75,13 +75,13 @@ int GamsIpopt::readyAPI(
 #endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Interior Point Optimizer (Ipopt Library "IPOPT_VERSION")\n");
-   if( ipoptLicensed )
+   if( ipoptlicensed )
       gevLogStatPChar(gev, "written by A. Waechter, commercially supported by GAMS Development Corp.\n");
    else
       gevLogStatPChar(gev, "written by A. Waechter.\n");
 
 #ifdef GAMS_BUILD
-   if( !ipoptLicensed && checkIpoptLicense(gmo, pal) )
+   if( !ipoptlicensed && checkIpoptLicense(gmo, pal) )
       gevLogPChar(gev, "\nNote: This is the free version IPOPT, but you could also use the commercially supported and potentially higher performance version IPOPTH.\n");
 
    palFree(&pal);
@@ -127,7 +127,7 @@ int GamsIpopt::callSolver()
    ipopt->Options()->SetNumericValue("max_cpu_time", gevGetDblOpt(gev, gevResLim), true, true);
    ipopt->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
    ipopt->Options()->SetStringValue("ma86_order", "auto", true, true);
-   if( ipoptLicensed )
+   if( ipoptlicensed )
    {
       ipopt->Options()->SetStringValue("linear_solver", "ma27", true, true);
       ipopt->Options()->SetStringValue("linear_system_scaling", "mc19", true, true);
