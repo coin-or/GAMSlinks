@@ -75,7 +75,7 @@ int GAMSsolvetraceCreate(
    if( (*solvetrace)->tracefile == NULL )
       return 3;
 
-   fprintf((*solvetrace)->tracefile, "* miptrace file %s: ID = %s\n", filename, solverid);
+   fprintf((*solvetrace)->tracefile, "* solvetrace file %s: ID = %s\n", filename, solverid);
    fprintf((*solvetrace)->tracefile, "* fields are lineNum, seriesID, node, seconds, bestFound, bestBound\n");
    fflush((*solvetrace)->tracefile);
 
@@ -99,7 +99,7 @@ void GAMSsolvetraceFree(
    assert(*solvetrace != NULL);
    assert((*solvetrace)->tracefile != NULL);
 
-   fprintf((*solvetrace)->tracefile, "* miptrace file closed\n");
+   fprintf((*solvetrace)->tracefile, "* solvetrace file closed\n");
    fclose((*solvetrace)->tracefile);
 
    free(*solvetrace);
