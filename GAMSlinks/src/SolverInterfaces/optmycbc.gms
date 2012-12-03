@@ -91,7 +91,7 @@ set g Cbc Option Groups /
       divinglinesearch       line search diving heuristic
       divingpseudocost       pseudo cost diving heuristic
       divingvectorlength     vector length diving heuristic
-      feaspump               feasibility pump      
+      feaspump               feasibility pump
       feaspump_passes        number of feasibility passes
       greedyheuristic        greedy heuristic
       localtreesearch        local tree search heuristic
@@ -227,7 +227,6 @@ mipheu.(
   roundingheuristic    .b.(def 1)
   vubheuristic         .i.(lo -2, up 20)
   proximitysearch      .i.(def 0)
-  
 )
 $ontext
 bch.(
@@ -258,32 +257,32 @@ $offtext
   oe(o,e) /
    idiotcrash.(     '-1', 0 )
    sprintcrash.(    '-1', 0 )
-   crash.(          off    
-                    on     
-                    solow_halim 
+   crash.(          off
+                    on
+                    solow_halim
                     halim_solow )
    crossover.(      0, 1 )
-   dualpivot.(      auto   
-                    dantzig 
-                    steepest 
+   dualpivot.(      auto
+                    dantzig
+                    steepest
                     partial  )
-   primalpivot.(    auto   
-                    exact  
-                    dantzig 
-                    partial 
-                    steepest 
-                    change 
+   primalpivot.(    auto
+                    exact
+                    dantzig
+                    partial
+                    steepest
+                    change
 *JJF: "I don't think sprint option works"; so we do not advertise it
-*                    sprint 
+*                    sprint
                     )
    perturbation.(   0, 1 )
-   scaling.(        off    
-                    equilibrium 
-                    geometric 
+   scaling.(        off
+                    equilibrium
+                    geometric
                     auto   )
    presolve.(       0, 1 )
-   startalg.(       primal  
-                    dual    
+   startalg.(       primal
+                    dual
                     barrier  )
    mipstart.(       0, 1 )
    strategy.(       0, 1, 2 )
@@ -329,14 +328,83 @@ $offtext
 *   usercutnewint.(   0, 1)
 *   userheurnewint.(   0, 1)
  /
+
+  publicoe(o,e) /
+   idiotcrash.(     '-1'          Automatic
+                      0           Off )
+   sprintcrash.(    '-1'          Automatic
+                      0           Off )
+   crash.(          off           Off
+                    on            On
+                    solow_halim   SolowHalim
+                    halim_solow   HalimSolow )
+   dualpivot.(      auto          Automatic
+                    dantzig       Dantzig
+                    steepest      Steepest
+                    partial       Partial )
+   primalpivot.(    auto          Automatic
+                    exact         Exact
+                    dantzig       Dantzig
+                    partial       Partial
+                    steepest      Steepest
+                    change        Change )
+   scaling.(        off           Off
+                    equilibrium   Equilibrium
+                    geometric     Geometric
+                    auto          Automatic )
+   startalg.(       primal        Primal
+                    dual          Dual
+                    barrier       Barrier )
+   strategy.(         0           EasyProblem
+                      1           Default
+                      2           DifficultProblem )
+   sollim.(         '-1'          NoLimit )
+   cutdepth.(       '-1'          Off )
+   cuts.(           off           Off
+                    on            On
+                    root          Root
+                    ifmove        IfMove
+                    forceon       OnAll )
+   probingcuts.(    off           Off
+                    on            On
+                    root          Root
+                    ifmove        IfMove
+                    forceon       ForceOn
+                    forceonbut    ForceOnBut
+                    forceonstrong ForceOnStrong
+                    forceonbutstrong  ForceOnButAndStrong )
+   greedyheuristic.(off           Off
+                    on            On
+                    root          OnlyForRoot )
+   coststrategy.(   off           Off
+                    priorities    Priorities
+                    columnorder   Columnorder
+                    binaryfirst   BinaryFirst
+                    binarylast    BinaryLast
+                    length        Length )
+   nodestrategy.(   hybrid        Hybrid
+                    fewest        Fewest
+                    depth         Depth
+                    upfewest      UpFewest
+                    downfewest    DownFewest
+                    updepth       Updepth
+                    downdepth     DownDepth )
+   preprocess.(     off           Off
+                    on            On
+                    equal         Equal
+                    equalall      EqualAll
+                    sos           SOS
+                    trysos        TrySOS )
+ /
+
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /
  hidden(o)         / NoBounds, ReadFile /
  odefault(o)       / reslim     'GAMS reslim'
-                     iterlim    'GAMS iterlim' 
-                     nodelim    'GAMS nodlim' 
-                     nodlim     'GAMS nodlim' 
-                     optca      'GAMS optca' 
+                     iterlim    'GAMS iterlim'
+                     nodelim    'GAMS nodlim'
+                     nodlim     'GAMS nodlim'
+                     optca      'GAMS optca'
                      optcr      'GAMS optcr'
                      cutoff     'GAMS cutoff'
                      increment  'GAMS cheat'
