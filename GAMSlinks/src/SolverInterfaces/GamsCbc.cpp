@@ -807,6 +807,7 @@ bool GamsCbc::setupParameters()
    CHECKOPT2_BOOL("rins", "Rins")
    CHECKOPT2_BOOL("roundingheuristic", "roundingHeuristic")
    CHECKOPT_BOOL("vubheuristic");
+   CHECKOPT2_BOOL("proximitysearch", "proximitySearch")
 
    stringenummap.clear();
    stringenummap["on"];

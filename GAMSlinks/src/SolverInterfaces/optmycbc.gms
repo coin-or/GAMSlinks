@@ -102,6 +102,7 @@ set g Cbc Option Groups /
       rins                   relaxed induced neighborhood search
       roundingheuristic      rounding heuristic
       vubheuristic           VUB heuristic
+      proximitysearch        proximity search heuristic
 $ontext
       usercutcall      The GAMS command line to call the cut generator
       usercutfirst     Calls the cut generator for the first n nodes
@@ -225,6 +226,8 @@ mipheu.(
   rins                 .b.(def 0)
   roundingheuristic    .b.(def 1)
   vubheuristic         .i.(lo -2, up 20)
+  proximitysearch      .i.(def 0)
+  
 )
 $ontext
 bch.(
@@ -317,6 +320,7 @@ $offtext
    rens.(           0, 1 )
    rins.(           0, 1 )
    roundingheuristic.( 0, 1 )
+   proximitysearch.(0, 1)
    coststrategy.(   off, priorities, columnorder, binaryfirst, binarylast, length )
    nodestrategy.(   hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth )
    preprocess.(     off, on, equal, equalall, sos, trysos )
@@ -327,7 +331,7 @@ $offtext
  /
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /
- hidden(o)         / NoBounds, ReadFile, dumpsolutions, maxsol /
+ hidden(o)         / NoBounds, ReadFile /
  odefault(o)       / reslim     'GAMS reslim'
                      iterlim    'GAMS iterlim' 
                      nodelim    'GAMS nodlim' 

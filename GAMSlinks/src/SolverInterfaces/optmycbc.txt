@@ -864,6 +864,23 @@ vubheuristic
 If this option is set, Cbc will try and fix some integer variables.
 
 
+proximitysearch
+This parameter controls the use of the "No-Neighborhood Search" 0-1 MIP refinement heuristic proposed by Fischetti and Monaci (2012).
+The idea is to define a sub-MIP without additional constraints but with a modified objective function intended to attract the search
+in the proximity of the incumbent.
+The approach works well for 0-1 MIPs whose solution landscape is not too irregular (meaning the there is reasonable probability of
+finding an improved solution by flipping a small number of binary variables), in particular when it is applied to the first heuristic solutions
+found at the root node.
+
+
+proximitysearch.0
+Turns the proximity heuristic off.
+
+
+proximitysearch.1
+Turns the proximity heuristic on.
+
+
 names
 This option causes GAMS names for the variables and equations to be loaded into Cbc.
 These names will then be used for error messages, log entries, and so forth.
