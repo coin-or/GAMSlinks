@@ -842,16 +842,16 @@ void printBonminOptions()
       "no",
       "no", "", "yes", "");
 
-   bonmin_setup.roptions()->AddStringOption1("miptrace",
-      "Name of file for writing branch-and-bound progress information.",
+   bonmin_setup.roptions()->AddStringOption1("solvetrace",
+      "Name of file for writing solving progress information.",
       "", "*", "");
 
-   bonmin_setup.roptions()->AddLowerBoundedIntegerOption("miptracenodefreq",
-      "Frequency in number of nodes for writing branch-and-bound progress information.",
+   bonmin_setup.roptions()->AddLowerBoundedIntegerOption("solvetracenodefreq",
+      "Frequency in number of nodes for writing solving progress information.",
       0, 100, "giving 0 disables writing of N-lines to trace file");
 
-   bonmin_setup.roptions()->AddLowerBoundedNumberOption("miptracetimefreq",
-      "Frequency in seconds for writing branch-and-bound progress information.",
+   bonmin_setup.roptions()->AddLowerBoundedNumberOption("solvetracetimefreq",
+      "Frequency in seconds for writing solving progress information.",
       0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
 
    bonmin_setup.roptions()->SetRegisteringCategory("NLP interface", Bonmin::RegisteredOptions::BonminCategory);
@@ -1149,16 +1149,16 @@ void printCouenneOptions()
 
    Couenne::CouenneSetup::registerAllOptions(regoptions);
 
-   regoptions->AddStringOption1("miptrace",
-      "Name of file for writing branch-and-bound progress information.",
+   regoptions->AddStringOption1("solvetrace",
+      "Name of file for writing solving progress information.",
       "", "*", "");
 
-   regoptions->AddLowerBoundedIntegerOption("miptracenodefreq",
-      "Frequency in number of nodes for writing branch-and-bound progress information.",
+   regoptions->AddLowerBoundedIntegerOption("solvetracenodefreq",
+      "Frequency in number of nodes for writing solving progress information.",
       0, 100, "giving 0 disables writing of N-lines to trace file");
 
-   regoptions->AddLowerBoundedNumberOption("miptracetimefreq",
-      "Frequency in seconds for writing branch-and-bound progress information.",
+   regoptions->AddLowerBoundedNumberOption("solvetracetimefreq",
+      "Frequency in seconds for writing solving progress information.",
       0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
 
    const Bonmin::RegisteredOptions::RegOptionsList& optionlist(regoptions->RegisteredOptionsList());
