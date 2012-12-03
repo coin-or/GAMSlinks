@@ -289,7 +289,10 @@ void GamsMINLP::finalize_solution(
 
       case TMINLP::INFEASIBLE:
       {
-         model_status = gmoModelStat_InfeasibleNoSolution; // infeasible - no solution
+         if( in_couenne || (gmoObjNLNZ(gmo) == 0 && gmoNLNZ(gmo) == 0) )
+            model_status = gmoModelStat_InfeasibleNoSolution; // proven infeasible - no solution
+         else
+            model_status = gmoModelStat_InfeasibleLocal;
          break;
       }
 
