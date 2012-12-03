@@ -114,15 +114,6 @@ maxsol</a></td>
 <tr><td><a href="#mipstart">
 mipstart</a></td>
 <td>whether it should be tried to use the initial variable levels as initial MIP solution</td></tr>
-<tr><td><a href="#miptrace">
-miptrace</a></td>
-<td>name of trace file for branch-and-bound information</td></tr>
-<tr><td><a href="#miptracenodefreq">
-miptracenodefreq</a></td>
-<td>frequency in number of nodes for writing to mip trace file</td></tr>
-<tr><td><a href="#miptracetimefreq">
-miptracetimefreq</a></td>
-<td>frequency in seconds for writing to mip trace file</td></tr>
 <tr><td><a href="#nodelim">
 nodelim</a></td>
 <td>node limit</td></tr>
@@ -150,6 +141,15 @@ sollim</a></td>
 <tr><td><a href="#solvefinal">
 solvefinal</a></td>
 <td>final solve of MIP with fixed discrete variables</td></tr>
+<tr><td><a href="#solvetrace">
+solvetrace</a></td>
+<td>name of trace file for solving information</td></tr>
+<tr><td><a href="#solvetracenodefreq">
+solvetracenodefreq</a></td>
+<td>frequency in number of nodes for writing to solve trace file</td></tr>
+<tr><td><a href="#solvetracetimefreq">
+solvetracetimefreq</a></td>
+<td>frequency in seconds for writing to solve trace file</td></tr>
 <tr><td><a href="#strategy">
 strategy</a></td>
 <td>switches on groups of features</td></tr>
@@ -760,29 +760,6 @@ Do not use the initial variable levels.</td></tr>
 Try to use the initial variable levels as a MIP starting solution.</td></tr>
 </table>
 
-<h4><a name="miptrace">
-miptrace</a>
-<i> (string)</i> name of trace file for branch-and-bound information</h4><p>
-
-Name of file for writing branch-and-bound progress information during solve.
-
-
-<h4><a name="miptracenodefreq">
-miptracenodefreq</a>
-<i> (integer)</i> frequency in number of nodes for writing to mip trace file</h4><p>
-
-frequency in number of nodes for writing branch-and-bound progress information
-
-<br><i>(default = 100)</i>
-
-<h4><a name="miptracetimefreq">
-miptracetimefreq</a>
-<i> (real)</i> frequency in seconds for writing to mip trace file</h4><p>
-
-frequency in seconds for writing branch-and-bound progress information
-
-<br><i>(default = 5)</i>
-
 <h4><a name="mircuts">
 mircuts</a>
 <i> (string)</i> Mixed Integer Rounding Cuts</h4><p>
@@ -1177,6 +1154,29 @@ Turn off the final LP solve.</td></tr>
 <tr valign="top"><td width=20 align=right>1</td><td>.
 Turn on the final LP solve.</td></tr>
 </table>
+
+<h4><a name="solvetrace">
+solvetrace</a>
+<i> (string)</i> name of trace file for solving information</h4><p>
+
+Name of file for writing solving progress information during solve.
+
+
+<h4><a name="solvetracenodefreq">
+solvetracenodefreq</a>
+<i> (integer)</i> frequency in number of nodes for writing to solve trace file</h4><p>
+
+frequency in number of nodes for writing solving progress information
+
+<br><i>(default = 100)</i>
+
+<h4><a name="solvetracetimefreq">
+solvetracetimefreq</a>
+<i> (real)</i> frequency in seconds for writing to solve trace file</h4><p>
+
+frequency in seconds for writing solving progress information
+
+<br><i>(default = 5)</i>
 
 <h4><a name="special">
 special</a>

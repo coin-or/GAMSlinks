@@ -899,16 +899,16 @@ loglevel
 Amount of output to print by CBC.
 
 
-miptrace
-Name of file for writing branch-and-bound progress information during solve.
+solvetrace
+Name of file for writing solving progress information during solve.
 
 
-miptracenodefreq
-frequency in number of nodes for writing branch-and-bound progress information
+solvetracenodefreq
+frequency in number of nodes for writing solving progress information
 
 
-miptracetimefreq
-frequency in seconds for writing branch-and-bound progress information
+solvetracetimefreq
+frequency in seconds for writing solving progress information
 
 
 solvefinal

@@ -126,16 +126,16 @@ int GamsCouenne::readyAPI(
    couenne_setup->setOptionsAndJournalist(roptions, options, jnlst);
    couenne_setup->registerOptions();
 
-   couenne_setup->roptions()->AddStringOption1("miptrace",
-      "Name of file for writing branch-and-bound progress information.",
+   couenne_setup->roptions()->AddStringOption1("solvetrace",
+      "Name of file for writing solving progress information.",
       "", "*", "");
 
-   couenne_setup->roptions()->AddLowerBoundedIntegerOption("miptracenodefreq",
-      "Frequency in number of nodes for writing branch-and-bound progress information.",
+   couenne_setup->roptions()->AddLowerBoundedIntegerOption("solvetracenodefreq",
+      "Frequency in number of nodes for writing solving progress information.",
       0, 100, "giving 0 disables writing of N-lines to trace file");
 
-   couenne_setup->roptions()->AddLowerBoundedNumberOption("miptracetimefreq",
-      "Frequency in seconds for writing branch-and-bound progress information.",
+   couenne_setup->roptions()->AddLowerBoundedNumberOption("solvetracetimefreq",
+      "Frequency in seconds for writing solving progress information.",
       0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
 
 
@@ -348,28 +348,28 @@ int GamsCouenne::callSolver()
    setNumThreadsLinearAlgebra(gev, gevThreads(gev));
 
    // initialize solvetrace, if activated
-   GAMS_SOLVETRACE* solvetrace = NULL;
-   std::string miptrace;
-   couenne_setup->options()->GetStringValue("miptrace", miptrace, "");
-   if( miptrace != "" )
+   GAMS_SOLVETRACE* solvetrace_ = NULL;
+   std::string solvetrace;
+   couenne_setup->options()->GetStringValue("solvetrace", solvetrace, "");
+   if( solvetrace != "" )
    {
       int nodefreq;
       double timefreq;
       int rc;
 
-      couenne_setup->options()->GetIntegerValue("miptracenodefreq", nodefreq, "");
-      couenne_setup->options()->GetNumericValue("miptracetimefreq", timefreq, "");
-      rc = GAMSsolvetraceCreate(&solvetrace, miptrace.c_str(), "Couenne "COUENNE_VERSION, COUENNE_INFINITY, nodefreq, timefreq);
+      couenne_setup->options()->GetIntegerValue("solvetracenodefreq", nodefreq, "");
+      couenne_setup->options()->GetNumericValue("solvetracetimefreq", timefreq, "");
+      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Couenne "COUENNE_VERSION, COUENNE_INFINITY, nodefreq, timefreq);
       if( rc != 0 )
       {
-         gevLogStat(gev, "Initializing miptrace failed.");
-         GAMSsolvetraceFree(&solvetrace);
+         gevLogStat(gev, "Initializing solvetrace failed.");
+         GAMSsolvetraceFree(&solvetrace_);
       }
       else
       {
          couenne_setup->heuristics().push_back(BabSetupBase::HeuristicMethod());
          BabSetupBase::HeuristicMethod& heurmeth(couenne_setup->heuristics().back());
-         heurmeth.heuristic = new GamsCbcHeurSolveTrace(solvetrace, minlp->isMin);
+         heurmeth.heuristic = new GamsCbcHeurSolveTrace(solvetrace_, minlp->isMin);
          heurmeth.id = "Solvetrace writing heuristic";
       }
    }
@@ -424,8 +424,8 @@ int GamsCouenne::callSolver()
       couenne_setup->options()->SetNumericValue("bonmin.time_limit", reslim - preprocessTime, true, true);
       couenne_setup->setDoubleParameter(BabSetupBase::MaxTime, reslim - preprocessTime);
 
-      if( solvetrace != NULL )
-         GAMSsolvetraceSetInfinity(solvetrace, couenne_setup->continuousSolver()->getInfinity());
+      if( solvetrace_ != NULL )
+         GAMSsolvetraceSetInfinity(solvetrace_, couenne_setup->continuousSolver()->getInfinity());
 
       // do branch and bound
       bb(*couenne_setup);
@@ -447,8 +447,8 @@ int GamsCouenne::callSolver()
       gmoModelStatSet(gmo, minlp->model_status);
       gmoSolveStatSet(gmo, minlp->solver_status);
 
-      if( solvetrace != NULL )
-         GAMSsolvetraceAddEndLine(solvetrace, bb.numNodes(), best_bound,
+      if( solvetrace_ != NULL )
+         GAMSsolvetraceAddEndLine(solvetrace_, bb.numNodes(), best_bound,
             bb.bestSolution() != NULL ? minlp->isMin * bb.bestObj() : minlp->isMin * bb.model().getInfinity());
 
       if( bb.bestSolution() != NULL )
@@ -536,8 +536,8 @@ int GamsCouenne::callSolver()
    }
 
 TERMINATE:
-   if( solvetrace != NULL )
-      GAMSsolvetraceFree(&solvetrace);
+   if( solvetrace_ != NULL )
+      GAMSsolvetraceFree(&solvetrace_);
 
    return 0;
 }

@@ -34,6 +34,7 @@ struct SCIP_EventhdlrData
    int                   nodefreq;           /**< node frequency of writing to trace file */
    SCIP_Real             timefreq;           /**< time frequency of writing to trace file */
    int                   filterpos;          /**< position of node event in SCIPs eventfilter */
+   SCIP_Real             dualbound;          /**< dual bound at last exit solve stage */
 };
 
 /*
@@ -132,7 +133,7 @@ SCIP_DECL_EVENTEXIT(eventExitSolveTrace)
    SCIP_CALL( SCIPdropEvent(scip, SCIP_EVENTTYPE_NODESOLVED, eventhdlr, (SCIP_EVENTDATA*)eventhdlrdata->solvetrace, eventhdlrdata->filterpos) );
 
    GAMSsolvetraceAddEndLine(eventhdlrdata->solvetrace, SCIPgetNTotalNodes(scip),
-      SCIPgetDualbound(scip),
+      eventhdlrdata->dualbound == SCIP_INVALID ? -SCIPgetObjsense(scip) * SCIPinfinity(scip) : eventhdlrdata->dualbound,
       SCIPgetNSols(scip) > 0 ? SCIPgetSolOrigObj(scip, SCIPgetBestSol(scip)) : SCIPgetObjsense(scip) * SCIPinfinity(scip));
 
    GAMSsolvetraceFree(&eventhdlrdata->solvetrace);
@@ -189,6 +190,8 @@ SCIP_DECL_EVENTDELETE(eventDeleteSolveTrace)
 static
 SCIP_DECL_EVENTEXEC(eventExecSolveTrace)
 {  /*lint --e{715}*/
+   SCIP_EVENTHDLRDATA* eventhdlrdata;
+
    assert(event != NULL);
    assert(SCIPeventGetType(event) & SCIP_EVENTTYPE_NODESOLVED);
    assert(eventdata != NULL);
@@ -196,6 +199,11 @@ SCIP_DECL_EVENTEXEC(eventExecSolveTrace)
    GAMSsolvetraceAddLine((GAMS_SOLVETRACE*)eventdata, SCIPgetNTotalNodes(scip),
       SCIPgetDualbound(scip),
       SCIPgetNSols(scip) > 0 ? SCIPgetSolOrigObj(scip, SCIPgetBestSol(scip)) : SCIPgetObjsense(scip) * SCIPinfinity(scip));
+
+   eventhdlrdata = SCIPeventhdlrGetData(eventhdlr);
+   assert(eventhdlrdata != NULL);
+
+   eventhdlrdata->dualbound = SCIPgetDualbound(scip);
 
    return SCIP_OKAY;
 }
@@ -211,6 +219,7 @@ SCIP_RETCODE SCIPincludeEventHdlrSolveTrace(
    SCIP_CALL( SCIPallocMemory(scip, &eventhdlrdata) );
    eventhdlrdata->solvetrace = NULL;
    eventhdlrdata->filename = NULL;
+   eventhdlrdata->dualbound = SCIP_INVALID;
 
    /* include event handler into SCIP */
    SCIP_CALL( SCIPincludeEventhdlr(scip, EVENTHDLR_NAME, EVENTHDLR_DESC,
@@ -220,15 +229,15 @@ SCIP_RETCODE SCIPincludeEventHdlrSolveTrace(
          eventhdlrdata) );
 
    /* add solvetrace event handler parameters */
-   SCIP_CALL( SCIPaddStringParam(scip, "gams/miptrace/file",
+   SCIP_CALL( SCIPaddStringParam(scip, "gams/solvetrace/file",
       "name of file where to write branch-and-bound trace information too",
       &eventhdlrdata->filename, FALSE, "", NULL, NULL) );
 
-   SCIP_CALL( SCIPaddIntParam(scip, "gams/miptrace/nodefreq",
+   SCIP_CALL( SCIPaddIntParam(scip, "gams/solvetrace/nodefreq",
       "frequency in number of nodes when to write branch-and-bound trace information, 0 to disable",
       &eventhdlrdata->nodefreq, FALSE, 100, 0, INT_MAX, NULL, NULL) );
 
-   SCIP_CALL( SCIPaddRealParam(scip, "gams/miptrace/timefreq",
+   SCIP_CALL( SCIPaddRealParam(scip, "gams/solvetrace/timefreq",
       "frequency in seconds when to write branch-and-bound trace information, 0.0 to disable",
       &eventhdlrdata->timefreq, FALSE, 5.0, 0.0, SCIP_REAL_MAX, NULL, NULL) );
 

@@ -123,16 +123,16 @@ int GamsBonmin::readyAPI(
       "no",
       "no", "", "yes", "");
 
-   bonmin_setup->roptions()->AddStringOption1("miptrace",
-      "Name of file for writing branch-and-bound progress information.",
+   bonmin_setup->roptions()->AddStringOption1("solvetrace",
+      "Name of file for writing solving progress information.",
       "", "*", "");
 
-   bonmin_setup->roptions()->AddLowerBoundedIntegerOption("miptracenodefreq",
-      "Frequency in number of nodes for writing branch-and-bound progress information.",
+   bonmin_setup->roptions()->AddLowerBoundedIntegerOption("solvetracenodefreq",
+      "Frequency in number of nodes for writing solving progress information.",
       0, 100, "giving 0 disables writing of N-lines to trace file");
 
-   bonmin_setup->roptions()->AddLowerBoundedNumberOption("miptracetimefreq",
-      "Frequency in seconds for writing branch-and-bound progress information.",
+   bonmin_setup->roptions()->AddLowerBoundedNumberOption("solvetracetimefreq",
+      "Frequency in seconds for writing solving progress information.",
       0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
 
    bonmin_setup->roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
@@ -325,28 +325,28 @@ int GamsBonmin::callSolver()
    setNumThreadsLinearAlgebra(gev, gevThreads(gev));
 
    // initialize solvetrace, if activated
-   GAMS_SOLVETRACE* solvetrace = NULL;
-   std::string miptrace;
-   bonmin_setup->options()->GetStringValue("miptrace", miptrace, "");
-   if( miptrace != "" )
+   GAMS_SOLVETRACE* solvetrace_ = NULL;
+   std::string solvetrace;
+   bonmin_setup->options()->GetStringValue("solvetrace", solvetrace, "");
+   if( solvetrace != "" )
    {
       int nodefreq;
       double timefreq;
       int rc;
 
-      bonmin_setup->options()->GetIntegerValue("miptracenodefreq", nodefreq, "");
-      bonmin_setup->options()->GetNumericValue("miptracetimefreq", timefreq, "");
-      rc = GAMSsolvetraceCreate(&solvetrace, miptrace.c_str(), "Bonmin "BONMIN_VERSION, ipoptinf, nodefreq, timefreq);
+      bonmin_setup->options()->GetIntegerValue("solvetracenodefreq", nodefreq, "");
+      bonmin_setup->options()->GetNumericValue("solvetracetimefreq", timefreq, "");
+      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Bonmin "BONMIN_VERSION, ipoptinf, nodefreq, timefreq);
       if( rc != 0 )
       {
-         gevLogStat(gev, "Initializing miptrace failed.");
-         GAMSsolvetraceFree(&solvetrace);
+         gevLogStat(gev, "Initializing solvetrace failed.");
+         GAMSsolvetraceFree(&solvetrace_);
       }
       else
       {
          bonmin_setup->heuristics().push_back(BabSetupBase::HeuristicMethod());
          BabSetupBase::HeuristicMethod& heurmeth(bonmin_setup->heuristics().back());
-         heurmeth.heuristic = new GamsCbcHeurSolveTrace(solvetrace, minlp->isMin);
+         heurmeth.heuristic = new GamsCbcHeurSolveTrace(solvetrace_, minlp->isMin);
          heurmeth.id = "Solvetrace writing heuristic";
       }
    }
@@ -372,8 +372,8 @@ int GamsBonmin::callSolver()
          // delete[] sol;
          bonmin_setup->initialize(first_osi_tminlp); // this will clone first_osi_tminlp
 
-         if( solvetrace != NULL )
-            GAMSsolvetraceSetInfinity(solvetrace, first_osi_tminlp.getInfinity());
+         if( solvetrace_ != NULL )
+            GAMSsolvetraceSetInfinity(solvetrace_, first_osi_tminlp.getInfinity());
       }
 
       // try solving
@@ -393,8 +393,8 @@ int GamsBonmin::callSolver()
       gmoModelStatSet(gmo, minlp->model_status);
       gmoSolveStatSet(gmo, minlp->solver_status);
 
-      if( solvetrace != NULL )
-         GAMSsolvetraceAddEndLine(solvetrace, bb.numNodes(), best_bound,
+      if( solvetrace_ != NULL )
+         GAMSsolvetraceAddEndLine(solvetrace_, bb.numNodes(), best_bound,
             bb.bestSolution() != NULL ? minlp->isMin * bb.bestObj() : minlp->isMin * bb.model().getInfinity());
 
       // store primal solution in gmo
@@ -582,8 +582,8 @@ int GamsBonmin::callSolver()
       return -1;
    }
 
-   if( solvetrace != NULL )
-      GAMSsolvetraceFree(&solvetrace);
+   if( solvetrace_ != NULL )
+      GAMSsolvetraceFree(&solvetrace_);
 
    return 0;
 }

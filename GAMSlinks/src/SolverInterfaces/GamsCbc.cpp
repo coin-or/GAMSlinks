@@ -25,7 +25,7 @@
 #include "GamsOptions.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
-#include "GamsCbcHeurSolveTrace.hpp"
+#include "GamsSolveTrace.h"
 
 // For Branch and bound
 #include "CbcConfig.h"
@@ -140,8 +140,8 @@ int cbcCallBack(
 
       /* update mainmodel in event handler */
       GamsSolveTraceEventHandler* eventhandler = dynamic_cast<GamsSolveTraceEventHandler*>(model->getEventHandler());
-      assert(eventhandler != NULL);
-      eventhandler->mainmodel = model;
+      if( eventhandler != NULL )
+         eventhandler->mainmodel = model;
    }
    else if( whereFrom == 4 ) /* just after B&B */
    {
@@ -152,8 +152,8 @@ int cbcCallBack(
 
       /* clear mainmodel in event handler */
       GamsSolveTraceEventHandler* eventhandler = dynamic_cast<GamsSolveTraceEventHandler*>(model->getEventHandler());
-      assert(eventhandler != NULL);
-      eventhandler->mainmodel = NULL;
+      if( eventhandler != NULL )
+         eventhandler->mainmodel = NULL;
    }
 
    return 0;
@@ -168,7 +168,7 @@ GamsCbc::~GamsCbc()
    delete[] cbc_args;
 
    free(writemps);
-   free(miptrace);
+   free(solvetrace);
    free(dumpsolutions);
 }
 
@@ -261,19 +261,19 @@ int GamsCbc::callSolver()
       model->solver()->writeMps(writemps, "", 1.0);
    }
 
-   GAMS_SOLVETRACE* solvetrace = NULL;
-   if( miptrace != NULL && miptrace[0] )
+   GAMS_SOLVETRACE* solvetrace_ = NULL;
+   if( solvetrace != NULL && solvetrace[0] )
    {
       int rc;
-      rc = GAMSsolvetraceCreate(&solvetrace, miptrace, "CBC "CBC_VERSION, model->getInfinity(), miptracenodefreq, miptracetimefreq);
+      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace, "CBC "CBC_VERSION, model->getInfinity(), solvetracenodefreq, solvetracetimefreq);
       if( rc != 0 )
       {
-         gevLogStat(gev, "Initializing miptrace failed.");
-         GAMSsolvetraceFree(&solvetrace);
+         gevLogStat(gev, "Initializing solvetrace failed.");
+         GAMSsolvetraceFree(&solvetrace_);
       }
       else
       {
-         GamsSolveTraceEventHandler traceeventhdlr(solvetrace);
+         GamsSolveTraceEventHandler traceeventhdlr(solvetrace_);
          model->passInEventHandler(&traceeventhdlr);
       }
    }
@@ -291,12 +291,12 @@ int GamsCbc::callSolver()
    double end_cputime  = CoinCpuTime();
    double end_walltime = CoinWallclockTime();
 
-   if( solvetrace != NULL )
+   if( solvetrace_ != NULL )
    {
-      GAMSsolvetraceAddEndLine(solvetrace, model->getNodeCount(),
+      GAMSsolvetraceAddEndLine(solvetrace_, model->getNodeCount(),
          model->getBestPossibleObjValue(),
          model->getSolutionCount() > 0 ? model->getObjValue() : model->getObjSense() * model->getInfinity());
-      GAMSsolvetraceFree(&solvetrace);
+      GAMSsolvetraceFree(&solvetrace_);
    }
 
    writeSolution(end_cputime - start_cputime, end_walltime - start_walltime);
@@ -1006,15 +1006,15 @@ bool GamsCbc::setupParameters()
    }
 
    // whether to write MIP trace file
-   free(miptrace);
-   miptrace = NULL;
-   if( options.isDefined("miptrace") )
+   free(solvetrace);
+   solvetrace = NULL;
+   if( options.isDefined("solvetrace") )
    {
-      options.getString("miptrace", buffer);
-      miptrace = strdup(buffer);
+      options.getString("solvetrace", buffer);
+      solvetrace = strdup(buffer);
    }
-   miptracenodefreq = options.getInteger("miptracenodefreq");
-   miptracetimefreq = options.getDouble("miptracetimefreq");
+   solvetracenodefreq = options.getInteger("solvetracenodefreq");
+   solvetracetimefreq = options.getDouble("solvetracetimefreq");
 
    // when to print which messages
    // loglevel default is 1, so enable CBC output by default, CoinUtils and CGL if loglevel >= 3, and CLP if loglevel >= 5 or >= 1 if problem is an LP

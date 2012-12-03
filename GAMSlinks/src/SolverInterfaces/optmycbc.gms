@@ -56,9 +56,9 @@ set g Cbc Option Groups /
       loglevel               CBC loglevel
       increment              increment of cutoff when new incumbent
       solvefinal             final solve of MIP with fixed discrete variables
-      miptrace               name of trace file for branch-and-bound information
-      miptracenodefreq       frequency in number of nodes for writing to mip trace file
-      miptracetimefreq       frequency in seconds for writing to mip trace file
+      solvetrace             name of trace file for solving information
+      solvetracenodefreq     frequency in number of nodes for writing to solve trace file
+      solvetracetimefreq     frequency in seconds for writing to solve trace file
       nodelim                node limit
       nodlim                 node limit
       optca                  absolute stopping tolerance
@@ -183,9 +183,9 @@ mipgeneral.(
   optcr                .r.(def 0.1)
   cutoff               .r.(def 0, lo mindouble)
   solvefinal           .b.(def 1)
-  miptrace             .s.(def '')
-  miptracenodefreq     .i.(def 100)
-  miptracetimefreq     .r.(def 5)
+  solvetrace           .s.(def '')
+  solvetracenodefreq   .i.(def 100)
+  solvetracetimefreq   .r.(def 5)
 )
 mipcuts.(
   cutdepth             .i.(def -1, lo -1, up 999999)
