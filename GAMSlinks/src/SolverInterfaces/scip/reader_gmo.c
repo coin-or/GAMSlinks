@@ -2128,6 +2128,8 @@ SCIP_RETCODE writeGmoSolution(
       gmoSetHeadnTail(gmo, gmoTmipbest, SCIPgetDualbound(scip));
    gmoSetHeadnTail(gmo, gmoTmipnod,  (int)SCIPgetNNodes(scip));
    gmoSetHeadnTail(gmo, gmoHresused, SCIPgetSolvingTime(scip));
+   gmoSetHeadnTail(gmo, gmoHiterused, SCIPgetNLPIterations(scip));
+   gmoSetHeadnTail(gmo, gmoHdomused, 0);
 
    /* dump all solutions, if more than one found and parameter is set */
    if( nrsol > 1)

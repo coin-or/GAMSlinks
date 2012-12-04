@@ -203,7 +203,7 @@ int GamsScip::callSolver()
    SCIP_CALL_ABORT( SCIPgetStringParam(scip, "gams/interactive", &interactive) );
    assert(interactive != NULL);
 #ifdef GAMS_BUILD
-   if( interactive[0] != '\0' && palLicenseIsDemoCheckout(pal) )
+   if( interactive[0] != '\0' && !palLicenseIsAcademic(pal) )
    {
       gevLogStat(gev, "SCIP interactive shell not available in demo mode.\n");
       interactive[0] = '\0';
