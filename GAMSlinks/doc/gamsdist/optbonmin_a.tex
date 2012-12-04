@@ -182,7 +182,7 @@ All strategies can be used in conjunction with any of the node comparison functi
 
 \printoption{variable\_selection}%
 {\ttfamily most-fractional, strong-branching, reliability-branching, qp-strong-branching, lp-strong-branching, nlp-strong-branching, osi-simple, osi-strong, random}%
-{osi-strong}%
+{strong-branching}%
 {Chooses variable selection strategy}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
@@ -303,7 +303,7 @@ To use Cplex, a valid license is required.}%
 
 \printoption{milp\_strategy}%
 {\ttfamily find\_good\_sol, solve\_to\_optimality}%
-{find\_good\_sol}%
+{solve\_to\_optimality}%
 {Choose a strategy for MILPs.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
@@ -702,26 +702,6 @@ Set the level of output of the linear programming sub-solver in B-Hyb or B-QG : 
 Set the level of output of the MILP subsolver in OA : 0 - none, 1 - minimal, 2 - normal low, 3 - normal high}%
 {}
 
-\printoption{miptrace}%
-{string}%
-{}%
-{Name of file for writing branch-and-bound progress information.}%
-{}
-
-\printoption{miptracenodefreq}%
-{$0\leq\textrm{integer}$}%
-{$100$}%
-{Frequency in number of nodes for writing branch-and-bound progress information.\\
-giving 0 disables writing of N-lines to trace file}%
-{}
-
-\printoption{miptracetimefreq}%
-{$0\leq\textrm{real}$}%
-{$5$}%
-{Frequency in seconds for writing branch-and-bound progress information.\\
-giving 0.0 disables writing of T-lines to trace file}%
-{}
-
 \printoption{nlp\_log\_at\_root}%
 {$0\leq\textrm{integer}\leq12$}%
 {$5$}%
@@ -759,6 +739,26 @@ Set the level of output of OA decomposition solver : 0 - none, 1 - normal, 2 - v
 {\ttfamily no, yes}%
 {no}%
 {Switch to enable printing statistics on number of evaluations of GAMS functions/gradients/Hessian.}%
+{}
+
+\printoption{solvetrace}%
+{string}%
+{}%
+{Name of file for writing solving progress information.}%
+{}
+
+\printoption{solvetracenodefreq}%
+{$0\leq\textrm{integer}$}%
+{$100$}%
+{Frequency in number of nodes for writing solving progress information.\\
+giving 0 disables writing of N-lines to trace file}%
+{}
+
+\printoption{solvetracetimefreq}%
+{$0\leq\textrm{real}$}%
+{$5$}%
+{Frequency in seconds for writing solving progress information.\\
+giving 0.0 disables writing of T-lines to trace file}%
 {}
 
 \printoptioncategory{Strong branching setup}

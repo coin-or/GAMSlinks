@@ -18,9 +18,11 @@
 {\end{list}}
 
 \newcommand{\BONMIN}{\textsc{Bonmin}\xspace}
+\newcommand{\BONMINH}{\textsc{BonminH}\xspace}
 \newcommand{\CBC}{\textsc{CBC}\xspace}
 \newcommand{\COUENNE}{\textsc{Couenne}\xspace}
 \newcommand{\IPOPT}{\textsc{Ipopt}\xspace}
+\newcommand{\IPOPTH}{\textsc{IpoptH}\xspace}
 \newcommand{\OS}{\textsc{OS}\xspace}
 \newcommand{\OSI}{\textsc{OSI}\xspace}
 \newcommand{\OSICPLEX}{\textsc{OsiCplex}\xspace}
@@ -68,7 +70,7 @@ Available solvers and tools include:
 For more information see the COIN-OR/GAMSlinks web site at
 \texttt{https://projects.coin-or.org/GAMSlinks}.
 
-\section{\BONMIN}
+\section{\BONMIN and \BONMINH}
 
 % \GAMS/\BONMIN brings the open source MINLP solver \BONMIN to the broad audience of \GAMS users.
 
@@ -96,6 +98,11 @@ B-iFP is more tailored at finding quickly good solutions to very hard convex MIN
 For \textbf{nonconvex} MINLPs, it is strongly recommended to use B-BB (the outer-approximation algorithms have not been tailored to treat nonconvex problems at this point).
 Although even B-BB is only a heuristic for such problems, several options are available to try and improve the quality of the solutions it provides (see below).
 
+NLPs are solved in \BONMIN by \IPOPT, which uses \textsc{MUMPS}~\cite{AmestoyDuffKosterLExcellent2001,AmestoyGuermoucheLExcellentPralet2006} as linear solver.
+In the commerically licensed \GAMS/\BONMINH version, also the linear solvers \textsc{MA27}, \textsc{MA57}, and \textsc{MA86} from the Harwell Subroutines Library (HSL) are available in \IPOPT.
+In this case, the default linear solver in \IPOPT is MA27.
+
+
 For more information we refer to \cite{BoCoLoMa06,BoGo08,BoKiLi09,BBCCGLLLMSW} and the \BONMIN web site \texttt{https://projects.coin-or.org/Bonmin}.
 Most of the \BONMIN documentation in this section is taken from the \BONMIN manual~\cite{BonminManual}.
 
@@ -113,12 +120,17 @@ If \GAMS/\BONMIN is called for a model with only linear equations, the interface
 
 \subsection{Usage}
 
-The following statement can be used inside your \GAMS program to specify using \BONMIN
+The following statement can be used inside your \GAMS program to specify using \BONMIN:
 \begin{verbatim}
   Option MINLP = BONMIN;    { or Option MIQCP = BONMIN; }
 \end{verbatim}
 This statement should appear before the \texttt{Solve} statement.
 If \BONMIN was specified as the default solver during \GAMS installation, the above statement is not necessary.
+
+To use \BONMINH, one should use the statement
+\begin{verbatim}
+  Option MINLP = BONMINH;   { or Option MIQCP = BONMINH; }
+\end{verbatim}
 
 \GAMS/\BONMIN currently does not support the \GAMS Branch-and-Cut-and-Heuristic (BCH) Facility.
 If you need to use \GAMS/\BONMIN with BCH, please consider to use a \GAMS system of version $\leq 23.3$, available at \url{http://www.gams.com/download/download_old.htm}.
@@ -129,7 +141,7 @@ If you need to use \GAMS/\BONMIN with BCH, please consider to use a \GAMS system
 
 \subsubsection{Specification of Options}
 
-A \BONMIN option file contains both \IPOPT and \BONMIN options, for clarity all \BONMIN options should be preceded with the prefix ``\texttt{bonmin.}''. %, except those corresponding to the BCH facility.
+A \BONMIN options file contains both \IPOPT and \BONMIN options, for clarity all \BONMIN options should be preceded with the prefix ``\texttt{bonmin.}''. %, except those corresponding to the BCH facility.
 The scheme to name option files is the same as for all other \GAMS solvers.
 Specifying \texttt{optfile=1} let \GAMS/\BONMIN read \texttt{bonmin.opt}, \texttt{optfile=2} corresponds to \texttt{bonmin.op2}, and so on.
 The format of the option file is the same as for \IPOPT (see Section \ref{sub:ipoptoptionspec}).
@@ -408,7 +420,7 @@ Note that options specific to \IPOPT and \BONMIN are not listed her, see Section
 
 \input{optcouenne_a}
 
-\section{\IPOPT}
+\section{\IPOPT and \IPOPTH}
 
 % \GAMS/\IPOPT brings the open source NLP solver \IPOPT to the broad audience of \GAMS users.
 
@@ -420,7 +432,7 @@ For more information on the algorithm we refer to~\cite{NoWaWa08,Waechter2002,Wa
 Most of the \IPOPT documentation in the section was taken from the \IPOPT manual~\cite{IpoptManual}.
 
 \GAMS/\IPOPT uses \textsc{MUMPS}~\cite{AmestoyDuffKosterLExcellent2001,AmestoyGuermoucheLExcellentPralet2006} as linear solver, cf.~\url{http://graal.ens-lyon.fr/MUMPS}.
-In a commerically licensed \GAMS/\IPOPT version, also the linear solvers \textsc{MA27}, \textsc{MA57}, and \textsc{MA86} from the Harwell Subroutines Library (HSL) are available.
+In the commerically licensed \GAMS/\IPOPTH version, also the linear solvers \textsc{MA27}, \textsc{MA57}, and \textsc{MA86} from the Harwell Subroutines Library (HSL) are available.
 In this case, the default solver is MA27.
 
 \textsc{MUMPS} and \textsc{MA57} use \textsc{METIS} for matrix ordering \cite{KaKu99}, cf.~\url{http://glaros.dtc.umn.edu/gkhome/views/metis/index.html} and \url{http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf}.
@@ -440,18 +452,23 @@ The following statement can be used inside your \GAMS program to specify using \
 The above statement should appear before the Solve statement.
 If \IPOPT was specified as the default solver during \GAMS installation, the above statement is not necessary.
 
+To use \IPOPTH, the statement should be
+\begin{verbatim}
+  Option NLP = IPOPTH;    { or LP, RMIP, DNLP, RMINLP, QCP, RMIQCP }
+\end{verbatim}
+
 \subsubsection{The linear solver in \IPOPT}
 \label{ipoptlinearsolver}
 \hypertarget{ipoptlinearsolver}{}
 
 The performance and robustness of \IPOPT on larger models heavily relies on the used solver for sparse symmetric indefinite linear systems.
 \GAMS/\IPOPT includes the sparse solver MUMPS~\cite{AmestoyDuffKosterLExcellent2001,AmestoyGuermoucheLExcellentPralet2006}.
-In a commerically licensed \GAMS/\IPOPT version, also the Harwell Subroutine Library (HSL) solvers MA27, MA57, and MA86 are available.
+In a commerically licensed \GAMS/\IPOPTH version, also the Harwell Subroutine Library (HSL) solvers MA27, MA57, and MA86 are available and MA27 is used by default.
 Further, a user can provide the Parallel Sparse Direct Solver PARDISO or routines from HSL as shared (or dynamic) libraries.
 
 \paragraph{Using Harwell Subroutine Library routines with \GAMS/\IPOPT.}
 
-\GAMS/\IPOPT without commercial license can use the HSL routines \texttt{MA27}, \texttt{MA28}, \texttt{MA57}, and \texttt{MC19} when provided as shared library.
+\GAMS/\IPOPT can use the HSL routines \texttt{MA27}, \texttt{MA28}, \texttt{MA57}, and \texttt{MC19} when provided as shared library.
 By telling \IPOPT to use one of these routines (see options \texttt{linear\_solver}, \texttt{linear\_system\_scaling}, \texttt{nlp\_scaling\_method}, \texttt{dependency\_detector}), \GAMS/\IPOPT attempts to load the required routines from the library \texttt{libhsl.so} (Unix-Systems), \texttt{libhsl.dylib} (MacOS X), or \texttt{libhsl.dll} (Windows), respectively.
 
 The HSL routines are available at \url{http://www.hsl.rl.ac.uk/ipopt}.
@@ -459,7 +476,7 @@ Note that it is your responsibility to ensure that you are entitled to download 
 % You can build a shared library using the ThirdParty/HSL project at COIN-OR.
 
 \paragraph{Using PARDISO with \GAMS/\IPOPT.}
-Setting the option \texttt{linear\_solver} to \texttt{pardiso}, let \GAMS/\IPOPT attempt to load the linear solver PARDISO from the library \texttt{libpardiso.so} (Unix-Systems), \texttt{libpardiso.dylib} (MacOS X), or \texttt{libpardiso.dll} (Windows), respectively.
+Setting the option \texttt{linear\_solver} to \texttt{pardiso}, lets \GAMS/\IPOPT or \GAMS/\IPOPTH attempt to load the linear solver PARDISO from the library \texttt{libpardiso.so} (Unix-Systems), \texttt{libpardiso.dylib} (MacOS X), or \texttt{libpardiso.dll} (Windows), respectively.
 
 PARDISO is available as compiled shared library for several platforms at \texttt{http://www.pardiso-project.org}.
 Note that it is your responsibility to ensure that you are entitled to download and use this package!

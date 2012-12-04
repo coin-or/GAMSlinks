@@ -32,7 +32,7 @@ read\_solution\_file & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $
 solution\_limit & $\mathbb{Z}$ & $\infty$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 time\_limit & $\mathbb{Q}$ & \GAMS \texttt{reslim} & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 tree\_search\_strategy & string & probed-dive & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
-variable\_selection & string & osi-strong & $\checkmark$& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
+variable\_selection & string & strong-branching & $\checkmark$& --& $\checkmark$& $\checkmark$& $\checkmark$& --& --\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{ECP cuts generation}\\
 \hline
@@ -52,7 +52,7 @@ generate\_benders\_after\_so\_many\_oa & $\mathbb{Z}$ & $5000$ & --& --& $\check
 \hline
 cpx\_parallel\_strategy & $\mathbb{Z}$ & $0$ & --& --& --& --& --& --& $\checkmark$\\
 milp\_solver & string & Cbc\_D & --& --& --& --& --& --& $\checkmark$\\
-milp\_strategy & string & find\_good\_sol & --& --& --& --& --& --& $\checkmark$\\
+milp\_strategy & string & solve\_to\_optimality & --& --& --& --& --& --& $\checkmark$\\
 number\_cpx\_threads & $\mathbb{Z}$ & $0$ & --& --& --& --& --& --& $\checkmark$\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{MILP cutting planes in hybrid algorithm (B-Hyb)}\\
@@ -130,15 +130,15 @@ fp\_log\_frequency & $\mathbb{Q}$ & $100$ & --& --& $\checkmark$& $\checkmark$& 
 fp\_log\_level & $\mathbb{Z}$ & $1$ & --& --& $\checkmark$& $\checkmark$& --& --& --\\
 lp\_log\_level & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 milp\_log\_level & $\mathbb{Z}$ & $0$ & --& --& --& --& --& --& $\checkmark$\\
-miptrace & string &  & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
-miptracenodefreq & $\mathbb{Z}$ & $100$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
-miptracetimefreq & $\mathbb{Q}$ & $5$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 nlp\_log\_at\_root & $\mathbb{Z}$ & 5 & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
 nlp\_log\_level & $\mathbb{Z}$ & $1$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 oa\_cuts\_log\_level & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 oa\_log\_frequency & $\mathbb{Q}$ & $100$ & $\checkmark$& --& --& $\checkmark$& $\checkmark$& --& --\\
 oa\_log\_level & $\mathbb{Z}$ & $1$ & $\checkmark$& --& --& $\checkmark$& $\checkmark$& --& --\\
 print\_funceval\_statistics & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+solvetrace & string &  & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+solvetracenodefreq & $\mathbb{Z}$ & $100$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+solvetracetimefreq & $\mathbb{Q}$ & $5$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Strong branching setup}\\
 \hline

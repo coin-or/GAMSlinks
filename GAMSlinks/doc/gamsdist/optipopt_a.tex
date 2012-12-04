@@ -979,8 +979,8 @@ This option is only important if a linear scaling method (e.g., mc19) is used.  
 {ma27}%
 {Linear solver used for step computations.\\
 Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions).
-Note, that in order to use MA27, MA57, or MA86, a commercially supported Gams/Ipopt license or a library with HSL code need to be available.
-If no commerical Gams/Ipopt license is available, the default linear solver is mumps.
+Note, that MA27, MA57, and MA86 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately.
+If no GAMS/IpoptH license is available, the default linear solver is MUMPS.
 For using Pardiso, a pardiso library need to be provided.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
@@ -1001,8 +1001,8 @@ For using Pardiso, a pardiso library need to be provided.}%
 {mc19}%
 {Method for scaling the linear system.\\
 Determines the method used to compute symmetric scaling factors for the augmented system (see also the "linear\_scaling\_on\_demand" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers.
-Note, that in order to use MC19, a commercially supported Gams/Ipopt license or a library with HSL code need to be available.
-If no commerical Gams/Ipopt license is available, the default scaling method is slack-based.}%
+Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately.
+If no commerical GAMS/IpoptH license is available, the default scaling method is slack-based.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -1237,7 +1237,7 @@ Maximum value to which u will be increased to improve quality.}%
 \printoptioncategory{Mumps Linear Solver}
 \printoption{mumps\_dep\_tol}%
 {$\textrm{real}$}%
-{$-1$}%
+{$0$}%
 {Pivot threshold for detection of linearly dependent constraints in MUMPS.\\
 When MUMPS is used to determine linearly dependent constraints, this is determines the threshold for a pivot to be considered zero.  This is CNTL(3) in MUMPS.}%
 {}

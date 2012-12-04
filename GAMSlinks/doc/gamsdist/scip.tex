@@ -10,7 +10,7 @@
 \section{Introduction}
 
 \SCIP (\textbf{S}olving \textbf{C}onstraint \textbf{I}nteger \textbf{P}rograms) is developed at the Konrad-Zuse-Zentrum f\"ur Informationstechnik Berlin (ZIB).
-The \SCIP main developer had been Tobias Achterberg, current main developers are Timo Berthold, Gerald Gamrath, Stefan Heinz, Marc Pfetsch, Stefan Vigerske, and Kati Wolter.
+The \SCIP main developer had been Tobias Achterberg, current main developers are Timo Berthold, Gerald Gamrath, Ambros Gleixner, Stefan Heinz, Marc Pfetsch, Stefan Vigerske, Michael Winkler, and Kati Wolter.
 Since \SCIP is distributed under the ZIB Academic License, it is only available for users with a \textbf{\GAMS academic license}.
 
 \SCIP is a framework for Constraint Integer Programming oriented towards the needs of Mathematical Programming experts who want to have total control of the solution process and access detailed information down to the guts of the solver.
@@ -107,10 +107,21 @@ Currently, indicators can only be used for linear equations.
 
 The interactive shell in \SCIP is a powerful tool that allows the user to display various information (e.g., branching statistics, presolved model), load emphasis settings, interrupt a solve to change parameters or trigger a restart, write the model in various file formats, start {\SCIP}s solution counter, and many more things.
 
-When setting the option \texttt{gams/interactive} to \texttt{TRUE}, the \GAMS/\SCIP interface opens the interactive shell of \SCIP after having load the \GAMS problem and parameters.
-The command \texttt{help} prints a list of available commands.
+When setting the option \texttt{gams/interactive} to a nonempty string, the \GAMS/\SCIP interface opens the interactive shell of \SCIP after having load the \GAMS problem and parameters and passes the value of the \texttt{gams/interactive} parameter to the \SCIP interactive shell.
 
-A tutorial on using the \SCIP shell is available at \url{http://scip.zib.de/doc/html/SHELL.html}.
+By default, \SCIP behaves as if \texttt{gams/interactive} has been set to \texttt{"optimize write gamssol quit"}, that is, \SCIP is requested to solve the problem, then to pass the solution back to GAMS, and to quit.
+
+An example use of the \SCIP interactive shell feature via \GAMS is to add the following line to your \SCIP options file:
+\begin{verbatim}
+gams/interactive = "write prob orig.lp presolve write transprob presol.mps opt write gamssol quit"
+\end{verbatim}
+This instructs \SCIP to write the original problem to the file \texttt{orig.lp} in LP format, to presolve the instance, to write the presolved problem to the file \texttt{presolved.mps} in MPS format, to solve the instance, to write the solution out to \GAMS, and to finish.
+
+By omitting the \texttt{quit} command, \SCIP{s} interactive shell remains open and awaits user input.
+The command \texttt{help} prints a list of available commands.
+Note, that on Windows, \GAMS need to be called with the option \texttt{interactivesolver = 1} to allow user input for the solver process.
+
+A tutorial on using the \SCIP shell is available at \url{http://scip.zib.de/doc/html/SHELL.shtml}.
 
 \subsection{Emphasis Settings}
 
@@ -121,7 +132,7 @@ The emphasis settings are not available as single parameters, but can be set via
 E.g., writing \texttt{set heuristics emphasis} in the shell displays the available emphasis settings for heuristics (aggressive, fast, off) and expects the user to input which setting to use.
 Further, general emphasis settings are available in the \texttt{set emphasis} menu, some of them giving predefined settings similar to the CPLEX option \texttt{mipemphasis}.
 
-Further, settings file that specify all available emphasis settings are available at \url{http://www.gams.com/~svigerske/scip2.1}.
+Further, option files that specify all available emphasis settings are available at \url{http://www.gams.com/~svigerske/scip3.0}.
 
 \subsection{Solution Pool}
 
@@ -130,9 +141,9 @@ If the option \texttt{gams/dumpsolutions} is specified, then all alternative sol
 
 The \GAMS testlib model \href{http://www.gams.com/testlib/libhtml/dumpsol.htm}{\texttt{dumpsol}} shows an example use for this option via GUROBI. It can easily be adapted to be used with \SCIP.
 
-\subsection{Branch-and-Bound tracing}
+\subsection{Solving process tracing}
 
-The option \texttt{gams/miptrace/file} can be used to specify the name of a file where information about the progress of the tree search in \SCIP are stored. The file is created and updated during the solution process, so it may also be used to monitor the progress of \SCIP while it still solves the model.
+The option \texttt{gams/solvetrace/file} can be used to specify the name of a file where information about the progress of the branch-and-bound tree search in \SCIP is stored. The file is created and updated during the solution process, so it may also be used to monitor the progress of \SCIP while it still solves the model.
 
 New entries are written periodically, depending on how many nodes have been processed or how much time has been elapsed since the last entry was written. Each entry contains information on the current primal and dual bound.
 
@@ -154,13 +165,13 @@ New entries are written periodically, depending on how many nodes have been proc
 \subsection{Notes on solving MINLPs with SCIP}
 
 \SCIP includes capabilities to handle nonlinear equations specified that are specified via algebraic expressions.
-Thus, external functions are not supported. Also not all \GAMS operands are supported yet, including trigonometric functions ($\sin$, $\cos$, $\ldots$).
+Thus, external functions are not supported. Further, not all \GAMS operands are supported yet, including trigonometric functions ($\sin$, $\cos$, $\ldots$).
 
-Note, that the support of MINLPs in \SCIP is still a very new feature and thus in a \textbf{BETA} stage.
-Especially for badly formulated models, \SCIP may produce no or wrong solutions.
+%Note, that the support of MINLPs in \SCIP is still a very new feature and thus in a \textbf{BETA} stage.
+%Especially for badly formulated models, \SCIP may produce no or wrong solutions.
 
 Nonconvex MINLPs are solved by \SCIP via a spatial branch-and-bound algorithm using convex relaxations.
-The tightness of a convex relaxation depends heavily on the variable bounds, thus tight bounds for the nonlinear variables are cruicial for \SCIP.
+The tightness of a convex relaxation depends heavily on the variable bounds, thus tight bounds for the nonlinear variables are crucial for \SCIP.
 
 \subsubsection{Special options for convex MINLPs}
 
@@ -180,7 +191,7 @@ separating/poolfreq = 1
 \section{Detailed Options Description}
 
 \SCIP supports a large set of options.
-Sample option files can be obtained from \\ \url{http://www.gams.com/~svigerske/scip2.1}.
+Sample option files can be obtained from \\ \url{http://www.gams.com/~svigerske/scip3.0}.
 
 % Further, there is a set of options that are specific to the \GAMS/\SCIP interface.
 % , most of them for control of the \GAMS BCH facility.

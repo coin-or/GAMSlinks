@@ -12,33 +12,15 @@
 {}
 
 \printoption{gams/interactive}%
-{boolean}%
-{FALSE}%
-{whether a SCIP shell should be opened instead of issuing a solve command}%
+{string}%
+{}%
+{command to be issued to the SCIP shell instead of issuing a solve command}%
 {}
 
 \printoption{gams/mipstart}%
 {boolean}%
 {TRUE}%
 {whether to try GAMS variable level values as initial primal solution}%
-{}
-
-\printoption{gams/miptrace/file}%
-{string}%
-{}%
-{name of file where to write branch-and-bound trace information too}%
-{}
-
-\printoption{gams/miptrace/nodefreq}%
-{$0\leq\textrm{integer}$}%
-{$100$}%
-{frequency in number of nodes when to write branch-and-bound trace information, 0 to disable}%
-{}
-
-\printoption{gams/miptrace/timefreq}%
-{$0\leq\textrm{real}$}%
-{$5$}%
-{frequency in seconds when to write branch-and-bound trace information, 0.0 to disable}%
 {}
 
 \printoption{gams/printstatistics}%
@@ -51,6 +33,24 @@
 {boolean}%
 {TRUE}%
 {whether to resolve MINLP with fixed discrete variables if best solution violates some constraints}%
+{}
+
+\printoption{gams/solvetrace/file}%
+{string}%
+{}%
+{name of file where to write branch-and-bound trace information too}%
+{}
+
+\printoption{gams/solvetrace/nodefreq}%
+{$0\leq\textrm{integer}$}%
+{$100$}%
+{frequency in number of nodes when to write branch-and-bound trace information, 0 to disable}%
+{}
+
+\printoption{gams/solvetrace/timefreq}%
+{$0\leq\textrm{real}$}%
+{$5$}%
+{frequency in seconds when to write branch-and-bound trace information, 0.0 to disable}%
 {}
 
 \printoptioncategory{Branching}
@@ -495,6 +495,12 @@
 {number of depth levels up to which first UIP's are used in conflict analysis (-1: use All-FirstUIP rule)}%
 {}
 
+\printoption{conflict/ignorerelaxedbd}%
+{boolean}%
+{FALSE}%
+{should relaxed bounds be ignored?}%
+{}
+
 \printoption{conflict/indicatorconflict/priority}%
 {$\textrm{integer}$}%
 {$200000$}%
@@ -598,12 +604,6 @@
 {}
 
 \printoptioncategory{Constraints}
-\printoption{constraints/abspower/addvarbounds}%
-{boolean}%
-{TRUE}%
-{should variable bounds be added to the cutpool?}%
-{}
-
 \printoption{constraints/abspower/branchminconverror}%
 {boolean}%
 {FALSE}%
@@ -614,6 +614,12 @@
 {$0\leq\textrm{real}$}%
 {$10^{  7}$}%
 {maximal coef range of a cut (maximal coefficient divided by minimal coefficient) in order to be added to LP relaxation}%
+{}
+
+\printoption{constraints/abspower/dualpresolve}%
+{boolean}%
+{TRUE}%
+{should dual presolve be applied?}%
 {}
 
 \printoption{constraints/abspower/linfeasshift}%
@@ -734,6 +740,18 @@
 {$-1\leq\textrm{integer}$}%
 {$-1$}%
 {frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/indicator/maxsepacuts}%
+{$0\leq\textrm{integer}$}%
+{$100$}%
+{maximal number of cuts separated per separation round}%
+{}
+
+\printoption{constraints/indicator/maxsepacutsroot}%
+{$0\leq\textrm{integer}$}%
+{$2000$}%
+{maximal number of cuts separated per separation round in the root node}%
 {}
 
 \printoption{constraints/indicator/propfreq}%
@@ -1114,6 +1132,18 @@
 {frequency for separating cuts (-1: never, 0: only in root node)}%
 {}
 
+\printoption{constraints/superindicator/propfreq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for propagating domains (-1: never, 0: only in root node)}%
+{}
+
+\printoption{constraints/superindicator/sepafreq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for separating cuts (-1: never, 0: only in root node)}%
+{}
+
 \printoption{constraints/varbound/propfreq}%
 {$-1\leq\textrm{integer}$}%
 {$1$}%
@@ -1126,7 +1156,19 @@
 {frequency for separating cuts (-1: never, 0: only in root node)}%
 {}
 
+\printoption{constraints/varbound/usebdwidening}%
+{boolean}%
+{TRUE}%
+{should bound widening be used in conflict analysis?}%
+{}
+
 \printoptioncategory{Constraints (advanced options)}
+\printoption{constraints/abspower/addvarboundcons}%
+{boolean}%
+{TRUE}%
+{should variable bound constraints be added for derived variable bounds?}%
+{}
+
 \printoption{constraints/abspower/delaypresol}%
 {boolean}%
 {FALSE}%
@@ -1157,6 +1199,12 @@
 {maximal number of presolving rounds the constraint handler participates in (-1: no limit)}%
 {}
 
+\printoption{constraints/abspower/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$15$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
 \printoption{constraints/agelimit}%
 {$-1\leq\textrm{integer}$}%
 {$0$}%
@@ -1185,6 +1233,12 @@
 {boolean}%
 {FALSE}%
 {should separation method be delayed, if other separators found cuts?}%
+{}
+
+\printoption{constraints/and/dualpresolving}%
+{boolean}%
+{TRUE}%
+{should dual presolving be performed?}%
 {}
 
 \printoption{constraints/and/eagerfreq}%
@@ -1223,6 +1277,12 @@
 {should hash table be used for detecting redundant constraints in advance}%
 {}
 
+\printoption{constraints/and/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
 \printoption{constraints/bivariate/cutmaxrange}%
 {$0\leq\textrm{real}$}%
 {$10^{  7}$}%
@@ -1259,6 +1319,12 @@
 {maximal number of presolving rounds the constraint handler participates in (-1: no limit)}%
 {}
 
+\printoption{constraints/bivariate/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
 \printoption{constraints/bounddisjunction/delaypresol}%
 {boolean}%
 {FALSE}%
@@ -1289,6 +1355,12 @@
 {maximal number of presolving rounds the constraint handler participates in (-1: no limit)}%
 {}
 
+\printoption{constraints/bounddisjunction/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
 \printoption{constraints/disableenfops}%
 {boolean}%
 {FALSE}%
@@ -1298,13 +1370,19 @@
 \printoption{constraints/indicator/addcoupling}%
 {boolean}%
 {TRUE}%
-{add initial coupling inequalities}%
+{Add coupling constraints if big-M is small enough?}%
 {}
 
 \printoption{constraints/indicator/addcouplingcons}%
 {boolean}%
 {FALSE}%
-{add initial coupling inequalities as linear constraints, if 'addcoupling' is true}%
+{Add initial coupling inequalities as linear constraints, if 'addcoupling' is true?}%
+{}
+
+\printoption{constraints/indicator/addopposite}%
+{boolean}%
+{FALSE}%
+{Add opposite inequality in nodes in which the binary variable has been fixed to 0?}%
 {}
 
 \printoption{constraints/indicator/branchindicators}%
@@ -1337,6 +1415,12 @@
 {should separation method be delayed, if other separators found cuts?}%
 {}
 
+\printoption{constraints/indicator/dualreductions}%
+{boolean}%
+{TRUE}%
+{should dual reduction steps be performed?}%
+{}
+
 \printoption{constraints/indicator/eagerfreq}%
 {$-1\leq\textrm{integer}$}%
 {$100$}%
@@ -1346,7 +1430,7 @@
 \printoption{constraints/indicator/enforcecuts}%
 {boolean}%
 {FALSE}%
-{in enforcing try to generate cuts (only if sepaalternativelp is true)}%
+{In enforcing try to generate cuts (only if sepaalternativelp is true)?}%
 {}
 
 \printoption{constraints/indicator/forcerestart}%
@@ -1358,7 +1442,7 @@
 \printoption{constraints/indicator/generatebilinear}%
 {boolean}%
 {FALSE}%
-{do not generate indicator constraint, but a bilinear constraint instead}%
+{Do not generate indicator constraint, but a bilinear constraint instead?}%
 {}
 
 \printoption{constraints/indicator/genlogicor}%
@@ -1394,7 +1478,7 @@
 \printoption{constraints/indicator/removeindicators}%
 {boolean}%
 {FALSE}%
-{remove indicator constraint if corresponding variable bound constraint has been added?}%
+{Remove indicator constraint if corresponding variable bound constraint has been added?}%
 {}
 
 \printoption{constraints/indicator/restartfrac}%
@@ -1407,6 +1491,30 @@
 {boolean}%
 {FALSE}%
 {Separate using the alternative LP?}%
+{}
+
+\printoption{constraints/indicator/sepacouplingcuts}%
+{boolean}%
+{FALSE}%
+{Should the coupling inequalities be separated dynamically?}%
+{}
+
+\printoption{constraints/indicator/sepacouplinglocal}%
+{boolean}%
+{FALSE}%
+{Allow to use local bounds in order to separated coupling inequalities?}%
+{}
+
+\printoption{constraints/indicator/sepacouplingvalue}%
+{$0\leq\textrm{real}\leq10^{  9}$}%
+{$10000$}%
+{maximum coefficient for binary variable in separated coupling constraint}%
+{}
+
+\printoption{constraints/indicator/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
 {}
 
 \printoption{constraints/indicator/trysolutions}%
@@ -1447,8 +1555,14 @@
 
 \printoption{constraints/integral/maxprerounds}%
 {$-1\leq\textrm{integer}$}%
-{$-1$}%
+{$0$}%
 {maximal number of presolving rounds the constraint handler participates in (-1: no limit)}%
+{}
+
+\printoption{constraints/integral/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
 {}
 
 \printoption{constraints/knapsack/delaypresol}%
@@ -1525,8 +1639,20 @@
 
 \printoption{constraints/knapsack/simplifyinequalities}%
 {boolean}%
-{FALSE}%
+{TRUE}%
 {should presolving try to simplify knapsacks}%
+{}
+
+\printoption{constraints/knapsack/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
+\printoption{constraints/knapsack/usegubs}%
+{boolean}%
+{FALSE}%
+{should GUB information be used for separation?}%
 {}
 
 \printoption{constraints/linear/aggregatevariables}%
@@ -1609,7 +1735,7 @@
 
 \printoption{constraints/linear/simplifyinequalities}%
 {boolean}%
-{FALSE}%
+{TRUE}%
 {should presolving try to simplify inequalities}%
 {}
 
@@ -1623,6 +1749,12 @@
 {$-1\leq\textrm{integer}$}%
 {$1$}%
 {multiplier on propagation frequency, how often the bounds are tightened (-1: never, 0: only at root)}%
+{}
+
+\printoption{constraints/linear/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
 {}
 
 \printoption{constraints/logicor/delaypresol}%
@@ -1663,7 +1795,7 @@
 
 \printoption{constraints/logicor/negatedclique}%
 {boolean}%
-{FALSE}%
+{TRUE}%
 {should negated clique information be used in presolving}%
 {}
 
@@ -1677,6 +1809,12 @@
 {boolean}%
 {TRUE}%
 {should hash table be used for detecting redundant constraints in advance}%
+{}
+
+\printoption{constraints/logicor/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
 {}
 
 \printoption{constraints/nonlinear/assumeconvex}%
@@ -1733,6 +1871,12 @@
 {minimal efficacy for a cut to be added to the LP during separation; overwrites separating/efficacy}%
 {}
 
+\printoption{constraints/nonlinear/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
 \printoption{constraints/obsoleteage}%
 {$-1\leq\textrm{integer}$}%
 {$-1$}%
@@ -1755,12 +1899,6 @@
 {$0\leq\textrm{real}$}%
 {$10^{  7}$}%
 {maximal coef range of a cut (maximal coefficient divided by minimal coefficient) in order to be added to LP relaxation}%
-{}
-
-\printoption{constraints/quadratic/defaultbound}%
-{$0\leq\textrm{real}$}%
-{$\infty$}%
-{a default bound to impose on unbounded variables in quadratic terms (-defaultbound is used for missing lower bounds)}%
 {}
 
 \printoption{constraints/quadratic/delaypresol}%
@@ -1841,6 +1979,30 @@
 {whether a quadratic constraint should be scaled w.r.t. the current gradient norm when checking for feasibility}%
 {}
 
+\printoption{constraints/quadratic/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
+\printoption{constraints/setppc/addvariablesascliques}%
+{boolean}%
+{FALSE}%
+{should we try to generate extra cliques out of all binary variables to maybe fasten redundant constraint detection}%
+{}
+
+\printoption{constraints/setppc/cliquelifting}%
+{boolean}%
+{FALSE}%
+{ should we try to lift variables into other clique constraints, fix variables, aggregate them, and also shrink the amount of variables in clique constraints}%
+{}
+
+\printoption{constraints/setppc/cliqueshrinking}%
+{boolean}%
+{TRUE}%
+{should we try to shrink the number of variables in a clique constraints, by replacing more than one variable by only one}%
+{}
+
 \printoption{constraints/setppc/delaypresol}%
 {boolean}%
 {FALSE}%
@@ -1893,6 +2055,12 @@
 {boolean}%
 {TRUE}%
 {should hash table be used for detecting redundant constraints in advance}%
+{}
+
+\printoption{constraints/setppc/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
 {}
 
 \printoption{constraints/soc/delaypresol}%
@@ -1955,6 +2123,12 @@
 {growth rate of maximal allowed nonzeros in cuts in sparsification}%
 {}
 
+\printoption{constraints/soc/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
 \printoption{constraints/SOS1/delaypresol}%
 {boolean}%
 {FALSE}%
@@ -1983,6 +2157,12 @@
 {$-1\leq\textrm{integer}$}%
 {$-1$}%
 {maximal number of presolving rounds the constraint handler participates in (-1: no limit)}%
+{}
+
+\printoption{constraints/SOS1/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
 {}
 
 \printoption{constraints/SOS2/delaypresol}%
@@ -2015,6 +2195,72 @@
 {maximal number of presolving rounds the constraint handler participates in (-1: no limit)}%
 {}
 
+\printoption{constraints/SOS2/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
+\printoption{constraints/superindicator/checkslacktype}%
+{boolean}%
+{TRUE}%
+{should type of slack constraint be checked when creating superindicator constraint?}%
+{}
+
+\printoption{constraints/superindicator/delaypresol}%
+{boolean}%
+{FALSE}%
+{should presolving method be delayed, if other presolvers found reductions?}%
+{}
+
+\printoption{constraints/superindicator/delayprop}%
+{boolean}%
+{FALSE}%
+{should propagation method be delayed, if other propagators found reductions?}%
+{}
+
+\printoption{constraints/superindicator/delaysepa}%
+{boolean}%
+{FALSE}%
+{should separation method be delayed, if other separators found cuts?}%
+{}
+
+\printoption{constraints/superindicator/eagerfreq}%
+{$-1\leq\textrm{integer}$}%
+{$100$}%
+{frequency for using all instead of only the useful constraints in separation, propagation and enforcement (-1: never, 0: only in first evaluation)}%
+{}
+
+\printoption{constraints/superindicator/maxprerounds}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of presolving rounds the constraint handler participates in (-1: no limit)}%
+{}
+
+\printoption{constraints/superindicator/maxupgdcoeflinear}%
+{$0\leq\textrm{real}\leq10^{ 15}$}%
+{$10000$}%
+{maximum big-M coefficient of binary variable in upgrade to a linear constraint (relative to smallest coefficient)}%
+{}
+
+\printoption{constraints/superindicator/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
+\printoption{constraints/superindicator/upgdprioindicator}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{priority for upgrading to an indicator constraint (-1: never)}%
+{}
+
+\printoption{constraints/superindicator/upgdpriolinear}%
+{$-1\leq\textrm{integer}$}%
+{$2$}%
+{priority for upgrading to an indicator constraint (-1: never)}%
+{}
+
 \printoption{constraints/varbound/delaypresol}%
 {boolean}%
 {FALSE}%
@@ -2039,6 +2285,12 @@
 {frequency for using all instead of only the useful constraints in separation, propagation and enforcement (-1: never, 0: only in first evaluation)}%
 {}
 
+\printoption{constraints/varbound/maxlpcoef}%
+{$0\leq\textrm{real}$}%
+{$10^{  6}$}%
+{maximum coefficient in varbound constraint to be added as a row into LP}%
+{}
+
 \printoption{constraints/varbound/maxprerounds}%
 {$-1\leq\textrm{integer}$}%
 {$-1$}%
@@ -2049,6 +2301,12 @@
 {boolean}%
 {TRUE}%
 {should pairwise constraint comparison be performed in presolving?}%
+{}
+
+\printoption{constraints/varbound/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$1$}%
+{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
 {}
 
 \printoptioncategory{Output}
@@ -2244,6 +2502,12 @@
 {display activation status of display column $<$primalgap$>$ (0: off, 1: auto, 2:on)}%
 {}
 
+\printoption{display/pseudoobj/active}%
+{$0\leq\textrm{integer}\leq2$}%
+{$1$}%
+{display activation status of display column $<$pseudoobj$>$ (0: off, 1: auto, 2:on)}%
+{}
+
 \printoption{display/separounds/active}%
 {$0\leq\textrm{integer}\leq2$}%
 {$1$}%
@@ -2338,7 +2602,7 @@
 \printoption{heuristics/clique/minfixingrate}%
 {$0\leq\textrm{real}\leq1$}%
 {$0.5$}%
-{minimum percentage of integer variables that have to be fixable }%
+{minimum percentage of integer variables that have to be fixable}%
 {}
 
 \printoption{heuristics/clique/nodesofs}%
@@ -2398,7 +2662,7 @@
 \printoption{heuristics/crossover/minfixingrate}%
 {$0\leq\textrm{real}\leq1$}%
 {$0.666$}%
-{minimum percentage of integer variables that have to be fixed }%
+{minimum percentage of integer variables that have to be fixed}%
 {}
 
 \printoption{heuristics/crossover/nodesofs}%
@@ -2716,7 +2980,7 @@
 \printoption{heuristics/mutation/minfixingrate}%
 {$10^{- 6}\leq\textrm{real}\leq0.999999$}%
 {$0.8$}%
-{percentage of integer variables that have to be fixed }%
+{percentage of integer variables that have to be fixed}%
 {}
 
 \printoption{heuristics/mutation/nodesofs}%
@@ -2729,6 +2993,78 @@
 {$0\leq\textrm{real}\leq1$}%
 {$0.1$}%
 {contingent of sub problem nodes in relation to the number of nodes of the original problem}%
+{}
+
+\printoption{heuristics/nlpdiving/backtrack}%
+{boolean}%
+{TRUE}%
+{use one level of backtracking if infeasibility is encountered?}%
+{}
+
+\printoption{heuristics/nlpdiving/fixquot}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.2$}%
+{percentage of fractional variables that should be fixed before the next NLP solve}%
+{}
+
+\printoption{heuristics/nlpdiving/freq}%
+{$-1\leq\textrm{integer}$}%
+{$10$}%
+{frequency for calling primal heuristic $<$nlpdiving$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/nlpdiving/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$3$}%
+{frequency offset for calling primal heuristic $<$nlpdiving$>$}%
+{}
+
+\printoption{heuristics/nlpdiving/maxfeasnlps}%
+{$1\leq\textrm{integer}$}%
+{$10$}%
+{maximal number of NLPs with feasible solution to solve during one dive}%
+{}
+
+\printoption{heuristics/nlpdiving/maxnlpiterabs}%
+{$0\leq\textrm{integer}$}%
+{$200$}%
+{minimial absolute number of allowed NLP iterations}%
+{}
+
+\printoption{heuristics/nlpdiving/maxnlpiterrel}%
+{$0\leq\textrm{integer}$}%
+{$10$}%
+{additional allowed number of NLP iterations relative to successfully found solutions}%
+{}
+
+\printoption{heuristics/nlpdiving/minsuccquot}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.1$}%
+{heuristic will not run if less then this percentage of calls succeeded (0.0: no limit)}%
+{}
+
+\printoption{heuristics/nlpdiving/nlpfastfail}%
+{boolean}%
+{TRUE}%
+{should the NLP solver stop early if it converges slow?}%
+{}
+
+\printoption{heuristics/nlpdiving/prefercover}%
+{boolean}%
+{TRUE}%
+{should variables in a minimal cover be preferred?}%
+{}
+
+\printoption{heuristics/nlpdiving/solvesubmip}%
+{boolean}%
+{FALSE}%
+{should a sub-MIP be solved if all cover variables are fixed?}%
+{}
+
+\printoption{heuristics/nlpdiving/varselrule}%
+{character}%
+{d}%
+{which variable selection should be used? ('f'ractionality, 'c'oefficient, 'p'seudocost, 'g'uided, 'd'ouble, 'v'eclen)}%
 {}
 
 \printoption{heuristics/objpscostdiving/freq}%
@@ -2824,7 +3160,7 @@
 \printoption{heuristics/rens/minfixingrate}%
 {$0\leq\textrm{real}\leq1$}%
 {$0.5$}%
-{minimum percentage of integer variables that have to be fixable }%
+{minimum percentage of integer variables that have to be fixable}%
 {}
 
 \printoption{heuristics/rens/nodesofs}%
@@ -2860,7 +3196,7 @@
 \printoption{heuristics/rins/minfixingrate}%
 {$0\leq\textrm{real}\leq1$}%
 {$0$}%
-{minimum percentage of integer variables that have to be fixed }%
+{minimum percentage of integer variables that have to be fixed}%
 {}
 
 \printoption{heuristics/rins/nodesofs}%
@@ -3082,7 +3418,7 @@
 \printoption{heuristics/undercover/postnlp}%
 {boolean}%
 {TRUE}%
-{should the nlp heuristic be called to polish a feasible solution?}%
+{should the NLP heuristic be called to polish a feasible solution?}%
 {}
 
 \printoption{heuristics/vbounds/freq}%
@@ -3100,7 +3436,7 @@
 \printoption{heuristics/vbounds/minfixingrate}%
 {$0\leq\textrm{real}\leq1$}%
 {$0.5$}%
-{minimum percentage of integer variables that have to be fixable }%
+{minimum percentage of integer variables that have to be fixable}%
 {}
 
 \printoption{heuristics/vbounds/nodesofs}%
@@ -3143,6 +3479,30 @@
 {$0\leq\textrm{real}$}%
 {$0.05$}%
 {maximal fraction of diving LP iterations compared to node LP iterations}%
+{}
+
+\printoption{heuristics/zeroobj/freq}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{frequency for calling primal heuristic $<$zeroobj$>$ (-1: never, 0: only at depth freqofs)}%
+{}
+
+\printoption{heuristics/zeroobj/freqofs}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{frequency offset for calling primal heuristic $<$zeroobj$>$}%
+{}
+
+\printoption{heuristics/zeroobj/nodesofs}%
+{$0\leq\textrm{integer}$}%
+{$100$}%
+{number of nodes added to the contingent of the total nodes}%
+{}
+
+\printoption{heuristics/zeroobj/nodesquot}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.1$}%
+{contingent of sub problem nodes in relation to the number of nodes of the original problem}%
 {}
 
 \printoption{heuristics/zirounding/freq}%
@@ -3215,7 +3575,7 @@
 \printoption{heuristics/clique/initseed}%
 {$0\leq\textrm{integer}$}%
 {$0$}%
-{initial random seed value to permutate variables }%
+{initial random seed value to permutate variables}%
 {}
 
 \printoption{heuristics/clique/maxdepth}%
@@ -3239,7 +3599,7 @@
 \printoption{heuristics/clique/minimprove}%
 {$0\leq\textrm{real}\leq1$}%
 {$0.01$}%
-{factor by which clique heuristic should at least improve the incumbent  }%
+{factor by which clique heuristic should at least improve the incumbent}%
 {}
 
 \printoption{heuristics/clique/minnodes}%
@@ -3350,6 +3710,12 @@
 {number of nodes without incumbent change that heuristic should wait}%
 {}
 
+\printoption{heuristics/crossover/permute}%
+{boolean}%
+{FALSE}%
+{should the subproblem be permuted to increase diversification?}%
+{}
+
 \printoption{heuristics/crossover/priority}%
 {$-536870912\leq\textrm{integer}\leq536870911$}%
 {$-1104000$}%
@@ -3389,7 +3755,7 @@
 \printoption{heuristics/dins/minimprove}%
 {$0\leq\textrm{real}\leq1$}%
 {$0.01$}%
-{factor by which dins should at least improve the incumbent  }%
+{factor by which dins should at least improve the incumbent}%
 {}
 
 \printoption{heuristics/dins/nwaitingnodes}%
@@ -3436,7 +3802,7 @@
 
 \printoption{heuristics/feaspump/maxsols}%
 {$-1\leq\textrm{integer}$}%
-{$2$}%
+{$10$}%
 {total number of feasible solutions found up to which heuristic is called (-1: no limit)}%
 {}
 
@@ -3701,7 +4067,7 @@
 \printoption{heuristics/localbranching/minimprove}%
 {$0\leq\textrm{real}\leq1$}%
 {$0.01$}%
-{factor by which localbranching should at least improve the incumbent  }%
+{factor by which localbranching should at least improve the incumbent}%
 {}
 
 \printoption{heuristics/localbranching/minnodes}%
@@ -3774,6 +4140,72 @@
 {boolean}%
 {FALSE}%
 {should subproblem be created out of the rows in the LP rows?}%
+{}
+
+\printoption{heuristics/nlpdiving/lp}%
+{boolean}%
+{FALSE}%
+{should the LP relaxation be solved before the NLP relaxation?}%
+{}
+
+\printoption{heuristics/nlpdiving/maxdepth}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal depth level to call primal heuristic $<$nlpdiving$>$ (-1: no limit)}%
+{}
+
+\printoption{heuristics/nlpdiving/maxdiveavgquot}%
+{$0\leq\textrm{real}$}%
+{$0$}%
+{maximal quotient (curlowerbound - lowerbound)/(avglowerbound - lowerbound) where diving is performed (0.0: no limit)}%
+{}
+
+\printoption{heuristics/nlpdiving/maxdiveavgquotnosol}%
+{$0\leq\textrm{real}$}%
+{$0$}%
+{maximal AVGQUOT when no solution was found yet (0.0: no limit)}%
+{}
+
+\printoption{heuristics/nlpdiving/maxdiveubquot}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.8$}%
+{maximal quotient (curlowerbound - lowerbound)/(cutoffbound - lowerbound) where diving is performed (0.0: no limit)}%
+{}
+
+\printoption{heuristics/nlpdiving/maxdiveubquotnosol}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.1$}%
+{maximal UBQUOT when no solution was found yet (0.0: no limit)}%
+{}
+
+\printoption{heuristics/nlpdiving/maxreldepth}%
+{$0\leq\textrm{real}\leq1$}%
+{$1$}%
+{maximal relative depth to start diving}%
+{}
+
+\printoption{heuristics/nlpdiving/minreldepth}%
+{$0\leq\textrm{real}\leq1$}%
+{$0$}%
+{minimal relative depth to start diving}%
+{}
+
+\printoption{heuristics/nlpdiving/nlpstart}%
+{character}%
+{s}%
+{which point should be used as starting point for the NLP solver? ('n'one, last 'f'easible, from dive's'tart)}%
+{}
+
+\printoption{heuristics/nlpdiving/preferlpfracs}%
+{boolean}%
+{FALSE}%
+{prefer variables that are also fractional in LP solution?}%
+{}
+
+\printoption{heuristics/nlpdiving/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$-1003000$}%
+{priority of heuristic $<$nlpdiving$>$}%
 {}
 
 \printoption{heuristics/objpscostdiving/depthfac}%
@@ -3869,7 +4301,7 @@
 \printoption{heuristics/octane/usefracspace}%
 {boolean}%
 {TRUE}%
-{execute OCTANE only in the space of fractional variables (TRUE) or in the full space? }%
+{execute OCTANE only in the space of fractional variables (TRUE) or in the full space?}%
 {}
 
 \printoption{heuristics/octane/useobjray}%
@@ -3878,10 +4310,22 @@
 {should the inner normal of the objective be used as one ray direction?}%
 {}
 
+\printoption{heuristics/oneopt/beforepresol}%
+{boolean}%
+{FALSE}%
+{should the heuristic be called before presolving?}%
+{}
+
 \printoption{heuristics/oneopt/duringroot}%
 {boolean}%
 {TRUE}%
 {should the heuristic be called before and during the root node?}%
+{}
+
+\printoption{heuristics/oneopt/forcelpconstruction}%
+{boolean}%
+{FALSE}%
+{should the construction of the LP be forced even if LP solving is deactivated?}%
 {}
 
 \printoption{heuristics/oneopt/maxdepth}%
@@ -3950,6 +4394,12 @@
 {priority of heuristic $<$pscostdiving$>$}%
 {}
 
+\printoption{heuristics/rens/addallsols}%
+{boolean}%
+{FALSE}%
+{should all subproblem solutions be added to the original SCIP?}%
+{}
+
 \printoption{heuristics/rens/binarybounds}%
 {boolean}%
 {TRUE}%
@@ -3960,6 +4410,18 @@
 {boolean}%
 {TRUE}%
 {if uselprows == FALSE, should all active cuts from cutpool be copied to constraints in subproblem?}%
+{}
+
+\printoption{heuristics/rens/extratime}%
+{boolean}%
+{FALSE}%
+{should the RENS sub-CIP get its own full time limit? This is only for tesing and not recommended!}%
+{}
+
+\printoption{heuristics/rens/fullscale}%
+{boolean}%
+{FALSE}%
+{should the RENS sub-CIP be solved with cuts, conflicts, strong branching,... This is only for tesing and not recommended!}%
 {}
 
 \printoption{heuristics/rens/maxdepth}%
@@ -3977,7 +4439,7 @@
 \printoption{heuristics/rens/minimprove}%
 {$0\leq\textrm{real}\leq1$}%
 {$0.01$}%
-{factor by which RENS should at least improve the incumbent  }%
+{factor by which RENS should at least improve the incumbent}%
 {}
 
 \printoption{heuristics/rens/minnodes}%
@@ -4100,6 +4562,12 @@
 {maximal depth level to call primal heuristic $<$rounding$>$ (-1: no limit)}%
 {}
 
+\printoption{heuristics/rounding/oncepernode}%
+{boolean}%
+{FALSE}%
+{should the heuristic only be called once per node?}%
+{}
+
 \printoption{heuristics/rounding/priority}%
 {$-536870912\leq\textrm{integer}\leq536870911$}%
 {$-1000$}%
@@ -4182,6 +4650,12 @@
 {$-1\leq\textrm{integer}$}%
 {$-1$}%
 {maximal depth level to call primal heuristic $<$simplerounding$>$ (-1: no limit)}%
+{}
+
+\printoption{heuristics/simplerounding/oncepernode}%
+{boolean}%
+{FALSE}%
+{should the heuristic only be called once per node?}%
 {}
 
 \printoption{heuristics/simplerounding/priority}%
@@ -4316,10 +4790,16 @@
 {should all active cuts from cutpool be copied to constraints in subproblem?}%
 {}
 
+\printoption{heuristics/undercover/coverbd}%
+{boolean}%
+{FALSE}%
+{should bounddisjunction constraints be covered (or just copied)?}%
+{}
+
 \printoption{heuristics/undercover/coveringobj}%
 {character}%
 {u}%
-{objective function of the covering problem ('b'ranching status, influenced nonlinear 'c'onstraints/'t'erms, 'd'omain size, 'l'ocks, 'm'in of up/down locks, 'u'nit penalties, constraint 'v'iolation)}%
+{objective function of the covering problem (influenced nonlinear 'c'onstraints/'t'erms, 'd'omain size, 'l'ocks, 'm'in of up/down locks, 'u'nit penalties)}%
 {}
 
 \printoption{heuristics/undercover/cutoffweight}%
@@ -4358,7 +4838,13 @@
 {maximum number of backtracks in fix-and-propagate}%
 {}
 
-\printoption{heuristics/undercover/maxcoversize}%
+\printoption{heuristics/undercover/maxcoversizeconss}%
+{$0\leq\textrm{real}$}%
+{$\infty$}%
+{maximum coversize maximum coversize (as ratio to the percentage of non-affected constraints)}%
+{}
+
+\printoption{heuristics/undercover/maxcoversizevars}%
 {$0\leq\textrm{real}\leq1$}%
 {$1$}%
 {maximum coversize (as fraction of total number of variables)}%
@@ -4388,6 +4874,18 @@
 {maximum number of reorderings of the fixing order}%
 {}
 
+\printoption{heuristics/undercover/mincoveredabs}%
+{$0\leq\textrm{integer}$}%
+{$5$}%
+{minimum number of nonlinear constraints in the original problem}%
+{}
+
+\printoption{heuristics/undercover/mincoveredrel}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.15$}%
+{minimum percentage of nonlinear constraints in the original problem}%
+{}
+
 \printoption{heuristics/undercover/minimprove}%
 {$-1\leq\textrm{real}\leq1$}%
 {$0$}%
@@ -4410,6 +4908,12 @@
 {$0\leq\textrm{real}\leq1$}%
 {$0.9$}%
 {fraction of covering variables in the last cover which need to change their value when recovering}%
+{}
+
+\printoption{heuristics/undercover/reusecover}%
+{boolean}%
+{FALSE}%
+{shall the cover be reused if a conflict was added after an infeasible subproblem?}%
 {}
 
 \printoption{heuristics/vbounds/copycuts}%
@@ -4439,7 +4943,7 @@
 \printoption{heuristics/vbounds/minimprove}%
 {$0\leq\textrm{real}\leq1$}%
 {$0.01$}%
-{factor by which vbounds heuristic should at least improve the incumbent  }%
+{factor by which vbounds heuristic should at least improve the incumbent}%
 {}
 
 \printoption{heuristics/vbounds/minnodes}%
@@ -4500,6 +5004,54 @@
 {$-536870912\leq\textrm{integer}\leq536870911$}%
 {$-1003100$}%
 {priority of heuristic $<$veclendiving$>$}%
+{}
+
+\printoption{heuristics/zeroobj/addallsols}%
+{boolean}%
+{FALSE}%
+{should all subproblem solutions be added to the original SCIP?}%
+{}
+
+\printoption{heuristics/zeroobj/maxdepth}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{maximal depth level to call primal heuristic $<$zeroobj$>$ (-1: no limit)}%
+{}
+
+\printoption{heuristics/zeroobj/maxlpiters}%
+{$-1\leq\textrm{integer}$}%
+{$5000$}%
+{maximum number of LP iterations to be performed in the subproblem}%
+{}
+
+\printoption{heuristics/zeroobj/maxnodes}%
+{$0\leq\textrm{integer}$}%
+{$1000$}%
+{maximum number of nodes to regard in the subproblem}%
+{}
+
+\printoption{heuristics/zeroobj/minimprove}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.01$}%
+{factor by which zeroobj should at least improve the incumbent}%
+{}
+
+\printoption{heuristics/zeroobj/minnodes}%
+{$0\leq\textrm{integer}$}%
+{$100$}%
+{minimum number of nodes required to start the subproblem}%
+{}
+
+\printoption{heuristics/zeroobj/onlywithoutsol}%
+{boolean}%
+{TRUE}%
+{should heuristic only be executed if no primal solution was found, yet?}%
+{}
+
+\printoption{heuristics/zeroobj/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$100$}%
+{priority of heuristic $<$zeroobj$>$}%
 {}
 
 \printoption{heuristics/zirounding/maxdepth}%
@@ -4605,6 +5157,12 @@
 {maximal time in seconds to run}%
 {}
 
+\printoption{limits/totalnodes}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of total nodes (incl. restarts) to process (-1: no limit)}%
+{}
+
 \printoptioncategory{LP}
 \printoption{lp/initalgorithm}%
 {character}%
@@ -4697,6 +5255,12 @@
 {should the buffers for storing LP solution values during diving be freed at end of diving?}%
 {}
 
+\printoption{lp/iterlim}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{iteration limit for each single LP solve (-1: no limit)}%
+{}
+
 \printoption{lp/lexdualalgo}%
 {boolean}%
 {FALSE}%
@@ -4749,6 +5313,12 @@
 {boolean}%
 {FALSE}%
 {should the LP be resolved to restore the state at start of diving (if FALSE we buffer the solution values)?}%
+{}
+
+\printoption{lp/rootiterlim}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{iteration limit for initial root LP solve (-1: no limit)}%
 {}
 
 \printoption{lp/rowagelimit}%
@@ -4826,6 +5396,12 @@
 {should the CTRL-C interrupt be caught by SCIP?}%
 {}
 
+\printoption{misc/estimexternmem}%
+{boolean}%
+{TRUE}%
+{should the usage of external memory be estimated?}%
+{}
+
 \printoption{misc/improvingsols}%
 {boolean}%
 {FALSE}%
@@ -4848,6 +5424,12 @@
 {boolean}%
 {TRUE}%
 {should the statistics be reseted if the transformed problem is freed (in case of a benders decomposition this parameter should be set to FALSE)}%
+{}
+
+\printoption{misc/transorigsols}%
+{boolean}%
+{TRUE}%
+{should SCIP try to transfer original solutions to the extended space (after presolving)?}%
 {}
 
 \printoption{misc/useconstable}%
@@ -4891,6 +5473,12 @@
 {$0\leq\textrm{integer}$}%
 {$10$}%
 {frequency at which the best node instead of the best estimate is selected (0: never)}%
+{}
+
+\printoption{nodeselection/estimate/breadthfirstdepth}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{depth until breadth-fisrt search is applied}%
 {}
 
 \printoption{nodeselection/estimate/stdpriority}%
@@ -5023,7 +5611,7 @@
 \printoptioncategory{Tolerances}
 \printoption{numerics/dualfeastol}%
 {$10^{-17}\leq\textrm{real}\leq0.001$}%
-{$10^{- 9}$}%
+{$10^{- 6}$}%
 {feasibility tolerance for reduced costs in LP solution}%
 {}
 
@@ -5037,6 +5625,12 @@
 {$10^{-17}\leq\textrm{real}\leq0.001$}%
 {$10^{- 6}$}%
 {feasibility tolerance for constraints}%
+{}
+
+\printoption{numerics/lpfeastol}%
+{$10^{-17}\leq\textrm{real}\leq0.001$}%
+{$10^{- 6}$}%
+{primal feasibility tolerance of LP solver}%
 {}
 
 \printoption{numerics/sumepsilon}%
@@ -5058,6 +5652,12 @@
 {minimal relative improve for strengthening bounds}%
 {}
 
+\printoption{numerics/hugeval}%
+{$0\leq\textrm{real}$}%
+{$10^{ 15}$}%
+{values larger than this are considered huge and should be handled separately (e.g., in activity computation)}%
+{}
+
 \printoption{numerics/pseudocostdelta}%
 {$0\leq\textrm{real}$}%
 {$0.0001$}%
@@ -5070,6 +5670,12 @@
 {minimal variable distance value to use for branching pseudo cost updates}%
 {}
 
+\printoption{numerics/recomputefac}%
+{$0\leq\textrm{real}$}%
+{$10^{  7}$}%
+{minimal decrease factor that causes the recomputation of a value (e.g., pseudo objective) instead of an update}%
+{}
+
 \printoptioncategory{Presolving}
 \printoption{presolving/boundshift/maxrounds}%
 {$-1\leq\textrm{integer}$}%
@@ -5077,7 +5683,61 @@
 {maximal number of presolving rounds the presolver participates in (-1: no limit)}%
 {}
 
+\printoption{presolving/components/intfactor}%
+{$0\leq\textrm{real}$}%
+{$1$}%
+{the weight of an integer variable compared to binary variables}%
+{}
+
+\printoption{presolving/components/maxintvars}%
+{$-1\leq\textrm{integer}$}%
+{$500$}%
+{maximum number of integer (or binary) variables to solve a subproblem directly (-1: unlimited)}%
+{}
+
+\printoption{presolving/components/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of presolving rounds the presolver participates in (-1: no limit)}%
+{}
+
+\printoption{presolving/components/nodelimit}%
+{$-1\leq\textrm{integer}$}%
+{$10000$}%
+{maximum number of nodes to be solved in subproblems}%
+{}
+
+\printoption{presolving/components/reldecrease}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.2$}%
+{percentage by which the number of variables has to be decreased after the last component solving to allow running again (1.0: do not run again)}%
+{}
+
+\printoption{presolving/components/writeproblems}%
+{boolean}%
+{FALSE}%
+{should the single components be written as an .lp-file?}%
+{}
+
+\printoption{presolving/convertinttobin/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{maximal number of presolving rounds the presolver participates in (-1: no limit)}%
+{}
+
+\printoption{presolving/domcol/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of presolving rounds the presolver participates in (-1: no limit)}%
+{}
+
 \printoption{presolving/dualfix/maxrounds}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of presolving rounds the presolver participates in (-1: no limit)}%
+{}
+
+\printoption{presolving/gateextraction/maxrounds}%
 {$-1\leq\textrm{integer}$}%
 {$-1$}%
 {maximal number of presolving rounds the presolver participates in (-1: no limit)}%
@@ -5150,6 +5810,60 @@
 {priority of presolver $<$boundshift$>$}%
 {}
 
+\printoption{presolving/components/delay}%
+{boolean}%
+{TRUE}%
+{should presolver be delayed, if other presolvers found reductions?}%
+{}
+
+\printoption{presolving/components/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$-9200000$}%
+{priority of presolver $<$components$>$}%
+{}
+
+\printoption{presolving/convertinttobin/delay}%
+{boolean}%
+{FALSE}%
+{should presolver be delayed, if other presolvers found reductions?}%
+{}
+
+\printoption{presolving/convertinttobin/maxdomainsize}%
+{$0\leq\textrm{integer}$}%
+{$\infty$}%
+{absolute value of maximum domain size for converting an integer variable to binaries variables}%
+{}
+
+\printoption{presolving/convertinttobin/onlypoweroftwo}%
+{boolean}%
+{FALSE}%
+{should only integer variables with a domain size of 2\^p - 1 be converted(, there we don't need an knapsack-constraint for restricting the sum of the binaries)}%
+{}
+
+\printoption{presolving/convertinttobin/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$6000000$}%
+{priority of presolver $<$convertinttobin$>$}%
+{}
+
+\printoption{presolving/convertinttobin/samelocksinbothdirections}%
+{boolean}%
+{FALSE}%
+{should only integer variables with uplocks equals downlocks be converted}%
+{}
+
+\printoption{presolving/domcol/delay}%
+{boolean}%
+{TRUE}%
+{should presolver be delayed, if other presolvers found reductions?}%
+{}
+
+\printoption{presolving/domcol/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$20000000$}%
+{priority of presolver $<$domcol$>$}%
+{}
+
 \printoption{presolving/donotaggr}%
 {boolean}%
 {FALSE}%
@@ -5172,6 +5886,36 @@
 {$-536870912\leq\textrm{integer}\leq536870911$}%
 {$8000000$}%
 {priority of presolver $<$dualfix$>$}%
+{}
+
+\printoption{presolving/gateextraction/delay}%
+{boolean}%
+{TRUE}%
+{should presolver be delayed, if other presolvers found reductions?}%
+{}
+
+\printoption{presolving/gateextraction/onlysetpart}%
+{boolean}%
+{FALSE}%
+{should we only try to extract set-partitioning constraints and no and-constraints}%
+{}
+
+\printoption{presolving/gateextraction/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$1000000$}%
+{priority of presolver $<$gateextraction$>$}%
+{}
+
+\printoption{presolving/gateextraction/searchequations}%
+{boolean}%
+{TRUE}%
+{should we try to extract set-partitioning constraint out of one logicor and one corresponding set-packing constraint}%
+{}
+
+\printoption{presolving/gateextraction/sorting}%
+{$-1\leq\textrm{integer}\leq1$}%
+{$1$}%
+{order logicor contraints to extract big-gates before smaller ones (-1), do not order them (0) or order them to extract smaller gates at first (1)}%
 {}
 
 \printoption{presolving/immrestartfac}%
@@ -5241,6 +5985,18 @@
 {should propagation be aborted immediately? setting this to FALSE could help conflict analysis to produce more conflict constraints}%
 {}
 
+\printoption{propagating/genvbounds/freq}%
+{$-1\leq\textrm{integer}$}%
+{$1$}%
+{frequency for calling propagator $<$genvbounds$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{propagating/genvbounds/maxprerounds}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of presolving rounds the propagator participates in (-1: no limit)}%
+{}
+
 \printoption{propagating/maxrounds}%
 {$-1\leq\textrm{integer}$}%
 {$100$}%
@@ -5251,6 +6007,30 @@
 {$-1\leq\textrm{integer}$}%
 {$1000$}%
 {maximal number of propagation rounds in the root node (-1: unlimited)}%
+{}
+
+\printoption{propagating/obbt/freq}%
+{$-1\leq\textrm{integer}$}%
+{$0$}%
+{frequency for calling propagator $<$obbt$>$ (-1: never, 0: only in root node)}%
+{}
+
+\printoption{propagating/obbt/itlimitfactor}%
+{$\textrm{real}$}%
+{$5$}%
+{multiple of root node LP iterations used as total LP iteration limit for obbt ($<$= 0: no limit )}%
+{}
+
+\printoption{propagating/obbt/maxlookahead}%
+{$-1\leq\textrm{integer}$}%
+{$3$}%
+{maximal number of bounds evaluated without success per group (-1: no limit)}%
+{}
+
+\printoption{propagating/obbt/maxprerounds}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal number of presolving rounds the propagator participates in (-1: no limit)}%
 {}
 
 \printoption{propagating/probing/freq}%
@@ -5297,8 +6077,14 @@
 
 \printoption{propagating/redcost/maxprerounds}%
 {$-1\leq\textrm{integer}$}%
-{$0$}%
+{$-1$}%
 {maximal number of presolving rounds the propagator participates in (-1: no limit)}%
+{}
+
+\printoption{propagating/redcost/useimplics}%
+{boolean}%
+{TRUE}%
+{should implications be used to strength the reduced cost for binary variables?}%
 {}
 
 \printoption{propagating/rootredcost/freq}%
@@ -5309,8 +6095,14 @@
 
 \printoption{propagating/rootredcost/maxprerounds}%
 {$-1\leq\textrm{integer}$}%
-{$0$}%
+{$-1$}%
 {maximal number of presolving rounds the propagator participates in (-1: no limit)}%
+{}
+
+\printoption{propagating/vbounds/dotoposort}%
+{boolean}%
+{TRUE}%
+{should the bounds be topologically sorted in advance?}%
 {}
 
 \printoption{propagating/vbounds/freq}%
@@ -5321,8 +6113,14 @@
 
 \printoption{propagating/vbounds/maxprerounds}%
 {$-1\leq\textrm{integer}$}%
-{$0$}%
+{$-1$}%
 {maximal number of presolving rounds the propagator participates in (-1: no limit)}%
+{}
+
+\printoption{propagating/vbounds/sortcliques}%
+{boolean}%
+{FALSE}%
+{should cliques be regarded for the topological sort?}%
 {}
 
 \printoption{propagating/vbounds/usebdwidening}%
@@ -5331,11 +6129,113 @@
 {should bound widening be used to initialize conflict analysis?}%
 {}
 
+\printoption{propagating/vbounds/usecliques}%
+{boolean}%
+{FALSE}%
+{should cliques be propagated?}%
+{}
+
+\printoption{propagating/vbounds/useimplics}%
+{boolean}%
+{FALSE}%
+{should implications be propagated?}%
+{}
+
+\printoption{propagating/vbounds/usevbounds}%
+{boolean}%
+{TRUE}%
+{should vbounds be propagated?}%
+{}
+
 \printoptioncategory{Domain Propagation (advanced options)}
+\printoption{propagating/genvbounds/delay}%
+{boolean}%
+{FALSE}%
+{should propagator be delayed, if other propagators found reductions?}%
+{}
+
+\printoption{propagating/genvbounds/presoldelay}%
+{boolean}%
+{FALSE}%
+{should presolving be delayed, if other presolvers found reductions?}%
+{}
+
+\printoption{propagating/genvbounds/presolpriority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$-2000000$}%
+{presolving priority of propagator $<$genvbounds$>$}%
+{}
+
+\printoption{propagating/genvbounds/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$-10$}%
+{priority of propagator $<$genvbounds$>$}%
+{}
+
+\printoption{propagating/genvbounds/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$15$}%
+{timing when propagator should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
+\printoption{propagating/obbt/creategenvbounds}%
+{boolean}%
+{TRUE}%
+{should obbt try to provide genvbounds if possible?}%
+{}
+
+\printoption{propagating/obbt/delay}%
+{boolean}%
+{TRUE}%
+{should propagator be delayed, if other propagators found reductions?}%
+{}
+
+\printoption{propagating/obbt/minfilter}%
+{$1\leq\textrm{integer}$}%
+{$2$}%
+{minimal number of filtered bounds to apply another filter round}%
+{}
+
+\printoption{propagating/obbt/normalize}%
+{boolean}%
+{TRUE}%
+{should coefficients in filtering be normalized w.r.t. the domains sizes?}%
+{}
+
+\printoption{propagating/obbt/presoldelay}%
+{boolean}%
+{FALSE}%
+{should presolving be delayed, if other presolvers found reductions?}%
+{}
+
+\printoption{propagating/obbt/presolpriority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$0$}%
+{presolving priority of propagator $<$obbt$>$}%
+{}
+
+\printoption{propagating/obbt/priority}%
+{$-536870912\leq\textrm{integer}\leq536870911$}%
+{$-1000000$}%
+{priority of propagator $<$obbt$>$}%
+{}
+
+\printoption{propagating/obbt/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$4$}%
+{timing when propagator should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
 \printoption{propagating/probing/delay}%
 {boolean}%
 {TRUE}%
 {should propagator be delayed, if other propagators found reductions?}%
+{}
+
+\printoption{propagating/probing/maxdepth}%
+{$-1\leq\textrm{integer}$}%
+{$-1$}%
+{maximal depth until propagation is executed(-1: no limit)}%
 {}
 
 \printoption{propagating/probing/maxfixings}%
@@ -5365,7 +6265,7 @@
 \printoption{propagating/probing/presoldelay}%
 {boolean}%
 {TRUE}%
-{should presolver be delayed, if other propagators found reductions?}%
+{should presolving be delayed, if other presolvers found reductions?}%
 {}
 
 \printoption{propagating/probing/presolpriority}%
@@ -5386,6 +6286,12 @@
 {maximal number of propagation rounds in probing subproblems (-1: no limit, 0: auto)}%
 {}
 
+\printoption{propagating/probing/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$4$}%
+{timing when propagator should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
 \printoption{propagating/pseudoobj/delay}%
 {boolean}%
 {FALSE}%
@@ -5396,6 +6302,12 @@
 {boolean}%
 {FALSE}%
 {should the propagator be forced even active pricer are present?}%
+{}
+
+\printoption{propagating/pseudoobj/maximplvars}%
+{$-1\leq\textrm{integer}$}%
+{$50000$}%
+{maximum number of binary variables the implications are used if turned on (-1: unlimited)?}%
 {}
 
 \printoption{propagating/pseudoobj/maxnewvars}%
@@ -5419,7 +6331,7 @@
 \printoption{propagating/pseudoobj/presoldelay}%
 {boolean}%
 {TRUE}%
-{should presolver be delayed, if other propagators found reductions?}%
+{should presolving be delayed, if other presolvers found reductions?}%
 {}
 
 \printoption{propagating/pseudoobj/presolpriority}%
@@ -5430,7 +6342,7 @@
 
 \printoption{propagating/pseudoobj/priority}%
 {$-536870912\leq\textrm{integer}\leq536870911$}%
-{$100000$}%
+{$3000000$}%
 {priority of propagator $<$pseudoobj$>$}%
 {}
 
@@ -5443,7 +6355,25 @@
 \printoption{propagating/pseudoobj/propfullinroot}%
 {boolean}%
 {TRUE}%
-{do we want to propagate full if we are propagating the root node, despite the number of maxcand}%
+{do we want to propagate all none binary variables if we are propagating the root node}%
+{}
+
+\printoption{propagating/pseudoobj/propuseimplics}%
+{boolean}%
+{TRUE}%
+{use implications to strengthen the propagation of binary variable (increasing the objective change)?}%
+{}
+
+\printoption{propagating/pseudoobj/respropuseimplics}%
+{boolean}%
+{TRUE}%
+{use implications to strengthen the resolve propagation of binary variable (increasing the objective change)?}%
+{}
+
+\printoption{propagating/pseudoobj/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$5$}%
+{timing when propagator should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
 {}
 
 \printoption{propagating/redcost/delay}%
@@ -5454,8 +6384,8 @@
 
 \printoption{propagating/redcost/presoldelay}%
 {boolean}%
-{TRUE}%
-{should presolver be delayed, if other propagators found reductions?}%
+{FALSE}%
+{should presolving be delayed, if other presolvers found reductions?}%
 {}
 
 \printoption{propagating/redcost/presolpriority}%
@@ -5466,8 +6396,14 @@
 
 \printoption{propagating/redcost/priority}%
 {$-536870912\leq\textrm{integer}\leq536870911$}%
-{$10000000$}%
+{$1000000$}%
 {priority of propagator $<$redcost$>$}%
+{}
+
+\printoption{propagating/redcost/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$2$}%
+{timing when propagator should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
 {}
 
 \printoption{propagating/rootredcost/delay}%
@@ -5478,8 +6414,8 @@
 
 \printoption{propagating/rootredcost/presoldelay}%
 {boolean}%
-{TRUE}%
-{should presolver be delayed, if other propagators found reductions?}%
+{FALSE}%
+{should presolving be delayed, if other presolvers found reductions?}%
 {}
 
 \printoption{propagating/rootredcost/presolpriority}%
@@ -5490,8 +6426,14 @@
 
 \printoption{propagating/rootredcost/priority}%
 {$-536870912\leq\textrm{integer}\leq536870911$}%
-{$1000000$}%
+{$10000000$}%
 {priority of propagator $<$rootredcost$>$}%
+{}
+
+\printoption{propagating/rootredcost/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$5$}%
+{timing when propagator should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
 {}
 
 \printoption{propagating/vbounds/delay}%
@@ -5502,8 +6444,8 @@
 
 \printoption{propagating/vbounds/presoldelay}%
 {boolean}%
-{TRUE}%
-{should presolver be delayed, if other propagators found reductions?}%
+{FALSE}%
+{should presolving be delayed, if other presolvers found reductions?}%
 {}
 
 \printoption{propagating/vbounds/presolpriority}%
@@ -5514,15 +6456,21 @@
 
 \printoption{propagating/vbounds/priority}%
 {$-536870912\leq\textrm{integer}\leq536870911$}%
-{$2000000$}%
+{$3000000$}%
 {priority of propagator $<$vbounds$>$}%
+{}
+
+\printoption{propagating/vbounds/timingmask}%
+{$1\leq\textrm{integer}\leq15$}%
+{$5$}%
+{timing when propagator should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
 {}
 
 \printoptioncategory{Separation}
 \printoption{separating/cgmip/addviolationcons}%
 {boolean}%
-{TRUE}%
-{add constraint to subscip that only allows violated cuts?}%
+{FALSE}%
+{add constraint to subscip that only allows violated cuts (otherwise add obj. limit)?}%
 {}
 
 \printoption{separating/cgmip/addviolconshdlr}%
@@ -5534,7 +6482,7 @@
 \printoption{separating/cgmip/allowlocal}%
 {boolean}%
 {FALSE}%
-{allow to generate local cuts?}%
+{Allow to generate local cuts?}%
 {}
 
 \printoption{separating/cgmip/cmirownbounds}%
@@ -5551,13 +6499,13 @@
 
 \printoption{separating/cgmip/contconvert}%
 {boolean}%
-{TRUE}%
-{convert some integral variables to be continuous to reduce the size of the sub-MIP?}%
+{FALSE}%
+{Convert some integral variables to be continuous to reduce the size of the sub-MIP?}%
 {}
 
 \printoption{separating/cgmip/contconvfrac}%
 {$0\leq\textrm{real}\leq1$}%
-{$0.5$}%
+{$0.1$}%
 {fraction of integral variables converted to be continuous (if contconvert)}%
 {}
 
@@ -5565,6 +6513,12 @@
 {$-1\leq\textrm{integer}$}%
 {$100$}%
 {minimum number of integral variables before some are converted to be continuous}%
+{}
+
+\printoption{separating/cgmip/decisiontree}%
+{boolean}%
+{FALSE}%
+{Use decision tree to turn separation on/off?}%
 {}
 
 \printoption{separating/cgmip/dynamiccuts}%
@@ -5585,10 +6539,34 @@
 {frequency for calling separator $<$cgmip$>$ (-1: never, 0: only in root node)}%
 {}
 
+\printoption{separating/cgmip/intconvert}%
+{boolean}%
+{FALSE}%
+{Convert some integral variables attaining fractional values to have integral value?}%
+{}
+
+\printoption{separating/cgmip/intconvfrac}%
+{$0\leq\textrm{real}\leq1$}%
+{$0.1$}%
+{fraction of frac. integral variables converted to have integral value (if intconvert)}%
+{}
+
+\printoption{separating/cgmip/intconvmin}%
+{$-1\leq\textrm{integer}$}%
+{$100$}%
+{minimum number of integral variables before some are converted to have integral value}%
+{}
+
 \printoption{separating/cgmip/maxdepth}%
 {$-1\leq\textrm{integer}$}%
 {$-1$}%
 {maximal depth at which the separator is applied (-1: unlimited)}%
+{}
+
+\printoption{separating/cgmip/maxnodelimit}%
+{$-1\leq\textrm{integer}$}%
+{$5000$}%
+{maximum number of nodes considered for sub-MIP (-1: unlimited)}%
 {}
 
 \printoption{separating/cgmip/maxrounds}%
@@ -5609,40 +6587,52 @@
 {maximal age of rows to consider if onlyactiverows is false}%
 {}
 
-\printoption{separating/cgmip/nodelimit}%
+\printoption{separating/cgmip/minnodelimit}%
 {$-1\leq\textrm{integer}$}%
-{$10000$}%
-{node limit for sub-MIP (-1: unlimited)}%
+{$500$}%
+{minimum number of nodes considered for sub-MIP (-1: unlimited)}%
 {}
 
 \printoption{separating/cgmip/objlone}%
 {boolean}%
 {FALSE}%
-{should the objective of the sub-MIP minimize the l1-norm of the multipliers?}%
+{Should the objective of the sub-MIP minimize the l1-norm of the multipliers?}%
+{}
+
+\printoption{separating/cgmip/objweighsize}%
+{boolean}%
+{FALSE}%
+{Weigh each row by its size?}%
 {}
 
 \printoption{separating/cgmip/onlyactiverows}%
 {boolean}%
 {FALSE}%
-{use only active rows to generate cuts?}%
+{Use only active rows to generate cuts?}%
 {}
 
 \printoption{separating/cgmip/onlyintvars}%
 {boolean}%
 {FALSE}%
-{generate cuts for problems with only integer variables?}%
+{Generate cuts for problems with only integer variables?}%
 {}
 
 \printoption{separating/cgmip/onlyrankone}%
 {boolean}%
 {FALSE}%
-{whether only rank 1 inequalities should be separated}%
+{Separate only rank 1 inequalities?}%
 {}
 
 \printoption{separating/cgmip/primalseparation}%
 {boolean}%
 {TRUE}%
 {only separate cuts that are tight for the best feasible solution?}%
+{}
+
+\printoption{separating/cgmip/skipmultbounds}%
+{boolean}%
+{TRUE}%
+{Skip the upper bounds on the multipliers in the sub-MIP?}%
 {}
 
 \printoption{separating/cgmip/usecmir}%
@@ -5655,6 +6645,12 @@
 {boolean}%
 {TRUE}%
 {use cutpool to store CG-cuts even if the are not efficient?}%
+{}
+
+\printoption{separating/cgmip/usestrongcg}%
+{boolean}%
+{FALSE}%
+{use strong CG-function to strengthen cut?}%
 {}
 
 \printoption{separating/clique/freq}%
@@ -5731,7 +6727,7 @@
 
 \printoption{separating/flowcover/maxroundsroot}%
 {$-1\leq\textrm{integer}$}%
-{$10$}%
+{$15$}%
 {maximal number of separation rounds in the root node (-1: unlimited)}%
 {}
 
@@ -5745,6 +6741,12 @@
 {$0\leq\textrm{integer}$}%
 {$200$}%
 {maximal number of flow cover cuts separated per separation round in the root}%
+{}
+
+\printoption{separating/gomory/away}%
+{$0\leq\textrm{real}\leq0.5$}%
+{$0.01$}%
+{minimal integrality violation of a basis variable in order to try Gomory cut}%
 {}
 
 \printoption{separating/gomory/dynamiccuts}%
@@ -5779,7 +6781,7 @@
 
 \printoption{separating/gomory/maxsepacutsroot}%
 {$0\leq\textrm{integer}$}%
-{$50$}%
+{$200$}%
 {maximal number of gomory cuts separated per separation round in the root node}%
 {}
 
@@ -5915,10 +6917,10 @@
 {maximal number of oddcycle cuts separated per separation round in the root node}%
 {}
 
-\printoption{separating/oddcycle/useclassical}%
+\printoption{separating/oddcycle/usegls}%
 {boolean}%
 {TRUE}%
-{should classical search method by Groetschel, Lovasz, Schrijver be used? Otherwise use levelgraph method by Hoffman, Padberg.}%
+{should the search method by Groetschel, Lovasz, Schrijver be used? Otherwise use levelgraph method by Hoffman, Padberg.}%
 {}
 
 \printoption{separating/poolfreq}%
@@ -6020,13 +7022,14 @@
 \printoption{separating/zerohalf/preprocessing/ppmethods}%
 {string}%
 {CXGXIM}%
-{preprocessing methods and ordering:\\   \#                      'd' columns with small LP solution,\\    \#                      'G' modified Gaussian elimination,\\     \#                      'i' identical columns,\\   \#                      'I' identical rows,\\   \#                      'L' large slack rows,\\   \#                      'M' large slack rows (minslack),\\   \#                      's' column singletons,\\   \#                      'X' add trivial zerohalf cuts,\\   \#                      'z' zero columns,\\   \#                      'Z' zero rows,\\   \#                      'C' fast {'z','s'},\\   \#                      'R' fast {'Z','L','I'}\\   \#                      \\                         \#                      '-' no preprocessing}%
+{preprocessing methods and ordering:\\   \#                      'd' columns with small LP solution,\\   \#                      'G' modified Gaussian elimination,\\   \#                      'i' identical columns,\\   \#                      'I' identical rows,\\   \#                      'L' large slack rows,\\   \#                      'M' large slack rows (minslack),\\   \#                      's' column singletons,\\   \#                      'X' add trivial zerohalf cuts,\\   \#                      'z' zero columns,\\   \#                      'Z' zero rows,\\   \#                      'C' fast {'z','s'},\\   \#                      'R' fast {'Z','L','I'}\\   \#
+   \#                      '-' no preprocessing\\   \#}%
 {}
 
 \printoption{separating/zerohalf/separating/auxip/objective}%
 {character}%
 {v}%
-{auxiliary IP objective:\\   \#                      'v' maximize cut violation,\\   \#                      'u' minimize number of aggregated rows in cut,\\   \#                      'w' minimize number of aggregated rows in cut\\   \#                          weighted by the number of rows in the aggregation,\\   \#                      'p' maximize cut violation and penalize a high number\\   \#                          of aggregated rows in the cut weighted by the number\\   \#                          of rows in the aggregation and the penalty factor p}%
+{auxiliary IP objective:\\   \#                      'v' maximize cut violation,\\   \#                      'u' minimize number of aggregated rows in cut,\\   \#                      'w' minimize number of aggregated rows in cut\\   \#                          weighted by the number of rows in the aggregation,\\   \#                      'p' maximize cut violation and penalize a high number\\   \#                          of aggregated rows in the cut weighted by the number\\   \#                          of rows in the aggregation and the penalty factor p\\   \#}%
 {}
 
 \printoption{separating/zerohalf/separating/auxip/penaltyfactor}%
@@ -6074,10 +7077,17 @@
 \printoption{separating/zerohalf/separating/sepamethods}%
 {string}%
 {2g}%
-{separating methods and ordering:\\   \#                      '!' stop further processing if a cut was found,\\   \#                      '2' exact polynomial time algorithm (only if matrix has max 2 odd entries per row),\\   \#                      'e' enumeration heuristics (k=1: try all preprocessed rows),\\   \#                      'E' enumeration heuristics (k=2: try all combinations of up to two preprocessed rows),\\   \#                      'g' Extended Gaussian elimination heuristics,\\   \#                      's' auxiliary IP heuristics (i.e. number of solved nodes is limited)\\   \#                      'S' auxiliary IP exact      (i.e. unlimited number of nodes)\\   \#                      \\   \#                      '-' no processing}%
+{separating methods and ordering:\\   \#                      '!' stop further processing if a cut was found,\\   \#                      '2' exact polynomial time algorithm (only if matrix has max 2 odd entries per row),\\   \#                      'e' enumeration heuristics (k=1: try all preprocessed rows),\\   \#                      'E' enumeration heuristics (k=2: try all combinations of up to two preprocessed rows),\\   \#                      'g' Extended Gaussian elimination heuristics,\\   \#                      's' auxiliary IP heuristics (i.e. number of solved nodes is limited)\\   \#                      'S' auxiliary IP exact      (i.e. unlimited number of nodes)\\   \#
+   \#                      '-' no processing\\   \#}%
 {}
 
 \printoptioncategory{Separation (advanced options)}
+\printoption{separating/cgmip/cutcoefbnd}%
+{$0\leq\textrm{real}$}%
+{$1000$}%
+{bounds on the values of the coefficients in the CG-cut}%
+{}
+
 \printoption{separating/cgmip/delay}%
 {boolean}%
 {FALSE}%
@@ -6192,6 +7202,12 @@
 {maximal relative distance from current node's dual bound to primal bound compared to best node's dual bound for applying separator $<$closecuts$>$ (0.0: only on current best node, 1.0: on all nodes)}%
 {}
 
+\printoption{separating/closecuts/maxlpiterfactor}%
+{$-1\leq\textrm{real}$}%
+{$2$}%
+{factor for maximal LP iterations in relative interior computation compared to node LP iterations (negative for no limit)}%
+{}
+
 \printoption{separating/closecuts/maxunsuccessful}%
 {$-1\leq\textrm{integer}$}%
 {$0$}%
@@ -6226,12 +7242,6 @@
 {boolean}%
 {TRUE}%
 {generate close cuts w.r.t. relative interior point (best solution otherwise)?}%
-{}
-
-\printoption{separating/closecuts/separootonly}%
-{boolean}%
-{TRUE}%
-{generate close cuts in the root only?}%
 {}
 
 \printoption{separating/cmir/aggrtol}%
@@ -6468,6 +7478,24 @@
 {should separator be delayed, if other separators found cuts?}%
 {}
 
+\printoption{separating/gomory/delayedcuts}%
+{boolean}%
+{TRUE}%
+{should cuts be added to the delayed cut pool?}%
+{}
+
+\printoption{separating/gomory/forcecuts}%
+{boolean}%
+{TRUE}%
+{if conversion to integral coefficients failed still use the cut}%
+{}
+
+\printoption{separating/gomory/makeintegral}%
+{boolean}%
+{TRUE}%
+{try to scale cuts to integral coefficients}%
+{}
+
 \printoption{separating/gomory/maxbounddist}%
 {$0\leq\textrm{real}\leq1$}%
 {$0$}%
@@ -6484,6 +7512,12 @@
 {$-536870912\leq\textrm{integer}\leq536870911$}%
 {$-1000$}%
 {priority of separator $<$gomory$>$}%
+{}
+
+\printoption{separating/gomory/separaterows}%
+{boolean}%
+{TRUE}%
+{separate rows with integral slack}%
 {}
 
 \printoption{separating/impliedbounds/delay}%
@@ -6700,6 +7734,12 @@
 {$0\leq\textrm{integer}$}%
 {$0$}%
 {minimal weight on an edge (in level graph or bipartite graph)}%
+{}
+
+\printoption{separating/oddcycle/maxunsucessfull}%
+{$0\leq\textrm{integer}$}%
+{$3$}%
+{number of unsuccessful calls at current node}%
 {}
 
 \printoption{separating/oddcycle/multiplecuts}%
@@ -6921,7 +7961,7 @@
 \printoption{separating/zerohalf/maxcutsfound}%
 {$0\leq\textrm{integer}$}%
 {$100$}%
-{maximal number of {0,1/2}-cuts determined per separation round \\   \#                      (this includes separated but inefficacious cuts)}%
+{maximal number of {0,1/2}-cuts determined per separation round\\   \#                      (this includes separated but inefficacious cuts)}%
 {}
 
 \printoption{separating/zerohalf/maxcutsfoundroot}%

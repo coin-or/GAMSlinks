@@ -265,7 +265,7 @@ Let CLP use a primal dual predictor corrector algorithm.
 \item[\label{threads}\hypertarget{threads}
 {\textbf{threads (\slshape{integer})}}]\hspace{1.0in}
 
-This option controls the multithreading feature of CBC, which is currently available only on Unix variants.
+This option controls the multithreading feature of CBC.
 
 \textsl{(default = GAMS threads)}
 
@@ -472,23 +472,23 @@ Turn off the final LP solve.
 Turn on the final LP solve.
 \end{itemize}
 
-\item[\label{miptrace}\hypertarget{miptrace}
-{\textbf{miptrace (\slshape{string})}}]\hspace{1.0in}
+\item[\label{solvetrace}\hypertarget{solvetrace}
+{\textbf{solvetrace (\slshape{string})}}]\hspace{1.0in}
 
-Name of file for writing branch-and-bound progress information during solve.
+Name of file for writing solving progress information during solve.
 
 
-\item[\label{miptracenodefreq}\hypertarget{miptracenodefreq}
-{\textbf{miptracenodefreq (\slshape{integer})}}]\hspace{1.0in}
+\item[\label{solvetracenodefreq}\hypertarget{solvetracenodefreq}
+{\textbf{solvetracenodefreq (\slshape{integer})}}]\hspace{1.0in}
 
-frequency in number of nodes for writing branch-and-bound progress information
+frequency in number of nodes for writing solving progress information
 
 \textsl{(default = 100)}
 
-\item[\label{miptracetimefreq}\hypertarget{miptracetimefreq}
-{\textbf{miptracetimefreq (\slshape{real})}}]\hspace{1.0in}
+\item[\label{solvetracetimefreq}\hypertarget{solvetracetimefreq}
+{\textbf{solvetracetimefreq (\slshape{real})}}]\hspace{1.0in}
 
-frequency in seconds for writing branch-and-bound progress information
+frequency in seconds for writing solving progress information
 
 \textsl{(default = 5)}
 
@@ -1024,4 +1024,21 @@ If it is set (between -2 and 20), Cbc will try  and fix some integer variables
 
 \textsl{(default = -1)}
 
+\item[\label{proximitysearch}\hypertarget{proximitysearch}
+{\textbf{proximitysearch (\slshape{integer})}}]\hspace{1.0in}
+
+This parameter controls the use of the "No-Neighborhood Search" 0-1 MIP refinement heuristic proposed by Fischetti and Monaci (2012).
+The idea is to define a sub-MIP without additional constraints but with a modified objective function intended to attract the search
+in the proximity of the incumbent.
+The approach works well for 0-1 MIPs whose solution landscape is not too irregular (meaning the there is reasonable probability of
+finding an improved solution by flipping a small number of binary variables), in particular when it is applied to the first heuristic solutions
+found at the root node.
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0]
+Turns the proximity heuristic off.
+\item[1]
+Turns the proximity heuristic on.
+\end{itemize}
 \end{description}
