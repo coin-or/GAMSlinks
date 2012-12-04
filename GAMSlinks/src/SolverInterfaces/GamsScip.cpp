@@ -199,13 +199,14 @@ int GamsScip::callSolver()
    SCIPinfoMessage(scip, NULL, "non-default parameter settings:\n");
    SCIPwriteParams(scip, NULL, FALSE, TRUE);
 
-   SCIP_Bool interactive;
-   SCIP_CALL_ABORT( SCIPgetBoolParam(scip, "gams/interactive", &interactive) );
+   char* interactive = NULL;
+   SCIP_CALL_ABORT( SCIPgetStringParam(scip, "gams/interactive", &interactive) );
+   assert(interactive != NULL);
 #ifdef GAMS_BUILD
-   if( interactive && palLicenseIsDemoCheckout(pal) )
+   if( interactive[0] != '\0' && palLicenseIsDemoCheckout(pal) )
    {
-      gevLogStat(gev, "SCIP shell not available in demo mode.\n");
-      interactive = FALSE;
+      gevLogStat(gev, "SCIP interactive shell not available in demo mode.\n");
+      interactive[0] = '\0';
    }
 #endif
 
@@ -233,7 +234,7 @@ int GamsScip::callSolver()
       SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, buffer) );               // process constraints attribute file
    }
 
-   if( !interactive )
+   if( interactive[0] == '\0' )
    {
       SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, "optimize") );           // solve model
 
@@ -244,6 +245,11 @@ int GamsScip::callSolver()
       SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, "write gamssol") );      // pass solution to GMO
 
       SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, "quit") );               // quit shell
+   }
+   else
+   {
+      // pass user commands to shell
+      SCIP_CALL_ABORT( SCIPaddDialogInputLine(scip, interactive) );
    }
 
 
@@ -344,9 +350,9 @@ SCIP_RETCODE GamsScip::setupSCIP()
       SCIP_CALL( SCIPaddBoolParam(scip, "gams/printstatistics",
          "whether to print statistics on a MIP solve",
          NULL, FALSE, FALSE, NULL, NULL) );
-      SCIP_CALL( SCIPaddBoolParam(scip, "gams/interactive",
-         "whether a SCIP shell should be opened instead of issuing a solve command",
-         NULL, FALSE, FALSE, NULL, NULL) );
+      SCIP_CALL( SCIPaddStringParam(scip, "gams/interactive",
+         "command to be issued to the SCIP shell instead of issuing a solve command",
+         NULL, FALSE, "", NULL, NULL) );
 #if 0
       SCIP_CALL( SCIPaddStringParam(scip, "constraints/attrfile",
          "name of file that specifies constraint attributes",
