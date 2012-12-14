@@ -81,23 +81,10 @@ SCIP_DECL_PARAMCHGD(GamsScipParamChgdLpSolver)
       return SCIP_INVALIDCALL;
    }
 
-   if( strcmp(SCIPparamGetString(param), "clp") == 0 )
-      lpsolver = SCIP_LPISW_CLP;
-   else if( strcmp(SCIPparamGetString(param), "cplex") == 0 )
-      lpsolver = SCIP_LPISW_CPLEX;
-   else if( strcmp(SCIPparamGetString(param), "gurobi") == 0 )
-      lpsolver = SCIP_LPISW_GUROBI;
-   else if( strcmp(SCIPparamGetString(param), "mosek") == 0 )
-      lpsolver = SCIP_LPISW_MOSEK;
-   else if( strcmp(SCIPparamGetString(param), "none") == 0 )
-      lpsolver = SCIP_LPISW_NONE;
-   else if( strcmp(SCIPparamGetString(param), "qsopt") == 0 )
-      lpsolver = SCIP_LPISW_QSOPT;
-   else if( strcmp(SCIPparamGetString(param), "soplex") == 0 )
-      lpsolver = SCIP_LPISW_SOPLEX;
-   else if( strcmp(SCIPparamGetString(param), "xpress") == 0 )
-      lpsolver = SCIP_LPISW_XPRESS;
-   else
+   for( lpsolver = SCIP_LPISW_LPSOLVER(0); lpsolver < SCIP_LPISW_NSOLVERS; lpsolver = SCIP_LPISW_LPSOLVER((int)lpsolver + 1) )
+      if( strcmp(SCIPparamGetString(param), SCIP_LPISW_SOLVERNAMES[lpsolver]) == 0 )
+         break;
+   if( lpsolver == SCIP_LPISW_NSOLVERS )
    {
       SCIPerrorMessage("Value '%s' for parameter lp/solver not understood.\n", SCIPparamGetString(param));
       return SCIP_PARAMETERWRONGVAL;
@@ -413,9 +400,10 @@ SCIP_RETCODE GamsScip::setupSCIP()
          "name of file that specifies constraint attributes",
          NULL, FALSE, "", NULL, NULL) );
 #endif
+
       SCIP_CALL( SCIPaddStringParam(scip, "lp/solver",
          "LP solver to use (clp, cplex, mosek, soplex, gurobi, xpress)",
-         NULL, FALSE, "cplex", GamsScipParamChgdLpSolver, NULL) );
+         NULL, FALSE, SCIP_LPISW_SOLVERNAMES[SCIPlpiSwitchGetCurrentSolver()], GamsScipParamChgdLpSolver, NULL) );
    }
    else
    {
