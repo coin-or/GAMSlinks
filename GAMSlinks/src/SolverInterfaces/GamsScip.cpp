@@ -22,6 +22,7 @@
 
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
+#include "scip/githash.c"
 #include "nlpi/nlpi_ipopt.h"
 #include "reader_gmo.h"
 #include "event_solvetrace.h"
@@ -159,9 +160,10 @@ int GamsScip::readyAPI(
 
    // print version info and copyright
    if( SCIPsubversion() > 0 )
-      sprintf(buffer, "SCIP version %d.%d.%d.%d\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion(), SCIPsubversion());
+      sprintf(buffer, "SCIP version %d.%d.%d.%d (" SCIP_GITHASH ")\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion(), SCIPsubversion());
    else
-      sprintf(buffer, "SCIP version %d.%d.%d\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion());
+      //sprintf(buffer, "SCIP version %d.%d.%d (" SCIP_GITHASH ")\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion());
+      sprintf(buffer, "SCIP version %d.%d (" SCIP_GITHASH ")\n", SCIPmajorVersion(), SCIPminorVersion());
    gevLogStatPChar(gev, buffer);
    gevLogStatPChar(gev, SCIP_COPYRIGHT"\n\n");
 
