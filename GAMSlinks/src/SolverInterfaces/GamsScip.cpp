@@ -27,6 +27,8 @@
 #include "event_solvetrace.h"
 /* #include "prop_defaultbounds.h" */
 
+#include "lpiswitch.h"
+
 #if SCIP_VERSION >= 300
 static
 SCIP_DECL_ERRORPRINTING(printErrorGev)
@@ -64,6 +66,51 @@ SCIP_DECL_MESSAGEINFO(GamsScipPrintLog)
       void* gev = (void*)SCIPmessagehdlrGetData(messagehdlr);
       gevLogPChar((gevHandle_t)gev, msg);
    }
+}
+
+static
+SCIP_DECL_PARAMCHGD(GamsScipParamChgdLpSolver)
+{
+   SCIP_LPISW_LPSOLVER lpsolver;
+
+   assert(scip != NULL);
+
+   if( SCIPgetStage(scip) >= SCIP_STAGE_INITPRESOLVE && SCIPgetStage(scip) <= SCIP_STAGE_EXITSOLVE )
+   {
+      SCIPerrorMessage("Cannot change SCIP LP Solver during presolve or solve.\n");
+      return SCIP_INVALIDCALL;
+   }
+
+   if( strcmp(SCIPparamGetString(param), "clp") == 0 )
+      lpsolver = SCIP_LPISW_CLP;
+   else if( strcmp(SCIPparamGetString(param), "cplex") == 0 )
+      lpsolver = SCIP_LPISW_CPLEX;
+   else if( strcmp(SCIPparamGetString(param), "gurobi") == 0 )
+      lpsolver = SCIP_LPISW_GUROBI;
+   else if( strcmp(SCIPparamGetString(param), "mosek") == 0 )
+      lpsolver = SCIP_LPISW_MOSEK;
+   else if( strcmp(SCIPparamGetString(param), "none") == 0 )
+      lpsolver = SCIP_LPISW_NONE;
+   else if( strcmp(SCIPparamGetString(param), "qsopt") == 0 )
+      lpsolver = SCIP_LPISW_QSOPT;
+   else if( strcmp(SCIPparamGetString(param), "soplex") == 0 )
+      lpsolver = SCIP_LPISW_SOPLEX;
+   else if( strcmp(SCIPparamGetString(param), "xpress") == 0 )
+      lpsolver = SCIP_LPISW_XPRESS;
+   else
+   {
+      SCIPerrorMessage("Value '%s' for parameter lp/solver not understood.\n", SCIPparamGetString(param));
+      return SCIP_PARAMETERWRONGVAL;
+   }
+
+   if( SCIPlpiSwitchGetCurrentSolver() != lpsolver )
+   {
+      SCIP_CALL( SCIPlpiSwitchSetSolver(lpsolver) );
+
+      SCIPinfoMessage(scip, NULL, "Changed LP solver to\n  %-20s %s\n", SCIPlpiGetSolverName(), SCIPlpiGetSolverDesc());
+   }
+
+   return SCIP_OKAY;
 }
 
 
@@ -311,6 +358,14 @@ SCIP_RETCODE GamsScip::setupSCIP()
    }
 #endif
 
+#ifdef COIN_HAS_OSICPX
+   // change default LP solver to CPLEX, if license available
+   if( checkCplexLicense(gmo, pal) )
+   {
+      SCIP_CALL( SCIPlpiSwitchSetSolver(SCIP_LPISW_CPLEX) );
+   }
+#endif
+
    if( scip == NULL )
    {
       // if called first time, create a new SCIP instance and include all plugins that we need and setup interface parameters
@@ -358,6 +413,9 @@ SCIP_RETCODE GamsScip::setupSCIP()
          "name of file that specifies constraint attributes",
          NULL, FALSE, "", NULL, NULL) );
 #endif
+      SCIP_CALL( SCIPaddStringParam(scip, "lp/solver",
+         "LP solver to use (clp, cplex, mosek, soplex, gurobi, xpress)",
+         NULL, FALSE, "cplex", GamsScipParamChgdLpSolver, NULL) );
    }
    else
    {
