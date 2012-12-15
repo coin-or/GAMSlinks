@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development and others 2009-2011
+// Copyright (C) GAMS Development and others 2009-2012
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
@@ -14,6 +14,7 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
+#include "gevlice.h" // for xpress license setup
 #include "palmcc.h"
 #endif
 
@@ -144,6 +145,12 @@ int GamsScip::readyAPI(
    gevStatAudit(gev, buffer);
 
    initLicensing(gmo, pal);
+
+#ifdef COIN_HAS_OSIXPR
+   /* Xpress license setup - don't say anything if failing, since Xpress is not used by default */
+   XPlicenseInit_t initType;
+   gevxpresslice(gev, pal, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType, buffer, sizeof(buffer));
+#endif
 #endif
 
    // check for academic license, or if we run in demo mode
@@ -349,7 +356,7 @@ SCIP_RETCODE GamsScip::setupSCIP()
 
 #ifdef COIN_HAS_OSICPX
    // change default LP solver to CPLEX, if license available
-   if( checkCplexLicense(gmo, pal) )
+   if( gmo != NULL && checkCplexLicense(gmo, pal) )
    {
       SCIP_CALL( SCIPlpiSwitchSetSolver(SCIP_LPISW_CPLEX) );
    }
