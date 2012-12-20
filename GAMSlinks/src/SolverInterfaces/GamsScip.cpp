@@ -254,7 +254,7 @@ int GamsScip::callSolver()
 #endif
 
    SCIP_Bool printstat;
-   SCIP_CALL_ABORT( SCIPgetBoolParam(scip, "gams/printstatistics", &printstat) );
+   SCIP_CALL_ABORT( SCIPgetBoolParam(scip, "display/statistics", &printstat) );
 
    char* attrfile = NULL;
 #if 0
@@ -398,8 +398,8 @@ SCIP_RETCODE GamsScip::setupSCIP()
        * "whether the problem should be solved with fixed discrete variables to get dual values",
        * NULL, FALSE, TRUE,  NULL, NULL) );
        */
-      SCIP_CALL( SCIPaddBoolParam(scip, "gams/printstatistics",
-         "whether to print statistics on a MIP solve",
+      SCIP_CALL( SCIPaddBoolParam(scip, "display/statistics",
+         "whether to print statistics on a solve",
          NULL, FALSE, FALSE, NULL, NULL) );
       SCIP_CALL( SCIPaddStringParam(scip, "gams/interactive",
          "command to be issued to the SCIP shell instead of issuing a solve command",
