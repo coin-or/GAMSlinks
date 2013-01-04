@@ -169,8 +169,7 @@ int GamsScip::readyAPI(
    if( SCIPsubversion() > 0 )
       sprintf(buffer, "SCIP version %d.%d.%d.%d (" SCIP_GITHASH ")\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion(), SCIPsubversion());
    else
-      //sprintf(buffer, "SCIP version %d.%d.%d (" SCIP_GITHASH ")\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion());
-      sprintf(buffer, "SCIP version %d.%d (" SCIP_GITHASH ")\n", SCIPmajorVersion(), SCIPminorVersion());
+      sprintf(buffer, "SCIP version %d.%d.%d (" SCIP_GITHASH ")\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion());
    gevLogStatPChar(gev, buffer);
    gevLogStatPChar(gev, SCIP_COPYRIGHT"\n\n");
 

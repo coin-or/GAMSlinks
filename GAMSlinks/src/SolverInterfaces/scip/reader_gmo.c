@@ -39,6 +39,7 @@
 #include "scip/cons_sos1.h"
 #include "scip/cons_sos2.h"
 #include "scip/heur_subnlp.h"
+#include "scip/dialog_default.h"
 #include "nlpi/struct_expr.h"
 
 #define READER_NAME             "gmoreader"
@@ -2693,6 +2694,16 @@ SCIP_RETCODE SCIPincludeReaderGmo(
       SCIP_CALL( SCIPincludeDialog(scip, &dialog,
             dialogCopySettingsLoadGams, dialogExecSettingsLoadGams, dialogDescSettingsLoadGams, dialogFreeSettingsLoadGams,
             DIALOG_SETTINGSLOADGAMS_NAME, DIALOG_SETTINGSLOADGAMS_DESC, DIALOG_SETTINGSLOADGAMS_ISSUBMENU, NULL) );
+      SCIP_CALL( SCIPaddDialogEntry(scip, parentdialog, dialog) );
+      SCIP_CALL( SCIPreleaseDialog(scip, &dialog) );
+   }
+
+   /* set gams */
+   if( !SCIPdialogHasEntry(parentdialog, "gams") )
+   {
+      SCIP_CALL( SCIPincludeDialog(scip, &dialog,
+            NULL, SCIPdialogExecMenu, NULL, NULL,
+            "gams", "change parameters for GAMS interface", TRUE, NULL) );
       SCIP_CALL( SCIPaddDialogEntry(scip, parentdialog, dialog) );
       SCIP_CALL( SCIPreleaseDialog(scip, &dialog) );
    }
