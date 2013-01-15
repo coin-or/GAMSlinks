@@ -15,6 +15,7 @@
 
 #include "event_solvetrace.h"
 #include "GamsSolveTrace.h"
+#include "scip/githash.c"
 
 #include <assert.h>
 
@@ -88,7 +89,7 @@ static
 SCIP_DECL_EVENTINIT(eventInitSolveTrace)
 {  /*lint --e{715}*/
    SCIP_EVENTHDLRDATA* eventhdlrdata;
-   char solverid[20];
+   char solverid[30];
    int rc;
 
    eventhdlrdata = SCIPeventhdlrGetData(eventhdlr);
@@ -98,9 +99,9 @@ SCIP_DECL_EVENTINIT(eventInitSolveTrace)
       return SCIP_OKAY;
 
 #if SCIP_SUBVERSION > 0
-   (void) SCIPsnprintf(solverid, sizeof(solverid), "SCIP %d.%d.%d.%d", SCIP_VERSION/100, (SCIP_VERSION%100)/10, SCIP_VERSION%10, SCIP_SUBVERSION);
+   (void) SCIPsnprintf(solverid, sizeof(solverid), "SCIP %d.%d.%d.%d (" SCIP_GITHASH ")", SCIP_VERSION/100, (SCIP_VERSION%100)/10, SCIP_VERSION%10, SCIP_SUBVERSION);
 #else
-   (void) SCIPsnprintf(solverid, sizeof(solverid), "SCIP %d.%d.%d", SCIP_VERSION/100, (SCIP_VERSION%100)/10, SCIP_VERSION%10);
+   (void) SCIPsnprintf(solverid, sizeof(solverid), "SCIP %d.%d.%d (" SCIP_GITHASH ")", SCIP_VERSION/100, (SCIP_VERSION%100)/10, SCIP_VERSION%10);
 #endif
    rc = GAMSsolvetraceCreate(&eventhdlrdata->solvetrace, eventhdlrdata->filename, solverid, SCIPinfinity(scip), eventhdlrdata->nodefreq, eventhdlrdata->timefreq);
    if( rc != 0 )
@@ -109,7 +110,7 @@ SCIP_DECL_EVENTINIT(eventInitSolveTrace)
       return SCIP_ERROR;
    }
 
-   SCIP_CALL( SCIPcatchEvent(scip, SCIP_EVENTTYPE_NODESOLVED, eventhdlr, (SCIP_EVENTDATA*)eventhdlrdata->solvetrace, &eventhdlrdata->filterpos) );
+   SCIP_CALL( SCIPcatchEvent(scip, SCIP_EVENTTYPE_NODESOLVED | SCIP_EVENTTYPE_BESTSOLFOUND | SCIP_EVENTTYPE_PRESOLVEROUND | SCIP_EVENTTYPE_LPEVENT, eventhdlr, (SCIP_EVENTDATA*)eventhdlrdata->solvetrace, &eventhdlrdata->filterpos) );
 
    return SCIP_OKAY;
 }
@@ -130,7 +131,7 @@ SCIP_DECL_EVENTEXIT(eventExitSolveTrace)
    if( eventhdlrdata->solvetrace == NULL )
       return SCIP_OKAY;
 
-   SCIP_CALL( SCIPdropEvent(scip, SCIP_EVENTTYPE_NODESOLVED, eventhdlr, (SCIP_EVENTDATA*)eventhdlrdata->solvetrace, eventhdlrdata->filterpos) );
+   SCIP_CALL( SCIPdropEvent(scip, SCIP_EVENTTYPE_NODESOLVED | SCIP_EVENTTYPE_BESTSOLFOUND | SCIP_EVENTTYPE_PRESOLVEROUND | SCIP_EVENTTYPE_LPEVENT, eventhdlr, (SCIP_EVENTDATA*)eventhdlrdata->solvetrace, eventhdlrdata->filterpos) );
 
    GAMSsolvetraceAddEndLine(eventhdlrdata->solvetrace, SCIPgetNTotalNodes(scip),
       eventhdlrdata->dualbound == SCIP_INVALID ? -SCIPgetObjsense(scip) * SCIPinfinity(scip) : eventhdlrdata->dualbound,
@@ -193,7 +194,6 @@ SCIP_DECL_EVENTEXEC(eventExecSolveTrace)
    SCIP_EVENTHDLRDATA* eventhdlrdata;
 
    assert(event != NULL);
-   assert(SCIPeventGetType(event) & SCIP_EVENTTYPE_NODESOLVED);
    assert(eventdata != NULL);
 
    GAMSsolvetraceAddLine((GAMS_SOLVETRACE*)eventdata, SCIPgetNTotalNodes(scip),

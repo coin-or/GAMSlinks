@@ -58,6 +58,12 @@ void GAMSsolvetraceSetInfinity(
    double                infinity            /**< new value for infinity */
 );
 
+/** sets starttime to the current time */
+extern
+void GAMSsolvetraceResetStarttime(
+   GAMS_SOLVETRACE*      solvetrace          /**< GAMS solve trace data structure */
+);
+
 #ifdef __cplusplus
 }
 #endif

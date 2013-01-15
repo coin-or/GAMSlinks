@@ -394,6 +394,8 @@ int GamsCouenne::callSolver()
       // not sufficient to support SOS/SemiCon/SemiInt: passSOSSemiCon(ci, &bb.model());
 
       minlp->nlp->clockStart = gevTimeDiffStart(gev);
+      if( solvetrace_ != NULL )
+         GAMSsolvetraceResetStarttime(solvetrace_);
 
       // initialize Couenne, e.g., reformulate problem
       // pass also bb in case user enabled recognition of SOS in problem

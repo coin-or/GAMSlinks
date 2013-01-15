@@ -48,6 +48,7 @@ struct GAMS_solvetrace
    long int              linecount;          /**< line counter */
    double                starttime;          /**< time when the S-line was written */
    double                lasttime;           /**< last time when a T-line was written */
+   long int              lastnode;           /**< last node when a N-line was written */
 };
 
 /** creates a GAMS solve trace data structure and initializes trace file for writing
@@ -84,8 +85,10 @@ int GAMSsolvetraceCreate(
    (*solvetrace)->timefreq = timefreq;
 
    (*solvetrace)->linecount = 1;
-   (*solvetrace)->starttime = 0.0;
+   (*solvetrace)->starttime = getTime();
    (*solvetrace)->lasttime  = 0.0;
+
+   (*solvetrace)->lastnode = -100;
 
    return 0;
 }
@@ -151,13 +154,14 @@ void GAMSsolvetraceAddLine(
 
    if( solvetrace->linecount == 1 )
    {
-      addLine(solvetrace, 'S', nnodes, 0.0, dualbnd, primalbnd);
-      solvetrace->starttime = time;
+      addLine(solvetrace, 'S', nnodes, time - solvetrace->starttime, dualbnd, primalbnd);
       solvetrace->lasttime = time;
+      solvetrace->lastnode = nnodes;
    }
-   else if( solvetrace->nodefreq > 0 && (nnodes % solvetrace->nodefreq == 0) )
+   else if( solvetrace->nodefreq > 0 && (nnodes % solvetrace->nodefreq == 0) && nnodes != solvetrace->lastnode )
    {
       addLine(solvetrace, 'N', nnodes, time - solvetrace->starttime, dualbnd, primalbnd);
+      solvetrace->lastnode = nnodes;
    }
 
    if( solvetrace->timefreq > 0.0 && (time - solvetrace->lasttime >= solvetrace->timefreq) )
@@ -177,10 +181,22 @@ void GAMSsolvetraceAddEndLine(
    double                primalbnd           /**< current primal bound */
 )
 {
+   double time;
+
    assert(solvetrace != NULL);
    assert(solvetrace->tracefile != NULL);
 
-   addLine(solvetrace, 'E', nnodes, getTime() - solvetrace->starttime, dualbnd, primalbnd);
+   time = getTime();
+
+   /* if no 'S' line printed yet (e.g., problem solved in presolve), do it now */
+   if( solvetrace->linecount == 1 )
+   {
+      addLine(solvetrace, 'S', nnodes, time - solvetrace->starttime, dualbnd, primalbnd);
+      solvetrace->lasttime = time;
+      solvetrace->lastnode = nnodes;
+   }
+
+   addLine(solvetrace, 'E', nnodes, time - solvetrace->starttime, dualbnd, primalbnd);
 
    fflush(solvetrace->tracefile);
 }
@@ -194,4 +210,14 @@ void GAMSsolvetraceSetInfinity(
    assert(solvetrace != NULL);
 
    solvetrace->infinity = infinity;
+}
+
+/** sets starttime to the current time */
+void GAMSsolvetraceResetStarttime(
+   GAMS_SOLVETRACE*      solvetrace          /**< GAMS solve trace data structure */
+)
+{
+   assert(solvetrace != NULL);
+
+   solvetrace->starttime = getTime();
 }

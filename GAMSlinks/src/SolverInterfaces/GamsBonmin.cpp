@@ -380,6 +380,9 @@ int GamsBonmin::callSolver()
       Bab bb;
 
       minlp->nlp->clockStart = gevTimeDiffStart(gev);
+      if( solvetrace_ != NULL )
+         GAMSsolvetraceResetStarttime(solvetrace_);
+
       bb(*bonmin_setup);
 
       /* store solve statistics */

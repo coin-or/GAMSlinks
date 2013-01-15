@@ -106,7 +106,7 @@ public:
 
    CbcEventHandler* clone() const
    {
-      // TODO clone only if model_ != mainmodel, so we don't clone our self into sub-cbc?
+      // TODO clone only if model_ != mainmodel, so we don't clone ourself into sub-cbc?
       return new GamsSolveTraceEventHandler(solvetrace, objfactor);
    }
 
@@ -114,7 +114,7 @@ public:
       CbcEvent           whichEvent
    )
    {
-      if( whichEvent == node && model_ == mainmodel )
+      if( model_ == mainmodel && (whichEvent == node || whichEvent == solution || whichEvent == heuristicSolution) )
       {
          GAMSsolvetraceAddLine(solvetrace, model_->getNodeCount(),
             objfactor * model_->getBestPossibleObjValue(),
@@ -261,6 +261,12 @@ int GamsCbc::callSolver()
       model->solver()->writeMps(writemps, "", 1.0);
    }
 
+   if( dumpsolutions != NULL && maxsol > 0 )
+      model->setMaximumSavedSolutions(maxsol);
+
+   /* initialize solvetrace
+    * do this almost immediately before calling solve, so the timing value is accurate
+    */
    GAMS_SOLVETRACE* solvetrace_ = NULL;
    if( solvetrace != NULL && solvetrace[0] )
    {
@@ -277,9 +283,6 @@ int GamsCbc::callSolver()
          model->passInEventHandler(&traceeventhdlr);
       }
    }
-
-   if( dumpsolutions != NULL && maxsol > 0 )
-      model->setMaximumSavedSolutions(maxsol);
 
    gevLogStat(gev, "\nCalling CBC main solution routine...");
 
