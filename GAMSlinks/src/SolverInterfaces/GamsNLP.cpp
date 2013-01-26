@@ -991,8 +991,8 @@ void GamsNLP::finalize_solution(
          negLambda[i] = -lambda[i];
       }
 
+      /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
       gmoSetSolution8(gmo, x, colMarg, negLambda, g, colBasStat, colIndic, rowBasStat, rowIndic);
-      gmoSetHeadnTail(gmo, gmoHobjval, obj_value);
 
       if( scaled_viol != mininfeasscaledviol )
       {

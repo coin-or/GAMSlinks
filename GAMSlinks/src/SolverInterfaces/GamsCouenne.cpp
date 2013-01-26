@@ -435,6 +435,19 @@ int GamsCouenne::callSolver()
       // check optimization outcome
       double best_val   = minlp->isMin * bb.bestObj();
       double best_bound = minlp->isMin * bb.model().getBestPossibleObjValue(); //bestBound();
+      bool havesol;
+      switch( minlp->model_status )
+      {
+         case gmoModelStat_OptimalGlobal:
+         case gmoModelStat_OptimalLocal:
+         case gmoModelStat_Integer:
+            havesol = true;
+            break;
+         default:
+            havesol = false;
+            break;
+      }
+      assert(bb.bestSolution() != NULL || !havesol);
 
       // correct best_bound, if necessary (works around sideeffect of other workaround in couenne)
       if( minlp->isMin * best_bound > minlp->isMin * best_val )
@@ -451,19 +464,25 @@ int GamsCouenne::callSolver()
 
       if( solvetrace_ != NULL )
          GAMSsolvetraceAddEndLine(solvetrace_, bb.numNodes(), best_bound,
-            bb.bestSolution() != NULL ? minlp->isMin * bb.bestObj() : minlp->isMin * bb.model().getInfinity());
+            havesol ? minlp->isMin * bb.bestObj() : minlp->isMin * bb.model().getInfinity());
 
-      if( bb.bestSolution() != NULL )
+      if( havesol )
       {
          gevLogStat(gev, "\nCouenne finished. Found feasible solution.");
 
-         double* negLambda = new double[gmoM(gmo)];
-         memset(negLambda, 0, gmoM(gmo)*sizeof(double));
+#if GMOAPIVERSION < 12
+         double* lambda = new double[gmoM(gmo)];
+         for( int i = 0; i < gmoM(gmo); ++i )
+            lambda[i] = gmoValNA(gmo);
 
-         gmoSetSolution2(gmo, bb.bestSolution(), negLambda);
-         gmoSetHeadnTail(gmo, gmoHobjval, best_val);
+         /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
+         gmoSetSolution2(gmo, bb.bestSolution(), lambda);
 
-         delete[] negLambda;
+         delete[] lambda;
+#else
+         /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
+         gmoSetSolutionPrimal(gmo, bb.bestSolution());
+#endif
       }
       else
       {
@@ -472,7 +491,7 @@ int GamsCouenne::callSolver()
 
       // print solving outcome (primal/dual bounds, gap)
       gevLogStat(gev, "");
-      if( bb.bestSolution() != NULL )
+      if( havesol )
       {
          snprintf(buffer, sizeof(buffer), "Best solution: %15.6e   (%d nodes, %g seconds)\n", best_val, bb.numNodes(), gmoGetHeadnTail(gmo, gmoHresused));
          gevLogStat(gev, buffer);
@@ -482,7 +501,7 @@ int GamsCouenne::callSolver()
          snprintf(buffer, sizeof(buffer), "Best possible: %15.6e", best_bound);
          gevLogStat(gev, buffer);
 
-         if( bb.bestSolution() != NULL )
+         if( havesol )
          {
             double optca;
             double optcr;

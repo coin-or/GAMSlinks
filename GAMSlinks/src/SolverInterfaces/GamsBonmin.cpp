@@ -407,13 +407,18 @@ int GamsBonmin::callSolver()
          snprintf(buf, 100, "\nBonmin finished. Found feasible solution. Objective function value = %g.", minlp->isMin * bb.bestObj());
          gevLogStat(gev, buf);
 
-         double* negLambda = new double[gmoM(gmo)];
-         memset(negLambda, 0, gmoM(gmo)*sizeof(double));
+#if GMOAPIVERSION < 12
+         double* lambda = new double[gmoM(gmo)];
+         for( int i = 0; i < gmoM(gmo); ++i )
+            lambda[i] = gmoValNA(gmo);
 
-         gmoSetSolution2(gmo, bb.bestSolution(), negLambda);
-         gmoSetHeadnTail(gmo, gmoHobjval, minlp->isMin * bb.bestObj());
+         /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
+         gmoSetSolution2(gmo, bb.bestSolution(), lambda);
 
-         delete[] negLambda;
+         delete[] lambda;
+#else
+         gmoSetSolutionPrimal(gmo, bb.bestSolution());
+#endif
       }
       else
       {
@@ -504,8 +509,8 @@ int GamsBonmin::callSolver()
                   negLambda[i] = -lambda[i];
             }
 
+            /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
             gmoSetSolution(gmo, osi_tminlp.getColSolution(), colMarg, negLambda != NULL ? negLambda : lambda, osi_tminlp.getRowActivity());
-            gmoSetHeadnTail(gmo, gmoHobjval,  minlp->isMin * osi_tminlp.getObjValue());
 
             delete[] colMarg;
             delete[] negLambda;

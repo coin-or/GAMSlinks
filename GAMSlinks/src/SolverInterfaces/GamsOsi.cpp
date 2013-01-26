@@ -1983,12 +1983,24 @@ bool GamsOsi::writeSolution(
       }
       else
       {
-         // is MIP -> store only primal values here
-         double* rowprice = CoinCopyOfArrayOrZero((double*)NULL, gmoM(gmo)); // dummy rowprice
          try
          {
-            gmoSetHeadnTail(gmo, gmoHobjval, osi->getObjValue());
-            gmoSetSolution2(gmo, osi->getColSolution(), rowprice);
+            const double* colsol = osi->getColSolution();
+
+            // is MIP -> store only primal values here, duals are not available (yet, computed below)
+#if GMOAPIVERSION < 12
+            double* rowprice = new double[gmoM(gmo)];
+            for( int i = 0; i < gmoM(gmo); ++i )
+               rowprice[i] = gmoValNA(gmo);
+
+            /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
+            gmoSetSolution2(gmo, colsol, rowprice);
+
+            delete[] rowprice;
+#else
+            /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
+            gmoSetSolutionPrimal(gmo, colsol);
+#endif
          }
          catch( CoinError& error )
          {
@@ -1996,7 +2008,6 @@ bool GamsOsi::writeSolution(
             gevLogStat(gev, error.message().c_str());
             solwritten = false;
          }
-         delete[] rowprice;
       }
    }
 

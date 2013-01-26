@@ -290,7 +290,7 @@ bool gamsOsiStoreSolution(
       delete ws;
    }
 
-   gmoSetHeadnTail(gmo, gmoHobjval, solver.getObjValue());
+   /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
    gmoSetSolution8(gmo, colLevel, colMargin, rowMargin, rowLevel, colBasis, NULL, rowBasis, NULL);
 
    delete[] colBasis;

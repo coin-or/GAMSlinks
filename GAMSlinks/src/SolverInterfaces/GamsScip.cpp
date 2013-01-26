@@ -31,14 +31,12 @@
 
 #include "lpiswitch.h"
 
-#if SCIP_VERSION >= 300
 static
 SCIP_DECL_ERRORPRINTING(printErrorGev)
 {
    assert(data != NULL);
    gevLogStatPChar((gevHandle_t)data, msg);
 }
-#endif
 
 static
 SCIP_DECL_MESSAGEWARNING(GamsScipPrintLogStat)
@@ -106,7 +104,6 @@ SCIP_DECL_PARAMCHGD(GamsScipParamChgdLpSolver)
 GamsScip::~GamsScip()
 {
    SCIP_CALL_ABORT( freeSCIP() );
-   assert(scipmsghandler == NULL);
 
 #ifdef GAMS_BUILD
    if( pal != NULL )
@@ -174,9 +171,7 @@ int GamsScip::readyAPI(
    gevLogStatPChar(gev, SCIP_COPYRIGHT"\n\n");
 
    // install or update error printing callback in SCIP to use current gev
-#if SCIP_VERSION >= 300
    SCIPmessageSetErrorPrinting(printErrorGev, (void*)gev);
-#endif
 
    // setup (or reset) SCIP instance
    SCIP_RETCODE scipret;
@@ -220,9 +215,7 @@ int GamsScip::callSolver()
    setNumThreadsLinearAlgebra(gev, gevThreads(gev));
 
    // update error printing callback in SCIP to use current gev
-#if SCIP_VERSION >= 300
    SCIPmessageSetErrorPrinting(printErrorGev, (void*)gev);
-#endif
 
    SCIP_RETCODE scipret;
 
@@ -342,17 +335,6 @@ int GamsScip::callSolver()
 
 SCIP_RETCODE GamsScip::setupSCIP()
 {
-#if SCIP_VERSION < 300
-   if( scipmsghandler == NULL && gev != NULL )
-   {
-      /* print dialog messages to stdout if lo=1 or lo=3, but through gev if lo=0 or lo=2 */
-      SCIP_CALL_ABORT( SCIPcreateMessagehdlr(&scipmsghandler, FALSE,
-         GamsScipPrintLogStat, GamsScipPrintLogStat, GamsScipPrintLog, GamsScipPrintLog,
-         (SCIP_MESSAGEHDLRDATA*)gev) );
-      SCIP_CALL_ABORT( SCIPsetMessagehdlr(scipmsghandler) );
-   }
-#endif
-
 #ifdef COIN_HAS_OSICPX
    // change default LP solver to CPLEX, if license available
    if( gmo != NULL && checkCplexLicense(gmo, pal) )
@@ -364,19 +346,17 @@ SCIP_RETCODE GamsScip::setupSCIP()
    if( scip == NULL )
    {
       // if called first time, create a new SCIP instance and include all plugins that we need and setup interface parameters
+      SCIP_MESSAGEHDLR* messagehdlr;
       SCIP_NLPI* nlpiipopt;
 
       SCIP_CALL( SCIPcreate(&scip) );
 
       // create and install our message handler
-#if SCIP_VERSION >= 300
-      SCIP_MESSAGEHDLR* messagehdlr;
       SCIP_CALL( SCIPmessagehdlrCreate(&messagehdlr, FALSE, NULL, FALSE,
          GamsScipPrintLogStat, GamsScipPrintLog, GamsScipPrintLog, NULL,
          (SCIP_MESSAGEHDLRDATA*)gev) );
       SCIP_CALL( SCIPsetMessagehdlr(scip, messagehdlr) );
       SCIP_CALL( SCIPmessagehdlrRelease(&messagehdlr) );
-#endif
 
       SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
       SCIP_CALL( SCIPincludeReaderGmo(scip) );
@@ -432,14 +412,6 @@ SCIP_RETCODE GamsScip::freeSCIP()
    {
       SCIP_CALL( SCIPfree(&scip) );
    }
-
-#if SCIP_VERSION < 300
-   if( scipmsghandler != NULL )
-   {
-      SCIP_CALL( SCIPsetDefaultMessagehdlr() );
-      SCIP_CALL( SCIPfreeMessagehdlr(&scipmsghandler) );
-   }
-#endif
 
    return SCIP_OKAY;
 }

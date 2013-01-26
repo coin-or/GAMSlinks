@@ -1937,123 +1937,100 @@ SCIP_RETCODE createProblem(
    return SCIP_OKAY;
 }
 
-/** resolves solution stored in GMO by NLP solver */
+/** check solution for feasibility and resolves by NLP solver, if necessary and possible */
 static
-SCIP_RETCODE resolveNLP(
-   SCIP*                 scip                /**< SCIP data structure */
-)
+SCIP_RETCODE checkAndRepairSol(
+   SCIP*                 scip,               /**< SCIP data structure */
+   SCIP_Real*            solvals,            /**< solution to check */
+   SCIP_Real*            objval,             /**< objective value corresponding to solvals */
+   SCIP_Bool             resolvenlp,         /**< whether NLP resolving is allowed */
+   SCIP_Bool*            success             /**< to store whether solution is feasible or could be made feasible */
+   )
 {
    gmoHandle_t gmo;
    SCIP_PROBDATA* probdata;
-   SCIP_SOL* sol;
-   SCIP_Real* solvals;
-   SCIP_Bool feasible;
-   SCIP_Bool success;
    SCIP_HEUR* heursubnlp;
-   int orignlpverblevel;
-   SCIP_Real origfeastol;
-   SCIP_Real mainsoltime;
-   SCIP_CLOCK* resolveclock;
+   SCIP_SOL* sol;
 
-   assert(scip != NULL);
-
-   if( SCIPgetNContVars(scip) == 0 )
-   {
-      SCIPdebugMessage("solution not feasible for original problem, but transformed SCIP problem has no continuous variables\n");
-      return SCIP_OKAY;
-   }
-
-   if( SCIPgetNNlpis(scip) == 0 )
-   {
-      SCIPdebugMessage("solution not feasible for original problem, but have no NLP solver\n");
-      return SCIP_OKAY;
-   }
-
-   heursubnlp = SCIPfindHeur(scip, "subnlp");
-   if( heursubnlp == NULL )
-   {
-      SCIPdebugMessage("solution not feasible for original problem, but NLP heuristic not available\n");
-      return SCIP_OKAY;
-   }
-
-   SCIPinfoMessage(scip, NULL, "Solve MINLP from original problem with fixed discrete variables to repair constraint violations.\n");
-
-   origfeastol = SCIPfeastol(scip);
-   SCIP_CALL( SCIPgetIntParam(scip, "heuristics/subnlp/nlpverblevel", &orignlpverblevel) );
-   SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/nlpverblevel", 1) );
-   SCIP_CALL( SCIPsetRealParam(scip, "numerics/feastol", origfeastol / 100.0) );
+   assert(scip    != NULL);
+   assert(solvals != NULL);
+   assert(success != NULL);
+   assert(objval  != NULL);
 
    if( SCIPisTransformed(scip) )
    {
+      /* cannot create solutions in SOLVED stage */
       SCIP_CALL( SCIPfreeTransform(scip) );
    }
-   SCIP_CALL( SCIPtransformProb(scip) );
 
    probdata = SCIPgetProbData(scip);
    assert(probdata != NULL);
    gmo = probdata->gmo;
 
-   SCIP_CALL( SCIPallocBufferArray(scip, &solvals, gmoN(gmo)) );
-   gmoGetVarL(gmo, solvals);
-
    SCIP_CALL( SCIPcreateSol(scip, &sol, NULL) );
    SCIP_CALL( SCIPsetSolVals(scip, sol, gmoN(gmo), probdata->vars, solvals) );
    if( probdata->objvar != NULL )
    {
-      SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objvar, gmoGetHeadnTail(gmo, gmoHobjval)) );
+      SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objvar, *objval) );
    }
    if( probdata->objconst != NULL )
    {
       SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objconst, 1.0) );
    }
 
-   SCIP_CALL( SCIPcreateClock(scip, &resolveclock) );
-   SCIP_CALL( SCIPstartClock(scip, resolveclock) );
+   SCIP_CALL( SCIPcheckSolOrig(scip, sol, success, FALSE, FALSE) );
 
-   SCIP_CALL( SCIPresolveSolHeurSubNlp(scip, heursubnlp, sol, &success, 100, 10.0) );
+   SCIP_CALL( SCIPfreeSol(scip, &sol) );
 
-   SCIP_CALL( SCIPstopClock(scip, resolveclock) );
+   if( *success || !resolvenlp )
+      return SCIP_OKAY;
 
-   SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/nlpverblevel", orignlpverblevel) );
-   SCIP_CALL( SCIPsetRealParam(scip, "numerics/feastol", origfeastol) );
+   /* assert that we checked already that resolving is possible and makes sense */
+   assert(SCIPgetNContVars(scip) > 0);
+   assert(SCIPgetNNlpis(scip) > 0);
 
-   if( success )
+   heursubnlp = SCIPfindHeur(scip, "subnlp");
+   assert(heursubnlp != NULL);
+
+   SCIPverbMessage(scip, SCIP_VERBLEVEL_FULL, NULL, "Attempt solving NLP from original problem with fixed discrete variables.\n");
+
+   /* create transformed problem and recreate sol in transformed problem, so subnlp heuristic can return result in it */
+   SCIP_CALL( SCIPtransformProb(scip) );
+   SCIP_CALL( SCIPcreateSol(scip, &sol, NULL) );
+   SCIP_CALL( SCIPsetSolVals(scip, sol, gmoN(gmo), probdata->vars, solvals) );
+   if( probdata->objvar != NULL )
    {
-      SCIP_CALL( SCIPcheckSolOrig(scip, sol, &feasible, FALSE, FALSE) );
-      if( feasible )
+      SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objvar, *objval) );
+   }
+   if( probdata->objconst != NULL )
+   {
+      SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objconst, 1.0) );
+   }
+
+   SCIP_CALL( SCIPresolveSolHeurSubNlp(scip, heursubnlp, sol, success, 100, 10.0) );
+
+   if( *success )
+   {
+      SCIP_CALL( SCIPcheckSolOrig(scip, sol, success, SCIPgetVerbLevel(scip) >= SCIP_VERBLEVEL_FULL, FALSE) );
+
+      if( *success )
       {
-         SCIP_Real* lambda;
-
-         SCIPinfoMessage(scip, NULL, "Updated solution is feasible, objective = %.15e. Storing in GMO.\n", SCIPgetSolOrigObj(scip, sol));
-
          SCIP_CALL( SCIPgetSolVals(scip, sol, gmoN(gmo), probdata->vars, solvals) );
-         SCIP_CALL( SCIPallocBufferArray(scip, &lambda, gmoM(gmo)) );
-         BMSclearMemoryArray(lambda, gmoM(gmo));
+         *objval = SCIPgetSolOrigObj(scip, sol);
 
-         gmoSetSolution2(gmo, solvals, lambda);
-         gmoSetHeadnTail(gmo, gmoHobjval, SCIPgetSolOrigObj(scip, sol));
-
-         SCIPfreeBufferArray(scip, &lambda);
+         SCIPverbMessage(scip, SCIP_VERBLEVEL_FULL, NULL, "NLP solution is feasible, objective value = %.15e.\n", *objval);
       }
       else
       {
-         SCIPinfoMessage(scip, NULL, "Updated solution still not feasible, objective = %.15e. Violated constraints:\n", SCIPgetSolOrigObj(scip, sol));
-         SCIP_CALL( SCIPcheckSolOrig(scip, sol, &feasible, TRUE, TRUE) );
+         SCIPverbMessage(scip, SCIP_VERBLEVEL_FULL, NULL, "NLP solution still not feasible, objective value = %.15e.\n", SCIPgetSolOrigObj(scip, sol));
       }
    }
    else
    {
-      SCIPinfoMessage(scip, NULL, "Failed to resolve NLP.\n");
+      SCIPverbMessage(scip, SCIP_VERBLEVEL_FULL, NULL, "Failed to resolve NLP.\n");
    }
 
    SCIP_CALL( SCIPfreeSol(scip, &sol) );
-   SCIPfreeBufferArray(scip, &solvals);
-
-   /* add time for NLP resolve to reported solving time */
-   mainsoltime = gmoGetHeadnTail(gmo, gmoHresused);
-   gmoSetHeadnTail(gmo, gmoHresused, mainsoltime + SCIPgetClockTime(scip, resolveclock));
-
-   SCIP_CALL( SCIPfreeClock(scip, &resolveclock) );
 
    return SCIP_OKAY;
 }
@@ -2067,6 +2044,7 @@ SCIP_RETCODE writeGmoSolution(
    gmoHandle_t gmo;
    SCIP_PROBDATA* probdata;
    int nrsol;
+   SCIP_Real dualbound;
 
    probdata = SCIPgetProbData(scip);
    assert(probdata != NULL);
@@ -2126,7 +2104,10 @@ SCIP_RETCODE writeGmoSolution(
    }
 
    if( SCIPgetStage(scip) == SCIP_STAGE_SOLVING || SCIPgetStage(scip) == SCIP_STAGE_SOLVED )
-      gmoSetHeadnTail(gmo, gmoTmipbest, SCIPgetDualbound(scip));
+      dualbound = SCIPgetDualbound(scip);
+   else
+      dualbound = gmoValNA(gmo);
+   gmoSetHeadnTail(gmo, gmoTmipbest, dualbound);
    gmoSetHeadnTail(gmo, gmoTmipnod,  (int)SCIPgetNNodes(scip));
    gmoSetHeadnTail(gmo, gmoHresused, SCIPgetSolvingTime(scip));
    gmoSetHeadnTail(gmo, gmoHiterused, SCIPgetNLPIterations(scip));
@@ -2207,52 +2188,213 @@ SCIP_RETCODE writeGmoSolution(
       }
    }
 
-   /* pass best solution to gmo, if any */
+   /* pass best solution to GMO, if any */
    if( nrsol > 0 )
    {
       SCIP_SOL* sol;
       SCIP_Real* collev;
-      SCIP_Real* lambda;
 
       sol = SCIPgetBestSol(scip);
       assert(sol != NULL);
 
       SCIP_CALL( SCIPallocBufferArray(scip, &collev, gmoN(gmo)) );
-      SCIP_CALL( SCIPallocBufferArray(scip, &lambda, gmoM(gmo)) );
-      BMSclearMemoryArray(lambda, gmoM(gmo));
-
       SCIP_CALL( SCIPgetSolVals(scip, sol, gmoN(gmo), probdata->vars, collev) );
-      gmoSetSolution2(gmo, collev, lambda);
+
+#if GMOAPIVERSION < 12
+      {
+         SCIP_Real* lambda;
+         int i;
+
+         SCIP_CALL( SCIPallocBufferArray(scip, &lambda, gmoM(gmo)) );
+         for( i = 0; i < gmoM(gmo); ++i )
+            lambda[i] = gmoValNA(gmo);
+
+         /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
+         gmoSetSolution2(gmo, collev, lambda);
+
+         SCIPfreeBufferArray(scip, &lambda);
+      }
+#else
+      gmoSetSolutionPrimal(gmo, collev);
+#endif
 
       SCIPfreeBufferArray(scip, &collev);
-      SCIPfreeBufferArray(scip, &lambda);
 
-      gmoSetHeadnTail(gmo, gmoHobjval, SCIPgetSolOrigObj(scip, sol));
-
-      /* if we have an MINLP with continuous variables, check if best solution is really feasible and try to repair otherwise */
-      if( (gmoObjNLNZ(gmo) != 0 || gmoNLNZ(gmo) != 0) && gmoNDisc(gmo) < gmoN(gmo) &&
-          (SCIPgetStage(scip) != SCIP_STAGE_SOLVING ||
-#if SCIP_VERSION < 300
-             SCIPhasContinuousNonlinearitiesPresent(scip)
-#else
-             SCIPisNLPEnabled(scip)
-#endif
-             ) )
+      /* if we have an MINLP, check if best solution is really feasible and try to repair and check other solutions otherwise */
+      if( gmoObjNLNZ(gmo) != 0 || gmoNLNZ(gmo) != 0 )
       {
-         SCIP_Bool resolvenlp;
+         SCIP_Bool success;
 
-         SCIP_CALL( SCIPgetBoolParam(scip, "gams/resolvenlp", &resolvenlp) );
+         /* check whether best solution is feasible in original problem */
+         SCIP_CALL( SCIPcheckSolOrig(scip, sol, &success, FALSE, FALSE) );
 
-         if( resolvenlp )
+         /* look at all solutions, try to repair if not feasible, and keep a feasible one with best objective value */
+         if( !success )
          {
-            SCIP_Bool feasible;
+            SCIP_Real mainsoltime;
+            SCIP_CLOCK* resolveclock;
+            int origmaxorigsol;
+            int orignlpverblevel;
+            /* SCIP_Real origfeastol; */
+            SCIP_Bool resolvenlp;
+            SCIP_Real** solvals;
+            SCIP_Real* objvals;
+            int nsols;
+            int s;
 
-            SCIP_CALL( SCIPcheckSolOrig(scip, sol, &feasible, FALSE, FALSE) );
-            if( !feasible )
+            /* check whether we can run an NLP solver */
+            SCIP_CALL( SCIPgetBoolParam(scip, "gams/resolvenlp", &resolvenlp) );
+            if( resolvenlp && SCIPgetStage(scip) == SCIP_STAGE_SOLVING && !SCIPisNLPEnabled(scip) )
             {
-               SCIP_CALL( resolveNLP(scip) );
+               SCIPdebugMessage("NLP is disabled: cannot do resolves\n");
+               resolvenlp = FALSE;
             }
+            if( resolvenlp && SCIPgetNContVars(scip) == 0 )
+            {
+               SCIPdebugMessage("transformed SCIP problem has no continuous variables: cannot do resolves\n");
+               resolvenlp = FALSE;
+            }
+            if( resolvenlp && SCIPgetNNlpis(scip) == 0 )
+            {
+               SCIPdebugMessage("no NLP solver: cannot do resolves\n");
+               resolvenlp = FALSE;
+            }
+            if( resolvenlp && SCIPfindHeur(scip, "subnlp") == NULL )
+            {
+               SCIPdebugMessage("no NLP heuristic available: cannot do resolves\n");
+               resolvenlp = FALSE;
+            }
+
+            /* try up to 10 best SCIP solutions */
+            nsols = MIN(10, SCIPgetNSols(scip));
+            SCIP_CALL( SCIPallocBufferArray(scip, &solvals, nsols) );
+            SCIP_CALL( SCIPallocBufferArray(scip, &objvals, nsols) );
+            for( s = 0; s < nsols; ++s )
+            {
+               SCIP_CALL( SCIPallocBufferArray(scip, &solvals[s], gmoN(gmo)) );
+               SCIP_CALL( SCIPgetSolVals(scip, SCIPgetSols(scip)[s], gmoN(gmo), probdata->vars, solvals[s]) );
+               objvals[s] = SCIPgetSolOrigObj(scip, SCIPgetSols(scip)[s]);
+            }
+
+            /* adapt some parameter values for possible resolve's */
+            if( resolvenlp )
+            {
+               /* don't store solutions in original problem, so they don't get in a way when transforming for resolve */
+               SCIP_CALL( SCIPgetIntParam(scip, "limits/maxorigsol", &origmaxorigsol) );
+               SCIP_CALL( SCIPsetIntParam(scip, "limits/maxorigsol", 0) );
+
+               SCIP_CALL( SCIPgetIntParam(scip, "heuristics/subnlp/nlpverblevel", &orignlpverblevel) );
+               SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/nlpverblevel", 1) );
+
+               /* origfeastol = SCIPfeastol(scip); */
+               /* SCIP_CALL( SCIPsetRealParam(scip, "numerics/feastol", origfeastol / 100.0) ); */
+            }
+
+            SCIP_CALL( SCIPcreateClock(scip, &resolveclock) );
+            SCIP_CALL( SCIPstartClock(scip, resolveclock) );
+
+            for( s = 0; s < nsols; ++s )
+            {
+               SCIPinfoMessage(scip, NULL, "Checking feasibility of solution #%0.2d with reported objective value %.15e.\n", s, objvals[s]);
+
+               SCIP_CALL( checkAndRepairSol(scip, solvals[s], &objvals[s], resolvenlp, &success) );
+
+               if( success )
+                  break;
+            }
+
+            SCIP_CALL( SCIPstopClock(scip, resolveclock) );
+
+            /* add time for checks and NLP resolves to reported solving time */
+            mainsoltime = gmoGetHeadnTail(gmo, gmoHresused);
+            gmoSetHeadnTail(gmo, gmoHresused, mainsoltime + SCIPgetClockTime(scip, resolveclock));
+
+            SCIP_CALL( SCIPfreeClock(scip, &resolveclock) );
+
+            if( success )
+            {
+               /* store updated solution in GMO */
+#if GMOAPIVERSION < 12
+               {
+                  SCIP_Real* lambda;
+                  int i;
+
+                  SCIP_CALL( SCIPallocBufferArray(scip, &lambda, gmoM(gmo)) );
+                  for( i = 0; i < gmoM(gmo); ++i )
+                     lambda[i] = gmoValNA(gmo);
+
+                  /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
+                  gmoSetSolution2(gmo, solvals[s], lambda);
+
+                  SCIPfreeBufferArray(scip, &lambda);
+               }
+#else
+               gmoSetSolutionPrimal(gmo, solvals[s]);
+#endif
+               /* update reevaluated objective value */
+               objvals[s] = gmoGetHeadnTail(gmo, gmoHobjval);
+
+               SCIPinfoMessage(scip, NULL, "Solution #%0.2d feasible. Reevaluated objective value = %.15e.\n", s, objvals[s]);
+
+               SCIPinfoMessage(scip, NULL, "\nStatus update:\n");
+               SCIPinfoMessage(scip, NULL, "Solving Time (sec) : %.2f\n", gmoGetHeadnTail(gmo, gmoHresused));
+               SCIPinfoMessage(scip, NULL, "Primal Bound       : %+.14e\n", objvals[s]);
+               if( gmoGetHeadnTail(gmo, gmoTmipbest) != gmoValNA(gmo) )
+               {
+                  SCIPinfoMessage(scip, NULL, "Dual Bound         : %+.14e\n", dualbound);
+                  SCIPinfoMessage(scip, NULL, "Gap                : ");
+
+                  if( SCIPisEQ(scip, objvals[s], dualbound) )
+                     SCIPinfoMessage(scip, NULL, "%.2f %%\n", 0.0);
+                  else if( SCIPisZero(scip, dualbound)
+                     || SCIPisZero(scip, objvals[s])
+                     || (dualbound == gmoValNA(gmo))
+                     || SCIPisInfinity(scip, REALABS(objvals[s]))
+                     || SCIPisInfinity(scip, REALABS(dualbound))
+                     || objvals[s] * dualbound < 0.0 )
+                     SCIPinfoMessage(scip, NULL, "infinite\n");
+                  else
+                     SCIPinfoMessage(scip, NULL, "%.2f %%\n", REALABS((objvals[s] - dualbound)/MIN(REALABS(dualbound),REALABS(objvals[s]))));
+               }
+            }
+            else
+            {
+               SCIPinfoMessage(scip, NULL, "None of SCIP's solutions could be made feasible.\n");
+            }
+
+            /* restore original parameter values */
+            if( resolvenlp )
+            {
+               SCIP_CALL( SCIPsetIntParam(scip, "limits/maxorigsol", origmaxorigsol) );
+               SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/nlpverblevel", orignlpverblevel) );
+               /* SCIP_CALL( SCIPsetRealParam(scip, "numerics/feastol", origfeastol) ); */
+            }
+
+            for( s = 0; s < nsols; ++s )
+            {
+               SCIPfreeBufferArray(scip, &solvals[s]);
+            }
+            SCIPfreeBufferArray(scip, &solvals);
+            SCIPfreeBufferArray(scip, &objvals);
          }
+
+         /* update model status */
+         if( !success )
+         {
+            /* couldn't get a feasible solution, report intermediate infeasible */
+            gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
+         }
+         else if( !SCIPisEQ(scip, gmoGetHeadnTail(gmo, gmoHobjval), gmoGetHeadnTail(gmo, gmoTmipbest)) )
+         {
+            /* feasible, but gap not closed, so only local optimum */
+            gmoModelStatSet(gmo, gmoNDisc(gmo) ? gmoModelStat_Integer : gmoModelStat_OptimalLocal);
+         }
+         else
+         {
+            /* feasible and gap closed, so solved globally */
+            gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
+         }
+
       }
    }
 
@@ -2770,11 +2912,7 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
    }
    else
    {
-      SCIPwarningMessage(
-#if SCIP_VERSION >= 300
-         scip,
-#endif
-         "Value for optca = %g >= value for infinity. Setting solution limit to 1 instead.\n", gevGetDblOpt(gev, gevOptCA));
+      SCIPwarningMessage(scip, "Value for optca = %g >= value for infinity. Setting solution limit to 1 instead.\n", gevGetDblOpt(gev, gevOptCA));
       SCIP_CALL( SCIPsetIntParam(scip, "limits/solutions", 1) );
    }
    if( gevGetDblOpt(gev, gevWorkSpace) > 0.0 )
@@ -2808,10 +2946,8 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
       SCIP_CALL( SCIPsetIntParam(scip, "display/nfrac/active", 2) );
    }
 
-#if SCIP_VERSION > 210
    /* don't print reason why start solution is infeasible, per default */
    SCIP_CALL( SCIPsetBoolParam(scip, "misc/printreason", FALSE) );
-#endif
 
    if( gmoOptFile(gmo) > 0 )
    {
@@ -2823,11 +2959,7 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
       ret = SCIPreadParams(scip, optfilename);
       if( ret != SCIP_OKAY )
       {
-         SCIPwarningMessage(
-#if SCIP_VERSION >= 300
-            scip,
-#endif
-            "Reading of optionfile %s failed with SCIP return code <%d>!\n", optfilename, ret);
+         SCIPwarningMessage(scip, "Reading of optionfile %s failed with SCIP return code <%d>!\n", optfilename, ret);
       }
    }
 

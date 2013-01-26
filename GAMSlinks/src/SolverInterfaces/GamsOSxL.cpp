@@ -1009,10 +1009,6 @@ void GamsOSxL::writeSolution(
    delete[] colLev;
    delete[] colMarg;
    delete[] colBasStat;
-
-   if( sol->objectives != NULL && sol->objectives->values != NULL && sol->objectives->values->obj[0] != NULL )
-      gmoSetHeadnTail(gmo, gmoHobjval, sol->objectives->values->obj[0]->value);
-
 }
 
 void GamsOSxL::writeSolution(
