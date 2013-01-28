@@ -2235,6 +2235,7 @@ SCIP_RETCODE writeGmoSolution(
             SCIP_CLOCK* resolveclock;
             int origmaxorigsol;
             int orignlpverblevel;
+            int origmaxpresolrounds;
             /* SCIP_Real origfeastol; */
             SCIP_Bool resolvenlp;
             SCIP_Real** solvals;
@@ -2288,6 +2289,9 @@ SCIP_RETCODE writeGmoSolution(
 
                /* origfeastol = SCIPfeastol(scip); */
                /* SCIP_CALL( SCIPsetRealParam(scip, "numerics/feastol", origfeastol / 100.0) ); */
+
+               SCIP_CALL( SCIPgetIntParam(scip, "heuristics/subnlp/maxpresolverounds", &origmaxpresolrounds) );
+               SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/maxpresolverounds", 0) );
             }
 
             SCIP_CALL( SCIPcreateClock(scip, &resolveclock) );
@@ -2359,7 +2363,7 @@ SCIP_RETCODE writeGmoSolution(
             }
             else
             {
-               SCIPinfoMessage(scip, NULL, "None of SCIP's solutions could be made feasible.\n");
+               SCIPinfoMessage(scip, NULL, "None of %d SCIP solutions could be made feasible.\n", nsols);
             }
 
             /* restore original parameter values */
@@ -2368,6 +2372,7 @@ SCIP_RETCODE writeGmoSolution(
                SCIP_CALL( SCIPsetIntParam(scip, "limits/maxorigsol", origmaxorigsol) );
                SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/nlpverblevel", orignlpverblevel) );
                /* SCIP_CALL( SCIPsetRealParam(scip, "numerics/feastol", origfeastol) ); */
+               SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/maxpresolverounds", origmaxpresolrounds) );
             }
 
             for( s = 0; s < nsols; ++s )
