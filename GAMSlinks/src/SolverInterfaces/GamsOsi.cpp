@@ -81,7 +81,13 @@ static int __stdcall grbcallback(GRBmodel* model, void* qcbdata, int where, void
 #include "OsiMskSolverInterface.hpp"
 #include "mosek.h"
 
-static int MSKAPI mskcallback(MSKtask_t task, MSKuserhandle_t handle, MSKcallbackcodee caller)
+static int MSKAPI mskcallback(MSKtask_t task, MSKuserhandle_t handle, MSKcallbackcodee caller
+#if MSK_VERSION_MAJOR >= 7
+   , MSKCONST MSKrealt * douinf,
+   MSKCONST MSKint32t * intinf,
+   MSKCONST MSKint64t * lintinf
+#endif
+)
 {
    return gevTerminateGet((gevHandle_t)handle);
 }
@@ -204,7 +210,7 @@ int GamsOsi::readyAPI(
 
 #ifdef COIN_HAS_OSISPX
       case SOPLEX:
-         sprintf(buffer, "OsiSoplex (Osi library "OSI_VERSION", SoPlex library %d.%d.%d.%d)\nOsi link written by T. Achterberg, A. Gleixner, and W. Huang. Osi is part of COIN-OR.\n", SOPLEX_VERSION/100, (SOPLEX_VERSION%100)/10, SOPLEX_VERSION%10, SOPLEX_SUBVERSION);
+         sprintf(buffer, "OsiSoplex (Osi library "OSI_VERSION", SoPlex library %d.%d.%d)\nOsi link written by T. Achterberg, A. Gleixner, and W. Huang. Osi is part of COIN-OR.\n", SOPLEX_VERSION/100, (SOPLEX_VERSION%100)/10, SOPLEX_VERSION%10);
          break;
 #endif
 
@@ -283,7 +289,11 @@ int GamsOsi::readyAPI(
             MSKenv_t mskenv;
             MKlicenseInit_t initType;
 
+#if MSK_VERSION_MAJOR < 7
             if( MSK_makeenv(&mskenv,NULL, NULL,NULL,NULL) )
+#else
+            if( MSK_makeenv(&mskenv,NULL) )
+#endif
             {
                gevLogStat(gev, "Failed to create Mosek environment.");
                gmoSolveStatSet(gmo, gmoSolveStat_License);
@@ -885,7 +895,11 @@ bool GamsOsi::setupParameters()
             MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_MIO_MAX_NUM_RELAXS, nodelim);
          MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_NEAR_TOL_REL_GAP, optcr);
          MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_NEAR_TOL_ABS_GAP, optca);
+#if MSK_VERSION_MAJOR < 7
          MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_INTPNT_NUM_THREADS, gevThreads(gev));
+#else
+         MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_NUM_THREADS, gevThreads(gev));
+#endif
          //if( gevGetIntOpt(gev, gevInteger4) )
          //	MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_MIO_CONSTRUCT_SOL, MSK_ON);
 
@@ -1703,7 +1717,9 @@ bool GamsOsi::writeSolution(
                gevLogStat(gev, "Stopped due to time limit.");
                break;
 
+#if MSK_VERSION_MAJOR < 7
             case MSK_RES_TRM_USER_BREAK:
+#endif
             case MSK_RES_TRM_USER_CALLBACK:
                gmoSolveStatSet(gmo, gmoSolveStat_User);
                gevLogStat(gev, "Stopped due to user interrupt.");
