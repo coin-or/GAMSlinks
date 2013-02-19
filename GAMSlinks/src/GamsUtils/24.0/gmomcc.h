@@ -6,7 +6,7 @@
 #if ! defined(_GMOCC_H_)
 #     define  _GMOCC_H_
 
-#define GMOAPIVERSION 10
+#define GMOAPIVERSION 11
 
 
 enum gmoEquType {
