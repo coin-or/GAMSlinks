@@ -5,7 +5,9 @@
 // Author: Stefan Vigerske
 
 #include "GamsSolver.hpp"
+#ifdef HAVE_CONFIG_H
 #include "GAMSlinksConfig.h"
+#endif
 
 #include <cstdio>
 #include <cassert>
