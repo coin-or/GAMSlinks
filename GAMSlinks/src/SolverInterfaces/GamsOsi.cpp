@@ -43,8 +43,9 @@ static int CPXPUBLIC cpxinfocallback(CPXCENVptr cpxenv, void* cbdata, int wheref
 #endif
 
 #ifdef COIN_HAS_OSIGLPK
-#include "OsiGlpkSolverInterface.hpp"
+#define GLP_PROB_DEFINED
 #include "glpk.h"
+#include "OsiGlpkSolverInterface.hpp"
 
 static int glpkprint(void* info, const char* msg)
 {
