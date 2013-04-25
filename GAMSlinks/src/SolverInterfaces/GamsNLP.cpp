@@ -44,6 +44,8 @@ GamsNLP::GamsNLP(
   div_iter_tol(1E+20),
   scaled_conviol_tol(1E-8),
   unscaled_conviol_tol(1E-4),
+  scaled_conviol_acctol(1E-2),
+  unscaled_conviol_acctol(1E-2),
   reportmininfeas(false),
   domviolations(0)
 {
@@ -746,13 +748,18 @@ void GamsNLP::finalize_solution(
    char buffer[300];
    bool write_solution = false;
 
+   double scaled_tol = scaled_conviol_tol;
+   double unscaled_tol = unscaled_conviol_tol;
+
    assert(n == gmoN(gmo));
    assert(m == gmoM(gmo));
 
    switch( status )
    {
-      case SUCCESS:
       case STOP_AT_ACCEPTABLE_POINT:
+         scaled_tol = scaled_conviol_acctol;
+         unscaled_tol = unscaled_conviol_acctol;
+      case SUCCESS:
          gmoModelStatSet(gmo, (gmoObjNLNZ(gmo) || gmoNLNZ(gmo)) ? gmoModelStat_OptimalLocal : gmoModelStat_OptimalGlobal);
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
          write_solution = true;
@@ -765,7 +772,6 @@ void GamsNLP::finalize_solution(
          break;
 
       case DIVERGING_ITERATES:
-         gevLogStat(gev, "Diverging iterates: we'll guess unbounded!");
          gmoModelStatSet(gmo, gmoModelStat_Unbounded);
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
          write_solution = true;
@@ -803,20 +809,20 @@ void GamsNLP::finalize_solution(
             default: ;
          }
          /* decide on model status: check if current point is feasible */
-         if( cq->curr_nlp_constraint_violation(NORM_MAX) > scaled_conviol_tol )
+         if( cq->curr_nlp_constraint_violation(NORM_MAX) > scaled_tol )
          {
-            snprintf(buffer, sizeof(buffer), "Final point is not feasible: scaled constraint violation (%g) is larger than max(tol,acceptable_tol) (%g).", cq->curr_nlp_constraint_violation(NORM_MAX), scaled_conviol_tol);
+            snprintf(buffer, sizeof(buffer), "Final point is not feasible: scaled constraint violation (%g) is larger than max(tol,acceptable_tol) (%g).", cq->curr_nlp_constraint_violation(NORM_MAX), scaled_tol);
             gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
          }
-         else if( cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) > unscaled_conviol_tol )
+         else if( cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) > unscaled_tol )
          {
-            snprintf(buffer, sizeof(buffer), "Final point is not feasible: unscaled constraint violation (%g) is larger than max(constr_viol_tol,acceptable_constr_viol_tol) (%g).", cq->unscaled_curr_nlp_constraint_violation(NORM_MAX), unscaled_conviol_tol);
+            snprintf(buffer, sizeof(buffer), "Final point is not feasible: unscaled constraint violation (%g) is larger than max(constr_viol_tol,acceptable_constr_viol_tol) (%g).", cq->unscaled_curr_nlp_constraint_violation(NORM_MAX), unscaled_tol);
             gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
          }
          else
          {
             snprintf(buffer, sizeof(buffer), "Final point is feasible: scaled constraint violation (%g) is below max(tol,acceptable_tol) (%g) and unscaled constraint violation (%g) is below max(constr_viol_tol,acceptable_constr_viol_tol) (%g).",
-               cq->curr_nlp_constraint_violation(NORM_MAX), scaled_conviol_tol, cq->unscaled_curr_nlp_constraint_violation(NORM_MAX), unscaled_conviol_tol);
+               cq->curr_nlp_constraint_violation(NORM_MAX), scaled_tol, cq->unscaled_curr_nlp_constraint_violation(NORM_MAX), unscaled_tol);
             gmoModelStatSet(gmo, gmoModelStat_NonOptimalIntermed);
          }
          gevLog(gev, buffer);
@@ -864,6 +870,8 @@ void GamsNLP::finalize_solution(
       double* compl_xU = NULL;
       double* compl_gL = NULL;
       double* compl_gU = NULL;
+      int ninfeas = 0;
+      int nnopt = 0;
 
       if( mininfeasprimals != NULL && (gmoModelStat(gmo) == gmoModelStat_InfeasibleIntermed || gmoModelStat(gmo) == gmoModelStat_InfeasibleLocal) && mininfeasiter < data->iter_count() )
       {
@@ -883,20 +891,20 @@ void GamsNLP::finalize_solution(
          eval_g(n, x, true, m, const_cast<double*>(g));
 
          /* decide on changing model status: check if current point is feasible */
-         if( mininfeasconviolsc > scaled_conviol_tol )
+         if( mininfeasconviolsc > scaled_tol )
          {
-            snprintf(buffer, sizeof(buffer), "Intermediate solution is not feasible: scaled constraint violation (%g) is larger than max(tol,acceptable_tol) (%g).", mininfeasconviolsc, scaled_conviol_tol);
+            snprintf(buffer, sizeof(buffer), "Intermediate solution is not feasible: scaled constraint violation (%g) is larger than max(tol,acceptable_tol) (%g).", mininfeasconviolsc, scaled_tol);
             gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
          }
-         else if( mininfeasconviolunsc > unscaled_conviol_tol )
+         else if( mininfeasconviolunsc > unscaled_tol )
          {
-            snprintf(buffer, sizeof(buffer), "Intermediate solution is not feasible: unscaled constraint violation (%g) is larger than max(constr_viol_tol,acceptable_constr_viol_tol) (%g).", mininfeasconviolunsc, unscaled_conviol_tol);
+            snprintf(buffer, sizeof(buffer), "Intermediate solution is not feasible: unscaled constraint violation (%g) is larger than max(constr_viol_tol,acceptable_constr_viol_tol) (%g).", mininfeasconviolunsc, unscaled_tol);
             gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
          }
          else
          {
             snprintf(buffer, sizeof(buffer), "Intermediate solution is feasible: scaled constraint violation (%g) is below max(tol,acceptable_tol) (%g) and unscaled constraint violation (%g) is below max(constr_viol_tol,acceptable_constr_viol_tol) (%g).",
-               mininfeasconviolsc, scaled_conviol_tol, mininfeasconviolunsc, unscaled_conviol_tol);
+               mininfeasconviolsc, scaled_tol, mininfeasconviolunsc, unscaled_tol);
             gmoModelStatSet(gmo, gmoModelStat_NonOptimalIntermed);
          }
          gevLog(gev, buffer);
@@ -946,8 +954,11 @@ void GamsNLP::finalize_solution(
       for( Index i = 0; i < n; ++i )
       {
          colBasStat[i] = gmoBstat_Super;
-         if( gmoGetVarLowerOne(gmo, i) != gmoGetVarUpperOne(gmo, i) && compl_xL != NULL && (fabs(compl_xL[i]) > scaled_conviol_tol || fabs(compl_xU[i]) > scaled_conviol_tol) )
+         if( gmoGetVarLowerOne(gmo, i) != gmoGetVarUpperOne(gmo, i) && compl_xL != NULL && (fabs(compl_xL[i]) > scaled_tol || fabs(compl_xU[i]) > scaled_tol) )
+         {
             colIndic[i] = gmoCstat_NonOpt;
+            ++nnopt;
+         }
          else
             colIndic[i] = gmoCstat_OK;
          // if, e.g., x_i has no lower bound, then the dual z_L[i] is -infinity
@@ -980,10 +991,16 @@ void GamsNLP::finalize_solution(
                viol = scaled_viol != NULL ? scaled_viol[i] : 0.0;
                break;
          }
-         if( viol > unscaled_conviol_tol )
+         if( viol > unscaled_tol )
+         {
             rowIndic[i] = gmoCstat_Infeas;
-         else if( compl_gL != NULL && (fabs(compl_gL[i]) > scaled_conviol_tol || fabs(compl_gU[i]) > scaled_conviol_tol) )
+            ++ninfeas;
+         }
+         else if( compl_gL != NULL && (fabs(compl_gL[i]) > scaled_tol || fabs(compl_gU[i]) > scaled_tol) )
+         {
             rowIndic[i] = gmoCstat_NonOpt;
+            ++nnopt;
+         }
          else
             rowIndic[i] = gmoCstat_OK;
 
@@ -993,6 +1010,9 @@ void GamsNLP::finalize_solution(
 
       /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
       gmoSetSolution8(gmo, x, colMarg, negLambda, g, colBasStat, colIndic, rowBasStat, rowIndic);
+
+      gmoSetHeadnTail(gmo, gmoTninf, ninfeas);
+      gmoSetHeadnTail(gmo, gmoTnopt, nnopt);
 
       if( scaled_viol != mininfeasscaledviol )
       {

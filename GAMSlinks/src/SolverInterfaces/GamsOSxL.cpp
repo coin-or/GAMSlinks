@@ -1003,6 +1003,16 @@ void GamsOSxL::writeSolution(
 
    gmoSetSolution8(gmo, colLev, colMarg, rowMarg, rowLev, colBasStat, NULL, rowBasStat, NULL);
 
+   if( gmoModelType(gmo) == gmoProc_cns )
+      switch( gmoModelStat(gmo) )
+      {
+         case gmoModelStat_OptimalGlobal:
+         case gmoModelStat_OptimalLocal:
+         case gmoModelStat_NonOptimalIntermed:
+         case gmoModelStat_Integer:
+            gmoModelStatSet(gmo, gmoModelStat_Solved);
+      }
+
    delete[] rowLev;
    delete[] rowMarg;
    delete[] rowBasStat;

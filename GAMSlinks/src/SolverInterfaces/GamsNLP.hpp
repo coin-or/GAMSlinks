@@ -52,6 +52,8 @@ public:
    double                div_iter_tol;       /**< value above which divergence is claimed */
    double                scaled_conviol_tol; /**< scaled constraint violation tolerance */
    double                unscaled_conviol_tol; /**< unscaled constraint violation tolerance */
+   double                scaled_conviol_acctol; /**< acceptable scaled constraint violation tolerance */
+   double                unscaled_conviol_acctol; /**< acceptable unscaled constraint violation tolerance */
    bool                  reportmininfeas;    /**< should an intermediate solution with minimal primal infeasibility be reported if final solution is not feasible? */
    double                clockStart;         /**< time when optimization started */
    long int              domviolations;      /**< number of domain violations */

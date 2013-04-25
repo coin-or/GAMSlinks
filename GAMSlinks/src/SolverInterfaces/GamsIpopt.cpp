@@ -160,18 +160,11 @@ int GamsIpopt::callSolver()
    SmartPtr<GamsNLP> nlp = new GamsNLP(gmo);
    ipopt->Options()->GetNumericValue("diverging_iterates_tol", nlp->div_iter_tol, "");
 
-   double acceptabletol;
-   double defaulttol;
-
-   // get scaled consviol tolerance as max of acceptable tolerance and tolerance
-   ipopt->Options()->GetNumericValue("acceptable_tol", acceptabletol, "");
-   ipopt->Options()->GetNumericValue("tol", defaulttol, "");
-   nlp->scaled_conviol_tol = std::max(defaulttol, acceptabletol);
-
-   // get unscaled consviol tolerance as max of acceptable constraint violation tolerance and constraint violation tolerance
-   ipopt->Options()->GetNumericValue("acceptable_constr_viol_tol", acceptabletol, "");
-   ipopt->Options()->GetNumericValue("constr_viol_tol", defaulttol, "");
-   nlp->unscaled_conviol_tol = std::max(defaulttol, acceptabletol);
+   // get scaled and unscaled constraint violation tolerances
+   ipopt->Options()->GetNumericValue("tol", nlp->scaled_conviol_tol, "");
+   ipopt->Options()->GetNumericValue("acceptable_tol", nlp->scaled_conviol_acctol, "");
+   ipopt->Options()->GetNumericValue("constr_viol_tol", nlp->unscaled_conviol_tol, "");
+   ipopt->Options()->GetNumericValue("acceptable_constr_viol_tol", nlp->unscaled_conviol_acctol, "");
 
    // initialize GMO hessian, if required
    std::string hess_approx;
@@ -257,6 +250,16 @@ int GamsIpopt::callSolver()
          gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
          gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
          break;
+   }
+
+   if( gmoModelType(gmo) == gmoProc_cns )
+      switch( gmoModelStat(gmo) )
+      {
+         case gmoModelStat_OptimalGlobal:
+         case gmoModelStat_OptimalLocal:
+         case gmoModelStat_NonOptimalIntermed:
+         case gmoModelStat_Integer:
+            gmoModelStatSet(gmo, gmoModelStat_Solved);
    }
 
    return 0;

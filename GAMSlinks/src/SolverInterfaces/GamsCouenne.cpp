@@ -418,6 +418,11 @@ int GamsCouenne::callSolver()
       if( preprocessTime >= reslim )
       {
          gevLogStat(gev, "Time is up.\n");
+         gmoSetHeadnTail(gmo, gmoHresused,  preprocessTime);
+         gmoSetHeadnTail(gmo, gmoTmipnod,   0);
+         gmoSetHeadnTail(gmo, gmoHiterused, 0);
+         gmoSetHeadnTail(gmo, gmoHdomused,  static_cast<double>(minlp->nlp->domviolations));
+         gmoSetHeadnTail(gmo, gmoTmipbest,  gmoValNA(gmo));
          gmoSolveStatSet(gmo, gmoSolveStat_Resource);
          gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
          goto TERMINATE;
@@ -554,6 +559,16 @@ int GamsCouenne::callSolver()
       gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
       gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
       return -1;
+   }
+
+   if( gmoModelType(gmo) == gmoProc_cns )
+      switch( gmoModelStat(gmo) )
+      {
+         case gmoModelStat_OptimalGlobal:
+         case gmoModelStat_OptimalLocal:
+         case gmoModelStat_NonOptimalIntermed:
+         case gmoModelStat_Integer:
+            gmoModelStatSet(gmo, gmoModelStat_Solved);
    }
 
 TERMINATE:

@@ -304,6 +304,8 @@ int GamsOsi::readyAPI(
             if( gevmoseklice(gev, pal, mskenv, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType) )
                gevLogStat(gev, "Trying to use Mosek standalone license.\n");
 
+            msklindomipallowed = (initType == MKGAMS || initType == ML || initType == MKdemo);
+
             if( MSK_initenv(mskenv) )
             {
                gevLogStat(gev, "Failed to initialize Mosek environment. Maybe you do not have a license?");
@@ -912,6 +914,37 @@ bool GamsOsi::setupParameters()
             MSK_putstrparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_SPAR_PARAM_READ_FILE_NAME, buffer);
             MSK_readparamfile(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL));
          }
+
+#ifdef GAMS_BUILD
+         if( gmoNDisc(gmo) > 0 )
+         {
+            /* ensure we call Lindo's MIP solver only if licensed */
+            MSKtask_t task;
+            MSKint32t mipchoice;
+
+            task = osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL);
+            MSK_getintparam(task, MSK_IPAR_OPTIMIZER, &mipchoice);
+            switch( mipchoice )
+            {
+               case MSK_OPTIMIZER_FREE:
+                  /* Mosek 7 currently chooses always Mosek's own conic optimizer,
+                   * but we want to use Lindo's MIP solver as in previous GAMS versions */
+                  if( msklindomipallowed )
+                     MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_MIXED_INT);
+                  else
+                     MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_MIXED_INT_CONIC);
+                  break;
+               case MSK_OPTIMIZER_MIXED_INT:
+                  if( !msklindomipallowed )
+                  {
+                     /* force Mosek's conic optimizer, thereby overwriting a user's choice */
+                     gevLogStat(gev, "Overruling choice for MSK_IPAR_OPTIMIZER with MSK_OPTIMIZER_MIXED_INT_CONIC");
+                     MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_MIXED_INT_CONIC);
+                  }
+                  break;
+            }
+         }
+#endif
 
          break;
       }

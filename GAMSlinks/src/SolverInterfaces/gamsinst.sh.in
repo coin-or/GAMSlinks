@@ -73,7 +73,7 @@ BEGIN {
    @COIN_HAS_IPOPT_TRUE@written["MYIPOPT"] = 0;
    @COIN_HAS_IPOPT_TRUE@libid["MYIPOPT"] = "ipo";
    @COIN_HAS_IPOPT_TRUE@dicttype["MYIPOPT"] = 0;
-   @COIN_HAS_IPOPT_TRUE@modeltypes["MYIPOPT"] = "LP RMIP NLP DNLP RMINLP QCP RMIQCP";
+   @COIN_HAS_IPOPT_TRUE@modeltypes["MYIPOPT"] = "LP RMIP NLP DNLP RMINLP CNS QCP RMIQCP";
 
    @COIN_HAS_OS_TRUE@written["MYOS"] = 0;
    @COIN_HAS_OS_TRUE@libid["MYOS"] = "os_";

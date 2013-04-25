@@ -571,8 +571,31 @@ int GamsBonmin::callSolver()
       char buf[1024];
       snprintf(buf, 1024, "Error: %s exited with error %s", E->solverName().c_str(), E->errorName().c_str());
       gevLogStat(gev, buf);
+      switch( Ipopt::ApplicationReturnStatus(E->errorNum()) )
+      {
+         case Maximum_Iterations_Exceeded:
+            gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
+            gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+            break;
+         case Maximum_CpuTime_Exceeded:
+         case Insufficient_Memory:
+            gmoSolveStatSet(gmo, gmoSolveStat_Resource);
+            gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+            break;
+         case Invalid_Number_Detected:
+            gmoSolveStatSet(gmo, gmoSolveStat_EvalError);
+            gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+            break;
+         case Restoration_Failed:
+         case Error_In_Step_Computation:
+         case Not_Enough_Degrees_Of_Freedom:
+            gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
+            gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+            break;
+         default:
       gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
       gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+      }
       return 0;
    }
    catch( std::bad_alloc )
