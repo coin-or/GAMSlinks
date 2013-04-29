@@ -220,6 +220,15 @@ not normally need to use this fine tuning.
 
 \textsl{(default = 5)}
 
+\item[\label{randomseedclp}\hypertarget{randomseedclp}
+{\textbf{randomseedclp (\slshape{integer})}}]\hspace{1.0in}
+
+Allows initialization of the random seed for pseudo-random numbers used to break ties in degenerate problems.
+This may yield a different continuous optimum and, in the context of Cbc, different cuts and heuristic solutions.
+The special value of 0 lets Clp use the time of the day for the initial seed.
+
+\textsl{(default = -1)}
+
 \item[\label{tol_dual}\hypertarget{tol_dual}
 {\textbf{tol\_dual (\slshape{real})}}]\hspace{1.0in}
 
@@ -384,6 +393,24 @@ Handles two sets of priorities such that binary variables get low priority.
 Assigns high priority to variables that are at most nonzero.
 \end{itemize}
 
+\item[\label{extravariables}\hypertarget{extravariables}
+{\textbf{extravariables (\slshape{integer})}}]\hspace{1.0in}
+
+Switches on a trivial re-formulation that introduces extra integer variables to group together variables with same cost.
+
+\textsl{(default = 0)}
+
+\item[\label{multiplerootpasses}\hypertarget{multiplerootpasses}
+{\textbf{multiplerootpasses (\slshape{integer})}}]\hspace{1.0in}
+
+Solves the root node with multiple copies of the solver, each with its own different seed and collects the solutions and cuts so that the main solver has a richer set of solutions and possibly stronger cuts.
+If threads are enabled, then this is done in parallel.
+If the number is below 100, then the option gives the number of times the root is solved.
+The actual format is aabbcc where aa is number of extra passes, if bb is non zero then it is number of threads to use (otherwise uses threads setting) and cc is number of times to do root phase.
+The solvers do not interact with each other.  However if extra passes are specified then cuts are collected and used in later passes - so there is interaction there.
+
+\textsl{(default = 0)}
+
 \item[\label{nodestrategy}\hypertarget{nodestrategy}
 {\textbf{nodestrategy (\slshape{string})}}]\hspace{1.0in}
 
@@ -441,6 +468,14 @@ Controls the number of nodes that are evaluated between status prints.
 \item[0] 
 Automatic choice, which is 100 for large problems and 1000 for small problems.
 \end{itemize}
+
+\item[\label{randomseedcbc}\hypertarget{randomseedcbc}
+{\textbf{randomseedcbc (\slshape{integer})}}]\hspace{1.0in}
+
+Allows initialization of the random seed for pseudo-random numbers used in heuristics such as the Feasibility Pump to decide whether to round up or down.
+The special value of 0 lets Cbc use the time of the day for the initial seed.
+
+\textsl{(default = -1)}
 
 \item[\label{loglevel}\hypertarget{loglevel}
 {\textbf{loglevel (\slshape{integer})}}]\hspace{1.0in}
@@ -530,6 +565,20 @@ CBC stops if the objective function values exceeds (in case of maximization) or 
 
 \textsl{(default = GAMS cutoff)}
 
+\item[\label{cutoffconstraint}\hypertarget{cutoffconstraint}
+{\textbf{cutoffconstraint (\slshape{integer})}}]\hspace{1.0in}
+
+For some problems, cut generators and general branching work better if the problem would be infeasible if the cost is too high.
+If this option is set, the objective function is added as a constraint which right hand side is set to the current cutoff value (objective value of best known solution).
+
+\textsl{(default = 0)}
+\begin{itemize}
+\item[0] 
+do not add extra constraint
+\item[1] 
+add extra constraint
+\end{itemize}
+
 \end{description}
 
 \subsubsection{MIP Options for Cutting Plane Generators}
@@ -570,6 +619,15 @@ A negative value $-n$ means that $n$ passes are also applied if the objective do
 
 \textsl{(default = 1)}
 
+\item[\label{cut_passes_slow}\hypertarget{cut_passes_slow}
+{\textbf{cut\_passes\_slow (\slshape{integer})}}]\hspace{1.0in}
+
+Determines the number of rounds that slow cut generators should be applied.
+The idea is that the code does these cuts just a few times - less than the more usual cuts.
+The cut generators identified by "may be slow" at present are Lift and project cuts and both versions of Reduce and Split cuts.
+
+\textsl{(default = 10)}
+
 \item[\label{cuts}\hypertarget{cuts}
 {\textbf{cuts (\slshape{string})}}]\hspace{1.0in}
 
@@ -583,7 +641,7 @@ Then you can set individual ones off or on using the specific options.
 \item[off] 
 Turns off all cut generators.
 \item[on] 
-Turns on all default cut generators and CBC will try them in the branch and cut tree (see the option \hyperlink{cutdepth}{cutdepth} on how to fine tune the behaviour).
+Turns on all default cut generators and CBC will try them in the branch and cut tree (see the option \hyperlink{cutdepth}{cutdepth} on how to fine tune the behavior).
 \item[root] 
 Let CBC generate cuts only at the root node.
 \item[ifmove] 
@@ -627,6 +685,32 @@ Determines whether and when CBC should try to generate mixed-integer Gomory cuts
 See the option \hyperlink{cuts}{cuts} for an explanation on the different values.
 
 Reference: Laurence A. Wolsey, Integer Programming, Wiley, John \& Sons, (1998) 124-132.
+
+\item[\label{gomorycuts2}\hypertarget{gomorycuts2}
+{\textbf{gomorycuts2 (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether and when CBC should try to generate mixed-integer Gomory cuts using the alternative robust implementation.
+Reference: G. Cornuejols, F. Margot, and G. Nannicini, On the safety of Gomory cut generators, submitted (2012)
+
+\textsl{(default = off)}
+\begin{itemize}
+\item[off] 
+Turns off the cut generators.
+\item[on] 
+Turns on the cut generator and CBC will try it in the branch and cut tree (see the option \hyperlink{cutdepth}{cutdepth} on how to fine tune the behavior).
+\item[root] 
+Let CBC generate gomory cuts only at the root node.
+\item[ifmove] 
+Let CBC use this cut generator in the tree if it looks as if it is doing some good and moves the objective value.
+\item[forceon] 
+Turns on the cut generator and forces CBC to use it at every node.
+\item[longroot]
+\item[endonly]
+\item[long]
+\item[longifmove]
+\item[forcelongon]
+\item[longendonly]
+\end{itemize}
 
 \textsl{(default = ifmove)}
 
@@ -692,7 +776,7 @@ Reference: M. Savelsbergh, Preprocessing and Probing Techniques for Mixed Intege
 \item[off] 
 Turns off Probing.
 \item[on] 
-Turns on Probing and CBC will try it in the branch and cut tree (see the option \hyperlink{cutdepth}{cutdepth} how to fine tune this behaviour).
+Turns on Probing and CBC will try it in the branch and cut tree (see the option \hyperlink{cutdepth}{cutdepth} how to fine tune this behavior).
 \item[root] 
 Let CBC do Probing only at the root node.
 \item[ifmove] 
@@ -723,6 +807,26 @@ Reference: K. Anderson, G. Cornuejols, and Yanjun Li, Reduce-and-Split Cuts: Imp
 
 \textsl{(default = off)}
 
+\item[\label{reduceandsplitcuts2}\hypertarget{reduceandsplitcuts2}
+{\textbf{reduceandsplitcuts2 (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether and when CBC should try to generate reduced and split cuts using the 2nd implementation.
+Reduce and split cuts are variants of Gomory cuts.
+Reference:
+G. Cornuejols and G. Nannicini, Practical strategies for generating rank-1 split cuts in mixed-integer linear programming, Mathematical Programming Computation 3 (2011), 281-318.
+
+\textsl{(default = off)}
+\begin{itemize}
+\item[off] 
+Turns off all cut generators.
+\item[on] 
+Turns on all default cut generators and CBC will try them in the branch and cut tree (see the option \hyperlink{cutdepth}{cutdepth} on how to fine tune the behavior).
+\item[root] 
+Let CBC generate cuts only at the root node.
+\item[longon]
+\item[longroot]
+\end{itemize}
+
 \item[\label{residualcapacitycuts}\hypertarget{residualcapacitycuts}
 {\textbf{residualcapacitycuts (\slshape{string})}}]\hspace{1.0in}
 
@@ -737,6 +841,29 @@ T.L. Magnanti, P. Mirchandani, and R. Vachani, The convex hull of two core capac
 A. Atamturk and D. Rajan, On splittable and unsplittable flow capacitated network design arc-set polyhedra, Math. Programming, 92 (2002), pp. 315-333.
 
 \textsl{(default = off)}
+
+\item[\label{zerohalfcuts}\hypertarget{zerohalfcuts}
+{\textbf{zerohalfcuts (\slshape{string})}}]\hspace{1.0in}
+
+Determines whether and when CBC should try to generate zero-half cuts.
+
+So far, they may help only on a small subset of problems and may need some tuning.
+Reference: G. Andreello, A. Caprara, and M. Fischetti, Embedding Cuts in a Branch and Cut Framework: a Computational Study with $\{0,1/2\}$-Cuts, INFORMS Journal on Computing 19 (2007), 229-238.
+
+\textsl{(default = off)}
+\begin{itemize}
+\item[off] 
+Turns off the zero half cuts generators.
+\item[on] 
+Turns on the zero half cuts cut generators and CBC will try it in the branch and cut tree (see the option \hyperlink{cutdepth}{cutdepth} on how to fine tune the behavior).
+\item[root] 
+Let CBC generate zero half cuts only at the root node.
+\item[ifmove] 
+Let CBC use the zero half cuts generator in the tree if it looks as if it is doing some good and moves the objective value.
+\item[forceon] 
+Turns on the zero half cuts generator and forces CBC to use it at every node.
+\item[onglobal]
+\end{itemize}
 
 \end{description}
 
@@ -937,7 +1064,7 @@ Turns the local tree search on.
 \item[\label{naiveheuristics}\hypertarget{naiveheuristics}
 {\textbf{naiveheuristics (\slshape{integer})}}]\hspace{1.0in}
 
-This parameter controls the use of some naive heuristics, e.g., fixing of all integers with costs to zero.<BR$>$
+This parameter controls the use of some naive heuristics, e.g., fixing of all integers with costs to zero.
 
 \textsl{(default = 0)}
 \begin{itemize}
@@ -1020,9 +1147,8 @@ Turns the rounding heuristic on.
 {\textbf{vubheuristic (\slshape{integer})}}]\hspace{1.0in}
 
 This parameter control the use of the VUB heuristic.
-If it is set (between -2 and 20), Cbc will try  and fix some integer variables
+If it is set (between -2 and 20), Cbc will try and fix some integer variables.
 
-\textsl{(default = -1)}
 
 \item[\label{proximitysearch}\hypertarget{proximitysearch}
 {\textbf{proximitysearch (\slshape{integer})}}]\hspace{1.0in}

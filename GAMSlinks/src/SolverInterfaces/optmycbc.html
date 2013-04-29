@@ -71,6 +71,9 @@ presolve</a></td>
 <tr><td><a href="#primalpivot">
 primalpivot</a></td>
 <td>primal pivot choice algorithm</td></tr>
+<tr><td><a href="#randomseedclp">
+randomseedclp</a></td>
+<td>random seed for CLP</td></tr>
 <tr><td><a href="#scaling">
 scaling</a></td>
 <td>scaling method</td></tr>
@@ -99,9 +102,15 @@ coststrategy</a></td>
 <tr><td><a href="#cutoff">
 cutoff</a></td>
 <td>cutoff for objective function value</td></tr>
+<tr><td><a href="#cutoffconstraint">
+cutoffconstraint</a></td>
+<td>whether to add a constraint from the objective function</td></tr>
 <tr><td><a href="#dumpsolutions">
 dumpsolutions</a></td>
 <td>name of solutions index gdx file for writing alternate solutions</td></tr>
+<tr><td><a href="#extravariables">
+extravariables</a></td>
+<td>group together variables with same cost</td></tr>
 <tr><td><a href="#increment">
 increment</a></td>
 <td>increment of cutoff when new incumbent</td></tr>
@@ -114,6 +123,9 @@ maxsol</a></td>
 <tr><td><a href="#mipstart">
 mipstart</a></td>
 <td>whether it should be tried to use the initial variable levels as initial MIP solution</td></tr>
+<tr><td><a href="#multiplerootpasses">
+multiplerootpasses</a></td>
+<td>runs multiple copies of the solver at the root node</td></tr>
 <tr><td><a href="#nodelim">
 nodelim</a></td>
 <td>node limit</td></tr>
@@ -135,6 +147,9 @@ preprocess</a></td>
 <tr><td><a href="#printfrequency">
 printfrequency</a></td>
 <td>frequency of status prints</td></tr>
+<tr><td><a href="#randomseedcbc">
+randomseedcbc</a></td>
+<td>random seed for CBC</td></tr>
 <tr><td><a href="#sollim">
 sollim</a></td>
 <td>limit on number of solutions</td></tr>
@@ -178,6 +193,9 @@ cuts</a></td>
 <tr><td><a href="#cut_passes_root">
 cut_passes_root</a></td>
 <td>number of cut passes at root node</td></tr>
+<tr><td><a href="#cut_passes_slow">
+cut_passes_slow</a></td>
+<td>number of cut passes for slow cut generators</td></tr>
 <tr><td><a href="#cut_passes_tree">
 cut_passes_tree</a></td>
 <td>number of cut passes at nodes in the tree</td></tr>
@@ -187,6 +205,9 @@ flowcovercuts</a></td>
 <tr><td><a href="#gomorycuts">
 gomorycuts</a></td>
 <td>Gomory Cuts</td></tr>
+<tr><td><a href="#gomorycuts2">
+gomorycuts2</a></td>
+<td>Gomory Cuts 2nd implementation</td></tr>
 <tr><td><a href="#knapsackcuts">
 knapsackcuts</a></td>
 <td>Knapsack Cover Cuts</td></tr>
@@ -202,12 +223,18 @@ probingcuts</a></td>
 <tr><td><a href="#reduceandsplitcuts">
 reduceandsplitcuts</a></td>
 <td>Reduce and Split Cuts</td></tr>
+<tr><td><a href="#reduceandsplitcuts2">
+reduceandsplitcuts2</a></td>
+<td>Reduce and Split Cuts 2nd implementation</td></tr>
 <tr><td><a href="#residualcapacitycuts">
 residualcapacitycuts</a></td>
 <td>Residual Capacity Cuts</td></tr>
 <tr><td><a href="#twomircuts">
 twomircuts</a></td>
 <td>Two Phase Mixed Integer Rounding Cuts</td></tr>
+<tr><td><a href="#zerohalfcuts">
+zerohalfcuts</a></td>
+<td>Zero-Half Cuts</td></tr>
 <tr><th height=75 valign=bottom colspan=2 align=left><h3>MIP Options for Heuristics</h3></th></tr>
 <tr><td><a href="#combinesolutions">
 combinesolutions</a></td>
@@ -383,6 +410,21 @@ CBC stops if the objective function values exceeds (in case of maximization) or 
 
 <br><i>(default = GAMS cutoff)</i>
 
+<h4><a name="cutoffconstraint">
+cutoffconstraint</a>
+<i> (integer)</i> whether to add a constraint from the objective function</h4><p>
+
+For some problems, cut generators and general branching work better if the problem would be infeasible if the cost is too high.
+If this option is set, the objective function is added as a constraint which right hand side is set to the current cutoff value (objective value of best known solution).
+
+<br><i>(default = 0)</i>
+<table>
+<tr valign="top"><td width=20 align=right>0</td><td>.
+do not add extra constraint  </td></tr>
+<tr valign="top"><td width=20 align=right>1</td><td>.
+add extra constraint  </td></tr>
+</table>
+
 <h4><a name="cuts">
 cuts</a>
 <i> (string)</i> global switch for cutgenerators</h4><p>
@@ -396,7 +438,7 @@ Then you can set individual ones off or on using the specific options.
 <tr valign="top"><td width=20 align=right>off</td><td>.
 Turns off all cut generators.</td></tr>
 <tr valign="top"><td width=20 align=right>on</td><td>.
-Turns on all default cut generators and CBC will try them in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> on how to fine tune the behaviour).</td></tr>
+Turns on all default cut generators and CBC will try them in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> on how to fine tune the behavior).</td></tr>
 <tr valign="top"><td width=20 align=right>root</td><td>.
 Let CBC generate cuts only at the root node.</td></tr>
 <tr valign="top"><td width=20 align=right>ifmove</td><td>.
@@ -413,6 +455,16 @@ Determines the number of rounds that the cut generators are applied in the root 
 A negative value -n means that n passes are also applied if the objective does not drop.
 
 <br><i>(default = 100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop in the objective function value is small) if it has less than 5000 columns, and 20 passes otherwise.)</i>
+
+<h4><a name="cut_passes_slow">
+cut_passes_slow</a>
+<i> (integer)</i> number of cut passes for slow cut generators</h4><p>
+
+Determines the number of rounds that slow cut generators should be applied.
+The idea is that the code does these cuts just a few times - less than the more usual cuts.
+The cut generators identified by "may be slow" at present are Lift and project cuts and both versions of Reduce and Split cuts.
+
+<br><i>(default = 10)</i>
 
 <h4><a name="cut_passes_tree">
 cut_passes_tree</a>
@@ -563,6 +615,14 @@ The GDX file specified by this option will contain a set called index that conta
 with the individual solutions.
 
 
+<h4><a name="extravariables">
+extravariables</a>
+<i> (integer)</i> group together variables with same cost</h4><p>
+
+Switches on a trivial re-formulation that introduces extra integer variables to group together variables with same cost.
+
+<br><i>(default = 0)</i>
+
 <h4><a name="feaspump">
 feaspump</a>
 <i> (integer)</i> feasibility pump</h4><p>
@@ -577,7 +637,7 @@ Reference: M. Fischetti, F. Glover, and A. Lodi, The feasibility pump, Math. Pro
 <tr valign="top"><td width=20 align=right>0</td><td>.
 Turns the feasibility pump off.</td></tr>
 <tr valign="top"><td width=20 align=right>1</td><td>.
-Turns the feasiblity pump on.</td></tr>
+Turns the feasibility pump on.</td></tr>
 </table>
 
 <h4><a name="feaspump_passes">
@@ -610,6 +670,33 @@ See the <a href="#cuts">option cuts</a> for an explanation on the different valu
 Reference: Laurence A. Wolsey, Integer Programming, Wiley, John & Sons, (1998) 124-132.
 
 <br><i>(default = ifmove)</i>
+
+<h4><a name="gomorycuts2">
+gomorycuts2</a>
+<i> (string)</i> Gomory Cuts 2nd implementation</h4><p>
+
+Determines whether and when CBC should try to generate mixed-integer Gomory cuts using the alternative robust implementation.<BR>
+Reference: G. Cornuejols, F. Margot, and G. Nannicini, On the safety of Gomory cut generators, submitted (2012)
+
+<br><i>(default = off)</i>
+<table>
+<tr valign="top"><td width=20 align=right>off</td><td>.
+Turns off the cut generators.</td></tr>
+<tr valign="top"><td width=20 align=right>on</td><td>.
+Turns on the cut generator and CBC will try it in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> on how to fine tune the behavior).</td></tr>
+<tr valign="top"><td width=20 align=right>root</td><td>.
+Let CBC generate gomory cuts only at the root node.</td></tr>
+<tr valign="top"><td width=20 align=right>ifmove</td><td>.
+Let CBC use this cut generator in the tree if it looks as if it is doing some good and moves the objective value.</td></tr>
+<tr valign="top"><td width=20 align=right>forceon</td><td>.
+Turns on the cut generator and forces CBC to use it at every node.</td></tr>
+<tr valign="top"><td width=20 align=right>longroot</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>endonly</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>long</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>longifmove</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>forcelongon</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>longendonly</td><td></td></tr>
+</table>
 
 <h4><a name="greedyheuristic">
 greedyheuristic</a>
@@ -769,6 +856,18 @@ See the <a href="#cuts">option cuts</a> for an explanation on the different valu
 Reference: H. Marchand and L. A. Wolsey, Aggregation and Mixed Integer Rounding to Solve MIPs, Operations Research, 49(3), (2001).
 
 <br><i>(default = ifmove)</i>
+
+<h4><a name="multiplerootpasses">
+multiplerootpasses</a>
+<i> (integer)</i> runs multiple copies of the solver at the root node</h4><p>
+
+Solves the root node with multiple copies of the solver, each with its own different seed and collects the solutions and cuts so that the main solver has a richer set of solutions and possibly stronger cuts.
+If threads are enabled, then this is done in parallel.
+If the number is below 100, then the option gives the number of times the root is solved.
+The actual format is aabbcc where aa is number of extra passes, if bb is non zero then it is number of threads to use (otherwise uses threads setting) and cc is number of times to do root phase.
+The solvers do not interact with each other.  However if extra passes are specified then cuts are collected and used in later passes - so there is interaction there.
+
+<br><i>(default = 0)</i>
 
 <h4><a name="naiveheuristics">
 naiveheuristics</a>
@@ -972,7 +1071,7 @@ Reference: M. Savelsbergh, Preprocessing and Probing Techniques for Mixed Intege
 <tr valign="top"><td width=20 align=right>off</td><td>.
 Turns off Probing.</td></tr>
 <tr valign="top"><td width=20 align=right>on</td><td>.
-Turns on Probing and CBC will try it in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> how to fine tune this behaviour).</td></tr>
+Turns on Probing and CBC will try it in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> how to fine tune this behavior).</td></tr>
 <tr valign="top"><td width=20 align=right>root</td><td>.
 Let CBC do Probing only at the root node.</td></tr>
 <tr valign="top"><td width=20 align=right>ifmove</td><td>.
@@ -1021,6 +1120,25 @@ Turns the randomized rounding heuristic off.</td></tr>
 Turns the randomized rounding heuristic on.</td></tr>
 </table>
 
+<h4><a name="randomseedcbc">
+randomseedcbc</a>
+<i> (integer)</i> random seed for CBC</h4><p>
+
+Allows initialization of the random seed for pseudo-random numbers used in heuristics such as the Feasibility Pump to decide whether to round up or down.
+The special value of 0 lets Cbc use the time of the day for the initial seed.
+
+<br><i>(default = -1)</i>
+
+<h4><a name="randomseedclp">
+randomseedclp</a>
+<i> (integer)</i> random seed for CLP</h4><p>
+
+Allows initialization of the random seed for pseudo-random numbers used to break ties in degenerate problems.
+This may yield a different continuous optimum and, in the context of Cbc, different cuts and heuristic solutions.
+The special value of 0 lets Clp use the time of the day for the initial seed.
+
+<br><i>(default = -1)</i>
+
 <h4><a name="reduceandsplitcuts">
 reduceandsplitcuts</a>
 <i> (string)</i> Reduce and Split Cuts</h4><p>
@@ -1033,6 +1151,27 @@ The choice of the linear combinations is driven by the objective of reducing the
 Reference: K. Anderson, G. Cornuejols, and Yanjun Li, Reduce-and-Split Cuts: Improving the Performance of Mixed Integer Gomory Cuts, Management Science 51 (2005).
 
 <br><i>(default = off)</i>
+
+<h4><a name="reduceandsplitcuts2">
+reduceandsplitcuts2</a>
+<i> (string)</i> Reduce and Split Cuts 2nd implementation</h4><p>
+
+Determines whether and when CBC should try to generate reduced and split cuts using the 2nd implementation.<BR>
+Reduce and split cuts are variants of Gomory cuts.
+Reference:
+G. Cornuejols and G. Nannicini, Practical strategies for generating rank-1 split cuts in mixed-integer linear programming, Mathematical Programming Computation 3 (2011), 281-318.
+
+<br><i>(default = off)</i>
+<table>
+<tr valign="top"><td width=20 align=right>off</td><td>.
+Turns off all cut generators.</td></tr>
+<tr valign="top"><td width=20 align=right>on</td><td>.
+Turns on all default cut generators and CBC will try them in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> on how to fine tune the behavior).</td></tr>
+<tr valign="top"><td width=20 align=right>root</td><td>.
+Let CBC generate cuts only at the root node.</td></tr>
+<tr valign="top"><td width=20 align=right>longon</td><td></td></tr>
+<tr valign="top"><td width=20 align=right>longroot</td><td></td></tr>
+</table>
 
 <h4><a name="rens">
 rens</a>
@@ -1318,7 +1457,8 @@ Reference: S. Dash, and O. Guenluek, Valid Inequalities Based on Simple Mixed-in
 vubheuristic</a>
 <i> (integer)</i> VUB heuristic</h4><p>
 
-If this option is set, Cbc will try and fix some integer variables.
+This parameter control the use of the VUB heuristic.
+If it is set (between -2 and 20), Cbc will try and fix some integer variables.
 
 
 <h4><a name="writemps">
@@ -1328,4 +1468,27 @@ writemps</a>
 Write the problem formulation in MPS format.
 The parameter value is the name of the MPS file.
 
+
+<h4><a name="zerohalfcuts">
+zerohalfcuts</a>
+<i> (string)</i> Zero-Half Cuts</h4><p>
+
+Determines whether and when CBC should try to generate zero-half cuts.<BR>
+So far, they may help only on a small subset of problems and may need some tuning.
+Reference: G. Andreello, A. Caprara, and M. Fischetti, Embedding Cuts in a Branch and Cut Framework: a Computational Study with {0,1/2}-Cuts, INFORMS Journal on Computing 19 (2007), 229-238.
+
+<br><i>(default = off)</i>
+<table>
+<tr valign="top"><td width=20 align=right>off</td><td>.
+Turns off the zero half cuts generators.</td></tr>
+<tr valign="top"><td width=20 align=right>on</td><td>.
+Turns on the zero half cuts cut generators and CBC will try it in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> on how to fine tune the behavior).</td></tr>
+<tr valign="top"><td width=20 align=right>root</td><td>.
+Let CBC generate zero half cuts only at the root node.</td></tr>
+<tr valign="top"><td width=20 align=right>ifmove</td><td>.
+Let CBC use the zero half cuts generator in the tree if it looks as if it is doing some good and moves the objective value.</td></tr>
+<tr valign="top"><td width=20 align=right>forceon</td><td>.
+Turns on the zero half cuts generator and forces CBC to use it at every node.</td></tr>
+<tr valign="top"><td width=20 align=right>onglobal</td><td></td></tr>
+</table>
 </body></html>

@@ -975,13 +975,10 @@ This option is only important if a linear scaling method (e.g., mc19) is used.  
 }
 
 \printoption{linear\_solver}%
-{\ttfamily ma27, ma57, ma86, pardiso, mumps}%
+{\ttfamily ma27, ma57, ma77, ma86, ma97, pardiso, mumps}%
 {ma27}%
 {Linear solver used for step computations.\\
-Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions).
-Note, that MA27, MA57, and MA86 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately.
-If no GAMS/IpoptH license is available, the default linear solver is MUMPS.
-For using Pardiso, a pardiso library need to be provided.}%
+Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. If no GAMS/IpoptH license is available, the default linear solver is MUMPS. For using Pardiso or MA77, a pardiso or HSL library need to be provided.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -990,7 +987,9 @@ For using Pardiso, a pardiso library need to be provided.}%
 \setlength{\topsep}{0pt}}
 \item[\texttt{ma27}] use the Harwell routine MA27
 \item[\texttt{ma57}] use the Harwell routine MA57
-\item[\texttt{ma86}] use the Harwell routine MA86
+\item[\texttt{ma77}] use the Harwell routine HSL\_MA77
+\item[\texttt{ma86}] use the Harwell routine HSL\_MA86
+\item[\texttt{ma97}] use the Harwell routine HSL\_MA97
 \item[\texttt{pardiso}] use the Pardiso package
 \item[\texttt{mumps}] use MUMPS package
 \end{list}
@@ -1000,9 +999,7 @@ For using Pardiso, a pardiso library need to be provided.}%
 {\ttfamily none, mc19, slack-based}%
 {mc19}%
 {Method for scaling the linear system.\\
-Determines the method used to compute symmetric scaling factors for the augmented system (see also the "linear\_scaling\_on\_demand" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers.
-Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately.
-If no commerical GAMS/IpoptH license is available, the default scaling method is slack-based.}%
+Determines the method used to compute symmetric scaling factors for the augmented system (see also the "linear\_scaling\_on\_demand" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. If no commerical GAMS/IpoptH license is available, the default scaling method is slack-based.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -1094,9 +1091,9 @@ This is used when MA28 tries to find the dependent constraints.}%
 \printoptioncategory{MA57 Linear Solver}
 \printoption{ma57\_automatic\_scaling}%
 {\ttfamily no, yes}%
-{yes}%
+{no}%
 {Controls MA57 automatic scaling\\
-This option controls the internal scaling option of MA57.This is ICNTL(15) in MA57.}%
+This option controls the internal scaling option of MA57. For higher reliability of the MA57 solver, you may want to set this option to yes. This is ICNTL(15) in MA57.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -1157,6 +1154,76 @@ If 1 is chosen, the suggested amount of work space is used.  However, choosing a
 This is ICNTL(16) in MA57.}%
 {}
 
+\printoptioncategory{MA77 Linear Solver}
+\printoption{ma77\_buffer\_lpage}%
+{$1\leq\textrm{integer}$}%
+{$4096$}%
+{Number of scalars per MA77 buffer page\\
+Number of scalars per an in-core buffer in the out-of-core solver MA77. Must be at most ma77\_file\_size.}%
+{}
+
+\printoption{ma77\_buffer\_npage}%
+{$1\leq\textrm{integer}$}%
+{$1600$}%
+{Number of pages that make up MA77 buffer\\
+Number of pages of size buffer\_lpage that exist in-core for the out-of-core solver MA77.}%
+{}
+
+\printoption{ma77\_file\_size}%
+{$1\leq\textrm{integer}$}%
+{$2097152$}%
+{Target size of each temporary file for MA77, scalars per type\\
+MA77 uses many temporary files, this option controls the size of each one. It is measured in the number of entries (int or double), NOT bytes.}%
+{}
+
+\printoption{ma77\_maxstore}%
+{$0\leq\textrm{integer}$}%
+{$0$}%
+{Maximum storage size for MA77 in-core mode\\
+If greater than zero, the maximum size of factors stored in core before out-of-core mode is invoked.}%
+{}
+
+\printoption{ma77\_nemin}%
+{$1\leq\textrm{integer}$}%
+{$8$}%
+{Node Amalgamation parameter\\
+Two nodes in elimination tree are merged if result has fewer than ma77\_nemin variables.}%
+{}
+
+\printoption{ma77\_print\_level}%
+{$\textrm{integer}$}%
+{$-1$}%
+{Debug printing level for the linear solver MA77}%
+{}
+
+\printoption{ma77\_small}%
+{$0\leq\textrm{real}$}%
+{$10^{-20}$}%
+{Zero Pivot Threshold\\
+Any pivot less than ma77\_small is treated as zero.}%
+{}
+
+\printoption{ma77\_static}%
+{$0\leq\textrm{real}$}%
+{$0$}%
+{Static Pivoting Threshold\\
+See MA77 documentation. Either ma77\_static=0.0 or ma77\_static$>$ma77\_small. ma77\_static=0.0 disables static pivoting.}%
+{}
+
+\printoption{ma77\_u}%
+{$0\leq\textrm{real}\leq0.5$}%
+{$10^{- 8}$}%
+{Pivoting Threshold\\
+See MA77 documentation.}%
+{}
+
+\printoption{ma77\_umax}%
+{$0\leq\textrm{real}\leq0.5$}%
+{$0.0001$}%
+{Maximum Pivoting Threshold\\
+Maximum value to which u will be increased to improve quality.}%
+{}
+
 \printoptioncategory{MA86 Linear Solver}
 \printoption{ma86\_nemin}%
 {$1\leq\textrm{integer}$}%
@@ -1185,8 +1252,7 @@ This option controls ordering for the solver HSL\_MA86.}%
 \printoption{ma86\_print\_level}%
 {$\textrm{integer}$}%
 {$-1$}%
-{Debug printing level for the linear solver MA86\\
-Meep}%
+{Debug printing level for the linear solver MA86}%
 {}
 
 \printoption{ma86\_scaling}%
@@ -1232,6 +1298,202 @@ See MA86 documentation.}%
 {$0.0001$}%
 {Maximum Pivoting Threshold\\
 Maximum value to which u will be increased to improve quality.}%
+{}
+
+\printoptioncategory{MA97 Linear Solver}
+\printoption{ma97\_nemin}%
+{$1\leq\textrm{integer}$}%
+{$8$}%
+{Node Amalgamation parameter\\
+Two nodes in elimination tree are merged if result has fewer than ma97\_nemin variables.}%
+{}
+
+\printoption{ma97\_order}%
+{\ttfamily auto, best, amd, metis, matched-auto, matched-metis, matched-amd}%
+{auto}%
+{Controls type of ordering used by HSL\_MA97}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{auto}] Use HSL\_MA97 heuristic to guess best of AMD and METIS
+\item[\texttt{best}] Try both AMD and MeTiS, pick best
+\item[\texttt{amd}] Use the HSL\_MC68 approximate minimum degree algorithm
+\item[\texttt{metis}] Use the MeTiS nested dissection algorithm
+\item[\texttt{matched-auto}] Use the HSL\_MC80 matching with heuristic choice of AMD or METIS
+\item[\texttt{matched-metis}] Use the HSL\_MC80 matching based ordering with METIS
+\item[\texttt{matched-amd}] Use the HSL\_MC80 matching based ordering with AMD
+\end{list}
+}
+
+\printoption{ma97\_print\_level}%
+{$\textrm{integer}$}%
+{$0$}%
+{Debug printing level for the linear solver MA97}%
+{}
+
+\printoption{ma97\_scaling}%
+{\ttfamily none, mc30, mc64, mc77, dynamic}%
+{dynamic}%
+{Specifies strategy for scaling in HSL\_MA97 linear solver}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{none}] Do not scale the linear system matrix
+\item[\texttt{mc30}] Scale all linear system matrices using MC30
+\item[\texttt{mc64}] Scale all linear system matrices using MC64
+\item[\texttt{mc77}] Scale all linear system matrices using MC77 [1,3,0]
+\item[\texttt{dynamic}] Dynamically select scaling according to rules specified by ma97\_scalingX and ma97\_switchX options.
+\end{list}
+}
+
+\printoption{ma97\_scaling1}%
+{\ttfamily none, mc30, mc64, mc77}%
+{mc64}%
+{First scaling.\\
+If ma97\_scaling=dynamic, this scaling is used according to the trigger ma97\_switch1. If ma97\_switch2 is triggered it is disabled.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{none}] No scaling
+\item[\texttt{mc30}] Scale linear system matrix using MC30
+\item[\texttt{mc64}] Scale linear system matrix using MC64
+\item[\texttt{mc77}] Scale linear system matrix using MC77 [1,3,0]
+\end{list}
+}
+
+\printoption{ma97\_scaling2}%
+{\ttfamily none, mc30, mc64, mc77}%
+{mc64}%
+{Second scaling.\\
+If ma97\_scaling=dynamic, this scaling is used according to the trigger ma97\_switch2. If ma97\_switch3 is triggered it is disabled.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{none}] No scaling
+\item[\texttt{mc30}] Scale linear system matrix using MC30
+\item[\texttt{mc64}] Scale linear system matrix using MC64
+\item[\texttt{mc77}] Scale linear system matrix using MC77 [1,3,0]
+\end{list}
+}
+
+\printoption{ma97\_scaling3}%
+{\ttfamily none, mc30, mc64, mc77}%
+{mc64}%
+{Third scaling.\\
+If ma97\_scaling=dynamic, this scaling is used according to the trigger ma97\_switch3.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{none}] No scaling
+\item[\texttt{mc30}] Scale linear system matrix using MC30
+\item[\texttt{mc64}] Scale linear system matrix using MC64
+\item[\texttt{mc77}] Scale linear system matrix using MC77 [1,3,0]
+\end{list}
+}
+
+\printoption{ma97\_small}%
+{$0\leq\textrm{real}$}%
+{$10^{-20}$}%
+{Zero Pivot Threshold\\
+Any pivot less than ma97\_small is treated as zero.}%
+{}
+
+\printoption{ma97\_switch1}%
+{\ttfamily never, at\_start, at\_start\_reuse, on\_demand, on\_demand\_reuse, high\_delay, high\_delay\_reuse, od\_hd, od\_hd\_reuse}%
+{od\_hd\_reuse}%
+{First switch, determine when ma97\_scaling1 is enabled.\\
+If ma97\_scaling=dynamic, ma97\_scaling1 is enabled according to this condition. If ma97\_switch2 occurs this option is henceforth ignored.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{never}] Scaling is never enabled.
+\item[\texttt{at\_start}] Scaling to be used from the very start.
+\item[\texttt{at\_start\_reuse}] Scaling to be used on first iteration, then reused thereafter.
+\item[\texttt{on\_demand}] Scaling to be used after Ipopt request improved solution (i.e. iterative refinement has failed).
+\item[\texttt{on\_demand\_reuse}] As on\_demand, but reuse scaling from previous itr
+\item[\texttt{high\_delay}] Scaling to be used after more than 0.05*n delays are present
+\item[\texttt{high\_delay\_reuse}] Scaling to be used only when previous itr created more that 0.05*n additional delays, otherwise reuse scaling from previous itr
+\item[\texttt{od\_hd}] Combination of on\_demand and high\_delay
+\item[\texttt{od\_hd\_reuse}] Combination of on\_demand\_reuse and high\_delay\_reuse
+\end{list}
+}
+
+\printoption{ma97\_switch2}%
+{\ttfamily never, at\_start, at\_start\_reuse, on\_demand, on\_demand\_reuse, high\_delay, high\_delay\_reuse, od\_hd, od\_hd\_reuse}%
+{never}%
+{Second switch, determine when ma97\_scaling2 is enabled.\\
+If ma97\_scaling=dynamic, ma97\_scaling2 is enabled according to this condition. If ma97\_switch3 occurs this option is henceforth ignored.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{never}] Scaling is never enabled.
+\item[\texttt{at\_start}] Scaling to be used from the very start.
+\item[\texttt{at\_start\_reuse}] Scaling to be used on first iteration, then reused thereafter.
+\item[\texttt{on\_demand}] Scaling to be used after Ipopt request improved solution (i.e. iterative refinement has failed).
+\item[\texttt{on\_demand\_reuse}] As on\_demand, but reuse scaling from previous itr
+\item[\texttt{high\_delay}] Scaling to be used after more than 0.05*n delays are present
+\item[\texttt{high\_delay\_reuse}] Scaling to be used only when previous itr created more that 0.05*n additional delays, otherwise reuse scaling from previous itr
+\item[\texttt{od\_hd}] Combination of on\_demand and high\_delay
+\item[\texttt{od\_hd\_reuse}] Combination of on\_demand\_reuse and high\_delay\_reuse
+\end{list}
+}
+
+\printoption{ma97\_switch3}%
+{\ttfamily never, at\_start, at\_start\_reuse, on\_demand, on\_demand\_reuse, high\_delay, high\_delay\_reuse, od\_hd, od\_hd\_reuse}%
+{never}%
+{Third switch, determine when ma97\_scaling3 is enabled.\\
+If ma97\_scaling=dynamic, ma97\_scaling3 is enabled according to this condition.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{never}] Scaling is never enabled.
+\item[\texttt{at\_start}] Scaling to be used from the very start.
+\item[\texttt{at\_start\_reuse}] Scaling to be used on first iteration, then reused thereafter.
+\item[\texttt{on\_demand}] Scaling to be used after Ipopt request improved solution (i.e. iterative refinement has failed).
+\item[\texttt{on\_demand\_reuse}] As on\_demand, but reuse scaling from previous itr
+\item[\texttt{high\_delay}] Scaling to be used after more than 0.05*n delays are present
+\item[\texttt{high\_delay\_reuse}] Scaling to be used only when previous itr created more that 0.05*n additional delays, otherwise reuse scaling from previous itr
+\item[\texttt{od\_hd}] Combination of on\_demand and high\_delay
+\item[\texttt{od\_hd\_reuse}] Combination of on\_demand\_reuse and high\_delay\_reuse
+\end{list}
+}
+
+\printoption{ma97\_u}%
+{$0\leq\textrm{real}\leq0.5$}%
+{$10^{- 8}$}%
+{Pivoting Threshold\\
+See MA97 documentation.}%
+{}
+
+\printoption{ma97\_umax}%
+{$0\leq\textrm{real}\leq0.5$}%
+{$0.0001$}%
+{Maximum Pivoting Threshold\\
+See MA97 documentation.}%
 {}
 
 \printoptioncategory{Mumps Linear Solver}
@@ -1488,6 +1750,20 @@ Ipopt works with a reformulation of the original problem, where slacks are intro
 {\ttfamily no, yes}%
 {yes}%
 {Switch to enable printing information about function evaluation errors into the GAMS listing file.}%
+{}
+
+\printoption{print\_frequency\_iter}%
+{$1\leq\textrm{integer}$}%
+{$1$}%
+{Determines at which iteration frequency the summarizing iteration output line should be printed.\\
+Summarizing iteration output is printed every print\_frequency\_iter iterations, if at least print\_frequency\_time seconds have passed since last output.}%
+{}
+
+\printoption{print\_frequency\_time}%
+{$0\leq\textrm{real}$}%
+{$0$}%
+{Determines at which time frequency the summarizing iteration output line should be printed.\\
+Summarizing iteration output is printed if at least print\_frequency\_time seconds have passed since last output and the iteration number is a multiple of print\_frequency\_iter.}%
 {}
 
 \printoption{print\_info\_string}%

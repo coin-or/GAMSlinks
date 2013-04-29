@@ -807,9 +807,14 @@ bool GamsCbc::setupParameters()
    CHECKOPT_BOOL("presolve")
    CHECKOPT2_DOUBLE("tol_presolve", "preTolerance")
    CHECKOPT_INT("passpresolve")
+   CHECKOPT2_INT("randomseedclp", "randomSeed")
 
    // MIP parameters
 
+   CHECKOPT2_BOOL("cutoffconstraint", "constraintFromCutoff")
+   CHECKOPT2_INT("extravariables", "extraVariables")
+   CHECKOPT2_INT("multiplerootpasses", "multipleRootPasses")
+   CHECKOPT2_INT("randomseedcbc", "randomCbcSeed")
    CHECKOPT_INT("strategy")
    CHECKOPT2_INT("sollim", "maxSolutions")
    CHECKOPT2_INT("strongbranching", "strongBranching")
@@ -817,6 +822,7 @@ bool GamsCbc::setupParameters()
    CHECKOPT2_INT("cutdepth", "cutDepth")
    CHECKOPT2_INT("cut_passes_root", "passCuts")
    CHECKOPT2_INT("cut_passes_tree", "passTree")
+   CHECKOPT2_INT("cut_passes_slow", "slowcutpasses")
 
    stringenummap.clear();
    stringenummap["off"];
@@ -834,11 +840,41 @@ bool GamsCbc::setupParameters()
    CHECKOPT2_STRINGENUM("reduceandsplitcuts", "reduceAndSplitCuts")
    CHECKOPT2_STRINGENUM("residualcapacitycuts", "residualCapacityCuts")
    CHECKOPT2_STRINGENUM("twomircuts", "twoMirCuts")
+   stringenummap["onglobal"];
+   CHECKOPT2_STRINGENUM("zerohalfcuts", "zeroHalfCuts")
 
+   stringenummap.clear();
+   stringenummap["off"];
+   stringenummap["on"];
+   stringenummap["root"];
+   stringenummap["ifmove"];
+   stringenummap["forceon"];
+   stringenummap["endonly"];
+   stringenummap["long"];
+   stringenummap["longroot"];
+   stringenummap["longifmove"];
+   stringenummap["forcelongon"];
+   stringenummap["longendonly"];
+   CHECKOPT2_STRINGENUM("gomorycuts2", "GMICuts")
+
+   stringenummap.clear();
+   stringenummap["off"];
+   stringenummap["on"];
+   stringenummap["root"];
+   stringenummap["ifmove"];
+   stringenummap["forceon"] = "forceOn";
    stringenummap["forceonbut"] = "forceOnBut";
    stringenummap["forceonstrong"] = "forceOnStrong";
    stringenummap["forceonbutstrong"] = "forceOnButStrong";
    CHECKOPT2_STRINGENUM("probingcuts", "probingCuts")
+
+   stringenummap.clear();
+   stringenummap["off"];
+   stringenummap["on"];
+   stringenummap["root"];
+   stringenummap["longon"] = "longOn";
+   stringenummap["longroot"] = "longRoot";
+   CHECKOPT2_STRINGENUM("reduceandsplitcuts2", "reduce2AndSplitCuts")
 
    CHECKOPT2_BOOL("heuristics", "heuristicsOnOff")
    CHECKOPT2_BOOL("combinesolutions", "combineSolutions")

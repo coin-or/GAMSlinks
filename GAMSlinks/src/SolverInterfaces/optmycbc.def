@@ -40,6 +40,7 @@ scaling enumstr 0 "auto" 1 2 scaling method
  "geometric" 1
 presolve boolean 0 1 1 2 switch for initial presolve of LP
 passpresolve integer 0 5 -200 100 1 2 how many passes to do in presolve
+randomseedclp integer 0 -1 -1 maxint 1 2 random seed for CLP
 tol_dual double 0 1e-7 0 maxdouble 1 2 dual feasibility tolerance
 tol_primal double 0 1e-7 0 maxdouble 1 2 primal feasibility tolerance
 tol_presolve double 0 1e-8 0 maxdouble 1 2 tolerance used in presolve
@@ -67,6 +68,8 @@ coststrategy enumstr 0 "off" 1 3 how to use costs as priorities
  "binaryfirst" 1
  "binarylast" 1
  "length" 1
+extravariables integer 0 0 0 maxint 1 3 group together variables with same cost
+multiplerootpasses integer 0 0 0 100000000 1 3 runs multiple copies of the solver at the root node
 nodestrategy enumstr 0 "fewest" 1 3 how to select nodes
  "hybrid" 1
  "fewest" 1
@@ -84,6 +87,7 @@ preprocess enumstr 0 "on" 1 3 integer presolve
  "trysos" 1
 printfrequency integer 0 0 0 maxint 1 3 frequency of status prints
  0 1
+randomseedcbc integer 0 -1 -1 maxint 1 3 random seed for CBC
 loglevel integer 0 1 0 maxint 1 3 CBC loglevel
 increment double 0 0 0 maxdouble 1 3 increment of cutoff when new incumbent
 solvefinal boolean 0 1 1 3 final solve of MIP with fixed discrete variables
@@ -95,10 +99,12 @@ nodlim integer 0 maxint 0 maxint 1 3 node limit
 optca double 0 0 0 maxdouble 1 3 absolute stopping tolerance
 optcr double 0 0.1 0 maxdouble 1 3 relative stopping tolerance
 cutoff double 0 0 mindouble maxdouble 1 3 cutoff for objective function value
+cutoffconstraint boolean 0 0 1 3 whether to add a constraint from the objective function
 cutdepth enumint 0 -1 1 4 depth in tree at which cuts are applied
  -1 1
-cut_passes_root integer 0 0 -999999 999999 1 4 number of cut passes at root node
-cut_passes_tree integer 0 1 -999999 999999 1 4 number of cut passes at nodes in the tree
+cut_passes_root integer 0 -1 -9999999 9999999 1 4 number of cut passes at root node
+cut_passes_tree integer 0 1 -9999999 9999999 1 4 number of cut passes at nodes in the tree
+cut_passes_slow integer 0 10 -1 maxint 1 4 number of cut passes for slow cut generators
 cuts enumstr 0 "on" 1 4 global switch for cutgenerators
  "off" 1
  "on" 1
@@ -108,6 +114,18 @@ cuts enumstr 0 "on" 1 4 global switch for cutgenerators
 cliquecuts string 0 "ifmove" 1 4 Clique Cuts
 flowcovercuts string 0 "ifmove" 1 4 Flow Cover Cuts
 gomorycuts string 0 "ifmove" 1 4 Gomory Cuts
+gomorycuts2 enumstr 0 "off" 1 4 Gomory Cuts 2nd implementation
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
+ "longroot" 1
+ "endonly" 1
+ "long" 1
+ "longifmove" 1
+ "forcelongon" 1
+ "longendonly" 1
 knapsackcuts string 0 "ifmove" 1 4 Knapsack Cover Cuts
 liftandprojectcuts string 0 "off" 1 4 Lift and Project Cuts
 mircuts string 0 "ifmove" 1 4 Mixed Integer Rounding Cuts
@@ -122,7 +140,20 @@ probingcuts enumstr 0 "ifmove" 1 4 Probing Cuts
  "forceonstrong" 1
  "forceonbutstrong" 1
 reduceandsplitcuts string 0 "off" 1 4 Reduce and Split Cuts
+reduceandsplitcuts2 enumstr 0 "off" 1 4 Reduce and Split Cuts 2nd implementation
+ "off" 1
+ "on" 1
+ "root" 1
+ "longon" 1
+ "longroot" 1
 residualcapacitycuts string 0 "off" 1 4 Residual Capacity Cuts
+zerohalfcuts enumstr 0 "off" 1 4 Zero-Half Cuts
+ "off" 1
+ "on" 1
+ "root" 1
+ "ifmove" 1
+ "forceon" 1
+ "onglobal" 1
 heuristics boolean 0 1 1 5 global switch for heuristics
 combinesolutions boolean 0 1 1 5 combine solutions heuristic
 dins boolean 0 0 1 5 distance induced neighborhood search

@@ -52,7 +52,7 @@ If you need to use \GAMS/\SCIP with BCH, please consider to use a \GAMS system o
 \subsection{Specification of \SCIP Options}
 
 \GAMS/\SCIP supports the \GAMS parameters \texttt{reslim}, \texttt{iterlim}, \texttt{nodlim}, \texttt{optcr}, \texttt{optca}, and \texttt{workspace}.
-Further, under Linux and Windows, the option \texttt{threads} can be used to control the number of threads used in the linear algebra routines of \textsc{Ipopt}.
+Further, the option \texttt{threads} can be used to control the number of threads used in the linear algebra routines of \textsc{Ipopt} (only under Linux and Windows) and for solving LPs (if CPLEX' barrier solver is used).
 
 Options can be specified by a \SCIP options file.
 A \SCIP options file consists of one option or comment per line.
@@ -173,7 +173,7 @@ Thus, external functions are not supported. Further, not all \GAMS operands are 
 Nonconvex MINLPs are solved by \SCIP via a spatial branch-and-bound algorithm using convex relaxations.
 The tightness of a convex relaxation depends heavily on the variable bounds, thus tight bounds for the nonlinear variables are crucial for \SCIP.
 
-\subsubsection{Special options for convex MINLPs}
+\subsubsection*{Special options for convex MINLPs}
 
 Convex MINLPs are much easier to solve for \SCIP, provided it recognizes the convexity of the model. So far, only a simple convexity check is implemented in \SCIP, which may not give a conclusive answer in all cases.
 However, the option \texttt{constraints/nonlinear/assumeconvex = TRUE} can be used to tell \SCIP that it should assume all nonlinear constraints to be of convex type. This may help to improve solving times for convex MINLPs considerably.

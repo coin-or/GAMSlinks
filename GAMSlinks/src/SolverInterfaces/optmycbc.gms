@@ -10,7 +10,7 @@ set g Cbc Option Groups /
       /
     e / '-1', 0*100, primal, dual, barrier, default, off, on, auto,
         solow_halim, halim_solow, dantzig, steepest, partial, exact, change, sprint, equilibrium, geometric
-        root, ifmove, forceon, forceonbut, forceonstrong, forceonbutstrong
+        root, ifmove, forceon, forceonbut, forceonstrong, forceonbutstrong, onglobal, longon, longroot, endonly, long, longifmove, forcelongon, longendonly
         priorities, columnorder, binaryfirst, binarylast, length
         hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth
         equal, equalall, sos, trysos
@@ -35,6 +35,7 @@ set g Cbc Option Groups /
       scaling                scaling method
       presolve               switch for initial presolve of LP
       passpresolve           how many passes to do in presolve
+      randomseedclp          random seed for CLP
       tol_dual               dual feasibility tolerance
       tol_primal             primal feasibility tolerance
       tol_presolve           tolerance used in presolve
@@ -50,9 +51,12 @@ set g Cbc Option Groups /
       strongbranching        strong branching
       trustpseudocosts       after howmany nodes we trust the pseudo costs
       coststrategy           how to use costs as priorities
+      extravariables         group together variables with same cost
+      multiplerootpasses     runs multiple copies of the solver at the root node 
       nodestrategy           how to select nodes
       preprocess             integer presolve
       printfrequency         frequency of status prints
+      randomseedcbc          random seed for CBC
       loglevel               CBC loglevel
       increment              increment of cutoff when new incumbent
       solvefinal             final solve of MIP with fixed discrete variables
@@ -64,22 +68,26 @@ set g Cbc Option Groups /
       optca                  absolute stopping tolerance
       optcr                  relative stopping tolerance
       cutoff                 cutoff for objective function value
+      cutoffconstraint       whether to add a constraint from the objective function 
 *MIP cuts options
       cutdepth               depth in tree at which cuts are applied
       cut_passes_root        number of cut passes at root node
       cut_passes_tree        number of cut passes at nodes in the tree
+      cut_passes_slow        number of cut passes for slow cut generators
       cuts                   global switch for cutgenerators
       cliquecuts             Clique Cuts
       flowcovercuts          Flow Cover Cuts
       gomorycuts             Gomory Cuts
+      gomorycuts2            Gomory Cuts 2nd implementation
       knapsackcuts           Knapsack Cover Cuts
       liftandprojectcuts     Lift and Project Cuts
       mircuts                Mixed Integer Rounding Cuts
       twomircuts             Two Phase Mixed Integer Rounding Cuts
       probingcuts            Probing Cuts
       reduceandsplitcuts     Reduce and Split Cuts
+      reduceandsplitcuts2    Reduce and Split Cuts 2nd implementation
       residualcapacitycuts   Residual Capacity Cuts
-*      zerohalfcuts           Zero-Half Cuts
+      zerohalfcuts           Zero-Half Cuts
 *MIP heuristics options
       heuristics             global switch for heuristics
       combinesolutions       combine solutions heuristic
@@ -153,6 +161,7 @@ lpoptions.(
   dualpivot            .s.(def auto)
   primalpivot          .s.(def auto)
   perturbation         .b.(def 1)
+  randomseedclp        .i.(def -1, lo -1)
   scaling              .s.(def auto)
   presolve             .b.(def 1)
   tol_dual             .r.(def 1e-7)
@@ -171,10 +180,13 @@ mipgeneral.(
   strongbranching      .i.(def 5, lo 0, up 999999)
   trustpseudocosts     .i.(def 5, lo -1, up 2000000)
   coststrategy         .s.(def off)
+  extravariables       .i.(def 0)
+  multiplerootpasses   .i.(def 0, up 100000000)
   nodestrategy         .s.(def fewest)
   preprocess           .s.(def on)
   threads              .i.(def 1, lo 0)
   printfrequency       .i.(def 0)
+  randomseedcbc        .i.(def -1, lo -1)
   loglevel             .i.(def 1)
   increment            .r.(def 0)
   nodelim              .i.(def maxint)
@@ -182,6 +194,7 @@ mipgeneral.(
   optca                .r.(def 0)
   optcr                .r.(def 0.1)
   cutoff               .r.(def 0, lo mindouble)
+  cutoffconstraint     .b.(def 0)
   solvefinal           .b.(def 1)
   solvetrace           .s.(def '')
   solvetracenodefreq   .i.(def 100)
@@ -189,20 +202,23 @@ mipgeneral.(
 )
 mipcuts.(
   cutdepth             .i.(def -1, lo -1, up 999999)
-  cut_passes_root      .i.(lo -999999, up 999999)
-  cut_passes_tree      .i.(def 1, lo -999999, up 999999)
+  cut_passes_root      .i.(def -1, lo -9999999, up 9999999)
+  cut_passes_tree      .i.(def 1, lo -9999999, up 9999999)
+  cut_passes_slow      .i.(def 10, lo -1)
   cuts                 .s.(def on)
   cliquecuts           .s.(def ifmove)
   flowcovercuts        .s.(def ifmove)
   gomorycuts           .s.(def ifmove)
+  gomorycuts2          .s.(def off)
   knapsackcuts         .s.(def ifmove)
   liftandprojectcuts   .s.(def off)
   mircuts        		   .s.(def ifmove)
   twomircuts           .s.(def root)
   probingcuts          .s.(def ifmove)
   reduceandsplitcuts   .s.(def off)
+  reduceandsplitcuts2  .s.(def off)
   residualcapacitycuts .s.(def off)
-*  zerohalfcuts         .s.(def off)
+  zerohalfcuts         .s.(def off)
 )
 mipheu.(
   heuristics           .b.(def 1)
@@ -292,6 +308,7 @@ $offtext
 *   cliquecuts.(     off, on, root, ifmove, forceon )
 *   flowcovercuts.(  off, on, root, ifmove, forceon )
 *   gomorycuts.(     off, on, root, ifmove, forceon )
+   gomorycuts2.(     off, on, root, ifmove, forceon, endonly, long, longroot, longifmove, forcelongon, longendonly )
 *   knapsackcuts.(   off, on, root, ifmove, forceon )
 *   liftandprojectcuts.( off, on, root, ifmove, forceon )
 *   mircuts.(        off, on, root, ifmove, forceon )
@@ -299,9 +316,12 @@ $offtext
    probingcuts.(    off, on, root, ifmove, forceon, forceonbut, forceonstrong, forceonbutstrong )
 *   probingcuts.(    forceonbut, forceonstrong, forceonbutstrong )
 *   reduceandsplitcuts.( off, on, root, ifmove, forceon )
+   reduceandsplitcuts2.( off, on, root, longon, longroot )
 *   residualcapacitycuts.( off, on, root, ifmove, forceon )
+   zerohalfcuts.(    off, on, root, ifmove, forceon, onglobal )
    heuristics.(     0, 1 )
    combinesolutions.( 0, 1 )
+   cutoffconstraint.( 0, 1 )
    dins.(           0, 1 )
    divingrandom.(   0, 1 )
    divingcoefficient.(0, 1 )
@@ -373,6 +393,17 @@ $offtext
                     forceonbut    ForceOnBut
                     forceonstrong ForceOnStrong
                     forceonbutstrong  ForceOnButAndStrong )
+   reduceandsplitcuts2.( off      Off
+                    on            On
+                    root          Root
+                    longon        LongOn
+                    longroot      LongRoot )
+   zerohalfcuts.(   off           Off
+                    on            On
+                    root          Root
+                    ifmove        IfMove
+                    forceon       OnAll
+                    onglobal      OnGlobal )
    greedyheuristic.(off           Off
                     on            On
                     root          OnlyForRoot )
@@ -413,6 +444,6 @@ $offtext
                    /
  oep(o) / mipstart, crossover, perturbation, presolve, printfrequency,
     heuristics, combinesolutions, dins, divingrandom, divingcoefficient, divingfractional, divingguided, divinglinesearch, divingpseudocost, divingvectorlength,
-    feaspump, localtreesearch, naiveheuristics, pivotandfix, randomizedrounding, rens, rins, roundingheuristic, solvefinal
+    feaspump, localtreesearch, naiveheuristics, pivotandfix, randomizedrounding, rens, rins, roundingheuristic, solvefinal, cutoffconstraint
 *    ,usercutnewint, userheurnewint
     /;

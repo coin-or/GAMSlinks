@@ -39,6 +39,8 @@
 {presolve} \> switch for initial presolve of LP \\
 \hyperlink{passpresolve}
 {passpresolve} \> how many passes to do in presolve \\
+\hyperlink{randomseedclp}
+{randomseedclp} \> random seed for CLP \\
 \hyperlink{tol_dual}
 {tol\_dual} \> dual feasibility tolerance \\
 \hyperlink{tol_primal}
@@ -73,12 +75,18 @@
 {trustpseudocosts} \> after howmany nodes we trust the pseudo costs \\
 \hyperlink{coststrategy}
 {coststrategy} \> how to use costs as priorities \\
+\hyperlink{extravariables}
+{extravariables} \> group together variables with same cost \\
+\hyperlink{multiplerootpasses}
+{multiplerootpasses} \> runs multiple copies of the solver at the root node \\
 \hyperlink{nodestrategy}
 {nodestrategy} \> how to select nodes \\
 \hyperlink{preprocess}
 {preprocess} \> integer presolve \\
 \hyperlink{printfrequency}
 {printfrequency} \> frequency of status prints \\
+\hyperlink{randomseedcbc}
+{randomseedcbc} \> random seed for CBC \\
 \hyperlink{loglevel}
 {loglevel} \> CBC loglevel \\
 \hyperlink{increment}
@@ -100,7 +108,9 @@
 \hyperlink{optcr}
 {optcr} \> relative stopping tolerance \\
 \hyperlink{cutoff}
-{cutoff} \> cutoff for objective function value
+{cutoff} \> cutoff for objective function value \\
+\hyperlink{cutoffconstraint}
+{cutoffconstraint} \> whether to add a constraint from the objective function
 \end{tabbing}
 
 
@@ -113,6 +123,8 @@
 {cut\_passes\_root} \> number of cut passes at root node \\
 \hyperlink{cut_passes_tree}
 {cut\_passes\_tree} \> number of cut passes at nodes in the tree \\
+\hyperlink{cut_passes_slow}
+{cut\_passes\_slow} \> number of cut passes for slow cut generators \\
 \hyperlink{cuts}
 {cuts} \> global switch for cutgenerators \\
 \hyperlink{cliquecuts}
@@ -121,6 +133,8 @@
 {flowcovercuts} \> Flow Cover Cuts \\
 \hyperlink{gomorycuts}
 {gomorycuts} \> Gomory Cuts \\
+\hyperlink{gomorycuts2}
+{gomorycuts2} \> Gomory Cuts 2nd implementation \\
 \hyperlink{knapsackcuts}
 {knapsackcuts} \> Knapsack Cover Cuts \\
 \hyperlink{liftandprojectcuts}
@@ -133,8 +147,12 @@
 {probingcuts} \> Probing Cuts \\
 \hyperlink{reduceandsplitcuts}
 {reduceandsplitcuts} \> Reduce and Split Cuts \\
+\hyperlink{reduceandsplitcuts2}
+{reduceandsplitcuts2} \> Reduce and Split Cuts 2nd implementation \\
 \hyperlink{residualcapacitycuts}
-{residualcapacitycuts} \> Residual Capacity Cuts
+{residualcapacitycuts} \> Residual Capacity Cuts \\
+\hyperlink{zerohalfcuts}
+{zerohalfcuts} \> Zero-Half Cuts \\
 \end{tabbing}
 
 

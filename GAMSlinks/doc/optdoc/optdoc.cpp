@@ -708,9 +708,6 @@ void printIpoptOptions()
 
    for( std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ != opts.end(); ++it_categ )
    {
-      if( it_categ->first == "MA77 Linear Solver" )
-         continue;
-
       printOptionCategoryStart(optfile, it_categ->first);
       gmsopt.setGroup(it_categ->first);
 
@@ -763,14 +760,16 @@ void printIpoptOptions()
                      enumval.clear();
                      enumval.push_back(std::pair<std::string, std::string>("ma27", "use the Harwell routine MA27"));
                      enumval.push_back(std::pair<std::string, std::string>("ma57", "use the Harwell routine MA57"));
-                     enumval.push_back(std::pair<std::string, std::string>("ma86", "use the Harwell routine MA86"));
+                     enumval.push_back(std::pair<std::string, std::string>("ma77", "use the Harwell routine HSL_MA77"));
+                     enumval.push_back(std::pair<std::string, std::string>("ma86", "use the Harwell routine HSL_MA86"));
+                     enumval.push_back(std::pair<std::string, std::string>("ma97", "use the Harwell routine HSL_MA97"));
                      enumval.push_back(std::pair<std::string, std::string>("pardiso", "use the Pardiso package"));
                      enumval.push_back(std::pair<std::string, std::string>("mumps", "use MUMPS package"));
 
                      longdescr = "Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). "
-                        "Note, that in order to use MA27, MA57, MA86, a commercially supported GAMS/Ipopt license or a library with HSL code need to be available. "
-                        "If no commercial GAMS/Ipopt license is available, the default linear solver is mumps. "
-                        "For using Pardiso, a Pardiso library need to be provided code need to be provided.";
+                        "Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
+                        "If no GAMS/IpoptH license is available, the default linear solver is MUMPS. "
+                        "For using Pardiso or MA77, a pardiso or HSL library need to be provided.";
 
                      defaultval.stringval = "ma27";
                   }
@@ -778,8 +777,8 @@ void printIpoptOptions()
                   {
                      if( (*it_opt)->Name() == "linear_system_scaling" )
                         longdescr = "Determines the method used to compute symmetric scaling factors for the augmented system (see also the \"linear_scaling_on_demand\" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. "
-                           "Note, that in order to use MC19, a commercially supported Gams/Ipopt license or a library with HSL code need to be available. "
-                           "If no commerical GAMS/Ipopt license is available, the default scaling method is slack-based.";
+                           "Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
+                           "If no commerical GAMS/IpoptH license is available, the default scaling method is slack-based.";
 
                      enumval.resize(settings.size());
                      for( size_t j = 0; j < settings.size(); ++j )
@@ -1357,6 +1356,7 @@ void printSCIPOptions()
    OPTVAL defaultval, minval, maxval;
    ENUMVAL enumval;
    std::string tmpstr;
+   std::string descr;
 
    std::ofstream optfile("optscip_a.tex");
 
@@ -1379,6 +1379,7 @@ void printSCIPOptions()
           strstr(paramname, "constraints/or")            == paramname ||
           strstr(paramname, "constraints/orbitope")      == paramname ||
           strstr(paramname, "constraints/pseudoboolean") == paramname ||
+          strstr(paramname, "constraints/superindicator")== paramname ||
           strstr(paramname, "constraints/xor")           == paramname
          )
          continue;
@@ -1469,6 +1470,7 @@ void printSCIPOptions()
                defaultval.stringval = SCIPparamGetStringDefault(param);
                break;
          }
+         descr = SCIPparamGetDesc(param);
 
          if( strcmp(SCIPparamGetName(param), "limits/time") == 0 )
             defaultval.realval = 1000.0;
@@ -1476,13 +1478,18 @@ void printSCIPOptions()
             defaultval.realval = 0.1;
          else if( strcmp(SCIPparamGetName(param), "limits/absgap") == 0 )
             defaultval.realval = 0.0;
+         else if( strcmp(SCIPparamGetName(param), "lp/solver") == 0 )
+         {
+            defaultval.stringval = "cplex, if licensed, otherwise soplex";
+            descr = "LP solver to use (clp, cplex, soplex)";
+         }
 
          if( !hadadvanced && SCIPparamIsAdvanced(param) )
          {
             printOptionCategoryStart(optfile, categname[it_categ->first] + " (advanced options)");
             hadadvanced = true;
          }
-         printOption(optfile, SCIPparamGetName(param), SCIPparamGetDesc(param), "",
+         printOption(optfile, SCIPparamGetName(param), descr, "",
             opttype, defaultval, minval, false, maxval, false, enumval, true);
       }
    }

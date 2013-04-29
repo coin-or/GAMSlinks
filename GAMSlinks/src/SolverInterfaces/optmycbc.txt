@@ -290,6 +290,14 @@ mipstart.1
 Try to use the initial variable levels as a MIP starting solution.
 
 
+multiplerootpasses
+Solves the root node with multiple copies of the solver, each with its own different seed and collects the solutions and cuts so that the main solver has a richer set of solutions and possibly stronger cuts.
+If threads are enabled, then this is done in parallel.
+If the number is below 100, then the option gives the number of times the root is solved.
+The actual format is aabbcc where aa is number of extra passes, if bb is non zero then it is number of threads to use (otherwise uses threads setting) and cc is number of times to do root phase.
+The solvers do not interact with each other.  However if extra passes are specified then cuts are collected and used in later passes - so there is interaction there.
+
+
 sollim
 A limit on number of feasible solutions that CBC should find for a MIP.
 
@@ -348,6 +356,23 @@ Handles two sets of priorities such that binary variables get low priority.
 
 coststrategy.length
 Assigns high priority to variables that are at most nonzero.
+
+
+cutoffconstraint
+For some problems, cut generators and general branching work better if the problem would be infeasible if the cost is too high.
+If this option is set, the objective function is added as a constraint which right hand side is set to the current cutoff value (objective value of best known solution).
+
+
+cutoffconstraint.0
+do not add extra constraint  
+
+
+cutoffconstraint.1
+add extra constraint  
+
+
+extravariables
+Switches on a trivial re-formulation that introduces extra integer variables to group together variables with same cost.
 
 
 nodestrategy
@@ -481,6 +506,12 @@ Determines the number of rounds that the cut generators are applied in the nodes
 A negative value -n means that n passes are also applied if the objective does not drop.
 
 
+cut_passes_slow
+Determines the number of rounds that slow cut generators should be applied.
+The idea is that the code does these cuts just a few times - less than the more usual cuts.
+The cut generators identified by "may be slow" at present are Lift and project cuts and both versions of Reduce and Split cuts.
+ 
+
 cuts
 A global switch to turn on or off the cutgenerators.<BR>
 This can be used to switch on or off all default cut generators.
@@ -492,7 +523,7 @@ Turns off all cut generators.
 
 
 cuts.on
-Turns on all default cut generators and CBC will try them in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> on how to fine tune the behaviour).
+Turns on all default cut generators and CBC will try them in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> on how to fine tune the behavior).
 
 
 cuts.root
@@ -527,6 +558,31 @@ gomorycuts
 Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglGomory">mixed-integer Gomory cuts</a>.<BR>
 See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
 Reference: Laurence A. Wolsey, Integer Programming, Wiley, John & Sons, (1998) 124-132.
+
+
+gomorycuts2
+Determines whether and when CBC should try to generate mixed-integer Gomory cuts using the alternative robust implementation.<BR>
+Reference: G. Cornuejols, F. Margot, and G. Nannicini, On the safety of Gomory cut generators, submitted (2012)
+
+
+gomorycuts2.off
+Turns off the cut generators.
+
+
+gomorycuts2.on
+Turns on the cut generator and CBC will try it in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> on how to fine tune the behavior).
+
+
+gomorycuts2.root
+Let CBC generate gomory cuts only at the root node.
+
+
+gomorycuts2.ifmove
+Let CBC use this cut generator in the tree if it looks as if it is doing some good and moves the objective value.
+
+
+gomorycuts2.forceon
+Turns on the cut generator and forces CBC to use it at every node.
 
 
 knapsackcuts
@@ -567,7 +623,7 @@ Turns off Probing.
 
 
 probingcuts.on
-Turns on Probing and CBC will try it in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> how to fine tune this behaviour).
+Turns on Probing and CBC will try it in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> how to fine tune this behavior).
 
 
 probingcuts.root
@@ -595,6 +651,17 @@ probingcuts.forceonbutstrong
 This is like forceonstrong, but does only probing (column fixing) and turns off row strengthening, so the matrix will not change inside the branch and bound.
 
 
+randomseedcbc
+Allows initialization of the random seed for pseudo-random numbers used in heuristics such as the Feasibility Pump to decide whether to round up or down. 
+The special value of 0 lets Cbc use the time of the day for the initial seed. 
+
+
+randomseedclp
+Allows initialization of the random seed for pseudo-random numbers used to break ties in degenerate problems.
+This may yield a different continuous optimum and, in the context of Cbc, different cuts and heuristic solutions.
+The special value of 0 lets Clp use the time of the day for the initial seed. 
+
+
 reduceandsplitcuts
 Determines whether and when CBC should try to generate reduced and split cuts.<BR>
 See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
@@ -604,6 +671,25 @@ The choice of the linear combinations is driven by the objective of reducing the
 Reference: K. Anderson, G. Cornuejols, and Yanjun Li, Reduce-and-Split Cuts: Improving the Performance of Mixed Integer Gomory Cuts, Management Science 51 (2005).
 
 
+reduceandsplitcuts2
+Determines whether and when CBC should try to generate reduced and split cuts using the 2nd implementation.<BR>
+Reduce and split cuts are variants of Gomory cuts.
+Reference: 
+G. Cornuejols and G. Nannicini, Practical strategies for generating rank-1 split cuts in mixed-integer linear programming, Mathematical Programming Computation 3 (2011), 281-318.
+
+
+reduceandsplitcuts2.off
+Turns off all cut generators.
+
+
+reduceandsplitcuts2.on
+Turns on all default cut generators and CBC will try them in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> on how to fine tune the behavior).
+
+
+reduceandsplitcuts2.root
+Let CBC generate cuts only at the root node.
+
+
 residualcapacitycuts
 Determines whether and when CBC should try to generate <a href="https://projects.coin-or.org/Cgl/wiki/CglResidualCapacity">residual capacity cuts</a>.<BR>
 See the <a href="#cuts">option cuts</a> for an explanation on the different values.<BR>
@@ -611,6 +697,32 @@ These inequalities are particularly useful for Network Design and Capacity Plann
 References:<BR>
 T.L. Magnanti, P. Mirchandani, and R. Vachani, The convex hull of two core capacitated network design problems, Math. Programming, 60 (1993), pp. 233-250.<BR>
 A. Atamturk and D. Rajan, On splittable and unsplittable flow capacitated network design arc-set polyhedra, Math. Programming, 92 (2002), pp. 315-333.
+
+
+zerohalfcuts
+Determines whether and when CBC should try to generate zero-half cuts.<BR>
+So far, they may help only on a small subset of problems and may need some tuning.
+Reference: G. Andreello, A. Caprara, and M. Fischetti, Embedding Cuts in a Branch and Cut Framework: a Computational Study with {0,1/2}-Cuts, INFORMS Journal on Computing 19 (2007), 229-238.
+
+
+zerohalfcuts.off
+Turns off the zero half cuts generators.
+
+
+zerohalfcuts.on
+Turns on the zero half cuts cut generators and CBC will try it in the branch and cut tree (see the <a href="#cutdepth">option cutdepth</a> on how to fine tune the behavior).
+
+
+zerohalfcuts.root
+Let CBC generate zero half cuts only at the root node.
+
+
+zerohalfcuts.ifmove
+Let CBC use the zero half cuts generator in the tree if it looks as if it is doing some good and moves the objective value.
+
+
+zerohalfcuts.forceon
+Turns on the zero half cuts generator and forces CBC to use it at every node.
 
 
 heuristics
@@ -747,7 +859,7 @@ Turns the feasibility pump off.
 
 
 feaspump.1
-Turns the feasiblity pump on.
+Turns the feasibility pump on.
 
 
 feaspump_passes
@@ -861,7 +973,8 @@ Turns the rounding heuristic on.
 
 
 vubheuristic
-If this option is set, Cbc will try and fix some integer variables.
+This parameter control the use of the VUB heuristic.
+If it is set (between -2 and 20), Cbc will try and fix some integer variables.
 
 
 proximitysearch

@@ -23,12 +23,6 @@
 {whether to try GAMS variable level values as initial primal solution}%
 {}
 
-\printoption{gams/printstatistics}%
-{boolean}%
-{FALSE}%
-{whether to print statistics on a MIP solve}%
-{}
-
 \printoption{gams/resolvenlp}%
 {boolean}%
 {TRUE}%
@@ -1132,18 +1126,6 @@
 {frequency for separating cuts (-1: never, 0: only in root node)}%
 {}
 
-\printoption{constraints/superindicator/propfreq}%
-{$-1\leq\textrm{integer}$}%
-{$1$}%
-{frequency for propagating domains (-1: never, 0: only in root node)}%
-{}
-
-\printoption{constraints/superindicator/sepafreq}%
-{$-1\leq\textrm{integer}$}%
-{$-1$}%
-{frequency for separating cuts (-1: never, 0: only in root node)}%
-{}
-
 \printoption{constraints/varbound/propfreq}%
 {$-1\leq\textrm{integer}$}%
 {$1$}%
@@ -2201,66 +2183,6 @@
 {timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
 {}
 
-\printoption{constraints/superindicator/checkslacktype}%
-{boolean}%
-{TRUE}%
-{should type of slack constraint be checked when creating superindicator constraint?}%
-{}
-
-\printoption{constraints/superindicator/delaypresol}%
-{boolean}%
-{FALSE}%
-{should presolving method be delayed, if other presolvers found reductions?}%
-{}
-
-\printoption{constraints/superindicator/delayprop}%
-{boolean}%
-{FALSE}%
-{should propagation method be delayed, if other propagators found reductions?}%
-{}
-
-\printoption{constraints/superindicator/delaysepa}%
-{boolean}%
-{FALSE}%
-{should separation method be delayed, if other separators found cuts?}%
-{}
-
-\printoption{constraints/superindicator/eagerfreq}%
-{$-1\leq\textrm{integer}$}%
-{$100$}%
-{frequency for using all instead of only the useful constraints in separation, propagation and enforcement (-1: never, 0: only in first evaluation)}%
-{}
-
-\printoption{constraints/superindicator/maxprerounds}%
-{$-1\leq\textrm{integer}$}%
-{$-1$}%
-{maximal number of presolving rounds the constraint handler participates in (-1: no limit)}%
-{}
-
-\printoption{constraints/superindicator/maxupgdcoeflinear}%
-{$0\leq\textrm{real}\leq10^{ 15}$}%
-{$10000$}%
-{maximum big-M coefficient of binary variable in upgrade to a linear constraint (relative to smallest coefficient)}%
-{}
-
-\printoption{constraints/superindicator/timingmask}%
-{$1\leq\textrm{integer}\leq15$}%
-{$1$}%
-{timing when constraint propagation should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
-{}
-
-\printoption{constraints/superindicator/upgdprioindicator}%
-{$-1\leq\textrm{integer}$}%
-{$1$}%
-{priority for upgrading to an indicator constraint (-1: never)}%
-{}
-
-\printoption{constraints/superindicator/upgdpriolinear}%
-{$-1\leq\textrm{integer}$}%
-{$2$}%
-{priority for upgrading to an indicator constraint (-1: never)}%
-{}
-
 \printoption{constraints/varbound/delaypresol}%
 {boolean}%
 {FALSE}%
@@ -2524,6 +2446,12 @@
 {$0\leq\textrm{integer}\leq2$}%
 {$0$}%
 {display activation status of display column $<$sols$>$ (0: off, 1: auto, 2:on)}%
+{}
+
+\printoption{display/statistics}%
+{boolean}%
+{FALSE}%
+{whether to print statistics on a solve}%
 {}
 
 \printoption{display/strongbranchs/active}%
@@ -5194,6 +5122,12 @@
 {frequency for solving LP at the nodes (-1: never; 0: only root LP)}%
 {}
 
+\printoption{lp/solver}%
+{string}%
+{cplex, if licensed, otherwise soplex}%
+{LP solver to use (clp, cplex, soplex)}%
+{}
+
 \printoptioncategory{LP (advanced options)}
 \printoption{lp/checkfeas}%
 {boolean}%
@@ -6009,6 +5943,12 @@
 {maximal number of propagation rounds in the root node (-1: unlimited)}%
 {}
 
+\printoption{propagating/obbt/dualfeastol}%
+{$0\leq\textrm{real}$}%
+{$10^{- 9}$}%
+{feasibility tolerance for reduced costs used in obbt; this value is used if SCIP's dual feastol is greater}%
+{}
+
 \printoption{propagating/obbt/freq}%
 {$-1\leq\textrm{integer}$}%
 {$0$}%
@@ -6154,6 +6094,12 @@
 {should propagator be delayed, if other propagators found reductions?}%
 {}
 
+\printoption{propagating/genvbounds/global}%
+{boolean}%
+{TRUE}%
+{apply global propagation?}%
+{}
+
 \printoption{propagating/genvbounds/presoldelay}%
 {boolean}%
 {FALSE}%
@@ -6168,14 +6114,32 @@
 
 \printoption{propagating/genvbounds/priority}%
 {$-536870912\leq\textrm{integer}\leq536870911$}%
-{$-10$}%
+{$3000000$}%
 {priority of propagator $<$genvbounds$>$}%
+{}
+
+\printoption{propagating/genvbounds/propinrootnode}%
+{boolean}%
+{TRUE}%
+{apply genvbounds in root node if no new incumbent was found?}%
+{}
+
+\printoption{propagating/genvbounds/sort}%
+{boolean}%
+{TRUE}%
+{sort genvbounds and wait for bound change events?}%
 {}
 
 \printoption{propagating/genvbounds/timingmask}%
 {$1\leq\textrm{integer}\leq15$}%
 {$15$}%
 {timing when propagator should be called (1:BEFORELP, 2:DURINGLPLOOP, 4:AFTERLPLOOP, 15:ALWAYS))}%
+{}
+
+\printoption{propagating/obbt/applyfilterrounds}%
+{boolean}%
+{FALSE}%
+{try to filter bounds in so-called filter rounds by solving auxiliary LPs?}%
 {}
 
 \printoption{propagating/obbt/creategenvbounds}%
