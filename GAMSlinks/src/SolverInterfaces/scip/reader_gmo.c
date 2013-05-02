@@ -2943,7 +2943,10 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
    }
 
 #ifdef _WIN32
-   SCIP_CALL( SCIPsetIntParam(scip, "display/width", 80) );
+   if( !gevGetIntOpt(gev, gevIDEFlag) )
+   {
+      SCIP_CALL( SCIPsetIntParam(scip, "display/width", 80) );
+   }
    SCIP_CALL( SCIPsetIntParam(scip, "display/lpavgiterations/active", 0) );
    SCIP_CALL( SCIPsetIntParam(scip, "display/maxdepth/active", 0) );
    SCIP_CALL( SCIPsetIntParam(scip, "display/time/active", 2) );
