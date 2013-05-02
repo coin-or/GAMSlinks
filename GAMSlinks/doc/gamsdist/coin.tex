@@ -516,6 +516,22 @@ is a valid \texttt{ipopt.opt} file.
 You can set them either on the command line, e.g. \verb+iterlim=500+, or inside your \GAMS program, e.g. \verb+Option iterlim=500;+.
 Further, under Linux and Windows, the option \texttt{threads} can be used to control the number of threads used in the basic linear algebra routines.
 
+\subsubsection{Warmstarting Ipopt}
+
+As an interior point solver, it is difficult to warm start \IPOPT.
+By default, only the level values of the variables are passed as starting point to \IPOPT.
+Setting the \IPOPT option \texttt{warm\_start\_init\_point} to \texttt{yes} enables that also dual values for variables and constraints are passed to \IPOPT.
+
+However, the expected behavior that \IPOPT finishes within one iteration if optimal primal and dual values are passed is not reached this way yet. This is, because \IPOPT by default moves any initial value that is close to a bounds into the interior. The amount on how much the initial point is moved can be controlled by various \texttt{bound\_push} and \texttt{bound\_frac} options.
+To allow \IPOPT accept an optimal primal/dual solution within one iteration, it should be sufficient to set the following options:
+\begin{verbatim}
+  warm_start_init_point       yes
+  warm_start_bound_push       1e-9
+  warm_start_bound_frac       1e-9
+  warm_start_slack_bound_frac 1e-9
+  warm_start_slack_bound_push 1e-9
+  warm_start_mult_bound_push  1e-9
+\end{verbatim}
 
 \subsection{Output}
 
