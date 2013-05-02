@@ -1698,7 +1698,7 @@ This is the gradient scaling cut-off. If the maximum gradient is above this valu
 {}
 
 \printoption{nlp\_scaling\_method}%
-{\ttfamily none, user-scaling, gradient-based, equilibration-based}%
+{\ttfamily none, gradient-based, equilibration-based}%
 {gradient-based}%
 {Select the technique used for scaling the NLP.\\
 Selects the technique used for scaling the problem internally before it is solved. For user-scaling, the parameters come from the NLP. If you are using AMPL, they can be specified through suffixes ("scaling\_factor")}%
@@ -1709,7 +1709,6 @@ Selects the technique used for scaling the problem internally before it is solve
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
 \item[\texttt{none}] no problem scaling will be performed
-\item[\texttt{user-scaling}] scaling parameters will come from the user
 \item[\texttt{gradient-based}] scale the problem so the maximum gradient at the starting point is scaling\_max\_gradient
 \item[\texttt{equilibration-based}] scale the problem so that first derivatives are of order 1 at random points (only available with MC19)
 \end{list}

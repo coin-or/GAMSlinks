@@ -2,8 +2,6 @@
 \newcommand{\SCIP}{\textsc{SCIP}\xspace}
 
 \chapter{SCIP}
-\textbf{Stefan Vigerske, Humboldt University Berlin, Germany}
-\vspace{1cm}
 
 \minitoc
 
@@ -164,14 +162,14 @@ New entries are written periodically, depending on how many nodes have been proc
 
 \subsection{Notes on solving MINLPs with SCIP}
 
-\SCIP includes capabilities to handle nonlinear equations specified that are specified via algebraic expressions.
-Thus, external functions are not supported. Further, not all \GAMS operands are supported yet, including trigonometric functions ($\sin$, $\cos$, $\ldots$).
+\SCIP includes capabilities to handle nonlinear functions that are specified via algebraic expressions.
+Therefor, external functions and not all \GAMS operands are supported yet, including trigonometric ones ($\sin$, $\cos$, $\ldots$).
 
 %Note, that the support of MINLPs in \SCIP is still a very new feature and thus in a \textbf{BETA} stage.
 %Especially for badly formulated models, \SCIP may produce no or wrong solutions.
 
-Nonconvex MINLPs are solved by \SCIP via a spatial branch-and-bound algorithm using convex relaxations.
-The tightness of a convex relaxation depends heavily on the variable bounds, thus tight bounds for the nonlinear variables are crucial for \SCIP.
+Nonconvex MINLPs are solved via a spatial branch-and-bound algorithm using linear relaxations.
+The tightness of this relaxation depends heavily on the variable bounds, thus tight bounds for the nonlinear variables are crucial for \SCIP.
 
 \subsubsection*{Special options for convex MINLPs}
 
