@@ -806,6 +806,16 @@ void printIpoptOptions()
             defaultval.stringval = "adaptive";
          else if( (*it_opt)->Name() == "ma86_order" )
             defaultval.stringval = "auto";
+         else if( (*it_opt)->Name() == "nlp_scaling_method" )
+         {
+            for( ENUMVAL::iterator it(enumval.begin()); it != enumval.end(); ++it )
+               if( it->first == "user-scaling" )
+               {
+                  enumval.erase(it);
+                  break;
+               }
+         }
+
 
          printOption(optfile, (*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
             opttype, defaultval, minval, minval_strict, maxval, maxval_strict, enumval);
