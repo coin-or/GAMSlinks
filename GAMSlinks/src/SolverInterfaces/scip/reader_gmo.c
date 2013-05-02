@@ -2946,10 +2946,10 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
    if( !gevGetIntOpt(gev, gevIDEFlag) )
    {
       SCIP_CALL( SCIPsetIntParam(scip, "display/width", 80) );
+      SCIP_CALL( SCIPsetIntParam(scip, "display/lpavgiterations/active", 0) );
+      SCIP_CALL( SCIPsetIntParam(scip, "display/maxdepth/active", 0) );
+      SCIP_CALL( SCIPsetIntParam(scip, "display/time/active", 2) );
    }
-   SCIP_CALL( SCIPsetIntParam(scip, "display/lpavgiterations/active", 0) );
-   SCIP_CALL( SCIPsetIntParam(scip, "display/maxdepth/active", 0) );
-   SCIP_CALL( SCIPsetIntParam(scip, "display/time/active", 2) );
 #endif
 
    /* enable column on number of branching on nonlinear variables, if any */
