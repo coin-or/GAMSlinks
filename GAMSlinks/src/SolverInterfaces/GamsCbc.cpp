@@ -270,8 +270,11 @@ int GamsCbc::callSolver()
    GAMS_SOLVETRACE* solvetrace_ = NULL;
    if( solvetrace != NULL && solvetrace[0] )
    {
+      char buffer[GMS_SSSIZE];
       int rc;
-      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace, "CBC "CBC_VERSION, model->getInfinity(), solvetracenodefreq, solvetracetimefreq);
+
+      gmoNameInput(gmo, buffer);
+      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace, "CBC "CBC_VERSION, buffer, model->getInfinity(), solvetracenodefreq, solvetracetimefreq);
       if( rc != 0 )
       {
          gevLogStat(gev, "Initializing solvetrace failed.");

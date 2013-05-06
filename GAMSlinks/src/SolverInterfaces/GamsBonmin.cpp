@@ -331,13 +331,15 @@ int GamsBonmin::callSolver()
    bonmin_setup->options()->GetStringValue("solvetrace", solvetrace, "");
    if( solvetrace != "" )
    {
+      char buffer[GMS_SSSIZE];
       int nodefreq;
       double timefreq;
       int rc;
 
       bonmin_setup->options()->GetIntegerValue("solvetracenodefreq", nodefreq, "");
       bonmin_setup->options()->GetNumericValue("solvetracetimefreq", timefreq, "");
-      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Bonmin "BONMIN_VERSION, ipoptinf, nodefreq, timefreq);
+      gmoNameInput(gmo, buffer);
+      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Bonmin "BONMIN_VERSION, buffer, ipoptinf, nodefreq, timefreq);
       if( rc != 0 )
       {
          gevLogStat(gev, "Initializing solvetrace failed.");

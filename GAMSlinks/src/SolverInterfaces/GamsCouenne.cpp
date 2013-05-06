@@ -353,13 +353,15 @@ int GamsCouenne::callSolver()
    couenne_setup->options()->GetStringValue("solvetrace", solvetrace, "");
    if( solvetrace != "" )
    {
+      char buffer[GMS_SSSIZE];
       int nodefreq;
       double timefreq;
       int rc;
 
+      gmoNameInput(gmo, buffer);
       couenne_setup->options()->GetIntegerValue("solvetracenodefreq", nodefreq, "");
       couenne_setup->options()->GetNumericValue("solvetracetimefreq", timefreq, "");
-      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Couenne "COUENNE_VERSION, COUENNE_INFINITY, nodefreq, timefreq);
+      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Couenne "COUENNE_VERSION, buffer, COUENNE_INFINITY, nodefreq, timefreq);
       if( rc != 0 )
       {
          gevLogStat(gev, "Initializing solvetrace failed.");

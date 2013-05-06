@@ -103,7 +103,7 @@ SCIP_DECL_EVENTINIT(eventInitSolveTrace)
 #else
    (void) SCIPsnprintf(solverid, sizeof(solverid), "SCIP %d.%d.%d (" SCIP_GITHASH ")", SCIP_VERSION/100, (SCIP_VERSION%100)/10, SCIP_VERSION%10);
 #endif
-   rc = GAMSsolvetraceCreate(&eventhdlrdata->solvetrace, eventhdlrdata->filename, solverid, SCIPinfinity(scip), eventhdlrdata->nodefreq, eventhdlrdata->timefreq);
+   rc = GAMSsolvetraceCreate(&eventhdlrdata->solvetrace, eventhdlrdata->filename, solverid, SCIPgetProbName(scip), SCIPinfinity(scip), eventhdlrdata->nodefreq, eventhdlrdata->timefreq);
    if( rc != 0 )
    {
       SCIPerrorMessage("GAMSsolvetraceCreate returned with error %d, trace file name = %s\n", rc, eventhdlrdata->filename);
