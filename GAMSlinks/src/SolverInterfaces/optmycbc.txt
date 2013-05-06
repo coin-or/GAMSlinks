@@ -1036,6 +1036,11 @@ solvefinal.1
 Turn on the final LP solve.
 
 
+parallelmode
+Determines whether a parallel MIP search (threads > 1) should be done in a deterministic (i.e., reproducible) way
+or in a possibily faster but not necessarily reproducible way
+
+
 userheurfreq
 Determines the frequency of the heuristic model calls.
 

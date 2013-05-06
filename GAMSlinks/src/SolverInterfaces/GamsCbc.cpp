@@ -943,6 +943,22 @@ bool GamsCbc::setupParameters()
    nthreads = options.getInteger("threads");
    if( nthreads > 1 && CbcModel::haveMultiThreadSupport() )
    {
+
+      // Cbc runs deterministic when 100 is added to nthreads
+      char* value = options.getString("parallelmode", buffer);
+      if( value != NULL && strcmp(value, "deterministic") == 0 )
+      {
+         snprintf(buffer, sizeof(buffer), "\nParallel mode: deterministic, using %d threads\n", nthreads);
+         nthreads += 100;
+      }
+      else
+      {
+         if( value == NULL )
+            gevLogStat(gev, "Cannot read value for option 'parallelmode'. Ignoring this option");
+         snprintf(buffer, sizeof(buffer), "\nParallel mode: opportunistic, using %d threads\n", nthreads);
+      }
+      gevLogStatPChar(gev, buffer);
+
       par_list.push_back("-threads");
       sprintf(buffer, "%d", nthreads);
       par_list.push_back(buffer);
@@ -953,7 +969,13 @@ bool GamsCbc::setupParameters()
    else
    {
       if( nthreads > 1 )
+      {
          gevLogStat(gev, "Warning: Multithreading support not available in CBC.");
+         snprintf(buffer, sizeof(buffer), "\nParallel mode: none, using %d threads in linear algebra\n", nthreads);
+         gevLogStatPChar(gev, buffer);
+      }
+      //else
+      //   gevLogStatPChar(gev, "Parallel mode: none, using 1 thread\n");
 
       // allow linear algebra multithreading
       setNumThreadsLinearAlgebra(gev, nthreads);
@@ -1028,8 +1050,8 @@ bool GamsCbc::setupParameters()
    cbc_args = new char*[cbc_argc];
    cbc_args[0] = strdup("GAMS/CBC");
    int i = 1;
-   for( std::list<std::string>::iterator it(par_list.begin()); it != par_list.end(); ++it, ++i )
-      cbc_args[i] = strdup(it->c_str());
+   for( std::list<std::string>::iterator it(par_list.begin()); it != par_list.end(); ++it, ++i ) {
+      cbc_args[i] = strdup(it->c_str()); }
    cbc_args[i++] = strdup("-quit");
 
    mipstart = options.getBool("mipstart");

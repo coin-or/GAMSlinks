@@ -13,7 +13,7 @@ set g Cbc Option Groups /
         root, ifmove, forceon, forceonbut, forceonstrong, forceonbutstrong, onglobal, longon, longroot, endonly, long, longifmove, forcelongon, longendonly
         priorities, columnorder, binaryfirst, binarylast, length
         hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth
-        equal, equalall, sos, trysos
+        equal, equalall, sos, trysos, opportunistic, deterministic
       /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
     t / I Integer, R Real, S String, B Binary /
@@ -41,7 +41,8 @@ set g Cbc Option Groups /
       tol_presolve           tolerance used in presolve
       startalg               LP solver for root node
 *MIP options
-      threads                number of threads to use (available on Unix variants only)
+      threads                number of threads to use (experimental on Windows)
+      parallelmode           whether to run opportunistic or deterministic
       strategy               switches on groups of features
       mipstart               whether it should be tried to use the initial variable levels as initial MIP solution
       tol_integer            tolerance for integrality
@@ -184,7 +185,8 @@ mipgeneral.(
   multiplerootpasses   .i.(def 0, up 100000000)
   nodestrategy         .s.(def fewest)
   preprocess           .s.(def on)
-  threads              .i.(def 1, lo 0)
+  threads              .i.(def 1, lo 0, up 99)
+  parallelmode         .s.(def deterministic) 
   printfrequency       .i.(def 0)
   randomseedcbc        .i.(def -1, lo -1)
   loglevel             .i.(def 1)
@@ -343,8 +345,9 @@ $offtext
    coststrategy.(   off, priorities, columnorder, binaryfirst, binarylast, length )
    nodestrategy.(   hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth )
    preprocess.(     off, on, equal, equalall, sos, trysos )
-   printfrequency.(  0 )
-   solvefinal.(      0, 1)
+   printfrequency.( 0 )
+   solvefinal.(     0, 1)
+   parallelmode.(   opportunistic, deterministic )   
 *   usercutnewint.(   0, 1)
 *   userheurnewint.(   0, 1)
  /
@@ -430,7 +433,7 @@ $offtext
 
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /
- hidden(o)         / NoBounds, ReadFile /
+ hidden(o)         / NoBounds, ReadFile, multiplerootpasses /
  odefault(o)       / reslim     'GAMS reslim'
                      iterlim    'GAMS iterlim'
                      nodelim    'GAMS nodlim'
