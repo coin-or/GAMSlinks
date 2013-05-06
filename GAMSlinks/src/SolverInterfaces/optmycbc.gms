@@ -433,7 +433,7 @@ $offtext
 
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /
- hidden(o)         / NoBounds, ReadFile, multiplerootpasses /
+ hidden(o)         / NoBounds, ReadFile /
  odefault(o)       / reslim     'GAMS reslim'
                      iterlim    'GAMS iterlim'
                      nodelim    'GAMS nodlim'

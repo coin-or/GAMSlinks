@@ -1050,8 +1050,8 @@ bool GamsCbc::setupParameters()
    cbc_args = new char*[cbc_argc];
    cbc_args[0] = strdup("GAMS/CBC");
    int i = 1;
-   for( std::list<std::string>::iterator it(par_list.begin()); it != par_list.end(); ++it, ++i ) {
-      cbc_args[i] = strdup(it->c_str()); }
+   for( std::list<std::string>::iterator it(par_list.begin()); it != par_list.end(); ++it, ++i )
+      cbc_args[i] = strdup(it->c_str());
    cbc_args[i++] = strdup("-quit");
 
    mipstart = options.getBool("mipstart");

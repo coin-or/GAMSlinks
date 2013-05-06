@@ -123,6 +123,9 @@ maxsol</a></td>
 <tr><td><a href="#mipstart">
 mipstart</a></td>
 <td>whether it should be tried to use the initial variable levels as initial MIP solution</td></tr>
+<tr><td><a href="#multiplerootpasses">
+multiplerootpasses</a></td>
+<td>runs multiple copies of the solver at the root node</td></tr>
 <tr><td><a href="#nodelim">
 nodelim</a></td>
 <td>node limit</td></tr>
@@ -857,6 +860,18 @@ Reference: H. Marchand and L. A. Wolsey, Aggregation and Mixed Integer Rounding 
 
 <br><i>(default = ifmove)</i>
 
+<h4><a name="multiplerootpasses">
+multiplerootpasses</a>
+<i> (integer)</i> runs multiple copies of the solver at the root node</h4><p>
+
+Solves the root node with multiple copies of the solver, each with its own different seed and collects the solutions and cuts so that the main solver has a richer set of solutions and possibly stronger cuts.
+If threads are enabled, then this is done in parallel (Attention: doing this in parallel is experimental).
+If the number is below 100, then the option gives the number of times the root is solved.
+The actual format is aabbcc where aa is number of extra passes, if bb is non zero then it is number of threads to use (otherwise uses threads setting) and cc is number of times to do root phase.
+The solvers do not interact with each other.  However if extra passes are specified then cuts are collected and used in later passes - so there is interaction there.
+
+<br><i>(default = 0)</i>
+
 <h4><a name="naiveheuristics">
 naiveheuristics</a>
 <i> (integer)</i> naive heuristics</h4><p>
@@ -936,7 +951,7 @@ parallelmode</a>
 <i> (string)</i> whether to run opportunistic or deterministic</h4><p>
 
 Determines whether a parallel MIP search (threads > 1) should be done in a deterministic (i.e., reproducible) way
-or in a possibily faster but not necessarily reproducible way
+or in a possibly faster but not necessarily reproducible way
 
 <br><i>(default = deterministic)</i>
 <table>
@@ -1393,13 +1408,7 @@ threads</a>
 <i> (integer)</i> number of threads to use (experimental on Windows)</h4><p>
 
 This option controls the multithreading feature of CBC.
-A number between 1 and 100 sets the number of threads used for parallel branch and bound.
-A number 100+n with n between 1 and 100 says that n threads are used to parallelize the branch and bound, but also heuristics such as RINS which do branch and bound on a reduced model also use threads.
-A number 200+n with n between 1 and 100 says that n threads are used to parallelize the branch and bound, but also the cut generators at the root node (i.e., before threads are useful) are run in parallel.
-A number 300+n with n between 1 and 100 combines the 100+n and 200+n options.
-A number 400+n with n between 1 and 100 says that n threads are used in sub-trees.
-Thus, n threads are used to parallelize the branch and bound, but also heuristics use threads and the cut generators at the root node are run in parallel.
-The 100+n, 200+n, and 300+n options are experimental.
+A number between 1 and 99 sets the number of threads used for parallel branch and bound.
 
 <br><i>(default = GAMS threads)</i>
 
