@@ -1175,6 +1175,12 @@
 {frequency for using all instead of only the useful constraints in separation, propagation and enforcement (-1: never, 0: only in first evaluation)}%
 {}
 
+\printoption{constraints/abspower/enfocutsremovable}%
+{boolean}%
+{FALSE}%
+{are cuts added during enforcement removable from the LP in the same node?}%
+{}
+
 \printoption{constraints/abspower/maxprerounds}%
 {$-1\leq\textrm{integer}$}%
 {$-1$}%
@@ -1293,6 +1299,12 @@
 {$-1\leq\textrm{integer}$}%
 {$100$}%
 {frequency for using all instead of only the useful constraints in separation, propagation and enforcement (-1: never, 0: only in first evaluation)}%
+{}
+
+\printoption{constraints/bivariate/enfocutsremovable}%
+{boolean}%
+{FALSE}%
+{are cuts added during enforcement removable from the LP in the same node?}%
 {}
 
 \printoption{constraints/bivariate/maxprerounds}%
@@ -1829,6 +1841,12 @@
 {frequency for using all instead of only the useful constraints in separation, propagation and enforcement (-1: never, 0: only in first evaluation)}%
 {}
 
+\printoption{constraints/nonlinear/enfocutsremovable}%
+{boolean}%
+{FALSE}%
+{are cuts added during enforcement removable from the LP in the same node?}%
+{}
+
 \printoption{constraints/nonlinear/maxexpansionexponent}%
 {$1\leq\textrm{integer}$}%
 {$2$}%
@@ -1911,6 +1929,12 @@
 {$-1\leq\textrm{integer}$}%
 {$100$}%
 {frequency for using all instead of only the useful constraints in separation, propagation and enforcement (-1: never, 0: only in first evaluation)}%
+{}
+
+\printoption{constraints/quadratic/enfocutsremovable}%
+{boolean}%
+{FALSE}%
+{are cuts added during enforcement removable from the LP in the same node?}%
 {}
 
 \printoption{constraints/quadratic/linearizeheursol}%
@@ -2067,6 +2091,12 @@
 {$-1\leq\textrm{integer}$}%
 {$100$}%
 {frequency for using all instead of only the useful constraints in separation, propagation and enforcement (-1: never, 0: only in first evaluation)}%
+{}
+
+\printoption{constraints/soc/enfocutsremovable}%
+{boolean}%
+{FALSE}%
+{are cuts added during enforcement removable from the LP in the same node?}%
 {}
 
 \printoption{constraints/soc/maxprerounds}%
@@ -5357,7 +5387,7 @@
 \printoption{misc/resetstat}%
 {boolean}%
 {TRUE}%
-{should the statistics be reseted if the transformed problem is freed (in case of a benders decomposition this parameter should be set to FALSE)}%
+{should the statistics be reset if the transformed problem is freed (in case of a benders decomposition this parameter should be set to FALSE)}%
 {}
 
 \printoption{misc/transorigsols}%
@@ -7168,7 +7198,7 @@
 
 \printoption{separating/closecuts/maxlpiterfactor}%
 {$-1\leq\textrm{real}$}%
-{$2$}%
+{$10$}%
 {factor for maximal LP iterations in relative interior computation compared to node LP iterations (negative for no limit)}%
 {}
 
