@@ -1120,8 +1120,6 @@ void printBonminOptions()
 
          if( (*it_opt)->Name() == "nlp_log_at_root" )
             defaultval.intval = Ipopt::J_ITERSUMMARY;
-         else if( (*it_opt)->Name() == "random_generator_seed" )
-            defaultval.intval = 42;
          else if( (*it_opt)->Name() == "allowable_fraction_gap" )
             defaultval.realval = 0.1;
          else if( (*it_opt)->Name() == "time_limit" )

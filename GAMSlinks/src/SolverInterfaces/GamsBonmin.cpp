@@ -204,7 +204,6 @@ int GamsBonmin::callSolver()
    bonmin_setup->options()->SetStringValue("ma86_order", "auto", true, true);
    bonmin_setup->options()->SetIntegerValue("bonmin.nlp_log_at_root", Ipopt::J_ITERSUMMARY, true, true);
    bonmin_setup->options()->SetNumericValue("print_frequency_time", 0.5, true, true);
-   bonmin_setup->options()->SetIntegerValue("bonmin.random_generator_seed", 42, true, true);
    if( gevGetIntOpt(gev, gevUseCutOff) )
       bonmin_setup->options()->SetNumericValue("bonmin.cutoff", gmoSense(gmo) == gmoObj_Min ? gevGetDblOpt(gev, gevCutOff) : -gevGetDblOpt(gev, gevCutOff), true, true);
    bonmin_setup->options()->SetNumericValue("bonmin.allowable_gap", gevGetDblOpt(gev, gevOptCA), true, true);
