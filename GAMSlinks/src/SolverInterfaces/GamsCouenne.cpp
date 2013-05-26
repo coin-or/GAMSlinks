@@ -139,7 +139,7 @@ int GamsCouenne::readyAPI(
       0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
 
 
-   couenne_setup->roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
+   couenne_setup->roptions()->SetRegisteringCategory("Output and Loglevel", Bonmin::RegisteredOptions::IpoptCategory);
    couenne_setup->roptions()->AddStringOption2("print_eval_error",
       "Switch to enable printing information about function evaluation errors into the GAMS listing file.",
       "yes",

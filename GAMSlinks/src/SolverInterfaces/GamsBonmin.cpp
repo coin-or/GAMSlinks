@@ -117,7 +117,7 @@ int GamsBonmin::readyAPI(
    bonmin_setup->setOptionsAndJournalist(roptions, options, journalist);
    bonmin_setup->registerOptions();
 
-   bonmin_setup->roptions()->SetRegisteringCategory("Output and log-level options", Bonmin::RegisteredOptions::BonminCategory);
+   bonmin_setup->roptions()->SetRegisteringCategory("Output and Loglevel", Bonmin::RegisteredOptions::BonminCategory);
    bonmin_setup->roptions()->AddStringOption2("print_funceval_statistics",
       "Switch to enable printing statistics on number of evaluations of GAMS functions/gradients/Hessian.",
       "no",

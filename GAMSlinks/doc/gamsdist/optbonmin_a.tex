@@ -14,7 +14,7 @@ This will preset some of the options of bonmin depending on the algorithm choice
 \item[\texttt{B-OA}] OA Decomposition algorithm,
 \item[\texttt{B-QG}] Quesada and Grossmann branch-and-cut algorithm,
 \item[\texttt{B-Hyb}] hybrid outer approximation based branch-and-cut,
-\item[\texttt{B-Ecp}] ecp cuts based branch-and-cut a la FilMINT.
+\item[\texttt{B-Ecp}] ECP cuts based branch-and-cut a la FilMINT.
 \item[\texttt{B-iFP}] Iterated Feasibility Pump for MINLP.
 \end{list}
 }
@@ -64,7 +64,7 @@ Any number within that value of an integer is considered integer.}%
 \printoption{iteration\_limit}%
 {$0\leq\textrm{integer}$}%
 {$\infty$}%
-{Set the cumulated maximum number of iteration in the algorithm used to process nodes continuous relaxations in the branch-and-bound.\\
+{Set the cumulative maximum number of iteration in the algorithm used to process nodes continuous relaxations in the branch-and-bound.\\
 value 0 deactivates option.}%
 {}
 
@@ -72,7 +72,7 @@ value 0 deactivates option.}%
 {\ttfamily stop, fathom}%
 {stop}%
 {Set the behavior when an NLP or a series of NLP are unsolved by Ipopt (we call unsolved an NLP for which Ipopt is not able to guarantee optimality within the specified tolerances).\\
-If set to "fathom", the algorithm will fathom the node when Ipopt fails to find a solution to the nlp at that node whithin the specified tolerances. The algorithm then becomes a heuristic, and the user will be warned that the solution might not be optimal.}%
+If set to "fathom", the algorithm will fathom the node when Ipopt fails to find a solution to the nlp at that node within the specified tolerances. The algorithm then becomes a heuristic, and the user will be warned that the solution might not be optimal.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -137,7 +137,7 @@ Set the number of variables on which to do strong branching.}%
 
 \printoption{random\_generator\_seed}%
 {$-1\leq\textrm{integer}$}%
-{$42$}%
+{$0$}%
 {Set seed for random number generator (a value of -1 sets seeds to time since Epoch).}%
 {}
 
@@ -174,7 +174,7 @@ All strategies can be used in conjunction with any of the node comparison functi
 \setlength{\topsep}{0pt}}
 \item[\texttt{top-node}]  Always pick the top node as sorted by the node comparison function
 \item[\texttt{dive}] Dive in the tree if possible, otherwise pick top node as sorted by the tree comparison function.
-\item[\texttt{probed-dive}] Dive in the tree exploring two childs before continuing the dive at each level.
+\item[\texttt{probed-dive}] Dive in the tree exploring two children before continuing the dive at each level.
 \item[\texttt{dfs-dive}] Dive in the tree if possible doing a depth first search. Backtrack on leaves or when a prescribed depth is attained or when estimate of best possible integer feasible solution in subtree is worst than cutoff. Once a prescribed limit of backtracks is attained pick top node as sorted by the tree comparison function
 \item[\texttt{dfs-dive-dynamic}] Same as dfs-dive but once enough solution are found switch to best-bound and if too many nodes switch to depth-first.
 \end{list}
@@ -256,7 +256,7 @@ If it seems too much memory is used should try Benders to use less}%
 {\ttfamily detect-cycles, keep-all, treated-as-normal}%
 {detect-cycles}%
 {How cuts from feasibility checker are discarded\\
-Normally to avoid cycle cuts from feasibility checker should not be discarded in the node where they are generated. However Cbc sometimes does it if no care is taken which can lead to an infinite loop in Bonmin (usualy on simple problems). To avoid this one can instruct Cbc to never discard a cut but if we do that for all cuts it can lead to memory problems. The default policy here is to detect cycles and only then impose to Cbc to keep the cut. The two other alternative are to instruct Cbc to keep all cuts or to just ignore the problem and hope for the best}%
+Normally to avoid cycle cuts from feasibility checker should not be discarded in the node where they are generated. However Cbc sometimes does it if no care is taken which can lead to an infinite loop in Bonmin (usually on simple problems). To avoid this one can instruct Cbc to never discard a cut but if we do that for all cuts it can lead to memory problems. The default policy here is to detect cycles and only then impose to Cbc to keep the cut. The two other alternative are to instruct Cbc to keep all cuts or to just ignore the problem and hope for the best}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -323,7 +323,7 @@ To use Cplex, a valid license is required.}%
 (refer to CPLEX documentation)}%
 {}
 
-\printoptioncategory{MILP cutting planes in hybrid algorithm (B-Hyb)}
+\printoptioncategory{MILP cutting planes in hybrid algorithm}
 \printoption{2mir\_cuts}%
 {$-100\leq\textrm{integer}$}%
 {$0$}%
@@ -380,70 +380,6 @@ See option \texttt{2mir\_cuts} for a detailed description.}%
 See option \texttt{2mir\_cuts} for a detailed description.}%
 {}
 
-\printoptioncategory{MINLP Heuristics}
-\printoption{feasibility\_pump\_objective\_norm}%
-{$1\leq\textrm{integer}\leq2$}%
-{$1$}%
-{Norm of feasibility pump objective function}%
-{}
-
-\printoption{fp\_pass\_infeasible}%
-{\ttfamily no, yes}%
-{no}%
-{Say whether feasibility pump should claim to converge or not}%
-{\begin{list}{}{
-\setlength{\parsep}{0em}
-\setlength{\leftmargin}{5ex}
-\setlength{\labelwidth}{2ex}
-\setlength{\itemindent}{0ex}
-\setlength{\topsep}{0pt}}
-\item[\texttt{no}] When master MILP is infeasible just bail out (don't stop all algorithm). This is the option for using in B-Hyb.
-\item[\texttt{yes}] Claim convergence, numerically dangerous.
-\end{list}
-}
-
-\printoption{heuristic\_RINS}%
-{\ttfamily no, yes}%
-{no}%
-{if yes runs the RINS heuristic}%
-{}
-
-\printoption{heuristic\_dive\_MIP\_fractional}%
-{\ttfamily no, yes}%
-{no}%
-{if yes runs the Dive MIP Fractional heuristic}%
-{}
-
-\printoption{heuristic\_dive\_MIP\_vectorLength}%
-{\ttfamily no, yes}%
-{no}%
-{if yes runs the Dive MIP VectorLength heuristic}%
-{}
-
-\printoption{heuristic\_dive\_fractional}%
-{\ttfamily no, yes}%
-{no}%
-{if yes runs the Dive Fractional heuristic}%
-{}
-
-\printoption{heuristic\_dive\_vectorLength}%
-{\ttfamily no, yes}%
-{no}%
-{if yes runs the Dive VectorLength heuristic}%
-{}
-
-\printoption{heuristic\_feasibility\_pump}%
-{\ttfamily no, yes}%
-{no}%
-{whether the heuristic feasibility pump should be used}%
-{}
-
-\printoption{pump\_for\_minlp}%
-{\ttfamily no, yes}%
-{no}%
-{if yes runs FP for MINLP}%
-{}
-
 \printoptioncategory{NLP interface}
 \printoption{solvefinal}%
 {\ttfamily no, yes}%
@@ -489,7 +425,7 @@ When picking a random point, coordinate i will be in the interval [min(max(l,-r)
 {$-1\leq\textrm{integer}$}%
 {$-1$}%
 {Number of iterations over which a node is considered "suspect" (for debugging purposes only, see detailed documentation).\\
-When the number of iterations to solve a node is above this number, the subproblem at this node is considered to be suspect and it will be outputed in a file (set to -1 to deactivate this).}%
+When the number of iterations to solve a node is above this number, the subproblem at this node is considered to be suspect and it will be written into a file (set to -1 to deactivate this).}%
 {}
 
 \printoption{num\_retry\_unsolved\_random\_point}%
@@ -502,7 +438,7 @@ When Ipopt fails to solve a continuous NLP sub-problem, if $k > 0$, the algorith
 \printoption{random\_point\_perturbation\_interval}%
 {$0<\textrm{real}$}%
 {$1$}%
-{Amount by which starting point is perturbed when choosing to pick random point by perturbating starting point}%
+{Amount by which starting point is perturbed when choosing to pick random point by perturbing starting point}%
 {}
 
 \printoption{random\_point\_type}%
@@ -571,7 +507,7 @@ A depth of 0 amounts to to never solve the NLP relaxation.}%
 {$0\leq\textrm{integer}$}%
 {$0$}%
 {Number of consecutive infeasible subproblems before aborting a branch.\\
-Will continue exploring a branch of the tree until "max\_consecutive\_infeasible"consecutive problems are infeasibles by the NLP sub-solver.}%
+Will continue exploring a branch of the tree until "max\_consecutive\_infeasible"consecutive problems are locally infeasible by the NLP sub-solver.}%
 {}
 
 \printoption{num\_resolve\_at\_infeasibles}%
@@ -620,7 +556,7 @@ The algorithm will solve the root node with $k$ random starting points and will 
 \setlength{\itemindent}{0ex}
 \setlength{\topsep}{0pt}}
 \item[\texttt{no}] Add all cuts
-\item[\texttt{yes}] Add only violated Cuts
+\item[\texttt{yes}] Add only violated cuts
 \end{list}
 }
 
@@ -660,7 +596,7 @@ We will remove "cleanly" (by relaxing cut) an element lower than this.}%
 Algorithm will take the risk of neglecting an element lower than this.}%
 {}
 
-\printoptioncategory{Output}
+\printoptioncategory{Output and Loglevel}
 \printoption{bb\_log\_interval}%
 {$0\leq\textrm{integer}$}%
 {$100$}%
@@ -705,7 +641,7 @@ Set the level of output of the MILP subsolver in OA : 0 - none, 1 - minimal, 2 -
 \printoption{nlp\_log\_at\_root}%
 {$0\leq\textrm{integer}\leq12$}%
 {$5$}%
-{ Specify a different log level for root relaxtion.}%
+{specify a different log level for root relaxation.}%
 {}
 
 \printoption{nlp\_log\_level}%
@@ -759,6 +695,70 @@ giving 0 disables writing of N-lines to trace file}%
 {$5$}%
 {Frequency in seconds for writing solving progress information.\\
 giving 0.0 disables writing of T-lines to trace file}%
+{}
+
+\printoptioncategory{Primal Heuristics}
+\printoption{feasibility\_pump\_objective\_norm}%
+{$1\leq\textrm{integer}\leq2$}%
+{$1$}%
+{Norm of feasibility pump objective function}%
+{}
+
+\printoption{fp\_pass\_infeasible}%
+{\ttfamily no, yes}%
+{no}%
+{Say whether feasibility pump should claim to converge or not}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{no}] When master MILP is infeasible just bail out (don't stop all algorithm). This is the option for using in B-Hyb.
+\item[\texttt{yes}] Claim convergence, numerically dangerous.
+\end{list}
+}
+
+\printoption{heuristic\_RINS}%
+{\ttfamily no, yes}%
+{no}%
+{if yes runs the RINS heuristic}%
+{}
+
+\printoption{heuristic\_dive\_MIP\_fractional}%
+{\ttfamily no, yes}%
+{no}%
+{if yes runs the Dive MIP Fractional heuristic}%
+{}
+
+\printoption{heuristic\_dive\_MIP\_vectorLength}%
+{\ttfamily no, yes}%
+{no}%
+{if yes runs the Dive MIP VectorLength heuristic}%
+{}
+
+\printoption{heuristic\_dive\_fractional}%
+{\ttfamily no, yes}%
+{no}%
+{if yes runs the Dive Fractional heuristic}%
+{}
+
+\printoption{heuristic\_dive\_vectorLength}%
+{\ttfamily no, yes}%
+{no}%
+{if yes runs the Dive VectorLength heuristic}%
+{}
+
+\printoption{heuristic\_feasibility\_pump}%
+{\ttfamily no, yes}%
+{no}%
+{whether the heuristic feasibility pump should be used}%
+{}
+
+\printoption{pump\_for\_minlp}%
+{\ttfamily no, yes}%
+{no}%
+{whether to run the feasibility pump heuristic for MINLP}%
 {}
 
 \printoptioncategory{Strong branching setup}

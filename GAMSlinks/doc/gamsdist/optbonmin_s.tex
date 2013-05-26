@@ -55,7 +55,7 @@ milp\_solver & string & Cbc\_D & --& --& --& --& --& --& $\checkmark$\\
 milp\_strategy & string & solve\_to\_optimality & --& --& --& --& --& --& $\checkmark$\\
 number\_cpx\_threads & $\mathbb{Z}$ & $0$ & --& --& --& --& --& --& $\checkmark$\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{MILP cutting planes in hybrid algorithm (B-Hyb)}\\
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{MILP cutting planes in hybrid algorithm}\\
 \hline
 2mir\_cuts & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 Gomory\_cuts & $\mathbb{Z}$ & $-5$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
@@ -65,18 +65,6 @@ flow\_cover\_cuts & $\mathbb{Z}$ & $-5$ & --& $\checkmark$& $\checkmark$& $\chec
 lift\_and\_project\_cuts & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 mir\_cuts & $\mathbb{Z}$ & $-5$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 reduce\_and\_split\_cuts & $\mathbb{Z}$ & $0$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
-\hline
-\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{MINLP Heuristics}\\
-\hline
-feasibility\_pump\_objective\_norm & $\mathbb{Z}$ & $1$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
-fp\_pass\_infeasible & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
-heuristic\_RINS & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
-heuristic\_dive\_MIP\_fractional & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
-heuristic\_dive\_MIP\_vectorLength & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
-heuristic\_dive\_fractional & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
-heuristic\_dive\_vectorLength & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
-heuristic\_feasibility\_pump & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
-pump\_for\_minlp & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{NLP interface}\\
 \hline
@@ -91,7 +79,7 @@ num\_iterations\_suspect & $\mathbb{Z}$ & $-1$ & $\checkmark$& $\checkmark$& $\c
 num\_retry\_unsolved\_random\_point & $\mathbb{Z}$ & $0$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 random\_point\_perturbation\_interval & $\mathbb{Q}$ & $1$ & $\checkmark$& --& --& --& --& --& --\\
 random\_point\_type & string & Jon & $\checkmark$& --& --& --& --& --& --\\
-resolve\_on\_small\_infeasibility & $\mathbb{Q}$ & $0$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+resolve\_on\_small\_infeasibility & $\mathbb{Q}$ & $0$ & $\checkmark$& --& --& --& --& --& --\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{NLP solves in hybrid algorithm (B-Hyb)}\\
 \hline
@@ -122,7 +110,7 @@ oa\_rhs\_relax & $\mathbb{Q}$ & $10^{- 8}$ & --& $\checkmark$& $\checkmark$& $\c
 tiny\_element & $\mathbb{Q}$ & $10^{- 8}$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 very\_tiny\_element & $\mathbb{Q}$ & $10^{-17}$ & --& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 \hline
-\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Output}\\
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Output and Loglevel}\\
 \hline
 bb\_log\_interval & $\mathbb{Z}$ & $100$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 bb\_log\_level & $\mathbb{Z}$ & $1$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
@@ -139,6 +127,18 @@ print\_funceval\_statistics & string & no & $\checkmark$& $\checkmark$& $\checkm
 solvetrace & string &  & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 solvetracenodefreq & $\mathbb{Z}$ & $100$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
 solvetracetimefreq & $\mathbb{Q}$ & $5$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+\hline
+\multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Primal Heuristics}\\
+\hline
+feasibility\_pump\_objective\_norm & $\mathbb{Z}$ & $1$ & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+fp\_pass\_infeasible & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$\\
+heuristic\_RINS & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+heuristic\_dive\_MIP\_fractional & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+heuristic\_dive\_MIP\_vectorLength & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+heuristic\_dive\_fractional & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+heuristic\_dive\_vectorLength & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+heuristic\_feasibility\_pump & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
+pump\_for\_minlp & string & no & $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& $\checkmark$& --\\
 \hline
 \multicolumn{1}{|c}{} & \multicolumn{9}{l|}{Strong branching setup}\\
 \hline

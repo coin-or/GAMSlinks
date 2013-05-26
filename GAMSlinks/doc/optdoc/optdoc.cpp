@@ -789,6 +789,7 @@ void printIpoptOptions()
                break;
             }
 
+            default:
             case Ipopt::OT_Unknown:
             {
                std::cerr << "Skip option " << (*it_opt)->Name() << " of unknown type." << std::endl;
@@ -845,7 +846,7 @@ void printBonminOptions()
    bonmin_setup.setOptionsAndJournalist(regoptions, options, journalist);
    bonmin_setup.registerOptions();
 
-   bonmin_setup.roptions()->SetRegisteringCategory("Output and log-level options", Bonmin::RegisteredOptions::BonminCategory);
+   bonmin_setup.roptions()->SetRegisteringCategory("Output and Loglevel", Bonmin::RegisteredOptions::BonminCategory);
    bonmin_setup.roptions()->AddStringOption2("print_funceval_statistics",
       "Switch to enable printing statistics on number of evaluations of GAMS functions/gradients/Hessian.",
       "no",
@@ -893,51 +894,6 @@ void printBonminOptions()
           it->second->Name() == "sos_constraints"
         )
          continue;
-
-      if( category == "Bonmin ecp based strong branching" )
-         category = "ECP based strong branching";
-      if( category == "MILP cutting planes in hybrid" )
-         category += " algorithm (B-Hyb)";
-      if( category == "Nlp solution robustness" )
-         category = "NLP solution robustness";
-      if( category == "Nlp solve options in B-Hyb" )
-         category = "NLP solves in hybrid algorithm (B-Hyb)";
-      if( category == "Options for MILP subsolver in OA decomposition" || category == "Options for OA decomposition" )
-         category = "Outer Approximation Decomposition (B-OA)";
-      if( category == "Options for ecp cuts generation" )
-         category = "ECP cuts generation";
-      if( category == "Options for non-convex problems" )
-         category = "Nonconvex problems";
-      if( category == "Output and log-level options" )
-         category = "Output";
-      if( category == "nlp interface option" )
-         category = "NLP interface";
-      if( category == "Options for MILP solver" )
-         category = "MILP Solver";
-      if( category == "Options for feasibility checker using OA cuts" )
-         category = "Feasibility checker using OA cuts";
-      if( category == "Options for feasibility pump" )
-         category = "MINLP Heuristics";
-      if( category == "Test Heuristics" )
-      {
-         category="MINLP Heuristics";
-         continue;
-      }
-      if( category == "Undocumented MINLP Heuristics" )
-      {
-         category="MINLP Heuristics";
-         continue;
-      }
-
-      if( it->second->Name() == "oa_cuts_log_level" ||
-          it->second->Name() == "nlp_log_level" ||
-          it->second->Name() == "milp_log_level" ||
-          it->second->Name() == "oa_log_level" ||
-          it->second->Name() == "oa_log_frequency" ||
-          it->second->Name() == "fp_log_level" ||
-          it->second->Name() == "fp_log_frequency"
-        )
-         category="Output";
 
       opts[category].push_back(it->second);
    }
@@ -1089,15 +1045,6 @@ void printBonminOptions()
                {
                   opttype = OPTTYPE_STRING;
                }
-               else if( (*it_opt)->Name().find("heuristic_") == 0 ||
-                  (*it_opt)->Name() == "pump_for_minlp" ||
-                  (*it_opt)->Name() == "dynamic_def_cutoff_decr" )
-               {
-                  opttype = OPTTYPE_ENUM;
-                  enumval.clear();
-                  enumval.push_back(std::pair<std::string, std::string>("no", ""));
-                  enumval.push_back(std::pair<std::string, std::string>("yes", ""));
-               }
                else
                {
                   opttype = OPTTYPE_ENUM;
@@ -1109,6 +1056,7 @@ void printBonminOptions()
                break;
             }
 
+            default:
             case Ipopt::OT_Unknown:
             {
                std::cerr << "Skip option " << (*it_opt)->Name() << " of unknown type." << std::endl;
@@ -1272,6 +1220,7 @@ void printCouenneOptions()
                break;
             }
 
+            default:
             case Ipopt::OT_Unknown:
             {
                std::cerr << "Skip option " << (*it_opt)->Name() << " of unknown type." << std::endl;
@@ -1477,6 +1426,11 @@ void printSCIPOptions()
                opttype = OPTTYPE_STRING;
                defaultval.stringval = SCIPparamGetStringDefault(param);
                break;
+
+            default:
+               std::cerr << "Skip option " << SCIPparamGetName(param) << " of unknown type." << std::endl;
+               continue;
+
          }
          descr = SCIPparamGetDesc(param);
 
