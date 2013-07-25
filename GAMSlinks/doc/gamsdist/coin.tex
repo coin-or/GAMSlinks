@@ -520,8 +520,8 @@ As an interior point solver, it is difficult to warm start \IPOPT.
 By default, only the level values of the variables are passed as starting point to \IPOPT.
 Setting the \IPOPT option \texttt{warm\_start\_init\_point} to \texttt{yes} enables that also dual values for variables and constraints are passed to \IPOPT.
 
-However, the expected behavior that \IPOPT finishes within one iteration if optimal primal and dual values are passed is not reached this way yet. This is, because \IPOPT by default moves any initial value that is close to a bounds into the interior. The amount on how much the initial point is moved can be controlled by various \texttt{bound\_push} and \texttt{bound\_frac} options.
-To allow \IPOPT accept an optimal primal/dual solution within one iteration, it should be sufficient to set the following options:
+However, the expected behavior that \IPOPT finishes within one iteration if optimal primal and dual values are passed is not reached this way, yet. This is, because \IPOPT by default moves any initial value that is close to a bound into the interior. The amount on how much the initial point is moved can be controlled by various \texttt{bound\_push} and \texttt{bound\_frac} options.
+To make \IPOPT accept an optimal primal/dual solution within one iteration, it should be sufficient to set the following options:
 \begin{verbatim}
   warm_start_init_point       yes
   warm_start_bound_push       1e-9
