@@ -22,6 +22,7 @@ int GAMSsolvetraceCreate(
    GAMS_SOLVETRACE**     solvetrace,         /**< buffer to store pointer of GAMS solve trace data structure */
    const char*           filename,           /**< name of trace file to write */
    const char*           solverid,           /**< solver identifier string */
+   int                   optfilenr,          /**< number of options file, or 0 if none */
    const char*           probname,           /**< problem name */
    double                infinity,           /**< solver value for infinity */
    int                   nodefreq,           /**< interval in number of nodes when to write N-lines to trace files, 0 to disable N-lines */

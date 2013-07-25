@@ -338,7 +338,7 @@ int GamsBonmin::callSolver()
       bonmin_setup->options()->GetIntegerValue("solvetracenodefreq", nodefreq, "");
       bonmin_setup->options()->GetNumericValue("solvetracetimefreq", timefreq, "");
       gmoNameInput(gmo, buffer);
-      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Bonmin "BONMIN_VERSION, buffer, ipoptinf, nodefreq, timefreq);
+      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Bonmin", gmoOptFile(gmo), buffer, ipoptinf, nodefreq, timefreq);
       if( rc != 0 )
       {
          gevLogStat(gev, "Initializing solvetrace failed.");
@@ -595,8 +595,8 @@ int GamsBonmin::callSolver()
             gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
             break;
          default:
-      gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
-      gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+            gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
+            gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
       }
       return 0;
    }

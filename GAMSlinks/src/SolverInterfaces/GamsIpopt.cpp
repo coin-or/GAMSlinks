@@ -260,7 +260,7 @@ int GamsIpopt::callSolver()
          case gmoModelStat_NonOptimalIntermed:
          case gmoModelStat_Integer:
             gmoModelStatSet(gmo, gmoModelStat_Solved);
-   }
+      }
 
    return 0;
 }

@@ -360,7 +360,7 @@ SCIP_RETCODE GamsScip::setupSCIP()
 
       SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
       SCIP_CALL( SCIPincludeReaderGmo(scip) );
-      SCIP_CALL( SCIPincludeEventHdlrSolveTrace(scip) );
+      SCIP_CALL( SCIPincludeEventHdlrSolveTrace(scip, gmo) );
       /* SCIP_CALL( SCIPincludePropDefaultBounds(scip) ); */
 
       if( ipoptlicensed )

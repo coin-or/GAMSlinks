@@ -16,6 +16,7 @@
 #define __SCIP_EVENT_SOLVETRACE_H__
 
 #include "scip/scip.h"
+#include "gmomcc.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,7 +25,8 @@ extern "C" {
 /** creates event handler for solve trace event */
 extern
 SCIP_RETCODE SCIPincludeEventHdlrSolveTrace(
-   SCIP*                 scip                /**< SCIP data structure */
+   SCIP*                 scip,               /**< SCIP data structure */
+   gmoHandle_t           gmo                 /**< GAMS model object */
    );
 
 #ifdef __cplusplus

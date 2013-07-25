@@ -58,15 +58,19 @@ int GAMSsolvetraceCreate(
    GAMS_SOLVETRACE**     solvetrace,         /**< buffer to store pointer of GAMS solve trace data structure */
    const char*           filename,           /**< name of trace file to write */
    const char*           solverid,           /**< solver identifier string */
+   int                   optfilenr,          /**< number of options file, or 0 if none */
    const char*           probname,           /**< problem name */
    double                infinity,           /**< solver value for infinity */
    int                   nodefreq,           /**< interval in number of nodes when to write N-lines to trace files, 0 to disable N-lines */
    double                timefreq            /**< interval in seconds when to write T-lines to trace files, 0 to disable T-lines */
 )
 {
+   char optnrstr[5];
+
    assert(solvetrace != NULL);
    assert(filename != NULL);
    assert(solverid != NULL);
+   assert(optfilenr >= 0);
    assert(probname != NULL);
    assert(nodefreq >= 0);
    assert(timefreq >= 0.0);
@@ -78,7 +82,12 @@ int GAMSsolvetraceCreate(
    if( (*solvetrace)->tracefile == NULL )
       return 3;
 
-   fprintf((*solvetrace)->tracefile, "* solvetrace file %s: ID = %s Instance = %s\n", filename, solverid, probname);
+   if( optfilenr != 0 )
+      sprintf(optnrstr, ".%d", optfilenr);
+   else
+      optnrstr[0] = '\0';
+
+   fprintf((*solvetrace)->tracefile, "* solvetrace file %s: ID = %s%s Instance = %s\n", filename, solverid, optnrstr, probname);
    fprintf((*solvetrace)->tracefile, "* fields are lineNum, seriesID, node, seconds, bestFound, bestBound\n");
    fflush((*solvetrace)->tracefile);
 

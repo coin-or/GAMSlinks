@@ -16,6 +16,7 @@
 #include "event_solvetrace.h"
 #include "GamsSolveTrace.h"
 #include "scip/githash.c"
+#include "gmomcc.h"
 
 #include <assert.h>
 
@@ -31,6 +32,7 @@
 struct SCIP_EventhdlrData
 {
    GAMS_SOLVETRACE*      solvetrace;         /**< GAMS solve trace object */
+   gmoHandle_t           gmo;                /**< GAMS model object */
    char*                 filename;           /**< name of trace file */
    int                   nodefreq;           /**< node frequency of writing to trace file */
    SCIP_Real             timefreq;           /**< time frequency of writing to trace file */
@@ -89,21 +91,16 @@ static
 SCIP_DECL_EVENTINIT(eventInitSolveTrace)
 {  /*lint --e{715}*/
    SCIP_EVENTHDLRDATA* eventhdlrdata;
-   char solverid[30];
    int rc;
 
    eventhdlrdata = SCIPeventhdlrGetData(eventhdlr);
    assert(eventhdlrdata != NULL);
+   assert(eventhdlrdata->gmo != NULL);
 
    if( eventhdlrdata->filename[0] == '\0' )
       return SCIP_OKAY;
 
-#if SCIP_SUBVERSION > 0
-   (void) SCIPsnprintf(solverid, sizeof(solverid), "SCIP %d.%d.%d.%d (" SCIP_GITHASH ")", SCIP_VERSION/100, (SCIP_VERSION%100)/10, SCIP_VERSION%10, SCIP_SUBVERSION);
-#else
-   (void) SCIPsnprintf(solverid, sizeof(solverid), "SCIP %d.%d.%d (" SCIP_GITHASH ")", SCIP_VERSION/100, (SCIP_VERSION%100)/10, SCIP_VERSION%10);
-#endif
-   rc = GAMSsolvetraceCreate(&eventhdlrdata->solvetrace, eventhdlrdata->filename, solverid, SCIPgetProbName(scip), SCIPinfinity(scip), eventhdlrdata->nodefreq, eventhdlrdata->timefreq);
+   rc = GAMSsolvetraceCreate(&eventhdlrdata->solvetrace, eventhdlrdata->filename, "SCIP", gmoOptFile(eventhdlrdata->gmo), SCIPgetProbName(scip), SCIPinfinity(scip), eventhdlrdata->nodefreq, eventhdlrdata->timefreq);
    if( rc != 0 )
    {
       SCIPerrorMessage("GAMSsolvetraceCreate returned with error %d, trace file name = %s\n", rc, eventhdlrdata->filename);
@@ -210,7 +207,8 @@ SCIP_DECL_EVENTEXEC(eventExecSolveTrace)
 
 /** creates event handler for solvetrace event */
 SCIP_RETCODE SCIPincludeEventHdlrSolveTrace(
-   SCIP*                 scip                /**< SCIP data structure */
+   SCIP*                 scip,               /**< SCIP data structure */
+   gmoHandle_t           gmo                 /**< GAMS model object */
    )
 {
    SCIP_EVENTHDLRDATA* eventhdlrdata;
@@ -218,6 +216,7 @@ SCIP_RETCODE SCIPincludeEventHdlrSolveTrace(
    /* create solvetrace event handler data */
    SCIP_CALL( SCIPallocMemory(scip, &eventhdlrdata) );
    eventhdlrdata->solvetrace = NULL;
+   eventhdlrdata->gmo = gmo;
    eventhdlrdata->filename = NULL;
    eventhdlrdata->dualbound = SCIP_INVALID;
 

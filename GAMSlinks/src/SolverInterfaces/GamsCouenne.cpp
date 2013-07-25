@@ -361,7 +361,7 @@ int GamsCouenne::callSolver()
       gmoNameInput(gmo, buffer);
       couenne_setup->options()->GetIntegerValue("solvetracenodefreq", nodefreq, "");
       couenne_setup->options()->GetNumericValue("solvetracetimefreq", timefreq, "");
-      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Couenne "COUENNE_VERSION, buffer, COUENNE_INFINITY, nodefreq, timefreq);
+      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Couenne", gmoOptFile(gmo), buffer, COUENNE_INFINITY, nodefreq, timefreq);
       if( rc != 0 )
       {
          gevLogStat(gev, "Initializing solvetrace failed.");
@@ -571,7 +571,7 @@ int GamsCouenne::callSolver()
          case gmoModelStat_NonOptimalIntermed:
          case gmoModelStat_Integer:
             gmoModelStatSet(gmo, gmoModelStat_Solved);
-   }
+      }
 
 TERMINATE:
    if( solvetrace_ != NULL )
