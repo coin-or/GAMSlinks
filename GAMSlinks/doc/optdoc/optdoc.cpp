@@ -104,12 +104,13 @@ private:
 
    std::string           solver;
    std::string           curgroup;
+   std::string           separator;
 
 public:
    GamsOptions(
       const std::string& solver_
       )
-   : solver(solver_)
+   : solver(solver_), separator(" ")
    { }
 
    void setGroup(
@@ -118,6 +119,13 @@ public:
    {
       curgroup = group;
       groups.insert(group);
+   }
+   
+   void setSeparator(
+      const std::string& sepa
+      )
+   {
+      separator = sepa;
    }
 
    void collect(
@@ -199,6 +207,8 @@ public:
 
       filename = "opt" + solver + ".gms";
       std::ofstream f(filename.c_str());
+      
+      f << "$set SEPARATOR \"" << separator << '"' << std::endl;
 
       f << "set e / 1*100 " << std::endl;  // the 1*100 is necessary to get the long description into the html file
       for( std::set<std::string>::iterator v(values.begin()); v != values.end(); ++v )
