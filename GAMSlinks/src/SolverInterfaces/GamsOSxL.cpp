@@ -142,6 +142,11 @@ bool GamsOSxL::createOSInstance()
             case gmovar_SI:
                vartypes[i] = 'J';
                break;
+            case gmovar_S1:
+            case gmovar_S2:
+               vartypes[i] = 'C';
+               // ignore SOS1, SOS2 for now; we should only get here if called by convert, in which case we do something special
+               break;
             default:
             {
                gevLogStat(gev, "Error: Unsupported variable type.");

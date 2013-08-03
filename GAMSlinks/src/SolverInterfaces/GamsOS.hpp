@@ -35,6 +35,10 @@ private:
       GamsOptions&       gamsopt             /**< GAMS options object */
    );
 
+   bool contriveSOS(
+      std::string&       osil                /**< OSiL string */
+   );
+
 public:
    GamsOS()
    : gmo(NULL),

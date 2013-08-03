@@ -29,6 +29,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 int GamsOS::readyAPI(
    struct gmoRec*     gmo,                /**< GAMS modeling object */
@@ -78,7 +79,9 @@ int GamsOS::callSolver()
    gmoObjStyleSet(gmo, gmoObjType_Fun);
    gmoIndexBaseSet(gmo, 0);
 
-   if( gmoGetVarTypeCnt(gmo, gmovar_S1) || gmoGetVarTypeCnt(gmo, gmovar_S2) )
+   bool calledbyconvert = (gevGetIntOpt(gev, gevInteger5) == 273);
+
+   if( (gmoGetVarTypeCnt(gmo, gmovar_S1) || gmoGetVarTypeCnt(gmo, gmovar_S2)) && !calledbyconvert )
    {
       gevLogStat(gev, "Error: Special ordered sets not supported by OS.");
       gmoSolveStatSet(gmo, gmoSolveStat_Capability);
@@ -95,8 +98,6 @@ int GamsOS::callSolver()
    }
 
    char buffer[2*GMS_SSSIZE];
-
-   bool calledbyconvert = (gevGetIntOpt(gev, gevInteger5) == 273);
 
    // setup options object, read options file, if given
    GamsOptions gamsopt(gev, opt);
@@ -148,9 +149,14 @@ int GamsOS::callSolver()
       }
       else
       {
+         std::string osil(osilwriter.writeOSiL(osinstance));
+         if( !contriveSOS(osil) )
+         {
+            gevLogStat(gev, "Error contriving SOS information into OSiL string.");
+         }
          sprintf(buffer, "Writing instance in OSiL to %s.", osilfilename);
          gevLogStat(gev, buffer);
-         osilfile << osilwriter.writeOSiL(osinstance);
+         osilfile << osil;
       }
    }
 
@@ -438,6 +444,63 @@ bool GamsOS::processResult(
       osrl2gmo.writeSolution(*osresult);
    else
       osrl2gmo.writeSolution(*osrl);
+
+   return true;
+}
+
+bool GamsOS::contriveSOS(std::string& osil)
+{
+   int numSos1;
+   int numSos2;
+   int nzSos;
+
+   gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);
+
+   if( nzSos == 0 )
+      return true;
+
+   int numSos;
+   int* sostype;
+   int* sosbeg;
+   int* sosind;
+   double* soswt;
+   std::stringstream sosstr;
+
+   numSos = numSos1 + numSos2;
+
+   sostype = new int[numSos];
+   sosbeg  = new int[numSos+1];
+   sosind  = new int[nzSos];
+   soswt   = new double[nzSos];
+
+   gmoGetSosConstraints(gmo, sostype, sosbeg, sosind, soswt);
+
+   sosstr << "<specialOrderedSets numberOfSOS=\"" << numSos << "\">";
+
+   // TODO the SOS weights (soswt) are lost here; OSoL has a scheme for these, but we don't write out an OSoL here
+   for( int i = 0; i < numSos; ++i )
+   {
+      sosstr << "<SOS" << sostype[i] << " numberOfVar=\"" << sosbeg[i+1] - sosbeg[i] << "\">";
+      for( int j = sosbeg[i]; j < sosbeg[i+1]; ++j )
+         sosstr << "<var idx=\"" << sosind[j] << "\"/>";
+      sosstr << "</SOS" << sostype[i] << ">";
+
+   }
+   sosstr << "</specialOrderedSets>";
+
+   size_t dataend = osil.rfind("</instanceData>");
+   if( dataend == std::string::npos )
+   {
+      gevLogStat(gev, "Error: Could not find '</InstanceData>' in OSiL string.");
+      return false;
+   }
+
+   osil.insert(dataend, sosstr.str());
+
+   delete sostype;
+   delete sosbeg;
+   delete sosind;
+   delete soswt;
 
    return true;
 }
