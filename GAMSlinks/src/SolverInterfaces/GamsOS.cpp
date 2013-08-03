@@ -480,10 +480,10 @@ bool GamsOS::contriveSOS(std::string& osil)
    // TODO the SOS weights (soswt) are lost here; OSoL has a scheme for these, but we don't write out an OSoL here
    for( int i = 0; i < numSos; ++i )
    {
-      sosstr << "<SOS" << sostype[i] << " numberOfVar=\"" << sosbeg[i+1] - sosbeg[i] << "\">";
+      sosstr << "<sos type=\"" << sostype[i] << "\" numberOfVar=\"" << sosbeg[i+1] - sosbeg[i] << "\">";
       for( int j = sosbeg[i]; j < sosbeg[i+1]; ++j )
          sosstr << "<var idx=\"" << sosind[j] << "\"/>";
-      sosstr << "</SOS" << sostype[i] << ">";
+      sosstr << "</sos>";
 
    }
    sosstr << "</specialOrderedSets>";
