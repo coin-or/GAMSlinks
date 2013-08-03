@@ -2061,6 +2061,7 @@ SCIP_RETCODE writeGmoSolution(
       case SCIP_STATUS_UNKNOWN: /* the solving status is not yet known */
          gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
          gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+         nrsol = 0;
          break;
       case SCIP_STATUS_USERINTERRUPT: /* the user interrupted the solving process (by pressing Ctrl-C) */
          gmoSolveStatSet(gmo, gmoSolveStat_User);
@@ -2092,6 +2093,7 @@ SCIP_RETCODE writeGmoSolution(
       case SCIP_STATUS_INFEASIBLE: /* the problem was proven to be infeasible */
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
          gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
+         nrsol = 0;
          break;
       case SCIP_STATUS_UNBOUNDED: /* the problem was proven to be unbounded */
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
@@ -2100,6 +2102,7 @@ SCIP_RETCODE writeGmoSolution(
       case SCIP_STATUS_INFORUNBD: /* the problem was proven to be either infeasible or unbounded */
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
          gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+         nrsol = 0;
          break;
    }
 
