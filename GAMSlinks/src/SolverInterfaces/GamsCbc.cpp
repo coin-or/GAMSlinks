@@ -967,7 +967,7 @@ bool GamsCbc::setupParameters()
       par_list.push_back(buffer);
 
       // no linear algebra multithreading if Cbc is doing multithreading
-      setNumThreadsLinearAlgebra(gev, 1);
+      setNumThreads(gev, 1);
    }
    else
    {
@@ -981,7 +981,7 @@ bool GamsCbc::setupParameters()
       //   gevLogStatPChar(gev, "Parallel mode: none, using 1 thread\n");
 
       // allow linear algebra multithreading
-      setNumThreadsLinearAlgebra(gev, nthreads);
+      setNumThreads(gev, nthreads);
       nthreads = 1;
    }
 

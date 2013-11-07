@@ -104,10 +104,10 @@ if test $coin_has_ipopt = yes ; then
   LIBS_save="$LIBS"
   LIBS=[`echo $IPOPT_LIBS $LIBS | sed -e 's/[^ ]*.la / /g'`]
   AC_CHECK_FUNC([goto_set_num_threads],
-    AC_DEFINE([HAVE_GOTO_SETNUMTHREADS],[1],[Define to 1 if the Blas library has goto_set_num_threads])
+    AC_DEFINE([HAVE_GOTO_SETNUMTHREADS],[1],[Define to 1 if we have goto_set_num_threads])
   )
-  AC_CHECK_FUNC([MKL_Domain_Set_Num_Threads],
-    AC_DEFINE([HAVE_MKL_SETNUMTHREADS],[1],[Define to 1 if the Blas library has mkl_set_num_threads])
+  AC_CHECK_FUNC([omp_set_num_threads],
+    AC_DEFINE([HAVE_OMP_SETNUMTHREADS],[1],[Define to 1 if we have omp_set_num_threads])
   )
   LIBS="$LIBS_save"
 fi

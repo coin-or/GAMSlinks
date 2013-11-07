@@ -18,4 +18,8 @@
 #define gmoEvalErrorNoMsg(a,b) gmoEvalErrorMsg(a,!(b))
 #endif
 
+#if GMOAPIVERSION >= 13
+#define gmoModelStat_NonOptimalIntermed gmoModelStat_Feasible
+#endif
+
 #endif /* GAMSCOMPATIBILITY_H_ */

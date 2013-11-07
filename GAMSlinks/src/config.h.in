@@ -77,7 +77,7 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
-/* Define to 1 if the Blas library has goto_set_num_threads */
+/* Define to 1 if we have goto_set_num_threads */
 #undef HAVE_GOTO_SETNUMTHREADS
 
 /* Define to 1 if you have the <inttypes.h> header file. */
@@ -86,8 +86,8 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
-/* Define to 1 if the Blas library has mkl_set_num_threads */
-#undef HAVE_MKL_SETNUMTHREADS
+/* Define to 1 if we have omp_set_num_threads */
+#undef HAVE_OMP_SETNUMTHREADS
 
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF

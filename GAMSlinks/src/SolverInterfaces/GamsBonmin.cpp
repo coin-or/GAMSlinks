@@ -322,7 +322,7 @@ int GamsBonmin::callSolver()
    gmoEvalErrorNoMsg(gmo, !printevalerror);
 
    // set number of threads in linear algebra in ipopt
-   setNumThreadsLinearAlgebra(gev, gevThreads(gev));
+   setNumThreads(gev, gevThreads(gev));
 
    // initialize solvetrace, if activated
    GAMS_SOLVETRACE* solvetrace_ = NULL;
