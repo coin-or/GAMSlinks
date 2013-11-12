@@ -277,7 +277,7 @@ void GamsMINLP::finalize_solution(
             if( gevGetDblOpt(gev, gevOptCA) == 0.0 && gevGetDblOpt(gev, gevOptCR) == 0.0 && (in_couenne || (gmoObjNLNZ(gmo) == 0 && gmoNLNZ(gmo) == 0)) )
                model_status = gmoModelStat_OptimalGlobal; // optimal
             else
-               model_status = (gmoNDisc(gmo) > 0) ? gmoModelStat_Integer : gmoModelStat_OptimalLocal; // integer feasible solution or local optimal
+               model_status = (gmoNDisc(gmo) > 0) ? gmoModelStat_Integer : gmoModelStat_Feasible; // (integer) feasible solution
          }
          else
          {
@@ -310,7 +310,7 @@ void GamsMINLP::finalize_solution(
             solver_status = gmoSolveStat_Iteration;
 
          if( x != NULL )
-            model_status = (gmoNDisc(gmo) > 0) ? gmoModelStat_Integer : gmoModelStat_OptimalLocal; // integer feasible solution or local optimal
+            model_status = (gmoNDisc(gmo) > 0) ? gmoModelStat_Integer : gmoModelStat_Feasible; // (integer) feasible solution
          else
             model_status = gmoModelStat_NoSolutionReturned; // no solution returned
 
@@ -323,7 +323,7 @@ void GamsMINLP::finalize_solution(
          solver_status = gmoSolveStat_User;
 
          if( x != NULL )
-            model_status = (gmoNDisc(gmo) > 0) ? gmoModelStat_Integer : gmoModelStat_OptimalLocal; // integer feasible solution or local optimal
+            model_status = (gmoNDisc(gmo) > 0) ? gmoModelStat_Integer : gmoModelStat_Feasible; // (integer) feasible solution
          else
             model_status = gmoModelStat_NoSolutionReturned; // no solution returned
 

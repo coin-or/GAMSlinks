@@ -447,6 +447,7 @@ int GamsCouenne::callSolver()
       {
          case gmoModelStat_OptimalGlobal:
          case gmoModelStat_OptimalLocal:
+         case gmoModelStat_Feasible:
          case gmoModelStat_Integer:
             havesol = true;
             break;
@@ -568,7 +569,7 @@ int GamsCouenne::callSolver()
       {
          case gmoModelStat_OptimalGlobal:
          case gmoModelStat_OptimalLocal:
-         case gmoModelStat_NonOptimalIntermed:
+         case gmoModelStat_Feasible:
          case gmoModelStat_Integer:
             gmoModelStatSet(gmo, gmoModelStat_Solved);
       }

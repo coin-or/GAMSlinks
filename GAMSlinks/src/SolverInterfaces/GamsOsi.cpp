@@ -684,6 +684,13 @@ bool GamsOsi::setupParameters()
 
    if( iterlim != ITERLIM_INFINITY )
       osi->setIntParam(OsiMaxNumIteration, iterlim);
+   
+   /* default is to try doing dual in initial, but a user might want to
+    * overwrite this setting with its solver specific options file;
+    * so we change the OsiDoDualInInitial hint from OsiHintTry to OsiHintIgnore,
+    * so Osi*::initialSolve should ignore this hint and let the solver choose
+    */
+   osi->setHintParam(OsiDoDualInInitial,1,OsiHintIgnore);
 
    switch( solverid )
    {
@@ -1204,7 +1211,7 @@ bool GamsOsi::writeSolution(
             case CPX_STAT_NUM_BEST:
             case CPX_STAT_FEASIBLE:
                gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-               gmoModelStatSet(gmo, gmoModelStat_NonOptimalIntermed);
+               gmoModelStatSet(gmo, gmoModelStat_Feasible);
                gevLogStat(gev, "Feasible solution found.");
                break;
 
@@ -1319,7 +1326,7 @@ bool GamsOsi::writeSolution(
             {
                solwritten = true;
                gevLogStat(gev, "Time limit reached, have feasible solution.");
-               gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
+               gmoModelStatSet(gmo, isLP() ? gmoModelStat_Feasible : gmoModelStat_Integer);
             }
             else
             {
@@ -1334,7 +1341,7 @@ bool GamsOsi::writeSolution(
             {
                solwritten = true;
                gevLogStat(gev, "Iteration limit reached, have feasible solution.");
-               gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
+               gmoModelStatSet(gmo, isLP() ? gmoModelStat_Feasible : gmoModelStat_Integer);
             }
             else
             {
@@ -1367,7 +1374,7 @@ bool GamsOsi::writeSolution(
             solwritten = true;
             gevLogStat(gev, "Feasible solution found.");
             gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-            gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
+            gmoModelStatSet(gmo, isLP() ? gmoModelStat_Feasible : gmoModelStat_Integer);
          }
          else if( osiglpk->isAbandoned() )
          {
@@ -1446,7 +1453,7 @@ bool GamsOsi::writeSolution(
                gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
                if( nrsol )
                {
-                  gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
+                  gmoModelStatSet(gmo, isLP() ? gmoModelStat_Feasible : gmoModelStat_Integer);
                   gevLogStat(gev, "Iteration limit reached, but have feasible solution.");
                }
                else
@@ -1475,7 +1482,7 @@ bool GamsOsi::writeSolution(
                gmoSolveStatSet(gmo, gmoSolveStat_Resource);
                if( nrsol )
                {
-                  gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
+                  gmoModelStatSet(gmo, isLP() ? gmoModelStat_Feasible : gmoModelStat_Integer);
                   gevLogStat(gev, "Time limit reached, but have feasible solution.");
                }
                else
@@ -1489,7 +1496,7 @@ bool GamsOsi::writeSolution(
                gmoSolveStatSet(gmo, gmoSolveStat_Solver);
                if( nrsol )
                {
-                  gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
+                  gmoModelStatSet(gmo, isLP() ? gmoModelStat_Feasible : gmoModelStat_Integer);
                   gevLogStat(gev, "Solution limit reached.");
                }
                else
@@ -1503,7 +1510,7 @@ bool GamsOsi::writeSolution(
                gmoSolveStatSet(gmo, gmoSolveStat_User);
                if( nrsol )
                {
-                  gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
+                  gmoModelStatSet(gmo, isLP() ? gmoModelStat_Feasible : gmoModelStat_Integer);
                   gevLogStat(gev, "User interrupt, have feasible solution.");
                }
                else
@@ -1517,7 +1524,7 @@ bool GamsOsi::writeSolution(
                gmoSolveStatSet(gmo, gmoSolveStat_Solver);
                if( nrsol )
                {
-                  gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
+                  gmoModelStatSet(gmo, isLP() ? gmoModelStat_Feasible : gmoModelStat_Integer);
                   gevLogStat(gev, "Stopped on numerical difficulties, but have feasible solution.");
                }
                else
@@ -1531,7 +1538,7 @@ bool GamsOsi::writeSolution(
                gmoSolveStatSet(gmo, gmoSolveStat_Solver);
                if( nrsol )
                {
-                  gmoModelStatSet(gmo, isLP() ? gmoModelStat_NonOptimalIntermed : gmoModelStat_Integer);
+                  gmoModelStatSet(gmo, isLP() ? gmoModelStat_Feasible : gmoModelStat_Integer);
                   gevLogStat(gev, "Stopped on suboptimal but feasible solution.");
                }
                else
@@ -1629,7 +1636,7 @@ bool GamsOsi::writeSolution(
                solwritten = true;
                gmoSolveStatSet(gmo, gmoSolveStat_Normal);
                if( isLP() )
-                  gmoModelStatSet(gmo, gmoModelStat_NonOptimalIntermed);
+                  gmoModelStatSet(gmo, gmoModelStat_Feasible);
                else
                   gmoModelStatSet(gmo, gmoModelStat_Integer);
                gevLogStat(gev, "Solved to feasibility.");
@@ -1699,7 +1706,7 @@ bool GamsOsi::writeSolution(
 
                   case MSK_PRO_STA_PRIM_AND_DUAL_FEAS:
                      gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-                     gmoModelStatSet(gmo, gmoModelStat_NonOptimalIntermed);
+                     gmoModelStatSet(gmo, gmoModelStat_Feasible);
                      gevLogStat(gev, "Model is primal and dual feasible.");
                      break;
 
@@ -1711,7 +1718,7 @@ bool GamsOsi::writeSolution(
 
                   case MSK_PRO_STA_PRIM_FEAS:
                      gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-                     gmoModelStatSet(gmo, gmoModelStat_NonOptimalIntermed);
+                     gmoModelStatSet(gmo, gmoModelStat_Feasible);
                      gevLogStat(gev, "Model is primal feasible.");
                      break;
 

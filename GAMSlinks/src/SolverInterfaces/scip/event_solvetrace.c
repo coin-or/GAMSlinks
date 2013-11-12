@@ -15,7 +15,6 @@
 
 #include "event_solvetrace.h"
 #include "GamsSolveTrace.h"
-#include "scip/githash.c"
 #include "gmomcc.h"
 
 #include <assert.h>
@@ -131,8 +130,8 @@ SCIP_DECL_EVENTEXIT(eventExitSolveTrace)
    SCIP_CALL( SCIPdropEvent(scip, SCIP_EVENTTYPE_NODESOLVED | SCIP_EVENTTYPE_BESTSOLFOUND | SCIP_EVENTTYPE_PRESOLVEROUND | SCIP_EVENTTYPE_LPEVENT, eventhdlr, (SCIP_EVENTDATA*)eventhdlrdata->solvetrace, eventhdlrdata->filterpos) );
 
    GAMSsolvetraceAddEndLine(eventhdlrdata->solvetrace, SCIPgetNTotalNodes(scip),
-      eventhdlrdata->dualbound == SCIP_INVALID ? -SCIPgetObjsense(scip) * SCIPinfinity(scip) : eventhdlrdata->dualbound,
-      SCIPgetNSols(scip) > 0 ? SCIPgetSolOrigObj(scip, SCIPgetBestSol(scip)) : SCIPgetObjsense(scip) * SCIPinfinity(scip));
+      eventhdlrdata->dualbound == SCIP_INVALID ? -(int)SCIPgetObjsense(scip) * SCIPinfinity(scip) : eventhdlrdata->dualbound,   /*lint !e777*/
+      SCIPgetNSols(scip) > 0 ? SCIPgetSolOrigObj(scip, SCIPgetBestSol(scip)) : (int)SCIPgetObjsense(scip) * SCIPinfinity(scip));
 
    GAMSsolvetraceFree(&eventhdlrdata->solvetrace);
    assert(eventhdlrdata->solvetrace == NULL);
@@ -195,7 +194,7 @@ SCIP_DECL_EVENTEXEC(eventExecSolveTrace)
 
    GAMSsolvetraceAddLine((GAMS_SOLVETRACE*)eventdata, SCIPgetNTotalNodes(scip),
       SCIPgetDualbound(scip),
-      SCIPgetNSols(scip) > 0 ? SCIPgetSolOrigObj(scip, SCIPgetBestSol(scip)) : SCIPgetObjsense(scip) * SCIPinfinity(scip));
+      SCIPgetNSols(scip) > 0 ? SCIPgetSolOrigObj(scip, SCIPgetBestSol(scip)) : (int) SCIPgetObjsense(scip) * SCIPinfinity(scip));
 
    eventhdlrdata = SCIPeventhdlrGetData(eventhdlr);
    assert(eventhdlrdata != NULL);

@@ -926,9 +926,9 @@ void GamsOSxL::writeSolution(
    else if( osresult.getSolutionStatusType(0) == "optimal" )
       gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
    else if( osresult.getSolutionStatusType(0) == "bestSoFar" )
-      gmoModelStatSet(gmo, gmoModelStat_NonOptimalIntermed); // or should we report integer solution if integer var.?
+      gmoModelStatSet(gmo, gmoModelStat_Feasible); // or should we report integer solution if integer var.?
    else if( osresult.getSolutionStatusType(0) == "feasible" )
-      gmoModelStatSet(gmo, gmoModelStat_NonOptimalIntermed); // or should we report integer solution if integer var.?
+      gmoModelStatSet(gmo, gmoModelStat_Feasible); // or should we report integer solution if integer var.?
    else if( osresult.getSolutionStatusType(0) == "infeasible" )
       gmoModelStatSet(gmo, gmoModelStat_InfeasibleGlobal);
    else if( osresult.getSolutionStatusType(0) == "stoppedByLimit" )
@@ -1013,7 +1013,7 @@ void GamsOSxL::writeSolution(
       {
          case gmoModelStat_OptimalGlobal:
          case gmoModelStat_OptimalLocal:
-         case gmoModelStat_NonOptimalIntermed:
+         case gmoModelStat_Feasible:
          case gmoModelStat_Integer:
             gmoModelStatSet(gmo, gmoModelStat_Solved);
       }

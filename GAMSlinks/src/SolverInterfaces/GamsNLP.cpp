@@ -494,8 +494,8 @@ bool GamsNLP::eval_jac_g(
       iRowStart      = new int[m+1];
       this->jCol     = new int[nele_jac];
       double* jacval = new double[nele_jac];
-      int*    nlflag = new int[nele_jac];
-      gmoGetMatrixRow(gmo, iRowStart, this->jCol, jacval, nlflag);
+      
+      gmoGetMatrixRow(gmo, iRowStart, this->jCol, jacval, NULL);
 
       assert(iRowStart[m] == nele_jac);
       for( Index i = 0; i < m; ++i )
@@ -504,7 +504,6 @@ bool GamsNLP::eval_jac_g(
       memcpy(jCol, this->jCol, nele_jac * sizeof(int));
 
       delete[] jacval;
-      delete[] nlflag;
 
       delete[] grad;
       grad = new double[n];
@@ -823,7 +822,7 @@ void GamsNLP::finalize_solution(
          {
             snprintf(buffer, sizeof(buffer), "Final point is feasible: scaled constraint violation (%g) is below max(tol,acceptable_tol) (%g) and unscaled constraint violation (%g) is below max(constr_viol_tol,acceptable_constr_viol_tol) (%g).",
                cq->curr_nlp_constraint_violation(NORM_MAX), scaled_tol, cq->unscaled_curr_nlp_constraint_violation(NORM_MAX), unscaled_tol);
-            gmoModelStatSet(gmo, gmoModelStat_NonOptimalIntermed);
+            gmoModelStatSet(gmo, gmoModelStat_Feasible);
          }
          gevLog(gev, buffer);
          /* in any case, we write the current point (or an intermediate one) */
@@ -905,7 +904,7 @@ void GamsNLP::finalize_solution(
          {
             snprintf(buffer, sizeof(buffer), "Intermediate solution is feasible: scaled constraint violation (%g) is below max(tol,acceptable_tol) (%g) and unscaled constraint violation (%g) is below max(constr_viol_tol,acceptable_constr_viol_tol) (%g).",
                mininfeasconviolsc, scaled_tol, mininfeasconviolunsc, unscaled_tol);
-            gmoModelStatSet(gmo, gmoModelStat_NonOptimalIntermed);
+            gmoModelStatSet(gmo, gmoModelStat_Feasible);
          }
          gevLog(gev, buffer);
       }

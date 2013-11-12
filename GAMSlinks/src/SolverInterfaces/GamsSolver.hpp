@@ -35,13 +35,15 @@ protected:
    bool HSLInit(
       struct gmoRec*     gmo,                /**< GAMS modeling object */
       struct palRec*     pal                 /**< GAMS audit and license object */
-   )
-   {
+   ) const
+   { /*lint --e{715}*/
       return false;
    }
 #endif
 
 public:
+   virtual ~GamsSolver() {};
+
    /** sets number of OpenMP/GotoBlas threads */
    static void setNumThreads(
       struct gevRec*      gev,                /**< GAMS environment */
