@@ -1564,14 +1564,14 @@ SCIP_RETCODE createProblem(
    {
       SCIP_CALL( SCIPallocBufferArray(scip, &nlflag, gmoN(gmo)) );
 
-      SCIP_CALL( SCIPallocBufferArray(scip, &quadvars1, gmoMaxQnz(gmo)) );
-      SCIP_CALL( SCIPallocBufferArray(scip, &quadvars2, gmoMaxQnz(gmo)) );
-      SCIP_CALL( SCIPallocBufferArray(scip, &quadcoefs, gmoMaxQnz(gmo)) );
-      SCIP_CALL( SCIPallocBufferArray(scip, &qrow, gmoMaxQnz(gmo)) );
-      SCIP_CALL( SCIPallocBufferArray(scip, &qcol, gmoMaxQnz(gmo)) );
+      SCIP_CALL( SCIPallocBufferArray(scip, &quadvars1, gmoMaxQNZ(gmo)) );
+      SCIP_CALL( SCIPallocBufferArray(scip, &quadvars2, gmoMaxQNZ(gmo)) );
+      SCIP_CALL( SCIPallocBufferArray(scip, &quadcoefs, gmoMaxQNZ(gmo)) );
+      SCIP_CALL( SCIPallocBufferArray(scip, &qrow, gmoMaxQNZ(gmo)) );
+      SCIP_CALL( SCIPallocBufferArray(scip, &qcol, gmoMaxQNZ(gmo)) );
 
-      SCIP_CALL( SCIPallocBufferArray(scip, &opcodes, gmoMaxSingleFNL(gmo)+1) );
-      SCIP_CALL( SCIPallocBufferArray(scip, &fields, gmoMaxSingleFNL(gmo)+1) );
+      SCIP_CALL( SCIPallocBufferArray(scip, &opcodes, gmoNLCodeSizeMaxRow(gmo)+1) );
+      SCIP_CALL( SCIPallocBufferArray(scip, &fields, gmoNLCodeSizeMaxRow(gmo)+1) );
       SCIP_CALL( SCIPduplicateBufferArray(scip, &constants, gmoPPool(gmo), gmoNLConst(gmo)) );
 
       /* translate special GAMS constants into SCIP variants (gmo does not seem to do this...) */

@@ -183,7 +183,7 @@ int GamsIpopt::callSolver()
 
    bool printevalerror;
    ipopt->Options()->GetBoolValue("print_eval_error", printevalerror, "");
-   gmoEvalErrorNoMsg(gmo, !printevalerror);
+   gmoEvalErrorMsg(gmo, printevalerror);
 
    ipopt->Options()->GetBoolValue("report_mininfeas_solution", nlp->reportmininfeas, "");
 

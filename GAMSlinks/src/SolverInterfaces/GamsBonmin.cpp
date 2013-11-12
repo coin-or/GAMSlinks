@@ -319,7 +319,7 @@ int GamsBonmin::callSolver()
    // check whether evaluation errors should be printed in status file
    bool printevalerror;
    bonmin_setup->options()->GetBoolValue("print_eval_error", printevalerror, "");
-   gmoEvalErrorNoMsg(gmo, !printevalerror);
+   gmoEvalErrorMsg(gmo, printevalerror);
 
    // set number of threads in linear algebra in ipopt
    setNumThreads(gev, gevThreads(gev));

@@ -326,8 +326,8 @@ bool GamsOSxL::createOSInstance()
       osinstance->instanceData->nonlinearExpressions->nl = CoinCopyOfArrayOrZero((Nl**)NULL, osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
       int iNLidx = 0;
 
-      int* opcodes = new int[gmoMaxSingleFNL(gmo)+1];
-      int* fields  = new int[gmoMaxSingleFNL(gmo)+1];
+      int* opcodes = new int[gmoNLCodeSizeMaxRow(gmo)+1];
+      int* fields  = new int[gmoNLCodeSizeMaxRow(gmo)+1];
       int constantlen = gmoNLConst(gmo);
       double* constants = (double*)gmoPPool(gmo);
       int codelen;

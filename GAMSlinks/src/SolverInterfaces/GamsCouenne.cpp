@@ -313,7 +313,7 @@ int GamsCouenne::callSolver()
 
    bool printevalerror;
    couenne_setup->options()->GetBoolValue("print_eval_error", printevalerror, "");
-   gmoEvalErrorNoMsg(gmo, !printevalerror);
+   gmoEvalErrorMsg(gmo, printevalerror);
 
    // initialize Hessian in GMO, if required
    couenne_setup->options()->GetStringValue("hessian_approximation", parvalue, "");
@@ -605,13 +605,13 @@ CouenneProblem* GamsCouenne::setupProblem()
    int*    lincolidx = new int[gmoN(gmo)];
    int*    nlflag    = new int[gmoN(gmo)];
 
-   double* quadcoefs = new double[gmoMaxQnz(gmo)];
-   int* qrow         = new int[gmoMaxQnz(gmo)];
-   int* qcol         = new int[gmoMaxQnz(gmo)];
+   double* quadcoefs = new double[gmoMaxQNZ(gmo)];
+   int* qrow         = new int[gmoMaxQNZ(gmo)];
+   int* qcol         = new int[gmoMaxQNZ(gmo)];
    int qnz;
 
-   int* opcodes = new int[gmoMaxSingleFNL(gmo)+1];
-   int* fields  = new int[gmoMaxSingleFNL(gmo)+1];
+   int* opcodes = new int[gmoNLCodeSizeMaxRow(gmo)+1];
+   int* fields  = new int[gmoNLCodeSizeMaxRow(gmo)+1];
    int constantlen = gmoNLConst(gmo);
    double* constants = (double*)gmoPPool(gmo);
    int codelen;
