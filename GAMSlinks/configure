@@ -28887,7 +28887,7 @@ done
 # if we have Ipopt, check if we have GotoBlas or MKL Blas functions to set number of threads
 if test $coin_has_ipopt = yes ; then
   LIBS_save="$LIBS"
-  LIBS=`echo $IPOPT_LIBS $LIBS | sed -e 's/[^ ]*.la / /g'`
+  LIBS=`echo $IPOPT_LIBS $LIBS " " | sed -e 's/[^ ]*.la / /g'`
   echo "$as_me:$LINENO: checking for goto_set_num_threads" >&5
 echo $ECHO_N "checking for goto_set_num_threads... $ECHO_C" >&6
 if test "${ac_cv_func_goto_set_num_threads+set}" = set; then
