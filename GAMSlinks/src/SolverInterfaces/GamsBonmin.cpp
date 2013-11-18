@@ -222,6 +222,10 @@ int GamsBonmin::callSolver()
       bonmin_setup->options()->SetStringValue("linear_solver", "ma27", true, true);
       bonmin_setup->options()->SetStringValue("linear_system_scaling", "mc19", true, true);
    }
+   else
+   {
+      bonmin_setup->options()->SetStringValue("linear_solver", "mumps", true, true);
+   }
 
    // process options file
    try
@@ -330,15 +334,13 @@ int GamsBonmin::callSolver()
    bonmin_setup->options()->GetStringValue("solvetrace", solvetrace, "");
    if( solvetrace != "" )
    {
-      char buffer[GMS_SSSIZE];
       int nodefreq;
       double timefreq;
       int rc;
 
       bonmin_setup->options()->GetIntegerValue("solvetracenodefreq", nodefreq, "");
       bonmin_setup->options()->GetNumericValue("solvetracetimefreq", timefreq, "");
-      gmoNameInput(gmo, buffer);
-      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Bonmin", gmoOptFile(gmo), buffer, ipoptinf, nodefreq, timefreq);
+      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Bonmin", gmoOptFile(gmo), NULL, ipoptinf, nodefreq, timefreq);
       if( rc != 0 )
       {
          gevLogStat(gev, "Initializing solvetrace failed.");

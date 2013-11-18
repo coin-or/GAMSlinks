@@ -54,6 +54,14 @@ void GamsSolver::setNumThreads(
    }
    omp_set_num_threads(nthreads);
 #endif
+
+#ifdef __APPLE__
+   {
+      char buf[10];
+      snprintf(buf, 10, "%d", nthreads);
+      setenv("VECLIB_MAXIMUM_THREADS", buf, 1);
+   }
+#endif
 }
 
 int GamsSolver::getGmoReady()

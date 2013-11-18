@@ -155,10 +155,6 @@ bool gamsOsiLoadProblem(
       delete[] discrind;
    }
 
-   char inputname[GMS_SSSIZE];
-   gmoNameInput(gmo, inputname);
-   solver.setStrParam(OsiProbName, inputname);
-
    // setup column/row/obj names, if available
    if( setupnames && gmoDict(gmo) != NULL )
    {
@@ -325,7 +321,7 @@ void gamsOsiWriteProblem(
       gevLogPChar(gev, buffer);
    }
 
-   gmoNameInput(gmo, buffer);
+   gmoNameOutput(gmo, buffer);
 
    if( formatflags & 0x1 )
    {

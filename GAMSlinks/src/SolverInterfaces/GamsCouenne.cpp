@@ -218,6 +218,10 @@ int GamsCouenne::callSolver()
       couenne_setup->options()->SetStringValue("linear_system_scaling", "mc19", true, true);
       //gevLog(gev, "Enabled use of HSL MA27 and MC19 from commercially supported Ipopt.\n");
    }
+   else
+   {
+      couenne_setup->options()->SetStringValue("linear_solver", "mumps", true, true);
+   }
 
    // workaround for bug in couenne reformulation: if there are tiny constants, delete_redundant might setup a nonstandard reformulation (e.g., using x*x instead of x^2)
    // thus, we change the default of delete_redundant to off in this case
@@ -353,15 +357,13 @@ int GamsCouenne::callSolver()
    couenne_setup->options()->GetStringValue("solvetrace", solvetrace, "");
    if( solvetrace != "" )
    {
-      char buffer[GMS_SSSIZE];
       int nodefreq;
       double timefreq;
       int rc;
 
-      gmoNameInput(gmo, buffer);
       couenne_setup->options()->GetIntegerValue("solvetracenodefreq", nodefreq, "");
       couenne_setup->options()->GetNumericValue("solvetracetimefreq", timefreq, "");
-      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Couenne", gmoOptFile(gmo), buffer, COUENNE_INFINITY, nodefreq, timefreq);
+      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Couenne", gmoOptFile(gmo), NULL, COUENNE_INFINITY, nodefreq, timefreq);
       if( rc != 0 )
       {
          gevLogStat(gev, "Initializing solvetrace failed.");

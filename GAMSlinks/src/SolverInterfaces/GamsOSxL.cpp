@@ -115,9 +115,6 @@ bool GamsOSxL::createOSInstance()
       delete osinstance;
       osinstance = new OSInstance();
 
-      gmoNameInput(gmo, buffer);
-      osinstance->setInstanceName(buffer);
-
       // setup variables
       osinstance->setVariableNumber(gmoN(gmo));
 

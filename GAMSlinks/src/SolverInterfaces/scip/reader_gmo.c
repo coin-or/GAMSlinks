@@ -1314,8 +1314,7 @@ SCIP_RETCODE createProblem(
    probdata->gmo = gmo;
    probdata->gev = gev;
 
-   (void) gmoNameInput(gmo, buffer);
-   SCIP_CALL( SCIPcreateProb(scip, buffer,
+   SCIP_CALL( SCIPcreateProb(scip, "gamsprob",
       probdataDelOrigGmo, probdataTransGmo, probdataDelTransGmo,
       probdataInitSolGmo, probdataExitSolGmo, probdataCopyGmo,
       probdata) );
