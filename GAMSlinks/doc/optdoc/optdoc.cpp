@@ -208,7 +208,7 @@ public:
       filename = "opt" + solver + ".gms";
       std::ofstream f(filename.c_str());
       
-      f << "$set SEPARATOR \"" << separator << '"' << std::endl;
+      f << "$setglobal SEPARATOR \"" << separator << '"' << std::endl;
 
       f << "set e / 1*100 " << std::endl;  // the 1*100 is necessary to get the long description into the html file
       for( std::set<std::string>::iterator v(values.begin()); v != values.end(); ++v )
@@ -739,8 +739,8 @@ void printIpoptOptions()
                if( maxval.realval ==  1e+20 )
                   maxval.realval =  DBL_MAX;
                defaultval.realval = (*it_opt)->DefaultNumber();
-               minval_strict = (*it_opt)->LowerStrict();
-               maxval_strict = (*it_opt)->UpperStrict();
+               minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
+               maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;
                break;
             }
 
@@ -779,7 +779,8 @@ void printIpoptOptions()
                      longdescr = "Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). "
                         "Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
                         "If no GAMS/IpoptH license is available, the default linear solver is MUMPS. "
-                        "For using Pardiso or MA77, a pardiso or HSL library need to be provided.";
+                        "Pardiso is only available on Linux and Windows systems. "
+                        "For using Pardiso on non-Linux/Windows systems or MA77, a Pardiso or HSL library need to be provided.";
 
                      defaultval.stringval = "ma27";
                   }
@@ -1031,8 +1032,8 @@ void printBonminOptions()
                if( maxval.realval ==  1e+20 )
                   maxval.realval =  DBL_MAX;
                defaultval.realval = (*it_opt)->DefaultNumber();
-               minval_strict = (*it_opt)->LowerStrict();
-               maxval_strict = (*it_opt)->UpperStrict();
+               minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
+               maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;
                break;
             }
 
@@ -1186,8 +1187,8 @@ void printCouenneOptions()
                if( maxval.realval ==  1e+20 )
                   maxval.realval =  DBL_MAX;
                defaultval.realval = (*it_opt)->DefaultNumber();
-               minval_strict = (*it_opt)->LowerStrict();
-               maxval_strict = (*it_opt)->UpperStrict();
+               minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
+               maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;
                break;
             }
 
