@@ -7,9 +7,10 @@
 \usepackage{fancyhdr}
 \usepackage{gams}
 %\usepackage{epsfig}
-% \usepackage[pdftex]{graphicx}
+\usepackage[pdftex]{graphicx}
 %end{latexonly}
 \usepackage{xspace}
+%\usepackage{chapterbib}
 
 \newenvironment{latexonly}{}{}
 
@@ -22,6 +23,9 @@
 
 \parindent0em
 \parskip0.5em
+
+\providecommand{\doilink}[1]{\href{http://dx.doi.org/#1}{doi:\detokenize{#1}}}
+\providecommand{\urnlink}[1]{\href{http://nbn-resolving.de/urn:#1}{urn:#1}}
 
 %begin{latexonly}
 %
@@ -147,8 +151,8 @@
 %\cleardoublepage
 
 %%% COIN
-% {\include{coin}}
-% \cleardoublepage
+%\include{coin}
+%\cleardoublepage
 
 %%% CONOPT
 %\addcontentsline{toc}{chapter}{\protect\numberline{3}{GAMS/CONOPT}}
@@ -188,7 +192,7 @@
 %\cleardoublepage
 
 %%% SCIP
-{\include{scip}}
+\include{scip}
 %\cleardoublepage
 
 %%% SNOPT

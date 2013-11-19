@@ -30,7 +30,6 @@ private:
    OsiSolverInterface*   osi;                /**< solver interface */
    OSISOLVER             solverid;           /**< ID of used solver */
    std::ostringstream    spxoutput;          /**< SoPlex output buffer */
-   bool                  msklindomipallowed; /**< is Mosek allowed to use the Lindo MIP solver? */
 
    /** loads problem from GMO into OSI */
    bool setupProblem();
