@@ -14,6 +14,7 @@
 
 #if GMOAPIVERSION < 13
 #define gmoModelStat_Feasible gmoModelStat_NonOptimalIntermed 
+#define gmoNameOutput         gmoNameInput
 #endif
 
 #endif /* GAMSCOMPATIBILITY_H_ */
