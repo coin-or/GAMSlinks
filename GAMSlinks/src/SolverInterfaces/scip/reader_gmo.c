@@ -1328,7 +1328,6 @@ SCIP_RETCODE createProblem(
    indicrows = NULL;
    indiccols = NULL;
    indiconvals = NULL;
-#if GMOAPIVERSION >= 10
    if( readerdata->indicatorfile != NULL && *readerdata->indicatorfile != '\0' )
    {
       optHandle_t opt;
@@ -1340,15 +1339,13 @@ SCIP_RETCODE createProblem(
          return SCIP_ERROR;
       }
 
+#if GMOAPIVERSION < 13
       (void) gevGetStrOpt(gev, gevNameSysDir, buffer);
-      if( strlen(buffer) > 500 )
-      {
-         SCIPerrorMessage("*** Path to GAMS system directory too long.");
-         return SCIP_ERROR;
-      }
       strcat(buffer, "optscip.def");
-
       if( optReadDefinition(opt, buffer) )
+#else
+      if( optReadDefinitionFromPChar(opt, "indic indicator\ngeneral group 1 1 Dot options and indicators") )
+#endif
       {
          for( i = 1; i <= optMessageCount(opt); ++i )
          {
@@ -1383,7 +1380,6 @@ SCIP_RETCODE createProblem(
 
       (void) optFree(&opt);
    }
-#endif
    assert(indicrows != NULL || nindics == 0);
    assert(indiccols != NULL || nindics == 0);
    assert(indiconvals != NULL || nindics == 0);

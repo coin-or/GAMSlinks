@@ -105,12 +105,13 @@ private:
    std::string           solver;
    std::string           curgroup;
    std::string           separator;
+   std::string           stringquote;
 
 public:
    GamsOptions(
       const std::string& solver_
       )
-   : solver(solver_), separator(" ")
+   : solver(solver_), separator(" "), stringquote()
    { }
 
    void setGroup(
@@ -126,6 +127,13 @@ public:
       )
    {
       separator = sepa;
+   }
+
+   void setStringQuote(
+      const std::string& strquote
+      )
+   {
+      stringquote = strquote;
    }
 
    void collect(
@@ -209,6 +217,11 @@ public:
       std::ofstream f(filename.c_str());
       
       f << "$setglobal SEPARATOR \"" << separator << '"' << std::endl;
+      if( stringquote == "\"" )
+         f << "$setglobal STRINGQUOTE '\"'" << std::endl;
+      else
+         f << "$setglobal STRINGQUOTE \"" << stringquote << "\"" << std::endl;
+      f << "$onempty" << std::endl;
 
       f << "set e / 1*100 " << std::endl;  // the 1*100 is necessary to get the long description into the html file
       for( std::set<std::string>::iterator v(values.begin()); v != values.end(); ++v )
@@ -227,6 +240,7 @@ public:
          std::replace(id.begin(), id.end(), '(', '_');
          std::replace(id.begin(), id.end(), ')', '_');
          std::replace(id.begin(), id.end(), '-', '_');
+         std::replace(id.begin(), id.end(), '/', '_');
          f << "  gr_" << id << "   '" << *g << "'" << std::endl;
       }
       f << "/;" << std::endl;
@@ -245,6 +259,7 @@ public:
          std::replace(id.begin(), id.end(), '(', '_');
          std::replace(id.begin(), id.end(), ')', '_');
          std::replace(id.begin(), id.end(), '-', '_');
+         std::replace(id.begin(), id.end(), '/', '_');
          f << "  gr_" << id << ".'" << d->name << "'.";
          switch( d->type )
          {
@@ -1325,8 +1340,13 @@ void printSCIPOptions()
    ENUMVAL enumval;
    std::string tmpstr;
    std::string descr;
+   std::string longdescr;
+   std::string category;
 
    std::ofstream optfile("optscip_a.tex");
+   GamsOptions gmsopt("scip");
+   gmsopt.setSeparator("=");
+   gmsopt.setStringQuote("\"");
 
    for( int i = 0; i < nparams; ++i )
    {
@@ -1353,7 +1373,6 @@ void printSCIPOptions()
          continue;
 
       const char* catend = strchr(paramname, '/');
-      std::string category;
       if( catend != NULL )
          category = std::string(paramname, 0, catend - paramname);
       else
@@ -1464,10 +1483,37 @@ void printSCIPOptions()
          }
          printOption(optfile, SCIPparamGetName(param), descr, "",
             opttype, defaultval, minval, false, maxval, false, enumval, true);
+
+         longdescr = "";
+         std::string::size_type nlpos = descr.find("\n");
+         if( nlpos != std::string::npos )
+         {
+            longdescr = std::string(descr, nlpos+1);
+            descr = std::string(descr, 0, nlpos);
+         }
+
+         tmpstr = SCIPparamGetName(param);
+
+         char* lastslash = strrchr(const_cast<char*>(SCIPparamGetName(param)), '/');
+         if( lastslash == NULL )
+         {
+            category = "";
+         }
+         else
+         {
+            category = std::string(SCIPparamGetName(param), 0, lastslash - SCIPparamGetName(param));
+            if( category.find("gams") == 0 )
+               category = " " + category;
+         }
+         gmsopt.setGroup(category);
+
+         gmsopt.collect(SCIPparamGetName(param), descr, longdescr,
+            opttype, defaultval, minval, maxval, enumval);
       }
    }
 
    optfile.close();
+   gmsopt.write();
 
    delete gamsscip;
 }
