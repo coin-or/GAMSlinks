@@ -46,7 +46,16 @@ idiotcrash
 This is a type of `crash' which works well on some homogeneous problems.
 It works best on problems with unit elements and right hand sides but will do something to any model.
 It should only be used before the primal simplex algorithm.<BR>
-A positive number determines the number of passes that idiotcrash is called.
+A positive number determines the number of passes that idiotcrash is called.<BR>
+John Forrest (2014): "idiot" is not the barrier method but a cheap imitation - so bad that I
+called it the Idiot algorithm and gave a bad talk on it years ago - any bad
+heuristic followed by an algorithm is an algorithm.  The simplified basic
+idea is that you minimize mu*objective + sum of squared primal
+infeasibilities.  This is done on a very local basis i.e. column by column
+where you just solve a quadratic to get new value.  Periodically you reduce
+mu.  For many problems you finish with a small sum of infeasibilities and
+an objective a bit higher than the optimal one.  You then finish with
+primal.
 
 
 idiotcrash.'-1'
