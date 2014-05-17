@@ -1,0 +1,69 @@
+\chapter{Optimization Services (OS)}
+
+COIN-OR \OS (\textbf{O}ptimization \textbf{S}ervices) is an initiative to provide a set of standards for representing optimization instances, results, solver options, and communication between clients and solvers in a distributed environment using Web Services.
+The code has been written primarily by Horand Gassmann, Jun Ma, and Kipp Martin.
+Kipp Martin is the COIN-OR project leader for \OS.
+
+For more information we refer to the web sites \url{http://www.optimizationservices.org} and \url{https://projects.coin-or.org/OS}, the \OS manual~\cite{Ma2005}, and the papers~\cite{FourerMaMartin2009,FourerMaMartin2010,OSManual}.
+
+With the \OS link in \GAMS, you can send your instance to an Optimization Services Server for remote solving.
+
+\OS supports continuous, binary, integer, semicontinuous, and semiinteger variables and linear and nonlinear equations.
+Special ordered sets and indicator constraints are currently not supported.
+Initial values are currently not supported by the \GAMS/\OS link.
+
+\section{Usage}
+
+The following statement can be used inside your \GAMS program to specify using \OS
+\begin{verbatim}
+  Option MINLP = OS;     { or LP, RMIP, MIP, DNLP, NLP, RMINLP, QCP, RMIQCP, MIQCP }
+\end{verbatim}
+
+The above statement should appear before the Solve statement.
+
+By default, for a given instance of a \GAMS model, nothing happens.
+To solve an instance remotely, you have to specify the URL of an Optimization Services Server via the option \texttt{service}.
+Usually, the server chooses an appropriate solver for your instance, depending on their availability on the server.
+A fully equipped server chooses
+\textsc{CLP} for continuous linear models (LP and RMIP),
+\IPOPT for continuous nonlinear models (NLP, DNLP, RMINLP, QCP, RMIQCP),
+\CBC for mixed-integer linear models (MIP), and
+\BONMIN for mixed-integer nonlinear models (MIQCP, MINLP).
+An easy way to influence the choice of the solver on the server is the \texttt{solver} option.
+
+Further options can be provided in an OSoL (Optimization Services Options Language) file, which is specified via the the \texttt{readosol} option.
+An example OSoL file looks like
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8"?>
+<osol xmlns="os.optimizationservices.org" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="os.optimizationservices.org
+                          http://www.optimizationservices.org/schemas/2.0/OSoL.xsd">
+<optimization>
+  <solverOptions numberOfSolverOptions="3">
+    <solverOption name="cuts" solver="cbc" value="off" />
+    <solverOption name="max_active_nodes" solver="symphony"  value="2" />
+    <solverOption name="max_iter" solver="ipopt" type="integer" value="2000"/>
+  </solverOptions>
+</optimization>
+</osol>
+\end{verbatim}
+It specifies that if \CBC is used, then cutting planes are disabled,
+if \textsc{SYMPHONY} is used, then at most 2 nodes should be active,
+and if \IPOPT is used, then a limit of 2000 iterations is imposed.
+
+By default, the call to the server is a \emph{synchronous} call.
+The \GAMS process will wait for the result and then display the result.
+This may not be desirable when solving large optimization models.
+In order to use the remote solver service in an \emph{asynchronous} fashion, one can make use of the \GAMS Grid Computing Facility, see Appendix I in the \GAMS manual.
+
+\section{Detailed Options Descriptions}
+
+\input{optosd_a}
+
+\bibliographystyle{plain}
+%\bibliography{coinlibd}
+%\renewcommand{\bibname}{OS References}
+\input{os.bbl}
+
+\chapterend

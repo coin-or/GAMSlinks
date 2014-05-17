@@ -238,6 +238,10 @@ int GamsOsi::readyAPI(
 #ifdef GAMS_BUILD
             if( !checkCplexLicense(gmo, pal) )
             {
+               gevLogStat(gev,"***");
+               gevLogStat(gev,"*** LICENSE ERROR:");
+               gevLogStat(gev,"*** See http://www.gams.com/osicplex/ for OsiCplex licensing information.");
+               gevLogStat(gev,"***");
                gmoSolveStatSet(gmo, gmoSolveStat_License);
                gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
@@ -1161,8 +1165,9 @@ bool GamsOsi::writeSolution(
 
             case CPX_STAT_UNBOUNDED:
             case CPXMIP_UNBOUNDED:
+               solwritten = true;
                gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-               gmoModelStatSet(gmo, gmoModelStat_UnboundedNoSolution);
+               gmoModelStatSet(gmo, gmoModelStat_Unbounded);
                gevLogStat(gev, "Model unbounded.");
                break;
 
@@ -1170,39 +1175,45 @@ bool GamsOsi::writeSolution(
             case CPX_STAT_INForUNBD:
             case CPXMIP_INFEASIBLE:
             case CPXMIP_INForUNBD:
+               solwritten = true;
                gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-               gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
+               gmoModelStatSet(gmo, gmoModelStat_InfeasibleGlobal);
                gevLogStat(gev, "Model infeasible.");
                break;
 
             case CPX_STAT_NUM_BEST:
             case CPX_STAT_FEASIBLE:
+               solwritten = true;
                gmoSolveStatSet(gmo, gmoSolveStat_Normal);
                gmoModelStatSet(gmo, gmoModelStat_Feasible);
                gevLogStat(gev, "Feasible solution found.");
                break;
 
             case CPX_STAT_ABORT_IT_LIM:
+               solwritten = true;
                gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
-               gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+               gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
                gevLogStat(gev, "Iteration limit reached.");
                break;
 
             case CPX_STAT_ABORT_TIME_LIM:
+               solwritten = true;
                gmoSolveStatSet(gmo, gmoSolveStat_Resource);
-               gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+               gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
                gevLogStat(gev, "Time limit reached.");
                break;
 
             case CPX_STAT_ABORT_OBJ_LIM:
+               solwritten = true;
                gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-               gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+               gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
                gevLogStat(gev, "Objective limit reached.");
                break;
 
             case CPX_STAT_ABORT_USER:
+               solwritten = true;
                gmoSolveStatSet(gmo, gmoSolveStat_User);
-               gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+               gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
                gevLogStat(gev, "Stopped on user interrupt.");
                break;
 
@@ -1399,20 +1410,23 @@ bool GamsOsi::writeSolution(
                assert(!nrsol);
 
             case GRB_INF_OR_UNBD:
+               solwritten = true;
                gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-               gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
+               gmoModelStatSet(gmo, gmoModelStat_InfeasibleGlobal);
                gevLogStat(gev, "Model infeasible.");
                break;
 
             case GRB_UNBOUNDED:
+               /* TODO OsiGrb does not seem to report a ray when proven a problem to be unbounded */
                gmoSolveStatSet(gmo, gmoSolveStat_Normal);
                gmoModelStatSet(gmo, gmoModelStat_UnboundedNoSolution);
                gevLogStat(gev, "Model unbounded.");
                break;
 
             case GRB_CUTOFF:
+               solwritten = true;
                gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-               gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+               gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
                gevLogStat(gev, "Objective limit reached.");
                break;
 
@@ -1425,6 +1439,7 @@ bool GamsOsi::writeSolution(
                }
                else
                {
+                  /* OsiGrb does not report any solution when the iterlim is hit */
                   gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
                   gevLogStat(gev, "Iteration limit reached.");
                }
@@ -1454,6 +1469,7 @@ bool GamsOsi::writeSolution(
                }
                else
                {
+                  /* OsiGrb does not report any solution when the time limit is hit */
                   gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
                   gevLogStat(gev, "Time limit reached.");
                }
@@ -1482,6 +1498,7 @@ bool GamsOsi::writeSolution(
                }
                else
                {
+                  /* OsiGrb does not report any solution when interrupted */
                   gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
                   gevLogStat(gev, "User interrupt.");
                }
@@ -1619,14 +1636,16 @@ bool GamsOsi::writeSolution(
                break;
 
             case MSK_SOL_STA_PRIM_INFEAS_CER:
+               // TODO OsiMsk does not seem to report an infeasible solution
                gmoSolveStatSet(gmo, gmoSolveStat_Normal);
                gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
                gevLogStat(gev, "Model is infeasible.");
                break;
 
             case MSK_SOL_STA_DUAL_INFEAS_CER:
+               solwritten = true;
                gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-               gmoModelStatSet(gmo, gmoModelStat_UnboundedNoSolution);
+               gmoModelStatSet(gmo, gmoModelStat_Unbounded);
                gevLogStat(gev, "Model is unbounded.");
                break;
 
@@ -1652,8 +1671,9 @@ bool GamsOsi::writeSolution(
                      break;
 
                   case MSK_PRO_STA_DUAL_INFEAS:
+                     solwritten = true;
                      gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-                     gmoModelStatSet(gmo, gmoModelStat_UnboundedNoSolution);
+                     gmoModelStatSet(gmo, gmoModelStat_Unbounded);
                      gevLogStat(gev, "Model is dual infeasible (probably unbounded).");
                      break;
 
@@ -1684,6 +1704,7 @@ bool GamsOsi::writeSolution(
                      break;
 
                   case MSK_PRO_STA_PRIM_FEAS:
+                     solwritten = true;
                      gmoSolveStatSet(gmo, gmoSolveStat_Normal);
                      gmoModelStatSet(gmo, gmoModelStat_Feasible);
                      gevLogStat(gev, "Model is primal feasible.");
@@ -1775,6 +1796,7 @@ bool GamsOsi::writeSolution(
                   break;
 
                case XPRS_LP_INFEAS:
+                  // TODO OsiXpr does not seem to report an infeasible solution
                   gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
                   gevLogStat(gev, "Model is infeasible.");
                   break;
@@ -1785,6 +1807,7 @@ bool GamsOsi::writeSolution(
                   break;
 
                case XPRS_LP_UNBOUNDED:
+                  // TODO OsiXpr does not implement getPrimalRay (throws CoinError)
                   gmoModelStatSet(gmo, gmoModelStat_UnboundedNoSolution);
                   gevLogStat(gev, "Model is unbounded.");
                   break;
@@ -1797,6 +1820,7 @@ bool GamsOsi::writeSolution(
                case XPRS_LP_UNFINISHED:
                case XPRS_LP_UNSOLVED:
                case XPRS_LP_NONCONVEX:
+                  // Xpress does not seem to report an intermediate solution
                   gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
                   gmoSolveStatSet(gmo, gmoSolveStat_Iteration); /* we just guess that it was the iteration limit */
                   gevLogStat(gev, "LP solve not finished.");
@@ -1912,8 +1936,9 @@ bool GamsOsi::writeSolution(
 
          if( osispx->isTimeLimitReached() )
          {
+            solwritten = true;
             gmoSolveStatSet(gmo, gmoSolveStat_Resource);
-            gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+            gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
             gevLogStat(gev, "Timelimit reached.");
             break;
          }
@@ -1954,8 +1979,9 @@ bool GamsOsi::writeSolution(
             }
             else if( osi->isIterationLimitReached() )
             {
+               solwritten = true;
                gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
-               gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+               gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
                gevLogStat(gev, "Iteration limit reached.");
             }
             else if( osi->isPrimalObjectiveLimitReached() )

@@ -90,12 +90,10 @@ int GamsCouenne::readyAPI(
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
-   assert(pal == NULL);
-
 #ifdef GAMS_BUILD
    char buffer[GMS_SSSIZE];
 
-   if( !palCreate(&pal, buffer, sizeof(buffer)) )
+   if( pal == NULL && !palCreate(&pal, buffer, sizeof(buffer)) )
       return 1;
 
 #define PALPTR pal
@@ -323,7 +321,7 @@ int GamsCouenne::callSolver()
    couenne_setup->options()->GetStringValue("hessian_approximation", parvalue, "");
    if( parvalue == "exact" )
    {
-      int do2dir = 1;
+      int do2dir = 0;
       int dohess = 1;
       gmoHessLoad(gmo, 0, &do2dir, &dohess);
       if( !dohess )
@@ -475,6 +473,28 @@ int GamsCouenne::callSolver()
       if( solvetrace_ != NULL )
          GAMSsolvetraceAddEndLine(solvetrace_, bb.numNodes(), best_bound,
             havesol ? minlp->isMin * bb.bestObj() : minlp->isMin * bb.model().getInfinity());
+
+#if 0 /* doesn't seem to work (always had ntotal == nroot), and one gets roughly the same info from the cbc statistics */
+      // there is only one CouenneCutGenerator object; scan list until dynamic_cast returns non-NULL
+      for( std::list<Bonmin::BabSetupBase::CuttingMethod>::iterator it(couenne_setup->cutGenerators().begin()); it != couenne_setup->cutGenerators().end(); ++it )
+      {
+         CouenneCutGenerator* cg = dynamic_cast <CouenneCutGenerator*>(it->cgl);
+         if( cg == NULL )
+            continue;
+
+         // print statistics on Couenne linearization cuts
+         int nroot;
+         int ntotal;
+         double time;
+
+         cg->getStats(nroot, ntotal, time);
+
+         snprintf(buffer, sizeof(buffer), "Linearization cuts at root: #%d  in total: #%d %.2fs\n", nroot, ntotal, time);
+         gevLog(gev, buffer);
+
+         break;
+      }
+#endif
 
       if( havesol )
       {
@@ -722,7 +742,10 @@ CouenneProblem* GamsCouenne::setupProblem()
          std::clog << "parse instructions for objective" << std::endl;
       nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
       if( nl[0] == NULL )
+      {
+         gevLogStatPChar(gev, "Error processing nonlinear instructions of objective equation.\n");
          goto TERMINATE;
+      }
 
       // multiply with -isMin/objjacval
       double objjacval = isMin*gmoObjJacVal(gmo);
@@ -799,7 +822,12 @@ CouenneProblem* GamsCouenne::setupProblem()
             std::clog << "parse instructions for constraint " << i << std::endl;
          nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
          if( nl[0] == NULL )
+         {
+            char buffer[256];
+            sprintf(buffer, "Error processing nonlinear instructions of equation %d.\n", i);
+            gevLogStatPChar(gev, buffer);
             goto TERMINATE;
+         }
 
          body = new exprGroup(0, lin, nl, 1);
       }
@@ -1350,7 +1378,7 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
                default:
                {
                   char buffer[256];
-                  sprintf(buffer, "Gams function code %d not supported.", address+1);
+                  sprintf(buffer, "Gams function %s not supported.", GamsFuncCodeName[address+1]);
                   gevLogStat(gev, buffer);
                   while( !stack.empty() )
                   {
@@ -1366,7 +1394,7 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
          default:
          {
             char buffer[256];
-            sprintf(buffer, "Gams opcode %d not supported.", opcode);
+            sprintf(buffer, "Gams opcode %s not supported.", GamsOpCodeName[opcode]);
             gevLogStat(gev, buffer);
             while( !stack.empty() )
             {

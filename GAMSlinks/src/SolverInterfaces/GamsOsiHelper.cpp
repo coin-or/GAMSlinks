@@ -8,6 +8,7 @@
 #include "GAMSlinksConfig.h"
 
 #include <cstdlib>
+#include <cmath>
 
 #include "CoinHelperFunctions.hpp"
 #include "CoinWarmStartBasis.hpp"
@@ -132,8 +133,10 @@ bool gamsOsiLoadProblem(
    // tell solver which variables are discrete
    if( gmoNDisc(gmo) )
    {
-      int* discrind = new int[gmoNDisc(gmo)];
+      int* discrind;
       int j = 0;
+
+      discrind = new int[gmoNDisc(gmo)];
       for( int i = 0; i < gmoN(gmo); ++i )
       {
          switch( (enum gmoVarType)gmoGetVarTypeOne(gmo, i) )
@@ -158,20 +161,32 @@ bool gamsOsiLoadProblem(
    // setup column/row/obj names, if available
    if( setupnames && gmoDict(gmo) != NULL )
    {
-      solver.setIntParam(OsiNameDiscipline, 2);
       char buffer[GMS_SSSIZE];
+      size_t nameMem;
+
+      solver.setIntParam(OsiNameDiscipline, 2);
+      nameMem = (gmoN(gmo) + gmoM(gmo)) * sizeof(char*);
       for( int j = 0; j < gmoN(gmo); ++j )
       {
          gmoGetVarNameOne(gmo, j, buffer);
          solver.setColName(j, buffer);
+         nameMem += strlen(buffer)+1;
       }
       for( int j = 0; j < gmoM(gmo); ++j )
       {
          gmoGetEquNameOne(gmo, j, buffer);
          solver.setRowName(j, buffer);
+         nameMem += strlen(buffer) + 1;
       }
       gmoGetObjName(gmo, buffer);
       solver.setObjName(buffer);
+      nameMem += strlen(buffer) + 1;
+
+      if( nameMem > 1024 * 1024 )
+      {
+         sprintf(buffer, "Space for names approximately %0.2f MB.\nUse statement '<modelname>.dictfile=0;' to turn dictionary off.\n", nameMem/(1024.0*1024.0));
+         gevLogStatPChar(gev, buffer);
+      }
    }
 
    return true;
@@ -199,6 +214,8 @@ bool gamsOsiStoreSolution(
 
    int* colBasis = new int[solver.getNumCols()];
    int* rowBasis = new int[solver.getNumRows()];
+   int* colStatus = new int[solver.getNumCols()];
+   int* rowStatus = new int[solver.getNumRows()];
 
    // workaround for gmo if there are no rows or columns
    double dummy2;
@@ -270,8 +287,9 @@ bool gamsOsiStoreSolution(
             switch( wsb->getArtifStatus(j) )
             {
                // for Cbc, the basis status seem to be flipped in CoinWarmStartBasis, but not in getBasisStatus
-               case CoinWarmStartBasis::atLowerBound: rowBasis[j] = gmoBstat_Upper; break;
-               case CoinWarmStartBasis::atUpperBound: rowBasis[j] = gmoBstat_Lower; break;
+               // change onbound to super if value is not at rhs as it should be
+               case CoinWarmStartBasis::atLowerBound: rowBasis[j] = (fabs(rowLevel[j] - gmoGetRhsOne(gmo, j)) > 1e-6 ? gmoBstat_Super : gmoBstat_Upper); break;
+               case CoinWarmStartBasis::atUpperBound: rowBasis[j] = (fabs(rowLevel[j] - gmoGetRhsOne(gmo, j)) > 1e-6 ? gmoBstat_Super : gmoBstat_Lower); break;
                case CoinWarmStartBasis::basic:        rowBasis[j] = gmoBstat_Basic; break;
                case CoinWarmStartBasis::isFree:       rowBasis[j] = gmoBstat_Super; break;
                default: gevLogStat(gev, "Row basis status unknown!"); return false;
@@ -286,11 +304,91 @@ bool gamsOsiStoreSolution(
       delete ws;
    }
 
+   double* primalray = NULL;
+   switch( gmoModelStat(gmo) )
+   {
+      case gmoModelStat_OptimalGlobal :
+      case gmoModelStat_OptimalLocal :
+      case gmoModelStat_Integer :
+         CoinFillN(colStatus, gmoN(gmo), (int)gmoCstat_OK);
+         CoinFillN(rowStatus, gmoM(gmo), (int)gmoCstat_OK);
+         break;
+
+      case gmoModelStat_Unbounded :
+      {
+         std::vector<double*> primalrays = solver.getPrimalRays(1);
+         if( !primalrays.empty() )
+         {
+            primalray = primalrays[0];
+            assert(primalray != NULL);
+         }
+         for( size_t r = 1; r < primalrays.size(); ++r )
+            delete[] primalrays[r];
+      }
+      /* no break */
+
+      default :
+      {
+         int ninfeas = 0;
+         for( int j = 0; j < gmoN(gmo); ++j )
+         {
+            colStatus[j] = gmoCstat_OK;
+            /* infeasible column ? */
+            if( colLevel[j] < gmoGetVarLowerOne(gmo, j) - 1e-6 || colLevel[j] > gmoGetVarUpperOne(gmo, j) + 1e-6 )
+            {
+               colStatus[j] = gmoCstat_Infeas;
+               ++ninfeas;
+            }
+            /* nonoptimal column ? */
+            else if( colBasis[j] == gmoBstat_Lower && solver.getObjSense() * colMargin[j] < -1e-6 ) /* at lowerbound and dj<0 */
+               colStatus[j] = gmoCstat_NonOpt;
+            else if( colBasis[j] == gmoBstat_Upper && solver.getObjSense() * colMargin[j] > 1e-6 ) /* at upperbound and dj>0 */
+               colStatus[j] = gmoCstat_NonOpt;
+            else if( colBasis[j] == gmoBstat_Basic && fabs(colMargin[j]) > 1e-6 ) /* between bounds and dj <> 0 */
+               colStatus[j] = gmoCstat_NonOpt;
+            /* unbounded column ? */
+            else if( primalray != NULL && fabs(primalray[j]) > 1e-6 )
+               colStatus[j] = gmoCstat_UnBnd;
+         }
+
+         for( int i = 0; i < gmoM(gmo); ++i )
+         {
+            rowStatus[i] = gmoCstat_OK;
+            /* infeasible row ? */
+            if( rowLevel[i] < solver.getRowLower()[i] - 1e-6 || rowLevel[i] > solver.getRowUpper()[i] + 1e-6 )
+            {
+               rowStatus[i] = gmoCstat_Infeas;
+               ++ninfeas;
+            }
+            else if( solver.getRowSense()[i] != 'E' )
+            {
+               /* nonoptimal row ? */
+               if( rowBasis[i] == gmoBstat_Lower && solver.getObjSense() * rowMargin[i] < -1e-6 ) /* at lowerbound and pi<0 */
+                  rowStatus[i] = gmoCstat_NonOpt;
+               else if( rowBasis[i] == gmoBstat_Upper && solver.getObjSense() * rowMargin[i] > 1e-6 ) /* at upperbound and pi>0 */
+                  rowStatus[i] = gmoCstat_NonOpt;
+               else if( rowBasis[i] == gmoBstat_Basic && fabs(rowMargin[i]) > 1e-6 ) /* between bounds and pi <> 0 */
+                  rowStatus[i] = gmoCstat_NonOpt;
+            }
+            /* there seem to be no notion of unbounded equations (in terms of slack variables) in Osi... */
+         }
+
+         /* change intermediate infeasible to feasible, if solution does not seem infeasible */
+         if( ninfeas == 0 && gmoModelStat(gmo) == gmoModelStat_InfeasibleIntermed )
+            gmoModelStatSet(gmo, gmoNDisc(gmo) > 0 ? gmoModelStat_Integer : gmoModelStat_Feasible);
+
+         break;
+      }
+   }
+
    /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
-   gmoSetSolution8(gmo, colLevel, colMargin, rowMargin, rowLevel, colBasis, NULL, rowBasis, NULL);
+   gmoSetSolution8(gmo, colLevel, colMargin, rowMargin, rowLevel, colBasis, colStatus, rowBasis, rowStatus);
 
    delete[] colBasis;
    delete[] rowBasis;
+   delete[] colStatus;
+   delete[] rowStatus;
+   delete[] primalray;
 
    return true;
 }

@@ -978,7 +978,7 @@ This option is only important if a linear scaling method (e.g., mc19) is used.  
 {\ttfamily ma27, ma57, ma77, ma86, ma97, pardiso, mumps}%
 {ma27}%
 {Linear solver used for step computations.\\
-Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. If no GAMS/IpoptH license is available, the default linear solver is MUMPS. For using Pardiso or MA77, a pardiso or HSL library need to be provided.}%
+Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. If no GAMS/IpoptH license is available, the default linear solver is MUMPS. Pardiso is only available on Linux and Windows systems. For using Pardiso on non-Linux/Windows systems or MA77, a Pardiso or HSL library need to be provided.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -1617,7 +1617,7 @@ Activating this option will cause an error if an invalid number is detected in t
 }
 
 \printoption{dependency\_detector}%
-{\ttfamily none, mumps, wsmp, ma28}%
+{\ttfamily none, mumps, ma28}%
 {none}%
 {Indicates which linear solver should be used to detect linearly dependent equality constraints.\\
 The default and available choices depend on how Ipopt has been compiled.  This is experimental and does not work well.}%
@@ -1629,7 +1629,6 @@ The default and available choices depend on how Ipopt has been compiled.  This i
 \setlength{\topsep}{0pt}}
 \item[\texttt{none}] don't check; no extra work at beginning
 \item[\texttt{mumps}] use MUMPS
-\item[\texttt{wsmp}] use WSMP
 \item[\texttt{ma28}] use MA28
 \end{list}
 }
@@ -1859,66 +1858,11 @@ This option allows to obtain the most feasible solution found by Ipopt during th
 {}
 
 \printoptioncategory{Pardiso Linear Solver}
-\printoption{pardiso\_iter\_coarse\_size}%
-{$1\leq\textrm{integer}$}%
-{$5000$}%
-{Maximum Size of Coarse Grid Matrix\\
-DPARM(3)}%
-{}
-
-\printoption{pardiso\_iter\_dropping\_factor}%
-{$0<\textrm{real}<1$}%
-{$0.5$}%
-{dropping value for incomplete factor\\
-DPARM(5)}%
-{}
-
-\printoption{pardiso\_iter\_dropping\_schur}%
-{$0<\textrm{real}<1$}%
-{$0.1$}%
-{dropping value for sparsify schur complement factor\\
-DPARM(6)}%
-{}
-
-\printoption{pardiso\_iter\_inverse\_norm\_factor}%
-{$1<\textrm{real}$}%
-{$5 \cdot 10^{  6}$}%
-{\\
-DPARM(8)}%
-{}
-
-\printoption{pardiso\_iter\_max\_levels}%
-{$1\leq\textrm{integer}$}%
-{$10$}%
-{Maximum Size of Grid Levels\\
-DPARM(4)}%
-{}
-
-\printoption{pardiso\_iter\_max\_row\_fill}%
-{$1\leq\textrm{integer}$}%
-{$10000000$}%
-{max fill for each row\\
-DPARM(7)}%
-{}
-
-\printoption{pardiso\_iter\_relative\_tol}%
-{$0<\textrm{real}<1$}%
-{$10^{- 6}$}%
-{Relative Residual Convergence\\
-DPARM(2)}%
-{}
-
-\printoption{pardiso\_iterative}%
-{\ttfamily no, yes}%
-{no}%
-{Switch on iterative solver in Pardiso library}%
-{}
-
 \printoption{pardiso\_matching\_strategy}%
 {\ttfamily complete, complete+2x2, constraints}%
 {complete+2x2}%
 {Matching strategy to be used by Pardiso\\
-This is IPAR(13) in Pardiso manual.  This option is only available if Ipopt has been compiled with Pardiso.}%
+This is IPAR(13) in Pardiso manual.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -1931,18 +1875,11 @@ This is IPAR(13) in Pardiso manual.  This option is only available if Ipopt has 
 \end{list}
 }
 
-\printoption{pardiso\_max\_droptol\_corrections}%
-{$1\leq\textrm{integer}$}%
-{$4$}%
-{Maximal number of decreases of drop tolerance during one solve.\\
-This is relevant only for iterative Pardiso options.}%
-{}
-
-\printoption{pardiso\_max\_iter}%
-{$1\leq\textrm{integer}$}%
-{$500$}%
-{Maximum number of Krylov-Subspace Iteration\\
-DPARM(1)}%
+\printoption{pardiso\_max\_iterative\_refinement\_steps}%
+{$\textrm{integer}$}%
+{$1$}%
+{Limit on number of iterative refinement steps.\\
+The solver does not perform more than the absolute value of this value steps of iterative refinement and stops the process if a satisfactory level of accuracy of the solution in terms of backward error is achieved. If negative, the accumulation of the residue uses extended precision real and complex data types. Perturbed pivots result in iterative refinement. The solver automatically performs two steps of iterative refinements when perturbed pivots are obtained during the numerical factorization and this option is set to 0.}%
 {}
 
 \printoption{pardiso\_msglvl}%
@@ -1952,18 +1889,27 @@ DPARM(1)}%
 This determines the amount of analysis output from the Pardiso solver. This is MSGLVL in the Pardiso manual.}%
 {}
 
-\printoption{pardiso\_out\_of\_core\_power}%
-{$0\leq\textrm{integer}$}%
-{$0$}%
-{Enables out-of-core variant of Pardiso\\
-Setting this option to a positive integer k makes Pardiso work in the out-of-core variant where the factor is split in 2\^k subdomains.  This is IPARM(50) in the Pardiso manual.  This option is only available if Ipopt has been compiled with Pardiso.}%
-{}
+\printoption{pardiso\_order}%
+{\ttfamily amd, one, metis, pmetis}%
+{metis}%
+{Controls the fill-in reduction ordering algorithm for the input matrix.}%
+{\begin{list}{}{
+\setlength{\parsep}{0em}
+\setlength{\leftmargin}{5ex}
+\setlength{\labelwidth}{2ex}
+\setlength{\itemindent}{0ex}
+\setlength{\topsep}{0pt}}
+\item[\texttt{amd}] minimum degree algorithm
+\item[\texttt{one}] undocumented
+\item[\texttt{metis}] MeTiS nested dissection algorithm
+\item[\texttt{pmetis}] parallel (OpenMP) version of MeTiS nested dissection algorithm
+\end{list}
+}
 
 \printoption{pardiso\_redo\_symbolic\_fact\_only\_if\_inertia\_wrong}%
 {\ttfamily no, yes}%
 {no}%
-{Toggle for handling case when elements were perturbed by Pardiso.\\
-This option is only available if Ipopt has been compiled with Pardiso.}%
+{Toggle for handling case when elements were perturbed by Pardiso.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}
@@ -1978,8 +1924,7 @@ This option is only available if Ipopt has been compiled with Pardiso.}%
 \printoption{pardiso\_repeated\_perturbation\_means\_singular}%
 {\ttfamily no, yes}%
 {no}%
-{Interpretation of perturbed elements.\\
-This option is only available if Ipopt has been compiled with Pardiso.}%
+{Interpretation of perturbed elements.}%
 {\begin{list}{}{
 \setlength{\parsep}{0em}
 \setlength{\leftmargin}{5ex}

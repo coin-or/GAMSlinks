@@ -128,9 +128,10 @@ int GamsOS::callSolver()
    if( !gmoosxl.createOSInstance() )
    {
       gevLogStat(gev, "Creation of OSInstance failed.");
-      gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
-      gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
-      return 1;
+      /* let's assume that this happened because of some capability issue */
+      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+      gmoSolveStatSet(gmo, gmoSolveStat_Capability);
+      return 0;
    }
 
    OSInstance* osinstance = gmoosxl.takeOverOSInstance();

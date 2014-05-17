@@ -1,13 +1,7 @@
-
-\newcommand{\SCIP}{\textsc{SCIP}\xspace}
-
 \chapter{SCIP}
 
-\minitoc
+\SCIP (\textbf{S}olving \textbf{C}onstraint \textbf{I}nteger \textbf{P}rograms) is developed at the Konrad-Zuse-Zentrum f\"ur Informationstechnik Berlin (ZIB) in cooperation with TU Darmstadt, RWTH Aachen, University of Erlangen-N\"urnberg, and Siemens AG.
 
-\section{Introduction}
-
-\SCIP (\textbf{S}olving \textbf{C}onstraint \textbf{I}nteger \textbf{P}rograms) is developed at the Konrad-Zuse-Zentrum f\"ur Informationstechnik Berlin (ZIB).
 The \SCIP main developer had been Tobias Achterberg, current main developers are Timo Berthold, Gerald Gamrath, Ambros Gleixner, Stefan Heinz, Marc Pfetsch, Stefan Vigerske, Michael Winkler, and Kati Wolter.
 Since \SCIP is distributed under the ZIB Academic License, it is only available for users with a \textbf{\GAMS academic license}.
 
@@ -17,9 +11,7 @@ Within \GAMS, the MIP and MINLP solving facilities of \SCIP are available.
 
 For more detailed information, we refer to \cite{Achterberg2007,Ach09,AchBeKoWo08,Berthold2006,BertholdHeinzVigerske2009,Vi12,Wolter2006} and the \SCIP web site \url{http://scip.zib.de}, especially the list of papers listed at \url{http://scip.zib.de/related.shtml}.
 
-\GAMS/\SCIP uses the linear solver \textsc{SoPlex} \cite{Wunderling1996} as LP solver, the COIN-OR Interior Point Optimizer \textsc{Ipopt}~\cite{WaBi06} as nonlinear solver, and \textsc{CppAD} to compute derivatives of nonlinear functions.
-
-\section{Model requirements}
+\GAMS/\SCIP uses \textsc{CPLEX}, if licensed, and otherwise \SOPLEX \cite{Wunderling1996} as LP solver, the COIN-OR Interior Point Optimizer \textsc{Ipopt}~\cite{WaBi06} as nonlinear solver, and \textsc{CppAD} to compute derivatives of nonlinear functions.
 
 \SCIP supports continuous, binary, integer, semi-continuous, semi-integer, and indicator variables, special ordered sets, and branching priorities for discrete variables.
 
@@ -50,7 +42,7 @@ If you need to use \GAMS/\SCIP with BCH, please consider to use a \GAMS system o
 \subsection{Specification of \SCIP Options}
 
 \GAMS/\SCIP supports the \GAMS parameters \texttt{reslim}, \texttt{iterlim}, \texttt{nodlim}, \texttt{optcr}, \texttt{optca}, and \texttt{workspace}.
-Further, the option \texttt{threads} can be used to control the number of threads used in the linear algebra routines of \textsc{Ipopt} (only under Linux and Windows) and for solving LPs (if CPLEX' barrier solver is used).
+Further, the option \texttt{threads} can be used to control the number of threads used in the linear algebra routines of \textsc{Ipopt}, see Section~\ref{sec:ipoptlinearsolver} in Chapter~\ref{cha:ipopt} for details, and for solving LPs (if CPLEX' barrier solver is used).
 
 Options can be specified by a \SCIP options file.
 A \SCIP options file consists of one option or comment per line.
@@ -102,6 +94,7 @@ Currently, indicators can only be used for linear equations.
 \section{Special Features}
 
 \subsection{\SCIP interactive shell}
+\label{sub:scipinteractive}
 
 The interactive shell in \SCIP is a powerful tool that allows the user to display various information (e.g., branching statistics, presolved model), load emphasis settings, interrupt a solve to change parameters or trigger a restart, write the model in various file formats, start {\SCIP}s solution counter, and many more things.
 
@@ -130,7 +123,33 @@ The emphasis settings are not available as single parameters, but can be set via
 E.g., writing \texttt{set heuristics emphasis} in the shell displays the available emphasis settings for heuristics (aggressive, fast, off) and expects the user to input which setting to use.
 Further, general emphasis settings are available in the \texttt{set emphasis} menu, some of them giving predefined settings similar to the CPLEX option \texttt{mipemphasis}.
 
-Further, option files that specify all available emphasis settings are available at \url{http://www.gams.com/~svigerske/scip3.0}.
+Via the \texttt{gams/interactive} option, c.f.\ Section \ref{sub:scipinteractive}, emphasis settings can be activated via a \SCIP options file. For example, adding the option
+\begin{verbatim}
+gams/interactive = "set emphasis feasibility optimize write gamssol quit"
+\end{verbatim}
+instructs \SCIP to load the emphasis setting \texttt{feasibility} prior to optimizing the model and passing the solution back to \GAMS.
+
+The following emphasis settings are available in \SCIP:
+
+\begin{tabular}{ll}
+%\texttt{counter} & "feasible" and "fast" counting process
+\texttt{set emphasis cpsolver}    & setup a constraint programming like search \\
+\texttt{set emphasis easycip}     & use for easy problems \\
+\texttt{set emphasis feasibility} & emphasize finding a feasible solution \\
+\texttt{set emphasis hardlp}      & use for problems with a hard LP \\
+\texttt{set emphasis optimality}  & emphasize proving optimality \\
+\texttt{set heuristic emphasis aggressive} & use primal heuristics aggressively \\
+\texttt{set heuristic emphasis fast} & use only fast primal heuristics \\
+\texttt{set heuristic emphasis off} & disable all primal heuristics \\
+\texttt{set presolving emphasis aggressive} & do aggressive presolving \\
+\texttt{set presolving emphasis fast} & use only fast presolving steps \\
+\texttt{set presolving emphasis off} & disable presolving \\
+\texttt{set separating emphasis aggressive} & use cutting plane separators aggressively \\
+\texttt{set separating emphasis fast} & use only fast cutting plane separators \\
+\texttt{set separating emphasis off} & disable all cutting plane separators
+\end{tabular}
+
+%Further, option files that specify all available emphasis settings are available at \url{http://www.gams.com/~svigerske/scip3.0}.
 
 \subsection{Solution Pool}
 
@@ -341,4 +360,8 @@ In the following we give a detailed list of most \SCIP options.
 % \textsl{(default = FALSE)}
 
 \bibliographystyle{plain}
-\bibliography{coin_scip}
+%\bibliography{coinlibd}
+%\renewcommand{\bibname}{SCIP References}
+\input{scip.bbl}
+
+\chapterend

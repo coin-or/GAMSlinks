@@ -1112,14 +1112,16 @@ bool GamsCbc::writeSolution(
       // if Cbc solved an LP, the solution status is not correctly stored in the CbcModel, we have to look into the solver
       if( model->solver()->isProvenDualInfeasible() )
       {
+         write_solution = true;
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-         gmoModelStatSet(gmo, gmoModelStat_UnboundedNoSolution);
+         gmoModelStatSet(gmo, gmoModelStat_Unbounded);
          gevLogStat(gev, "Model unbounded.");
       }
       else if( model->solver()->isProvenPrimalInfeasible() )
       {
+         write_solution = true;
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-         gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
+         gmoModelStatSet(gmo, gmoModelStat_InfeasibleGlobal);
          gevLogStat(gev, "Model infeasible.");
       }
       else if( model->solver()->isAbandoned() )
@@ -1138,26 +1140,30 @@ bool GamsCbc::writeSolution(
       }
       else if( model->isSecondsLimitReached() )
       {
+         write_solution = true;
          gmoSolveStatSet(gmo, gmoSolveStat_Resource);
-         gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
          gevLogStat(gev, "Time limit reached.");
       }
       else if( model->solver()->isIterationLimitReached() )
       {
+         write_solution = true;
          gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
-         gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
          gevLogStat(gev, "Iteration limit reached.");
       }
       else if( model->solver()->isPrimalObjectiveLimitReached() )
       {
+         write_solution = true;
          gmoSolveStatSet(gmo, gmoSolveStat_Solver);
-         gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
          gevLogStat(gev, "Primal objective limit reached.");
       }
       else if( model->solver()->isDualObjectiveLimitReached() )
       {
+         write_solution = true;
          gmoSolveStatSet(gmo, gmoSolveStat_Solver);
-         gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
          gevLogStat(gev, "Dual objective limit reached.");
       }
       else

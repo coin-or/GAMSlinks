@@ -7,11 +7,7 @@ GAMSlinks/Makefile.in -text
 GAMSlinks/README -text
 GAMSlinks/configure -text
 GAMSlinks/configure.ac -text
-GAMSlinks/doc/gamsdist/coin.tex -text
-GAMSlinks/doc/gamsdist/coin_scip.bib -text
 GAMSlinks/doc/gamsdist/gams.sty -text
-GAMSlinks/doc/gamsdist/ind_coin.tex -text
-GAMSlinks/doc/gamsdist/ind_scip.tex -text
 GAMSlinks/doc/gamsdist/optbonmin_a.tex -text
 GAMSlinks/doc/gamsdist/optbonmin_s.tex -text
 GAMSlinks/doc/gamsdist/optcbc_a.tex -text

@@ -109,6 +109,8 @@ bool GamsOSxL::createOSInstance()
 {
    char buffer[GMS_SSSIZE];
 
+   gmoUseQSet(gmo, 1);
+
    try
    {
       // delete possible old instance and create a new one
@@ -187,24 +189,23 @@ bool GamsOSxL::createOSInstance()
 
          if( gmoN(gmo) > 0 )
          {
-            objectiveCoefficients = new SparseVector(gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
-
             int* colidx = new int[gmoObjNZ(gmo)];
             double* val = new double[gmoObjNZ(gmo)];
             int* nlflag = new int[gmoObjNZ(gmo)];
-            int dummy;
+            int nz;
+            int nlnz;
 
-            //         if( gmoObjNZ(gmo) > 0 )
-            //            nlflag[0] = 0; // workaround for gmo bug
-            gmoGetObjSparse(gmo, colidx, val, nlflag, &dummy, &dummy);
-            for( int i = 0, j = 0; i < gmoObjNZ(gmo); ++i )
+            gmoGetObjSparse(gmo, colidx, val, nlflag, &nz, &nlnz);
+
+            objectiveCoefficients = new SparseVector(nz - nlnz);
+            for( int i = 0, j = 0; i < nz; ++i )
             {
                if( nlflag[i] )
                   continue;
                objectiveCoefficients->indexes[j] = colidx[i];
                objectiveCoefficients->values[j]  = val[i];
                j++;
-               assert(j <= gmoObjNZ(gmo) - gmoObjNLNZ(gmo));
+               assert(j <= nz - nlnz);
             }
 
             delete[] colidx;
@@ -275,40 +276,45 @@ bool GamsOSxL::createOSInstance()
          }
       }
 
-      int nz = gmoNZ(gmo);
-      double* values  = new double[nz];
-      int* colstarts  = new int[gmoN(gmo)+1];
-      int* rowindexes = new int[nz];
-      int* nlflags    = new int[nz];
+      double* values  = new double[gmoNZ(gmo) + gmoN(gmo)];
+      int* colindexes = new int[gmoNZ(gmo) + gmoN(gmo)];
+      int* rowstarts  = new int[gmoM(gmo)+1];
+      int* nlflags    = new int[gmoN(gmo)];
 
-      // get coefficients matrix
-      gmoGetMatrixCol(gmo, colstarts, rowindexes, values, nlflags);
-      colstarts[gmoN(gmo)] = nz;
-
-      // remove coefficients corresponding to nonlinear terms
-      int shift = 0;
-      for( int col = 0; col < gmoN(gmo); ++col )
+      int nz = 0;
+      for( int row = 0; row < gmoM(gmo); ++row )
       {
-         colstarts[col+1] -= shift;
-         for( int k = colstarts[col]; k < colstarts[col+1]; )
-         {
-            values[k] = values[k+shift];
-            rowindexes[k] = rowindexes[k+shift];
-            if( nlflags[k+shift] )
-            {
-               ++shift;
-               --colstarts[col+1];
-            }
-            else
-               ++k;
-         }
-      }
-      nz -= shift;
+         int rownz;
+         int nlnz;
 
-      // values, colstarts, rowindexes are deleted by OSInstance
+         rowstarts[row] = nz;
+         gmoGetRowSparse(gmo, row, &colindexes[nz], &values[nz], nlflags, &rownz, &nlnz);
+
+         if( nlnz > 0 )
+         {
+            /* remove coefs of nonlinear entries (strangely, they seem to be disappearing for general nonlinear rows anyway when enabling qmaker...) */
+            for( int k = 0, shift = 0; k + shift < rownz; )
+            {
+               if( nlflags[k+shift] )
+               {
+                  ++shift;
+               }
+               else
+               {
+                  colindexes[nz+k] = colindexes[nz+k+shift];
+                  values[nz+k] = values[nz+k+shift];
+                  ++k;
+               }
+            }
+         }
+         nz += rownz - nlnz;
+      }
+      rowstarts[gmoM(gmo)] = nz;
+
+      // values, rowstarts, colindexes are deleted by OSInstance
       delete[] nlflags;
 
-      if( !osinstance->setLinearConstraintCoefficients(nz, true, values, 0, nz-1, rowindexes, 0, nz-1, colstarts, 0, gmoN(gmo)) )
+      if( !osinstance->setLinearConstraintCoefficients(nz, false, values, 0, nz-1, colindexes, 0, nz-1, rowstarts, 0, gmoM(gmo)) )
       {
          gevLogStat(gev, "Error: OSInstance::setLinearConstraintCoefficients did not succeed.\n");
          return false;
@@ -318,8 +324,21 @@ bool GamsOSxL::createOSInstance()
       if( gmoObjNLNZ(gmo) == 0 && gmoNLNZ(gmo) == 0 )
          return true;
 
-      // setup nonlinear expressions
-      osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions = gmoNLM(gmo) + (gmoObjNLNZ(gmo) ? 1 : 0);
+      // setup quadratic terms and nonlinear expressions
+      int nqterms = 0;
+      if( gmoGetObjOrder(gmo) == gmoorder_Q )
+         nqterms = gmoObjQNZ(gmo);
+      for( int i = 0; i < gmoM(gmo); ++i )
+         if( gmoGetEquOrderOne(gmo, i) == gmoorder_Q )
+            nqterms += gmoGetRowQNZOne(gmo, i);
+
+      int qtermpos = 0;
+      int* quadequs = new int[nqterms];
+      int* quadrows = new int[nqterms];
+      int* quadcols = new int[nqterms];
+      double* quadcoefs = new double[nqterms];
+
+      osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions = gmoNLM(gmo) + (gmoGetObjOrder(gmo) == gmoorder_NL ? 1 : 0);
       osinstance->instanceData->nonlinearExpressions->nl = CoinCopyOfArrayOrZero((Nl**)NULL, osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
       int iNLidx = 0;
 
@@ -328,17 +347,33 @@ bool GamsOSxL::createOSInstance()
       int constantlen = gmoNLConst(gmo);
       double* constants = (double*)gmoPPool(gmo);
       int codelen;
-
       OSnLNode* nl;
-      // parse nonlinear objective
-      if( gmoObjNLNZ(gmo) > 0 )
+
+      if( gmoGetObjOrder(gmo) == gmoorder_Q )
       {
+         // handle quadratic objective
+         assert(qtermpos == 0);
+
+         int qnz = gmoObjQNZ(gmo);
+         gmoGetObjQ(gmo, quadrows, quadcols, quadcoefs);
+         for( int j = 0; j < qnz; ++j )
+         {
+            if( quadrows[j] == quadcols[j] )
+               quadcoefs[j] /= 2.0; /* for some strange reason, the coefficients on the diagonal are multiplied by 2 in GMO */
+            quadequs[j] = -1;
+         }
+         qtermpos = qnz;
+      }
+      else if( gmoObjNLNZ(gmo) > 0 )
+      {
+         // handle nonlinear objective
          gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
 
          nl = parseGamsInstructions(codelen, opcodes, fields, constantlen, constants);
          if( nl == NULL )
          {
-            gevLogStat(gev, "Error: failure when parsing GAMS instructions.\n");
+            sprintf(buffer, "Failure when processing GAMS instructions for objective %s.\n", osinstance->getObjectiveNames()[0].c_str());
+            gevLogStatPChar(gev, buffer);
             return false;
          }
 
@@ -371,27 +406,54 @@ bool GamsOSxL::createOSInstance()
 
       for( int i = 0; i < gmoM(gmo); ++i )
       {
-         gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields);
-         if( codelen == 0 )
-            continue;
-
-         nl = parseGamsInstructions(codelen, opcodes, fields, constantlen, constants);
-         if( nl == NULL )
+         if( gmoGetEquOrderOne(gmo, i) == gmoorder_Q )
          {
-            gevLogStat(gev, "Error: failure when parsing GAMS instructions.\n");
-            return false;
+            // handle quadratic equation
+            int qnz = gmoGetRowQNZOne(gmo, i);
+            assert(qtermpos + qnz <= nqterms);
+            gmoGetRowQ(gmo, i, &quadrows[qtermpos], &quadcols[qtermpos], &quadcoefs[qtermpos]);
+            for( int j = qtermpos; j < qtermpos+qnz; ++j )
+            {
+               if( quadrows[j] == quadcols[j] )
+                  quadcoefs[j] /= 2.0; /* for some strange reason, the coefficients on the diagonal are multiplied by 2 in GMO */
+               quadequs[j] = i;
+            }
+            qtermpos += qnz;
          }
+         else if( gmoGetEquOrderOne(gmo, i) == gmoorder_NL )
+         {
+            gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields);
+            if( codelen == 0 )
+               continue;
 
-         assert(iNLidx < osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
-         osinstance->instanceData->nonlinearExpressions->nl[iNLidx] = new Nl();
-         osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->idx = i; // correct that this is the con. number?
-         osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree = new OSExpressionTree();
-         osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree->m_treeRoot = nl;
-         ++iNLidx;
+            nl = parseGamsInstructions(codelen, opcodes, fields, constantlen, constants);
+            if( nl == NULL )
+            {
+               sprintf(buffer, "Failure when processing GAMS instructions for equation %s.\n", osinstance->getConstraintNames()[i].c_str());
+               gevLogStatPChar(gev, buffer);
+               return false;
+            }
+
+            assert(iNLidx < osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
+            osinstance->instanceData->nonlinearExpressions->nl[iNLidx] = new Nl();
+            osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->idx = i; // correct that this is the con. number?
+            osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree = new OSExpressionTree();
+            osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree->m_treeRoot = nl;
+            ++iNLidx;
+         }
       }
 
+      assert(qtermpos == nqterms);
       assert(iNLidx == osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
 
+      osinstance->setQuadraticTerms(nqterms, quadequs, quadrows, quadcols, quadcoefs, 0, nqterms-1);
+
+      delete[] quadequs;
+      delete[] quadrows;
+      delete[] quadcols;
+      delete[] quadcoefs;
+      delete[] opcodes;
+      delete[] fields;
    }
    catch( ErrorClass& error )
    {
@@ -401,6 +463,102 @@ bool GamsOSxL::createOSInstance()
    }
 
    return true;
+}
+
+const char* multivarops[] = {"sum", "product", "min", "max", "allDiff"};
+
+static
+void applyOperation(std::vector<OSnLNode*>& stack, OSnLNode* op, int nargs = -1)
+{
+   assert(op != NULL);
+
+   if( op->getTokenName() == "minus" )
+   {
+      /* for A - B with A a sum, rewrite as A + (-B), so we can add -B into the sum of A */
+      assert(nargs == 2 || nargs == -1);
+      assert(stack.size() >= 2);
+      if( stack[stack.size()-2]->getTokenName() == "sum" )
+      {
+         delete op;
+         applyOperation(stack, new OSnLNodeNegate());
+         applyOperation(stack, new OSnLNodeSum(), 2);
+         return;
+      }
+   }
+
+   if( nargs < 0 )
+      nargs = op->inumberOfChildren;
+
+   /* if operator can take arbitrarily many operands, then merge children of children of same operator into new one
+    * e.g., (a+b) + c = a + b + c */
+   for( int o = 0; o < 4; ++o )
+   {
+      if( op->getTokenName() != multivarops[o] )
+         continue;
+
+      assert(op->inumberOfChildren == 0);
+      assert(op->m_mChildren == NULL);
+      assert(nargs > 0);
+      assert((int)stack.size() >= nargs);
+
+      op->inumberOfChildren = nargs;
+
+      /* check for number of additional arguments from arguments of same operator */
+      size_t a;
+      for( a = 0; (int)a < nargs; ++a )
+         if( stack[stack.size()-1-a]->getTokenName() == multivarops[o] )
+            op->inumberOfChildren += stack[stack.size()-1-a]->inumberOfChildren - 1;
+
+      op->m_mChildren = new OSnLNode*[op->inumberOfChildren];
+
+      a = 0;
+      while( nargs )
+      {
+         if( stack.back()->getTokenName() == multivarops[o] )
+         {
+            assert(a + stack.back()->inumberOfChildren <= op->inumberOfChildren);
+            memcpy(&op->m_mChildren[a], stack.back()->m_mChildren, stack.back()->inumberOfChildren * sizeof(OSnLNode*));
+            a += stack.back()->inumberOfChildren;
+
+            delete[] stack.back()->m_mChildren;
+            stack.back()->m_mChildren = NULL;
+            stack.back()->inumberOfChildren = 0;
+            delete stack.back();
+         }
+         else
+         {
+            assert(a + 1 <= op->inumberOfChildren);
+            op->m_mChildren[a] = stack.back();
+            ++a;
+         }
+         stack.pop_back();
+         --nargs;
+      }
+      assert(a == op->inumberOfChildren);
+
+      stack.push_back(op);
+      return;
+   }
+
+   if( op->inumberOfChildren == 0 && nargs > 0 )
+   {
+      assert(op->m_mChildren == NULL);
+
+      op->inumberOfChildren = nargs;
+      op->m_mChildren = new OSnLNode*[nargs];
+   }
+   assert((int)op->inumberOfChildren == nargs);
+   assert(op->m_mChildren != NULL || nargs == 0);
+
+   assert((int)stack.size() >= nargs);
+
+   while( nargs )
+   {
+      op->m_mChildren[--nargs] = stack.back();
+      stack.pop_back();
+   }
+
+   stack.push_back(op);
 }
 
 OSnLNode* GamsOSxL::parseGamsInstructions(
@@ -414,9 +572,8 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
    bool debugoutput = gevGetIntOpt(gev, gevInteger1) & 0x4;
 #define debugout if( debugoutput ) std::clog
 
-   std::vector<OSnLNode*> nlNodeVec;
-
-   nlNodeVec.reserve(codelen);
+   std::vector<OSnLNode*> stack;
+   stack.reserve(20);
 
    int nargs = -1;
 
@@ -442,7 +599,7 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
             debugout << "push variable " << osinstance->getVariableNames()[address] << std::endl;
             OSnLNodeVariable* nlNode = new OSnLNodeVariable();
             nlNode->idx = address;
-            nlNodeVec.push_back(nlNode);
+            stack.push_back(nlNode);
             break;
          }
 
@@ -451,21 +608,23 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
             debugout << "push constant " << constants[address] << std::endl;
             OSnLNodeNumber* nlNode = new OSnLNodeNumber();
             nlNode->value = constants[address];
-            nlNodeVec.push_back(nlNode);
+            stack.push_back(nlNode);
             break;
          }
 
          case nlPushZero: // push zero
          {
             debugout << "push constant zero" << std::endl;
-            nlNodeVec.push_back(new OSnLNodeNumber());
+            stack.push_back(new OSnLNodeNumber());
             break;
          }
 
          case nlAdd: // add
          {
             debugout << "add" << std::endl;
-            nlNodeVec.push_back(new OSnLNodePlus());
+
+            applyOperation(stack, new OSnLNodeSum(), 2);
+
             break;
          }
 
@@ -475,8 +634,8 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
             debugout << "add variable " << osinstance->getVariableNames()[address] << std::endl;
             OSnLNodeVariable* nlNode = new OSnLNodeVariable();
             nlNode->idx = address;
-            nlNodeVec.push_back(nlNode);
-            nlNodeVec.push_back(new OSnLNodePlus());
+            stack.push_back(nlNode);
+            applyOperation(stack, new OSnLNodeSum(), 2);
             break;
          }
 
@@ -485,15 +644,15 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
             debugout << "add constant " << constants[address] << std::endl;
             OSnLNodeNumber* nlNode = new OSnLNodeNumber();
             nlNode->value = constants[address];
-            nlNodeVec.push_back(nlNode);
-            nlNodeVec.push_back(new OSnLNodePlus());
+            stack.push_back(nlNode);
+            applyOperation(stack, new OSnLNodeSum(), 2);
             break;
          }
 
          case nlSub: // minus
          {
             debugout << "minus" << std::endl;
-            nlNodeVec.push_back(new OSnLNodeMinus());
+            applyOperation(stack, new OSnLNodeMinus());
             break;
          }
 
@@ -503,8 +662,8 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
             debugout << "subtract variable " << osinstance->getVariableNames()[address] << std::endl;
             OSnLNodeVariable* nlNode = new OSnLNodeVariable();
             nlNode->idx = address;
-            nlNodeVec.push_back(nlNode);
-            nlNodeVec.push_back(new OSnLNodeMinus());
+            stack.push_back(nlNode);
+            applyOperation(stack, new OSnLNodeMinus());
             break;
          }
 
@@ -513,15 +672,15 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
             debugout << "subtract constant " << constants[address] << std::endl;
             OSnLNodeNumber* nlNode = new OSnLNodeNumber();
             nlNode->value = constants[address];
-            nlNodeVec.push_back(nlNode);
-            nlNodeVec.push_back(new OSnLNodeMinus());
+            stack.push_back(nlNode);
+            applyOperation(stack, new OSnLNodeMinus());
             break;
          }
 
          case nlMul: // multiply
          {
             debugout << "multiply" << std::endl;
-            nlNodeVec.push_back(new OSnLNodeTimes());
+            applyOperation(stack, new OSnLNodeProduct(), 2);
             break;
          }
 
@@ -531,8 +690,8 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
             debugout << "multiply variable " << osinstance->getVariableNames()[address] << std::endl;
             OSnLNodeVariable* nlNode = new OSnLNodeVariable();
             nlNode->idx = address;
-            nlNodeVec.push_back(nlNode);
-            nlNodeVec.push_back(new OSnLNodeTimes());
+            stack.push_back(nlNode);
+            applyOperation(stack, new OSnLNodeProduct(), 2);
             break;
          }
 
@@ -541,8 +700,8 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
             debugout << "multiply constant " << constants[address] << std::endl;
             OSnLNodeNumber* nlNode = new OSnLNodeNumber();
             nlNode->value = constants[address];
-            nlNodeVec.push_back(nlNode);
-            nlNodeVec.push_back(new OSnLNodeTimes());
+            stack.push_back(nlNode);
+            applyOperation(stack, new OSnLNodeProduct(), 2);
             break;
          }
 
@@ -551,16 +710,16 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
             debugout << "multiply constant " << constants[address] << " and add " << std::endl;
             OSnLNodeNumber* nlNode = new OSnLNodeNumber();
             nlNode->value = constants[address];
-            nlNodeVec.push_back(nlNode);
-            nlNodeVec.push_back(new OSnLNodeTimes());
-            nlNodeVec.push_back(new OSnLNodePlus());
+            stack.push_back(nlNode);
+            applyOperation(stack, new OSnLNodeProduct(), 2);
+            applyOperation(stack, new OSnLNodeSum(), 2);
             break;
          }
 
          case nlDiv: // divide
          {
             debugout << "divide" << std::endl;
-            nlNodeVec.push_back(new OSnLNodeDivide());
+            applyOperation(stack, new OSnLNodeDivide());
             break;
          }
 
@@ -570,8 +729,8 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
             debugout << "divide variable " << osinstance->getVariableNames()[address] << std::endl;
             OSnLNodeVariable* nlNode = new OSnLNodeVariable();
             nlNode->idx = address;
-            nlNodeVec.push_back(nlNode);
-            nlNodeVec.push_back(new OSnLNodeDivide());
+            stack.push_back(nlNode);
+            applyOperation(stack, new OSnLNodeDivide());
             break;
          }
 
@@ -580,15 +739,15 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
             debugout << "divide constant " << constants[address] << std::endl;
             OSnLNodeNumber* nlNode = new OSnLNodeNumber();
             nlNode->value = constants[address];
-            nlNodeVec.push_back(nlNode);
-            nlNodeVec.push_back(new OSnLNodeDivide());
+            stack.push_back(nlNode);
+            applyOperation(stack, new OSnLNodeDivide());
             break;
          }
 
          case nlUMin: // unary minus
          {
             debugout << "negate" << std::endl;
-            nlNodeVec.push_back(new OSnLNodeNegate());
+            applyOperation(stack, new OSnLNodeNegate());
             break;
          }
 
@@ -599,7 +758,7 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
             OSnLNodeVariable* nlNode = new OSnLNodeVariable();
             nlNode->idx = address;
             nlNode->coef = -1.0;
-            nlNodeVec.push_back( nlNode );
+            stack.push_back(nlNode);
             break;
          }
 
@@ -621,25 +780,21 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                case fnmin:
                {
                   debugout << "min" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodeMin());
-                  nlNodeVec.back()->inumberOfChildren = 2;
-                  nlNodeVec.back()->m_mChildren = new OSnLNode*[2];
+                  applyOperation(stack, new OSnLNodeMin(), 2);
                   break;
                }
 
                case fnmax :
                {
                   debugout << "max" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodeMax());
-                  nlNodeVec.back()->inumberOfChildren = 2;
-                  nlNodeVec.back()->m_mChildren = new OSnLNode*[2];
+                  applyOperation(stack, new OSnLNodeMax(), 2);
                   break;
                }
 
                case fnsqr:
                {
                   debugout << "square" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodeSquare());
+                  applyOperation(stack, new OSnLNodeSquare());
                   break;
                }
 
@@ -648,14 +803,14 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                case fnsqexp:
                {
                   debugout << "exp" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodeExp());
+                  applyOperation(stack, new OSnLNodeExp());
                   break;
                }
 
                case fnlog:
                {
                   debugout << "ln" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodeLn());
+                  applyOperation(stack, new OSnLNodeLn());
                   break;
                }
 
@@ -664,50 +819,50 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                case fnsqlog10:
                {
                   debugout << "log10 = ln * 1/ln(10)" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodeLn());
+                  applyOperation(stack, new OSnLNodeLn());
                   OSnLNodeNumber* nlNode = new OSnLNodeNumber();
                   nlNode->value = 1.0/log(10.0);
-                  nlNodeVec.push_back(nlNode);
-                  nlNodeVec.push_back(new OSnLNodeTimes());
+                  stack.push_back(nlNode);
+                  applyOperation(stack, new OSnLNodeTimes());
                   break;
                }
 
                case fnlog2:
                {
                   debugout << "log2 = ln * 1/ln(2)" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodeLn());
+                  applyOperation(stack, new OSnLNodeLn());
                   OSnLNodeNumber *nlNode = new OSnLNodeNumber();
                   nlNode->value = 1.0/log(2.0);
-                  nlNodeVec.push_back(nlNode);
-                  nlNodeVec.push_back(new OSnLNodeTimes());
+                  stack.push_back(nlNode);
+                  applyOperation(stack, new OSnLNodeTimes());
                   break;
                }
 
                case fnsqrt:
                {
                   debugout << "sqrt" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodeSqrt());
+                  applyOperation(stack, new OSnLNodeSqrt());
                   break;
                }
 
                case fnabs:
                {
                   debugout << "abs" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodeAbs());
+                  applyOperation(stack, new OSnLNodeAbs());
                   break;
                }
 
                case fncos:
                {
                   debugout << "cos" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodeCos());
+                  applyOperation(stack, new OSnLNodeCos());
                   break;
                }
 
                case fnsin:
                {
                   debugout << "sin" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodeSin());
+                  applyOperation(stack, new OSnLNodeSin());
                   break;
                }
 
@@ -717,14 +872,14 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                case fnvcpower: // x ^ constant
                {
                   debugout << "power" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodePower());
+                  applyOperation(stack, new OSnLNodePower());
                   break;
                }
 
                case fnpi:
                {
                   debugout << "pi" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodePI());
+                  stack.push_back(new OSnLNodePI());
                   break;
                }
 
@@ -732,7 +887,7 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                case fndiv0:
                {
                   debugout << "divide" << std::endl;
-                  nlNodeVec.push_back(new OSnLNodeDivide());
+                  applyOperation(stack, new OSnLNodeDivide());
                   break;
                }
 
@@ -742,8 +897,8 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                   debugout << "reciprocal" << std::endl;
                   OSnLNodeNumber *nlNode = new OSnLNodeNumber();
                   nlNode->value = 1.0;
-                  nlNodeVec.push_back( nlNode );
-                  nlNodeVec.push_back( new OSnLNodeDivide() );
+                  stack.push_back( nlNode );
+                  applyOperation(stack, new OSnLNodeDivide());
                   break;
                }
 
@@ -756,22 +911,22 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                      case 0:
                      {
                         // delete variable of polynom
-                        delete nlNodeVec.back();
-                        nlNodeVec.pop_back();
+                        delete stack.back();
+                        stack.pop_back();
                         // push zero
-                        nlNodeVec.push_back(new OSnLNodeNumber());
+                        stack.push_back(new OSnLNodeNumber());
                         break;
                      }
 
                      case 1: // "constant" polynomial
                      {
-                        assert(nlNodeVec.size() >= 2);
+                        assert(stack.size() >= 2);
                         // delete variable
-                        delete nlNodeVec[nlNodeVec.size()-2];
+                        delete stack[stack.size()-2];
                         // put constant there
-                        nlNodeVec[nlNodeVec.size()-2] = nlNodeVec.back();
+                        stack[stack.size()-2] = stack.back();
                         // forget last element
-                        nlNodeVec.pop_back();
+                        stack.pop_back();
                         break;
                      }
 
@@ -780,39 +935,39 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                         std::vector<OSnLNode*> coeff(nargs);
                         while( nargs > 0 )
                         {
-                           assert(!nlNodeVec.empty());
-                           coeff[nargs-1] = nlNodeVec.back();
-                           nlNodeVec.pop_back();
+                           assert(!stack.empty());
+                           coeff[nargs-1] = stack.back();
+                           stack.pop_back();
                            --nargs;
                         }
-                        assert(!nlNodeVec.empty());
-                        OSnLNode* var = nlNodeVec.back();
-                        nlNodeVec.pop_back();
+                        assert(!stack.empty());
+                        OSnLNode* var = stack.back();
+                        stack.pop_back();
 
-                        nlNodeVec.push_back(coeff[0]);
+                        stack.push_back(coeff[0]);
 
-                        nlNodeVec.push_back(coeff[1]);
-                        nlNodeVec.push_back(var);
-                        nlNodeVec.push_back(new OSnLNodeTimes());
+                        stack.push_back(coeff[1]);
+                        stack.push_back(var);
+                        applyOperation(stack, new OSnLNodeProduct(), 2);
 
-                        nlNodeVec.push_back(new OSnLNodePlus());
+                        applyOperation(stack, new OSnLNodeSum(), 2);
                         for( size_t i = 2; i < coeff.size(); ++i )
                         {
-                           nlNodeVec.push_back(coeff[i]);
-                           nlNodeVec.push_back(var);
+                           stack.push_back(coeff[i]);
+                           stack.push_back(var);
                            if( i == 2 )
                            {
-                              nlNodeVec.push_back(new OSnLNodeSquare());
+                              applyOperation(stack, new OSnLNodeSquare());
                            }
                            else
                            {
                               OSnLNodeNumber* exponent = new OSnLNodeNumber();
                               exponent->value = (double)i;
-                              nlNodeVec.push_back(exponent);
-                              nlNodeVec.push_back(new OSnLNodePower());
+                              stack.push_back(exponent);
+                              applyOperation(stack, new OSnLNodePower());
                            }
-                           nlNodeVec.push_back(new OSnLNodeTimes());
-                           nlNodeVec.push_back(new OSnLNodePlus());
+                           applyOperation(stack, new OSnLNodeProduct());
+                           applyOperation(stack, new OSnLNodeSum(), 2);
                         }
                      }
                   }
@@ -820,10 +975,35 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                   break;
                }
 
+               case fnerrf :
+               {
+                  debugout << "errorf = 0.5 * [1+erf(x/sqrt(2))]" << std::endl;
+                  OSnLNodeNumber* nodenumber;
+
+                  nodenumber = new OSnLNodeNumber();
+                  nodenumber->value = sqrt(2.0) / 2.0;
+                  stack.push_back( nodenumber );
+                  applyOperation(stack, new OSnLNodeProduct(), 2);
+
+                  applyOperation(stack, new OSnLNodeErf());
+
+                  nodenumber = new OSnLNodeNumber();
+                  nodenumber->value = 1.0;
+                  stack.push_back( nodenumber );
+                  applyOperation(stack, new OSnLNodePlus());
+
+                  nodenumber = new OSnLNodeNumber();
+                  nodenumber->value = 0.5;
+                  stack.push_back( nodenumber );
+                  applyOperation(stack, new OSnLNodeTimes());
+
+                  break;
+               }
+
                // TODO some more we could handle
                case fnceil: case fnfloor: case fnround:
                case fnmod: case fntrunc: case fnsign:
-               case fnarctan: case fnerrf: case fndunfm:
+               case fnarctan: case fndunfm:
                case fndnorm: case fnerror: case fnfrac: case fnerrorl:
                case fnfact /* factorial */:
                case fnunfmi /* uniform random number */:
@@ -849,11 +1029,13 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                default:
                {
                   debugout << "nr. " << address+1 << " - unsuppored. Error." << std::endl;
-                  gevLogStat(gev, "Error: Unsupported GAMS function.\n");
-                  while( !nlNodeVec.empty() )
+                  char buffer[256];
+                  sprintf(buffer, "Error: Unsupported GAMS function %s.\n", GamsFuncCodeName[address+1]);
+                  gevLogStatPChar(gev, buffer);
+                  while( !stack.empty() )
                   {
-                     delete nlNodeVec.back();
-                     nlNodeVec.pop_back();
+                     delete stack.back();
+                     stack.pop_back();
                   }
                   return NULL;
                }
@@ -864,22 +1046,22 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
          default:
          {
             debugout << "opcode " << opcode << " - unsuppored. Error." << std::endl;
-            gevLogStat(gev, "Error: Unsupported GAMS instruction.\n");
-            while( !nlNodeVec.empty() )
+            char buffer[256];
+            sprintf(buffer, "Error: Unsupported GAMS opcode %s.\n", GamsOpCodeName[opcode]);
+            gevLogStatPChar(gev, buffer);
+            while( !stack.empty() )
             {
-               delete nlNodeVec.back();
-               nlNodeVec.pop_back();
+               delete stack.back();
+               stack.pop_back();
             }
             return NULL;
          }
       }
    }
 
-   if( nlNodeVec.size() == 0 )
-      return NULL;
+   assert(stack.size() == 1);
 
-   // the vector is in postfix format - create expression tree and return it
-   return nlNodeVec[0]->createExpressionTreeFromPostfix(nlNodeVec);
+   return stack[0];
 #undef debugout
 }
 

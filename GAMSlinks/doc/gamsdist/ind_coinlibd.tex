@@ -5,21 +5,25 @@
 \usepackage{vmargin}
 \usepackage{minitoc-hyper}
 \usepackage{fancyhdr}
+\usepackage{fancyvrb}
 \usepackage{gams}
 %\usepackage{epsfig}
 \usepackage[pdftex]{graphicx}
 %end{latexonly}
 \usepackage{xspace}
-%\usepackage{chapterbib}
+\usepackage[sectionbib]{natbib}
+\usepackage{chapterbib}
+\usepackage{xtab}
+\usepackage{amsfonts,amsmath}
+\usepackage{longtable}
+\usepackage{verbatim}
 
-\newenvironment{latexonly}{}{}
+\usepackage{html}
 
-% \usepackage{html}
-
-% \begin{htmlonly}
-% \newcommand{\hyperlink}[2]{\htmlref{#2}{#1}}
-% \newcommand{\hypertarget}[2]{{#2}}
-% \end{htmlonly}
+\begin{htmlonly}
+\newcommand{\hyperlink}[2]{\htmlref{#2}{#1}}
+\newcommand{\hypertarget}[2]{{#2}}
+\end{htmlonly}
 
 \parindent0em
 \parskip0.5em
@@ -46,28 +50,12 @@
 \cfoot{}
 %end{latexonly}
 
-%%%
-%%% DICOPT configurations
-%%%
-\usepackage{amsmath}
-\usepackage{fancyvrb}
-
-%%%
-%%% MINOS configurations
-%%%
-\usepackage{longtable}
-
-%%%
-%%% PATH configurations
-%%%
-\usepackage{verbatim}
 
 %%%
 %%% tabular with the option-table header
 %%%
 \newenvironment{option_tabular}%
-{\begin{tabular}{\latexhtml{p{.21\textwidth}p{.48\textwidth}p{.21\textwidth}}{ppp}}
-%{\begin{tabular}{p{.11\textwidth}p{.68\textwidth}p{.11\textwidth}}
+{\begin{tabular}{p{.16\textwidth}p{.65\textwidth}p{.11\textwidth}}
 \hline
 \textbf{Option}      &
 \textbf{Description} &
@@ -99,111 +87,77 @@
 %%%
 %%% list to use inside a tabular cell
 %%%
-%begin{latexonly}
 \newenvironment{tab_list}[1]%
 {\begin{list}{}{\vspace*{-1.5ex}\renewcommand{\makelabel}{\desclabel}\parsep-0.15cm\labelwidth#1\leftmargin#1\setlength{\labelsep}{\itemindent}\topsep0cm\parskip0cm\partopsep0cm}}%
 {\end{list}}
-%end{latexonly}
 
 \newcommand{\ragg}[1]{{\raggedright #1\\}}
 \renewcommand{\thesection}{\arabic{section}}
+
+\newcommand{\BONMIN}{\textsc{Bonmin}\xspace}
+\newcommand{\BONMINH}{\textsc{BonminH}\xspace}
+\newcommand{\CBC}{\textsc{CBC}\xspace}
+\newcommand{\COUENNE}{\textsc{Couenne}\xspace}
+\newcommand{\IPOPT}{\textsc{Ipopt}\xspace}
+\newcommand{\IPOPTH}{\textsc{IpoptH}\xspace}
+\newcommand{\OS}{\textsc{OS}\xspace}
+\newcommand{\OSI}{\textsc{OSI}\xspace}
+\newcommand{\OSICPLEX}{\textsc{OsiCplex}\xspace}
+\newcommand{\OSIGUROBI}{\textsc{OsiGurobi}\xspace}
+\newcommand{\OSIMOSEK}{\textsc{OsiMosek}\xspace}
+\newcommand{\OSISOPLEX}{\textsc{OsiSoplex}\xspace}
+\newcommand{\OSIXPRESS}{\textsc{OsiXpress}\xspace}
+\newcommand{\CPLEX}{\textsc{CPLEX}\xspace}
+\newcommand{\GUROBI}{\textsc{GUROBI}\xspace}
+\newcommand{\MOSEK}{\textsc{MOSEK}\xspace}
+\newcommand{\SOPLEX}{\textsc{SoPlex}\xspace}
+\newcommand{\XPRESS}{\textsc{XPRESS}\xspace}
+\newcommand{\SCIP}{\textsc{SCIP}\xspace}
 
 
 %%% B E G I N  D O C U M E N T %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-\renewenvironment{tab_list}[1]%
-{\begin{list}{}{\vspace*{-1.5ex}\renewcommand{\makelabel}{\desclabel}\parsep-0.15cm\labelwidth#1\leftmargin#1\setlength{\labelsep}{\itemindent}\topsep0cm\parskip0cm\partopsep0cm}}%
-{\end{list}}
 
-\begin{latexonly}
-\dominitoc
-\mtcindent12pt
-\faketableofcontents
-\end{latexonly}
-
-\newcounter{figures}
-\setcounter{figures}{1}
-\newcounter{examples}
-\setcounter{examples}{3}
-
-%%% TITLE page
 %\begin{latexonly}
-%\include{title}
-%\cleardoublepage
-
-%%% Table of Contents
-%\setcounter{tocdepth}{0}
-%\tableofcontents
-%\cleardoublepage
+%\dominitoc
+%\mtcindent12pt
+%\faketableofcontents
 %\end{latexonly}
 
-%%% INTRODUCTION
-%\include{intro}
-%\cleardoublepage
+%\newcounter{figures}
+%\setcounter{figures}{1}
+%\newcounter{examples}
+%\setcounter{examples}{3}
 
-%%% BDMLP
-%\include{bdmlp}
-%\cleardoublepage
 
-%%% BENCH
-%\include{bench}
-%\cleardoublepage
+%%% BONMIN
+\include{bonmin}
+\cleardoublepage
 
-%%% COIN
-%\include{coin}
-%\cleardoublepage
+%%% CBC
+\include{cbc}
+\cleardoublepage
 
-%%% CONOPT
-%\addcontentsline{toc}{chapter}{\protect\numberline{3}{GAMS/CONOPT}}
-%\include{conopt}
-%\cleardoublepage
+%%% Couenne
+\include{couenne}
+\cleardoublepage
 
-%%% CPLEX
-%\include{cplex}
-%\chapter{GAMS/CPLEX}
-%\pagebreak
-%\addtocounter{page}{+31}
-%\chapterend
-%\cleardoublepage
+%%% IPOPT
+\include{ipopt}
+\cleardoublepage
 
-%%% DECIS
-%\include{decis}
-%\cleardoublepage
+%%% OS
+\include{os}
+\cleardoublepage
 
-%%% DICOPT
-%\include{dicopt}
-%\cleardoublepage
-
-%%% MILES
-%\include{miles}
-%\cleardoublepage
-
-%%% MINOS
-%\include{minos}
-%\cleardoublepage
-
-%%% PATH
-%\include{path}
-%\cleardoublepage
-
-%%% SBB
-%\include{sbb}
-%\cleardoublepage
+%%% Osi
+\include{osi}
+\cleardoublepage
 
 %%% SCIP
 \include{scip}
-%\cleardoublepage
+\cleardoublepage
 
-%%% SNOPT
-%\include{snopt}
-%\cleardoublepage
-
-%%% XA
-%\input{xa}
-%\cleardoublepage
-
-%%% XPRESS
-%\include{xpress}
 
 \end{document}

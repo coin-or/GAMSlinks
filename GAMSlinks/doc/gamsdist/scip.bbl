@@ -1,0 +1,67 @@
+\providecommand{\doilink}[1]{\href{http://dx.doi.org/#1}{doi:\detokenize{#1}}}\providecommand{\urnlink}[1]{\href{http://nbn-resolving.de/urn:#1}{urn:#1}}
+\begin{thebibliography}{1}
+
+\bibitem{Achterberg2007}
+Tobias Achterberg.
+\newblock {\em Constraint Integer Programming}.
+\newblock PhD thesis, Technische Universit\"at Berlin, 2007.
+\newblock \urnlink{nbn:de:0297-zib-11129}.
+
+\bibitem{Ach09}
+Tobias Achterberg.
+\newblock {SCIP: Solving Constraint Integer Programs}.
+\newblock {\em Mathematical Programming Computations}, 1(1):1--41, 2009.
+\newblock \doilink{10.1007/s12532-008-0001-1}.
+
+\bibitem{AchBeKoWo08}
+Tobias Achterberg, Timo Berthold, Thorsten Koch, and Kati Wolter.
+\newblock Constraint integer programming: A new approach to integrate {CP} and
+  {MIP}.
+\newblock In L.~Perron and M.A. Trick, editors, {\em Integration of AI and OR
+  Techniques in Constraint Programming for Combinatorial Optimization Problems,
+  5th International Conference, CPAIOR 2008}, volume 5015 of {\em LNCS}, pages
+  6--20. Springer, 2008.
+\newblock \doilink{10.1007/978-3-540-68155-7_4}.
+
+\bibitem{Berthold2006}
+Timo Berthold.
+\newblock Primal heuristics for mixed integer programs.
+\newblock Diploma thesis, Technische Universit\"at Berlin, 2006.
+\newblock \urnlink{nbn:de:0297-zib-10293}.
+
+\bibitem{BertholdHeinzVigerske2009}
+Timo Berthold, Stefan Heinz, and Stefan Vigerske.
+\newblock Extending a {CIP} framework to solve {MIQCP}s.
+\newblock In Jon Lee and Sven Leyffer, editors, {\em Mixed Integer Nonlinear
+  Programming}, volume 154 of {\em The IMA Volumes in Mathematics and its
+  Applications}, pages 427--444. Springer, 2012.
+\newblock \doilink{10.1007/978-1-4614-1927-3_15}.
+
+\bibitem{Vi12}
+Stefan Vigerske.
+\newblock {\em Decomposition of Multistage Stochastic Programs and a Constraint
+  Integer Programming Approach to Mixed-Integer Nonlinear Programming}.
+\newblock PhD thesis, Humboldt-Universit\"at zu Berlin, 2013.
+\newblock \urnlink{nbn:de:kobv:11-100208240}.
+
+\bibitem{WaBi06}
+Andreas W\"achter and Lorenz~T. Biegler.
+\newblock On the implementation of a primal-dual interior point filter line
+  search algorithm for large-scale nonlinear programming.
+\newblock {\em Mathematical Programming}, 106(1):25--57, 2006.
+\newblock \doilink{10.1007/s10107-004-0559-y},
+  \url{http://projects.coin-or.org/Ipopt}.
+
+\bibitem{Wolter2006}
+Kati Wolter.
+\newblock Implementation of cutting plane separators for mixed integer
+  programs.
+\newblock Diploma thesis, Technische Universit{\"a}t Berlin, 2006.
+
+\bibitem{Wunderling1996}
+Roland Wunderling.
+\newblock {\em Paralleler und objektorientierter {S}implex-{A}lgorithmus}.
+\newblock PhD thesis, Technische Universit{\"a}t Berlin, 1996.
+\newblock \urnlink{nbn:de:0297-zib-5386}, \url{http://soplex.zib.de}.
+
+\end{thebibliography}

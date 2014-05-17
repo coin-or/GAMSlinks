@@ -175,7 +175,7 @@ int GamsIpopt::callSolver()
    ipopt->Options()->GetStringValue("hessian_approximation", hess_approx, "");
    if( hess_approx == "exact" )
    {
-      int do2dir = 1;
+      int do2dir = 0;
       int dohess = 1;
       gmoHessLoad(gmo, 0, &do2dir, &dohess);
       if( !dohess )

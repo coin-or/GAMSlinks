@@ -127,11 +127,9 @@ int GamsScip::readyAPI(
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
-   assert(pal == NULL);
-
    ipoptlicensed = false;
 #ifdef GAMS_BUILD
-   if( !palCreate(&pal, buffer, sizeof(buffer)) )
+   if( pal == NULL && !palCreate(&pal, buffer, sizeof(buffer)) )
       return 1;
 
 #define PALPTR pal

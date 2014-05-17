@@ -1,0 +1,29 @@
+\providecommand{\doilink}[1]{\href{http://dx.doi.org/#1}{doi:\detokenize{#1}}}\providecommand{\urnlink}[1]{\href{http://nbn-resolving.de/urn:#1}{urn:#1}}
+\begin{thebibliography}{1}
+
+\bibitem{FourerMaMartin2009}
+Robert Fourer, Jun Ma, and Kipp Martin.
+\newblock Optimization services: A framework for distributed optimization.
+\newblock {\em Operations Research}, 58(6):1624--1636, 2010.
+\newblock \doilink{ 10.1287/opre.1100.0880},
+  \url{http://www.optimizationservices.org/}.
+
+\bibitem{FourerMaMartin2010}
+Robert Fourer, Jun Ma, and Kipp Martin.
+\newblock {OSiL}: An instance language for optimization.
+\newblock {\em Computational Optimization and Applications}, 45(1):181--203,
+  2010.
+\newblock \doilink{10.1007/s10589-008-9169-6}.
+
+\bibitem{OSManual}
+Horand Gassmann, Jun Ma, Kipp Martin, and Wayne Sheng.
+\newblock {\em Optimization Services 2.1 User's Manual}, March 2010.
+\newblock \url{https://projects.coin-or.org/OS}.
+
+\bibitem{Ma2005}
+Jun Ma.
+\newblock {\em Optimization Services (OS)}.
+\newblock PhD thesis, Industrial Engineering and Management Sciences,
+  Northwestern University, 2005.
+
+\end{thebibliography}

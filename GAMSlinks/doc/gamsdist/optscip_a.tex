@@ -1313,6 +1313,12 @@
 {maximal number of presolving rounds the constraint handler participates in (-1: no limit)}%
 {}
 
+\printoption{constraints/bivariate/scaling}%
+{boolean}%
+{TRUE}%
+{whether a constraint should be scaled w.r.t. the current gradient sup.norm when checking for feasibility}%
+{}
+
 \printoption{constraints/bivariate/timingmask}%
 {$1\leq\textrm{integer}\leq15$}%
 {$1$}%
@@ -2360,7 +2366,7 @@
 
 \printoption{display/lpavgiterations/active}%
 {$0\leq\textrm{integer}\leq2$}%
-{$1$}%
+{$1$ ($0$ under Windows)}%
 {display activation status of display column $<$lpavgiterations$>$ (0: off, 1: auto, 2:on)}%
 {}
 
@@ -2390,7 +2396,7 @@
 
 \printoption{display/maxdepth/active}%
 {$0\leq\textrm{integer}\leq2$}%
-{$1$}%
+{$1$ ($0$ under Windows)}%
 {display activation status of display column $<$maxdepth$>$ (0: off, 1: auto, 2:on)}%
 {}
 
@@ -2402,13 +2408,13 @@
 
 \printoption{display/nexternbranchcands/active}%
 {$0\leq\textrm{integer}\leq2$}%
-{$1$}%
+{$1$ ($2$ for nonlinear instances)}%
 {display activation status of display column $<$nexternbranchcands$>$ (0: off, 1: auto, 2:on)}%
 {}
 
 \printoption{display/nfrac/active}%
 {$0\leq\textrm{integer}\leq2$}%
-{$1$}%
+{$1$ ($2$ if discrete variables)}%
 {display activation status of display column $<$nfrac$>$ (0: off, 1: auto, 2:on)}%
 {}
 
@@ -2492,7 +2498,7 @@
 
 \printoption{display/time/active}%
 {$0\leq\textrm{integer}\leq2$}%
-{$1$}%
+{$1$ ($2$ under Windows)}%
 {display activation status of display column $<$time$>$ (0: off, 1: auto, 2:on)}%
 {}
 
@@ -2510,7 +2516,7 @@
 
 \printoption{display/width}%
 {$0\leq\textrm{integer}$}%
-{$139$}%
+{$139$ ($80$ for Windows without IDE)}%
 {maximal number of characters in a node information line}%
 {}
 
@@ -5051,7 +5057,7 @@
 \printoptioncategory{Limits}
 \printoption{limits/absgap}%
 {$0\leq\textrm{real}$}%
-{$0$}%
+{GAMS optca}%
 {solving stops, if the absolute gap = $|$primalbound - dualbound$|$ is below the given value}%
 {}
 
@@ -5063,7 +5069,7 @@
 
 \printoption{limits/gap}%
 {$0\leq\textrm{real}$}%
-{$0.1$}%
+{GAMS optcr}%
 {solving stops, if the relative gap = $|$primal - dual$|$/MIN($|$dual$|$,$|$primal$|$) is below the given value}%
 {}
 
@@ -5081,13 +5087,13 @@
 
 \printoption{limits/memory}%
 {$0\leq\textrm{real}$}%
-{$\infty$}%
+{GAMS workspace}%
 {maximal memory usage in MB; reported memory usage is lower than real memory usage!}%
 {}
 
 \printoption{limits/nodes}%
 {$-1\leq\textrm{integer}$}%
-{$-1$}%
+{GAMS nodlim, if set, otherwise $-1$}%
 {maximal number of nodes to process (-1: no limit)}%
 {}
 
@@ -5111,7 +5117,7 @@
 
 \printoption{limits/time}%
 {$0\leq\textrm{real}$}%
-{$1000$}%
+{GAMS reslim}%
 {maximal time in seconds to run}%
 {}
 
@@ -5305,7 +5311,7 @@
 
 \printoption{lp/threads}%
 {$0\leq\textrm{integer}\leq64$}%
-{$0$}%
+{GAMS threads option}%
 {number of threads used for solving the LP (0: automatic)}%
 {}
 
@@ -5380,7 +5386,7 @@
 
 \printoption{misc/printreason}%
 {boolean}%
-{TRUE}%
+{FALSE}%
 {should the reason be printed if a given start solution is infeasible}%
 {}
 
@@ -6738,7 +6744,7 @@
 {}
 
 \printoption{separating/gomory/away}%
-{$0\leq\textrm{real}\leq0.5$}%
+{$0.0001\leq\textrm{real}\leq0.5$}%
 {$0.01$}%
 {minimal integrality violation of a basis variable in order to try Gomory cut}%
 {}
@@ -7953,13 +7959,13 @@
 {}
 
 \printoption{separating/zerohalf/maxcutsfound}%
-{$0\leq\textrm{integer}$}%
+{$0\leq\textrm{integer}\leq1000000$}%
 {$100$}%
 {maximal number of {0,1/2}-cuts determined per separation round\\   \#                      (this includes separated but inefficacious cuts)}%
 {}
 
 \printoption{separating/zerohalf/maxcutsfoundroot}%
-{$0\leq\textrm{integer}$}%
+{$0\leq\textrm{integer}\leq1000000$}%
 {$1000$}%
 {maximal number of {0,1/2}-cuts determined per separation round in the root node\\   \#                      (this includes separated but inefficacious cuts)}%
 {}

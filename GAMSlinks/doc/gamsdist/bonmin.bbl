@@ -1,0 +1,100 @@
+\providecommand{\doilink}[1]{\href{http://dx.doi.org/#1}{doi:\detokenize{#1}}}\providecommand{\urnlink}[1]{\href{http://nbn-resolving.de/urn:#1}{urn:#1}}
+\begin{thebibliography}{10}
+
+\bibitem{AbLeLi07}
+Kumar Abhishek, Sven Leyffer, and Jeff~T. Linderoth.
+\newblock {FilMINT}: An outer-approximation-based solver for nonlinear mixed
+  integer programs.
+\newblock {\em INFORMS Journal On Computing}, 22(4):555--567, 2010.
+\newblock \doilink{10.1287/ijoc.1090.0373}.
+
+\bibitem{bonminAmestoyDuffKosterLExcellent2001}
+Patrick~R. Amestoy, Iain~S. Duff, Jacko Koster, and Jean-Yves L'Excellent.
+\newblock A fully asynchronous multifrontal solver using distributed dynamic
+  scheduling.
+\newblock {\em SIAM Journal of Matrix Analysis and Applications}, 23(1):15--24,
+  2001.
+\newblock \doilink{10.1137/S0895479899358194}.
+
+\bibitem{bonminAmestoyGuermoucheLExcellentPralet2006}
+Patrick~R. Amestoy, Abdou Guermouche, Jean-Yves L'Excellent, and Stephane
+  Pralet.
+\newblock Hybrid scheduling for the parallel solution of linear systems.
+\newblock {\em Parallel Computing}, 32(2):136--156, 2006.
+\newblock \doilink{10.1016/j.parco.2005.07.004}.
+
+\bibitem{BoCoLoMa06}
+Pierre Bonami, G\'erard Cornu\'ejols, Andrea Lodi, and Fran\c{c}ois Margot.
+\newblock A feasibility pump for mixed integer nonlinear programs.
+\newblock {\em Mathematical Programming}, 119(2):331--352, 2009.
+\newblock \doilink{10.1007/s10107-008-0212-2}.
+
+\bibitem{BoGo08}
+Pierre Bonami and Jo{\~{a}}o P.~M. Gon{\c{c}}alves.
+\newblock Heuristics for convex mixed integer nonlinear programs.
+\newblock {\em Computational Optimization and Applications}, 51(2):729--747,
+  2012.
+\newblock \doilink{10.1007/s10589-010-9350-6}.
+
+\bibitem{BoKiLi09}
+Pierre Bonami, Mustafa Kilin{\c{c}}, and Jeffrey Linderoth.
+\newblock Algorithms and software for convex mixed integer nonlinear programs.
+\newblock In Jon Lee and Sven Leyffer, editors, {\em Mixed Integer Nonlinear
+  Programming}, volume 154 of {\em The IMA Volumes in Mathematics and its
+  Applications}, pages 1--40. Springer, 2012.
+\newblock \doilink{10.1007/978-1-4614-1927-3_1}.
+
+\bibitem{BonminManual}
+Pierre Bonami and Jon Lee.
+\newblock {\em BONMIN Users' Manual}, 1.5 edition, July 2011.
+\newblock \url{https://projects.coin-or.org/Bonmin}.
+
+\bibitem{BBCCGLLLMSW}
+Pierre Bonami, Andreas W{\"a}chter, Lorenz~T. Biegler, Andrew~R. Conn,
+  G{\'e}rard Cornu{\'e}jols, Ignacio~E. Grossmann, Carl~D. Laird, Jon Lee,
+  Andrea Lodi, Fran\c{c}ois Margot, and Nicolas~W. Sawaya.
+\newblock An algorithmic framework for convex mixed integer nonlinear programs.
+\newblock {\em Discrete Optimization}, 5(2):186--204, 2008.
+\newblock \doilink{10.1016/j.disopt.2006.10.011}.
+
+\bibitem{DuGr86}
+Marco~A. Duran and Ignacio~E. Grossmann.
+\newblock An outer-approximation algorithm for a class of mixed-integer
+  nonlinear programs.
+\newblock {\em Mathematical Programming}, 36(3):307--339, 1986.
+\newblock \doilink{10.1007/BF02592064}.
+
+\bibitem{FlLe94}
+Roger Fletcher and Sven Leyffer.
+\newblock Solving mixed integer nonlinear programs by outer approximation.
+\newblock {\em Mathematical Programming}, 66(1-3):327--349, 1994.
+\newblock \doilink{10.1007/BF01581153}.
+
+\bibitem{GuptaRavindran85}
+Omprakash~K. Gupta and A.~Ravindran.
+\newblock Branch and bound experiments in convex nonlinear integer programming.
+\newblock {\em Management Science}, 31:1533--1546, 1985.
+\newblock \doilink{10.1287/mnsc.31.12.1533}.
+
+\bibitem{QeGr92}
+Ignacio Quesada and Ignacio~E. Grossmann.
+\newblock An {LP/NLP} based branch and bound algorithm for convex {MINLP}
+  optimization problems.
+\newblock {\em Computers \& Chemical Engineering}, 16(10-11):937--947, 1992.
+\newblock \doilink{10.1016/0098-1354(92)80028-8}.
+
+\bibitem{bonminSchGa04}
+Olaf Schenk and Klaus G\"{a}rtner.
+\newblock Solving unsymmetric sparse systems of linear equations with pardiso.
+\newblock {\em Journal of Future Generation Computer Systems}, 20(3):475--487,
+  2004.
+\newblock \doilink{10.1016/j.future.2003.07.011}.
+
+\bibitem{bonminSchGa06}
+Olaf Schenk and Klaus G\"{a}rtner.
+\newblock On fast factorization pivoting methods for symmetric indefinite
+  systems.
+\newblock {\em Electronic Transactions on Numerical Analysis}, 23:158--179,
+  2006.
+
+\end{thebibliography}

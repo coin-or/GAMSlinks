@@ -58,13 +58,11 @@ int GamsBonmin::readyAPI(
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
-   assert(pal == NULL);
-
    ipoptlicensed = false;
 #ifdef GAMS_BUILD
    char buffer[GMS_SSSIZE];
 
-   if( !palCreate(&pal, buffer, sizeof(buffer)) )
+   if( pal == NULL && !palCreate(&pal, buffer, sizeof(buffer)) )
       return 1;
 
 #define PALPTR pal
@@ -296,7 +294,7 @@ int GamsBonmin::callSolver()
    bonmin_setup->options()->GetStringValue("hessian_approximation", parvalue, "");
    if( parvalue == "exact" )
    {
-      int do2dir = 1;
+      int do2dir = 0;
       int dohess = 1;
       gmoHessLoad(gmo, 0, &do2dir, &dohess);
       if( !dohess )
