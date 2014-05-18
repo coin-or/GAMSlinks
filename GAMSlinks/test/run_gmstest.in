@@ -105,7 +105,9 @@ notest('288') = yes;
 notest('289') = yes;
 *skip logmip tests because we do not have this solver
 notest(s)\$(ord(s)>=332 and ord(s)<=337) = yes;
-*skip abel and ship because of couenne (unbounded relaxation)
+*skip cclinpts, qdemo7, abel, and ship because of couenne (unbounded relaxation)
+notest('373') = yes;
+notest('284') = yes;
 notest('64') = yes;
 notest('22') = yes;
 *skip worst.111, mingamma.299, procmean.301, mlbeta.302, mlgamma.303 because some functions in there are not supported by Couenne
