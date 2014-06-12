@@ -1537,6 +1537,7 @@ void printSCIPOptions()
    categname["constraints"] = "Constraints";
    categname["display"] = "Output";
    categname["heuristics"] = "Heuristics";
+   categname["history"] = "History";
    categname["limits"] = "Limits";
    categname["lp"] = "LP";
    categname["memory"] = "Memory";
@@ -1603,7 +1604,8 @@ void printSCIPOptions()
           category == "pricing" ||
           category == "nlp" ||
           category == "nlpi" ||
-          category == "vbc"
+          category == "vbc" ||
+          category == "write"
         )
          continue;
 
@@ -1616,7 +1618,10 @@ void printSCIPOptions()
    for( std::map<std::string, std::list<SCIP_PARAM*> >::iterator it_categ(paramsort.begin()); it_categ != paramsort.end(); ++it_categ )
    {
       if( !categname.count(it_categ->first) )
-         std::cerr << "Do not have name for SCIP option category " << it_categ->first << std::endl;
+      {
+         std::cerr << "Error: Do not have name for SCIP option category " << it_categ->first << std::endl;
+         return;
+      }
       printOptionCategoryStart(optfile, categname[it_categ->first]);
 
       it_categ->second.sort(ScipParamCompare);
