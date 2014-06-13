@@ -209,7 +209,7 @@ int GamsCbc::readyAPI(
    palFree(&pal);
 #endif
 
-   gevLogStatPChar(gev, "\nCOIN-OR Branch and Cut (CBC Library "CBC_VERSION")\nwritten by J. Forrest\n");
+   gevLogStatPChar(gev, "\nCOIN-OR Branch and Cut (CBC Library " CBC_VERSION ")\nwritten by J. Forrest\n");
 
    if( msghandler == NULL )
    {
@@ -712,7 +712,7 @@ bool GamsCbc::setupParameters()
 #define CHECKOPT2_INT(NAMEGAMS, NAMECBC) \
    if( options.isDefined(NAMEGAMS) ) \
    { \
-      par_list.push_back("-"NAMECBC); \
+      par_list.push_back("-" NAMECBC); \
       sprintf(buffer, "%d", options.getInteger(NAMEGAMS)); \
       par_list.push_back(buffer); \
    }
@@ -722,7 +722,7 @@ bool GamsCbc::setupParameters()
 #define CHECKOPT2_DOUBLE(NAMEGAMS, NAMECBC) \
    if( options.isDefined(NAMEGAMS) ) \
    { \
-      par_list.push_back("-"NAMECBC); \
+      par_list.push_back("-" NAMECBC); \
       sprintf(buffer, "%g", options.getDouble(NAMEGAMS)); \
       par_list.push_back(buffer); \
    }
@@ -732,7 +732,7 @@ bool GamsCbc::setupParameters()
 #define CHECKOPT2_BOOL(NAMEGAMS, NAMECBC) \
    if( options.isDefined(NAMEGAMS) ) \
    { \
-      par_list.push_back("-"NAMECBC); \
+      par_list.push_back("-" NAMECBC); \
       par_list.push_back(options.getBool(NAMEGAMS) ? "on" : "off"); \
    }
 
@@ -744,18 +744,18 @@ bool GamsCbc::setupParameters()
       char* value = options.getString(NAMEGAMS, buffer); \
       if( value == NULL ) \
       { \
-         gevLogStatPChar(gev, "Cannot read value for option '"NAMEGAMS"'. Ignoring this option.\n"); \
+         gevLogStatPChar(gev, "Cannot read value for option '" NAMEGAMS "'. Ignoring this option.\n"); \
       } \
       else \
       { \
          std::map<std::string, std::string>::iterator it(stringenummap.find(value)); \
          if( it == stringenummap.end() ) \
          { \
-            gevLogStatPChar(gev, "Unsupported value for option '"NAMEGAMS"'. Ignoring this option.\n"); \
+            gevLogStatPChar(gev, "Unsupported value for option '" NAMEGAMS "'. Ignoring this option.\n"); \
          } \
          else \
          { \
-            par_list.push_back("-"NAMECBC); \
+            par_list.push_back("-" NAMECBC); \
             par_list.push_back(it->second.length() > 0 ? it->second : it->first); \
          } \
       } \

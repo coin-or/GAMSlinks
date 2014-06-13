@@ -187,42 +187,42 @@ int GamsOsi::readyAPI(
    {
 #ifdef COIN_HAS_OSICPX
       case CPLEX:
-         sprintf(buffer, "OsiCplex (Osi library "OSI_VERSION", CPLEX library %.2f)\nOsi link written by T. Achterberg. Osi is part of COIN-OR.\n", CPX_VERSION/100.);
+         sprintf(buffer, "OsiCplex (Osi library " OSI_VERSION ", CPLEX library %.2f)\nOsi link written by T. Achterberg. Osi is part of COIN-OR.\n", CPX_VERSION/100.);
          break;
 #endif
 
 #ifdef COIN_HAS_OSIGLPK
       case GLPK:
-         sprintf(buffer, "OsiGlpk (Osi library "OSI_VERSION", GLPK library %d.%d)\nOsi link written by Vivian De Smedt and Braden Hunsaker. Osi is part of COIN-OR.\n", GLP_MAJOR_VERSION, GLP_MINOR_VERSION);
+         sprintf(buffer, "OsiGlpk (Osi library " OSI_VERSION ", GLPK library %d.%d)\nOsi link written by Vivian De Smedt and Braden Hunsaker. Osi is part of COIN-OR.\n", GLP_MAJOR_VERSION, GLP_MINOR_VERSION);
          break;
 #endif
 
 #ifdef COIN_HAS_OSIGRB
       case GUROBI:
-         sprintf(buffer, "OsiGurobi (Osi library "OSI_VERSION", GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske. Osi is part of COIN-OR.\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
+         sprintf(buffer, "OsiGurobi (Osi library " OSI_VERSION ", GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske. Osi is part of COIN-OR.\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
          break;
 #endif
 
 #ifdef COIN_HAS_OSIMSK
       case MOSEK:
-         sprintf(buffer, "OsiMosek (Osi library "OSI_VERSION", MOSEK library %d.%d)\nwritten by Bo Jensen. Osi is part of COIN-OR.\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
+         sprintf(buffer, "OsiMosek (Osi library " OSI_VERSION ", MOSEK library %d.%d)\nwritten by Bo Jensen. Osi is part of COIN-OR.\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
          break;
 #endif
 
 #ifdef COIN_HAS_OSISPX
       case SOPLEX:
-         sprintf(buffer, "OsiSoplex (Osi library "OSI_VERSION", SoPlex library %d.%d.%d)\nOsi link written by T. Achterberg, A. Gleixner, and W. Huang. Osi is part of COIN-OR.\n", SOPLEX_VERSION/100, (SOPLEX_VERSION%100)/10, SOPLEX_VERSION%10);
+         sprintf(buffer, "OsiSoplex (Osi library " OSI_VERSION ", SoPlex library %d.%d.%d)\nOsi link written by T. Achterberg, A. Gleixner, and W. Huang. Osi is part of COIN-OR.\n", SOPLEX_VERSION/100, (SOPLEX_VERSION%100)/10, SOPLEX_VERSION%10);
          break;
 #endif
 
 #ifdef COIN_HAS_OSIXPR
       case XPRESS:
-         sprintf(buffer, "OsiXpress (Osi library "OSI_VERSION", FICO Xpress-Optimizer library %d)\nOsi is part of COIN-OR.\n", XPVERSION);
+         sprintf(buffer, "OsiXpress (Osi library " OSI_VERSION ", FICO Xpress-Optimizer library %d)\nOsi is part of COIN-OR.\n", XPVERSION);
          break;
 #endif
 
       default:
-         sprintf(buffer, "Osi library "OSI_VERSION".\n");
+         sprintf(buffer, "Osi library " OSI_VERSION ".\n");
    }
    gevLogStat(gev, buffer);
 

@@ -87,7 +87,7 @@ int GamsBonmin::readyAPI(
    }
 #endif
 
-   gevLogStatPChar(gev, "\nCOIN-OR Bonmin (Bonmin Library "BONMIN_VERSION")\n");
+   gevLogStatPChar(gev, "\nCOIN-OR Bonmin (Bonmin Library " BONMIN_VERSION ")\n");
    if( ipoptlicensed )
       gevLogStatPChar(gev, "written by P. Bonami, with commercially supported IpOpt.\n");
    else

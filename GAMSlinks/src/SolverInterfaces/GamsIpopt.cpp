@@ -74,7 +74,7 @@ int GamsIpopt::readyAPI(
    }
 #endif
 
-   gevLogStatPChar(gev, "\nCOIN-OR Interior Point Optimizer (Ipopt Library "IPOPT_VERSION")\n");
+   gevLogStatPChar(gev, "\nCOIN-OR Interior Point Optimizer (Ipopt Library " IPOPT_VERSION ")\n");
    if( ipoptlicensed )
       gevLogStatPChar(gev, "written by A. Waechter, commercially supported by GAMS Development Corp.\n");
    else

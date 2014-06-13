@@ -63,7 +63,7 @@ int GamsOS::readyAPI(
    palFree(&pal);
 #endif
 
-   gevLogStatPChar(gev, "\nCOIN-OR Optimization Services (OS Library "OS_VERSION")\nwritten by H. Gassmann, J. Ma, and K. Martin\n\n");
+   gevLogStatPChar(gev, "\nCOIN-OR Optimization Services (OS Library " OS_VERSION ")\nwritten by H. Gassmann, J. Ma, and K. Martin\n\n");
 
    return 0;
 }

@@ -107,7 +107,7 @@ int GamsCouenne::readyAPI(
    initLicensing(gmo, pal);
    ipoptlicensed = HSLInit(gmo, pal);
 
-   gevLogStatPChar(gev, "\nCOIN-OR Couenne (Couenne Library "COUENNE_VERSION")\nwritten by P. Belotti\n\n");
+   gevLogStatPChar(gev, "\nCOIN-OR Couenne (Couenne Library " COUENNE_VERSION ")\nwritten by P. Belotti\n\n");
 
    delete couenne_setup;
    couenne_setup = new CouenneSetup();
