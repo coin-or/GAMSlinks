@@ -1698,8 +1698,8 @@ void printSCIPOptions()
             defaultval.realval = 0.0;
          else if( strcmp(SCIPparamGetName(param), "lp/solver") == 0 )
          {
-            defaultval.stringval = "cplex, if licensed, otherwise soplex";
-            descr = "LP solver to use (clp, cplex, soplex)";
+            defaultval.stringval = "cplex, if licensed, otherwise soplex2";
+            descr = "LP solver to use (clp, cplex, soplex, soplex2)";
          }
 
          if( !hadadvanced && SCIPparamIsAdvanced(param) )
