@@ -478,6 +478,7 @@ ac_subdirs_all="$ac_subdirs_all ThirdParty/Metis"
 ac_subdirs_all="$ac_subdirs_all ThirdParty/HSL"
 ac_subdirs_all="$ac_subdirs_all ThirdParty/Mumps"
 ac_subdirs_all="$ac_subdirs_all ThirdParty/SoPlex"
+ac_subdirs_all="$ac_subdirs_all ThirdParty/FilterSQP"
 ac_subdirs_all="$ac_subdirs_all CoinUtils"
 ac_subdirs_all="$ac_subdirs_all Osi"
 ac_subdirs_all="$ac_subdirs_all Clp"
@@ -1162,6 +1163,12 @@ Optional Packages:
   --with-soplex-lib linker flags for using project SoPlex
   --with-soplex-incdir directory with header files for using project SoPlex
   --with-soplex-datadir directory with data files for using project SoPlex
+  --with-filtersqp-lib linker flags for using project FilterSQP
+  --with-filtersqp-incdir directory with header files for using project
+                          FilterSQP
+  --with-filtersqp-datadir
+                          directory with data files for using project
+                          FilterSQP
   --with-coinutils-lib linker flags for using project CoinUtils
   --with-coinutils-incdir directory with header files for using project
                           CoinUtils
@@ -4192,7 +4199,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:4195:" \
+echo "$as_me:4202:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6417,7 +6424,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6420 "configure"' > conftest.$ac_ext
+  echo '#line 6427 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8381,11 +8388,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8384: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8391: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8388: \$? = $ac_status" >&5
+   echo "$as_me:8395: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8649,11 +8656,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8652: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8659: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8656: \$? = $ac_status" >&5
+   echo "$as_me:8663: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8753,11 +8760,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8756: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8763: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8760: \$? = $ac_status" >&5
+   echo "$as_me:8767: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11098,7 +11105,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11101 "configure"
+#line 11108 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11198,7 +11205,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11201 "configure"
+#line 11208 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13542,11 +13549,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13545: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13552: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13549: \$? = $ac_status" >&5
+   echo "$as_me:13556: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -13646,11 +13653,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13649: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13656: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13653: \$? = $ac_status" >&5
+   echo "$as_me:13660: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15216,11 +15223,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15219: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15226: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15223: \$? = $ac_status" >&5
+   echo "$as_me:15230: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15320,11 +15327,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15323: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15330: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15327: \$? = $ac_status" >&5
+   echo "$as_me:15334: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17527,11 +17534,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17530: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17537: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17534: \$? = $ac_status" >&5
+   echo "$as_me:17541: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17795,11 +17802,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17798: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17805: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17802: \$? = $ac_status" >&5
+   echo "$as_me:17809: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17899,11 +17906,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17902: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17909: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:17906: \$? = $ac_status" >&5
+   echo "$as_me:17913: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -21735,6 +21742,130 @@ if test "$coin_has_soplex" = yes ; then
 
 
 subdirs="$subdirs ThirdParty/SoPlex"
+
+  fi
+fi
+
+
+echo "$as_me:$LINENO: checking whether source of project FilterSQP is available and should be compiled" >&5
+echo $ECHO_N "checking whether source of project FilterSQP is available and should be compiled... $ECHO_C" >&6
+
+coin_has_filtersqp=notGiven
+coin_reason=
+
+# check if user wants to skip project in any case
+
+if test x"$COIN_SKIP_PROJECTS" != x; then
+  for dir in $COIN_SKIP_PROJECTS; do
+    if test $dir = "FilterSQP"; then
+      coin_has_filtersqp="no"
+      coin_reason="FilterSQP has been specified in COIN_SKIP_PROJECTS"
+    fi
+
+    if test $dir = "ThirdParty/FilterSQP"; then
+      coin_has_filtersqp="no"
+      coin_reason="ThirdParty/FilterSQP has been specified in COIN_SKIP_PROJECTS"
+    fi
+  done
+fi
+
+if test "$coin_has_filtersqp" != no; then
+
+# Check whether --with-m4_tolower(FilterSQP) or --without-m4_tolower(FilterSQP) was given.
+if test "${with_filtersqp+set}" = set; then
+  withval="$with_filtersqp"
+  if test "$withval" = no ; then
+       coin_has_filtersqp="no"
+       coin_reason="--without-filtersqp has been specified"
+     fi
+
+fi;
+fi
+
+if test "$coin_has_filtersqp" != no; then
+
+# Check whether --with-m4_tolower(FilterSQP)-lib or --without-m4_tolower(FilterSQP)-lib was given.
+if test "${with_filtersqp_lib+set}" = set; then
+  withval="$with_filtersqp_lib"
+  if test "$withval" = no ; then
+       coin_has_filtersqp="no"
+       coin_reason="--without-filtersqp-lib has been specified"
+     else
+       coin_has_filtersqp="no"
+       coin_reason="--with-filtersqp-lib has been specified"
+     fi
+fi;
+fi
+
+if test "$coin_has_filtersqp" != no; then
+
+# Check whether --with-m4_tolower(FilterSQP)-incdir or --without-m4_tolower(FilterSQP)-incdir was given.
+if test "${with_filtersqp_incdir+set}" = set; then
+  withval="$with_filtersqp_incdir"
+  if test "$withval" = no ; then
+       coin_has_filtersqp="no"
+       coin_reason="--without-filtersqp-incdir has been specified"
+     else
+       coin_has_filtersqp="no"
+       coin_reason="--with-filtersqp-incdir has been specified"
+     fi
+fi;
+fi
+
+if test "$coin_has_filtersqp" != no; then
+
+# Check whether --with-m4_tolower(FilterSQP)-datadir or --without-m4_tolower(FilterSQP)-datadir was given.
+if test "${with_filtersqp_datadir+set}" = set; then
+  withval="$with_filtersqp_datadir"
+  if test "$withval" = no ; then
+       coin_has_filtersqp="no"
+       coin_reason="--without-filtersqp-datadir has been specified"
+     else
+       coin_has_filtersqp="no"
+       coin_reason="--with-filtersqp-datadir has been specified"
+     fi
+fi;
+fi
+
+
+
+
+
+# check if project is available in present directory
+if test "$coin_has_filtersqp" = notGiven; then
+  coin_has_filtersqp=no
+  if test -d $srcdir/ThirdParty/FilterSQP; then
+    coin_reason="source in ThirdParty/FilterSQP"
+    # If a third argument is given, then we have to check if one one the files given in that third argument is present.
+    # If none of the files in the third argument is available, then we consider the project directory as non-existing.
+    # However, if no third argument is given, then this means that there should be no check, and existence of the directory is sufficient.
+    for i in $srcdir/ThirdParty/FilterSQP/source/src/filter.f; do
+         if test -r $i; then
+           coin_has_filtersqp="yes"
+         else
+           coin_has_filtersqp="no"
+           coin_reason="source file $i not available"
+           break
+         fi
+       done
+
+  fi
+fi
+
+if test -z "$coin_reason" ; then
+  echo "$as_me:$LINENO: result: $coin_has_filtersqp" >&5
+echo "${ECHO_T}$coin_has_filtersqp" >&6
+else
+  echo "$as_me:$LINENO: result: $coin_has_filtersqp, $coin_reason" >&5
+echo "${ECHO_T}$coin_has_filtersqp, $coin_reason" >&6
+fi
+
+if test "$coin_has_filtersqp" = yes ; then
+  if test -r $srcdir/ThirdParty/FilterSQP/configure; then
+    coin_subdirs="$coin_subdirs ThirdParty/FilterSQP"
+
+
+subdirs="$subdirs ThirdParty/FilterSQP"
 
   fi
 fi
