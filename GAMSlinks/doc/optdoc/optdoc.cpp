@@ -69,6 +69,7 @@ private:
       std::string        name;
       std::string        shortdescr;
       std::string        longdescr;
+      std::string        defaultdescr;
       OPTTYPE            type;
       OPTVAL             defaultval;
       OPTVAL             minval;
@@ -80,6 +81,7 @@ private:
          const std::string& name_,
          const std::string& shortdescr_,
          const std::string& longdescr_,
+         const std::string& defaultdescr_,
          OPTTYPE            type_,
          OPTVAL             defaultval_,
          OPTVAL             minval_,
@@ -90,6 +92,7 @@ private:
         name(name_),
         shortdescr(shortdescr_),
         longdescr(longdescr_),
+        defaultdescr(defaultdescr_),
         type(type_),
         defaultval(defaultval_),
         minval(minval_),
@@ -150,7 +153,8 @@ public:
       OPTVAL             defaultval,
       OPTVAL             minval,
       OPTVAL             maxval,
-      const ENUMVAL&     enumval
+      const ENUMVAL&     enumval,
+      const std::string& defaultdescr = std::string()
    )
    {
       /* ignore options with number in beginning, because the GAMS options object cannot handle them so far */
@@ -160,7 +164,7 @@ public:
 //         return;
 //      }
 
-      data.push_back(Data(curgroup, name, shortdescr, longdescr, type, defaultval, minval, maxval, enumval));
+      data.push_back(Data(curgroup, name, shortdescr, longdescr, defaultdescr, type, defaultval, minval, maxval, enumval));
 
       /* replace all double quotes by single quotes */
       std::replace(data.back().shortdescr.begin(), data.back().shortdescr.end(), '"', '\'');
@@ -332,9 +336,19 @@ public:
       }
       f << "/;" << std::endl;
 
+      f << "$onempty" << std::endl;
 
-      f << "$onempty" << std::endl
-        << "set os(o,*) synonyms  / /;" << std::endl
+      f << "set odefault(o) /" << std::endl;
+      for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
+      {
+         if( d->defaultdescr.length() == 0 )
+            continue;
+
+         f << "  '" << d->name << "' \"" << d->defaultdescr << '"' << std::endl;
+      }
+      f << "/;" << std::endl;
+
+      f << "set os(o,*) synonyms  / /;" << std::endl
         << "set im immediates recognized  / EolFlag , Message /;" << std::endl   /* ???? */
         << "set strlist(o)        / /;" << std::endl
         << "set immediate(o,im)   / /;" << std::endl
@@ -345,7 +359,6 @@ public:
         << "set deprecated(*,*)   / /;" << std::endl
         << "set ooverwrite(o,f)   / /;" << std::endl
         << "set orange(o)         / /;" << std::endl
-        << "set odefault(o)       / /;" << std::endl
         << "set oedepr(o,e)       / /;" << std::endl  /* deprecated enum options */
         << "set oep(o)            / /;" << std::endl  /* enum options for documentation only */
         << "set olink(o)          / /;" << std::endl
@@ -520,7 +533,8 @@ void printOption(
    OPTVAL&               max,
    bool                  max_strict,
    const ENUMVAL&        enumvals = ENUMVAL(),
-   bool                  isSCIP = false
+   bool                  isSCIP = false,
+   std::string           defaultdescr = std::string()
 )
 {
    //std::clog << "print SCIP option " << name << "...";
@@ -565,7 +579,9 @@ void printOption(
          //				out << "\\{" << min.boolval << ", " << max.boolval << "\\} ";
          out << "boolean";
          out << "}%" << std::endl;
-         if( isSCIP )
+         if( defaultdescr.length() > 0 )
+            out << "{" << defaultdescr << "}%" << std::endl;
+         else if( isSCIP )
             out << "{" << (def.boolval ? "TRUE" : "FALSE") << "}%" << std::endl;
          else
             out << "{" << def.boolval << "}%" << std::endl;
@@ -581,7 +597,10 @@ void printOption(
          if( max.intval < INT_MAX )
             out << "\\leq" << makeValidLatexNumber(max.intval);
          out << "$}%" << std::endl;
-         out << "{$" << makeValidLatexNumber(def.intval) << "$}%" << std::endl;
+         if( defaultdescr.length() > 0 )
+            out << "{" << defaultdescr << "}%" << std::endl;
+         else
+            out << "{$" << makeValidLatexNumber(def.intval) << "$}%" << std::endl;
          break;
       }
 
@@ -594,21 +613,30 @@ void printOption(
          if( max.realval < DBL_MAX )
             out << (max_strict ? "<" : "\\leq") << makeValidLatexNumber(max.realval);
          out << "$}%" << std::endl;
-         out << "{$" << makeValidLatexNumber(def.realval) << "$}%" << std::endl;
+         if( defaultdescr.length() > 0 )
+            out << "{" << defaultdescr << "}%" << std::endl;
+         else
+            out << "{$" << makeValidLatexNumber(def.realval) << "$}%" << std::endl;
          break;
       }
 
       case OPTTYPE_CHAR:
       {
          out << "{character}%" << std::endl;
-         out << "{" << def.charval << "}%" << std::endl;
+         if( defaultdescr.length() > 0 )
+            out << "{" << defaultdescr << "}%" << std::endl;
+         else
+            out << "{" << def.charval << "}%" << std::endl;
          break;
       }
 
       case OPTTYPE_STRING:
       {
          out << "{string}%" << std::endl;
-         out << "{" << makeValidLatexString(def.stringval) << "}%" << std::endl;
+         if( defaultdescr.length() > 0 )
+            out << "{" << defaultdescr << "}%" << std::endl;
+         else
+            out << "{" << makeValidLatexString(def.stringval) << "}%" << std::endl;
          break;
       }
 
@@ -627,7 +655,10 @@ void printOption(
                have_enum_docu = true;
          }
          out << "}%" << std::endl;
-         out << "{" << makeValidLatexString(def.stringval) << "}%" << std::endl;
+         if( defaultdescr.length() > 0 )
+            out << "{" << defaultdescr << "}%" << std::endl;
+         else
+            out << "{" << makeValidLatexString(def.stringval) << "}%" << std::endl;
          break;
       }
    }
@@ -1178,7 +1209,7 @@ void printBonminOptions()
          else if( (*it_opt)->Name() == "time_limit" )
             defaultval.realval = 1000;
          else if( it_categ->first == " MILP cutting planes in hybrid algorithm" && (*it_opt)->Name() != "2mir_cuts" )
-            longdescr = "See option \\texttt{2mir_cuts} for a detailed description.";
+            longdescr = "See option `2mir_cuts` for a detailed description.";
          else if( (*it_opt)->Name() == "milp_solver" )
             longdescr = "To use Cplex, a valid license is required.";
          else if( (*it_opt)->Name() == "resolve_on_small_infeasibility" )
@@ -1440,9 +1471,9 @@ void printCouenneOptions()
          longdescr = (*it_opt)->LongDescription();
          // Couenne options
          if( longdescr.find("cuts are generated every k nodes") != std::string::npos && (*it_opt)->Name() != "2mir_cuts" )
-            longdescr = "See option \\texttt{2mir_cuts} for the meaning of k.";
+            longdescr = "See option `2mir_cuts` for the meaning of k.";
          else if( (*it_opt)->Name().find("branch_pt_select_") == 0 )
-            longdescr = longdescr + "Default is to use the value of \\texttt{branch_pt_select} (value \\texttt{common}).";
+            longdescr = longdescr + "Default is to use the value of `branch_pt_select` (value `common`).";
          else if( (*it_opt)->Name() == "feas_pump_usescip" )
             longdescr = "Note, that SCIP is only available for GAMS users with an academic GAMS license.";
          // Bonmin options
@@ -1453,7 +1484,7 @@ void printCouenneOptions()
          else if( (*it_opt)->Name() == "problem_print_level" )
             defaultval.intval = Ipopt::J_STRONGWARNING;
          else if( it_categ->first == "Bonmin MILP cutting planes in hybrid algorithm" && (*it_opt)->Name() != "2mir_cuts" )
-            longdescr = "See option \\texttt{2mir_cuts} for a detailed description.";
+            longdescr = "See option `2mir_cuts` for a detailed description.";
          else if( (*it_opt)->Name() == "milp_solver" )
             longdescr = "To use Cplex, a valid license is required.";
          else if( (*it_opt)->Name() == "resolve_on_small_infeasibility" )
@@ -1563,6 +1594,7 @@ void printSCIPOptions()
    std::string tmpstr;
    std::string descr;
    std::string longdescr;
+   std::string defaultdescr;
    std::string category;
 
    std::ofstream optfile("optscip_a.tex");
@@ -1689,18 +1721,48 @@ void printSCIPOptions()
 
          }
          descr = SCIPparamGetDesc(param);
+         defaultdescr = std::string();
 
          if( strcmp(SCIPparamGetName(param), "limits/time") == 0 )
+         {
             defaultval.realval = 1000.0;
+            defaultdescr = "GAMS reslim";
+         }
          else if( strcmp(SCIPparamGetName(param), "limits/gap") == 0 )
+         {
             defaultval.realval = 0.1;
+            defaultdescr = "GAMS optcr";
+         }
          else if( strcmp(SCIPparamGetName(param), "limits/absgap") == 0 )
+         {
             defaultval.realval = 0.0;
+            defaultdescr = "GAMS optca";
+         }
+         else if( strcmp(SCIPparamGetName(param), "limits/memory") == 0 )
+            defaultdescr = "GAMS workspace";
+         else if( strcmp(SCIPparamGetName(param), "limits/nodes") == 0 )
+            defaultdescr = "GAMS nodlim, if set, otherwise -1";
          else if( strcmp(SCIPparamGetName(param), "lp/solver") == 0 )
          {
-            defaultval.stringval = "cplex, if licensed, otherwise soplex2";
+            defaultdescr = "cplex, if licensed, otherwise soplex2";
             descr = "LP solver to use (clp, cplex, soplex, soplex2)";
          }
+         else if( strcmp(SCIPparamGetName(param), "lp/threads") == 0 )
+            defaultdescr = "GAMS threads";
+         else if( strcmp(SCIPparamGetName(param), "misc/printreason") == 0 )
+            defaultval.boolval = false;
+         else if( strcmp(SCIPparamGetName(param), "display/lpavgiterations/active") == 0 )
+            defaultdescr = "1 (0 for Windows without IDE)";
+         else if( strcmp(SCIPparamGetName(param), "display/maxdepth/active") == 0 )
+            defaultdescr = "1 (0 for Windows without IDE)";
+         else if( strcmp(SCIPparamGetName(param), "display/nexternbranchcands/active") == 0 )
+            defaultdescr = "1 (2 for nonlinear instances)";
+         else if( strcmp(SCIPparamGetName(param), "display/nfrac/active") == 0 )
+            defaultdescr = "1 (2 if discrete variables)";
+         else if( strcmp(SCIPparamGetName(param), "display/time/active") == 0 )
+            defaultdescr = "1 (2 for Windows without IDE)";
+         else if( strcmp(SCIPparamGetName(param), "display/width") == 0 )
+            defaultdescr = "139 (80 for Windows without IDE)";
 
          if( !hadadvanced && SCIPparamIsAdvanced(param) )
          {
@@ -1708,7 +1770,7 @@ void printSCIPOptions()
             hadadvanced = true;
          }
          printOption(optfile, SCIPparamGetName(param), descr, "",
-            opttype, defaultval, minval, false, maxval, false, enumval, true);
+            opttype, defaultval, minval, false, maxval, false, enumval, true, defaultdescr);
 
          longdescr = "";
          std::string::size_type nlpos = descr.find("\n");
@@ -1734,7 +1796,7 @@ void printSCIPOptions()
          gmsopt.setGroup(category);
 
          gmsopt.collect(SCIPparamGetName(param), descr, longdescr,
-            opttype, defaultval, minval, maxval, enumval);
+            opttype, defaultval, minval, maxval, enumval, defaultdescr);
       }
    }
 
