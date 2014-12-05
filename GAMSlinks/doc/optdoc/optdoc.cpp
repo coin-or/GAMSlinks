@@ -116,6 +116,28 @@ private:
       return s;
    }
 
+   void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+       if(from.empty())
+           return;
+       size_t start_pos = 0;
+       while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+           str.replace(start_pos, from.length(), to);
+           start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+       }
+   }
+   
+   std::string makeValidMarkdownString(const std::string& s)
+   {
+      std::string r(s);
+      replaceAll(r, "<=", "&le;");
+      replaceAll(r, ">=", "&ge;");
+      replaceAll(r, "<", "&lt;");
+      replaceAll(r, ">", "&gt;");
+      replaceAll(r, "|", "\\|");
+      replaceAll(r, "$", "\\f$");
+      return r;
+   }
+
 public:
    GamsOptions(
       const std::string& solver_
@@ -217,9 +239,8 @@ public:
          }
       }
    }
-
-
-   void write()
+   
+   void write(bool shortdoc = false)
    {
       std::string filename;
 
@@ -231,6 +252,8 @@ public:
          f << "$setglobal STRINGQUOTE '\"'" << std::endl;
       else
          f << "$setglobal STRINGQUOTE \"" << stringquote << "\"" << std::endl;
+      if( shortdoc )
+         f << "$setglobal SHORTDOCONLY" << std::endl;
       f << "$onempty" << std::endl;
 
       f << "set e / 1*100 " << std::endl;  // the 1*100 is necessary to get the long description into the html file
@@ -257,7 +280,7 @@ public:
 
       f << "set o Solver and Link Options with one-line description /" << std::endl;
       for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
-         f << "  '" << d->name << "'  \"" << d->shortdescr << '"' << std::endl;
+         f << "  '" << d->name << "'  \"" << makeValidMarkdownString(d->shortdescr) << '"' << std::endl;
       f << "/;" << std::endl;
 
       f << "$onembedded" << std::endl;
@@ -318,7 +341,7 @@ public:
 
             case OPTTYPE_STRING:
             case OPTTYPE_ENUM:
-               f << "S.(def '" << d->defaultval.stringval << "')";
+               f << "S.(def '" << makeValidMarkdownString(d->defaultval.stringval) << "')";
                break;
          }
          f << std::endl;
@@ -332,7 +355,7 @@ public:
             continue;
 
          for( std::vector<std::pair<std::string, std::string> >::iterator e(d->enumval.begin()); e != d->enumval.end(); ++e )
-            f << "  '" << d->name << "'.'" << e->first << "'  \"" << e->second << '"' << std::endl;
+            f << "  '" << d->name << "'.'" << e->first << "'  \"" << makeValidMarkdownString(e->second) << '"' << std::endl;
       }
       f << "/;" << std::endl;
 
@@ -344,7 +367,7 @@ public:
          if( d->defaultdescr.length() == 0 )
             continue;
 
-         f << "  '" << d->name << "' \"" << d->defaultdescr << '"' << std::endl;
+         f << "  '" << d->name << "' \"" << makeValidMarkdownString(d->defaultdescr) << '"' << std::endl;
       }
       f << "/;" << std::endl;
 
@@ -381,7 +404,7 @@ public:
       for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
       {
          f << d->name << std::endl;
-         f << d->longdescr << std::endl;
+         f << makeValidMarkdownString(d->longdescr) << std::endl;
          f << std::endl << std::endl;
       }
 
@@ -1790,7 +1813,7 @@ void printSCIPOptions()
    }
 
    optfile.close();
-   gmsopt.write();
+   gmsopt.write(true);
 
    delete gamsscip;
 }
