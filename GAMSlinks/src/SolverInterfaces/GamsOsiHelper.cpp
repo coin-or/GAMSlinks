@@ -158,6 +158,10 @@ bool gamsOsiLoadProblem(
       delete[] discrind;
    }
 
+   char inputname[GMS_SSSIZE];
+   gmoNameInput(gmo, inputname);
+   solver.setStrParam(OsiProbName, inputname);
+
    // setup column/row/obj names, if available
    if( setupnames && gmoDict(gmo) != NULL )
    {
@@ -419,14 +423,44 @@ void gamsOsiWriteProblem(
       gevLogPChar(gev, buffer);
    }
 
-   gmoNameOutput(gmo, buffer);
+   gmoNameInput(gmo, buffer);
 
    if( formatflags & 0x1 )
    {
       gevLogPChar(gev, "Writing MPS file ");
       gevLogPChar(gev, buffer);
       gevLogPChar(gev, ".mps\n");
+
+      assert(gmoN(gmo) <= solver.getNumCols());
+      assert(gmoM(gmo) <= solver.getNumRows());
+
+      int nameDiscipline;
+      if( !solver.getIntParam(OsiNameDiscipline, nameDiscipline) )
+         nameDiscipline = 0;
+      if( nameDiscipline == 2 )
+      {
+         char** colnames = new char*[gmoN(gmo)];
+         char** rownames = new char*[gmoM(gmo)+1];
+         for( int i = 0; i < gmoN(gmo); ++i )
+            colnames[i] = strdup(solver.getColName(i).c_str());
+         for( int i = 0; i < gmoM(gmo); ++i )
+            rownames[i] = strdup(solver.getRowName(i).c_str());
+         rownames[gmoM(gmo)] = strdup(solver.getObjName().c_str());
+
+         strcat(buffer, ".mps");
+         solver.writeMpsNative(buffer, const_cast<const char**>(rownames), const_cast<const char**>(colnames), 0, 2, 1.0);
+
+         for( int i = 0; i < gmoN(gmo); ++i )
+            free(colnames[i]);
+         for( int i = 0; i < gmoM(gmo)+1; ++i )
+            free(rownames[i]);
+         delete[] colnames;
+         delete[] rownames;
+      }
+      else
+      {
       solver.writeMps(buffer, "mps", 1.0);
+      }
    }
 
    if( formatflags & 0x2 )

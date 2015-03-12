@@ -277,9 +277,20 @@ int GamsOsi::readyAPI(
             /* Gurobi license setup */
             if( gevgurobilice(gev, pal, (void**)&grbenv, NULL, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType) )
                gevLogStat(gev, "Trying to use Gurobi standalone license.\n");
+
+            // disable Gurobi output here, so we don't get messages from model setup to stdout
+            if( grbenv != NULL )
+               GRBsetintparam(grbenv, GRB_INT_PAR_OUTPUTFLAG, 0);
 #endif
             // this lets OsiGrb take over ownership of grbenv (if not NULL), so it will be freed when osi is deleted
             osi = new OsiGrbSolverInterface(grbenv);
+
+            // disable Gurobi output here again, in case grbenv was NULL above
+            OsiGrbSolverInterface* osigrb = dynamic_cast<OsiGrbSolverInterface*>(osi);
+            assert(osigrb != NULL);
+            grbenv = GRBgetenv(osigrb->getLpPtr(OsiGrbSolverInterface::KEEPCACHED_ALL));
+            if( grbenv != NULL )
+               GRBsetintparam(grbenv, GRB_INT_PAR_OUTPUTFLAG, 0);
 #else
             gevLogStat(gev, "GamsOsi compiled without Osi/Gurobi interface.\n");
             return 1;
@@ -1392,9 +1403,12 @@ bool GamsOsi::writeSolution(
             case GRB_OPTIMAL:
                assert(nrsol);
                gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-               if( isLP() ||
-                  fabs(objest - osi->getObjValue()) < 1e-9 ||
-                  fabs(objest - osi->getObjValue())/(fabs(osi->getObjValue()) + 1.0e-10) < 1e-9 )
+               if( !isLP() )
+               {
+                  gmoSetHeadnTail(gmo, gmoTmipbest, objest);
+                  gmoSetHeadnTail(gmo, gmoHobjval, osi->getObjValue());
+               }
+               if( isLP() || gmoGetRelativeGap(gmo) < 1e-9 )
                {
                   gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
                   gevLogStat(gev, "Solved to optimality.");
@@ -2080,12 +2094,16 @@ bool GamsOsi::writeSolution(
          gevLogStat(gev, buffer);
          if( solwritten )
          {
-            snprintf(buffer, 255, "Absolute gap: %15.6e   (absolute tolerance optca: %g)", CoinAbs(osi->getObjValue() - objest), gevGetDblOpt(gev, gevOptCA));
+            snprintf(buffer, 255, "Absolute gap: %15.6e   (absolute tolerance optca: %g)", gmoGetAbsoluteGap(gmo), gevGetDblOpt(gev, gevOptCA));
             gevLogStat(gev, buffer);
-            snprintf(buffer, 255, "Relative gap: %14.6f%%   (relative tolerance optcr: %g%%)", 100*CoinAbs(osi->getObjValue() - objest) / CoinMax(CoinAbs(objest), 1.), 100*gevGetDblOpt(gev, gevOptCR));
+            snprintf(buffer, 255, "Relative gap: %15.6e   (relative tolerance optcr: %g)", gmoGetRelativeGap(gmo), gevGetDblOpt(gev, gevOptCR));
             gevLogStat(gev, buffer);
          }
       }
+      
+      /* Mosek may report only primal feasible for a MIP solve even when solved to completion with 0 gap tolerance due to numerical differences in computing the gap */
+      if( solverid == MOSEK && gmoModelStat(gmo) == gmoModelStat_Integer && gmoGetRelativeGap(gmo) <= 1e-9 )
+         gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
    }
 
    return true;

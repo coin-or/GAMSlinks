@@ -332,13 +332,15 @@ int GamsBonmin::callSolver()
    bonmin_setup->options()->GetStringValue("solvetrace", solvetrace, "");
    if( solvetrace != "" )
    {
+      char buffer[GMS_SSSIZE];
       int nodefreq;
       double timefreq;
       int rc;
 
       bonmin_setup->options()->GetIntegerValue("solvetracenodefreq", nodefreq, "");
       bonmin_setup->options()->GetNumericValue("solvetracetimefreq", timefreq, "");
-      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Bonmin", gmoOptFile(gmo), NULL, ipoptinf, nodefreq, timefreq);
+      gmoNameInput(gmo, buffer);
+      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Bonmin", gmoOptFile(gmo), buffer, ipoptinf, nodefreq, timefreq);
       if( rc != 0 )
       {
          gevLogStat(gev, "Initializing solvetrace failed.");
@@ -544,9 +546,9 @@ int GamsBonmin::callSolver()
             bonmin_setup->options()->GetNumericValue("allowable_gap", optca, "bonmin.");
             bonmin_setup->options()->GetNumericValue("allowable_fraction_gap", optcr, "bonmin.");
 
-            snprintf(buf, 255, "Absolute gap: %16.6e   (absolute tolerance optca: %g)", CoinAbs(best_val-best_bound), optca);
+            snprintf(buf, 255, "Absolute gap: %16.6e   (absolute tolerance optca: %g)", gmoGetAbsoluteGap(gmo), optca);
             gevLogStat(gev, buf);
-            snprintf(buf, 255, "Relative gap: %16.6e   (relative tolerance optcr: %g)", CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.0), optcr);
+            snprintf(buf, 255, "Relative gap: %16.6e   (relative tolerance optcr: %g)", gmoGetRelativeGap(gmo), optcr);
             gevLogStat(gev, buf);
          }
       }

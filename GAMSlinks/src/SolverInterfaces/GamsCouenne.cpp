@@ -355,13 +355,15 @@ int GamsCouenne::callSolver()
    couenne_setup->options()->GetStringValue("solvetrace", solvetrace, "");
    if( solvetrace != "" )
    {
+      char buffer[GMS_SSSIZE];
       int nodefreq;
       double timefreq;
       int rc;
 
+      gmoNameInput(gmo, buffer);
       couenne_setup->options()->GetIntegerValue("solvetracenodefreq", nodefreq, "");
       couenne_setup->options()->GetNumericValue("solvetracetimefreq", timefreq, "");
-      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Couenne", gmoOptFile(gmo), NULL, COUENNE_INFINITY, nodefreq, timefreq);
+      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace.c_str(), "Couenne", gmoOptFile(gmo), buffer, COUENNE_INFINITY, nodefreq, timefreq);
       if( rc != 0 )
       {
          gevLogStat(gev, "Initializing solvetrace failed.");
@@ -538,11 +540,16 @@ int GamsCouenne::callSolver()
             couenne_setup->options()->GetNumericValue("allowable_gap", optca, "bonmin.");
             couenne_setup->options()->GetNumericValue("allowable_fraction_gap", optcr, "bonmin.");
 
-            snprintf(buffer, sizeof(buffer), "Absolute gap: %16.6e   (absolute tolerance optca: %g)", CoinAbs(best_val-best_bound), optca);
+            snprintf(buffer, sizeof(buffer), "Absolute gap: %16.6e   (absolute tolerance optca: %g)", gmoGetAbsoluteGap(gmo), optca);
             gevLogStat(gev, buffer);
-            snprintf(buffer, sizeof(buffer), "Relative gap: %16.6e   (relative tolerance optcr: %g)", CoinAbs(best_val-best_bound)/CoinMax(CoinAbs(best_bound), 1.0), optcr);
+            snprintf(buffer, sizeof(buffer), "Relative gap: %16.6e   (relative tolerance optcr: %g)", gmoGetRelativeGap(gmo), optcr);
             gevLogStat(gev, buffer);
          }
+
+         if( minlp->model_status != gmoModelStat_OptimalGlobal && fabs(gmoGetRelativeGap(gmo)) < 2e-9 )
+            gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
+         else if( minlp->model_status == gmoModelStat_OptimalGlobal && fabs(gmoGetRelativeGap(gmo)) >= 2e-9 )
+            gmoModelStatSet(gmo, gmoModelStat_Feasible);
       }
    }
    catch( CoinError& error )

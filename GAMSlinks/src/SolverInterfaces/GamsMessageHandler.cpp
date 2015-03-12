@@ -15,6 +15,9 @@ int GamsMessageHandler::print()
 {
    const char* messageOut;
 
+   /* ensure we are exclusively calling gevLog... */
+   (void) pthread_mutex_lock(&mutex);
+
    messageOut = messageBuffer();
    if( messageOut[strlen(messageOut)-1] == '\n' )
       if( currentMessage_.detail() < 2 )
@@ -26,6 +29,8 @@ int GamsMessageHandler::print()
          gevLogStat(gev, messageOut);
       else
          gevLog(gev, messageOut);
+
+   (void) pthread_mutex_unlock(&mutex);
 
    return 0;
 }

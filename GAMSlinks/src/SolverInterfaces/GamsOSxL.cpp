@@ -117,6 +117,9 @@ bool GamsOSxL::createOSInstance()
       delete osinstance;
       osinstance = new OSInstance();
 
+      gmoNameInput(gmo, buffer);
+      osinstance->setInstanceName(buffer);
+
       // setup variables
       osinstance->setVariableNumber(gmoN(gmo));
 
@@ -902,6 +905,10 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                   break;
                }
 
+/* cannot handle nonlinear polynomials with this setup, as we would require copies of
+ * the variable argument when the variable occurs more than once
+ */
+#if 0
                case fnpoly: // simple polynomial
                {
                   debugout << "polynomial of degree " << nargs-1 << std::endl;
@@ -950,11 +957,10 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                         stack.push_back(var);
                         applyOperation(stack, new OSnLNodeProduct(), 2);
 
-                        applyOperation(stack, new OSnLNodeSum(), 2);
                         for( size_t i = 2; i < coeff.size(); ++i )
                         {
                            stack.push_back(coeff[i]);
-                           stack.push_back(var);
+                           stack.push_back(var->copyNodeAndDescendants()); // TODO this isn't sufficient in cases where var is not just a variable or expression)
                            if( i == 2 )
                            {
                               applyOperation(stack, new OSnLNodeSquare());
@@ -966,15 +972,16 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                               stack.push_back(exponent);
                               applyOperation(stack, new OSnLNodePower());
                            }
-                           applyOperation(stack, new OSnLNodeProduct());
-                           applyOperation(stack, new OSnLNodeSum(), 2);
+                           applyOperation(stack, new OSnLNodeProduct(), 2);
                         }
+
+                        applyOperation(stack, new OSnLNodeSum(), coeff.size());
                      }
                   }
                   nargs = -1;
                   break;
                }
-
+#endif
                case fnerrf :
                {
                   debugout << "errorf = 0.5 * [1+erf(x/sqrt(2))]" << std::endl;
@@ -1026,6 +1033,7 @@ OSnLNode* GamsOSxL::parseGamsInstructions(
                case fnbinomial:
                case fntan: case fnarccos:
                case fnarcsin: case fnarctan2 /* arctan(x2/x1) */:
+               case fnpoly :
                default:
                {
                   debugout << "nr. " << address+1 << " - unsuppored. Error." << std::endl;

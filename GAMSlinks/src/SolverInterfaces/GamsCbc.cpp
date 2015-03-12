@@ -270,9 +270,11 @@ int GamsCbc::callSolver()
    GAMS_SOLVETRACE* solvetrace_ = NULL;
    if( solvetrace != NULL && solvetrace[0] )
    {
+      char buffer[GMS_SSSIZE];
       int rc;
 
-      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace, "CBC", gmoOptFile(gmo), NULL, model->getInfinity(), solvetracenodefreq, solvetracetimefreq);
+      gmoNameInput(gmo, buffer);
+      rc = GAMSsolvetraceCreate(&solvetrace_, solvetrace, "CBC", gmoOptFile(gmo), buffer, model->getInfinity(), solvetracenodefreq, solvetracetimefreq);
       if( rc != 0 )
       {
          gevLogStat(gev, "Initializing solvetrace failed.");
@@ -1106,6 +1108,11 @@ bool GamsCbc::writeSolution(
 {
    bool write_solution = false;
 
+   gmoSetHeadnTail(gmo, gmoHiterused, model->getIterationCount());
+   gmoSetHeadnTail(gmo, gmoHresused,  nthreads > 1 ? walltime : cputime);
+   gmoSetHeadnTail(gmo, gmoTmipbest,  model->getBestPossibleObjValue());
+   gmoSetHeadnTail(gmo, gmoTmipnod,   model->getNodeCount());
+
    gevLogStat(gev, "");
    if( isLP() )
    {
@@ -1192,10 +1199,7 @@ bool GamsCbc::writeSolution(
       {
          write_solution = true;
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-         if( (optca > 0.0 || optcr > 0.0) &&
-            (fabs(model->getBestPossibleObjValue()) >= 1e50 ||
-             fabs(model->getBestPossibleObjValue() - model->getObjValue()) > 1e-9 * CoinMax(1.0, fabs(model->getObjValue())))
-         )
+         if( (optca > 0.0 || optcr > 0.0) && gmoGetRelativeGap(gmo) > 1e-9 )
          {
             gmoModelStatSet(gmo, gmoModelStat_Integer);
             gevLogStat(gev, "Solved to optimality (within gap tolerances optca and optcr).");
@@ -1278,11 +1282,6 @@ bool GamsCbc::writeSolution(
       }
    }
 
-   gmoSetHeadnTail(gmo, gmoHiterused, model->getIterationCount());
-   gmoSetHeadnTail(gmo, gmoHresused,  nthreads > 1 ? walltime : cputime);
-   gmoSetHeadnTail(gmo, gmoTmipbest,  model->getBestPossibleObjValue());
-   gmoSetHeadnTail(gmo, gmoTmipnod,   model->getNodeCount());
-
    if( write_solution && !gamsOsiStoreSolution(gmo, *model->solver()) )
       return false;
 
@@ -1301,9 +1300,9 @@ bool GamsCbc::writeSolution(
       gevLogStat(gev, buffer);
       if( model->bestSolution() )
       {
-         snprintf(buffer, 255, "Absolute gap: %15.6e   (absolute tolerance optca: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()), optca);
+         snprintf(buffer, 255, "Absolute gap: %15.6e   (absolute tolerance optca: %g)", gmoGetAbsoluteGap(gmo), optca);
          gevLogStat(gev, buffer);
-         snprintf(buffer, 255, "Relative gap: %15.6e   (relative tolerance optcr: %g)", CoinAbs(model->getObjValue() - model->getBestPossibleObjValue()) / CoinMax(CoinAbs(model->getBestPossibleObjValue()), 1.), optcr);
+         snprintf(buffer, 255, "Relative gap: %15.6e   (relative tolerance optcr: %g)", gmoGetRelativeGap(gmo), optcr);
          gevLogStat(gev, buffer);
       }
    }

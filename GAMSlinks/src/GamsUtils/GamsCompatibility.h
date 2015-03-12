@@ -8,13 +8,10 @@
 #ifndef GAMSCOMPATIBILITY_H_
 #define GAMSCOMPATIBILITY_H_
 
+/*
 #ifndef GMOAPIVERSION
 #error "gmomcc.h need to be included before this file to have GMOAPIVERSION defined"
 #endif
-
-#if GMOAPIVERSION < 13
-#define gmoModelStat_Feasible gmoModelStat_NonOptimalIntermed 
-#define gmoNameOutput         gmoNameInput
-#endif
+*/
 
 #endif /* GAMSCOMPATIBILITY_H_ */
