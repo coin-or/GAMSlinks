@@ -1044,7 +1044,8 @@ void printBonminOptions()
 
       for( std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt != it_categ->second.end(); ++it_opt )
       {
-         tabfile << "| \\ref BONMIN" << (*it_opt)->Name() << " \"" << (*it_opt)->Name() << "\" | ";
+         tabfile << "| \\anchor BONMIN" << (*it_opt)->Name() << "SHORTDOC ";
+         tabfile << "\\ref BONMIN" << (*it_opt)->Name() << " \"" << (*it_opt)->Name() << "\" | ";
 
          std::string typestring;
          std::string defaultval;
