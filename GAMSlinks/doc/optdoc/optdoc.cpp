@@ -1035,12 +1035,13 @@ void printBonminOptions()
    int categcount = 0;
    for( std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ != opts.end(); ++it_categ, ++categcount )
    {
-      if( it_categ->first.find("Ipopt") == 0 )
-         continue;
-
       tabfile << std::endl;
       tabfile << "\\subsection BONMINopt_" << categcount << ' ' << it_categ->first << std::endl << std::endl;
-      tabfile << tablehead << std::endl;
+      if( it_categ->first.find("Ipopt") == 0 )
+         tabfile << "| Option | Type | Default |" << std::endl
+                 << "|:-------|:-----|--------:|" << std::endl;
+      else
+         tabfile << tablehead << std::endl;
 
       for( std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt != it_categ->second.end(); ++it_opt )
       {
@@ -1097,15 +1098,17 @@ void printBonminOptions()
             defaultval = "GAMS ``cutoff``";
 
          tabfile << typestring << " | ";
-         tabfile << defaultval << " | ";
-         tabfile  << ( (regoptions->isValidForBBB((*it_opt)->Name()))    ? "\\f$\\checkmark\\f$" : "--" )
-          << " | " << ( (regoptions->isValidForBOA((*it_opt)->Name()))    ? "\\f$\\checkmark\\f$" : "--" )
-          << " | " << ( (regoptions->isValidForBQG((*it_opt)->Name()))    ? "\\f$\\checkmark\\f$" : "--" )
-          << " | " << ( (regoptions->isValidForHybrid((*it_opt)->Name())) ? "\\f$\\checkmark\\f$" : "--" )
-          << " | " << ( (regoptions->isValidForBEcp((*it_opt)->Name()))   ? "\\f$\\checkmark\\f$" : "--" )
-          << " | " << ( (regoptions->isValidForBiFP((*it_opt)->Name()))   ? "\\f$\\checkmark\\f$" : "--" )
-          << " | " << ( (regoptions->isValidForCbc((*it_opt)->Name()))    ? "\\f$\\checkmark\\f$" : "--" )
-          << " |" << std::endl;
+         tabfile << defaultval;
+         if( it_categ->first.find("Ipopt") != 0 )
+            tabfile
+             << " | " << ( (regoptions->isValidForBBB((*it_opt)->Name()))    ? "\\f$\\checkmark\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForBOA((*it_opt)->Name()))    ? "\\f$\\checkmark\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForBQG((*it_opt)->Name()))    ? "\\f$\\checkmark\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForHybrid((*it_opt)->Name())) ? "\\f$\\checkmark\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForBEcp((*it_opt)->Name()))   ? "\\f$\\checkmark\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForBiFP((*it_opt)->Name()))   ? "\\f$\\checkmark\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForCbc((*it_opt)->Name()))    ? "\\f$\\checkmark\\f$" : "--" );
+         tabfile << " |" << std::endl;
       }
    }
    tabfile.close();
