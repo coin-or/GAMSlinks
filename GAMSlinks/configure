@@ -1094,6 +1094,9 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
+  --disable-dependency-linking
+                          disable linking library dependencies into shared
+                          libraries
   --disable-pkg-config    disable use of pkg-config (if available)
   --disable-interpackage-dependencies
                           disables deduction of Makefile dependencies from
@@ -2068,6 +2071,7 @@ fi
 	       comps="xlc gcc pgcc icc cc"
 	     fi
 	     ;;
+  *-*-darwin*) comps="clang gcc cc" ;;
   *-linux-gnu*) comps="gcc cc pgcc icc xlc" ;;
   *-linux-*) comps="xlc gcc cc pgcc icc" ;;
   *)         comps="xlc_r xlc cc gcc pgcc icc" ;;
@@ -3226,7 +3230,7 @@ case $build in
       fi ;;
   *-*-solaris*)
   	     comps="CC xlC_r aCC g++ c++ pgCC icpc gpp cxx cc++ cl FCC KCC RCC" ;;
-  *-darwin*) comps="g++ c++ CC" ;;
+  *-darwin*) comps="clang++ g++ c++ CC" ;;
   *-linux-gnu*)
              comps="g++ c++ pgCC icpc gpp cxx cc++ cl FCC KCC RCC xlC_r aCC CC" ;;
           *) comps="xlC_r aCC CC g++ c++ pgCC icpc gpp cxx cc++ cl FCC KCC RCC" ;;
@@ -3663,7 +3667,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 coin_cxx_is_cl=false
 # It seems that we need to cleanup something here for the Windows
 case "$CXX" in
-  clang* ) ;;
+  clang* | */clang*) ;;
   cl* | */cl* | CL* | */CL* | icl* | */icl* | ICL* | */ICL*)
     sed -e 's/^void exit (int);//' confdefs.h >> confdefs.hh
     mv confdefs.hh confdefs.h
@@ -4172,7 +4176,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:4175:" \
+echo "$as_me:4179:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4370,7 +4374,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_verb"
-(eval echo $as_me:4373: \"$ac_link\") >&5
+(eval echo $as_me:4377: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -4448,7 +4452,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_cv_prog_f77_v"
-(eval echo $as_me:4451: \"$ac_link\") >&5
+(eval echo $as_me:4455: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -5223,31 +5227,30 @@ echo "$as_me: error: Shared libraries are disabled by user, but this is not feas
   fi
   enable_shared=yes;
 else
-  # On Cygwin and AIX, building DLLs doesn't work
   case $build in
     *-cygwin* | *-mingw*)
       coin_disable_shared=yes
       if test x"$enable_shared" = xyes; then
         case "$CC" in
           clang* )
-            { echo "$as_me:$LINENO: WARNING: DLL building not supported. I'm disabling your choice." >&5
-echo "$as_me: WARNING: DLL building not supported. I'm disabling your choice." >&2;}
+            { echo "$as_me:$LINENO: WARNING: Building of DLLs not supported in this configuration." >&5
+echo "$as_me: WARNING: Building of DLLs not supported in this configuration." >&2;}
             ;;
           cl* | */cl* | CL* | */CL* | icl* | */icl* | ICL* | */ICL*)
-            { echo "$as_me:$LINENO: DLL building not supported, but will build with -MD(d) instead of -MT(d)." >&5
-echo "$as_me: DLL building not supported, but will build with -MD(d) instead of -MT(d)." >&6;}
+            { echo "$as_me:$LINENO: Building of DLLs not supported in this configuration." >&5
+echo "$as_me: Building of DLLs not supported in this configuration." >&6;}
             ;;
           *gcc*)
-	    if test x"$enable_dependency_linking" = xyes; then
+            if test x"$enable_dependency_linking" = xyes; then
               coin_disable_shared=no
             else
-              { echo "$as_me:$LINENO: WARNING: To build shared libraries with gcc on CYGWIN or MSys, use --enable-dependency-linking" >&5
-echo "$as_me: WARNING: To build shared libraries with gcc on CYGWIN or MSys, use --enable-dependency-linking" >&2;}
+              { echo "$as_me:$LINENO: WARNING: Dependency linking seems to be disabled, so shared libraries (DLLs) will not be built" >&5
+echo "$as_me: WARNING: Dependency linking seems to be disabled, so shared libraries (DLLs) will not be built" >&2;}
             fi
             ;;
           *)
-            { echo "$as_me:$LINENO: WARNING: DLL building not supported. I'm disabling your choice." >&5
-echo "$as_me: WARNING: DLL building not supported. I'm disabling your choice." >&2;}
+            { echo "$as_me:$LINENO: WARNING: Building of DLLs not supported in this configuration." >&5
+echo "$as_me: WARNING: Building of DLLs not supported in this configuration." >&2;}
             ;;
         esac
       fi
@@ -5256,8 +5259,8 @@ echo "$as_me: WARNING: DLL building not supported. I'm disabling your choice." >
       coin_disable_shared=yes
       platform=AIX
       if test x"$enable_shared" = xyes; then
-        { echo "$as_me:$LINENO: WARNING: Shared objects are not supported. I'm disabling your choice." >&5
-echo "$as_me: WARNING: Shared objects are not supported. I'm disabling your choice." >&2;}
+        { echo "$as_me:$LINENO: WARNING: Shared objects are not supported." >&5
+echo "$as_me: WARNING: Shared objects are not supported." >&2;}
       fi
     ;;
   esac
@@ -6974,7 +6977,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6977 "configure"' > conftest.$ac_ext
+  echo '#line 6980 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8954,11 +8957,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8957: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8960: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8961: \$? = $ac_status" >&5
+   echo "$as_me:8964: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9222,11 +9225,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9225: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9228: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9229: \$? = $ac_status" >&5
+   echo "$as_me:9232: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9326,11 +9329,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9329: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9332: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9333: \$? = $ac_status" >&5
+   echo "$as_me:9336: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11743,7 +11746,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11746 "configure"
+#line 11749 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11843,7 +11846,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11846 "configure"
+#line 11849 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14203,11 +14206,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14206: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14209: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14210: \$? = $ac_status" >&5
+   echo "$as_me:14213: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14307,11 +14310,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14310: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14313: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14314: \$? = $ac_status" >&5
+   echo "$as_me:14317: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15877,11 +15880,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15880: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15883: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15884: \$? = $ac_status" >&5
+   echo "$as_me:15887: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15981,11 +15984,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15984: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15987: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15988: \$? = $ac_status" >&5
+   echo "$as_me:15991: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18188,11 +18191,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18191: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18194: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18195: \$? = $ac_status" >&5
+   echo "$as_me:18198: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18456,11 +18459,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18459: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18462: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18463: \$? = $ac_status" >&5
+   echo "$as_me:18466: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18560,11 +18563,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18563: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18566: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:18567: \$? = $ac_status" >&5
+   echo "$as_me:18570: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -21466,13 +21469,37 @@ if test "${enable_dependency_linking+set}" = set; then
   enableval="$enable_dependency_linking"
   dependency_linking="$enableval"
 else
-  dependency_linking=no
+  dependency_linking=auto
 fi;
 
-# ToDo
-# For now, don't use the -no-undefined flag, since the Makefiles are
-# not yet set up that way.  But we need to fix this, when we want
-# to comile DLLs under Windows.
+if test "$dependency_linking" = auto; then
+  # On Cygwin and AIX, building DLLs doesn't work
+  dependency_linking=no
+  if test x"$coin_disable_shared" = xno; then
+    case $build in
+      *-cygwin* | *-mingw*)
+        case "$CC" in
+          clang* )
+            dependency_linking=yes
+            ;;
+          cl* | */cl* | CL* | */CL* | icl* | */icl* | ICL* | */ICL*)
+            dependency_linking=no
+            ;;
+          *gcc*)
+            dependency_linking=yes
+            ;;
+          *)
+            dependency_linking=yes
+            ;;
+        esac
+        ;;
+      *)
+        dependency_linking=yes
+        ;;
+    esac
+  fi
+fi
+
 if test "$dependency_linking" = yes ;
 then
   LT_LDFLAGS="-no-undefined"
@@ -21742,7 +21769,6 @@ OSI_DATA=
 OSI_DEPENDENCIES=
 OSI_PCLIBS=
 OSI_PCREQUIRES=
-OSI_DATA=
 
 
 
@@ -22253,7 +22279,6 @@ OSICPX_DATA=
 OSICPX_DEPENDENCIES=
 OSICPX_PCLIBS=
 OSICPX_PCREQUIRES=
-OSICPX_DATA=
 
 
 
@@ -22764,7 +22789,6 @@ OSIGLPK_DATA=
 OSIGLPK_DEPENDENCIES=
 OSIGLPK_PCLIBS=
 OSIGLPK_PCREQUIRES=
-OSIGLPK_DATA=
 
 
 
@@ -23275,7 +23299,6 @@ OSIGRB_DATA=
 OSIGRB_DEPENDENCIES=
 OSIGRB_PCLIBS=
 OSIGRB_PCREQUIRES=
-OSIGRB_DATA=
 
 
 
@@ -23786,7 +23809,6 @@ OSIMSK_DATA=
 OSIMSK_DEPENDENCIES=
 OSIMSK_PCLIBS=
 OSIMSK_PCREQUIRES=
-OSIMSK_DATA=
 
 
 
@@ -24297,7 +24319,6 @@ OSISPX_DATA=
 OSISPX_DEPENDENCIES=
 OSISPX_PCLIBS=
 OSISPX_PCREQUIRES=
-OSISPX_DATA=
 
 
 
@@ -24808,7 +24829,6 @@ OSIXPR_DATA=
 OSIXPR_DEPENDENCIES=
 OSIXPR_PCLIBS=
 OSIXPR_PCREQUIRES=
-OSIXPR_DATA=
 
 
 
@@ -25319,7 +25339,6 @@ CBC_DATA=
 CBC_DEPENDENCIES=
 CBC_PCLIBS=
 CBC_PCREQUIRES=
-CBC_DATA=
 
 
 
@@ -25830,7 +25849,6 @@ IPOPT_DATA=
 IPOPT_DEPENDENCIES=
 IPOPT_PCLIBS=
 IPOPT_PCREQUIRES=
-IPOPT_DATA=
 
 
 
@@ -26341,7 +26359,6 @@ BONMIN_DATA=
 BONMIN_DEPENDENCIES=
 BONMIN_PCLIBS=
 BONMIN_PCREQUIRES=
-BONMIN_DATA=
 
 
 
@@ -26852,7 +26869,6 @@ COUENNE_DATA=
 COUENNE_DEPENDENCIES=
 COUENNE_PCLIBS=
 COUENNE_PCREQUIRES=
-COUENNE_DATA=
 
 
 
@@ -27363,7 +27379,6 @@ OS_DATA=
 OS_DEPENDENCIES=
 OS_PCLIBS=
 OS_PCREQUIRES=
-OS_DATA=
 
 
 
@@ -27874,7 +27889,6 @@ SCIP_DATA=
 SCIP_DEPENDENCIES=
 SCIP_PCLIBS=
 SCIP_PCREQUIRES=
-SCIP_DATA=
 
 
 

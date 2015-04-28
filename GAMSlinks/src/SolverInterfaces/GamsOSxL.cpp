@@ -402,7 +402,7 @@ bool GamsOSxL::createOSInstance()
          assert(iNLidx < osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
          osinstance->instanceData->nonlinearExpressions->nl[iNLidx] = new Nl();
          osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->idx = -1;
-         osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree = new OSExpressionTree();
+         osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree = new ScalarExpressionTree();
          osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree->m_treeRoot = nl;
          ++iNLidx;
       }
@@ -440,7 +440,7 @@ bool GamsOSxL::createOSInstance()
             assert(iNLidx < osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
             osinstance->instanceData->nonlinearExpressions->nl[iNLidx] = new Nl();
             osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->idx = i; // correct that this is the con. number?
-            osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree = new OSExpressionTree();
+            osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree = new ScalarExpressionTree();
             osinstance->instanceData->nonlinearExpressions->nl[iNLidx]->osExpressionTree->m_treeRoot = nl;
             ++iNLidx;
          }
@@ -449,7 +449,7 @@ bool GamsOSxL::createOSInstance()
       assert(qtermpos == nqterms);
       assert(iNLidx == osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);
 
-      osinstance->setQuadraticTerms(nqterms, quadequs, quadrows, quadcols, quadcoefs, 0, nqterms-1);
+      osinstance->setQuadraticCoefficients(nqterms, quadequs, quadrows, quadcols, quadcoefs, 0, nqterms-1);
 
       delete[] quadequs;
       delete[] quadrows;
