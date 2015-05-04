@@ -1043,8 +1043,19 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
             debugout << "multiply constant " << constants[address] << std::endl;
 
             expression* term1 = stack.back(); stack.pop_back();
-            expression* term2 = new exprConst(constants[address]);
-            exp = new exprMul(term1, term2);
+            if( term1->Type() == CONST )
+            {
+               // multiply the constants here instead of letting Couenne do this
+               // this also avoids a crash in Couenne's reformulation, which cannot handle products with 0 terms (see fnvcpower below)
+               assert(dynamic_cast<exprConst*>(term1) != NULL);
+               exp = new exprConst(term1->Value() * constants[address]);
+               delete term1;
+            }
+            else
+            {
+               expression* term2 = new exprConst(constants[address]);
+               exp = new exprMul(term1, term2);
+            }
             break;
          }
 
@@ -1270,7 +1281,19 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
                   expression* term1 = stack.back(); stack.pop_back();
                   expression* term2 = stack.back(); stack.pop_back();
                   assert(term1->Type() == CONST);
-                  exp = new exprPow(term2, term1);
+                  assert(dynamic_cast<exprConst*>(term1) != NULL);
+                  if( dynamic_cast<exprConst*>(term1)->Value() == 0.0 )
+                  {
+                     // Couenne's standardization does not handle products with x^0 well (see modlib/otpop)
+                     // avoid these by just pushing 1.0
+                     delete term2;
+                     delete term1;
+                     exp = new exprConst(0.0);
+                  }
+                  else
+                  {
+                     exp = new exprPow(term2, term1);
+                  }
                   break;
                }
 
