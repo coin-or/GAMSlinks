@@ -1304,8 +1304,20 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
                   expression* term2 = stack.back(); stack.pop_back();
 
                   assert(term1->Type() == CONST);
-                  exp = new exprMul(term2, new exprPow(new exprAbs(new exprClone(term2)), new exprConst(((exprConst*)term1)->Value() - 1.0)));
-                  delete term1;
+                  double c = ((exprConst*)term1)->Value();
+                  // Couenne 0.5 supports signpower via exprPow for c=1,...,10
+/* doesn't seem to work yet (declares gastransnlp to be infeasible)
+#if COUENNE_VERSION_MINOR >= 5
+                  if( (int)c == c && c >= 1.0 && c <= 10.0 )
+                     exp = new exprPow(term2, term1, true);
+                  else
+#endif
+*/
+                  {
+                     exp = new exprMul(term2, new exprPow(new exprAbs(new exprClone(term2)), new exprConst(c - 1.0)));
+                     delete term1;
+                  }
+
                   break;
                }
 
