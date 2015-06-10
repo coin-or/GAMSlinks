@@ -1049,6 +1049,9 @@ bool GamsOsi::setupCallbacks()
 #ifdef COIN_HAS_OSISPX
       case SOPLEX:
       {
+         OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
+         assert(osispx != NULL);
+#if SOPLEX_VERSION < 220
          soplex::Param::setVerbose(soplex::SPxOut::INFO1);
          if( gevGetIntOpt(gev, gevLogOption) == 0 )
          {
@@ -1065,6 +1068,25 @@ bool GamsOsi::setupCallbacks()
             soplex::spxout.setStream(soplex::SPxOut::INFO3, spxoutput);
             soplex::spxout.setStream(soplex::SPxOut::DEBUG, spxoutput);
          }
+#else
+         soplex::SPxOut* spxout(osispx->getSPxOut());
+         spxout->setVerbosity(soplex::SPxOut::INFO1);
+         if( gevGetIntOpt(gev, gevLogOption) == 0 )
+         {
+            spxout->setVerbosity(soplex::SPxOut::ERROR);
+         }
+         else if (gevGetIntOpt(gev, gevLogOption) == 2)
+         {
+            spxoutput.str(std::string());
+            spxoutput.clear();
+            spxout->setStream(soplex::SPxOut::ERROR, spxoutput);
+            spxout->setStream(soplex::SPxOut::WARNING, spxoutput);
+            spxout->setStream(soplex::SPxOut::INFO1, spxoutput);
+            spxout->setStream(soplex::SPxOut::INFO2, spxoutput);
+            spxout->setStream(soplex::SPxOut::INFO3, spxoutput);
+            spxout->setStream(soplex::SPxOut::DEBUG, spxoutput);
+         }
+#endif
          break;
       }
 #endif
@@ -1103,6 +1125,7 @@ bool GamsOsi::clearCallbacks()
 #ifdef COIN_HAS_OSISPX
       case SOPLEX:
       {
+#if 0
          soplex::Param::setVerbose(soplex::SPxOut::ERROR);
          if (gevGetIntOpt(gev, gevLogOption) == 2)
          {
@@ -1113,6 +1136,7 @@ bool GamsOsi::clearCallbacks()
             soplex::spxout.setStream(soplex::SPxOut::INFO3, std::cout);
             soplex::spxout.setStream(soplex::SPxOut::DEBUG, std::cout);
          }
+#endif
          break;
       }
 #endif
