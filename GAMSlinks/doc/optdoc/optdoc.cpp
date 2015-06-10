@@ -308,10 +308,10 @@ public:
                   f << "minint";
                else
                   f << d->defaultval.intval;
-               if( d->minval.intval != -INT_MAX )
-                  f << ", lo " << d->minval.intval;
-               else
+               if( d->minval.intval == -INT_MAX )
                   f << ", lo minint";
+               else if( d->minval.intval != 0 )
+                  f << ", lo " << d->minval.intval;
                if( d->maxval.intval !=  INT_MAX )
                   f << ", up " << d->maxval.intval;
                f << ")";
@@ -325,10 +325,10 @@ public:
                   f << "mindouble";
                else
                   f << d->defaultval.realval;
-               if( d->minval.realval != -DBL_MAX )
-                  f << ", lo " << d->minval.realval;
-               else
+               if( d->minval.realval == -DBL_MAX )
                   f << ", lo mindouble";
+               else if( d->minval.realval != 0 )
+                  f << ", lo " << d->minval.realval;
                if( d->maxval.realval !=  DBL_MAX )
                   f << ", up " << d->maxval.realval;
                f << ")";
@@ -380,21 +380,11 @@ public:
         << "set dotoption(o)      / /;" << std::endl
         << "set dropdefaults(o)   / /;" << std::endl
         << "set deprecated(*,*)   / /;" << std::endl
-        << "set ooverwrite(o,f)   / /;" << std::endl
-        << "set orange(o)         / /;" << std::endl
         << "set oedepr(o,e)       / /;" << std::endl  /* deprecated enum options */
         << "set oep(o)            / /;" << std::endl  /* enum options for documentation only */
         << "set olink(o)          / /;" << std::endl
         //<< "set om(o,m)           / /;" << std::endl  /* option with GAMS synonym and GAMS initialization */
         << "$offempty" << std::endl;
-
-
-      f << "set orange(o);" << std::endl
-        << "orange(o) = (sum(g,optdata(g,o,'R','def')) or sum(g,optdata(g,o,'I','def'))) and sum(oe(o,e),1)=0 "
-        << "and sum((g,t),optdata(g,o,t,'up')) and sum((g,t),optdata(g,o,t,'lo')) and not ooverwrite(o,'lo') and not ooverwrite(o,'up');"
-        << std::endl;
-
-      f << "optdata(g,o,t,f)$optdata(g,o,t,'def') $= ooverwrite(o,f);" << std::endl;
 
       f.close();
 
