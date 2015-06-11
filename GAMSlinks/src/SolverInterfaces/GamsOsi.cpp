@@ -1049,8 +1049,6 @@ bool GamsOsi::setupCallbacks()
 #ifdef COIN_HAS_OSISPX
       case SOPLEX:
       {
-         OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
-         assert(osispx != NULL);
 #if SOPLEX_VERSION < 220
          soplex::Param::setVerbose(soplex::SPxOut::INFO1);
          if( gevGetIntOpt(gev, gevLogOption) == 0 )
@@ -1069,6 +1067,8 @@ bool GamsOsi::setupCallbacks()
             soplex::spxout.setStream(soplex::SPxOut::DEBUG, spxoutput);
          }
 #else
+         OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
+         assert(osispx != NULL);
          soplex::SPxOut* spxout(osispx->getSPxOut());
          spxout->setVerbosity(soplex::SPxOut::INFO1);
          if( gevGetIntOpt(gev, gevLogOption) == 0 )
@@ -1125,7 +1125,7 @@ bool GamsOsi::clearCallbacks()
 #ifdef COIN_HAS_OSISPX
       case SOPLEX:
       {
-#if 0
+#if SOPLEX_VERSION < 220
          soplex::Param::setVerbose(soplex::SPxOut::ERROR);
          if (gevGetIntOpt(gev, gevLogOption) == 2)
          {
@@ -1135,6 +1135,20 @@ bool GamsOsi::clearCallbacks()
             soplex::spxout.setStream(soplex::SPxOut::INFO2, std::cout);
             soplex::spxout.setStream(soplex::SPxOut::INFO3, std::cout);
             soplex::spxout.setStream(soplex::SPxOut::DEBUG, std::cout);
+         }
+#else
+         OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
+         assert(osispx != NULL);
+         soplex::SPxOut* spxout(osispx->getSPxOut());
+         spxout->setVerbosity(soplex::SPxOut::ERROR);
+         if (gevGetIntOpt(gev, gevLogOption) == 2)
+         {
+            spxout->setStream(soplex::SPxOut::ERROR, std::cerr);
+            spxout->setStream(soplex::SPxOut::WARNING, std::cerr);
+            spxout->setStream(soplex::SPxOut::INFO1, std::cout);
+            spxout->setStream(soplex::SPxOut::INFO2, std::cout);
+            spxout->setStream(soplex::SPxOut::INFO3, std::cout);
+            spxout->setStream(soplex::SPxOut::DEBUG, std::cout);
          }
 #endif
          break;
