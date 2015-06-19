@@ -1091,13 +1091,13 @@ void printBonminOptions()
          tabfile << defaultval;
          if( it_categ->first.find("Ipopt") != 0 )
             tabfile
-             << " | " << ( (regoptions->isValidForBBB((*it_opt)->Name()))    ? "\\f$\\checkmark\\f$" : "--" )
-             << " | " << ( (regoptions->isValidForBOA((*it_opt)->Name()))    ? "\\f$\\checkmark\\f$" : "--" )
-             << " | " << ( (regoptions->isValidForBQG((*it_opt)->Name()))    ? "\\f$\\checkmark\\f$" : "--" )
-             << " | " << ( (regoptions->isValidForHybrid((*it_opt)->Name())) ? "\\f$\\checkmark\\f$" : "--" )
-             << " | " << ( (regoptions->isValidForBEcp((*it_opt)->Name()))   ? "\\f$\\checkmark\\f$" : "--" )
-             << " | " << ( (regoptions->isValidForBiFP((*it_opt)->Name()))   ? "\\f$\\checkmark\\f$" : "--" )
-             << " | " << ( (regoptions->isValidForCbc((*it_opt)->Name()))    ? "\\f$\\checkmark\\f$" : "--" );
+             << " | " << ( (regoptions->isValidForBBB((*it_opt)->Name()))    ? "\\f$\\surd\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForBOA((*it_opt)->Name()))    ? "\\f$\\surd\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForBQG((*it_opt)->Name()))    ? "\\f$\\surd\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForHybrid((*it_opt)->Name())) ? "\\f$\\surd\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForBEcp((*it_opt)->Name()))   ? "\\f$\\surd\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForBiFP((*it_opt)->Name()))   ? "\\f$\\surd\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForCbc((*it_opt)->Name()))    ? "\\f$\\surd\\f$" : "--" );
          tabfile << " |" << std::endl;
       }
    }
@@ -1638,11 +1638,13 @@ void printSCIPOptions()
       else
          category = "";
 
-      if( category == "reading" ||
+      if( category == "compression" ||  //FIXME should be here?
+          category == "reading" ||
+          category == "reoptimization" ||
           category == "pricing" ||
           category == "nlp" ||
           category == "nlpi" ||
-          category == "vbc" ||
+          category == "visual" ||
           category == "write"
         )
          continue;
