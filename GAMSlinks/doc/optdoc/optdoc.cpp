@@ -393,6 +393,8 @@ public:
       f.open(filename.c_str());
       for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
       {
+         if( d->longdescr.length() == 0 )
+            continue;
          f << d->name << std::endl;
          f << makeValidMarkdownString(d->longdescr) << std::endl;
          f << std::endl << std::endl;
