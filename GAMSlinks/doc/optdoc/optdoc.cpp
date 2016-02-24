@@ -1754,7 +1754,7 @@ void printSCIPOptions()
             defaultdescr = "GAMS nodlim, if set, otherwise -1";
          else if( strcmp(SCIPparamGetName(param), "lp/solver") == 0 )
          {
-            defaultdescr = "cplex, if licensed, otherwise soplex2";
+            defaultdescr = "cplex, if licensed, otherwise soplex";
             descr = "LP solver to use (clp, cplex, soplex, soplex2)";
          }
          else if( strcmp(SCIPparamGetName(param), "lp/threads") == 0 )
