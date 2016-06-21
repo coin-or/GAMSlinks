@@ -11,6 +11,10 @@
 #include <list>
 #include <string>
 
+#ifdef _MSC_VER
+#define strdup _strdup
+#endif
+
 #include "gclgms.h"
 #include "gmomcc.h"
 #include "gevmcc.h"
@@ -845,6 +849,12 @@ bool GamsCbc::setupParameters()
    CHECKOPT2_STRINGENUM("twomircuts", "twoMirCuts")
    stringenummap["onglobal"];
    CHECKOPT2_STRINGENUM("zerohalfcuts", "zeroHalfCuts")
+
+   if( options.getBool("conflictcuts") )
+   {
+      par_list.push_back("-constraint");
+      par_list.push_back("conflict");
+   }
 
    stringenummap.clear();
    stringenummap["off"];

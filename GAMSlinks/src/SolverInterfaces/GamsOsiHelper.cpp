@@ -459,7 +459,7 @@ void gamsOsiWriteProblem(
       }
       else
       {
-      solver.writeMps(buffer, "mps", 1.0);
+         solver.writeMps(buffer, "mps", 1.0);
       }
    }
 

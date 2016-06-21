@@ -21,6 +21,10 @@
 #include "gevmcc.h"
 
 #include "GamsCompatibility.h"
+#if OS_VERSION_MINOR < 9
+#define ScalarExpressionTree OSExpressionTree
+#define setQuadraticCoefficients setQuadraticTerms
+#endif
 
 GamsOSxL::~GamsOSxL()
 {
@@ -340,6 +344,9 @@ bool GamsOSxL::createOSInstance()
       int* quadrows = new int[nqterms];
       int* quadcols = new int[nqterms];
       double* quadcoefs = new double[nqterms];
+
+      if( osinstance->instanceData->nonlinearExpressions == NULL )
+         osinstance->instanceData->nonlinearExpressions = new NonlinearExpressions();
 
       osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions = gmoNLM(gmo) + (gmoGetObjOrder(gmo) == gmoorder_NL ? 1 : 0);
       osinstance->instanceData->nonlinearExpressions->nl = CoinCopyOfArrayOrZero((Nl**)NULL, osinstance->instanceData->nonlinearExpressions->numberOfNonlinearExpressions);

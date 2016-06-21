@@ -149,10 +149,10 @@ int GamsIpopt::callSolver()
       char buffer[GMS_SSSIZE];
       ipopt->Options()->SetStringValue("print_user_options", "yes", true, true);
       gmoNameOptFile(gmo, buffer);
-      ipopt->Initialize(buffer);
+      ipopt->Initialize(buffer, false);
    }
    else
-      ipopt->Initialize("");
+      ipopt->Initialize("", false);
 
    // process options and setup NLP
    double ipoptinf;
@@ -171,6 +171,7 @@ int GamsIpopt::callSolver()
    ipopt->Options()->GetNumericValue("acceptable_constr_viol_tol", nlp->unscaled_conviol_acctol, "");
 
    // initialize GMO hessian, if required
+   // TODO if hessian is only approximated by GMO (extr. func without 2nd deriv info), then could suggest user to enable Ipopts hessian approx via log
    std::string hess_approx;
    ipopt->Options()->GetStringValue("hessian_approximation", hess_approx, "");
    if( hess_approx == "exact" )

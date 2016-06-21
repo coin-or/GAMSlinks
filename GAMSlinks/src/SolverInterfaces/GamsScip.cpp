@@ -108,7 +108,11 @@ GamsScip::~GamsScip()
 #ifdef GAMS_BUILD
    if( pal != NULL )
       palFree(&pal);
+
+   if( calledxprslicense )
+      gevxpressliceFreeTS();
 #endif
+
 }
 
 int GamsScip::readyAPI(
@@ -143,8 +147,13 @@ int GamsScip::readyAPI(
 
 #ifdef COIN_HAS_OSIXPR
    /* Xpress license setup - don't say anything if failing, since Xpress is not used by default */
-   XPlicenseInit_t initType;
-   gevxpresslice(gev, pal, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType, buffer, sizeof(buffer));
+   if( !calledxprslicense )
+   {
+      XPlicenseInit_t initType;
+      int initRC;
+      gevxpressliceInitTS(gev, pal, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType, &initRC, buffer, sizeof(buffer));
+      calledxprslicense = true;
+   }
 #endif
 #endif
 
@@ -233,7 +242,7 @@ int GamsScip::callSolver()
    SCIP_CALL_ABORT( SCIPgetStringParam(scip, "gams/interactive", &interactive) );
    assert(interactive != NULL);
 #ifdef GAMS_BUILD
-   if( interactive[0] != '\0' && !palLicenseIsAcademic(pal) )
+   if( interactive[0] != '\0' && !palLicenseIsAcademic(pal) && palLicenseCheckSubSys(pal, const_cast<char*>("SC")) )
    {
       gevLogStat(gev, "SCIP interactive shell not available in demo mode.\n");
       interactive[0] = '\0';
