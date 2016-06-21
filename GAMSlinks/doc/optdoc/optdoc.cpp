@@ -1618,9 +1618,6 @@ void printSCIPOptions()
       if( strcmp(paramname, "numerics/infinity") == 0 )
          continue;
 
-      if( strcmp(paramname, "display/lpcond") == 0 )
-         continue;
-
       if( strstr(paramname, "constraints/conjunction")   == paramname ||
           strstr(paramname, "constraints/countsols")     == paramname ||
           strstr(paramname, "constraints/cumulative")    == paramname ||
@@ -1812,6 +1809,286 @@ void printSCIPOptions()
 
    optfile.close();
    gmsopt.write(true);
+
+   /* branching rules */
+   {
+      std::ofstream outfile("branchrules.md");
+      outfile << "| branching rule | priority | maxdepth | maxbounddist | description |" << std::endl;
+      outfile << "|:------------- -|---------:|---------:|-------------:|:------------|" << std::endl;
+
+      int nbranchrules = SCIPgetNBranchrules(scip);
+      SCIP_BRANCHRULE** sorted;
+      SCIP_CALL_ABORT( SCIPduplicateBufferArray(scip, &sorted, SCIPgetBranchrules(scip), nbranchrules) );
+      SCIPsortPtr((void**)sorted, SCIPbranchruleComp, nbranchrules);
+      for( int i = 0; i < nbranchrules; ++i )
+      {
+         outfile << "| \\ref SCIP_gr_branching_" << SCIPbranchruleGetName(sorted[i]) << " \"" << SCIPbranchruleGetName(sorted[i]) << '"';
+         outfile << " | " << SCIPbranchruleGetPriority(sorted[i]);
+         outfile << " | " << SCIPbranchruleGetMaxdepth(sorted[i]);
+         outfile << " | " << 100.0 * SCIPbranchruleGetMaxbounddist(sorted[i]);
+         outfile << " | " << SCIPbranchruleGetDesc(sorted[i]);
+         outfile << " |" << std::endl;
+      }
+      SCIPfreeBufferArray(scip, &sorted);
+   }
+   
+   /* conflict handler */
+   {
+      SCIP_CONFLICTHDLR** conflicthdlrs = SCIPgetConflicthdlrs(scip);
+      SCIP_CONFLICTHDLR** sorted;
+      int nconflicthdlrs = SCIPgetNConflicthdlrs(scip);
+      SCIP_CALL_ABORT( SCIPduplicateBufferArray(scip, &sorted, conflicthdlrs, nconflicthdlrs) );
+      SCIPsortPtr((void**)sorted, SCIPconflicthdlrComp, nconflicthdlrs);
+
+      std::ofstream outfile("conflicthdlrs.md");
+      outfile << "| conflict handler | priority | description |" << std::endl;
+      outfile << "|:-----------------|---------:|:------------|" << std::endl;
+
+      for( int i = 0; i < nconflicthdlrs; ++i )
+      {
+         outfile << "| \\ref SCIP_gr_conflict_" << SCIPconflicthdlrGetName(sorted[i]) << " \"" << SCIPconflicthdlrGetName(sorted[i]) << '"';
+         outfile << " | " << SCIPconflicthdlrGetPriority(sorted[i]);
+         outfile << " | " << SCIPconflicthdlrGetDesc(sorted[i]);
+         outfile << " |" << std::endl;
+      }
+      SCIPfreeBufferArray(scip, &sorted);
+   }
+
+   /* constraint handler */
+   {
+      std::ofstream outfile("conshdlrs.md");
+      outfile << "| constraint handler | checkprio | enfoprio | sepaprio | sepafreq | propfreq | eagerfreq | presolvetimings | description |" << std::endl;
+      outfile << "|:-------------------|----------:|---------:|---------:|---------:|---------:|----------:|:---------------:|:------------|" << std::endl;
+      SCIP_CONSHDLR** conshdlrs = SCIPgetConshdlrs(scip);
+      for( int i = 0; i < SCIPgetNConshdlrs(scip); ++i )
+      {
+         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "conjunction") == 0 )
+            continue;
+         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "countsols") == 0 )
+            continue;
+         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "cumulative") == 0 )
+            continue;
+         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "disjunction") == 0 )
+            continue;
+         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "linking") == 0 )
+            continue;
+         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "or") == 0 )
+            continue;
+         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "orbitope") == 0 )
+            continue;
+         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "pseudoboolean") == 0 )
+            continue;
+         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "superindicator") == 0 )
+            continue;
+         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "xor") == 0 )
+            continue;
+
+         outfile << "| \\ref SCIP_gr_constraints_" << SCIPconshdlrGetName(conshdlrs[i]) << " \"" << SCIPconshdlrGetName(conshdlrs[i]) << '"';
+         outfile << " | " << SCIPconshdlrGetCheckPriority(conshdlrs[i]);
+         outfile << " | " << SCIPconshdlrGetEnfoPriority(conshdlrs[i]);
+         outfile << " | " << SCIPconshdlrGetSepaPriority(conshdlrs[i]);
+         outfile << " | " << SCIPconshdlrGetSepaFreq(conshdlrs[i]);
+         outfile << " | " << SCIPconshdlrGetPropFreq(conshdlrs[i]);
+         outfile << " | " << SCIPconshdlrGetEagerFreq(conshdlrs[i]);
+         if( SCIPconshdlrGetPresolTiming(conshdlrs[i]) == SCIP_PRESOLTIMING_ALWAYS )
+            outfile << " | always";
+         else
+         {
+            outfile << " |";
+            if( SCIPconshdlrGetPresolTiming(conshdlrs[i]) & SCIP_PRESOLTIMING_FAST )
+               outfile << " fast";
+            if( SCIPconshdlrGetPresolTiming(conshdlrs[i]) & SCIP_PRESOLTIMING_MEDIUM )
+               outfile << " medium";
+            if( SCIPconshdlrGetPresolTiming(conshdlrs[i]) & SCIP_PRESOLTIMING_EXHAUSTIVE )
+               outfile << " exhaustive";
+         }
+         outfile << " | " << SCIPconshdlrGetDesc(conshdlrs[i]);
+         outfile << " |" << std::endl;
+      }
+   }
+   
+   /* display columns */
+   {
+      SCIP_DISP** disps = SCIPgetDisps(scip);
+      int ndisps = SCIPgetNDisps(scip);
+      
+      std::ofstream outfile("disps.md");
+      outfile << "| display column | header | position | width | priority | status | description |" << std::endl;
+      outfile << "|:---------------|:-------|---------:|------:|---------:|-------:|:------------|" << std::endl;
+      for( int i = 0; i < ndisps; ++i )
+      {
+         outfile << "| \\ref SCIP_gr_display_" << SCIPdispGetName(disps[i]) << " \"" << SCIPdispGetName(disps[i]) << '"';
+         outfile << " | " << SCIPdispGetHeader(disps[i]);
+         outfile << " | " << SCIPdispGetPosition(disps[i]);
+         outfile << " | " << SCIPdispGetWidth(disps[i]);
+         outfile << " | " << SCIPdispGetPriority(disps[i]);
+         switch( SCIPdispGetStatus(disps[i]) )
+         {
+         case SCIP_DISPSTATUS_OFF:
+            outfile << " | off";
+            break;
+         case SCIP_DISPSTATUS_AUTO:
+            outfile << " | auto";
+            break;
+         case SCIP_DISPSTATUS_ON:
+            outfile << " | on";
+            break;
+         default:
+            outfile << " | ?";
+            break;
+         }
+         outfile << " | ";
+         
+         /* escape "|" */
+         char* descr = strdup(SCIPdispGetDesc(disps[i]));
+         char* desc = descr;
+         char* rest = desc;
+         while( (rest = strstr(desc, "|")) != NULL )
+         {
+            *rest = '\0';
+            outfile << desc << "\\|";
+            desc = rest+1;
+         }
+         outfile << desc;
+         free(descr);
+         
+         outfile << " |" << std::endl;
+      }
+   }
+
+   /* primal heuristics */
+   {
+      std::ofstream outfile("heurs.md");
+      outfile << "| primal heuristic | char | priority | freq | freqoffset | description |" << std::endl;
+      outfile << "|:-----------------|:----:|---------:|-----:|-----------:|:------------|" << std::endl;
+      
+      int nheurs = SCIPgetNHeurs(scip);
+      SCIP_HEUR** heurs = SCIPgetHeurs(scip);
+      for( int h = 0; h < nheurs; ++h )
+      {
+         outfile << "| \\ref SCIP_gr_heuristics_" << SCIPheurGetName(heurs[h]) << " \"" << SCIPheurGetName(heurs[h]) << '"';
+         outfile << " | " << SCIPheurGetDispchar(heurs[h]);
+         outfile << " | " << SCIPheurGetPriority(heurs[h]);
+         outfile << " | " << SCIPheurGetFreq(heurs[h]);
+         outfile << " | " << SCIPheurGetFreqofs(heurs[h]);
+         outfile << " | " << SCIPheurGetDesc(heurs[h]);
+         outfile << " |" << std::endl;
+      }
+   }
+
+   /* node selectors */
+   {
+      SCIP_NODESEL** nodesels;
+      int nnodesels;
+      int i;
+
+      nodesels = SCIPgetNodesels(scip);
+      nnodesels = SCIPgetNNodesels(scip);
+
+      std::ofstream outfile("nodesels.md");
+      outfile << "| node selector | standard priority | memsave priority | description |" << std::endl;
+      outfile << "|:--------------|------------------:|-----------------:|:------------|" << std::endl;
+      for( i = 0; i < nnodesels; ++i )
+      {
+         outfile << "| \\ref SCIP_gr_nodeselection_" << SCIPnodeselGetName(nodesels[i]) << " \"" << SCIPnodeselGetName(nodesels[i]) << '"';
+         outfile << " | " << SCIPnodeselGetStdPriority(nodesels[i]);
+         outfile << " | " << SCIPnodeselGetMemsavePriority(nodesels[i]);
+         outfile << " | " << SCIPnodeselGetDesc(nodesels[i]);
+         outfile << " |" << std::endl;
+      }
+   }
+
+   /* presolvers */
+   {
+      SCIP_PRESOL** presols;
+      int npresols;
+      int i;
+
+      presols = SCIPgetPresols(scip);
+      npresols = SCIPgetNPresols(scip);
+
+      std::ofstream outfile("presols.md");
+      outfile << "| presolver | priority | timing | maxrounds | description |" << std::endl;
+      outfile << "|:----------|---------:|:------:|----------:|:------------|" << std::endl;
+      for( i = 0; i < npresols; ++i )
+      {
+         outfile << "| \\ref SCIP_gr_presolving_" << SCIPpresolGetName(presols[i]) << " \"" << SCIPpresolGetName(presols[i]) << '"';
+         outfile << " | " << SCIPpresolGetPriority(presols[i]);
+         if( SCIPpresolGetTiming(presols[i]) == SCIP_PRESOLTIMING_ALWAYS )
+            outfile << " | always";
+         else
+         {
+            outfile << " |";
+            if( SCIPpresolGetTiming(presols[i]) & SCIP_PRESOLTIMING_FAST )
+               outfile << " fast";
+            if( SCIPpresolGetTiming(presols[i]) & SCIP_PRESOLTIMING_MEDIUM )
+               outfile << " medium";
+            if( SCIPpresolGetTiming(presols[i]) & SCIP_PRESOLTIMING_EXHAUSTIVE )
+               outfile << " exhaustive";
+         }
+         outfile << " | " << SCIPpresolGetMaxrounds(presols[i]);
+         outfile << " | " << SCIPpresolGetDesc(presols[i]);
+         outfile << " |" << std::endl;
+      }
+   }
+
+   /* propagators */
+   {
+      SCIP_PROP** props;
+      int nprops;
+      int i;
+
+      props = SCIPgetProps(scip);
+      nprops = SCIPgetNProps(scip);
+
+      std::ofstream outfile("props.md");
+      outfile << "| propagator | propprio | freq | presolveprio | presolvetiming | description |" << std::endl;
+      outfile << "|:-----------|---------:|-----:|-------------:|:--------------:|:------------|" << std::endl;
+      for( i = 0; i < nprops; ++i )
+      {
+         outfile << "| \\ref SCIP_gr_propagating_" << SCIPpropGetName(props[i]) << " \"" << SCIPpropGetName(props[i]) << '"';
+         outfile << " | " << SCIPpropGetPriority(props[i]) << (SCIPpropIsDelayed(props[i]) ? 'd' : ' ');
+         outfile << " | " << SCIPpropGetFreq(props[i]);
+         outfile << " | " << SCIPpropGetPresolPriority(props[i]);
+         if( SCIPpropGetPresolTiming(props[i]) == SCIP_PRESOLTIMING_ALWAYS )
+            outfile << " | always";
+         else
+         {
+            outfile << " |";
+            if( SCIPpropGetPresolTiming(props[i]) & SCIP_PRESOLTIMING_FAST )
+               outfile << " fast";
+            if( SCIPpropGetPresolTiming(props[i]) & SCIP_PRESOLTIMING_MEDIUM )
+               outfile << " medium";
+            if( SCIPpropGetPresolTiming(props[i]) & SCIP_PRESOLTIMING_EXHAUSTIVE )
+               outfile << " exhaustive";
+         }
+         outfile << " | " << SCIPpropGetDesc(props[i]);
+         outfile << " |" << std::endl;
+      }
+   }
+
+   /* separators */
+   {
+      SCIP_SEPA** sepas;
+      int nsepas;
+      int i;
+
+      sepas = SCIPgetSepas(scip);
+      nsepas = SCIPgetNSepas(scip);
+
+      std::ofstream outfile("sepas.md");
+      outfile << "| separator | priority | freq | bounddist | description |" << std::endl;
+      outfile << "|:----------|---------:|-----:|----------:|:------------|" << std::endl;
+      for( i = 0; i < nsepas; ++i )
+      {
+         outfile << "| \\ref SCIP_gr_separating_" << SCIPsepaGetName(sepas[i]) << " \"" << SCIPsepaGetName(sepas[i]) << '"';
+         outfile << " | " <<  SCIPsepaGetPriority(sepas[i]) << (SCIPsepaIsDelayed(sepas[i]) ? 'd' : ' ');
+         outfile << " | " << SCIPsepaGetFreq(sepas[i]);
+         outfile << " | " << SCIPsepaGetMaxbounddist(sepas[i]);
+         outfile << " | " << SCIPsepaGetDesc(sepas[i]);
+         outfile << " |" << std::endl;
+      }
+   }
 
    delete gamsscip;
 }
