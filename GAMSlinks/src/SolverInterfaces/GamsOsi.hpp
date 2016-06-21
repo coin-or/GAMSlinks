@@ -13,6 +13,7 @@
 #include <sstream>
 
 class GamsMessageHandler;
+class GamsOutputStreamBuf;
 class OsiSolverInterface;
 
 /** GAMS interface to solvers with Osi interface */
@@ -29,7 +30,8 @@ private:
    GamsMessageHandler*   msghandler;         /**< message handler */
    OsiSolverInterface*   osi;                /**< solver interface */
    OSISOLVER             solverid;           /**< ID of used solver */
-   std::ostringstream    spxoutput;          /**< SoPlex output buffer */
+   GamsOutputStreamBuf*  spxoutputbuf;       /**< SoPlex output buffer */
+   std::ostream*         spxoutput;          /**< SoPlex output stream */
 
    /** loads problem from GMO into OSI */
    bool setupProblem();
@@ -70,7 +72,9 @@ public:
      opt(NULL),
      msghandler(NULL),
      osi(NULL),
-     solverid(solverid_)
+     solverid(solverid_),
+     spxoutputbuf(NULL),
+     spxoutput(NULL)
    { }
 
    ~GamsOsi();

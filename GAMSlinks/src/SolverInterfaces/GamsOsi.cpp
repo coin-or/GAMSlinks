@@ -97,9 +97,6 @@ static int MSKAPI mskcallback(MSKtask_t task, MSKuserhandle_t handle, MSKcallbac
 #ifdef COIN_HAS_OSISPX
 #include "OsiSpxSolverInterface.hpp"
 #include "spxout.h"  // for passing in output stringstream
-#ifndef SOPLEX_SUBVERSION
-#define SOPLEX_SUBVERSION 0
-#endif
 #endif
 
 #ifdef COIN_HAS_OSIXPR
@@ -114,6 +111,55 @@ static int XPRS_CC xprcallback(XPRSprob prob, void* vUserDat)
    return 0;
 }
 #endif
+
+/** streambuf implementation that directs output to gev streams, taken from CP Optimizer link */
+/* #define BUFFERSIZE GMS_SSSIZE */
+#define BUFFERSIZE 1
+class GamsOutputStreamBuf : public std::streambuf
+{
+private:
+   gevHandle_t gev;
+   char buffer[BUFFERSIZE+2];
+   bool tostat;
+
+public:
+   GamsOutputStreamBuf(
+      gevHandle_t gev_,
+      bool        tostat_ = false
+   )
+   : gev(gev_), tostat(tostat_)
+   {
+      setp(buffer, buffer+BUFFERSIZE);
+   }
+
+   ~GamsOutputStreamBuf()
+#ifdef _MSC_VER
+     _NOEXCEPT
+#endif
+   {
+      overflow(traits_type::eof());
+   }
+
+   int_type overflow(int_type c = traits_type::eof())
+   {
+      if( c != traits_type::eof() )
+      {
+         *pptr() = traits_type::to_char_type(c);
+         *(pptr()+1) = '\0';
+      }
+      else
+         *pptr() = '\0';
+
+      if( tostat )
+         gevLogStatPChar(gev, pbase());
+      else
+         gevLogPChar(gev, pbase());
+
+      setp(buffer, buffer+BUFFERSIZE);
+
+      return 0;
+   }
+};
 
 GamsOsi::~GamsOsi()
 {
@@ -271,13 +317,23 @@ int GamsOsi::readyAPI(
          {
 #ifdef COIN_HAS_OSIGRB
             GRBenv* grbenv = NULL;
+            int status;
 #ifdef GAMS_BUILD
             GUlicenseInit_t initType;
 
             /* Gurobi license setup */
-            if( gevgurobilice(gev, pal, (void**)&grbenv, NULL, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType) )
-               gevLogStat(gev, "Trying to use Gurobi standalone license.\n");
-
+            if( (status=gevgurobilice(gev, pal, (void**)&grbenv, NULL, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 1, &initType)) )
+            {
+               if( GRB_ERROR_NO_LICENSE == status )
+                  sprintf(buffer, "Failed to create Gurobi environment. Missing license.");
+               else
+                  sprintf(buffer, "Failed to create Gurobi environment (status=%d).", status);
+               gevLogStat(gev, buffer);
+               gmoSolveStatSet(gmo, gmoSolveStat_License);
+               gmoModelStatSet(gmo, gmoModelStat_LicenseError);
+               return 1;
+            } 
+            
             // disable Gurobi output here, so we don't get messages from model setup to stdout
             if( grbenv != NULL )
                GRBsetintparam(grbenv, GRB_INT_PAR_OUTPUTFLAG, 0);
@@ -364,12 +420,22 @@ int GamsOsi::readyAPI(
             char msg[1024];
 #ifdef GAMS_BUILD
             XPlicenseInit_t initType;
+            int initRC;
 
-            /* Xpress license setup */
-            if( gevxpresslice(gev, pal, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType, msg, sizeof(msg)) )
+            /* Xpress license initialization: calls XPRSinit() in a thread-safe way and passes in GAMS/Xpress license */
+            if( gevxpressliceInitTS(gev, pal, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType, &initRC, msg, sizeof(msg)) )
                gevLogStat(gev, "Trying to use Xpress standalone license.\n");
 #endif
-            OsiXprSolverInterface* osixpr = new OsiXprSolverInterface(0,0);
+            OsiXprSolverInterface* osixpr = new OsiXprSolverInterface(0,0);  /* also calls XPRSinit() */
+
+#ifdef GAMS_BUILD
+            /* Xpress license finalize: calls XPRSfree() in a thread-safe way
+             * However, not much should happen if the call to XPRSinit() was successful in OsiXprSolverInterface.
+             * If it wasn't, then we terminate anyway (return 1 below).
+             */
+            gevxpressliceFreeTS();
+#endif
+#if 0 // getNumInstances() is always 0 now
             if( !osixpr->getNumInstances() )
             {
                gevLogStat(gev, "Failed to setup XPRESS instance. Maybe you do not have a license?\n");
@@ -377,6 +443,7 @@ int GamsOsi::readyAPI(
                gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
             }
+#endif
             osi = osixpr;
 
             XPRSgetbanner(msg);
@@ -504,13 +571,6 @@ int GamsOsi::callSolver()
 
    double end_cputime  = CoinCpuTime();
    double end_walltime = CoinWallclockTime();
-
-   if( solverid == SOPLEX )
-   {
-      gevLogPChar(gev, spxoutput.str().c_str());
-      spxoutput.str(std::string());
-      spxoutput.clear();
-   }
 
    if( !failure )
    {
@@ -925,6 +985,8 @@ bool GamsOsi::setupParameters()
 #else
          MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_NUM_THREADS, gevThreads(gev));
 #endif
+         /* enable checks for termination criteria (#nodes, #LPs, gap) */
+         MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_DISABLE_TERM_TIME, 0.0);
          //if( gevGetIntOpt(gev, gevInteger4) )
          //	MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_MIO_CONSTRUCT_SOL, MSK_ON);
 
@@ -1049,44 +1111,26 @@ bool GamsOsi::setupCallbacks()
 #ifdef COIN_HAS_OSISPX
       case SOPLEX:
       {
-#if SOPLEX_VERSION < 220
-         soplex::Param::setVerbose(soplex::SPxOut::INFO1);
-         if( gevGetIntOpt(gev, gevLogOption) == 0 )
-         {
-            soplex::Param::setVerbose(soplex::SPxOut::ERROR);
-         }
-         else if (gevGetIntOpt(gev, gevLogOption) == 2)
-         {
-            spxoutput.str(std::string());
-            spxoutput.clear();
-            soplex::spxout.setStream(soplex::SPxOut::ERROR, spxoutput);
-            soplex::spxout.setStream(soplex::SPxOut::WARNING, spxoutput);
-            soplex::spxout.setStream(soplex::SPxOut::INFO1, spxoutput);
-            soplex::spxout.setStream(soplex::SPxOut::INFO2, spxoutput);
-            soplex::spxout.setStream(soplex::SPxOut::INFO3, spxoutput);
-            soplex::spxout.setStream(soplex::SPxOut::DEBUG, spxoutput);
-         }
-#else
          OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
          assert(osispx != NULL);
          soplex::SPxOut* spxout(osispx->getSPxOut());
          spxout->setVerbosity(soplex::SPxOut::INFO1);
+         spxoutputbuf = new GamsOutputStreamBuf(gev);
+         spxoutput = new std::ostream(spxoutputbuf);
          if( gevGetIntOpt(gev, gevLogOption) == 0 )
          {
             spxout->setVerbosity(soplex::SPxOut::ERROR);
+            spxout->setStream(soplex::SPxOut::ERROR, *spxoutput);
          }
-         else if (gevGetIntOpt(gev, gevLogOption) == 2)
+         else
          {
-            spxoutput.str(std::string());
-            spxoutput.clear();
-            spxout->setStream(soplex::SPxOut::ERROR, spxoutput);
-            spxout->setStream(soplex::SPxOut::WARNING, spxoutput);
-            spxout->setStream(soplex::SPxOut::INFO1, spxoutput);
-            spxout->setStream(soplex::SPxOut::INFO2, spxoutput);
-            spxout->setStream(soplex::SPxOut::INFO3, spxoutput);
-            spxout->setStream(soplex::SPxOut::DEBUG, spxoutput);
+            spxout->setStream(soplex::SPxOut::ERROR, *spxoutput);
+            spxout->setStream(soplex::SPxOut::WARNING, *spxoutput);
+            spxout->setStream(soplex::SPxOut::INFO1, *spxoutput);
+            spxout->setStream(soplex::SPxOut::INFO2, *spxoutput);
+            spxout->setStream(soplex::SPxOut::INFO3, *spxoutput);
+            spxout->setStream(soplex::SPxOut::DEBUG, *spxoutput);
          }
-#endif
          break;
       }
 #endif
@@ -1125,32 +1169,21 @@ bool GamsOsi::clearCallbacks()
 #ifdef COIN_HAS_OSISPX
       case SOPLEX:
       {
-#if SOPLEX_VERSION < 220
-         soplex::Param::setVerbose(soplex::SPxOut::ERROR);
-         if (gevGetIntOpt(gev, gevLogOption) == 2)
-         {
-            soplex::spxout.setStream(soplex::SPxOut::ERROR, std::cerr);
-            soplex::spxout.setStream(soplex::SPxOut::WARNING, std::cerr);
-            soplex::spxout.setStream(soplex::SPxOut::INFO1, std::cout);
-            soplex::spxout.setStream(soplex::SPxOut::INFO2, std::cout);
-            soplex::spxout.setStream(soplex::SPxOut::INFO3, std::cout);
-            soplex::spxout.setStream(soplex::SPxOut::DEBUG, std::cout);
-         }
-#else
          OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
          assert(osispx != NULL);
          soplex::SPxOut* spxout(osispx->getSPxOut());
          spxout->setVerbosity(soplex::SPxOut::ERROR);
-         if (gevGetIntOpt(gev, gevLogOption) == 2)
-         {
-            spxout->setStream(soplex::SPxOut::ERROR, std::cerr);
-            spxout->setStream(soplex::SPxOut::WARNING, std::cerr);
-            spxout->setStream(soplex::SPxOut::INFO1, std::cout);
-            spxout->setStream(soplex::SPxOut::INFO2, std::cout);
-            spxout->setStream(soplex::SPxOut::INFO3, std::cout);
-            spxout->setStream(soplex::SPxOut::DEBUG, std::cout);
-         }
-#endif
+         spxout->setStream(soplex::SPxOut::ERROR, std::cerr);
+         spxout->setStream(soplex::SPxOut::WARNING, std::cerr);
+         spxout->setStream(soplex::SPxOut::INFO1, std::cout);
+         spxout->setStream(soplex::SPxOut::INFO2, std::cout);
+         spxout->setStream(soplex::SPxOut::INFO3, std::cout);
+         spxout->setStream(soplex::SPxOut::DEBUG, std::cout);
+
+         delete spxoutput;
+         spxoutput = NULL;
+         delete spxoutputbuf;
+         spxoutputbuf = NULL;
          break;
       }
 #endif
