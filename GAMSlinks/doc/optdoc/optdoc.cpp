@@ -765,6 +765,7 @@ void printIpoptOptions()
           it->second->Name() == "print_user_options" ||
           it->second->Name() == "nlp_lower_bound_inf" ||
           it->second->Name() == "nlp_upper_bound_inf" ||
+          it->second->Name() == "num_linear_variables" ||
           it->second->Name() == "skip_finalize_solution_call" ||
           it->second->Name() == "warm_start_entire_iterate" ||
           it->second->Name() == "warm_start_same_structure"
@@ -1008,6 +1009,7 @@ void printBonminOptions()
           it->second->Name() == "print_user_options" ||
           it->second->Name() == "nlp_lower_bound_inf" ||
           it->second->Name() == "nlp_upper_bound_inf" ||
+          it->second->Name() == "num_linear_variables" ||
           it->second->Name() == "skip_finalize_solution_call" ||
           it->second->Name() == "warm_start_entire_iterate" ||
           it->second->Name() == "warm_start_same_structure"
@@ -1358,6 +1360,7 @@ void printCouenneOptions()
           it->second->Name() == "print_user_options" ||
           it->second->Name() == "nlp_lower_bound_inf" ||
           it->second->Name() == "nlp_upper_bound_inf" ||
+          it->second->Name() == "num_linear_variables" ||
           it->second->Name() == "skip_finalize_solution_call" ||
           it->second->Name() == "warm_start_entire_iterate" ||
           it->second->Name() == "warm_start_same_structure"
