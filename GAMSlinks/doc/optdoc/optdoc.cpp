@@ -1,6 +1,6 @@
-// Copyright (C) GAMS Development and others 2010-2011
+// Copyright (C) GAMS Development and others 2010 and later
 // All Rights Reserved.
-// This code is published under the Eclipse Public License.
+// The following code is distributed under the terms of the ZIB Academic Licence.
 //
 // Author: Stefan Vigerske
 
@@ -36,6 +36,107 @@
 #include "scip/pub_paramset.h"
 #include "GamsScip.hpp"
 #endif
+
+#ifdef COIN_HAS_OSISPX
+#include "soplex.h"
+
+using namespace soplex;
+
+/// class of parameter settings
+class SoPlex::Settings
+{
+public:
+   /// array of names for boolean parameters
+   static std::string _boolParamName[SoPlex::BOOLPARAM_COUNT];
+
+   /// array of names for integer parameters
+   static std::string _intParamName[SoPlex::INTPARAM_COUNT];
+
+   /// array of names for real parameters
+   static std::string _realParamName[SoPlex::REALPARAM_COUNT];
+
+#ifdef SOPLEX_WITH_RATIONALPARAM
+   /// array of names for rational parameters
+   static std::string _rationalParamName[SoPlex::RATIONALPARAM_COUNT];
+#endif
+
+   /// array of descriptions for boolean parameters
+   static std::string _boolParamDescription[SoPlex::BOOLPARAM_COUNT];
+
+   /// array of descriptions for integer parameters
+   static std::string _intParamDescription[SoPlex::INTPARAM_COUNT];
+
+   /// array of descriptions for real parameters
+   static std::string _realParamDescription[SoPlex::REALPARAM_COUNT];
+
+#ifdef SOPLEX_WITH_RATIONALPARAM
+   /// array of descriptions for rational parameters
+   static std::string _rationalParamDescription[SoPlex::RATIONALPARAM_COUNT];
+#endif
+
+   /// array of default values for boolean parameters
+   static bool _boolParamDefault[SoPlex::BOOLPARAM_COUNT];
+
+   /// array of default values for integer parameters
+   static int _intParamDefault[SoPlex::INTPARAM_COUNT];
+
+   /// array of default values for real parameters
+   static Real _realParamDefault[SoPlex::REALPARAM_COUNT];
+
+#ifdef SOPLEX_WITH_RATIONALPARAM
+   /// array of default values for rational parameters
+   static Rational _rationalParamDefault[SoPlex::RATIONALPARAM_COUNT];
+#endif
+
+   /// array of lower bounds for int parameter values
+   static int _intParamLower[SoPlex::INTPARAM_COUNT];
+
+   /// array of upper bounds for int parameter values
+   static int _intParamUpper[SoPlex::INTPARAM_COUNT];
+
+   /// array of lower bounds for real parameter values
+   static Real _realParamLower[SoPlex::REALPARAM_COUNT];
+
+   /// array of upper bounds for real parameter values
+   static Real _realParamUpper[SoPlex::REALPARAM_COUNT];
+
+#ifdef SOPLEX_WITH_RATIONALPARAM
+   /// array of lower bounds for rational parameter values
+   static Rational _rationalParamLower[SoPlex::RATIONALPARAM_COUNT];
+
+   /// array of upper bounds for rational parameter values
+   static Rational _rationalParamUpper[SoPlex::RATIONALPARAM_COUNT];
+#endif
+
+   /// have static arrays been initialized?
+   static bool _defaultsAndBoundsInitialized;
+
+   /// array of current boolean parameter values
+   bool _boolParamValues[SoPlex::BOOLPARAM_COUNT];
+
+   /// array of current integer parameter values
+   int _intParamValues[SoPlex::INTPARAM_COUNT];
+
+   /// array of current real parameter values
+   Real _realParamValues[SoPlex::REALPARAM_COUNT];
+
+#ifdef SOPLEX_WITH_RATIONALPARAM
+   /// array of current rational parameter values
+   Rational _rationalParamValues[SoPlex::RATIONALPARAM_COUNT];
+#endif
+
+   /// default constructor initializing default settings
+   Settings();
+
+   /// copy constructor
+   Settings(const Settings& settings);
+
+   /// assignment operator
+   Settings& operator=(const Settings& settings);
+};
+#endif
+
+// The following code is published under the Eclipse Public License.
 
 enum OPTTYPE
 {
@@ -2097,6 +2198,109 @@ void printSCIPOptions()
 }
 #endif
 
+#if COIN_HAS_OSISPX
+static
+double translateSoplexInfinity(
+   double val
+   )
+{
+   if( val >=  1e100 )
+      return  DBL_MAX;
+   if( val <= -1e100 )
+      return -DBL_MAX;
+   return val;
+}
+
+void printSoPlexOptions()
+{
+   SoPlex soplex;
+
+   OPTVAL defaultval, minval, maxval;
+   ENUMVAL enumval;
+   std::string tmpstr;
+   std::string descr;
+   std::string defaultdescr;
+
+   GamsOptions gmsopt("soplex");
+   gmsopt.setSeparator("=");
+   // gmsopt.setStringQuote("\"");
+   gmsopt.setGroup("soplex");
+
+   assert(SoPlex::Settings::_defaultsAndBoundsInitialized);
+
+   for( int i = 0; i < SoPlex::BOOLPARAM_COUNT; ++i )
+   {
+      if( i == SoPlex::EQTRANS )
+         continue;
+      if( i == SoPlex::RATFAC )
+         continue;
+      if( i == SoPlex::RATREC )
+         continue;
+
+      defaultval.boolval = SoPlex::Settings::_boolParamDefault[i];
+      minval.boolval = 0;
+      maxval.boolval = 1;
+      defaultdescr = std::string();
+
+      gmsopt.collect(
+         std::string("bool:") + SoPlex::Settings::_boolParamName[i],
+         SoPlex::Settings::_boolParamDescription[i], std::string(),
+         OPTTYPE_BOOL, defaultval, minval, maxval, enumval, defaultdescr);
+   }
+
+   for( int i = 0; i < SoPlex::INTPARAM_COUNT; ++i )
+   {
+      if( i == SoPlex::OBJSENSE )
+         continue;
+      if( i == SoPlex::SYNCMODE )
+         continue;
+      if( i == SoPlex::READMODE )
+         continue;
+      if( i == SoPlex::SOLVEMODE )
+         continue;
+      if( i == SoPlex::CHECKMODE )
+         continue;
+      if( i == SoPlex::RATFAC_MINSTALLS )
+         continue;
+
+      // TODO recognize intenums
+      defaultval.intval = SoPlex::Settings::_intParamDefault[i];
+      minval.intval = SoPlex::Settings::_intParamLower[i];
+      maxval.intval = SoPlex::Settings::_intParamUpper[i];
+      defaultdescr = std::string();
+
+      if( i == SoPlex::ITERLIMIT )
+         defaultdescr = "GAMS iterlim";
+
+      gmsopt.collect(
+         std::string("int:") + SoPlex::Settings::_intParamName[i],
+         SoPlex::Settings::_intParamDescription[i], std::string(),
+         OPTTYPE_INTEGER, defaultval, minval, maxval, enumval, defaultdescr);
+   }
+
+   for( int i = 0; i < SoPlex::REALPARAM_COUNT; ++i )
+   {
+      if( i == SoPlex::RATREC_FREQ )
+         continue;
+
+      defaultval.realval = translateSoplexInfinity(SoPlex::Settings::_realParamDefault[i]);
+      minval.realval = translateSoplexInfinity(SoPlex::Settings::_realParamLower[i]);
+      maxval.realval = translateSoplexInfinity(SoPlex::Settings::_realParamUpper[i]);
+      defaultdescr = std::string();
+
+      if( i == SoPlex::TIMELIMIT )
+         defaultdescr = "GAMS reslim";
+
+      gmsopt.collect(
+         std::string("real:") + SoPlex::Settings::_realParamName[i],
+         SoPlex::Settings::_realParamDescription[i], std::string(),
+         OPTTYPE_REAL, defaultval, minval, maxval, enumval, defaultdescr);
+   }
+
+   gmsopt.write(true);
+}
+#endif
+
 int main(int argc, char** argv)
 {
 #if COIN_HAS_IPOPT
@@ -2113,5 +2317,9 @@ int main(int argc, char** argv)
 
 #if COIN_HAS_SCIP
    printSCIPOptions();
+#endif
+
+#if COIN_HAS_OSISPX
+   printSoPlexOptions();
 #endif
 }
