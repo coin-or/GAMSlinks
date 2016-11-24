@@ -375,6 +375,7 @@ int GamsOsi::readyAPI(
             if( gevmoseklice(gev, pal, mskenv, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType) )
                gevLogStat(gev, "Trying to use Mosek standalone license.\n");
 
+#if MSK_VERSION_MAJOR < 8  /* Erling claims that MSK_initenv got deprecated in Mosek 7.1 */
             if( MSK_initenv(mskenv) )
             {
                gevLogStat(gev, "Failed to initialize Mosek environment. Maybe you do not have a license?");
@@ -382,6 +383,7 @@ int GamsOsi::readyAPI(
                gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
             }
+#endif
             osi = new OsiMskSolverInterface(mskenv);
 #else
             osi = new OsiMskSolverInterface();
@@ -995,8 +997,7 @@ bool GamsOsi::setupParameters()
             char buffer[GMS_SSSIZE];
             gmoNameOptFile(gmo, buffer);
             gevLogStatPChar(gev, "Let MOSEK read option file "); gevLogStat(gev, buffer);
-            MSK_putstrparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_SPAR_PARAM_READ_FILE_NAME, buffer);
-            MSK_readparamfile(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL));
+            MSK_readparamfile(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), buffer);
          }
 
          break;
