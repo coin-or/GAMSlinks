@@ -42,6 +42,9 @@
 using namespace soplex;
 #endif
 
+extern "C" const char* SCIPgetBuildFlags();
+extern "C" const char* SCIPgetBuildFlags() { return ""; }
+
 enum OPTTYPE
 {
    OPTTYPE_BOOL,
@@ -2130,8 +2133,6 @@ void printSoPlexOptions()
    // gmsopt.setStringQuote("\"");
    gmsopt.setGroup("soplex");
 
-   assert(SoPlex::Settings::_defaultsAndBoundsInitialized);
-
    for( int i = 0; i < SoPlex::BOOLPARAM_COUNT; ++i )
    {
       if( i == SoPlex::EQTRANS )
@@ -2141,14 +2142,14 @@ void printSoPlexOptions()
       if( i == SoPlex::RATREC )
          continue;
 
-      defaultval.boolval = SoPlex::Settings::_boolParamDefault[i];
+      defaultval.boolval = SoPlex::Settings::boolParam.defaultValue[i];
       minval.boolval = 0;
       maxval.boolval = 1;
       defaultdescr = std::string();
 
       gmsopt.collect(
-         std::string("bool:") + SoPlex::Settings::_boolParamName[i],
-         SoPlex::Settings::_boolParamDescription[i], std::string(),
+         std::string("bool:") + SoPlex::Settings::boolParam.name[i],
+         SoPlex::Settings::boolParam.description[i], std::string(),
          OPTTYPE_BOOL, defaultval, minval, maxval, enumval, defaultdescr);
    }
 
@@ -2168,17 +2169,17 @@ void printSoPlexOptions()
          continue;
 
       // TODO recognize intenums
-      defaultval.intval = SoPlex::Settings::_intParamDefault[i];
-      minval.intval = SoPlex::Settings::_intParamLower[i];
-      maxval.intval = SoPlex::Settings::_intParamUpper[i];
+      defaultval.intval = SoPlex::Settings::intParam.defaultValue[i];
+      minval.intval = SoPlex::Settings::intParam.lower[i];
+      maxval.intval = SoPlex::Settings::intParam.upper[i];
       defaultdescr = std::string();
 
       if( i == SoPlex::ITERLIMIT )
          defaultdescr = "GAMS iterlim";
 
       gmsopt.collect(
-         std::string("int:") + SoPlex::Settings::_intParamName[i],
-         SoPlex::Settings::_intParamDescription[i], std::string(),
+         std::string("int:") + SoPlex::Settings::intParam.name[i],
+         SoPlex::Settings::intParam.description[i], std::string(),
          OPTTYPE_INTEGER, defaultval, minval, maxval, enumval, defaultdescr);
    }
 
@@ -2187,17 +2188,17 @@ void printSoPlexOptions()
       if( i == SoPlex::RATREC_FREQ )
          continue;
 
-      defaultval.realval = translateSoplexInfinity(SoPlex::Settings::_realParamDefault[i]);
-      minval.realval = translateSoplexInfinity(SoPlex::Settings::_realParamLower[i]);
-      maxval.realval = translateSoplexInfinity(SoPlex::Settings::_realParamUpper[i]);
+      defaultval.realval = translateSoplexInfinity(SoPlex::Settings::realParam.defaultValue[i]);
+      minval.realval = translateSoplexInfinity(SoPlex::Settings::realParam.lower[i]);
+      maxval.realval = translateSoplexInfinity(SoPlex::Settings::realParam.upper[i]);
       defaultdescr = std::string();
 
       if( i == SoPlex::TIMELIMIT )
          defaultdescr = "GAMS reslim";
 
       gmsopt.collect(
-         std::string("real:") + SoPlex::Settings::_realParamName[i],
-         SoPlex::Settings::_realParamDescription[i], std::string(),
+         std::string("real:") + SoPlex::Settings::realParam.name[i],
+         SoPlex::Settings::realParam.description[i], std::string(),
          OPTTYPE_REAL, defaultval, minval, maxval, enumval, defaultdescr);
    }
 
