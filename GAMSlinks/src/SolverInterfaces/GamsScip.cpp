@@ -31,6 +31,9 @@
 
 #include "lpiswitch.h"
 
+extern "C" const char* SCIPgetBuildFlags();
+extern "C" const char* SCIPgetBuildFlags() { return ""; }
+
 static
 SCIP_DECL_ERRORPRINTING(printErrorGev)
 {
@@ -45,7 +48,7 @@ SCIP_DECL_MESSAGEWARNING(GamsScipPrintLogStat)
    assert(file != NULL);
 
    if( file != stderr )
-      fprintf(file, msg);
+      fputs(msg, file);
    else
    {
       void* gev = (void*)SCIPmessagehdlrGetData(messagehdlr);
@@ -60,7 +63,7 @@ SCIP_DECL_MESSAGEINFO(GamsScipPrintLog)
    assert(file != NULL);
 
    if( file != stdout )
-      fprintf(file, msg);
+      fputs(msg, file);
    else
    {
       void* gev = (void*)SCIPmessagehdlrGetData(messagehdlr);
@@ -160,8 +163,8 @@ int GamsScip::readyAPI(
    // check for academic license, or if we run in demo mode
    if( !checkScipLicense(gmo, pal) )
    {
-      gevLogStat(gev, "*** Use of SCIP is limited to academic users.");
-      gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");
+      gevLogStat(gev, "*** No SCIP license available.");
+      gevLogStat(gev, "*** Please contact sales@gams.com to arrange for a license.");
       gmoSolveStatSet(gmo, gmoSolveStat_License);
       gmoModelStatSet(gmo, gmoModelStat_LicenseError);
       return 1;
@@ -418,11 +421,27 @@ SCIP_RETCODE GamsScip::setupSCIP()
    return SCIP_OKAY;
 }
 
+static
+void interruptDuringFree(void)
+{
+   printf("SCIP is freeing its memory. Please be patient...\n");
+}
+
 SCIP_RETCODE GamsScip::freeSCIP()
 {
    if( scip != NULL )
    {
+      /* catch Ctrl+C while freeing SCIP
+       * This can take several seconds after a longer run and the SCIP
+       * signal handler is not in place at this point anymore.
+       * Without it, the run will be aborted here, thereby not returning
+       * results back to GAMS.
+       */
+      gevTerminateSet(gev, NULL, (void*)&interruptDuringFree);
+
       SCIP_CALL( SCIPfree(&scip) );
+
+      gevTerminateUninstall(gev);
    }
 
    return SCIP_OKAY;

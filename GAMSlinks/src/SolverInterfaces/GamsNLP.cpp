@@ -661,7 +661,9 @@ bool GamsNLP::intermediate_callback(
    if( gevTerminateGet(gev) )
       return false;
 
-   /* store current solution for later use, if we should report solution with minimal infeasibility and current point has smaller scaled constraint violation than previously seen */
+   /* store current solution for later use, if we should report solution with minimal infeasibility and current point has smaller scaled constraint violation than previously seen
+    * @TODO the quantities in ip_data correspond to the scaled problem, we should apply unscaling to get to the user problem, see also OrigIpoptNLP::FinalizeSolution()
+    */
    if( reportmininfeas && mode == RegularMode && ip_cq->curr_nlp_constraint_violation(NORM_MAX) < mininfeasconviolsc )
    {
       Ipopt::TNLPAdapter* tnlp_adapter;

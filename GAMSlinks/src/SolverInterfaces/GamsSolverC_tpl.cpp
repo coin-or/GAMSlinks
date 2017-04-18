@@ -6,6 +6,8 @@
 
 #include <cstdlib>
 #include <cassert>
+#include <cstring>
+#include <exception>
 
 #include "GamsSolverC_tpl.h"
 
@@ -27,8 +29,17 @@ DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,Create)(void** Cptr, cha
    assert(msgBufLen > 0);
    assert(msgBuf != NULL);
 
-   *Cptr = (void*) new GAMSSOLVERC_CLASS(GAMSSOLVERC_CONSTRARGS);
-   msgBuf[0] = 0;
+   try
+   {
+      *Cptr = (void*) new GAMSSOLVERC_CLASS(GAMSSOLVERC_CONSTRARGS);
+      msgBuf[0] = 0;
+   }
+   catch( const std::exception& e )
+   {
+      strncpy(msgBuf, e.what(), msgBufLen);
+      msgBuf[msgBufLen-1] = '\0';
+      return 1;
+   }
 
    return 1;
 }
@@ -37,13 +48,22 @@ DllExport void STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,Free)(void** Cptr)
 {
    assert(Cptr != NULL);
    delete (GAMSSOLVERC_CLASS*)*Cptr;
+
    *Cptr = NULL;
 }
 
 DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,CallSolver)(void* Cptr)
 {
    assert(Cptr != NULL);
-   return ((GAMSSOLVERC_CLASS*)Cptr)->callSolver();
+   try
+   {
+      return ((GAMSSOLVERC_CLASS*)Cptr)->callSolver();
+   }
+   catch( const std::exception& e )
+   {
+      fprintf(stderr, "Exception from CallSolver: %s\n", e.what());
+      return 1;
+   }
 }
 
 DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,HaveModifyProblem)(void* Cptr)
@@ -54,7 +74,15 @@ DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,HaveModifyProblem)(void*
 DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,ModifyProblem)(void* Cptr)
 {
    assert(Cptr != NULL);
-   return ((GAMSSOLVERC_CLASS*)Cptr)->modifyProblem();
+   try
+   {
+      return ((GAMSSOLVERC_CLASS*)Cptr)->modifyProblem();
+   }
+   catch( const std::exception& e )
+   {
+      fprintf(stderr, "Exception from ModifyProblem: %s\n", e.what());
+      return 1;
+   }
 }
 
 DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr)
@@ -66,7 +94,15 @@ DllExport int STDCALL GAMSSOLVERC_CONCAT(GAMSSOLVERC_ID,ReadyAPI)(void* Cptr, gm
       return 1;
    if( !gevGetReady(msg, sizeof(msg)) )
       return 1;
-   return ((GAMSSOLVERC_CLASS*)Cptr)->readyAPI(Gptr, Optr);
+   try
+   {
+      return ((GAMSSOLVERC_CLASS*)Cptr)->readyAPI(Gptr, Optr);
+   }
+   catch( const std::exception& e )
+   {
+      fprintf(stderr, "Exception from readyAPI: %s\n", e.what());
+      return 1;
+   }
 }
 
 #else
