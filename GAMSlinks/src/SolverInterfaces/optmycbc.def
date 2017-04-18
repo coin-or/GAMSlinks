@@ -12,7 +12,6 @@ idiotcrash enumint 0 -1 1 2 idiot crash
 sprintcrash enumint 0 -1 1 2 sprint crash
  -1 1
  0 1
-sifting integer 0 -1 -1 5000000 1 2 synonym for sprint crash
 crash enumstr 0 "off" 1 2 use crash method to get dual feasible
  "off" 1
  "on" 1
@@ -20,6 +19,8 @@ crash enumstr 0 "off" 1 2 use crash method to get dual feasible
  "halim_solow" 1
 maxfactor integer 0 200 1 999999 1 2 maximum number of iterations between refactorizations
 crossover boolean 0 1 1 2 crossover to simplex algorithm after barrier
+ 0
+ 1
 dualpivot enumstr 0 "auto" 1 2 dual pivot choice algorithm
  "auto" 1
  "dantzig" 1
@@ -33,12 +34,16 @@ primalpivot enumstr 0 "auto" 1 2 primal pivot choice algorithm
  "exact" 1
  "change" 1
 perturbation boolean 0 1 1 2 perturbation of problem
+ 0
+ 1
 scaling enumstr 0 "auto" 1 2 scaling method
  "off" 1
  "auto" 1
  "equilibrium" 1
  "geometric" 1
 presolve boolean 0 1 1 2 switch for initial presolve of LP
+ 0
+ 1
 passpresolve integer 0 5 -200 100 1 2 how many passes to do in presolve
 randomseedclp integer 0 -1 -1 maxint 1 2 random seed for CLP
 tol_dual double 0 1e-7 0 maxdouble 1 2 dual feasibility tolerance
@@ -48,7 +53,7 @@ startalg enumstr 0 "dual" 1 2 LP solver for root node
  "primal" 1
  "dual" 1
  "barrier" 1
-threads integer 0 1 0 99 1 3 number of threads to use (experimental on Windows)
+threads integer 0 1 0 99 1 3 number of threads to use
 parallelmode enumstr 0 "deterministic" 1 3 whether to run opportunistic or deterministic
  "opportunistic" 1
  "deterministic" 1
@@ -57,6 +62,8 @@ strategy enumint 0 1 1 3 switches on groups of features
  1 1
  2 1
 mipstart boolean 0 0 1 3 whether it should be tried to use the initial variable levels as initial MIP solution
+ 0
+ 1
 tol_integer double 0 1e-6 0 maxdouble 1 3 tolerance for integrality
 sollim enumint 0 -1 1 3 limit on number of solutions
  -1 1
@@ -89,11 +96,13 @@ preprocess enumstr 0 "on" 1 3 integer presolve
  "sos" 1
  "trysos" 1
 printfrequency integer 0 0 0 maxint 1 3 frequency of status prints
- 0 1
+ 0
 randomseedcbc integer 0 -1 -1 maxint 1 3 random seed for CBC
 loglevel integer 0 1 0 maxint 1 3 CBC loglevel
 increment double 0 0 0 maxdouble 1 3 increment of cutoff when new incumbent
 solvefinal boolean 0 1 1 3 final solve of MIP with fixed discrete variables
+ 0
+ 1
 solvetrace string 0 "" 1 3 name of trace file for solving information
 solvetracenodefreq integer 0 100 0 maxint 1 3 frequency in number of nodes for writing to solve trace file
 solvetracetimefreq double 0 5 0 maxdouble 1 3 frequency in seconds for writing to solve trace file
@@ -103,6 +112,8 @@ optca double 0 0 0 maxdouble 1 3 absolute stopping tolerance
 optcr double 0 0.1 0 maxdouble 1 3 relative stopping tolerance
 cutoff double 0 0 mindouble maxdouble 1 3 cutoff for objective function value
 cutoffconstraint boolean 0 0 1 3 whether to add a constraint from the objective function
+ 0
+ 1
 cutdepth enumint 0 -1 1 4 depth in tree at which cuts are applied
  -1 1
 cut_passes_root integer 0 -1 -9999999 9999999 1 4 number of cut passes at root node
@@ -115,6 +126,7 @@ cuts enumstr 0 "on" 1 4 global switch for cutgenerators
  "ifmove" 1
  "forceon" 1
 cliquecuts string 0 "ifmove" 1 4 Clique Cuts
+conflictcuts boolean 0 0 1 4 Conflict Cuts
 flowcovercuts string 0 "ifmove" 1 4 Flow Cover Cuts
 gomorycuts string 0 "ifmove" 1 4 Gomory Cuts
 gomorycuts2 enumstr 0 "off" 1 4 Gomory Cuts 2nd implementation
@@ -158,34 +170,74 @@ zerohalfcuts enumstr 0 "off" 1 4 Zero-Half Cuts
  "forceon" 1
  "onglobal" 1
 heuristics boolean 0 1 1 5 global switch for heuristics
+ 0
+ 1
 combinesolutions boolean 0 1 1 5 combine solutions heuristic
+ 0
+ 1
 dins boolean 0 0 1 5 distance induced neighborhood search
+ 0
+ 1
 divingrandom boolean 0 0 1 5 turns on random diving heuristic
+ 0
+ 1
 divingcoefficient boolean 0 1 1 5 coefficient diving heuristic
+ 0
+ 1
 divingfractional boolean 0 0 1 5 fractional diving heuristic
+ 0
+ 1
 divingguided boolean 0 0 1 5 guided diving heuristic
+ 0
+ 1
 divinglinesearch boolean 0 0 1 5 line search diving heuristic
+ 0
+ 1
 divingpseudocost boolean 0 0 1 5 pseudo cost diving heuristic
+ 0
+ 1
 divingvectorlength boolean 0 0 1 5 vector length diving heuristic
+ 0
+ 1
 feaspump boolean 0 1 1 5 feasibility pump
+ 0
+ 1
 feaspump_passes integer 0 20 0 10000 1 5 number of feasibility passes
 greedyheuristic enumstr 0 "on" 1 5 greedy heuristic
  "off" 1
  "on" 1
  "root" 1
 localtreesearch boolean 0 0 1 5 local tree search heuristic
+ 0
+ 1
 naiveheuristics boolean 0 0 1 5 naive heuristics
+ 0
+ 1
 pivotandfix boolean 0 0 1 5 pivot and fix heuristic
+ 0
+ 1
 randomizedrounding boolean 0 0 1 5 randomized rounding heuristis
+ 0
+ 1
 rens boolean 0 0 1 5 relaxation enforced neighborhood search
+ 0
+ 1
 rins boolean 0 0 1 5 relaxed induced neighborhood search
+ 0
+ 1
 roundingheuristic boolean 0 1 1 5 rounding heuristic
+ 0
+ 1
 vubheuristic integer 0 0 -2 20 1 5 VUB heuristic
 proximitysearch enumint 0 0 1 5 proximity search heuristic
  0 1
  1 1
 nobounds immediate nobounds 0 1 ignores bounds on options
 readfile immediate readfile 0 1 read secondary option file
+*
+* synonym section
+*
+sifting synonym sprintcrash
 *
 * Groups
 * <group-ident> group <group-number <help-context> <help-text>

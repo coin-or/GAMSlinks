@@ -1,4 +1,3 @@
-$setglobal PDFLINK coin
 $eolcom //
 set g Cbc Option Groups /
         general        General Options
@@ -25,7 +24,6 @@ set g Cbc Option Groups /
       iterlim                iteration limit
       idiotcrash             idiot crash
       sprintcrash            sprint crash
-      sifting                synonym for sprint crash
       crash                  use crash method to get dual feasible
       maxfactor              maximum number of iterations between refactorizations
       crossover              crossover to simplex algorithm after barrier
@@ -41,7 +39,7 @@ set g Cbc Option Groups /
       tol_presolve           tolerance used in presolve
       startalg               LP solver for root node
 *MIP options
-      threads                number of threads to use (experimental on Windows)
+      threads                number of threads to use
       parallelmode           whether to run opportunistic or deterministic
       strategy               switches on groups of features
       mipstart               whether it should be tried to use the initial variable levels as initial MIP solution
@@ -77,6 +75,7 @@ set g Cbc Option Groups /
       cut_passes_slow        number of cut passes for slow cut generators
       cuts                   global switch for cutgenerators
       cliquecuts             Clique Cuts
+      conflictcuts           Conflict Cuts
       flowcovercuts          Flow Cover Cuts
       gomorycuts             Gomory Cuts
       gomorycuts2            Gomory Cuts 2nd implementation
@@ -155,7 +154,6 @@ lpoptions.(
   iterlim              .i.(def 10000)
   idiotcrash           .i.(def -1, lo -1, up 999999)
   sprintcrash          .i.(def -1, lo -1, up 5000000)
-  sifting              .i.(def -1, lo -1, up 5000000)
   crash                .s.(def off)
   maxfactor            .i.(def 200, lo 1, up 999999)
   crossover            .b.(def 1)
@@ -173,19 +171,19 @@ lpoptions.(
 )
 mipgeneral.(
   mipstart             .b.(def 0)
-  strategy             .i.(def 1, lo 0, up 2)
+  strategy             .i.(def 1, up 2)
   tol_integer          .r.(def 1e-6)
   sollim               .i.(def -1, lo -1, up 2147483647)
   dumpsolutions        .s.(def '')
   maxsol               .i.(def 100)
-  strongbranching      .i.(def 5, lo 0, up 999999)
+  strongbranching      .i.(def 5, up 999999)
   trustpseudocosts     .i.(def 5, lo -1, up 2000000)
   coststrategy         .s.(def off)
   extravariables       .i.(def 0)
   multiplerootpasses   .i.(def 0, up 100000000)
   nodestrategy         .s.(def fewest)
   preprocess           .s.(def on)
-  threads              .i.(def 1, lo 0, up 99)
+  threads              .i.(def 1, up 99)
   parallelmode         .s.(def deterministic) 
   printfrequency       .i.(def 0)
   randomseedcbc        .i.(def -1, lo -1)
@@ -209,12 +207,13 @@ mipcuts.(
   cut_passes_slow      .i.(def 10, lo -1)
   cuts                 .s.(def on)
   cliquecuts           .s.(def ifmove)
+  conflictcuts         .b.(def 0)
   flowcovercuts        .s.(def ifmove)
   gomorycuts           .s.(def ifmove)
   gomorycuts2          .s.(def off)
   knapsackcuts         .s.(def ifmove)
   liftandprojectcuts   .s.(def off)
-  mircuts        		   .s.(def ifmove)
+  mircuts              .s.(def ifmove)
   twomircuts           .s.(def root)
   probingcuts          .s.(def ifmove)
   reduceandsplitcuts   .s.(def off)
@@ -234,7 +233,7 @@ mipheu.(
   divingpseudocost     .b.(def 0)
   divingvectorlength   .b.(def 0)
   feaspump             .b.(def 1)
-  feaspump_passes      .i.(def 20, lo 0, up 10000)
+  feaspump_passes      .i.(def 20, up 10000)
   greedyheuristic      .s.(def on)
   localtreesearch      .b.(def 0)
   naiveheuristics      .b.(def 0)
@@ -249,22 +248,22 @@ mipheu.(
 $ontext
 bch.(
             usercutcall      .s.(def '')
-            usercutfirst     .i.(def 10, lo 0, up maxint)
-            usercutfreq      .i.(def 10, lo 0, up maxint)
-            usercutinterval  .i.(def 100, lo 0, up maxint)
-            usercutmult      .i.(def 2, lo 0, up maxint)
+            usercutfirst     .i.(def 10)
+            usercutfreq      .i.(def 10)
+            usercutinterval  .i.(def 100)
+            usercutmult      .i.(def 2)
             usercutnewint    .b.(def 0)
             usergdxin        .s.(def 'bchin.gdx')
             usergdxname      .s.(def 'bchout.gdx')
             usergdxnameinc   .s.(def 'bchout_i.gdx')
             usergdxprefix    .s.(def '')
             userheurcall     .s.(def '')
-            userheurfirst    .i.(def 10, lo 0, up maxint)
-            userheurfreq     .i.(def 10, lo 0, up maxint)
-            userheurinterval .i.(def 100, lo 0, up maxint)
-            userheurmult     .i.(def 2, lo 0, up maxint)
+            userheurfirst    .i.(def 10)
+            userheurfreq     .i.(def 10)
+            userheurinterval .i.(def 100)
+            userheurmult     .i.(def 2)
             userheurnewint   .b.(def 0)
-            userheurobjfirst .i.(def 0, lo 0, up maxint)
+            userheurobjfirst .i.(def 0)
 *            userincbcall     .s.(def '')
 *            userincbicall    .s.(def '')
             userkeep         .b.(def 0)
@@ -345,8 +344,8 @@ $offtext
    coststrategy.(   off, priorities, columnorder, binaryfirst, binarylast, length )
    nodestrategy.(   hybrid, fewest, depth, upfewest, downfewest, updepth, downdepth )
    preprocess.(     off, on, equal, equalall, sos, trysos )
-   printfrequency.( 0 )
-   solvefinal.(     0, 1)
+   printfrequency.(  0 )
+   solvefinal.(      0, 1)
    parallelmode.(   opportunistic, deterministic )   
 *   usercutnewint.(   0, 1)
 *   userheurnewint.(   0, 1)
@@ -430,6 +429,9 @@ $offtext
                     sos           SOS
                     trysos        TrySOS )
  /
+ os(o,*) Synonyms /
+   sprintcrash .(sifting)
+ /
 
  im  immediates recognized  / EolFlag , ReadFile, Message, NoBounds /
  immediate(o,im)   / NoBounds.NoBounds, ReadFile.ReadFile /
@@ -443,10 +445,11 @@ $offtext
                      cutoff     'GAMS cutoff'
                      increment  'GAMS cheat'
                      threads    'GAMS threads'
-                     cut_passes_root '100 passes if the MIP has less than 500 columns, 100 passes (but stop if the drop in the objective function value is small) if it has less than 5000 columns, and 20 passes otherwise.'
+                     cut_passes_root '20 or 100'
                    /
  oep(o) / mipstart, crossover, perturbation, presolve, printfrequency,
     heuristics, combinesolutions, dins, divingrandom, divingcoefficient, divingfractional, divingguided, divinglinesearch, divingpseudocost, divingvectorlength,
     feaspump, localtreesearch, naiveheuristics, pivotandfix, randomizedrounding, rens, rins, roundingheuristic, solvefinal, cutoffconstraint
 *    ,usercutnewint, userheurnewint
-    /;
+    /
+;

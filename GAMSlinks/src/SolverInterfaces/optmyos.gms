@@ -1,9 +1,9 @@
-$setglobal PDFLINK coin
+$setglobal SHORTDOCONLY
 $eolcom //
 set g OS Option Groups /
         general        General Options
       /
-    e / '-1' /
+    e / '-1', 0*100 /
     f / def Default, lo Lower Bound, up Upper Bound, ref Reference /
     t / I   Integer
         R   Real

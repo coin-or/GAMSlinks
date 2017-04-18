@@ -188,16 +188,10 @@ GAMSlinks/src/SolverInterfaces/Makefile.in -text
 GAMSlinks/src/SolverInterfaces/gamsinst.sh.in -text
 GAMSlinks/src/SolverInterfaces/optmycbc.def -text
 GAMSlinks/src/SolverInterfaces/optmycbc.gms -text
-GAMSlinks/src/SolverInterfaces/optmycbc.html -text
-GAMSlinks/src/SolverInterfaces/optmycbc.txt -text
 GAMSlinks/src/SolverInterfaces/optmyglpk.def -text
 GAMSlinks/src/SolverInterfaces/optmyglpk.gms -text
-GAMSlinks/src/SolverInterfaces/optmyglpk.html -text
-GAMSlinks/src/SolverInterfaces/optmyglpk.txt -text
 GAMSlinks/src/SolverInterfaces/optmyos.def -text
 GAMSlinks/src/SolverInterfaces/optmyos.gms -text
-GAMSlinks/src/SolverInterfaces/optmyos.html -text
-GAMSlinks/src/SolverInterfaces/optmyos.txt -text
 GAMSlinks/src/SolverInterfaces/scip/event_solvetrace.c -text
 GAMSlinks/src/SolverInterfaces/scip/event_solvetrace.h -text
 GAMSlinks/src/SolverInterfaces/scip/prop_defaultbounds.c -text
