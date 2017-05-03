@@ -35,15 +35,13 @@
 #include "scip/scipdefplugins.h"
 #include "scip/pub_paramset.h"
 #include "GamsScip.hpp"
+#include "lpiswitch.h"
 #endif
 
 #ifdef COIN_HAS_OSISPX
 #include "soplex.h"
 using namespace soplex;
 #endif
-
-extern "C" const char* SCIPgetBuildFlags();
-extern "C" const char* SCIPgetBuildFlags() { return ""; }
 
 enum OPTTYPE
 {
@@ -1574,6 +1572,7 @@ void printSCIPOptions()
    GamsScip* gamsscip;
    SCIP* scip;
 
+   SCIPlpiSwitchSetDefaultSolver();
    gamsscip = new GamsScip();
    gamsscip->setupSCIP();
    scip = gamsscip->scip;
@@ -1629,7 +1628,8 @@ void printSCIPOptions()
       if( strcmp(paramname, "numerics/infinity") == 0 )
          continue;
 
-      if( strstr(paramname, "constraints/conjunction")   == paramname ||
+      if( strstr(paramname, "constraints/cardinality")   == paramname ||
+          strstr(paramname, "constraints/conjunction")   == paramname ||
           strstr(paramname, "constraints/countsols")     == paramname ||
           strstr(paramname, "constraints/cumulative")    == paramname ||
           strstr(paramname, "constraints/disjunction")   == paramname ||
@@ -1764,7 +1764,7 @@ void printSCIPOptions()
             defaultdescr = "GAMS nodlim, if set, otherwise -1";
          else if( strcmp(SCIPparamGetName(param), "lp/solver") == 0 )
          {
-            defaultdescr = "cplex, if licensed, otherwise soplex";
+            defaultdescr = "cplex, if licensed, otherwise soplex2";
             descr = "LP solver to use (clp, cplex, soplex, soplex2)";
          }
          else if( strcmp(SCIPparamGetName(param), "lp/threads") == 0 )
@@ -1875,6 +1875,8 @@ void printSCIPOptions()
       SCIP_CONSHDLR** conshdlrs = SCIPgetConshdlrs(scip);
       for( int i = 0; i < SCIPgetNConshdlrs(scip); ++i )
       {
+         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "cardinality") == 0 )
+            continue;
          if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "conjunction") == 0 )
             continue;
          if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "countsols") == 0 )
@@ -2169,6 +2171,8 @@ void printSoPlexOptions()
          continue;
       if( i == SoPlex::RATFAC_MINSTALLS )
          continue;
+      if( i == SoPlex::SOLUTION_POLISHING )
+         continue;
 
       // TODO recognize intenums
       defaultval.intval = SoPlex::Settings::intParam.defaultValue[i];
@@ -2188,6 +2192,8 @@ void printSoPlexOptions()
    for( int i = 0; i < SoPlex::REALPARAM_COUNT; ++i )
    {
       if( i == SoPlex::RATREC_FREQ )
+         continue;
+      if( i == SoPlex::OBJ_OFFSET )
          continue;
 
       defaultval.realval = translateSoplexInfinity(SoPlex::Settings::realParam.defaultValue[i]);

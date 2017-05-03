@@ -434,11 +434,13 @@ SCIP_RETCODE GamsScip::freeSCIP()
        * Without it, the run will be aborted here, thereby not returning
        * results back to GAMS.
        */
-      gevTerminateSet(gev, NULL, (void*)&interruptDuringFree);
+      if( gev != NULL )
+         gevTerminateSet(gev, NULL, (void*)&interruptDuringFree);
 
       SCIP_CALL( SCIPfree(&scip) );
 
-      gevTerminateUninstall(gev);
+      if( gev != NULL )
+         gevTerminateUninstall(gev);
    }
 
    return SCIP_OKAY;
