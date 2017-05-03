@@ -21,10 +21,6 @@
 #include "gevmcc.h"
 
 #include "GamsCompatibility.h"
-#if OS_VERSION_MINOR < 9
-#define ScalarExpressionTree OSExpressionTree
-#define setQuadraticCoefficients setQuadraticTerms
-#endif
 
 GamsOSxL::~GamsOSxL()
 {

@@ -317,7 +317,6 @@ void GamsMINLP::finalize_solution(
          break;
       }
 
-#if BONMIN_VERSION_MINOR > 6
       case TMINLP::USER_INTERRUPT:
       {
          solver_status = gmoSolveStat_User;
@@ -329,7 +328,6 @@ void GamsMINLP::finalize_solution(
 
          break;
       }
-#endif
 
       case TMINLP::MINLP_ERROR:
       {

@@ -82,12 +82,10 @@ static int __stdcall grbcallback(GRBmodel* model, void* qcbdata, int where, void
 #include "OsiMskSolverInterface.hpp"
 #include "mosek.h"
 
-static int MSKAPI mskcallback(MSKtask_t task, MSKuserhandle_t handle, MSKcallbackcodee caller
-#if MSK_VERSION_MAJOR >= 7
-   , MSKCONST MSKrealt * douinf,
+static int MSKAPI mskcallback(MSKtask_t task, MSKuserhandle_t handle, MSKcallbackcodee caller,
+   MSKCONST MSKrealt * douinf,
    MSKCONST MSKint32t * intinf,
    MSKCONST MSKint64t * lintinf
-#endif
 )
 {
    return gevTerminateGet((gevHandle_t)handle);
@@ -361,11 +359,7 @@ int GamsOsi::readyAPI(
             MSKenv_t mskenv;
             MKlicenseInit_t initType;
 
-#if MSK_VERSION_MAJOR < 7
-            if( MSK_makeenv(&mskenv,NULL, NULL,NULL,NULL) )
-#else
             if( MSK_makeenv(&mskenv,NULL) )
-#endif
             {
                gevLogStat(gev, "Failed to create Mosek environment.");
                gmoSolveStatSet(gmo, gmoSolveStat_License);
@@ -375,15 +369,6 @@ int GamsOsi::readyAPI(
             if( gevmoseklice(gev, pal, mskenv, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType) )
                gevLogStat(gev, "Trying to use Mosek standalone license.\n");
 
-#if MSK_VERSION_MAJOR < 8  /* Erling claims that MSK_initenv got deprecated in Mosek 7.1 */
-            if( MSK_initenv(mskenv) )
-            {
-               gevLogStat(gev, "Failed to initialize Mosek environment. Maybe you do not have a license?");
-               gmoSolveStatSet(gmo, gmoSolveStat_License);
-               gmoModelStatSet(gmo, gmoModelStat_LicenseError);
-               return 1;
-            }
-#endif
             osi = new OsiMskSolverInterface(mskenv);
 #else
             osi = new OsiMskSolverInterface();
@@ -982,11 +967,7 @@ bool GamsOsi::setupParameters()
          MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_NEAR_TOL_REL_GAP, optcr);
          MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_TOL_ABS_GAP, 0.0);
          MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_NEAR_TOL_ABS_GAP, optca);
-#if MSK_VERSION_MAJOR < 7
-         MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_INTPNT_NUM_THREADS, gevThreads(gev));
-#else
          MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_NUM_THREADS, gevThreads(gev));
-#endif
          /* enable checks for termination criteria (#nodes, #LPs, gap) */
          MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_DISABLE_TERM_TIME, 0.0);
          //if( gevGetIntOpt(gev, gevInteger4) )
@@ -1834,9 +1815,6 @@ bool GamsOsi::writeSolution(
                gevLogStat(gev, "Stopped due to time limit.");
                break;
 
-#if MSK_VERSION_MAJOR < 7
-            case MSK_RES_TRM_USER_BREAK:
-#endif
             case MSK_RES_TRM_USER_CALLBACK:
                gmoSolveStatSet(gmo, gmoSolveStat_User);
                gevLogStat(gev, "Stopped due to user interrupt.");

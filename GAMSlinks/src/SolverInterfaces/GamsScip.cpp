@@ -31,9 +31,6 @@
 
 #include "lpiswitch.h"
 
-extern "C" const char* SCIPgetBuildFlags();
-extern "C" const char* SCIPgetBuildFlags() { return ""; }
-
 static
 SCIP_DECL_ERRORPRINTING(printErrorGev)
 {
