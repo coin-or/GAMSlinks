@@ -832,7 +832,7 @@ void printIpoptOptions()
 
             case Ipopt::OT_String:
             {
-               defaultval.stringval = (*it_opt)->DefaultString().c_str();
+               defaultval.stringval = strdup((*it_opt)->DefaultString().c_str());
 
                const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
                if( settings.size() == 1 && settings[0].value_ == "*")
@@ -1163,8 +1163,7 @@ void printBonminOptions()
 
             case Ipopt::OT_String:
             {
-               tmpstr = (*it_opt)->DefaultString();
-               defaultval.stringval = tmpstr.c_str();
+               defaultval.stringval = strdup((*it_opt)->DefaultString().c_str());
 
                const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
                if( settings.size() == 1 && settings[0].value_ == "*")
@@ -1427,8 +1426,7 @@ void printCouenneOptions()
 
             case Ipopt::OT_String:
             {
-               tmpstr = (*it_opt)->DefaultString();
-               defaultval.stringval = tmpstr.c_str();
+               defaultval.stringval = strdup((*it_opt)->DefaultString().c_str());
 
                const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
                if( settings.size() == 1 && settings[0].value_ == "*")
@@ -1598,7 +1596,9 @@ void printSCIPOptions()
    categname["numerics"] = "Tolerances";
    categname["presolving"] = "Presolving";
    categname["propagating"] = "Domain Propagation";
+   categname["randomization"] = "Randomization";
    categname["separating"] = "Separation";
+   categname["solvingphases"] = "Solving Phases";
    categname["timing"] = "Timing";
 
    SCIP_PARAM** params = SCIPgetParams(scip);
@@ -1648,9 +1648,11 @@ void printSCIPOptions()
       else
          category = "";
 
-      if( category == "compression" ||  //FIXME should be here?
+      if( category == "compression" ||  //for reoptimization
+          category == "concurrent" ||
           category == "reading" ||
           category == "reoptimization" ||
+          category == "parallel" ||
           category == "pricing" ||
           category == "nlp" ||
           category == "nlpi" ||
