@@ -2182,6 +2182,8 @@ void printSoPlexOptions()
 
       if( i == SoPlex::ITERLIMIT )
          defaultdescr = "GAMS iterlim";
+      if( i == SoPlex::TIMER )
+         defaultval.intval = SoPlex::TIMER_WALLCLOCK;
 
       gmsopt.collect(
          std::string("int:") + SoPlex::Settings::intParam.name[i],
