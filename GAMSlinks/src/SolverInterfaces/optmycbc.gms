@@ -46,6 +46,7 @@ set g Cbc Option Groups /
       tol_integer            tolerance for integrality
       sollim                 limit on number of solutions
       dumpsolutions          name of solutions index gdx file for writing alternate solutions
+      dumpsolutionsmerged    name of gdx file for writing all alternate solutions
       maxsol                 maximal number of solutions to store during search
       strongbranching        strong branching
       trustpseudocosts       after howmany nodes we trust the pseudo costs
@@ -175,6 +176,7 @@ mipgeneral.(
   tol_integer          .r.(def 1e-6)
   sollim               .i.(def -1, lo -1, up 2147483647)
   dumpsolutions        .s.(def '')
+  dumpsolutionsmerged  .s.(def '')
   maxsol               .i.(def 100)
   strongbranching      .i.(def 5, up 999999)
   trustpseudocosts     .i.(def 5, lo -1, up 2000000)

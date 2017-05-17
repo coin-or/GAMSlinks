@@ -174,6 +174,7 @@ GamsCbc::~GamsCbc()
    free(writemps);
    free(solvetrace);
    free(dumpsolutions);
+   free(dumpsolutionsmerged);
 }
 
 int GamsCbc::readyAPI(
@@ -265,7 +266,7 @@ int GamsCbc::callSolver()
       model->solver()->writeMps(writemps, "", 1.0);
    }
 
-   if( dumpsolutions != NULL && maxsol > 0 )
+   if( (dumpsolutions != NULL || dumpsolutionsmerged != NULL) && maxsol > 0 )
       model->setMaximumSavedSolutions(maxsol);
 
    /* initialize solvetrace
@@ -1106,6 +1107,13 @@ bool GamsCbc::setupParameters()
       options.getString("dumpsolutions", buffer);
       dumpsolutions = strdup(buffer);
    }
+   free(dumpsolutionsmerged);
+   dumpsolutionsmerged = NULL;
+   if( options.isDefined("dumpsolutionsmerged") )
+   {
+      options.getString("dumpsolutionsmerged", buffer);
+      dumpsolutionsmerged = strdup(buffer);
+   }
    maxsol = options.getInteger("maxsol");
 
    return true;
@@ -1382,6 +1390,51 @@ bool GamsCbc::writeSolution(
       gdxFree(&gdx);
    }
    else if( dumpsolutions != NULL && model->numberSavedSolutions() == 1 )
+   {
+      gevLog(gev, "Only one solution found, skip dumping alternate solutions.");
+   }
+
+   if( dumpsolutionsmerged != NULL && model->numberSavedSolutions() > 1 )
+   {
+      char buffer[GMS_SSSIZE];
+      int solnvarsym;
+
+      if( gmoCheckSolPoolUEL(gmo, "soln_cbc_p", &solnvarsym) )
+      {
+         gevLogStatPChar(gev, "Solution pool scenario label 'soln_cbc_p' contained in model dictionary. Cannot dump merged solutions pool.\n");
+      }
+      else
+      {
+         void* handle;
+
+         handle = gmoPrepareSolPoolMerge(gmo, dumpsolutionsmerged, model->numberSavedSolutions()-1, "soln_cbc_p");
+         if( handle != NULL )
+         {
+            for( int k = 0; k < solnvarsym; k++ )
+            {
+               gmoPrepareSolPoolNextSym(gmo, handle);
+               for( int i = 1; i < model->numberSavedSolutions(); ++i )
+               {
+                  gmoSetVarL(gmo, model->savedSolution(i));
+                  if( gmoUnloadSolPoolSolution (gmo, handle, i-1) )
+                  {
+                     snprintf(buffer, GMS_SSSIZE, "Problems unloading solution point %d symbol %d\n", i, k);
+                     gevLogStatPChar(gev, buffer);
+                  }
+               }
+            }
+            if( gmoFinalizeSolPoolMerge(gmo, handle) )
+            {
+               gevLogStatPChar(gev, "Problems finalizing merged solution pool\n");
+            }
+         }
+         else
+         {
+            gevLogStatPChar(gev, "Problems preparing merged solution pool\n");
+         }
+      }
+   }
+   else if( dumpsolutionsmerged != NULL && model->numberSavedSolutions() == 1 )
    {
       gevLog(gev, "Only one solution found, skip dumping alternate solutions.");
    }

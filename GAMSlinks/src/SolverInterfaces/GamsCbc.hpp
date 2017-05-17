@@ -38,6 +38,7 @@ private:
    int                   solvetracenodefreq; /**< node frequency for solve trace */
    double                solvetracetimefreq; /**< time frequency for solve trace */
    char*                 dumpsolutions;      /**< name of solutions index gdx file for writing all solutions */
+   char*                 dumpsolutionsmerged;/**< name of gdx file for writing all solutions */
    int                   maxsol;             /**< maximal number of solutions to store during search */
 
    bool setupProblem();
@@ -72,6 +73,7 @@ public:
      solvetracenodefreq(100),
      solvetracetimefreq(5.0),
      dumpsolutions(NULL),
+     dumpsolutionsmerged(NULL),
      maxsol(100)
    { }
 
