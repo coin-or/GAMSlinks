@@ -1784,6 +1784,8 @@ void printSCIPOptions()
             defaultdescr = "1 (2 for Windows without IDE)";
          else if( strcmp(SCIPparamGetName(param), "display/width") == 0 )
             defaultdescr = "139 (80 for Windows without IDE)";
+         else if( strcmp(SCIPparamGetName(param), "gams/mipstart") == 0 )
+            descr += ", see also section \ref SCIP_PARTIALSOL";
 
          if( !hadadvanced && SCIPparamIsAdvanced(param) )
          {

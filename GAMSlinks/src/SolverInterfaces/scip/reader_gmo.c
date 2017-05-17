@@ -56,7 +56,7 @@ struct SCIP_ReaderData
 {
    gmoHandle_t           gmo;                /**< GAMS model object */
    gevHandle_t           gev;                /**< GAMS environment */
-   SCIP_Bool             mipstart;           /**< whether to try initial point as first primal solution */
+   int                   mipstart;           /**< how to handle initial variable levels */
    char*                 indicatorfile;      /**< name of GAMS options file that contains definitions on indicators */
 };
 
@@ -1246,7 +1246,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
    SCIP*                 scip,               /**< SCIP data structure */
    gmoRec_t*             gmo,                /**< GAMS Model Object */
    const char*           indicatorfile,      /**< name of file with indicator specification, or NULL */
-   SCIP_Bool             loadinitialsol      /**< whether to pass initial solution from GMO to SCIP */
+   int                   mipstart            /**< how to pass initial variable levels from GMO to SCIP */
 )
 {
    char buffer[GMS_SSSIZE];
@@ -1936,41 +1936,128 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
       SCIP_CALL( SCIPsetObjlimit(scip, gevGetDblOpt(gev, gevCutOff)) );
    }
 
-   /* set initial solution, if allowed */
-   if( loadinitialsol )
+   /* handle initial solution values */
+   switch( mipstart )
    {
-      SCIP_SOL* sol;
-      SCIP_Real* vals;
-      SCIP_Bool stored;
-
-      SCIP_CALL( SCIPcreateOrigSol(scip, &sol, NULL) );
-
-      SCIP_CALL( SCIPallocBufferArray(scip, &vals, gmoN(gmo)) );
-      (void) gmoGetVarL(gmo, vals);
-
-      SCIP_CALL( SCIPsetSolVals(scip, sol, gmoN(gmo), probdata->vars, vals) );
-
-      /* if we have extra variable for objective, then need to set its value too */
-      if( probdata->objvar != NULL )
+      case 0 :
       {
-         double objval;
-         int numErr;
-         (void) gmoEvalFuncObj(gmo, vals, &objval, &numErr);
-         if( numErr == 0 )
+         /* don't pass any initial values to SCIP */
+         break;
+      }
+
+      case 2:
+      case 3:
+      {
+         /* pass all initial values to SCIP and let SCIP check feasibility (2) or repair (3)
+          * NOTE: mipstart=3 does not work as expected: heur_completesol does not run if values for all vars are given and for all integer variables integral values are given
+          */
+         SCIP_SOL* sol;
+         SCIP_Real* vals;
+         SCIP_Bool stored;
+
+         if( mipstart == 2 )
          {
-            SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objvar, objval) );
+            /* with this, SCIP will only check feasibility */
+            SCIP_CALL( SCIPcreateOrigSol(scip, &sol, NULL) );
          }
+         else
+         {
+            /* with this, SCIP will try to find a feasible solution close by to the initial values */
+            SCIP_CALL( SCIPcreatePartialSol(scip, &sol, NULL) );
+         }
+
+         SCIP_CALL( SCIPallocBufferArray(scip, &vals, gmoN(gmo)) );
+         (void) gmoGetVarL(gmo, vals);
+
+         SCIP_CALL( SCIPsetSolVals(scip, sol, gmoN(gmo), probdata->vars, vals) );
+
+         /* if we have extra variable for objective, then need to set its value too */
+         if( probdata->objvar != NULL )
+         {
+            double objval;
+            int numErr;
+            (void) gmoEvalFuncObj(gmo, vals, &objval, &numErr);
+            if( numErr == 0 )
+            {
+               SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objvar, objval) );
+            }
+         }
+
+         /* if we have extra variable for objective constant, then need to set its value to 1.0 here too */
+         if( probdata->objconst != NULL )
+         {
+            SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objconst, 1.0) );
+         }
+
+         SCIP_CALL( SCIPaddSolFree(scip, &sol, &stored) );
+         assert(stored);
+
+         SCIPfreeBufferArray(scip, &vals);
+
+         if( mipstart == 3 )
+         {
+            SCIPinfoMessage(scip, NULL, "Passed partial solution with values for all variables to SCIP.");
+         }
+
+         break;
       }
 
-      /* if we have extra variable for objective constant, then need to set its value to 1.0 here too */
-      if( probdata->objconst != NULL )
+      case 1:
+      case 4:
       {
-         SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objconst, 1.0) );
+         /* pass some initial value to SCIP and let SCIP complete solution */
+         SCIP_SOL* sol;
+         SCIP_Bool stored;
+         double tryint;
+         int nknown;
+
+         if( mipstart == 4 )
+            tryint = gevGetDblOpt(gev, gevTryInt);
+
+         SCIP_CALL( SCIPcreatePartialSol(scip, &sol, NULL) );
+
+         nknown = 0;
+         for( i = 0; i < gmoN(gmo); ++i )
+         {
+            if( mipstart == 1 && (gmoGetVarTypeOne(gmo, i) == gmovar_B || gmoGetVarTypeOne(gmo, i) == gmovar_I || gmoGetVarTypeOne(gmo, i) == gmovar_SI) )
+            {
+               /* 1: set all integer variables */
+               SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->vars[i], gmoGetVarLOne(gmo, i)) );
+               ++nknown;
+            }
+
+            if( mipstart == 4 && (gmoGetVarTypeOne(gmo, i) == gmovar_B || gmoGetVarTypeOne(gmo, i) == gmovar_I || gmoGetVarTypeOne(gmo, i) == gmovar_SI) )
+            {
+               /* 4: set only integer variables with level close to an integral value, closeness decided by tryint */
+               SCIP_Real val;
+
+               val = gmoGetVarLOne(gmo, i);
+               if( fabs(round(val)-val) <= tryint )
+               {
+                  SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->vars[i], val) );
+                  ++nknown;
+               }
+            }
+         }
+
+         /* if we have extra variable for objective constant, then can set its value to 1.0 here too */
+         if( probdata->objconst != NULL )
+         {
+            SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objconst, 1.0) );
+         }
+
+         SCIP_CALL( SCIPaddSolFree(scip, &sol, &stored) );
+         assert(stored);
+
+         SCIPinfoMessage(scip, NULL, "Passed partial solution with values for %d variables (%.1f\%) to SCIP.", nknown, 100.0*(double)nknown/gmoN(gmo));
+
+         break;
       }
 
-      SCIP_CALL( SCIPaddSolFree(scip, &sol, &stored) );
-
-      SCIPfreeBufferArray(scip, &vals);
+      default:
+      {
+         SCIPwarningMessage(scip, "Setting mipstart = %d not supported. Ignored.\n", mipstart);
+      }
    }
 
    if( namemem > 1024 * 1024 && nindics == 0 )
@@ -2880,9 +2967,9 @@ SCIP_RETCODE SCIPincludeReaderGmo(
       "whether to resolve MINLP with fixed discrete variables if best solution violates some constraints",
       NULL, FALSE, TRUE, NULL, NULL) );
 
-   SCIP_CALL( SCIPaddBoolParam(scip, "gams/mipstart",
-      "whether to try GAMS variable level values as initial primal solution",
-      &readerdata->mipstart, FALSE, TRUE, NULL, NULL) );
+   SCIP_CALL( SCIPaddIntParam(scip, "gams/mipstart",
+      "how to handle initial variable levels",
+      &readerdata->mipstart, FALSE, 2, 0, 4, NULL, NULL) );
 
    SCIP_CALL( SCIPaddStringParam(scip, "gams/indicatorfile",
       "name of GAMS options file that contains definitions on indicators",
