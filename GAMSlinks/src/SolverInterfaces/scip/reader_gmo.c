@@ -2338,6 +2338,51 @@ SCIP_RETCODE writeGmoSolution(
 
          (void) gdxFree(&gdx);
       }
+
+      SCIP_CALL( SCIPgetStringParam(scip, "gams/dumpsolutionsmerged", &indexfilename) );
+      if( indexfilename != NULL && indexfilename[0] )
+      {
+         int solnvarsym;
+
+         if( gmoCheckSolPoolUEL(gmo, "soln_scip_p", &solnvarsym) )
+         {
+            SCIPerrorMessage("Solution pool scenario label 'soln_scip_p' contained in model dictionary. Cannot dump merged solutions pool.\n");
+         }
+         else
+         {
+            void* handle;
+
+            handle = gmoPrepareSolPoolMerge(gmo, indexfilename, nrsol-1, "soln_scip_p");
+            if( handle != NULL )
+            {
+               SCIP_Real* collev;
+               int k, i;
+
+               SCIP_CALL( SCIPallocBufferArray(scip, &collev, gmoN(gmo)) );
+               for ( k = 0; k < solnvarsym; k++ )
+               {
+                  gmoPrepareSolPoolNextSym(gmo, handle);
+                  for( i = 1; i < nrsol; ++i )
+                  {
+                     SCIP_CALL( SCIPgetSolVals(scip, SCIPgetSols(scip)[i], probdata->nvars, probdata->vars, collev) );
+                     (void) gmoSetVarL(gmo, collev);
+                     if( gmoUnloadSolPoolSolution (gmo, handle, i-1) )
+                     {
+                        SCIPerrorMessage("Problems unloading solution point %d symbol %d\n", i, k);
+                     }
+                  }
+               }
+               if( gmoFinalizeSolPoolMerge(gmo, handle) )
+               {
+                  SCIPerrorMessage("Problems finalizing merged solution pool\n");
+               }
+            }
+            else
+            {
+               SCIPerrorMessage("Problems preparing merged solution pool\n");
+            }
+         }
+      }
    }
 
    /* pass best solution to GMO, if any */
@@ -2960,7 +3005,11 @@ SCIP_RETCODE SCIPincludeReaderGmo(
          readerdata) );
 
    SCIP_CALL( SCIPaddStringParam(scip, "gams/dumpsolutions",
-      "name of solutions index gdx file for writing all solutions",
+      "name of solutions index gdx file for writing all alternate solutions",
+      NULL, FALSE, "", NULL, NULL) );
+
+   SCIP_CALL( SCIPaddStringParam(scip, "gams/dumpsolutionsmerged",
+      "name of gdx file for writing all alternate solutions into a single file",
       NULL, FALSE, "", NULL, NULL) );
 
    SCIP_CALL( SCIPaddBoolParam(scip, "gams/resolvenlp",
