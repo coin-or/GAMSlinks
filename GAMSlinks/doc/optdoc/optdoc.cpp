@@ -1786,6 +1786,8 @@ void printSCIPOptions()
             defaultdescr = "139 (80 for Windows without IDE)";
          else if( strcmp(SCIPparamGetName(param), "gams/mipstart") == 0 )
             descr += ", see also section \\ref SCIP_PARTIALSOL";
+         else if( strcmp(SCIPparamGetName(param), "timing/clocktype") == 0 )
+            defaultval.intval = 2;
 
          if( !hadadvanced && SCIPparamIsAdvanced(param) )
          {
