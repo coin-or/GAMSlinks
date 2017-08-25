@@ -2049,7 +2049,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
          SCIP_CALL( SCIPaddSolFree(scip, &sol, &stored) );
          assert(stored);
 
-         SCIPinfoMessage(scip, NULL, "Passed partial solution with values for %d variables (%.1f\%) to SCIP.", nknown, 100.0*(double)nknown/gmoN(gmo));
+         SCIPinfoMessage(scip, NULL, "Passed partial solution with values for %d variables (%.1f%%) to SCIP.", nknown, 100.0*(double)nknown/gmoN(gmo));
 
          break;
       }
