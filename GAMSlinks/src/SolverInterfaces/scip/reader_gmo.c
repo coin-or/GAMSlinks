@@ -2008,7 +2008,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
          /* pass some initial value to SCIP and let SCIP complete solution */
          SCIP_SOL* sol;
          SCIP_Bool stored;
-         double tryint;
+         double tryint = 0.0;
          int nknown;
 
          if( mipstart == 4 )
