@@ -440,6 +440,7 @@ SCIP_RETCODE makeExprtree(
    int           address;
    int           varidx;
    int           nargs;
+   int           rc;
 
    assert(scip != NULL);
    assert(opcodes != NULL);
@@ -463,6 +464,7 @@ SCIP_RETCODE makeExprtree(
    SCIP_CALL( SCIPhashmapCreate(&var2idx, blkmem, SCIPgetNVars(scip)) );
 
    nargs = -1;
+   rc = SCIP_OKAY;
 
    for( pos = 0; pos < codelen; ++pos )
    {
@@ -1044,7 +1046,8 @@ SCIP_RETCODE makeExprtree(
                   else
                   {
                      SCIPerrorMessage("signpower with non-constant exponent not supported.\n");
-                     return SCIP_ERROR;
+                     rc = SCIP_READERROR;
+                     goto TERMINATE;
                   }
 
                   break;
@@ -1201,7 +1204,8 @@ SCIP_RETCODE makeExprtree(
                {
                   SCIPdebugPrintf("nr. %d - unsupported. Error.\n", (int)func);
                   SCIPinfoMessage(scip, NULL, "Error: GAMS function %s not supported.\n", GamsFuncCodeName[func]);
-                  return SCIP_READERROR;
+                  rc = SCIP_READERROR;
+                  goto TERMINATE;
                }
             } /*lint !e788*/
             break;
@@ -1211,7 +1215,8 @@ SCIP_RETCODE makeExprtree(
          default:
          {
             SCIPinfoMessage(scip, NULL, "Error: GAMS opcode %s not supported.\n", GamsOpCodeName[opcode]);
-            return SCIP_READERROR;
+            rc = SCIP_READERROR;
+            goto TERMINATE;
          }
       } /*lint !e788*/
 
@@ -1234,11 +1239,12 @@ SCIP_RETCODE makeExprtree(
    SCIP_CALL( SCIPexprtreeCreate(blkmem, exprtree, stack[0], nvars, 0, NULL) );
    SCIP_CALL( SCIPexprtreeSetVars(*exprtree, nvars, vars) );
 
+TERMINATE:
    SCIPfreeBufferArray(scip, &vars);
    SCIPfreeBufferArray(scip, &stack);
    SCIPhashmapFree(&var2idx);
 
-   return SCIP_OKAY;
+   return rc;
 }
 
 /** creates a SCIP problem from a GMO */
@@ -1479,16 +1485,24 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
       
       bndtypes[0] = SCIP_BOUNDTYPE_UPPER;
       bndtypes[1] = SCIP_BOUNDTYPE_LOWER;
-      bnds[0] = 0;
+      bnds[0] = 0.0;
 
       for( i = 0; i < gmoN(gmo); ++i )
       {
          if( gmoGetVarTypeOne(gmo, i) != (int) gmovar_SC && gmoGetVarTypeOne(gmo, i) != (int) gmovar_SI )
             continue;
-         
+
+         bnds[1] = gmoGetVarLowerOne(gmo, i);
+         /* skip bound disjunction if lower bound is 0 (if continuous) or 1 (if integer)
+          * since this is a trivial disjunction, but would raise an assert in SCIPcreateConsBounddisjunction
+          */
+         if( gmoGetVarTypeOne(gmo, i) == (int) gmovar_SC && !SCIPisPositive(scip, bnds[1]) )
+            continue;
+         if( gmoGetVarTypeOne(gmo, i) == (int) gmovar_SI && !SCIPisPositive(scip, bnds[1]-1.0) )
+            continue;
+
          bndvars[0] = vars[i];
          bndvars[1] = vars[i];
-         bnds[1] = gmoGetVarLowerOne(gmo, i);
          (void) SCIPsnprintf(name, SCIP_MAXSTRLEN, "semi%s_%s", gmoGetVarTypeOne(gmo, i) == (int) gmovar_SC ? "con" : "int", SCIPvarGetName(vars[i]));
          SCIP_CALL( SCIPcreateConsBounddisjunction(scip, &cons, name, 2, bndvars, bndtypes, bnds,
             TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
