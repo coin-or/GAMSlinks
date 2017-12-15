@@ -1009,6 +1009,10 @@ bool GamsOsi::setupParameters()
             XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXNODE, nodelim);
          XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPRELSTOP, optcr);
          XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPABSSTOP, optca);
+         /* reduce relative mip cutoff applied by xpress, if optcr is below its default */
+         if( optcr < 1e-4 ) // 1e-4 is the default for XPRS_MIPRELCUTOFF in xpress 31.01
+            XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPRELCUTOFF, optcr);
+         XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPADDCUTOFF, -gevGetDblOpt(gev, gevCheat));
          XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_THREADS, gevThreads(gev));
          osixpr->setMipStart(gevGetIntOpt(gev, gevInteger4));
 
@@ -1932,16 +1936,11 @@ bool GamsOsi::writeSolution(
 
                case XPRS_MIP_OPTIMAL:
                   solwritten = true;
+                  gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
                   if( fabs(objest - osixpr->getObjValue()) < 1e-9 )
-                  {
-                     gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
                      gevLogStat(gev, "Solved to optimality.");
-                  }
                   else
-                  {
-                     gmoModelStatSet(gmo, gmoModelStat_Integer);
-                     gevLogStat(gev, "Solved to optimality within tolerances.");
-                  }
+                     gevLogStat(gev, "Solved to optimality. Warning: Some gap remains.");
                   break;
             }
          }
