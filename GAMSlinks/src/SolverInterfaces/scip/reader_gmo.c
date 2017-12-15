@@ -2390,6 +2390,7 @@ SCIP_RETCODE writeGmoSolution(
                {
                   SCIPerrorMessage("Problems finalizing merged solution pool\n");
                }
+               SCIPfreeBufferArray(scip, &collev);
             }
             else
             {
