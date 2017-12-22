@@ -1599,6 +1599,7 @@ void printSCIPOptions()
    categname["randomization"] = "Randomization";
    categname["separating"] = "Separation";
    categname["solvingphases"] = "Solving Phases";
+   categname["table"] = "Solve Statistic Tables";
    categname["timing"] = "Timing";
 
    SCIP_PARAM** params = SCIPgetParams(scip);
@@ -1635,8 +1636,7 @@ void printSCIPOptions()
           strstr(paramname, "constraints/cumulative")    == paramname ||
           strstr(paramname, "constraints/disjunction")   == paramname ||
           strstr(paramname, "constraints/linking")       == paramname ||
-          strstr(paramname, "constraints/or")            == paramname ||
-          strstr(paramname, "constraints/orbitope")      == paramname ||
+          strstr(paramname, "constraints/or/")           == paramname ||
           strstr(paramname, "constraints/pseudoboolean") == paramname ||
           strstr(paramname, "constraints/superindicator")== paramname ||
           strstr(paramname, "constraints/xor")           == paramname
@@ -1788,6 +1788,8 @@ void printSCIPOptions()
             descr += ", see also section \\ref SCIP_PARTIALSOL";
          else if( strcmp(SCIPparamGetName(param), "timing/clocktype") == 0 )
             defaultval.intval = 2;
+         else if( strcmp(SCIPparamGetName(param), "misc/usesymmetry") == 0 )
+            defaultdescr = "2 (0 for Windows)"; // TODO take default default from defaultval.intval
 
          if( !hadadvanced && SCIPparamIsAdvanced(param) )
          {
@@ -1893,8 +1895,6 @@ void printSCIPOptions()
          if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "linking") == 0 )
             continue;
          if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "or") == 0 )
-            continue;
-         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "orbitope") == 0 )
             continue;
          if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "pseudoboolean") == 0 )
             continue;
