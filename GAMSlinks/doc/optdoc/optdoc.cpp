@@ -973,6 +973,13 @@ void printBonminOptions()
       "no", "", "yes", "",
       "If enabled, then the dual values from the resolved NLP are made available in GAMS.");
 
+   bonmin_setup.roptions()->SetRegisteringCategory("Branch-and-bound options", Bonmin::RegisteredOptions::BonminCategory);
+   bonmin_setup.roptions()->AddStringOption2("clocktype",
+      "Type of clock to use for time_limit",
+      "wall",
+      "cpu", "CPU time", "wall", "Wall-clock time",
+      "");
+
    const Bonmin::RegisteredOptions::RegOptionsList& optionlist(regoptions->RegisteredOptionsList());
 
    // options sorted by category
@@ -1314,6 +1321,13 @@ void printCouenneOptions()
       "Switch to enable printing information about function evaluation errors into the GAMS listing file.",
       "yes",
       "no", "", "yes", "");
+
+   regoptions->SetRegisteringCategory("Branch-and-bound options", Bonmin::RegisteredOptions::BonminCategory);
+   regoptions->AddStringOption2("clocktype",
+      "Type of clock to use for time_limit",
+      "wall",
+      "cpu", "CPU time", "wall", "Wall-clock time",
+      "");
 
    const Bonmin::RegisteredOptions::RegOptionsList& optionlist(regoptions->RegisteredOptionsList());
 
