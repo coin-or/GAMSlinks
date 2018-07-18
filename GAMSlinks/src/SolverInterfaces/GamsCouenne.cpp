@@ -143,6 +143,13 @@ int GamsCouenne::readyAPI(
       "yes",
       "no", "", "yes", "");
 
+   couenne_setup->roptions()->SetRegisteringCategory("Branch-and-bound options", Bonmin::RegisteredOptions::BonminCategory);
+   couenne_setup->roptions()->AddStringOption2("clocktype",
+      "Type of clock to use for time_limit",
+      "wall",
+      "cpu", "CPU time", "wall", "Wall-clock time",
+      "");
+
    return 0;
 }
 
@@ -256,7 +263,7 @@ int GamsCouenne::callSolver()
       if( gmoOptFile(gmo) )
       {
          char buffer[GMS_SSSIZE];
-         couenne_setup->options()->SetStringValue("print_user_options", "yes", true, true);
+         couenne_setup->options()->SetStringValue("print_user_options", "yes", true, true); //FIXME doesn't seem to have effect
          gmoNameOptFile(gmo, buffer);
          couenne_setup->BabSetupBase::readOptionsFile(buffer);
       }
@@ -401,11 +408,21 @@ int GamsCouenne::callSolver()
       if( solvetrace_ != NULL )
          GAMSsolvetraceResetStarttime(solvetrace_);
 
+      // change to wall-clock time if not requested otherwise
+      std::string clocktype;
+      couenne_setup->options()->GetStringValue("clocktype", clocktype, "");
+      if( clocktype == "wall" )
+         bb.model().setUseElapsedTime(true);
+
       // initialize Couenne, e.g., reformulate problem
       // pass also bb in case user enabled recognition of SOS in problem
       if( !couenne_setup->InitializeCouenne(NULL, problem, GetRawPtr(minlp), ci, &bb) )
       {
          gevLogStat(gev, "Reformulation finds model infeasible.\n");
+         gmoSetHeadnTail(gmo, gmoHresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+         gmoSetHeadnTail(gmo, gmoTmipnod,   0);
+         gmoSetHeadnTail(gmo, gmoHiterused, 0);
+         gmoSetHeadnTail(gmo, gmoHdomused,  static_cast<double>(minlp->nlp->domviolations));
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
          gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
          delete problem;
@@ -445,6 +462,7 @@ int GamsCouenne::callSolver()
       double best_val   = minlp->isMin * bb.bestObj();
       double best_bound = minlp->isMin * bb.model().getBestPossibleObjValue(); //bestBound();
       bool havesol;
+      bool useinitialsol = false;
       switch( minlp->model_status )
       {
          case gmoModelStat_OptimalGlobal:
@@ -458,6 +476,79 @@ int GamsCouenne::callSolver()
             break;
       }
       assert(bb.bestSolution() != NULL || !havesol);
+
+      if( !havesol )
+      {
+         bool feasible = true;
+         double feastol = 1e-5;
+         couenne_setup->options()->GetNumericValue("feas_tolerance", feastol, "");
+         for( int i = 0; i < gmoM(gmo) && feasible; ++i )
+         {
+            double equlevel = gmoGetEquLOne(gmo, i);
+            double rhs = gmoGetRhsOne(gmo, i);
+            switch( gmoGetEquTypeOne(gmo, i) )
+            {
+               case gmoequ_E :
+               case gmoequ_B :
+                  feasible = fabs(equlevel - rhs) < feastol;
+                  break;
+               case gmoequ_G :
+                  feasible = equlevel >= rhs - feastol;
+                  break;
+               case gmoequ_L :
+                  feasible = equlevel <= rhs + feastol;
+                  break;
+            }
+         }
+         for( int i = 0; i < gmoN(gmo) && feasible; ++i )
+         {
+            double varlevel = gmoGetVarLOne(gmo, i);
+            switch( gmoGetVarTypeOne(gmo, i) )
+            {
+               case gmovar_B :
+               case gmovar_I :
+                  feasible = fabs(round(varlevel) - varlevel) < feastol;
+               // semicontinuous and sos not supported by couenne anyway
+            }
+         }
+
+         if( feasible )
+         {
+            // evaluate objective value
+            double objval;
+            int numerr = 0;
+
+            double* x = new double[gmoN(gmo)];
+            gmoGetVarL(gmo, x);
+            gmoEvalFuncObj(gmo, x, &objval, &numerr);
+
+            if( numerr == 0 )
+            {
+               best_val = objval;
+               havesol = true;
+               useinitialsol = true;
+               gmoSetSolutionPrimal(gmo, x);
+            }
+
+            delete[] x;
+
+            if( havesol )
+            {
+               // adjust model status (infeasible -> optimal; no solution -> feasible)
+               if( minlp->model_status == gmoModelStat_InfeasibleNoSolution )
+               {
+                  minlp->model_status = gmoModelStat_OptimalGlobal;
+                  best_bound = best_val;
+               }
+               else
+               {
+                  // only other case here should be when stopped on limit or ctrl+c, which all result in model status NoSolutionReturned (if no solution)
+                  assert(minlp->model_status == gmoModelStat_NoSolutionReturned);
+                  minlp->model_status = (gmoNDisc(gmo) > 0) ? gmoModelStat_Integer : gmoModelStat_Feasible;
+               }
+            }
+         }
+      }
 
       // correct best_bound, if necessary (works around sideeffect of other workaround in couenne)
       if( minlp->isMin * best_bound > minlp->isMin * best_val )
@@ -474,7 +565,7 @@ int GamsCouenne::callSolver()
 
       if( solvetrace_ != NULL )
          GAMSsolvetraceAddEndLine(solvetrace_, bb.numNodes(), best_bound,
-            havesol ? minlp->isMin * bb.bestObj() : minlp->isMin * bb.model().getInfinity());
+            havesol ? best_val : minlp->isMin * bb.model().getInfinity());
 
 #if 0 /* doesn't seem to work (always had ntotal == nroot), and one gets roughly the same info from the cbc statistics */
       // there is only one CouenneCutGenerator object; scan list until dynamic_cast returns non-NULL
@@ -500,21 +591,21 @@ int GamsCouenne::callSolver()
 
       if( havesol )
       {
-         gevLogStat(gev, "\nCouenne finished. Found feasible solution.");
+         if( bb.bestSolution() != NULL && !useinitialsol )
+         {
+            gevLogStat(gev, "\nCouenne finished. Found feasible solution.");
 
-#if GMOAPIVERSION < 12
-         double* lambda = new double[gmoM(gmo)];
-         for( int i = 0; i < gmoM(gmo); ++i )
-            lambda[i] = gmoValNA(gmo);
-
-         /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
-         gmoSetSolution2(gmo, bb.bestSolution(), lambda);
-
-         delete[] lambda;
-#else
-         /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
-         gmoSetSolutionPrimal(gmo, bb.bestSolution());
-#endif
+            /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
+            gmoSetSolutionPrimal(gmo, bb.bestSolution());
+         }
+         else
+         {
+            gevLogStat(gev, "\nCouenne finished. Did not find improving solution. Reporting initial solution.");
+            // gmoSetSolutionPrimal() with initial point already called above
+         }
+         // gmoSetSolutionPrimal does not set objval attribute for CNS, so set it here (makes gap report look better)
+         if( gmoModelType(gmo) == gmoProc_cns )
+            gmoSetHeadnTail(gmo, gmoHobjval, 0.0);
       }
       else
       {

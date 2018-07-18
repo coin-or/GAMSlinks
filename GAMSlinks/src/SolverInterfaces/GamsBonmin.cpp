@@ -146,6 +146,13 @@ int GamsBonmin::readyAPI(
       "no", "", "yes", "",
       "If enabled, then the dual values from the resolved NLP are made available in GAMS.");
 
+   bonmin_setup->roptions()->SetRegisteringCategory("Branch-and-bound options", Bonmin::RegisteredOptions::BonminCategory);
+   bonmin_setup->roptions()->AddStringOption2("clocktype",
+      "Type of clock to use for time_limit",
+      "wall",
+      "cpu", "CPU time", "wall", "Wall-clock time",
+      "");
+
    return 0;
 }
 
@@ -211,6 +218,7 @@ int GamsBonmin::callSolver()
    bonmin_setup->options()->SetNumericValue("bonmin.time_limit", gevGetDblOpt(gev, gevResLim), true, true);
    if( gevGetIntOpt(gev, gevIterLim) < ITERLIM_INFINITY )
       bonmin_setup->options()->SetIntegerValue("bonmin.iteration_limit", gevGetIntOpt(gev, gevIterLim), true, true);
+   bonmin_setup->options()->SetIntegerValue("number_cpx_threads", gevThreads(gev), true, true);
 
    if( gmoNLM(gmo) == 0 && (gmoModelType(gmo) == gmoProc_qcp || gmoModelType(gmo) == gmoProc_rmiqcp || gmoModelType(gmo) == gmoProc_miqcp) )
       bonmin_setup->options()->SetStringValue("hessian_constant", "yes", true, true);
@@ -386,6 +394,12 @@ int GamsBonmin::callSolver()
       minlp->nlp->clockStart = gevTimeDiffStart(gev);
       if( solvetrace_ != NULL )
          GAMSsolvetraceResetStarttime(solvetrace_);
+
+      // change to wall-clock time if not requested otherwise
+      std::string clocktype;
+      bonmin_setup->options()->GetStringValue("clocktype", clocktype, "");
+      if( clocktype == "wall" )
+         bb.model().setUseElapsedTime(true);
 
       bb(*bonmin_setup);
 

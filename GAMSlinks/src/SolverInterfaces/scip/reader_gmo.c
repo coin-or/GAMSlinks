@@ -2634,6 +2634,7 @@ SCIP_RETCODE writeGmoSolution(
          case gmoModelStat_Feasible:
          case gmoModelStat_Integer:
             gmoModelStatSet(gmo, (int) gmoModelStat_Solved);
+            gmoSetHeadnTail(gmo, gmoHobjval, 0.0);
       } /*lint !e744*/
 
    return SCIP_OKAY;

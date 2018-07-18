@@ -1103,6 +1103,8 @@ void printBonminOptions()
             defaultval = "GAMS ``iterlim``";
          else if( (*it_opt)->Name() == "cutoff" )
             defaultval = "GAMS ``cutoff``";
+         else if( (*it_opt)->Name() == "number_cpx_threads" )
+            defaultval = "GAMS ``threads``";
 
          tabfile << typestring << " | ";
          tabfile << defaultval;
@@ -1236,6 +1238,8 @@ void printBonminOptions()
             longdescr = "To use Cplex, a valid license is required.";
          else if( (*it_opt)->Name() == "resolve_on_small_infeasibility" )
             longdescr = "";
+         else if( (*it_opt)->Name() == "number_cpx_threads" )
+            defaultval.intval = 1;
          // Ipopt options
          else if( (*it_opt)->Name() == "bound_relax_factor" )
             defaultval.realval = 1e-10;

@@ -435,8 +435,13 @@ bool GamsCbc::setupProblem()
       int*    which   = new int[CoinMin(gmoN(gmo), nzSos)];
       double* weights = new double[CoinMin(gmoN(gmo), nzSos)];
 
+      int cnt = 0;
       for( int i = 0; i < numSos; ++i )
       {
+         // skip trivial SOS (SOS1 with at most one variable and SOS2 with at most two variables); not necessary, but also easy to do
+         if( sosbeg[i+1] - sosbeg[i] <= sostype[i] )
+            continue;
+
          int k = 0;
          for( int j = sosbeg[i]; j < sosbeg[i+1]; ++j, ++k )
          {
@@ -444,13 +449,14 @@ bool GamsCbc::setupProblem()
             weights[k] = soswt[j];
             assert(gmoGetVarTypeOne(gmo, sosind[j]) == (sostype[i] == 1 ? gmovar_S1 : gmovar_S2));
          }
-         sosobjects[i] = new CbcSOS(model, k, which, weights, i, sostype[i]);
-         sosobjects[i]->setPriority(gmoN(gmo)-k); // branch on long sets first
+         sosobjects[cnt] = new CbcSOS(model, k, which, weights, i, sostype[i]);
+         sosobjects[cnt]->setPriority(gmoN(gmo)-k); // branch on long sets first
+         ++cnt;
       }
 
-      model->addObjects(numSos, sosobjects);
+      model->addObjects(cnt, sosobjects);
 
-      for( int i = 0; i < numSos; ++i )
+      for( int i = 0; i < cnt; ++i )
          delete sosobjects[i];
       delete[] sosobjects;
       delete[] which;
@@ -953,6 +959,11 @@ bool GamsCbc::setupParameters()
 //   }
 
    CHECKOPT_DOUBLE("increment")
+
+   // switch to wallclock-time in Cbc, if not requested otherwise
+   char clocktype[GMS_SSSIZE];
+   if( options.getString("clocktype", clocktype) == NULL || strcmp(clocktype, "wall") == 0 )
+      model->setUseElapsedTime(true);
 
    nthreads = options.getInteger("threads");
    if( nthreads > 1 && CbcModel::haveMultiThreadSupport() )
