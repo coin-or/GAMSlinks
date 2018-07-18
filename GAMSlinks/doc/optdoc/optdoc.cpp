@@ -1648,7 +1648,8 @@ void printSCIPOptions()
       if( strcmp(paramname, "numerics/infinity") == 0 )
          continue;
 
-      if( strstr(paramname, "constraints/cardinality")   == paramname ||
+      if( strstr(paramname, "constraints/benders")       == paramname ||
+          strstr(paramname, "constraints/cardinality")   == paramname ||
           strstr(paramname, "constraints/conjunction")   == paramname ||
           strstr(paramname, "constraints/countsols")     == paramname ||
           strstr(paramname, "constraints/cumulative")    == paramname ||
@@ -1657,7 +1658,8 @@ void printSCIPOptions()
           strstr(paramname, "constraints/or/")           == paramname ||
           strstr(paramname, "constraints/pseudoboolean") == paramname ||
           strstr(paramname, "constraints/superindicator")== paramname ||
-          strstr(paramname, "constraints/xor")           == paramname
+          strstr(paramname, "constraints/xor")           == paramname ||
+          strstr(paramname, "table/benders")             == paramname
          )
          continue;
 
@@ -1667,7 +1669,8 @@ void printSCIPOptions()
       else
          category = "";
 
-      if( category == "compression" ||  //for reoptimization
+      if( category == "benders" ||
+          category == "compression" ||  //for reoptimization
           category == "concurrent" ||
           category == "reading" ||
           category == "reoptimization" ||
