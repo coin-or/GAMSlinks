@@ -11,16 +11,16 @@ prefix="@prefix@"
 exec_prefix="@exec_prefix@"
 libdir="@libdir@"
 
-@COIN_IS_WINDOWS_TRUE@gmscmp=${gamspath}/gmscmpNT.txt
-@COIN_IS_WINDOWS_FALSE@gmscmp=${gamspath}/gmscmpun.txt
+@COIN_IS_WINDOWS_TRUE@gmscmp="${gamspath}/gmscmpNT.txt"
+@COIN_IS_WINDOWS_FALSE@gmscmp="${gamspath}/gmscmpun.txt"
 
 @COIN_IS_WINDOWS_TRUE@libname="libGamsCoin.dll";
 @COIN_IS_WINDOWS_FALSE@libname="libGamsCoin.so";
 
-gmscmporig=${gmscmp}.orig
-gmscmpbak=${gmscmp}.bak
+gmscmporig="${gmscmp}.orig"
+gmscmpbak="${gmscmp}.bak"
 
-if ! test -r $gmscmp ;
+if ! test -r "$gmscmp" ;
 then
    echo "File $gmscmp not found or not readable, cannot edit."
    exit 1
@@ -35,13 +35,13 @@ fi
 echo "Editing $gmscmp"
 
 # keep backup of original gmscmpun.txt file
-if ! test -r $gmscmporig
+if ! test -r "$gmscmporig"
 then
-   cp $gmscmp $gmscmporig
+   cp "$gmscmp" "$gmscmporig"
 fi
 
 # keep backup of current gmscmpun.txt file
-cp -f $gmscmp $gmscmpbak
+cp -f "$gmscmp" "$gmscmpbak"
 
 awk -vlibname=$libname '
 BEGIN {
@@ -153,7 +153,7 @@ function writeConfig(solverID) {
    }
    print;
 }
-' $gmscmpbak > $gmscmp
+' "$gmscmpbak" > "$gmscmp"
 
 
 echo "Installing ${libdir}/$libname in $gamspath"
@@ -165,6 +165,6 @@ fi
 @COIN_IS_WINDOWS_TRUE@cp "${libdir}/$libname" "${gamspath}/$libname"
 @COIN_IS_WINDOWS_FALSE@ln -s "${libdir}/$libname" "${gamspath}/$libname"
 
-@COIN_HAS_CBC_TRUE@cp @bindir@/optmycbc.def ${gamspath}
-@COIN_HAS_OS_TRUE@cp @bindir@/optmyos.def ${gamspath}
-@COIN_HAS_OSIGLPK_TRUE@cp @bindir@/optmyglpk.def ${gamspath}
+@COIN_HAS_CBC_TRUE@cp @bindir@/optmycbc.def "${gamspath}"
+@COIN_HAS_OS_TRUE@cp @bindir@/optmyos.def "${gamspath}"
+@COIN_HAS_OSIGLPK_TRUE@cp @bindir@/optmyglpk.def "${gamspath}"
