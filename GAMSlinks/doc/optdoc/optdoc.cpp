@@ -1357,6 +1357,7 @@ void printCouenneOptions()
       if( it->second->Name()=="couenne_check" ||
           it->second->Name()=="opt_window" ||
           it->second->Name()=="test_mode" ||
+          it->second->Name()=="lp_solver" ||
           it->second->Name()=="display_stats" )
          continue;
 
