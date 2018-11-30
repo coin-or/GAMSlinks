@@ -36,9 +36,11 @@
 #include "scip/pub_paramset.h"
 #include "GamsScip.hpp"
 #include "lpiswitch.h"
+
+#define COIN_HAS_SPX 1 /* TODO do via configure, etc */
 #endif
 
-#ifdef COIN_HAS_OSISPX
+#ifdef COIN_HAS_SPX
 #include "soplex.h"
 using namespace soplex;
 #endif
@@ -1904,6 +1906,10 @@ void printSCIPOptions()
       SCIP_CONSHDLR** conshdlrs = SCIPgetConshdlrs(scip);
       for( int i = 0; i < SCIPgetNConshdlrs(scip); ++i )
       {
+         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "benders") == 0 )
+            continue;
+         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "benderslp") == 0 )
+            continue;
          if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "cardinality") == 0 )
             continue;
          if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "conjunction") == 0 )
@@ -2136,7 +2142,7 @@ void printSCIPOptions()
 }
 #endif
 
-#if COIN_HAS_OSISPX
+#if COIN_HAS_SPX
 static
 double translateSoplexInfinity(
    double val
@@ -2261,7 +2267,7 @@ int main(int argc, char** argv)
    printSCIPOptions();
 #endif
 
-#if COIN_HAS_OSISPX
+#if COIN_HAS_SPX
    printSoPlexOptions();
 #endif
 }
