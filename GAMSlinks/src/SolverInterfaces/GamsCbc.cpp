@@ -620,8 +620,9 @@ bool GamsCbc::setupStartingPoint()
       // this call initializes ClpSimplex data structures, which can produce an error if CLP does not like the model
       if( model->solver()->setBasisStatus(cstat, rstat) ) {
          gevLogStat(gev, "Failed to set initial basis. Probably CLP abandoned the model.");
-         retcode = false;
-         goto TERMINATE;
+         // ignoring this error for now, we probably can still solve, #3610
+         // retcode = false;
+         // goto TERMINATE;
       }
    }
 
