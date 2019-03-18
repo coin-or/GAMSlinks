@@ -7,7 +7,7 @@ set g Cbc Option Groups /
         mipheu         MIP Options for Heuristics
 *        bch            MIP Options for the GAMS Branch Cut and Heuristic Facility
       /
-    e / '-1', 0*100, primal, dual, barrier, default, off, on, auto,
+    e / '-1', 0*100, primal, dual, barrier, default, off, on, auto, cpu, wall,
         solow_halim, halim_solow, dantzig, steepest, partial, exact, change, sprint, equilibrium, geometric
         root, ifmove, forceon, forceonbut, forceonstrong, forceonbutstrong, onglobal, longon, longroot, endonly, long, longifmove, forcelongon, longendonly
         priorities, columnorder, binaryfirst, binarylast, length
@@ -18,6 +18,7 @@ set g Cbc Option Groups /
     t / I Integer, R Real, S String, B Binary /
     o Options /
       reslim                 resource limit
+      clocktype              type of clock for time measurement
       special                options passed unseen to CBC
       writemps               create MPS file for problem
 *LP options
@@ -145,6 +146,7 @@ optdata(g,o,t,f) /
 general.(
   writemps             .s.(def '')
   special              .s.(def '')
+  clocktype            .s.(def wall)
 * GAMS options
   reslim          .r.(def 1000)
 * immediates
@@ -274,6 +276,8 @@ bch.(
 $offtext
 /
   oe(o,e) /
+   clocktype.(      cpu
+                    wall )
    idiotcrash.(     '-1', 0 )
    sprintcrash.(    '-1', 0 )
    crash.(          off
@@ -354,6 +358,8 @@ $offtext
  /
 
   publicoe(o,e) /
+   clocktype.(      cpu           'CPU clock'
+                    wall          'Wallclock' )
    idiotcrash.(     '-1'          Automatic
                       0           Off )
    sprintcrash.(    '-1'          Automatic
