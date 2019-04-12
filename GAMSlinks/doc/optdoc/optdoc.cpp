@@ -260,6 +260,7 @@ public:
          f << "$setglobal STRINGQUOTE '\"'" << std::endl;
       else
          f << "$setglobal STRINGQUOTE \"" << stringquote << "\"" << std::endl;
+      f << "$setglobal EOLCHAR \"#\"" << std::endl;
       if( shortdoc )
          f << "$setglobal SHORTDOCONLY" << std::endl;
       f << "$onempty" << std::endl;
