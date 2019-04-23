@@ -9,24 +9,5 @@ Currently supported are
 - SIG: Solaris 10.0 or higher on a x86 (64 bit only) machine.
 - DII: Intel-based (x86) Macintosh system with Darwin.
 
-If you are working under Unix/Linux-like system and you have `wget'
-installed, you can downloaded the required libraries
-by executing the script get.GAMSIO in this directory with the corresponding system code as parameter, e.g.
-  ./get_GAMSIO LX3
-If you are not sure which system code is right for you, you can also call this script with several parameter or no parameter.
-If no parameter is given, the script tries to determine the system code according to the output of uname.
-If it fails to determine the system code, libraries for all available systems are downloaded. 
-
-If the script does not work for you, follow the following instructions:
-
-Create a directory which name is the code that corresponds to your machine
-(e.g., LX3 for Linux 32bit, VIS for Windows, ...).
-
-Point your browser to
-
-  http://www.gams.com/~svigerske
-
-download the file <syscode>_latest.tgz into the created directory, where <syscode> is the system code in lower case letters.
-Then unpack this file:
-  tar xzf <syscode>_latest.tgz
-.
+The precompiled libraries are present in the current directory.
+In a previous version, we had here some script and instructions to download them from the GAMS server.

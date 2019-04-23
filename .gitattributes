@@ -138,14 +138,239 @@ GAMSlinks/test/run_quality.in -text
 /Makefile.am -text
 /Makefile.in -text
 /README -text
+ThirdParty/GAMSIO/DIG/bch.o -text svneol=unset#application/x-mach-binary
+ThirdParty/GAMSIO/DIG/clicelib.a -text
+ThirdParty/GAMSIO/DIG/dictfunc.o -text svneol=unset#application/x-mach-binary
+ThirdParty/GAMSIO/DIG/dictread.o -text svneol=unset#application/x-mach-binary
+ThirdParty/GAMSIO/DIG/gclib.a -text
+ThirdParty/GAMSIO/DIG/gdxcs.cs -text
+ThirdParty/GAMSIO/DIG/gdxdcdef.pas -text
+ThirdParty/GAMSIO/DIG/gdxdcon.pas -text
+ThirdParty/GAMSIO/DIG/gdxddec.inc -text
+ThirdParty/GAMSIO/DIG/gdxdodef.pas -text
+ThirdParty/GAMSIO/DIG/gdxdpdef.pas -text
+ThirdParty/GAMSIO/DIG/gdxf9def.f90 -text
+ThirdParty/GAMSIO/DIG/gdxjava.java -text
+ThirdParty/GAMSIO/DIG/gdxvba.bas -text
+ThirdParty/GAMSIO/DIG/gdxvbnet.vb -text
+ThirdParty/GAMSIO/DIG/gxdefs.pas -text
+ThirdParty/GAMSIO/DIG/iolib.a -text
+ThirdParty/GAMSIO/DIG/libf90pallib.a -text
+ThirdParty/GAMSIO/DIG/libg2d.a -text
+ThirdParty/GAMSIO/DIG/libgdxdclib.dylib -text svneol=unset#application/x-mach-binary
+ThirdParty/GAMSIO/DIG/liboptdclib.dylib -text svneol=unset#application/x-mach-binary
+ThirdParty/GAMSIO/DIG/libsmag.a -text
+ThirdParty/GAMSIO/DIG/nliolib.a -text
+ThirdParty/GAMSIO/DIG/optcs.cs -text
+ThirdParty/GAMSIO/DIG/optdcdef.pas -text
+ThirdParty/GAMSIO/DIG/optdcon.pas -text
+ThirdParty/GAMSIO/DIG/optddec.inc -text
+ThirdParty/GAMSIO/DIG/optdodef.pas -text
+ThirdParty/GAMSIO/DIG/optdpdef.pas -text
+ThirdParty/GAMSIO/DIG/optf9def.f90 -text
+ThirdParty/GAMSIO/DIG/optjava.java -text
+ThirdParty/GAMSIO/DIG/optvba.bas -text
+ThirdParty/GAMSIO/DIG/optvbnet.vb -text
+ThirdParty/GAMSIO/DIG/palf9def.mod -text
+ThirdParty/GAMSIO/DII/bch.o -text svneol=unset#application/x-mach-binary
+ThirdParty/GAMSIO/DII/clicelib.a -text
+ThirdParty/GAMSIO/DII/dictfunc.o -text svneol=unset#application/x-mach-binary
+ThirdParty/GAMSIO/DII/dictread.o -text svneol=unset#application/x-mach-binary
+ThirdParty/GAMSIO/DII/gclib.a -text
+ThirdParty/GAMSIO/DII/gdxdcdef.pas -text
+ThirdParty/GAMSIO/DII/gdxdcon.pas -text
+ThirdParty/GAMSIO/DII/gdxddec.inc -text
+ThirdParty/GAMSIO/DII/gdxdodef.pas -text
+ThirdParty/GAMSIO/DII/gdxdpdef.pas -text
+ThirdParty/GAMSIO/DII/gdxf9def.f90 -text
+ThirdParty/GAMSIO/DII/gdxvba.bas -text
+ThirdParty/GAMSIO/DII/gdxvbnet.vb -text
+ThirdParty/GAMSIO/DII/iolib.a -text
+ThirdParty/GAMSIO/DII/libf90pallib.a -text
+ThirdParty/GAMSIO/DII/libg2d.a -text
+ThirdParty/GAMSIO/DII/libgdxdclib.dylib -text svneol=unset#application/x-mach-binary
+ThirdParty/GAMSIO/DII/liboptdclib.dylib -text svneol=unset#application/x-mach-binary
+ThirdParty/GAMSIO/DII/libsmag.a -text
+ThirdParty/GAMSIO/DII/nliolib.a -text
+ThirdParty/GAMSIO/DII/optdcdef.pas -text
+ThirdParty/GAMSIO/DII/optdcon.pas -text
+ThirdParty/GAMSIO/DII/optdodef.pas -text
+ThirdParty/GAMSIO/DII/palf9def.mod -text
 ThirdParty/GAMSIO/INSTALL.GAMSIO -text
+ThirdParty/GAMSIO/LEG/bch.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/LEG/clicelib.a -text
+ThirdParty/GAMSIO/LEG/dictfunc.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/LEG/dictread.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/LEG/gclib.a -text
+ThirdParty/GAMSIO/LEG/gdxdcdef.pas -text
+ThirdParty/GAMSIO/LEG/gdxdcon.pas -text
+ThirdParty/GAMSIO/LEG/gdxddec.inc -text
+ThirdParty/GAMSIO/LEG/gdxdodef.pas -text
+ThirdParty/GAMSIO/LEG/gdxdpdef.pas -text
+ThirdParty/GAMSIO/LEG/gdxf9def.f90 -text
+ThirdParty/GAMSIO/LEG/gdxvba.bas -text
+ThirdParty/GAMSIO/LEG/gdxvbnet.vb -text
+ThirdParty/GAMSIO/LEG/iolib.a -text
+ThirdParty/GAMSIO/LEG/libf90pallib.a -text
+ThirdParty/GAMSIO/LEG/libg2d.a -text
+ThirdParty/GAMSIO/LEG/libgdxdclib64.so -text
+ThirdParty/GAMSIO/LEG/liboptdclib64.so -text
+ThirdParty/GAMSIO/LEG/libsmag.a -text
+ThirdParty/GAMSIO/LEG/nliolib.a -text
+ThirdParty/GAMSIO/LEG/optdcdef.pas -text
+ThirdParty/GAMSIO/LEG/optdcon.pas -text
+ThirdParty/GAMSIO/LEG/optdodef.pas -text
+ThirdParty/GAMSIO/LEG/palf9def.mod -text
+ThirdParty/GAMSIO/LEI/bch.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/LEI/clicelib.a -text
+ThirdParty/GAMSIO/LEI/dictfunc.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/LEI/dictread.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/LEI/gclib.a -text
+ThirdParty/GAMSIO/LEI/gdxdcdef.pas -text
+ThirdParty/GAMSIO/LEI/gdxdcon.pas -text
+ThirdParty/GAMSIO/LEI/gdxddec.inc -text
+ThirdParty/GAMSIO/LEI/gdxdodef.pas -text
+ThirdParty/GAMSIO/LEI/gdxdpdef.pas -text
+ThirdParty/GAMSIO/LEI/gdxf9def.f90 -text
+ThirdParty/GAMSIO/LEI/gdxvba.bas -text
+ThirdParty/GAMSIO/LEI/gdxvbnet.vb -text
+ThirdParty/GAMSIO/LEI/iolib.a -text
+ThirdParty/GAMSIO/LEI/libf90pallib.a -text
+ThirdParty/GAMSIO/LEI/libg2d.a -text
+ThirdParty/GAMSIO/LEI/libgdxdclib64.so -text
+ThirdParty/GAMSIO/LEI/liboptdclib64.so -text
+ThirdParty/GAMSIO/LEI/libsmag.a -text
+ThirdParty/GAMSIO/LEI/nliolib.a -text
+ThirdParty/GAMSIO/LEI/optdcdef.pas -text
+ThirdParty/GAMSIO/LEI/optdcon.pas -text
+ThirdParty/GAMSIO/LEI/optdodef.pas -text
+ThirdParty/GAMSIO/LEI/palf9def.mod -text
 ThirdParty/GAMSIO/LICENSE -text
+ThirdParty/GAMSIO/LNX/bch.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/LNX/clicelib.a -text
+ThirdParty/GAMSIO/LNX/dictfunc.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/LNX/dictread.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/LNX/gclib.a -text
+ThirdParty/GAMSIO/LNX/gdxdcdef.pas -text
+ThirdParty/GAMSIO/LNX/gdxdcon.pas -text
+ThirdParty/GAMSIO/LNX/gdxddec.inc -text
+ThirdParty/GAMSIO/LNX/gdxdodef.pas -text
+ThirdParty/GAMSIO/LNX/gdxdpdef.pas -text
+ThirdParty/GAMSIO/LNX/gdxf9def.f90 -text
+ThirdParty/GAMSIO/LNX/gdxvba.bas -text
+ThirdParty/GAMSIO/LNX/gdxvbnet.vb -text
+ThirdParty/GAMSIO/LNX/iolib.a -text
+ThirdParty/GAMSIO/LNX/libf90pallib.a -text
+ThirdParty/GAMSIO/LNX/libg2d.a -text
+ThirdParty/GAMSIO/LNX/libgdxdclib.so -text
+ThirdParty/GAMSIO/LNX/liboptdclib.so -text
+ThirdParty/GAMSIO/LNX/libsmag.a -text
+ThirdParty/GAMSIO/LNX/nliolib.a -text
+ThirdParty/GAMSIO/LNX/optdcdef.pas -text
+ThirdParty/GAMSIO/LNX/optdcon.pas -text
+ThirdParty/GAMSIO/LNX/optdodef.pas -text
+ThirdParty/GAMSIO/LNX/palf9def.mod -text
+ThirdParty/GAMSIO/LX3/bch.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/LX3/clicelib.a -text
+ThirdParty/GAMSIO/LX3/dictfunc.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/LX3/dictread.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/LX3/gclib.a -text
+ThirdParty/GAMSIO/LX3/gdxdcdef.pas -text
+ThirdParty/GAMSIO/LX3/gdxdcon.pas -text
+ThirdParty/GAMSIO/LX3/gdxddec.inc -text
+ThirdParty/GAMSIO/LX3/gdxdodef.pas -text
+ThirdParty/GAMSIO/LX3/gdxdpdef.pas -text
+ThirdParty/GAMSIO/LX3/gdxf9def.f90 -text
+ThirdParty/GAMSIO/LX3/gdxvba.bas -text
+ThirdParty/GAMSIO/LX3/gdxvbnet.vb -text
+ThirdParty/GAMSIO/LX3/iolib.a -text
+ThirdParty/GAMSIO/LX3/libf90pallib.a -text
+ThirdParty/GAMSIO/LX3/libg2d.a -text
+ThirdParty/GAMSIO/LX3/libgdxdclib.so -text
+ThirdParty/GAMSIO/LX3/liboptdclib.so -text
+ThirdParty/GAMSIO/LX3/libsmag.a -text
+ThirdParty/GAMSIO/LX3/nliolib.a -text
+ThirdParty/GAMSIO/LX3/optdcdef.pas -text
+ThirdParty/GAMSIO/LX3/optdcon.pas -text
+ThirdParty/GAMSIO/LX3/optdodef.pas -text
+ThirdParty/GAMSIO/LX3/palf9def.mod -text
 ThirdParty/GAMSIO/Makefile.am -text
 ThirdParty/GAMSIO/Makefile.in -text
+ThirdParty/GAMSIO/SIG/bch.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/SIG/clicelib.a -text
+ThirdParty/GAMSIO/SIG/dictfunc.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/SIG/dictread.o -text svneol=unset#application/x-object
+ThirdParty/GAMSIO/SIG/gclib.a -text
+ThirdParty/GAMSIO/SIG/gdxdcdef.pas -text
+ThirdParty/GAMSIO/SIG/gdxdcon.pas -text
+ThirdParty/GAMSIO/SIG/gdxddec.inc -text
+ThirdParty/GAMSIO/SIG/gdxdodef.pas -text
+ThirdParty/GAMSIO/SIG/gdxdpdef.pas -text
+ThirdParty/GAMSIO/SIG/gdxf9def.f90 -text
+ThirdParty/GAMSIO/SIG/gdxvba.bas -text
+ThirdParty/GAMSIO/SIG/gdxvbnet.vb -text
+ThirdParty/GAMSIO/SIG/iolib.a -text
+ThirdParty/GAMSIO/SIG/libf90pallib.a -text
+ThirdParty/GAMSIO/SIG/libg2d.a -text
+ThirdParty/GAMSIO/SIG/libgdxdclib.so -text
+ThirdParty/GAMSIO/SIG/liboptdclib.so -text
+ThirdParty/GAMSIO/SIG/libsmag.a -text
+ThirdParty/GAMSIO/SIG/nliolib.a -text
+ThirdParty/GAMSIO/SIG/optdcdef.pas -text
+ThirdParty/GAMSIO/SIG/optdcon.pas -text
+ThirdParty/GAMSIO/SIG/optdodef.pas -text
+ThirdParty/GAMSIO/SIG/palf9def.mod -text
+ThirdParty/GAMSIO/VIS/bch.obj -text
+ThirdParty/GAMSIO/VIS/clicelib.lib -text
+ThirdParty/GAMSIO/VIS/dictfunc.obj -text
+ThirdParty/GAMSIO/VIS/dictread.obj -text
+ThirdParty/GAMSIO/VIS/f90pallib.lib -text
+ThirdParty/GAMSIO/VIS/g2d.lib -text
+ThirdParty/GAMSIO/VIS/gclib.lib -text
+ThirdParty/GAMSIO/VIS/gdxdcdef.pas -text
+ThirdParty/GAMSIO/VIS/gdxdclib.dll -text
+ThirdParty/GAMSIO/VIS/gdxdcon.pas -text
+ThirdParty/GAMSIO/VIS/gdxddec.inc -text
+ThirdParty/GAMSIO/VIS/gdxdodef.pas -text
+ThirdParty/GAMSIO/VIS/gdxdpdef.pas -text
+ThirdParty/GAMSIO/VIS/gdxf9def.f90 -text
+ThirdParty/GAMSIO/VIS/gdxvba.bas -text
+ThirdParty/GAMSIO/VIS/gdxvbnet.vb -text
+ThirdParty/GAMSIO/VIS/iolib.lib -text
+ThirdParty/GAMSIO/VIS/nliolib.lib -text
+ThirdParty/GAMSIO/VIS/optdcdef.pas -text
+ThirdParty/GAMSIO/VIS/optdclib.dll -text
+ThirdParty/GAMSIO/VIS/optdcon.pas -text
+ThirdParty/GAMSIO/VIS/optdodef.pas -text
+ThirdParty/GAMSIO/VIS/palf9def.mod -text
+ThirdParty/GAMSIO/VIS/smag.lib -text
+ThirdParty/GAMSIO/WEI/bch.obj -text
+ThirdParty/GAMSIO/WEI/clicelib.lib -text
+ThirdParty/GAMSIO/WEI/dictfunc.obj -text
+ThirdParty/GAMSIO/WEI/dictread.obj -text
+ThirdParty/GAMSIO/WEI/f90pallib.lib -text
+ThirdParty/GAMSIO/WEI/g2d.lib -text
+ThirdParty/GAMSIO/WEI/gclib.lib -text
+ThirdParty/GAMSIO/WEI/gdxdcdef.pas -text
+ThirdParty/GAMSIO/WEI/gdxdclib64.dll -text
+ThirdParty/GAMSIO/WEI/gdxdcon.pas -text
+ThirdParty/GAMSIO/WEI/gdxddec.inc -text
+ThirdParty/GAMSIO/WEI/gdxdodef.pas -text
+ThirdParty/GAMSIO/WEI/gdxdpdef.pas -text
+ThirdParty/GAMSIO/WEI/gdxf9def.f90 -text
+ThirdParty/GAMSIO/WEI/gdxvba.bas -text
+ThirdParty/GAMSIO/WEI/gdxvbnet.vb -text
+ThirdParty/GAMSIO/WEI/iolib.lib -text
+ThirdParty/GAMSIO/WEI/nliolib.lib -text
+ThirdParty/GAMSIO/WEI/optdcdef.pas -text
+ThirdParty/GAMSIO/WEI/optdclib64.dll -text
+ThirdParty/GAMSIO/WEI/optdcon.pas -text
+ThirdParty/GAMSIO/WEI/optdodef.pas -text
+ThirdParty/GAMSIO/WEI/palf9def.mod -text
+ThirdParty/GAMSIO/WEI/smag.lib -text
 ThirdParty/GAMSIO/configure -text
 ThirdParty/GAMSIO/configure.ac -text
 ThirdParty/GAMSIO/gdx2gams.c -text
-ThirdParty/GAMSIO/get.GAMSIO -text
 ThirdParty/GAMSIO/m4/ac_coin_gams.m4 -text
 ThirdParty/SCIP/INSTALL.SCIP -text
 ThirdParty/SCIP/Makefile.am -text
