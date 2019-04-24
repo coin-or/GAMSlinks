@@ -205,7 +205,6 @@ GAMSSOLVERLIB_LIBS_INSTALLED = @GAMSSOLVERLIB_LIBS_INSTALLED@
 GAMSSOLVERLIB_PCLIBS = @GAMSSOLVERLIB_PCLIBS@
 GAMSSOLVERLIB_PCREQUIRES = @GAMSSOLVERLIB_PCREQUIRES@
 GAMS_PATH = @GAMS_PATH@
-GAMS_VERSION = @GAMS_VERSION@
 HAVE_EXTERNALS_FALSE = @HAVE_EXTERNALS_FALSE@
 HAVE_EXTERNALS_TRUE = @HAVE_EXTERNALS_TRUE@
 INSTALL_DATA = @INSTALL_DATA@
@@ -375,12 +374,16 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = 
 lib_LTLIBRARIES = libGamsUtils.la
 libGamsUtils_la_SOURCES = GamsOptions.cpp GamsSolveTrace.c \
-  $(GAMS_VERSION)/optcc.c $(GAMS_VERSION)/gmomcc.c $(GAMS_VERSION)/gevmcc.c $(GAMS_VERSION)/gclgms.c $(GAMS_VERSION)/gdxcc.c
+  $(GAMS_PATH)/apifiles/C/api/optcc.c \
+  $(GAMS_PATH)/apifiles/C/api/gmomcc.c \
+  $(GAMS_PATH)/apifiles/C/api/gevmcc.c \
+  $(GAMS_PATH)/apifiles/C/api/gclgms.c \
+  $(GAMS_PATH)/apifiles/C/api/gdxcc.c
 
 libGamsUtils_la_LDFLAGS = 
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = GamsCompatibility.h GamsOptions.hpp GamsNLinstr.h GamsSolveTrace.h
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/$(GAMS_VERSION)` $(GAMSLIBCFLAGS)
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(GAMS_PATH)/apifiles/C/api` $(GAMSLIBCFLAGS)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 
 ########################################################################
@@ -487,40 +490,40 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-optcc.lo: $(GAMS_VERSION)/optcc.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT optcc.lo -MD -MP -MF "$(DEPDIR)/optcc.Tpo" -c -o optcc.lo `test -f '$(GAMS_VERSION)/optcc.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/optcc.c; \
+optcc.lo: $(GAMS_PATH)/apifiles/C/api/optcc.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT optcc.lo -MD -MP -MF "$(DEPDIR)/optcc.Tpo" -c -o optcc.lo `test -f '$(GAMS_PATH)/apifiles/C/api/optcc.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/optcc.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/optcc.Tpo" "$(DEPDIR)/optcc.Plo"; else rm -f "$(DEPDIR)/optcc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_VERSION)/optcc.c' object='optcc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_PATH)/apifiles/C/api/optcc.c' object='optcc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o optcc.lo `test -f '$(GAMS_VERSION)/optcc.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/optcc.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o optcc.lo `test -f '$(GAMS_PATH)/apifiles/C/api/optcc.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/optcc.c
 
-gmomcc.lo: $(GAMS_VERSION)/gmomcc.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gmomcc.lo -MD -MP -MF "$(DEPDIR)/gmomcc.Tpo" -c -o gmomcc.lo `test -f '$(GAMS_VERSION)/gmomcc.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/gmomcc.c; \
+gmomcc.lo: $(GAMS_PATH)/apifiles/C/api/gmomcc.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gmomcc.lo -MD -MP -MF "$(DEPDIR)/gmomcc.Tpo" -c -o gmomcc.lo `test -f '$(GAMS_PATH)/apifiles/C/api/gmomcc.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/gmomcc.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/gmomcc.Tpo" "$(DEPDIR)/gmomcc.Plo"; else rm -f "$(DEPDIR)/gmomcc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_VERSION)/gmomcc.c' object='gmomcc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_PATH)/apifiles/C/api/gmomcc.c' object='gmomcc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gmomcc.lo `test -f '$(GAMS_VERSION)/gmomcc.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/gmomcc.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gmomcc.lo `test -f '$(GAMS_PATH)/apifiles/C/api/gmomcc.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/gmomcc.c
 
-gevmcc.lo: $(GAMS_VERSION)/gevmcc.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gevmcc.lo -MD -MP -MF "$(DEPDIR)/gevmcc.Tpo" -c -o gevmcc.lo `test -f '$(GAMS_VERSION)/gevmcc.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/gevmcc.c; \
+gevmcc.lo: $(GAMS_PATH)/apifiles/C/api/gevmcc.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gevmcc.lo -MD -MP -MF "$(DEPDIR)/gevmcc.Tpo" -c -o gevmcc.lo `test -f '$(GAMS_PATH)/apifiles/C/api/gevmcc.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/gevmcc.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/gevmcc.Tpo" "$(DEPDIR)/gevmcc.Plo"; else rm -f "$(DEPDIR)/gevmcc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_VERSION)/gevmcc.c' object='gevmcc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_PATH)/apifiles/C/api/gevmcc.c' object='gevmcc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gevmcc.lo `test -f '$(GAMS_VERSION)/gevmcc.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/gevmcc.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gevmcc.lo `test -f '$(GAMS_PATH)/apifiles/C/api/gevmcc.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/gevmcc.c
 
-gclgms.lo: $(GAMS_VERSION)/gclgms.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gclgms.lo -MD -MP -MF "$(DEPDIR)/gclgms.Tpo" -c -o gclgms.lo `test -f '$(GAMS_VERSION)/gclgms.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/gclgms.c; \
+gclgms.lo: $(GAMS_PATH)/apifiles/C/api/gclgms.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gclgms.lo -MD -MP -MF "$(DEPDIR)/gclgms.Tpo" -c -o gclgms.lo `test -f '$(GAMS_PATH)/apifiles/C/api/gclgms.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/gclgms.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/gclgms.Tpo" "$(DEPDIR)/gclgms.Plo"; else rm -f "$(DEPDIR)/gclgms.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_VERSION)/gclgms.c' object='gclgms.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_PATH)/apifiles/C/api/gclgms.c' object='gclgms.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gclgms.lo `test -f '$(GAMS_VERSION)/gclgms.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/gclgms.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gclgms.lo `test -f '$(GAMS_PATH)/apifiles/C/api/gclgms.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/gclgms.c
 
-gdxcc.lo: $(GAMS_VERSION)/gdxcc.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gdxcc.lo -MD -MP -MF "$(DEPDIR)/gdxcc.Tpo" -c -o gdxcc.lo `test -f '$(GAMS_VERSION)/gdxcc.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/gdxcc.c; \
+gdxcc.lo: $(GAMS_PATH)/apifiles/C/api/gdxcc.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gdxcc.lo -MD -MP -MF "$(DEPDIR)/gdxcc.Tpo" -c -o gdxcc.lo `test -f '$(GAMS_PATH)/apifiles/C/api/gdxcc.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/gdxcc.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/gdxcc.Tpo" "$(DEPDIR)/gdxcc.Plo"; else rm -f "$(DEPDIR)/gdxcc.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_VERSION)/gdxcc.c' object='gdxcc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_PATH)/apifiles/C/api/gdxcc.c' object='gdxcc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gdxcc.lo `test -f '$(GAMS_VERSION)/gdxcc.c' || echo '$(srcdir)/'`$(GAMS_VERSION)/gdxcc.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gdxcc.lo `test -f '$(GAMS_PATH)/apifiles/C/api/gdxcc.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/gdxcc.c
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

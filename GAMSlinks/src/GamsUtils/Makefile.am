@@ -10,13 +10,17 @@ EXTRA_DIST =
 
 lib_LTLIBRARIES = libGamsUtils.la
 libGamsUtils_la_SOURCES = GamsOptions.cpp GamsSolveTrace.c \
-  $(GAMS_VERSION)/optcc.c $(GAMS_VERSION)/gmomcc.c $(GAMS_VERSION)/gevmcc.c $(GAMS_VERSION)/gclgms.c $(GAMS_VERSION)/gdxcc.c
+  $(GAMS_PATH)/apifiles/C/api/optcc.c \
+  $(GAMS_PATH)/apifiles/C/api/gmomcc.c \
+  $(GAMS_PATH)/apifiles/C/api/gevmcc.c \
+  $(GAMS_PATH)/apifiles/C/api/gclgms.c \
+  $(GAMS_PATH)/apifiles/C/api/gdxcc.c
 libGamsUtils_la_LDFLAGS =
 
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = GamsCompatibility.h GamsOptions.hpp GamsNLinstr.h GamsSolveTrace.h
 
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(srcdir)/$(GAMS_VERSION)` $(GAMSLIBCFLAGS)
+AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(GAMS_PATH)/apifiles/C/api` $(GAMSLIBCFLAGS)
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 

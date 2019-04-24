@@ -13,7 +13,7 @@ AM_CPPFLAGS = \
   -I`$(CYGPATH_W) $(srcdir)/..` \
   -I`$(CYGPATH_W) $(srcdir)/scip` \
   -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` \
-  -I`$(CYGPATH_W) $(srcdir)/../GamsUtils/$(GAMS_VERSION)` \
+  -I`$(CYGPATH_W) $(GAMS_PATH)/apifiles/C/api` \
   $(GAMSSOLVERLIB_CFLAGS)
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..

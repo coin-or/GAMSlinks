@@ -12,7 +12,6 @@
 #
 # GAMS_PATH            path of GAMS system if available
 # COIN_HAS_GAMSSYSTEM  AM_CONDITIONAL that tells whether gams is available
-# GAMS_VERSION         major version number of GAMS system
 
 AC_DEFUN([AC_COIN_HAVE_GAMS], [
 
@@ -29,21 +28,9 @@ AC_ARG_WITH([gams],
 AM_CONDITIONAL([COIN_HAS_GAMSSYSTEM], [test "$GAMS_PATH" != UNAVAILABLE])
 AC_SUBST(GAMS_PATH)
 
-GAMS_VERSION_DEFAULT="24.3" 
 if test "$GAMS_PATH" = UNAVAILABLE; then
   GAMS_VERSION="$GAMS_VERSION_DEFAULT" 
-  AC_MSG_NOTICE([no GAMS system found, tests will not work, assuming build for GAMS version $GAMS_VERSION])
-else
-  AC_MSG_CHECKING([for gams version number])
-  GAMS_VERSION=""
-  [GAMS_VERSION=`"${GAMS_PATH}/gams" ? lo=3 | sed -n -e '1s/.* \([0-9][0-9]*\.[0-9][0-9]*\)\.[0-9][0-9]* .*/\1/p' -e 2q`]
-  if test "x$GAMS_VERSION" != x ; then
-    AC_MSG_RESULT([$GAMS_VERSION])
-  else
-    GAMS_VERSION="$GAMS_VERSION_DEFAULT" 
-    AC_MSG_RESULT([unknown, assuming version $GAMS_VERSION])
-  fi
+  AC_MSG_WARN([no GAMS system found, build and tests will not work])
 fi
-AC_SUBST(GAMS_VERSION)
 
 ])
