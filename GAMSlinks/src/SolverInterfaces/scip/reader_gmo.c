@@ -3168,7 +3168,6 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
       SCIP_CALL( SCIPsetRealParam(scip, "limits/memory", gevGetDblOpt(gev, gevWorkSpace)) );
    }
    SCIP_CALL( SCIPsetIntParam(scip, "lp/threads", gevThreads(gev)) );
-   SCIP_CALL( SCIPsetIntParam(scip, "timing/clocktype", 2) ); /* wallclock time */
 
    /* if log is not kept, then can also set SCIP verblevel to 0 */
    if( gevGetIntOpt(gev, gevLogOption) == 0 )
