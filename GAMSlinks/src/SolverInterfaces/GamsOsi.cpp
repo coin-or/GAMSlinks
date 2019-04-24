@@ -79,11 +79,6 @@ static int MSKAPI mskcallback(MSKtask_t task, MSKuserhandle_t handle, MSKcallbac
 }
 #endif
 
-#ifdef COIN_HAS_OSISPX
-#include "OsiSpxSolverInterface.hpp"
-#include "spxout.h"  // for passing in output stringstream
-#endif
-
 #ifdef COIN_HAS_OSIXPR
 #include "OsiXprSolverInterface.hpp"
 #include "xprs.h"
@@ -194,9 +189,6 @@ int GamsOsi::readyAPI(
       case MOSEK:
 #include "coinlibdCL9svn.h"
          break;
-      case SOPLEX:
-#include "coinlibdCLBsvn.h"
-         break;
       case XPRESS:
 #include "coinlibdCLAsvn.h"
          break;
@@ -231,12 +223,6 @@ int GamsOsi::readyAPI(
 #ifdef COIN_HAS_OSIMSK
       case MOSEK:
          sprintf(buffer, "OsiMosek (Osi library " OSI_VERSION ", MOSEK library %d.%d)\nwritten by Bo Jensen. Osi is part of COIN-OR.\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
-         break;
-#endif
-
-#ifdef COIN_HAS_OSISPX
-      case SOPLEX:
-         sprintf(buffer, "OsiSoplex (Osi library " OSI_VERSION ", SoPlex library %d.%d.%d)\nOsi link written by T. Achterberg, A. Gleixner, and W. Huang. Osi is part of COIN-OR.\n", SOPLEX_VERSION/100, (SOPLEX_VERSION%100)/10, SOPLEX_VERSION%10);
          break;
 #endif
 
@@ -345,27 +331,6 @@ int GamsOsi::readyAPI(
 #endif
 #else
             gevLogStat(gev, "GamsOsi compiled without Osi/MOSEK interface.\n");
-            return 1;
-#endif
-            break;
-         }
-
-         case SOPLEX:
-         {
-#ifdef COIN_HAS_OSISPX
-#if GAMS_BUILD
-            if( !checkScipLicense(gmo, pal) )
-            {
-               gevLogStat(gev, "*** Use of SOPLEX is limited to academic users.");
-               gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");
-               gmoSolveStatSet(gmo, gmoSolveStat_License);
-               gmoModelStatSet(gmo, gmoModelStat_LicenseError);
-               return 1;
-            }
-#endif
-            osi = new OsiSpxSolverInterface();
-#else
-            gevLogStat(gev, "GamsOsi compiled without Osi/Soplex interface.\n");
             return 1;
 #endif
             break;
@@ -564,14 +529,6 @@ bool GamsOsi::setupProblem()
       return false;
    }
 
-   if( solverid == SOPLEX && !isLP() )
-   {
-      gevLogStat(gev, "Binary and integer variables not supported by SoPlex.\n");
-      gmoSolveStatSet(gmo, gmoSolveStat_Capability);
-      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
-      return false;
-   }
-
    // get rid of free rows
    if( gmoGetEquTypeCnt(gmo, gmoequ_N) )
       gmoSetNRowPerm(gmo);
@@ -659,7 +616,7 @@ bool GamsOsi::setupStartingPoint()
       try
       {
          // some solvers choke if they get an incomplete basis
-         if( (solverid != GUROBI && solverid != MOSEK && solverid != SOPLEX) || nbas == gmoM(gmo) )
+         if( (solverid != GUROBI && solverid != MOSEK) || nbas == gmoM(gmo) )
          {
             if( !osi->setWarmStart(&basis) )
             {
@@ -823,18 +780,6 @@ bool GamsOsi::setupParameters()
       }
 #endif
 
-#ifdef COIN_HAS_OSISPX
-      case SOPLEX:
-      {
-         OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
-         assert(osispx != NULL);
-
-         osispx->setTimeLimit(reslim);
-
-         break;
-      }
-#endif
-
 #ifdef COIN_HAS_OSIXPR
       case XPRESS:
       {
@@ -924,33 +869,6 @@ bool GamsOsi::setupCallbacks()
       }
 #endif
 
-#ifdef COIN_HAS_OSISPX
-      case SOPLEX:
-      {
-         OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
-         assert(osispx != NULL);
-         soplex::SPxOut* spxout(osispx->getSPxOut());
-         spxout->setVerbosity(soplex::SPxOut::INFO1);
-         spxoutputbuf = new GamsOutputStreamBuf(gev);
-         spxoutput = new std::ostream(spxoutputbuf);
-         if( gevGetIntOpt(gev, gevLogOption) == 0 )
-         {
-            spxout->setVerbosity(soplex::SPxOut::ERROR);
-            spxout->setStream(soplex::SPxOut::ERROR, *spxoutput);
-         }
-         else
-         {
-            spxout->setStream(soplex::SPxOut::ERROR, *spxoutput);
-            spxout->setStream(soplex::SPxOut::WARNING, *spxoutput);
-            spxout->setStream(soplex::SPxOut::INFO1, *spxoutput);
-            spxout->setStream(soplex::SPxOut::INFO2, *spxoutput);
-            spxout->setStream(soplex::SPxOut::INFO3, *spxoutput);
-            spxout->setStream(soplex::SPxOut::DEBUG, *spxoutput);
-         }
-         break;
-      }
-#endif
-
 #ifdef COIN_HAS_OSIXPR
       case XPRESS:
       {
@@ -972,30 +890,9 @@ bool GamsOsi::setupCallbacks()
 
 bool GamsOsi::clearCallbacks()
 {
-#if defined(COIN_HAS_OSISPX)
+#if 0
    switch( solverid )
    {
-#ifdef COIN_HAS_OSISPX
-      case SOPLEX:
-      {
-         OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
-         assert(osispx != NULL);
-         soplex::SPxOut* spxout(osispx->getSPxOut());
-         spxout->setVerbosity(soplex::SPxOut::ERROR);
-         spxout->setStream(soplex::SPxOut::ERROR, std::cerr);
-         spxout->setStream(soplex::SPxOut::WARNING, std::cerr);
-         spxout->setStream(soplex::SPxOut::INFO1, std::cout);
-         spxout->setStream(soplex::SPxOut::INFO2, std::cout);
-         spxout->setStream(soplex::SPxOut::INFO3, std::cout);
-         spxout->setStream(soplex::SPxOut::DEBUG, std::cout);
-
-         delete spxoutput;
-         spxoutput = NULL;
-         delete spxoutputbuf;
-         spxoutputbuf = NULL;
-         break;
-      }
-#endif
 
       default: ;
    }
@@ -1736,25 +1633,6 @@ bool GamsOsi::writeSolution(
       }
 #endif
 
-#ifdef COIN_HAS_OSISPX
-      case SOPLEX:
-      {
-         OsiSpxSolverInterface* osispx = dynamic_cast<OsiSpxSolverInterface*>(osi);
-         assert(osispx != NULL);
-
-         if( osispx->isTimeLimitReached() )
-         {
-            solwritten = true;
-            gmoSolveStatSet(gmo, gmoSolveStat_Resource);
-            gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
-            gevLogStat(gev, "Timelimit reached.");
-            break;
-         }
-
-         /* for all other cases, continue as in default */
-      }
-#endif
-
       default:
       {
          try
@@ -2018,13 +1896,6 @@ bool GamsOsi::isLP() {
 #define GAMSSOLVERC_ID         omk
 #define GAMSSOLVERC_CLASS      GamsOsi
 #define GAMSSOLVERC_CONSTRARGS GamsOsi::MOSEK
-#include "GamsSolverC_tpl.cpp"
-#endif
-
-#ifdef COIN_HAS_OSISPX
-#define GAMSSOLVERC_ID         osp
-#define GAMSSOLVERC_CLASS      GamsOsi
-#define GAMSSOLVERC_CONSTRARGS GamsOsi::SOPLEX
 #include "GamsSolverC_tpl.cpp"
 #endif
 

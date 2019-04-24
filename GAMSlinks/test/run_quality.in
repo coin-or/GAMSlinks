@@ -53,10 +53,10 @@ declare -a testlist
 @COIN_HAS_IPOPT_TRUE@testlist[${#testlist[@]}]="--solver myipopt --suite nlp"
 @COIN_HAS_IPOPT_TRUE@testlist[${#testlist[@]}]="--solver myipopt --suite qcp"
 
-@COIN_HAS_OSISPX_TRUE@solvers="$solvers , MyOsiSoplex"
-@COIN_HAS_OSISPX_TRUE@skiplist="$skiplist skip('MyOsiSoplex','lp03')=yes;"
-@COIN_HAS_OSISPX_TRUE@skiplist="$skiplist skip('MyOsiSoplex','sl4lp03')=yes;"
-@COIN_HAS_OSISPX_TRUE@testlist[${#testlist[@]}]="--solver myosisoplex --suite lp"
+@COIN_HAS_SOPLEX_TRUE@solvers="$solvers , MySoplex"
+@COIN_HAS_SOPLEX_TRUE@skiplist="$skiplist skip('MySoplex','lp03')=yes;"
+@COIN_HAS_SOPLEX_TRUE@skiplist="$skiplist skip('MySoplex','sl4lp03')=yes;"
+@COIN_HAS_SOPLEX_TRUE@testlist[${#testlist[@]}]="--solver mysoplex --suite lp"
 
 @COIN_HAS_CBC_TRUE@solvers="$solvers , MyCbc"
 @COIN_HAS_CBC_TRUE@skiplist="$skiplist skip('MyCbc','lp03')=yes;"

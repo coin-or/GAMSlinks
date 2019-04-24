@@ -51,15 +51,17 @@ host_triplet = @host@
 @COIN_HAS_CBC_TRUE@am__append_5 = optmycbc.def
 @COIN_HAS_IPOPT_TRUE@am__append_6 = GamsJournal.cpp GamsNLP.cpp GamsIpopt.cpp 
 @COIN_HAS_IPOPT_TRUE@am__append_7 = GamsJournal.hpp GamsNLP.hpp GamsIpopt.hpp
-@COIN_HAS_SCIP_TRUE@am__append_8 = GamsScip.cpp scip/reader_gmo.c scip/event_solvetrace.c scip/prop_defaultbounds.c
-@COIN_HAS_SCIP_TRUE@am__append_9 = GamsScip.hpp
-@COIN_HAS_BONMIN_TRUE@am__append_10 = GamsMINLP.cpp GamsBonmin.cpp
-@COIN_HAS_BONMIN_TRUE@am__append_11 = GamsMINLP.hpp GamsBonmin.hpp
-@COIN_HAS_COUENNE_TRUE@am__append_12 = GamsCouenne.cpp
-@COIN_HAS_COUENNE_TRUE@am__append_13 = GamsCouenne.hpp
-@COIN_HAS_OS_TRUE@am__append_14 = GamsOS.cpp GamsOSxL.cpp
-@COIN_HAS_OS_TRUE@am__append_15 = GamsOS.hpp GamsOSxL.hpp
-@COIN_HAS_OS_TRUE@am__append_16 = optmyos.def
+@COIN_HAS_SOPLEX_TRUE@am__append_8 = GamsSoPlex.cpp
+@COIN_HAS_SOPLEX_TRUE@am__append_9 = GamsSoPlex.hpp
+@COIN_HAS_SCIP_TRUE@am__append_10 = GamsScip.cpp scip/reader_gmo.c scip/event_solvetrace.c scip/prop_defaultbounds.c
+@COIN_HAS_SCIP_TRUE@am__append_11 = GamsScip.hpp
+@COIN_HAS_BONMIN_TRUE@am__append_12 = GamsMINLP.cpp GamsBonmin.cpp
+@COIN_HAS_BONMIN_TRUE@am__append_13 = GamsMINLP.hpp GamsBonmin.hpp
+@COIN_HAS_COUENNE_TRUE@am__append_14 = GamsCouenne.cpp
+@COIN_HAS_COUENNE_TRUE@am__append_15 = GamsCouenne.hpp
+@COIN_HAS_OS_TRUE@am__append_16 = GamsOS.cpp GamsOSxL.cpp
+@COIN_HAS_OS_TRUE@am__append_17 = GamsOS.hpp GamsOSxL.hpp
+@COIN_HAS_OS_TRUE@am__append_18 = optmyos.def
 subdir = src/SolverInterfaces
 DIST_COMMON = $(am__includecoin_HEADERS_DIST) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/gamsinst.sh.in
@@ -86,22 +88,25 @@ am__DEPENDENCIES_1 =
 am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp \
 	GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp \
 	GamsCbc.cpp GamsJournal.cpp GamsNLP.cpp GamsIpopt.cpp \
-	GamsScip.cpp scip/reader_gmo.c scip/event_solvetrace.c \
-	scip/prop_defaultbounds.c GamsMINLP.cpp GamsBonmin.cpp \
-	GamsCouenne.cpp GamsOS.cpp GamsOSxL.cpp
+	GamsSoPlex.cpp GamsScip.cpp scip/reader_gmo.c \
+	scip/event_solvetrace.c scip/prop_defaultbounds.c \
+	GamsMINLP.cpp GamsBonmin.cpp GamsCouenne.cpp GamsOS.cpp \
+	GamsOSxL.cpp
 @COIN_HAS_OSI_TRUE@am__objects_1 = GamsMessageHandler.lo \
 @COIN_HAS_OSI_TRUE@	GamsOsiHelper.lo GamsOsi.lo
 @COIN_HAS_CBC_TRUE@am__objects_2 = GamsCbc.lo
 @COIN_HAS_IPOPT_TRUE@am__objects_3 = GamsJournal.lo GamsNLP.lo \
 @COIN_HAS_IPOPT_TRUE@	GamsIpopt.lo
-@COIN_HAS_SCIP_TRUE@am__objects_4 = GamsScip.lo reader_gmo.lo \
+@COIN_HAS_SOPLEX_TRUE@am__objects_4 = GamsSoPlex.lo
+@COIN_HAS_SCIP_TRUE@am__objects_5 = GamsScip.lo reader_gmo.lo \
 @COIN_HAS_SCIP_TRUE@	event_solvetrace.lo prop_defaultbounds.lo
-@COIN_HAS_BONMIN_TRUE@am__objects_5 = GamsMINLP.lo GamsBonmin.lo
-@COIN_HAS_COUENNE_TRUE@am__objects_6 = GamsCouenne.lo
-@COIN_HAS_OS_TRUE@am__objects_7 = GamsOS.lo GamsOSxL.lo
+@COIN_HAS_BONMIN_TRUE@am__objects_6 = GamsMINLP.lo GamsBonmin.lo
+@COIN_HAS_COUENNE_TRUE@am__objects_7 = GamsCouenne.lo
+@COIN_HAS_OS_TRUE@am__objects_8 = GamsOS.lo GamsOSxL.lo
 am_libGamsCoin_la_OBJECTS = GamsSolver.lo $(am__objects_1) \
 	$(am__objects_2) $(am__objects_3) $(am__objects_4) \
-	$(am__objects_5) $(am__objects_6) $(am__objects_7)
+	$(am__objects_5) $(am__objects_6) $(am__objects_7) \
+	$(am__objects_8)
 libGamsCoin_la_OBJECTS = $(am_libGamsCoin_la_OBJECTS)
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 SCRIPTS = $(bin_SCRIPTS)
@@ -127,8 +132,9 @@ SOURCES = $(libGamsCoin_la_SOURCES)
 DIST_SOURCES = $(am__libGamsCoin_la_SOURCES_DIST)
 am__includecoin_HEADERS_DIST = GamsMessageHandler.hpp \
 	GamsOsiHelper.hpp GamsOsi.hpp GamsCbc.hpp GamsJournal.hpp \
-	GamsNLP.hpp GamsIpopt.hpp GamsScip.hpp GamsMINLP.hpp \
-	GamsBonmin.hpp GamsCouenne.hpp GamsOS.hpp GamsOSxL.hpp
+	GamsNLP.hpp GamsIpopt.hpp GamsSoPlex.hpp GamsScip.hpp \
+	GamsMINLP.hpp GamsBonmin.hpp GamsCouenne.hpp GamsOS.hpp \
+	GamsOSxL.hpp
 includecoinHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(includecoin_HEADERS)
 ETAGS = etags
@@ -188,8 +194,6 @@ COIN_HAS_OSIGRB_FALSE = @COIN_HAS_OSIGRB_FALSE@
 COIN_HAS_OSIGRB_TRUE = @COIN_HAS_OSIGRB_TRUE@
 COIN_HAS_OSIMSK_FALSE = @COIN_HAS_OSIMSK_FALSE@
 COIN_HAS_OSIMSK_TRUE = @COIN_HAS_OSIMSK_TRUE@
-COIN_HAS_OSISPX_FALSE = @COIN_HAS_OSISPX_FALSE@
-COIN_HAS_OSISPX_TRUE = @COIN_HAS_OSISPX_TRUE@
 COIN_HAS_OSIXPR_FALSE = @COIN_HAS_OSIXPR_FALSE@
 COIN_HAS_OSIXPR_TRUE = @COIN_HAS_OSIXPR_TRUE@
 COIN_HAS_OSI_FALSE = @COIN_HAS_OSI_FALSE@
@@ -200,6 +204,8 @@ COIN_HAS_PKGCONFIG_FALSE = @COIN_HAS_PKGCONFIG_FALSE@
 COIN_HAS_PKGCONFIG_TRUE = @COIN_HAS_PKGCONFIG_TRUE@
 COIN_HAS_SCIP_FALSE = @COIN_HAS_SCIP_FALSE@
 COIN_HAS_SCIP_TRUE = @COIN_HAS_SCIP_TRUE@
+COIN_HAS_SOPLEX_FALSE = @COIN_HAS_SOPLEX_FALSE@
+COIN_HAS_SOPLEX_TRUE = @COIN_HAS_SOPLEX_TRUE@
 COIN_IS_WINDOWS_FALSE = @COIN_IS_WINDOWS_FALSE@
 COIN_IS_WINDOWS_TRUE = @COIN_IS_WINDOWS_TRUE@
 COIN_PKG_CONFIG_PATH = @COIN_PKG_CONFIG_PATH@
@@ -296,13 +302,6 @@ OSIMSK_DATA_INSTALLED = @OSIMSK_DATA_INSTALLED@
 OSIMSK_DEPENDENCIES = @OSIMSK_DEPENDENCIES@
 OSIMSK_LIBS = @OSIMSK_LIBS@
 OSIMSK_LIBS_INSTALLED = @OSIMSK_LIBS_INSTALLED@
-OSISPX_CFLAGS = @OSISPX_CFLAGS@
-OSISPX_CFLAGS_INSTALLED = @OSISPX_CFLAGS_INSTALLED@
-OSISPX_DATA = @OSISPX_DATA@
-OSISPX_DATA_INSTALLED = @OSISPX_DATA_INSTALLED@
-OSISPX_DEPENDENCIES = @OSISPX_DEPENDENCIES@
-OSISPX_LIBS = @OSISPX_LIBS@
-OSISPX_LIBS_INSTALLED = @OSISPX_LIBS_INSTALLED@
 OSIXPR_CFLAGS = @OSIXPR_CFLAGS@
 OSIXPR_CFLAGS_INSTALLED = @OSIXPR_CFLAGS_INSTALLED@
 OSIXPR_DATA = @OSIXPR_DATA@
@@ -343,6 +342,13 @@ SCIP_LIBS = @SCIP_LIBS@
 SCIP_LIBS_INSTALLED = @SCIP_LIBS_INSTALLED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SOPLEX_CFLAGS = @SOPLEX_CFLAGS@
+SOPLEX_CFLAGS_INSTALLED = @SOPLEX_CFLAGS_INSTALLED@
+SOPLEX_DATA = @SOPLEX_DATA@
+SOPLEX_DATA_INSTALLED = @SOPLEX_DATA_INSTALLED@
+SOPLEX_DEPENDENCIES = @SOPLEX_DEPENDENCIES@
+SOPLEX_LIBS = @SOPLEX_LIBS@
+SOPLEX_LIBS_INSTALLED = @SOPLEX_LIBS_INSTALLED@
 STRIP = @STRIP@
 VERSION = @VERSION@
 VPATH_DISTCLEANFILES = @VPATH_DISTCLEANFILES@
@@ -416,15 +422,16 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 lib_LTLIBRARIES = libGamsCoin.la
 libGamsCoin_la_SOURCES = GamsSolver.cpp $(am__append_1) \
 	$(am__append_3) $(am__append_6) $(am__append_8) \
-	$(am__append_10) $(am__append_12) $(am__append_14)
+	$(am__append_10) $(am__append_12) $(am__append_14) \
+	$(am__append_16)
 libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_LIBS)
 libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_DEPENDENCIES)
 libGamsCoin_la_LDFLAGS = -module -no-undefined
 includecoindir = $(includedir)/coin
 includecoin_HEADERS = $(am__append_2) $(am__append_4) $(am__append_7) \
 	$(am__append_9) $(am__append_11) $(am__append_13) \
-	$(am__append_15)
-bin_SCRIPTS = gamsinst.sh $(am__append_5) $(am__append_16)
+	$(am__append_15) $(am__append_17)
+bin_SCRIPTS = gamsinst.sh $(am__append_5) $(am__append_18)
 @COIN_IS_WINDOWS_FALSE@SCRIPTSUFFIX = us.run
 @COIN_IS_WINDOWS_TRUE@SCRIPTSUFFIX = nt.cmd
 all: all-am
@@ -530,6 +537,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsScip.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSoPlex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSolver.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/event_solvetrace.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prop_defaultbounds.Plo@am__quote@

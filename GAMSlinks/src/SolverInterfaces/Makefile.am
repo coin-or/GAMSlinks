@@ -50,6 +50,11 @@ if COIN_HAS_IPOPT
   includecoin_HEADERS    += GamsJournal.hpp GamsNLP.hpp GamsIpopt.hpp
 endif
 
+if COIN_HAS_SOPLEX
+  libGamsCoin_la_SOURCES += GamsSoPlex.cpp
+  includecoin_HEADERS    += GamsSoPlex.hpp
+endif
+
 if COIN_HAS_SCIP
   libGamsCoin_la_SOURCES += GamsScip.cpp scip/reader_gmo.c scip/event_solvetrace.c scip/prop_defaultbounds.c
   includecoin_HEADERS    += GamsScip.hpp

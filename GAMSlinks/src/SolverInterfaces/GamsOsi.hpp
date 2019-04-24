@@ -20,7 +20,7 @@ class OsiSolverInterface;
 class GamsOsi : public GamsSolver
 {
 public:
-   typedef enum { CPLEX, GUROBI, MOSEK, SOPLEX, XPRESS } OSISOLVER;
+   typedef enum { CPLEX, GUROBI, MOSEK, XPRESS } OSISOLVER;
 
 private:
    struct gmoRec*        gmo;                /**< GAMS modeling object */
@@ -30,8 +30,6 @@ private:
    GamsMessageHandler*   msghandler;         /**< message handler */
    OsiSolverInterface*   osi;                /**< solver interface */
    OSISOLVER             solverid;           /**< ID of used solver */
-   GamsOutputStreamBuf*  spxoutputbuf;       /**< SoPlex output buffer */
-   std::ostream*         spxoutput;          /**< SoPlex output stream */
 
    /** loads problem from GMO into OSI */
    bool setupProblem();
@@ -72,9 +70,7 @@ public:
      opt(NULL),
      msghandler(NULL),
      osi(NULL),
-     solverid(solverid_),
-     spxoutputbuf(NULL),
-     spxoutput(NULL)
+     solverid(solverid_)
    { }
 
    ~GamsOsi();
