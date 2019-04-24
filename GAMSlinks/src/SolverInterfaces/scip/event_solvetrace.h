@@ -5,7 +5,7 @@
  * Author: Stefan Vigerske
  */
 
-/**@file   event_bbtrace.h
+/**@file   event_solvetrace.h
  * @brief  event handler to write GAMS solve trace file
  * @author Stefan Vigerske
  */
