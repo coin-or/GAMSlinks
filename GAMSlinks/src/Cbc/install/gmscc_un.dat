@@ -1,8 +1,0 @@
-id           Cbc
-license_id   00 01 02
-capabilities LP RMIP MIP
-file_type    2112
-dictionary_file 4
-run_file     gmscc_us.run
-exe_file     gmscc_ux.out
-special      2
