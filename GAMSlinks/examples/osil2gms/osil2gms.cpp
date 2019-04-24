@@ -6,8 +6,10 @@
 //
 // Author: Lutz Westermann
 
+#include <cassert>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <list>
 
@@ -34,7 +36,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          } else {
             str.insert(pos, '(');
             walk(node->m_mChildren[0], str, pos);
-            for(int i=1;i<node->inumberOfChildren;i++) {
+            for(unsigned int i=1;i<node->inumberOfChildren;i++) {
                str.insert(pos, '+');
                walk(node->m_mChildren[i], str, pos);
             }
@@ -96,7 +98,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          } else {
             str.insert(pos, '(');
             walk(node->m_mChildren[0], str, pos);
-            for(int i=1;i<node->inumberOfChildren;i++) {
+            for(unsigned int i=1;i<node->inumberOfChildren;i++) {
                str.insert(pos, '*');
                walk(node->m_mChildren[i], str, pos);
             }
@@ -185,7 +187,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
             str.insert(pos, 'n');
             str.insert(pos, '(');
             walk(node->m_mChildren[0], str, pos);
-            for(int i=1;i<node->inumberOfChildren;i++) {
+            for(unsigned int i=1;i<node->inumberOfChildren;i++) {
                str.insert(pos, ',');
                walk(node->m_mChildren[i], str, pos);
             }
@@ -203,7 +205,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
             str.insert(pos, 'x');
             str.insert(pos, '(');
             walk(node->m_mChildren[0], str, pos);
-            for(int i=1;i<node->inumberOfChildren;i++) {
+            for(unsigned int i=1;i<node->inumberOfChildren;i++) {
                str.insert(pos, ',');
                walk(node->m_mChildren[i], str, pos);
             }
@@ -234,7 +236,7 @@ void walk(OSnLNode* node, list<char>& str, list<char>::iterator pos) {
          break;
       }
       default:
-         cout << node->snodeName << " NOT IMPLEMENTED!!" << endl;
+         cout << "Node with inodeInt " << node->inodeInt << " NOT IMPLEMENTED!!" << endl;
          break;
    }
 }
@@ -340,7 +342,7 @@ int main(int argc, char** argv) {
 
    for(int i=0; i<osinstance->getVariableNumber(); i++) {
       nDefVar = 0;
-      if(varTypes[i] == 'C' && varLB[i] != -OSDBL_MAX || varTypes[i] == 'B' && varLB[i] != 0) {
+      if((varTypes[i] == 'C' && varLB[i] != -OSDBL_MAX) || (varTypes[i] == 'B' && varLB[i] != 0)) {
          out <<  "x" << i << ".lo = " << varLB[i] << "; " << endl;
          nDefVar = 1;
       }
@@ -349,7 +351,7 @@ int main(int argc, char** argv) {
          out <<  "x" << i << ".l = " << osinstance->instanceData->variables->var[i]->init << ";";
          nDefVar = 1;
       } */
-      if(varTypes[i] == 'C' && varUB[i] != OSDBL_MAX || varTypes[i] == 'B' && varUB[i] != 1)  {
+      if((varTypes[i] == 'C' && varUB[i] != OSDBL_MAX) || (varTypes[i] == 'B' && varUB[i] != 1))  {
          out << " x" << i << ".up = " << varUB[i] << ";" << endl;
          nDefVar = 1;
       }
@@ -357,12 +359,12 @@ int main(int argc, char** argv) {
    }
    out << endl;
 
-   map<int, OSExpressionTree*> allexptrees(osinstance->getAllNonlinearExpressionTreesMod());
-   for(std::map<int,OSExpressionTree*>::iterator exptreeit(allexptrees.begin());
+   map<int, ScalarExpressionTree*> allexptrees(osinstance->getAllNonlinearExpressionTreesMod());
+   for(std::map<int,ScalarExpressionTree*>::iterator exptreeit(allexptrees.begin());
       exptreeit != allexptrees.end(); ++exptreeit) {
 
       int connumber = exptreeit->first;
-      OSExpressionTree* exptree = exptreeit->second;
+      ScalarExpressionTree* exptree = exptreeit->second;
 
       if(connumber != -1)
          conindex[connumber] = 1;
@@ -421,7 +423,7 @@ int main(int argc, char** argv) {
       
       if (conTypes[connumber] == 'R') {
         int connumber = exptreeit->first;
-        OSExpressionTree* exptree = exptreeit->second;
+        ScalarExpressionTree* exptree = exptreeit->second;
 
         assert(connumber != -1);
 
