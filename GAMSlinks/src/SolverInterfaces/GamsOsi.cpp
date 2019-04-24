@@ -1142,6 +1142,7 @@ bool GamsOsi::setupCallbacks()
 
 bool GamsOsi::clearCallbacks()
 {
+#if defined(COIN_HAS_OSIGLPK) || defined(COIN_HAS_OSISPX)
    switch( solverid )
    {
 #ifdef COIN_HAS_OSIGLPK
@@ -1176,6 +1177,7 @@ bool GamsOsi::clearCallbacks()
 
       default: ;
    }
+#endif
 
    return true;
 }

@@ -254,7 +254,7 @@ int GamsBonmin::callSolver()
       gevLogStat(gev, error.Message().c_str());
       return 1;
    }
-   catch( std::bad_alloc )
+   catch( const std::bad_alloc& )
    {
       gevLogStat(gev, "Error: Not enough memory\n");
       return -1;
@@ -616,7 +616,7 @@ int GamsBonmin::callSolver()
       }
       return 0;
    }
-   catch( std::bad_alloc )
+   catch( const std::bad_alloc& )
    {
       gevLogStat(gev, "Error: Not enough memory!");
       gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
