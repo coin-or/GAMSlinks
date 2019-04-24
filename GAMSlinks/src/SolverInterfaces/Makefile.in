@@ -46,21 +46,20 @@ build_triplet = @build@
 host_triplet = @host@
 @COIN_HAS_OSI_TRUE@am__append_1 = GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp
 @COIN_HAS_OSI_TRUE@am__append_2 = GamsMessageHandler.hpp GamsOsiHelper.hpp GamsOsi.hpp
-@COIN_HAS_OSIGLPK_TRUE@am__append_3 = optmyglpk.def
-@COIN_HAS_CBC_TRUE@am__append_4 = GamsCbc.cpp
-@COIN_HAS_CBC_TRUE@am__append_5 = GamsCbc.hpp
-@COIN_HAS_CBC_TRUE@am__append_6 = optmycbc.def
-@COIN_HAS_IPOPT_TRUE@am__append_7 = GamsJournal.cpp GamsNLP.cpp GamsIpopt.cpp 
-@COIN_HAS_IPOPT_TRUE@am__append_8 = GamsJournal.hpp GamsNLP.hpp GamsIpopt.hpp
-@COIN_HAS_SCIP_TRUE@am__append_9 = GamsScip.cpp scip/reader_gmo.c scip/event_solvetrace.c scip/prop_defaultbounds.c
-@COIN_HAS_SCIP_TRUE@am__append_10 = GamsScip.hpp
-@COIN_HAS_BONMIN_TRUE@am__append_11 = GamsMINLP.cpp GamsBonmin.cpp
-@COIN_HAS_BONMIN_TRUE@am__append_12 = GamsMINLP.hpp GamsBonmin.hpp
-@COIN_HAS_COUENNE_TRUE@am__append_13 = GamsCouenne.cpp
-@COIN_HAS_COUENNE_TRUE@am__append_14 = GamsCouenne.hpp
-@COIN_HAS_OS_TRUE@am__append_15 = GamsOS.cpp GamsOSxL.cpp
-@COIN_HAS_OS_TRUE@am__append_16 = GamsOS.hpp GamsOSxL.hpp
-@COIN_HAS_OS_TRUE@am__append_17 = optmyos.def
+@COIN_HAS_CBC_TRUE@am__append_3 = GamsCbc.cpp
+@COIN_HAS_CBC_TRUE@am__append_4 = GamsCbc.hpp
+@COIN_HAS_CBC_TRUE@am__append_5 = optmycbc.def
+@COIN_HAS_IPOPT_TRUE@am__append_6 = GamsJournal.cpp GamsNLP.cpp GamsIpopt.cpp 
+@COIN_HAS_IPOPT_TRUE@am__append_7 = GamsJournal.hpp GamsNLP.hpp GamsIpopt.hpp
+@COIN_HAS_SCIP_TRUE@am__append_8 = GamsScip.cpp scip/reader_gmo.c scip/event_solvetrace.c scip/prop_defaultbounds.c
+@COIN_HAS_SCIP_TRUE@am__append_9 = GamsScip.hpp
+@COIN_HAS_BONMIN_TRUE@am__append_10 = GamsMINLP.cpp GamsBonmin.cpp
+@COIN_HAS_BONMIN_TRUE@am__append_11 = GamsMINLP.hpp GamsBonmin.hpp
+@COIN_HAS_COUENNE_TRUE@am__append_12 = GamsCouenne.cpp
+@COIN_HAS_COUENNE_TRUE@am__append_13 = GamsCouenne.hpp
+@COIN_HAS_OS_TRUE@am__append_14 = GamsOS.cpp GamsOSxL.cpp
+@COIN_HAS_OS_TRUE@am__append_15 = GamsOS.hpp GamsOSxL.hpp
+@COIN_HAS_OS_TRUE@am__append_16 = optmyos.def
 subdir = src/SolverInterfaces
 DIST_COMMON = $(am__includecoin_HEADERS_DIST) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/gamsinst.sh.in
@@ -185,8 +184,6 @@ COIN_HAS_IPOPT_FALSE = @COIN_HAS_IPOPT_FALSE@
 COIN_HAS_IPOPT_TRUE = @COIN_HAS_IPOPT_TRUE@
 COIN_HAS_OSICPX_FALSE = @COIN_HAS_OSICPX_FALSE@
 COIN_HAS_OSICPX_TRUE = @COIN_HAS_OSICPX_TRUE@
-COIN_HAS_OSIGLPK_FALSE = @COIN_HAS_OSIGLPK_FALSE@
-COIN_HAS_OSIGLPK_TRUE = @COIN_HAS_OSIGLPK_TRUE@
 COIN_HAS_OSIGRB_FALSE = @COIN_HAS_OSIGRB_FALSE@
 COIN_HAS_OSIGRB_TRUE = @COIN_HAS_OSIGRB_TRUE@
 COIN_HAS_OSIMSK_FALSE = @COIN_HAS_OSIMSK_FALSE@
@@ -285,13 +282,6 @@ OSICPX_DATA_INSTALLED = @OSICPX_DATA_INSTALLED@
 OSICPX_DEPENDENCIES = @OSICPX_DEPENDENCIES@
 OSICPX_LIBS = @OSICPX_LIBS@
 OSICPX_LIBS_INSTALLED = @OSICPX_LIBS_INSTALLED@
-OSIGLPK_CFLAGS = @OSIGLPK_CFLAGS@
-OSIGLPK_CFLAGS_INSTALLED = @OSIGLPK_CFLAGS_INSTALLED@
-OSIGLPK_DATA = @OSIGLPK_DATA@
-OSIGLPK_DATA_INSTALLED = @OSIGLPK_DATA_INSTALLED@
-OSIGLPK_DEPENDENCIES = @OSIGLPK_DEPENDENCIES@
-OSIGLPK_LIBS = @OSIGLPK_LIBS@
-OSIGLPK_LIBS_INSTALLED = @OSIGLPK_LIBS_INSTALLED@
 OSIGRB_CFLAGS = @OSIGRB_CFLAGS@
 OSIGRB_CFLAGS_INSTALLED = @OSIGRB_CFLAGS_INSTALLED@
 OSIGRB_DATA = @OSIGRB_DATA@
@@ -425,17 +415,16 @@ AM_CPPFLAGS = \
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 lib_LTLIBRARIES = libGamsCoin.la
 libGamsCoin_la_SOURCES = GamsSolver.cpp $(am__append_1) \
-	$(am__append_4) $(am__append_7) $(am__append_9) \
-	$(am__append_11) $(am__append_13) $(am__append_15)
+	$(am__append_3) $(am__append_6) $(am__append_8) \
+	$(am__append_10) $(am__append_12) $(am__append_14)
 libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_LIBS)
 libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_DEPENDENCIES)
 libGamsCoin_la_LDFLAGS = -module -no-undefined
 includecoindir = $(includedir)/coin
-includecoin_HEADERS = $(am__append_2) $(am__append_5) $(am__append_8) \
-	$(am__append_10) $(am__append_12) $(am__append_14) \
-	$(am__append_16)
-bin_SCRIPTS = gamsinst.sh $(am__append_3) $(am__append_6) \
-	$(am__append_17)
+includecoin_HEADERS = $(am__append_2) $(am__append_4) $(am__append_7) \
+	$(am__append_9) $(am__append_11) $(am__append_13) \
+	$(am__append_15)
+bin_SCRIPTS = gamsinst.sh $(am__append_5) $(am__append_16)
 @COIN_IS_WINDOWS_FALSE@SCRIPTSUFFIX = us.run
 @COIN_IS_WINDOWS_TRUE@SCRIPTSUFFIX = nt.cmd
 all: all-am

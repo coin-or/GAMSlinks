@@ -20,7 +20,7 @@ class OsiSolverInterface;
 class GamsOsi : public GamsSolver
 {
 public:
-   typedef enum { CPLEX, GLPK, GUROBI, MOSEK, SOPLEX, XPRESS } OSISOLVER;
+   typedef enum { CPLEX, GUROBI, MOSEK, SOPLEX, XPRESS } OSISOLVER;
 
 private:
    struct gmoRec*        gmo;                /**< GAMS modeling object */

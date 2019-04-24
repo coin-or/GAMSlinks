@@ -85,11 +85,6 @@ BEGIN {
    @COIN_HAS_OSICPX_TRUE@dicttype["MYOSICPLEX"] = 5;
    @COIN_HAS_OSICPX_TRUE@modeltypes["MYOSICPLEX"] = "LP RMIP MIP";
 
-   @COIN_HAS_OSIGLPK_TRUE@written["MYOSIGLPK"] = 0;
-   @COIN_HAS_OSIGLPK_TRUE@libid["MYOSIGLPK"] = "ogl";
-   @COIN_HAS_OSIGLPK_TRUE@dicttype["MYOSIGLPK"] = 5;
-   @COIN_HAS_OSIGLPK_TRUE@modeltypes["MYOSIGLPK"] = "LP RMIP MIP";
-
    @COIN_HAS_OSIGRB_TRUE@written["MYOSIGUROBI"] = 0;
    @COIN_HAS_OSIGRB_TRUE@libid["MYOSIGUROBI"] = "ogu";
    @COIN_HAS_OSIGRB_TRUE@dicttype["MYOSIGUROBI"] = 5;
@@ -167,4 +162,3 @@ fi
 
 @COIN_HAS_CBC_TRUE@cp @bindir@/optmycbc.def "${gamspath}"
 @COIN_HAS_OS_TRUE@cp @bindir@/optmyos.def "${gamspath}"
-@COIN_HAS_OSIGLPK_TRUE@cp @bindir@/optmyglpk.def "${gamspath}"

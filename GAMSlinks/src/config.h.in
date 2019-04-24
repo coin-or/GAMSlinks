@@ -27,9 +27,6 @@
 /* Define to 1 if the OsiCpx package is available */
 #undef COIN_HAS_OSICPX
 
-/* Define to 1 if the OsiGlpk package is available */
-#undef COIN_HAS_OSIGLPK
-
 /* Define to 1 if the OsiGrb package is available */
 #undef COIN_HAS_OSIGRB
 

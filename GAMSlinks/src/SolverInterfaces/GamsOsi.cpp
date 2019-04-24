@@ -42,19 +42,6 @@ static int CPXPUBLIC cpxinfocallback(CPXCENVptr cpxenv, void* cbdata, int wheref
 }
 #endif
 
-#ifdef COIN_HAS_OSIGLPK
-#define GLP_PROB_DEFINED
-#include "glpk.h"
-#include "OsiGlpkSolverInterface.hpp"
-
-static int glpkprint(void* info, const char* msg)
-{
-   assert(info != NULL);
-   gevLogStatPChar((gevHandle_t)info, msg);
-   return 1;
-}
-#endif
-
 #ifdef COIN_HAS_OSIGRB
 #include "OsiGrbSolverInterface.hpp"
 extern "C"
@@ -235,12 +222,6 @@ int GamsOsi::readyAPI(
          break;
 #endif
 
-#ifdef COIN_HAS_OSIGLPK
-      case GLPK:
-         sprintf(buffer, "OsiGlpk (Osi library " OSI_VERSION ", GLPK library %d.%d)\nOsi link written by Vivian De Smedt and Braden Hunsaker. Osi is part of COIN-OR.\n", GLP_MAJOR_VERSION, GLP_MINOR_VERSION);
-         break;
-#endif
-
 #ifdef COIN_HAS_OSIGRB
       case GUROBI:
          sprintf(buffer, "OsiGurobi (Osi library " OSI_VERSION ", GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske. Osi is part of COIN-OR.\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
@@ -295,17 +276,6 @@ int GamsOsi::readyAPI(
             osi = osicpx;
 #else
             gevLogStat(gev, "GamsOsi compiled without Osi/CPLEX interface.\n");
-            return 1;
-#endif
-            break;
-         }
-
-         case GLPK:
-         {
-#ifdef COIN_HAS_OSIGLPK
-            osi = new OsiGlpkSolverInterface();
-#else
-            gevLogStat(gev, "GamsOsi compiled without Osi/Glpk interface.\n");
             return 1;
 #endif
             break;
@@ -697,7 +667,7 @@ bool GamsOsi::setupStartingPoint()
                gmoHaveBasisSet(gmo, 0);
                return false;
             }
-            else if( solverid == GUROBI || solverid == GLPK )
+            else if( solverid == GUROBI )
             {
                gevLog(gev, "Registered advanced basis. This turns off presolve!");
                gevLog(gev, "In case of poor performance consider turning off advanced basis registration via GAMS option BRatio=1.");
@@ -783,138 +753,6 @@ bool GamsOsi::setupParameters()
                   gevLogStat(gev, "unknown error code");
             }
          }
-
-         break;
-      }
-#endif
-
-#ifdef COIN_HAS_OSIGLPK
-      case GLPK:
-      {
-         char buffer[GMS_SSSIZE];
-
-         OsiGlpkSolverInterface* osiglpk = dynamic_cast<OsiGlpkSolverInterface*>(osi);
-         assert(osiglpk != NULL);
-
-         GamsOptions options(gev, opt);
-
-         if( opt == NULL )
-         {
-            // initialize options object by getting defaults from options settings file and optionally read user options file
-            char* optfilename = NULL;
-            if( gmoOptFile(gmo) > 0 )
-            {
-               gmoNameOptFile(gmo, buffer);
-               optfilename = buffer;
-            }
-#ifdef GAMS_BUILD
-            options.readOptionsFile("glpk", optfilename);
-#else
-            options.readOptionsFile("myglpk", optfilename);
-#endif
-         }
-         /* overwrite GAMS options with values from option object, if given there */
-         if( options.isDefined("reslim") )
-            reslim = options.getDouble ("reslim");
-         if( options.isDefined("iterlim") )
-            iterlim = options.getInteger("iterlim");
-         if( options.isDefined("optcr") )
-            optcr = options.getDouble ("optcr");
-
-         LPX* glpk_model = osiglpk->getModelPtr();
-
-         // GLPK cannot handle very large timelimits, so we run it without limit then
-         if( reslim > 1e+6 )
-         {
-            gevLogStat(gev, "Time limit too large. GLPK will run without timelimit.");
-            reslim = -1;
-         }
-         lpx_set_real_parm(glpk_model, LPX_K_TMLIM, reslim);
-
-         if( !isLP() && nodelim > 0 )
-            gevLogStat(gev, "Cannot set node limit for GLPK. Node limit ignored.");
-
-         lpx_set_real_parm(glpk_model, LPX_K_MIPGAP, optcr);
-
-         if( !isLP() && optca > 0.0 )
-            gevLogStat(gev, "Cannot set absolute gap limit for GLPK. Gap limit ignored.");
-
-         osiglpk->setHintParam(OsiDoReducePrint, false, OsiForceDo); // GLPK loglevel 3
-
-         // GLPK LP parameters
-
-         if( !osiglpk->setDblParam(OsiDualTolerance, options.getDouble("tol_dual")) )
-            gevLogStat(gev, "Failed to set dual tolerance for GLPK.");
-
-         if( !osiglpk->setDblParam(OsiPrimalTolerance, options.getDouble("tol_primal")) )
-            gevLogStat(gev, "Failed to set primal tolerance for GLPK.");
-
-         // more parameters
-         options.getString("scaling", buffer);
-         if( strcmp(buffer, "off") == 0 )
-            lpx_set_int_parm(glpk_model, LPX_K_SCALE, 0);
-         else if( strcmp(buffer, "equilibrium") == 0 )
-            lpx_set_int_parm(glpk_model, LPX_K_SCALE, 1);
-         else if( strcmp(buffer, "mean") == 0 )
-            lpx_set_int_parm(glpk_model, LPX_K_SCALE, 2);
-         else if( strcmp(buffer, "meanequilibrium") == 0 )
-            lpx_set_int_parm(glpk_model, LPX_K_SCALE, 3); // default (set in OsiGlpk)
-
-         options.getString("startalg", buffer);
-         osiglpk->setHintParam(OsiDoDualInInitial, (strcmp(buffer, "dual") == 0), OsiForceDo);
-
-         // if a user basis was set, then disable presolve, otherwise it is discarded
-         if( !gmoHaveBasis(gmo) )
-            osiglpk->setHintParam(OsiDoPresolveInInitial, options.getBool("presolve"), OsiForceDo);
-         else
-            osiglpk->setHintParam(OsiDoPresolveInInitial, false, OsiForceDo);
-
-         options.getString("pricing", buffer);
-         if( strcmp(buffer, "textbook") == 0 )
-            lpx_set_int_parm(glpk_model, LPX_K_PRICE, 0);
-         else if( strcmp(buffer, "steepestedge") == 0 )
-            lpx_set_int_parm(glpk_model, LPX_K_PRICE, 1); // default
-
-         options.getString("factorization", buffer);
-         if( strcmp(buffer, "forresttomlin") == 0 )
-            lpx_set_int_parm(glpk_model, LPX_K_BFTYPE, 1);
-         else if( strcmp(buffer, "bartelsgolub") == 0 )
-            lpx_set_int_parm(glpk_model, LPX_K_BFTYPE, 2);
-         else if( strcmp(buffer, "givens") == 0 )
-            lpx_set_int_parm(glpk_model, LPX_K_BFTYPE, 3);
-
-         // GLPK MIP parameters
-
-         options.getString("backtracking", buffer);
-         if( strcmp(buffer, "depthfirst") == 0 )
-            lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 0);
-         else if( strcmp(buffer, "breadthfirst") == 0 )
-            lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 1);
-         else if( strcmp(buffer, "bestprojection") == 0 )
-            lpx_set_int_parm(glpk_model, LPX_K_BTRACK, 2);
-
-         int cutindicator=0;
-         switch( options.getInteger("cuts") )
-         {
-            case -1 : break; // no cuts
-            case  1 : cutindicator = LPX_C_ALL; break; // all cuts
-            case  0 : // user defined cut selection
-               if( options.getBool("covercuts") )  cutindicator |= LPX_C_COVER;
-               if( options.getBool("cliquecuts") ) cutindicator |= LPX_C_CLIQUE;
-               if( options.getBool("gomorycuts") ) cutindicator |= LPX_C_GOMORY;
-               if( options.getBool("mircuts") )    cutindicator |= LPX_C_MIR;
-               break;
-            default: ;
-         }
-         lpx_set_int_parm(glpk_model, LPX_K_USECUTS, cutindicator);
-
-         double tol_integer = options.getDouble("tol_integer");
-         if( tol_integer > 0.001 )
-         {
-            gevLog(gev, "Cannot use tol_integer of larger then 0.001. Setting integer tolerance to 0.001.");
-            tol_integer = 0.001;
-         }
-         lpx_set_real_parm(glpk_model, LPX_K_TOLINT, tol_integer);
 
          break;
       }
@@ -1063,14 +901,6 @@ bool GamsOsi::setupCallbacks()
       }
 #endif
 
-#ifdef COIN_HAS_OSIGLPK
-      case GLPK:
-      {
-         glp_term_hook(glpkprint, gev);
-         break;
-      }
-#endif
-
 #ifdef COIN_HAS_OSIGRB
       case GUROBI:
       {
@@ -1142,17 +972,9 @@ bool GamsOsi::setupCallbacks()
 
 bool GamsOsi::clearCallbacks()
 {
-#if defined(COIN_HAS_OSIGLPK) || defined(COIN_HAS_OSISPX)
+#if defined(COIN_HAS_OSISPX)
    switch( solverid )
    {
-#ifdef COIN_HAS_OSIGLPK
-      case GLPK:
-      {
-         glp_term_hook(NULL, NULL);
-         break;
-      }
-#endif
-
 #ifdef COIN_HAS_OSISPX
       case SOPLEX:
       {
@@ -1356,85 +1178,6 @@ bool GamsOsi::writeSolution(
                gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
                gevLogStat(gev, "Solving failed, do not have feasible solution.");
                break;
-         }
-         break;
-      }
-#endif
-
-#ifdef COIN_HAS_OSIGLPK
-      case GLPK:
-      {
-         OsiGlpkSolverInterface* osiglpk = dynamic_cast<OsiGlpkSolverInterface*>(osi);
-         assert(osiglpk != NULL);
-
-         if( osiglpk->isTimeLimitReached() )
-         {
-            gmoSolveStatSet(gmo, gmoSolveStat_Resource);
-            if( osiglpk->isFeasible() )
-            {
-               solwritten = true;
-               gevLogStat(gev, "Time limit reached, have feasible solution.");
-               gmoModelStatSet(gmo, isLP() ? gmoModelStat_Feasible : gmoModelStat_Integer);
-            }
-            else
-            {
-               gevLogStat(gev, "Time limit reached, do not have feasible solution.");
-               gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
-            }
-         }
-         else if( osiglpk->isIterationLimitReached() )
-         {
-            gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
-            if( osiglpk->isFeasible() )
-            {
-               solwritten = true;
-               gevLogStat(gev, "Iteration limit reached, have feasible solution.");
-               gmoModelStatSet(gmo, isLP() ? gmoModelStat_Feasible : gmoModelStat_Integer);
-            }
-            else
-            {
-               gevLogStat(gev, "Iteration limit reached, do not have feasible solution.");
-               gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
-            }
-         }
-         else if( osiglpk->isProvenPrimalInfeasible() )
-         {
-            gevLogStat(gev, "Model infeasible.");
-            gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-            gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
-         }
-         else if( osiglpk->isProvenDualInfeasible() )
-         {
-            gevLogStat(gev, "Model unbounded.");
-            gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-            gmoModelStatSet(gmo, gmoModelStat_UnboundedNoSolution);
-         }
-         else if( osiglpk->isProvenOptimal() )
-         {
-            solwritten = true;
-            gevLogStat(gev, "Optimal solution found.");
-            gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-            gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
-            objest = osiglpk->getObjValue();
-         }
-         else if( osiglpk->isFeasible() )
-         {
-            solwritten = true;
-            gevLogStat(gev, "Feasible solution found.");
-            gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-            gmoModelStatSet(gmo, isLP() ? gmoModelStat_Feasible : gmoModelStat_Integer);
-         }
-         else if( osiglpk->isAbandoned() )
-         {
-            gevLogStat(gev, "Model abandoned.");
-            gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
-            gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
-         }
-         else
-         {
-            gevLogStat(gev, "Unknown solve outcome.");
-            gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
-            gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
          }
          break;
       }
@@ -2133,7 +1876,7 @@ bool GamsOsi::writeSolution(
       char buffer[255];
       if( solwritten )
       {
-         if( solverid != GLPK && solverid != MOSEK )
+         if( solverid != MOSEK )
             snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %g seconds)", osi->getObjValue(), nnodes, cputime);
          else
             snprintf(buffer, 255, "MIP solution: %15.6e   (%g seconds)", osi->getObjValue(), cputime);
@@ -2184,23 +1927,6 @@ bool GamsOsi::solveFixed()
             OsiCpxSolverInterface* osicpx = dynamic_cast<OsiCpxSolverInterface*>(osi);
             assert(osicpx != NULL);
             CPXsetdblparam(osicpx->getEnvironmentPtr(), CPX_PARAM_TILIM, gevGetDblOpt(gev, gevReal1));
-            break;
-         }
-#endif
-
-#ifdef COIN_HAS_OSIGLPK
-         case GLPK:
-         {
-            OsiGlpkSolverInterface* osiglpk = dynamic_cast<OsiGlpkSolverInterface*>(osi);
-            assert(osiglpk != NULL);
-            if( gevGetDblOpt(gev, gevReal1) > 1e+6 )
-            {
-               // GLPK cannot handle very large timelimits, so we run it without limit then
-               gevLogStat(gev, "Time limit for final LP solve too large. GLPK will run without timelimit.");
-               lpx_set_real_parm(osiglpk->getModelPtr(), LPX_K_TMLIM, -1);
-               break;
-            }
-            lpx_set_real_parm(osiglpk->getModelPtr(), LPX_K_TMLIM, gevGetDblOpt(gev, gevReal1));
             break;
          }
 #endif
@@ -2278,13 +2004,6 @@ bool GamsOsi::isLP() {
 #define GAMSSOLVERC_ID         ocp
 #define GAMSSOLVERC_CLASS      GamsOsi
 #define GAMSSOLVERC_CONSTRARGS GamsOsi::CPLEX
-#include "GamsSolverC_tpl.cpp"
-#endif
-
-#ifdef COIN_HAS_OSIGLPK
-#define GAMSSOLVERC_ID         ogl
-#define GAMSSOLVERC_CLASS      GamsOsi
-#define GAMSSOLVERC_CONSTRARGS GamsOsi::GLPK
 #include "GamsSolverC_tpl.cpp"
 #endif
 

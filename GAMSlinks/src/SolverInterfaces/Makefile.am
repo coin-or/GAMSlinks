@@ -39,10 +39,6 @@ if COIN_HAS_OSI
   includecoin_HEADERS    += GamsMessageHandler.hpp GamsOsiHelper.hpp GamsOsi.hpp
 endif
 
-if COIN_HAS_OSIGLPK
-  bin_SCRIPTS += optmyglpk.def
-endif
-
 if COIN_HAS_CBC
   libGamsCoin_la_SOURCES += GamsCbc.cpp
   includecoin_HEADERS    += GamsCbc.hpp

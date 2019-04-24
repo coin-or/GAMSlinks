@@ -62,7 +62,6 @@ AC_COIN_INIT_AUTO_TOOLS
 # check which solvers are available
 AC_COIN_CHECK_PACKAGE(Osi,     [osi],        [GamsSolverLib])
 AC_COIN_CHECK_PACKAGE(OsiCpx,  [osi-cplex],  [GamsSolverLib])
-AC_COIN_CHECK_PACKAGE(OsiGlpk, [osi-glpk],   [GamsSolverLib])
 AC_COIN_CHECK_PACKAGE(OsiGrb,  [osi-gurobi], [GamsSolverLib])
 AC_COIN_CHECK_PACKAGE(OsiMsk,  [osi-mosek],  [GamsSolverLib])
 AC_COIN_CHECK_PACKAGE(OsiSpx,  [osi-soplex], [GamsSolverLib])

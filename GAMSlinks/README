@@ -7,7 +7,6 @@ For license information see the file LICENSE.
 === Introduction ===
 
 Currently for the following solvers links are available:
-* Glpk:   Gnu Linear Programming Kit
 * Cbc:    Coin Branch and Cut code
 * Ipopt:  Interior Point Optimizer
 * Bonmin: Basic open-source nonlinear mixed-integer programming
@@ -23,17 +22,12 @@ The GAMS/COIN-OR solvers implement a subset of all possible GAMS parameters.
 Not all bells and whistles of regular GAMS solvers are part of the interfaces yet.
 For nonstandard solver parameters that can be set, see
 - the documentation in doc/gamsdist
-- src/Glpk/optglpk.gms,
 - src/Cbc/optcbc.gms,
 - the IPOPT documentation,
 - the Bonmin documentation,
 - src/Osi/optosi.gms,
 - src/OS/optosi.gms.
 
-For GAMS/OSI, only a few options are available, see src/Osi/optosi.gms.
-The most important option is "solver". It determines which solver that had been linked into GAMS/OSI will be used.
-If all so-far supported solvers have been linked with GAMS/OSI, then the available values are clp, cbc, glpk, volume, dylp, and symphony.
-
 === Tests ===
 
-The directory test contains a script that tests Cbc, Glpk, Ipopt, Bonmin, Osi, and SCIP on small testsuites from the GAMS test model library (testlib).
+The directory test contains a script that tests Cbc, Ipopt, Bonmin, Osi, and SCIP on small testsuites from the GAMS test model library (testlib).
