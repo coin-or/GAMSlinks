@@ -1,7 +1,7 @@
-These directories contain links between the GAMS modeling system (http://www.gams.com) and some open source solvers.
+These directories contain links between the GAMS modeling system (http://www.gams.com) and some COIN-OR and other solvers.
 
 For requirements and installation instruction see the file INSTALL in the GAMSlinks base directory.
-For information on how to use the installed solvers in GAMS and which parameters are supported, see the COIN-OR solver documentation part from the GAMS solver manuals, located in doc/gamsdist (compile ind_coin.tex with pdflatex).
+For information on how to use the installed solvers in GAMS and which parameters are supported, see the GAMS documentation.
 For license information see the file LICENSE.
 
 === Introduction ===
@@ -10,24 +10,19 @@ Currently for the following solvers links are available:
 * Cbc:    Coin Branch and Cut code
 * Ipopt:  Interior Point Optimizer
 * Bonmin: Basic open-source nonlinear mixed-integer programming
-* Osi:    LP and MIP solvers with a COIN-OR/OSI interface (this link has not been tested much)
-* OS:     Optimization Services (call a remote Optimization Server or use solvers linked to OS locally)
-* SCIP:   MIP solver of the Branch and Cut Framework from Zuse-Institut Berlin
-
-There are known to work under Linux (32 and 64 bit), Windows (32 bit), Solaris Intel (64 bit), and Intel Darwin.
+* Couenne: Convex Over and Under Envelopes for Nonlinear Estimation; global MINLP solver
+* Osi:    LP and MIP solvers with a COIN-OR/OSI interface, in particular Cplex, Gurobi, Mosek, Xpress
+* OS:     Optimization Services (call a remote Optimization Server or write out the instance in OSiL format)
+* SoPlex: LP solver developed at Zuse-Institut Berlin
+* SCIP:   MIP and MINLP solver of the Branch and Cut Framework SCIP
 
 === Parameters ===
 
 The GAMS/COIN-OR solvers implement a subset of all possible GAMS parameters.
 Not all bells and whistles of regular GAMS solvers are part of the interfaces yet.
-For nonstandard solver parameters that can be set, see
-- the documentation in doc/gamsdist
-- src/Cbc/optcbc.gms,
-- the IPOPT documentation,
-- the Bonmin documentation,
-- src/Osi/optosi.gms,
-- src/OS/optosi.gms.
+For nonstandard solver parameters that can be set, see the GAMS solvers documentations
+(https://www.gams.com/latest/docs/S_MAIN.html).
 
 === Tests ===
 
-The directory test contains a script that tests Cbc, Ipopt, Bonmin, Osi, and SCIP on small testsuites from the GAMS test model library (testlib).
+The directory test contains a script that tests Cbc, Ipopt, Bonmin, Couenne, Osi, SoPlex, and SCIP on small testsuites from the GAMS test model library (testlib).
