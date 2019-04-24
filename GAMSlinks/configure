@@ -29173,7 +29173,6 @@ fi
 
 
 if test "$GAMS_PATH" = UNAVAILABLE; then
-  GAMS_VERSION="$GAMS_VERSION_DEFAULT"
   { echo "$as_me:$LINENO: WARNING: no GAMS system found, build and tests will not work" >&5
 echo "$as_me: WARNING: no GAMS system found, build and tests will not work" >&2;}
 fi

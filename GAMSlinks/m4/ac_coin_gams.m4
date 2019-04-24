@@ -29,7 +29,6 @@ AM_CONDITIONAL([COIN_HAS_GAMSSYSTEM], [test "$GAMS_PATH" != UNAVAILABLE])
 AC_SUBST(GAMS_PATH)
 
 if test "$GAMS_PATH" = UNAVAILABLE; then
-  GAMS_VERSION="$GAMS_VERSION_DEFAULT" 
   AC_MSG_WARN([no GAMS system found, build and tests will not work])
 fi
 
