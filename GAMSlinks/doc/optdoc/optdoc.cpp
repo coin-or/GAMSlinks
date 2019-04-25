@@ -267,6 +267,83 @@ public:
       }
    }
    
+   void collect(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      double             defaultval,
+      double             minval,
+      double             maxval,
+      const std::string& defaultdescr = std::string(),
+      int                refval = -2
+   )
+   {
+      collect(name, shortdescr, longdescr,
+         OPTTYPE_REAL, OPTVAL({.realval = defaultval}), OPTVAL({.realval = minval}), OPTVAL({.realval = maxval}), ENUMVAL(),
+         defaultdescr, refval);
+   }
+
+   void collect(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      int                defaultval,
+      int                minval,
+      int                maxval,
+      const std::string& defaultdescr = std::string(),
+      int                refval = -2
+   )
+   {
+      collect(name, shortdescr, longdescr,
+         OPTTYPE_INTEGER, OPTVAL({.intval = defaultval}), OPTVAL({.intval = minval}), OPTVAL({.intval = maxval}), ENUMVAL(),
+         defaultdescr, refval);
+   }
+
+   void collect(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      bool               defaultval,
+      const std::string& defaultdescr = std::string(),
+      int                refval = -2
+   )
+   {
+      collect(name, shortdescr, longdescr,
+         OPTTYPE_BOOL, OPTVAL({.boolval = defaultval}), OPTVAL(), OPTVAL(), ENUMVAL(),
+         defaultdescr, refval);
+   }
+
+   void collect(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      const std::string& defaultval,
+      const ENUMVAL&     enumval,
+      const std::string& defaultdescr = std::string(),
+      int                refval = -2
+   )
+   {
+      const char* def = strdup(defaultval.c_str());
+      collect(name, shortdescr, longdescr,
+         OPTTYPE_ENUM, OPTVAL({.stringval = def}), OPTVAL(), OPTVAL(), enumval,
+         defaultdescr, refval);
+   }
+
+   void collect(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      const std::string& defaultval,
+      const std::string& defaultdescr = std::string(),
+      int                refval = -2
+   )
+   {
+      const char* def = strdup(defaultval.c_str());
+      collect(name, shortdescr, longdescr,
+         OPTTYPE_STRING, OPTVAL({.stringval = def}), OPTVAL(), OPTVAL(), ENUMVAL(),
+         defaultdescr, refval);
+   }
+
    void write(bool shortdoc = false)
    {
       std::string filename;
@@ -944,6 +1021,78 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "nodestrategy", "nodeStrategy");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "preprocess");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "increment");
+
+   // add GAMS/CBC interface options
+   gmsopt.setGroup("General Options");
+   gmsopt.collect("reslim", "resource limit",
+      "Maximum time in seconds.",
+      1000.0, 0.0, DBL_MAX, "\\ref GAMSAOreslim GAMS reslim", -1);
+   ENUMVAL clocktypes;
+   clocktypes.push_back(std::pair<std::string, std::string>("cpu", "CPU clock"));
+   clocktypes.push_back(std::pair<std::string, std::string>("wall", "Wall clock"));
+   gmsopt.collect("clocktype", "type of clock for time measurement", "",
+      "wall", clocktypes, "", -1);
+   gmsopt.collect("special", "options passed unseen to CBC",
+      "This parameter let you specify CBC options which are not supported by the GAMS/CBC interface. "
+      "The string value given to this parameter is split up into parts at each space and added to the array of parameters given to CBC (in front of the -solve command). "
+      "Hence, you can use it like the command line parameters for the CBC standalone version.",
+      "", "", -1);
+
+   gmsopt.setGroup("LP Options");
+   gmsopt.collect("iterlim", "iteration limit",
+      "For an LP, this is the maximum number of iterations to solve the LP. For a MIP, this option is ignored.",
+      INT_MAX, 0, INT_MAX, "\\ref GAMSAOiterlim GAMS iterlim", -1);
+   gmsopt.collect("tol_primal", "primal feasibility tolerance",
+      "The maximum amount the primal constraints can be violated and still be considered feasible.",
+      1e-7, 0.0, DBL_MAX, "", -1);  // TODO check default, read from Cbc?
+   gmsopt.collect("tol_dual", "dual feasibility tolerance",
+      "The maximum amount the dual constraints can be violated and still be considered feasible.",
+      1e-7, 0.0, DBL_MAX, "", -1);  // TODO check default, read from Cbc?
+   ENUMVAL startalgs;
+   startalgs.push_back(std::pair<std::string, std::string>("primal", "Primal Simplex algorithm"));
+   startalgs.push_back(std::pair<std::string, std::string>("dual", "Dual Simplex algorithm"));
+   startalgs.push_back(std::pair<std::string, std::string>("barrier", "Primal dual predictor corrector algorithm"));
+   gmsopt.collect("startalg", "LP solver for root node",
+      "Determines the algorithm to use for an LP or the initial LP relaxation if the problem is a MIP.",
+      "dual", startalgs, "", -1);  // TODO check default
+
+   gmsopt.setGroup("MIP Options");
+   gmsopt.collect("nodlim", "node limit",
+      "Maximum number of nodes that are enumerated in the Branch and Bound tree search.",
+      INT_MAX, 0, INT_MAX, "\\ref GAMSAOnodlim GAMS nodlim", -1);   // TODO synonym: nodelim
+   gmsopt.collect("optca", "absolute optimality gap tolerance",
+      "Absolute optimality criterion for a MIP. "
+      "CBC stops if the gap between the best known solution and the best possible solution is less than this value.",
+      0.0, 0.0, DBL_MAX, "\\ref GAMSAOoptca GAMS optca", -1);
+   gmsopt.collect("optcr", "relative optimality gap tolerance",
+      "Relative optimality criterion for a MIP. "
+      "CBC stops if the relative gap between the best known solution and the best possible solution is less than this value.",
+      0.1, 0.0, DBL_MAX, "\\ref GAMSAOoptcr GAMS optcr", -1);
+   gmsopt.collect("cutoff", "cutoff for objective function value",
+      "A valid solution must be at least this much better than last integer solution. "
+      "If this option is not set then it CBC will try and work one out. "
+      "E.g., if all objective coefficients are multiples of 0.01 and only integer variables have entries in objective then this can be set to 0.01.",
+      0.0, -DBL_MAX, DBL_MAX, "\\ref GAMSAOcutoff GAMS cutoff", -1);
+   // TODO update description of Cbc's own increment?
+   //gmsopt.collect("increment", "increment of cutoff when new incumbent",
+   //   "CBC stops if the objective function values exceeds (in case of maximization) or falls below (in case of minimization) this value.",
+   //   0.0, 0.0, DBL_MAX, "\\ref GAMSAOcheat GAMS cheat");
+   gmsopt.collect("threads", "number of threads to use",
+      "This option controls the multithreading feature of CBC. "
+      "A number between 1 and 99 sets the number of threads used for parallel branch and bound.",
+      1, 1, 99, "\\ref GAMSAOthreads GAMS threads", -1);
+   ENUMVAL parallelmodes;
+   parallelmodes.push_back(std::pair<std::string, std::string>("opportunistic", ""));
+   parallelmodes.push_back(std::pair<std::string, std::string>("deterministic", ""));
+   gmsopt.collect("parallelmode", "whether to run opportunistic or deterministic",
+      "Determines whether a parallel MIP search (threads > 1) should be done in a deterministic (i.e., reproducible) way or in a possibly faster but not necessarily reproducible way",
+      "deterministic", parallelmodes, "", -1);
+   gmsopt.collect("tol_integer", "tolerance for integrality",
+      "For a feasible solution, no integer variable may be farther than this from an integer value.",
+      1e-6, 0.0, DBL_MAX, "", -1);  // TODO check default, read from Cbc?
+   gmsopt.collect("printfrequency", "frequency of status prints",
+      "Controls the number of nodes that are evaluated between status prints.",
+      0, 0, INT_MAX, "", -1);
 
    gmsopt.write();
 }
