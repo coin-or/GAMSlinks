@@ -16,6 +16,12 @@
 #include <fstream>
 #include <algorithm>
 
+#ifdef COIN_HAS_CBC
+#include "CbcOrClpParam.hpp"
+#include "OsiClpSolverInterface.hpp"
+#include "CbcModel.hpp"
+#endif
+
 #ifdef COIN_HAS_IPOPT
 #include "IpIpoptApplication.hpp"
 #endif
@@ -81,6 +87,7 @@ private:
       OPTVAL             minval;
       OPTVAL             maxval;
       ENUMVAL            enumval;
+      int                refval;
 
       Data(
          const std::string& group_,
@@ -92,7 +99,8 @@ private:
          OPTVAL             defaultval_,
          OPTVAL             minval_,
          OPTVAL             maxval_,
-         const ENUMVAL&     enumval_
+         const ENUMVAL&     enumval_,
+         int                refval_
          )
       : group(group_),
         name(name_),
@@ -103,7 +111,8 @@ private:
         defaultval(defaultval_),
         minval(minval_),
         maxval(maxval_),
-        enumval(enumval_)
+        enumval(enumval_),
+        refval(refval_)
       { }
    };
 
@@ -182,7 +191,8 @@ public:
       OPTVAL             minval,
       OPTVAL             maxval,
       const ENUMVAL&     enumval,
-      const std::string& defaultdescr = std::string()
+      const std::string& defaultdescr = std::string(),
+      int                refval = -2
    )
    {
       /* ignore options with number in beginning, because the GAMS options object cannot handle them so far */
@@ -192,7 +202,7 @@ public:
 //         return;
 //      }
 
-      data.push_back(Data(curgroup, name, shortdescr, longdescr, defaultdescr, type, defaultval, minval, maxval, enumval));
+      data.push_back(Data(curgroup, name, shortdescr, longdescr, defaultdescr, type, defaultval, minval, maxval, enumval, refval));
 
       /* replace all double quotes by single quotes */
       std::replace(data.back().shortdescr.begin(), data.back().shortdescr.end(), '"', '\'');
@@ -304,7 +314,7 @@ public:
          switch( d->type )
          {
             case OPTTYPE_BOOL:
-               f << "B.(def " << d->defaultval.boolval << ")";
+               f << "B.(def " << d->defaultval.boolval;
                break;
 
             case OPTTYPE_INTEGER:
@@ -321,7 +331,6 @@ public:
                   f << ", lo " << d->minval.intval;
                if( d->maxval.intval !=  INT_MAX )
                   f << ", up " << d->maxval.intval;
-               f << ")";
                break;
 
             case OPTTYPE_REAL:
@@ -338,20 +347,21 @@ public:
                   f << ", lo " << d->minval.realval;
                if( d->maxval.realval !=  DBL_MAX )
                   f << ", up " << d->maxval.realval;
-               f << ")";
                break;
 
             case OPTTYPE_CHAR:
                /* no character type in GAMS option files */
-               f << "S.(def '" << d->defaultval.charval << "')";
+               f << "S.(def '" << d->defaultval.charval;
                break;
 
             case OPTTYPE_STRING:
             case OPTTYPE_ENUM:
-               f << "S.(def '" << makeValidMarkdownString(d->defaultval.stringval) << "')";
+               f << "S.(def '" << makeValidMarkdownString(d->defaultval.stringval);
                break;
          }
-         f << std::endl;
+         if( d->refval >= -1 )
+            f << ", ref " << d->refval;
+         f << ")" << std::endl;
       }
       f << "/;" << std::endl;
 
@@ -362,7 +372,12 @@ public:
             continue;
 
          for( std::vector<std::pair<std::string, std::string> >::iterator e(d->enumval.begin()); e != d->enumval.end(); ++e )
-            f << "  '" << d->name << "'.'" << e->first << "'  \"" << makeValidMarkdownString(e->second) << '"' << std::endl;
+         {
+            f << "  '" << d->name << "'.'" << e->first << '\'';
+            if( !e->second.empty() )
+               f << "  \"" << makeValidMarkdownString(e->second) << '"';
+            f << std::endl;
+         }
       }
       f << "/;" << std::endl;
 
@@ -722,6 +737,204 @@ void printOption(
    out << std::endl << std::endl;
    //	std::clog << "done" << std::endl;
 }
+
+#ifdef COIN_HAS_CBC
+static
+void collectCbcOption(
+   GamsOptions& gmsopt,
+   const std::vector<CbcOrClpParam>& cbcopts,
+   CbcModel& cbcmodel,
+   const std::string& namegams,
+   const std::string& namecbc_ = ""
+   )
+{
+   std::string namecbc(namecbc_.empty() ? namegams : namecbc_);
+
+
+   unsigned int idx;
+   for( idx = 0; idx < cbcopts.size(); ++idx )
+      if( cbcopts[idx].name() == namecbc )
+         break;
+   if( idx >= cbcopts.size() )
+   {
+      std::cerr << "Error: Option " << namecbc << " not known to Cbc." << std::endl;
+      exit(1);
+   }
+
+   const CbcOrClpParam& cbcopt(cbcopts[idx]);
+
+   std::cout << cbcopt.name() << std::endl;
+
+   OPTTYPE opttype;
+   OPTVAL defaultval, minval, maxval;
+   ENUMVAL enumval;
+   std::string tmpstr;
+   std::string longdescr;
+
+   /*   1 -- 100  double parameters
+    * 101 -- 200  integer parameters
+    * 201 -- 300  Clp string parameters
+    * 301 -- 400  Cbc string parameters
+    * 401 -- 500  Clp actions
+    * 501 -- 600  Cbc actions
+   */
+   CbcOrClpParameterType cbcoptnum = cbcopt.type();
+   if( cbcoptnum <= 100 )
+   {
+      opttype = OPTTYPE_REAL;
+      minval.realval = cbcopt.lowerDoubleValue();
+      maxval.realval = cbcopt.upperDoubleValue();
+      defaultval.realval = cbcopt.doubleParameter(cbcmodel);
+   }
+   else if( cbcoptnum <= 200 )
+   {
+      opttype = OPTTYPE_INTEGER;
+      minval.intval = cbcopt.lowerIntValue();
+      maxval.intval = cbcopt.upperIntValue();
+      defaultval.intval = cbcopt.intParameter(cbcmodel);
+   }
+   else if( cbcoptnum <= 400 )
+   {
+      // check whether this might be a bool option
+      const std::vector<std::string>& kws(cbcopt.definedKeywords());
+      if( kws.size() == 2 &&
+         ((kws[0] == "on" && kws[1] == "off") || (kws[1] == "on" && kws[0] == "off")) )
+      {
+         opttype = OPTTYPE_BOOL;
+         defaultval.boolval = cbcopt.currentOption() == "on";
+      }
+      else
+      {
+         opttype = OPTTYPE_ENUM;
+         defaultval.stringval = strdup(cbcopt.currentOption().c_str());
+         for( auto v : cbcopt.definedKeywords() )
+         {
+            if( v == "01first" )
+               v = "binaryfirst";
+            else if( v == "01last" )
+               v = "binarylast";
+
+            // remove '!' and '?' marker from keyword
+            auto newend = std::remove(v.begin(), v.end(), '!');
+            newend = std::remove(v.begin(), newend, '?');
+            //std::string oldval(v.begin(), newend);
+            //std::transform(v.begin(), newend, v.begin(), ::tolower);
+            //if( oldval != std::string(v.begin(), newend) )
+            //   std::cout << "TOLOWER: " << oldval << " => " << std::string(v.begin(), newend) << std::endl;
+            enumval.push_back(std::pair<std::string, std::string>(std::string(v.begin(), newend), ""));
+         }
+      }
+   }
+   else
+   {
+      std::cerr << "ERROR: 'action'-option encountered: " << namegams << std::endl;
+      exit(1);
+   }
+
+   gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, enumval, "", cbcoptnum);
+
+}
+
+void printCbcOptions()
+{
+   // to read the defaults for some options, we need a CbcModel; let's even initialize it with an LP
+   OsiClpSolverInterface solver;
+   CbcModel cbcmodel(solver);
+   CbcMain0(cbcmodel);
+
+   // get Cbc parameters
+   std::vector<CbcOrClpParam> cbcopts;
+   establishParams(cbcopts);  // from CbcOrClpParam.hpp
+
+   // collection of GAMS/Cbc parameters
+   GamsOptions gmsopt("cbc");
+
+   // gams to cbc mapping of string enum values
+   std::map<std::string, std::string> se_gams2cbc;
+
+   // LP parameters
+   gmsopt.setGroup("LP Options");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "idiotcrash", "idiotCrash");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sprintcrash", "sprintCrash");  // TODO synonym: sifting
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "crash");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "maxfactor", "maxFactor");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "crossover");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "dualpivot", "dualPivot");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "primalpivot", "primalPivot");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "perturbation");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "scaling");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "presolve");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_presolve", "preTolerance");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "passpresolve", "passPresolve");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomseedclp", "randomSeed");
+
+   // MIP parameters
+   gmsopt.setGroup("MIP Options");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutoffconstraint", "constraintfromCutoff");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "extravariables", "extraVariables");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "multiplerootpasses", "multipleRootPasses");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomseedcbc", "randomCbcSeed");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "strategy");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sollim", "maxSolutions");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "strongbranching", "strongBranching");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "trustpseudocosts", "trustPseudoCosts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutdepth", "cutDepth");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_root", "passCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_tree", "passTreeCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_slow", "slowcutpasses");
+
+   gmsopt.setGroup("MIP Options for Cutting Plane Generators");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cuts", "cutsOnOff");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cliquecuts", "cliqueCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "flowcovercuts", "flowCoverCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "gomorycuts", "gomoryCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "knapsackcuts", "knapsackCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "liftandprojectcuts", "liftAndProjectCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "mircuts", "mixedIntegerRoundingCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "reduceandsplitcuts", "reduceAndSplitCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "residualcapacitycuts", "residualCapacityCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "twomircuts", "twoMirCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "zerohalfcuts", "zeroHalfCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "gomorycuts2", "GMICuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "probingcuts", "probingCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "reduceandsplitcuts2", "reduce2AndSplitCuts");
+   // another cut option that actually does the same as -constraint conflict
+   gmsopt.collect("conflictcuts", "Conflict Cuts", "Equivalent to setting cutoffconstraint=conflict",
+      OPTTYPE_BOOL, OPTVAL({.boolval = false}), OPTVAL(), OPTVAL(), ENUMVAL(), "", -2);
+
+   gmsopt.setGroup("MIP Options for Primal Heuristics");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "heuristics", "heuristicsOnOff");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "combinesolutions", "combineSolutions");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "dins", "Dins");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divingrandom", "DivingSome");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divingcoefficient", "DivingCoefficient");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divingfractional", "DivingFractional");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divingguided", "DivingGuided");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divinglinesearch", "DivingLineSearch");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divingpseudocost", "DivingPseudoCost");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divingvectorlength", "DivingVectorLength");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump", "feasibilityPump");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_passes", "passFeasibilityPump");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "localtreesearch", "localTreeSearch");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "naiveheuristics", "naiveHeuristics");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "pivotandfix", "pivotAndFix");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomizedrounding", "randomizedRounding");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "rens", "Rens");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "rins", "Rins");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "roundingheuristic", "roundingHeuristic");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "vubheuristic");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "proximitysearch", "proximitySearch");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "greedyheuristic", "greedyHeuristic");
+
+   gmsopt.setGroup("MIP Options");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "coststrategy", "costStrategy");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "nodestrategy", "nodeStrategy");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "preprocess");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "increment");
+
+   gmsopt.write();
+}
+#endif
 
 #ifdef COIN_HAS_IPOPT
 static
@@ -2250,6 +2463,10 @@ void printSoPlexOptions()
 
 int main(int argc, char** argv)
 {
+#ifdef COIN_HAS_CBC
+   printCbcOptions();
+#endif
+
 #ifdef COIN_HAS_IPOPT
    printIpoptOptions();
 #endif
