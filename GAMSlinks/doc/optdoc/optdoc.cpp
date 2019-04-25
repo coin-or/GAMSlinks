@@ -2266,7 +2266,7 @@ int main(int argc, char** argv)
    printSCIPOptions();
 #endif
 
-#if COIN_HAS_SOPLEX
+#ifdef COIN_HAS_SOPLEX
    printSoPlexOptions();
 #endif
 }
