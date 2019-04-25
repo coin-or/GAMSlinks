@@ -36,11 +36,9 @@
 #include "scip/pub_paramset.h"
 #include "GamsScip.hpp"
 #include "lpiswitch.h"
-
-#define COIN_HAS_SPX 1 /* TODO do via configure, etc */
 #endif
 
-#ifdef COIN_HAS_SPX
+#ifdef COIN_HAS_SOPLEX
 #include "soplex.h"
 using namespace soplex;
 #endif
@@ -930,7 +928,7 @@ void printIpoptOptions()
 #endif
 
 // TODO specify Ipopt options of Bonmin as hidden in optbonmin.gms, so they don't show up in docu?
-#if COIN_HAS_BONMIN
+#ifdef COIN_HAS_BONMIN
 static
 void printBonminOptions()
 {
@@ -1299,7 +1297,7 @@ void printBonminOptions()
 }
 #endif
 
-#if COIN_HAS_COUENNE
+#ifdef COIN_HAS_COUENNE
 static
 void printCouenneOptions()
 {
@@ -1564,7 +1562,7 @@ void printCouenneOptions()
 }
 #endif
 
-#if COIN_HAS_SCIP
+#ifdef COIN_HAS_SCIP
 bool ScipParamCompare(SCIP_PARAM* a, SCIP_PARAM* b)
 {
    /* move advanced parameters to end */
@@ -2143,7 +2141,7 @@ void printSCIPOptions()
 }
 #endif
 
-#if COIN_HAS_SPX
+#ifdef COIN_HAS_SOPLEX
 static
 double translateSoplexInfinity(
    double val
@@ -2252,23 +2250,23 @@ void printSoPlexOptions()
 
 int main(int argc, char** argv)
 {
-#if COIN_HAS_IPOPT
+#ifdef COIN_HAS_IPOPT
    printIpoptOptions();
 #endif
 
-#if COIN_HAS_BONMIN
+#ifdef COIN_HAS_BONMIN
    printBonminOptions();
 #endif
 
-#if COIN_HAS_COUENNE
+#ifdef COIN_HAS_COUENNE
    printCouenneOptions();
 #endif
 
-#if COIN_HAS_SCIP
+#ifdef COIN_HAS_SCIP
    printSCIPOptions();
 #endif
 
-#if COIN_HAS_SPX
+#if COIN_HAS_SOPLEX
    printSoPlexOptions();
 #endif
 }
