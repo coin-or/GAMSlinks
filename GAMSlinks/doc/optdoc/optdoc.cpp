@@ -851,8 +851,6 @@ void collectCbcOption(
 
    const CbcOrClpParam& cbcopt(cbcopts[idx]);
 
-   std::cout << cbcopt.name() << std::endl;
-
    OPTTYPE opttype;
    OPTVAL defaultval, minval, maxval;
    ENUMVAL enumval;
@@ -926,7 +924,6 @@ void collectCbcOption(
    }
 
    gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, enumval, "", cbcoptnum);
-
 }
 
 void printCbcOptions()
@@ -1037,6 +1034,10 @@ void printCbcOptions()
       "The string value given to this parameter is split up into parts at each space and added to the array of parameters given to CBC (in front of the -solve command). "
       "Hence, you can use it like the command line parameters for the CBC standalone version.",
       "", "", -1);
+   gmsopt.collect("writemps", "create MPS file for problem",
+      "Write the problem formulation in MPS format. "
+      "The parameter value is the name of the MPS file.",
+      "", "", -1);
 
    gmsopt.setGroup("LP Options");
    gmsopt.collect("iterlim", "iteration limit",
@@ -1093,6 +1094,31 @@ void printCbcOptions()
    gmsopt.collect("printfrequency", "frequency of status prints",
       "Controls the number of nodes that are evaluated between status prints.",
       0, 0, INT_MAX, "", -1);
+   gmsopt.collect("mipstart", "whether it should be tried to use the initial variable levels as initial MIP solution",
+      "This option controls the use of advanced starting values for mixed integer programs. "
+      "A setting of 1 indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.",
+      false, "", -1);
+   gmsopt.collect("solvefinal", "final solve of MIP with fixed discrete variables",
+      "Whether the MIP with discrete variables fixed to solution values should be solved after CBC finished.",
+      true, "", -1);
+   gmsopt.collect("solvetrace", "name of trace file for solving information",
+      "Name of file for writing solving progress information during solve.",
+      "", "", -1);
+   gmsopt.collect("solvetracenodefreq", "frequency in number of nodes for writing to solve trace file", "",
+      100, 0, INT_MAX, "", -1);
+   gmsopt.collect("solvetracetimefreq", "frequency in seconds for writing to solve trace file", "",
+      5.0, 0.0, DBL_MAX, "", -1);
+   gmsopt.collect("loglevel", "amount of output printed by CBC", "",
+      1, 0, INT_MAX, "", -1);
+   gmsopt.collect("dumpsolutions", "name of solutions index gdx file for writing alternate solutions",
+      "The name of a solutions index gdx file for writing alternate solutions found by CBC. "
+      "The GDX file specified by this option will contain a set called index that contains the names of GDX files with the individual solutions.",
+      "", "", -1);
+   gmsopt.collect("dumpsolutionsmerged", "name of gdx file for writing all alternate solutions", "",
+      "", "", -1);
+   gmsopt.collect("maxsol", "maximal number of solutions to store during search",
+      "Maximal number of solutions to store during search and to dump into gdx files if dumpsolutions options is set.",
+      100, 0, INT_MAX, "", -1);
 
    gmsopt.write();
 }
