@@ -124,6 +124,7 @@ private:
    std::string           curgroup;
    std::string           separator;
    std::string           stringquote;
+   std::string           eolchars;
 
    std::string tolower(std::string s)
    {
@@ -157,7 +158,9 @@ public:
    GamsOptions(
       const std::string& solver_
       )
-   : solver(solver_), separator(" "), stringquote()
+   : values({"1", "2", "3", "4", "5", "6", "7", "8", "9"}),  // GAMS needs these to enumerate lines in long descr.
+     solver(solver_),
+     separator(" ")
    { }
 
    void setGroup(
@@ -180,6 +183,13 @@ public:
       )
    {
       stringquote = strquote;
+   }
+
+   void setEolChars(
+      const std::string& eolchs
+      )
+   {
+      eolchars = eolchs;
    }
 
    void collect(
@@ -268,12 +278,13 @@ public:
          f << "$setglobal STRINGQUOTE '\"'" << std::endl;
       else
          f << "$setglobal STRINGQUOTE \"" << stringquote << "\"" << std::endl;
-      f << "$setglobal EOLCHAR \"#\"" << std::endl;
+      if( !eolchars.empty() )
+         f << "$setglobal EOLCHAR \"" << eolchars << "\"" << std::endl;
       if( shortdoc )
          f << "$setglobal SHORTDOCONLY" << std::endl;
       f << "$onempty" << std::endl;
 
-      f << "set e / 1*100 " << std::endl;  // the 1*100 is necessary to get the long description into the html file
+      f << "set e / " << std::endl;
       for( std::set<std::string>::iterator v(values.begin()); v != values.end(); ++v )
          f << "  '" << *v << "'" << std::endl;
       f << "/;" << std::endl;
@@ -351,12 +362,12 @@ public:
 
             case OPTTYPE_CHAR:
                /* no character type in GAMS option files */
-               f << "S.(def '" << d->defaultval.charval;
+               f << "S.(def '" << d->defaultval.charval << '\'';
                break;
 
             case OPTTYPE_STRING:
             case OPTTYPE_ENUM:
-               f << "S.(def '" << makeValidMarkdownString(d->defaultval.stringval);
+               f << "S.(def '" << makeValidMarkdownString(d->defaultval.stringval) << '\'';
                break;
          }
          if( d->refval >= -1 )
@@ -849,9 +860,6 @@ void printCbcOptions()
    // collection of GAMS/Cbc parameters
    GamsOptions gmsopt("cbc");
 
-   // gams to cbc mapping of string enum values
-   std::map<std::string, std::string> se_gams2cbc;
-
    // LP parameters
    gmsopt.setGroup("LP Options");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "idiotcrash", "idiotCrash");
@@ -1004,6 +1012,7 @@ void printIpoptOptions()
 
    std::ofstream optfile("optipopt_a.tex");
    GamsOptions gmsopt("ipopt");
+   gmsopt.setEolChars("#");
 
    for( std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ != opts.end(); ++it_categ )
    {
@@ -1199,6 +1208,7 @@ void printBonminOptions()
    // options sorted by category
    std::map<std::string, std::list<SmartPtr<RegisteredOption> > > opts;
    GamsOptions gmsopt("bonmin");
+   gmsopt.setEolChars("#");
 
    for( Bonmin::RegisteredOptions::RegOptionsList::const_iterator it(optionlist.begin()); it != optionlist.end(); ++it )
    {
@@ -1617,6 +1627,7 @@ void printCouenneOptions()
    std::string longdescr;
 
    GamsOptions gmsopt("couenne");
+   gmsopt.setEolChars("#");
 
    std::ofstream optfile("optcouenne_a.tex");
 
@@ -1854,6 +1865,7 @@ void printSCIPOptions()
    GamsOptions gmsopt("scip");
    gmsopt.setSeparator("=");
    gmsopt.setStringQuote("\"");
+   gmsopt.setEolChars("#");
 
    for( int i = 0; i < nparams; ++i )
    {
