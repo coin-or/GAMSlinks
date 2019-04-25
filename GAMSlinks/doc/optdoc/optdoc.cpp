@@ -817,7 +817,13 @@ void collectCbcOption(
       else
       {
          opttype = OPTTYPE_ENUM;
-         defaultval.stringval = strdup(cbcopt.currentOption().c_str());
+
+         std::string def = cbcopt.currentOption();
+         // remove '!' and '?' marker from default
+         auto newend = std::remove(def.begin(), def.end(), '!');
+         newend = std::remove(def.begin(), newend, '?');
+         defaultval.stringval = strdup(std::string(def.begin(), newend).c_str());
+
          for( auto v : cbcopt.definedKeywords() )
          {
             if( v == "01first" )
@@ -826,7 +832,7 @@ void collectCbcOption(
                v = "binarylast";
 
             // remove '!' and '?' marker from keyword
-            auto newend = std::remove(v.begin(), v.end(), '!');
+            newend = std::remove(v.begin(), v.end(), '!');
             newend = std::remove(v.begin(), newend, '?');
             //std::string oldval(v.begin(), newend);
             //std::transform(v.begin(), newend, v.begin(), ::tolower);
