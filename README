@@ -1,7 +1,5 @@
-To install this package, please look at the INSTALL file.
-
 This package contains several subdirectories corresponding to COIN-OR
-projects (www.coin-or.org). The AUTHORS, LICENSE and README files in
+projects (www.coin-or.org). The AUTHORS, LICENSE and README.md files in
 each of the subdirectories give more information about these projects.
-See especially the README file in the GAMSlinks directory on more
-information on the GAMSlinks project.
+See especially the README.md file in this directory on more
+information on the GAMSlinks project, including installation instructions.
