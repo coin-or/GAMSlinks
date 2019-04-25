@@ -20,6 +20,7 @@
 #include "CbcOrClpParam.hpp"
 #include "OsiClpSolverInterface.hpp"
 #include "CbcModel.hpp"
+#include "CbcSolver.hpp"
 #endif
 
 #ifdef COIN_HAS_IPOPT
@@ -761,7 +762,6 @@ void collectCbcOption(
 {
    std::string namecbc(namecbc_.empty() ? namegams : namecbc_);
 
-
    unsigned int idx;
    for( idx = 0; idx < cbcopts.size(); ++idx )
       if( cbcopts[idx].name() == namecbc )
@@ -855,13 +855,12 @@ void collectCbcOption(
 void printCbcOptions()
 {
    // to read the defaults for some options, we need a CbcModel; let's even initialize it with an LP
+   // calling CbcMain0 with a CbcSolverUsefulData seems to make Cbc store its defaults in the parameters in there
    OsiClpSolverInterface solver;
    CbcModel cbcmodel(solver);
-   CbcMain0(cbcmodel);
-
-   // get Cbc parameters
-   std::vector<CbcOrClpParam> cbcopts;
-   establishParams(cbcopts);  // from CbcOrClpParam.hpp
+   CbcSolverUsefulData cbcusefuldata;
+   CbcMain0(cbcmodel, cbcusefuldata);
+   std::vector<CbcOrClpParam>& cbcopts = cbcusefuldata.parameters_;
 
    // collection of GAMS/Cbc parameters
    GamsOptions gmsopt("cbc");
