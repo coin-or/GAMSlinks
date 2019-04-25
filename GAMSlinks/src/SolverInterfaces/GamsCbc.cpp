@@ -18,6 +18,7 @@
 #include "gclgms.h"
 #include "gmomcc.h"
 #include "gevmcc.h"
+#include "optcc.h"
 #include "gdxcc.h"
 #ifdef GAMS_BUILD
 #include "palmcc.h"
@@ -26,16 +27,16 @@
 #include "GamsCompatibility.h"
 
 #include "GAMSlinksConfig.h"
-#include "GamsOptions.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
 #include "GamsSolveTrace.h"
 
-// For Branch and bound
+// For Cbc
 #include "CbcConfig.h"
 #include "CbcModel.hpp"
 #include "CbcBranchActual.hpp"  // for CbcSOS
 #include "CbcBranchLotsize.hpp" // for CbcLotsize
+#include "CbcOrClpParam.hpp"
 
 #include "OsiClpSolverInterface.hpp"
 #include "CoinHelperFunctions.hpp"
@@ -657,321 +658,193 @@ bool GamsCbc::setupParameters()
    assert(gmo != NULL);
    assert(gev != NULL);
 
-   GamsOptions options(gev, opt);
+   char buffer[GMS_SSSIZE];
 
    if( opt == NULL )
    {
-      // initialize options object by getting defaults from options settings file and optionally read user options file
-      char* optfilename = NULL;
+      /* get the Option File Handling set up */
+      if( !optCreate(&opt, buffer, sizeof(buffer)) )
+      {
+         gevLogStatPChar(gev, "\n*** Could not create optionfile handle: ");
+         gevLogStat(gev, buffer);
+         return false;
+      }
+
+      char deffile[2*GMS_SSSIZE];
+      gevGetStrOpt(gev, gevNameSysDir, buffer);
+#ifdef GAMS_BUILD
+      sprintf(deffile, "%soptcbc.def", buffer);
+#else
+      sprintf(deffile, "%soptmycbc.def", buffer);
+#endif
+      if( optReadDefinition(opt, deffile) )
+      {
+         int itype;
+         for( int i = 1; i <= optMessageCount(opt); ++i )
+         {
+            optGetMessage(opt, i, buffer, &itype);
+            if( itype <= optMsgFileLeave || itype == optMsgUserError )
+               gevLogStat(gev, buffer);
+         }
+         optClearMessages(opt);
+         optEchoSet(opt, 0);
+         // TODO something failed, stop?
+         return false;
+      }
+      optEOLOnlySet(opt, 1);
+
+      // read user options file
       if( gmoOptFile(gmo) > 0 )
       {
-         char buffer[1024];
          gmoNameOptFile(gmo, buffer);
-         optfilename = buffer;
+
+         /* read option file */
+         optEchoSet(opt, 1);
+         optReadParameterFile(opt, buffer);
+         if( optMessageCount(opt) )
+         {
+            int itype;
+            for( int i = 1; i <= optMessageCount(opt); ++i )
+            {
+               optGetMessage(opt, i, buffer, &itype);
+               if( itype <= optMsgFileLeave || itype == optMsgUserError )
+                  gevLogStat(gev, buffer);
+            }
+            optClearMessages(opt);
+            optEchoSet(opt, 0);
+            // TODO something failed, stop?
+            return false;
+         }
+         else
+         {
+            optEchoSet(opt, 0);
+         }
       }
-#ifdef GAMS_BUILD
-      options.readOptionsFile("cbc", optfilename);
-#else
-      options.readOptionsFile("mycbc", optfilename);
-#endif
    }
 
    // set GAMS options for those not set in options file
-   if( !options.isDefined("reslim") )
-      options.setDouble("reslim", gevGetDblOpt(gev, gevResLim));
-   if( !options.isDefined("iterlim") && gevGetIntOpt(gev, gevIterLim) != ITERLIM_INFINITY )
-      options.setInteger("iterlim", gevGetIntOpt(gev, gevIterLim));
-   if( !options.isDefined("nodlim") && gevGetIntOpt(gev, gevNodeLim) > 0 )
-      options.setInteger("nodlim", gevGetIntOpt(gev, gevNodeLim));
-   if( !options.isDefined("nodelim") && options.isDefined("nodlim") )
-      options.setInteger("nodelim", options.getInteger("nodlim"));
-   if( !options.isDefined("optca") )
-      options.setDouble("optca", gevGetDblOpt(gev, gevOptCA));
-   if( !options.isDefined("optcr") )
-      options.setDouble ("optcr", gevGetDblOpt(gev, gevOptCR));
-   if( !options.isDefined("cutoff") && gevGetIntOpt(gev, gevUseCutOff) )
-      options.setDouble("cutoff", gevGetDblOpt(gev, gevCutOff));
-   if( !options.isDefined("increment") && gevGetIntOpt(gev, gevUseCheat) )
-      options.setDouble("increment", gevGetDblOpt(gev, gevCheat));
-   if( !options.isDefined("threads") )
-      options.setInteger("threads", gevThreads(gev));
+   if( !optGetDefinedStr(opt, "reslim") )
+      optSetDblStr(opt, "reslim", gevGetDblOpt(gev, gevResLim));
+   if( !optGetDefinedStr(opt, "iterlim") && gevGetIntOpt(gev, gevIterLim) != ITERLIM_INFINITY )
+      optSetIntStr(opt, "iterlim", gevGetIntOpt(gev, gevIterLim));
+   if( !optGetDefinedStr(opt, "nodlim") && gevGetIntOpt(gev, gevNodeLim) > 0 )
+      optSetIntStr(opt, "nodlim", gevGetIntOpt(gev, gevNodeLim));
+   if( !optGetDefinedStr(opt, "optca") )
+      optSetDblStr(opt, "optca", gevGetDblOpt(gev, gevOptCA));
+   if( !optGetDefinedStr(opt, "optcr") )
+      optSetDblStr(opt, "optcr", gevGetDblOpt(gev, gevOptCR));
+   if( !optGetDefinedStr(opt, "cutoff") && gevGetIntOpt(gev, gevUseCutOff) )
+      optSetDblStr(opt, "cutoff", gevGetDblOpt(gev, gevCutOff));
+   if( !optGetDefinedStr(opt, "increment") && gevGetIntOpt(gev, gevUseCheat) )
+      optSetDblStr(opt, "increment", gevGetDblOpt(gev, gevCheat));
+   if( !optGetDefinedStr(opt, "threads") )
+      optSetIntStr(opt, "threads", gevThreads(gev));
 
    //note: does not seem to work via Osi: OsiDoPresolveInInitial, OsiDoDualInInitial
 
    // Some tolerances and limits
-   model->setDblParam(CbcModel::CbcMaximumSeconds,  options.getDouble("reslim"));
-   model->solver()->setDblParam(OsiPrimalTolerance, options.getDouble("tol_primal"));
-   model->solver()->setDblParam(OsiDualTolerance,   options.getDouble("tol_dual"));
+   model->setDblParam(CbcModel::CbcMaximumSeconds,  optGetDblStr(opt, "reslim"));
+   model->solver()->setDblParam(OsiPrimalTolerance, optGetDblStr(opt, "tol_primal"));
+   model->solver()->setDblParam(OsiDualTolerance,   optGetDblStr(opt, "tol_dual"));
 
    // iteration limit, if set
-   if( options.isDefined("iterlim") )
-      model->solver()->setIntParam(OsiMaxNumIteration, options.getInteger("iterlim"));
+   if( optGetDefinedStr(opt, "iterlim") )
+      model->solver()->setIntParam(OsiMaxNumIteration, optGetIntStr(opt, "iterlim"));
 
    // MIP parameters
-   optca = options.getDouble("optca");
-   optcr = options.getDouble("optcr");
-   model->setIntParam(CbcModel::CbcMaxNumNode,           options.getInteger("nodelim"));
+   optca = optGetDblStr(opt, "optca");
+   optcr = optGetDblStr(opt, "optcr");
+   model->setIntParam(CbcModel::CbcMaxNumNode,           optGetIntStr(opt, "nodlim"));
    model->setDblParam(CbcModel::CbcAllowableGap,         optca);
    model->setDblParam(CbcModel::CbcAllowableFractionGap, optcr);
-   model->setDblParam(CbcModel::CbcIntegerTolerance,     options.getDouble ("tol_integer"));
-   if( options.isDefined("cutoff") )
-      model->setCutoff(model->solver()->getObjSense() * options.getDouble("cutoff")); // Cbc assumes a minimization problem here
-   model->setPrintFrequency(options.getInteger("printfrequency"));
+   model->setDblParam(CbcModel::CbcIntegerTolerance,     optGetDblStr(opt, "tol_integer"));
+   if( optGetDefinedStr(opt, "cutoff") )
+      model->setCutoff(model->solver()->getObjSense() * optGetDblStr(opt, "cutoff")); // Cbc assumes a minimization problem here
+   model->setPrintFrequency(optGetIntStr(opt, "printfrequency"));
+
+   std::vector<CbcOrClpParam> cbcparams;
+   if( optCount(opt) > 0 )
+      establishParams(cbcparams);
 
    std::list<std::string> par_list;
 
-   char buffer[GMS_SSSIZE];
-   std::map<std::string, std::string> stringenummap;
-
-#define CHECKOPT2_INT(NAMEGAMS, NAMECBC) \
-   if( options.isDefined(NAMEGAMS) ) \
-   { \
-      par_list.push_back("-" NAMECBC); \
-      sprintf(buffer, "%d", options.getInteger(NAMEGAMS)); \
-      par_list.push_back(buffer); \
-   }
-
-#define CHECKOPT_INT(NAME) CHECKOPT2_INT(NAME, NAME)
-
-#define CHECKOPT2_DOUBLE(NAMEGAMS, NAMECBC) \
-   if( options.isDefined(NAMEGAMS) ) \
-   { \
-      par_list.push_back("-" NAMECBC); \
-      sprintf(buffer, "%g", options.getDouble(NAMEGAMS)); \
-      par_list.push_back(buffer); \
-   }
-
-#define CHECKOPT_DOUBLE(NAME) CHECKOPT2_DOUBLE(NAME, NAME)
-
-#define CHECKOPT2_BOOL(NAMEGAMS, NAMECBC) \
-   if( options.isDefined(NAMEGAMS) ) \
-   { \
-      par_list.push_back("-" NAMECBC); \
-      par_list.push_back(options.getBool(NAMEGAMS) ? "on" : "off"); \
-   }
-
-#define CHECKOPT_BOOL(NAME) CHECKOPT2_BOOL(NAME, NAME)
-
-#define CHECKOPT2_STRINGENUM(NAMEGAMS, NAMECBC) \
-   if( options.isDefined(NAMEGAMS) ) \
-   { \
-      char* value = options.getString(NAMEGAMS, buffer); \
-      if( value == NULL ) \
-      { \
-         gevLogStatPChar(gev, "Cannot read value for option '" NAMEGAMS "'. Ignoring this option.\n"); \
-      } \
-      else \
-      { \
-         std::map<std::string, std::string>::iterator it(stringenummap.find(value)); \
-         if( it == stringenummap.end() ) \
-         { \
-            gevLogStatPChar(gev, "Unsupported value for option '" NAMEGAMS "'. Ignoring this option.\n"); \
-         } \
-         else \
-         { \
-            par_list.push_back("-" NAMECBC); \
-            par_list.push_back(it->second.length() > 0 ? it->second : it->first); \
-         } \
-      } \
-   }
-
-#define CHECKOPT_STRINGENUM(NAME) CHECKOPT2_STRINGENUM(NAME, NAME)
-
-   // LP parameters
-   CHECKOPT2_INT("idiotcrash",  "idiotCrash")
-   CHECKOPT2_INT("sprintcrash", "sprintCrash")
-   else
-      CHECKOPT2_INT("sifting", "sprintCrash");
-
-   stringenummap.clear();
-   stringenummap["on"]  = "on";
-   stringenummap["off"] = "off";
-   stringenummap["solow_halim"] = "so";
-   stringenummap["halim_solow"] = "ha";
-   CHECKOPT_STRINGENUM("crash")
-
-   CHECKOPT2_INT("maxfactor", "maxFactor")
-   CHECKOPT_BOOL("crossover") // should be revised if we can do quadratic
-
-   stringenummap.clear();
-   stringenummap["auto"];
-   stringenummap["dantzig"];
-   stringenummap["partial"];
-   stringenummap["steepest"];
-   CHECKOPT2_STRINGENUM("dualpivot", "dualPivot")
-
-   stringenummap.clear();
-   stringenummap["auto"];
-   stringenummap["exact"];
-   stringenummap["dantzig"];
-   stringenummap["partial"];
-   stringenummap["steepest"];
-   stringenummap["change"];
-   stringenummap["sprint"];
-   CHECKOPT2_STRINGENUM("primalpivot", "primalPivot")
-
-   CHECKOPT2_BOOL("perturbation", "perturb")
-
-   stringenummap.clear();
-   stringenummap["auto"];
-   stringenummap["off"];
-   stringenummap["equilibrium"];
-   stringenummap["geometric"];
-   CHECKOPT_STRINGENUM("scaling")
-
-   CHECKOPT_BOOL("presolve")
-   CHECKOPT2_DOUBLE("tol_presolve", "preTolerance")
-   CHECKOPT_INT("passpresolve")
-   CHECKOPT2_INT("randomseedclp", "randomSeed")
-
-   // MIP parameters
-
-   CHECKOPT2_BOOL("cutoffconstraint", "constraintFromCutoff")
-   CHECKOPT2_INT("extravariables", "extraVariables")
-   CHECKOPT2_INT("multiplerootpasses", "multipleRootPasses")
-   CHECKOPT2_INT("randomseedcbc", "randomCbcSeed")
-   CHECKOPT_INT("strategy")
-   CHECKOPT2_INT("sollim", "maxSolutions")
-   CHECKOPT2_INT("strongbranching", "strongBranching")
-   CHECKOPT2_INT("trustpseudocosts", "trustPseudoCosts")
-   CHECKOPT2_INT("cutdepth", "cutDepth")
-   CHECKOPT2_INT("cut_passes_root", "passCuts")
-   CHECKOPT2_INT("cut_passes_tree", "passTree")
-   CHECKOPT2_INT("cut_passes_slow", "slowcutpasses")
-
-   stringenummap.clear();
-   stringenummap["off"];
-   stringenummap["on"];
-   stringenummap["root"];
-   stringenummap["ifmove"];
-   stringenummap["forceon"] = "forceOn";
-   CHECKOPT2_STRINGENUM("cuts", "cutsOnOff")
-   CHECKOPT2_STRINGENUM("cliquecuts", "cliqueCuts")
-   CHECKOPT2_STRINGENUM("flowcovercuts", "flowCoverCuts")
-   CHECKOPT2_STRINGENUM("gomorycuts", "gomoryCuts")
-   CHECKOPT2_STRINGENUM("knapsackcuts", "knapsackCuts")
-   CHECKOPT2_STRINGENUM("liftandprojectcuts", "liftAndProjectCuts")
-   CHECKOPT2_STRINGENUM("mircuts", "mixedIntegerRoundingCuts")
-   CHECKOPT2_STRINGENUM("reduceandsplitcuts", "reduceAndSplitCuts")
-   CHECKOPT2_STRINGENUM("residualcapacitycuts", "residualCapacityCuts")
-   CHECKOPT2_STRINGENUM("twomircuts", "twoMirCuts")
-   stringenummap["onglobal"];
-   CHECKOPT2_STRINGENUM("zerohalfcuts", "zeroHalfCuts")
-
-   if( options.getBool("conflictcuts") )
+   if( optGetIntStr(opt, "conflictcuts") )
    {
       par_list.push_back("-constraint");
       par_list.push_back("conflict");
    }
 
-   stringenummap.clear();
-   stringenummap["off"];
-   stringenummap["on"];
-   stringenummap["root"];
-   stringenummap["ifmove"];
-   stringenummap["forceon"];
-   stringenummap["endonly"];
-   stringenummap["long"];
-   stringenummap["longroot"];
-   stringenummap["longifmove"];
-   stringenummap["forcelongon"];
-   stringenummap["longendonly"];
-   CHECKOPT2_STRINGENUM("gomorycuts2", "GMICuts")
+   /* Apply Cbc options */
+   for( int i = 1; i <= optCount(opt); ++i )
+   {
+      int idefined;
+      int idummy;
+      int irefnr;
+      int itype; /* data type */
+      int iotype; /* option type */
+      int ival;
+      double dval;
+      char sname[GMS_SSSIZE];
+      char sval[GMS_SSSIZE];
 
-   stringenummap.clear();
-   stringenummap["off"];
-   stringenummap["on"];
-   stringenummap["root"];
-   stringenummap["ifmove"];
-   stringenummap["forceon"] = "forceOn";
-   stringenummap["forceonbut"] = "forceOnBut";
-   stringenummap["forceonstrong"] = "forceOnStrong";
-   stringenummap["forceonbutstrong"] = "forceOnButStrong";
-   CHECKOPT2_STRINGENUM("probingcuts", "probingCuts")
+      optGetInfoNr(opt, i, &idefined, &idummy, &irefnr, &itype, &iotype, &idummy);
+      if( itype == optDataNone || irefnr < 0 || 0 == idefined )
+         continue;
 
-   stringenummap.clear();
-   stringenummap["off"];
-   stringenummap["on"];
-   stringenummap["root"];
-   stringenummap["longon"] = "longOn";
-   stringenummap["longroot"] = "longRoot";
-   CHECKOPT2_STRINGENUM("reduceandsplitcuts2", "reduce2AndSplitCuts")
+      if( irefnr >= (int)cbcparams.size() )
+      {
+         // TODO error
+         return false;
+      }
 
-   CHECKOPT2_BOOL("heuristics", "heuristicsOnOff")
-   CHECKOPT2_BOOL("combinesolutions", "combineSolutions")
-   CHECKOPT2_BOOL("dins", "Dins")
-   CHECKOPT2_BOOL("divingrandom", "DivingSome")
-   CHECKOPT2_BOOL("divingcoefficient", "DivingCoefficient")
-   CHECKOPT2_BOOL("divingfractional", "DivingFractional")
-   CHECKOPT2_BOOL("divingguided", "DivingGuided")
-   CHECKOPT2_BOOL("divinglinesearch", "DivingLineSearch")
-   CHECKOPT2_BOOL("divingpseudocost", "DivingPseudoCost")
-   CHECKOPT2_BOOL("divingvectorlength", "DivingVectorLength")
-   CHECKOPT2_BOOL("feaspump", "feasibilityPump")
-   CHECKOPT2_INT("feaspump_passes", "passFeasibilityPump")
-   CHECKOPT2_BOOL("localtreesearch", "localTreeSearch")
-   CHECKOPT2_BOOL("naiveheuristics", "naiveHeuristics")
-   CHECKOPT2_BOOL("pivotandfix", "pivotAndFix")
-   CHECKOPT2_BOOL("randomizedrounding", "randomizedRounding")
-   CHECKOPT2_BOOL("rens", "Rens")
-   CHECKOPT2_BOOL("rins", "Rins")
-   CHECKOPT2_BOOL("roundingheuristic", "roundingHeuristic")
-   CHECKOPT_BOOL("vubheuristic");
-   CHECKOPT2_BOOL("proximitysearch", "proximitySearch")
+      sprintf(buffer, "-%s", cbcparams[irefnr].name().c_str());
+      par_list.push_back(buffer);
 
-   stringenummap.clear();
-   stringenummap["on"];
-   stringenummap["off"];
-   stringenummap["root"];
-   CHECKOPT2_STRINGENUM("greedyheuristic", "greedyHeuristic")
+      optGetValuesNr(opt, i, sname, &ival, &dval, sval);
 
-   stringenummap.clear();
-   stringenummap["off"];
-   stringenummap["priorities"];
-   stringenummap["length"];
-   stringenummap["columnorder"];
-   stringenummap["binaryfirst"] = "01first";
-   stringenummap["binarylast"] = "01last";
-   CHECKOPT2_STRINGENUM("coststrategy", "costStrategy")
+      switch( iotype )
+      {
+         case optTypeBoolean:
+            assert(itype == optDataInteger);
+            par_list.push_back(ival == 0 ? "off" : "on");
+            break;
 
-   stringenummap.clear();
-   stringenummap["hybrid"];
-   stringenummap["fewest"];
-   stringenummap["depth"];
-   stringenummap["upfewest"];
-   stringenummap["downfewest"];
-   stringenummap["updepth"];
-   stringenummap["downdepth"];
-   CHECKOPT2_STRINGENUM("nodestrategy", "nodeStrategy")
+         case optTypeInteger:
+            assert(itype == optDataInteger);
+            sprintf(buffer, "%d", ival);
+            par_list.push_back(buffer);
+            break;
 
-   stringenummap.clear();
-   stringenummap["off"];
-   stringenummap["on"];
-   stringenummap["equal"];
-   stringenummap["equalall"];
-   stringenummap["sos"];
-   stringenummap["trysos"];
-   CHECKOPT_STRINGENUM("preprocess")
-// should happen automatically now:
-//   if (gmoGetVarTypeCnt(gmo, gmovar_SC) || gmoGetVarTypeCnt(gmo, gmovar_SI)) {
-//      gevLogStat(gev, "CBC integer preprocessing does not handle semicontinuous variables correct, thus we switch it off.");
-//      par_list.push_back("-preprocess");
-//      par_list.push_back("off");
-//   }
+         case optTypeDouble:
+            assert(itype == optDataDouble);
+            sprintf(buffer, "%g", dval);
+            par_list.push_back(buffer);
+            break;
 
-   CHECKOPT_DOUBLE("increment")
+         case optTypeEnumStr:
+            // TODO map some all-lowercase names to correct capitalization as expected by Cbc
+            assert(itype == optDataString);
+            par_list.push_back(sval);
+            break;
+
+         default:
+         {
+            // TODO  "*** Unknown option type %d of option %s\n", iotype, sname);
+            return false;
+         }
+      }
+   }
 
    // switch to wallclock-time in Cbc, if not requested otherwise
    char clocktype[GMS_SSSIZE];
-   if( options.getString("clocktype", clocktype) == NULL || strcmp(clocktype, "wall") == 0 )
+   if( optGetStrStr(opt, "clocktype", clocktype) == NULL || strcmp(clocktype, "wall") == 0 )
       model->setUseElapsedTime(true);
 
-   nthreads = options.getInteger("threads");
+   nthreads = optGetIntStr(opt, "threads");
    if( nthreads > 1 && CbcModel::haveMultiThreadSupport() )
    {
-
       // Cbc runs deterministic when 100 is added to nthreads
-      char* value = options.getString("parallelmode", buffer);
+      char* value = optGetStrStr(opt, "parallelmode", buffer);
       if( value != NULL && strcmp(value, "deterministic") == 0 )
       {
          snprintf(buffer, sizeof(buffer), "\nParallel mode: deterministic, using %d threads\n", nthreads);
@@ -1009,9 +882,9 @@ bool GamsCbc::setupParameters()
    }
 
    // special options set by user and passed unseen to CBC
-   if( options.isDefined("special") )
+   if( optGetDefinedStr(opt, "special") )
    {
-      char* value = options.getString("special", buffer);
+      char* value = optGetStrStr(opt, "special", buffer);
       if( value == NULL )
       {
          gevLogStatPChar(gev, "Cannot read value for option 'special'. Ignoring this option.\n");
@@ -1028,9 +901,9 @@ bool GamsCbc::setupParameters()
    }
 
    // algorithm for root node and solve command
-   if( options.isDefined("startalg") )
+   if( optGetDefinedStr(opt, "startalg") )
    {
-      char* value = options.getString("startalg", buffer);
+      char* value = optGetStrStr(opt, "startalg", buffer);
       if( value == NULL )
       {
          gevLogStat(gev, "Cannot read value for option 'startalg'. Ignoring this option");
@@ -1057,15 +930,6 @@ bool GamsCbc::setupParameters()
    else
       par_list.push_back("-solve");
 
-#undef CHECKOPT_INT
-#undef CHECKOPT2_INT
-#undef CHECKOPT_DOUBLE
-#undef CHECKOPT2_DOUBLE
-#undef CHECKOPT_BOOL
-#undef CHECKOPT2_BOOL
-#undef CHECKOPT_STRINGENUM
-#undef CHECKOPT2_STRINGENUM
-
    size_t par_list_length = par_list.size();
    if( cbc_args != NULL ) {
       for( int i = 0; i < cbc_argc; ++i )
@@ -1077,35 +941,38 @@ bool GamsCbc::setupParameters()
    cbc_args[0] = strdup("GAMS/CBC");
    int i = 1;
    for( std::list<std::string>::iterator it(par_list.begin()); it != par_list.end(); ++it, ++i )
+   {
       cbc_args[i] = strdup(it->c_str());
+      //std::cout << cbc_args[i] << std::endl;
+   }
    cbc_args[i++] = strdup("-quit");
 
-   mipstart = options.getBool("mipstart");
-   solvefinal = options.getBool("solvefinal");
+   mipstart = optGetIntStr(opt, "mipstart") != 0;
+   solvefinal = optGetIntStr(opt, "solvefinal") != 0;
 
    // whether to write MPS file
    free(writemps);
    writemps = NULL;
-   if( options.isDefined("writemps") )
+   if( optGetDefinedStr(opt, "writemps") )
    {
-      options.getString("writemps", buffer);
+      optGetStrStr(opt, "writemps", buffer);
       writemps = strdup(buffer);
    }
 
    // whether to write MIP trace file
    free(solvetrace);
    solvetrace = NULL;
-   if( options.isDefined("solvetrace") )
+   if( optGetDefinedStr(opt, "solvetrace") )
    {
-      options.getString("solvetrace", buffer);
+      optGetStrStr(opt, "solvetrace", buffer);
       solvetrace = strdup(buffer);
    }
-   solvetracenodefreq = options.getInteger("solvetracenodefreq");
-   solvetracetimefreq = options.getDouble("solvetracetimefreq");
+   solvetracenodefreq = optGetIntStr(opt, "solvetracenodefreq");
+   solvetracetimefreq = optGetDblStr(opt, "solvetracetimefreq");
 
    // when to print which messages
    // loglevel default is 1, so enable CBC output by default, CoinUtils and CGL if loglevel >= 3, and CLP if loglevel >= 5 or >= 1 if problem is an LP
-   int loglevel = options.getInteger("loglevel");
+   int loglevel = optGetIntStr(opt, "loglevel");
    msghandler->setLogLevel(0, loglevel);   // CBC output
    msghandler->setLogLevel(1, isLP() ? loglevel : loglevel-4); // CLP output
    msghandler->setLogLevel(2, loglevel-2); // CoinUtils output, like COIN_PRESOLVE_STATS
@@ -1114,19 +981,19 @@ bool GamsCbc::setupParameters()
    // whether to write other found solutions, and how many of them
    free(dumpsolutions);
    dumpsolutions = NULL;
-   if( options.isDefined("dumpsolutions") )
+   if( optGetDefinedStr(opt, "dumpsolutions") )
    {
-      options.getString("dumpsolutions", buffer);
+      optGetStrStr(opt, "dumpsolutions", buffer);
       dumpsolutions = strdup(buffer);
    }
    free(dumpsolutionsmerged);
    dumpsolutionsmerged = NULL;
-   if( options.isDefined("dumpsolutionsmerged") )
+   if( optGetDefinedStr(opt, "dumpsolutionsmerged") )
    {
-      options.getString("dumpsolutionsmerged", buffer);
+      optGetStrStr(opt, "dumpsolutionsmerged", buffer);
       dumpsolutionsmerged = strdup(buffer);
    }
-   maxsol = options.getInteger("maxsol");
+   maxsol = optGetIntStr(opt, "maxsol");
 
    return true;
 }
