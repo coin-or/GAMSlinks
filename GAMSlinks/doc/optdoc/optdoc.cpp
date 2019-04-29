@@ -986,6 +986,12 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "maxsol", "maxSavedSolutions");
    gmsopt.back().defaultval.intval = 100;
    gmsopt.back().longdescr = "Maximal number of solutions to store during search and to dump into gdx files if dumpsolutions options is set.";
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "threads");
+   gmsopt.back().defaultdescr = "\\ref GAMSAOthreads GAMS threads";
+   gmsopt.back().longdescr.clear();
+   gmsopt.back().defaultval.intval = 1; // somehow I got a -1 from Cbc
+   gmsopt.back().minval.intval = 1;
+   gmsopt.back().maxval.intval = 99;
 
    gmsopt.setGroup("MIP Options for Cutting Plane Generators");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cuts", "cutsOnOff");
@@ -1069,10 +1075,6 @@ void printCbcOptions()
       "dual", startalgs, "", -1);
 
    gmsopt.setGroup("MIP Options");
-   gmsopt.collect("threads", "number of threads to use",
-      "This option controls the multithreading feature of CBC. "
-      "A number between 1 and 99 sets the number of threads used for parallel branch and bound.",
-      1, 1, 99, "\\ref GAMSAOthreads GAMS threads", -1);
    ENUMVAL parallelmodes;
    parallelmodes.push_back(std::pair<std::string, std::string>("opportunistic", ""));
    parallelmodes.push_back(std::pair<std::string, std::string>("deterministic", ""));

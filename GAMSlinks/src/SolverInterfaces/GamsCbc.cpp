@@ -788,6 +788,10 @@ bool GamsCbc::setupParameters()
          return false;
       }
 
+      // skip threads here, will handle this below
+      if( cbcparams.at(irefnr).type() == CBC_PARAM_INT_THREADS )
+         continue;
+
       sprintf(buffer, "-%s", cbcparams.at(irefnr).name().c_str());
       par_list.push_back(buffer);
 
