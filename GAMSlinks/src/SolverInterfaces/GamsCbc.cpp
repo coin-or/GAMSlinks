@@ -741,8 +741,6 @@ bool GamsCbc::setupParameters()
 
    // Some tolerances and limits
    model->setDblParam(CbcModel::CbcMaximumSeconds,  optGetDblStr(opt, "reslim"));
-   model->solver()->setDblParam(OsiPrimalTolerance, optGetDblStr(opt, "tol_primal"));
-   model->solver()->setDblParam(OsiDualTolerance,   optGetDblStr(opt, "tol_dual"));
 
    // iteration limit, if set
    if( optGetDefinedStr(opt, "iterlim") )
@@ -754,7 +752,6 @@ bool GamsCbc::setupParameters()
    model->setIntParam(CbcModel::CbcMaxNumNode,           optGetIntStr(opt, "nodlim"));
    model->setDblParam(CbcModel::CbcAllowableGap,         optca);
    model->setDblParam(CbcModel::CbcAllowableFractionGap, optcr);
-   model->setDblParam(CbcModel::CbcIntegerTolerance,     optGetDblStr(opt, "tol_integer"));
    if( optGetDefinedStr(opt, "cutoff") )
       model->setCutoff(model->solver()->getObjSense() * optGetDblStr(opt, "cutoff")); // Cbc assumes a minimization problem here
    model->setPrintFrequency(optGetIntStr(opt, "printfrequency"));

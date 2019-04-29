@@ -947,6 +947,8 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_presolve", "preTolerance");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "passpresolve", "passPresolve");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomseedclp", "randomSeed");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_primal", "primalTolerance");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_dual", "dualTolerance");
 
    // MIP parameters
    gmsopt.setGroup("MIP Options");
@@ -962,6 +964,7 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_root", "passCuts");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_tree", "passTreeCuts");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_slow", "slowcutpasses");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_integer", "integerTolerance");
 
    gmsopt.setGroup("MIP Options for Cutting Plane Generators");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cuts", "cutsOnOff");
@@ -1036,19 +1039,13 @@ void printCbcOptions()
    gmsopt.collect("iterlim", "iteration limit",
       "For an LP, this is the maximum number of iterations to solve the LP. For a MIP, this option is ignored.",
       INT_MAX, 0, INT_MAX, "\\ref GAMSAOiterlim GAMS iterlim", -1);
-   gmsopt.collect("tol_primal", "primal feasibility tolerance",
-      "The maximum amount the primal constraints can be violated and still be considered feasible.",
-      1e-7, 0.0, DBL_MAX, "", -1);  // TODO check default, read from Cbc?
-   gmsopt.collect("tol_dual", "dual feasibility tolerance",
-      "The maximum amount the dual constraints can be violated and still be considered feasible.",
-      1e-7, 0.0, DBL_MAX, "", -1);  // TODO check default, read from Cbc?
    ENUMVAL startalgs;
    startalgs.push_back(std::pair<std::string, std::string>("primal", "Primal Simplex algorithm"));
    startalgs.push_back(std::pair<std::string, std::string>("dual", "Dual Simplex algorithm"));
    startalgs.push_back(std::pair<std::string, std::string>("barrier", "Primal dual predictor corrector algorithm"));
    gmsopt.collect("startalg", "LP solver for root node",
       "Determines the algorithm to use for an LP or the initial LP relaxation if the problem is a MIP.",
-      "dual", startalgs, "", -1);  // TODO check default
+      "dual", startalgs, "", -1);
 
    gmsopt.setGroup("MIP Options");
    gmsopt.collect("nodlim", "node limit",
@@ -1082,9 +1079,6 @@ void printCbcOptions()
    gmsopt.collect("parallelmode", "whether to run opportunistic or deterministic",
       "Determines whether a parallel MIP search (threads > 1) should be done in a deterministic (i.e., reproducible) way or in a possibly faster but not necessarily reproducible way",
       "deterministic", parallelmodes, "", -1);
-   gmsopt.collect("tol_integer", "tolerance for integrality",
-      "For a feasible solution, no integer variable may be farther than this from an integer value.",
-      1e-6, 0.0, DBL_MAX, "", -1);  // TODO check default, read from Cbc?
    gmsopt.collect("printfrequency", "frequency of status prints",
       "Controls the number of nodes that are evaluated between status prints.",
       0, 0, INT_MAX, "", -1);
