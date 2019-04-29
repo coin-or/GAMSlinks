@@ -8,6 +8,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <climits>
 #include <string>
 #include <vector>
 #include <list>
@@ -25,6 +26,7 @@
 
 #ifdef COIN_HAS_IPOPT
 #include "IpIpoptApplication.hpp"
+using namespace Ipopt;
 #endif
 
 #ifdef COIN_HAS_BONMIN
@@ -520,9 +522,6 @@ public:
 
 };
 
-
-using namespace Ipopt;
-
 static
 void makeValidLatexString(
    std::string&          str
@@ -613,26 +612,6 @@ std::string makeValidLatexNumber(
    sprintf(buffer, "%d", value);
 
    return buffer;
-}
-
-static
-int ScipLongintToInt(
-   SCIP_Longint              value
-)
-{
-   if( value >=  SCIP_LONGINT_MAX )
-      return INT_MAX;
-   if( value <= -SCIP_LONGINT_MAX )
-      return -INT_MAX;
-   //	if (value > INT_MAX) {
-   //		std::cout << "Warning, chop long int value " << value << " to max integer = " << INT_MAX << std::endl;
-   //		return INT_MAX;
-   //	}
-   //	if (value < -INT_MAX) {
-   //		std::cout << "Warning, chop long int value " << value << " to min integer = " << -INT_MAX << std::endl;
-   //		return -INT_MAX;
-   //	}
-   return (int)value;
 }
 
 static
@@ -1967,6 +1946,26 @@ void printCouenneOptions()
 #endif
 
 #ifdef COIN_HAS_SCIP
+static
+int ScipLongintToInt(
+   SCIP_Longint              value
+)
+{
+   if( value >=  SCIP_LONGINT_MAX )
+      return INT_MAX;
+   if( value <= -SCIP_LONGINT_MAX )
+      return -INT_MAX;
+   // if (value > INT_MAX) {
+   //    std::cout << "Warning, chop long int value " << value << " to max integer = " << INT_MAX << std::endl;
+   //    return INT_MAX;
+   // }
+   // if (value < -INT_MAX) {
+   //    std::cout << "Warning, chop long int value " << value << " to min integer = " << -INT_MAX << std::endl;
+   //    return -INT_MAX;
+   // }
+   return (int)value;
+}
+
 bool ScipParamCompare(SCIP_PARAM* a, SCIP_PARAM* b)
 {
    /* move advanced parameters to end */
