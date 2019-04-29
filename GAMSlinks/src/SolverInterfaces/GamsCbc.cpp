@@ -730,8 +730,14 @@ bool GamsCbc::setupParameters()
       optSetDblStr(opt, "optca", gevGetDblOpt(gev, gevOptCA));
    if( !optGetDefinedStr(opt, "optcr") )
       optSetDblStr(opt, "optcr", gevGetDblOpt(gev, gevOptCR));
-   if( !optGetDefinedStr(opt, "cutoff") && gevGetIntOpt(gev, gevUseCutOff) )
-      optSetDblStr(opt, "cutoff", gevGetDblOpt(gev, gevCutOff));
+   // Cbc assumes a minimization problem, so set or correct cutoff value accordingly
+   if( !optGetDefinedStr(opt, "cutoff") )
+   {
+      if( gevGetIntOpt(gev, gevUseCutOff) )
+         optSetDblStr(opt, "cutoff", model->solver()->getObjSense() * gevGetDblOpt(gev, gevCutOff));
+   }
+   else if( model->solver()->getObjSense() == - 1)
+      optSetDblStr(opt, "cutoff", -optGetDblStr(opt, "cutoff"));
    if( !optGetDefinedStr(opt, "increment") && gevGetIntOpt(gev, gevUseCheat) )
       optSetDblStr(opt, "increment", gevGetDblOpt(gev, gevCheat));
    if( !optGetDefinedStr(opt, "threads") )
@@ -742,8 +748,6 @@ bool GamsCbc::setupParameters()
    // MIP parameters
    optca = optGetDblStr(opt, "optca");
    optcr = optGetDblStr(opt, "optcr");
-   if( optGetDefinedStr(opt, "cutoff") )
-      model->setCutoff(model->solver()->getObjSense() * optGetDblStr(opt, "cutoff")); // Cbc assumes a minimization problem here
    model->setPrintFrequency(optGetIntStr(opt, "printfrequency"));
 
    std::vector<CbcOrClpParam> cbcparams;

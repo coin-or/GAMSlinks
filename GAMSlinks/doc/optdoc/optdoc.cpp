@@ -1033,6 +1033,11 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "preprocess");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "increment");
    gmsopt.back().defaultdescr = "\\ref GAMSAOcheat GAMS cheat";
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutoff");
+   gmsopt.back().defaultdescr = "\\ref GAMSAOcutoff GAMS cutoff";
+   gmsopt.back().longdescr = "A valid solution must be at least this much better than last integer solution. "
+      "If this option is not set then it CBC will try and work one out. "
+      "E.g., if all objective coefficients are multiples of 0.01 and only integer variables have entries in objective then this can be set to 0.01.";
 
    // add GAMS/CBC interface options
    gmsopt.setGroup("General Options");
@@ -1061,11 +1066,6 @@ void printCbcOptions()
       "dual", startalgs, "", -1);
 
    gmsopt.setGroup("MIP Options");
-   gmsopt.collect("cutoff", "cutoff for objective function value",
-      "A valid solution must be at least this much better than last integer solution. "
-      "If this option is not set then it CBC will try and work one out. "
-      "E.g., if all objective coefficients are multiples of 0.01 and only integer variables have entries in objective then this can be set to 0.01.",
-      0.0, -DBL_MAX, DBL_MAX, "\\ref GAMSAOcutoff GAMS cutoff", -1);
    gmsopt.collect("threads", "number of threads to use",
       "This option controls the multithreading feature of CBC. "
       "A number between 1 and 99 sets the number of threads used for parallel branch and bound.",
