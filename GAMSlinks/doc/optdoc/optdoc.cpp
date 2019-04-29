@@ -347,13 +347,11 @@ public:
          defaultdescr, refval);
    }
 
-   /// add synonym for option that was added last
-   void addSynonym(
-      const std::string& synname
-   )
+   /// get last added option
+   Data& back()
    {
       assert(!data.empty());
-      data.back().synonyms.insert(synname);
+      return data.back();
    }
 
    void write(bool shortdoc = false)
@@ -935,7 +933,7 @@ void printCbcOptions()
    gmsopt.setGroup("LP Options");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "idiotcrash", "idiotCrash");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "sprintcrash", "sprintCrash");
-   gmsopt.addSynonym("sifting");
+   gmsopt.back().synonyms.insert("sifting");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "crash");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "maxfactor", "maxFactor");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "crossover");
@@ -1014,6 +1012,7 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "nodestrategy", "nodeStrategy");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "preprocess");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "increment");
+   gmsopt.back().defaultdescr = "\\ref GAMSAOcheat GAMS cheat";
 
    // add GAMS/CBC interface options
    gmsopt.setGroup("General Options");
@@ -1051,7 +1050,7 @@ void printCbcOptions()
    gmsopt.collect("nodlim", "node limit",
       "Maximum number of nodes that are enumerated in the Branch and Bound tree search.",
       INT_MAX, 0, INT_MAX, "\\ref GAMSAOnodlim GAMS nodlim", -1);
-   gmsopt.addSynonym("nodelim");
+   gmsopt.back().synonyms.insert("nodelim");
    gmsopt.collect("optca", "absolute optimality gap tolerance",
       "Absolute optimality criterion for a MIP. "
       "CBC stops if the gap between the best known solution and the best possible solution is less than this value.",
@@ -1065,10 +1064,6 @@ void printCbcOptions()
       "If this option is not set then it CBC will try and work one out. "
       "E.g., if all objective coefficients are multiples of 0.01 and only integer variables have entries in objective then this can be set to 0.01.",
       0.0, -DBL_MAX, DBL_MAX, "\\ref GAMSAOcutoff GAMS cutoff", -1);
-   // TODO update description of Cbc's own increment?
-   //gmsopt.collect("increment", "increment of cutoff when new incumbent",
-   //   "CBC stops if the objective function values exceeds (in case of maximization) or falls below (in case of minimization) this value.",
-   //   0.0, 0.0, DBL_MAX, "\\ref GAMSAOcheat GAMS cheat");
    gmsopt.collect("threads", "number of threads to use",
       "This option controls the multithreading feature of CBC. "
       "A number between 1 and 99 sets the number of threads used for parallel branch and bound.",
