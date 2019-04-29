@@ -983,6 +983,9 @@ void printCbcOptions()
    gmsopt.back().defaultdescr = "\\ref GAMSAOoptca GAMS optca";
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "optcr", "ratioGap");
    gmsopt.back().defaultdescr = "\\ref GAMSAOoptcr GAMS optcr";
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "maxsol", "maxSavedSolutions");
+   gmsopt.back().defaultval.intval = 100;
+   gmsopt.back().longdescr = "Maximal number of solutions to store during search and to dump into gdx files if dumpsolutions options is set.";
 
    gmsopt.setGroup("MIP Options for Cutting Plane Generators");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cuts", "cutsOnOff");
@@ -1101,9 +1104,6 @@ void printCbcOptions()
       "", "", -1);
    gmsopt.collect("dumpsolutionsmerged", "name of gdx file for writing all alternate solutions", "",
       "", "", -1);
-   gmsopt.collect("maxsol", "maximal number of solutions to store during search",
-      "Maximal number of solutions to store during search and to dump into gdx files if dumpsolutions options is set.",
-      100, 0, INT_MAX, "", -1);
 
    gmsopt.write();
 }

@@ -267,9 +267,6 @@ int GamsCbc::callSolver()
       model->solver()->writeMps(writemps, "", 1.0);
    }
 
-   if( (dumpsolutions != NULL || dumpsolutionsmerged != NULL) && maxsol > 0 )
-      model->setMaximumSavedSolutions(maxsol);
-
    /* initialize solvetrace
     * do this almost immediately before calling solve, so the timing value is accurate
     */
@@ -719,7 +716,7 @@ bool GamsCbc::setupParameters()
       }
    }
 
-   // set GAMS options for those not set in options file
+   // overwrite Cbc defaults with values from GAMS options, if not set in options file
    if( !optGetDefinedStr(opt, "reslim") )
       optSetDblStr(opt, "reslim", gevGetDblOpt(gev, gevResLim));
    if( !optGetDefinedStr(opt, "iterlim") && gevGetIntOpt(gev, gevIterLim) != ITERLIM_INFINITY )
@@ -742,6 +739,8 @@ bool GamsCbc::setupParameters()
       optSetDblStr(opt, "increment", gevGetDblOpt(gev, gevCheat));
    if( !optGetDefinedStr(opt, "threads") )
       optSetIntStr(opt, "threads", gevThreads(gev));
+   if( !optGetDefinedStr(opt, "maxsol") )
+      optSetIntStr(opt, "maxsol", 100);
 
    //note: does not seem to work via Osi: OsiDoPresolveInInitial, OsiDoDualInInitial
 
@@ -990,7 +989,6 @@ bool GamsCbc::setupParameters()
       optGetStrStr(opt, "dumpsolutionsmerged", buffer);
       dumpsolutionsmerged = strdup(buffer);
    }
-   maxsol = optGetIntStr(opt, "maxsol");
 
    return true;
 }
