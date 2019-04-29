@@ -688,7 +688,6 @@ bool GamsCbc::setupParameters()
          }
          optClearMessages(opt);
          optEchoSet(opt, 0);
-         // TODO something failed, stop?
          return false;
       }
       optEOLOnlySet(opt, 1);
@@ -712,8 +711,6 @@ bool GamsCbc::setupParameters()
             }
             optClearMessages(opt);
             optEchoSet(opt, 0);
-            // TODO something failed, stop?
-            return false;
          }
          else
          {
@@ -791,16 +788,18 @@ bool GamsCbc::setupParameters()
       if( itype == optDataNone || irefnr < 0 || 0 == idefined )
          continue;
 
-      if( irefnr >= (int)cbcparams.size() )
+      optGetValuesNr(opt, i, sname, &ival, &dval, sval);
+
+      /* first 3 "parameters" are ?, ???, and - */
+      if( irefnr < 3 || irefnr >= (int)cbcparams.size() )
       {
-         // TODO error
+         sprintf(buffer, "ERROR: Option %s has invalid reference number %d\n", sname, irefnr);
+         gevLogStatPChar(gev, buffer);
          return false;
       }
 
-      sprintf(buffer, "-%s", cbcparams[irefnr].name().c_str());
+      sprintf(buffer, "-%s", cbcparams.at(irefnr).name().c_str());
       par_list.push_back(buffer);
-
-      optGetValuesNr(opt, i, sname, &ival, &dval, sval);
 
       switch( iotype )
       {
@@ -829,7 +828,8 @@ bool GamsCbc::setupParameters()
 
          default:
          {
-            // TODO  "*** Unknown option type %d of option %s\n", iotype, sname);
+            sprintf(buffer, "ERROR: Option %s is of unknown type %d\n", sname, iotype);
+            gevLogStatPChar(gev, buffer);
             return false;
          }
       }
