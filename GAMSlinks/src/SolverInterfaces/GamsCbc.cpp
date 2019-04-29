@@ -821,9 +821,15 @@ bool GamsCbc::setupParameters()
             break;
 
          case optTypeEnumStr:
-            // TODO map some all-lowercase names to correct capitalization as expected by Cbc
             assert(itype == optDataString);
-            par_list.push_back(sval);
+
+            // for backward compatibility
+            if( strcmp(sval, "binaryfirst") == 0 )
+               par_list.push_back("01first");
+            else if( strcmp(sval, "binarylast") == 0 )
+               par_list.push_back("01last");
+            else
+               par_list.push_back(sval);
             break;
 
          default:

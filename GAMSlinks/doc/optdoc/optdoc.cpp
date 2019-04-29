@@ -880,19 +880,17 @@ void collectCbcOption(
 
          for( auto v : cbcopt.definedKeywords() )
          {
-            if( v == "01first" )
-               v = "binaryfirst";
-            else if( v == "01last" )
-               v = "binarylast";
-
             // remove '!' and '?' marker from keyword
             newend = std::remove(v.begin(), v.end(), '!');
             newend = std::remove(v.begin(), newend, '?');
-            //std::string oldval(v.begin(), newend);
-            //std::transform(v.begin(), newend, v.begin(), ::tolower);
-            //if( oldval != std::string(v.begin(), newend) )
-            //   std::cout << "TOLOWER: " << oldval << " => " << std::string(v.begin(), newend) << std::endl;
-            enumval.push_back(std::pair<std::string, std::string>(std::string(v.begin(), newend), ""));
+            v = std::string(v.begin(), newend);
+
+            enumval.push_back(std::pair<std::string, std::string>(v, ""));
+
+            if( v == "01first" )
+               enumval.push_back(std::pair<std::string, std::string>("binaryfirst", "This is a deprecated setting. Please use 01first."));
+            else if( v == "01last" )
+               enumval.push_back(std::pair<std::string, std::string>("binarylast", "This is a deprecated setting. Please use 01last."));
          }
       }
    }
