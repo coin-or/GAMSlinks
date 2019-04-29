@@ -902,7 +902,7 @@ void collectCbcOption(
       exit(1);
    }
 
-   gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, enumval, "", cbcoptnum);
+   gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, enumval, "", idx);
 }
 
 void printCbcOptions()
