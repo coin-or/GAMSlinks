@@ -91,6 +91,7 @@ private:
       OPTVAL             maxval;
       ENUMVAL            enumval;
       int                refval;
+      std::set<std::string> synonyms;
 
       Data(
          const std::string& group_,
@@ -346,6 +347,15 @@ public:
          defaultdescr, refval);
    }
 
+   /// add synonym for option that was added last
+   void addSynonym(
+      const std::string& synname
+   )
+   {
+      assert(!data.empty());
+      data.back().synonyms.insert(synname);
+   }
+
    void write(bool shortdoc = false)
    {
       std::string filename;
@@ -484,7 +494,12 @@ public:
       }
       f << "/;" << std::endl;
 
-      f << "set os(o,*) synonyms  / /;" << std::endl
+      f << "set os(o,*) synonyms  /";
+      for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
+         if( !d->synonyms.empty() )
+            for( std::set<std::string>::const_iterator s(d->synonyms.begin()); s != d->synonyms.end(); ++s )
+               f << std::endl << "  '" << d->name << "'.'" << *s << '\'';
+      f << " /;" << std::endl
         << "set im immediates recognized  / EolFlag , Message /;" << std::endl   /* ???? */
         << "set strlist(o)        / /;" << std::endl
         << "set immediate(o,im)   / /;" << std::endl
@@ -919,7 +934,8 @@ void printCbcOptions()
    // LP parameters
    gmsopt.setGroup("LP Options");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "idiotcrash", "idiotCrash");
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sprintcrash", "sprintCrash");  // TODO synonym: sifting
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sprintcrash", "sprintCrash");
+   gmsopt.addSynonym("sifting");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "crash");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "maxfactor", "maxFactor");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "crossover");
@@ -1037,7 +1053,8 @@ void printCbcOptions()
    gmsopt.setGroup("MIP Options");
    gmsopt.collect("nodlim", "node limit",
       "Maximum number of nodes that are enumerated in the Branch and Bound tree search.",
-      INT_MAX, 0, INT_MAX, "\\ref GAMSAOnodlim GAMS nodlim", -1);   // TODO synonym: nodelim
+      INT_MAX, 0, INT_MAX, "\\ref GAMSAOnodlim GAMS nodlim", -1);
+   gmsopt.addSynonym("nodelim");
    gmsopt.collect("optca", "absolute optimality gap tolerance",
       "Absolute optimality criterion for a MIP. "
       "CBC stops if the gap between the best known solution and the best possible solution is less than this value.",
