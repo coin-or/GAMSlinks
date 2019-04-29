@@ -2,26 +2,27 @@
 
 ## Introduction
 
-This project is dedicated to the development of links between [GAMS](http://www.gams.com) ( **G**eneral **A**lgebraic **M**odeling **S**ystem) and open source solvers.
+This project is dedicated to the development of links between [GAMS](http://www.gams.com) ( **G**eneral **A**lgebraic **M**odeling **S**ystem) and some solvers,
+including some of the [COIN-OR](https://www.coin-or.org) open source solvers.
 The links are written in C++ and are released as open source code under the Eclipse Public Licence (EPL) 1.0.
 The COIN-OR project leader for GAMSlinks is [Stefan Vigerske](http://www.gams.com/~stefan) (GAMS Software GmbH).
 
 Currently the following links are available:
 
-  * [https://projects.coin-or.org/Bonmin Bonmin]: Basic Open-source Nonlinear Mixed-Integer Programming
-  * [https://projects.coin-or.org/Couenne Couenne] Convex Over and Under Envelopes for Nonlinear Estimation
-  * [https://github.com/coin-or/Cbc Cbc]: Coin Branch and Cut code
-  * [https://github.com/coin-or/Ipopt Ipopt]: Interior Point Optimizer
-  * [https://github.com/coin-or/Osi Osi]: Interface to LP and MIP solvers with an Open Solver Interface, currently CPLEX, Gurobi, Mosek, and Xpress
-  * [https://projects.coin-or.org/OS OS]: Optimization Services
-  * [https://scip.zib.de SCIP]: Solving Constraint Integer Programs
-  * [https://soplex.zib.de SoPlex]: Sequential object-oriented simPlex
+  * [Bonmin](https://projects.coin-or.org/Bonmin): Basic Open-source Nonlinear Mixed-Integer Programming
+  * [Couenne](https://projects.coin-or.org/Couenne): Convex Over and Under Envelopes for Nonlinear Estimation
+  * [Cbc](https://github.com/coin-or/Cbc): Coin Branch and Cut code
+  * [Ipopt](https://github.com/coin-or/Ipopt): Interior Point Optimizer
+  * [Osi](https://github.com/coin-or/Osi): Interface to LP and MIP solvers with an Open Solver Interface, currently CPLEX, Gurobi, Mosek, and Xpress
+  * [OS](https://projects.coin-or.org/OS): Optimization Services
+  * [SCIP](https://scip.zib.de): Solving Constraint Integer Programs
+  * [SoPlex](https://soplex.zib.de): Sequential object-oriented simPlex
 
 Note, that these solver links are also distributed with any regular GAMS distribution.
 
 Note, that one still requires a **licensed GAMS base system** to use the solvers via GAMS.
 
-## Download / Installation ==
+## Download / Installation
 
 The links should work under Linux and Mac OS X (both 64 bit), and maybe Windows.
 
@@ -98,12 +99,6 @@ For a documentation of the GAMS/COIN-OR links and their parameters please see th
 
 The directory `GAMSlinks/test` contains scripts that test Cbc, Ipopt, Bonmin, Couenne, Osi, SoPlex, and SCIP on some models from the GAMS test and model libraries.
 
-## Project Links
+## Mailing list
 
-  * [http://www.coin-or.org COIN-OR Initiative]
-
-  * [http://www.gams.com GAMS]
-
-  * [http://www.coin-or.org/Doxygen/GAMSlinks Documentation of GAMSlinks classes]
-
-  * [http://list.coin-or.org/mailman/listinfo/gamslinks GAMSlinks mailing list]
+To subscribe to the GAMSlinks mailing list, go to <http://list.coin-or.org/mailman/listinfo/gamslinks>.
