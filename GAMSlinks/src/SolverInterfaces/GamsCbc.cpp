@@ -739,19 +739,9 @@ bool GamsCbc::setupParameters()
 
    //note: does not seem to work via Osi: OsiDoPresolveInInitial, OsiDoDualInInitial
 
-   // Some tolerances and limits
-   model->setDblParam(CbcModel::CbcMaximumSeconds,  optGetDblStr(opt, "reslim"));
-
-   // iteration limit, if set
-   if( optGetDefinedStr(opt, "iterlim") )
-      model->solver()->setIntParam(OsiMaxNumIteration, optGetIntStr(opt, "iterlim"));
-
    // MIP parameters
    optca = optGetDblStr(opt, "optca");
    optcr = optGetDblStr(opt, "optcr");
-   model->setIntParam(CbcModel::CbcMaxNumNode,           optGetIntStr(opt, "nodlim"));
-   model->setDblParam(CbcModel::CbcAllowableGap,         optca);
-   model->setDblParam(CbcModel::CbcAllowableFractionGap, optcr);
    if( optGetDefinedStr(opt, "cutoff") )
       model->setCutoff(model->solver()->getObjSense() * optGetDblStr(opt, "cutoff")); // Cbc assumes a minimization problem here
    model->setPrintFrequency(optGetIntStr(opt, "printfrequency"));

@@ -929,6 +929,14 @@ void printCbcOptions()
    // collection of GAMS/Cbc parameters
    GamsOptions gmsopt("cbc");
 
+   // TODO remove renaming that only change capitalization; add original cbc names as synonyms
+   // TODO check which Cbc options are ignored, write as hidden?
+
+   // General parameters
+   gmsopt.setGroup("General Options");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "reslim", "seconds");
+   gmsopt.back().defaultdescr = "\\ref GAMSAOreslim GAMS reslim";
+
    // LP parameters
    gmsopt.setGroup("LP Options");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "idiotcrash", "idiotCrash");
@@ -947,6 +955,9 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomseedclp", "randomSeed");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_primal", "primalTolerance");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_dual", "dualTolerance");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "iterlim", "maxIterations");
+   gmsopt.back().longdescr = "For an LP, this is the maximum number of iterations to solve the LP. For a MIP, this option is ignored.";
+   gmsopt.back().defaultdescr = "\\ref GAMSAOiterlim GAMS iterlim";
 
    // MIP parameters
    gmsopt.setGroup("MIP Options");
@@ -963,6 +974,15 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_tree", "passTreeCuts");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_slow", "slowcutpasses");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_integer", "integerTolerance");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "nodlim", "maxNodes");
+   gmsopt.back().shortdescr = "node limit";
+   gmsopt.back().longdescr = "Maximum number of nodes that are enumerated in the Branch and Bound tree search.";
+   gmsopt.back().defaultdescr = "\\ref GAMSAOnodlim GAMS nodlim";
+   gmsopt.back().synonyms.insert("nodelim");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "optca", "allowableGap");
+   gmsopt.back().defaultdescr = "\\ref GAMSAOoptca GAMS optca";
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "optcr", "ratioGap");
+   gmsopt.back().defaultdescr = "\\ref GAMSAOoptcr GAMS optcr";
 
    gmsopt.setGroup("MIP Options for Cutting Plane Generators");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cuts", "cutsOnOff");
@@ -1016,9 +1036,6 @@ void printCbcOptions()
 
    // add GAMS/CBC interface options
    gmsopt.setGroup("General Options");
-   gmsopt.collect("reslim", "resource limit",
-      "Maximum time in seconds.",
-      1000.0, 0.0, DBL_MAX, "\\ref GAMSAOreslim GAMS reslim", -1);
    ENUMVAL clocktypes;
    clocktypes.push_back(std::pair<std::string, std::string>("cpu", "CPU clock"));
    clocktypes.push_back(std::pair<std::string, std::string>("wall", "Wall clock"));
@@ -1035,9 +1052,6 @@ void printCbcOptions()
       "", "", -1);
 
    gmsopt.setGroup("LP Options");
-   gmsopt.collect("iterlim", "iteration limit",
-      "For an LP, this is the maximum number of iterations to solve the LP. For a MIP, this option is ignored.",
-      INT_MAX, 0, INT_MAX, "\\ref GAMSAOiterlim GAMS iterlim", -1);
    ENUMVAL startalgs;
    startalgs.push_back(std::pair<std::string, std::string>("primal", "Primal Simplex algorithm"));
    startalgs.push_back(std::pair<std::string, std::string>("dual", "Dual Simplex algorithm"));
@@ -1047,18 +1061,6 @@ void printCbcOptions()
       "dual", startalgs, "", -1);
 
    gmsopt.setGroup("MIP Options");
-   gmsopt.collect("nodlim", "node limit",
-      "Maximum number of nodes that are enumerated in the Branch and Bound tree search.",
-      INT_MAX, 0, INT_MAX, "\\ref GAMSAOnodlim GAMS nodlim", -1);
-   gmsopt.back().synonyms.insert("nodelim");
-   gmsopt.collect("optca", "absolute optimality gap tolerance",
-      "Absolute optimality criterion for a MIP. "
-      "CBC stops if the gap between the best known solution and the best possible solution is less than this value.",
-      0.0, 0.0, DBL_MAX, "\\ref GAMSAOoptca GAMS optca", -1);
-   gmsopt.collect("optcr", "relative optimality gap tolerance",
-      "Relative optimality criterion for a MIP. "
-      "CBC stops if the relative gap between the best known solution and the best possible solution is less than this value.",
-      0.1, 0.0, DBL_MAX, "\\ref GAMSAOoptcr GAMS optcr", -1);
    gmsopt.collect("cutoff", "cutoff for objective function value",
       "A valid solution must be at least this much better than last integer solution. "
       "If this option is not set then it CBC will try and work one out. "
