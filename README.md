@@ -25,19 +25,18 @@ Note, that one still requires a **licensed GAMS base system** to use the solvers
 ## Download / Installation
 
 The links should work under Linux and Mac OS X (both 64 bit), and maybe Windows.
-
-The latest version is available in trunk or master. The stable branches do not receive much updates.
-You can obtain GAMSlinks/trunk via subversion by typing
-```
-svn checkout https://projects.coin-or.org/svn/GAMSlinks/trunk GAMSlinks
-```
-See also the [COIN-OR documentation for the download of source code](https://projects.coin-or.org/BuildTools/wiki/user-download) and [current issues](https://projects.coin-or.org/BuildTools/wiki/current-issues) for building COIN-OR code.
 Especially the build under Windows is difficult and not suggested.
+
+The latest version is available in the master branch. The stable branches do not receive much updates.
+You can obtain GAMSlinks via git by typing
+```
+git clone https://github.com/coin-or/GAMSlinks.git
+```
 
 The main installation steps are:
 
  1. Install a GAMS system, if you do not have one.
- 2. Download third-party software.
+ 2. Install solvers.
  3. Call configure, make, and make install.
  4. Install the GAMS/COIN-OR links in your GAMS system by calling make gams-install.
 
@@ -52,20 +51,19 @@ The demonstrations limits are:
  * Number of nonzero elements: 2000 (of which 1000 nonlinear)
  * Number of discrete variables: 50 (including semi continuous, semi integer and member of SOS-Sets)
 
-### 2. Download third-party software.
+### 2. Install solvers
 
-Several solvers require third-party software, e.g., for linear algebra or matrix ordering.
-Also to build interfaces for SoPlex and SCIP, these solvers need to be made available.
-Go through the directories in directory ThirdParty/ to check which third-party software you need
-and make the source code available. For some packages, a `get.*` script to download the code is
-available. For others, follow the instructions in INSTALL.
+To build the interface to a certain solver, this solver needs to be installed in your system.
+Check with the solvers instructions on how to build and install.
 
-### 3. Configure and make COIN-OR/GAMS links
+For SoPlex and SCIP, GAMSlinks currently assumes that they have been installed via
+the autotools-based build system provided by COIN-OR, see
+[ThirdParty/SoPlex](https://github.com/coin-or-tools/ThirdParty-SoPlex) and
+[ThirdParty/SCIP](https://github.com/coin-or-tools/ThirdParty-SCIP).
 
-We suggest to compile the code in a different place than the one where the source code is located using the VPATH feature of the build system.
+### 3. Call configure, make, and make install
 
-Now you can use the GAMSlinks build system.
-That is, you just call
+Call
  1. configure
  2. make
  3. make install
@@ -74,6 +72,8 @@ This should setup the Makefiles, compile all COIN-OR packages and install binari
 
 If a GAMS system is found in the search path, it will automatically be found by the GAMSlinks configure script.
 Alternatively you can provide a path with the `--with-gams` option of configure.
+
+The configure call also supports the VPATH feature, so you can compile the code in a different place than the one where the source code is located.
 
 ### 4. Installation of solvers in your GAMS system
 
