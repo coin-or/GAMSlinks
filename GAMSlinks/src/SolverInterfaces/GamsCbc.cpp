@@ -655,7 +655,7 @@ bool GamsCbc::setupParameters()
    assert(gmo != NULL);
    assert(gev != NULL);
 
-   char buffer[GMS_SSSIZE];
+   char buffer[2*GMS_SSSIZE];
 
    if( opt == NULL )
    {
@@ -667,7 +667,7 @@ bool GamsCbc::setupParameters()
          return false;
       }
 
-      char deffile[2*GMS_SSSIZE];
+      char deffile[2*GMS_SSSIZE+20];
       gevGetStrOpt(gev, gevNameSysDir, buffer);
 #ifdef GAMS_BUILD
       sprintf(deffile, "%soptcbc.def", buffer);
