@@ -1,254 +1,554 @@
 *
-* optmycbc.def
+* optcbc.def
 *
 
-reslim double 0 1000 0 maxdouble 1 1 resource limit
-clocktype enumstr 0 "wall" 1 1 type of clock for time measurement
- "cpu" 1
- "wall" 1
-special string 0 "" 1 1 options passed unseen to CBC
-writemps string 0 "" 1 1 create MPS file for problem
-iterlim integer 0 10000 0 maxint 1 2 iteration limit
-idiotcrash enumint 0 -1 1 2 idiot crash
- -1 1
- 0 1
-sprintcrash enumint 0 -1 1 2 sprint crash
- -1 1
- 0 1
-crash enumstr 0 "off" 1 2 use crash method to get dual feasible
+gamma enumstr 78 "off" 1 2 Whether to regularize barrier
+ "delta" 1
+ "deltastrong" 1
+ "gamma" 1
+ "gammastrong" 1
+ "off" 1
+ "on" 1
+ "onstrong" 1
+presolve enumstr 147 "on" 1 2 Whether to presolve problem
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "more" 1
+ "off" 1
+ "on" 1
+strategy integer 199 1 0 2 1 3 Switches on groups of features
+reslim double 184 1e+100 -1 maxdouble 1 1 maximum seconds
+clocktype enumstr -1 "wall" 1 1 type of clock for time measurement
+ "cpu" 1 CPU clock
+ "wall" 1 Wall clock
+special string -1 "" 1 1 options passed unseen to CBC
+writemps string -1 "" 1 1 create MPS file for problem
+iterlim integer 104 maxint 0 maxint 1 2 Maximum number of iterations before stopping
+idiotCrash integer 88 -1 -1 maxint 1 2 Whether to try idiot crash
+sprintCrash integer 196 -1 -1 maxint 1 2 Whether to try sprint crash
+crash enumstr 22 "off" 1 2 Whether to create basis for problem
+ "idiot1" 1
+ "idiot2" 1
+ "idiot3" 1
+ "idiot4" 1
+ "idiot5" 1
+ "idiot6" 1
+ "idiot7" 1
+ "lots" 1
  "off" 1
  "on" 1
  "solow_halim" 1
- "halim_solow" 1
-maxfactor integer 0 200 1 999999 1 2 maximum number of iterations between refactorizations
-crossover boolean 0 1 1 2 crossover to simplex algorithm after barrier
- 0
- 1
-dualpivot enumstr 0 "auto" 1 2 dual pivot choice algorithm
- "auto" 1
- "dantzig" 1
- "steepest" 1
- "partial" 1
-primalpivot enumstr 0 "auto" 1 2 primal pivot choice algorithm
- "auto" 1
- "dantzig" 1
- "steepest" 1
- "partial" 1
- "exact" 1
- "change" 1
-perturbation boolean 0 1 1 2 perturbation of problem
- 0
- 1
-scaling enumstr 0 "auto" 1 2 scaling method
+factorization enumstr 71 "normal" 1 2 Which factorization to use
+ "dense" 1
+ "normal" 1
+ "osl" 1
+ "simple" 1
+denseThreshold integer 31 -1 -1 10000 1 2 Threshold for using dense factorization
+smallFactorization integer 188 -1 -1 10000 1 2 Threshold for using small factorization
+sparseFactor boolean 194 1 1 2 Whether factorization treated as sparse
+biasLU enumstr 11 "LX" 1 2 Whether factorization biased towards U
+ "ll" 1
+ "lx" 1
+ "uu" 1
+ "ux" 1
+maxFactor integer 103 200 1 maxint 1 2 Maximum number of iterations between refactorizations
+crossover enumstr 23 "on" 1 2 Whether to get a basic solution with the simplex algorithm after the barrier algorithm finished
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
  "off" 1
- "auto" 1
+ "on" 1
+ "presolve" 1
+dualPivot enumstr 54 "automatic" 1 2 Dual pivot choice algorithm
+ "auto" 1 Same as automatic. This is a deprecated setting.
+ "automatic" 1
+ "dantzig" 1
+ "partial" 1
+ "pedantzig" 1
+ "pesteepest" 1
+ "steepest" 1
+primalPivot enumstr 150 "automatic" 1 2 Primal pivot choice algorithm
+ "auto" 1 Same as automatic. This is a deprecated setting.
+ "automatic" 1
+ "change" 1
+ "dantzig" 1
+ "exact" 1
+ "partial" 1
+ "pedantzig" 1
+ "pesteepest" 1
+ "sprint" 1
+ "steepest" 1
+psi double 154 -0.5 -1.1 1.1 1 2 Two-dimension pricing factor for Positive Edge criterion
+perturbation boolean 140 1 1 2 Whether to perturb the problem
+scaling enumstr 183 "automatic" 1 2 Whether to scale problem
+ "auto" 1 Same as automatic. This is a deprecated setting.
+ "automatic" 1
+ "dynamic" 1
  "equilibrium" 1
  "geometric" 1
-presolve boolean 0 1 1 2 switch for initial presolve of LP
- 0
- 1
-passpresolve integer 0 5 -200 100 1 2 how many passes to do in presolve
-randomseedclp integer 0 -1 -1 maxint 1 2 random seed for CLP
-tol_dual double 0 1e-7 0 maxdouble 1 2 dual feasibility tolerance
-tol_primal double 0 1e-7 0 maxdouble 1 2 primal feasibility tolerance
-tol_presolve double 0 1e-8 0 maxdouble 1 2 tolerance used in presolve
-startalg enumstr 0 "dual" 1 2 LP solver for root node
- "primal" 1
- "dual" 1
- "barrier" 1
-threads integer 0 1 0 99 1 3 number of threads to use
-parallelmode enumstr 0 "deterministic" 1 3 whether to run opportunistic or deterministic
- "opportunistic" 1
+ "off" 1
+ "rowsonly" 1
+passPresolve integer 137 5 -200 100 1 2 How many passes in presolve
+substitution integer 201 3 0 10000 1 2 How long a column to substitute for in presolve
+randomSeedClp integer 166 1234567 0 maxint 1 2 Random seed for Clp
+tol_primal double 152 1e-07 1e-20 maxdouble 1 2 For a feasible solution no primal infeasibility, i.e., constraint violation, may exceed this value
+tol_dual double 56 1e-07 1e-20 maxdouble 1 2 For an optimal solution no dual infeasibility may exceed this value
+tol_presolve double 149 1e-08 1e-20 maxdouble 1 2 Tolerance to use in presolve
+startalg enumstr -1 "dual" 1 2 LP solver for root node
+ "barrier" 1 Primal-dual predictor-corrector algorithm
+ "dual" 1 Dual Simplex algorithm
+ "primal" 1 Primal Simplex algorithm
+primalWeight double 153 1e+10 1e-20 maxdouble 1 2 Initially algorithm acts as if it costs this much to be infeasible
+autoScale boolean 7 0 1 2 Whether to scale objective, rhs and bounds of problem if they look odd (experimental)
+bscale enumstr 13 "off" 1 2 Whether to scale in barrier (and ordering speed)
+ "off" 1
+ "off1" 1
+ "off2" 1
+ "on" 1
+ "on1" 1
+ "on2" 1
+KKT boolean 95 0 1 2 Whether to use KKT factorization in barrier
+threads integer 203 1 1 99 1 3 Number of threads to try and use
+parallelmode enumstr -1 "deterministic" 1 3 whether to run opportunistic or deterministic
  "deterministic" 1
-strategy enumint 0 1 1 3 switches on groups of features
- 0 1
- 1 1
- 2 1
-mipstart boolean 0 0 1 3 whether it should be tried to use the initial variable levels as initial MIP solution
- 0
- 1
-tol_integer double 0 1e-6 0 maxdouble 1 3 tolerance for integrality
-sollim enumint 0 -1 1 3 limit on number of solutions
- -1 1
-dumpsolutions string 0 "" 1 3 name of solutions index gdx file for writing alternate solutions
-dumpsolutionsmerged string 0 "" 1 3 name of gdx file for writing all alternate solutions
-maxsol integer 0 100 0 maxint 1 3 maximal number of solutions to store during search
-strongbranching integer 0 5 0 999999 1 3 strong branching
-trustpseudocosts integer 0 5 -1 2000000 1 3 after howmany nodes we trust the pseudo costs
-coststrategy enumstr 0 "off" 1 3 how to use costs as priorities
+ "opportunistic" 1
+mipstart boolean -1 0 1 3 whether it should be tried to use the initial variable levels as initial MIP solution
+tol_integer double 93 1e-07 1e-20 0.5 1 3 For a feasible solution no integer variable may be more than this away from an integer value
+sollim integer 107 maxint 1 maxint 1 3 Maximum number of feasible solutions to get
+dumpsolutions string -1 "" 1 3 name of solutions index gdx file for writing alternate solutions
+dumpsolutionsmerged string -1 "" 1 3 name of gdx file for writing all alternate solutions
+maxsol integer 106 100 0 maxint 1 3 Maximum number of solutions to save
+strongBranching integer 200 5 0 maxint 1 3 Number of variables to look at in strong branching
+trustPseudoCosts integer 207 10 -3 maxint 1 3 Number of branches before we trust pseudocosts
+expensiveStrong integer 64 0 0 maxint 1 3 Whether to do even more strong branching
+OrbitalBranching enumstr 130 "off" 1 3 Whether to try orbital branching
+ "force" 1
+ "off" 1
+ "on" 1
+ "simple" 1
+ "strong" 1
+costStrategy enumstr 19 "off" 1 3 How to use costs for branching priorities
+ "01first" 1
+ "01last" 1
+ "binaryfirst" 1 This is a deprecated setting. Please use 01first.
+ "binarylast" 1 This is a deprecated setting. Please use 01last.
+ "columnorder" 1
+ "generalforce" 1
+ "length" 1
+ "nonzero" 1
  "off" 1
  "priorities" 1
- "columnorder" 1
- "binaryfirst" 1
- "binarylast" 1
- "length" 1
-extravariables integer 0 0 0 maxint 1 3 group together variables with same cost
-multiplerootpasses integer 0 0 0 100000000 1 3 runs multiple copies of the solver at the root node
-nodestrategy enumstr 0 "fewest" 1 3 how to select nodes
- "hybrid" 1
- "fewest" 1
+ "singletons" 1
+extraVariables integer 70 0 minint maxint 1 3 Allow creation of extra integer variables
+multipleRootPasses integer 118 0 0 maxint 1 3 Do multiple root passes to collect cuts and solutions
+nodeStrategy enumstr 127 "fewest" 1 3 What strategy to use to select the next node from the branch and cut tree
  "depth" 1
- "upfewest" 1
- "downfewest" 1
- "updepth" 1
  "downdepth" 1
-preprocess enumstr 0 "on" 1 3 integer presolve
- "off" 1
- "on" 1
+ "downfewest" 1
+ "fewest" 1
+ "hybrid" 1
+ "updepth" 1
+ "upfewest" 1
+infeasibilityWeight double 91 0 0 maxdouble 1 3 Each integer infeasibility is expected to cost this much
+preprocess enumstr 148 "sos" 1 3 Whether to use integer preprocessing
+ "aggregate" 1
  "equal" 1
  "equalall" 1
+ "forcesos" 1
+ "off" 1
+ "on" 1
+ "save" 1
  "sos" 1
+ "stopaftersaving" 1
+ "strategy" 1
  "trysos" 1
-printfrequency integer 0 0 0 maxint 1 3 frequency of status prints
- 0
-randomseedcbc integer 0 -1 -1 maxint 1 3 random seed for CBC
-loglevel integer 0 1 0 maxint 1 3 CBC loglevel
-increment double 0 0 0 maxdouble 1 3 increment of cutoff when new incumbent
-solvefinal boolean 0 1 1 3 final solve of MIP with fixed discrete variables
- 0
- 1
-solvetrace string 0 "" 1 3 name of trace file for solving information
-solvetracenodefreq integer 0 100 0 maxint 1 3 frequency in number of nodes for writing to solve trace file
-solvetracetimefreq double 0 5 0 maxdouble 1 3 frequency in seconds for writing to solve trace file
-nodelim integer 0 maxint 0 maxint 1 3 node limit
-nodlim integer 0 maxint 0 maxint 1 3 node limit
-optca double 0 0 0 maxdouble 1 3 absolute stopping tolerance
-optcr double 0 0.1 0 maxdouble 1 3 relative stopping tolerance
-cutoff double 0 0 mindouble maxdouble 1 3 cutoff for objective function value
-cutoffconstraint boolean 0 0 1 3 whether to add a constraint from the objective function
- 0
- 1
-cutdepth enumint 0 -1 1 4 depth in tree at which cuts are applied
- -1 1
-cut_passes_root integer 0 -1 -9999999 9999999 1 4 number of cut passes at root node
-cut_passes_tree integer 0 1 -9999999 9999999 1 4 number of cut passes at nodes in the tree
-cut_passes_slow integer 0 10 -1 maxint 1 4 number of cut passes for slow cut generators
-cuts enumstr 0 "on" 1 4 global switch for cutgenerators
+fixOnDj double 74 -1 mindouble maxdouble 1 3 Try heuristic based on fixing variables with reduced costs greater than this
+printfrequency integer -1 0 0 maxint 1 3 frequency of status prints
+randomSeedCbc integer 164 -1 -1 maxint 1 3 Random seed for Cbc
+loglevel integer -1 1 0 maxint 1 3 amount of output printed by CBC
+increment double 90 1e-05 mindouble maxdouble 1 3 A valid solution must be at least this much better than last integer solution
+solvefinal boolean -1 1 1 3 final solve of MIP with fixed discrete variables
+solvetrace string -1 "" 1 3 name of trace file for solving information
+solvetracenodefreq integer -1 100 0 maxint 1 3 frequency in number of nodes for writing to solve trace file
+solvetracetimefreq double -1 5 0 maxdouble 1 3 frequency in seconds for writing to solve trace file
+nodlim integer 105 maxint -1 maxint 1 3 node limit
+optca double 4 1e-10 0 maxdouble 1 3 Stop when gap between best possible and best less than this
+optcr double 167 0 0 maxdouble 1 3 Stop when gap between best possible and best known is less than this fraction of larger of two
+cutoff double 27 1e+100 mindouble maxdouble 1 3 Bound on the objective value for all solutions
+cutoffConstraint enumstr 18 "off" 1 3 Whether to use cutoff as constraint
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "conflict" 1
+ "forcevariable" 1
+ "off" 1
+ "on" 1
+ "variable" 1
+sosPrioritize enumstr 193 "off" 1 3 How to deal with SOS priorities
+ "high" 1
+ "low" 1
+ "off" 1
+ "orderhigh" 1
+ "orderlow" 1
+cutDepth integer 25 -1 -1 maxint 1 4 Depth in tree at which to do cuts
+cut_passes_root integer 135 20 minint maxint 1 4 Number of rounds that cut generators are applied in the root node
+cut_passes_tree integer 138 10 minint maxint 1 4 Number of rounds that cut generators are applied in the tree
+cut_passes_slow integer 186 10 -1 maxint 1 4 Maximum number of rounds for slower cut generators
+cutLength integer 26 -1 -1 maxint 1 4 Length of a cut
+cuts enumstr 28 "on" 1 4 Switches all cut generators on or off
+ "forceon" 1
+ "ifmove" 1
  "off" 1
  "on" 1
  "root" 1
- "ifmove" 1
+cliqueCuts enumstr 15 "ifmove" 1 4 Whether to use Clique cuts
  "forceon" 1
-cliquecuts string 0 "ifmove" 1 4 Clique Cuts
+ "ifmove" 1
+ "off" 1
+ "on" 1
+ "onglobal" 1
+ "root" 1
 conflictcuts boolean 0 0 1 4 Conflict Cuts
-flowcovercuts string 0 "ifmove" 1 4 Flow Cover Cuts
-gomorycuts string 0 "ifmove" 1 4 Gomory Cuts
-gomorycuts2 enumstr 0 "off" 1 4 Gomory Cuts 2nd implementation
- "off" 1
- "on" 1
- "root" 1
- "ifmove" 1
+flowCoverCuts enumstr 75 "ifmove" 1 4 Whether to use Flow Cover cuts
  "forceon" 1
- "longroot" 1
- "endonly" 1
- "long" 1
- "longifmove" 1
+ "ifmove" 1
+ "off" 1
+ "on" 1
+ "onglobal" 1
+ "root" 1
+gomoryCuts enumstr 80 "ifmove" 1 4 Whether to use Gomory cuts
+ "forceandglobal" 1
  "forcelongon" 1
+ "forceon" 1
+ "ifmove" 1
+ "long" 1
+ "off" 1
+ "on" 1
+ "onglobal" 1
+ "root" 1
+gomorycuts2 enumstr 79 "off" 1 4 Whether to use alternative Gomory cuts
+ "endonly" 1
+ "forcelongon" 1
+ "forceon" 1
+ "ifmove" 1
+ "long" 1
  "longendonly" 1
-knapsackcuts string 0 "ifmove" 1 4 Knapsack Cover Cuts
-liftandprojectcuts string 0 "off" 1 4 Lift and Project Cuts
-mircuts string 0 "ifmove" 1 4 Mixed Integer Rounding Cuts
-twomircuts string 0 "root" 1 4 Two Phase Mixed Integer Rounding Cuts
-probingcuts enumstr 0 "ifmove" 1 4 Probing Cuts
+ "longifmove" 1
+ "longroot" 1
  "off" 1
  "on" 1
  "root" 1
+knapsackCuts enumstr 96 "ifmove" 1 4 Whether to use Knapsack cuts
+ "forceandglobal" 1
+ "forceon" 1
  "ifmove" 1
+ "off" 1
+ "on" 1
+ "onglobal" 1
+ "root" 1
+liftAndProjectCuts enumstr 99 "off" 1 4 Whether to use Lift and Project cuts
+ "forceon" 1
+ "ifmove" 1
+ "off" 1
+ "on" 1
+ "root" 1
+mirCuts enumstr 112 "ifmove" 1 4 Whether to use Mixed Integer Rounding cuts
+ "forceon" 1
+ "ifmove" 1
+ "off" 1
+ "on" 1
+ "onglobal" 1
+ "root" 1
+twoMirCuts enumstr 209 "root" 1 4 Whether to use Two phase Mixed Integer Rounding cuts
+ "forceandglobal" 1
+ "forcelongon" 1
+ "forceon" 1
+ "ifmove" 1
+ "off" 1
+ "on" 1
+ "onglobal" 1
+ "root" 1
+probingCuts enumstr 158 "ifmove" 1 4 Whether to use Probing cuts
  "forceon" 1
  "forceonbut" 1
- "forceonstrong" 1
  "forceonbutstrong" 1
-reduceandsplitcuts string 0 "off" 1 4 Reduce and Split Cuts
-reduceandsplitcuts2 enumstr 0 "off" 1 4 Reduce and Split Cuts 2nd implementation
+ "forceonglobal" 1
+ "forceonstrong" 1
+ "ifmove" 1
+ "off" 1
+ "on" 1
+ "onglobal" 1
+ "root" 1
+ "strongroot" 1
+reduceAndSplitCuts enumstr 172 "off" 1 4 Whether to use Reduce-and-Split cuts
+ "forceon" 1
+ "ifmove" 1
  "off" 1
  "on" 1
  "root" 1
+reduceAndSplitCuts2 enumstr 173 "off" 1 4 Whether to use Reduce-and-Split cuts - style 2
  "longon" 1
  "longroot" 1
-residualcapacitycuts string 0 "off" 1 4 Residual Capacity Cuts
-zerohalfcuts enumstr 0 "off" 1 4 Zero-Half Cuts
  "off" 1
  "on" 1
  "root" 1
- "ifmove" 1
+residualCapacityCuts enumstr 174 "off" 1 4 Whether to use Residual Capacity cuts
  "forceon" 1
- "onglobal" 1
-heuristics boolean 0 1 1 5 global switch for heuristics
- 0
- 1
-combinesolutions boolean 0 1 1 5 combine solutions heuristic
- 0
- 1
-dins boolean 0 0 1 5 distance induced neighborhood search
- 0
- 1
-divingrandom boolean 0 0 1 5 turns on random diving heuristic
- 0
- 1
-divingcoefficient boolean 0 1 1 5 coefficient diving heuristic
- 0
- 1
-divingfractional boolean 0 0 1 5 fractional diving heuristic
- 0
- 1
-divingguided boolean 0 0 1 5 guided diving heuristic
- 0
- 1
-divinglinesearch boolean 0 0 1 5 line search diving heuristic
- 0
- 1
-divingpseudocost boolean 0 0 1 5 pseudo cost diving heuristic
- 0
- 1
-divingvectorlength boolean 0 0 1 5 vector length diving heuristic
- 0
- 1
-feaspump boolean 0 1 1 5 feasibility pump
- 0
- 1
-feaspump_passes integer 0 20 0 10000 1 5 number of feasibility passes
-greedyheuristic enumstr 0 "on" 1 5 greedy heuristic
+ "ifmove" 1
  "off" 1
  "on" 1
  "root" 1
-localtreesearch boolean 0 0 1 5 local tree search heuristic
- 0
- 1
-naiveheuristics boolean 0 0 1 5 naive heuristics
- 0
- 1
-pivotandfix boolean 0 0 1 5 pivot and fix heuristic
- 0
- 1
-randomizedrounding boolean 0 0 1 5 randomized rounding heuristis
- 0
- 1
-rens boolean 0 0 1 5 relaxation enforced neighborhood search
- 0
- 1
-rins boolean 0 0 1 5 relaxed induced neighborhood search
- 0
- 1
-roundingheuristic boolean 0 1 1 5 rounding heuristic
- 0
- 1
-vubheuristic integer 0 0 -2 20 1 5 VUB heuristic
-proximitysearch enumint 0 0 1 5 proximity search heuristic
- 0 1
- 1 1
-nobounds immediate nobounds 0 1 ignores bounds on options
-readfile immediate readfile 0 1 read secondary option file
+zeroHalfCuts enumstr 217 "ifmove" 1 4 Whether to use zero half cuts
+ "forceon" 1
+ "ifmove" 1
+ "off" 1
+ "on" 1
+ "onglobal" 1
+ "root" 1
+lagomoryCuts enumstr 97 "off" 1 4 Whether to use Lagrangean Gomory cuts
+ "bothaswell" 1
+ "bothaswellroot" 1
+ "bothinstead" 1
+ "cleanaswell" 1
+ "cleanaswellroot" 1
+ "cleaninstead" 1
+ "endboth" 1
+ "endclean" 1
+ "endcleanroot" 1
+ "endonly" 1
+ "endonlyroot" 1
+ "off" 1
+ "onlyaswell" 1
+ "onlyaswellroot" 1
+ "onlyinstead" 1
+ "root" 1
+latwomirCuts enumstr 98 "off" 1 4 Whether to use Lagrangean TwoMir cuts
+ "bothaswell" 1
+ "bothinstead" 1
+ "cleanaswell" 1
+ "cleaninstead" 1
+ "endboth" 1
+ "endbothroot" 1
+ "endclean" 1
+ "endcleanroot" 1
+ "endonly" 1
+ "endonlyroot" 1
+ "off" 1
+ "onlyaswell" 1
+ "onlyinstead" 1
+heuristics boolean 84 1 1 5 Switches most primal heuristics on or off
+hOptions integer 86 0 minint maxint 1 5 Heuristic options
+combineSolutions enumstr 16 "off" 1 5 Whether to use combine solution heuristic
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "beforequick" 1
+ "both" 1
+ "bothquick" 1
+ "off" 1
+ "on" 1
+ "onquick" 1
+combine2Solutions enumstr 17 "off" 1 5 Whether to use crossover solution heuristic
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+Dins enumstr 36 "off" 1 5 Whether to try Distance Induced Neighborhood Search
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "often" 1
+ "on" 1
+DivingRandom enumstr 44 "off" 1 5 Whether to try Diving heuristics
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+DivingCoefficient enumstr 45 "off" 1 5 Whether to try Coefficient diving heuristic
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+DivingFractional enumstr 46 "off" 1 5 Whether to try Fractional diving heuristic
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+DivingGuided enumstr 47 "off" 1 5 Whether to try Guided diving heuristic
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+DivingLineSearch enumstr 48 "off" 1 5 Whether to try Linesearch diving heuristic
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+DivingPseudoCost enumstr 49 "off" 1 5 Whether to try Pseudocost diving heuristic
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+DivingVectorLength enumstr 50 "off" 1 5 Whether to try Vectorlength diving heuristic
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+diveSolves integer 43 100 -1 200000 1 5 Diving solve option
+feaspump enumstr 73 "on" 1 5 Whether to try the Feasibility Pump heuristic
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+feaspump_passes integer 136 20 0 10000 1 5 How many passes to do in the Feasibility Pump heuristic
+feaspump_artcost double 6 0 0 maxdouble 1 5 Costs &ge; this treated as artificials in feasibility pump
+feaspump_fracbab double 77 0.5 1e-05 1.1 1 5 Fraction in feasibility pump
+feaspump_cutoff double 160 0 mindouble maxdouble 1 5 Fake cutoff for use in feasibility pump
+feaspump_increment double 161 0 mindouble maxdouble 1 5 Fake increment for use in feasibility pump
+greedyHeuristic enumstr 81 "on" 1 5 Whether to use a greedy heuristic
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+localTreeSearch boolean 100 0 1 5 Whether to use local tree search when a solution is found
+naiveHeuristics enumstr 119 "off" 1 5 Whether to try some stupid heuristic
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+pivotAndFix enumstr 143 "off" 1 5 Whether to try Pivot and Fix heuristic
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+randomizedRounding enumstr 165 "off" 1 5 Whether to try randomized rounding heuristic
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+Rens enumstr 178 "off" 1 5 Whether to try Relaxation Enforced Neighborhood Search
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "1000" 1
+ "10000" 1
+ "200" 1
+ "before" 1
+ "both" 1
+ "dj" 1
+ "djbefore" 1
+ "off" 1
+ "on" 1
+ "usesolution" 1
+Rins enumstr 179 "off" 1 5 Whether to try Relaxed Induced Neighborhood Search
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "often" 1
+ "on" 1
+roundingHeuristic enumstr 180 "on" 1 5 Whether to use simple (but effective) Rounding heuristic
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+vubheuristic integer 216 -1 -2 20 1 5 Type of VUB heuristic
+proximitySearch enumstr 159 "off" 1 5 Whether to do proximity search heuristic
+ "0" 1 Same as off. This is a deprecated setting.
+ "1" 1 Same as on. This is a deprecated setting.
+ "10" 1
+ "100" 1
+ "300" 1
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+dwHeuristic enumstr 57 "off" 1 5 Whether to try Dantzig Wolfe heuristic
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+pivotAndComplement enumstr 142 "off" 1 5 Whether to try Pivot and Complement heuristic
+ "before" 1
+ "both" 1
+ "off" 1
+ "on" 1
+VndVariableNeighborhoodSearch enumstr 213 "off" 1 5 Whether to try Variable Neighborhood Search
+ "before" 1
+ "both" 1
+ "intree" 1
+ "off" 1
+ "on" 1
 *
 * synonym section
 *
-sifting synonym sprintcrash
+seconds synonym reslim
+maxIterations synonym iterlim
+sifting synonym sprintCrash
+randomSeed synonym randomSeedClp
+primalTolerance synonym tol_primal
+dualTolerance synonym tol_dual
+preTolerance synonym tol_presolve
+integerTolerance synonym tol_integer
+maxSolutions synonym sollim
+maxSavedSolutions synonym maxsol
+randomCbcSeed synonym randomSeedCbc
+maxNodes synonym nodlim
+nodelim synonym nodlim
+allowableGap synonym optca
+ratioGap synonym optcr
+constraintfromCutoff synonym cutoffConstraint
+passCuts synonym cut_passes_root
+passTreeCuts synonym cut_passes_tree
+slowcutpasses synonym cut_passes_slow
+cutsOnOff synonym cuts
+GMICuts synonym gomorycuts2
+mixedIntegerRoundingCuts synonym mirCuts
+reduce2AndSplitCuts synonym reduceAndSplitCuts2
+heuristicsOnOff synonym heuristics
+DivingSome synonym DivingRandom
+feasibilityPump synonym feaspump
+passFeasibilityPump synonym feaspump_passes
+artificialCost synonym feaspump_artcost
+fractionforBAB synonym feaspump_fracbab
+pumpCutoff synonym feaspump_cutoff
+pumpIncrement synonym feaspump_increment
+*
+* indicator section
+*
+indicator SEPARATOR " "
+indicator STRINGQUOTE
 *
 * Groups
 * <group-ident> group <group-number <help-context> <help-text>
 *
-general group 1 1 General Options
-lpoptions group 2 1 LP Options
-mipgeneral group 3 1 MIP Options
-mipcuts group 4 1 MIP Options for Cutting Plane Generators
-mipheu group 5 1 MIP Options for Heuristics
+gr_General_Options group 1 1 General Options
+gr_LP_Options group 2 1 LP Options
+gr_MIP_Options group 3 1 MIP Options
+gr_MIP_Options_for_Cutting_Plane_Generators group 4 1 MIP Options for Cutting Plane Generators
+gr_MIP_Options_for_Primal_Heuristics group 5 1 MIP Options for Primal Heuristics
 *** End of file
