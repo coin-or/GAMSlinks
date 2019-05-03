@@ -656,6 +656,7 @@ bool GamsCbc::setupParameters()
    assert(gev != NULL);
 
    char buffer[2*GMS_SSSIZE];
+   bool createdopt = false;
 
    if( opt == NULL )
    {
@@ -666,6 +667,7 @@ bool GamsCbc::setupParameters()
          gevLogStat(gev, buffer);
          return false;
       }
+      createdopt = true;
 
       char deffile[2*GMS_SSSIZE+20];
       gevGetStrOpt(gev, gevNameSysDir, buffer);
@@ -685,6 +687,8 @@ bool GamsCbc::setupParameters()
          }
          optClearMessages(opt);
          optEchoSet(opt, 0);
+         if( createdopt )
+            optFree(&opt);
          return false;
       }
       optEOLOnlySet(opt, 1);
@@ -781,6 +785,8 @@ bool GamsCbc::setupParameters()
       {
          sprintf(buffer, "ERROR: Option %s has invalid reference number %d\n", sname, irefnr);
          gevLogStatPChar(gev, buffer);
+         if( createdopt )
+            optFree(&opt);
          return false;
       }
 
@@ -852,6 +858,8 @@ bool GamsCbc::setupParameters()
          {
             sprintf(buffer, "ERROR: Option %s is of unknown type %d\n", sname, iotype);
             gevLogStatPChar(gev, buffer);
+            if( createdopt )
+               optFree(&opt);
             return false;
          }
       }
@@ -1015,6 +1023,9 @@ bool GamsCbc::setupParameters()
       optGetStrStr(opt, "dumpsolutionsmerged", buffer);
       dumpsolutionsmerged = strdup(buffer);
    }
+
+   if( createdopt )
+      optFree(&opt);
 
    return true;
 }
