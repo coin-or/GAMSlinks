@@ -831,7 +831,7 @@ void printOption(
 static
 void collectCbcOption(
    GamsOptions& gmsopt,
-   const std::vector<CbcOrClpParam>& cbcopts,
+   std::vector<CbcOrClpParam>& cbcopts,
    CbcModel& cbcmodel,
    const std::string& namegams,
    const std::string& namecbc_ = ""
@@ -924,6 +924,9 @@ void collectCbcOption(
    gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, enumval, "", idx);
    if( namegams != namecbc )
       gmsopt.back().synonyms.insert(namecbc);
+
+   // remove parameter from array, so we can later easily check which options we haven't taken
+   cbcopts[idx] = CbcOrClpParam();
 }
 
 static
@@ -951,8 +954,6 @@ void printCbcOptions()
    gmsopt.addvalue("0");
    gmsopt.addvalue("1");
    gmsopt.addvalue("auto");
-
-   // TODO check which Cbc options are ignored, write as hidden?
 
    // General parameters
    gmsopt.setGroup("General Options");
@@ -994,6 +995,16 @@ void printCbcOptions()
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "crash");
 
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "factorization");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "denseThreshold");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "smallFactorization");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sparseFactor");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "biasLU");
+
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "maxFactor");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "crossover");
@@ -1008,6 +1019,8 @@ void printCbcOptions()
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "primalPivot");
    gmsopt.back().enumval.push_back(std::pair<std::string, std::string>("auto", "Same as automatic. This is a deprecated setting."));
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "psi");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "perturbation");
 
@@ -1024,6 +1037,8 @@ void printCbcOptions()
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "passPresolve");
 
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "substitution");
+
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomSeedClp", "randomSeed");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_primal", "primalTolerance");
@@ -1039,6 +1054,21 @@ void printCbcOptions()
    gmsopt.collect("startalg", "LP solver for root node",
       "Determines the algorithm to use for an LP or the initial LP relaxation if the problem is a MIP.",
       "dual", startalgs, "", -1);
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "primalWeight");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "autoScale");
+   gmsopt.back().shortdescr += " (experimental)";
+   gmsopt.back().longdescr.clear();
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "bscale");
+
+   //TODO collectCbcOption(gmsopt, cbcopts, cbcmodel, "cholesky");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "gamma", "gamma(Delta)");
+   gmsopt.back().synonyms.clear();  // GAMS options object doesn't like parenthesis in synonym
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "KKT");
 
    // MIP parameters
    gmsopt.setGroup("MIP Options");
@@ -1084,6 +1114,10 @@ void printCbcOptions()
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "trustPseudoCosts");
 
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "expensiveStrong");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "OrbitalBranching");
+
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "costStrategy");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "extraVariables");
@@ -1092,7 +1126,13 @@ void printCbcOptions()
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "nodeStrategy");
 
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "infeasibilityWeight");
+
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "preprocess");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "fixOnDj");
+
+   // overwritten by Cbc? collectCbcOption(gmsopt, cbcopts, cbcmodel, "tunePreProcess");
 
    gmsopt.collect("printfrequency", "frequency of status prints",
       "Controls the number of nodes that are evaluated between status prints.",
@@ -1141,6 +1181,12 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutoffConstraint", "constraintfromCutoff");
    add01(gmsopt.back().enumval);
 
+   // allows to turn on CPLEX (licensing...)
+   // collectCbcOption(gmsopt, cbcopts, cbcmodel, "depthMiniBab");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sosPrioritize");
+
+
    gmsopt.setGroup("MIP Options for Cutting Plane Generators");
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutDepth");
 
@@ -1150,6 +1196,8 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_tree", "passTreeCuts");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_slow", "slowcutpasses");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutLength");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cuts", "cutsOnOff");
 
@@ -1183,12 +1231,20 @@ void printCbcOptions()
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "zeroHalfCuts");
 
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "lagomoryCuts");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "latwomirCuts");
+
    gmsopt.setGroup("MIP Options for Primal Heuristics");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "heuristics", "heuristicsOnOff");
 
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "hOptions");
+
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "combineSolutions");
    add01(gmsopt.back().enumval);
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "combine2Solutions");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "Dins");
    add01(gmsopt.back().enumval);
@@ -1214,10 +1270,26 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingVectorLength");
    add01(gmsopt.back().enumval);
 
+   // overwritten by Cbc? collectCbcOption(gmsopt, cbcopts, cbcmodel, "diveOpt");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "diveSolves");
+
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump", "feasibilityPump");
    add01(gmsopt.back().enumval);
 
+   // overwritten by Cbc?
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_passes", "passFeasibilityPump");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_artcost", "artificialCost");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_fracbab", "fractionforBAB");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_cutoff", "pumpCutoff");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_increment", "pumpIncrement");
+
+   // overwritten by Cbc? collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_tune", "pumpTune");
+   // collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_moretune", "moreTune");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "greedyHeuristic");
 
@@ -1246,7 +1318,18 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "proximitySearch");
    add01(gmsopt.back().enumval);
 
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "dwHeuristic");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "pivotAndComplement");
+
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "VndVariableNeighborhoodSearch");
+
    gmsopt.write();
+
+   // print uncollected Cbc options
+   //for( auto& cbcopt : cbcopts )
+   //   if( cbcopt.type() < CLP_PARAM_ACTION_DIRECTORY )
+   //      printf("%-30s %3d %s\n", cbcopt.name().c_str(), cbcopt.type(), cbcopt.shortHelp().c_str());
 }
 #endif
 
