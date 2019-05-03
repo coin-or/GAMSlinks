@@ -922,6 +922,8 @@ void collectCbcOption(
    }
 
    gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, enumval, "", idx);
+   if( namegams != namecbc )
+      gmsopt.back().synonyms.insert(namecbc);
 }
 
 static
@@ -950,7 +952,6 @@ void printCbcOptions()
    gmsopt.addvalue("1");
    gmsopt.addvalue("auto");
 
-   // TODO add original cbc names as synonyms
    // TODO check which Cbc options are ignored, write as hidden?
 
    // General parameters
