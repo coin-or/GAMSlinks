@@ -739,10 +739,6 @@ bool GamsCbc::setupParameters()
       optSetDblStr(opt, "increment", gevGetDblOpt(gev, gevCheat));
    if( !optGetDefinedStr(opt, "threads") )
       optSetIntStr(opt, "threads", gevThreads(gev));
-   if( !optGetDefinedStr(opt, "maxsol") )
-      optSetIntStr(opt, "maxsol", 100);
-
-   //note: does not seem to work via Osi: OsiDoPresolveInInitial, OsiDoDualInInitial
 
    // MIP parameters
    optca = optGetDblStr(opt, "optca");
@@ -819,9 +815,35 @@ bool GamsCbc::setupParameters()
 
             // for backward compatibility
             if( strcmp(sval, "binaryfirst") == 0 )
+            {
+               sprintf(buffer, "WARNING: Value 'binaryfirst' for option %s is deprecated. Use '01first' instead.\n", sname);
+               gevLogStatPChar(gev, buffer);
                par_list.push_back("01first");
+            }
             else if( strcmp(sval, "binarylast") == 0 )
+            {
+               sprintf(buffer, "WARNING: Value 'binarylast' for option %s is deprecated. Use '01first' instead.\n", sname);
+               gevLogStatPChar(gev, buffer);
                par_list.push_back("01last");
+            }
+            else if( strcmp(sval, "0") == 0 )
+            {
+               sprintf(buffer, "WARNING: Option %s is no longer of boolean type. Use value 'on' instead.\n", sname);
+               gevLogStatPChar(gev, buffer);
+               par_list.push_back("on");
+            }
+            else if( strcmp(sval, "1") == 0 )
+            {
+               sprintf(buffer, "WARNING: Option %s is no longer of boolean type. Use value 'off' instead.\n", sname);
+               gevLogStatPChar(gev, buffer);
+               par_list.push_back("off");
+            }
+            else if( strcmp(sval, "auto") == 0 )
+            {
+               sprintf(buffer, "WARNING: Value 'auto' for option %s is deprecated. Use value 'automatic' instead.\n", sname);
+               gevLogStatPChar(gev, buffer);
+               par_list.push_back("off");
+            }
             else
                par_list.push_back(sval);
             break;
