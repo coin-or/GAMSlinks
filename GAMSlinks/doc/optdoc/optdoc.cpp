@@ -950,7 +950,7 @@ void printCbcOptions()
    gmsopt.addvalue("1");
    gmsopt.addvalue("auto");
 
-   // TODO remove renaming that only change capitalization; add original cbc names as synonyms
+   // TODO add original cbc names as synonyms
    // TODO check which Cbc options are ignored, write as hidden?
 
    // General parameters
@@ -958,7 +958,7 @@ void printCbcOptions()
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "reslim", "seconds");
    //gmsopt.back().defaultval.realval = 1000.0;
-   gmsopt.back().defaultdescr = "\\ref GAMSAOreslim GAMS reslim";
+   gmsopt.back().defaultdescr = "GAMS reslim";
    gmsopt.back().longdescr.clear();
 
    ENUMVAL clocktypes;
@@ -984,16 +984,16 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "iterlim", "maxIterations");
    gmsopt.back().longdescr = "For an LP, this is the maximum number of iterations to solve the LP. For a MIP, this option is ignored.";
    //gmsopt.back().defaultval.intval = INT_MAX;
-   gmsopt.back().defaultdescr = "\\ref GAMSAOiterlim GAMS iterlim";
+   gmsopt.back().defaultdescr = "GAMS iterlim";
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "idiotcrash", "idiotCrash");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "idiotCrash");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sprintcrash", "sprintCrash");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sprintCrash");
    gmsopt.back().synonyms.insert("sifting");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "crash");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "maxfactor", "maxFactor");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "maxFactor");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "crossover");
    // value "maybe" is only relevant for quadratic: remove value and mention in longdescr
@@ -1002,10 +1002,10 @@ void printCbcOptions()
       "This option will crossover to a basic solution suitable for ranging or branch and cut.";
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "dualpivot", "dualPivot");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "dualPivot");
    gmsopt.back().enumval.push_back(std::pair<std::string, std::string>("auto", "Same as automatic. This is a deprecated setting."));
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "primalpivot", "primalPivot");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "primalPivot");
    gmsopt.back().enumval.push_back(std::pair<std::string, std::string>("auto", "Same as automatic. This is a deprecated setting."));
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "perturbation");
@@ -1021,9 +1021,9 @@ void printCbcOptions()
       "For the initial solve of any problem this is worth doing unless one knows that it will have no effect. "
       "Option 'on' will normally do 5 passes, while using 'more' will do 10.";
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "passpresolve", "passPresolve");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "passPresolve");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomseedclp", "randomSeed");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomSeedClp", "randomSeed");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_primal", "primalTolerance");
 
@@ -1043,7 +1043,7 @@ void printCbcOptions()
    gmsopt.setGroup("MIP Options");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "threads");
-   gmsopt.back().defaultdescr = "\\ref GAMSAOthreads GAMS threads";
+   gmsopt.back().defaultdescr = "GAMS threads";
    gmsopt.back().longdescr.clear();
    gmsopt.back().defaultval.intval = 1; // somehow I got a -1 from Cbc
    gmsopt.back().minval.intval = 1;
@@ -1079,17 +1079,17 @@ void printCbcOptions()
    gmsopt.back().defaultval.intval = 100;
    gmsopt.back().longdescr = "Maximal number of solutions to store during search and to dump into gdx files if dumpsolutions options is set.";
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "strongbranching", "strongBranching");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "strongBranching");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "trustpseudocosts", "trustPseudoCosts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "trustPseudoCosts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "coststrategy", "costStrategy");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "costStrategy");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "extravariables", "extraVariables");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "extraVariables");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "multiplerootpasses", "multipleRootPasses");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "multipleRootPasses");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "nodestrategy", "nodeStrategy");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "nodeStrategy");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "preprocess");
 
@@ -1097,13 +1097,13 @@ void printCbcOptions()
       "Controls the number of nodes that are evaluated between status prints.",
       0, 0, INT_MAX, "", -1);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomseedcbc", "randomCbcSeed");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomSeedCbc", "randomCbcSeed");
 
    gmsopt.collect("loglevel", "amount of output printed by CBC", "",
       1, 0, INT_MAX, "", -1);
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "increment");
-   gmsopt.back().defaultdescr = "\\ref GAMSAOcheat GAMS cheat";
+   gmsopt.back().defaultdescr = "GAMS cheat";
 
    gmsopt.collect("solvefinal", "final solve of MIP with fixed discrete variables",
       "Whether the MIP with discrete variables fixed to solution values should be solved after CBC finished.",
@@ -1120,28 +1120,28 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "nodlim", "maxNodes");
    gmsopt.back().shortdescr = "node limit";
    gmsopt.back().longdescr = "Maximum number of nodes that are enumerated in the Branch and Bound tree search.";
-   gmsopt.back().defaultdescr = "\\ref GAMSAOnodlim GAMS nodlim";
+   gmsopt.back().defaultdescr = "GAMS nodlim";
    gmsopt.back().synonyms.insert("nodelim");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "optca", "allowableGap");
    //gmsopt.back().defaultval.realval = 0.0;
-   gmsopt.back().defaultdescr = "\\ref GAMSAOoptca GAMS optca";
+   gmsopt.back().defaultdescr = "GAMS optca";
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "optcr", "ratioGap");
    //gmsopt.back().defaultval.realval = 0.1;
-   gmsopt.back().defaultdescr = "\\ref GAMSAOoptcr GAMS optcr";
+   gmsopt.back().defaultdescr = "GAMS optcr";
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutoff");
-   gmsopt.back().defaultdescr = "\\ref GAMSAOcutoff GAMS cutoff";
+   gmsopt.back().defaultdescr = "GAMS cutoff";
    gmsopt.back().longdescr = "A valid solution must be at least this much better than last integer solution. "
       "If this option is not set then it CBC will try and work one out. "
       "E.g., if all objective coefficients are multiples of 0.01 and only integer variables have entries in objective then this can be set to 0.01.";
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutoffconstraint", "constraintfromCutoff");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutoffConstraint", "constraintfromCutoff");
    add01(gmsopt.back().enumval);
 
    gmsopt.setGroup("MIP Options for Cutting Plane Generators");
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutdepth", "cutDepth");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutDepth");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_root", "passCuts");
    gmsopt.back().defaultdescr = "20 or 100";
@@ -1152,65 +1152,65 @@ void printCbcOptions()
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cuts", "cutsOnOff");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cliquecuts", "cliqueCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cliqueCuts");
 
    // another cut option that actually does the same as -constraint conflict
    gmsopt.collect("conflictcuts", "Conflict Cuts", "Equivalent to setting cutoffconstraint=conflict",
       OPTTYPE_BOOL, OPTVAL({.boolval = false}), OPTVAL(), OPTVAL(), ENUMVAL(), "", -2);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "flowcovercuts", "flowCoverCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "flowCoverCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "gomorycuts", "gomoryCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "gomoryCuts");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "gomorycuts2", "GMICuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "knapsackcuts", "knapsackCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "knapsackCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "liftandprojectcuts", "liftAndProjectCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "liftAndProjectCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "mircuts", "mixedIntegerRoundingCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "mirCuts", "mixedIntegerRoundingCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "twomircuts", "twoMirCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "twoMirCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "probingcuts", "probingCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "probingCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "reduceandsplitcuts", "reduceAndSplitCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "reduceAndSplitCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "reduceandsplitcuts2", "reduce2AndSplitCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "reduceAndSplitCuts2", "reduce2AndSplitCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "residualcapacitycuts", "residualCapacityCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "residualCapacityCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "zerohalfcuts", "zeroHalfCuts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "zeroHalfCuts");
 
    gmsopt.setGroup("MIP Options for Primal Heuristics");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "heuristics", "heuristicsOnOff");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "combinesolutions", "combineSolutions");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "combineSolutions");
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "dins", "Dins");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "Dins");
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divingrandom", "DivingSome");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingRandom", "DivingSome");
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divingcoefficient", "DivingCoefficient");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingCoefficient");
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divingfractional", "DivingFractional");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingFractional");
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divingguided", "DivingGuided");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingGuided");
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divinglinesearch", "DivingLineSearch");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingLineSearch");
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divingpseudocost", "DivingPseudoCost");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingPseudoCost");
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "divingvectorlength", "DivingVectorLength");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingVectorLength");
    add01(gmsopt.back().enumval);
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump", "feasibilityPump");
@@ -1218,31 +1218,31 @@ void printCbcOptions()
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_passes", "passFeasibilityPump");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "greedyheuristic", "greedyHeuristic");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "greedyHeuristic");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "localtreesearch", "localTreeSearch");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "localTreeSearch");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "naiveheuristics", "naiveHeuristics");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "naiveHeuristics");
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "pivotandfix", "pivotAndFix");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "pivotAndFix");
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomizedrounding", "randomizedRounding");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomizedRounding");
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "rens", "Rens");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "Rens");
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "rins", "Rins");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "Rins");
    add01(gmsopt.back().enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "roundingheuristic", "roundingHeuristic");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "roundingHeuristic");
    add01(gmsopt.back().enumval);
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "vubheuristic");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "proximitysearch", "proximitySearch");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "proximitySearch");
    add01(gmsopt.back().enumval);
 
    gmsopt.write();
