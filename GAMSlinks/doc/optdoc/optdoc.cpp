@@ -1204,8 +1204,7 @@ void printCbcOptions()
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "cliqueCuts");
 
    // another cut option that actually does the same as -constraint conflict
-   gmsopt.collect("conflictcuts", "Conflict Cuts", "Equivalent to setting cutoffconstraint=conflict",
-      OPTTYPE_BOOL, OPTVAL({.boolval = false}), OPTVAL(), OPTVAL(), ENUMVAL(), "", -2);
+   gmsopt.collect("conflictcuts", "Conflict Cuts", "Equivalent to setting cutoffconstraint=conflict", false, "", -1);
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "flowCoverCuts");
 
