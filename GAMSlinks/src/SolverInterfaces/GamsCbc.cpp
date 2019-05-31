@@ -770,6 +770,7 @@ bool GamsCbc::setupParameters()
       int itype; /* data type */
       int iotype; /* option type */
       int ival;
+      int pos;
       double dval;
       char sname[GMS_SSSIZE];
       char sval[GMS_SSSIZE];
@@ -781,20 +782,22 @@ bool GamsCbc::setupParameters()
       optGetValuesNr(opt, i, sname, &ival, &dval, sval);
 
       /* first 3 "parameters" are ?, ???, and - */
-      if( irefnr < 3 || irefnr >= (int)cbcparams.size() )
+      pos = whichParam(CbcOrClpParameterType(irefnr), cbcparams);
+      if( pos > (int)cbcparams.size() )
       {
-         sprintf(buffer, "ERROR: Option %s has invalid reference number %d\n", sname, irefnr);
+         sprintf(buffer, "ERROR: Option %s not found in CBC (invalid reference number %d?)\n", sname, irefnr);
          gevLogStatPChar(gev, buffer);
          if( createdopt )
             optFree(&opt);
          return false;
       }
+      assert(cbcparams.at(pos).type() == irefnr);
 
       // skip threads here, will handle this below
-      if( cbcparams.at(irefnr).type() == CBC_PARAM_INT_THREADS )
+      if( irefnr == CBC_PARAM_INT_THREADS )
          continue;
 
-      sprintf(buffer, "-%s", cbcparams.at(irefnr).name().c_str());
+      sprintf(buffer, "-%s", cbcparams.at(pos).name().c_str());
       par_list.push_back(buffer);
 
       switch( iotype )

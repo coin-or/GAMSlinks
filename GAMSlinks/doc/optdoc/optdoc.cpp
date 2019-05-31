@@ -921,7 +921,7 @@ void collectCbcOption(
       exit(1);
    }
 
-   gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, enumval, "", idx);
+   gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, enumval, "", cbcoptnum);
    if( namegams != namecbc )
       gmsopt.back().synonyms.insert(namecbc);
 
