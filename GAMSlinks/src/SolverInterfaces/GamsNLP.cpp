@@ -312,9 +312,9 @@ bool GamsNLP::get_var_con_metadata(
       namemem += strlen(buffer) + 1;
    }
 
-   if( namemem > 1024 * 1024 )
+   if( (namemem >> 20) > 0 )
    {
-      sprintf(buffer, "Space for names approximately %0.2f MB.\nUse statement '<modelname>.dictfile=0;' to turn dictionary off.\n", namemem/(1024.0*1024.0));
+      sprintf(buffer, "Space for names approximately %u MB.\nUse statement '<modelname>.dictfile=0;' to turn dictionary off.\n", (unsigned int)(namemem>>20));
       gevLogStatPChar(gev, buffer);
    }
 

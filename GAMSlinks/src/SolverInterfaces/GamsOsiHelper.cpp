@@ -186,9 +186,9 @@ bool gamsOsiLoadProblem(
       solver.setObjName(buffer);
       nameMem += strlen(buffer) + 1;
 
-      if( nameMem > 1024 * 1024 )
+      if( (nameMem >> 20) > 0 )
       {
-         sprintf(buffer, "Space for names approximately %0.2f MB.\nUse statement '<modelname>.dictfile=0;' to turn dictionary off.\n", nameMem/(1024.0*1024.0));
+         sprintf(buffer, "Space for names approximately %u MB.\nUse statement '<modelname>.dictfile=0;' to turn dictionary off.\n", (unsigned int)(nameMem>>20));
          gevLogStatPChar(gev, buffer);
       }
    }
