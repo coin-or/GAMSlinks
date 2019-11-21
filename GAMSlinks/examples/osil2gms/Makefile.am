@@ -32,4 +32,4 @@ DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I$(top_builddir)/inc
 
 DISTCLEANFILES =
 
-include ../../../BuildTools/Makemain.inc
+include ../../BuildTools/Makemain.inc

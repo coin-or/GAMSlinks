@@ -69,7 +69,6 @@ AC_COIN_CHECK_PACKAGE(Cbc,     [cbc],        [GamsSolverLib])
 AC_COIN_CHECK_PACKAGE(Ipopt,   [ipopt],      [GamsSolverLib])
 AC_COIN_CHECK_PACKAGE(Bonmin,  [bonmin],     [GamsSolverLib])
 AC_COIN_CHECK_PACKAGE(Couenne, [couenne],    [GamsSolverLib])
-AC_COIN_CHECK_PACKAGE(OS,      [os],         [GamsSolverLib])
 AC_COIN_CHECK_PACKAGE(SoPlex,  [coinsoplex], [GamsSolverLib])
 AC_COIN_CHECK_PACKAGE(SCIP,    [coinscip],   [GamsSolverLib])
 

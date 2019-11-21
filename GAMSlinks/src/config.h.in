@@ -18,9 +18,6 @@
 /* Define to 1 if the Ipopt package is available */
 #undef COIN_HAS_IPOPT
 
-/* Define to 1 if the OS package is available */
-#undef COIN_HAS_OS
-
 /* Define to 1 if the Osi package is available */
 #undef COIN_HAS_OSI
 

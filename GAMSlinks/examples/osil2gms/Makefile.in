@@ -53,7 +53,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = osil2gms$(EXEEXT) osrl2trace$(EXEEXT)
-DIST_COMMON = $(srcdir)/../../../BuildTools/Makemain.inc \
+DIST_COMMON = $(srcdir)/../../BuildTools/Makemain.inc \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 @HAVE_EXTERNALS_TRUE@am__append_1 = Dependencies
 @HAVE_EXTERNALS_TRUE@am__append_2 = .Dependencies-stamp
@@ -147,8 +147,6 @@ COIN_HAS_OSIXPR_FALSE = @COIN_HAS_OSIXPR_FALSE@
 COIN_HAS_OSIXPR_TRUE = @COIN_HAS_OSIXPR_TRUE@
 COIN_HAS_OSI_FALSE = @COIN_HAS_OSI_FALSE@
 COIN_HAS_OSI_TRUE = @COIN_HAS_OSI_TRUE@
-COIN_HAS_OS_FALSE = @COIN_HAS_OS_FALSE@
-COIN_HAS_OS_TRUE = @COIN_HAS_OS_TRUE@
 COIN_HAS_PKGCONFIG_FALSE = @COIN_HAS_PKGCONFIG_FALSE@
 COIN_HAS_PKGCONFIG_TRUE = @COIN_HAS_PKGCONFIG_TRUE@
 COIN_HAS_SCIP_FALSE = @COIN_HAS_SCIP_FALSE@
@@ -265,13 +263,6 @@ OSI_DATA_INSTALLED = @OSI_DATA_INSTALLED@
 OSI_DEPENDENCIES = @OSI_DEPENDENCIES@
 OSI_LIBS = @OSI_LIBS@
 OSI_LIBS_INSTALLED = @OSI_LIBS_INSTALLED@
-OS_CFLAGS = @OS_CFLAGS@
-OS_CFLAGS_INSTALLED = @OS_CFLAGS_INSTALLED@
-OS_DATA = @OS_DATA@
-OS_DATA_INSTALLED = @OS_DATA_INSTALLED@
-OS_DEPENDENCIES = @OS_DEPENDENCIES@
-OS_LIBS = @OS_LIBS@
-OS_LIBS_INSTALLED = @OS_LIBS_INSTALLED@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -330,6 +321,7 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+dos2unix = @dos2unix@
 exec_prefix = @exec_prefix@
 gamspath = @gamspath@
 have_autoconf = @have_autoconf@
@@ -379,7 +371,7 @@ all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .cpp .lo .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../../BuildTools/Makemain.inc $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../BuildTools/Makemain.inc $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -532,7 +524,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/../../../BuildTools
+	$(mkdir_p) $(distdir)/../../BuildTools
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

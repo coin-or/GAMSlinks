@@ -52,11 +52,9 @@ AC_COIN_MAIN_PACKAGEDIR(Clp)
 AC_COIN_MAIN_PACKAGEDIR(Cgl)
 AC_COIN_MAIN_PACKAGEDIR(Cbc)
 AC_COIN_MAIN_PACKAGEDIR(Ipopt)
-AC_COIN_MAIN_PACKAGEDIR(cppad)
 AC_COIN_MAIN_PACKAGEDIR(SCIP,     ThirdParty,[scip/src/scip/scip.h])
 AC_COIN_MAIN_PACKAGEDIR(Bonmin)
 AC_COIN_MAIN_PACKAGEDIR(Couenne)
-AC_COIN_MAIN_PACKAGEDIR(OS)
 AC_COIN_MAIN_PACKAGEDIR(GAMSlinks)
 
 ##############################################################################
