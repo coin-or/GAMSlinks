@@ -57,6 +57,12 @@ typedef struct optRec* optHandle_t;
 extern "C" {
 #endif
 
+/* Can be implemented by solver interface */
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Initialize)(void);
+
+/* Can be implemented by solver interface */
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Finalize)(void);
+
 /* Needs to be implemented by solver interface */
 DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen);
 

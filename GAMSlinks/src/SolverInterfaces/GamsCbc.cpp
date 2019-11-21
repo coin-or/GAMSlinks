@@ -41,6 +41,10 @@
 #include "CoinHelperFunctions.hpp"
 #include "CoinTime.hpp"
 
+#if defined(__linux) && defined(COIN_HAS_OSICPX)
+#include "cplex.h"
+#endif
+
 /** CBC callback, used for updating model pointer
  * forward declaration, so we can define a static function as friend of special message handler
  */
@@ -1252,7 +1256,7 @@ bool GamsCbc::writeSolution(
       gdxHandle_t gdx;
       int rc;
 
-      if( !gdxCreate(&gdx, buffer, sizeof(buffer)) )
+      if( !gdxGetReady(buffer, sizeof(buffer)) || !gdxCreate(&gdx, buffer, sizeof(buffer)) )
       {
          gevLogStatPChar(gev, "failed to load GDX I/O library: ");
          gevLogStat(gev, buffer);
@@ -1309,6 +1313,7 @@ bool GamsCbc::writeSolution(
       }
 
       gdxFree(&gdx);
+      gdxLibraryUnload();
    }
    else if( dumpsolutions != NULL && model->numberSavedSolutions() == 1 )
    {
@@ -1391,6 +1396,32 @@ bool GamsCbc::isLP()
 #define GAMSSOLVER_ID         cbc
 #include "GamsEntryPoints_tpl.c"
 
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Initialize)(void)
+{
+#if defined(__linux) && defined(COIN_HAS_OSICPX)
+   CPXinitialize();
+#endif
+
+   gmoInitMutexes();
+   gevInitMutexes();
+   palInitMutexes();
+   optInitMutexes();
+   gdxInitMutexes();
+}
+
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Finalize)(void)
+{
+#if defined(__linux) && defined(COIN_HAS_OSICPX)
+   CPXfinalize();
+#endif
+
+   gmoFiniMutexes();
+   gevFiniMutexes();
+   palFiniMutexes();
+   optFiniMutexes();
+   gdxFiniMutexes();
+}
+
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
    assert(Cptr != NULL);
@@ -1405,6 +1436,9 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char*
       return 0;
 
    if( !palGetReady(msgBuf, msgBufLen) )
+      return 0;
+
+   if( !optGetReady(msgBuf, msgBufLen) )
       return 0;
 
    *Cptr = (void*) new GamsCbc();
@@ -1429,6 +1463,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
    gmoLibraryUnload();
    gevLibraryUnload();
    palLibraryUnload();
+   optLibraryUnload();
 
    return 1;
 }

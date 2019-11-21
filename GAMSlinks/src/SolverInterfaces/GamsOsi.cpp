@@ -1878,9 +1878,43 @@ int oxyfree(void** Cptr)
    return 1;
 }
 
+static
+void oxyInitialize(void)
+{
+#if defined(__linux) && defined(COIN_HAS_OSICPX)
+   CPXinitialize();
+#endif
+
+   gmoInitMutexes();
+   gevInitMutexes();
+   palInitMutexes();
+}
+
+static
+void oxyFinalize(void)
+{
+#if defined(__linux) && defined(COIN_HAS_OSICPX)
+   CPXfinalize();
+#endif
+
+   gmoFiniMutexes();
+   gevFiniMutexes();
+   palFiniMutexes();
+}
+
 #ifdef COIN_HAS_OSICPX
 #define GAMSSOLVER_ID ocp
 #include "GamsEntryPoints_tpl.c"
+
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Initialize)(void)
+{
+   oxyInitialize();
+}
+
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Finalize)(void)
+{
+   oxyFinalize();
+}
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
@@ -1918,6 +1952,16 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
 #define GAMSSOLVER_ID ogu
 #include "GamsEntryPoints_tpl.c"
 
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Initialize)(void)
+{
+   oxyInitialize();
+}
+
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Finalize)(void)
+{
+   oxyFinalize();
+}
+
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
    return oxycreate(Cptr, msgBuf, msgBufLen, GamsOsi::GUROBI);
@@ -1954,6 +1998,20 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
 #define GAMSSOLVER_ID omk
 #include "GamsEntryPoints_tpl.c"
 
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Initialize)(void)
+{
+   oxyInitialize();
+}
+
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Finalize)(void)
+{
+   oxyFinalize();
+
+#ifdef COIN_HAS_OSIMSK
+   MSK_licensecleanup();
+#endif
+}
+
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
    return oxycreate(Cptr, msgBuf, msgBufLen, GamsOsi::MOSEK);
@@ -1989,6 +2047,16 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
 #ifdef COIN_HAS_OSIXPR
 #define GAMSSOLVER_ID oxp
 #include "GamsEntryPoints_tpl.c"
+
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Initialize)(void)
+{
+   oxyInitialize();
+}
+
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Finalize)(void)
+{
+   oxyFinalize();
+}
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
 {

@@ -33,6 +33,14 @@
 
 #include "lpiswitch.h"
 
+#if defined(__linux) && defined(COIN_HAS_OSICPX)
+#include "cplex.h"
+#endif
+
+#if defined(COIN_HAS_OSIMSK)
+#include "mosek.h"
+#endif
+
 static
 SCIP_DECL_ERRORPRINTING(printErrorGev)
 {
@@ -445,6 +453,35 @@ SCIP_RETCODE GamsScip::freeSCIP()
 
 #define GAMSSOLVER_ID scp
 #include "GamsEntryPoints_tpl.c"
+
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Initialize)(void)
+{
+#if defined(__linux) && defined(COIN_HAS_OSICPX)
+   CPXinitialize();
+#endif
+
+#ifdef COIN_HAS_SCIP
+   SCIPlpiSwitchSetSolver(SCIP_LPISW_SOPLEX2);
+#endif
+
+   gmoInitMutexes();
+   gevInitMutexes();
+   palInitMutexes();
+}
+
+DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Finalize)(void)
+{
+#if defined(__linux) && defined(COIN_HAS_OSICPX)
+   CPXfinalize();
+#endif
+#ifdef COIN_HAS_OSIMSK
+   MSK_licensecleanup();
+#endif
+
+   gmoFiniMutexes();
+   gevFiniMutexes();
+   palFiniMutexes();
+}
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
