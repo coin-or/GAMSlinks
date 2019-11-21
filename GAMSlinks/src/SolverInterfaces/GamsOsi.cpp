@@ -268,8 +268,8 @@ int GamsOsi::readyAPI(
          {
 #ifdef COIN_HAS_OSIGRB
             GRBenv* grbenv = NULL;
-            int status;
 #ifdef GAMS_BUILD
+            int status;
             GUlicenseInit_t initType;
 
             /* Gurobi license setup */
