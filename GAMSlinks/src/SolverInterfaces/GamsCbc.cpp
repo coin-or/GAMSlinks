@@ -28,6 +28,7 @@
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
 #include "GamsSolveTrace.h"
+#include "GamsHelper.h"
 
 // For Cbc
 #include "CbcConfig.h"
@@ -908,7 +909,7 @@ bool GamsCbc::setupParameters()
       par_list.push_back(buffer);
 
       // no linear algebra multithreading if Cbc is doing multithreading
-      setNumThreads(gev, 1);
+      GAMSsetNumThreads(gev, 1);
    }
    else
    {
@@ -922,7 +923,7 @@ bool GamsCbc::setupParameters()
       //   gevLogStatPChar(gev, "Parallel mode: none, using 1 thread\n");
 
       // allow linear algebra multithreading
-      setNumThreads(gev, nthreads);
+      GAMSsetNumThreads(gev, nthreads);
       nthreads = 1;
    }
 

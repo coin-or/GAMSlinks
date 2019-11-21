@@ -21,6 +21,7 @@
 #include "GAMSlinksConfig.h"
 #include "GamsCompatibility.h"
 #include "GamsLicensing.h"
+#include "GamsHelper.h"
 
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
@@ -218,7 +219,7 @@ int GamsScip::callSolver()
    }
 
    // set number of threads for linear algebra routines used in Ipopt
-   setNumThreads(gev, gevThreads(gev));
+   GAMSsetNumThreads(gev, gevThreads(gev));
 
    // update error printing callback in SCIP to use current gev
    SCIPmessageSetErrorPrinting(printErrorGev, (void*)gev);

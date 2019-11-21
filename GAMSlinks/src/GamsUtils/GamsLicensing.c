@@ -8,6 +8,7 @@
 
 #include "GamsLicensing.h"
 
+#include <stdlib.h>
 #include <assert.h>
 
 #include "palmcc.h"

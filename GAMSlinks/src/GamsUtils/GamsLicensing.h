@@ -15,6 +15,10 @@ typedef struct gmoRec* gmoHandle_t;
 typedef struct gevRec* gevHandle_t;
 typedef struct palRec* palHandle_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** initializing licensing */
 void GAMSinitLicensing(
    struct gmoRec*     gmo,                /**< GAMS modeling object */
@@ -41,5 +45,9 @@ bool GAMScheckIpoptLicense(
 bool GAMScheckSCIPLicense(
    struct palRec*     pal                 /**< GAMS audit and license object */
 );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /*GAMSLICENSING_H_ */

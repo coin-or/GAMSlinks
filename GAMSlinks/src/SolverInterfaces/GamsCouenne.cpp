@@ -31,6 +31,7 @@
 
 #include "GamsCompatibility.h"
 #include "GamsLicensing.h"
+#include "GamsHelper.h"
 
 #include "CbcBranchActual.hpp"  // for CbcSOS
 #include "CbcBranchLotsize.hpp" // for CbcLotsize
@@ -355,7 +356,7 @@ int GamsCouenne::callSolver()
    couenne_setup->options()->GetNumericValue("diverging_iterates_tol", minlp->nlp->div_iter_tol, "");
 
    // set number of threads in linear algebra in ipopt
-   setNumThreads(gev, gevThreads(gev));
+   GAMSsetNumThreads(gev, gevThreads(gev));
 
    // initialize solvetrace, if activated
    GAMS_SOLVETRACE* solvetrace_ = NULL;

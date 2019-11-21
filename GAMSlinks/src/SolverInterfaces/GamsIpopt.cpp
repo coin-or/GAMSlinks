@@ -23,6 +23,7 @@
 
 #include "GamsLicensing.h"
 #include "GamsCompatibility.h"
+#include "GamsHelper.h"
 
 using namespace Ipopt;
 
@@ -190,7 +191,7 @@ int GamsIpopt::callSolver()
    ipopt->Options()->GetBoolValue("report_mininfeas_solution", nlp->reportmininfeas, "");
 
    // set number of threads in linear algebra
-   setNumThreads(gev, gevThreads(gev));
+   GAMSsetNumThreads(gev, gevThreads(gev));
 
    // solve NLP
    nlp->clockStart = gevTimeDiffStart(gev);

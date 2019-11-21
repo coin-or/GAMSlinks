@@ -39,12 +39,6 @@ protected:
 public:
    virtual ~GamsSolver() {};
 
-   /** sets number of OpenMP/GotoBlas threads */
-   static void setNumThreads(
-      struct gevRec*      gev,                /**< GAMS environment */
-      int                 nthreads            /**< number of threads for OpenMP/GotoBlas */
-   );
-
    /** ensure that GMO library has been loaded
     * @return nonzero on failure, 0 on success
     */

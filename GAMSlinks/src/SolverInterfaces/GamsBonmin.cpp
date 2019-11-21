@@ -28,6 +28,7 @@
 
 #include "GamsCompatibility.h"
 #include "GamsLicensing.h"
+#include "GamsHelper.h"
 
 using namespace Bonmin;
 using namespace Ipopt;
@@ -325,7 +326,7 @@ int GamsBonmin::callSolver()
    gmoEvalErrorMsg(gmo, printevalerror);
 
    // set number of threads in linear algebra in ipopt
-   setNumThreads(gev, gevThreads(gev));
+   GAMSsetNumThreads(gev, gevThreads(gev));
 
    // initialize solvetrace, if activated
    GAMS_SOLVETRACE* solvetrace_ = NULL;

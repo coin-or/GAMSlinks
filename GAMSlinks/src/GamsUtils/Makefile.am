@@ -10,6 +10,7 @@ EXTRA_DIST =
 
 lib_LTLIBRARIES = libGamsUtils.la
 libGamsUtils_la_SOURCES = \
+  GamsHelper.c \
   GamsLicensing.c \
   GamsSolveTrace.c \
   $(GAMS_PATH)/apifiles/C/api/optcc.c \
@@ -21,7 +22,7 @@ libGamsUtils_la_SOURCES = \
 libGamsUtils_la_LDFLAGS =
 
 includecoindir = $(includedir)/coin
-includecoin_HEADERS = GamsCompatibility.h  GamsLicensing.h GamsNLinstr.h GamsSolveTrace.h
+includecoin_HEADERS = GamsCompatibility.h  GamsLicensing.h GamsHelper.h GamsNLinstr.h GamsSolveTrace.h
 
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(GAMS_PATH)/apifiles/C/api` $(GAMSLIBCFLAGS)
 
