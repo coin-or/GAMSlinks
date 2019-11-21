@@ -1394,27 +1394,29 @@ bool GamsCbc::isLP()
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
    assert(Cptr != NULL);
-   assert(msgBufLen > 0);
    assert(msgBuf != NULL);
+
+   *Cptr = NULL;
+
+   if( !gmoGetReady(msgBuf, msgBufLen) )
+      return 0;
+
+   if( !gevGetReady(msgBuf, msgBufLen) )
+      return 0;
+
+   if( !palGetReady(msgBuf, msgBufLen) )
+      return 0;
 
    *Cptr = (void*) new GamsCbc();
    if( *Cptr == NULL )
    {
       snprintf(msgBuf, msgBufLen, "Out of memory when creating GamsCbc object.\n");
-      msgBuf[msgBufLen] = '\0';
-      return 1;
+      if( msgBufLen > 0 )
+         msgBuf[msgBufLen] = '\0';
+      return 0;
    }
 
-   if( !gmoGetReady(msgBuf, msgBufLen) )
-      return 1;
-
-   if( !gevGetReady(msgBuf, msgBufLen) )
-      return 1;
-
-   if( !palGetReady(msgBuf, msgBufLen) )
-      return 1;
-
-   return 0;
+   return 1;
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
