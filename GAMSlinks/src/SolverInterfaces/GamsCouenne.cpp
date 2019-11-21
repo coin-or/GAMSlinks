@@ -759,6 +759,7 @@ CouenneProblem* GamsCouenne::setupProblem()
       {
          case gmovar_SC:
             lb[i] = 0.0;
+            /* no break */
          case gmovar_X:
          case gmovar_S1:
          case gmovar_S2:
@@ -767,6 +768,7 @@ CouenneProblem* GamsCouenne::setupProblem()
 
          case gmovar_SI:
             ub[i] = 0.0;
+            /* no break */
          case gmovar_B:
          case gmovar_I:
             prob->addVariable(true, prob->domain());
@@ -921,7 +923,7 @@ CouenneProblem* GamsCouenne::setupProblem()
 
          gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields);
          expression** nl = new expression*[1];
-         if( (gevGetIntOpt(gev, gevInteger1)) & 0x4 && (2651979 != gevGetIntOpt(gev, gevInteger1)) )
+         if( (gevGetIntOpt(gev, gevInteger1) & 0x4) && (2651979 != gevGetIntOpt(gev, gevInteger1)) )
             std::clog << "parse instructions for constraint " << i << std::endl;
          nl[0] = parseGamsInstructions(prob, codelen, opcodes, fields, constantlen, constants);
          if( nl[0] == NULL )
@@ -1231,9 +1233,11 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
 
          case nlCallArg1 :
             nargs = 1;
+            /* no break */
          case nlCallArg2 :
             if( opcode == nlCallArg2 )
                nargs = 2;
+               /* no break */
          case nlCallArgN :
          {
             debugout << "call function ";

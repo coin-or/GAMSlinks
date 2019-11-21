@@ -835,9 +835,11 @@ SCIP_RETCODE makeExprtree(
 
          case nlCallArg1:
             nargs = 1;
+            /* no break */
          case nlCallArg2:
             if( opcode == nlCallArg2 )
                nargs = 2;
+               /* no break */
          case nlCallArgN:
          {
             GamsFuncCode func;
