@@ -75,11 +75,6 @@ BEGIN {
    @COIN_HAS_IPOPT_TRUE@dicttype["MYIPOPT"] = 0;
    @COIN_HAS_IPOPT_TRUE@modeltypes["MYIPOPT"] = "LP RMIP NLP DNLP RMINLP CNS QCP RMIQCP";
 
-   @COIN_HAS_OS_TRUE@written["MYOS"] = 0;
-   @COIN_HAS_OS_TRUE@libid["MYOS"] = "os_";
-   @COIN_HAS_OS_TRUE@dicttype["MYOS"] = 5;
-   @COIN_HAS_OS_TRUE@modeltypes["MYOS"] = "LP RMIP MIP QCP RMIQCP NLP DNLP RMINLP CNS MIQCP MINLP";
-
    @COIN_HAS_OSICPX_TRUE@written["MYOSICPLEX"] = 0;
    @COIN_HAS_OSICPX_TRUE@libid["MYOSICPLEX"] = "ocp";
    @COIN_HAS_OSICPX_TRUE@dicttype["MYOSICPLEX"] = 5;
@@ -161,4 +156,3 @@ fi
 @COIN_IS_WINDOWS_FALSE@ln -s "${libdir}/$libname" "${gamspath}/$libname"
 
 @COIN_HAS_CBC_TRUE@cp @bindir@/optmycbc.def "${gamspath}"
-@COIN_HAS_OS_TRUE@cp @bindir@/optmyos.def "${gamspath}"
