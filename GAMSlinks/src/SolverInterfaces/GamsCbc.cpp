@@ -1394,6 +1394,55 @@ bool GamsCbc::isLP()
    return true;
 }
 
-#define GAMSSOLVERC_ID         cbc
-#define GAMSSOLVERC_CLASS      GamsCbc
-#include "GamsSolverC_tpl.cpp"
+#define GAMSSOLVER_ID         cbc
+#include "GamsEntryPoints_tpl.c"
+
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
+{
+   assert(Cptr != NULL);
+   assert(msgBufLen > 0);
+   assert(msgBuf != NULL);
+
+   *Cptr = (void*) new GamsCbc();
+   msgBuf[0] = 0;
+
+   return 1;
+}
+
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
+{
+   assert(Cptr != NULL);
+
+   delete (GamsCbc*)*Cptr;
+   *Cptr = NULL;
+
+   gmoLibraryUnload();
+   gevLibraryUnload();
+
+   return 1;
+}
+
+DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,CallSolver)(void* Cptr)
+{
+   assert(Cptr != NULL);
+   return ((GamsCbc*)Cptr)->callSolver();
+}
+
+DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr)
+{
+   return -1;
+}
+
+DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr)
+{
+   assert(Cptr != NULL);
+   assert(Gptr != NULL);
+
+   char msg[256];
+   if( !gmoGetReady(msg, sizeof(msg)) )
+      return 1;
+   if( !gevGetReady(msg, sizeof(msg)) )
+      return 1;
+
+   return ((GamsCbc*)Cptr)->readyAPI(Gptr, Optr);
+}
