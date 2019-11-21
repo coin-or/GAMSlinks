@@ -9,7 +9,6 @@
 
 typedef struct gmoRec* gmoHandle_t;
 typedef struct gevRec* gevHandle_t;
-typedef struct optRec* optHandle_t;
 
 #include <sstream>
 
@@ -26,7 +25,6 @@ public:
 private:
    struct gmoRec*        gmo;                /**< GAMS modeling object */
    struct gevRec*        gev;                /**< GAMS environment */
-   struct optRec*        opt;                /**< GAMS options object */
 
    GamsMessageHandler*   msghandler;         /**< message handler */
    OsiSolverInterface*   osi;                /**< solver interface */
@@ -68,7 +66,6 @@ public:
    )
    : gmo(NULL),
      gev(NULL),
-     opt(NULL),
      msghandler(NULL),
      osi(NULL),
      solverid(solverid_)
@@ -77,8 +74,7 @@ public:
    ~GamsOsi();
 
    int readyAPI(
-      struct gmoRec*     gmo_,               /**< GAMS modeling object */
-      struct optRec*     opt_                /**< GAMS options object */
+      struct gmoRec*     gmo_                /**< GAMS modeling object */
    );
 
    int callSolver();

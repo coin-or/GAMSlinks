@@ -146,19 +146,13 @@ GamsOsi::~GamsOsi()
 }
 
 int GamsOsi::readyAPI(
-   struct gmoRec*        gmo_,               /**< GAMS modeling object */
-   struct optRec*        opt_                /**< GAMS options object */
+   struct gmoRec*        gmo_                /**< GAMS modeling object */
 )
 {
    char buffer[1024];
 
    gmo = gmo_;
    assert(gmo != NULL);
-
-   opt = opt_;
-
-   /* delete an Osi from a previous solve, if there is one */
-   delete osi;
 
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
@@ -1840,23 +1834,37 @@ bool GamsOsi::isLP() {
    return true;
 }
 
-#ifdef COIN_HAS_OSICPX
-#define GAMSSOLVER_ID ocp
-#include "GamsEntryPoints_tpl.c"
-
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
+static
+int oxycreate(void** Cptr, char* msgBuf, int msgBufLen, GamsOsi::OSISOLVER osisolver)
 {
    assert(Cptr != NULL);
    assert(msgBufLen > 0);
    assert(msgBuf != NULL);
 
-   *Cptr = (void*) new GamsOsi(GamsOsi::CPLEX);
-   msgBuf[0] = 0;
+   *Cptr = NULL;
 
-   return 1;
+   if( !gmoGetReady(msgBuf, msgBufLen) )
+      return 1;
+
+   if( !gevGetReady(msgBuf, msgBufLen) )
+      return 1;
+
+   if( !palGetReady(msgBuf, msgBufLen) )
+      return 1;
+
+   *Cptr = (void*) new GamsOsi(osisolver);
+   if( *Cptr == NULL )
+   {
+      snprintf(msgBuf, msgBufLen, "Out of memory when creating GamsOsi object.\n");
+      msgBuf[msgBufLen] = '\0';
+      return 1;
+   }
+
+   return 0;
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
+static
+int oxyfree(void** Cptr)
 {
    assert(Cptr != NULL);
 
@@ -1865,8 +1873,23 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
 
    gmoLibraryUnload();
    gevLibraryUnload();
+   palLibraryUnload();
 
    return 1;
+}
+
+#ifdef COIN_HAS_OSICPX
+#define GAMSSOLVER_ID ocp
+#include "GamsEntryPoints_tpl.c"
+
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
+{
+   return oxycreate(Cptr, msgBuf, msgBufLen, GamsOsi::CPLEX);
+}
+
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
+{
+   return oxyfree(Cptr);
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,CallSolver)(void* Cptr)
@@ -1885,13 +1908,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
    assert(Cptr != NULL);
    assert(Gptr != NULL);
 
-   char msg[256];
-   if( !gmoGetReady(msg, sizeof(msg)) )
-      return 1;
-   if( !gevGetReady(msg, sizeof(msg)) )
-      return 1;
-
-   return ((GamsOsi*)Cptr)->readyAPI(Gptr, Optr);
+   return ((GamsOsi*)Cptr)->readyAPI(Gptr);
 }
 
 #undef GAMSSOLVER_ID
@@ -1903,27 +1920,12 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
-   assert(Cptr != NULL);
-   assert(msgBufLen > 0);
-   assert(msgBuf != NULL);
-
-   *Cptr = (void*) new GamsOsi(GamsOsi::GUROBI);
-   msgBuf[0] = 0;
-
-   return 1;
+   return oxycreate(Cptr, msgBuf, msgBufLen, GamsOsi::GUROBI);
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
 {
-   assert(Cptr != NULL);
-
-   delete (GamsOsi*)*Cptr;
-   *Cptr = NULL;
-
-   gmoLibraryUnload();
-   gevLibraryUnload();
-
-   return 1;
+   return oxyfree(Cptr);
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,CallSolver)(void* Cptr)
@@ -1942,13 +1944,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
    assert(Cptr != NULL);
    assert(Gptr != NULL);
 
-   char msg[256];
-   if( !gmoGetReady(msg, sizeof(msg)) )
-      return 1;
-   if( !gevGetReady(msg, sizeof(msg)) )
-      return 1;
-
-   return ((GamsOsi*)Cptr)->readyAPI(Gptr, Optr);
+   return ((GamsOsi*)Cptr)->readyAPI(Gptr);
 }
 
 #undef GAMSSOLVER_ID
@@ -1960,27 +1956,12 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
-   assert(Cptr != NULL);
-   assert(msgBufLen > 0);
-   assert(msgBuf != NULL);
-
-   *Cptr = (void*) new GamsOsi(GamsOsi::MOSEK);
-   msgBuf[0] = 0;
-
-   return 1;
+   return oxycreate(Cptr, msgBuf, msgBufLen, GamsOsi::MOSEK);
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
 {
-   assert(Cptr != NULL);
-
-   delete (GamsOsi*)*Cptr;
-   *Cptr = NULL;
-
-   gmoLibraryUnload();
-   gevLibraryUnload();
-
-   return 1;
+   return oxyfree(Cptr);
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,CallSolver)(void* Cptr)
@@ -1999,13 +1980,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
    assert(Cptr != NULL);
    assert(Gptr != NULL);
 
-   char msg[256];
-   if( !gmoGetReady(msg, sizeof(msg)) )
-      return 1;
-   if( !gevGetReady(msg, sizeof(msg)) )
-      return 1;
-
-   return ((GamsOsi*)Cptr)->readyAPI(Gptr, Optr);
+   return ((GamsOsi*)Cptr)->readyAPI(Gptr);
 }
 
 #undef GAMSSOLVER_ID
@@ -2017,27 +1992,12 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
-   assert(Cptr != NULL);
-   assert(msgBufLen > 0);
-   assert(msgBuf != NULL);
-
-   *Cptr = (void*) new GamsOsi(GamsOsi::XPRESS);
-   msgBuf[0] = 0;
-
-   return 1;
+   return oxycreate(Cptr, msgBuf, msgBufLen, GamsOsi::XPRESS);
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
 {
-   assert(Cptr != NULL);
-
-   delete (GamsOsi*)*Cptr;
-   *Cptr = NULL;
-
-   gmoLibraryUnload();
-   gevLibraryUnload();
-
-   return 1;
+   return oxyfree(Cptr);
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,CallSolver)(void* Cptr)
@@ -2056,13 +2016,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
    assert(Cptr != NULL);
    assert(Gptr != NULL);
 
-   char msg[256];
-   if( !gmoGetReady(msg, sizeof(msg)) )
-      return 1;
-   if( !gevGetReady(msg, sizeof(msg)) )
-      return 1;
-
-   return ((GamsOsi*)Cptr)->readyAPI(Gptr, Optr);
+   return ((GamsOsi*)Cptr)->readyAPI(Gptr);
 }
 
 #undef GAMSSOLVER_ID

@@ -5,9 +5,7 @@
  *  @author Stefan Vigerske
  */
 
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
+typedef struct optRec* optHandle_t;
 
 /* check that three-letter id of solver is defined */
 #ifndef GAMSSOLVER_ID

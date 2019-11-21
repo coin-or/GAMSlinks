@@ -1398,9 +1398,23 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char*
    assert(msgBuf != NULL);
 
    *Cptr = (void*) new GamsCbc();
-   msgBuf[0] = 0;
+   if( *Cptr == NULL )
+   {
+      snprintf(msgBuf, msgBufLen, "Out of memory when creating GamsCbc object.\n");
+      msgBuf[msgBufLen] = '\0';
+      return 1;
+   }
 
-   return 1;
+   if( !gmoGetReady(msgBuf, msgBufLen) )
+      return 1;
+
+   if( !gevGetReady(msgBuf, msgBufLen) )
+      return 1;
+
+   if( !palGetReady(msgBuf, msgBufLen) )
+      return 1;
+
+   return 0;
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
@@ -1412,6 +1426,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
 
    gmoLibraryUnload();
    gevLibraryUnload();
+   palLibraryUnload();
 
    return 1;
 }
@@ -1431,12 +1446,6 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);
-
-   char msg[256];
-   if( !gmoGetReady(msg, sizeof(msg)) )
-      return 1;
-   if( !gevGetReady(msg, sizeof(msg)) )
-      return 1;
 
    return ((GamsCbc*)Cptr)->readyAPI(Gptr, Optr);
 }

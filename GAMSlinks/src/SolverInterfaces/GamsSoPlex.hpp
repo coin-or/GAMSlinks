@@ -13,7 +13,6 @@
 typedef struct gmoRec* gmoHandle_t;
 typedef struct gevRec* gevHandle_t;
 typedef struct palRec* palHandle_t;
-typedef struct optRec* optHandle_t;
 
 namespace soplex
 {
@@ -52,8 +51,7 @@ public:
    ~GamsSoPlex();
 
    int readyAPI(
-      struct gmoRec*     gmo_,               /**< GAMS modeling object */
-      struct optRec*     opt_                /**< GAMS options object */
+      struct gmoRec*     gmo_                /**< GAMS modeling object */
    );
 
    int callSolver();

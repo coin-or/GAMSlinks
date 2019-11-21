@@ -9,7 +9,6 @@
 
 typedef struct gmoRec* gmoHandle_t;
 typedef struct gevRec* gevHandle_t;
-typedef struct optRec* optHandle_t;
 
 #include "IpTNLP.hpp"
 #include "IpIpoptApplication.hpp"
@@ -32,8 +31,7 @@ public:
    { }
 
    int readyAPI(
-      struct gmoRec*     gmo_,
-      struct optRec*     opt
+      struct gmoRec*     gmo_
    );
 
    int callSolver();

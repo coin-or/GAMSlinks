@@ -12,7 +12,6 @@
 typedef struct gmoRec* gmoHandle_t;
 typedef struct gevRec* gevHandle_t;
 typedef struct palRec* palHandle_t;
-typedef struct optRec* optHandle_t;
 
 class GamsMessageHandler;
 class CbcModel;
@@ -65,8 +64,7 @@ public:
    ~GamsCouenne();
 
    int readyAPI(
-      struct gmoRec*     gmo,                /**< GAMS modeling object */
-      struct optRec*     opt                 /**< GAMS options object */
+      struct gmoRec*     gmo                 /**< GAMS modeling object */
    );
 
    int callSolver();
