@@ -19,6 +19,13 @@ typedef struct optRec* optHandle_t;
 # if ! defined(DllExport)
 #  define DllExport __declspec( dllexport )
 # endif
+#elif defined(__GNUC__)
+# if ! defined(STDCALL)
+#  define STDCALL
+# endif
+# if ! defined(DllExport)
+#  define DllExport __attribute__((__visibility__("default")))
+# endif
 #else
 # if ! defined(STDCALL)
 #  define STDCALL
