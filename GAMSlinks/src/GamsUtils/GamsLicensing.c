@@ -72,3 +72,17 @@ bool GAMScheckSCIPLicense(
 
    return true;
 }
+
+#ifndef GAMS_BUILD
+/** initializes GAMS licensed HSL routines if a commercial Ipopt license is available
+ *
+ * @return True if a commercial Ipopt license is available, and false otherwise.
+ */
+bool GAMSHSLInit(
+   struct gmoRec*     gmo,                /**< GAMS modeling object */
+   struct palRec*     pal                 /**< GAMS audit and license object */
+)
+{
+   return false;
+}
+#endif

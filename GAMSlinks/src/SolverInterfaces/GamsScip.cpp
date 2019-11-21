@@ -170,7 +170,7 @@ int GamsScip::readyAPI(
       return 1;
    }
 
-   ipoptlicensed = HSLInit(gmo, pal);
+   ipoptlicensed = GAMSHSLInit(gmo, pal);
 
    // print version info and copyright
    sprintf(buffer, "SCIP version %d.%d (" SCIP_GITHASH ")\n", SCIPmajorVersion(), SCIPminorVersion());

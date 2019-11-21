@@ -74,7 +74,7 @@ int GamsBonmin::readyAPI(
    GAMSinitLicensing(gmo, pal);
    if( gevGetIntOpt(gev, gevCurSolver) == gevSolver2Id(gev, "bonminh") )
    {
-      ipoptlicensed = HSLInit(gmo, pal);
+      ipoptlicensed = GAMSHSLInit(gmo, pal);
 
       if( !ipoptlicensed  )
       {

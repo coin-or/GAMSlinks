@@ -17,24 +17,6 @@ class GamsSolver
 {
 protected:
 
-   /** initializes GAMS licensed HSL routines if a commercial Ipopt license is available
-    *
-    * Returns true if a commercial Ipopt license is available, and false otherwise.
-    */
-#ifdef GAMS_BUILD
-   bool HSLInit(
-      struct gmoRec*     gmo,                /**< GAMS modeling object */
-      struct palRec*     pal                 /**< GAMS audit and license object */
-   );
-#else
-   bool HSLInit(
-      struct gmoRec*     gmo,                /**< GAMS modeling object */
-      struct palRec*     pal                 /**< GAMS audit and license object */
-   ) const
-   { /*lint --e{715}*/
-      return false;
-   }
-#endif
 
 public:
    virtual ~GamsSolver() {};

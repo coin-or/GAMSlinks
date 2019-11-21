@@ -103,7 +103,7 @@ int GamsCouenne::readyAPI(
 #endif
 
    GAMSinitLicensing(gmo, pal);
-   ipoptlicensed = HSLInit(gmo, pal);
+   ipoptlicensed = GAMSHSLInit(gmo, pal);
 
    gevLogStatPChar(gev, "\nCOIN-OR Couenne (Couenne Library " COUENNE_VERSION ")\nwritten by P. Belotti\n\n");
 
