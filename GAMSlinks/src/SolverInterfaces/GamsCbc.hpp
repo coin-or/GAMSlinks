@@ -7,16 +7,18 @@
 #ifndef GAMSCBC_HPP_
 #define GAMSCBC_HPP_
 
-#include "GamsSolver.hpp"
-
 #include <cstdlib>
+
+typedef struct gmoRec* gmoHandle_t;
+typedef struct gevRec* gevHandle_t;
+typedef struct optRec* optHandle_t;
 
 class CbcModel;
 class GamsCbcMessageHandler;
 class OsiSolverInterface;
 
 /** GAMS interface to CBC */
-class GamsCbc : public GamsSolver
+class GamsCbc
 {
 private:
    struct gmoRec*        gmo;                /**< GAMS modeling object */
@@ -83,12 +85,6 @@ public:
    );
 
    int callSolver();
-
-   /** indicates whether the solver interface and solver supports the modifyProblem call */
-   static int haveModifyProblem()
-   {
-      return -1;
-   }
 };
 
 #endif /*GAMSCBC_HPP_*/

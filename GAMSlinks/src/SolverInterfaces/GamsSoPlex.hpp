@@ -7,10 +7,13 @@
 #ifndef GAMSSOPLEX_HPP_
 #define GAMSSOPLEX_HPP_
 
-#include "GamsSolver.hpp"
-
 #include <cstdlib>
 #include <ostream>
+
+typedef struct gmoRec* gmoHandle_t;
+typedef struct gevRec* gevHandle_t;
+typedef struct palRec* palHandle_t;
+typedef struct optRec* optHandle_t;
 
 namespace soplex
 {
@@ -20,7 +23,7 @@ class SoPlex;
 class GamsOutputStreamBuf;
 
 /** GAMS interface to SoPlex */
-class GamsSoPlex : public GamsSolver
+class GamsSoPlex
 {
    friend void printSoPlexOptions();
 private:
@@ -57,12 +60,6 @@ public:
 
    /** notifies solver that the GMO object has been modified and changes should be passed forward to the solver */
    int modifyProblem();
-
-   /** indicates whether the solver interface and solver supports the modifyProblem call */
-   static int haveModifyProblem()
-   {
-      return 0;
-   }
 };
 
 #endif /*GAMSSOPLEX_HPP_*/

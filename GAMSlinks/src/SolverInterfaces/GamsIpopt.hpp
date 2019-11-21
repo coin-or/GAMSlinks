@@ -7,13 +7,15 @@
 #ifndef GAMSIPOPT_HPP_
 #define GAMSIPOPT_HPP_
 
-#include "GamsSolver.hpp"
+typedef struct gmoRec* gmoHandle_t;
+typedef struct gevRec* gevHandle_t;
+typedef struct optRec* optHandle_t;
 
 #include "IpTNLP.hpp"
 #include "IpIpoptApplication.hpp"
 
 /** GAMS interface to Ipopt */
-class GamsIpopt : public GamsSolver
+class GamsIpopt
 {
 private:
    struct gmoRec*         gmo;                /**< GAMS modeling object */
@@ -35,12 +37,6 @@ public:
    );
 
    int callSolver();
-
-   /** indicates whether the solver interface and solver supports the modifyProblem call */
-   static int haveModifyProblem()
-   {
-      return -1;
-   }
 };
 
 #endif

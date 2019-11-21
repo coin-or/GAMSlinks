@@ -82,12 +82,12 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp \
-	GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp \
-	GamsCbc.cpp GamsJournal.cpp GamsNLP.cpp GamsIpopt.cpp \
-	GamsSoPlex.cpp GamsScip.cpp scip/reader_gmo.c \
-	scip/event_solvetrace.c scip/prop_defaultbounds.c \
-	GamsMINLP.cpp GamsBonmin.cpp GamsCouenne.cpp
+am__libGamsCoin_la_SOURCES_DIST = GamsMessageHandler.cpp \
+	GamsOsiHelper.cpp GamsOsi.cpp GamsCbc.cpp GamsJournal.cpp \
+	GamsNLP.cpp GamsIpopt.cpp GamsSoPlex.cpp GamsScip.cpp \
+	scip/reader_gmo.c scip/event_solvetrace.c \
+	scip/prop_defaultbounds.c GamsMINLP.cpp GamsBonmin.cpp \
+	GamsCouenne.cpp
 @COIN_HAS_OSI_TRUE@am__objects_1 = GamsMessageHandler.lo \
 @COIN_HAS_OSI_TRUE@	GamsOsiHelper.lo GamsOsi.lo
 @COIN_HAS_CBC_TRUE@am__objects_2 = GamsCbc.lo
@@ -98,9 +98,9 @@ am__libGamsCoin_la_SOURCES_DIST = GamsSolver.cpp \
 @COIN_HAS_SCIP_TRUE@	event_solvetrace.lo prop_defaultbounds.lo
 @COIN_HAS_BONMIN_TRUE@am__objects_6 = GamsMINLP.lo GamsBonmin.lo
 @COIN_HAS_COUENNE_TRUE@am__objects_7 = GamsCouenne.lo
-am_libGamsCoin_la_OBJECTS = GamsSolver.lo $(am__objects_1) \
-	$(am__objects_2) $(am__objects_3) $(am__objects_4) \
-	$(am__objects_5) $(am__objects_6) $(am__objects_7)
+am_libGamsCoin_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
+	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
+	$(am__objects_6) $(am__objects_7)
 libGamsCoin_la_OBJECTS = $(am_libGamsCoin_la_OBJECTS)
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 SCRIPTS = $(bin_SCRIPTS)
@@ -405,9 +405,9 @@ AM_CPPFLAGS = \
 
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 lib_LTLIBRARIES = libGamsCoin.la
-libGamsCoin_la_SOURCES = GamsSolver.cpp $(am__append_1) \
-	$(am__append_3) $(am__append_6) $(am__append_8) \
-	$(am__append_10) $(am__append_12) $(am__append_14)
+libGamsCoin_la_SOURCES = $(am__append_1) $(am__append_3) \
+	$(am__append_6) $(am__append_8) $(am__append_10) \
+	$(am__append_12) $(am__append_14)
 libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_LIBS)
 libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_DEPENDENCIES)
 libGamsCoin_la_LDFLAGS = -module -no-undefined
@@ -520,7 +520,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsScip.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSoPlex.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSolver.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/event_solvetrace.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prop_defaultbounds.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_gmo.Plo@am__quote@

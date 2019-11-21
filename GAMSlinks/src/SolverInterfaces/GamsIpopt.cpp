@@ -38,9 +38,6 @@ int GamsIpopt::readyAPI(
    /* free a previous Ipopt instance, if existing */
    ipopt = NULL;
 
-   if( getGmoReady() || getGevReady() )
-      return 1;
-
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
@@ -318,5 +315,5 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
    if( !gevGetReady(msg, sizeof(msg)) )
       return 1;
 
-   return ((GamsSolver*)Cptr)->readyAPI(Gptr, Optr);
+   return ((GamsIpopt*)Cptr)->readyAPI(Gptr, Optr);
 }

@@ -84,9 +84,6 @@ int GamsCouenne::readyAPI(
    this->gmo = gmo;
    assert(gmo != NULL);
 
-   if( getGmoReady() || getGevReady() )
-      return 1;
-
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 

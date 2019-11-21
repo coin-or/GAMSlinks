@@ -7,7 +7,9 @@
 #ifndef GAMSOSI_HPP_
 #define GAMSOSI_HPP_
 
-#include "GamsSolver.hpp"
+typedef struct gmoRec* gmoHandle_t;
+typedef struct gevRec* gevHandle_t;
+typedef struct optRec* optHandle_t;
 
 #include <sstream>
 
@@ -16,7 +18,7 @@ class GamsOutputStreamBuf;
 class OsiSolverInterface;
 
 /** GAMS interface to solvers with Osi interface */
-class GamsOsi : public GamsSolver
+class GamsOsi
 {
 public:
    typedef enum { CPLEX, GUROBI, MOSEK, XPRESS } OSISOLVER;
@@ -80,12 +82,6 @@ public:
    );
 
    int callSolver();
-
-   /** indicates whether the solver interface and solver supports the modifyProblem call */
-   static int haveModifyProblem()
-   {
-      return -1;
-   }
 };
 
 #endif

@@ -432,7 +432,7 @@ PACKAGE_VERSION='trunk'
 PACKAGE_STRING='GAMSlinks trunk'
 PACKAGE_BUGREPORT='https://projects.coin-or.org/GAMSlinks/newticket'
 
-ac_unique_file="src/SolverInterfaces/GamsSolver.hpp"
+ac_unique_file="src/GAMSlinksConfig.h"
 ac_default_prefix=`pwd`
 # Factoring default headers for most tests.
 ac_includes_default="\

@@ -7,7 +7,10 @@
 #ifndef GAMSSCIP_HPP_
 #define GAMSSCIP_HPP_
 
-#include "GamsSolver.hpp"
+typedef struct gmoRec* gmoHandle_t;
+typedef struct gevRec* gevHandle_t;
+typedef struct palRec* palHandle_t;
+typedef struct optRec* optHandle_t;
 
 #include <cstdlib>
 
@@ -17,7 +20,7 @@ typedef struct Scip             SCIP;
 typedef struct SCIP_Messagehdlr SCIP_MESSAGEHDLR;
 
 /** GAMS interface to SCIP */
-class GamsScip : public GamsSolver
+class GamsScip
 {
    friend void printSCIPOptions();
 private:
@@ -50,12 +53,6 @@ public:
    );
 
    int callSolver();
-
-   /** indicates whether the solver interface and solver supports the modifyProblem call */
-   static int haveModifyProblem()
-   {
-      return -1;
-   }
 };
 
 #endif /*GAMSSCIP_HPP_*/

@@ -50,9 +50,6 @@ int GamsBonmin::readyAPI(
    this->gmo = gmo;
    assert(gmo != NULL);
 
-   if( getGmoReady() || getGevReady() )
-      return 1;
-
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
@@ -710,5 +707,5 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
    if( !gevGetReady(msg, sizeof(msg)) )
       return 1;
 
-   return ((GamsSolver*)Cptr)->readyAPI(Gptr, Optr);
+   return ((GamsBonmin*)Cptr)->readyAPI(Gptr, Optr);
 }

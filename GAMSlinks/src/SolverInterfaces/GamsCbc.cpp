@@ -188,12 +188,6 @@ int GamsCbc::readyAPI(
 
    delete model;
 
-   if( getGmoReady() )
-      return 1;
-
-   if( getGevReady() )
-      return 1;
-
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 

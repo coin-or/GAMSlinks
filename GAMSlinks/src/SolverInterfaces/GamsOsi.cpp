@@ -160,12 +160,6 @@ int GamsOsi::readyAPI(
    /* delete an Osi from a previous solve, if there is one */
    delete osi;
 
-   if( getGmoReady() )
-      return 1;
-
-   if( getGevReady() )
-      return 1;
-
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
@@ -1897,7 +1891,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
    if( !gevGetReady(msg, sizeof(msg)) )
       return 1;
 
-   return ((GamsSolver*)Cptr)->readyAPI(Gptr, Optr);
+   return ((GamsOsi*)Cptr)->readyAPI(Gptr, Optr);
 }
 
 #undef GAMSSOLVER_ID
@@ -1954,7 +1948,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
    if( !gevGetReady(msg, sizeof(msg)) )
       return 1;
 
-   return ((GamsSolver*)Cptr)->readyAPI(Gptr, Optr);
+   return ((GamsOsi*)Cptr)->readyAPI(Gptr, Optr);
 }
 
 #undef GAMSSOLVER_ID
@@ -2011,7 +2005,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
    if( !gevGetReady(msg, sizeof(msg)) )
       return 1;
 
-   return ((GamsSolver*)Cptr)->readyAPI(Gptr, Optr);
+   return ((GamsOsi*)Cptr)->readyAPI(Gptr, Optr);
 }
 
 #undef GAMSSOLVER_ID
@@ -2068,7 +2062,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr,
    if( !gevGetReady(msg, sizeof(msg)) )
       return 1;
 
-   return ((GamsSolver*)Cptr)->readyAPI(Gptr, Optr);
+   return ((GamsOsi*)Cptr)->readyAPI(Gptr, Optr);
 }
 
 #undef GAMSSOLVER_ID
