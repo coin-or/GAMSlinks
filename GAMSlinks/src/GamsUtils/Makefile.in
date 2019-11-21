@@ -65,8 +65,8 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includecoindir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libGamsUtils_la_LIBADD =
-am_libGamsUtils_la_OBJECTS = GamsSolveTrace.lo optcc.lo gmomcc.lo \
-	gevmcc.lo gclgms.lo gdxcc.lo
+am_libGamsUtils_la_OBJECTS = GamsLicensing.lo GamsSolveTrace.lo \
+	optcc.lo gmomcc.lo gevmcc.lo gclgms.lo gdxcc.lo
 libGamsUtils_la_OBJECTS = $(am_libGamsUtils_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -348,7 +348,9 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = 
 lib_LTLIBRARIES = libGamsUtils.la
-libGamsUtils_la_SOURCES = GamsSolveTrace.c \
+libGamsUtils_la_SOURCES = \
+  GamsLicensing.c \
+  GamsSolveTrace.c \
   $(GAMS_PATH)/apifiles/C/api/optcc.c \
   $(GAMS_PATH)/apifiles/C/api/gmomcc.c \
   $(GAMS_PATH)/apifiles/C/api/gevmcc.c \
@@ -357,7 +359,7 @@ libGamsUtils_la_SOURCES = GamsSolveTrace.c \
 
 libGamsUtils_la_LDFLAGS = 
 includecoindir = $(includedir)/coin
-includecoin_HEADERS = GamsCompatibility.h GamsNLinstr.h GamsSolveTrace.h
+includecoin_HEADERS = GamsCompatibility.h  GamsLicensing.h GamsNLinstr.h GamsSolveTrace.h
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(GAMS_PATH)/apifiles/C/api` $(GAMSLIBCFLAGS)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 
@@ -436,6 +438,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsLicensing.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSolveTrace.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gclgms.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdxcc.Plo@am__quote@

@@ -25,6 +25,7 @@
 
 #include "GAMSlinksConfig.h"
 #include "GamsCompatibility.h"
+#include "GamsLicensing.h"
 
 /* disable -Wclass-memaccess warnings due to dubious memcpy/realloc calls in SoPlex headers */
 #ifdef __GNUC__
@@ -342,11 +343,11 @@ int GamsSoPlex::readyAPI(
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
 
-   initLicensing(gmo, pal);
+   GAMSinitLicensing(gmo, pal);
 #endif
 
    // check for academic license, or if we run in demo mode
-   if( !checkScipLicense(gmo, pal) )
+   if( !GAMScheckScipLicense(gmo, pal) )
    {
       gevLogStat(gev, "*** No SoPlex license available.");
       gevLogStat(gev, "*** Please contact sales@gams.com to arrange for a license.");

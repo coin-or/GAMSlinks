@@ -17,11 +17,6 @@ class GamsSolver
 {
 protected:
 
-   void initLicensing(
-      struct gmoRec*     gmo,                /**< GAMS modeling object */
-      struct palRec*     pal                 /**< GAMS audit and license object */
-      );
-
    /** initializes GAMS licensed HSL routines if a commercial Ipopt license is available
     *
     * Returns true if a commercial Ipopt license is available, and false otherwise.
@@ -59,40 +54,6 @@ public:
     * @return nonzero on failure, 0 on success
     */
    static int getGevReady();
-
-#if 0
-   /** calls GAMS license check, if build by GAMS
-    * @return True if license check was skipped or successful or model fits into demo size restrictions
-    */
-   bool checkGamsLicense(
-      struct gmoRec*     gmo,                /**< GAMS modeling object */
-      struct palRec*     pal                 /**< GAMS audit and license object */
-   );
-#endif
-
-   /** registers a GAMS/CPLEX license, if build by GAMS
-    * @return True if license was registered or no CPLEX available
-    */
-   bool checkCplexLicense(
-      struct gmoRec*     gmo,                /**< GAMS modeling object */
-      struct palRec*     pal                 /**< GAMS audit and license object */
-   );
-
-   /** checks for GAMS/Ipopt commercial license
-    * @return True if Ipopt commercial license was found, false otherwise (even for demo models).
-    */
-   bool checkIpoptLicense(
-      struct gmoRec*     gmo,                /**< GAMS modeling object */
-      struct palRec*     pal                 /**< GAMS audit and license object */
-   );
-
-   /** checks for GAMS/Scip commercial license
-    * @return True if Scip commercial license was found, false otherwise (even for demo models).
-    */
-   bool checkScipLicense(
-      struct gmoRec*     gmo,                /**< GAMS modeling object */
-      struct palRec*     pal                 /**< GAMS audit and license object */
-   );
 
    /** initialization of solver interface and solver
     * The method should do initializes necessary for solving a given model.

@@ -19,6 +19,7 @@
 #ifdef GAMS_BUILD
 #include "gevlice.h"
 #include "palmcc.h"
+#include "GamsLicensing.h"
 #endif
 
 #include "GamsCompatibility.h"
@@ -198,7 +199,7 @@ int GamsOsi::readyAPI(
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
 
-   initLicensing(gmo, pal);
+   GAMSinitLicensing(gmo, pal);
 #endif
 
    // print Osi and solver version information
@@ -244,7 +245,7 @@ int GamsOsi::readyAPI(
 #ifdef COIN_HAS_OSICPX
             OsiCpxSolverInterface* osicpx;
 #ifdef GAMS_BUILD
-            if( !checkCplexLicense(gmo, pal) )
+            if( !GAMScheckCplexLicense(gmo, pal) )
             {
                gevLogStat(gev,"***");
                gevLogStat(gev,"*** LICENSE ERROR:");

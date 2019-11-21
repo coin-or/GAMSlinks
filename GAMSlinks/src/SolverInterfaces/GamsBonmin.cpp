@@ -26,6 +26,7 @@
 #include "gclgms.h"
 #ifdef GAMS_BUILD
 #include "palmcc.h"
+#include "GamsLicensing.h"
 #endif
 
 #include "GamsCompatibility.h"
@@ -72,7 +73,7 @@ int GamsBonmin::readyAPI(
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
 
-   initLicensing(gmo, pal);
+   GAMSinitLicensing(gmo, pal);
    if( gevGetIntOpt(gev, gevCurSolver) == gevSolver2Id(gev, "bonminh") )
    {
       ipoptlicensed = HSLInit(gmo, pal);
@@ -275,7 +276,7 @@ int GamsBonmin::callSolver()
       bonmin_setup->options()->GetStringValue("milp_solver", parvalue, prefixes[i]);
       if( parvalue == "Cplex" )
       {
-         if( !checkCplexLicense(gmo, pal) )
+         if( !GAMScheckCplexLicense(gmo, pal) )
          {
             gevLogStat(gev, "No valid CPLEX license found.");
             return 1;

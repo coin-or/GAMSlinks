@@ -20,6 +20,7 @@
 
 #include "GAMSlinksConfig.h"
 #include "GamsCompatibility.h"
+#include "GamsLicensing.h"
 
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
@@ -143,7 +144,7 @@ int GamsScip::readyAPI(
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
 
-   initLicensing(gmo, pal);
+   GAMSinitLicensing(gmo, pal);
 
 #ifdef COIN_HAS_OSIXPR
    /* Xpress license setup - don't say anything if failing, since Xpress is not used by default */
@@ -159,7 +160,7 @@ int GamsScip::readyAPI(
 #endif
 
    // check for academic license, or if we run in demo mode
-   if( !checkScipLicense(gmo, pal) )
+   if( !GAMScheckScipLicense(gmo, pal) )
    {
       gevLogStat(gev, "*** No SCIP license available.");
       gevLogStat(gev, "*** Please contact sales@gams.com to arrange for a license.");
@@ -342,7 +343,7 @@ SCIP_RETCODE GamsScip::setupSCIP()
 {
 #ifdef COIN_HAS_OSICPX
    // change default LP solver to CPLEX, if license available
-   if( gmo != NULL && checkCplexLicense(gmo, pal) )
+   if( gmo != NULL && GAMScheckCplexLicense(gmo, pal) )
    {
       SCIP_CALL( SCIPlpiSwitchSetSolver(SCIP_LPISW_CPLEX) );
    }

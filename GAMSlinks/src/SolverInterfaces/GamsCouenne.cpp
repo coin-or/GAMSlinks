@@ -32,6 +32,7 @@
 #endif
 
 #include "GamsCompatibility.h"
+#include "GamsLicensing.h"
 
 #include "CbcBranchActual.hpp"  // for CbcSOS
 #include "CbcBranchLotsize.hpp" // for CbcLotsize
@@ -104,7 +105,7 @@ int GamsCouenne::readyAPI(
    gevStatAudit(gev, buffer);
 #endif
 
-   initLicensing(gmo, pal);
+   GAMSinitLicensing(gmo, pal);
    ipoptlicensed = HSLInit(gmo, pal);
 
    gevLogStatPChar(gev, "\nCOIN-OR Couenne (Couenne Library " COUENNE_VERSION ")\nwritten by P. Belotti\n\n");
@@ -297,7 +298,7 @@ int GamsCouenne::callSolver()
    std::string parvalue;
    couenne_setup->options()->GetStringValue("lp_solver", parvalue, "");
 #ifdef COIN_HAS_OSICPX
-   if( parvalue == "cplex" && !checkCplexLicense(gmo, pal) )
+   if( parvalue == "cplex" && !GAMScheckCplexLicense(gmo, pal) )
    {
       gevLogStat(gev, "CPLEX as LP solver chosen, but no CPLEX license available. Aborting.\n");
       gmoSolveStatSet(gmo, gmoSolveStat_License);
@@ -315,7 +316,7 @@ int GamsCouenne::callSolver()
    couenne_setup->options()->GetBoolValue("feas_pump_heuristic", usescip, "couenne.");
    if( usescip )
       couenne_setup->options()->GetBoolValue("feas_pump_usescip", usescip, "couenne.");
-   if( usescip && !checkScipLicense(gmo, pal) )
+   if( usescip && !GAMScheckScipLicense(gmo, pal) )
    {
       gevLogStat(gev, "*** Use of SCIP is limited to academic users.");
       gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");
