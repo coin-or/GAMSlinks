@@ -649,7 +649,7 @@ SCIP_RETCODE makeExprtree(
 
          case nlMul: /* multiply */
          {
-            SCIPdebugPrintf("subtract\n");
+            SCIPdebugPrintf("multiply\n");
 
             assert(stackpos >= 2);
             term1 = stack[stackpos-1];
@@ -829,12 +829,15 @@ SCIP_RETCODE makeExprtree(
          case nlFuncArgN:
          {
             SCIPdebugPrintf("set number of arguments = %d\n", address);
-            nargs = address;
+            nargs = address + 1;  /* undo shift by one */
             break;
          }
 
          case nlCallArg1:
+            nargs = 1;
          case nlCallArg2:
+            if( opcode == nlCallArg2 )
+               nargs = 2;
          case nlCallArgN:
          {
             GamsFuncCode func;
@@ -910,8 +913,6 @@ SCIP_RETCODE makeExprtree(
                }
 
                case fnlog10:
-               case fnsllog10:
-               case fnsqlog10:
                {
                   SCIPdebugPrintf("log10 = ln * 1/ln(10)\n");
 
@@ -1062,7 +1063,6 @@ SCIP_RETCODE makeExprtree(
                }
 
                case fndiv:
-               case fndiv0:
                {
                   SCIPdebugPrintf("divide\n");
 
@@ -1072,20 +1072,6 @@ SCIP_RETCODE makeExprtree(
                   term2 = stack[stackpos-1];
                   --stackpos;
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_DIV, term2, term1) );
-                  break;
-               }
-
-               case fnslrec:
-               case fnsqrec: /* 1/x */
-               {
-                  SCIPdebugPrintf("reciprocal\n");
-
-                  assert(stackpos >= 1);
-                  term1 = stack[stackpos-1];
-                  --stackpos;
-
-                  SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_CONST, 1.0) );
                   SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_DIV, term2, term1) );
                   break;
                }
@@ -1104,7 +1090,7 @@ SCIP_RETCODE makeExprtree(
 
                case fnpoly: /* univariate polynomial */
                {
-                  SCIPdebugPrintf("univariate polynomial of degree %d\n", nargs-1);
+                  SCIPdebugPrintf("univariate polynomial of degree %d\n", nargs-2);
                   assert(nargs >= 0);
                   switch( nargs )
                   {
@@ -1138,22 +1124,22 @@ SCIP_RETCODE makeExprtree(
                         int nmonomials;
                         int zero;
 
-                        nmonomials = nargs-1;
-                        SCIP_CALL( SCIPallocBufferArray(scip, &monomials, nargs-1) );
+                        nmonomials = nargs-2;
+                        SCIP_CALL( SCIPallocBufferArray(scip, &monomials, nargs-2) );
 
                         zero = 0;
                         constant = 0.0;
-                        for( ; nargs > 0; --nargs )
+                        for( ; nargs > 1; --nargs )
                         {
                            assert(stackpos > 0);
 
                            term1 = stack[stackpos-1];
                            assert(SCIPexprGetOperator(term1) == SCIP_EXPR_CONST);
 
-                           if( nargs > 1 )
+                           if( nargs > 2 )
                            {
-                              exponent = (SCIP_Real)(nargs-1);
-                              SCIP_CALL( SCIPexprCreateMonomial(blkmem, &monomials[nargs-2], SCIPexprGetOpReal(term1), 1, &zero, &exponent) );
+                              exponent = (SCIP_Real)(nargs-2);
+                              SCIP_CALL( SCIPexprCreateMonomial(blkmem, &monomials[nargs-3], SCIPexprGetOpReal(term1), 1, &zero, &exponent) );
                            }
                            else
                               constant = SCIPexprGetOpReal(term1);
@@ -3183,6 +3169,10 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
       SCIP_CALL( SCIPsetIntParam(scip, "display/maxdepth/active", 0) );
       SCIP_CALL( SCIPsetIntParam(scip, "display/time/active", 2) );
    }
+#endif
+
+#ifdef _WIN32
+   SCIP_CALL( SCIPsetIntParam(scip, "misc/usesymmetry", 0) );
 #endif
 
    /* enable column on number of branching on nonlinear variables, if any */

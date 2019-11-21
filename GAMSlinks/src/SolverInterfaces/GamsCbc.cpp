@@ -849,13 +849,13 @@ bool GamsCbc::setupParameters()
                gevLogStatPChar(gev, buffer);
                par_list.push_back("01last");
             }
-            else if( strcmp(sval, "0") == 0 )
+            else if( strcmp(sval, "1") == 0 )
             {
                sprintf(buffer, "WARNING: Option %s is no longer of boolean type. Use value 'on' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
                par_list.push_back("on");
             }
-            else if( strcmp(sval, "1") == 0 )
+            else if( strcmp(sval, "0") == 0 )
             {
                sprintf(buffer, "WARNING: Option %s is no longer of boolean type. Use value 'off' instead.\n", sname);
                gevLogStatPChar(gev, buffer);

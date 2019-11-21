@@ -70,9 +70,9 @@ static int __stdcall grbcallback(GRBmodel* model, void* qcbdata, int where, void
 #include "mosek.h"
 
 static int MSKAPI mskcallback(MSKtask_t task, MSKuserhandle_t handle, MSKcallbackcodee caller,
-   MSKCONST MSKrealt * douinf,
-   MSKCONST MSKint32t * intinf,
-   MSKCONST MSKint64t * lintinf
+   const MSKrealt * douinf,
+   const MSKint32t * intinf,
+   const MSKint64t * lintinf
 )
 {
    return gevTerminateGet((gevHandle_t)handle);
@@ -113,9 +113,6 @@ public:
    }
 
    ~GamsOutputStreamBuf()
-#ifdef _MSC_VER
-     _NOEXCEPT
-#endif
    {
       overflow(traits_type::eof());
    }
@@ -276,7 +273,7 @@ int GamsOsi::readyAPI(
             GUlicenseInit_t initType;
 
             /* Gurobi license setup */
-            if( (status=gevgurobilice(gev, pal, (void**)&grbenv, NULL, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 1, &initType)) )
+            if( (status=gevgurobilice(gev, pal, NULL, NULL, (void**)&grbenv, NULL, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 1, &initType)) )
             {
                if( GRB_ERROR_NO_LICENSE == status )
                   sprintf(buffer, "Failed to create Gurobi environment. Missing license.");
@@ -346,16 +343,21 @@ int GamsOsi::readyAPI(
 
             /* Xpress license initialization: calls XPRSinit() in a thread-safe way and passes in GAMS/Xpress license */
             if( gevxpressliceInitTS(gev, pal, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType, &initRC, msg, sizeof(msg)) )
+            {
+               if( *msg != '\0' )
+                  gevLogStat(gev, msg);
                gevLogStat(gev, "Trying to use Xpress standalone license.\n");
+            }
 #endif
             OsiXprSolverInterface* osixpr = new OsiXprSolverInterface(0,0);  /* also calls XPRSinit() */
 
 #ifdef GAMS_BUILD
-            /* Xpress license finalize: calls XPRSfree() in a thread-safe way
+            /* Xpress license finalize: calls XPRSfree() in a thread-safe way, if it was called by gevxpressliceInitTS, which is indicated by initRC >= 0
              * However, not much should happen if the call to XPRSinit() was successful in OsiXprSolverInterface.
              * If it wasn't, then we terminate anyway (return 1 below).
              */
-            gevxpressliceFreeTS();
+            if( initRC >= 0 )
+               gevxpressliceFreeTS();
 #endif
 #if 0 // getNumInstances() is always 0 now
             if( !osixpr->getNumInstances() )
@@ -758,15 +760,9 @@ bool GamsOsi::setupParameters()
          MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_OPTIMIZER_MAX_TIME, reslim);
          if( !isLP() && nodelim > 0 )
             MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_MIO_MAX_NUM_RELAXS, nodelim);
-         MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_TOL_REL_GAP, 0.0);
-         MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_NEAR_TOL_REL_GAP, optcr);
-         MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_TOL_ABS_GAP, 0.0);
-         MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_NEAR_TOL_ABS_GAP, optca);
+         MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_TOL_REL_GAP, optcr);
+         MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_TOL_ABS_GAP, optca);
          MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_NUM_THREADS, gevThreads(gev));
-         /* enable checks for termination criteria (#nodes, #LPs, gap) */
-         MSK_putdouparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DPAR_MIO_DISABLE_TERM_TIME, 0.0);
-         //if( gevGetIntOpt(gev, gevInteger4) )
-         //	MSK_putintparam(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_IPAR_MIO_CONSTRUCT_SOL, MSK_ON);
 
          if( gmoOptFile(gmo) > 0 )
          {
@@ -1317,17 +1313,6 @@ bool GamsOsi::writeSolution(
 
          switch( solstatus )
          {
-            case MSK_SOL_STA_NEAR_INTEGER_OPTIMAL:
-            case MSK_SOL_STA_NEAR_OPTIMAL:
-               solwritten = true;
-               gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-               if( isLP() )
-                  gmoModelStatSet(gmo, gmoModelStat_OptimalLocal);
-               else
-                  gmoModelStatSet(gmo, gmoModelStat_Integer);
-               gevLogStat(gev, "Solved nearly to optimality.");
-               break;
-
             case MSK_SOL_STA_PRIM_FEAS:
             case MSK_SOL_STA_PRIM_AND_DUAL_FEAS:
                solwritten = true;
@@ -1363,11 +1348,6 @@ bool GamsOsi::writeSolution(
                break;
 
             case MSK_SOL_STA_DUAL_FEAS:
-            case MSK_SOL_STA_NEAR_PRIM_FEAS:
-            case MSK_SOL_STA_NEAR_DUAL_FEAS:
-            case MSK_SOL_STA_NEAR_PRIM_AND_DUAL_FEAS:
-            case MSK_SOL_STA_NEAR_PRIM_INFEAS_CER:
-            case MSK_SOL_STA_NEAR_DUAL_INFEAS_CER:
                gmoSolveStatSet(gmo, gmoSolveStat_Solver);
                gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
                gevLogStat(gev, "Stopped before feasibility or infeasibility proven.");
@@ -1394,14 +1374,6 @@ bool GamsOsi::writeSolution(
                      gmoSolveStatSet(gmo, gmoSolveStat_Normal);
                      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
                      gevLogStat(gev, "Model is ill posed.");
-                     break;
-
-                  case MSK_PRO_STA_NEAR_DUAL_FEAS:
-                  case MSK_PRO_STA_NEAR_PRIM_AND_DUAL_FEAS:
-                  case MSK_PRO_STA_NEAR_PRIM_FEAS:
-                     gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-                     gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
-                     gevLogStat(gev, "Stopped before feasibility or infeasibility proven.");
                      break;
 
                   case MSK_PRO_STA_PRIM_AND_DUAL_FEAS:

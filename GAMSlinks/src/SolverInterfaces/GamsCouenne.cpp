@@ -263,9 +263,13 @@ int GamsCouenne::callSolver()
       if( gmoOptFile(gmo) )
       {
          char buffer[GMS_SSSIZE];
-         couenne_setup->options()->SetStringValue("print_user_options", "yes", true, true); //FIXME doesn't seem to have effect
          gmoNameOptFile(gmo, buffer);
          couenne_setup->BabSetupBase::readOptionsFile(buffer);
+
+         std::string useroptions;
+         couenne_setup->options()->PrintUserOptions(useroptions);
+         gevLogPChar(gev, "List of user-set options (ignore column 'used'):\n");
+         gevLogPChar(gev, useroptions.c_str());
       }
       else
       {
@@ -538,6 +542,7 @@ int GamsCouenne::callSolver()
                if( minlp->model_status == gmoModelStat_InfeasibleNoSolution )
                {
                   minlp->model_status = gmoModelStat_OptimalGlobal;
+                  minlp->solver_status = gmoSolveStat_Normal;
                   best_bound = best_val;
                }
                else
@@ -638,7 +643,10 @@ int GamsCouenne::callSolver()
          }
 
          if( minlp->model_status != gmoModelStat_OptimalGlobal && fabs(gmoGetRelativeGap(gmo)) < 2e-9 )
+         {
             gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
+            gmoSolveStatSet(gmo, gmoSolveStat_Normal);
+         }
          else if( minlp->model_status == gmoModelStat_OptimalGlobal && fabs(gmoGetRelativeGap(gmo)) >= 2e-9 )
             gmoModelStatSet(gmo, gmoModelStat_Feasible);
       }
@@ -1219,13 +1227,16 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
 
          case nlFuncArgN: // number of function arguments
          {
-            nargs = address;
+            nargs = address + 1;  // undo shift by 1
             debugout << nargs << " arguments" << std::endl;
             break;
          }
 
          case nlCallArg1 :
+            nargs = 1;
          case nlCallArg2 :
+            if( opcode == nlCallArg2 )
+               nargs = 2;
          case nlCallArgN :
          {
             debugout << "call function ";
@@ -1263,8 +1274,6 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
                }
 
                case fnexp:
-               case fnslexp:
-               case fnsqexp:
                {
                   debugout << "exp" << std::endl;
 
@@ -1283,8 +1292,6 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
                }
 
                case fnlog10:
-               case fnsllog10:
-               case fnsqlog10:
                {
                   debugout << "log10 = ln * 1/ln(10)" << std::endl;
 
@@ -1416,7 +1423,6 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
                }
 
                case fndiv:
-               case fndiv0:
                {
                   debugout << "divide" << std::endl;
                   expression* term1 = stack.back(); stack.pop_back();
@@ -1428,39 +1434,29 @@ Couenne::expression* GamsCouenne::parseGamsInstructions(
                   break;
                }
 
-               case fnslrec: // 1/x
-               case fnsqrec: // 1/x
-               {
-                  debugout << "reciproce" << std::endl;
-
-                  expression* term = stack.back(); stack.pop_back();
-                  exp = new exprInv(term);
-                  break;
-               }
-
                case fnpoly: /* univariate polynomial */
                {
-                  debugout << "univariate polynomial of degree " << nargs-1 << std::endl;
+                  debugout << "univariate polynomial of degree " << nargs-2 << std::endl;
                   assert(nargs >= 0);
                   switch( nargs )
                   {
-                     case 0:
+                     case 1:
                         delete stack.back(); stack.pop_back(); // delete variable of polynomial
                         exp = new exprConst(0.0);
                         break;
 
-                     case 1: // "constant" polynomial
+                     case 2: // "constant" polynomial
                         exp = stack.back(); stack.pop_back();
                         delete stack.back(); stack.pop_back(); // delete variable of polynomial
                         break;
 
                      default: // polynomial is at least linear
                      {
-                        std::vector<expression*> coeff(nargs);
-                        while( nargs )
+                        std::vector<expression*> coeff(nargs-1);
+                        while( nargs > 1 )
                         {
                            assert(!stack.empty());
-                           coeff[nargs-1] = stack.back();
+                           coeff[nargs-2] = stack.back();
                            stack.pop_back();
                            --nargs;
                         }

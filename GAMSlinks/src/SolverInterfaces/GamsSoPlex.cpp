@@ -60,9 +60,6 @@ public:
    }
 
    ~GamsOutputStreamBuf()
-#ifdef _MSC_VER
-     _NOEXCEPT
-#endif
    {
       overflow(traits_type::eof());
    }

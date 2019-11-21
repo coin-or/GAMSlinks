@@ -783,6 +783,12 @@ void GamsNLP::finalize_solution(
          write_solution = true;
          break;
 
+      case FEASIBLE_POINT_FOUND:
+         gmoModelStatSet(gmo, gmoModelStat_Feasible);
+         gmoSolveStatSet(gmo, gmoSolveStat_Solver); // terminated by solver
+         write_solution = true;
+         break;
+
       case STOP_AT_ACCEPTABLE_POINT:
       case USER_REQUESTED_STOP:
       case STOP_AT_TINY_STEP:
