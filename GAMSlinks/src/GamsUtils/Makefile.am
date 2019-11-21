@@ -16,7 +16,8 @@ libGamsUtils_la_SOURCES = \
   $(GAMS_PATH)/apifiles/C/api/gmomcc.c \
   $(GAMS_PATH)/apifiles/C/api/gevmcc.c \
   $(GAMS_PATH)/apifiles/C/api/gclgms.c \
-  $(GAMS_PATH)/apifiles/C/api/gdxcc.c
+  $(GAMS_PATH)/apifiles/C/api/gdxcc.c \
+  $(GAMS_PATH)/apifiles/C/api/palmcc.c
 libGamsUtils_la_LDFLAGS =
 
 includecoindir = $(includedir)/coin

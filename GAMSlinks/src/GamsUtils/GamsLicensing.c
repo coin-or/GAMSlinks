@@ -8,18 +8,23 @@
 
 #include "GamsLicensing.h"
 
+#include <assert.h>
+
+#include "palmcc.h"
+#include "gmomcc.h"
+#include "gevmcc.h"
+
 void GAMSinitLicensing(
    struct gmoRec*     gmo,                /**< GAMS modeling object */
    struct palRec*     pal                 /**< GAMS audit and license object */
    )
 {
-#ifdef GAMS_BUILD
    char ll[80];
-   gevRec* gev;
+   gevHandle_t gev;
 
    assert(pal != NULL);
 
-   gev = (gevRec*)gmoEnvironment(gmo);
+   gev = (gevHandle_t)gmoEnvironment(gmo);
 
    palLicenseRegisterGAMS(pal, 1, gevGetStrOpt(gev, "License1", ll));
    palLicenseRegisterGAMS(pal, 2, gevGetStrOpt(gev, "License2", ll));
@@ -28,70 +33,41 @@ void GAMSinitLicensing(
    palLicenseRegisterGAMS(pal, 5, gevGetStrOpt(gev, "License5", ll));
    palLicenseRegisterGAMSDone(pal);
 
-   palLicenseCheck(pal,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo));
-#endif
+   palLicenseCheck(pal, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo));
 }
 
-#if 0
-bool GAMScheckGamsLicense(
-   struct gmoRec*     gmo,                /**< GAMS modeling object */
+bool GAMScheckCPLEXLicense(
    struct palRec*     pal                 /**< GAMS audit and license object */
 )
 {
-#ifdef GAMS_BUILD
-   gevRec* gev = (gevRec*)gmoEnvironment(gmo);
-
-   if( palLicenseCheck(pal,gmoM(gmo),gmoN(gmo),gmoNZ(gmo),gmoNLNZ(gmo),gmoNDisc(gmo)) )
-   {
-      char msg[256];
-      gevLogStat(gev, "The license check failed:");
-      while( palLicenseGetMessage(pal, msg, sizeof(msg)) )
-         gevLogStat(gev, msg);
-      return false;
-   }
-#endif
-   return true;
-}
-#endif
-
-bool GAMScheckCplexLicense(
-   struct gmoRec*     gmo,                /**< GAMS modeling object */
-   struct palRec*     pal                 /**< GAMS audit and license object */
-)
-{
-#ifdef GAMS_BUILD
    assert(pal != NULL);
 
-   if( !palLicenseIsDemoCheckout(pal) && palLicenseCheckSubSys(pal, const_cast<char*>("OCCPCL")) )
+   if( !palLicenseIsDemoCheckout(pal) && palLicenseCheckSubSys(pal, (char*)"OCCPCL") )
       return false;
-#endif
+
    return true;
 }
 
 bool GAMScheckIpoptLicense(
-   struct gmoRec*     gmo,                /**< GAMS modeling object */
    struct palRec*     pal                /**< GAMS audit and license object */
 )
 {
-#ifdef GAMS_BUILD
    assert(pal != NULL);
 
-   if( !palLicenseIsDemoCheckout(pal) && palLicenseCheckSubSys(pal, const_cast<char*>("IP")) )
+   if( !palLicenseIsDemoCheckout(pal) && palLicenseCheckSubSys(pal, (char*)"IP") )
       return false;
-#endif
+
    return true;
 }
 
-bool GAMScheckScipLicense(
-   struct gmoRec*     gmo,                /**< GAMS modeling object */
+bool GAMScheckSCIPLicense(
    struct palRec*     pal                /**< GAMS audit and license object */
 )
 {
-#ifdef GAMS_BUILD
    assert(pal != NULL);
 
-   if( !palLicenseIsDemoCheckout(pal) && !palLicenseIsAcademic(pal) && palLicenseCheckSubSys(pal, const_cast<char*>("SC")) )
+   if( !palLicenseIsDemoCheckout(pal) && !palLicenseIsAcademic(pal) && palLicenseCheckSubSys(pal, (char*)"SC") )
       return false;
-#endif
+
    return true;
 }

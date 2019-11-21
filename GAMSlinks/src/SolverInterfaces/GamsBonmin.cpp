@@ -24,12 +24,10 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 #include "gclgms.h"
-#ifdef GAMS_BUILD
 #include "palmcc.h"
-#include "GamsLicensing.h"
-#endif
 
 #include "GamsCompatibility.h"
+#include "GamsLicensing.h"
 
 using namespace Bonmin;
 using namespace Ipopt;
@@ -39,10 +37,8 @@ GamsBonmin::~GamsBonmin()
    delete bonmin_setup;
    delete msghandler;
 
-#ifdef GAMS_BUILD
    if( pal != NULL )
       palFree(&pal);
-#endif
 }
 
 int GamsBonmin::readyAPI(
@@ -60,18 +56,19 @@ int GamsBonmin::readyAPI(
    assert(gev != NULL);
 
    ipoptlicensed = false;
-#ifdef GAMS_BUILD
    char buffer[GMS_SSSIZE];
 
    if( pal == NULL && !palCreate(&pal, buffer, sizeof(buffer)) )
       return 1;
 
+#ifdef GAMS_BUILD
 #define PALPTR pal
 #include "coinlibdCLsvn.h" 
    palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+#endif
 
    GAMSinitLicensing(gmo, pal);
    if( gevGetIntOpt(gev, gevCurSolver) == gevSolver2Id(gev, "bonminh") )
@@ -86,7 +83,6 @@ int GamsBonmin::readyAPI(
          return 1;
       }
    }
-#endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Bonmin (Bonmin Library " BONMIN_VERSION ")\n");
    if( ipoptlicensed )
@@ -94,10 +90,8 @@ int GamsBonmin::readyAPI(
    else
       gevLogStatPChar(gev, "written by P. Bonami.\n");
 
-#ifdef GAMS_BUILD
-   if( !ipoptlicensed && (palLicenseCheckSubSys(pal, const_cast<char*>("IP")) == 0) )
+   if( !ipoptlicensed && !GAMScheckIpoptLicense(pal) )
       gevLogPChar(gev, "\nNote: This is the free version BONMIN, but you could also use the commercially supported and potentially higher performance version BONMINH.\n");
-#endif
 
    delete bonmin_setup;
    bonmin_setup = new BonminSetup();
@@ -269,14 +263,13 @@ int GamsBonmin::callSolver()
    // check for GAMS/CPLEX license, if required
    std::string parvalue;
 #ifdef COIN_HAS_OSICPX
-#ifdef GAMS_BUILD
    std::string prefixes[7] = { "", "bonmin", "oa_decomposition.", "pump_for_minlp.", "rins.", "rens.", "local_branch." };
    for( int i = 0; i < 7; ++i )
    {
       bonmin_setup->options()->GetStringValue("milp_solver", parvalue, prefixes[i]);
       if( parvalue == "Cplex" )
       {
-         if( !GAMScheckCplexLicense(gmo, pal) )
+         if( !GAMScheckCPLEXLicense(pal) )
          {
             gevLogStat(gev, "No valid CPLEX license found.");
             return 1;
@@ -285,7 +278,6 @@ int GamsBonmin::callSolver()
             break;
       }
    }
-#endif
 #endif
 
    double ipoptinf;

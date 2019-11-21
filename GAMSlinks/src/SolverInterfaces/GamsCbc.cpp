@@ -20,9 +20,7 @@
 #include "gevmcc.h"
 #include "optcc.h"
 #include "gdxcc.h"
-#ifdef GAMS_BUILD
 #include "palmcc.h"
-#endif
 
 #include "GamsCompatibility.h"
 

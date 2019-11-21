@@ -27,9 +27,7 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 #include "gclgms.h"
-#ifdef GAMS_BUILD
 #include "palmcc.h"
-#endif
 
 #include "GamsCompatibility.h"
 #include "GamsLicensing.h"
@@ -71,10 +69,8 @@ GamsCouenne::~GamsCouenne()
    delete couenne_setup;
    delete msghandler;
 
-#ifdef GAMS_BUILD
    if( pal != NULL )
       palFree(&pal);
-#endif
 }
 
 int GamsCouenne::readyAPI(
@@ -82,6 +78,8 @@ int GamsCouenne::readyAPI(
    struct optRec*     opt                 /**< GAMS options object */
 )
 {
+   char buffer[GMS_SSSIZE];
+
    this->gmo = gmo;
    assert(gmo != NULL);
 
@@ -91,12 +89,10 @@ int GamsCouenne::readyAPI(
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
-#ifdef GAMS_BUILD
-   char buffer[GMS_SSSIZE];
-
    if( pal == NULL && !palCreate(&pal, buffer, sizeof(buffer)) )
       return 1;
 
+#ifdef GAMS_BUILD
 #define PALPTR pal
 #include "coinlibdCL2svn.h" 
    palGetAuditLine(pal, buffer);
@@ -298,7 +294,7 @@ int GamsCouenne::callSolver()
    std::string parvalue;
    couenne_setup->options()->GetStringValue("lp_solver", parvalue, "");
 #ifdef COIN_HAS_OSICPX
-   if( parvalue == "cplex" && !GAMScheckCplexLicense(gmo, pal) )
+   if( parvalue == "cplex" && !GAMScheckCPLEXLicense(pal) )
    {
       gevLogStat(gev, "CPLEX as LP solver chosen, but no CPLEX license available. Aborting.\n");
       gmoSolveStatSet(gmo, gmoSolveStat_License);
@@ -316,7 +312,7 @@ int GamsCouenne::callSolver()
    couenne_setup->options()->GetBoolValue("feas_pump_heuristic", usescip, "couenne.");
    if( usescip )
       couenne_setup->options()->GetBoolValue("feas_pump_usescip", usescip, "couenne.");
-   if( usescip && !GAMScheckScipLicense(gmo, pal) )
+   if( usescip && !GAMScheckSCIPLicense(pal) )
    {
       gevLogStat(gev, "*** Use of SCIP is limited to academic users.");
       gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");

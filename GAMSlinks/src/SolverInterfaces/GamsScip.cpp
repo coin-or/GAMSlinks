@@ -13,9 +13,9 @@
 // GAMS
 #include "gmomcc.h"
 #include "gevmcc.h"
+#include "palmcc.h"
 #ifdef GAMS_BUILD
 #include "gevlice.h" // for xpress license setup
-#include "palmcc.h"
 #endif
 
 #include "GAMSlinksConfig.h"
@@ -106,10 +106,10 @@ GamsScip::~GamsScip()
 {
    SCIP_CALL_ABORT( freeSCIP() );
 
-#ifdef GAMS_BUILD
    if( pal != NULL )
       palFree(&pal);
 
+#ifdef GAMS_BUILD
    if( calledxprslicense )
       gevxpressliceFreeTS();
 #endif
@@ -133,20 +133,21 @@ int GamsScip::readyAPI(
    assert(gev != NULL);
 
    ipoptlicensed = false;
-#ifdef GAMS_BUILD
    if( pal == NULL && !palCreate(&pal, buffer, sizeof(buffer)) )
       return 1;
 
+#ifdef GAMS_BUILD
 #define PALPTR pal
 #include "coinlibdCL5svn.h" 
    palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+#endif
 
    GAMSinitLicensing(gmo, pal);
 
-#ifdef COIN_HAS_OSIXPR
+#if defined(COIN_HAS_OSIXPR) && defined(GAMS_BUILD)
    /* Xpress license setup - don't say anything if failing, since Xpress is not used by default */
    if( !calledxprslicense )
    {
@@ -157,10 +158,9 @@ int GamsScip::readyAPI(
          calledxprslicense = true;
    }
 #endif
-#endif
 
    // check for academic license, or if we run in demo mode
-   if( !GAMScheckScipLicense(gmo, pal) )
+   if( !GAMScheckSCIPLicense(pal) )
    {
       gevLogStat(gev, "*** No SCIP license available.");
       gevLogStat(gev, "*** Please contact sales@gams.com to arrange for a license.");
@@ -243,13 +243,11 @@ int GamsScip::callSolver()
    char* interactive = NULL;
    SCIP_CALL_ABORT( SCIPgetStringParam(scip, "gams/interactive", &interactive) );
    assert(interactive != NULL);
-#ifdef GAMS_BUILD
    if( interactive[0] != '\0' && !palLicenseIsAcademic(pal) && palLicenseCheckSubSys(pal, const_cast<char*>("SC")) )
    {
       gevLogStat(gev, "SCIP interactive shell not available in demo mode.\n");
       interactive[0] = '\0';
    }
-#endif
 
    SCIP_Bool printstat;
    SCIP_CALL_ABORT( SCIPgetBoolParam(scip, "display/statistics", &printstat) );
@@ -343,7 +341,7 @@ SCIP_RETCODE GamsScip::setupSCIP()
 {
 #ifdef COIN_HAS_OSICPX
    // change default LP solver to CPLEX, if license available
-   if( gmo != NULL && GAMScheckCplexLicense(gmo, pal) )
+   if( gmo != NULL && GAMScheckCPLEXLicense(pal) )
    {
       SCIP_CALL( SCIPlpiSwitchSetSolver(SCIP_LPISW_CPLEX) );
    }

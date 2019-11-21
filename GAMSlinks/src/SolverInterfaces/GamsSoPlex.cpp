@@ -19,9 +19,7 @@
 // GAMS
 #include "gmomcc.h"
 #include "gevmcc.h"
-#ifdef GAMS_BUILD
 #include "palmcc.h"
-#endif
 
 #include "GAMSlinksConfig.h"
 #include "GamsCompatibility.h"
@@ -309,11 +307,8 @@ GamsSoPlex::~GamsSoPlex()
    delete logstreambuf;
    logstreambuf = NULL;
 
-#ifdef GAMS_BUILD
    if( pal != NULL )
       palFree(&pal);
-#endif
-
 }
 
 int GamsSoPlex::readyAPI(
@@ -321,8 +316,6 @@ int GamsSoPlex::readyAPI(
    struct optRec*     opt_                /**< GAMS options object */
 )
 {
-   char buffer[512];
-
    gmo = gmo_;
    assert(gmo != NULL);
 
@@ -332,22 +325,23 @@ int GamsSoPlex::readyAPI(
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
-#ifdef GAMS_BUILD
+   char buffer[512];
    if( pal == NULL && !palCreate(&pal, buffer, sizeof(buffer)) )
       return 1;
 
+#ifdef GAMS_BUILD
 #define PALPTR pal
 #include "coinlibdCLBsvn.h"
    palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
-
-   GAMSinitLicensing(gmo, pal);
 #endif
 
+   GAMSinitLicensing(gmo, pal);
+
    // check for academic license, or if we run in demo mode
-   if( !GAMScheckScipLicense(gmo, pal) )
+   if( !GAMScheckSCIPLicense(pal) )
    {
       gevLogStat(gev, "*** No SoPlex license available.");
       gevLogStat(gev, "*** Please contact sales@gams.com to arrange for a license.");

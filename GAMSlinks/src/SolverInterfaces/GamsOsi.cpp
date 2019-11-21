@@ -18,9 +18,9 @@
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
 #include "gevlice.h"
+#endif
 #include "palmcc.h"
 #include "GamsLicensing.h"
-#endif
 
 #include "GamsCompatibility.h"
 
@@ -170,11 +170,11 @@ int GamsOsi::readyAPI(
    assert(gev != NULL);
 
    // print GAMS version information
-#ifdef GAMS_BUILD
    struct palRec* pal;
    if( !palCreate(&pal, buffer, sizeof(buffer)) )
       return 1;
 
+#ifdef GAMS_BUILD
 #define PALPTR pal
    switch( solverid )
    {
@@ -198,9 +198,9 @@ int GamsOsi::readyAPI(
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+#endif
 
    GAMSinitLicensing(gmo, pal);
-#endif
 
    // print Osi and solver version information
    gevLogStat(gev, "");
@@ -244,8 +244,7 @@ int GamsOsi::readyAPI(
          {
 #ifdef COIN_HAS_OSICPX
             OsiCpxSolverInterface* osicpx;
-#ifdef GAMS_BUILD
-            if( !GAMScheckCplexLicense(gmo, pal) )
+            if( !GAMScheckCPLEXLicense(pal) )
             {
                gevLogStat(gev,"***");
                gevLogStat(gev,"*** LICENSE ERROR:");
@@ -255,7 +254,7 @@ int GamsOsi::readyAPI(
                gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
             }
-#endif
+
             osicpx = new OsiCpxSolverInterface;
             osi = osicpx;
 #else
@@ -391,9 +390,7 @@ int GamsOsi::readyAPI(
       gevLogStat(gev, error.message().c_str());
       if( solverid == CPLEX || solverid == GUROBI || solverid == MOSEK || solverid == XPRESS )
       {
-#ifdef GAMS_BUILD
          palFree(&pal);
-#endif
          gmoSolveStatSet(gmo, gmoSolveStat_License);
          gmoModelStatSet(gmo, gmoModelStat_LicenseError);
       }
@@ -409,9 +406,7 @@ int GamsOsi::readyAPI(
       gevLogStat(gev, "Unknown exception caught when creating Osi interface\n");
       return 1;
    }
-#ifdef GAMS_BUILD
    palFree(&pal);
-#endif
 
    // setup message handler
    if( msghandler == NULL )

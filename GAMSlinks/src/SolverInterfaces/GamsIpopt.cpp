@@ -19,10 +19,9 @@
 // GAMS
 #include "gmomcc.h"
 #include "gevmcc.h"
-#ifdef GAMS_BUILD
 #include "palmcc.h"
-#endif
 
+#include "GamsLicensing.h"
 #include "GamsCompatibility.h"
 
 using namespace Ipopt;
@@ -45,19 +44,20 @@ int GamsIpopt::readyAPI(
    assert(gev != NULL);
 
    ipoptlicensed = false;
-#ifdef GAMS_BUILD
    struct palRec* pal;
    char buffer[GMS_SSSIZE];
 
    if( !palCreate(&pal, buffer, sizeof(buffer)) )
       return 1;
 
+#ifdef GAMS_BUILD
 #define PALPTR pal
 #include "coinlibdCL3svn.h" 
    palGetAuditLine(pal,buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+#endif
 
    GAMSinitLicensing(gmo, pal);
    if( gevGetIntOpt(gev, gevCurSolver) == gevSolver2Id(gev, "ipopth") )
@@ -72,7 +72,6 @@ int GamsIpopt::readyAPI(
          return 1;
       }
    }
-#endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Interior Point Optimizer (Ipopt Library " IPOPT_VERSION ")\n");
    if( ipoptlicensed )
@@ -80,12 +79,10 @@ int GamsIpopt::readyAPI(
    else
       gevLogStatPChar(gev, "written by A. Waechter.\n");
 
-#ifdef GAMS_BUILD
-   if( !ipoptlicensed && (palLicenseCheckSubSys(pal, const_cast<char*>("IP")) == 0) )
+   if( !ipoptlicensed && !GAMScheckIpoptLicense(pal) )
       gevLogPChar(gev, "\nNote: This is the free version IPOPT, but you could also use the commercially supported and potentially higher performance version IPOPTH.\n");
 
    palFree(&pal);
-#endif
 
    ipopt = new IpoptApplication(false);
 

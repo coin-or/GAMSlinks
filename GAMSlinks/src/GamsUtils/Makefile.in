@@ -66,7 +66,7 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libGamsUtils_la_LIBADD =
 am_libGamsUtils_la_OBJECTS = GamsLicensing.lo GamsSolveTrace.lo \
-	optcc.lo gmomcc.lo gevmcc.lo gclgms.lo gdxcc.lo
+	optcc.lo gmomcc.lo gevmcc.lo gclgms.lo gdxcc.lo palmcc.lo
 libGamsUtils_la_OBJECTS = $(am_libGamsUtils_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -355,7 +355,8 @@ libGamsUtils_la_SOURCES = \
   $(GAMS_PATH)/apifiles/C/api/gmomcc.c \
   $(GAMS_PATH)/apifiles/C/api/gevmcc.c \
   $(GAMS_PATH)/apifiles/C/api/gclgms.c \
-  $(GAMS_PATH)/apifiles/C/api/gdxcc.c
+  $(GAMS_PATH)/apifiles/C/api/gdxcc.c \
+  $(GAMS_PATH)/apifiles/C/api/palmcc.c
 
 libGamsUtils_la_LDFLAGS = 
 includecoindir = $(includedir)/coin
@@ -445,6 +446,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gevmcc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmomcc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optcc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palmcc.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -501,6 +503,13 @@ gdxcc.lo: $(GAMS_PATH)/apifiles/C/api/gdxcc.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_PATH)/apifiles/C/api/gdxcc.c' object='gdxcc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gdxcc.lo `test -f '$(GAMS_PATH)/apifiles/C/api/gdxcc.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/gdxcc.c
+
+palmcc.lo: $(GAMS_PATH)/apifiles/C/api/palmcc.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT palmcc.lo -MD -MP -MF "$(DEPDIR)/palmcc.Tpo" -c -o palmcc.lo `test -f '$(GAMS_PATH)/apifiles/C/api/palmcc.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/palmcc.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/palmcc.Tpo" "$(DEPDIR)/palmcc.Plo"; else rm -f "$(DEPDIR)/palmcc.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_PATH)/apifiles/C/api/palmcc.c' object='palmcc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o palmcc.lo `test -f '$(GAMS_PATH)/apifiles/C/api/palmcc.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/palmcc.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
