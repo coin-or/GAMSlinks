@@ -65,8 +65,8 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includecoindir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libGamsUtils_la_LIBADD =
-am_libGamsUtils_la_OBJECTS = GamsOptions.lo GamsSolveTrace.lo optcc.lo \
-	gmomcc.lo gevmcc.lo gclgms.lo gdxcc.lo
+am_libGamsUtils_la_OBJECTS = GamsSolveTrace.lo optcc.lo gmomcc.lo \
+	gevmcc.lo gclgms.lo gdxcc.lo
 libGamsUtils_la_OBJECTS = $(am_libGamsUtils_la_OBJECTS)
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -78,14 +78,6 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
-	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
-	$(AM_CXXFLAGS) $(CXXFLAGS)
-CXXLD = $(CXX)
-CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libGamsUtils_la_SOURCES)
 DIST_SOURCES = $(libGamsUtils_la_SOURCES)
 includecoinHEADERS_INSTALL = $(INSTALL_HEADER)
@@ -356,7 +348,7 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = 
 lib_LTLIBRARIES = libGamsUtils.la
-libGamsUtils_la_SOURCES = GamsOptions.cpp GamsSolveTrace.c \
+libGamsUtils_la_SOURCES = GamsSolveTrace.c \
   $(GAMS_PATH)/apifiles/C/api/optcc.c \
   $(GAMS_PATH)/apifiles/C/api/gmomcc.c \
   $(GAMS_PATH)/apifiles/C/api/gevmcc.c \
@@ -365,7 +357,7 @@ libGamsUtils_la_SOURCES = GamsOptions.cpp GamsSolveTrace.c \
 
 libGamsUtils_la_LDFLAGS = 
 includecoindir = $(includedir)/coin
-includecoin_HEADERS = GamsCompatibility.h GamsOptions.hpp GamsNLinstr.h GamsSolveTrace.h
+includecoin_HEADERS = GamsCompatibility.h GamsNLinstr.h GamsSolveTrace.h
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(GAMS_PATH)/apifiles/C/api` $(GAMSLIBCFLAGS)
 DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 
@@ -378,7 +370,7 @@ DISTCLEANFILES =
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cpp .lo .o .obj
+.SUFFIXES: .c .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -436,7 +428,7 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libGamsUtils.la: $(libGamsUtils_la_OBJECTS) $(libGamsUtils_la_DEPENDENCIES) 
-	$(CXXLINK) -rpath $(libdir) $(libGamsUtils_la_LDFLAGS) $(libGamsUtils_la_OBJECTS) $(libGamsUtils_la_LIBADD) $(LIBS)
+	$(LINK) -rpath $(libdir) $(libGamsUtils_la_LDFLAGS) $(libGamsUtils_la_OBJECTS) $(libGamsUtils_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -444,7 +436,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOptions.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSolveTrace.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gclgms.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdxcc.Plo@am__quote@
@@ -507,27 +498,6 @@ gdxcc.lo: $(GAMS_PATH)/apifiles/C/api/gdxcc.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(GAMS_PATH)/apifiles/C/api/gdxcc.c' object='gdxcc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gdxcc.lo `test -f '$(GAMS_PATH)/apifiles/C/api/gdxcc.c' || echo '$(srcdir)/'`$(GAMS_PATH)/apifiles/C/api/gdxcc.c
-
-.cpp.o:
-@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ $<
-
-.cpp.obj:
-@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-
-.cpp.lo:
-@am__fastdepCXX_TRUE@	if $(LTCXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Plo"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -9,7 +9,7 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST =
 
 lib_LTLIBRARIES = libGamsUtils.la
-libGamsUtils_la_SOURCES = GamsOptions.cpp GamsSolveTrace.c \
+libGamsUtils_la_SOURCES = GamsSolveTrace.c \
   $(GAMS_PATH)/apifiles/C/api/optcc.c \
   $(GAMS_PATH)/apifiles/C/api/gmomcc.c \
   $(GAMS_PATH)/apifiles/C/api/gevmcc.c \
@@ -18,7 +18,7 @@ libGamsUtils_la_SOURCES = GamsOptions.cpp GamsSolveTrace.c \
 libGamsUtils_la_LDFLAGS =
 
 includecoindir = $(includedir)/coin
-includecoin_HEADERS = GamsCompatibility.h GamsOptions.hpp GamsNLinstr.h GamsSolveTrace.h
+includecoin_HEADERS = GamsCompatibility.h GamsNLinstr.h GamsSolveTrace.h
 
 AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(GAMS_PATH)/apifiles/C/api` $(GAMSLIBCFLAGS)
 

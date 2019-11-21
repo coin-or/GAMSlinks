@@ -8,7 +8,6 @@
 #define GAMSOSI_HPP_
 
 #include "GamsSolver.hpp"
-#include "GamsOptions.hpp"
 
 #include <sstream>
 
