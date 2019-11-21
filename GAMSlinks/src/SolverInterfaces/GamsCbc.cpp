@@ -317,15 +317,29 @@ int GamsCbc::callSolver()
 
       double* varlow = new double[gmoN(gmo)];
       double* varup  = new double[gmoN(gmo)];
+      enum gmoVarType vartype;
       gmoGetVarLower(gmo, varlow);
       gmoGetVarUpper(gmo, varup);
       for( int i = 0; i < gmoN(gmo); ++i )
-         if( (enum gmoVarType)gmoGetVarTypeOne(gmo, i) != gmovar_X )
+      {
+         vartype = (enum gmoVarType)gmoGetVarTypeOne(gmo, i);
+         /* if SOS, only fix if at 0: gives better duals on SOS2a
+          * TODO if semicontinuous/integer, do something similar?
+          */
+         if( vartype == gmovar_B ||
+             vartype == gmovar_I ||
+             (vartype == gmovar_S1 && fabs(model->bestSolution()[i]) < 1e-9) ||
+             (vartype == gmovar_S2 && fabs(model->bestSolution()[i]) < 1e-9) ||
+             vartype == gmovar_SC || vartype == gmovar_SI )
+         {
             varlow[i] = varup[i] = model->bestSolution()[i];
+         }
+      }
       model->solver()->setColLower(varlow);
       model->solver()->setColUpper(varup);
 
       model->solver()->messageHandler()->setLogLevel(1, 1);
+      // model->solver()->setHintParam(OsiDoPresolveInResolve, false, OsiHintTry);
       model->solver()->resolve();
       if( model->solver()->isProvenOptimal() )
       {
