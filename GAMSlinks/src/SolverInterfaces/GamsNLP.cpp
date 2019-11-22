@@ -941,24 +941,28 @@ void GamsNLP::finalize_solution(
             scaled_viol = new double[m];
             tnlp_adapter->ResortG(*cq->curr_c(), *cq->curr_d_minus_s(), scaled_viol);
 
-            SmartPtr<Vector> dummy = cq->curr_c()->MakeNew();
-            dummy->Set(0.0);
             compl_xL = new double[n];
             compl_xU = new double[n];
+            memset(compl_xL, 0, n*sizeof(double));
+            memset(compl_xU, 0, n*sizeof(double));
+            if( cq->curr_compl_x_L()->Dim() && cq->curr_compl_x_U()->Dim() )
+               tnlp_adapter->ResortBnds(*cq->curr_compl_x_L(), compl_xL, *cq->curr_compl_x_U(), compl_xU);
+
+/* dummy->Set(0.0) crashes with current Intel compiler on WEI (icl 18.0.1.156 and 18.0.3.210) */
+#if !(defined __ICL) || (__ICL != 1800)
+            SmartPtr<Vector> dummy = cq->curr_c()->MakeNew();
+            dummy->Set(0.0);
             compl_gL = new double[m];
             compl_gU = new double[m];
 
-            memset(compl_xL, 0, n*sizeof(double));
-            memset(compl_xU, 0, n*sizeof(double));
             memset(compl_gL, 0, m*sizeof(double));
             memset(compl_gU, 0, m*sizeof(double));
 
-            if( cq->curr_compl_x_L()->Dim() && cq->curr_compl_x_U()->Dim() )
-               tnlp_adapter->ResortBnds(*cq->curr_compl_x_L(), compl_xL, *cq->curr_compl_x_U(), compl_xU);
             if( cq->curr_compl_s_L()->Dim() )
                tnlp_adapter->ResortG(*dummy, *cq->curr_compl_s_L(), compl_gL);
             if( cq->curr_compl_s_U()->Dim() )
                tnlp_adapter->ResortG(*dummy, *cq->curr_compl_s_U(), compl_gU);
+#endif
          }
       }
 
