@@ -1464,6 +1464,8 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
    gevLibraryUnload();
    palLibraryUnload();
    optLibraryUnload();
+   if( gdxLibraryLoaded() )
+      gdxLibraryUnload();
 
    return 1;
 }
