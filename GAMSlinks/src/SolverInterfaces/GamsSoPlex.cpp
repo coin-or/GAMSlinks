@@ -723,6 +723,7 @@ int GamsSoPlex::modifyProblem()
 }
 
 #define GAMSSOLVER_ID osp
+#define GAMSSOLVER_HAVEMODIFYPROBLEM
 #include "GamsEntryPoints_tpl.c"
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
@@ -789,24 +790,24 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
    return 1;
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,CallSolver)(void* Cptr)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
 {
    assert(Cptr != NULL);
    return ((GamsSoPlex*)Cptr)->callSolver();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr)
 {
    return 0;
 }
 
-DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ModifyProblem)(void* Cptr)
+DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ModifyProblem)(void* Cptr)
 {
    assert(Cptr != NULL);
    return ((GamsSoPlex*)Cptr)->modifyProblem();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr)
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);

@@ -57,10 +57,10 @@ typedef struct optRec* optHandle_t;
 extern "C" {
 #endif
 
-/* Can be implemented by solver interface */
+/* Needs to be implemented by solver interface */
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void);
 
-/* Can be implemented by solver interface */
+/* Needs to be implemented by solver interface */
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void);
 
 /* Needs to be implemented by solver interface */
@@ -70,16 +70,18 @@ DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char
 DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr);
 
 /* Needs to be implemented by solver interface */
-DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr, struct gmoRec* Gptr, struct optRec* Optr);
+DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, struct gmoRec* Gptr, struct optRec* Optr);
 
 /* Needs to be implemented by solver interface */
-DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,CallSolver)(void* Cptr);
+DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr);
 
-/* Needs to be implemented by solver interface if modify-problem is supported */
-DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr);
+#ifdef GAMSSOLVER_HAVEMODIFYPROBLEM
+/* Needs to be implemented by solver interface if GAMSSOLVER_HAVEMODIFYPROBLEM is defined */
+DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr);
 
-/* Needs to be implemented by solver interface if modify-problem is supported */
-DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ModifyProblem)(void* Cptr);
+/* Needs to be implemented by solver interface if GAMSSOLVER_HAVEMODIFYPROBLEM is defined */
+DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ModifyProblem)(void* Cptr);
+#endif
 
 
 /* Implemented below */
@@ -93,6 +95,20 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,XCreate)(void** Cptr);
 
 /* Implemented below */
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,XFree)(void** Cptr);
+
+/* Needs to be implemented by solver interface */
+DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr, struct gmoRec* Gptr, struct optRec* Optr);
+
+/* Needs to be implemented by solver interface */
+DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,CallSolver)(void* Cptr);
+
+#ifdef GAMSSOLVER_HAVEMODIFYPROBLEM
+/* Needs to be implemented by solver interface if modify-problem is supported */
+DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr);
+
+/* Needs to be implemented by solver interface if modify-problem is supported */
+DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ModifyProblem)(void* Cptr);
+#endif
 
 /* Implemented below */
 DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,XAPIVersion)(int api, char* Msg, int* comp);
@@ -131,6 +147,28 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,XFree)(void** Cptr)
 {
    GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(Cptr);
 }
+
+DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr, struct gmoRec* Gptr, struct optRec* Optr)
+{
+   return GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(Cptr, Gptr, Optr);
+}
+
+DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,CallSolver)(void* Cptr)
+{
+   return GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(Cptr);
+}
+
+#ifdef GAMSSOLVER_HAVEMODIFYPROBLEM
+DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr)
+{
+   return GAMSSOLVER_CONCAT(GAMSSOLVER_ID,HaveModifyProblem)(Cptr);
+}
+
+DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ModifyProblem)(void* Cptr)
+{
+   return GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ModifyProblem)(Cptr);
+}
+#endif
 
 /* comp returns the compatibility mode:
    0: client is too old for the DLL, no compatibility
