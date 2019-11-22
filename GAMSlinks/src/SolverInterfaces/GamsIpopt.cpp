@@ -80,7 +80,7 @@ int GamsIpopt::readyAPI(
    else
       gevLogStatPChar(gev, "written by A. Waechter.\n");
 
-   if( !ipoptlicensed && !GAMScheckIpoptLicense(pal) )
+   if( !ipoptlicensed && (palLicenseCheckSubSys(pal, const_cast<char*>("IP")) == 0) )
       gevLogPChar(gev, "\nNote: This is the free version IPOPT, but you could also use the commercially supported and potentially higher performance version IPOPTH.\n");
 
    palFree(&pal);
