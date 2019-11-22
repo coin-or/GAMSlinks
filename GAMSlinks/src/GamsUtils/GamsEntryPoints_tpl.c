@@ -75,10 +75,10 @@ DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr
 /* Needs to be implemented by solver interface */
 DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,CallSolver)(void* Cptr);
 
-/* Needs to (?) be implemented by solver interface */
+/* Needs to be implemented by solver interface if modify-problem is supported */
 DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr);
 
-/* Needs to (?) be implemented by solver interface */
+/* Needs to be implemented by solver interface if modify-problem is supported */
 DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ModifyProblem)(void* Cptr);
 
 
