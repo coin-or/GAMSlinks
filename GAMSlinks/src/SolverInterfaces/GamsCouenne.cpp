@@ -1654,7 +1654,7 @@ void GamsCouenne::passSOSSemiCon(
 #define GAMSSOLVER_ID         cou
 #include "GamsEntryPoints_tpl.c"
 
-DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Initialize)(void)
+DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 {
 #if defined(__linux) && defined(COIN_HAS_OSICPX)
    CPXinitialize();
@@ -1669,7 +1669,7 @@ DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Initialize)(void)
    palInitMutexes();
 }
 
-DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Finalize)(void)
+DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
 #if defined(__linux) && defined(COIN_HAS_OSICPX)
    CPXfinalize();
