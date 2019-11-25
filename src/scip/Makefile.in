@@ -20,7 +20,6 @@
 #
 # Author: Stefan Vigerske
 
-
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -95,15 +94,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@COIN_HAS_OSI_TRUE@am__append_1 = GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp
-@COIN_HAS_CBC_TRUE@am__append_2 = GamsCbc.cpp
-@COIN_HAS_CBC_TRUE@am__append_3 = optmycbc.def
-@COIN_HAS_IPOPT_TRUE@am__append_4 = GamsJournal.cpp GamsNLP.cpp GamsIpopt.cpp 
-@COIN_HAS_SOPLEX_TRUE@am__append_5 = GamsSoPlex.cpp
-@COIN_HAS_SCIP_TRUE@am__append_6 = GamsScip.cpp scip/reader_gmo.c scip/event_solvetrace.c scip/prop_defaultbounds.c
-@COIN_HAS_BONMIN_TRUE@am__append_7 = GamsMINLP.cpp GamsBonmin.cpp
-@COIN_HAS_COUENNE_TRUE@am__append_8 = GamsCouenne.cpp
-subdir = src/SolverInterfaces
+subdir = src/scip
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -111,7 +102,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h
-CONFIG_CLEAN_FILES = gamsinst.sh
+CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -140,36 +131,22 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la \
+libGamsScip_la_DEPENDENCIES = ../utils/libGamsUtils.la \
 	$(am__DEPENDENCIES_1)
-@COIN_HAS_OSI_TRUE@am__objects_1 = GamsMessageHandler.lo \
-@COIN_HAS_OSI_TRUE@	GamsOsiHelper.lo GamsOsi.lo
-@COIN_HAS_CBC_TRUE@am__objects_2 = GamsCbc.lo
-@COIN_HAS_IPOPT_TRUE@am__objects_3 = GamsJournal.lo GamsNLP.lo \
-@COIN_HAS_IPOPT_TRUE@	GamsIpopt.lo
-@COIN_HAS_SOPLEX_TRUE@am__objects_4 = GamsSoPlex.lo
-am__dirstamp = $(am__leading_dot)dirstamp
-@COIN_HAS_SCIP_TRUE@am__objects_5 = GamsScip.lo scip/reader_gmo.lo \
-@COIN_HAS_SCIP_TRUE@	scip/event_solvetrace.lo \
-@COIN_HAS_SCIP_TRUE@	scip/prop_defaultbounds.lo
-@COIN_HAS_BONMIN_TRUE@am__objects_6 = GamsMINLP.lo GamsBonmin.lo
-@COIN_HAS_COUENNE_TRUE@am__objects_7 = GamsCouenne.lo
-am_libGamsCoin_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
-	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
-	$(am__objects_6) $(am__objects_7)
-libGamsCoin_la_OBJECTS = $(am_libGamsCoin_la_OBJECTS)
+am_libGamsScip_la_OBJECTS = GamsScip.lo reader_gmo.lo \
+	event_solvetrace.lo prop_defaultbounds.lo
+libGamsScip_la_OBJECTS = $(am_libGamsScip_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libGamsCoin_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
+libGamsScip_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(AM_CXXFLAGS) $(CXXFLAGS) $(libGamsCoin_la_LDFLAGS) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) $(libGamsScip_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SCRIPTS = $(bin_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -185,15 +162,9 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/GamsBonmin.Plo \
-	./$(DEPDIR)/GamsCbc.Plo ./$(DEPDIR)/GamsCouenne.Plo \
-	./$(DEPDIR)/GamsIpopt.Plo ./$(DEPDIR)/GamsJournal.Plo \
-	./$(DEPDIR)/GamsMINLP.Plo ./$(DEPDIR)/GamsMessageHandler.Plo \
-	./$(DEPDIR)/GamsNLP.Plo ./$(DEPDIR)/GamsOsi.Plo \
-	./$(DEPDIR)/GamsOsiHelper.Plo ./$(DEPDIR)/GamsScip.Plo \
-	./$(DEPDIR)/GamsSoPlex.Plo scip/$(DEPDIR)/event_solvetrace.Plo \
-	scip/$(DEPDIR)/prop_defaultbounds.Plo \
-	scip/$(DEPDIR)/reader_gmo.Plo
+am__depfiles_remade = ./$(DEPDIR)/GamsScip.Plo \
+	./$(DEPDIR)/event_solvetrace.Plo \
+	./$(DEPDIR)/prop_defaultbounds.Plo ./$(DEPDIR)/reader_gmo.Plo
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -231,7 +202,7 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(libGamsCoin_la_SOURCES)
+SOURCES = $(libGamsScip_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -287,12 +258,42 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
+GAMSBONMIN_CFLAGS = @GAMSBONMIN_CFLAGS@
+GAMSBONMIN_CFLAGS_NOPC = @GAMSBONMIN_CFLAGS_NOPC@
+GAMSBONMIN_LFLAGS = @GAMSBONMIN_LFLAGS@
+GAMSBONMIN_LFLAGS_NOPC = @GAMSBONMIN_LFLAGS_NOPC@
+GAMSBONMIN_PCFILES = @GAMSBONMIN_PCFILES@
+GAMSCBC_CFLAGS = @GAMSCBC_CFLAGS@
+GAMSCBC_CFLAGS_NOPC = @GAMSCBC_CFLAGS_NOPC@
+GAMSCBC_LFLAGS = @GAMSCBC_LFLAGS@
+GAMSCBC_LFLAGS_NOPC = @GAMSCBC_LFLAGS_NOPC@
+GAMSCBC_PCFILES = @GAMSCBC_PCFILES@
+GAMSCOUENNE_CFLAGS = @GAMSCOUENNE_CFLAGS@
+GAMSCOUENNE_CFLAGS_NOPC = @GAMSCOUENNE_CFLAGS_NOPC@
+GAMSCOUENNE_LFLAGS = @GAMSCOUENNE_LFLAGS@
+GAMSCOUENNE_LFLAGS_NOPC = @GAMSCOUENNE_LFLAGS_NOPC@
+GAMSCOUENNE_PCFILES = @GAMSCOUENNE_PCFILES@
+GAMSIPOPT_CFLAGS = @GAMSIPOPT_CFLAGS@
+GAMSIPOPT_CFLAGS_NOPC = @GAMSIPOPT_CFLAGS_NOPC@
+GAMSIPOPT_LFLAGS = @GAMSIPOPT_LFLAGS@
+GAMSIPOPT_LFLAGS_NOPC = @GAMSIPOPT_LFLAGS_NOPC@
+GAMSIPOPT_PCFILES = @GAMSIPOPT_PCFILES@
 GAMSLIBCFLAGS = @GAMSLIBCFLAGS@
-GAMSSOLVERLIB_CFLAGS = @GAMSSOLVERLIB_CFLAGS@
-GAMSSOLVERLIB_CFLAGS_NOPC = @GAMSSOLVERLIB_CFLAGS_NOPC@
-GAMSSOLVERLIB_LFLAGS = @GAMSSOLVERLIB_LFLAGS@
-GAMSSOLVERLIB_LFLAGS_NOPC = @GAMSSOLVERLIB_LFLAGS_NOPC@
-GAMSSOLVERLIB_PCFILES = @GAMSSOLVERLIB_PCFILES@
+GAMSOSI_CFLAGS = @GAMSOSI_CFLAGS@
+GAMSOSI_CFLAGS_NOPC = @GAMSOSI_CFLAGS_NOPC@
+GAMSOSI_LFLAGS = @GAMSOSI_LFLAGS@
+GAMSOSI_LFLAGS_NOPC = @GAMSOSI_LFLAGS_NOPC@
+GAMSOSI_PCFILES = @GAMSOSI_PCFILES@
+GAMSSCIP_CFLAGS = @GAMSSCIP_CFLAGS@
+GAMSSCIP_CFLAGS_NOPC = @GAMSSCIP_CFLAGS_NOPC@
+GAMSSCIP_LFLAGS = @GAMSSCIP_LFLAGS@
+GAMSSCIP_LFLAGS_NOPC = @GAMSSCIP_LFLAGS_NOPC@
+GAMSSCIP_PCFILES = @GAMSSCIP_PCFILES@
+GAMSSOPLEX_CFLAGS = @GAMSSOPLEX_CFLAGS@
+GAMSSOPLEX_CFLAGS_NOPC = @GAMSSOPLEX_CFLAGS_NOPC@
+GAMSSOPLEX_LFLAGS = @GAMSSOPLEX_LFLAGS@
+GAMSSOPLEX_LFLAGS_NOPC = @GAMSSOPLEX_LFLAGS_NOPC@
+GAMSSOPLEX_PCFILES = @GAMSSOPLEX_PCFILES@
 GAMS_PATH = @GAMS_PATH@
 GREP = @GREP@
 INSTALL = @INSTALL@
@@ -396,23 +397,16 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = foreign subdir-objects
-AM_CPPFLAGS = \
-  -I$(srcdir)/.. \
-  -I$(srcdir)/../GamsUtils \
-  -I$(srcdir)/scip \
-  -I"$(GAMS_PATH)/apifiles/C/api" \
-  $(GAMSSOLVERLIB_CFLAGS)
+AUTOMAKE_OPTIONS = foreign
 
-lib_LTLIBRARIES = libGamsCoin.la
-libGamsCoin_la_SOURCES = $(am__append_1) $(am__append_2) \
-	$(am__append_4) $(am__append_5) $(am__append_6) \
-	$(am__append_7) $(am__append_8)
-libGamsCoin_la_LIBADD = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_LFLAGS)
-libGamsCoin_la_LDFLAGS = $(LT_LDFLAGS)
-bin_SCRIPTS = gamsinst.sh $(am__append_3)
-@COIN_IS_WINDOWS_FALSE@SCRIPTSUFFIX = us.run
-@COIN_IS_WINDOWS_TRUE@SCRIPTSUFFIX = nt.cmd
+# TODO better way to get to cplex header, but maybe we don't need it at all?
+AM_CPPFLAGS = -I$(srcdir)/.. -I$(srcdir)/../utils \
+	-I"$(GAMS_PATH)/apifiles/C/api" $(GAMSSCIP_CFLAGS) \
+	$(GAMSOSI_CFLAGS)
+lib_LTLIBRARIES = libGamsScip.la
+libGamsScip_la_SOURCES = GamsScip.cpp reader_gmo.c event_solvetrace.c prop_defaultbounds.c
+libGamsScip_la_LIBADD = ../utils/libGamsUtils.la $(GAMSSCIP_LFLAGS)
+libGamsScip_la_LDFLAGS = $(LT_LDFLAGS)
 all: all-am
 
 .SUFFIXES:
@@ -426,9 +420,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/SolverInterfaces/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/scip/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/SolverInterfaces/Makefile
+	  $(AUTOMAKE) --foreign src/scip/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -446,8 +440,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-gamsinst.sh: $(top_builddir)/config.status $(srcdir)/gamsinst.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
@@ -483,80 +475,20 @@ clean-libLTLIBRARIES:
 	  echo rm -f $${locs}; \
 	  rm -f $${locs}; \
 	}
-scip/$(am__dirstamp):
-	@$(MKDIR_P) scip
-	@: > scip/$(am__dirstamp)
-scip/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) scip/$(DEPDIR)
-	@: > scip/$(DEPDIR)/$(am__dirstamp)
-scip/reader_gmo.lo: scip/$(am__dirstamp) \
-	scip/$(DEPDIR)/$(am__dirstamp)
-scip/event_solvetrace.lo: scip/$(am__dirstamp) \
-	scip/$(DEPDIR)/$(am__dirstamp)
-scip/prop_defaultbounds.lo: scip/$(am__dirstamp) \
-	scip/$(DEPDIR)/$(am__dirstamp)
 
-libGamsCoin.la: $(libGamsCoin_la_OBJECTS) $(libGamsCoin_la_DEPENDENCIES) $(EXTRA_libGamsCoin_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(libGamsCoin_la_LINK) -rpath $(libdir) $(libGamsCoin_la_OBJECTS) $(libGamsCoin_la_LIBADD) $(LIBS)
-install-binSCRIPTS: $(bin_SCRIPTS)
-	@$(NORMAL_INSTALL)
-	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
-	done | \
-	sed -e 'p;s,.*/,,;n' \
-	    -e 'h;s|.*|.|' \
-	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
-	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
-	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
-	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
-	      if (++n[d] == $(am__install_max)) { \
-		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
-	    else { print "f", d "/" $$4, $$1 } } \
-	  END { for (d in files) print "f", d, files[d] }' | \
-	while read type dir files; do \
-	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
-	     test -z "$$files" || { \
-	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
-	     } \
-	; done
-
-uninstall-binSCRIPTS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
-	files=`for p in $$list; do echo "$$p"; done | \
-	       sed -e 's,.*/,,;$(transform)'`; \
-	dir='$(DESTDIR)$(bindir)'; $(am__uninstall_files_from_dir)
+libGamsScip.la: $(libGamsScip_la_OBJECTS) $(libGamsScip_la_DEPENDENCIES) $(EXTRA_libGamsScip_la_DEPENDENCIES) 
+	$(AM_V_CXXLD)$(libGamsScip_la_LINK) -rpath $(libdir) $(libGamsScip_la_OBJECTS) $(libGamsScip_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f scip/*.$(OBJEXT)
-	-rm -f scip/*.lo
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsBonmin.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCbc.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCouenne.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsIpopt.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsJournal.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMINLP.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsNLP.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsi.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsScip.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSoPlex.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@scip/$(DEPDIR)/event_solvetrace.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@scip/$(DEPDIR)/prop_defaultbounds.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@scip/$(DEPDIR)/reader_gmo.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/event_solvetrace.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prop_defaultbounds.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_gmo.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -565,49 +497,43 @@ $(am__depfiles_remade):
 am--depfiles: $(am__depfiles_remade)
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
-@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
-@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
-@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
-@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
-@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
-@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 .cpp.o:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
-@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
-@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
 
 .cpp.obj:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
-@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
-@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .cpp.lo:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
-@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
-@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
@@ -617,7 +543,6 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-	-rm -rf scip/.libs scip/_libs
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -672,9 +597,9 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(SCRIPTS)
+all-am: Makefile $(LTLIBRARIES)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(libdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -703,8 +628,6 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f scip/$(DEPDIR)/$(am__dirstamp)
-	-rm -f scip/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -715,21 +638,10 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/GamsBonmin.Plo
-	-rm -f ./$(DEPDIR)/GamsCbc.Plo
-	-rm -f ./$(DEPDIR)/GamsCouenne.Plo
-	-rm -f ./$(DEPDIR)/GamsIpopt.Plo
-	-rm -f ./$(DEPDIR)/GamsJournal.Plo
-	-rm -f ./$(DEPDIR)/GamsMINLP.Plo
-	-rm -f ./$(DEPDIR)/GamsMessageHandler.Plo
-	-rm -f ./$(DEPDIR)/GamsNLP.Plo
-	-rm -f ./$(DEPDIR)/GamsOsi.Plo
-	-rm -f ./$(DEPDIR)/GamsOsiHelper.Plo
-	-rm -f ./$(DEPDIR)/GamsScip.Plo
-	-rm -f ./$(DEPDIR)/GamsSoPlex.Plo
-	-rm -f scip/$(DEPDIR)/event_solvetrace.Plo
-	-rm -f scip/$(DEPDIR)/prop_defaultbounds.Plo
-	-rm -f scip/$(DEPDIR)/reader_gmo.Plo
+		-rm -f ./$(DEPDIR)/GamsScip.Plo
+	-rm -f ./$(DEPDIR)/event_solvetrace.Plo
+	-rm -f ./$(DEPDIR)/prop_defaultbounds.Plo
+	-rm -f ./$(DEPDIR)/reader_gmo.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -752,7 +664,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binSCRIPTS install-libLTLIBRARIES
+install-exec-am: install-libLTLIBRARIES
 
 install-html: install-html-am
 
@@ -775,21 +687,10 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/GamsBonmin.Plo
-	-rm -f ./$(DEPDIR)/GamsCbc.Plo
-	-rm -f ./$(DEPDIR)/GamsCouenne.Plo
-	-rm -f ./$(DEPDIR)/GamsIpopt.Plo
-	-rm -f ./$(DEPDIR)/GamsJournal.Plo
-	-rm -f ./$(DEPDIR)/GamsMINLP.Plo
-	-rm -f ./$(DEPDIR)/GamsMessageHandler.Plo
-	-rm -f ./$(DEPDIR)/GamsNLP.Plo
-	-rm -f ./$(DEPDIR)/GamsOsi.Plo
-	-rm -f ./$(DEPDIR)/GamsOsiHelper.Plo
-	-rm -f ./$(DEPDIR)/GamsScip.Plo
-	-rm -f ./$(DEPDIR)/GamsSoPlex.Plo
-	-rm -f scip/$(DEPDIR)/event_solvetrace.Plo
-	-rm -f scip/$(DEPDIR)/prop_defaultbounds.Plo
-	-rm -f scip/$(DEPDIR)/reader_gmo.Plo
+		-rm -f ./$(DEPDIR)/GamsScip.Plo
+	-rm -f ./$(DEPDIR)/event_solvetrace.Plo
+	-rm -f ./$(DEPDIR)/prop_defaultbounds.Plo
+	-rm -f ./$(DEPDIR)/reader_gmo.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -806,7 +707,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binSCRIPTS uninstall-libLTLIBRARIES
+uninstall-am: uninstall-libLTLIBRARIES
 
 .MAKE: install-am install-strip
 
@@ -814,16 +715,15 @@ uninstall-am: uninstall-binSCRIPTS uninstall-libLTLIBRARIES
 	clean-generic clean-libLTLIBRARIES clean-libtool cscopelist-am \
 	ctags ctags-am distclean distclean-compile distclean-generic \
 	distclean-libtool distclean-tags dvi dvi-am html html-am info \
-	info-am install install-am install-binSCRIPTS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-libLTLIBRARIES install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
+	info-am install install-am install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-binSCRIPTS \
-	uninstall-libLTLIBRARIES
+	tags tags-am uninstall uninstall-am uninstall-libLTLIBRARIES
 
 .PRECIOUS: Makefile
 

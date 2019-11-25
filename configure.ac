@@ -44,17 +44,17 @@ AC_COIN_DOXYGEN
 #############################################################################
 
 # check which solvers are available
-AC_COIN_CHK_PKG(Osi,     [GamsSolverLib], [osi])
-AC_COIN_CHK_PKG(OsiCpx,  [GamsSolverLib], [osi-cplex])
-AC_COIN_CHK_PKG(OsiGrb,  [GamsSolverLib], [osi-gurobi])
-AC_COIN_CHK_PKG(OsiMsk,  [GamsSolverLib], [osi-mosek])
-AC_COIN_CHK_PKG(OsiXpr,  [GamsSolverLib], [osi-xpress])
-AC_COIN_CHK_PKG(Cbc,     [GamsSolverLib], [cbc])
-AC_COIN_CHK_PKG(Ipopt,   [GamsSolverLib], [ipopt])
-AC_COIN_CHK_PKG(Bonmin,  [GamsSolverLib], [bonmin])
-AC_COIN_CHK_PKG(Couenne, [GamsSolverLib], [couenne])
-AC_COIN_CHK_PKG(SoPlex,  [GamsSolverLib], [coinsoplex])
-AC_COIN_CHK_PKG(SCIP,    [GamsSolverLib], [coinscip])
+AC_COIN_CHK_PKG(Osi,     [GamsOsi],     [osi])
+AC_COIN_CHK_PKG(OsiCpx,  [GamsOsi],     [osi-cplex])
+AC_COIN_CHK_PKG(OsiGrb,  [GamsOsi],     [osi-gurobi])
+AC_COIN_CHK_PKG(OsiMsk,  [GamsOsi],     [osi-mosek])
+AC_COIN_CHK_PKG(OsiXpr,  [GamsOsi],     [osi-xpress])
+AC_COIN_CHK_PKG(Cbc,     [GamsCbc],     [cbc])
+AC_COIN_CHK_PKG(Ipopt,   [GamsIpopt],   [ipopt])
+AC_COIN_CHK_PKG(Bonmin,  [GamsBonmin],  [bonmin])
+AC_COIN_CHK_PKG(Couenne, [GamsCouenne], [couenne])
+AC_COIN_CHK_PKG(SoPlex,  [GamsSoplex],  [coinsoplex])
+AC_COIN_CHK_PKG(SCIP,    [GamsScip],    [coinscip])
 
 ############################################################################
 #                          Check for system specifics                      #
@@ -64,7 +64,7 @@ AC_LANG_PUSH(C)
 
 # check if intptr_t is available, which can be used to avoid errors when compiling the GAMS library loader codes
 GAMSLIBCFLAGS=
-AC_CHECK_TYPE([intptr_t],[GAMSLIBCFLAGS=-DHAVE_INTPTR_T])  #FIXME
+AC_CHECK_TYPE([intptr_t],[GAMSLIBCFLAGS=-DHAVE_INTPTR_T])
 AC_SUBST(GAMSLIBCFLAGS)
 
 # check if va_copy is available, to be used in GamsJournal
@@ -131,13 +131,19 @@ AM_CONDITIONAL(COIN_IS_WINDOWS, test $coin_is_windows = yes)
 # END PART #
 ############
 
-AC_COIN_FINALIZE_FLAGS([GamsSolverLib])
+AC_COIN_FINALIZE_FLAGS([GamsOsi GamsCbc GamsIpopt GamsBonmin GamsCouenne GamsSoplex GamsScip])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
-                 src/GamsUtils/Makefile
-                 src/SolverInterfaces/Makefile
-                 src/SolverInterfaces/gamsinst.sh
+                 src/gamsinst.sh
+                 src/utils/Makefile
+                 src/bonmin/Makefile
+                 src/cbc/Makefile
+                 src/couenne/Makefile
+                 src/ipopt/Makefile
+                 src/osi/Makefile
+                 src/scip/Makefile
+                 src/soplex/Makefile
                  test/Makefile
                  doc/optdoc/Makefile
                  doc/Doxyfile

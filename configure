@@ -641,8 +641,20 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
-GAMSSOLVERLIB_CFLAGS_NOPC
-GAMSSOLVERLIB_LFLAGS_NOPC
+GAMSSCIP_CFLAGS_NOPC
+GAMSSCIP_LFLAGS_NOPC
+GAMSSOPLEX_CFLAGS_NOPC
+GAMSSOPLEX_LFLAGS_NOPC
+GAMSCOUENNE_CFLAGS_NOPC
+GAMSCOUENNE_LFLAGS_NOPC
+GAMSBONMIN_CFLAGS_NOPC
+GAMSBONMIN_LFLAGS_NOPC
+GAMSIPOPT_CFLAGS_NOPC
+GAMSIPOPT_LFLAGS_NOPC
+GAMSCBC_CFLAGS_NOPC
+GAMSCBC_LFLAGS_NOPC
+GAMSOSI_CFLAGS_NOPC
+GAMSOSI_LFLAGS_NOPC
 COIN_IS_WINDOWS_FALSE
 COIN_IS_WINDOWS_TRUE
 GAMS_PATH
@@ -650,16 +662,34 @@ gamspath
 GAMSLIBCFLAGS
 COIN_HAS_SCIP_FALSE
 COIN_HAS_SCIP_TRUE
+GAMSSCIP_PCFILES
+GAMSSCIP_CFLAGS
+GAMSSCIP_LFLAGS
 COIN_HAS_SOPLEX_FALSE
 COIN_HAS_SOPLEX_TRUE
+GAMSSOPLEX_PCFILES
+GAMSSOPLEX_CFLAGS
+GAMSSOPLEX_LFLAGS
 COIN_HAS_COUENNE_FALSE
 COIN_HAS_COUENNE_TRUE
+GAMSCOUENNE_PCFILES
+GAMSCOUENNE_CFLAGS
+GAMSCOUENNE_LFLAGS
 COIN_HAS_BONMIN_FALSE
 COIN_HAS_BONMIN_TRUE
+GAMSBONMIN_PCFILES
+GAMSBONMIN_CFLAGS
+GAMSBONMIN_LFLAGS
 COIN_HAS_IPOPT_FALSE
 COIN_HAS_IPOPT_TRUE
+GAMSIPOPT_PCFILES
+GAMSIPOPT_CFLAGS
+GAMSIPOPT_LFLAGS
 COIN_HAS_CBC_FALSE
 COIN_HAS_CBC_TRUE
+GAMSCBC_PCFILES
+GAMSCBC_CFLAGS
+GAMSCBC_LFLAGS
 COIN_HAS_OSIXPR_FALSE
 COIN_HAS_OSIXPR_TRUE
 COIN_HAS_OSIMSK_FALSE
@@ -670,9 +700,9 @@ COIN_HAS_OSICPX_FALSE
 COIN_HAS_OSICPX_TRUE
 COIN_HAS_OSI_FALSE
 COIN_HAS_OSI_TRUE
-GAMSSOLVERLIB_PCFILES
-GAMSSOLVERLIB_CFLAGS
-GAMSSOLVERLIB_LFLAGS
+GAMSOSI_PCFILES
+GAMSOSI_CFLAGS
+GAMSOSI_LFLAGS
 COIN_PKG_CONFIG_PATH
 COIN_HAS_PKGCONFIG_FALSE
 COIN_HAS_PKGCONFIG_TRUE
@@ -17184,9 +17214,9 @@ fi
 
 $as_echo "#define COIN_HAS_OSI 1" >>confdefs.h
 
-    if test -n "$osi_pcfiles" ; then GAMSSOLVERLIB_PCFILES="$osi_pcfiles $GAMSSOLVERLIB_PCFILES" ; fi
-       GAMSSOLVERLIB_LFLAGS="$osi_lflags $GAMSSOLVERLIB_LFLAGS"
-       GAMSSOLVERLIB_CFLAGS="$osi_cflags $GAMSSOLVERLIB_CFLAGS"
+    if test -n "$osi_pcfiles" ; then GAMSOSI_PCFILES="$osi_pcfiles $GAMSOSI_PCFILES" ; fi
+       GAMSOSI_LFLAGS="$osi_lflags $GAMSOSI_LFLAGS"
+       GAMSOSI_CFLAGS="$osi_cflags $GAMSOSI_CFLAGS"
 
 
 # Finally, set up PRIM_DATA, unless the user specified nodata.
@@ -17438,9 +17468,9 @@ fi
 
 $as_echo "#define COIN_HAS_OSICPX 1" >>confdefs.h
 
-    if test -n "$osicpx_pcfiles" ; then GAMSSOLVERLIB_PCFILES="$osicpx_pcfiles $GAMSSOLVERLIB_PCFILES" ; fi
-       GAMSSOLVERLIB_LFLAGS="$osicpx_lflags $GAMSSOLVERLIB_LFLAGS"
-       GAMSSOLVERLIB_CFLAGS="$osicpx_cflags $GAMSSOLVERLIB_CFLAGS"
+    if test -n "$osicpx_pcfiles" ; then GAMSOSI_PCFILES="$osicpx_pcfiles $GAMSOSI_PCFILES" ; fi
+       GAMSOSI_LFLAGS="$osicpx_lflags $GAMSOSI_LFLAGS"
+       GAMSOSI_CFLAGS="$osicpx_cflags $GAMSOSI_CFLAGS"
 
 
 # Finally, set up PRIM_DATA, unless the user specified nodata.
@@ -17692,9 +17722,9 @@ fi
 
 $as_echo "#define COIN_HAS_OSIGRB 1" >>confdefs.h
 
-    if test -n "$osigrb_pcfiles" ; then GAMSSOLVERLIB_PCFILES="$osigrb_pcfiles $GAMSSOLVERLIB_PCFILES" ; fi
-       GAMSSOLVERLIB_LFLAGS="$osigrb_lflags $GAMSSOLVERLIB_LFLAGS"
-       GAMSSOLVERLIB_CFLAGS="$osigrb_cflags $GAMSSOLVERLIB_CFLAGS"
+    if test -n "$osigrb_pcfiles" ; then GAMSOSI_PCFILES="$osigrb_pcfiles $GAMSOSI_PCFILES" ; fi
+       GAMSOSI_LFLAGS="$osigrb_lflags $GAMSOSI_LFLAGS"
+       GAMSOSI_CFLAGS="$osigrb_cflags $GAMSOSI_CFLAGS"
 
 
 # Finally, set up PRIM_DATA, unless the user specified nodata.
@@ -17946,9 +17976,9 @@ fi
 
 $as_echo "#define COIN_HAS_OSIMSK 1" >>confdefs.h
 
-    if test -n "$osimsk_pcfiles" ; then GAMSSOLVERLIB_PCFILES="$osimsk_pcfiles $GAMSSOLVERLIB_PCFILES" ; fi
-       GAMSSOLVERLIB_LFLAGS="$osimsk_lflags $GAMSSOLVERLIB_LFLAGS"
-       GAMSSOLVERLIB_CFLAGS="$osimsk_cflags $GAMSSOLVERLIB_CFLAGS"
+    if test -n "$osimsk_pcfiles" ; then GAMSOSI_PCFILES="$osimsk_pcfiles $GAMSOSI_PCFILES" ; fi
+       GAMSOSI_LFLAGS="$osimsk_lflags $GAMSOSI_LFLAGS"
+       GAMSOSI_CFLAGS="$osimsk_cflags $GAMSOSI_CFLAGS"
 
 
 # Finally, set up PRIM_DATA, unless the user specified nodata.
@@ -18200,9 +18230,9 @@ fi
 
 $as_echo "#define COIN_HAS_OSIXPR 1" >>confdefs.h
 
-    if test -n "$osixpr_pcfiles" ; then GAMSSOLVERLIB_PCFILES="$osixpr_pcfiles $GAMSSOLVERLIB_PCFILES" ; fi
-       GAMSSOLVERLIB_LFLAGS="$osixpr_lflags $GAMSSOLVERLIB_LFLAGS"
-       GAMSSOLVERLIB_CFLAGS="$osixpr_cflags $GAMSSOLVERLIB_CFLAGS"
+    if test -n "$osixpr_pcfiles" ; then GAMSOSI_PCFILES="$osixpr_pcfiles $GAMSOSI_PCFILES" ; fi
+       GAMSOSI_LFLAGS="$osixpr_lflags $GAMSOSI_LFLAGS"
+       GAMSOSI_CFLAGS="$osixpr_cflags $GAMSOSI_CFLAGS"
 
 
 # Finally, set up PRIM_DATA, unless the user specified nodata.
@@ -18454,9 +18484,9 @@ fi
 
 $as_echo "#define COIN_HAS_CBC 1" >>confdefs.h
 
-    if test -n "$cbc_pcfiles" ; then GAMSSOLVERLIB_PCFILES="$cbc_pcfiles $GAMSSOLVERLIB_PCFILES" ; fi
-       GAMSSOLVERLIB_LFLAGS="$cbc_lflags $GAMSSOLVERLIB_LFLAGS"
-       GAMSSOLVERLIB_CFLAGS="$cbc_cflags $GAMSSOLVERLIB_CFLAGS"
+    if test -n "$cbc_pcfiles" ; then GAMSCBC_PCFILES="$cbc_pcfiles $GAMSCBC_PCFILES" ; fi
+       GAMSCBC_LFLAGS="$cbc_lflags $GAMSCBC_LFLAGS"
+       GAMSCBC_CFLAGS="$cbc_cflags $GAMSCBC_CFLAGS"
 
 
 # Finally, set up PRIM_DATA, unless the user specified nodata.
@@ -18708,9 +18738,9 @@ fi
 
 $as_echo "#define COIN_HAS_IPOPT 1" >>confdefs.h
 
-    if test -n "$ipopt_pcfiles" ; then GAMSSOLVERLIB_PCFILES="$ipopt_pcfiles $GAMSSOLVERLIB_PCFILES" ; fi
-       GAMSSOLVERLIB_LFLAGS="$ipopt_lflags $GAMSSOLVERLIB_LFLAGS"
-       GAMSSOLVERLIB_CFLAGS="$ipopt_cflags $GAMSSOLVERLIB_CFLAGS"
+    if test -n "$ipopt_pcfiles" ; then GAMSIPOPT_PCFILES="$ipopt_pcfiles $GAMSIPOPT_PCFILES" ; fi
+       GAMSIPOPT_LFLAGS="$ipopt_lflags $GAMSIPOPT_LFLAGS"
+       GAMSIPOPT_CFLAGS="$ipopt_cflags $GAMSIPOPT_CFLAGS"
 
 
 # Finally, set up PRIM_DATA, unless the user specified nodata.
@@ -18962,9 +18992,9 @@ fi
 
 $as_echo "#define COIN_HAS_BONMIN 1" >>confdefs.h
 
-    if test -n "$bonmin_pcfiles" ; then GAMSSOLVERLIB_PCFILES="$bonmin_pcfiles $GAMSSOLVERLIB_PCFILES" ; fi
-       GAMSSOLVERLIB_LFLAGS="$bonmin_lflags $GAMSSOLVERLIB_LFLAGS"
-       GAMSSOLVERLIB_CFLAGS="$bonmin_cflags $GAMSSOLVERLIB_CFLAGS"
+    if test -n "$bonmin_pcfiles" ; then GAMSBONMIN_PCFILES="$bonmin_pcfiles $GAMSBONMIN_PCFILES" ; fi
+       GAMSBONMIN_LFLAGS="$bonmin_lflags $GAMSBONMIN_LFLAGS"
+       GAMSBONMIN_CFLAGS="$bonmin_cflags $GAMSBONMIN_CFLAGS"
 
 
 # Finally, set up PRIM_DATA, unless the user specified nodata.
@@ -19216,9 +19246,9 @@ fi
 
 $as_echo "#define COIN_HAS_COUENNE 1" >>confdefs.h
 
-    if test -n "$couenne_pcfiles" ; then GAMSSOLVERLIB_PCFILES="$couenne_pcfiles $GAMSSOLVERLIB_PCFILES" ; fi
-       GAMSSOLVERLIB_LFLAGS="$couenne_lflags $GAMSSOLVERLIB_LFLAGS"
-       GAMSSOLVERLIB_CFLAGS="$couenne_cflags $GAMSSOLVERLIB_CFLAGS"
+    if test -n "$couenne_pcfiles" ; then GAMSCOUENNE_PCFILES="$couenne_pcfiles $GAMSCOUENNE_PCFILES" ; fi
+       GAMSCOUENNE_LFLAGS="$couenne_lflags $GAMSCOUENNE_LFLAGS"
+       GAMSCOUENNE_CFLAGS="$couenne_cflags $GAMSCOUENNE_CFLAGS"
 
 
 # Finally, set up PRIM_DATA, unless the user specified nodata.
@@ -19470,9 +19500,9 @@ fi
 
 $as_echo "#define COIN_HAS_SOPLEX 1" >>confdefs.h
 
-    if test -n "$soplex_pcfiles" ; then GAMSSOLVERLIB_PCFILES="$soplex_pcfiles $GAMSSOLVERLIB_PCFILES" ; fi
-       GAMSSOLVERLIB_LFLAGS="$soplex_lflags $GAMSSOLVERLIB_LFLAGS"
-       GAMSSOLVERLIB_CFLAGS="$soplex_cflags $GAMSSOLVERLIB_CFLAGS"
+    if test -n "$soplex_pcfiles" ; then GAMSSOPLEX_PCFILES="$soplex_pcfiles $GAMSSOPLEX_PCFILES" ; fi
+       GAMSSOPLEX_LFLAGS="$soplex_lflags $GAMSSOPLEX_LFLAGS"
+       GAMSSOPLEX_CFLAGS="$soplex_cflags $GAMSSOPLEX_CFLAGS"
 
 
 # Finally, set up PRIM_DATA, unless the user specified nodata.
@@ -19724,9 +19754,9 @@ fi
 
 $as_echo "#define COIN_HAS_SCIP 1" >>confdefs.h
 
-    if test -n "$scip_pcfiles" ; then GAMSSOLVERLIB_PCFILES="$scip_pcfiles $GAMSSOLVERLIB_PCFILES" ; fi
-       GAMSSOLVERLIB_LFLAGS="$scip_lflags $GAMSSOLVERLIB_LFLAGS"
-       GAMSSOLVERLIB_CFLAGS="$scip_cflags $GAMSSOLVERLIB_CFLAGS"
+    if test -n "$scip_pcfiles" ; then GAMSSCIP_PCFILES="$scip_pcfiles $GAMSSCIP_PCFILES" ; fi
+       GAMSSCIP_LFLAGS="$scip_lflags $GAMSSCIP_LFLAGS"
+       GAMSSCIP_CFLAGS="$scip_cflags $GAMSSCIP_CFLAGS"
 
 
 # Finally, set up PRIM_DATA, unless the user specified nodata.
@@ -19752,7 +19782,7 @@ ac_fn_c_check_type "$LINENO" "intptr_t" "ac_cv_type_intptr_t" "$ac_includes_defa
 if test "x$ac_cv_type_intptr_t" = xyes; then :
   GAMSLIBCFLAGS=-DHAVE_INTPTR_T
 fi
-  #FIXME
+
 
 
 # check if va_copy is available, to be used in GamsJournal
@@ -20073,18 +20103,18 @@ fi
 
 
    if test "$BUILDTOOLS_DEBUG" = 1 ; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: FINALIZE_FLAGS for GamsSolverLib:" >&5
-$as_echo "$as_me: FINALIZE_FLAGS for GamsSolverLib:" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: FINALIZE_FLAGS for GamsOsi:" >&5
+$as_echo "$as_me: FINALIZE_FLAGS for GamsOsi:" >&6;}
       fi
-      GAMSSOLVERLIB_LFLAGS_NOPC=$GAMSSOLVERLIB_LFLAGS
+      GAMSOSI_LFLAGS_NOPC=$GAMSOSI_LFLAGS
 
-      GAMSSOLVERLIB_CFLAGS_NOPC=$GAMSSOLVERLIB_CFLAGS
+      GAMSOSI_CFLAGS_NOPC=$GAMSOSI_CFLAGS
 
-      if test -n "${GAMSSOLVERLIB_PCFILES}" ; then
-        temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSSOLVERLIB_PCFILES}`
-        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSSOLVERLIB_PCFILES}`
-        GAMSSOLVERLIB_CFLAGS="$temp_CFLAGS ${GAMSSOLVERLIB_CFLAGS}"
-        GAMSSOLVERLIB_LFLAGS="$temp_LFLAGS ${GAMSSOLVERLIB_LFLAGS}"
+      if test -n "${GAMSOSI_PCFILES}" ; then
+        temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSOSI_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSOSI_PCFILES}`
+        GAMSOSI_CFLAGS="$temp_CFLAGS ${GAMSOSI_CFLAGS}"
+        GAMSOSI_LFLAGS="$temp_LFLAGS ${GAMSOSI_LFLAGS}"
       fi
 
       # setup XYZ_EXPORT symbol for library users
@@ -20101,28 +20131,310 @@ $as_echo "$as_me: FINALIZE_FLAGS for GamsSolverLib:" >&6;}
       fi
 
 cat >>confdefs.h <<_ACEOF
-#define GAMSSOLVERLIB_EXPORT $libexport_attribute
+#define GAMSOSI_EXPORT $libexport_attribute
 _ACEOF
 
 
 # Define BUILDTOOLS_DEBUG to enable debugging output
 
       if test "$BUILDTOOLS_DEBUG" = 1 ; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSOLVERLIB_LFLAGS_NOPC: \"${GAMSSOLVERLIB_LFLAGS_NOPC}\"" >&5
-$as_echo "$as_me: GAMSSOLVERLIB_LFLAGS_NOPC: \"${GAMSSOLVERLIB_LFLAGS_NOPC}\"" >&6;}
-        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSOLVERLIB_CFLAGS_NOPC: \"${GAMSSOLVERLIB_CFLAGS_NOPC}\"" >&5
-$as_echo "$as_me: GAMSSOLVERLIB_CFLAGS_NOPC: \"${GAMSSOLVERLIB_CFLAGS_NOPC}\"" >&6;}
-        { $as_echo "$as_me:${as_lineno-$LINENO}: adding \"${GAMSSOLVERLIB_PCFILES}\"" >&5
-$as_echo "$as_me: adding \"${GAMSSOLVERLIB_PCFILES}\"" >&6;}
-        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSOLVERLIB_LFLAGS: \"${GAMSSOLVERLIB_LFLAGS}\"" >&5
-$as_echo "$as_me: GAMSSOLVERLIB_LFLAGS: \"${GAMSSOLVERLIB_LFLAGS}\"" >&6;}
-        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSOLVERLIB_CFLAGS: \"${GAMSSOLVERLIB_CFLAGS}\"" >&5
-$as_echo "$as_me: GAMSSOLVERLIB_CFLAGS: \"${GAMSSOLVERLIB_CFLAGS}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSOSI_LFLAGS_NOPC: \"${GAMSOSI_LFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSOSI_LFLAGS_NOPC: \"${GAMSOSI_LFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSOSI_CFLAGS_NOPC: \"${GAMSOSI_CFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSOSI_CFLAGS_NOPC: \"${GAMSOSI_CFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: adding \"${GAMSOSI_PCFILES}\"" >&5
+$as_echo "$as_me: adding \"${GAMSOSI_PCFILES}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSOSI_LFLAGS: \"${GAMSOSI_LFLAGS}\"" >&5
+$as_echo "$as_me: GAMSOSI_LFLAGS: \"${GAMSOSI_LFLAGS}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSOSI_CFLAGS: \"${GAMSOSI_CFLAGS}\"" >&5
+$as_echo "$as_me: GAMSOSI_CFLAGS: \"${GAMSOSI_CFLAGS}\"" >&6;}
+      fi
+     if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: FINALIZE_FLAGS for GamsCbc:" >&5
+$as_echo "$as_me: FINALIZE_FLAGS for GamsCbc:" >&6;}
+      fi
+      GAMSCBC_LFLAGS_NOPC=$GAMSCBC_LFLAGS
+
+      GAMSCBC_CFLAGS_NOPC=$GAMSCBC_CFLAGS
+
+      if test -n "${GAMSCBC_PCFILES}" ; then
+        temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSCBC_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSCBC_PCFILES}`
+        GAMSCBC_CFLAGS="$temp_CFLAGS ${GAMSCBC_CFLAGS}"
+        GAMSCBC_LFLAGS="$temp_LFLAGS ${GAMSCBC_LFLAGS}"
+      fi
+
+      # setup XYZ_EXPORT symbol for library users
+      libexport_attribute=
+      if test "$enable_shared" = yes ; then
+        case $build_os in
+          cygwin* | mingw* | msys* | cegcc* )
+            libexport_attribute="__declspec(dllimport)"
+            if test "$enable_static" = yes ; then
+              as_fn_error $? "Cannot do DLL and static LIB builds simultaneously. Do not add --enable-static without --disable-shared." "$LINENO" 5
+            fi
+          ;;
+        esac
+      fi
+
+cat >>confdefs.h <<_ACEOF
+#define GAMSCBC_EXPORT $libexport_attribute
+_ACEOF
+
+
+# Define BUILDTOOLS_DEBUG to enable debugging output
+
+      if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSCBC_LFLAGS_NOPC: \"${GAMSCBC_LFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSCBC_LFLAGS_NOPC: \"${GAMSCBC_LFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSCBC_CFLAGS_NOPC: \"${GAMSCBC_CFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSCBC_CFLAGS_NOPC: \"${GAMSCBC_CFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: adding \"${GAMSCBC_PCFILES}\"" >&5
+$as_echo "$as_me: adding \"${GAMSCBC_PCFILES}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSCBC_LFLAGS: \"${GAMSCBC_LFLAGS}\"" >&5
+$as_echo "$as_me: GAMSCBC_LFLAGS: \"${GAMSCBC_LFLAGS}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSCBC_CFLAGS: \"${GAMSCBC_CFLAGS}\"" >&5
+$as_echo "$as_me: GAMSCBC_CFLAGS: \"${GAMSCBC_CFLAGS}\"" >&6;}
+      fi
+     if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: FINALIZE_FLAGS for GamsIpopt:" >&5
+$as_echo "$as_me: FINALIZE_FLAGS for GamsIpopt:" >&6;}
+      fi
+      GAMSIPOPT_LFLAGS_NOPC=$GAMSIPOPT_LFLAGS
+
+      GAMSIPOPT_CFLAGS_NOPC=$GAMSIPOPT_CFLAGS
+
+      if test -n "${GAMSIPOPT_PCFILES}" ; then
+        temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSIPOPT_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSIPOPT_PCFILES}`
+        GAMSIPOPT_CFLAGS="$temp_CFLAGS ${GAMSIPOPT_CFLAGS}"
+        GAMSIPOPT_LFLAGS="$temp_LFLAGS ${GAMSIPOPT_LFLAGS}"
+      fi
+
+      # setup XYZ_EXPORT symbol for library users
+      libexport_attribute=
+      if test "$enable_shared" = yes ; then
+        case $build_os in
+          cygwin* | mingw* | msys* | cegcc* )
+            libexport_attribute="__declspec(dllimport)"
+            if test "$enable_static" = yes ; then
+              as_fn_error $? "Cannot do DLL and static LIB builds simultaneously. Do not add --enable-static without --disable-shared." "$LINENO" 5
+            fi
+          ;;
+        esac
+      fi
+
+cat >>confdefs.h <<_ACEOF
+#define GAMSIPOPT_EXPORT $libexport_attribute
+_ACEOF
+
+
+# Define BUILDTOOLS_DEBUG to enable debugging output
+
+      if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSIPOPT_LFLAGS_NOPC: \"${GAMSIPOPT_LFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSIPOPT_LFLAGS_NOPC: \"${GAMSIPOPT_LFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSIPOPT_CFLAGS_NOPC: \"${GAMSIPOPT_CFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSIPOPT_CFLAGS_NOPC: \"${GAMSIPOPT_CFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: adding \"${GAMSIPOPT_PCFILES}\"" >&5
+$as_echo "$as_me: adding \"${GAMSIPOPT_PCFILES}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSIPOPT_LFLAGS: \"${GAMSIPOPT_LFLAGS}\"" >&5
+$as_echo "$as_me: GAMSIPOPT_LFLAGS: \"${GAMSIPOPT_LFLAGS}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSIPOPT_CFLAGS: \"${GAMSIPOPT_CFLAGS}\"" >&5
+$as_echo "$as_me: GAMSIPOPT_CFLAGS: \"${GAMSIPOPT_CFLAGS}\"" >&6;}
+      fi
+     if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: FINALIZE_FLAGS for GamsBonmin:" >&5
+$as_echo "$as_me: FINALIZE_FLAGS for GamsBonmin:" >&6;}
+      fi
+      GAMSBONMIN_LFLAGS_NOPC=$GAMSBONMIN_LFLAGS
+
+      GAMSBONMIN_CFLAGS_NOPC=$GAMSBONMIN_CFLAGS
+
+      if test -n "${GAMSBONMIN_PCFILES}" ; then
+        temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSBONMIN_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSBONMIN_PCFILES}`
+        GAMSBONMIN_CFLAGS="$temp_CFLAGS ${GAMSBONMIN_CFLAGS}"
+        GAMSBONMIN_LFLAGS="$temp_LFLAGS ${GAMSBONMIN_LFLAGS}"
+      fi
+
+      # setup XYZ_EXPORT symbol for library users
+      libexport_attribute=
+      if test "$enable_shared" = yes ; then
+        case $build_os in
+          cygwin* | mingw* | msys* | cegcc* )
+            libexport_attribute="__declspec(dllimport)"
+            if test "$enable_static" = yes ; then
+              as_fn_error $? "Cannot do DLL and static LIB builds simultaneously. Do not add --enable-static without --disable-shared." "$LINENO" 5
+            fi
+          ;;
+        esac
+      fi
+
+cat >>confdefs.h <<_ACEOF
+#define GAMSBONMIN_EXPORT $libexport_attribute
+_ACEOF
+
+
+# Define BUILDTOOLS_DEBUG to enable debugging output
+
+      if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSBONMIN_LFLAGS_NOPC: \"${GAMSBONMIN_LFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSBONMIN_LFLAGS_NOPC: \"${GAMSBONMIN_LFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSBONMIN_CFLAGS_NOPC: \"${GAMSBONMIN_CFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSBONMIN_CFLAGS_NOPC: \"${GAMSBONMIN_CFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: adding \"${GAMSBONMIN_PCFILES}\"" >&5
+$as_echo "$as_me: adding \"${GAMSBONMIN_PCFILES}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSBONMIN_LFLAGS: \"${GAMSBONMIN_LFLAGS}\"" >&5
+$as_echo "$as_me: GAMSBONMIN_LFLAGS: \"${GAMSBONMIN_LFLAGS}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSBONMIN_CFLAGS: \"${GAMSBONMIN_CFLAGS}\"" >&5
+$as_echo "$as_me: GAMSBONMIN_CFLAGS: \"${GAMSBONMIN_CFLAGS}\"" >&6;}
+      fi
+     if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: FINALIZE_FLAGS for GamsCouenne:" >&5
+$as_echo "$as_me: FINALIZE_FLAGS for GamsCouenne:" >&6;}
+      fi
+      GAMSCOUENNE_LFLAGS_NOPC=$GAMSCOUENNE_LFLAGS
+
+      GAMSCOUENNE_CFLAGS_NOPC=$GAMSCOUENNE_CFLAGS
+
+      if test -n "${GAMSCOUENNE_PCFILES}" ; then
+        temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSCOUENNE_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSCOUENNE_PCFILES}`
+        GAMSCOUENNE_CFLAGS="$temp_CFLAGS ${GAMSCOUENNE_CFLAGS}"
+        GAMSCOUENNE_LFLAGS="$temp_LFLAGS ${GAMSCOUENNE_LFLAGS}"
+      fi
+
+      # setup XYZ_EXPORT symbol for library users
+      libexport_attribute=
+      if test "$enable_shared" = yes ; then
+        case $build_os in
+          cygwin* | mingw* | msys* | cegcc* )
+            libexport_attribute="__declspec(dllimport)"
+            if test "$enable_static" = yes ; then
+              as_fn_error $? "Cannot do DLL and static LIB builds simultaneously. Do not add --enable-static without --disable-shared." "$LINENO" 5
+            fi
+          ;;
+        esac
+      fi
+
+cat >>confdefs.h <<_ACEOF
+#define GAMSCOUENNE_EXPORT $libexport_attribute
+_ACEOF
+
+
+# Define BUILDTOOLS_DEBUG to enable debugging output
+
+      if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSCOUENNE_LFLAGS_NOPC: \"${GAMSCOUENNE_LFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSCOUENNE_LFLAGS_NOPC: \"${GAMSCOUENNE_LFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSCOUENNE_CFLAGS_NOPC: \"${GAMSCOUENNE_CFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSCOUENNE_CFLAGS_NOPC: \"${GAMSCOUENNE_CFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: adding \"${GAMSCOUENNE_PCFILES}\"" >&5
+$as_echo "$as_me: adding \"${GAMSCOUENNE_PCFILES}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSCOUENNE_LFLAGS: \"${GAMSCOUENNE_LFLAGS}\"" >&5
+$as_echo "$as_me: GAMSCOUENNE_LFLAGS: \"${GAMSCOUENNE_LFLAGS}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSCOUENNE_CFLAGS: \"${GAMSCOUENNE_CFLAGS}\"" >&5
+$as_echo "$as_me: GAMSCOUENNE_CFLAGS: \"${GAMSCOUENNE_CFLAGS}\"" >&6;}
+      fi
+     if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: FINALIZE_FLAGS for GamsSoplex:" >&5
+$as_echo "$as_me: FINALIZE_FLAGS for GamsSoplex:" >&6;}
+      fi
+      GAMSSOPLEX_LFLAGS_NOPC=$GAMSSOPLEX_LFLAGS
+
+      GAMSSOPLEX_CFLAGS_NOPC=$GAMSSOPLEX_CFLAGS
+
+      if test -n "${GAMSSOPLEX_PCFILES}" ; then
+        temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSSOPLEX_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSSOPLEX_PCFILES}`
+        GAMSSOPLEX_CFLAGS="$temp_CFLAGS ${GAMSSOPLEX_CFLAGS}"
+        GAMSSOPLEX_LFLAGS="$temp_LFLAGS ${GAMSSOPLEX_LFLAGS}"
+      fi
+
+      # setup XYZ_EXPORT symbol for library users
+      libexport_attribute=
+      if test "$enable_shared" = yes ; then
+        case $build_os in
+          cygwin* | mingw* | msys* | cegcc* )
+            libexport_attribute="__declspec(dllimport)"
+            if test "$enable_static" = yes ; then
+              as_fn_error $? "Cannot do DLL and static LIB builds simultaneously. Do not add --enable-static without --disable-shared." "$LINENO" 5
+            fi
+          ;;
+        esac
+      fi
+
+cat >>confdefs.h <<_ACEOF
+#define GAMSSOPLEX_EXPORT $libexport_attribute
+_ACEOF
+
+
+# Define BUILDTOOLS_DEBUG to enable debugging output
+
+      if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSOPLEX_LFLAGS_NOPC: \"${GAMSSOPLEX_LFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSSOPLEX_LFLAGS_NOPC: \"${GAMSSOPLEX_LFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSOPLEX_CFLAGS_NOPC: \"${GAMSSOPLEX_CFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSSOPLEX_CFLAGS_NOPC: \"${GAMSSOPLEX_CFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: adding \"${GAMSSOPLEX_PCFILES}\"" >&5
+$as_echo "$as_me: adding \"${GAMSSOPLEX_PCFILES}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSOPLEX_LFLAGS: \"${GAMSSOPLEX_LFLAGS}\"" >&5
+$as_echo "$as_me: GAMSSOPLEX_LFLAGS: \"${GAMSSOPLEX_LFLAGS}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSOPLEX_CFLAGS: \"${GAMSSOPLEX_CFLAGS}\"" >&5
+$as_echo "$as_me: GAMSSOPLEX_CFLAGS: \"${GAMSSOPLEX_CFLAGS}\"" >&6;}
+      fi
+     if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: FINALIZE_FLAGS for GamsScip:" >&5
+$as_echo "$as_me: FINALIZE_FLAGS for GamsScip:" >&6;}
+      fi
+      GAMSSCIP_LFLAGS_NOPC=$GAMSSCIP_LFLAGS
+
+      GAMSSCIP_CFLAGS_NOPC=$GAMSSCIP_CFLAGS
+
+      if test -n "${GAMSSCIP_PCFILES}" ; then
+        temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSSCIP_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSSCIP_PCFILES}`
+        GAMSSCIP_CFLAGS="$temp_CFLAGS ${GAMSSCIP_CFLAGS}"
+        GAMSSCIP_LFLAGS="$temp_LFLAGS ${GAMSSCIP_LFLAGS}"
+      fi
+
+      # setup XYZ_EXPORT symbol for library users
+      libexport_attribute=
+      if test "$enable_shared" = yes ; then
+        case $build_os in
+          cygwin* | mingw* | msys* | cegcc* )
+            libexport_attribute="__declspec(dllimport)"
+            if test "$enable_static" = yes ; then
+              as_fn_error $? "Cannot do DLL and static LIB builds simultaneously. Do not add --enable-static without --disable-shared." "$LINENO" 5
+            fi
+          ;;
+        esac
+      fi
+
+cat >>confdefs.h <<_ACEOF
+#define GAMSSCIP_EXPORT $libexport_attribute
+_ACEOF
+
+
+# Define BUILDTOOLS_DEBUG to enable debugging output
+
+      if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSCIP_LFLAGS_NOPC: \"${GAMSSCIP_LFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSSCIP_LFLAGS_NOPC: \"${GAMSSCIP_LFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSCIP_CFLAGS_NOPC: \"${GAMSSCIP_CFLAGS_NOPC}\"" >&5
+$as_echo "$as_me: GAMSSCIP_CFLAGS_NOPC: \"${GAMSSCIP_CFLAGS_NOPC}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: adding \"${GAMSSCIP_PCFILES}\"" >&5
+$as_echo "$as_me: adding \"${GAMSSCIP_PCFILES}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSCIP_LFLAGS: \"${GAMSSCIP_LFLAGS}\"" >&5
+$as_echo "$as_me: GAMSSCIP_LFLAGS: \"${GAMSSCIP_LFLAGS}\"" >&6;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSCIP_CFLAGS: \"${GAMSSCIP_CFLAGS}\"" >&5
+$as_echo "$as_me: GAMSSCIP_CFLAGS: \"${GAMSSCIP_CFLAGS}\"" >&6;}
       fi
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/GamsUtils/Makefile src/SolverInterfaces/Makefile src/SolverInterfaces/gamsinst.sh test/Makefile doc/optdoc/Makefile doc/Doxyfile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/gamsinst.sh src/utils/Makefile src/bonmin/Makefile src/cbc/Makefile src/couenne/Makefile src/ipopt/Makefile src/osi/Makefile src/scip/Makefile src/soplex/Makefile test/Makefile doc/optdoc/Makefile doc/Doxyfile"
 
 ac_config_files="$ac_config_files test/run_quality"
 
@@ -21319,9 +21631,15 @@ do
     "libtoolmingwpatch") CONFIG_COMMANDS="$CONFIG_COMMANDS libtoolmingwpatch" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-    "src/GamsUtils/Makefile") CONFIG_FILES="$CONFIG_FILES src/GamsUtils/Makefile" ;;
-    "src/SolverInterfaces/Makefile") CONFIG_FILES="$CONFIG_FILES src/SolverInterfaces/Makefile" ;;
-    "src/SolverInterfaces/gamsinst.sh") CONFIG_FILES="$CONFIG_FILES src/SolverInterfaces/gamsinst.sh" ;;
+    "src/gamsinst.sh") CONFIG_FILES="$CONFIG_FILES src/gamsinst.sh" ;;
+    "src/utils/Makefile") CONFIG_FILES="$CONFIG_FILES src/utils/Makefile" ;;
+    "src/bonmin/Makefile") CONFIG_FILES="$CONFIG_FILES src/bonmin/Makefile" ;;
+    "src/cbc/Makefile") CONFIG_FILES="$CONFIG_FILES src/cbc/Makefile" ;;
+    "src/couenne/Makefile") CONFIG_FILES="$CONFIG_FILES src/couenne/Makefile" ;;
+    "src/ipopt/Makefile") CONFIG_FILES="$CONFIG_FILES src/ipopt/Makefile" ;;
+    "src/osi/Makefile") CONFIG_FILES="$CONFIG_FILES src/osi/Makefile" ;;
+    "src/scip/Makefile") CONFIG_FILES="$CONFIG_FILES src/scip/Makefile" ;;
+    "src/soplex/Makefile") CONFIG_FILES="$CONFIG_FILES src/soplex/Makefile" ;;
     "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
     "doc/optdoc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/optdoc/Makefile" ;;
     "doc/Doxyfile") CONFIG_FILES="$CONFIG_FILES doc/Doxyfile" ;;

@@ -36,6 +36,18 @@
 /* Define to 1 if your C++ compiler doesn't accept -c and -o together. */
 #undef CXX_NO_MINUS_C_MINUS_O
 
+/* Library Visibility Attribute */
+#undef GAMSBONMIN_EXPORT
+
+/* Library Visibility Attribute */
+#undef GAMSCBC_EXPORT
+
+/* Library Visibility Attribute */
+#undef GAMSCOUENNE_EXPORT
+
+/* Library Visibility Attribute */
+#undef GAMSIPOPT_EXPORT
+
 /* Version number of project */
 #undef GAMSLINKS_VERSION
 
@@ -49,7 +61,13 @@
 #undef GAMSLINKS_VERSION_RELEASE
 
 /* Library Visibility Attribute */
-#undef GAMSSOLVERLIB_EXPORT
+#undef GAMSOSI_EXPORT
+
+/* Library Visibility Attribute */
+#undef GAMSSCIP_EXPORT
+
+/* Library Visibility Attribute */
+#undef GAMSSOPLEX_EXPORT
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H

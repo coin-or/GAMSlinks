@@ -25,10 +25,6 @@
 #include "GamsCompatibility.h"
 #include "GamsLicensing.h"
 
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
-#include "cplex.h"
-#endif
-
 /* disable -Wclass-memaccess warnings due to dubious memcpy/realloc calls in SoPlex headers */
 #ifdef __GNUC__
 #if __GNUC__ >= 8
@@ -728,10 +724,6 @@ int GamsSoPlex::modifyProblem()
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
-   CPXinitialize();
-#endif
-
    gmoInitMutexes();
    gevInitMutexes();
    palInitMutexes();
@@ -739,10 +731,6 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
-   CPXfinalize();
-#endif
-
    gmoFiniMutexes();
    gevFiniMutexes();
    palFiniMutexes();

@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2009-2011 GAMS Development and others
+# Copyright (C) GAMS Development and others 2009-2011
 # All Rights Reserved.
 # This file is distributed under the Eclipse Public License.
 #
@@ -94,7 +94,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/GamsUtils
+subdir = src/soplex
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -104,20 +104,48 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-LTLIBRARIES = $(noinst_LTLIBRARIES)
-libGamsUtils_la_LIBADD =
-am_libGamsUtils_la_OBJECTS = GamsHelper.lo GamsLicensing.lo \
-	GamsSolveTrace.lo optcc.lo gmomcc.lo gevmcc.lo gclgms.lo \
-	gdxcc.lo palmcc.lo
-libGamsUtils_la_OBJECTS = $(am_libGamsUtils_la_OBJECTS)
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+am__installdirs = "$(DESTDIR)$(libdir)"
+LTLIBRARIES = $(lib_LTLIBRARIES)
+am__DEPENDENCIES_1 =
+libGamsSoplex_la_DEPENDENCIES = ../utils/libGamsUtils.la \
+	$(am__DEPENDENCIES_1)
+am_libGamsSoplex_la_OBJECTS = GamsSoPlex.lo
+libGamsSoplex_la_OBJECTS = $(am_libGamsSoplex_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libGamsUtils_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
-	$(AM_CFLAGS) $(CFLAGS) $(libGamsUtils_la_LDFLAGS) $(LDFLAGS) \
-	-o $@
+libGamsSoplex_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) $(libGamsSoplex_la_LDFLAGS) \
+	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -133,31 +161,27 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/GamsHelper.Plo \
-	./$(DEPDIR)/GamsLicensing.Plo ./$(DEPDIR)/GamsSolveTrace.Plo \
-	./$(DEPDIR)/gclgms.Plo ./$(DEPDIR)/gdxcc.Plo \
-	./$(DEPDIR)/gevmcc.Plo ./$(DEPDIR)/gmomcc.Plo \
-	./$(DEPDIR)/optcc.Plo ./$(DEPDIR)/palmcc.Plo
+am__depfiles_remade = ./$(DEPDIR)/GamsSoPlex.Plo
 am__mv = mv -f
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) \
 	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
-	$(AM_CFLAGS) $(CFLAGS)
-AM_V_CC = $(am__v_CC_@AM_V@)
-am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
-am__v_CC_0 = @echo "  CC      " $@;
-am__v_CC_1 = 
-CCLD = $(CC)
-LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-AM_V_CCLD = $(am__v_CCLD_@AM_V@)
-am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
-am__v_CCLD_0 = @echo "  CCLD    " $@;
-am__v_CCLD_1 = 
-SOURCES = $(libGamsUtils_la_SOURCES)
+	$(AM_CXXFLAGS) $(CXXFLAGS)
+AM_V_CXX = $(am__v_CXX_@AM_V@)
+am__v_CXX_ = $(am__v_CXX_@AM_DEFAULT_V@)
+am__v_CXX_0 = @echo "  CXX     " $@;
+am__v_CXX_1 = 
+CXXLD = $(CXX)
+CXXLINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
+am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
+am__v_CXXLD_0 = @echo "  CXXLD   " $@;
+am__v_CXXLD_1 = 
+SOURCES = $(libGamsSoplex_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -213,12 +237,42 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
+GAMSBONMIN_CFLAGS = @GAMSBONMIN_CFLAGS@
+GAMSBONMIN_CFLAGS_NOPC = @GAMSBONMIN_CFLAGS_NOPC@
+GAMSBONMIN_LFLAGS = @GAMSBONMIN_LFLAGS@
+GAMSBONMIN_LFLAGS_NOPC = @GAMSBONMIN_LFLAGS_NOPC@
+GAMSBONMIN_PCFILES = @GAMSBONMIN_PCFILES@
+GAMSCBC_CFLAGS = @GAMSCBC_CFLAGS@
+GAMSCBC_CFLAGS_NOPC = @GAMSCBC_CFLAGS_NOPC@
+GAMSCBC_LFLAGS = @GAMSCBC_LFLAGS@
+GAMSCBC_LFLAGS_NOPC = @GAMSCBC_LFLAGS_NOPC@
+GAMSCBC_PCFILES = @GAMSCBC_PCFILES@
+GAMSCOUENNE_CFLAGS = @GAMSCOUENNE_CFLAGS@
+GAMSCOUENNE_CFLAGS_NOPC = @GAMSCOUENNE_CFLAGS_NOPC@
+GAMSCOUENNE_LFLAGS = @GAMSCOUENNE_LFLAGS@
+GAMSCOUENNE_LFLAGS_NOPC = @GAMSCOUENNE_LFLAGS_NOPC@
+GAMSCOUENNE_PCFILES = @GAMSCOUENNE_PCFILES@
+GAMSIPOPT_CFLAGS = @GAMSIPOPT_CFLAGS@
+GAMSIPOPT_CFLAGS_NOPC = @GAMSIPOPT_CFLAGS_NOPC@
+GAMSIPOPT_LFLAGS = @GAMSIPOPT_LFLAGS@
+GAMSIPOPT_LFLAGS_NOPC = @GAMSIPOPT_LFLAGS_NOPC@
+GAMSIPOPT_PCFILES = @GAMSIPOPT_PCFILES@
 GAMSLIBCFLAGS = @GAMSLIBCFLAGS@
-GAMSSOLVERLIB_CFLAGS = @GAMSSOLVERLIB_CFLAGS@
-GAMSSOLVERLIB_CFLAGS_NOPC = @GAMSSOLVERLIB_CFLAGS_NOPC@
-GAMSSOLVERLIB_LFLAGS = @GAMSSOLVERLIB_LFLAGS@
-GAMSSOLVERLIB_LFLAGS_NOPC = @GAMSSOLVERLIB_LFLAGS_NOPC@
-GAMSSOLVERLIB_PCFILES = @GAMSSOLVERLIB_PCFILES@
+GAMSOSI_CFLAGS = @GAMSOSI_CFLAGS@
+GAMSOSI_CFLAGS_NOPC = @GAMSOSI_CFLAGS_NOPC@
+GAMSOSI_LFLAGS = @GAMSOSI_LFLAGS@
+GAMSOSI_LFLAGS_NOPC = @GAMSOSI_LFLAGS_NOPC@
+GAMSOSI_PCFILES = @GAMSOSI_PCFILES@
+GAMSSCIP_CFLAGS = @GAMSSCIP_CFLAGS@
+GAMSSCIP_CFLAGS_NOPC = @GAMSSCIP_CFLAGS_NOPC@
+GAMSSCIP_LFLAGS = @GAMSSCIP_LFLAGS@
+GAMSSCIP_LFLAGS_NOPC = @GAMSSCIP_LFLAGS_NOPC@
+GAMSSCIP_PCFILES = @GAMSSCIP_PCFILES@
+GAMSSOPLEX_CFLAGS = @GAMSSOPLEX_CFLAGS@
+GAMSSOPLEX_CFLAGS_NOPC = @GAMSSOPLEX_CFLAGS_NOPC@
+GAMSSOPLEX_LFLAGS = @GAMSSOPLEX_LFLAGS@
+GAMSSOPLEX_LFLAGS_NOPC = @GAMSSOPLEX_LFLAGS_NOPC@
+GAMSSOPLEX_PCFILES = @GAMSSOPLEX_PCFILES@
 GAMS_PATH = @GAMS_PATH@
 GREP = @GREP@
 INSTALL = @INSTALL@
@@ -323,25 +377,20 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-noinst_LTLIBRARIES = libGamsUtils.la
-libGamsUtils_la_SOURCES = \
-  GamsHelper.c \
-  GamsLicensing.c \
-  GamsSolveTrace.c \
-  optcc.c \
-  gmomcc.c \
-  gevmcc.c \
-  gclgms.c \
-  gdxcc.c \
-  palmcc.c
+AM_CPPFLAGS = \
+  -I$(srcdir)/.. \
+  -I$(srcdir)/../utils \
+  -I"$(GAMS_PATH)/apifiles/C/api" \
+  $(GAMSSOPLEX_CFLAGS)
 
-libGamsUtils_la_LDFLAGS = 
-CLEANFILES = optcc.c gmomcc.c gevmcc.c gclgms.c gdxcc.c palmcc.c
-AM_CPPFLAGS = -I$(srcdir)/.. -I"$(GAMS_PATH)/apifiles/C/api" $(GAMSLIBCFLAGS)
+lib_LTLIBRARIES = libGamsSoplex.la
+libGamsSoplex_la_SOURCES = GamsSoPlex.cpp
+libGamsSoplex_la_LIBADD = ../utils/libGamsUtils.la $(GAMSSOPLEX_LFLAGS)
+libGamsSoplex_la_LDFLAGS = $(LT_LDFLAGS)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .lo .o .obj
+.SUFFIXES: .cpp .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -351,9 +400,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/GamsUtils/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/soplex/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/GamsUtils/Makefile
+	  $(AUTOMAKE) --foreign src/soplex/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -372,9 +421,33 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
-clean-noinstLTLIBRARIES:
-	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
-	@list='$(noinst_LTLIBRARIES)'; \
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
+	list2=; for p in $$list; do \
+	  if test -f $$p; then \
+	    list2="$$list2 $$p"; \
+	  else :; fi; \
+	done; \
+	test -z "$$list2" || { \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(libdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(libdir)" || exit 1; \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(libdir)'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(libdir)"; \
+	}
+
+uninstall-libLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
+	for p in $$list; do \
+	  $(am__strip_dir) \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(libdir)/$$f'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(libdir)/$$f"; \
+	done
+
+clean-libLTLIBRARIES:
+	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
+	@list='$(lib_LTLIBRARIES)'; \
 	locs=`for p in $$list; do echo $$p; done | \
 	      sed 's|^[^/]*$$|.|; s|/[^/]*$$||; s|$$|/so_locations|' | \
 	      sort -u`; \
@@ -383,8 +456,8 @@ clean-noinstLTLIBRARIES:
 	  rm -f $${locs}; \
 	}
 
-libGamsUtils.la: $(libGamsUtils_la_OBJECTS) $(libGamsUtils_la_DEPENDENCIES) $(EXTRA_libGamsUtils_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(libGamsUtils_la_LINK)  $(libGamsUtils_la_OBJECTS) $(libGamsUtils_la_LIBADD) $(LIBS)
+libGamsSoplex.la: $(libGamsSoplex_la_OBJECTS) $(libGamsSoplex_la_DEPENDENCIES) $(EXTRA_libGamsSoplex_la_DEPENDENCIES) 
+	$(AM_V_CXXLD)$(libGamsSoplex_la_LINK) -rpath $(libdir) $(libGamsSoplex_la_OBJECTS) $(libGamsSoplex_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -392,15 +465,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsHelper.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsLicensing.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSolveTrace.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gclgms.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdxcc.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gevmcc.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gmomcc.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optcc.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palmcc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsSoPlex.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -408,26 +473,26 @@ $(am__depfiles_remade):
 
 am--depfiles: $(am__depfiles_remade)
 
-.c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+.cpp.o:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
 
-.c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+.cpp.obj:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-.c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+.cpp.lo:
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -490,6 +555,9 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES)
 installdirs:
+	for dir in "$(DESTDIR)$(libdir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -512,7 +580,6 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -523,19 +590,11 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
+clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/GamsHelper.Plo
-	-rm -f ./$(DEPDIR)/GamsLicensing.Plo
-	-rm -f ./$(DEPDIR)/GamsSolveTrace.Plo
-	-rm -f ./$(DEPDIR)/gclgms.Plo
-	-rm -f ./$(DEPDIR)/gdxcc.Plo
-	-rm -f ./$(DEPDIR)/gevmcc.Plo
-	-rm -f ./$(DEPDIR)/gmomcc.Plo
-	-rm -f ./$(DEPDIR)/optcc.Plo
-	-rm -f ./$(DEPDIR)/palmcc.Plo
+		-rm -f ./$(DEPDIR)/GamsSoPlex.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -558,7 +617,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am:
+install-exec-am: install-libLTLIBRARIES
 
 install-html: install-html-am
 
@@ -581,15 +640,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/GamsHelper.Plo
-	-rm -f ./$(DEPDIR)/GamsLicensing.Plo
-	-rm -f ./$(DEPDIR)/GamsSolveTrace.Plo
-	-rm -f ./$(DEPDIR)/gclgms.Plo
-	-rm -f ./$(DEPDIR)/gdxcc.Plo
-	-rm -f ./$(DEPDIR)/gevmcc.Plo
-	-rm -f ./$(DEPDIR)/gmomcc.Plo
-	-rm -f ./$(DEPDIR)/optcc.Plo
-	-rm -f ./$(DEPDIR)/palmcc.Plo
+		-rm -f ./$(DEPDIR)/GamsSoPlex.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -606,44 +657,26 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-libLTLIBRARIES
 
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--depfiles check check-am clean \
-	clean-generic clean-libtool clean-noinstLTLIBRARIES \
-	cscopelist-am ctags ctags-am distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags dvi dvi-am \
-	html html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
+	clean-generic clean-libLTLIBRARIES clean-libtool cscopelist-am \
+	ctags ctags-am distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags dvi dvi-am html html-am info \
+	info-am install install-am install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am
+	tags tags-am uninstall uninstall-am uninstall-libLTLIBRARIES
 
 .PRECIOUS: Makefile
 
-
-optcc.c : $(GAMS_PATH)/apifiles/C/api/optcc.c
-	@cp $< $@
-
-gmomcc.c : $(GAMS_PATH)/apifiles/C/api/gmomcc.c
-	@cp $< $@
-
-gevmcc.c : $(GAMS_PATH)/apifiles/C/api/gevmcc.c
-	@cp $< $@
-
-gclgms.c : $(GAMS_PATH)/apifiles/C/api/gclgms.c
-	@cp $< $@
-
-gdxcc.c : $(GAMS_PATH)/apifiles/C/api/gdxcc.c
-	@cp $< $@
-
-palmcc.c : $(GAMS_PATH)/apifiles/C/api/palmcc.c
-	@cp $< $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
