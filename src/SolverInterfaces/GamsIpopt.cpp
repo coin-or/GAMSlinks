@@ -61,6 +61,7 @@ int GamsIpopt::readyAPI(
 #endif
 
    GAMSinitLicensing(gmo, pal);
+#ifdef GAMS_BUILD
    if( gevGetIntOpt(gev, gevCurSolver) == gevSolver2Id(gev, "ipopth") )
    {
       ipoptlicensed = GAMSHSLInit(gmo, pal);
@@ -73,6 +74,7 @@ int GamsIpopt::readyAPI(
          return 1;
       }
    }
+#endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Interior Point Optimizer (Ipopt Library " IPOPT_VERSION ")\n");
    if( ipoptlicensed )

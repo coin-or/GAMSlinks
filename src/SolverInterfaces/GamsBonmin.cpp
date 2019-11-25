@@ -70,6 +70,7 @@ int GamsBonmin::readyAPI(
 #endif
 
    GAMSinitLicensing(gmo, pal);
+#ifdef GAMS_BUILD
    if( gevGetIntOpt(gev, gevCurSolver) == gevSolver2Id(gev, "bonminh") )
    {
       ipoptlicensed = GAMSHSLInit(gmo, pal);
@@ -82,6 +83,7 @@ int GamsBonmin::readyAPI(
          return 1;
       }
    }
+#endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Bonmin (Bonmin Library " BONMIN_VERSION ")\n");
    if( ipoptlicensed )
