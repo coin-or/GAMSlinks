@@ -11,8 +11,6 @@
 #include "GamsMINLP.hpp"
 #include "GamsJournal.hpp"
 #include "GamsMessageHandler.hpp"
-#include "GamsCbc.hpp"  // in case we need to solve an LP or MIP
-#include "GamsIpopt.hpp" // in case we need to solve an NLP
 #include "GamsCbcHeurSolveTrace.hpp"
 #include "GAMSlinksConfig.h"
 
@@ -156,28 +154,6 @@ int GamsBonmin::callSolver()
 {
    assert(gmo != NULL);
    assert(bonmin_setup != NULL);
-
-   if( isMIP() && gmoOptFile(gmo) == 0 )
-   {
-      gevLogStat(gev, "Problem is linear. Passing over to Cbc.");
-      GamsCbc cbc;
-      int retcode;
-      retcode = cbc.readyAPI(gmo, NULL);
-      if( retcode == 0 )
-         retcode = cbc.callSolver();
-      return retcode;
-   }
-
-   if( isNLP() && gmoOptFile(gmo) == 0 )
-   {
-      gevLogStat(gev, "Problem is continuous. Passing over to Ipopt.");
-      GamsIpopt ipopt;
-      int retcode;
-      retcode = ipopt.readyAPI(gmo);
-      if( retcode == 0 )
-         retcode = ipopt.callSolver();
-      return retcode;
-   }
 
    gmoObjStyleSet(gmo, gmoObjType_Fun);
    gmoObjReformSet(gmo, 1);
@@ -629,35 +605,6 @@ int GamsBonmin::callSolver()
       GAMSsolvetraceFree(&solvetrace_);
 
    return 0;
-}
-
-bool GamsBonmin::isNLP()
-{
-   switch( gmoModelType(gmo) )
-   {
-      case gmoProc_lp:
-      case gmoProc_rmip:
-      case gmoProc_qcp:
-      case gmoProc_rmiqcp:
-      case gmoProc_nlp:
-      case gmoProc_rminlp:
-         return true;
-   }
-
-   if( gmoNDisc(gmo) > 0 )
-      return false;
-
-   int numSos1, numSos2, nzSos;
-   gmoGetSosCounts(gmo, &numSos1, &numSos2, &nzSos);
-   if( nzSos > 0 )
-      return false;
-
-   return true;
-}
-
-bool GamsBonmin::isMIP()
-{
-   return gmoNLNZ(gmo) == 0 && (gmoObjStyle(gmo) == gmoObjType_Var || gmoObjNLNZ(gmo) == 0);
 }
 
 #define GAMSSOLVER_ID         bon

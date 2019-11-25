@@ -31,9 +31,6 @@ private:
 	GamsMessageHandler*   msghandler;         /**< COIN-OR message handler for GAMS */
    bool                  ipoptlicensed;      /**< whether a commercial Ipopt license is available */
 
-	bool isNLP();
-	bool isMIP();
-
 public:
 	GamsBonmin()
 	: gmo(NULL),
