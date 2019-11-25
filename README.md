@@ -14,7 +14,6 @@ Currently the following links are available:
   * [Cbc](https://github.com/coin-or/Cbc): Coin Branch and Cut code
   * [Ipopt](https://github.com/coin-or/Ipopt): Interior Point Optimizer
   * [Osi](https://github.com/coin-or/Osi): Interface to LP and MIP solvers with an Open Solver Interface, currently CPLEX, Gurobi, Mosek, and Xpress
-  * [OS](https://projects.coin-or.org/OS): Optimization Services
   * [SCIP](https://scip.zib.de): Solving Constraint Integer Programs
   * [SoPlex](https://soplex.zib.de): Sequential object-oriented simPlex
 
@@ -38,7 +37,7 @@ The main installation steps are:
  1. Install a GAMS system, if you do not have one.
  2. Install solvers.
  3. Call configure, make, and make install.
- 4. Install the GAMS/COIN-OR links in your GAMS system by calling make gams-install.
+ 4. Install the GAMS/COIN-OR links in your GAMS system by calling `make gams-install`.
 
 ### 1. Installation of a GAMS system
 
@@ -97,8 +96,4 @@ For a documentation of the GAMS/COIN-OR links and their parameters please see th
 
 ## Testing
 
-The directory `GAMSlinks/test` contains scripts that test Cbc, Ipopt, Bonmin, Couenne, Osi, SoPlex, and SCIP on some models from the GAMS test and model libraries.
-
-## Mailing list
-
-To subscribe to the GAMSlinks mailing list, go to <http://list.coin-or.org/mailman/listinfo/gamslinks>.
+The directory `test` contains scripts that test Cbc, Ipopt, Bonmin, Couenne, Osi, SoPlex, and SCIP on some models from the GAMS test and model libraries.
