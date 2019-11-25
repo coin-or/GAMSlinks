@@ -6,31 +6,37 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST =
-
-lib_LTLIBRARIES = libGamsUtils.la
+noinst_LTLIBRARIES = libGamsUtils.la
 libGamsUtils_la_SOURCES = \
   GamsHelper.c \
   GamsLicensing.c \
   GamsSolveTrace.c \
-  $(GAMS_PATH)/apifiles/C/api/optcc.c \
-  $(GAMS_PATH)/apifiles/C/api/gmomcc.c \
-  $(GAMS_PATH)/apifiles/C/api/gevmcc.c \
-  $(GAMS_PATH)/apifiles/C/api/gclgms.c \
-  $(GAMS_PATH)/apifiles/C/api/gdxcc.c \
-  $(GAMS_PATH)/apifiles/C/api/palmcc.c
+  optcc.c \
+  gmomcc.c \
+  gevmcc.c \
+  gclgms.c \
+  gdxcc.c \
+  palmcc.c
 libGamsUtils_la_LDFLAGS =
 
-includecoindir = $(includedir)/coin
-includecoin_HEADERS = GamsCompatibility.h  GamsLicensing.h GamsHelper.h GamsNLinstr.h GamsSolveTrace.h
+optcc.c : $(GAMS_PATH)/apifiles/C/api/optcc.c
+	@cp $< $@
 
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/..` -I`$(CYGPATH_W) $(GAMS_PATH)/apifiles/C/api` $(GAMSLIBCFLAGS)
+gmomcc.c : $(GAMS_PATH)/apifiles/C/api/gmomcc.c
+	@cp $< $@
 
-DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
+gevmcc.c : $(GAMS_PATH)/apifiles/C/api/gevmcc.c
+	@cp $< $@
 
-########################################################################
-#                         Maintainer Stuff                             #
-########################################################################
+gclgms.c : $(GAMS_PATH)/apifiles/C/api/gclgms.c
+	@cp $< $@
 
-# Files that are generated and should be cleaned with make distclean
-DISTCLEANFILES =
+gdxcc.c : $(GAMS_PATH)/apifiles/C/api/gdxcc.c
+	@cp $< $@
+
+palmcc.c : $(GAMS_PATH)/apifiles/C/api/palmcc.c
+	@cp $< $@
+
+CLEANFILES = optcc.c gmomcc.c gevmcc.c gclgms.c gdxcc.c palmcc.c
+
+AM_CPPFLAGS = -I$(srcdir)/.. -I"$(GAMS_PATH)/apifiles/C/api" $(GAMSLIBCFLAGS)

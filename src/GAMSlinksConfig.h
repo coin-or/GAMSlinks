@@ -12,7 +12,6 @@
 #error "HAVE_CONFIG_H not defined. Need configuration header files."
 #endif
 
-#ifdef GAMSLINKS_BUILD
 #include "config.h"
 
 #ifndef HAVE_SNPRINTF
@@ -33,10 +32,6 @@
 #error "Do not have strtok_r, strtok_s, or strtok."
 #endif
 #endif
-#endif
-
-#else
-#include "config_gamslinks.h"
 #endif
 
 #endif /*__GAMSLINKSCONFIG_H__*/

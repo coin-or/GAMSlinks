@@ -4,28 +4,19 @@
 #
 # Author: Stefan Vigerske
 
-AUTOMAKE_OPTIONS = foreign
-
-EXTRA_DIST     =
-DISTCLEANFILES =
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 AM_CPPFLAGS = \
-  -I`$(CYGPATH_W) $(srcdir)/..` \
-  -I`$(CYGPATH_W) $(srcdir)/scip` \
-  -I`$(CYGPATH_W) $(srcdir)/../GamsUtils` \
-  -I`$(CYGPATH_W) $(GAMS_PATH)/apifiles/C/api` \
+  -I$(srcdir)/.. \
+  -I$(srcdir)/../GamsUtils \
+  -I$(srcdir)/scip \
+  -I"$(GAMS_PATH)/apifiles/C/api" \
   $(GAMSSOLVERLIB_CFLAGS)
-
-DEFAULT_INCLUDES = -I. -I`$(CYGPATH_W) $(srcdir)` -I..
 
 lib_LTLIBRARIES = libGamsCoin.la
 libGamsCoin_la_SOURCES      =
-libGamsCoin_la_LIBADD       = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_LIBS)
-libGamsCoin_la_DEPENDENCIES = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_DEPENDENCIES)
-libGamsCoin_la_LDFLAGS      = -module -no-undefined
-
-includecoindir = $(includedir)/coin
-includecoin_HEADERS = 
+libGamsCoin_la_LIBADD       = ../GamsUtils/libGamsUtils.la $(GAMSSOLVERLIB_LFLAGS)
+libGamsCoin_la_LDFLAGS      = $(LT_LDFLAGS)
 
 bin_SCRIPTS = gamsinst.sh
 if COIN_IS_WINDOWS
@@ -36,36 +27,29 @@ endif
 
 if COIN_HAS_OSI
   libGamsCoin_la_SOURCES += GamsMessageHandler.cpp GamsOsiHelper.cpp GamsOsi.cpp
-  includecoin_HEADERS    += GamsMessageHandler.hpp GamsOsiHelper.hpp GamsOsi.hpp
 endif
 
 if COIN_HAS_CBC
   libGamsCoin_la_SOURCES += GamsCbc.cpp
-  includecoin_HEADERS    += GamsCbc.hpp
   bin_SCRIPTS += optmycbc.def
 endif
 
 if COIN_HAS_IPOPT
   libGamsCoin_la_SOURCES += GamsJournal.cpp GamsNLP.cpp GamsIpopt.cpp 
-  includecoin_HEADERS    += GamsJournal.hpp GamsNLP.hpp GamsIpopt.hpp
 endif
 
 if COIN_HAS_SOPLEX
   libGamsCoin_la_SOURCES += GamsSoPlex.cpp
-  includecoin_HEADERS    += GamsSoPlex.hpp
 endif
 
 if COIN_HAS_SCIP
   libGamsCoin_la_SOURCES += GamsScip.cpp scip/reader_gmo.c scip/event_solvetrace.c scip/prop_defaultbounds.c
-  includecoin_HEADERS    += GamsScip.hpp
 endif
 
 if COIN_HAS_BONMIN
   libGamsCoin_la_SOURCES += GamsMINLP.cpp GamsBonmin.cpp
-  includecoin_HEADERS    += GamsMINLP.hpp GamsBonmin.hpp
 endif
 
 if COIN_HAS_COUENNE
   libGamsCoin_la_SOURCES += GamsCouenne.cpp
-  includecoin_HEADERS    += GamsCouenne.hpp
 endif

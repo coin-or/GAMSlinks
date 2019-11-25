@@ -6,8 +6,6 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST =
-
 test:
 	sh -c ./run_quality
 	sh -c ./run_gmstest
@@ -18,7 +16,3 @@ clean-local:
 	rm -rf gmstest quality
 
 .PHONY: test unitTest
-
-DISTCLEANFILES = 
-
-include ../BuildTools/Makemain.inc

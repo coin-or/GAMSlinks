@@ -10,7 +10,7 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([GAMSlinks],[trunk],[https://projects.coin-or.org/GAMSlinks/newticket])
+AC_INIT([GAMSlinks],[master],[https://github.com/coin-or/GAMSlinks])
 
 AC_COPYRIGHT([Copyright (C) 2006-2011 GAMS Development and others 
 All Rights Reserved.
@@ -21,27 +21,11 @@ under the Eclipse Public License.])
 # whether the package is actually there
 AC_CONFIG_SRCDIR(src/GAMSlinksConfig.h)
 
-# Where should everything be installed by default?  Here, we want it
-# to be installed directly in 'bin', 'lib', 'include' subdirectories
-# of the directory where configure is run.  The default would be
-# /usr/local.
-AC_PREFIX_DEFAULT([`pwd`])
+AC_COIN_INITIALIZE(GAMSlinks)
 
 #############################################################################
 #                         Standard build tools stuff                        #
 #############################################################################
-
-# Get the system type
-AC_CANONICAL_BUILD
-
-# If this project depends on external projects, the Externals file in
-# the source root directory contains definition of where to find those
-# externals.  The following macro ensures that those externals are
-# retrieved by svn if they are not there yet.
-AC_COIN_PROJECTDIR_INIT(GAMSlinks)
-
-# Check if user wants to produce debugging code
-AC_COIN_DEBUG_COMPILE(GAMSlinks)
 
 # Get the name of the C compiler and appropriate compiler options
 AC_COIN_PROG_CC
@@ -49,28 +33,28 @@ AC_COIN_PROG_CC
 # Get the name of the C++ compiler and appropriate compiler options
 AC_COIN_PROG_CXX
 
-# Get the macros for Fortran naming convention 
-AC_COIN_F77_WRAPPERS
+# Initialize libtool
+AC_COIN_PROG_LIBTOOL
 
-# Initialize automake and libtool
-AC_COIN_INIT_AUTO_TOOLS
+# Doxygen
+AC_COIN_DOXYGEN
 
 #############################################################################
 #                      COIN-OR and other components                         #
 #############################################################################
 
 # check which solvers are available
-AC_COIN_CHECK_PACKAGE(Osi,     [osi],        [GamsSolverLib])
-AC_COIN_CHECK_PACKAGE(OsiCpx,  [osi-cplex],  [GamsSolverLib])
-AC_COIN_CHECK_PACKAGE(OsiGrb,  [osi-gurobi], [GamsSolverLib])
-AC_COIN_CHECK_PACKAGE(OsiMsk,  [osi-mosek],  [GamsSolverLib])
-AC_COIN_CHECK_PACKAGE(OsiXpr,  [osi-xpress], [GamsSolverLib])
-AC_COIN_CHECK_PACKAGE(Cbc,     [cbc],        [GamsSolverLib])
-AC_COIN_CHECK_PACKAGE(Ipopt,   [ipopt],      [GamsSolverLib])
-AC_COIN_CHECK_PACKAGE(Bonmin,  [bonmin],     [GamsSolverLib])
-AC_COIN_CHECK_PACKAGE(Couenne, [couenne],    [GamsSolverLib])
-AC_COIN_CHECK_PACKAGE(SoPlex,  [coinsoplex], [GamsSolverLib])
-AC_COIN_CHECK_PACKAGE(SCIP,    [coinscip],   [GamsSolverLib])
+AC_COIN_CHK_PKG(Osi,     [GamsSolverLib], [osi])
+AC_COIN_CHK_PKG(OsiCpx,  [GamsSolverLib], [osi-cplex])
+AC_COIN_CHK_PKG(OsiGrb,  [GamsSolverLib], [osi-gurobi])
+AC_COIN_CHK_PKG(OsiMsk,  [GamsSolverLib], [osi-mosek])
+AC_COIN_CHK_PKG(OsiXpr,  [GamsSolverLib], [osi-xpress])
+AC_COIN_CHK_PKG(Cbc,     [GamsSolverLib], [cbc])
+AC_COIN_CHK_PKG(Ipopt,   [GamsSolverLib], [ipopt])
+AC_COIN_CHK_PKG(Bonmin,  [GamsSolverLib], [bonmin])
+AC_COIN_CHK_PKG(Couenne, [GamsSolverLib], [couenne])
+AC_COIN_CHK_PKG(SoPlex,  [GamsSolverLib], [coinsoplex])
+AC_COIN_CHK_PKG(SCIP,    [GamsSolverLib], [coinscip])
 
 ############################################################################
 #                          Check for system specifics                      #
@@ -78,16 +62,16 @@ AC_COIN_CHECK_PACKAGE(SCIP,    [coinscip],   [GamsSolverLib])
 
 AC_LANG_PUSH(C)
 
-# check if intptr_t is available, which can be used to avoid errors when compiling hte GAMS library loader codes
+# check if intptr_t is available, which can be used to avoid errors when compiling the GAMS library loader codes
 GAMSLIBCFLAGS=
-AC_CHECK_TYPE([intptr_t],[GAMSLIBCFLAGS=-DHAVE_INTPTR_T])
+AC_CHECK_TYPE([intptr_t],[GAMSLIBCFLAGS=-DHAVE_INTPTR_T])  #FIXME
 AC_SUBST(GAMSLIBCFLAGS)
 
 # check if va_copy is available, to be used in GamsJournal
 AC_CHECK_DECL([va_copy],
   [AC_DEFINE([HAVE_VA_COPY],[1],[Define to 1 if va_copy is available])],,
   [
-#include <cstdarg>
+#include "stdarg.h"
   ])
 
 # check for snprintf variants
@@ -99,15 +83,12 @@ AC_CHECK_FUNCS([strtok_r strtok_s strtok],[break])
 
 # if we have Ipopt, check if we have GotoBlas or MKL Blas functions to set number of threads
 if test $coin_has_ipopt = yes ; then
-  LIBS_save="$LIBS"
-  LIBS=[`echo $IPOPT_LIBS $LIBS " " | sed -e 's/[^ ]*.la / /g'`]
-  AC_CHECK_FUNC([goto_set_num_threads],
-    AC_DEFINE([HAVE_GOTO_SETNUMTHREADS],[1],[Define to 1 if we have goto_set_num_threads])
+  AC_COIN_TRY_LINK([goto_set_num_threads],[$ipopt_lflags],[$ipopt_pcfiles],
+    AC_DEFINE([HAVE_GOTO_SETNUMTHREADS],[1],[Define to 1 if Ipopt has goto_set_num_threads])
   )
-  AC_CHECK_FUNC([omp_set_num_threads],
-    AC_DEFINE([HAVE_OMP_SETNUMTHREADS],[1],[Define to 1 if we have omp_set_num_threads])
+  AC_COIN_TRY_LINK([omp_set_num_threads],[$ipopt_lflags],[$ipopt_pcfiles],
+    AC_DEFINE([HAVE_OMP_SETNUMTHREADS],[1],[Define to 1 if Ipopt has omp_set_num_threads])
   )
-  LIBS="$LIBS_save"
 fi
 
 AC_LANG_POP(C)
@@ -116,14 +97,28 @@ AC_LANG_POP(C)
 # GAMS system #
 ###############
 
-AC_COIN_HAVE_GAMS
+GAMS_PATH=UNAVAILABLE
+AC_ARG_WITH([gams],
+  AC_HELP_STRING([--with-gams],[specify directory of GAMS distribution]),
+  [if test "$withval" != no ; then
+     AC_CHECK_FILE([$withval/gams],[GAMS_PATH=$withval],[GAMS_PATH=UNAVAILABLE])
+   fi
+  ],
+  [AC_PATH_PROG(gamspath, [gams], UNAVAILABLE,,)
+   GAMS_PATH="${gamspath/%gams/}"
+  ])
+AC_SUBST(GAMS_PATH)
+
+if test "$GAMS_PATH" = UNAVAILABLE; then
+  AC_MSG_ERROR([no GAMS system found])
+fi
 
 ####################
 # Windos or *nix ? #
 ####################
 
 case $build in
-  *-cygwin* | *-mingw* )
+  *-cygwin* | *-mingw* | *-msys* )
     coin_is_windows=yes
   ;;
   *)
@@ -136,6 +131,8 @@ AM_CONDITIONAL(COIN_IS_WINDOWS, test $coin_is_windows = yes)
 # END PART #
 ############
 
+AC_COIN_FINALIZE_FLAGS([GamsSolverLib])
+
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/GamsUtils/Makefile
@@ -143,11 +140,10 @@ AC_CONFIG_FILES([Makefile
                  src/SolverInterfaces/gamsinst.sh
                  test/Makefile
                  doc/optdoc/Makefile
-                 examples/osil2gms/Makefile
                 ])
 AC_CONFIG_FILES([test/run_quality], [chmod +x test/run_quality])
 AC_CONFIG_FILES([test/run_gmstest], [chmod +x test/run_gmstest])
 
-AC_CONFIG_HEADER([src/config.h src/config_gamslinks.h])
+AC_CONFIG_HEADER([src/config.h])
 
 AC_COIN_FINALIZE

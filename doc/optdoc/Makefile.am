@@ -12,14 +12,4 @@ optdoc_SOURCES = optdoc.cpp
 
 optdoc_LDADD = ../../src/SolverInterfaces/libGamsCoin.la
 
-AM_CPPFLAGS = -I`$(CYGPATH_W) $(srcdir)/../../src` -I`$(CYGPATH_W) $(srcdir)/../../src/SolverInterfaces` $(GAMSSOLVERLIB_CFLAGS)
-
-########################################################################
-#                         Maintainer Stuff                             #
-########################################################################
-
-# Files that are generated and should be cleaned with make distclean
-DISTCLEANFILES =
-EXTRA_DIST = 
-
-include ../../BuildTools/Makemain.inc
+AM_CPPFLAGS = -I$(srcdir)/../../src -I$(srcdir)/../../src/SolverInterfaces $(GAMSSOLVERLIB_CFLAGS)

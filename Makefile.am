@@ -3,7 +3,6 @@
 # This file is distributed under the Eclipse Public License.
 #
 # Author: Stefan Vigerske
-# Template from: Andreas Waechter
 
 AUTOMAKE_OPTIONS = foreign
 
@@ -13,7 +12,7 @@ if ALWAYS_FALSE
   SUBDIRS += test
 endif
 
-EXTRA_DIST = README LICENSE AUTHORS
+doc_DATA = README.md LICENSE AUTHORS
 
 test: all
 	cd test; $(MAKE) test
@@ -23,24 +22,14 @@ unitTest: test
 gams-install: install
 	$(bindir)/gamsinst.sh
 
-.PHONY: test unitTest gams-install
+doc:
+	cd doc && doxygen
+
+.PHONY: test unitTest gams-install doc
 
 # Stuff to clean up
-clean-local:
+clean-doc :
+	cd doc && rm -rf html *.log
+
+clean-local: clean-doc
 	if test -r test/Makefile; then cd test; $(MAKE) clean; fi
-
-distclean-local:
-	if test -r test/Makefile; then cd test; $(MAKE) distclean; fi
-
-install-exec-local: install-doc
-
-uninstall-local: uninstall-doc
-
-########################################################################
-#                         Maintainer Stuff                             #
-########################################################################
-
-# Files that are generated and should be cleaned with make distclean
-DISTCLEANFILES =
-
-include BuildTools/Makemain.inc
