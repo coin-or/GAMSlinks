@@ -16,18 +16,6 @@
       <projectLicenseURL>http://opensource.org/licenses/EPL-2.0</projectLicenseURL>
       <coinLinkedProjects>
          <coinProject>
-            <repoName>BuildTools</repoName>
-         </coinProject>
-         <coinProject>
-            <repoName>CoinUtils</repoName>
-         </coinProject>
-         <coinProject>
-            <repoName>Cgl</repoName>
-         </coinProject>
-         <coinProject>
-            <repoName>Clp</repoName>
-         </coinProject>
-         <coinProject>
             <repoName>Osi</repoName>
          </coinProject>
          <coinProject>
@@ -42,36 +30,8 @@
          <coinProject>
             <repoName>Couenne</repoName>
          </coinProject>
-         <coinProject>
-            <repoName>OS</repoName>
-         </coinProject>
       </coinLinkedProjects>
       <otherLinkedPackages>
-         <otherPackage>
-            <packageName>Blas</packageName>
-            <packageURL>http://www.netlib.org/blas</packageURL>
-            <requiredOrOptional>Required for IPOPT, BONMIN, and Couenne</requiredOrOptional>
-         </otherPackage>
-         <otherPackage>
-            <packageName>Lapack</packageName>
-            <packageURL>http://www.netlib.org/lapack</packageURL>
-            <requiredOrOptional>Optional</requiredOrOptional>
-         </otherPackage>
-         <otherPackage>
-            <packageName>A sparse linear solver (MA27, MA57, WSMP, Paradiso, HSL, MUMPS)</packageName>
-            <packageURL/>
-            <requiredOrOptional>Required for IPOPT, BONMIN, and Couenne</requiredOrOptional>
-         </otherPackage>
-         <otherPackage>
-            <packageName>Metis 4</packageName>
-            <packageURL>http://glaros.dtc.umn.edu/gkhome/metis/metis/overview</packageURL>
-            <requiredOrOptional>Optional</requiredOrOptional>
-         </otherPackage>
-         <otherPackage>
-            <packageName>GLPK</packageName>
-            <packageURL>http://www.gnu.org/software/glpk/glpk.html</packageURL>
-            <requiredOrOptional>Optional</requiredOrOptional>
-         </otherPackage>
          <otherPackage>
             <packageName>SCIP</packageName>
             <packageURL>http://scip.zib.de</packageURL>
