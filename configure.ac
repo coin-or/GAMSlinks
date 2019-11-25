@@ -140,6 +140,7 @@ AC_CONFIG_FILES([Makefile
                  src/SolverInterfaces/gamsinst.sh
                  test/Makefile
                  doc/optdoc/Makefile
+                 doc/Doxyfile
                 ])
 AC_CONFIG_FILES([test/run_quality], [chmod +x test/run_quality])
 AC_CONFIG_FILES([test/run_gmstest], [chmod +x test/run_gmstest])

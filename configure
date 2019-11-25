@@ -20122,7 +20122,7 @@ $as_echo "$as_me: GAMSSOLVERLIB_CFLAGS: \"${GAMSSOLVERLIB_CFLAGS}\"" >&6;}
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/GamsUtils/Makefile src/SolverInterfaces/Makefile src/SolverInterfaces/gamsinst.sh test/Makefile doc/optdoc/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/GamsUtils/Makefile src/SolverInterfaces/Makefile src/SolverInterfaces/gamsinst.sh test/Makefile doc/optdoc/Makefile doc/Doxyfile"
 
 ac_config_files="$ac_config_files test/run_quality"
 
@@ -21324,6 +21324,7 @@ do
     "src/SolverInterfaces/gamsinst.sh") CONFIG_FILES="$CONFIG_FILES src/SolverInterfaces/gamsinst.sh" ;;
     "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
     "doc/optdoc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/optdoc/Makefile" ;;
+    "doc/Doxyfile") CONFIG_FILES="$CONFIG_FILES doc/Doxyfile" ;;
     "test/run_quality") CONFIG_FILES="$CONFIG_FILES test/run_quality" ;;
     "test/run_gmstest") CONFIG_FILES="$CONFIG_FILES test/run_gmstest" ;;
     "src/config.h") CONFIG_HEADERS="$CONFIG_HEADERS src/config.h" ;;
