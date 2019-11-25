@@ -2,7 +2,7 @@
 # All Rights Reserved.
 # This file is distributed under the Eclipse Public License.
 #
-# Author:  Stefan Vigerske
+# Author: Stefan Vigerske
 
 #############################################################################
 #                       Names and other basic things                        #
@@ -12,14 +12,14 @@ AC_PREREQ(2.59)
 
 AC_INIT([GAMSlinks],[trunk],[https://projects.coin-or.org/GAMSlinks/newticket])
 
-AC_COPYRIGHT([Copyright (C) 2006-2011 GAMS Development and others
+AC_COPYRIGHT([Copyright (C) 2006-2011 GAMS Development and others 
 All Rights Reserved.
 This file is part of the open source package GAMSlinks which is distributed
 under the Eclipse Public License.])
 
 # List one file in the package so that the configure script can test
 # whether the package is actually there
-AC_CONFIG_SRCDIR(configure.ac)
+AC_CONFIG_SRCDIR(src/GAMSlinksConfig.h)
 
 # Where should everything be installed by default?  Here, we want it
 # to be installed directly in 'bin', 'lib', 'include' subdirectories
@@ -28,42 +28,126 @@ AC_CONFIG_SRCDIR(configure.ac)
 AC_PREFIX_DEFAULT([`pwd`])
 
 #############################################################################
-#              Create the libtool script for the subdirectories             #
+#                         Standard build tools stuff                        #
 #############################################################################
 
-AC_COIN_CREATE_LIBTOOL
+# Get the system type
+AC_CANONICAL_BUILD
+
+# If this project depends on external projects, the Externals file in
+# the source root directory contains definition of where to find those
+# externals.  The following macro ensures that those externals are
+# retrieved by svn if they are not there yet.
+AC_COIN_PROJECTDIR_INIT(GAMSlinks)
+
+# Check if user wants to produce debugging code
+AC_COIN_DEBUG_COMPILE(GAMSlinks)
+
+# Get the name of the C compiler and appropriate compiler options
+AC_COIN_PROG_CC
+
+# Get the name of the C++ compiler and appropriate compiler options
+AC_COIN_PROG_CXX
+
+# Get the macros for Fortran naming convention 
+AC_COIN_F77_WRAPPERS
+
+# Initialize automake and libtool
+AC_COIN_INIT_AUTO_TOOLS
 
 #############################################################################
-#                  Check which subprojects are there                        #
+#                      COIN-OR and other components                         #
 #############################################################################
 
-#we want SCIP to be build after CoinUtils, Clp, Ipopt, and CppAD in order to use them there 
+# check which solvers are available
+AC_COIN_CHECK_PACKAGE(Osi,     [osi],        [GamsSolverLib])
+AC_COIN_CHECK_PACKAGE(OsiCpx,  [osi-cplex],  [GamsSolverLib])
+AC_COIN_CHECK_PACKAGE(OsiGrb,  [osi-gurobi], [GamsSolverLib])
+AC_COIN_CHECK_PACKAGE(OsiMsk,  [osi-mosek],  [GamsSolverLib])
+AC_COIN_CHECK_PACKAGE(OsiXpr,  [osi-xpress], [GamsSolverLib])
+AC_COIN_CHECK_PACKAGE(Cbc,     [cbc],        [GamsSolverLib])
+AC_COIN_CHECK_PACKAGE(Ipopt,   [ipopt],      [GamsSolverLib])
+AC_COIN_CHECK_PACKAGE(Bonmin,  [bonmin],     [GamsSolverLib])
+AC_COIN_CHECK_PACKAGE(Couenne, [couenne],    [GamsSolverLib])
+AC_COIN_CHECK_PACKAGE(SoPlex,  [coinsoplex], [GamsSolverLib])
+AC_COIN_CHECK_PACKAGE(SCIP,    [coinscip],   [GamsSolverLib])
 
-AC_COIN_MAIN_PACKAGEDIR(Blas,     ThirdParty,[daxpy.f])
-AC_COIN_MAIN_PACKAGEDIR(Lapack,   ThirdParty,[LAPACK/SRC/dlarf.f])
-AC_COIN_MAIN_PACKAGEDIR(Metis,    ThirdParty,[metis-4.0/Lib/balance.c])
-AC_COIN_MAIN_PACKAGEDIR(HSL,      ThirdParty,[coinhsl/common/deps.f])
-AC_COIN_MAIN_PACKAGEDIR(Mumps,    ThirdParty,[MUMPS/src/dmumps_part1.F])
-AC_COIN_MAIN_PACKAGEDIR(SoPlex,   ThirdParty,[soplex/src/soplex.h])
-AC_COIN_MAIN_PACKAGEDIR(FilterSQP,ThirdParty,[source/src/filter.f])
-AC_COIN_MAIN_PACKAGEDIR(CoinUtils)
-AC_COIN_MAIN_PACKAGEDIR(Osi)
-AC_COIN_MAIN_PACKAGEDIR(Clp)
-AC_COIN_MAIN_PACKAGEDIR(Cgl)
-AC_COIN_MAIN_PACKAGEDIR(Cbc)
-AC_COIN_MAIN_PACKAGEDIR(Ipopt)
-AC_COIN_MAIN_PACKAGEDIR(SCIP,     ThirdParty,[scip/src/scip/scip.h])
-AC_COIN_MAIN_PACKAGEDIR(Bonmin)
-AC_COIN_MAIN_PACKAGEDIR(Couenne)
-AC_COIN_MAIN_PACKAGEDIR(GAMSlinks)
+############################################################################
+#                          Check for system specifics                      #
+############################################################################
 
-##############################################################################
-#                   Finishing up by writing all the output                   #
-##############################################################################
+AC_LANG_PUSH(C)
 
-# Here list all the files that configure should create (except for the
-# configuration header file)
-AC_CONFIG_FILES([Makefile])
+# check if intptr_t is available, which can be used to avoid errors when compiling hte GAMS library loader codes
+GAMSLIBCFLAGS=
+AC_CHECK_TYPE([intptr_t],[GAMSLIBCFLAGS=-DHAVE_INTPTR_T])
+AC_SUBST(GAMSLIBCFLAGS)
 
-# Finally, we let configure write all the output...
+# check if va_copy is available, to be used in GamsJournal
+AC_CHECK_DECL([va_copy],
+  [AC_DEFINE([HAVE_VA_COPY],[1],[Define to 1 if va_copy is available])],,
+  [
+#include <cstdarg>
+  ])
+
+# check for snprintf variants
+AC_CHECK_FUNCS([snprintf _snprintf],[break])
+AC_CHECK_FUNCS([vsnprintf _vsnprintf],[break])
+
+# check for strtok variants
+AC_CHECK_FUNCS([strtok_r strtok_s strtok],[break])
+
+# if we have Ipopt, check if we have GotoBlas or MKL Blas functions to set number of threads
+if test $coin_has_ipopt = yes ; then
+  LIBS_save="$LIBS"
+  LIBS=[`echo $IPOPT_LIBS $LIBS " " | sed -e 's/[^ ]*.la / /g'`]
+  AC_CHECK_FUNC([goto_set_num_threads],
+    AC_DEFINE([HAVE_GOTO_SETNUMTHREADS],[1],[Define to 1 if we have goto_set_num_threads])
+  )
+  AC_CHECK_FUNC([omp_set_num_threads],
+    AC_DEFINE([HAVE_OMP_SETNUMTHREADS],[1],[Define to 1 if we have omp_set_num_threads])
+  )
+  LIBS="$LIBS_save"
+fi
+
+AC_LANG_POP(C)
+
+###############
+# GAMS system #
+###############
+
+AC_COIN_HAVE_GAMS
+
+####################
+# Windos or *nix ? #
+####################
+
+case $build in
+  *-cygwin* | *-mingw* )
+    coin_is_windows=yes
+  ;;
+  *)
+    coin_is_windows=no
+  ;;
+esac
+AM_CONDITIONAL(COIN_IS_WINDOWS, test $coin_is_windows = yes)  
+
+############
+# END PART #
+############
+
+AC_CONFIG_FILES([Makefile
+                 src/Makefile
+                 src/GamsUtils/Makefile
+                 src/SolverInterfaces/Makefile
+                 src/SolverInterfaces/gamsinst.sh
+                 test/Makefile
+                 doc/optdoc/Makefile
+                 examples/osil2gms/Makefile
+                ])
+AC_CONFIG_FILES([test/run_quality], [chmod +x test/run_quality])
+AC_CONFIG_FILES([test/run_gmstest], [chmod +x test/run_gmstest])
+
+AC_CONFIG_HEADER([src/config.h src/config_gamslinks.h])
+
 AC_COIN_FINALIZE

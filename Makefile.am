@@ -1,46 +1,40 @@
-# Copyright (C) 2006-2011 GAMS Development
+# Copyright (C) GAMS Development 2007-2011
 # All Rights Reserved.
 # This file is distributed under the Eclipse Public License.
 #
-# Author:  Stefan Vigerske
+# Author: Stefan Vigerske
+# Template from: Andreas Waechter
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = doxydoc/doxygen.conf INSTALL LICENCE README
+SUBDIRS = src
 
-########################################################################
-#                          Subdirectories                              #
-########################################################################
+if ALWAYS_FALSE
+  SUBDIRS += test
+endif
 
-# subdirs is set by configure as the list of all subdirectories to recurse
-# into
-SUBDIRS = $(subdirs)
-
-########################################################################
-#                           Extra Targets                              #
-########################################################################
+EXTRA_DIST = README LICENSE AUTHORS
 
 test: all
-	cd GAMSlinks; $(MAKE) test
+	cd test; $(MAKE) test
 
 unitTest: test
 
-tests: all
-	for dir in $(subdirs); do \
-	  if test -r $$dir/test/Makefile; then \
-	    (cd $$dir; $(MAKE) test) \
-	  fi; \
-	done
-
-unitTests: tests
-
-doxydoc:
-	cd $(srcdir); doxygen doxydoc/doxygen.conf
-	
 gams-install: install
 	$(bindir)/gamsinst.sh
 
-.PHONY: test unitTest tests unitTests gams-install doxydoc
+.PHONY: test unitTest gams-install
+
+# Stuff to clean up
+clean-local:
+	if test -r test/Makefile; then cd test; $(MAKE) clean; fi
+
+distclean-local:
+	if test -r test/Makefile; then cd test; $(MAKE) distclean; fi
+
+install-exec-local: install-doc
+
+uninstall-local: uninstall-doc
 
 ########################################################################
 #                         Maintainer Stuff                             #

@@ -14,11 +14,12 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2006-2011 GAMS Development
+# Copyright (C) GAMS Development 2007-2011
 # All Rights Reserved.
 # This file is distributed under the Eclipse Public License.
 #
-# Author:  Stefan Vigerske
+# Author: Stefan Vigerske
+# Template from: Andreas Waechter
 
 # Copyright (C) 2006, 2007 International Business Machines and others.
 # All Rights Reserved.
@@ -51,21 +52,25 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-DIST_COMMON = README $(am__configure_deps) \
+@ALWAYS_FALSE@am__append_1 = test
+DIST_COMMON = README $(am__configure_deps) $(srcdir)/../config.guess \
+	$(srcdir)/../config.sub $(srcdir)/../install-sh \
+	$(srcdir)/../ltmain.sh $(srcdir)/../missing \
 	$(srcdir)/BuildTools/Makemain.inc $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(top_srcdir)/configure INSTALL compile \
-	config.guess config.sub depcomp install-sh ltmain.sh missing
-@HAVE_EXTERNALS_TRUE@am__append_1 = Dependencies
-@HAVE_EXTERNALS_TRUE@am__append_2 = .Dependencies-stamp
+	$(srcdir)/Makefile.in $(top_srcdir)/configure AUTHORS
+@HAVE_EXTERNALS_TRUE@am__append_2 = Dependencies
+@HAVE_EXTERNALS_TRUE@am__append_3 = .Dependencies-stamp
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/ac_coin_gams.m4 \
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno configure.status.lineno
 mkinstalldirs = $(install_sh) -d
+CONFIG_HEADER = $(top_builddir)/src/config.h \
+	$(top_builddir)/src/config_gamslinks.h
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
@@ -77,7 +82,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = $(SUBDIRS)
+DIST_SUBDIRS = src test
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -93,7 +98,8 @@ ABSBUILDDIR = @ABSBUILDDIR@
 ACLOCAL = @ACLOCAL@
 ADD_CFLAGS = @ADD_CFLAGS@
 ADD_CXXFLAGS = @ADD_CXXFLAGS@
-ADD_FFLAGS = @ADD_FFLAGS@
+ALWAYS_FALSE_FALSE = @ALWAYS_FALSE_FALSE@
+ALWAYS_FALSE_TRUE = @ALWAYS_FALSE_TRUE@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
@@ -103,7 +109,21 @@ AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AUX_DIR = @AUX_DIR@
 AWK = @AWK@
+BONMIN_CFLAGS = @BONMIN_CFLAGS@
+BONMIN_CFLAGS_INSTALLED = @BONMIN_CFLAGS_INSTALLED@
+BONMIN_DATA = @BONMIN_DATA@
+BONMIN_DATA_INSTALLED = @BONMIN_DATA_INSTALLED@
+BONMIN_DEPENDENCIES = @BONMIN_DEPENDENCIES@
+BONMIN_LIBS = @BONMIN_LIBS@
+BONMIN_LIBS_INSTALLED = @BONMIN_LIBS_INSTALLED@
 BUILDTOOLSDIR = @BUILDTOOLSDIR@
+CBC_CFLAGS = @CBC_CFLAGS@
+CBC_CFLAGS_INSTALLED = @CBC_CFLAGS_INSTALLED@
+CBC_DATA = @CBC_DATA@
+CBC_DATA_INSTALLED = @CBC_DATA_INSTALLED@
+CBC_DEPENDENCIES = @CBC_DEPENDENCIES@
+CBC_LIBS = @CBC_LIBS@
+CBC_LIBS_INSTALLED = @CBC_LIBS_INSTALLED@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CDEFS = @CDEFS@
@@ -112,7 +132,43 @@ COIN_CC_IS_CL_FALSE = @COIN_CC_IS_CL_FALSE@
 COIN_CC_IS_CL_TRUE = @COIN_CC_IS_CL_TRUE@
 COIN_CXX_IS_CL_FALSE = @COIN_CXX_IS_CL_FALSE@
 COIN_CXX_IS_CL_TRUE = @COIN_CXX_IS_CL_TRUE@
-COIN_SKIP_PROJECTS = @COIN_SKIP_PROJECTS@
+COIN_HAS_BONMIN_FALSE = @COIN_HAS_BONMIN_FALSE@
+COIN_HAS_BONMIN_TRUE = @COIN_HAS_BONMIN_TRUE@
+COIN_HAS_CBC_FALSE = @COIN_HAS_CBC_FALSE@
+COIN_HAS_CBC_TRUE = @COIN_HAS_CBC_TRUE@
+COIN_HAS_COUENNE_FALSE = @COIN_HAS_COUENNE_FALSE@
+COIN_HAS_COUENNE_TRUE = @COIN_HAS_COUENNE_TRUE@
+COIN_HAS_GAMSSYSTEM_FALSE = @COIN_HAS_GAMSSYSTEM_FALSE@
+COIN_HAS_GAMSSYSTEM_TRUE = @COIN_HAS_GAMSSYSTEM_TRUE@
+COIN_HAS_IPOPT_FALSE = @COIN_HAS_IPOPT_FALSE@
+COIN_HAS_IPOPT_TRUE = @COIN_HAS_IPOPT_TRUE@
+COIN_HAS_OSICPX_FALSE = @COIN_HAS_OSICPX_FALSE@
+COIN_HAS_OSICPX_TRUE = @COIN_HAS_OSICPX_TRUE@
+COIN_HAS_OSIGRB_FALSE = @COIN_HAS_OSIGRB_FALSE@
+COIN_HAS_OSIGRB_TRUE = @COIN_HAS_OSIGRB_TRUE@
+COIN_HAS_OSIMSK_FALSE = @COIN_HAS_OSIMSK_FALSE@
+COIN_HAS_OSIMSK_TRUE = @COIN_HAS_OSIMSK_TRUE@
+COIN_HAS_OSIXPR_FALSE = @COIN_HAS_OSIXPR_FALSE@
+COIN_HAS_OSIXPR_TRUE = @COIN_HAS_OSIXPR_TRUE@
+COIN_HAS_OSI_FALSE = @COIN_HAS_OSI_FALSE@
+COIN_HAS_OSI_TRUE = @COIN_HAS_OSI_TRUE@
+COIN_HAS_PKGCONFIG_FALSE = @COIN_HAS_PKGCONFIG_FALSE@
+COIN_HAS_PKGCONFIG_TRUE = @COIN_HAS_PKGCONFIG_TRUE@
+COIN_HAS_SCIP_FALSE = @COIN_HAS_SCIP_FALSE@
+COIN_HAS_SCIP_TRUE = @COIN_HAS_SCIP_TRUE@
+COIN_HAS_SOPLEX_FALSE = @COIN_HAS_SOPLEX_FALSE@
+COIN_HAS_SOPLEX_TRUE = @COIN_HAS_SOPLEX_TRUE@
+COIN_IS_WINDOWS_FALSE = @COIN_IS_WINDOWS_FALSE@
+COIN_IS_WINDOWS_TRUE = @COIN_IS_WINDOWS_TRUE@
+COIN_PKG_CONFIG_PATH = @COIN_PKG_CONFIG_PATH@
+COIN_PKG_CONFIG_PATH_UNINSTALLED = @COIN_PKG_CONFIG_PATH_UNINSTALLED@
+COUENNE_CFLAGS = @COUENNE_CFLAGS@
+COUENNE_CFLAGS_INSTALLED = @COUENNE_CFLAGS_INSTALLED@
+COUENNE_DATA = @COUENNE_DATA@
+COUENNE_DATA_INSTALLED = @COUENNE_DATA_INSTALLED@
+COUENNE_DEPENDENCIES = @COUENNE_DEPENDENCIES@
+COUENNE_LIBS = @COUENNE_LIBS@
+COUENNE_LIBS_INSTALLED = @COUENNE_LIBS_INSTALLED@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
@@ -123,7 +179,6 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DBG_CFLAGS = @DBG_CFLAGS@
 DBG_CXXFLAGS = @DBG_CXXFLAGS@
-DBG_FFLAGS = @DBG_FFLAGS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DEPENDENCY_LINKING_FALSE = @DEPENDENCY_LINKING_FALSE@
@@ -136,12 +191,30 @@ EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+FLIBS = @FLIBS@
+GAMSLIBCFLAGS = @GAMSLIBCFLAGS@
+GAMSLINKS_SVN_REV = @GAMSLINKS_SVN_REV@
+GAMSSOLVERLIB_CFLAGS = @GAMSSOLVERLIB_CFLAGS@
+GAMSSOLVERLIB_CFLAGS_INSTALLED = @GAMSSOLVERLIB_CFLAGS_INSTALLED@
+GAMSSOLVERLIB_DEPENDENCIES = @GAMSSOLVERLIB_DEPENDENCIES@
+GAMSSOLVERLIB_LIBS = @GAMSSOLVERLIB_LIBS@
+GAMSSOLVERLIB_LIBS_INSTALLED = @GAMSSOLVERLIB_LIBS_INSTALLED@
+GAMSSOLVERLIB_PCLIBS = @GAMSSOLVERLIB_PCLIBS@
+GAMSSOLVERLIB_PCREQUIRES = @GAMSSOLVERLIB_PCREQUIRES@
+GAMS_PATH = @GAMS_PATH@
 HAVE_EXTERNALS_FALSE = @HAVE_EXTERNALS_FALSE@
 HAVE_EXTERNALS_TRUE = @HAVE_EXTERNALS_TRUE@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+IPOPT_CFLAGS = @IPOPT_CFLAGS@
+IPOPT_CFLAGS_INSTALLED = @IPOPT_CFLAGS_INSTALLED@
+IPOPT_DATA = @IPOPT_DATA@
+IPOPT_DATA_INSTALLED = @IPOPT_DATA_INSTALLED@
+IPOPT_DEPENDENCIES = @IPOPT_DEPENDENCIES@
+IPOPT_LIBS = @IPOPT_LIBS@
+IPOPT_LIBS_INSTALLED = @IPOPT_LIBS_INSTALLED@
 LDFLAGS = @LDFLAGS@
 LIBEXT = @LIBEXT@
 LIBOBJS = @LIBOBJS@
@@ -157,11 +230,44 @@ MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MPICC = @MPICC@
 MPICXX = @MPICXX@
-MPIF77 = @MPIF77@
 OBJEXT = @OBJEXT@
 OPT_CFLAGS = @OPT_CFLAGS@
 OPT_CXXFLAGS = @OPT_CXXFLAGS@
-OPT_FFLAGS = @OPT_FFLAGS@
+OSICPX_CFLAGS = @OSICPX_CFLAGS@
+OSICPX_CFLAGS_INSTALLED = @OSICPX_CFLAGS_INSTALLED@
+OSICPX_DATA = @OSICPX_DATA@
+OSICPX_DATA_INSTALLED = @OSICPX_DATA_INSTALLED@
+OSICPX_DEPENDENCIES = @OSICPX_DEPENDENCIES@
+OSICPX_LIBS = @OSICPX_LIBS@
+OSICPX_LIBS_INSTALLED = @OSICPX_LIBS_INSTALLED@
+OSIGRB_CFLAGS = @OSIGRB_CFLAGS@
+OSIGRB_CFLAGS_INSTALLED = @OSIGRB_CFLAGS_INSTALLED@
+OSIGRB_DATA = @OSIGRB_DATA@
+OSIGRB_DATA_INSTALLED = @OSIGRB_DATA_INSTALLED@
+OSIGRB_DEPENDENCIES = @OSIGRB_DEPENDENCIES@
+OSIGRB_LIBS = @OSIGRB_LIBS@
+OSIGRB_LIBS_INSTALLED = @OSIGRB_LIBS_INSTALLED@
+OSIMSK_CFLAGS = @OSIMSK_CFLAGS@
+OSIMSK_CFLAGS_INSTALLED = @OSIMSK_CFLAGS_INSTALLED@
+OSIMSK_DATA = @OSIMSK_DATA@
+OSIMSK_DATA_INSTALLED = @OSIMSK_DATA_INSTALLED@
+OSIMSK_DEPENDENCIES = @OSIMSK_DEPENDENCIES@
+OSIMSK_LIBS = @OSIMSK_LIBS@
+OSIMSK_LIBS_INSTALLED = @OSIMSK_LIBS_INSTALLED@
+OSIXPR_CFLAGS = @OSIXPR_CFLAGS@
+OSIXPR_CFLAGS_INSTALLED = @OSIXPR_CFLAGS_INSTALLED@
+OSIXPR_DATA = @OSIXPR_DATA@
+OSIXPR_DATA_INSTALLED = @OSIXPR_DATA_INSTALLED@
+OSIXPR_DEPENDENCIES = @OSIXPR_DEPENDENCIES@
+OSIXPR_LIBS = @OSIXPR_LIBS@
+OSIXPR_LIBS_INSTALLED = @OSIXPR_LIBS_INSTALLED@
+OSI_CFLAGS = @OSI_CFLAGS@
+OSI_CFLAGS_INSTALLED = @OSI_CFLAGS_INSTALLED@
+OSI_DATA = @OSI_DATA@
+OSI_DATA_INSTALLED = @OSI_DATA_INSTALLED@
+OSI_DEPENDENCIES = @OSI_DEPENDENCIES@
+OSI_LIBS = @OSI_LIBS@
+OSI_LIBS_INSTALLED = @OSI_LIBS_INSTALLED@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -169,10 +275,25 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKG_CONFIG = @PKG_CONFIG@
 RANLIB = @RANLIB@
 RPATH_FLAGS = @RPATH_FLAGS@
+SCIP_CFLAGS = @SCIP_CFLAGS@
+SCIP_CFLAGS_INSTALLED = @SCIP_CFLAGS_INSTALLED@
+SCIP_DATA = @SCIP_DATA@
+SCIP_DATA_INSTALLED = @SCIP_DATA_INSTALLED@
+SCIP_DEPENDENCIES = @SCIP_DEPENDENCIES@
+SCIP_LIBS = @SCIP_LIBS@
+SCIP_LIBS_INSTALLED = @SCIP_LIBS_INSTALLED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SOPLEX_CFLAGS = @SOPLEX_CFLAGS@
+SOPLEX_CFLAGS_INSTALLED = @SOPLEX_CFLAGS_INSTALLED@
+SOPLEX_DATA = @SOPLEX_DATA@
+SOPLEX_DATA_INSTALLED = @SOPLEX_DATA_INSTALLED@
+SOPLEX_DEPENDENCIES = @SOPLEX_DEPENDENCIES@
+SOPLEX_LIBS = @SOPLEX_LIBS@
+SOPLEX_LIBS_INSTALLED = @SOPLEX_LIBS_INSTALLED@
 STRIP = @STRIP@
 VERSION = @VERSION@
 VPATH_DISTCLEANFILES = @VPATH_DISTCLEANFILES@
@@ -185,6 +306,7 @@ ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_F77 = @ac_ct_F77@
+ac_ct_PKG_CONFIG = @ac_ct_PKG_CONFIG@
 ac_ct_RANLIB = @ac_ct_RANLIB@
 ac_ct_STRIP = @ac_ct_STRIP@
 ac_cxx_preproc_warn_flag = @ac_cxx_preproc_warn_flag@
@@ -206,9 +328,11 @@ build_vendor = @build_vendor@
 datadir = @datadir@
 dos2unix = @dos2unix@
 exec_prefix = @exec_prefix@
+gamspath = @gamspath@
 have_autoconf = @have_autoconf@
 have_automake = @have_automake@
 have_svn = @have_svn@
+have_svnversion = @have_svnversion@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
@@ -228,27 +352,18 @@ program_transform_name = @program_transform_name@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sol_cc_compiler = @sol_cc_compiler@
-subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-EXTRA_DIST = doxydoc/doxygen.conf INSTALL LICENCE README \
-	$(am__append_1)
-
-########################################################################
-#                          Subdirectories                              #
-########################################################################
-
-# subdirs is set by configure as the list of all subdirectories to recurse
-# into
-SUBDIRS = $(subdirs)
+SUBDIRS = src $(am__append_1)
+EXTRA_DIST = README LICENSE AUTHORS $(am__append_2)
 
 ########################################################################
 #                         Maintainer Stuff                             #
 ########################################################################
 
 # Files that are generated and should be cleaned with make distclean
-DISTCLEANFILES = $(am__append_2) $(VPATH_DISTCLEANFILES)
+DISTCLEANFILES = $(am__append_3) $(VPATH_DISTCLEANFILES)
 DocFiles = README AUTHORS LICENSE 
 DocInstallDir = $(datadir)/coin/doc/$(PACKAGE_NAME)
 COIN_HAS_DOXYGEN = @COIN_HAS_DOXYGEN_TRUE@TRUE
@@ -435,7 +550,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/BuildTools $(distdir)/doxydoc
+	$(mkdir_p) $(distdir)/.. $(distdir)/BuildTools $(distdir)/m4 $(distdir)/src/SolverInterfaces $(distdir)/test
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -606,13 +721,13 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-libtool clean-local mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
 distclean-am: clean-am distclean-generic distclean-libtool \
-	distclean-tags
+	distclean-local distclean-tags
 
 dvi: dvi-recursive
 
@@ -626,7 +741,7 @@ info-am:
 
 install-data-am:
 
-install-exec-am:
+install-exec-am: install-exec-local
 
 install-info: install-info-recursive
 
@@ -652,51 +767,47 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-info-am
+uninstall-am: uninstall-info-am uninstall-local
 
 uninstall-info: uninstall-info-recursive
 
 .PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am am--refresh check \
-	check-am clean clean-generic clean-libtool clean-recursive \
-	ctags ctags-recursive dist dist-all dist-bzip2 dist-gzip \
-	dist-shar dist-tarZ dist-zip distcheck distclean \
-	distclean-generic distclean-libtool distclean-recursive \
-	distclean-tags distcleancheck distdir distuninstallcheck dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-exec install-exec-am \
-	install-info install-info-am install-man install-strip \
-	installcheck installcheck-am installdirs installdirs-am \
-	maintainer-clean maintainer-clean-generic \
-	maintainer-clean-recursive mostlyclean mostlyclean-generic \
-	mostlyclean-libtool mostlyclean-recursive pdf pdf-am ps ps-am \
-	tags tags-recursive uninstall uninstall-am uninstall-info-am
+	check-am clean clean-generic clean-libtool clean-local \
+	clean-recursive ctags ctags-recursive dist dist-all dist-bzip2 \
+	dist-gzip dist-shar dist-tarZ dist-zip distcheck distclean \
+	distclean-generic distclean-libtool distclean-local \
+	distclean-recursive distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-exec \
+	install-exec-am install-exec-local install-info \
+	install-info-am install-man install-strip installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic maintainer-clean-recursive \
+	mostlyclean mostlyclean-generic mostlyclean-libtool \
+	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
+	uninstall uninstall-am uninstall-info-am uninstall-local
 
-
-########################################################################
-#                           Extra Targets                              #
-########################################################################
 
 test: all
-	cd GAMSlinks; $(MAKE) test
+	cd test; $(MAKE) test
 
 unitTest: test
-
-tests: all
-	for dir in $(subdirs); do \
-	  if test -r $$dir/test/Makefile; then \
-	    (cd $$dir; $(MAKE) test) \
-	  fi; \
-	done
-
-unitTests: tests
-
-doxydoc:
-	cd $(srcdir); doxygen doxydoc/doxygen.conf
 
 gams-install: install
 	$(bindir)/gamsinst.sh
 
-.PHONY: test unitTest tests unitTests gams-install doxydoc
+.PHONY: test unitTest gams-install
+
+# Stuff to clean up
+clean-local:
+	if test -r test/Makefile; then cd test; $(MAKE) clean; fi
+
+distclean-local:
+	if test -r test/Makefile; then cd test; $(MAKE) distclean; fi
+
+install-exec-local: install-doc
+
+uninstall-local: uninstall-doc
 
 doxygen-docs: 
 	if test "$(COIN_HAS_DOXYGEN)" = TRUE; then \
