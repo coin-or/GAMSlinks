@@ -12,8 +12,8 @@
       </projectShortDescription>
       <projectManager>Stefan Vigerske</projectManager>
       <projectHomePage>https://github.com/coin-or/GAMSlinks</projectHomePage>
-      <projectLicense>Eclipse Public License 1.0</projectLicense>
-      <projectLicenseURL>http://opensource.org/licenses/EPL-1.0</projectLicenseURL>
+      <projectLicense>Eclipse Public License 2.0</projectLicense>
+      <projectLicenseURL>http://opensource.org/licenses/EPL-2.0</projectLicenseURL>
       <coinLinkedProjects>
          <coinProject>
             <repoName>BuildTools</repoName>

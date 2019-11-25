@@ -4,7 +4,7 @@
 
 This project is dedicated to the development of links between [GAMS](http://www.gams.com) ( **G**eneral **A**lgebraic **M**odeling **S**ystem) and some solvers,
 including some of the [COIN-OR](https://www.coin-or.org) open source solvers.
-The links are written in C++ and are released as open source code under the Eclipse Public Licence (EPL) 1.0.
+The links are written in C++ and are released as open source code under the Eclipse Public Licence (EPL) 2.0.
 The COIN-OR project leader for GAMSlinks is [Stefan Vigerske](http://www.gams.com/~stefan) (GAMS Software GmbH).
 
 Currently the following links are available:
