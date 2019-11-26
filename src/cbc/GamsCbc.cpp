@@ -41,9 +41,9 @@
 #include "CoinHelperFunctions.hpp"
 #include "CoinTime.hpp"
 
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
-#include "cplex.h"
-#endif
+//#if defined(__linux) && defined(COIN_HAS_OSICPX)
+//#include "cplex.h"
+//#endif
 
 /** CBC callback, used for updating model pointer
  * forward declaration, so we can define a static function as friend of special message handler
@@ -1398,9 +1398,10 @@ bool GamsCbc::isLP()
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
-   CPXinitialize();
-#endif
+// assuming that CBC was build without CPLEX (or the CPLEX feature not enabled)
+//#if defined(__linux) && defined(COIN_HAS_OSICPX)
+//   CPXinitialize();
+//#endif
 
    gmoInitMutexes();
    gevInitMutexes();
@@ -1411,9 +1412,9 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
-   CPXfinalize();
-#endif
+//#if defined(__linux) && defined(COIN_HAS_OSICPX)
+//   CPXfinalize();
+//#endif
 
    gmoFiniMutexes();
    gevFiniMutexes();
