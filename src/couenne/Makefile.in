@@ -137,7 +137,7 @@ am__DEPENDENCIES_1 =
 libGamsCouenne_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libGamsCouenne_la_OBJECTS = GamsCouenne.lo ../bonmin/GamsMINLP.lo \
-	../cbc/GamsMessageHandler.lo ../ipopt/GamsJournal.lo \
+	../osi/GamsMessageHandler.lo ../ipopt/GamsJournal.lo \
 	../ipopt/GamsNLP.lo ../utils/GamsSolveTrace.lo \
 	../utils/GamsHelper.lo ../utils/GamsLicensing.lo \
 	../utils/gmomcc.lo ../utils/gevmcc.lo ../utils/palmcc.lo
@@ -166,9 +166,9 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ../bonmin/$(DEPDIR)/GamsMINLP.Plo \
-	../cbc/$(DEPDIR)/GamsMessageHandler.Plo \
 	../ipopt/$(DEPDIR)/GamsJournal.Plo \
 	../ipopt/$(DEPDIR)/GamsNLP.Plo \
+	../osi/$(DEPDIR)/GamsMessageHandler.Plo \
 	../utils/$(DEPDIR)/GamsHelper.Plo \
 	../utils/$(DEPDIR)/GamsLicensing.Plo \
 	../utils/$(DEPDIR)/GamsSolveTrace.Plo \
@@ -410,13 +410,13 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 
 # TODO better way to get to cplex header
 AM_CPPFLAGS = -I$(srcdir)/.. -I$(srcdir)/../bonmin -I$(srcdir)/../cbc \
-	-I$(srcdir)/../ipopt -I$(srcdir)/../utils \
+	-I$(srcdir)/../osi -I$(srcdir)/../ipopt -I$(srcdir)/../utils \
 	$(GAMSCOUENNE_CFLAGS) $(GAMSOSI_CFLAGS) \
 	-I"$(GAMS_PATH)/apifiles/C/api" $(GAMSLIBCFLAGS)
 lib_LTLIBRARIES = libGamsCouenne.la
 libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
   ../bonmin/GamsMINLP.cpp \
-  ../cbc/GamsMessageHandler.cpp \
+  ../osi/GamsMessageHandler.cpp \
   ../ipopt/GamsJournal.cpp ../ipopt/GamsNLP.cpp \
   ../utils/GamsSolveTrace.c ../utils/GamsHelper.c ../utils/GamsLicensing.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
@@ -502,14 +502,14 @@ clean-libLTLIBRARIES:
 	@: > ../bonmin/$(DEPDIR)/$(am__dirstamp)
 ../bonmin/GamsMINLP.lo: ../bonmin/$(am__dirstamp) \
 	../bonmin/$(DEPDIR)/$(am__dirstamp)
-../cbc/$(am__dirstamp):
-	@$(MKDIR_P) ../cbc
-	@: > ../cbc/$(am__dirstamp)
-../cbc/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../cbc/$(DEPDIR)
-	@: > ../cbc/$(DEPDIR)/$(am__dirstamp)
-../cbc/GamsMessageHandler.lo: ../cbc/$(am__dirstamp) \
-	../cbc/$(DEPDIR)/$(am__dirstamp)
+../osi/$(am__dirstamp):
+	@$(MKDIR_P) ../osi
+	@: > ../osi/$(am__dirstamp)
+../osi/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../osi/$(DEPDIR)
+	@: > ../osi/$(DEPDIR)/$(am__dirstamp)
+../osi/GamsMessageHandler.lo: ../osi/$(am__dirstamp) \
+	../osi/$(DEPDIR)/$(am__dirstamp)
 ../ipopt/$(am__dirstamp):
 	@$(MKDIR_P) ../ipopt
 	@: > ../ipopt/$(am__dirstamp)
@@ -546,10 +546,10 @@ mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f ../bonmin/*.$(OBJEXT)
 	-rm -f ../bonmin/*.lo
-	-rm -f ../cbc/*.$(OBJEXT)
-	-rm -f ../cbc/*.lo
 	-rm -f ../ipopt/*.$(OBJEXT)
 	-rm -f ../ipopt/*.lo
+	-rm -f ../osi/*.$(OBJEXT)
+	-rm -f ../osi/*.lo
 	-rm -f ../utils/*.$(OBJEXT)
 	-rm -f ../utils/*.lo
 
@@ -557,9 +557,9 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@../bonmin/$(DEPDIR)/GamsMINLP.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@../cbc/$(DEPDIR)/GamsMessageHandler.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../ipopt/$(DEPDIR)/GamsJournal.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../ipopt/$(DEPDIR)/GamsNLP.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../osi/$(DEPDIR)/GamsMessageHandler.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsHelper.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsLicensing.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsSolveTrace.Plo@am__quote@ # am--include-marker
@@ -628,8 +628,8 @@ mostlyclean-libtool:
 clean-libtool:
 	-rm -rf .libs _libs
 	-rm -rf ../bonmin/.libs ../bonmin/_libs
-	-rm -rf ../cbc/.libs ../cbc/_libs
 	-rm -rf ../ipopt/.libs ../ipopt/_libs
+	-rm -rf ../osi/.libs ../osi/_libs
 	-rm -rf ../utils/.libs ../utils/_libs
 
 ID: $(am__tagged_files)
@@ -719,10 +719,10 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f ../bonmin/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ../bonmin/$(am__dirstamp)
-	-rm -f ../cbc/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../cbc/$(am__dirstamp)
 	-rm -f ../ipopt/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ../ipopt/$(am__dirstamp)
+	-rm -f ../osi/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../osi/$(am__dirstamp)
 	-rm -f ../utils/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ../utils/$(am__dirstamp)
 
@@ -736,9 +736,9 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 
 distclean: distclean-am
 		-rm -f ../bonmin/$(DEPDIR)/GamsMINLP.Plo
-	-rm -f ../cbc/$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ../ipopt/$(DEPDIR)/GamsJournal.Plo
 	-rm -f ../ipopt/$(DEPDIR)/GamsNLP.Plo
+	-rm -f ../osi/$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsLicensing.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsSolveTrace.Plo
@@ -792,9 +792,9 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 		-rm -f ../bonmin/$(DEPDIR)/GamsMINLP.Plo
-	-rm -f ../cbc/$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ../ipopt/$(DEPDIR)/GamsJournal.Plo
 	-rm -f ../ipopt/$(DEPDIR)/GamsNLP.Plo
+	-rm -f ../osi/$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsLicensing.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsSolveTrace.Plo

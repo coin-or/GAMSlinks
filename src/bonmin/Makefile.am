@@ -9,6 +9,7 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 AM_CPPFLAGS = \
   -I$(srcdir)/.. \
   -I$(srcdir)/../cbc \
+  -I$(srcdir)/../osi \
   -I$(srcdir)/../ipopt \
   -I$(srcdir)/../utils \
   $(GAMSBONMIN_CFLAGS)
@@ -18,7 +19,7 @@ AM_CPPFLAGS += $(GAMSOSI_CFLAGS)
 
 lib_LTLIBRARIES = libGamsBonmin.la
 libGamsBonmin_la_SOURCES = GamsBonmin.cpp GamsMINLP.cpp \
-  ../cbc/GamsMessageHandler.cpp \
+  ../osi/GamsMessageHandler.cpp \
   ../ipopt/GamsJournal.cpp ../ipopt/GamsNLP.cpp \
   ../utils/GamsSolveTrace.c ../utils/GamsHelper.c ../utils/GamsLicensing.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
