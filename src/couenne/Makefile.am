@@ -4,7 +4,7 @@
 #
 # Author: Stefan Vigerske
 
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 AM_CPPFLAGS = \
   -I$(srcdir)/.. \
@@ -13,11 +13,13 @@ AM_CPPFLAGS = \
   -I"$(GAMS_PATH)/apifiles/C/api" \
   $(GAMSCOUENNE_CFLAGS)
 
-# TODO better way to get to cplex header, but maybe we don't need it at all?
+# TODO better way to get to cplex header
 AM_CPPFLAGS += $(GAMSOSI_CFLAGS)
 
 lib_LTLIBRARIES = libGamsCouenne.la
-# FIXME GamsMINLP.cpp GamsJournal
-libGamsCouenne_la_SOURCES = GamsCouenne.cpp
+libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
+  ../bonmin/GamsMINLP.cpp \
+  ../cbc/GamsMessageHandler.cpp \
+  ../ipopt/GamsJournal.cpp ../ipopt/GamsNLP.cpp
 libGamsCouenne_la_LIBADD  = ../utils/libGamsUtils.la $(GAMSCOUENNE_LFLAGS)
 libGamsCouenne_la_LDFLAGS = $(LT_LDFLAGS)

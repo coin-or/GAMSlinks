@@ -9,7 +9,6 @@
 #include "GamsJournal.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsNLinstr.h"
-#include "GamsCbc.hpp"
 #include "GamsCbcHeurSolveTrace.hpp"
 #include "GAMSlinksConfig.h"
 
@@ -159,17 +158,6 @@ int GamsCouenne::callSolver()
 {
    assert(gmo != NULL);
    assert(couenne_setup != NULL);
-
-   if( isMIP() && gmoOptFile(gmo) == 0 )
-   {
-      gevLogStat(gev, "Problem is linear. Passing over to Cbc.");
-      GamsCbc cbc;
-      int retcode;
-      retcode = cbc.readyAPI(gmo, NULL);
-      if( retcode == 0 )
-         retcode = cbc.callSolver();
-      return retcode;
-   }
 
    gmoInterfaceSet(gmo, gmoIFace_Raw);
    gmoObjStyleSet(gmo, gmoObjType_Fun);
