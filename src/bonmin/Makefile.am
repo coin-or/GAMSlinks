@@ -4,7 +4,7 @@
 #
 # Author: Stefan Vigerske
 
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 AM_CPPFLAGS = \
   -I$(srcdir)/.. \
@@ -17,7 +17,8 @@ AM_CPPFLAGS = \
 AM_CPPFLAGS += $(GAMSOSI_CFLAGS)
 
 lib_LTLIBRARIES = libGamsBonmin.la
-#FIXME GamsJournal GamsNLP?
-libGamsBonmin_la_SOURCES = GamsMINLP.cpp GamsBonmin.cpp
+libGamsBonmin_la_SOURCES = GamsBonmin.cpp GamsMINLP.cpp \
+  ../cbc/GamsMessageHandler.cpp \
+  ../ipopt/GamsJournal.cpp ../ipopt/GamsNLP.cpp
 libGamsBonmin_la_LIBADD  = ../utils/libGamsUtils.la $(GAMSBONMIN_LFLAGS)
 libGamsBonmin_la_LDFLAGS = $(LT_LDFLAGS)
