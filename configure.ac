@@ -136,7 +136,6 @@ AC_COIN_FINALIZE_FLAGS([GamsOsi GamsCbc GamsIpopt GamsBonmin GamsCouenne GamsSop
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/gamsinst.sh
-                 src/utils/Makefile
                  src/bonmin/Makefile
                  src/cbc/Makefile
                  src/couenne/Makefile

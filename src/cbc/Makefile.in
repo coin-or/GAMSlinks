@@ -135,11 +135,12 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libGamsCbc_la_DEPENDENCIES = ../utils/libGamsUtils.la \
-	$(am__DEPENDENCIES_1)
+libGamsCbc_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libGamsCbc_la_OBJECTS = GamsCbc.lo GamsMessageHandler.lo \
-	../osi/GamsOsiHelper.lo
+	../osi/GamsOsiHelper.lo ../utils/GamsSolveTrace.lo \
+	../utils/GamsHelper.lo ../utils/gmomcc.lo ../utils/gevmcc.lo \
+	../utils/gdxcc.lo ../utils/optcc.lo
 libGamsCbc_la_OBJECTS = $(am_libGamsCbc_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -166,8 +167,30 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ../osi/$(DEPDIR)/GamsOsiHelper.Plo \
+	../utils/$(DEPDIR)/GamsHelper.Plo \
+	../utils/$(DEPDIR)/GamsSolveTrace.Plo \
+	../utils/$(DEPDIR)/gdxcc.Plo ../utils/$(DEPDIR)/gevmcc.Plo \
+	../utils/$(DEPDIR)/gmomcc.Plo ../utils/$(DEPDIR)/optcc.Plo \
 	./$(DEPDIR)/GamsCbc.Plo ./$(DEPDIR)/GamsMessageHandler.Plo
 am__mv = mv -f
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
@@ -382,22 +405,25 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign subdir-objects
-AM_CPPFLAGS = \
-  -I$(srcdir)/.. \
-  -I$(srcdir)/../utils \
-  -I"$(GAMS_PATH)/apifiles/C/api" \
-  $(GAMSCBC_CFLAGS)
-
+AM_CPPFLAGS = -I$(srcdir)/.. -I$(srcdir)/../osi -I$(srcdir)/../utils \
+	$(GAMSCBC_CFLAGS) -I"$(GAMS_PATH)/apifiles/C/api" \
+	$(GAMSLIBCFLAGS)
 lib_LTLIBRARIES = libGamsCbc.la
-libGamsCbc_la_SOURCES = GamsCbc.cpp GamsMessageHandler.cpp ../osi/GamsOsiHelper.cpp
-libGamsCbc_la_LIBADD = ../utils/libGamsUtils.la $(GAMSCBC_LFLAGS)
+libGamsCbc_la_SOURCES = GamsCbc.cpp GamsMessageHandler.cpp \
+  ../osi/GamsOsiHelper.cpp \
+  ../utils/GamsSolveTrace.c ../utils/GamsHelper.c \
+  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/gdxcc.c ../utils/optcc.c
+
+libGamsCbc_la_LIBADD = $(GAMSCBC_LFLAGS)
 libGamsCbc_la_LDFLAGS = $(LT_LDFLAGS)
 bin_SCRIPTS = optmycbc.def
+CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
+	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .lo .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+.SUFFIXES: .c .cpp .lo .o .obj
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../utils/Makefile_gamsapi.inc $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -417,6 +443,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
 	esac;
+$(srcdir)/../utils/Makefile_gamsapi.inc $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -469,6 +496,24 @@ clean-libLTLIBRARIES:
 	@: > ../osi/$(DEPDIR)/$(am__dirstamp)
 ../osi/GamsOsiHelper.lo: ../osi/$(am__dirstamp) \
 	../osi/$(DEPDIR)/$(am__dirstamp)
+../utils/$(am__dirstamp):
+	@$(MKDIR_P) ../utils
+	@: > ../utils/$(am__dirstamp)
+../utils/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../utils/$(DEPDIR)
+	@: > ../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/GamsSolveTrace.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/GamsHelper.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/gmomcc.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/gevmcc.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/gdxcc.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/optcc.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
 
 libGamsCbc.la: $(libGamsCbc_la_OBJECTS) $(libGamsCbc_la_DEPENDENCIES) $(EXTRA_libGamsCbc_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(libGamsCbc_la_LINK) -rpath $(libdir) $(libGamsCbc_la_OBJECTS) $(libGamsCbc_la_LIBADD) $(LIBS)
@@ -512,11 +557,19 @@ mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f ../osi/*.$(OBJEXT)
 	-rm -f ../osi/*.lo
+	-rm -f ../utils/*.$(OBJEXT)
+	-rm -f ../utils/*.lo
 
 distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@../osi/$(DEPDIR)/GamsOsiHelper.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsHelper.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsSolveTrace.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gdxcc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gevmcc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gmomcc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/optcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCbc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@ # am--include-marker
 
@@ -525,6 +578,30 @@ $(am__depfiles_remade):
 	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
 
 am--depfiles: $(am__depfiles_remade)
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -556,6 +633,7 @@ mostlyclean-libtool:
 clean-libtool:
 	-rm -rf .libs _libs
 	-rm -rf ../osi/.libs ../osi/_libs
+	-rm -rf ../utils/.libs ../utils/_libs
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -637,12 +715,15 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f ../osi/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ../osi/$(am__dirstamp)
+	-rm -f ../utils/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../utils/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -654,6 +735,12 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 
 distclean: distclean-am
 		-rm -f ../osi/$(DEPDIR)/GamsOsiHelper.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsSolveTrace.Plo
+	-rm -f ../utils/$(DEPDIR)/gdxcc.Plo
+	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
+	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
+	-rm -f ../utils/$(DEPDIR)/optcc.Plo
 	-rm -f ./$(DEPDIR)/GamsCbc.Plo
 	-rm -f ./$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f Makefile
@@ -702,6 +789,12 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 		-rm -f ../osi/$(DEPDIR)/GamsOsiHelper.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsSolveTrace.Plo
+	-rm -f ../utils/$(DEPDIR)/gdxcc.Plo
+	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
+	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
+	-rm -f ../utils/$(DEPDIR)/optcc.Plo
 	-rm -f ./$(DEPDIR)/GamsCbc.Plo
 	-rm -f ./$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f Makefile
@@ -741,6 +834,23 @@ uninstall-am: uninstall-binSCRIPTS uninstall-libLTLIBRARIES
 
 .PRECIOUS: Makefile
 
+../utils/optcc.c : $(GAMS_PATH)/apifiles/C/api/optcc.c
+	@cp $< $@
+
+../utils/gmomcc.c : $(GAMS_PATH)/apifiles/C/api/gmomcc.c
+	@cp $< $@
+
+../utils/gevmcc.c : $(GAMS_PATH)/apifiles/C/api/gevmcc.c
+	@cp $< $@
+
+../utils/gclgms.c : $(GAMS_PATH)/apifiles/C/api/gclgms.c
+	@cp $< $@
+
+../utils/gdxcc.c : $(GAMS_PATH)/apifiles/C/api/gdxcc.c
+	@cp $< $@
+
+../utils/palmcc.c : $(GAMS_PATH)/apifiles/C/api/palmcc.c
+	@cp $< $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

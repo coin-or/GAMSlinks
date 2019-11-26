@@ -20,7 +20,9 @@
 #include "gevmcc.h"
 #include "optcc.h"
 #include "gdxcc.h"
+#ifdef GAMS_BUILD
 #include "palmcc.h"
+#endif
 
 #include "GamsCompatibility.h"
 
@@ -1405,9 +1407,11 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 
    gmoInitMutexes();
    gevInitMutexes();
-   palInitMutexes();
    optInitMutexes();
    gdxInitMutexes();
+#ifdef GAMS_BUILD
+   palInitMutexes();
+#endif
 }
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
@@ -1418,9 +1422,11 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 
    gmoFiniMutexes();
    gevFiniMutexes();
-   palFiniMutexes();
    optFiniMutexes();
    gdxFiniMutexes();
+#ifdef GAMS_BUILD
+   palFiniMutexes();
+#endif
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
@@ -1436,8 +1442,10 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char*
    if( !gevGetReady(msgBuf, msgBufLen) )
       return 0;
 
+#ifdef GAMS_BUILD
    if( !palGetReady(msgBuf, msgBufLen) )
       return 0;
+#endif
 
    if( !optGetReady(msgBuf, msgBufLen) )
       return 0;
@@ -1463,7 +1471,9 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
 
    gmoLibraryUnload();
    gevLibraryUnload();
+#ifdef GAMS_BUILD
    palLibraryUnload();
+#endif
    optLibraryUnload();
    if( gdxLibraryLoaded() )
       gdxLibraryUnload();

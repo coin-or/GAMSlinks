@@ -8,11 +8,16 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 
 AM_CPPFLAGS = \
   -I$(srcdir)/.. \
+  -I$(srcdir)/../cbc \
   -I$(srcdir)/../utils \
-  -I"$(GAMS_PATH)/apifiles/C/api" \
   $(GAMSOSI_CFLAGS)
 
 lib_LTLIBRARIES = libGamsOsi.la
-libGamsOsi_la_SOURCES = GamsOsiHelper.cpp GamsOsi.cpp ../cbc/GamsMessageHandler.cpp
-libGamsOsi_la_LIBADD  = ../utils/libGamsUtils.la $(GAMSOSI_LFLAGS)
+libGamsOsi_la_SOURCES = GamsOsiHelper.cpp GamsOsi.cpp \
+  ../cbc/GamsMessageHandler.cpp \
+  ../utils/gmomcc.c ../utils/gevmcc.c
+libGamsOsi_la_LIBADD  = $(GAMSOSI_LFLAGS)
 libGamsOsi_la_LDFLAGS = $(LT_LDFLAGS)
+
+CLEANFILES =
+include ../utils/Makefile_gamsapi.inc

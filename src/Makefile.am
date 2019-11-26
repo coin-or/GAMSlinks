@@ -6,7 +6,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = utils
+SUBDIRS =
 
 if COIN_HAS_BONMIN
   SUBDIRS += bonmin

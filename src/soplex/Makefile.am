@@ -4,15 +4,19 @@
 #
 # Author: Stefan Vigerske
 
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 AM_CPPFLAGS = \
   -I$(srcdir)/.. \
   -I$(srcdir)/../utils \
-  -I"$(GAMS_PATH)/apifiles/C/api" \
   $(GAMSSOPLEX_CFLAGS)
 
 lib_LTLIBRARIES = libGamsSoplex.la
-libGamsSoplex_la_SOURCES = GamsSoPlex.cpp
-libGamsSoplex_la_LIBADD  = ../utils/libGamsUtils.la $(GAMSSOPLEX_LFLAGS)
+libGamsSoplex_la_SOURCES = GamsSoPlex.cpp \
+  ../utils/GamsLicensing.c \
+  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
+libGamsSoplex_la_LIBADD  = $(GAMSSOPLEX_LFLAGS)
 libGamsSoplex_la_LDFLAGS = $(LT_LDFLAGS)
+
+CLEANFILES =
+include ../utils/Makefile_gamsapi.inc

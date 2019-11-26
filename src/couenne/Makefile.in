@@ -134,12 +134,13 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libGamsCouenne_la_DEPENDENCIES = ../utils/libGamsUtils.la \
-	$(am__DEPENDENCIES_1)
+libGamsCouenne_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libGamsCouenne_la_OBJECTS = GamsCouenne.lo ../bonmin/GamsMINLP.lo \
 	../cbc/GamsMessageHandler.lo ../ipopt/GamsJournal.lo \
-	../ipopt/GamsNLP.lo
+	../ipopt/GamsNLP.lo ../utils/GamsSolveTrace.lo \
+	../utils/GamsHelper.lo ../utils/GamsLicensing.lo \
+	../utils/gmomcc.lo ../utils/gevmcc.lo ../utils/palmcc.lo
 libGamsCouenne_la_OBJECTS = $(am_libGamsCouenne_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -167,8 +168,31 @@ am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ../bonmin/$(DEPDIR)/GamsMINLP.Plo \
 	../cbc/$(DEPDIR)/GamsMessageHandler.Plo \
 	../ipopt/$(DEPDIR)/GamsJournal.Plo \
-	../ipopt/$(DEPDIR)/GamsNLP.Plo ./$(DEPDIR)/GamsCouenne.Plo
+	../ipopt/$(DEPDIR)/GamsNLP.Plo \
+	../utils/$(DEPDIR)/GamsHelper.Plo \
+	../utils/$(DEPDIR)/GamsLicensing.Plo \
+	../utils/$(DEPDIR)/GamsSolveTrace.Plo \
+	../utils/$(DEPDIR)/gevmcc.Plo ../utils/$(DEPDIR)/gmomcc.Plo \
+	../utils/$(DEPDIR)/palmcc.Plo ./$(DEPDIR)/GamsCouenne.Plo
 am__mv = mv -f
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
@@ -385,22 +409,27 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign subdir-objects
 
 # TODO better way to get to cplex header
-AM_CPPFLAGS = -I$(srcdir)/.. -I$(srcdir)/../utils -I$(srcdir)/../cbc \
-	-I"$(GAMS_PATH)/apifiles/C/api" $(GAMSCOUENNE_CFLAGS) \
-	$(GAMSOSI_CFLAGS)
+AM_CPPFLAGS = -I$(srcdir)/.. -I$(srcdir)/../bonmin -I$(srcdir)/../cbc \
+	-I$(srcdir)/../ipopt -I$(srcdir)/../utils \
+	$(GAMSCOUENNE_CFLAGS) $(GAMSOSI_CFLAGS) \
+	-I"$(GAMS_PATH)/apifiles/C/api" $(GAMSLIBCFLAGS)
 lib_LTLIBRARIES = libGamsCouenne.la
 libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
   ../bonmin/GamsMINLP.cpp \
   ../cbc/GamsMessageHandler.cpp \
-  ../ipopt/GamsJournal.cpp ../ipopt/GamsNLP.cpp
+  ../ipopt/GamsJournal.cpp ../ipopt/GamsNLP.cpp \
+  ../utils/GamsSolveTrace.c ../utils/GamsHelper.c ../utils/GamsLicensing.c \
+  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 
-libGamsCouenne_la_LIBADD = ../utils/libGamsUtils.la $(GAMSCOUENNE_LFLAGS)
+libGamsCouenne_la_LIBADD = $(GAMSCOUENNE_LFLAGS)
 libGamsCouenne_la_LDFLAGS = $(LT_LDFLAGS)
+CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
+	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .lo .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+.SUFFIXES: .c .cpp .lo .o .obj
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../utils/Makefile_gamsapi.inc $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -420,6 +449,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
 	esac;
+$(srcdir)/../utils/Makefile_gamsapi.inc $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -490,6 +520,24 @@ clean-libLTLIBRARIES:
 	../ipopt/$(DEPDIR)/$(am__dirstamp)
 ../ipopt/GamsNLP.lo: ../ipopt/$(am__dirstamp) \
 	../ipopt/$(DEPDIR)/$(am__dirstamp)
+../utils/$(am__dirstamp):
+	@$(MKDIR_P) ../utils
+	@: > ../utils/$(am__dirstamp)
+../utils/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../utils/$(DEPDIR)
+	@: > ../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/GamsSolveTrace.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/GamsHelper.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/GamsLicensing.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/gmomcc.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/gevmcc.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/palmcc.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
 
 libGamsCouenne.la: $(libGamsCouenne_la_OBJECTS) $(libGamsCouenne_la_DEPENDENCIES) $(EXTRA_libGamsCouenne_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(libGamsCouenne_la_LINK) -rpath $(libdir) $(libGamsCouenne_la_OBJECTS) $(libGamsCouenne_la_LIBADD) $(LIBS)
@@ -502,6 +550,8 @@ mostlyclean-compile:
 	-rm -f ../cbc/*.lo
 	-rm -f ../ipopt/*.$(OBJEXT)
 	-rm -f ../ipopt/*.lo
+	-rm -f ../utils/*.$(OBJEXT)
+	-rm -f ../utils/*.lo
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -510,6 +560,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../cbc/$(DEPDIR)/GamsMessageHandler.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../ipopt/$(DEPDIR)/GamsJournal.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../ipopt/$(DEPDIR)/GamsNLP.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsHelper.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsLicensing.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsSolveTrace.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gevmcc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gmomcc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/palmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCouenne.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -517,6 +573,30 @@ $(am__depfiles_remade):
 	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
 
 am--depfiles: $(am__depfiles_remade)
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -550,6 +630,7 @@ clean-libtool:
 	-rm -rf ../bonmin/.libs ../bonmin/_libs
 	-rm -rf ../cbc/.libs ../cbc/_libs
 	-rm -rf ../ipopt/.libs ../ipopt/_libs
+	-rm -rf ../utils/.libs ../utils/_libs
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -631,6 +712,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -641,6 +723,8 @@ distclean-generic:
 	-rm -f ../cbc/$(am__dirstamp)
 	-rm -f ../ipopt/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ../ipopt/$(am__dirstamp)
+	-rm -f ../utils/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../utils/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -655,6 +739,12 @@ distclean: distclean-am
 	-rm -f ../cbc/$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ../ipopt/$(DEPDIR)/GamsJournal.Plo
 	-rm -f ../ipopt/$(DEPDIR)/GamsNLP.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsLicensing.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsSolveTrace.Plo
+	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
+	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
+	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsCouenne.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -705,6 +795,12 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ../cbc/$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ../ipopt/$(DEPDIR)/GamsJournal.Plo
 	-rm -f ../ipopt/$(DEPDIR)/GamsNLP.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsLicensing.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsSolveTrace.Plo
+	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
+	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
+	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsCouenne.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
@@ -742,6 +838,23 @@ uninstall-am: uninstall-libLTLIBRARIES
 
 .PRECIOUS: Makefile
 
+../utils/optcc.c : $(GAMS_PATH)/apifiles/C/api/optcc.c
+	@cp $< $@
+
+../utils/gmomcc.c : $(GAMS_PATH)/apifiles/C/api/gmomcc.c
+	@cp $< $@
+
+../utils/gevmcc.c : $(GAMS_PATH)/apifiles/C/api/gevmcc.c
+	@cp $< $@
+
+../utils/gclgms.c : $(GAMS_PATH)/apifiles/C/api/gclgms.c
+	@cp $< $@
+
+../utils/gdxcc.c : $(GAMS_PATH)/apifiles/C/api/gdxcc.c
+	@cp $< $@
+
+../utils/palmcc.c : $(GAMS_PATH)/apifiles/C/api/palmcc.c
+	@cp $< $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

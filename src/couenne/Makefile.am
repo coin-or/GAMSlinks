@@ -8,9 +8,10 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 
 AM_CPPFLAGS = \
   -I$(srcdir)/.. \
-  -I$(srcdir)/../utils \
+  -I$(srcdir)/../bonmin \
   -I$(srcdir)/../cbc \
-  -I"$(GAMS_PATH)/apifiles/C/api" \
+  -I$(srcdir)/../ipopt \
+  -I$(srcdir)/../utils \
   $(GAMSCOUENNE_CFLAGS)
 
 # TODO better way to get to cplex header
@@ -20,6 +21,11 @@ lib_LTLIBRARIES = libGamsCouenne.la
 libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
   ../bonmin/GamsMINLP.cpp \
   ../cbc/GamsMessageHandler.cpp \
-  ../ipopt/GamsJournal.cpp ../ipopt/GamsNLP.cpp
-libGamsCouenne_la_LIBADD  = ../utils/libGamsUtils.la $(GAMSCOUENNE_LFLAGS)
+  ../ipopt/GamsJournal.cpp ../ipopt/GamsNLP.cpp \
+  ../utils/GamsSolveTrace.c ../utils/GamsHelper.c ../utils/GamsLicensing.c \
+  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
+libGamsCouenne_la_LIBADD  = $(GAMSCOUENNE_LFLAGS)
 libGamsCouenne_la_LDFLAGS = $(LT_LDFLAGS)
+
+CLEANFILES =
+include ../utils/Makefile_gamsapi.inc

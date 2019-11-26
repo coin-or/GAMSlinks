@@ -18,12 +18,11 @@
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
 #include "gevlice.h"
-#endif
 #include "palmcc.h"
 #include "GamsLicensing.h"
+#endif
 
 #include "GamsCompatibility.h"
-
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
 
@@ -157,12 +156,12 @@ int GamsOsi::readyAPI(
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
+#ifdef GAMS_BUILD
    // print GAMS version information
    struct palRec* pal;
    if( !palCreate(&pal, buffer, sizeof(buffer)) )
       return 1;
 
-#ifdef GAMS_BUILD
 #define PALPTR pal
    switch( solverid )
    {
@@ -186,9 +185,9 @@ int GamsOsi::readyAPI(
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
-#endif
 
    GAMSinitLicensing(gmo, pal);
+#endif
 
    // print Osi and solver version information
    gevLogStat(gev, "");
@@ -223,6 +222,10 @@ int GamsOsi::readyAPI(
    }
    gevLogStat(gev, buffer);
 
+   // delete old osi, if any
+   delete osi;
+   osi = NULL;
+
    // initialize Osi and licenses for academic and commercial solvers
    try
    {
@@ -232,6 +235,7 @@ int GamsOsi::readyAPI(
          {
 #ifdef COIN_HAS_OSICPX
             OsiCpxSolverInterface* osicpx;
+#ifdef GAMS_BUILD
             if( !GAMScheckCPLEXLicense(pal) )
             {
                gevLogStat(gev,"***");
@@ -242,7 +246,7 @@ int GamsOsi::readyAPI(
                gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
             }
-
+#endif
             osicpx = new OsiCpxSolverInterface;
             osi = osicpx;
 #else
@@ -378,7 +382,9 @@ int GamsOsi::readyAPI(
       gevLogStat(gev, error.message().c_str());
       if( solverid == CPLEX || solverid == GUROBI || solverid == MOSEK || solverid == XPRESS )
       {
+#ifdef GAMS_BUILD
          palFree(&pal);
+#endif
          gmoSolveStatSet(gmo, gmoSolveStat_License);
          gmoModelStatSet(gmo, gmoModelStat_LicenseError);
       }
@@ -394,7 +400,9 @@ int GamsOsi::readyAPI(
       gevLogStat(gev, "Unknown exception caught when creating Osi interface\n");
       return 1;
    }
+#ifdef GAMS_BUILD
    palFree(&pal);
+#endif
 
    // setup message handler
    if( msghandler == NULL )
@@ -1848,8 +1856,10 @@ int oxycreate(void** Cptr, char* msgBuf, int msgBufLen, GamsOsi::OSISOLVER osiso
    if( !gevGetReady(msgBuf, msgBufLen) )
       return 0;
 
+#ifdef GAMS_BUILD
    if( !palGetReady(msgBuf, msgBufLen) )
       return 0;
+#endif
 
    *Cptr = (void*) new GamsOsi(osisolver);
    if( *Cptr == NULL )
@@ -1873,7 +1883,9 @@ int oxyfree(void** Cptr)
 
    gmoLibraryUnload();
    gevLibraryUnload();
+#ifdef GAMS_BUILD
    palLibraryUnload();
+#endif
 
    return 1;
 }
@@ -1887,7 +1899,9 @@ void oxyInitialize(void)
 
    gmoInitMutexes();
    gevInitMutexes();
+#ifdef GAMS_BUILD
    palInitMutexes();
+#endif
 }
 
 static
@@ -1899,7 +1913,9 @@ void oxyFinalize(void)
 
    gmoFiniMutexes();
    gevFiniMutexes();
+#ifdef GAMS_BUILD
    palFiniMutexes();
+#endif
 }
 
 #ifdef COIN_HAS_OSICPX
