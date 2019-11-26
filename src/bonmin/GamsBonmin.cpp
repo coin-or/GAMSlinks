@@ -91,8 +91,10 @@ int GamsBonmin::readyAPI(
    else
       gevLogStatPChar(gev, "written by P. Bonami.\n");
 
+#ifdef GAMS_BUILD
    if( !ipoptlicensed && (palLicenseCheckSubSys(pal, const_cast<char*>("IP")) == 0) )
       gevLogPChar(gev, "\nNote: This is the free version BONMIN, but you could also use the commercially supported and potentially higher performance version BONMINH.\n");
+#endif
 
    delete bonmin_setup;
    bonmin_setup = new BonminSetup();
