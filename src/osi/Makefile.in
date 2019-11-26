@@ -136,7 +136,9 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libGamsOsi_la_DEPENDENCIES = ../utils/libGamsUtils.la \
 	$(am__DEPENDENCIES_1)
-am_libGamsOsi_la_OBJECTS = GamsOsiHelper.lo GamsOsi.lo
+am__dirstamp = $(am__leading_dot)dirstamp
+am_libGamsOsi_la_OBJECTS = GamsOsiHelper.lo GamsOsi.lo \
+	../cbc/GamsMessageHandler.lo
 libGamsOsi_la_OBJECTS = $(am_libGamsOsi_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -161,8 +163,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/GamsOsi.Plo \
-	./$(DEPDIR)/GamsOsiHelper.Plo
+am__depfiles_remade = ../cbc/$(DEPDIR)/GamsMessageHandler.Plo \
+	./$(DEPDIR)/GamsOsi.Plo ./$(DEPDIR)/GamsOsiHelper.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -377,7 +379,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign subdir-objects
 AM_CPPFLAGS = \
   -I$(srcdir)/.. \
   -I$(srcdir)/../utils \
@@ -385,8 +387,7 @@ AM_CPPFLAGS = \
   $(GAMSOSI_CFLAGS)
 
 lib_LTLIBRARIES = libGamsOsi.la
-#FIXME GamsMessageHandler.cpp
-libGamsOsi_la_SOURCES = GamsOsiHelper.cpp GamsOsi.cpp
+libGamsOsi_la_SOURCES = GamsOsiHelper.cpp GamsOsi.cpp ../cbc/GamsMessageHandler.cpp
 libGamsOsi_la_LIBADD = ../utils/libGamsUtils.la $(GAMSOSI_LFLAGS)
 libGamsOsi_la_LDFLAGS = $(LT_LDFLAGS)
 all: all-am
@@ -457,16 +458,27 @@ clean-libLTLIBRARIES:
 	  echo rm -f $${locs}; \
 	  rm -f $${locs}; \
 	}
+../cbc/$(am__dirstamp):
+	@$(MKDIR_P) ../cbc
+	@: > ../cbc/$(am__dirstamp)
+../cbc/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../cbc/$(DEPDIR)
+	@: > ../cbc/$(DEPDIR)/$(am__dirstamp)
+../cbc/GamsMessageHandler.lo: ../cbc/$(am__dirstamp) \
+	../cbc/$(DEPDIR)/$(am__dirstamp)
 
 libGamsOsi.la: $(libGamsOsi_la_OBJECTS) $(libGamsOsi_la_DEPENDENCIES) $(EXTRA_libGamsOsi_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(libGamsOsi_la_LINK) -rpath $(libdir) $(libGamsOsi_la_OBJECTS) $(libGamsOsi_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../cbc/*.$(OBJEXT)
+	-rm -f ../cbc/*.lo
 
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@../cbc/$(DEPDIR)/GamsMessageHandler.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsi.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@ # am--include-marker
 
@@ -477,22 +489,25 @@ $(am__depfiles_remade):
 am--depfiles: $(am__depfiles_remade)
 
 .cpp.o:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
 
 .cpp.obj:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .cpp.lo:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCXX_TRUE@	$(LTCXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
@@ -502,6 +517,7 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+	-rm -rf ../cbc/.libs ../cbc/_libs
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -587,6 +603,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../cbc/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../cbc/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -597,7 +615,8 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 	mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/GamsOsi.Plo
+		-rm -f ../cbc/$(DEPDIR)/GamsMessageHandler.Plo
+	-rm -f ./$(DEPDIR)/GamsOsi.Plo
 	-rm -f ./$(DEPDIR)/GamsOsiHelper.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -644,7 +663,8 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/GamsOsi.Plo
+		-rm -f ../cbc/$(DEPDIR)/GamsMessageHandler.Plo
+	-rm -f ./$(DEPDIR)/GamsOsi.Plo
 	-rm -f ./$(DEPDIR)/GamsOsiHelper.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
