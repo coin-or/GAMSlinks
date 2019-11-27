@@ -137,11 +137,10 @@ am__DEPENDENCIES_1 =
 libGamsScip_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libGamsScip_la_OBJECTS = GamsScip.lo reader_gmo.lo \
-	event_solvetrace.lo prop_defaultbounds.lo \
-	../utils/GamsLicensing.lo ../utils/GamsHelper.lo \
-	../utils/GamsSolveTrace.lo ../utils/gmomcc.lo \
-	../utils/gevmcc.lo ../utils/palmcc.lo ../utils/gdxcc.lo \
-	../utils/optcc.lo
+	event_solvetrace.lo ../utils/GamsLicensing.lo \
+	../utils/GamsHelper.lo ../utils/GamsSolveTrace.lo \
+	../utils/gmomcc.lo ../utils/gevmcc.lo ../utils/palmcc.lo \
+	../utils/gdxcc.lo ../utils/optcc.lo
 libGamsScip_la_OBJECTS = $(am_libGamsScip_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -172,8 +171,7 @@ am__depfiles_remade = ../utils/$(DEPDIR)/GamsHelper.Plo \
 	../utils/$(DEPDIR)/gdxcc.Plo ../utils/$(DEPDIR)/gevmcc.Plo \
 	../utils/$(DEPDIR)/gmomcc.Plo ../utils/$(DEPDIR)/optcc.Plo \
 	../utils/$(DEPDIR)/palmcc.Plo ./$(DEPDIR)/GamsScip.Plo \
-	./$(DEPDIR)/event_solvetrace.Plo \
-	./$(DEPDIR)/prop_defaultbounds.Plo ./$(DEPDIR)/reader_gmo.Plo
+	./$(DEPDIR)/event_solvetrace.Plo ./$(DEPDIR)/reader_gmo.Plo
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -413,7 +411,7 @@ AM_CPPFLAGS = -I$(srcdir)/.. -I$(srcdir)/../utils $(GAMSSCIP_CFLAGS) \
 	$(GAMSOSI_CFLAGS) -I"$(GAMS_PATH)/apifiles/C/api" \
 	$(GAMSLIBCFLAGS)
 lib_LTLIBRARIES = libGamsScip.la
-libGamsScip_la_SOURCES = GamsScip.cpp reader_gmo.c event_solvetrace.c prop_defaultbounds.c \
+libGamsScip_la_SOURCES = GamsScip.cpp reader_gmo.c event_solvetrace.c \
   ../utils/GamsLicensing.c ../utils/GamsHelper.c ../utils/GamsSolveTrace.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c ../utils/gdxcc.c ../utils/optcc.c
 
@@ -534,7 +532,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/palmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsScip.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/event_solvetrace.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prop_defaultbounds.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reader_gmo.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -705,7 +702,6 @@ distclean: distclean-am
 	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsScip.Plo
 	-rm -f ./$(DEPDIR)/event_solvetrace.Plo
-	-rm -f ./$(DEPDIR)/prop_defaultbounds.Plo
 	-rm -f ./$(DEPDIR)/reader_gmo.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -762,7 +758,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsScip.Plo
 	-rm -f ./$(DEPDIR)/event_solvetrace.Plo
-	-rm -f ./$(DEPDIR)/prop_defaultbounds.Plo
 	-rm -f ./$(DEPDIR)/reader_gmo.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic

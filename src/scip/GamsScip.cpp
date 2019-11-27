@@ -29,7 +29,6 @@
 #include "nlpi/nlpi_ipopt.h"
 #include "reader_gmo.h"
 #include "event_solvetrace.h"
-/* #include "prop_defaultbounds.h" */
 
 #include "lpiswitch.h"
 
@@ -370,7 +369,6 @@ SCIP_RETCODE GamsScip::setupSCIP()
       SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
       SCIP_CALL( SCIPincludeReaderGmo(scip) );
       SCIP_CALL( SCIPincludeEventHdlrSolveTrace(scip, gmo) );
-      /* SCIP_CALL( SCIPincludePropDefaultBounds(scip) ); */
 
       if( ipoptlicensed )
       {
