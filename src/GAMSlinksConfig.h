@@ -14,7 +14,8 @@
 #ifdef HAVE__SNPRINTF
 #define snprintf _snprintf
 #else
-#error "Do not have snprintf of _snprintf."
+/* some snprintf seems to be availabe on Windows, though configure couldn't detect it */
+/*#error "Do not have snprintf of _snprintf." */
 #endif
 #endif
 
