@@ -8,10 +8,6 @@
 #ifndef __GAMSLINKSCONFIG_H__
 #define __GAMSLINKSCONFIG_H__
 
-#ifndef HAVE_CONFIG_H
-#error "HAVE_CONFIG_H not defined. Need configuration header files."
-#endif
-
 #include "config.h"
 
 #ifndef HAVE_SNPRINTF
