@@ -92,7 +92,7 @@ int GamsBonmin::readyAPI(
       gevLogStatPChar(gev, "written by P. Bonami.\n");
 
 #ifdef GAMS_BUILD
-   if( !ipoptlicensed && (palLicenseCheckSubSys(pal, const_cast<char*>("IP")) == 0) )
+   if( !ipoptlicensed && GAMScheckIpoptLicense(pal, true) )
       gevLogPChar(gev, "\nNote: This is the free version BONMIN, but you could also use the commercially supported and potentially higher performance version BONMINH.\n");
 #endif
 
@@ -250,7 +250,7 @@ int GamsBonmin::callSolver()
       bonmin_setup->options()->GetStringValue("milp_solver", parvalue, prefixes[i]);
       if( parvalue == "Cplex" )
       {
-         if( !GAMScheckCPLEXLicense(pal) )
+         if( !GAMScheckCPLEXLicense(pal, true) )
          {
             gevLogStat(gev, "No valid CPLEX license found.");
             return 1;

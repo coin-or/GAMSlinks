@@ -38,39 +38,51 @@ void GAMSinitLicensing(
 }
 
 bool GAMScheckCPLEXLicense(
-   struct palRec*     pal                 /**< GAMS audit and license object */
+   struct palRec*     pal,                /**< GAMS audit and license object */
+   bool               strict              /**< whether a CPLEX license code needs to be available */
 )
 {
    assert(pal != NULL);
 
-   if( !palLicenseIsDemoCheckout(pal) && palLicenseCheckSubSys(pal, (char*)"OCCPCL") )
-      return false;
+   if( !strict && palLicenseIsDemoCheckout(pal) )
+      return true;
 
-   return true;
+   if( !palLicenseCheckSubSys(pal, (char*)"OCCPCL") )
+      return true;
+
+   return false;
 }
 
 bool GAMScheckIpoptLicense(
-   struct palRec*     pal                /**< GAMS audit and license object */
+   struct palRec*     pal,                /**< GAMS audit and license object */
+   bool               strict              /**< whether an IPOPT license code needs to be available */
 )
 {
    assert(pal != NULL);
 
-   if( !palLicenseIsDemoCheckout(pal) && palLicenseCheckSubSys(pal, (char*)"IP") )
-      return false;
+   if( !strict && palLicenseIsDemoCheckout(pal) )
+      return true;
 
-   return true;
+   if( !palLicenseCheckSubSys(pal, (char*)"IP") )
+      return true;
+
+   return false;
 }
 
 bool GAMScheckSCIPLicense(
-   struct palRec*     pal                /**< GAMS audit and license object */
+   struct palRec*     pal,                /**< GAMS audit and license object */
+   bool               strict              /**< whether a SCIP license code or GAMS academic license needs to be available */
 )
 {
    assert(pal != NULL);
 
-   if( !palLicenseIsDemoCheckout(pal) && !palLicenseIsAcademic(pal) && palLicenseCheckSubSys(pal, (char*)"SC") )
-      return false;
+   if( !strict && palLicenseIsDemoCheckout(pal) )
+      return true;
 
-   return true;
+   if( palLicenseIsAcademic(pal) || !palLicenseCheckSubSys(pal, (char*)"SC") )
+      return true;
+
+   return false;
 }
 
 #ifndef GAMS_BUILD

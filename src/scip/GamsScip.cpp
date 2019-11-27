@@ -164,7 +164,7 @@ int GamsScip::readyAPI(
 #endif
 
    // check for academic license, or if we run in demo mode
-   if( !GAMScheckSCIPLicense(pal) )
+   if( !GAMScheckSCIPLicense(pal, false) )
    {
       gevLogStat(gev, "*** No SCIP license available.");
       gevLogStat(gev, "*** Please contact sales@gams.com to arrange for a license.");
@@ -247,7 +247,7 @@ int GamsScip::callSolver()
    char* interactive = NULL;
    SCIP_CALL_ABORT( SCIPgetStringParam(scip, "gams/interactive", &interactive) );
    assert(interactive != NULL);
-   if( interactive[0] != '\0' && !palLicenseIsAcademic(pal) && palLicenseCheckSubSys(pal, const_cast<char*>("SC")) )
+   if( interactive[0] != '\0' && !GAMScheckSCIPLicense(pal, true) )
    {
       gevLogStat(gev, "SCIP interactive shell not available in demo mode.\n");
       interactive[0] = '\0';
@@ -345,7 +345,7 @@ SCIP_RETCODE GamsScip::setupSCIP()
 {
 #ifdef COIN_HAS_OSICPX
    // change default LP solver to CPLEX, if license available
-   if( gmo != NULL && GAMScheckCPLEXLicense(pal) )
+   if( gmo != NULL && GAMScheckCPLEXLicense(pal, true) )
    {
       SCIP_CALL( SCIPlpiSwitchSetSolver(SCIP_LPISW_CPLEX) );
    }

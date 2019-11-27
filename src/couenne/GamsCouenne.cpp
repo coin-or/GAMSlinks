@@ -287,7 +287,7 @@ int GamsCouenne::callSolver()
    std::string parvalue;
    couenne_setup->options()->GetStringValue("lp_solver", parvalue, "");
 #ifdef COIN_HAS_OSICPX
-   if( parvalue == "cplex" && !GAMScheckCPLEXLicense(pal) )
+   if( parvalue == "cplex" && !GAMScheckCPLEXLicense(pal, true) )
    {
       gevLogStat(gev, "CPLEX as LP solver chosen, but no CPLEX license available. Aborting.\n");
       gmoSolveStatSet(gmo, gmoSolveStat_License);
@@ -305,10 +305,10 @@ int GamsCouenne::callSolver()
    couenne_setup->options()->GetBoolValue("feas_pump_heuristic", usescip, "couenne.");
    if( usescip )
       couenne_setup->options()->GetBoolValue("feas_pump_usescip", usescip, "couenne.");
-   if( usescip && !GAMScheckSCIPLicense(pal) )
+   if( usescip && !GAMScheckSCIPLicense(pal, true) )
    {
-      gevLogStat(gev, "*** Use of SCIP is limited to academic users.");
-      gevLogStat(gev, "*** Please contact koch@zib.de to arrange for a license.");
+      gevLogStat(gev, "*** No SCIP license available.");
+      gevLogStat(gev, "*** Please contact sales@gams.com to arrange for a license.");
       gevLogStat(gev, "Disabling use of SCIP in feasibility pump.");
       couenne_setup->options()->SetStringValue("feas_pump_usescip", "no", false, false);
    }

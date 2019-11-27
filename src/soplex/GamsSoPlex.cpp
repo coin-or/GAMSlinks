@@ -337,7 +337,7 @@ int GamsSoPlex::readyAPI(
    GAMSinitLicensing(gmo, pal);
 
    // check for academic license, or if we run in demo mode
-   if( !GAMScheckSCIPLicense(pal) )
+   if( !GAMScheckSCIPLicense(pal, false) )
    {
       gevLogStat(gev, "*** No SoPlex license available.");
       gevLogStat(gev, "*** Please contact sales@gams.com to arrange for a license.");

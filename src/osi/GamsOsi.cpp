@@ -236,11 +236,11 @@ int GamsOsi::readyAPI(
 #ifdef COIN_HAS_OSICPX
             OsiCpxSolverInterface* osicpx;
 #ifdef GAMS_BUILD
-            if( !GAMScheckCPLEXLicense(pal) )
+            if( !GAMScheckCPLEXLicense(pal, false) )
             {
                gevLogStat(gev,"***");
                gevLogStat(gev,"*** LICENSE ERROR:");
-               gevLogStat(gev,"*** See http://www.gams.com/osicplex/ for OsiCplex licensing information.");
+               gevLogStat(gev,"*** See https://support.gams.com/doku.php?id=solver:gams_cplex-link_and_osicplex-link_licenses for OsiCplex licensing information.");
                gevLogStat(gev,"***");
                gmoSolveStatSet(gmo, gmoSolveStat_License);
                gmoModelStatSet(gmo, gmoModelStat_LicenseError);
