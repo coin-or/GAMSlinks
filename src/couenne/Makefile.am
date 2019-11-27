@@ -30,3 +30,8 @@ libGamsCouenne_la_LDFLAGS = $(LT_LDFLAGS)
 
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
+
+noinst_PROGRAMS = optcouenne
+optcouenne_SOURCES = optcouenne.cpp ../utils/GamsOptionsSpecWriter.cpp
+optcouenne_LDADD = libGamsCouenne.la
+CLEANFILES += optcouenne.gms optcouenne.txt

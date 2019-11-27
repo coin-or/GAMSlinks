@@ -20434,7 +20434,7 @@ $as_echo "$as_me: GAMSSCIP_CFLAGS: \"${GAMSSCIP_CFLAGS}\"" >&6;}
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/gamsinst.sh src/bonmin/Makefile src/cbc/Makefile src/couenne/Makefile src/ipopt/Makefile src/osi/Makefile src/scip/Makefile src/soplex/Makefile test/Makefile doc/optdoc/Makefile doc/Doxyfile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/gamsinst.sh src/bonmin/Makefile src/cbc/Makefile src/couenne/Makefile src/ipopt/Makefile src/osi/Makefile src/scip/Makefile src/soplex/Makefile test/Makefile doc/Doxyfile"
 
 ac_config_files="$ac_config_files test/run_quality"
 
@@ -21640,7 +21640,6 @@ do
     "src/scip/Makefile") CONFIG_FILES="$CONFIG_FILES src/scip/Makefile" ;;
     "src/soplex/Makefile") CONFIG_FILES="$CONFIG_FILES src/soplex/Makefile" ;;
     "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
-    "doc/optdoc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/optdoc/Makefile" ;;
     "doc/Doxyfile") CONFIG_FILES="$CONFIG_FILES doc/Doxyfile" ;;
     "test/run_quality") CONFIG_FILES="$CONFIG_FILES test/run_quality" ;;
     "test/run_gmstest") CONFIG_FILES="$CONFIG_FILES test/run_gmstest" ;;

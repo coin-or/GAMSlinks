@@ -144,7 +144,6 @@ AC_CONFIG_FILES([Makefile
                  src/scip/Makefile
                  src/soplex/Makefile
                  test/Makefile
-                 doc/optdoc/Makefile
                  doc/Doxyfile
                 ])
 AC_CONFIG_FILES([test/run_quality], [chmod +x test/run_quality])

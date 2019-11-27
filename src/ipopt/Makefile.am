@@ -20,3 +20,8 @@ libGamsIpopt_la_LDFLAGS = $(LT_LDFLAGS)
 
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
+
+noinst_PROGRAMS = optipopt
+optipopt_SOURCES = optipopt.cpp ../utils/GamsOptionsSpecWriter.cpp
+optipopt_LDADD = libGamsIpopt.la
+CLEANFILES += optipopt.gms optipopt.txt

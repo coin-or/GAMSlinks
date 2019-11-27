@@ -24,3 +24,8 @@ bin_SCRIPTS = optmycbc.def
 
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
+
+noinst_PROGRAMS = optcbc
+optcbc_SOURCES = optcbc.cpp ../utils/GamsOptionsSpecWriter.cpp
+optcbc_LDADD = libGamsCbc.la
+CLEANFILES += optcbc.txt optcbc.gms

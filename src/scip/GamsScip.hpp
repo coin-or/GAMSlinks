@@ -21,7 +21,7 @@ typedef struct SCIP_Messagehdlr SCIP_MESSAGEHDLR;
 /** GAMS interface to SCIP */
 class GamsScip
 {
-   friend void printSCIPOptions();
+   friend int main(int, char**);
 private:
    struct gmoRec*        gmo;                /**< GAMS modeling object */
    struct gevRec*        gev;                /**< GAMS environment */

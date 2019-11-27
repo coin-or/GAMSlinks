@@ -23,3 +23,8 @@ libGamsScip_la_LDFLAGS = $(LT_LDFLAGS)
 
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
+
+noinst_PROGRAMS = optscip
+optscip_SOURCES = optscip.cpp ../utils/GamsOptionsSpecWriter.cpp
+optscip_LDADD = libGamsScip.la
+CLEANFILES += optscip.gms branchrules.md conflicthdlrs.md conshdlrs.md disps.md heurs.md nodesels.md presols.md props.md sepas.md

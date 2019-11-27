@@ -28,3 +28,8 @@ libGamsBonmin_la_LDFLAGS = $(LT_LDFLAGS)
 
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
+
+noinst_PROGRAMS = optbonmin
+optbonmin_SOURCES = optbonmin.cpp ../utils/GamsOptionsSpecWriter.cpp
+optbonmin_LDADD = libGamsBonmin.la
+CLEANFILES += optbonmin.gms optbonmin.txt optbonmin_t.md

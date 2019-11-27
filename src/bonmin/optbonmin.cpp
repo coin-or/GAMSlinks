@@ -1,0 +1,375 @@
+/** Copyright (C) GAMS Development and others 2009-2019
+  * All Rights Reserved.
+  * This code is published under the Eclipse Public License.
+  *
+  * @file optbonmin.cpp
+  * @author Stefan Vigerske
+ */
+
+#include "GamsOptionsSpecWriter.hpp"
+#include "GAMSlinksConfig.h"
+
+#include "BonBonminSetup.hpp"
+#include "BonCbc.hpp"
+
+using namespace Ipopt;
+
+// TODO specify Ipopt options of Bonmin as hidden in optbonmin.gms, so they don't show up in docu?
+
+int main(int argc, char** argv)
+{
+   Bonmin::BonminSetup bonmin_setup;
+
+   SmartPtr<OptionsList> options = new OptionsList();
+   SmartPtr<Ipopt::Journalist> journalist = new Ipopt::Journalist();
+   SmartPtr<Bonmin::RegisteredOptions> regoptions = new Bonmin::RegisteredOptions();
+   options->SetJournalist(journalist);
+   options->SetRegisteredOptions(GetRawPtr(regoptions));
+
+   bonmin_setup.setOptionsAndJournalist(regoptions, options, journalist);
+   bonmin_setup.registerOptions();
+
+   bonmin_setup.roptions()->SetRegisteringCategory("Output", Bonmin::RegisteredOptions::IpoptCategory);
+   bonmin_setup.roptions()->AddStringOption2("print_eval_error",
+      "Switch to enable printing information about function evaluation errors into the GAMS listing file.",
+      "yes",
+      "no", "", "yes", "");
+
+   bonmin_setup.roptions()->SetRegisteringCategory("Output and Loglevel", Bonmin::RegisteredOptions::BonminCategory);
+   bonmin_setup.roptions()->AddStringOption2("print_funceval_statistics",
+      "Switch to enable printing statistics on number of evaluations of GAMS functions/gradients/Hessian.",
+      "no",
+      "no", "", "yes", "");
+
+   bonmin_setup.roptions()->AddStringOption1("solvetrace",
+      "Name of file for writing solving progress information.",
+      "", "*", "");
+
+   bonmin_setup.roptions()->AddLowerBoundedIntegerOption("solvetracenodefreq",
+      "Frequency in number of nodes for writing solving progress information.",
+      0, 100, "giving 0 disables writing of N-lines to trace file");
+
+   bonmin_setup.roptions()->AddLowerBoundedNumberOption("solvetracetimefreq",
+      "Frequency in seconds for writing solving progress information.",
+      0.0, false, 5.0, "giving 0.0 disables writing of T-lines to trace file");
+
+   bonmin_setup.roptions()->SetRegisteringCategory("NLP interface", Bonmin::RegisteredOptions::BonminCategory);
+   bonmin_setup.roptions()->AddStringOption2("solvefinal",
+      "Switch to disable solving MINLP with discrete variables fixed to solution values after solve.",
+      "yes",
+      "no", "", "yes", "",
+      "If enabled, then the dual values from the resolved NLP are made available in GAMS.");
+
+   bonmin_setup.roptions()->SetRegisteringCategory("Branch-and-bound options", Bonmin::RegisteredOptions::BonminCategory);
+   bonmin_setup.roptions()->AddStringOption2("clocktype",
+      "Type of clock to use for time_limit",
+      "wall",
+      "cpu", "CPU time", "wall", "Wall-clock time",
+      "");
+
+   const Bonmin::RegisteredOptions::RegOptionsList& optionlist(regoptions->RegisteredOptionsList());
+
+   // options sorted by category
+   std::map<std::string, std::list<SmartPtr<RegisteredOption> > > opts;
+   GamsOptions gmsopt("bonmin");
+   gmsopt.setEolChars("#");
+
+   for( Bonmin::RegisteredOptions::RegOptionsList::const_iterator it(optionlist.begin()); it != optionlist.end(); ++it )
+   {
+      std::string category(it->second->RegisteringCategory());
+
+      if( category.empty() )
+         continue;
+      if( regoptions->categoriesInfo(category) == Bonmin::RegisteredOptions::UndocumentedCategory )
+         continue;
+      if( regoptions->categoriesInfo(category) == Bonmin::RegisteredOptions::IpoptCategory )
+         category = "Ipopt " + category;
+      else
+         category = " " + category;
+
+      if( it->second->Name() == "nlp_solver" ||
+          it->second->Name() == "file_solution" ||
+          it->second->Name() == "sos_constraints"
+        )
+         continue;
+
+
+      if( category == "Ipopt Undocumented" ||
+          category == "Ipopt Uncategorized" ||
+          category == "Ipopt " ||
+          category == "Ipopt Derivative Checker"
+        )
+         continue;
+
+      if( it->second->Name() == "hessian_constant" ||
+          it->second->Name() == "obj_scaling_factor" ||
+          it->second->Name() == "file_print_level" ||
+          it->second->Name() == "option_file_name" ||
+          it->second->Name() == "output_file" ||
+          it->second->Name() == "print_options_documentation" ||
+          it->second->Name() == "print_user_options" ||
+          it->second->Name() == "nlp_lower_bound_inf" ||
+          it->second->Name() == "nlp_upper_bound_inf" ||
+          it->second->Name() == "num_linear_variables" ||
+          it->second->Name() == "skip_finalize_solution_call" ||
+          it->second->Name() == "warm_start_entire_iterate" ||
+          it->second->Name() == "warm_start_same_structure"
+        )
+         continue;
+
+
+      opts[category].push_back(it->second);
+   }
+
+   // print options tables
+   std::ofstream tabfile("optbonmin_t.md");
+   tabfile << "<!-- This file is autogenerated by optdoc.cpp in COIN-OR/GAMSlinks -->" << std::endl;
+   std::string tablehead = "| Option | Type | Default | B-BB | B-OA | B-QG | B-Hyb | B-Ecp | B-iFP | Cbc_Par |\n";
+   tablehead.append(       "|:-------|:-----|--------:|:----:|:----:|:----:|:-----:|:-----:|:-----:|:-------:|");
+
+   int categcount = 0;
+   for( std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ != opts.end(); ++it_categ, ++categcount )
+   {
+      tabfile << std::endl;
+      tabfile << "\\subsection BONMINopt_" << categcount << ' ' << it_categ->first << std::endl << std::endl;
+      if( it_categ->first.find("Ipopt") == 0 )
+         tabfile << "| Option | Type | Default |" << std::endl
+                 << "|:-------|:-----|--------:|" << std::endl;
+      else
+         tabfile << tablehead << std::endl;
+
+      for( std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt != it_categ->second.end(); ++it_opt )
+      {
+         tabfile << "| \\anchor BONMIN" << (*it_opt)->Name() << "SHORTDOC ";
+         tabfile << "\\ref BONMIN" << (*it_opt)->Name() << " \"" << (*it_opt)->Name() << "\" | ";
+
+         std::string typestring;
+         std::string defaultval;
+         switch( (*it_opt)->Type() )
+         {
+            case Ipopt::OT_Integer:
+            {
+               typestring = "\\f$\\mathbb{Z}\\f$";
+               defaultval = "\\f$";
+               defaultval.append(GamsOptions::makeValidLatexNumber((*it_opt)->DefaultInteger()));
+               defaultval.append("\\f$");
+               break;
+            }
+
+            case Ipopt::OT_Number:
+            {
+               typestring = "\\f$\\mathbb{Q}\\f$";
+               defaultval = "\\f$";
+               defaultval.append(GamsOptions::makeValidLatexNumber((*it_opt)->DefaultNumber()));
+               defaultval.append("\\f$");
+               break;
+            }
+
+            case Ipopt::OT_String:
+            {
+               typestring = "string";
+               defaultval = "``";
+               defaultval.append((*it_opt)->DefaultString());
+               defaultval.append("``");
+               break;
+            }
+
+            case Ipopt::OT_Unknown: ;
+         }
+
+         if( (*it_opt)->Name() == "nlp_log_at_root" )
+            defaultval = GamsOptions::makeValidLatexNumber(Ipopt::J_ITERSUMMARY);
+         else if( (*it_opt)->Name() == "allowable_gap" )
+            defaultval = "GAMS ``optca``";
+         else if( (*it_opt)->Name() == "allowable_fraction_gap" )
+            defaultval = "GAMS ``optcr``";
+         else if( (*it_opt)->Name() == "node_limit" )
+            defaultval = "GAMS ``nodlim``";
+         else if( (*it_opt)->Name() == "time_limit" )
+            defaultval = "GAMS ``reslim``";
+         else if( (*it_opt)->Name() == "iteration_limit" )
+            defaultval = "GAMS ``iterlim``";
+         else if( (*it_opt)->Name() == "cutoff" )
+            defaultval = "GAMS ``cutoff``";
+         else if( (*it_opt)->Name() == "number_cpx_threads" )
+            defaultval = "GAMS ``threads``";
+
+         tabfile << typestring << " | ";
+         tabfile << defaultval;
+         if( it_categ->first.find("Ipopt") != 0 )
+            tabfile
+             << " | " << ( (regoptions->isValidForBBB((*it_opt)->Name()))    ? "\\f$\\surd\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForBOA((*it_opt)->Name()))    ? "\\f$\\surd\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForBQG((*it_opt)->Name()))    ? "\\f$\\surd\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForHybrid((*it_opt)->Name())) ? "\\f$\\surd\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForBEcp((*it_opt)->Name()))   ? "\\f$\\surd\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForBiFP((*it_opt)->Name()))   ? "\\f$\\surd\\f$" : "--" )
+             << " | " << ( (regoptions->isValidForCbc((*it_opt)->Name()))    ? "\\f$\\surd\\f$" : "--" );
+         tabfile << " |" << std::endl;
+      }
+   }
+   tabfile.close();
+
+   GamsOptions::OPTTYPE opttype;
+   GamsOptions::OPTVAL defaultval, minval, maxval;
+   bool minval_strict, maxval_strict;
+   GamsOptions::ENUMVAL enumval;
+   std::string tmpstr;
+   std::string longdescr;
+
+   for( std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ != opts.end(); ++it_categ )
+   {
+      gmsopt.setGroup(it_categ->first);
+
+      for( std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt != it_categ->second.end(); ++it_opt )
+      {
+         minval_strict = false;
+         maxval_strict = false;
+         switch( (*it_opt)->Type() )
+         {
+            case Ipopt::OT_Number:
+            {
+               opttype = GamsOptions::OPTTYPE_REAL;
+               minval.realval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
+               maxval.realval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
+               //TODO should ask Bonmin for value for infinity
+               if( minval.realval == -1e+20 )
+                  minval.realval = -DBL_MAX;
+               if( maxval.realval ==  1e+20 )
+                  maxval.realval =  DBL_MAX;
+               defaultval.realval = (*it_opt)->DefaultNumber();
+               minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
+               maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;
+               break;
+            }
+
+            case Ipopt::OT_Integer:
+            {
+               opttype = GamsOptions::OPTTYPE_INTEGER;
+               minval.intval = (*it_opt)->HasLower() ? (*it_opt)->LowerInteger() : -INT_MAX;
+               maxval.intval = (*it_opt)->HasUpper() ? (*it_opt)->UpperInteger() :  INT_MAX;
+               defaultval.intval = (*it_opt)->DefaultInteger();
+               break;
+            }
+
+            case Ipopt::OT_String:
+            {
+               defaultval.stringval = strdup((*it_opt)->DefaultString().c_str());
+
+               const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
+               if( settings.size() == 1 && settings[0].value_ == "*")
+               {
+                  opttype = GamsOptions::OPTTYPE_STRING;
+               }
+               else
+               {
+                  opttype = GamsOptions::OPTTYPE_ENUM;
+                  if( (*it_opt)->Name() == "linear_solver" )
+                  {
+                     enumval.clear();
+                     enumval.push_back(std::pair<std::string, std::string>("ma27", "use the Harwell routine MA27"));
+                     enumval.push_back(std::pair<std::string, std::string>("ma57", "use the Harwell routine MA57"));
+                     enumval.push_back(std::pair<std::string, std::string>("ma77", "use the Harwell routine HSL_MA77"));
+                     enumval.push_back(std::pair<std::string, std::string>("ma86", "use the Harwell routine HSL_MA86"));
+                     enumval.push_back(std::pair<std::string, std::string>("ma97", "use the Harwell routine HSL_MA97"));
+                     enumval.push_back(std::pair<std::string, std::string>("pardiso", "use the Pardiso package"));
+                     enumval.push_back(std::pair<std::string, std::string>("mumps", "use MUMPS package"));
+
+                     longdescr = "Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). "
+                        "Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
+                        "If no GAMS/IpoptH license is available, the default linear solver is MUMPS. "
+                        "Pardiso is only available on Linux and Windows systems. "
+                        "For using Pardiso on non-Linux/Windows systems or MA77, a Pardiso or HSL library need to be provided.";
+
+                     defaultval.stringval = "ma27";
+                  }
+                  else
+                  {
+                     if( (*it_opt)->Name() == "linear_system_scaling" )
+                        longdescr = "Determines the method used to compute symmetric scaling factors for the augmented system (see also the \"linear_scaling_on_demand\" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. "
+                           "Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
+                           "If no commerical GAMS/IpoptH license is available, the default scaling method is slack-based.";
+
+                     enumval.resize(settings.size());
+                     for( size_t j = 0; j < settings.size(); ++j )
+                        enumval[j] = std::pair<std::string, std::string>(settings[j].value_, settings[j].description_);
+                  }
+               }
+
+               break;
+            }
+
+            default:
+            case Ipopt::OT_Unknown:
+            {
+               std::cerr << "Skip option " << (*it_opt)->Name() << " of unknown type." << std::endl;
+               continue;
+            }
+         }
+
+         longdescr = (*it_opt)->LongDescription();
+
+         // Bonmin options
+         if( (*it_opt)->Name() == "nlp_log_at_root" )
+            defaultval.intval = Ipopt::J_ITERSUMMARY;
+         else if( (*it_opt)->Name() == "allowable_fraction_gap" )
+            defaultval.realval = 0.1;
+         else if( (*it_opt)->Name() == "time_limit" )
+            defaultval.realval = 1000;
+         else if( it_categ->first == " MILP cutting planes in hybrid algorithm" && (*it_opt)->Name() != "2mir_cuts" )
+            longdescr = "See option `2mir_cuts` for a detailed description.";
+         else if( (*it_opt)->Name() == "milp_solver" )
+            longdescr = "To use Cplex, a valid license is required.";
+         else if( (*it_opt)->Name() == "resolve_on_small_infeasibility" )
+            longdescr = "";
+         else if( (*it_opt)->Name() == "number_cpx_threads" )
+            defaultval.intval = 1;
+         // Ipopt options
+         else if( (*it_opt)->Name() == "bound_relax_factor" )
+            defaultval.realval = 1e-10;
+         else if( (*it_opt)->Name() == "mu_strategy" )
+            defaultval.stringval = "adaptive";
+         else if( (*it_opt)->Name() == "mu_oracle" )
+            defaultval.stringval = "probing";
+         else if( (*it_opt)->Name() == "gamma_phi" )
+            defaultval.realval = 1e-8;
+         else if( (*it_opt)->Name() == "gamma_theta" )
+            defaultval.realval = 1e-4;
+         else if( (*it_opt)->Name() == "required_infeasibility_reduction" )
+            defaultval.realval = 0.1;
+         else if( (*it_opt)->Name() == "expect_infeasible_problem" )
+            defaultval.stringval = "yes";
+         else if( (*it_opt)->Name() == "warm_start_init_point" )
+            defaultval.stringval = "yes";
+         else if( (*it_opt)->Name() == "print_level" )
+            defaultval.intval = 0;
+         else if( (*it_opt)->Name() == "print_frequency_time" )
+            defaultval.realval = 0.5;
+         else if( (*it_opt)->Name() == "ma86_order" )
+            defaultval.stringval = "auto";
+         else if( (*it_opt)->Name() == "nlp_scaling_method" )
+         {
+            for( GamsOptions::ENUMVAL::iterator it(enumval.begin()); it != enumval.end(); ++it )
+               if( it->first == "user-scaling" )
+               {
+                  enumval.erase(it);
+                  break;
+               }
+         }
+         else if( (*it_opt)->Name() == "dependency_detector" )
+         {
+            for( GamsOptions::ENUMVAL::iterator it(enumval.begin()); it != enumval.end(); ++it )
+               if( it->first == "wsmp" )
+               {
+                  enumval.erase(it);
+                  break;
+               }
+         }
+
+         gmsopt.collect((*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
+            opttype, defaultval, minval, maxval, enumval);
+      }
+   }
+
+   gmsopt.write();
+}

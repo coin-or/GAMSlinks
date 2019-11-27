@@ -20,6 +20,7 @@
 #
 # Author: Stefan Vigerske
 
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -94,6 +95,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+noinst_PROGRAMS = optcouenne$(EXEEXT)
 subdir = src/couenne
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -104,6 +106,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+PROGRAMS = $(noinst_PROGRAMS)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -150,6 +153,10 @@ libGamsCouenne_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(AM_CXXFLAGS) $(CXXFLAGS) $(libGamsCouenne_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am_optcouenne_OBJECTS = optcouenne.$(OBJEXT) \
+	../utils/GamsOptionsSpecWriter.$(OBJEXT)
+optcouenne_OBJECTS = $(am_optcouenne_OBJECTS)
+optcouenne_DEPENDENCIES = libGamsCouenne.la
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -171,9 +178,11 @@ am__depfiles_remade = ../bonmin/$(DEPDIR)/GamsMINLP.Plo \
 	../osi/$(DEPDIR)/GamsMessageHandler.Plo \
 	../utils/$(DEPDIR)/GamsHelper.Plo \
 	../utils/$(DEPDIR)/GamsLicensing.Plo \
+	../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po \
 	../utils/$(DEPDIR)/GamsSolveTrace.Plo \
 	../utils/$(DEPDIR)/gevmcc.Plo ../utils/$(DEPDIR)/gmomcc.Plo \
-	../utils/$(DEPDIR)/palmcc.Plo ./$(DEPDIR)/GamsCouenne.Plo
+	../utils/$(DEPDIR)/palmcc.Plo ./$(DEPDIR)/GamsCouenne.Plo \
+	./$(DEPDIR)/optcouenne.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -211,7 +220,7 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(libGamsCouenne_la_SOURCES)
+SOURCES = $(libGamsCouenne_la_SOURCES) $(optcouenne_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -424,7 +433,10 @@ libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
 libGamsCouenne_la_LIBADD = $(GAMSCOUENNE_LFLAGS)
 libGamsCouenne_la_LDFLAGS = $(LT_LDFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
-	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c
+	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
+	optcouenne.gms optcouenne.txt
+optcouenne_SOURCES = optcouenne.cpp ../utils/GamsOptionsSpecWriter.cpp
+optcouenne_LDADD = libGamsCouenne.la
 all: all-am
 
 .SUFFIXES:
@@ -459,6 +471,15 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
 
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
@@ -541,6 +562,12 @@ clean-libLTLIBRARIES:
 
 libGamsCouenne.la: $(libGamsCouenne_la_OBJECTS) $(libGamsCouenne_la_DEPENDENCIES) $(EXTRA_libGamsCouenne_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(libGamsCouenne_la_LINK) -rpath $(libdir) $(libGamsCouenne_la_OBJECTS) $(libGamsCouenne_la_LIBADD) $(LIBS)
+../utils/GamsOptionsSpecWriter.$(OBJEXT): ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
+
+optcouenne$(EXEEXT): $(optcouenne_OBJECTS) $(optcouenne_DEPENDENCIES) $(EXTRA_optcouenne_DEPENDENCIES) 
+	@rm -f optcouenne$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(optcouenne_OBJECTS) $(optcouenne_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -562,11 +589,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../osi/$(DEPDIR)/GamsMessageHandler.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsHelper.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsLicensing.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsSolveTrace.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gevmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gmomcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/palmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCouenne.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optcouenne.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -685,7 +714,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(PROGRAMS) $(LTLIBRARIES)
 installdirs:
 	for dir in "$(DESTDIR)$(libdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -732,7 +761,7 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
-	mostlyclean-am
+	clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 		-rm -f ../bonmin/$(DEPDIR)/GamsMINLP.Plo
@@ -741,11 +770,13 @@ distclean: distclean-am
 	-rm -f ../osi/$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsLicensing.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
 	-rm -f ../utils/$(DEPDIR)/GamsSolveTrace.Plo
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
 	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsCouenne.Plo
+	-rm -f ./$(DEPDIR)/optcouenne.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -797,11 +828,13 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ../osi/$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsLicensing.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
 	-rm -f ../utils/$(DEPDIR)/GamsSolveTrace.Plo
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
 	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsCouenne.Plo
+	-rm -f ./$(DEPDIR)/optcouenne.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -823,12 +856,13 @@ uninstall-am: uninstall-libLTLIBRARIES
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--depfiles check check-am clean \
-	clean-generic clean-libLTLIBRARIES clean-libtool cscopelist-am \
-	ctags ctags-am distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags dvi dvi-am html html-am info \
-	info-am install install-am install-data install-data-am \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
+	clean-generic clean-libLTLIBRARIES clean-libtool \
+	clean-noinstPROGRAMS cscopelist-am ctags ctags-am distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags dvi dvi-am html html-am info info-am install \
+	install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
 	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \

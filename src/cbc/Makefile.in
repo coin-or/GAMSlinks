@@ -21,6 +21,7 @@
 # Author: Stefan Vigerske
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -95,6 +96,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+noinst_PROGRAMS = optcbc$(EXEEXT)
 subdir = src/cbc
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -105,6 +107,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+PROGRAMS = $(noinst_PROGRAMS)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -150,6 +153,10 @@ libGamsCbc_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(AM_CXXFLAGS) $(CXXFLAGS) $(libGamsCbc_la_LDFLAGS) $(LDFLAGS) \
 	-o $@
+am_optcbc_OBJECTS = optcbc.$(OBJEXT) \
+	../utils/GamsOptionsSpecWriter.$(OBJEXT)
+optcbc_OBJECTS = $(am_optcbc_OBJECTS)
+optcbc_DEPENDENCIES = libGamsCbc.la
 SCRIPTS = $(bin_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -169,10 +176,11 @@ am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ../osi/$(DEPDIR)/GamsMessageHandler.Plo \
 	../osi/$(DEPDIR)/GamsOsiHelper.Plo \
 	../utils/$(DEPDIR)/GamsHelper.Plo \
+	../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po \
 	../utils/$(DEPDIR)/GamsSolveTrace.Plo \
 	../utils/$(DEPDIR)/gdxcc.Plo ../utils/$(DEPDIR)/gevmcc.Plo \
 	../utils/$(DEPDIR)/gmomcc.Plo ../utils/$(DEPDIR)/optcc.Plo \
-	./$(DEPDIR)/GamsCbc.Plo
+	./$(DEPDIR)/GamsCbc.Plo ./$(DEPDIR)/optcbc.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -210,7 +218,7 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(libGamsCbc_la_SOURCES)
+SOURCES = $(libGamsCbc_la_SOURCES) $(optcbc_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -419,7 +427,10 @@ libGamsCbc_la_LIBADD = $(GAMSCBC_LFLAGS)
 libGamsCbc_la_LDFLAGS = $(LT_LDFLAGS)
 bin_SCRIPTS = optmycbc.def
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
-	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c
+	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
+	optcbc.txt optcbc.gms
+optcbc_SOURCES = optcbc.cpp ../utils/GamsOptionsSpecWriter.cpp
+optcbc_LDADD = libGamsCbc.la
 all: all-am
 
 .SUFFIXES:
@@ -454,6 +465,15 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
 
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
@@ -520,6 +540,12 @@ clean-libLTLIBRARIES:
 
 libGamsCbc.la: $(libGamsCbc_la_OBJECTS) $(libGamsCbc_la_DEPENDENCIES) $(EXTRA_libGamsCbc_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(libGamsCbc_la_LINK) -rpath $(libdir) $(libGamsCbc_la_OBJECTS) $(libGamsCbc_la_LIBADD) $(LIBS)
+../utils/GamsOptionsSpecWriter.$(OBJEXT): ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
+
+optcbc$(EXEEXT): $(optcbc_OBJECTS) $(optcbc_DEPENDENCIES) $(EXTRA_optcbc_DEPENDENCIES) 
+	@rm -f optcbc$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(optcbc_OBJECTS) $(optcbc_LDADD) $(LIBS)
 install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
@@ -569,12 +595,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../osi/$(DEPDIR)/GamsMessageHandler.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../osi/$(DEPDIR)/GamsOsiHelper.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsHelper.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsSolveTrace.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gdxcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gevmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gmomcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/optcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCbc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optcbc.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -691,7 +719,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(SCRIPTS)
+all-am: Makefile $(PROGRAMS) $(LTLIBRARIES) $(SCRIPTS)
 installdirs:
 	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -734,18 +762,20 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
-	mostlyclean-am
+	clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 		-rm -f ../osi/$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ../osi/$(DEPDIR)/GamsOsiHelper.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
 	-rm -f ../utils/$(DEPDIR)/GamsSolveTrace.Plo
 	-rm -f ../utils/$(DEPDIR)/gdxcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
 	-rm -f ../utils/$(DEPDIR)/optcc.Plo
 	-rm -f ./$(DEPDIR)/GamsCbc.Plo
+	-rm -f ./$(DEPDIR)/optcbc.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -794,12 +824,14 @@ maintainer-clean: maintainer-clean-am
 		-rm -f ../osi/$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ../osi/$(DEPDIR)/GamsOsiHelper.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
 	-rm -f ../utils/$(DEPDIR)/GamsSolveTrace.Plo
 	-rm -f ../utils/$(DEPDIR)/gdxcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
 	-rm -f ../utils/$(DEPDIR)/optcc.Plo
 	-rm -f ./$(DEPDIR)/GamsCbc.Plo
+	-rm -f ./$(DEPDIR)/optcbc.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -821,15 +853,16 @@ uninstall-am: uninstall-binSCRIPTS uninstall-libLTLIBRARIES
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--depfiles check check-am clean \
-	clean-generic clean-libLTLIBRARIES clean-libtool cscopelist-am \
-	ctags ctags-am distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags dvi dvi-am html html-am info \
-	info-am install install-am install-binSCRIPTS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-libLTLIBRARIES install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
+	clean-generic clean-libLTLIBRARIES clean-libtool \
+	clean-noinstPROGRAMS cscopelist-am ctags ctags-am distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags dvi dvi-am html html-am info info-am install \
+	install-am install-binSCRIPTS install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am uninstall-binSCRIPTS \

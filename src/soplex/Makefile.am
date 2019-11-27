@@ -20,3 +20,8 @@ libGamsSoplex_la_LDFLAGS = $(LT_LDFLAGS)
 
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
+
+noinst_PROGRAMS = optsoplex
+optsoplex_SOURCES = optsoplex.cpp ../utils/GamsOptionsSpecWriter.cpp
+optsoplex_LDADD = $(GAMSSOPLEX_LFLAGS)
+CLEANFILES += optsoplex.gms
