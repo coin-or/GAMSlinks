@@ -271,6 +271,14 @@ int GamsBonmin::callSolver()
    SmartPtr<GamsMINLP> minlp = new GamsMINLP(gmo);
    bonmin_setup->options()->GetNumericValue("diverging_iterates_tol", minlp->nlp->div_iter_tol, "");
 
+   if( minlp->have_negative_sos() )
+   {
+      gevLogStat(gev, "Error: Bonmin requires all variables in SOS to be non-negative.");
+      gmoSolveStatSet(gmo, gmoSolveStat_Capability);
+      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+      return 0;
+   }
+
    // initialize Hessian in GMO, if required
    bool hessian_is_approx = false;
    bonmin_setup->options()->GetStringValue("hessian_approximation", parvalue, "");

@@ -35,7 +35,8 @@ private:
 
    bool                  in_couenne;         /**< whether we use this class in Couenne */
 
-   Bonmin::TMINLP::SosInfo       sosinfo;       /**< SOS information */
+   Bonmin::TMINLP::SosInfo sosinfo;          /**< SOS information */
+   bool                  negativesos;        /**< whether we saw variables in SOS with (possibly) negative variables */
    Bonmin::TMINLP::BranchingInfo branchinginfo; /**< Branching information */
 
    Ipopt::SmartPtr<GamsNLP> nlp;                /**< a GamsNLP used to store the underlying NLP */
@@ -54,6 +55,12 @@ public:
       struct gmoRec*     gmo_,               /**< GAMS modeling object */
       bool               in_couenne_ = false /**< whether the MINLP is used within Couenne */
       );
+
+   /** whether we have variables in SOS that can take negative values */
+   bool have_negative_sos()
+   {
+      return negativesos;
+   }
 
    /** resets counter on function/gradient/hessian evaluations */
    void reset_eval_counter();

@@ -25,6 +25,7 @@ GamsMINLP::GamsMINLP(
 : gmo(gmo_),
   gev(gmo_ ? (gevRec*)gmoEnvironment(gmo_) : NULL),
   in_couenne(in_couenne_),
+  negativesos(false),
   model_status(gmoModelStat_ErrorNoSolution),
   solver_status(gmoSolveStat_SetupErr)
 {
@@ -106,10 +107,28 @@ void GamsMINLP::setupPrioritiesSOS()
 
    gmoGetSosConstraints(gmo, sostype, sosinfo.starts, sosinfo.indices, sosinfo.weights);
 
+   // check whether some var in a SOS has a negative lower bound
+   // Bonmin doesn't handle this well and so we want to reject such problems
    for( int i = 0; i < numSos; ++i )
    {
       sosinfo.types[i] = (char)sostype[i];
       sosinfo.priorities[i] = gmoN(gmo) - (sosinfo.starts[i+1] - sosinfo.starts[i]); // branch on long sets first
+
+      for( int j = sosinfo.starts[i]; j < sosinfo.starts[i+1]; ++j )
+      {
+         if( gmoGetVarLowerOne(gmo, j) < 0.0 )
+         {
+            char buffer[GMS_SSSIZE+100];
+            char varname[GMS_SSSIZE];
+            if( gmoDict(gmo) )
+               gmoGetVarNameOne(gmo, j, varname);
+            else
+               sprintf(varname, "x%d", j);
+            sprintf(buffer, "Variable %s in SOS has negative lower bound %g\n", varname, gmoGetVarLowerOne(gmo, j));
+            gevLogPChar(gev, buffer);
+            negativesos = true;
+         }
+      }
    }
 
    delete[] sostype;
