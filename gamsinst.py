@@ -47,6 +47,25 @@ if not os.path.isfile(solverlib) :
     print_usage()
     sys.exit(1)
 
+if solverlib.endswith('.la') :
+    # extract installed libname from libtool archive
+    dlname = None
+    libdir = None
+    for line in open(solverlib, 'r') :
+        if line.startswith('dlname=') :
+            dlname = line.split('=')[1].strip().strip("'")
+        if line.startswith('libdir=') :
+            libdir = line.split('=')[1].strip().strip("'")
+    if not dlname or not libdir :
+        print("Error: no libdir or dlname found in", solverlib, file=sys.stderr)
+        print_usage()
+        sys.exit(1)
+    solverlib = os.path.join(libdir, dlname)
+    if not os.path.isfile(solverlib) :
+        print("Error: %s does not exist or is not a file" % solverlib, file=sys.stderr)
+        print_usage()
+        sys.exit(1)
+
 if len(solverid) != 3 or len(solverid.split()) > 1 :
     print("Error: Solver id %s needs to consist of exactly 3 non-whitespace characters" % solverid, file=sys.stderr)
     print_usage()
@@ -100,7 +119,7 @@ try :
             continue
     
         if line.startswith('DEFAULTS') :
-            print('Adding section for solver', solvername)
+            print('Adding section for solver', solvername, 'using lib', solverlib)
             # add config for solver before DEFAULTS section
             # TODO 05 needs to be added to 0001020304 with GAMS 30?
             print("%s 111 %s 0001020304 1 0 2 %s" % (solvername, dicttype, modeltypes), file = outfile)
