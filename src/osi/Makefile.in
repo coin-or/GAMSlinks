@@ -691,7 +691,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-libLTLIBRARIES
+install-exec-am: install-exec-local install-libLTLIBRARIES
 
 install-html: install-html-am
 
@@ -745,10 +745,10 @@ uninstall-am: uninstall-libLTLIBRARIES
 	distclean-libtool distclean-tags dvi dvi-am html html-am info \
 	info-am install install-am install-data install-data-am \
 	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	install-exec-local install-html install-html-am install-info \
+	install-info-am install-libLTLIBRARIES install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am uninstall-libLTLIBRARIES
@@ -772,6 +772,13 @@ uninstall-am: uninstall-libLTLIBRARIES
 
 ../utils/palmcc.c : $(GAMS_PATH)/apifiles/C/api/palmcc.c
 	@cp $< $@
+
+install-exec-local : install-libLTLIBRARIES
+@COIN_HAS_OSICPX_TRUE@	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsOsi.la MYOSICPLEX ocp "LP RMIP MIP" 5
+@COIN_HAS_OSIGRB_TRUE@	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsOsi.la MYOSIGUROBI ogu "LP RMIP MIP" 5
+@COIN_HAS_OSIMSK_TRUE@	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsOsi.la MYOSIMOSEK omk "LP RMIP MIP" 5
+@COIN_HAS_OSIXPR_TRUE@	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsOsi.la MYOSIXPRESS oxp "LP RMIP MIP" 5
+#TODO uninstall-exec-local should remove solver in GAMS
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

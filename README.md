@@ -11,7 +11,7 @@ Currently the following links are available:
 
   * [Bonmin](https://projects.coin-or.org/Bonmin): Basic Open-source Nonlinear Mixed-Integer Programming
   * [Couenne](https://projects.coin-or.org/Couenne): Convex Over and Under Envelopes for Nonlinear Estimation
-  * [Cbc](https://github.com/coin-or/Cbc): Coin Branch and Cut code
+  * [Cbc](https://github.com/coin-or/Cbc): COIN-OR Branch and Cut code
   * [Ipopt](https://github.com/coin-or/Ipopt): Interior Point Optimizer
   * [Osi](https://github.com/coin-or/Osi): Interface to LP and MIP solvers with an Open Solver Interface, currently CPLEX, Gurobi, Mosek, and Xpress
   * [SCIP](https://scip.zib.de): Solving Constraint Integer Programs
@@ -37,18 +37,14 @@ The main installation steps are:
  1. Install a GAMS system, if you do not have one.
  2. Install solvers.
  3. Call configure, make, and make install.
- 4. Install the GAMS/COIN-OR links in your GAMS system by calling `make gams-install`.
 
 ### 1. Installation of a GAMS system
 
-A GAMS system is needed to build the GAMS solver interfaces.
+A GAMS system is needed to build and use the GAMS solver interfaces.
+It can be downloaded from https://www.gams.com/latest.
 
-You can download a GAMS demonstration system at http://www.gams.com/latest.
-The demonstrations limits are:
- * Number of constraints: 300
- * Number of variables: 300
- * Number of nonzero elements: 2000 (of which 1000 nonlinear)
- * Number of discrete variables: 50 (including semi continuous, semi integer and member of SOS-Sets)
+With GAMS >= 30, a license file will need to be present, too.
+The GAMS webpage will provide a mechanism to obtain a demo license.
 
 ### 2. Install solvers
 
@@ -74,9 +70,7 @@ Alternatively you can provide a path with the `--with-gams` option of configure.
 
 The configure call also supports the VPATH feature, so you can compile the code in a different place than the one where the source code is located.
 
-### 4. Installation of solvers in your GAMS system
-
-By calling "make gams-install", the GAMS system is made aware of the build solver interfaces.
+The call to "make install" will also make the GAMS system is aware of the build solver interfaces.
 
 To use a solver under GAMS, use `SOLVER=MY<SolverName>`, e.g., use `SOLVER=MYCBC` to call your build of the GAMS/Cbc link.
 The prefix "`MY`" has been added to distinguish the solvers from those that are already included in the GAMS distribution.
@@ -96,4 +90,4 @@ For a documentation of the GAMS/COIN-OR links and their parameters please see th
 
 ## Testing
 
-The directory `test` contains scripts that test Cbc, Ipopt, Bonmin, Couenne, Osi, SoPlex, and SCIP on some models from the GAMS test and model libraries.
+The directory `test` contains scripts that test Cbc, Ipopt, Bonmin, Couenne, OsiXyz, SoPlex, and SCIP on some models from the GAMS test and model libraries.

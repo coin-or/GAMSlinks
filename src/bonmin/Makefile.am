@@ -33,3 +33,7 @@ noinst_PROGRAMS = optbonmin
 optbonmin_SOURCES = optbonmin.cpp ../utils/GamsOptionsSpecWriter.cpp
 optbonmin_LDADD = libGamsBonmin.la
 CLEANFILES += optbonmin.gms optbonmin.txt optbonmin_t.md
+
+install-exec-local : install-libLTLIBRARIES
+	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsBonmin.la MYBONMIN bon "MIP MIQCP MINLP" 0
+#TODO uninstall-exec-local should remove solver in GAMS

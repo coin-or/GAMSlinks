@@ -28,3 +28,6 @@ noinst_PROGRAMS = optscip
 optscip_SOURCES = optscip.cpp ../utils/GamsOptionsSpecWriter.cpp
 optscip_LDADD = libGamsScip.la
 CLEANFILES += optscip.gms branchrules.md conflicthdlrs.md conshdlrs.md disps.md heurs.md nodesels.md presols.md props.md sepas.md
+
+install-exec-local : install-libLTLIBRARIES
+	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsScip.la MYSCIP scp "MIP QCP RMIQCP NLP DNLP RMINLP CNS MIQCP MINLP" 5

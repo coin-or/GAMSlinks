@@ -19,3 +19,18 @@ libGamsOsi_la_LDFLAGS = $(LT_LDFLAGS)
 
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
+
+install-exec-local : install-libLTLIBRARIES
+if COIN_HAS_OSICPX
+	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsOsi.la MYOSICPLEX ocp "LP RMIP MIP" 5
+endif
+if COIN_HAS_OSIGRB
+	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsOsi.la MYOSIGUROBI ogu "LP RMIP MIP" 5
+endif
+if COIN_HAS_OSIMSK
+	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsOsi.la MYOSIMOSEK omk "LP RMIP MIP" 5
+endif
+if COIN_HAS_OSIXPR
+	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsOsi.la MYOSIXPRESS oxp "LP RMIP MIP" 5
+endif
+#TODO uninstall-exec-local should remove solver in GAMS

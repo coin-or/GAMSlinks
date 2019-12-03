@@ -19,13 +19,10 @@ test: all
 
 unitTest: test
 
-gams-install: install
-	src/gamsinst.sh
-
 doc:
 	cd doc && doxygen
 
-.PHONY: test unitTest gams-install doc
+.PHONY: test unitTest doc
 
 # Stuff to clean up
 clean-doc :

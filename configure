@@ -20434,7 +20434,7 @@ $as_echo "$as_me: GAMSSCIP_CFLAGS: \"${GAMSSCIP_CFLAGS}\"" >&6;}
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/gamsinst.sh src/bonmin/Makefile src/cbc/Makefile src/couenne/Makefile src/ipopt/Makefile src/osi/Makefile src/scip/Makefile src/soplex/Makefile test/Makefile doc/Doxyfile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/bonmin/Makefile src/cbc/Makefile src/couenne/Makefile src/ipopt/Makefile src/osi/Makefile src/scip/Makefile src/soplex/Makefile test/Makefile doc/Doxyfile"
 
 ac_config_files="$ac_config_files test/run_quality"
 
@@ -21631,7 +21631,6 @@ do
     "libtoolmingwpatch") CONFIG_COMMANDS="$CONFIG_COMMANDS libtoolmingwpatch" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-    "src/gamsinst.sh") CONFIG_FILES="$CONFIG_FILES src/gamsinst.sh" ;;
     "src/bonmin/Makefile") CONFIG_FILES="$CONFIG_FILES src/bonmin/Makefile" ;;
     "src/cbc/Makefile") CONFIG_FILES="$CONFIG_FILES src/cbc/Makefile" ;;
     "src/couenne/Makefile") CONFIG_FILES="$CONFIG_FILES src/couenne/Makefile" ;;
