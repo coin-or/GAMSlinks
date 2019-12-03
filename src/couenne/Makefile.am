@@ -38,4 +38,6 @@ CLEANFILES += optcouenne.gms optcouenne.txt
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCouenne.la MYCOUENNE cou "QCP RMIQCP NLP DNLP RMINLP CNS MIQCP MINLP" 0
-#TODO uninstall-exec-local should remove solver in GAMS
+
+uninstall-local :
+	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYCOUENNE

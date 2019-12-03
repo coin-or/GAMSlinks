@@ -836,7 +836,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-libLTLIBRARIES
+uninstall-am: uninstall-libLTLIBRARIES uninstall-local
 
 .MAKE: install-am install-strip
 
@@ -853,7 +853,8 @@ uninstall-am: uninstall-libLTLIBRARIES
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-libLTLIBRARIES
+	tags tags-am uninstall uninstall-am uninstall-libLTLIBRARIES \
+	uninstall-local
 
 .PRECIOUS: Makefile
 
@@ -877,7 +878,9 @@ uninstall-am: uninstall-libLTLIBRARIES
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsBonmin.la MYBONMIN bon "MIP MIQCP MINLP" 0
-#TODO uninstall-exec-local should remove solver in GAMS
+
+uninstall-local :
+	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYBONMIN
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

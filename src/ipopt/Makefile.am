@@ -28,4 +28,6 @@ CLEANFILES += optipopt.gms optipopt.txt
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsIpopt.la MYIPOPT ipo "LP RMIP NLP DNLP RMINLP CNS QCP RMIQCP" 0
-#TODO uninstall-exec-local should remove solver in GAMS
+
+uninstall-local :
+	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYIPOPT

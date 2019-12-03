@@ -30,4 +30,6 @@ CLEANFILES += optcbc.txt optcbc.gms
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCbc.la MYCBC cbc "LP MIP RMIP" 5 @srcdir@/optmycbc.def
-#TODO uninstall-exec-local should remove solver in GAMS
+
+uninstall-local :
+	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYCBC optmycbc.def

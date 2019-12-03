@@ -28,3 +28,6 @@ CLEANFILES += optsoplex.gms
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsSoplex.la MYSOPLEX osp "LP RMIP" 5
+
+uninstall-local :
+	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYSOPLEX

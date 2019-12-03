@@ -735,7 +735,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-libLTLIBRARIES
+uninstall-am: uninstall-libLTLIBRARIES uninstall-local
 
 .MAKE: install-am install-strip
 
@@ -751,7 +751,8 @@ uninstall-am: uninstall-libLTLIBRARIES
 	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-libLTLIBRARIES
+	tags tags-am uninstall uninstall-am uninstall-libLTLIBRARIES \
+	uninstall-local
 
 .PRECIOUS: Makefile
 
@@ -778,7 +779,12 @@ install-exec-local : install-libLTLIBRARIES
 @COIN_HAS_OSIGRB_TRUE@	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsOsi.la MYOSIGUROBI ogu "LP RMIP MIP" 5
 @COIN_HAS_OSIMSK_TRUE@	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsOsi.la MYOSIMOSEK omk "LP RMIP MIP" 5
 @COIN_HAS_OSIXPR_TRUE@	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsOsi.la MYOSIXPRESS oxp "LP RMIP MIP" 5
-#TODO uninstall-exec-local should remove solver in GAMS
+
+uninstall-local :
+@COIN_HAS_OSICPX_TRUE@	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYOSICPLEX
+@COIN_HAS_OSIGRB_TRUE@	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYOSIGUROBI
+@COIN_HAS_OSIMSK_TRUE@	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYOSIMOSEK
+@COIN_HAS_OSIXPR_TRUE@	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYOSIXPRESS
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
