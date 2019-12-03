@@ -35,5 +35,3 @@ endif
 if COIN_HAS_SOPLEX
   SUBDIRS += soplex
 endif
-
-bin_SCRIPTS = gamsinst.sh

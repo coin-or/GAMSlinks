@@ -160,4 +160,4 @@ do
     @COIN_IS_WINDOWS_FALSE@ln -s "${libdir}/${libname}.${libext}" "${gamspath}/${libname}.${libext}"
   fi
 done
-@COIN_HAS_CBC_TRUE@cp @bindir@/optmycbc.def "${gamspath}"
+@COIN_HAS_CBC_TRUE@cp @abs_srcdir@/cbc/optmycbc.def "${gamspath}"

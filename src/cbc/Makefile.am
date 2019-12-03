@@ -20,8 +20,6 @@ libGamsCbc_la_SOURCES = GamsCbc.cpp \
 libGamsCbc_la_LIBADD  = $(GAMSCBC_LFLAGS)
 libGamsCbc_la_LDFLAGS = $(LT_LDFLAGS)
 
-bin_SCRIPTS = optmycbc.def
-
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
 

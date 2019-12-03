@@ -20,7 +20,7 @@ test: all
 unitTest: test
 
 gams-install: install
-	$(bindir)/gamsinst.sh
+	src/gamsinst.sh
 
 doc:
 	cd doc && doxygen
