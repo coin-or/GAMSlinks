@@ -140,7 +140,8 @@ am__DEPENDENCIES_1 =
 libGamsIpopt_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libGamsIpopt_la_OBJECTS = GamsIpopt.lo GamsNLP.lo GamsJournal.lo \
-	../utils/GamsHelper.lo ../utils/gmomcc.lo ../utils/gevmcc.lo
+	../utils/GamsHelper.lo ../utils/gmomcc.lo ../utils/gevmcc.lo \
+	../utils/palmcc.lo
 libGamsIpopt_la_OBJECTS = $(am_libGamsIpopt_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -172,8 +173,9 @@ am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ../utils/$(DEPDIR)/GamsHelper.Plo \
 	../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po \
 	../utils/$(DEPDIR)/gevmcc.Plo ../utils/$(DEPDIR)/gmomcc.Plo \
-	./$(DEPDIR)/GamsIpopt.Plo ./$(DEPDIR)/GamsJournal.Plo \
-	./$(DEPDIR)/GamsNLP.Plo ./$(DEPDIR)/optipopt.Po
+	../utils/$(DEPDIR)/palmcc.Plo ./$(DEPDIR)/GamsIpopt.Plo \
+	./$(DEPDIR)/GamsJournal.Plo ./$(DEPDIR)/GamsNLP.Plo \
+	./$(DEPDIR)/optipopt.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -412,7 +414,7 @@ AM_CPPFLAGS = -I$(srcdir)/.. -I$(srcdir)/../utils $(GAMSIPOPT_CFLAGS) \
 lib_LTLIBRARIES = libGamsIpopt.la
 libGamsIpopt_la_SOURCES = GamsIpopt.cpp GamsNLP.cpp GamsJournal.cpp \
   ../utils/GamsHelper.c \
-  ../utils/gmomcc.c ../utils/gevmcc.c
+  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 
 libGamsIpopt_la_LIBADD = $(GAMSIPOPT_LFLAGS)
 libGamsIpopt_la_LDFLAGS = $(LT_LDFLAGS)
@@ -511,6 +513,8 @@ clean-libLTLIBRARIES:
 	../utils/$(DEPDIR)/$(am__dirstamp)
 ../utils/gevmcc.lo: ../utils/$(am__dirstamp) \
 	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/palmcc.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
 
 libGamsIpopt.la: $(libGamsIpopt_la_OBJECTS) $(libGamsIpopt_la_DEPENDENCIES) $(EXTRA_libGamsIpopt_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(libGamsIpopt_la_LINK) -rpath $(libdir) $(libGamsIpopt_la_OBJECTS) $(libGamsIpopt_la_LIBADD) $(LIBS)
@@ -533,6 +537,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gevmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gmomcc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/palmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsIpopt.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsJournal.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsNLP.Plo@am__quote@ # am--include-marker
@@ -700,6 +705,7 @@ distclean: distclean-am
 	-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
+	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsIpopt.Plo
 	-rm -f ./$(DEPDIR)/GamsJournal.Plo
 	-rm -f ./$(DEPDIR)/GamsNLP.Plo
@@ -753,6 +759,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
+	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsIpopt.Plo
 	-rm -f ./$(DEPDIR)/GamsJournal.Plo
 	-rm -f ./$(DEPDIR)/GamsNLP.Plo

@@ -20,9 +20,7 @@
 #include "gevmcc.h"
 #include "optcc.h"
 #include "gdxcc.h"
-#ifdef GAMS_BUILD
 #include "palmcc.h"
-#endif
 
 #include "GamsCompatibility.h"
 
@@ -189,6 +187,9 @@ int GamsCbc::readyAPI(
    struct optRec*     opt_                /**< GAMS options object */
 )
 {
+   struct palRec* pal;
+   char buffer[GMS_SSSIZE];
+
    gmo = gmo_;
    assert(gmo != NULL);
    opt = opt_;
@@ -198,22 +199,21 @@ int GamsCbc::readyAPI(
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
-#ifdef GAMS_BUILD
-   struct palRec* pal;
-   char buffer[GMS_SSSIZE];
-
    if( !palCreate(&pal, buffer, sizeof(buffer)) )
+   {
+      gevLogStat(gev, buffer);
       return 1;
+   }
 
-#define PALPTR pal
-#include "coinlibdCL1svn.h"
+#if PALAPIVERSION >= 3
+   palSetSystemName(pal, "COIN-OR CBC");
    palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+#endif
 
    palFree(&pal);
-#endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Branch and Cut (CBC Library " CBC_VERSION ")\nwritten by J. Forrest\n");
 
@@ -1415,6 +1415,9 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 #endif
 }
 
+#ifdef GAMS_BUILD
+extern "C" void mkl_finalize(void);
+#endif
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
 //#if defined(__linux) && defined(COIN_HAS_OSICPX)
@@ -1427,6 +1430,10 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
    gdxFiniMutexes();
 #ifdef GAMS_BUILD
    palFiniMutexes();
+#endif
+
+#ifdef GAMS_BUILD
+   mkl_finalize();
 #endif
 }
 

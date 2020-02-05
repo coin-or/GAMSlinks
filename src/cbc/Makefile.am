@@ -16,7 +16,7 @@ lib_LTLIBRARIES = libGamsCbc.la
 libGamsCbc_la_SOURCES = GamsCbc.cpp \
   ../osi/GamsOsiHelper.cpp ../osi/GamsMessageHandler.cpp \
   ../utils/GamsSolveTrace.c ../utils/GamsHelper.c \
-  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/gdxcc.c ../utils/optcc.c
+  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/gdxcc.c ../utils/optcc.c ../utils/palmcc.c
 libGamsCbc_la_LIBADD  = $(GAMSCBC_LFLAGS)
 libGamsCbc_la_LDFLAGS = $(LT_LDFLAGS)
 

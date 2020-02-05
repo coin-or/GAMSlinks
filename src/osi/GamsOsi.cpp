@@ -18,9 +18,9 @@
 #include "gevmcc.h"
 #ifdef GAMS_BUILD
 #include "gevlice.h"
-#include "palmcc.h"
 #include "GamsLicensing.h"
 #endif
+#include "palmcc.h"
 
 #include "GamsCompatibility.h"
 #include "GamsMessageHandler.hpp"
@@ -156,36 +156,40 @@ int GamsOsi::readyAPI(
    gev = (gevRec*)gmoEnvironment(gmo);
    assert(gev != NULL);
 
-#ifdef GAMS_BUILD
-   // print GAMS version information
+   // print GAMS audit line
    struct palRec* pal;
    if( !palCreate(&pal, buffer, sizeof(buffer)) )
+   {
+      gevLogStat(gev, buffer);
       return 1;
+   }
 
-#define PALPTR pal
+#if PALAPIVERSION >= 3
    switch( solverid )
    {
       case CPLEX:
-#include "coinlibdCL7svn.h"
+         palSetSystemName(pal, "OSI CPLEX");
          break;
       case GUROBI:
-#include "coinlibdCL8svn.h"
+         palSetSystemName(pal, "OSI GUROBI");
          break;
       case MOSEK:
-#include "coinlibdCL9svn.h"
+         palSetSystemName(pal, "OSI MOSEK");
          break;
       case XPRESS:
-#include "coinlibdCLAsvn.h"
+         palSetSystemName(pal, "OSI XPRESS");
          break;
       default:
-         gevLogStat(gev, "Error: Do not have auditline for solver\n");
+         gevLogStat(gev, "Error: Do not know systemname for solver\n");
          return -1;
    }
    palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+#endif
 
+#ifdef GAMS_BUILD
    GAMSinitLicensing(gmo, pal);
 #endif
 
@@ -265,7 +269,7 @@ int GamsOsi::readyAPI(
             GUlicenseInit_t initType;
 
             /* Gurobi license setup */
-            if( (status=gevgurobilice(gev, pal, NULL, NULL, (void**)&grbenv, NULL, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 1, &initType)) )
+            if( (status=gevgurobilice(gev, pal, NULL, NULL, (void**)&grbenv, NULL, 1, &initType)) )
             {
                if( GRB_ERROR_NO_LICENSE == status )
                   sprintf(buffer, "Failed to create Gurobi environment. Missing license.");
@@ -311,7 +315,7 @@ int GamsOsi::readyAPI(
                gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
             }
-            if( gevmoseklice(gev, pal, mskenv, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType) )
+            if( gevmoseklice(gev, pal, mskenv, gmoM(gmo), gmoN(gmo), 0, &initType) )
                gevLogStat(gev, "Trying to use Mosek standalone license.\n");
 
             osi = new OsiMskSolverInterface(mskenv);
@@ -334,7 +338,7 @@ int GamsOsi::readyAPI(
             int initRC;
 
             /* Xpress license initialization: calls XPRSinit() in a thread-safe way and passes in GAMS/Xpress license */
-            if( gevxpressliceInitTS(gev, pal, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType, &initRC, msg, sizeof(msg)) )
+            if( gevxpressliceInitTS(gev, pal, gmoM(gmo), gmoN(gmo), 0, &initType, &initRC, msg, sizeof(msg)) )
             {
                if( *msg != '\0' )
                   gevLogStat(gev, msg);
@@ -382,9 +386,7 @@ int GamsOsi::readyAPI(
       gevLogStat(gev, error.message().c_str());
       if( solverid == CPLEX || solverid == GUROBI || solverid == MOSEK || solverid == XPRESS )
       {
-#ifdef GAMS_BUILD
          palFree(&pal);
-#endif
          gmoSolveStatSet(gmo, gmoSolveStat_License);
          gmoModelStatSet(gmo, gmoModelStat_LicenseError);
       }
@@ -400,9 +402,7 @@ int GamsOsi::readyAPI(
       gevLogStat(gev, "Unknown exception caught when creating Osi interface\n");
       return 1;
    }
-#ifdef GAMS_BUILD
    palFree(&pal);
-#endif
 
    // setup message handler
    if( msghandler == NULL )
@@ -1856,10 +1856,8 @@ int oxycreate(void** Cptr, char* msgBuf, int msgBufLen, GamsOsi::OSISOLVER osiso
    if( !gevGetReady(msgBuf, msgBufLen) )
       return 0;
 
-#ifdef GAMS_BUILD
    if( !palGetReady(msgBuf, msgBufLen) )
       return 0;
-#endif
 
    *Cptr = (void*) new GamsOsi(osisolver);
    if( *Cptr == NULL )
@@ -1883,9 +1881,7 @@ int oxyfree(void** Cptr)
 
    gmoLibraryUnload();
    gevLibraryUnload();
-#ifdef GAMS_BUILD
    palLibraryUnload();
-#endif
 
    return 1;
 }
@@ -1899,9 +1895,7 @@ void oxyInitialize(void)
 
    gmoInitMutexes();
    gevInitMutexes();
-#ifdef GAMS_BUILD
    palInitMutexes();
-#endif
 }
 
 static
@@ -1913,9 +1907,7 @@ void oxyFinalize(void)
 
    gmoFiniMutexes();
    gevFiniMutexes();
-#ifdef GAMS_BUILD
    palFiniMutexes();
-#endif
 }
 
 #ifdef COIN_HAS_OSICPX

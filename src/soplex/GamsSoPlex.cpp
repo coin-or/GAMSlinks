@@ -323,11 +323,13 @@ int GamsSoPlex::readyAPI(
 
    char buffer[512];
    if( pal == NULL && !palCreate(&pal, buffer, sizeof(buffer)) )
+   {
+      gevLogStat(gev, buffer);
       return 1;
+   }
 
-#ifdef GAMS_BUILD
-#define PALPTR pal
-#include "coinlibdCLBsvn.h"
+#if PALAPIVERSION >= 3
+   palSetSystemName(pal, "Soplex");
    palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);

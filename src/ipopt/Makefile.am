@@ -14,7 +14,7 @@ AM_CPPFLAGS = \
 lib_LTLIBRARIES = libGamsIpopt.la
 libGamsIpopt_la_SOURCES = GamsIpopt.cpp GamsNLP.cpp GamsJournal.cpp \
   ../utils/GamsHelper.c \
-  ../utils/gmomcc.c ../utils/gevmcc.c
+  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 libGamsIpopt_la_LIBADD  = $(GAMSIPOPT_LFLAGS)
 libGamsIpopt_la_LDFLAGS = $(LT_LDFLAGS)
 

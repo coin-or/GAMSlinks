@@ -142,7 +142,7 @@ am__dirstamp = $(am__leading_dot)dirstamp
 am_libGamsCbc_la_OBJECTS = GamsCbc.lo ../osi/GamsOsiHelper.lo \
 	../osi/GamsMessageHandler.lo ../utils/GamsSolveTrace.lo \
 	../utils/GamsHelper.lo ../utils/gmomcc.lo ../utils/gevmcc.lo \
-	../utils/gdxcc.lo ../utils/optcc.lo
+	../utils/gdxcc.lo ../utils/optcc.lo ../utils/palmcc.lo
 libGamsCbc_la_OBJECTS = $(am_libGamsCbc_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -178,7 +178,8 @@ am__depfiles_remade = ../osi/$(DEPDIR)/GamsMessageHandler.Plo \
 	../utils/$(DEPDIR)/GamsSolveTrace.Plo \
 	../utils/$(DEPDIR)/gdxcc.Plo ../utils/$(DEPDIR)/gevmcc.Plo \
 	../utils/$(DEPDIR)/gmomcc.Plo ../utils/$(DEPDIR)/optcc.Plo \
-	./$(DEPDIR)/GamsCbc.Plo ./$(DEPDIR)/optcbc.Po
+	../utils/$(DEPDIR)/palmcc.Plo ./$(DEPDIR)/GamsCbc.Plo \
+	./$(DEPDIR)/optcbc.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -419,7 +420,7 @@ lib_LTLIBRARIES = libGamsCbc.la
 libGamsCbc_la_SOURCES = GamsCbc.cpp \
   ../osi/GamsOsiHelper.cpp ../osi/GamsMessageHandler.cpp \
   ../utils/GamsSolveTrace.c ../utils/GamsHelper.c \
-  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/gdxcc.c ../utils/optcc.c
+  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/gdxcc.c ../utils/optcc.c ../utils/palmcc.c
 
 libGamsCbc_la_LIBADD = $(GAMSCBC_LFLAGS)
 libGamsCbc_la_LDFLAGS = $(LT_LDFLAGS)
@@ -534,6 +535,8 @@ clean-libLTLIBRARIES:
 	../utils/$(DEPDIR)/$(am__dirstamp)
 ../utils/optcc.lo: ../utils/$(am__dirstamp) \
 	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/palmcc.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
 
 libGamsCbc.la: $(libGamsCbc_la_OBJECTS) $(libGamsCbc_la_DEPENDENCIES) $(EXTRA_libGamsCbc_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(libGamsCbc_la_LINK) -rpath $(libdir) $(libGamsCbc_la_OBJECTS) $(libGamsCbc_la_LIBADD) $(LIBS)
@@ -563,6 +566,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gevmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gmomcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/optcc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/palmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsCbc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optcbc.Po@am__quote@ # am--include-marker
 
@@ -736,6 +740,7 @@ distclean: distclean-am
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
 	-rm -f ../utils/$(DEPDIR)/optcc.Plo
+	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsCbc.Plo
 	-rm -f ./$(DEPDIR)/optcbc.Po
 	-rm -f Makefile
@@ -792,6 +797,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
 	-rm -f ../utils/$(DEPDIR)/optcc.Plo
+	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsCbc.Plo
 	-rm -f ./$(DEPDIR)/optcbc.Po
 	-rm -f Makefile

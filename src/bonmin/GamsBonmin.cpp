@@ -60,9 +60,8 @@ int GamsBonmin::readyAPI(
    if( pal == NULL && !palCreate(&pal, buffer, sizeof(buffer)) )
       return 1;
 
-#ifdef GAMS_BUILD
-#define PALPTR pal
-#include "coinlibdCLsvn.h" 
+#if PALAPIVERSION >= 3
+   palSetSystemName(pal, "COIN-OR Bonmin");
    palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
@@ -633,6 +632,9 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
    palInitMutexes();
 }
 
+#ifdef GAMS_BUILD
+extern "C" void mkl_finalize(void);
+#endif
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
 #if defined(__linux) && defined(COIN_HAS_CPLEX)
@@ -642,6 +644,10 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
    gmoFiniMutexes();
    gevFiniMutexes();
    palFiniMutexes();
+
+#ifdef GAMS_BUILD
+   mkl_finalize();
+#endif
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)

@@ -19,9 +19,7 @@
 // GAMS
 #include "gmomcc.h"
 #include "gevmcc.h"
-#ifdef GAMS_BUILD
 #include "palmcc.h"
-#endif
 
 #include "GamsLicensing.h"
 #include "GamsCompatibility.h"
@@ -33,6 +31,9 @@ int GamsIpopt::readyAPI(
    struct gmoRec*     gmo_
 )
 {
+   struct palRec* pal;
+   char buffer[GMS_SSSIZE];
+
    gmo = gmo_;
    assert(gmo != NULL);
 
@@ -43,20 +44,22 @@ int GamsIpopt::readyAPI(
    assert(gev != NULL);
 
    ipoptlicensed = false;
-#ifdef GAMS_BUILD
-   struct palRec* pal;
-   char buffer[GMS_SSSIZE];
 
    if( !palCreate(&pal, buffer, sizeof(buffer)) )
+   {
+      gevLogStat(gev, buffer);
       return 1;
+   }
 
-#define PALPTR pal
-#include "coinlibdCL3svn.h" 
+#if PALAPIVERSION >= 3
+   palSetSystemName(pal, "COIN-OR Ipopt");
    palGetAuditLine(pal,buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
+#endif
 
+#ifdef GAMS_BUILD
    GAMSinitLicensing(gmo, pal);
    if( gevGetIntOpt(gev, gevCurSolver) == gevSolver2Id(gev, "ipopth") )
    {
@@ -81,9 +84,9 @@ int GamsIpopt::readyAPI(
 #ifdef GAMS_BUILD
    if( !ipoptlicensed && GAMScheckIpoptLicense(pal, true) )
       gevLogPChar(gev, "\nNote: This is the free version IPOPT, but you could also use the commercially supported and potentially higher performance version IPOPTH.\n");
+#endif
 
    palFree(&pal);
-#endif
 
    ipopt = new IpoptApplication(false);
 
@@ -275,17 +278,20 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 {
    gmoInitMutexes();
    gevInitMutexes();
-#ifdef GAMS_BUILD
    palInitMutexes();
-#endif
 }
 
+#ifdef GAMS_BUILD
+extern "C" void mkl_finalize(void);
+#endif
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
    gmoFiniMutexes();
    gevFiniMutexes();
-#ifdef GAMS_BUILD
    palFiniMutexes();
+
+#ifdef GAMS_BUILD
+   mkl_finalize();
 #endif
 }
 
@@ -302,10 +308,8 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char*
    if( !gevGetReady(msgBuf, msgBufLen) )
       return 0;
 
-#ifdef GAMS_BUILD
    if( !palGetReady(msgBuf, msgBufLen) )
       return 0;
-#endif
 
    *Cptr = (void*) new GamsIpopt();
    if( *Cptr == NULL )
@@ -328,9 +332,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
 
    gmoLibraryUnload();
    gevLibraryUnload();
-#ifdef GAMS_BUILD
    palLibraryUnload();
-#endif
 
    return 1;
 }
