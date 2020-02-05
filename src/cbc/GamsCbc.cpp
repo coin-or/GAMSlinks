@@ -34,6 +34,7 @@
 
 // For Cbc
 #include "CbcConfig.h"
+#include "CbcSolver.hpp"
 #include "CbcModel.hpp"
 #include "CbcBranchActual.hpp"  // for CbcSOS
 #include "CbcBranchLotsize.hpp" // for CbcLotsize
