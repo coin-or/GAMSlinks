@@ -42,7 +42,7 @@
 #include "CoinHelperFunctions.hpp"
 #include "CoinTime.hpp"
 
-//#if defined(__linux) && defined(COIN_HAS_OSICPX)
+//#if defined(__linux) && defined(COIN_HAS_CPLEX)
 //#include "cplex.h"
 //#endif
 
@@ -1402,7 +1402,7 @@ bool GamsCbc::isLP()
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 {
 // assuming that CBC was build without CPLEX (or the CPLEX feature not enabled)
-//#if defined(__linux) && defined(COIN_HAS_OSICPX)
+//#if defined(__linux) && defined(COIN_HAS_CPLEX)
 //   CPXinitialize();
 //#endif
 
@@ -1410,9 +1410,7 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
    gevInitMutexes();
    optInitMutexes();
    gdxInitMutexes();
-#ifdef GAMS_BUILD
    palInitMutexes();
-#endif
 }
 
 #ifdef GAMS_BUILD
@@ -1420,7 +1418,7 @@ extern "C" void mkl_finalize(void);
 #endif
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
-//#if defined(__linux) && defined(COIN_HAS_OSICPX)
+//#if defined(__linux) && defined(COIN_HAS_CPLEX)
 //   CPXfinalize();
 //#endif
 
@@ -1428,9 +1426,7 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
    gevFiniMutexes();
    optFiniMutexes();
    gdxFiniMutexes();
-#ifdef GAMS_BUILD
    palFiniMutexes();
-#endif
 
 #ifdef GAMS_BUILD
    mkl_finalize();
@@ -1450,10 +1446,8 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char*
    if( !gevGetReady(msgBuf, msgBufLen) )
       return 0;
 
-#ifdef GAMS_BUILD
    if( !palGetReady(msgBuf, msgBufLen) )
       return 0;
-#endif
 
    if( !optGetReady(msgBuf, msgBufLen) )
       return 0;
@@ -1479,9 +1473,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
 
    gmoLibraryUnload();
    gevLibraryUnload();
-#ifdef GAMS_BUILD
    palLibraryUnload();
-#endif
    optLibraryUnload();
    if( gdxLibraryLoaded() )
       gdxLibraryUnload();

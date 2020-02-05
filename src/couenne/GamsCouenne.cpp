@@ -64,10 +64,8 @@
 #include "cplex.h"
 #endif
 
-#ifdef COIN_HAS_SCIP
-#ifdef GAMS_BUILD
+#if defined(COIN_HAS_SCIP) && defined(GAMS_BUILD)
 #include "lpiswitch.h"
-#endif
 #endif
 
 using namespace Couenne;
@@ -1652,10 +1650,8 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
    CPXinitialize();
 #endif
 
-#ifdef COIN_HAS_SCIP
-#ifdef GAMS_BUILD
+#if defined(COIN_HAS_SCIP) && defined(GAMS_BUILD)
    SCIPlpiSwitchSetSolver(SCIP_LPISW_SOPLEX2);
-#endif
 #endif
 
    gmoInitMutexes();
