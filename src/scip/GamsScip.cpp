@@ -32,11 +32,11 @@
 
 #include "lpiswitch.h"
 
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
+#if defined(__linux) && defined(COIN_HAS_CPLEX)
 #include "cplex.h"
 #endif
 
-#if defined(COIN_HAS_OSIMSK)
+#if defined(COIN_HAS_MOSEK)
 #include "mosek.h"
 #endif
 
@@ -151,7 +151,7 @@ int GamsScip::readyAPI(
 
    GAMSinitLicensing(gmo, pal);
 
-#if defined(COIN_HAS_OSIXPR) && defined(GAMS_BUILD)
+#if defined(COIN_HAS_XPRESS) && defined(GAMS_BUILD)
    /* Xpress license setup - don't say anything if failing, since Xpress is not used by default */
    if( !calledxprslicense )
    {
@@ -343,7 +343,7 @@ int GamsScip::callSolver()
 
 SCIP_RETCODE GamsScip::setupSCIP()
 {
-#ifdef COIN_HAS_OSICPX
+#ifdef COIN_HAS_CPLEX
    // change default LP solver to CPLEX, if license available
    if( gmo != NULL && GAMScheckCPLEXLicense(pal, true) )
    {
@@ -454,7 +454,7 @@ SCIP_RETCODE GamsScip::freeSCIP()
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
+#if defined(__linux) && defined(COIN_HAS_CPLEX)
    CPXinitialize();
 #endif
 
@@ -469,10 +469,10 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
+#if defined(__linux) && defined(COIN_HAS_CPLEX)
    CPXfinalize();
 #endif
-#ifdef COIN_HAS_OSIMSK
+#ifdef COIN_HAS_MOSEK
    MSK_licensecleanup();
 #endif
 

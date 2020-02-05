@@ -56,6 +56,11 @@ AC_COIN_CHK_PKG(Couenne, [GamsCouenne], [couenne])
 AC_COIN_CHK_PKG(SoPlex,  [GamsSoplex],  [coinsoplex])
 AC_COIN_CHK_PKG(SCIP,    [GamsScip],    [coinscip])
 
+AC_COIN_CHK_LIB(Cplex,[GamsOsi GamsBonmin GamsCouenne GamsScip GamsCbc],[-lcplex -lpthread -lm -ldl],[],[],[CPXgetstat])
+AC_COIN_CHK_LIB(Mosek,[GamsOsi GamsScip],[-lmosek64 -lpthread],[],[],[MSK_makeenv])
+AC_COIN_CHK_LIB(Xpress,[GamsOsi],[-lxprs -lxprl],[],[],[XPRSinit])
+AC_COIN_CHK_LIB(Gurobi,[GamsOsi],[-lgurobi -lpthread -lm],[],[],[GRBloadenv])
+
 ############################################################################
 #                          Check for system specifics                      #
 ############################################################################

@@ -60,7 +60,7 @@
 //#include "exprQuad.hpp"
 //#include "lqelems.hpp"
 
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
+#if defined(__linux) && defined(COIN_HAS_CPLEX)
 #include "cplex.h"
 #endif
 
@@ -286,7 +286,7 @@ int GamsCouenne::callSolver()
    // check for CPLEX license, if used
    std::string parvalue;
    couenne_setup->options()->GetStringValue("lp_solver", parvalue, "");
-#ifdef COIN_HAS_OSICPX
+#ifdef COIN_HAS_CPLEX
    if( parvalue == "cplex" && !GAMScheckCPLEXLicense(pal, true) )
    {
       gevLogStat(gev, "CPLEX as LP solver chosen, but no CPLEX license available. Aborting.\n");
@@ -1644,7 +1644,7 @@ void GamsCouenne::passSOSSemiCon(
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
+#if defined(__linux) && defined(COIN_HAS_CPLEX)
    CPXinitialize();
 #endif
 
@@ -1659,7 +1659,7 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
+#if defined(__linux) && defined(COIN_HAS_CPLEX)
    CPXfinalize();
 #endif
 
