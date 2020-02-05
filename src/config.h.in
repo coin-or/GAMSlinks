@@ -36,10 +36,10 @@
 /* Define to 1 if OsiXpr is available. */
 #undef COIN_HAS_OSIXPR
 
-/* Define to 1 if SCIP is available. */
+/* Define to 1 if the SCIP package is available */
 #undef COIN_HAS_SCIP
 
-/* Define to 1 if SoPlex is available. */
+/* Define to 1 if the SoPlex package is available */
 #undef COIN_HAS_SOPLEX
 
 /* Define to 1 if the Xpress package is available */

@@ -13,7 +13,9 @@
 #include "scip/scipdefplugins.h"
 #include "scip/pub_paramset.h"
 #include "GamsScip.hpp"
+#ifdef GAMS_BUILD
 #include "lpiswitch.h"
+#endif
 
 #include <map>
 #include <iostream>
@@ -69,7 +71,9 @@ int main(int argc, char** argv)
    GamsScip* gamsscip;
    SCIP* scip;
 
+#ifdef GAMS_BUILD
    SCIPlpiSwitchSetDefaultSolver();
+#endif
    gamsscip = new GamsScip();
    gamsscip->setupSCIP();
    scip = gamsscip->scip;

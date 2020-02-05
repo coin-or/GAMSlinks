@@ -30,7 +30,9 @@
 #include "reader_gmo.h"
 #include "event_solvetrace.h"
 
+#ifdef GAMS_BUILD
 #include "lpiswitch.h"
+#endif
 
 #if defined(__linux) && defined(COIN_HAS_CPLEX)
 #include "cplex.h"
@@ -77,6 +79,7 @@ SCIP_DECL_MESSAGEINFO(GamsScipPrintLog)
    }
 }
 
+#ifdef GAMS_BUILD
 static
 SCIP_DECL_PARAMCHGD(GamsScipParamChgdLpSolver)
 {
@@ -108,6 +111,7 @@ SCIP_DECL_PARAMCHGD(GamsScipParamChgdLpSolver)
 
    return SCIP_OKAY;
 }
+#endif
 
 
 GamsScip::~GamsScip()
@@ -343,7 +347,7 @@ int GamsScip::callSolver()
 
 SCIP_RETCODE GamsScip::setupSCIP()
 {
-#ifdef COIN_HAS_CPLEX
+#if defined(COIN_HAS_CPLEX) && defined(GAMS_BUILD)
    // change default LP solver to CPLEX, if license available
    if( gmo != NULL && GAMScheckCPLEXLicense(pal, true) )
    {
@@ -375,7 +379,11 @@ SCIP_RETCODE GamsScip::setupSCIP()
          nlpiipopt = SCIPfindNlpi(scip, "ipopt");
          if( nlpiipopt != NULL )
          {
+#if SCIP_VERSION >= 700
+            SCIPsetModifiedDefaultSettingsIpopt(nlpiipopt, "linear_solver ma27\nlinear_system_scaling mc19\n", FALSE);
+#else
             SCIPsetModifiedDefaultSettingsIpopt(nlpiipopt, "linear_solver ma27\nlinear_system_scaling mc19\n");
+#endif
             SCIP_CALL( SCIPincludeExternalCodeInformation(scip, "HSL MA27 and MC19", "Harwell Subroutine Libraries (www.hsl.rl.ac.uk) from commercially supported Ipopt") );
          }
       }
@@ -384,7 +392,11 @@ SCIP_RETCODE GamsScip::setupSCIP()
          nlpiipopt = SCIPfindNlpi(scip, "ipopt");
          if( nlpiipopt != NULL )
          {
+#if SCIP_VERSION >= 700
+            SCIPsetModifiedDefaultSettingsIpopt(nlpiipopt, "linear_solver mumps\n", FALSE);
+#else
             SCIPsetModifiedDefaultSettingsIpopt(nlpiipopt, "linear_solver mumps\n");
+#endif
          }
       }
 
@@ -404,9 +416,11 @@ SCIP_RETCODE GamsScip::setupSCIP()
          NULL, FALSE, "", NULL, NULL) );
 #endif
 
+#ifdef GAMS_BUILD
       SCIP_CALL( SCIPaddStringParam(scip, "lp/solver",
          "LP solver to use (clp, cplex, mosek, soplex, gurobi, xpress)",
          NULL, FALSE, SCIP_LPISW_SOLVERNAMES[SCIPlpiSwitchGetCurrentSolver()], GamsScipParamChgdLpSolver, NULL) );
+#endif
    }
    else
    {
@@ -458,7 +472,7 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
    CPXinitialize();
 #endif
 
-#ifdef COIN_HAS_SCIP
+#ifdef GAMS_BUILD
    SCIPlpiSwitchSetSolver(SCIP_LPISW_SOPLEX2);
 #endif
 
