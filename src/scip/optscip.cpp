@@ -41,6 +41,7 @@ int ScipLongintToInt(
    return (int)value;
 }
 
+static
 bool ScipParamCompare(SCIP_PARAM* a, SCIP_PARAM* b)
 {
    /* move advanced parameters to end */

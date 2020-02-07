@@ -74,6 +74,7 @@ int main(int argc, char** argv)
       /* Couenne skips */
       if( it->second->Name()=="couenne_check" ||
           it->second->Name()=="opt_window" ||
+          it->second->Name()=="save_soltext" ||
           it->second->Name()=="test_mode" ||
           it->second->Name()=="lp_solver" ||
           it->second->Name()=="display_stats" )
@@ -115,7 +116,7 @@ int main(int argc, char** argv)
 
    GamsOptions::OPTTYPE opttype;
    GamsOptions::OPTVAL defaultval, minval, maxval;
-   bool minval_strict, maxval_strict;
+   // bool minval_strict, maxval_strict;
    GamsOptions::ENUMVAL enumval;
    std::string tmpstr;
    std::string longdescr;
@@ -129,8 +130,8 @@ int main(int argc, char** argv)
 
       for( std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt != it_categ->second.end(); ++it_opt )
       {
-         minval_strict = false;
-         maxval_strict = false;
+         // minval_strict = false;
+         // maxval_strict = false;
          switch( (*it_opt)->Type() )
          {
             case Ipopt::OT_Number:
@@ -144,8 +145,8 @@ int main(int argc, char** argv)
                if( maxval.realval ==  1e+20 )
                   maxval.realval =  DBL_MAX;
                defaultval.realval = (*it_opt)->DefaultNumber();
-               minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
-               maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;
+               // minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
+               // maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;
                break;
             }
 
@@ -189,18 +190,19 @@ int main(int argc, char** argv)
 
                      longdescr = "Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). "
                         "Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
-                        "If no GAMS/IpoptH license is available, the default linear solver is MUMPS. "
-                        "Pardiso is only available on Linux and Windows systems. "
-                        "For using Pardiso on non-Linux/Windows systems or MA77, a Pardiso or HSL library need to be provided.";
+                        "To use HSL_MA77, a HSL library needs to be provided.";
 
-                     defaultval.stringval = "ma27";
+                     defaultval.stringval = "ma27, if IpoptH licensed, otherwise mumps";
                   }
                   else
                   {
                      if( (*it_opt)->Name() == "linear_system_scaling" )
+                     {
                         longdescr = "Determines the method used to compute symmetric scaling factors for the augmented system (see also the \"linear_scaling_on_demand\" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. "
-                           "Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
-                           "If no commerical GAMS/IpoptH license is available, the default scaling method is slack-based.";
+                           "Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately.";
+
+                        defaultval.stringval = "mc19, if IpoptH licensed, otherwise none";
+                     }
 
                      enumval.resize(settings.size());
                      for( size_t j = 0; j < settings.size(); ++j )
@@ -226,7 +228,7 @@ int main(int argc, char** argv)
          else if( (*it_opt)->Name().find("branch_pt_select_") == 0 )
             longdescr = longdescr + "Default is to use the value of `branch_pt_select` (value `common`).";
          else if( (*it_opt)->Name() == "feas_pump_usescip" )
-            longdescr = "Note, that SCIP is only available for GAMS users with an academic GAMS license.";
+            longdescr = "Note, that SCIP is only available for GAMS users with a SCIP or academic GAMS license.";
          // Bonmin options
          else if( (*it_opt)->Name() == "allowable_fraction_gap" )
             defaultval.realval = 0.1;
