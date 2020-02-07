@@ -22,7 +22,6 @@
 #include "palmcc.h"
 
 #include "GamsLicensing.h"
-#include "GamsCompatibility.h"
 #include "GamsHelper.h"
 
 using namespace Ipopt;

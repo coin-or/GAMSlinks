@@ -28,7 +28,6 @@
 #include "gevmcc.h"
 #include "gdxcc.h"
 #include "optcc.h"
-#include "GamsCompatibility.h"
 #include "GamsNLinstr.h"
 
 #include "scip/cons_linear.h"

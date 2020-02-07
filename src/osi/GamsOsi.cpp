@@ -22,7 +22,6 @@
 #endif
 #include "palmcc.h"
 
-#include "GamsCompatibility.h"
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
 

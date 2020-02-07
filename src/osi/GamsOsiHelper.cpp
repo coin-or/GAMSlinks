@@ -17,7 +17,6 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 
-#include "GamsCompatibility.h"
 #include "GAMSlinksConfig.h"
 
 bool gamsOsiLoadProblem(

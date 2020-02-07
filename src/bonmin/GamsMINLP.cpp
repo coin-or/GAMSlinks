@@ -13,8 +13,6 @@
 #include "gmomcc.h"
 #include "gevmcc.h"
 
-#include "GamsCompatibility.h"
-
 using namespace Ipopt;
 using namespace Bonmin;
 

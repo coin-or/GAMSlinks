@@ -28,7 +28,6 @@
 #include "gclgms.h"
 #include "palmcc.h"
 
-#include "GamsCompatibility.h"
 #include "GamsLicensing.h"
 #include "GamsHelper.h"
 

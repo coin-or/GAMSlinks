@@ -22,8 +22,6 @@
 #include "gdxcc.h"
 #include "palmcc.h"
 
-#include "GamsCompatibility.h"
-
 #include "GAMSlinksConfig.h"
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"

@@ -22,7 +22,6 @@
 #include "palmcc.h"
 
 #include "GAMSlinksConfig.h"
-#include "GamsCompatibility.h"
 #include "GamsLicensing.h"
 
 /* disable -Wclass-memaccess warnings due to dubious memcpy/realloc calls in SoPlex headers */
