@@ -416,12 +416,10 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign subdir-objects
-
-# TODO better way to get to cplex header
 AM_CPPFLAGS = -I$(srcdir)/.. -I$(srcdir)/../bonmin -I$(srcdir)/../cbc \
 	-I$(srcdir)/../osi -I$(srcdir)/../ipopt -I$(srcdir)/../utils \
-	$(GAMSCOUENNE_CFLAGS) $(GAMSOSI_CFLAGS) \
-	-I"$(GAMS_PATH)/apifiles/C/api" $(GAMSLIBCFLAGS)
+	$(GAMSCOUENNE_CFLAGS) -I"$(GAMS_PATH)/apifiles/C/api" \
+	$(GAMSLIBCFLAGS)
 lib_LTLIBRARIES = libGamsCouenne.la
 libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
   ../bonmin/GamsMINLP.cpp \

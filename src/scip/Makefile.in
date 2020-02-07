@@ -414,11 +414,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign subdir-objects
-
-# TODO better way to get to cplex header, but maybe we don't need it at all?
 AM_CPPFLAGS = -I$(srcdir)/.. -I$(srcdir)/../utils $(GAMSSCIP_CFLAGS) \
-	$(GAMSOSI_CFLAGS) -I"$(GAMS_PATH)/apifiles/C/api" \
-	$(GAMSLIBCFLAGS)
+	-I"$(GAMS_PATH)/apifiles/C/api" $(GAMSLIBCFLAGS)
 lib_LTLIBRARIES = libGamsScip.la
 libGamsScip_la_SOURCES = GamsScip.cpp reader_gmo.c event_solvetrace.c \
   ../utils/GamsLicensing.c ../utils/GamsHelper.c ../utils/GamsSolveTrace.c \

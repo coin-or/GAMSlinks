@@ -15,9 +15,6 @@ AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSCOUENNE_CFLAGS)
 
-# TODO better way to get to cplex header
-AM_CPPFLAGS += $(GAMSOSI_CFLAGS)
-
 lib_LTLIBRARIES = libGamsCouenne.la
 libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
   ../bonmin/GamsMINLP.cpp \

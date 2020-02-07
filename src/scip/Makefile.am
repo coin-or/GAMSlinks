@@ -11,9 +11,6 @@ AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSSCIP_CFLAGS)
 
-# TODO better way to get to cplex header, but maybe we don't need it at all?
-AM_CPPFLAGS += $(GAMSOSI_CFLAGS)
-
 lib_LTLIBRARIES = libGamsScip.la
 libGamsScip_la_SOURCES = GamsScip.cpp reader_gmo.c event_solvetrace.c \
   ../utils/GamsLicensing.c ../utils/GamsHelper.c ../utils/GamsSolveTrace.c \

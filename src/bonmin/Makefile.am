@@ -14,9 +14,6 @@ AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSBONMIN_CFLAGS)
 
-# TODO better way to get to cplex header, or avoid it
-AM_CPPFLAGS += $(GAMSOSI_CFLAGS)
-
 lib_LTLIBRARIES = libGamsBonmin.la
 libGamsBonmin_la_SOURCES = GamsBonmin.cpp GamsMINLP.cpp \
   ../osi/GamsMessageHandler.cpp \
