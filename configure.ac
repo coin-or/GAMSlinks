@@ -118,20 +118,6 @@ if test "$GAMS_PATH" = UNAVAILABLE; then
   AC_MSG_ERROR([no GAMS system found])
 fi
 
-####################
-# Windos or *nix ? #
-####################
-
-case $build in
-  *-cygwin* | *-mingw* | *-msys* )
-    coin_is_windows=yes
-  ;;
-  *)
-    coin_is_windows=no
-  ;;
-esac
-AM_CONDITIONAL(COIN_IS_WINDOWS, test $coin_is_windows = yes)  
-
 ############
 # END PART #
 ############

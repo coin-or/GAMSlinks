@@ -655,8 +655,6 @@ GAMSCBC_CFLAGS_NOPC
 GAMSCBC_LFLAGS_NOPC
 GAMSOSI_CFLAGS_NOPC
 GAMSOSI_LFLAGS_NOPC
-COIN_IS_WINDOWS_FALSE
-COIN_IS_WINDOWS_TRUE
 GAMS_PATH
 gamspath
 GAMSLIBCFLAGS
@@ -21233,27 +21231,6 @@ if test "$GAMS_PATH" = UNAVAILABLE; then
   as_fn_error $? "no GAMS system found" "$LINENO" 5
 fi
 
-####################
-# Windos or *nix ? #
-####################
-
-case $build in
-  *-cygwin* | *-mingw* | *-msys* )
-    coin_is_windows=yes
-  ;;
-  *)
-    coin_is_windows=no
-  ;;
-esac
- if test $coin_is_windows = yes; then
-  COIN_IS_WINDOWS_TRUE=
-  COIN_IS_WINDOWS_FALSE='#'
-else
-  COIN_IS_WINDOWS_TRUE='#'
-  COIN_IS_WINDOWS_FALSE=
-fi
-
-
 ############
 # END PART #
 ############
@@ -21821,10 +21798,6 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${COIN_HAS_GUROBI_TRUE}" && test -z "${COIN_HAS_GUROBI_FALSE}"; then
   as_fn_error $? "conditional \"COIN_HAS_GUROBI\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${COIN_IS_WINDOWS_TRUE}" && test -z "${COIN_IS_WINDOWS_FALSE}"; then
-  as_fn_error $? "conditional \"COIN_IS_WINDOWS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
