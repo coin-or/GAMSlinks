@@ -7,19 +7,20 @@
 #ifndef GAMSSCIP_HPP_
 #define GAMSSCIP_HPP_
 
+#include <cstdlib>
+
+#include "GAMSlinksConfig.h"
+#include "scip/type_retcode.h"
+
 typedef struct gmoRec* gmoHandle_t;
 typedef struct gevRec* gevHandle_t;
 typedef struct palRec* palHandle_t;
-
-#include <cstdlib>
-
-#include "scip/type_retcode.h"
 
 typedef struct Scip             SCIP;
 typedef struct SCIP_Messagehdlr SCIP_MESSAGEHDLR;
 
 /** GAMS interface to SCIP */
-class GamsScip
+class DllExport GamsScip
 {
    friend int main(int, char**);
 private:

@@ -18,7 +18,6 @@
 #include "gevlice.h" // for xpress license setup
 #endif
 
-#include "GAMSlinksConfig.h"
 #include "GamsCompatibility.h"
 #include "GamsLicensing.h"
 #include "GamsHelper.h"

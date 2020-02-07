@@ -12,29 +12,6 @@ typedef struct optRec* optHandle_t;
 #error You need to define GAMSSOLVER_ID
 #endif
 
-#if defined(_WIN32)
-# if ! defined(STDCALL)
-#  define STDCALL   __stdcall
-# endif
-# if ! defined(DllExport)
-#  define DllExport __declspec( dllexport )
-# endif
-#elif defined(__GNUC__)
-# if ! defined(STDCALL)
-#  define STDCALL
-# endif
-# if ! defined(DllExport)
-#  define DllExport __attribute__((__visibility__("default")))
-# endif
-#else
-# if ! defined(STDCALL)
-#  define STDCALL
-# endif
-# if ! defined(DllExport)
-#  define DllExport
-# endif
-#endif
-
 /* we need to redirect the CONCAT macro to another one to ensure that macro arguments are substituted too */
 
 #ifndef GAMSSOLVER_CONCAT_

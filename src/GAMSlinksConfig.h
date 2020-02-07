@@ -31,4 +31,31 @@
 #endif
 #endif
 
+#if defined(_WIN32)
+# if ! defined(STDCALL)
+#  define STDCALL   __stdcall
+# endif
+# if ! defined(DllExport)
+#  if defined(DLL_EXPORT)
+#   define DllExport __declspec( dllexport )
+#  else
+#   define DllExport __declspec( dllimport )
+#  endif
+# endif
+#elif defined(__GNUC__)
+# if ! defined(STDCALL)
+#  define STDCALL
+# endif
+# if ! defined(DllExport)
+#  define DllExport __attribute__((__visibility__("default")))
+# endif
+#else
+# if ! defined(STDCALL)
+#  define STDCALL
+# endif
+# if ! defined(DllExport)
+#  define DllExport
+# endif
+#endif
+
 #endif /*__GAMSLINKSCONFIG_H__*/
