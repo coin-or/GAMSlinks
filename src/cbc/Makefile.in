@@ -148,10 +148,6 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libGamsCbc_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(AM_CXXFLAGS) $(CXXFLAGS) $(libGamsCbc_la_LDFLAGS) $(LDFLAGS) \
-	-o $@
 am_optcbc_OBJECTS = optcbc.$(OBJEXT) \
 	../utils/GamsOptionsSpecWriter.$(OBJEXT)
 optcbc_OBJECTS = $(am_optcbc_OBJECTS)
@@ -317,7 +313,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
-LDFLAGS = @LDFLAGS@
+LDFLAGS = @LDFLAGS@ $(LT_LDFLAGS)
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -423,7 +419,6 @@ libGamsCbc_la_SOURCES = GamsCbc.cpp \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/gdxcc.c ../utils/optcc.c ../utils/palmcc.c
 
 libGamsCbc_la_LIBADD = $(GAMSCBC_LFLAGS)
-libGamsCbc_la_LDFLAGS = $(LT_LDFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
 	optcbc.txt optcbc.gms
@@ -539,7 +534,7 @@ clean-libLTLIBRARIES:
 	../utils/$(DEPDIR)/$(am__dirstamp)
 
 libGamsCbc.la: $(libGamsCbc_la_OBJECTS) $(libGamsCbc_la_DEPENDENCIES) $(EXTRA_libGamsCbc_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(libGamsCbc_la_LINK) -rpath $(libdir) $(libGamsCbc_la_OBJECTS) $(libGamsCbc_la_LIBADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libGamsCbc_la_OBJECTS) $(libGamsCbc_la_LIBADD) $(LIBS)
 ../utils/GamsOptionsSpecWriter.$(OBJEXT): ../utils/$(am__dirstamp) \
 	../utils/$(DEPDIR)/$(am__dirstamp)
 

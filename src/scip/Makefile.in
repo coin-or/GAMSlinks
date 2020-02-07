@@ -149,10 +149,6 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libGamsScip_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(AM_CXXFLAGS) $(CXXFLAGS) $(libGamsScip_la_LDFLAGS) \
-	$(LDFLAGS) -o $@
 am_optscip_OBJECTS = optscip.$(OBJEXT) \
 	../utils/GamsOptionsSpecWriter.$(OBJEXT)
 optscip_OBJECTS = $(am_optscip_OBJECTS)
@@ -318,7 +314,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
-LDFLAGS = @LDFLAGS@
+LDFLAGS = @LDFLAGS@ $(LT_LDFLAGS)
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -422,7 +418,6 @@ libGamsScip_la_SOURCES = GamsScip.cpp reader_gmo.c event_solvetrace.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c ../utils/gdxcc.c ../utils/optcc.c
 
 libGamsScip_la_LIBADD = $(GAMSSCIP_LFLAGS)
-libGamsScip_la_LDFLAGS = $(LT_LDFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
 	optscip.gms branchrules.md conflicthdlrs.md conshdlrs.md \
@@ -531,7 +526,7 @@ clean-libLTLIBRARIES:
 	../utils/$(DEPDIR)/$(am__dirstamp)
 
 libGamsScip.la: $(libGamsScip_la_OBJECTS) $(libGamsScip_la_DEPENDENCIES) $(EXTRA_libGamsScip_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(libGamsScip_la_LINK) -rpath $(libdir) $(libGamsScip_la_OBJECTS) $(libGamsScip_la_LIBADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libGamsScip_la_OBJECTS) $(libGamsScip_la_LIBADD) $(LIBS)
 ../utils/GamsOptionsSpecWriter.$(OBJEXT): ../utils/$(am__dirstamp) \
 	../utils/$(DEPDIR)/$(am__dirstamp)
 

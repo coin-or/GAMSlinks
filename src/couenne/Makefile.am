@@ -15,6 +15,8 @@ AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSCOUENNE_CFLAGS)
 
+LDFLAGS += $(LT_LDFLAGS)
+
 lib_LTLIBRARIES = libGamsCouenne.la
 libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
   ../bonmin/GamsMINLP.cpp \
@@ -23,7 +25,6 @@ libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
   ../utils/GamsSolveTrace.c ../utils/GamsHelper.c ../utils/GamsLicensing.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 libGamsCouenne_la_LIBADD  = $(GAMSCOUENNE_LFLAGS)
-libGamsCouenne_la_LDFLAGS = $(LT_LDFLAGS)
 
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc

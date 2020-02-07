@@ -143,10 +143,6 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libGamsOsi_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(AM_CXXFLAGS) $(CXXFLAGS) $(libGamsOsi_la_LDFLAGS) $(LDFLAGS) \
-	-o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -303,7 +299,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
-LDFLAGS = @LDFLAGS@
+LDFLAGS = @LDFLAGS@ $(LT_LDFLAGS)
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -406,7 +402,6 @@ libGamsOsi_la_SOURCES = GamsOsiHelper.cpp GamsOsi.cpp GamsMessageHandler.cpp \
   ../utils/gmomcc.c ../utils/gevmcc.c
 
 libGamsOsi_la_LIBADD = $(GAMSOSI_LFLAGS)
-libGamsOsi_la_LDFLAGS = $(LT_LDFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c
 all: all-am
@@ -490,7 +485,7 @@ clean-libLTLIBRARIES:
 	../utils/$(DEPDIR)/$(am__dirstamp)
 
 libGamsOsi.la: $(libGamsOsi_la_OBJECTS) $(libGamsOsi_la_DEPENDENCIES) $(EXTRA_libGamsOsi_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(libGamsOsi_la_LINK) -rpath $(libdir) $(libGamsOsi_la_OBJECTS) $(libGamsOsi_la_LIBADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libGamsOsi_la_OBJECTS) $(libGamsOsi_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

@@ -146,10 +146,6 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libGamsSoplex_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(AM_CXXFLAGS) $(CXXFLAGS) $(libGamsSoplex_la_LDFLAGS) \
-	$(LDFLAGS) -o $@
 am_optsoplex_OBJECTS = optsoplex.$(OBJEXT) \
 	../utils/GamsOptionsSpecWriter.$(OBJEXT)
 optsoplex_OBJECTS = $(am_optsoplex_OBJECTS)
@@ -311,7 +307,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
-LDFLAGS = @LDFLAGS@
+LDFLAGS = @LDFLAGS@ $(LT_LDFLAGS)
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -415,7 +411,6 @@ libGamsSoplex_la_SOURCES = GamsSoPlex.cpp \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 
 libGamsSoplex_la_LIBADD = $(GAMSSOPLEX_LFLAGS)
-libGamsSoplex_la_LDFLAGS = $(LT_LDFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
 	optsoplex.gms
@@ -515,7 +510,7 @@ clean-libLTLIBRARIES:
 	../utils/$(DEPDIR)/$(am__dirstamp)
 
 libGamsSoplex.la: $(libGamsSoplex_la_OBJECTS) $(libGamsSoplex_la_DEPENDENCIES) $(EXTRA_libGamsSoplex_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(libGamsSoplex_la_LINK) -rpath $(libdir) $(libGamsSoplex_la_OBJECTS) $(libGamsSoplex_la_LIBADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libGamsSoplex_la_OBJECTS) $(libGamsSoplex_la_LIBADD) $(LIBS)
 ../utils/GamsOptionsSpecWriter.$(OBJEXT): ../utils/$(am__dirstamp) \
 	../utils/$(DEPDIR)/$(am__dirstamp)
 

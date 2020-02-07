@@ -149,10 +149,6 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libGamsBonmin_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(AM_CXXFLAGS) $(CXXFLAGS) $(libGamsBonmin_la_LDFLAGS) \
-	$(LDFLAGS) -o $@
 am_optbonmin_OBJECTS = optbonmin.$(OBJEXT) \
 	../utils/GamsOptionsSpecWriter.$(OBJEXT)
 optbonmin_OBJECTS = $(am_optbonmin_OBJECTS)
@@ -319,7 +315,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
-LDFLAGS = @LDFLAGS@
+LDFLAGS = @LDFLAGS@ $(LT_LDFLAGS)
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -426,7 +422,6 @@ libGamsBonmin_la_SOURCES = GamsBonmin.cpp GamsMINLP.cpp \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 
 libGamsBonmin_la_LIBADD = $(GAMSBONMIN_LFLAGS)
-libGamsBonmin_la_LDFLAGS = $(LT_LDFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
 	optbonmin.gms optbonmin.txt optbonmin_t.md
@@ -548,7 +543,7 @@ clean-libLTLIBRARIES:
 	../utils/$(DEPDIR)/$(am__dirstamp)
 
 libGamsBonmin.la: $(libGamsBonmin_la_OBJECTS) $(libGamsBonmin_la_DEPENDENCIES) $(EXTRA_libGamsBonmin_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(libGamsBonmin_la_LINK) -rpath $(libdir) $(libGamsBonmin_la_OBJECTS) $(libGamsBonmin_la_LIBADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libGamsBonmin_la_OBJECTS) $(libGamsBonmin_la_LIBADD) $(LIBS)
 ../utils/GamsOptionsSpecWriter.$(OBJEXT): ../utils/$(am__dirstamp) \
 	../utils/$(DEPDIR)/$(am__dirstamp)
 

@@ -11,12 +11,13 @@ AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSSOPLEX_CFLAGS)
 
+LDFLAGS += $(LT_LDFLAGS)
+
 lib_LTLIBRARIES = libGamsSoplex.la
 libGamsSoplex_la_SOURCES = GamsSoPlex.cpp \
   ../utils/GamsLicensing.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 libGamsSoplex_la_LIBADD  = $(GAMSSOPLEX_LFLAGS)
-libGamsSoplex_la_LDFLAGS = $(LT_LDFLAGS)
 
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc

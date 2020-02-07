@@ -149,10 +149,6 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-libGamsCouenne_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(AM_CXXFLAGS) $(CXXFLAGS) $(libGamsCouenne_la_LDFLAGS) \
-	$(LDFLAGS) -o $@
 am_optcouenne_OBJECTS = optcouenne.$(OBJEXT) \
 	../utils/GamsOptionsSpecWriter.$(OBJEXT)
 optcouenne_OBJECTS = $(am_optcouenne_OBJECTS)
@@ -320,7 +316,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
-LDFLAGS = @LDFLAGS@
+LDFLAGS = @LDFLAGS@ $(LT_LDFLAGS)
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -429,7 +425,6 @@ libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 
 libGamsCouenne_la_LIBADD = $(GAMSCOUENNE_LFLAGS)
-libGamsCouenne_la_LDFLAGS = $(LT_LDFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
 	optcouenne.gms optcouenne.txt
@@ -559,7 +554,7 @@ clean-libLTLIBRARIES:
 	../utils/$(DEPDIR)/$(am__dirstamp)
 
 libGamsCouenne.la: $(libGamsCouenne_la_OBJECTS) $(libGamsCouenne_la_DEPENDENCIES) $(EXTRA_libGamsCouenne_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(libGamsCouenne_la_LINK) -rpath $(libdir) $(libGamsCouenne_la_OBJECTS) $(libGamsCouenne_la_LIBADD) $(LIBS)
+	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libGamsCouenne_la_OBJECTS) $(libGamsCouenne_la_LIBADD) $(LIBS)
 ../utils/GamsOptionsSpecWriter.$(OBJEXT): ../utils/$(am__dirstamp) \
 	../utils/$(DEPDIR)/$(am__dirstamp)
 

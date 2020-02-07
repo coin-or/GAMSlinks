@@ -11,12 +11,13 @@ AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSSCIP_CFLAGS)
 
+LDFLAGS += $(LT_LDFLAGS)
+
 lib_LTLIBRARIES = libGamsScip.la
 libGamsScip_la_SOURCES = GamsScip.cpp reader_gmo.c event_solvetrace.c \
   ../utils/GamsLicensing.c ../utils/GamsHelper.c ../utils/GamsSolveTrace.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c ../utils/gdxcc.c ../utils/optcc.c
 libGamsScip_la_LIBADD  = $(GAMSSCIP_LFLAGS)
-libGamsScip_la_LDFLAGS = $(LT_LDFLAGS)
 
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc

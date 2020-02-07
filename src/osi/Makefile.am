@@ -11,11 +11,12 @@ AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSOSI_CFLAGS)
 
+LDFLAGS += $(LT_LDFLAGS)
+
 lib_LTLIBRARIES = libGamsOsi.la
 libGamsOsi_la_SOURCES = GamsOsiHelper.cpp GamsOsi.cpp GamsMessageHandler.cpp \
   ../utils/gmomcc.c ../utils/gevmcc.c
 libGamsOsi_la_LIBADD  = $(GAMSOSI_LFLAGS)
-libGamsOsi_la_LDFLAGS = $(LT_LDFLAGS)
 
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
