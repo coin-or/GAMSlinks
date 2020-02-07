@@ -4,8 +4,8 @@
 //
 // Author: Stefan Vigerske
 
+#include "GamsLinksConfig.h"
 #include "GamsOsiHelper.hpp"
-#include "GAMSlinksConfig.h"
 
 #include <cstdlib>
 #include <cmath>
@@ -16,8 +16,6 @@
 
 #include "gmomcc.h"
 #include "gevmcc.h"
-
-#include "GAMSlinksConfig.h"
 
 bool gamsOsiLoadProblem(
    struct gmoRec*        gmo,                /**< GAMS modeling object */

@@ -4,6 +4,7 @@
 //
 // Author: Stefan Vigerske
 
+#include "GamsLinksConfig.h"
 #include "GamsCbc.hpp"
 
 #include <cstdlib>
@@ -22,7 +23,6 @@
 #include "gdxcc.h"
 #include "palmcc.h"
 
-#include "GAMSlinksConfig.h"
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
 #include "GamsSolveTrace.h"

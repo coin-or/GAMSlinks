@@ -9,7 +9,7 @@
 
 #include <cstdlib>
 
-#include "GAMSlinksConfig.h"
+#include "GamsLinksConfig.h"
 #include "scip/type_retcode.h"
 
 typedef struct gmoRec* gmoHandle_t;

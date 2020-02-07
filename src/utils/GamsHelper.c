@@ -8,7 +8,7 @@
 
 #include "GamsHelper.h"
 #ifdef HAVE_CONFIG_H
-#include "GAMSlinksConfig.h"
+#include "GamsLinksConfig.h"
 #endif
 
 #include <stdio.h>

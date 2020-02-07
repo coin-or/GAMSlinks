@@ -4,13 +4,13 @@
 //
 // Author: Stefan Vigerske
 
+#include "GamsLinksConfig.h"
 #include "GamsCouenne.hpp"
 #include "GamsMINLP.hpp"
 #include "GamsJournal.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsNLinstr.h"
 #include "GamsCbcHeurSolveTrace.hpp"
-#include "GAMSlinksConfig.h"
 
 #include <cmath>
 #include <cstdio>

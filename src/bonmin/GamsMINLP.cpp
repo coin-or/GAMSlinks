@@ -4,8 +4,8 @@
 //
 // Authors: Stefan Vigerske
 
+#include "GamsLinksConfig.h"
 #include "GamsMINLP.hpp"
-#include "GAMSlinksConfig.h"
 #include "BonminConfig.h"
 
 #include <cstring> // for memcpy

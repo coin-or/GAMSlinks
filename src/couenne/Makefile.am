@@ -7,7 +7,6 @@
 AUTOMAKE_OPTIONS = foreign subdir-objects
 
 AM_CPPFLAGS = \
-  -I$(srcdir)/.. \
   -I$(srcdir)/../bonmin \
   -I$(srcdir)/../cbc \
   -I$(srcdir)/../osi \

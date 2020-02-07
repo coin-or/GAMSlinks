@@ -6,8 +6,8 @@
   * @author Stefan Vigerske
  */
 
+#include "GamsLinksConfig.h"
 #include "GamsOptionsSpecWriter.hpp"
-#include "GAMSlinksConfig.h"
 
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"

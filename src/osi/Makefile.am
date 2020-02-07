@@ -7,7 +7,6 @@
 AUTOMAKE_OPTIONS = foreign subdir-objects
 
 AM_CPPFLAGS = \
-  -I$(srcdir)/.. \
   -I$(srcdir)/../utils \
   $(GAMSOSI_CFLAGS)
 

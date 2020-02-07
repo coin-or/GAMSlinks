@@ -19,7 +19,7 @@ under the Eclipse Public License.])
 
 # List one file in the package so that the configure script can test
 # whether the package is actually there
-AC_CONFIG_SRCDIR(src/GAMSlinksConfig.h)
+AC_CONFIG_SRCDIR(src/utils/GamsLinksConfig.h)
 
 AC_COIN_INITIALIZE(GAMSlinks)
 
@@ -153,6 +153,6 @@ AC_CONFIG_FILES([Makefile
 AC_CONFIG_FILES([test/run_quality], [chmod +x test/run_quality])
 AC_CONFIG_FILES([test/run_gmstest], [chmod +x test/run_gmstest])
 
-AC_CONFIG_HEADER([src/config.h])
+AC_CONFIG_HEADER([src/utils/config.h])
 
 AC_COIN_FINALIZE

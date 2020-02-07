@@ -4,10 +4,10 @@
 //
 // Author: Stefan Vigerske
 
+#include "GamsLinksConfig.h"
 #include "GamsIpopt.hpp"
 #include "GamsNLP.hpp"
 #include "GamsJournal.hpp"
-#include "GAMSlinksConfig.h"
 
 #include "IpoptConfig.h"
 #include "IpSolveStatistics.hpp"

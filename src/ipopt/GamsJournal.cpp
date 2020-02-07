@@ -4,8 +4,8 @@
 //
 // Author: Stefan Vigerske
 
+#include "GamsLinksConfig.h"
 #include "GamsJournal.hpp"
-#include "GAMSlinksConfig.h"
 
 #include "gevmcc.h"
 

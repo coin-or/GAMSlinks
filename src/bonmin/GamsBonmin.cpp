@@ -12,7 +12,7 @@
 #include "GamsJournal.hpp"
 #include "GamsMessageHandler.hpp"
 #include "GamsCbcHeurSolveTrace.hpp"
-#include "GAMSlinksConfig.h"
+#include "GamsLinksConfig.h"
 
 #include "BonminConfig.h"
 #include "BonBonminSetup.hpp"

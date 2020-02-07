@@ -103,7 +103,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/src/config.h
+CONFIG_HEADER = $(top_builddir)/src/utils/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
@@ -165,7 +165,7 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src/utils
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ../ipopt/$(DEPDIR)/GamsJournal.Plo \
@@ -411,7 +411,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign subdir-objects
-AM_CPPFLAGS = -I$(srcdir)/.. -I$(srcdir)/../cbc -I$(srcdir)/../osi \
+AM_CPPFLAGS = -I$(srcdir)/../cbc -I$(srcdir)/../osi \
 	-I$(srcdir)/../ipopt -I$(srcdir)/../utils $(GAMSBONMIN_CFLAGS) \
 	-I"$(GAMS_PATH)/apifiles/C/api" $(GAMSLIBCFLAGS)
 lib_LTLIBRARIES = libGamsBonmin.la

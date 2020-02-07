@@ -4,8 +4,8 @@
 //
 // Authors: Steven Dirkse, Stefan Vigerske
 
+#include "GamsLinksConfig.h"
 #include "GamsNLP.hpp"
-#include "GAMSlinksConfig.h"
 
 #include "IpIpoptCalculatedQuantities.hpp"
 #include "IpIpoptData.hpp"

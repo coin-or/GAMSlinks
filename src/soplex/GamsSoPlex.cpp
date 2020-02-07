@@ -8,6 +8,7 @@
 // - Ctrl^C
 // - make use of high-precision / exact arithmetic solver (?)
 
+#include "GamsLinksConfig.h"
 #include "GamsSoPlex.hpp"
 
 #include <cstdio>
@@ -21,7 +22,6 @@
 #include "gevmcc.h"
 #include "palmcc.h"
 
-#include "GAMSlinksConfig.h"
 #include "GamsLicensing.h"
 
 /* disable -Wclass-memaccess warnings due to dubious memcpy/realloc calls in SoPlex headers */

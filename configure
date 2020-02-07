@@ -600,7 +600,7 @@ PACKAGE_STRING='GAMSlinks master'
 PACKAGE_BUGREPORT='https://github.com/coin-or/GAMSlinks'
 PACKAGE_URL=''
 
-ac_unique_file="src/GAMSlinksConfig.h"
+ac_unique_file="src/utils/GamsLinksConfig.h"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -21598,7 +21598,7 @@ ac_config_files="$ac_config_files test/run_quality"
 ac_config_files="$ac_config_files test/run_gmstest"
 
 
-ac_config_headers="$ac_config_headers src/config.h"
+ac_config_headers="$ac_config_headers src/utils/config.h"
 
 
 
@@ -22819,7 +22819,7 @@ do
     "doc/Doxyfile") CONFIG_FILES="$CONFIG_FILES doc/Doxyfile" ;;
     "test/run_quality") CONFIG_FILES="$CONFIG_FILES test/run_quality" ;;
     "test/run_gmstest") CONFIG_FILES="$CONFIG_FILES test/run_gmstest" ;;
-    "src/config.h") CONFIG_HEADERS="$CONFIG_HEADERS src/config.h" ;;
+    "src/utils/config.h") CONFIG_HEADERS="$CONFIG_HEADERS src/utils/config.h" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

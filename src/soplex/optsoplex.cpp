@@ -6,8 +6,8 @@
   * @author Stefan Vigerske
  */
 
+#include "GamsLinksConfig.h"
 #include "GamsOptionsSpecWriter.hpp"
-#include "GAMSlinksConfig.h"
 
 #include "soplex.h"
 using namespace soplex;
