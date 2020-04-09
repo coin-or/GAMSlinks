@@ -23,6 +23,9 @@
 
 #include "GamsLicensing.h"
 #include "GamsHelper.h"
+#ifdef GAMS_BUILD
+#include "GamsHSLInit.h"
+#endif
 
 using namespace Ipopt;
 
@@ -62,15 +65,15 @@ int GamsIpopt::readyAPI(
    GAMSinitLicensing(gmo, pal);
    if( gevGetIntOpt(gev, gevCurSolver) == gevSolver2Id(gev, "ipopth") )
    {
-      ipoptlicensed = GAMSHSLInit(gmo, pal);
-
-      if( !ipoptlicensed  )
+      ipoptlicensed = GAMScheckIpoptLicense(pal, false);
+      if( !ipoptlicensed )
       {
          gmoSolveStatSet(gmo, gmoSolveStat_License);
          gmoModelStatSet(gmo, gmoModelStat_LicenseError);
          gevLogStatPChar(gev, "\nYou may want to try the free version IPOPT instead of IPOPTH.\n\n");
          return 1;
       }
+      GamsHSLInit();
    }
 #endif
 
@@ -280,18 +283,11 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
    palInitMutexes();
 }
 
-#ifdef GAMS_BUILD
-extern "C" void mkl_finalize(void);
-#endif
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
    gmoFiniMutexes();
    gevFiniMutexes();
    palFiniMutexes();
-
-#ifdef GAMS_BUILD
-   mkl_finalize();
-#endif
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)

@@ -61,15 +61,6 @@ bool GAMScheckSCIPLicense(
    bool               strict              /**< whether an SCIP license code or GAMS academic license needs to be available */
 );
 
-/** initializes GAMS licensed HSL routines if a commercial Ipopt license is available
- *
- * @return True if a commercial Ipopt license is available, and false otherwise.
- */
-bool GAMSHSLInit(
-   struct gmoRec*     gmo,                /**< GAMS modeling object */
-   struct palRec*     pal                 /**< GAMS audit and license object */
-);
-
 #ifdef __cplusplus
 }
 #endif

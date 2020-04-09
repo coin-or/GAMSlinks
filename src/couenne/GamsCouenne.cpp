@@ -30,6 +30,9 @@
 
 #include "GamsLicensing.h"
 #include "GamsHelper.h"
+#ifdef GAMS_BUILD
+#include "GamsHSLInit.h"
+#endif
 
 #include "CbcBranchActual.hpp"  // for CbcSOS
 #include "CbcBranchLotsize.hpp" // for CbcLotsize
@@ -107,7 +110,11 @@ int GamsCouenne::readyAPI(
 #endif
 
    GAMSinitLicensing(gmo, pal);
-   ipoptlicensed = GAMSHSLInit(gmo, pal);
+#ifdef GAMS_BUILD
+   ipoptlicensed = GAMScheckIpoptLicense(pal, false);
+   if( ipoptlicensed )
+      GamsHSLInit();
+#endif
 
    gevLogStatPChar(gev, "\nCOIN-OR Couenne (Couenne Library " COUENNE_VERSION ")\nwritten by P. Belotti\n\n");
 

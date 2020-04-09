@@ -7,17 +7,21 @@
 #ifndef GAMSSOPLEX_HPP_
 #define GAMSSOPLEX_HPP_
 
+/* disable -Wclass-memaccess warnings due to dubious memcpy/realloc calls in SoPlex headers */
+#ifdef __GNUC__
+#if __GNUC__ >= 8
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
+#endif
+
+#include "soplex.h"
+
 #include <cstdlib>
 #include <ostream>
 
 typedef struct gmoRec* gmoHandle_t;
 typedef struct gevRec* gevHandle_t;
 typedef struct palRec* palHandle_t;
-
-namespace soplex
-{
-class SoPlex;
-}
 
 class GamsOutputStreamBuf;
 

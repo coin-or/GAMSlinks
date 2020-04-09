@@ -7,21 +7,19 @@
  */
 
 #include "GamsHelper.h"
-#ifdef HAVE_CONFIG_H
 #include "GamsLinksConfig.h"
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "gevmcc.h"
 
-#ifdef HAVE_GOTO_SETNUMTHREADS
-void goto_set_num_threads(int);
+#if defined _OPENMP
+#include <omp.h>
 #endif
 
-#ifdef HAVE_OMP_SETNUMTHREADS
-void omp_set_num_threads(int);
+#ifdef HAVE_GOTO_SETNUMTHREADS
+void goto_set_num_threads(int);
 #endif
 
 void GAMSsetNumThreads(
@@ -39,7 +37,7 @@ void GAMSsetNumThreads(
    goto_set_num_threads(nthreads);
 #endif
 
-#ifdef HAVE_OMP_SETNUMTHREADS
+#ifdef _OPENMP
    if( gev != NULL && nthreads > 1 )
    {
       char msg[100];

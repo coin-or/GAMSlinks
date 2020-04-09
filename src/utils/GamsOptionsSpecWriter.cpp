@@ -15,8 +15,8 @@
 
 void GamsOptions::collect(
    const std::string& name,
-   const std::string& shortdescr,
-   const std::string& longdescr,
+   std::string        shortdescr,
+   std::string        longdescr,
    OPTTYPE            type,
    OPTVAL             defaultval,
    OPTVAL             minval,
@@ -32,11 +32,32 @@ void GamsOptions::collect(
    //         std::cerr << "Warning: Ignoring " << solver << " option " << name << " for GAMS options file." << std::endl;
    //         return;
    //      }
+   if( name.length() > 63 )
+   {
+      std::cerr << "Skipping option " << name << " because its name is too long for stupid GAMS." << std::endl;
+      return;
+   }
 
-   data.push_back(Data(curgroup, name, shortdescr, longdescr, defaultdescr, type, defaultval, minval, maxval, enumval, refval));
+   if( shortdescr.length() >= 255 )
+   {
+      std::cerr << "Short description of option " << name << " too long for stupid GAMS. Moving to long description." << std::endl;
+      if( !longdescr.empty() )
+         longdescr = shortdescr + " " + longdescr;
+      else
+         longdescr = shortdescr;
+      shortdescr.clear();
+   }
+
+   if( name.find(".") != std::string::npos && !longdescr.empty() )
+   {
+      std::cerr << "Cannot have long description because option " << name << " has a dot in the name and GAMS is stupid. Skipping long description." << std::endl;
+      longdescr.clear();
+   }
+
+   options.push_back(Option(curgroup, name, shortdescr, longdescr, defaultdescr, type, defaultval, minval, maxval, enumval, refval));
 
    /* replace all double quotes by single quotes */
-   std::replace(data.back().shortdescr.begin(), data.back().shortdescr.end(), '"', '\'');
+   std::replace(options.back().shortdescr.begin(), options.back().shortdescr.end(), '"', '\'');
 
    switch( type )
    {
@@ -59,30 +80,45 @@ void GamsOptions::collect(
             values.insert(tolower(defaultval.stringval));
          break;
       }
+   }
 
-      case OPTTYPE_ENUM:
+   /* collect enum values for values
+    * update enum description
+    */
+   for( ENUMVAL::iterator e(options.back().enumval.begin()); e != options.back().enumval.end(); ++e )
+   {
+      switch( type )
       {
-         if( defaultval.stringval[0] != '\0' )
-            values.insert(tolower(defaultval.stringval));
+         case OPTTYPE_BOOL:
+            values.insert(std::to_string(e->first.boolval));
+            break;
 
-         for( std::vector<std::pair<std::string, std::string> >::iterator e(data.back().enumval.begin()); e != data.back().enumval.end(); ++e )
-         {
-            if( defaultval.stringval[0] != '\0' )
-               values.insert(tolower(e->first));
+         case OPTTYPE_INTEGER:
+            values.insert(std::to_string(e->first.intval));
+            break;
 
-            /* replace all double quotes by single quotes */
-            std::replace(e->second.begin(), e->second.end(), '"', '\'');
-            if( e->second.length() >= 255 )
-            {
-               size_t pos = e->second.rfind('.');
-               if( pos < std::string::npos )
-                  e->second.erase(pos+1, e->second.length());
-               else
-                  std::cerr << "Could not cut down description of enum value '" << e->first << "' of parameter " << name << ": " << e->second << std::endl;
-            }
-         }
+         case OPTTYPE_REAL:
+            values.insert(std::to_string(e->first.realval));
+            break;
 
-         break;
+         case OPTTYPE_CHAR:
+            values.insert(tolower(std::to_string(e->first.charval)));
+            break;
+
+         case OPTTYPE_STRING:
+            values.insert(tolower(e->first.stringval));
+            break;
+      }
+
+      /* replace all double quotes by single quotes */
+      std::replace(e->second.begin(), e->second.end(), '"', '\'');
+      if( e->second.length() >= 255 )
+      {
+         size_t pos = e->second.rfind('.');
+         if( pos < std::string::npos )
+            e->second.erase(pos+1, e->second.length());
+         else
+            std::cerr << "Could not cut down description of enum value of parameter " << name << ": " << e->second << std::endl;
       }
    }
 }
@@ -106,7 +142,9 @@ void GamsOptions::write(bool shortdoc)
       f << "$setglobal SHORTDOCONLY" << std::endl;
    f << "$onempty" << std::endl;
 
-   f << "set e / " << std::endl;
+   f << "set e / 0*100 " << std::endl;
+   for( int i = 0; i <= 100; ++i )
+      values.erase(std::to_string(i));
    for( std::set<std::string>::iterator v(values.begin()); v != values.end(); ++v )
       f << "  '" << *v << "'" << std::endl;
    f << "/;" << std::endl;
@@ -116,27 +154,27 @@ void GamsOptions::write(bool shortdoc)
    //f << "set m / %system.gamsopt% /;" << std::endl;
 
    f << "set g Option Groups /" << std::endl;
-   for( std::set<std::string>::iterator g(groups.begin()); g != groups.end(); ++g )
+   for( std::map<std::string, std::string>::iterator g(groups.begin()); g != groups.end(); ++g )
    {
-      std::string id(*g);
+      std::string id(g->first);
       std::replace(id.begin(), id.end(), ' ', '_');
       std::replace(id.begin(), id.end(), '(', '_');
       std::replace(id.begin(), id.end(), ')', '_');
       std::replace(id.begin(), id.end(), '-', '_');
       std::replace(id.begin(), id.end(), '/', '_');
-      f << "  gr_" << id << "   '" << *g << "'" << std::endl;
+      f << "  gr_" << id << "   '" << (g->second.length() > 0 ? g->second : g->first) << "'" << std::endl;
    }
    f << "/;" << std::endl;
 
    f << "set o Solver and Link Options with one-line description /" << std::endl;
-   for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
+   for( std::list<Option>::iterator d(options.begin()); d != options.end(); ++d )
       f << "  '" << d->name << "'  \"" << makeValidMarkdownString(d->shortdescr) << '"' << std::endl;
    f << "/;" << std::endl;
 
    f << "$onembedded" << std::endl;
    f << "set optdata(g,o,t,f) /" << std::endl;
    bool havelongdescr = false;
-   for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
+   for( std::list<Option>::iterator d(options.begin()); d != options.end(); ++d )
    {
       if( d->longdescr.length() > 0 )
          havelongdescr = true;
@@ -192,7 +230,6 @@ void GamsOptions::write(bool shortdoc)
             break;
 
          case OPTTYPE_STRING:
-         case OPTTYPE_ENUM:
             f << "S.(def '" << makeValidMarkdownString(d->defaultval.stringval) << '\'';
             break;
       }
@@ -203,14 +240,30 @@ void GamsOptions::write(bool shortdoc)
    f << "/;" << std::endl;
 
    f << "set oe(o,e) /" << std::endl;
-   for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
+   for( std::list<Option>::iterator d(options.begin()); d != options.end(); ++d )
    {
-      if( d->type != OPTTYPE_ENUM )
-         continue;
-
-      for( std::vector<std::pair<std::string, std::string> >::iterator e(d->enumval.begin()); e != d->enumval.end(); ++e )
+      for( ENUMVAL::iterator e(d->enumval.begin()); e != d->enumval.end(); ++e )
       {
-         f << "  '" << d->name << "'.'" << e->first << '\'';
+         f << "  '" << d->name << "'.'";
+         switch( d->type )
+         {
+            case OPTTYPE_BOOL :
+               f << e->first.boolval;
+               break;
+            case OPTTYPE_INTEGER :
+               f << e->first.intval;
+               break;
+            case OPTTYPE_REAL :
+               f << e->first.realval;
+               break;
+            case OPTTYPE_CHAR :
+               f << e->first.charval;
+               break;
+            case OPTTYPE_STRING :
+               f << e->first.stringval;
+               break;
+         }
+         f << '\'';
          if( !e->second.empty() )
             f << "  \"" << makeValidMarkdownString(e->second) << '"';
          f << std::endl;
@@ -221,17 +274,17 @@ void GamsOptions::write(bool shortdoc)
    f << "$onempty" << std::endl;
 
    f << "set odefault(o) /" << std::endl;
-   for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
+   for( std::list<Option>::iterator d(options.begin()); d != options.end(); ++d )
    {
       if( d->defaultdescr.length() == 0 )
          continue;
 
-      f << "  '" << d->name << "' \"" << makeValidMarkdownString(d->defaultdescr) << '"' << std::endl;
+      f << "  '" << d->name << "' '" << makeValidMarkdownString(d->defaultdescr) << '\'' << std::endl;
    }
    f << "/;" << std::endl;
 
    f << "set os(o,*) synonyms  /";
-   for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
+   for( std::list<Option>::iterator d(options.begin()); d != options.end(); ++d )
       if( !d->synonyms.empty() )
          for( std::set<std::string>::const_iterator s(d->synonyms.begin()); s != d->synonyms.end(); ++s )
             f << std::endl << "  '" << d->name << "'.'" << *s << '\'';
@@ -257,7 +310,7 @@ void GamsOptions::write(bool shortdoc)
       filename = "opt" + solver + ".txt_";
       std::cout << "Writing " << filename << std::endl;
       f.open(filename.c_str());
-      for( std::list<Data>::iterator d(data.begin()); d != data.end(); ++d )
+      for( std::list<Option>::iterator d(options.begin()); d != options.end(); ++d )
       {
          if( d->longdescr.length() == 0 )
             continue;

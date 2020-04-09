@@ -5,6 +5,8 @@
  *  @author Stefan Vigerske
  */
 
+#include "GamsLinksConfig.h"
+
 typedef struct optRec* optHandle_t;
 
 /* check that three-letter id of solver is defined */

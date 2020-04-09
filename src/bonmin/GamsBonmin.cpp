@@ -30,6 +30,9 @@
 
 #include "GamsLicensing.h"
 #include "GamsHelper.h"
+#ifdef GAMS_BUILD
+#include "GamsHSLInit.h"
+#endif
 
 using namespace Bonmin;
 using namespace Ipopt;
@@ -71,15 +74,15 @@ int GamsBonmin::readyAPI(
 #ifdef GAMS_BUILD
    if( gevGetIntOpt(gev, gevCurSolver) == gevSolver2Id(gev, "bonminh") )
    {
-      ipoptlicensed = GAMSHSLInit(gmo, pal);
-
-      if( !ipoptlicensed  )
+      ipoptlicensed = GAMScheckIpoptLicense(pal, false);
+      if( !ipoptlicensed )
       {
          gmoSolveStatSet(gmo, gmoSolveStat_License);
          gmoModelStatSet(gmo, gmoModelStat_LicenseError);
          gevLogStatPChar(gev, "\nYou may want to try the free version BONMIN instead of BONMINH\n\n");
          return 1;
       }
+      GamsHSLInit();
    }
 #endif
 

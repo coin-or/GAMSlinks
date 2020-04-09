@@ -84,13 +84,15 @@ int main(int argc, char** argv)
    categname["branching"] = "Branching";
    categname["conflict"] = "Conflict analysis";
    categname["constraints"] = "Constraints";
+   categname["decomposition"] = "Decomposition";
    categname["display"] = "Output";
+   categname["estimation"] = "Restarts and Tree Size Estimation";
    categname["heuristics"] = "Heuristics";
    categname["history"] = "History";
    categname["limits"] = "Limits";
    categname["lp"] = "LP";
    categname["memory"] = "Memory";
-   categname["misc"] = "Micellaneous";
+   categname["misc"] = "Miscellaneous";
    categname["nlp"] = "Nonlinear Programming Relaxation";
    categname["nlpi"] = "Nonlinear Programming Solver interfaces";
    categname["nodeselection"] = "Node Selection";
@@ -142,6 +144,11 @@ int main(int argc, char** argv)
           strstr(paramname, "constraints/pseudoboolean") == paramname ||
           strstr(paramname, "constraints/superindicator")== paramname ||
           strstr(paramname, "constraints/xor")           == paramname ||
+          strstr(paramname, "heuristics/padm")           == paramname ||
+          strstr(paramname, "heuristics/gins/consecutiveblocks") == paramname ||
+          strstr(paramname, "heuristics/gins/overlap") == paramname ||
+          strstr(paramname, "heuristics/gins/usedecomp") == paramname ||
+          strstr(paramname, "heuristics/gins/useselfallback") == paramname ||
           strstr(paramname, "table/benders")             == paramname
          )
          continue;
@@ -155,6 +162,7 @@ int main(int argc, char** argv)
       if( category == "benders" ||
           category == "compression" ||  //for reoptimization
           category == "concurrent" ||
+          category == "decomposition" ||
           category == "reading" ||
           category == "reoptimization" ||
           category == "parallel" ||
@@ -250,29 +258,29 @@ int main(int argc, char** argv)
          if( strcmp(SCIPparamGetName(param), "limits/time") == 0 )
          {
             defaultval.realval = 1000.0;
-            defaultdescr = "GAMS reslim";
+            defaultdescr = "\\ref GAMSAOreslim \"GAMS reslim\"";
          }
          else if( strcmp(SCIPparamGetName(param), "limits/gap") == 0 )
          {
             defaultval.realval = 0.1;
-            defaultdescr = "GAMS optcr";
+            defaultdescr = "\\ref GAMSAOoptcr \"GAMS optcr\"";
          }
          else if( strcmp(SCIPparamGetName(param), "limits/absgap") == 0 )
          {
             defaultval.realval = 0.0;
-            defaultdescr = "GAMS optca";
+            defaultdescr = "\\ref GAMSAOoptca \"GAMS optca\"";
          }
          else if( strcmp(SCIPparamGetName(param), "limits/memory") == 0 )
-            defaultdescr = "GAMS workspace";
+            defaultdescr = "\\ref GAMSAOworkspace \"GAMS workspace\"";
          else if( strcmp(SCIPparamGetName(param), "limits/nodes") == 0 )
-            defaultdescr = "GAMS nodlim, if set, otherwise -1";
+            defaultdescr = "\\ref GAMSAOnodlim \"GAMS nodlim\", if set, otherwise -1";
          else if( strcmp(SCIPparamGetName(param), "lp/solver") == 0 )
          {
-            defaultdescr = "cplex, if licensed, otherwise soplex2";
-            descr = "LP solver to use (clp, cplex, soplex, soplex2)";
+            defaultdescr = "cplex, if licensed, otherwise soplex";
+            descr = "LP solver to use (clp, cplex, soplex)";
          }
          else if( strcmp(SCIPparamGetName(param), "lp/threads") == 0 )
-            defaultdescr = "GAMS threads";
+            defaultdescr = "\\ref GAMSAOthreads \"GAMS threads\"";
          else if( strcmp(SCIPparamGetName(param), "misc/printreason") == 0 )
             defaultval.boolval = false;
          else if( strcmp(SCIPparamGetName(param), "display/lpavgiterations/active") == 0 )
@@ -286,13 +294,11 @@ int main(int argc, char** argv)
          else if( strcmp(SCIPparamGetName(param), "display/time/active") == 0 )
             defaultdescr = "1 (2 for Windows without IDE)";
          else if( strcmp(SCIPparamGetName(param), "display/width") == 0 )
-            defaultdescr = "139 (80 for Windows without IDE)";
+            defaultdescr = "143 (80 for Windows without IDE)";
          else if( strcmp(SCIPparamGetName(param), "gams/mipstart") == 0 )
             descr += ", see also section \\ref SCIP_PARTIALSOL";
-         else if( strcmp(SCIPparamGetName(param), "timing/clocktype") == 0 )
-            defaultval.intval = 2;
          else if( strcmp(SCIPparamGetName(param), "misc/usesymmetry") == 0 )
-            defaultdescr = "2 (0 for Windows)"; // TODO take default default from defaultval.intval
+            descr.erase(descr.find(", see type_symmetry.h"));
 
          if( !hadadvanced && SCIPparamIsAdvanced(param) )
             hadadvanced = true;
@@ -442,6 +448,8 @@ int main(int argc, char** argv)
       outfile << "|:---------------|:-------|---------:|------:|---------:|-------:|:------------|" << std::endl;
       for( int i = 0; i < ndisps; ++i )
       {
+         if( strstr(SCIPdispGetName(disps[i]), "conc") == SCIPdispGetName(disps[i]) )
+            continue;
          outfile << "| \\ref SCIP_gr_display_" << SCIPdispGetName(disps[i]) << " \"" << SCIPdispGetName(disps[i]) << '"';
          outfile << " | " << SCIPdispGetHeader(disps[i]);
          outfile << " | " << SCIPdispGetPosition(disps[i]);
@@ -485,13 +493,16 @@ int main(int argc, char** argv)
    {
       std::ofstream outfile("heurs.md");
       std::cout << "Writing heurs.md" << std::endl;
-      outfile << "| primal heuristic | char | priority | freq | freqoffset | description |" << std::endl;
+      outfile << "| primal heuristic | type | priority | freq | freqoffset | description |" << std::endl;
       outfile << "|:-----------------|:----:|---------:|-----:|-----------:|:------------|" << std::endl;
 
       int nheurs = SCIPgetNHeurs(scip);
       SCIP_HEUR** heurs = SCIPgetHeurs(scip);
       for( int h = 0; h < nheurs; ++h )
       {
+         if( strstr(SCIPheurGetName(heurs[h]), "padm") == SCIPheurGetName(heurs[h]) )
+            continue;
+
          outfile << "| \\ref SCIP_gr_heuristics_" << SCIPheurGetName(heurs[h]) << " \"" << SCIPheurGetName(heurs[h]) << '"';
          outfile << " | " << SCIPheurGetDispchar(heurs[h]);
          outfile << " | " << SCIPheurGetPriority(heurs[h]);

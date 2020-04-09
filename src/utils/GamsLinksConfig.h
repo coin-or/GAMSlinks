@@ -36,11 +36,7 @@
 #  define STDCALL   __stdcall
 # endif
 # if ! defined(DllExport)
-#  if defined(DLL_EXPORT)
-#   define DllExport __declspec( dllexport )
-#  else
-#   define DllExport __declspec( dllimport )
-#  endif
+#  define DllExport __declspec( dllexport )
 # endif
 #elif defined(__GNUC__)
 # if ! defined(STDCALL)

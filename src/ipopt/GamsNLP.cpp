@@ -946,8 +946,8 @@ void GamsNLP::finalize_solution(
             if( cq->curr_compl_x_L()->Dim() && cq->curr_compl_x_U()->Dim() )
                tnlp_adapter->ResortBnds(*cq->curr_compl_x_L(), compl_xL, *cq->curr_compl_x_U(), compl_xU);
 
-/* dummy->Set(0.0) crashes with current Intel compiler on WEI (icl 18.0.1.156 and 18.0.3.210) */
-#if !(defined __ICL) || (__ICL != 1800)
+/* dummy->Set(0.0) crashes with current Intel compiler on WEI (icl 18.0.1.156 and 18.0.3.210 and 19.1.0.166) */
+#if !(defined __ICL)
             SmartPtr<Vector> dummy = cq->curr_c()->MakeNew();
             dummy->Set(0.0);
             compl_gL = new double[m];

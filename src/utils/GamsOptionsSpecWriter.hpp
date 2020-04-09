@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <map>
 #include <list>
 #include <algorithm>
 
@@ -29,8 +30,7 @@ public:
       OPTTYPE_INTEGER,
       OPTTYPE_REAL,
       OPTTYPE_CHAR,
-      OPTTYPE_STRING,
-      OPTTYPE_ENUM
+      OPTTYPE_STRING
    } OPTTYPE;
 
    union OPTVAL
@@ -42,10 +42,10 @@ public:
       const char*           stringval;
    };
 
-   typedef std::vector<std::pair<std::string, std::string> > ENUMVAL;
+   typedef std::vector<std::pair<OPTVAL, std::string> > ENUMVAL;
 
 private:
-   class Data
+   class Option
    {
    public:
       std::string        group;
@@ -61,7 +61,7 @@ private:
       int                refval;
       std::set<std::string> synonyms;
 
-      Data(
+      Option(
          const std::string& group_,
          const std::string& name_,
          const std::string& shortdescr_,
@@ -88,8 +88,8 @@ private:
       { }
    };
 
-   std::list<Data>       data;
-   std::set<std::string> groups;
+   std::list<Option>     options;
+   std::map<std::string, std::string> groups;
    std::set<std::string> values;
 
    std::string           solver;
@@ -182,17 +182,18 @@ public:
    GamsOptions(
       const std::string& solver_
       )
-   : values({"1", "2", "3", "4", "5", "6", "7", "8", "9"}),  // GAMS needs these to enumerate lines in long descr.
+   : values(),
      solver(solver_),
      separator(" ")
    { }
 
    void setGroup(
-      const std::string& group
+      const std::string& group,
+      const std::string& description = ""
       )
    {
       curgroup = group;
-      groups.insert(group);
+      groups[group] = description;
    }
 
    void setSeparator(
@@ -218,8 +219,8 @@ public:
 
    void collect(
       const std::string& name,
-      const std::string& shortdescr,
-      const std::string& longdescr,
+      std::string        shortdescr,
+      std::string        longdescr,
       OPTTYPE            type,
       OPTVAL             defaultval,
       OPTVAL             minval,
@@ -229,6 +230,7 @@ public:
       int                refval = -2
    );
 
+   /** add real-type option */
    void collect(
       const std::string& name,
       const std::string& shortdescr,
@@ -245,6 +247,7 @@ public:
          defaultdescr, refval);
    }
 
+   /** add integer-type option */
    void collect(
       const std::string& name,
       const std::string& shortdescr,
@@ -261,6 +264,30 @@ public:
          defaultdescr, refval);
    }
 
+   /** add enumerated integer-type option */
+   void collect(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      int                defaultval,
+      const ENUMVAL&     enumval,
+      const std::string& defaultdescr = std::string(),
+      int                refval = -2
+   )
+   {
+      int minval =  INT_MAX;
+      int maxval = -INT_MAX;
+      for( ENUMVAL::const_iterator e(enumval.begin()); e != enumval.end(); ++e )
+      {
+         minval = std::min(e->first.intval, minval);
+         maxval = std::max(e->first.intval, maxval);
+      }
+      collect(name, shortdescr, longdescr,
+         OPTTYPE_INTEGER, OPTVAL({.intval = defaultval}), OPTVAL({.intval = minval}), OPTVAL({.intval = maxval}), enumval,
+         defaultdescr, refval);
+   }
+
+   /** add bool-type option */
    void collect(
       const std::string& name,
       const std::string& shortdescr,
@@ -275,22 +302,7 @@ public:
          defaultdescr, refval);
    }
 
-   void collect(
-      const std::string& name,
-      const std::string& shortdescr,
-      const std::string& longdescr,
-      const std::string& defaultval,
-      const ENUMVAL&     enumval,
-      const std::string& defaultdescr = std::string(),
-      int                refval = -2
-   )
-   {
-      const char* def = strdup(defaultval.c_str());
-      collect(name, shortdescr, longdescr,
-         OPTTYPE_ENUM, OPTVAL({.stringval = def}), OPTVAL(), OPTVAL(), enumval,
-         defaultdescr, refval);
-   }
-
+   /** add string-type option */
    void collect(
       const std::string& name,
       const std::string& shortdescr,
@@ -305,11 +317,28 @@ public:
          std::string(), refval);
    }
 
-   /// get last added option
-   Data& back()
+   /** add enumerated string-type option */
+   void collect(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      const std::string& defaultval,
+      const ENUMVAL&     enumval,
+      const std::string& defaultdescr = std::string(),
+      int                refval = -2
+   )
    {
-      assert(!data.empty());
-      return data.back();
+      const char* def = strdup(defaultval.c_str());
+      collect(name, shortdescr, longdescr,
+         OPTTYPE_STRING, OPTVAL({.stringval = def}), OPTVAL(), OPTVAL(), enumval,
+         defaultdescr, refval);
+   }
+
+   /// get last added option
+   Option& back()
+   {
+      assert(!options.empty());
+      return options.back();
    }
 
    /// add element to "value" error - for hacks

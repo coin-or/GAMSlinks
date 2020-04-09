@@ -20,6 +20,9 @@
 
 #include "GamsLicensing.h"
 #include "GamsHelper.h"
+#ifdef GAMS_BUILD
+#include "GamsHSLInit.h"
+#endif
 
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
@@ -30,14 +33,6 @@
 
 #ifdef GAMS_BUILD
 #include "lpiswitch.h"
-#endif
-
-#if defined(__linux) && defined(COIN_HAS_CPLEX)
-#include "cplex.h"
-#endif
-
-#if defined(COIN_HAS_MOSEK)
-#include "mosek.h"
 #endif
 
 static
@@ -177,7 +172,11 @@ int GamsScip::readyAPI(
       return 1;
    }
 
-   ipoptlicensed = GAMSHSLInit(gmo, pal);
+#ifdef GAMS_BUILD
+   ipoptlicensed = GAMScheckIpoptLicense(pal, false);
+   if( ipoptlicensed )
+      GamsHSLInit();
+#endif
 
    // print version info and copyright
    sprintf(buffer, "SCIP version %d.%d (" SCIP_GITHASH ")\n", SCIPmajorVersion(), SCIPminorVersion());
@@ -468,38 +467,16 @@ SCIP_RETCODE GamsScip::freeSCIP()
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_CPLEX)
-   CPXinitialize();
-#endif
-
-#ifdef GAMS_BUILD
-   SCIPlpiSwitchSetSolver(SCIP_LPISW_SOPLEX2);
-#endif
-
    gmoInitMutexes();
    gevInitMutexes();
    palInitMutexes();
 }
 
-#ifdef GAMS_BUILD
-extern "C" void mkl_finalize(void);
-#endif
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_CPLEX)
-   CPXfinalize();
-#endif
-#ifdef COIN_HAS_MOSEK
-   MSK_licensecleanup();
-#endif
-
    gmoFiniMutexes();
    gevFiniMutexes();
    palFiniMutexes();
-
-#ifdef GAMS_BUILD
-   mkl_finalize();
-#endif
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)

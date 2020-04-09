@@ -10,6 +10,7 @@
 
 #include "GamsLinksConfig.h"
 #include "GamsSoPlex.hpp"
+#include "GamsLicensing.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -22,16 +23,6 @@
 #include "gevmcc.h"
 #include "palmcc.h"
 
-#include "GamsLicensing.h"
-
-/* disable -Wclass-memaccess warnings due to dubious memcpy/realloc calls in SoPlex headers */
-#ifdef __GNUC__
-#if __GNUC__ >= 8
-#pragma GCC diagnostic ignored "-Wclass-memaccess"
-#endif
-#endif
-
-#include "soplex.h"
 #include "soplex/spxgithash.h"
 
 using namespace soplex;
@@ -527,19 +518,19 @@ int GamsSoPlex::callSolver()
       double feastol = soplex->realParam(SoPlex::FEASTOL);
       double opttol = soplex->realParam(SoPlex::OPTTOL);
 
-      soplex->getPrimalReal(primal);
+      soplex->getPrimal(primal);
       soplex->getSlacksReal(activities);
 
       if( soplex->hasDual() )
       {
-         soplex->getRedCostReal(redcost);
-         soplex->getDualReal(dual);
+         soplex->getRedCost(redcost);
+         soplex->getDual(dual);
       }
 
       if( soplex->hasPrimalRay() )
       {
          primalray = new DVector(ncols);
-         soplex->getPrimalRayReal(*primalray);
+         soplex->getPrimal(*primalray);
       }
 
       for( int i = 0; i < gmoN(gmo); ++i )

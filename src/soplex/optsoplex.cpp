@@ -84,7 +84,7 @@ int main(int argc, char** argv)
       defaultdescr = std::string();
 
       if( i == SoPlex::ITERLIMIT )
-         defaultdescr = "GAMS iterlim";
+         defaultdescr = "\\ref GAMSAOiterlim \"GAMS iterlim\"";
       if( i == SoPlex::TIMER )
          defaultval.intval = SoPlex::TIMER_WALLCLOCK;
 
@@ -107,7 +107,11 @@ int main(int argc, char** argv)
       defaultdescr = std::string();
 
       if( i == SoPlex::TIMELIMIT )
-         defaultdescr = "GAMS reslim";
+         defaultdescr = "\\ref GAMSAOreslim \"GAMS reslim\"";
+      else if( i == SoPlex::OBJLIMIT_UPPER )
+         defaultdescr = "\\ref GAMSAOcutoff \"GAMS cutoff\", if minimizing, else +&infin;";
+      else if( i == SoPlex::OBJLIMIT_LOWER )
+         defaultdescr = "\\ref GAMSAOcutoff \"GAMS cutoff\", if maximizing, else -&infin;";
 
       gmsopt.collect(
          std::string("real:") + SoPlex::Settings::realParam.name[i],

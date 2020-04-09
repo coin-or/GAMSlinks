@@ -77,7 +77,7 @@ void collectCbcOption(
       }
       else
       {
-         opttype = GamsOptions::OPTTYPE_ENUM;
+         opttype = GamsOptions::OPTTYPE_STRING;
 
          std::string def = cbcopt.currentOption();
          // remove '!' and '?' marker from default
@@ -92,12 +92,12 @@ void collectCbcOption(
             newend = std::remove(v.begin(), newend, '?');
             v = std::string(v.begin(), newend);
 
-            enumval.push_back(std::pair<std::string, std::string>(v, ""));
+            enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup(v.c_str())}, ""));
 
             if( v == "01first" )
-               enumval.push_back(std::pair<std::string, std::string>("binaryfirst", "This is a deprecated setting. Please use 01first."));
+               enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("binaryfirst")}, "This is a deprecated setting. Please use 01first."));
             else if( v == "01last" )
-               enumval.push_back(std::pair<std::string, std::string>("binarylast", "This is a deprecated setting. Please use 01last."));
+               enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("binarylast")}, "This is a deprecated setting. Please use 01last."));
          }
       }
    }
@@ -119,8 +119,8 @@ static
 void add01(
    GamsOptions::ENUMVAL& enumval)
 {
-   enumval.push_back(std::pair<std::string, std::string>("0", "Same as off. This is a deprecated setting."));
-   enumval.push_back(std::pair<std::string, std::string>("1", "Same as on. This is a deprecated setting."));
+   enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("0")}, "Same as off. This is a deprecated setting."));
+   enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("1")}, "Same as on. This is a deprecated setting."));
 }
 
 int main(int argc, char** argv)
@@ -150,8 +150,8 @@ int main(int argc, char** argv)
    gmsopt.back().longdescr.clear();
 
    GamsOptions::ENUMVAL clocktypes;
-   clocktypes.push_back(std::pair<std::string, std::string>("cpu", "CPU clock"));
-   clocktypes.push_back(std::pair<std::string, std::string>("wall", "Wall clock"));
+   clocktypes.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("cpu")}, "CPU clock"));
+   clocktypes.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("wall")}, "Wall clock"));
    gmsopt.collect("clocktype", "type of clock for time measurement", "",
       "wall", clocktypes, "", -1);
 
@@ -195,26 +195,36 @@ int main(int argc, char** argv)
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "crossover");
    // value "maybe" is only relevant for quadratic: remove value and mention in longdescr
-   gmsopt.back().enumval.erase(std::find(gmsopt.back().enumval.begin(), gmsopt.back().enumval.end(), std::pair<std::string, std::string>("maybe", "")));
+   for( GamsOptions::ENUMVAL::iterator e(gmsopt.back().enumval.begin()); e != gmsopt.back().enumval.end(); ++e )
+      if( strcmp(e->first.stringval, "maybe") == 0 )
+      {
+         gmsopt.back().enumval.erase(e);
+         break;
+      }
    gmsopt.back().longdescr = "Interior point algorithms do not obtain a basic solution. "
       "This option will crossover to a basic solution suitable for ranging or branch and cut.";
    add01(gmsopt.back().enumval);
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "dualPivot");
-   gmsopt.back().enumval.push_back(std::pair<std::string, std::string>("auto", "Same as automatic. This is a deprecated setting."));
+   gmsopt.back().enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("auto")}, "Same as automatic. This is a deprecated setting."));
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "primalPivot");
-   gmsopt.back().enumval.push_back(std::pair<std::string, std::string>("auto", "Same as automatic. This is a deprecated setting."));
+   gmsopt.back().enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("auto")}, "Same as automatic. This is a deprecated setting."));
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "psi");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "perturbation");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "scaling");
-   gmsopt.back().enumval.push_back(std::pair<std::string, std::string>("auto", "Same as automatic. This is a deprecated setting."));
+   gmsopt.back().enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("auto")}, "Same as automatic. This is a deprecated setting."));
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "presolve");
-   gmsopt.back().enumval.erase(std::find(gmsopt.back().enumval.begin(), gmsopt.back().enumval.end(), std::pair<std::string, std::string>("file", "")));
+   for( GamsOptions::ENUMVAL::iterator e(gmsopt.back().enumval.begin()); e != gmsopt.back().enumval.end(); ++e )
+      if( strcmp(e->first.stringval, "file") == 0 )
+      {
+         gmsopt.back().enumval.erase(e);
+         break;
+      }
    add01(gmsopt.back().enumval);
    gmsopt.back().longdescr = "Presolve analyzes the model to find such things as redundant equations, "
       "equations which fix some variables, equations which can be transformed into bounds, etc. "
@@ -234,9 +244,9 @@ int main(int argc, char** argv)
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_presolve", "preTolerance");
 
    GamsOptions::ENUMVAL startalgs;
-   startalgs.push_back(std::pair<std::string, std::string>("primal", "Primal Simplex algorithm"));
-   startalgs.push_back(std::pair<std::string, std::string>("dual", "Dual Simplex algorithm"));
-   startalgs.push_back(std::pair<std::string, std::string>("barrier", "Primal-dual predictor-corrector algorithm"));
+   startalgs.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("primal")}, "Primal Simplex algorithm"));
+   startalgs.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("dual")}, "Dual Simplex algorithm"));
+   startalgs.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("barrier")}, "Primal-dual predictor-corrector algorithm"));
    gmsopt.collect("startalg", "LP solver for root node",
       "Determines the algorithm to use for an LP or the initial LP relaxation if the problem is a MIP.",
       "dual", startalgs, "", -1);
@@ -267,8 +277,8 @@ int main(int argc, char** argv)
    gmsopt.back().maxval.intval = 99;
 
    GamsOptions::ENUMVAL parallelmodes;
-   parallelmodes.push_back(std::pair<std::string, std::string>("opportunistic", ""));
-   parallelmodes.push_back(std::pair<std::string, std::string>("deterministic", ""));
+   parallelmodes.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("opportunistic")}, ""));
+   parallelmodes.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("deterministic")}, ""));
    gmsopt.collect("parallelmode", "whether to run opportunistic or deterministic",
       "Determines whether a parallel MIP search (threads > 1) should be done in a deterministic (i.e., reproducible) way or in a possibly faster but not necessarily reproducible way",
       "deterministic", parallelmodes, "", -1);

@@ -241,8 +241,9 @@ int GamsCbc::callSolver()
       return -1;
    }
 
-   /* initialize Cbc, I guess */
-   CbcMain0(*model);
+   /* initialize Cbc */
+   CbcSolverUsefulData cbcData;
+   CbcMain0(*model, cbcData);
 
    if( !setupParameters() )
    {
@@ -293,7 +294,7 @@ int GamsCbc::callSolver()
    double start_cputime  = CoinCpuTime();
    double start_walltime = CoinWallclockTime();
 
-   CbcMain1(cbc_argc, const_cast<const char**>(cbc_args), *model, cbcCallBack);
+   CbcMain1(cbc_argc, const_cast<const char**>(cbc_args), *model, cbcCallBack, cbcData);
 
    double end_cputime  = CoinCpuTime();
    double end_walltime = CoinWallclockTime();
