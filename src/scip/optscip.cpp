@@ -281,6 +281,8 @@ int main(int argc, char** argv)
          }
          else if( strcmp(SCIPparamGetName(param), "lp/threads") == 0 )
             defaultdescr = "\\ref GAMSAOthreads \"GAMS threads\"";
+         else if( strcmp(SCIPparamGetName(param), "presolving/milp/threads") == 0 )
+            defaultdescr = "\\ref GAMSAOthreads \"GAMS threads\"";
          else if( strcmp(SCIPparamGetName(param), "misc/printreason") == 0 )
             defaultval.boolval = false;
          else if( strcmp(SCIPparamGetName(param), "display/lpavgiterations/active") == 0 )
