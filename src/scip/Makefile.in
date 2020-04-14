@@ -843,9 +843,11 @@ uninstall-am: uninstall-libLTLIBRARIES uninstall-local
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsScip.la MYSCIP scp "MIP QCP RMIQCP NLP DNLP RMINLP CNS MIQCP MINLP" 5
+@COIN_HAS_GCG_TRUE@	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsScip.la MYGCG gcg "MIP" 5
 
 uninstall-local :
 	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYSCIP
+@COIN_HAS_GCG_TRUE@	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYGCG
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

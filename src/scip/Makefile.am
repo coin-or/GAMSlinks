@@ -28,6 +28,12 @@ CLEANFILES += optscip.gms branchrules.md conflicthdlrs.md conshdlrs.md disps.md 
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsScip.la MYSCIP scp "MIP QCP RMIQCP NLP DNLP RMINLP CNS MIQCP MINLP" 5
+if COIN_HAS_GCG
+	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsScip.la MYGCG gcg "MIP" 5
+endif
 
 uninstall-local :
 	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYSCIP
+if COIN_HAS_GCG
+	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYGCG
+endif

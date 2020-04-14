@@ -31,6 +31,11 @@
 #include "reader_gmo.h"
 #include "event_solvetrace.h"
 
+#ifdef GAMSLINKS_HAS_GCG
+#include "gcgplugins.h"
+#endif
+
+
 #ifdef GAMS_BUILD
 #include "lpiswitch.h"
 #endif
@@ -369,9 +374,16 @@ SCIP_RETCODE GamsScip::setupSCIP()
       SCIP_CALL( SCIPsetMessagehdlr(scip, messagehdlr) );
       SCIP_CALL( SCIPmessagehdlrRelease(&messagehdlr) );
 
-      SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
+      if( gcg )
+      {
+         SCIP_CALL( SCIPincludeGcgPlugins(scip) );
+      }
+      else
+      {
+         SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
+         SCIP_CALL( SCIPincludeEventHdlrSolveTrace(scip, gmo) );
+      }
       SCIP_CALL( SCIPincludeReaderGmo(scip) );
-      SCIP_CALL( SCIPincludeEventHdlrSolveTrace(scip, gmo) );
 
       if( ipoptlicensed )
       {
@@ -496,6 +508,80 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char*
       return 0;
 
    *Cptr = (void*) new GamsScip();
+   if( *Cptr == NULL )
+   {
+      snprintf(msgBuf, msgBufLen, "Out of memory when creating GamsScip object.\n");
+      if( msgBufLen > 0 )
+         msgBuf[msgBufLen] = '\0';
+      return 0;
+   }
+
+   return 1;
+}
+
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
+{
+   assert(Cptr != NULL);
+
+   delete (GamsScip*)*Cptr;
+   *Cptr = NULL;
+
+   gmoLibraryUnload();
+   gevLibraryUnload();
+   palLibraryUnload();
+
+   return 1;
+}
+
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
+{
+   assert(Cptr != NULL);
+   return ((GamsScip*)Cptr)->callSolver();
+}
+
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr)
+{
+   assert(Cptr != NULL);
+   assert(Gptr != NULL);
+
+   return ((GamsScip*)Cptr)->readyAPI(Gptr);
+}
+
+#undef GAMSSOLVER_ID
+#define GAMSSOLVER_ID gcg
+#include "GamsEntryPoints_tpl.c"
+
+DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
+{
+   gmoInitMutexes();
+   gevInitMutexes();
+   palInitMutexes();
+}
+
+DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
+{
+   gmoFiniMutexes();
+   gevFiniMutexes();
+   palFiniMutexes();
+}
+
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
+{
+   assert(Cptr != NULL);
+   assert(msgBuf != NULL);
+
+   *Cptr = NULL;
+
+   if( !gmoGetReady(msgBuf, msgBufLen) )
+      return 0;
+
+   if( !gevGetReady(msgBuf, msgBufLen) )
+      return 0;
+
+   if( !palGetReady(msgBuf, msgBufLen) )
+      return 0;
+
+   *Cptr = (void*) new GamsScip(true);
    if( *Cptr == NULL )
    {
       snprintf(msgBuf, msgBufLen, "Out of memory when creating GamsScip object.\n");

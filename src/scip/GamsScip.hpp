@@ -31,18 +31,20 @@ private:
    SCIP*                 scip;               /**< SCIP structure */
    bool                  ipoptlicensed;      /**< whether a commercial Ipopt license is available */
    bool                  calledxprslicense;  /**< whether we have registered the GAMS/Xpress license (gevxpressliceInitTS) */
+   bool                  gcg;                /**< whether we want to run GCG */
 
    SCIP_RETCODE setupSCIP();
    SCIP_RETCODE freeSCIP();
 
 public:
-   GamsScip()
+   GamsScip(bool gcg_ = false)
    : gmo(NULL),
      gev(NULL),
      pal(NULL),
      scip(NULL),
      ipoptlicensed(false),
-     calledxprslicense(false)
+     calledxprslicense(false),
+     gcg(gcg_)
    { }
 
    ~GamsScip();
