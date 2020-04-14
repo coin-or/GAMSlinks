@@ -40,7 +40,7 @@
 #include "CoinHelperFunctions.hpp"
 #include "CoinTime.hpp"
 
-//#if defined(__linux) && defined(COIN_HAS_CPLEX)
+//#if defined(__linux) && defined(GAMSLINKS_HAS_CPLEX)
 //#include "cplex.h"
 //#endif
 
@@ -1401,7 +1401,7 @@ bool GamsCbc::isLP()
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 {
 // assuming that CBC was build without CPLEX (or the CPLEX feature not enabled)
-//#if defined(__linux) && defined(COIN_HAS_CPLEX)
+//#if defined(__linux) && defined(GAMSLINKS_HAS_CPLEX)
 //   CPXinitialize();
 //#endif
 
@@ -1417,7 +1417,7 @@ extern "C" void mkl_finalize(void);
 #endif
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
-//#if defined(__linux) && defined(COIN_HAS_CPLEX)
+//#if defined(__linux) && defined(GAMSLINKS_HAS_CPLEX)
 //   CPXfinalize();
 //#endif
 

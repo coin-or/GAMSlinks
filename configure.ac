@@ -21,7 +21,7 @@ under the Eclipse Public License.])
 # whether the package is actually there
 AC_CONFIG_SRCDIR(src/utils/GamsLinksConfig.h)
 
-AC_COIN_INITIALIZE(GAMSlinks)
+AC_COIN_INITIALIZE
 
 #############################################################################
 #                         Standard build tools stuff                        #

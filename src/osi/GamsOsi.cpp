@@ -31,7 +31,7 @@
 #include "CoinPackedVector.hpp"
 #include "CoinWarmStartBasis.hpp"
 
-#ifdef COIN_HAS_OSICPX
+#ifdef GAMSLINKS_HAS_OSICPX
 #include "OsiCpxSolverInterface.hpp"
 #include "cplex.h"
 
@@ -41,7 +41,7 @@ static int CPXPUBLIC cpxinfocallback(CPXCENVptr cpxenv, void* cbdata, int wheref
 }
 #endif
 
-#ifdef COIN_HAS_OSIGRB
+#ifdef GAMSLINKS_HAS_OSIGRB
 #include "OsiGrbSolverInterface.hpp"
 extern "C"
 {
@@ -64,7 +64,7 @@ static int __stdcall grbcallback(GRBmodel* model, void* qcbdata, int where, void
 }
 #endif
 
-#ifdef COIN_HAS_OSIMSK
+#ifdef GAMSLINKS_HAS_OSIMSK
 #include "OsiMskSolverInterface.hpp"
 #include "mosek.h"
 
@@ -78,7 +78,7 @@ static int MSKAPI mskcallback(MSKtask_t task, MSKuserhandle_t handle, MSKcallbac
 }
 #endif
 
-#ifdef COIN_HAS_OSIXPR
+#ifdef GAMSLINKS_HAS_OSIXPR
 #include "OsiXprSolverInterface.hpp"
 #include "xprs.h"
 extern "C" void XPRS_CC XPRScommand(XPRSprob, char*);
@@ -196,25 +196,25 @@ int GamsOsi::readyAPI(
    gevLogStat(gev, "");
    switch (solverid)
    {
-#ifdef COIN_HAS_OSICPX
+#ifdef GAMSLINKS_HAS_OSICPX
       case CPLEX:
          sprintf(buffer, "OsiCplex (Osi library " OSI_VERSION ", CPLEX library %.2f)\nOsi link written by T. Achterberg. Osi is part of COIN-OR.\n", CPX_VERSION/100.);
          break;
 #endif
 
-#ifdef COIN_HAS_OSIGRB
+#ifdef GAMSLINKS_HAS_OSIGRB
       case GUROBI:
          sprintf(buffer, "OsiGurobi (Osi library " OSI_VERSION ", GUROBI library %d.%d.%d)\nOsi link written by S. Vigerske. Osi is part of COIN-OR.\n", GRB_VERSION_MAJOR, GRB_VERSION_MINOR, GRB_VERSION_TECHNICAL);
          break;
 #endif
 
-#ifdef COIN_HAS_OSIMSK
+#ifdef GAMSLINKS_HAS_OSIMSK
       case MOSEK:
          sprintf(buffer, "OsiMosek (Osi library " OSI_VERSION ", MOSEK library %d.%d)\nwritten by Bo Jensen. Osi is part of COIN-OR.\n", MSK_VERSION_MAJOR, MSK_VERSION_MINOR);
          break;
 #endif
 
-#ifdef COIN_HAS_OSIXPR
+#ifdef GAMSLINKS_HAS_OSIXPR
       case XPRESS:
          sprintf(buffer, "OsiXpress (Osi library " OSI_VERSION ", FICO Xpress-Optimizer library %d)\nOsi is part of COIN-OR.\n", XPVERSION);
          break;
@@ -236,7 +236,7 @@ int GamsOsi::readyAPI(
       {
          case CPLEX:
          {
-#ifdef COIN_HAS_OSICPX
+#ifdef GAMSLINKS_HAS_OSICPX
             OsiCpxSolverInterface* osicpx;
 #ifdef GAMS_BUILD
             if( !GAMScheckCPLEXLicense(pal, false) )
@@ -261,7 +261,7 @@ int GamsOsi::readyAPI(
 
          case GUROBI:
          {
-#ifdef COIN_HAS_OSIGRB
+#ifdef GAMSLINKS_HAS_OSIGRB
             GRBenv* grbenv = NULL;
 #ifdef GAMS_BUILD
             int status;
@@ -302,7 +302,7 @@ int GamsOsi::readyAPI(
 
          case MOSEK:
          {
-#ifdef COIN_HAS_OSIMSK
+#ifdef GAMSLINKS_HAS_OSIMSK
 #ifdef GAMS_BUILD
             MSKenv_t mskenv;
             MKlicenseInit_t initType;
@@ -330,7 +330,7 @@ int GamsOsi::readyAPI(
 
          case XPRESS:
          {
-#ifdef COIN_HAS_OSIXPR
+#ifdef GAMSLINKS_HAS_OSIXPR
             char msg[1024];
 #ifdef GAMS_BUILD
             XPlicenseInit_t initType;
@@ -674,7 +674,7 @@ bool GamsOsi::setupParameters()
 
    switch( solverid )
    {
-#ifdef COIN_HAS_OSICPX
+#ifdef GAMSLINKS_HAS_OSICPX
       case CPLEX:
       {
          OsiCpxSolverInterface* osicpx = dynamic_cast<OsiCpxSolverInterface*>(osi);
@@ -708,7 +708,7 @@ bool GamsOsi::setupParameters()
       }
 #endif
 
-#ifdef COIN_HAS_OSIGRB
+#ifdef GAMSLINKS_HAS_OSIGRB
       case GUROBI:
       {
          OsiGrbSolverInterface* osigrb = dynamic_cast<OsiGrbSolverInterface*>(osi);
@@ -743,7 +743,7 @@ bool GamsOsi::setupParameters()
       }
 #endif
 
-#ifdef COIN_HAS_OSIMSK
+#ifdef GAMSLINKS_HAS_OSIMSK
       case MOSEK:
       {
          OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
@@ -767,7 +767,7 @@ bool GamsOsi::setupParameters()
       }
 #endif
 
-#ifdef COIN_HAS_OSIXPR
+#ifdef GAMSLINKS_HAS_OSIXPR
       case XPRESS:
       {
          OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
@@ -822,7 +822,7 @@ bool GamsOsi::setupCallbacks()
 
    switch( solverid )
    {
-#ifdef COIN_HAS_OSICPX
+#ifdef GAMSLINKS_HAS_OSICPX
       case CPLEX:
       {
          OsiCpxSolverInterface* osicpx = dynamic_cast<OsiCpxSolverInterface*>(osi);
@@ -833,7 +833,7 @@ bool GamsOsi::setupCallbacks()
       }
 #endif
 
-#ifdef COIN_HAS_OSIGRB
+#ifdef GAMSLINKS_HAS_OSIGRB
       case GUROBI:
       {
          OsiGrbSolverInterface* osigrb = dynamic_cast<OsiGrbSolverInterface*>(osi);
@@ -845,7 +845,7 @@ bool GamsOsi::setupCallbacks()
       }
 #endif
 
-#ifdef COIN_HAS_OSIMSK
+#ifdef GAMSLINKS_HAS_OSIMSK
       case MOSEK:
       {
          OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
@@ -856,7 +856,7 @@ bool GamsOsi::setupCallbacks()
       }
 #endif
 
-#ifdef COIN_HAS_OSIXPR
+#ifdef GAMSLINKS_HAS_OSIXPR
       case XPRESS:
       {
          OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
@@ -907,7 +907,7 @@ bool GamsOsi::writeSolution(
 
    switch( solverid )
    {
-#ifdef COIN_HAS_OSICPX
+#ifdef GAMSLINKS_HAS_OSICPX
       case CPLEX:
       {
          OsiCpxSolverInterface* osicpx = dynamic_cast<OsiCpxSolverInterface*>(osi);
@@ -1067,7 +1067,7 @@ bool GamsOsi::writeSolution(
       }
 #endif
 
-#ifdef COIN_HAS_OSIGRB
+#ifdef GAMSLINKS_HAS_OSIGRB
       case GUROBI:
       {
          OsiGrbSolverInterface* osigrb = dynamic_cast<OsiGrbSolverInterface*>(osi);
@@ -1243,7 +1243,7 @@ bool GamsOsi::writeSolution(
       }
 #endif
 
-#ifdef COIN_HAS_OSIMSK
+#ifdef GAMSLINKS_HAS_OSIMSK
       case MOSEK:
       {
          OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
@@ -1448,7 +1448,7 @@ bool GamsOsi::writeSolution(
 #endif
 
 
-#ifdef COIN_HAS_OSIXPR
+#ifdef GAMSLINKS_HAS_OSIXPR
       case XPRESS:
       {
          OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
@@ -1762,7 +1762,7 @@ bool GamsOsi::solveFixed()
       // setup timelimit for fixed solve
       switch( solverid )
       {
-#ifdef COIN_HAS_OSICPX
+#ifdef GAMSLINKS_HAS_OSICPX
          case CPLEX:
          {
             OsiCpxSolverInterface* osicpx = dynamic_cast<OsiCpxSolverInterface*>(osi);
@@ -1772,7 +1772,7 @@ bool GamsOsi::solveFixed()
          }
 #endif
 
-#ifdef COIN_HAS_OSIGRB
+#ifdef GAMSLINKS_HAS_OSIGRB
          case GUROBI:
          {
             OsiGrbSolverInterface* osigrb = dynamic_cast<OsiGrbSolverInterface*>(osi);
@@ -1782,7 +1782,7 @@ bool GamsOsi::solveFixed()
          }
 #endif
 
-#ifdef COIN_HAS_OSIMSK
+#ifdef GAMSLINKS_HAS_OSIMSK
          case MOSEK:
          {
             OsiMskSolverInterface* osimsk = dynamic_cast<OsiMskSolverInterface*>(osi);
@@ -1792,7 +1792,7 @@ bool GamsOsi::solveFixed()
          }
 #endif
 
-#ifdef COIN_HAS_OSIXPR
+#ifdef GAMSLINKS_HAS_OSIXPR
          case XPRESS:
          {
             OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
@@ -1888,7 +1888,7 @@ int oxyfree(void** Cptr)
 static
 void oxyInitialize(void)
 {
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
+#if defined(__linux) && defined(GAMSLINKS_HAS_OSICPX)
    CPXinitialize();
 #endif
 
@@ -1900,7 +1900,7 @@ void oxyInitialize(void)
 static
 void oxyFinalize(void)
 {
-#if defined(__linux) && defined(COIN_HAS_OSICPX)
+#if defined(__linux) && defined(GAMSLINKS_HAS_OSICPX)
    CPXfinalize();
 #endif
 
@@ -1909,7 +1909,7 @@ void oxyFinalize(void)
    palFiniMutexes();
 }
 
-#ifdef COIN_HAS_OSICPX
+#ifdef GAMSLINKS_HAS_OSICPX
 #define GAMSSOLVER_ID ocp
 #include "GamsEntryPoints_tpl.c"
 
@@ -1950,7 +1950,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoH
 #undef GAMSSOLVER_ID
 #endif
 
-#ifdef COIN_HAS_OSIGRB
+#ifdef GAMSLINKS_HAS_OSIGRB
 #define GAMSSOLVER_ID ogu
 #include "GamsEntryPoints_tpl.c"
 
@@ -1991,7 +1991,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoH
 #undef GAMSSOLVER_ID
 #endif
 
-#ifdef COIN_HAS_OSIMSK
+#ifdef GAMSLINKS_HAS_OSIMSK
 #define GAMSSOLVER_ID omk
 #include "GamsEntryPoints_tpl.c"
 
@@ -2004,7 +2004,7 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
    oxyFinalize();
 
-#ifdef COIN_HAS_OSIMSK
+#ifdef GAMSLINKS_HAS_OSIMSK
    MSK_licensecleanup();
 #endif
 }
@@ -2036,7 +2036,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoH
 #undef GAMSSOLVER_ID
 #endif
 
-#ifdef COIN_HAS_OSIXPR
+#ifdef GAMSLINKS_HAS_OSIXPR
 #define GAMSSOLVER_ID oxp
 #include "GamsEntryPoints_tpl.c"
 

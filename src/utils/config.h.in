@@ -1,50 +1,5 @@
 /* src/utils/config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Define to 1 if Bonmin is available. */
-#undef COIN_HAS_BONMIN
-
-/* Define to 1 if Cbc is available. */
-#undef COIN_HAS_CBC
-
-/* Define to 1 if Couenne is available. */
-#undef COIN_HAS_COUENNE
-
-/* Define to 1 if the Cplex package is available */
-#undef COIN_HAS_CPLEX
-
-/* Define to 1 if the Gurobi package is available */
-#undef COIN_HAS_GUROBI
-
-/* Define to 1 if Ipopt is available. */
-#undef COIN_HAS_IPOPT
-
-/* Define to 1 if the Mosek package is available */
-#undef COIN_HAS_MOSEK
-
-/* Define to 1 if Osi is available. */
-#undef COIN_HAS_OSI
-
-/* Define to 1 if OsiCpx is available. */
-#undef COIN_HAS_OSICPX
-
-/* Define to 1 if OsiGrb is available. */
-#undef COIN_HAS_OSIGRB
-
-/* Define to 1 if OsiMsk is available. */
-#undef COIN_HAS_OSIMSK
-
-/* Define to 1 if OsiXpr is available. */
-#undef COIN_HAS_OSIXPR
-
-/* Define to 1 if the SCIP package is available */
-#undef COIN_HAS_SCIP
-
-/* Define to 1 if the SoPlex package is available */
-#undef COIN_HAS_SOPLEX
-
-/* Define to 1 if the Xpress package is available */
-#undef COIN_HAS_XPRESS
-
 /* Define to 1 if your C++ compiler doesn't accept -c and -o together. */
 #undef CXX_NO_MINUS_C_MINUS_O
 
@@ -59,6 +14,51 @@
 
 /* Library Visibility Attribute */
 #undef GAMSIPOPT_EXPORT
+
+/* Define to 1 if Bonmin is available. */
+#undef GAMSLINKS_HAS_BONMIN
+
+/* Define to 1 if Cbc is available. */
+#undef GAMSLINKS_HAS_CBC
+
+/* Define to 1 if Couenne is available. */
+#undef GAMSLINKS_HAS_COUENNE
+
+/* Define to 1 if the Cplex package is available */
+#undef GAMSLINKS_HAS_CPLEX
+
+/* Define to 1 if the Gurobi package is available */
+#undef GAMSLINKS_HAS_GUROBI
+
+/* Define to 1 if Ipopt is available. */
+#undef GAMSLINKS_HAS_IPOPT
+
+/* Define to 1 if the Mosek package is available */
+#undef GAMSLINKS_HAS_MOSEK
+
+/* Define to 1 if Osi is available. */
+#undef GAMSLINKS_HAS_OSI
+
+/* Define to 1 if OsiCpx is available. */
+#undef GAMSLINKS_HAS_OSICPX
+
+/* Define to 1 if OsiGrb is available. */
+#undef GAMSLINKS_HAS_OSIGRB
+
+/* Define to 1 if OsiMsk is available. */
+#undef GAMSLINKS_HAS_OSIMSK
+
+/* Define to 1 if OsiXpr is available. */
+#undef GAMSLINKS_HAS_OSIXPR
+
+/* Define to 1 if the SCIP package is available */
+#undef GAMSLINKS_HAS_SCIP
+
+/* Define to 1 if the SoPlex package is available */
+#undef GAMSLINKS_HAS_SOPLEX
+
+/* Define to 1 if the Xpress package is available */
+#undef GAMSLINKS_HAS_XPRESS
 
 /* Version number of project */
 #undef GAMSLINKS_VERSION

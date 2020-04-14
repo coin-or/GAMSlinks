@@ -150,7 +150,7 @@ int GamsScip::readyAPI(
 
    GAMSinitLicensing(gmo, pal);
 
-#if defined(COIN_HAS_XPRESS) && defined(GAMS_BUILD)
+#if defined(GAMSLINKS_HAS_XPRESS) && defined(GAMS_BUILD)
    /* Xpress license setup - don't say anything if failing, since Xpress is not used by default */
    if( !calledxprslicense )
    {
@@ -346,7 +346,7 @@ int GamsScip::callSolver()
 
 SCIP_RETCODE GamsScip::setupSCIP()
 {
-#if defined(COIN_HAS_CPLEX) && defined(GAMS_BUILD)
+#if defined(GAMSLINKS_HAS_CPLEX) && defined(GAMS_BUILD)
    // change default LP solver to CPLEX, if license available
    if( gmo != NULL && GAMScheckCPLEXLicense(pal, true) )
    {

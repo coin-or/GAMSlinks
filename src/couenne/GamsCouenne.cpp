@@ -62,11 +62,11 @@
 //#include "exprQuad.hpp"
 //#include "lqelems.hpp"
 
-#if defined(__linux) && defined(COIN_HAS_CPLEX)
+#if defined(__linux) && defined(GAMSLINKS_HAS_CPLEX)
 #include "cplex.h"
 #endif
 
-#if defined(COIN_HAS_SCIP) && defined(GAMS_BUILD)
+#if defined(GAMSLINKS_HAS_SCIP) && defined(GAMS_BUILD)
 #include "lpiswitch.h"
 #endif
 
@@ -294,7 +294,7 @@ int GamsCouenne::callSolver()
    // check for CPLEX license, if used
    std::string parvalue;
    couenne_setup->options()->GetStringValue("lp_solver", parvalue, "");
-#ifdef COIN_HAS_CPLEX
+#ifdef GAMSLINKS_HAS_CPLEX
    if( parvalue == "cplex" && !GAMScheckCPLEXLicense(pal, true) )
    {
       gevLogStat(gev, "CPLEX as LP solver chosen, but no CPLEX license available. Aborting.\n");
@@ -308,7 +308,7 @@ int GamsCouenne::callSolver()
 
    // if feaspump is activated and should use SCIP, check for academic license of SCIP
    // also do not accept demo mode, since we do not know how large the MIPs in the feaspump will be
-#ifdef COIN_HAS_SCIP
+#ifdef GAMSLINKS_HAS_SCIP
    bool usescip;
    couenne_setup->options()->GetBoolValue("feas_pump_heuristic", usescip, "couenne.");
    if( usescip )
@@ -1652,11 +1652,11 @@ void GamsCouenne::passSOSSemiCon(
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_CPLEX)
+#if defined(__linux) && defined(GAMSLINKS_HAS_CPLEX)
    CPXinitialize();
 #endif
 
-#if defined(COIN_HAS_SCIP) && defined(GAMS_BUILD)
+#if defined(GAMSLINKS_HAS_SCIP) && defined(GAMS_BUILD)
    SCIPlpiSwitchSetSolver(SCIP_LPISW_SOPLEX2);
 #endif
 
@@ -1670,7 +1670,7 @@ extern "C" void mkl_finalize(void);
 #endif
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_CPLEX)
+#if defined(__linux) && defined(GAMSLINKS_HAS_CPLEX)
    CPXfinalize();
 #endif
 

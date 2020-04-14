@@ -18,7 +18,7 @@
 #include "BonBonminSetup.hpp"
 #include "BonCbc.hpp"
 
-#if defined(__linux) && defined(COIN_HAS_CPLEX)
+#if defined(__linux) && defined(GAMSLINKS_HAS_CPLEX)
 #include "cplex.h"
 #endif
 
@@ -244,7 +244,7 @@ int GamsBonmin::callSolver()
 
    // check for GAMS/CPLEX license, if required
    std::string parvalue;
-#ifdef COIN_HAS_CPLEX
+#ifdef GAMSLINKS_HAS_CPLEX
    std::string prefixes[7] = { "", "bonmin", "oa_decomposition.", "pump_for_minlp.", "rins.", "rens.", "local_branch." };
    for( int i = 0; i < 7; ++i )
    {
@@ -625,7 +625,7 @@ int GamsBonmin::callSolver()
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_CPLEX)
+#if defined(__linux) && defined(GAMSLINKS_HAS_CPLEX)
    CPXinitialize();
 #endif
 
@@ -639,7 +639,7 @@ extern "C" void mkl_finalize(void);
 #endif
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 {
-#if defined(__linux) && defined(COIN_HAS_CPLEX)
+#if defined(__linux) && defined(GAMSLINKS_HAS_CPLEX)
    CPXfinalize();
 #endif
 
