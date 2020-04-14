@@ -72,7 +72,7 @@ void GamsJournal::PrintfImpl(
    va_list                 ap
 )
 {
-   static char outBuf[10000];
+   char outBuf[10000];
 #ifdef HAVE_VA_COPY
    va_list apcopy;
    va_copy(apcopy, ap);
