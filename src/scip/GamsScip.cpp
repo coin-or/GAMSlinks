@@ -376,7 +376,9 @@ SCIP_RETCODE GamsScip::setupSCIP()
 
       if( gcg )
       {
+#ifdef GAMSLINKS_HAS_GCG
          SCIP_CALL( SCIPincludeGcgPlugins(scip) );
+#endif
       }
       else
       {
@@ -547,6 +549,8 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoH
    return ((GamsScip*)Cptr)->readyAPI(Gptr);
 }
 
+#ifdef GAMSLINKS_HAS_GCG
+
 #undef GAMSSOLVER_ID
 #define GAMSSOLVER_ID gcg
 #include "GamsEntryPoints_tpl.c"
@@ -620,3 +624,5 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoH
 
    return ((GamsScip*)Cptr)->readyAPI(Gptr);
 }
+
+#endif // GAMSLINKS_HAS_GCG
