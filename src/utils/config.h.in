@@ -27,6 +27,9 @@
 /* Define to 1 if the Cplex package is available */
 #undef GAMSLINKS_HAS_CPLEX
 
+/* Define to 1 if the GCG package is available */
+#undef GAMSLINKS_HAS_GCG
+
 /* Define to 1 if the Gurobi package is available */
 #undef GAMSLINKS_HAS_GUROBI
 

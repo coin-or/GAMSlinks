@@ -666,6 +666,8 @@ COIN_HAS_MOSEK_FALSE
 COIN_HAS_MOSEK_TRUE
 COIN_HAS_CPLEX_FALSE
 COIN_HAS_CPLEX_TRUE
+COIN_HAS_GCG_FALSE
+COIN_HAS_GCG_TRUE
 COIN_HAS_SCIP_FALSE
 COIN_HAS_SCIP_TRUE
 GAMSSCIP_CFLAGS
@@ -904,6 +906,9 @@ with_soplex_cflags
 with_scip
 with_scip_lflags
 with_scip_cflags
+with_gcg
+with_gcg_lflags
+with_gcg_cflags
 with_cplex
 with_cplex_lflags
 with_cplex_cflags
@@ -1685,6 +1690,15 @@ Optional Packages:
   --with-scip-lflags      Linker flags for SCIP appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-scip-cflags      Compiler flags for SCIP appropriate for your
+                          environment. (Most often, -I specs for header file
+                          directories.)
+  --with-gcg              Use GCG. If an argument is given, 'yes' is
+                          equivalent to --with-gcg, 'no' is
+                          equivalent to --without-gcg. Any other argument is
+                          applied as for --with-gcg-lflags
+  --with-gcg-lflags       Linker flags for GCG appropriate for your
+                          environment. (Most often, -l specs for libraries.)
+  --with-gcg-cflags       Compiler flags for GCG appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
   --with-cplex            Use Cplex. If an argument is given, 'yes' is
@@ -20026,6 +20040,266 @@ $as_echo "#define GAMSLINKS_HAS_SCIP 1" >>confdefs.h
   fi
 
 
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package GCG" >&5
+$as_echo_n "checking for package GCG... " >&6; }
+
+# Make sure the necessary variables exist for each client package.
+
+
+
+
+
+# Check to see if the user has overridden configure parameters from the
+# environment.
+
+  coin_has_gcg=noInfo
+  if test x"$COIN_SKIP_PROJECTS" != x ; then
+    for pkg in $COIN_SKIP_PROJECTS ; do
+      if test "$pkg" = "$gcg" ; then
+        coin_has_gcg=skipping
+      fi
+    done
+  fi
+
+# If we're not skipping this project, define and process the command line
+# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
+# the heavy lifting.
+
+  if test "$coin_has_gcg" != skipping ; then
+
+
+
+
+# Check whether --with-gcg was given.
+if test "${with_gcg+set}" = set; then :
+  withval=$with_gcg;
+fi
+
+
+
+# Check whether --with-gcg-lflags was given.
+if test "${with_gcg_lflags+set}" = set; then :
+  withval=$with_gcg_lflags;
+fi
+
+
+
+# Check whether --with-gcg-cflags was given.
+if test "${with_gcg_cflags+set}" = set; then :
+  withval=$with_gcg_cflags;
+fi
+
+
+
+
+
+  dflt_action=yes
+
+# Initialize variables for the primary library.
+
+  coin_has_gcg=noInfo
+  gcg_lflags=
+  gcg_cflags=
+  gcg_data=
+
+# --with-prim is always present. If the client specified dataonly, its value
+# is assigned to prim_data.
+
+  withval=$with_gcg
+  if test -n "$withval" ; then
+    case "$withval" in
+      no )
+        coin_has_gcg=skipping
+        ;;
+      yes )
+        coin_has_gcg=requested
+        ;;
+      build )
+        coin_has_gcg=build
+        ;;
+      * )
+        coin_has_gcg=yes
+        gcg_lflags=$withval
+        ;;
+    esac
+  fi
+
+# --with-prim-lflags and --with-prim-cflags are present unless the client
+# specified dataonly. Specifying --with-prim=no overrides the individual
+# options for lflags and cflags.
+
+  if test "$coin_has_gcg" != skipping ; then
+       withval=$with_gcg_lflags
+       if test -n "$withval" ; then
+         case "$withval" in
+           build | no | yes )
+             as_fn_error $? "\"$withval\" is not valid here; please specify linker flags appropriate for your environment." "$LINENO" 5
+             ;;
+           * )
+             coin_has_gcg=yes
+             gcg_lflags=$withval
+             ;;
+         esac
+       fi
+
+       withval=$with_gcg_cflags
+       if test -n "$withval" ; then
+         case "$withval" in
+           build | no | yes )
+             as_fn_error $? "\"$withval\" is not valid here; please specify compiler flags appropriate for your environment." "$LINENO" 5
+             ;;
+           * )
+             coin_has_gcg=yes
+             gcg_cflags="$withval"
+             ;;
+         esac
+       fi
+     fi
+
+# --with-prim-data will be present unless the client specified nodata.
+# Specifying --with-prim=no overrides the individual option for data.
+
+
+
+# At this point, coin_has_prim can be one of noInfo (no user options
+# specified), skipping (user said no), requested or build (user said yes
+# or build and gave no further guidance), or yes (user specified one or
+# more --with-prim options). If we're already at yes or skipping, we're
+# done looking.
+
+# If there are no user options (noInfo) and the default is no, we're skipping.
+# Otherwise, the default must be yes or build; consider the package requested.
+# A default action we don't recognise defaults to yes.
+
+  if test "$coin_has_gcg" = noInfo ; then
+    case $dflt_action in
+      no )
+        coin_has_gcg=skipping
+        ;;
+      build )
+        coin_has_gcg=build
+        ;;
+      * )
+        coin_has_gcg=requested
+        ;;
+    esac
+  fi
+
+# Now coin_has_prim can be one of skipping, yes, build, or requested. For
+# build or requested, use the parameter values or invent some.
+
+  case $coin_has_gcg in
+    build | requested)
+      gcg_lflags="-lgcg"
+         if test "$coin_has_gcg" = build ; then
+              gcg_cflags="-I\$(pkgincludedir)/ThirdParty"
+            fi
+
+      coin_has_gcg=yes
+      ;;
+    skipping | yes )
+      ;;
+    * )
+      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Unexpected status \"$coin_has_gcg\" in COIN_FIND_PRIM_LIB" >&5
+$as_echo "$as_me: WARNING: Unexpected status \"$coin_has_gcg\" in COIN_FIND_PRIM_LIB" >&2;}
+      ;;
+  esac
+
+# At this point, coin_has_prim is yes or skipping.  Time to run a link check,
+# if we have a function (GCGisMaster). Use whatever we've collected for lflags, plus
+# other libraries () as the other libraries parameter to AC_SEARCH_LIBS,
+# leaving the library parameter blank.
+
+  if test $coin_has_gcg != skipping ; then
+    ac_save_LIBS=$LIBS
+       LIBS="$gcg_lflags "
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifdef __cplusplus
+             extern "C"
+           #endif
+           void GCGisMaster();
+int
+main ()
+{
+GCGisMaster()
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+
+else
+  coin_has_gcg=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+       LIBS=$ac_save_LIBS
+  fi
+
+# The final value of coin_has_prim will be yes, no, or skipping. No means that
+# the link check failed. Yes means that we passed the link check, or no link
+# check was performed. Skipping means the user said `don't use.'
+
+# Define BUILDTOOLS_DEBUG to enable debugging output
+
+    if test "$BUILDTOOLS_DEBUG" = 1 ; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for gcg: \"$coin_has_gcg\"" >&5
+$as_echo "$as_me: FIND_PRIM_LIB result for gcg: \"$coin_has_gcg\"" >&6;}
+      { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'gcg'" >&5
+$as_echo "$as_me: Collected values for package 'gcg'" >&6;}
+      { $as_echo "$as_me:${as_lineno-$LINENO}: gcg_lflags is \"$gcg_lflags\"" >&5
+$as_echo "$as_me: gcg_lflags is \"$gcg_lflags\"" >&6;}
+      { $as_echo "$as_me:${as_lineno-$LINENO}: gcg_cflags is \"$gcg_cflags\"" >&5
+$as_echo "$as_me: gcg_cflags is \"$gcg_cflags\"" >&6;}
+      { $as_echo "$as_me:${as_lineno-$LINENO}: gcg_data is \"$gcg_data\"" >&5
+$as_echo "$as_me: gcg_data is \"$gcg_data\"" >&6;}
+      { $as_echo "$as_me:${as_lineno-$LINENO}: gcg_pcfiles is \"$gcg_pcfiles\"" >&5
+$as_echo "$as_me: gcg_pcfiles is \"$gcg_pcfiles\"" >&6;}
+    fi
+
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_gcg" >&5
+$as_echo "$coin_has_gcg" >&6; }
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_gcg due to COIN_SKIP_PROJECTS" >&5
+$as_echo "$coin_has_gcg due to COIN_SKIP_PROJECTS" >&6; }
+  fi
+
+# Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
+
+  if test "$coin_has_gcg" != yes ; then
+    coin_has_gcg=no
+  fi
+
+# Create an automake conditional COIN_HAS_PRIM.
+
+   if test $coin_has_gcg = yes; then
+  COIN_HAS_GCG_TRUE=
+  COIN_HAS_GCG_FALSE='#'
+else
+  COIN_HAS_GCG_TRUE='#'
+  COIN_HAS_GCG_FALSE=
+fi
+
+
+# If we've located the package, define preprocessor symbol COIN_HAS_PRIM
+# and augment the necessary variables for the client packages.
+
+  if test $coin_has_gcg = yes ; then
+
+$as_echo "#define GAMSLINKS_HAS_GCG 1" >>confdefs.h
+
+    GAMSSCIP_LFLAGS="$gcg_lflags $GAMSSCIP_LFLAGS"
+       GAMSSCIP_CFLAGS="$gcg_cflags $GAMSSCIP_CFLAGS"
+
+
+# Finally, set up PRIM_DATA, unless the user specified nodata.
+
+
+  fi
+
+
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Cplex" >&5
 $as_echo_n "checking for package Cplex... " >&6; }
 
@@ -21969,6 +22243,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${COIN_HAS_SCIP_TRUE}" && test -z "${COIN_HAS_SCIP_FALSE}"; then
   as_fn_error $? "conditional \"COIN_HAS_SCIP\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${COIN_HAS_GCG_TRUE}" && test -z "${COIN_HAS_GCG_FALSE}"; then
+  as_fn_error $? "conditional \"COIN_HAS_GCG\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${COIN_HAS_CPLEX_TRUE}" && test -z "${COIN_HAS_CPLEX_FALSE}"; then

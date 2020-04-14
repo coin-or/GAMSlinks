@@ -56,6 +56,7 @@ AC_COIN_CHK_PKG(Couenne, [GamsCouenne], [couenne])
 
 AC_COIN_CHK_LIB(SoPlex,[GamsSoplex],[-lsoplex],[],[],[])
 AC_COIN_CHK_LIB(SCIP,[GamsScip],[-lscipsolver],[],[],[SCIPcreate])
+AC_COIN_CHK_LIB(GCG,[GamsScip],[-lgcg],[],[],[GCGisMaster])
 AC_COIN_CHK_LIB(Cplex,[GamsOsi GamsBonmin GamsCouenne GamsScip GamsCbc],[-lcplex -lpthread -lm -ldl],[],[],[CPXgetstat])
 AC_COIN_CHK_LIB(Mosek,[GamsOsi GamsScip],[-lmosek64 -lpthread],[],[],[MSK_makeenv])
 AC_COIN_CHK_LIB(Xpress,[GamsOsi],[-lxprs -lxprl],[],[],[XPRSinit])
