@@ -3155,7 +3155,10 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
       SCIP_CALL( SCIPsetRealParam(scip, "limits/memory", gevGetDblOpt(gev, gevWorkSpace)) );
    }
    SCIP_CALL( SCIPsetIntParam(scip, "lp/threads", gevThreads(gev)) );
-   SCIP_CALL( SCIPsetIntParam(scip, "presolving/milp/threads", gevThreads(gev)) );
+   if( SCIPgetParam(scip, "presolving/milp/threads") != NULL )
+   {
+      SCIP_CALL( SCIPsetIntParam(scip, "presolving/milp/threads", gevThreads(gev)) );
+   }
 
    /* if log is not kept, then can also set SCIP verblevel to 0 */
    if( gevGetIntOpt(gev, gevLogOption) == 0 )
