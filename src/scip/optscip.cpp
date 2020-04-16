@@ -144,12 +144,9 @@ int main(int argc, char** argv)
           strstr(paramname, "constraints/pseudoboolean") == paramname ||
           strstr(paramname, "constraints/superindicator")== paramname ||
           strstr(paramname, "constraints/xor")           == paramname ||
-          strstr(paramname, "heuristics/padm")           == paramname ||
-          strstr(paramname, "heuristics/gins/consecutiveblocks") == paramname ||
-          strstr(paramname, "heuristics/gins/overlap") == paramname ||
-          strstr(paramname, "heuristics/gins/usedecomp") == paramname ||
-          strstr(paramname, "heuristics/gins/useselfallback") == paramname ||
-          strstr(paramname, "table/benders")             == paramname
+          strstr(paramname, "table/benders")             == paramname ||
+          strstr(paramname, "decomposition/applybenders") == paramname ||
+          strstr(paramname, "decomposition/benderslabels") == paramname
          )
          continue;
 
@@ -162,7 +159,6 @@ int main(int argc, char** argv)
       if( category == "benders" ||
           category == "compression" ||  //for reoptimization
           category == "concurrent" ||
-          category == "decomposition" ||
           category == "reading" ||
           category == "reoptimization" ||
           category == "parallel" ||
@@ -502,9 +498,6 @@ int main(int argc, char** argv)
       SCIP_HEUR** heurs = SCIPgetHeurs(scip);
       for( int h = 0; h < nheurs; ++h )
       {
-         if( strstr(SCIPheurGetName(heurs[h]), "padm") == SCIPheurGetName(heurs[h]) )
-            continue;
-
          outfile << "| \\ref SCIP_gr_heuristics_" << SCIPheurGetName(heurs[h]) << " \"" << SCIPheurGetName(heurs[h]) << '"';
          outfile << " | " << SCIPheurGetDispchar(heurs[h]);
          outfile << " | " << SCIPheurGetPriority(heurs[h]);

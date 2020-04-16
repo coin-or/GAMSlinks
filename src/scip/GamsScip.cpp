@@ -418,7 +418,7 @@ SCIP_RETCODE GamsScip::setupSCIP()
        * NULL, FALSE, TRUE,  NULL, NULL) );
        */
       SCIP_CALL( SCIPaddBoolParam(scip, "display/statistics",
-         "whether to print statistics on a solve",
+         "whether to print statistics on a solve and a provided decomposition",
          NULL, FALSE, FALSE, NULL, NULL) );
       SCIP_CALL( SCIPaddStringParam(scip, "gams/interactive",
          "command to be issued to the SCIP shell instead of issuing a solve command",

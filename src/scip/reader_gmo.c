@@ -1271,6 +1271,9 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
    int indicidx;
    size_t namemem;
    SCIP_RETCODE rc = SCIP_OKAY;
+   int maxstage;
+   int origprior;
+   SCIP_Bool havedecomp;
    
    assert(scip != NULL);
    assert(gmo != NULL);
@@ -1295,6 +1298,11 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
    /* we want GMO to use SCIP's value for infinity */
    gmoPinfSet(gmo,  SCIPinfinity(scip));
    gmoMinfSet(gmo, -SCIPinfinity(scip));
+
+   /* enable prioropt, if not enabled, so GMO may elect to return .prior values always */
+   origprior = gmoPriorOpt(gmo);
+   if( origprior == 0 )
+      gmoPriorOptSet(gmo, 1);
 
    /* create SCIP problem */
    SCIP_CALL( SCIPallocMemory(scip, &probdata) );
@@ -1380,7 +1388,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
    /* compute range of variable priorities */ 
    minprior = SCIPinfinity(scip);
    maxprior = 0.0;
-   if( gmoPriorOpt(gmo) && gmoNDisc(gmo) > 0 )
+   if( origprior && gmoNDisc(gmo) > 0 )
    {
       for (i = 0; i < gmoN(gmo); ++i)
       {
@@ -1407,11 +1415,13 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
       BMSclearMemoryArray(coefs, gmoN(gmo));
    }
    
-   /* add variables */
+   /* add variables, handle priority; get maxstage */
+   maxstage = 0;
+   havedecomp = FALSE;
    for( i = 0; i < gmoN(gmo); ++i )
    {
       SCIP_VARTYPE vartype;
-      SCIP_Real lb, ub;
+      SCIP_Real lb, ub, stage;
       lb = gmoGetVarLowerOne(gmo, i);
       ub = gmoGetVarUpperOne(gmo, i);
       switch( gmoGetVarTypeOne(gmo, i) )
@@ -1450,7 +1460,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
       SCIPdebugMessage("added variable ");
       SCIPdebug( SCIPprintVar(scip, vars[i], NULL) );
       
-      if( gmoPriorOpt(gmo) && minprior < maxprior && gmoGetVarTypeOne(gmo, i) != (int) gmovar_X )
+      if( origprior && minprior < maxprior && gmoGetVarTypeOne(gmo, i) != (int) gmovar_X )
       {
          /* in GAMS: higher priorities are given by smaller .prior values
             in SCIP: variables with higher branch priority are always preferred to variables with lower priority in selection of branching variable
@@ -1459,6 +1469,19 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
          int branchpriority = (int)(1000.0 / (maxprior - minprior) * (maxprior - gmoGetVarPriorOne(gmo, i)));
          SCIP_CALL( SCIPchgVarBranchPriority(scip, vars[i], branchpriority) );
       }
+
+      if( gmoGetVarTypeOne(gmo, i) == gmovar_X )
+      {
+         stage = gmoGetVarStageOne(gmo, i);
+         if( stage != 1.0 )
+            havedecomp = TRUE;
+      }
+      else if( origprior == 0 )  /* for non-X variable, use .prior attribute, if prioropt was not set originally */
+         stage = gmoGetVarPriorOne(gmo, i);
+      else
+         stage = 0.0;
+      if( EPSISINT(stage, 0.0) )
+         maxstage = MAX(maxstage, (int)stage);
    }
    
    /* setup bound disjunction constraints for semicontinuous/semiinteger variables by saying x <= 0 or x >= gmoGetVarLower */
@@ -2066,6 +2089,64 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
       namemem <<= 1;  /* transformed problem has copy of names, so duplicate estimate */
       SCIPinfoMessage(scip, NULL, "Space for names approximately %0.2f MB. Use statement '<modelname>.dictfile=0;' to turn dictionary off.\n", namemem/(1024.0*1024.0));
    }
+
+   /* pass on decomposition info derived from variable stage attributes
+    * ignoring stage 0 to do the same as GAMS/CPLEX
+    */
+   if( maxstage > 0 && havedecomp )
+   {
+      SCIP_DECOMP* decomp;
+      SCIP_VAR** labeledvars;
+      int* labels;
+      int nlabels = 0;
+      SCIP_Bool dispstat;
+
+      SCIP_CALL( SCIPcreateDecomp(scip, &decomp, maxstage, TRUE, FALSE) );
+
+      SCIP_CALL( SCIPallocBufferArray(scip, &labeledvars, gmoN(gmo)) );
+      SCIP_CALL( SCIPallocBufferArray(scip, &labels, gmoN(gmo)) );
+
+      for( i = 0; i < gmoN(gmo); ++i )
+      {
+         double stage;
+
+         if( gmoGetVarTypeOne(gmo, i) == gmovar_X )
+            stage = gmoGetVarStageOne(gmo, i);
+         else if( origprior == 0 )  /* for non-X variable, use .prior attribute, if prioropt was not set originally */
+            stage = gmoGetVarPriorOne(gmo, i);
+         else
+            stage = 0.0;
+         if( !EPSISINT(stage, 0.0) || stage <= 0.0 )
+            continue;
+
+         labeledvars[nlabels] = vars[i];
+         labels[nlabels] = (int)stage - 1;  /* I believe that SCIP want's labels to start from 0 */
+
+         SCIPdebugMsg(scip, "var <%s> with label %d\n", SCIPvarGetName(vars[i]), labels[nlabels]);
+
+         ++nlabels;
+      }
+
+      SCIP_CALL( SCIPdecompSetVarsLabels(decomp, labeledvars, labels, nlabels) );
+      SCIP_CALL( SCIPcomputeDecompConsLabels(scip, decomp, SCIPgetConss(scip), SCIPgetNConss(scip)) );
+
+      SCIP_CALL( SCIPgetBoolParam(scip, "display/statistics", &dispstat) );
+      if( dispstat )
+      {
+         char decompstats[SCIP_MAXSTRLEN];
+         SCIP_CALL( SCIPcomputeDecompStats(scip, decomp, TRUE) );
+         SCIPinfoMessage(scip, NULL, SCIPdecompPrintStats(decomp, decompstats) );
+      }
+
+      SCIP_CALL( SCIPaddDecomp(scip, decomp) );
+
+      SCIPfreeBufferArray(scip, &labels);
+      SCIPfreeBufferArray(scip, &labeledvars);
+   }
+
+   /* reset to original prioropt */
+   if( origprior == 0 )
+      gmoPriorOptSet(gmo, 0);
 
 TERMINATE:
    SCIPfreeBufferArrayNull(scip, &coefs);
