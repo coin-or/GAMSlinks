@@ -3257,10 +3257,6 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
    }
 #endif
 
-#ifdef _WIN32
-   SCIP_CALL( SCIPsetIntParam(scip, "misc/usesymmetry", 0) );
-#endif
-
    /* enable column on number of branching on nonlinear variables, if any */
    if( gmoNLNZ(gmo) > 0 || (gmoObjStyle(gmo) == (int) gmoObjType_Fun && gmoObjNLNZ(gmo) > 0) )
    {
