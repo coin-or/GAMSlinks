@@ -19393,7 +19393,7 @@ fi
               soplex_cflags="-I\$(pkgincludedir)/ThirdParty"
             fi
 
-      coin_has_soplex=yes
+      coin_has_soplex=skipping
       ;;
     skipping | yes )
       ;;
