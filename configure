@@ -724,6 +724,8 @@ coin_doxy_tagname
 coin_doxy_usedot
 coin_have_latex
 coin_have_doxygen
+COIN_STATIC_BUILD_FALSE
+COIN_STATIC_BUILD_TRUE
 LT_LDFLAGS
 CXXCPP
 CPP
@@ -775,9 +777,6 @@ LDFLAGS
 CFLAGS
 COIN_RELOCATABLE_FALSE
 COIN_RELOCATABLE_TRUE
-MAINT
-MAINTAINER_MODE_FALSE
-MAINTAINER_MODE_TRUE
 am__untar
 am__tar
 AMTAR
@@ -801,6 +800,9 @@ am__isrc
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+MAINT
+MAINTAINER_MODE_FALSE
+MAINTAINER_MODE_TRUE
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
@@ -814,8 +816,6 @@ build_os
 build_vendor
 build_cpu
 build
-ALWAYS_FALSE_FALSE
-ALWAYS_FALSE_TRUE
 target_alias
 host_alias
 build_alias
@@ -2811,7 +2811,6 @@ fi
 
 
 
-  # We want --enable-msvc setup and checked
 
 
   # Check whether --enable-debug was given.
@@ -2822,18 +2821,10 @@ else
 fi
 
 
-# This macro should run before the compiler checks (doesn't seem to be
-# sufficient for CFLAGS)
 
 
 
 
-
-
-# change default compiler flags
-# - debugging enabled: enable debug symbols (-g/-Z7)
-# - debugging disabled: disable debug code (-DNDEBUG); enable (more) optimization (-O2)
-# - enable exceptions for (i)cl
 
   if test "$enable_debug" = yes ; then
     if test "$enable_msvc" = yes ; then
@@ -3320,20 +3311,13 @@ fi
 rmdir .tst 2>/dev/null
 
 
-# Enforce the required autoconf version
-
-
-
-# Set the project's version numbers
-
-
-  # break up package version number in major.minor.release
-  # AC_PACKAGE_VERSION is defined by AC_INIT
 
 
 
 
-  # ac-define AC_PACKAGE_VERSION macros, use 9999 for missing values
+
+
+
 
 cat >>confdefs.h <<_ACEOF
 #define GAMSLINKS_VERSION "master"
@@ -3358,29 +3342,12 @@ _ACEOF
 
 
 
-# A useful makefile conditional that is always false
-
-   if false; then
-  ALWAYS_FALSE_TRUE=
-  ALWAYS_FALSE_FALSE='#'
-else
-  ALWAYS_FALSE_TRUE='#'
-  ALWAYS_FALSE_FALSE=
-fi
-
-
-# Change the default compiler flags. This needs to run before
-# AC_CANONICAL_BUILD.
-
-
-
-# Get the build and host types
 
 
 
 
-# libtool has some magic for host_os and build_os being mingw, but doesn't know about msys
 
+  # libtool has some magic for host_os and build_os being mingw, but doesn't know about msys
   if test $host_os = msys ; then
     host_os=mingw
     host=`echo $host | sed -e 's/msys/mingw/'`
@@ -3390,10 +3357,6 @@ fi
     build_os=mingw
     build=`echo $build | sed -e 's/msys/mingw/'`
   fi
-
-# Make silent build rules the default (https://www.gnu.org/software/automake/
-# manual/html_node/Automake-Silent-Rules.html). Run before AM_INIT_AUTOMAKE,
-# which will AC_REQUIRE it anyway.
 
   # Check whether --enable-silent-rules was given.
 if test "${enable_silent_rules+set}" = set; then :
@@ -3435,13 +3398,29 @@ fi
 AM_BACKSLASH='\'
 
 
-# Initialize automake
-# - do not be as strict as for GNU projects
-# - don't AC_DEFINE PACKAGE or VERSION (but there're still defined as shell
-#   variables in configure, and as make variables).
-# - disable dist target
-# - place objects from sources in subdirs into corresponding subdirs
-# - enable all automake warnings
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
+$as_echo_n "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
+    # Check whether --enable-maintainer-mode was given.
+if test "${enable_maintainer_mode+set}" = set; then :
+  enableval=$enable_maintainer_mode; USE_MAINTAINER_MODE=$enableval
+else
+  USE_MAINTAINER_MODE=no
+fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $USE_MAINTAINER_MODE" >&5
+$as_echo "$USE_MAINTAINER_MODE" >&6; }
+   if test $USE_MAINTAINER_MODE = yes; then
+  MAINTAINER_MODE_TRUE=
+  MAINTAINER_MODE_FALSE='#'
+else
+  MAINTAINER_MODE_TRUE='#'
+  MAINTAINER_MODE_FALSE=
+fi
+
+  MAINT=$MAINTAINER_MODE_TRUE
+
+
 
   if test "`cd $srcdir && pwd`" != "`pwd`"; then
   # Use -I$(srcdir) only when $(srcdir) != ., so that make's output
@@ -3550,38 +3529,12 @@ END
 fi
 
 
-# Disable automatic rebuild of configure/Makefile. Use run_autotools.
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
-$as_echo_n "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
-    # Check whether --enable-maintainer-mode was given.
-if test "${enable_maintainer_mode+set}" = set; then :
-  enableval=$enable_maintainer_mode; USE_MAINTAINER_MODE=$enableval
-else
-  USE_MAINTAINER_MODE=no
-fi
-
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $USE_MAINTAINER_MODE" >&5
-$as_echo "$USE_MAINTAINER_MODE" >&6; }
-   if test $USE_MAINTAINER_MODE = yes; then
-  MAINTAINER_MODE_TRUE=
-  MAINTAINER_MODE_FALSE='#'
-else
-  MAINTAINER_MODE_TRUE='#'
-  MAINTAINER_MODE_FALSE=
-fi
-
-  MAINT=$MAINTAINER_MODE_TRUE
-
-
-
-# Figure out the path where libraries are installed.
-# Unless the user specifies --prefix, prefix is set to NONE until the
-# end of configuration, at which point it will be set to $ac_default_prefix.
-# Unless the user specifies --exec-prefix, exec-prefix is set to NONE until
-# the end of configuration, at which point it's set to '${prefix}'.
-# Sheesh.  So do the expansion, then back it out.
+  # Figure out the path where libraries are installed.
+  # Unless the user specifies --prefix, prefix is set to NONE until the
+  # end of configuration, at which point it will be set to $ac_default_prefix.
+  # Unless the user specifies --exec-prefix, exec-prefix is set to NONE until
+  # the end of configuration, at which point it's set to '${prefix}'.
+  # Sheesh.  So do the expansion, then back it out.
   save_prefix=$prefix
   save_exec_prefix=$exec_prefix
   if test "x$prefix" = xNONE ; then
@@ -3597,8 +3550,6 @@ fi
   prefix=$save_prefix
   exec_prefix=$save_exec_prefix
 
-# add a configure flag to indicate whether .pc files should be made relocatable
-# off by default, as it creates libtool warnings
   # Check whether --enable-relocatable was given.
 if test "${enable_relocatable+set}" = set; then :
   enableval=$enable_relocatable; coin_enable_relocatable=$enableval
@@ -3687,17 +3638,7 @@ fi
 
 
 
-  # Setting up libtool with LT_INIT will AC_REQUIRE AC_PROG_CC, but we want
-  # to invoke it from this macro first so that we can supply a parameter.
 
-
-  # If enable-msvc, then test for Intel (on Windows) and MS C compiler
-  # explicitly and add the compile wrapper before AC_PROG_CC. The compile
-  # wrapper works around issues related to finding MS link.exe. (Unix link.exe
-  # occurs first in PATH, which causes compile and link checks to fail.) For
-  # the same reason, set LD to use the compile wrapper. If CC remains unset
-  # (neither icl or cl was found, and CC was not set by the user), stop with
-  # an error.
 
   if test $enable_msvc = yes ; then
     for ac_prog in icl cl
@@ -3751,11 +3692,6 @@ done
       as_fn_error $? "Neither MS nor Intel C compiler found in PATH and CC is unset." "$LINENO" 5
     fi
   fi
-
-  # Look for some C compiler and check that it works. If the user has set CC
-  # or we found icl/cl above, this shouldn't overwrite CC. Unlike the macros
-  # that establish C++ or Fortran compilers, PROG_CC also takes care of adding
-  # the compile wrapper if needed.
 
   ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -4542,7 +4478,6 @@ fi
 
 
 
-  # Declare precious variable for additional compiler flags
 
 
 
@@ -4550,14 +4485,6 @@ fi
 
 
 
-
-  # If enable-msvc, then test for Intel (on Windows) and MS C compiler
-  # explicitly and add the compile wrapper before AC_PROG_CXX. The compile
-  # wrapper works around issues related to finding MS link.exe. (Unix link.exe
-  # occurs first in PATH, which causes compile and link checks to fail.) For
-  # the same reason, set LD to use the compile wrapper. If CC remains unset
-  # (neither icl or cl was found, and CC was not set by the user), stop with
-  # an error.
 
   if test $enable_msvc = yes ; then
     for ac_prog in icl cl
@@ -4611,9 +4538,6 @@ done
       as_fn_error $? "Neither MS nor Intel C++ compiler found in PATH and CXX is unset." "$LINENO" 5
     fi
   fi
-
-  # Look for some C++ compiler and check that it works. If the user has set
-  # CXX or we found icl/cl above, this shouldn't overwrite CXX.
 
   ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
@@ -5001,8 +4925,6 @@ fi
 
 
 
-  # If the compiler does not support -c -o, wrap it with the compile script.
-
   ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -5072,7 +4994,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
     CXX="$am_aux_dir/compile $CXX"
   fi
 
-  # Declare precious variable for additional compiler flags
 
 
 
@@ -8781,7 +8702,6 @@ func_stripname_cnf ()
 } # func_stripname_cnf
 
 
-# checkout AR and decide whether to use ar-lib wrapper
   if test -n "$ac_tool_prefix"; then
   for ac_prog in ar lib "link -lib"
   do
@@ -8954,7 +8874,6 @@ unknown)
 esac
 
 
-# Create libtool.
 
 
 
@@ -16852,31 +16771,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-# Patch libtool to circumvent some issues when using MSVC and MS lib.
-# This needs to be run after config.status has created libtool.
-# 1. Relax check which libraries can be used when linking a DLL.
-#    libtool's func_mode_link() would reject linking a .lib file when building a DLL,
-#    even though this .lib file may just be the one that eventually loads a depending DLL,
-#    e.g., mkl_core_dll.lib. Setting deplibs_check_method=pass_all will still print a
-#    warning, but the .lib is still passed to the linker.
-# 2. Ensure always_export_symbols=no if win32-dll. Even when we pass win32-dll,
-#    libtool forces always_export_symbols=yes for --tag=CXX if using MS compiler.
-#    This leads to a nm call that collects ALL C-functions from a library
-#    and explicitly dll-exporting them, leading to warnings about duplicates
-#    regarding those that are properly marked for dll-export in the source.
-# 3. Do not add mkl_*.lib to old_deplibs, which can result in trying to unpack and repack
-#    the MKL libraries (which are pretty big). Instead, treat them like other -l<...> libs.
-# 4. Add MKL libraries to dependency_libs in .la file, which I guess should be
-#    the case due to point 5.
-#
-# Patch libtool also to circumvent some issues when using MinGW (Msys+GCC).
-# 1. Relax check which libraries can be used when linking a DLL.
-#    libtool's func_mode_link() would reject linking MinGW system libraries,
-#    e.g., -lmingw32, when building a DLL, because it does not find this
-#    library in the installation path, and then falls back to build only
-#    static libraries. Setting deplibs_check_method=pass_all will avoid
-#    this faulty check.
-
   case "$am_cv_ar_interface" in
     lib )
       ac_config_commands="$ac_config_commands libtoolclpatch"
@@ -16892,27 +16786,29 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
       ;;
   esac
 
-  # Set up LT_LDFLAGS, user can initialize and we augment below
 
 
-  # Use the libtool library info, if defined, otherwise use the project version info,
-  # if a full major.minor.release number was available
 
 
-  # shared libraries should have no undefined symbols
-  # for Windows DLLs, it is mandatory to add this
   LT_LDFLAGS="$LT_LDFLAGS -no-undefined"
+
+   if test "$enable_shared" = no; then
+  COIN_STATIC_BUILD_TRUE=
+  COIN_STATIC_BUILD_FALSE='#'
+else
+  COIN_STATIC_BUILD_TRUE='#'
+  COIN_STATIC_BUILD_FALSE=
+fi
+
 
 
 # Doxygen
 
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: configuring doxygen documentation options" >&5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: configuring doxygen documentation options" >&5
 $as_echo "$as_me: configuring doxygen documentation options" >&6;}
 
-# Check to see if doxygen is available.
-
-# Extract the first word of "doxygen", so it can be a program name with args.
+  # Check to see if Doxygen and LaTeX are available.
+  # Extract the first word of "doxygen", so it can be a program name with args.
 set dummy doxygen; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -16950,7 +16846,7 @@ $as_echo "no" >&6; }
 fi
 
 
-# Extract the first word of "latex", so it can be a program name with args.
+  # Extract the first word of "latex", so it can be a program name with args.
 set dummy latex; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -16989,9 +16885,6 @@ fi
 
 
 
-# Look for the dot tool from the graphviz package, unless the user has
-# disabled it.
-
 
 # Check whether --with-dot was given.
 if test "${with_dot+set}" = set; then :
@@ -17000,14 +16893,16 @@ else
   withval=yes
 fi
 
-if test x"$withval" = xno ; then
-  coin_doxy_usedot=NO
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dot " >&5
+
+  # Look for the dot tool from the graphviz package, unless the user has disabled it.
+  if test x"$withval" = xno ; then
+    coin_doxy_usedot=NO
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dot " >&5
 $as_echo_n "checking for dot ... " >&6; }
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: disabled" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: disabled" >&5
 $as_echo "disabled" >&6; }
-else
-  # Extract the first word of "dot", so it can be a program name with args.
+  else
+    # Extract the first word of "dot", so it can be a program name with args.
 set dummy dot; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -17045,16 +16940,15 @@ $as_echo "no" >&6; }
 fi
 
 
-fi
+  fi
 
-# Generate a tag file name and a log file name.
+  # Generate a tag file name and a log file name.
+  coin_doxy_tagname=gamslinks_doxy.tag
 
-lc_pkg=`echo ${PACKAGE_NAME} | tr [A-Z] [a-z]`
-coin_doxy_tagname=${lc_pkg}_doxy.tag
+  coin_doxy_logname=gamslinks_doxy.log
 
-coin_doxy_logname=${lc_pkg}_doxy.log
 
- if test $coin_have_doxygen = yes; then
+   if test $coin_have_doxygen = yes; then
   COIN_HAS_DOXYGEN_TRUE=
   COIN_HAS_DOXYGEN_FALSE='#'
 else
@@ -17062,7 +16956,7 @@ else
   COIN_HAS_DOXYGEN_FALSE=
 fi
 
- if test $coin_have_latex = yes; then
+   if test $coin_have_latex = yes; then
   COIN_HAS_LATEX_TRUE=
   COIN_HAS_LATEX_FALSE='#'
 else
@@ -17071,20 +16965,7 @@ else
 fi
 
 
-# Process the list of project names and massage each one into the name of
-# a tag file. The value of coin_doxy_tagfiles is substituted for TAGFILES
-# in doxygen.conf.in. Further substitution for @baredocdir_nosub@ will happen
-# as an edit during make install. See comments in Makemain.inc.
-
-coin_doxy_tagfiles=
-tmp=""
-for proj in $tmp ; do
-  lc_proj=`echo $proj | tr [A-Z] [a-z]`
-  doxytag=${lc_proj}_doxy.tag
-  doxydir="@baredocdir_nosub@/coin-or-${lc_proj}/doxydoc"
-  coin_doxy_tagfiles="$coin_doxy_tagfiles $doxydir/$doxytag=$doxydir/html"
-done
-
+  coin_doxy_tagfiles=""
 
 
 
@@ -17095,9 +16976,6 @@ done
 # check which solvers are available
 
 
-
-# pkgconf is the up-and-coming thing, replacing pkg-config, so prefer it.
-# The next stanza is a modified version of PKG_PROG_PKG_CONFIG from pkg.m4.
 
   if test -z "$PKG_CONFIG" ; then
    if test -n "$ac_tool_prefix"; then
@@ -17216,9 +17094,7 @@ $as_echo "no" >&6; }
    fi
   fi
 
-# Check if PKG_CONFIG supports the short-errors flag. The next stanza is a
-# modified version of _PKG_SHORT_ERRORS_SUPPORTED from pkg.m4.
-
+  # Check if PKG_CONFIG supports the short-errors flag.
   if test -n "$PKG_CONFIG" &&
      $PKG_CONFIG --atleast-pkgconfig-version 0.20 ; then
     pkg_short_errors=" --short-errors "
@@ -17226,7 +17102,11 @@ $as_echo "no" >&6; }
     pkg_short_errors=""
   fi
 
-# Create a makefile variable and conditional.
+  # Check whether -static option of pkg-config should be used when requesting libs
+  pkg_static=
+  if test -n "$PKG_CONFIG" ; then
+    case "$LDFLAGS" in "-static" | "* -static*" ) pkg_static=--static ;; esac
+  fi
 
    if test -n "$PKG_CONFIG"; then
   COIN_HAS_PKGCONFIG_TRUE=
@@ -17238,22 +17118,14 @@ fi
 
 
 
-# Assemble a PKG_CONFIG search path that will include the installation
-# directory for .pc files for COIN packages.  Coin .pc files are installed in
-# ${libdir}/pkgconfig and COIN_INITIALIZE takes care of setting up
-# $expanded_libdir based on $libdir. Of course,
-# this whole house of cards balances on the shaky assumption that the user is
-# sane and has installed all packages in the same place and does not change
-# that place when make executes. If not, well, it's their responsibility to
-# augment PKG_CONFIG_PATH in the environment.
-
   COIN_PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"
 
 
   COIN_PKG_CONFIG_PATH="${expanded_libdir}/pkgconfig:${COIN_PKG_CONFIG_PATH}"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: $PKG_CONFIG path is \"$COIN_PKG_CONFIG_PATH\"" >&5
+  if test -n "$PKG_CONFIG"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: $PKG_CONFIG path is \"$COIN_PKG_CONFIG_PATH\"" >&5
 $as_echo "$as_me: $PKG_CONFIG path is \"$COIN_PKG_CONFIG_PATH\"" >&6;}
-
+  fi
 
 
 
@@ -17261,15 +17133,12 @@ $as_echo "$as_me: $PKG_CONFIG path is \"$COIN_PKG_CONFIG_PATH\"" >&6;}
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Osi" >&5
 $as_echo_n "checking for package Osi... " >&6; }
 
-# Make sure the necessary variables exist for each client package.
 
 
 
 
 
-
-# Check to see if the user has set an override to skip this primary.
-
+  # Check to see if the user has set an override to skip this primary.
   coin_has_osi=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -17278,10 +17147,6 @@ $as_echo_n "checking for package Osi... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this primary, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_osi" != skipping ; then
 
@@ -17315,17 +17180,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary package.
-
+  # Initialize variables for the primary package.
   coin_has_osi=noInfo
   osi_lflags=
   osi_cflags=
   osi_data=
   osi_pcfiles=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
+  # --with-prim is always present.
   withval="$with_osi"
   if test -n "$withval" ; then
     case "$withval" in
@@ -17340,16 +17202,13 @@ fi
         ;;
       * )
         coin_has_osi=yes
-        osi_lflags="$withval"
+                osi_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-libs and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for libs and cflags.
-
-  if test "$coin_has_osi" != skipping ; then
+  # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_osi" != skipping ; then
        withval="$with_osi_lflags"
        if test -n "$withval" ; then
          case "$withval" in
@@ -17377,21 +17236,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance),
+  # - or yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_osi" = noInfo ; then
     case $dflt_action in
       no )
@@ -17406,11 +17263,10 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, requested, or build. For
-# requested or build, try pkgconf, if it's available. If it's not available,
-# well, hope that the user knows their system and prim can be used with no
-# additional flags.
-
+  # Now coin_has_prim can be one of skipping, yes, requested, or build.
+  # For requested or build, try pkgconf, if it's available.
+  # If it's not available, well, hope that the user knows their system
+  # and prim can be used with no additional flags.
   case $coin_has_osi in
     requested | build )
       if test -n "$PKG_CONFIG" -a "osi" != skip ; then
@@ -17434,7 +17290,6 @@ fi
 
       else
         coin_has_osi=no
-        # AC_MSG_WARN([skipped check via pkgconf as no pkgconf available])
       fi
       ;;
     skipping | yes )
@@ -17445,13 +17300,13 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_osi\" in COIN_FIND_PRIM
       ;;
   esac
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means
-# we looked (with pkgconfig) and didn't find anything. Skipping means the
-# user said `don't use.' Yes means we have something, from the user or
-# from pkgconfig. Note that we haven't run a useability test!
+  # The final value of coin_has_prim will be yes, no, or skipping.
+  # No means we looked (with pkgconfig) and didn't find anything.
+  # Skipping means the user said `don't use.'
+  # Yes means we have something, from the user or from pkgconfig.
+  # Note that we haven't run a useability test!
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+  # Define BUILDTOOLS_DEBUG to enable debugging output
   if test "$BUILDTOOLS_DEBUG" = 1 ; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_PKG result for osi: \"$coin_has_osi\"" >&5
 $as_echo "$as_me: FIND_PRIM_PKG result for osi: \"$coin_has_osi\"" >&6;}
@@ -17470,18 +17325,20 @@ $as_echo "$as_me: osi_pcfiles is \"$osi_pcfiles\"" >&6;}
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_osi" >&5
 $as_echo "$coin_has_osi" >&6; }
+
+      if test "$PKG_CONFIG$coin_has_osi" = no ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Check for Osi via pkg-config was skipped as no pkg-config available. If Osi was meant to be found, then consider installing pkg-config or provide appropriate --with-osi-lflags, --with-osi-cflags, etc." >&5
+$as_echo "$as_me: WARNING: Check for Osi via pkg-config was skipped as no pkg-config available. If Osi was meant to be found, then consider installing pkg-config or provide appropriate --with-osi-lflags, --with-osi-cflags, etc." >&2;}
+      fi
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_osi due to COIN_SKIP_PROJECTS" >&5
 $as_echo "$coin_has_osi due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_osi" != yes ; then
     coin_has_osi=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_osi = yes; then
   COIN_HAS_OSI_TRUE=
@@ -17492,9 +17349,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM and
-# augment the necessary variables for the client packages.
-
+  # If we have located the package, define preprocessor symbol PKG_HAS_PRIM and
+  # augment the necessary variables for the client packages.
   if test $coin_has_osi = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_OSI 1" >>confdefs.h
@@ -17503,8 +17359,6 @@ $as_echo "#define GAMSLINKS_HAS_OSI 1" >>confdefs.h
        GAMSOSI_LFLAGS="$osi_lflags $GAMSOSI_LFLAGS"
        GAMSOSI_CFLAGS="$osi_cflags $GAMSOSI_CFLAGS"
 
-
-# Finally, set up PRIM_DATA, unless the user specified nodata.
 
 
   fi
@@ -17515,15 +17369,12 @@ $as_echo "#define GAMSLINKS_HAS_OSI 1" >>confdefs.h
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package OsiCpx" >&5
 $as_echo_n "checking for package OsiCpx... " >&6; }
 
-# Make sure the necessary variables exist for each client package.
 
 
 
 
 
-
-# Check to see if the user has set an override to skip this primary.
-
+  # Check to see if the user has set an override to skip this primary.
   coin_has_osicpx=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -17532,10 +17383,6 @@ $as_echo_n "checking for package OsiCpx... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this primary, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_osicpx" != skipping ; then
 
@@ -17569,17 +17416,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary package.
-
+  # Initialize variables for the primary package.
   coin_has_osicpx=noInfo
   osicpx_lflags=
   osicpx_cflags=
   osicpx_data=
   osicpx_pcfiles=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
+  # --with-prim is always present.
   withval="$with_osicpx"
   if test -n "$withval" ; then
     case "$withval" in
@@ -17594,16 +17438,13 @@ fi
         ;;
       * )
         coin_has_osicpx=yes
-        osicpx_lflags="$withval"
+                osicpx_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-libs and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for libs and cflags.
-
-  if test "$coin_has_osicpx" != skipping ; then
+  # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_osicpx" != skipping ; then
        withval="$with_osicpx_lflags"
        if test -n "$withval" ; then
          case "$withval" in
@@ -17631,21 +17472,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance),
+  # - or yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_osicpx" = noInfo ; then
     case $dflt_action in
       no )
@@ -17660,11 +17499,10 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, requested, or build. For
-# requested or build, try pkgconf, if it's available. If it's not available,
-# well, hope that the user knows their system and prim can be used with no
-# additional flags.
-
+  # Now coin_has_prim can be one of skipping, yes, requested, or build.
+  # For requested or build, try pkgconf, if it's available.
+  # If it's not available, well, hope that the user knows their system
+  # and prim can be used with no additional flags.
   case $coin_has_osicpx in
     requested | build )
       if test -n "$PKG_CONFIG" -a "osi-cplex" != skip ; then
@@ -17688,7 +17526,6 @@ fi
 
       else
         coin_has_osicpx=no
-        # AC_MSG_WARN([skipped check via pkgconf as no pkgconf available])
       fi
       ;;
     skipping | yes )
@@ -17699,13 +17536,13 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_osicpx\" in COIN_FIND_P
       ;;
   esac
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means
-# we looked (with pkgconfig) and didn't find anything. Skipping means the
-# user said `don't use.' Yes means we have something, from the user or
-# from pkgconfig. Note that we haven't run a useability test!
+  # The final value of coin_has_prim will be yes, no, or skipping.
+  # No means we looked (with pkgconfig) and didn't find anything.
+  # Skipping means the user said `don't use.'
+  # Yes means we have something, from the user or from pkgconfig.
+  # Note that we haven't run a useability test!
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+  # Define BUILDTOOLS_DEBUG to enable debugging output
   if test "$BUILDTOOLS_DEBUG" = 1 ; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_PKG result for osicpx: \"$coin_has_osicpx\"" >&5
 $as_echo "$as_me: FIND_PRIM_PKG result for osicpx: \"$coin_has_osicpx\"" >&6;}
@@ -17724,18 +17561,20 @@ $as_echo "$as_me: osicpx_pcfiles is \"$osicpx_pcfiles\"" >&6;}
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_osicpx" >&5
 $as_echo "$coin_has_osicpx" >&6; }
+
+      if test "$PKG_CONFIG$coin_has_osicpx" = no ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Check for OsiCpx via pkg-config was skipped as no pkg-config available. If OsiCpx was meant to be found, then consider installing pkg-config or provide appropriate --with-osicpx-lflags, --with-osicpx-cflags, etc." >&5
+$as_echo "$as_me: WARNING: Check for OsiCpx via pkg-config was skipped as no pkg-config available. If OsiCpx was meant to be found, then consider installing pkg-config or provide appropriate --with-osicpx-lflags, --with-osicpx-cflags, etc." >&2;}
+      fi
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_osicpx due to COIN_SKIP_PROJECTS" >&5
 $as_echo "$coin_has_osicpx due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_osicpx" != yes ; then
     coin_has_osicpx=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_osicpx = yes; then
   COIN_HAS_OSICPX_TRUE=
@@ -17746,9 +17585,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM and
-# augment the necessary variables for the client packages.
-
+  # If we have located the package, define preprocessor symbol PKG_HAS_PRIM and
+  # augment the necessary variables for the client packages.
   if test $coin_has_osicpx = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_OSICPX 1" >>confdefs.h
@@ -17757,8 +17595,6 @@ $as_echo "#define GAMSLINKS_HAS_OSICPX 1" >>confdefs.h
        GAMSOSI_LFLAGS="$osicpx_lflags $GAMSOSI_LFLAGS"
        GAMSOSI_CFLAGS="$osicpx_cflags $GAMSOSI_CFLAGS"
 
-
-# Finally, set up PRIM_DATA, unless the user specified nodata.
 
 
   fi
@@ -17769,15 +17605,12 @@ $as_echo "#define GAMSLINKS_HAS_OSICPX 1" >>confdefs.h
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package OsiGrb" >&5
 $as_echo_n "checking for package OsiGrb... " >&6; }
 
-# Make sure the necessary variables exist for each client package.
 
 
 
 
 
-
-# Check to see if the user has set an override to skip this primary.
-
+  # Check to see if the user has set an override to skip this primary.
   coin_has_osigrb=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -17786,10 +17619,6 @@ $as_echo_n "checking for package OsiGrb... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this primary, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_osigrb" != skipping ; then
 
@@ -17823,17 +17652,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary package.
-
+  # Initialize variables for the primary package.
   coin_has_osigrb=noInfo
   osigrb_lflags=
   osigrb_cflags=
   osigrb_data=
   osigrb_pcfiles=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
+  # --with-prim is always present.
   withval="$with_osigrb"
   if test -n "$withval" ; then
     case "$withval" in
@@ -17848,16 +17674,13 @@ fi
         ;;
       * )
         coin_has_osigrb=yes
-        osigrb_lflags="$withval"
+                osigrb_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-libs and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for libs and cflags.
-
-  if test "$coin_has_osigrb" != skipping ; then
+  # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_osigrb" != skipping ; then
        withval="$with_osigrb_lflags"
        if test -n "$withval" ; then
          case "$withval" in
@@ -17885,21 +17708,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance),
+  # - or yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_osigrb" = noInfo ; then
     case $dflt_action in
       no )
@@ -17914,11 +17735,10 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, requested, or build. For
-# requested or build, try pkgconf, if it's available. If it's not available,
-# well, hope that the user knows their system and prim can be used with no
-# additional flags.
-
+  # Now coin_has_prim can be one of skipping, yes, requested, or build.
+  # For requested or build, try pkgconf, if it's available.
+  # If it's not available, well, hope that the user knows their system
+  # and prim can be used with no additional flags.
   case $coin_has_osigrb in
     requested | build )
       if test -n "$PKG_CONFIG" -a "osi-gurobi" != skip ; then
@@ -17942,7 +17762,6 @@ fi
 
       else
         coin_has_osigrb=no
-        # AC_MSG_WARN([skipped check via pkgconf as no pkgconf available])
       fi
       ;;
     skipping | yes )
@@ -17953,13 +17772,13 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_osigrb\" in COIN_FIND_P
       ;;
   esac
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means
-# we looked (with pkgconfig) and didn't find anything. Skipping means the
-# user said `don't use.' Yes means we have something, from the user or
-# from pkgconfig. Note that we haven't run a useability test!
+  # The final value of coin_has_prim will be yes, no, or skipping.
+  # No means we looked (with pkgconfig) and didn't find anything.
+  # Skipping means the user said `don't use.'
+  # Yes means we have something, from the user or from pkgconfig.
+  # Note that we haven't run a useability test!
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+  # Define BUILDTOOLS_DEBUG to enable debugging output
   if test "$BUILDTOOLS_DEBUG" = 1 ; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_PKG result for osigrb: \"$coin_has_osigrb\"" >&5
 $as_echo "$as_me: FIND_PRIM_PKG result for osigrb: \"$coin_has_osigrb\"" >&6;}
@@ -17978,18 +17797,20 @@ $as_echo "$as_me: osigrb_pcfiles is \"$osigrb_pcfiles\"" >&6;}
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_osigrb" >&5
 $as_echo "$coin_has_osigrb" >&6; }
+
+      if test "$PKG_CONFIG$coin_has_osigrb" = no ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Check for OsiGrb via pkg-config was skipped as no pkg-config available. If OsiGrb was meant to be found, then consider installing pkg-config or provide appropriate --with-osigrb-lflags, --with-osigrb-cflags, etc." >&5
+$as_echo "$as_me: WARNING: Check for OsiGrb via pkg-config was skipped as no pkg-config available. If OsiGrb was meant to be found, then consider installing pkg-config or provide appropriate --with-osigrb-lflags, --with-osigrb-cflags, etc." >&2;}
+      fi
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_osigrb due to COIN_SKIP_PROJECTS" >&5
 $as_echo "$coin_has_osigrb due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_osigrb" != yes ; then
     coin_has_osigrb=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_osigrb = yes; then
   COIN_HAS_OSIGRB_TRUE=
@@ -18000,9 +17821,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM and
-# augment the necessary variables for the client packages.
-
+  # If we have located the package, define preprocessor symbol PKG_HAS_PRIM and
+  # augment the necessary variables for the client packages.
   if test $coin_has_osigrb = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_OSIGRB 1" >>confdefs.h
@@ -18011,8 +17831,6 @@ $as_echo "#define GAMSLINKS_HAS_OSIGRB 1" >>confdefs.h
        GAMSOSI_LFLAGS="$osigrb_lflags $GAMSOSI_LFLAGS"
        GAMSOSI_CFLAGS="$osigrb_cflags $GAMSOSI_CFLAGS"
 
-
-# Finally, set up PRIM_DATA, unless the user specified nodata.
 
 
   fi
@@ -18023,15 +17841,12 @@ $as_echo "#define GAMSLINKS_HAS_OSIGRB 1" >>confdefs.h
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package OsiMsk" >&5
 $as_echo_n "checking for package OsiMsk... " >&6; }
 
-# Make sure the necessary variables exist for each client package.
 
 
 
 
 
-
-# Check to see if the user has set an override to skip this primary.
-
+  # Check to see if the user has set an override to skip this primary.
   coin_has_osimsk=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -18040,10 +17855,6 @@ $as_echo_n "checking for package OsiMsk... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this primary, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_osimsk" != skipping ; then
 
@@ -18077,17 +17888,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary package.
-
+  # Initialize variables for the primary package.
   coin_has_osimsk=noInfo
   osimsk_lflags=
   osimsk_cflags=
   osimsk_data=
   osimsk_pcfiles=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
+  # --with-prim is always present.
   withval="$with_osimsk"
   if test -n "$withval" ; then
     case "$withval" in
@@ -18102,16 +17910,13 @@ fi
         ;;
       * )
         coin_has_osimsk=yes
-        osimsk_lflags="$withval"
+                osimsk_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-libs and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for libs and cflags.
-
-  if test "$coin_has_osimsk" != skipping ; then
+  # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_osimsk" != skipping ; then
        withval="$with_osimsk_lflags"
        if test -n "$withval" ; then
          case "$withval" in
@@ -18139,21 +17944,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance),
+  # - or yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_osimsk" = noInfo ; then
     case $dflt_action in
       no )
@@ -18168,11 +17971,10 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, requested, or build. For
-# requested or build, try pkgconf, if it's available. If it's not available,
-# well, hope that the user knows their system and prim can be used with no
-# additional flags.
-
+  # Now coin_has_prim can be one of skipping, yes, requested, or build.
+  # For requested or build, try pkgconf, if it's available.
+  # If it's not available, well, hope that the user knows their system
+  # and prim can be used with no additional flags.
   case $coin_has_osimsk in
     requested | build )
       if test -n "$PKG_CONFIG" -a "osi-mosek" != skip ; then
@@ -18196,7 +17998,6 @@ fi
 
       else
         coin_has_osimsk=no
-        # AC_MSG_WARN([skipped check via pkgconf as no pkgconf available])
       fi
       ;;
     skipping | yes )
@@ -18207,13 +18008,13 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_osimsk\" in COIN_FIND_P
       ;;
   esac
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means
-# we looked (with pkgconfig) and didn't find anything. Skipping means the
-# user said `don't use.' Yes means we have something, from the user or
-# from pkgconfig. Note that we haven't run a useability test!
+  # The final value of coin_has_prim will be yes, no, or skipping.
+  # No means we looked (with pkgconfig) and didn't find anything.
+  # Skipping means the user said `don't use.'
+  # Yes means we have something, from the user or from pkgconfig.
+  # Note that we haven't run a useability test!
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+  # Define BUILDTOOLS_DEBUG to enable debugging output
   if test "$BUILDTOOLS_DEBUG" = 1 ; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_PKG result for osimsk: \"$coin_has_osimsk\"" >&5
 $as_echo "$as_me: FIND_PRIM_PKG result for osimsk: \"$coin_has_osimsk\"" >&6;}
@@ -18232,18 +18033,20 @@ $as_echo "$as_me: osimsk_pcfiles is \"$osimsk_pcfiles\"" >&6;}
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_osimsk" >&5
 $as_echo "$coin_has_osimsk" >&6; }
+
+      if test "$PKG_CONFIG$coin_has_osimsk" = no ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Check for OsiMsk via pkg-config was skipped as no pkg-config available. If OsiMsk was meant to be found, then consider installing pkg-config or provide appropriate --with-osimsk-lflags, --with-osimsk-cflags, etc." >&5
+$as_echo "$as_me: WARNING: Check for OsiMsk via pkg-config was skipped as no pkg-config available. If OsiMsk was meant to be found, then consider installing pkg-config or provide appropriate --with-osimsk-lflags, --with-osimsk-cflags, etc." >&2;}
+      fi
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_osimsk due to COIN_SKIP_PROJECTS" >&5
 $as_echo "$coin_has_osimsk due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_osimsk" != yes ; then
     coin_has_osimsk=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_osimsk = yes; then
   COIN_HAS_OSIMSK_TRUE=
@@ -18254,9 +18057,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM and
-# augment the necessary variables for the client packages.
-
+  # If we have located the package, define preprocessor symbol PKG_HAS_PRIM and
+  # augment the necessary variables for the client packages.
   if test $coin_has_osimsk = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_OSIMSK 1" >>confdefs.h
@@ -18265,8 +18067,6 @@ $as_echo "#define GAMSLINKS_HAS_OSIMSK 1" >>confdefs.h
        GAMSOSI_LFLAGS="$osimsk_lflags $GAMSOSI_LFLAGS"
        GAMSOSI_CFLAGS="$osimsk_cflags $GAMSOSI_CFLAGS"
 
-
-# Finally, set up PRIM_DATA, unless the user specified nodata.
 
 
   fi
@@ -18277,15 +18077,12 @@ $as_echo "#define GAMSLINKS_HAS_OSIMSK 1" >>confdefs.h
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package OsiXpr" >&5
 $as_echo_n "checking for package OsiXpr... " >&6; }
 
-# Make sure the necessary variables exist for each client package.
 
 
 
 
 
-
-# Check to see if the user has set an override to skip this primary.
-
+  # Check to see if the user has set an override to skip this primary.
   coin_has_osixpr=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -18294,10 +18091,6 @@ $as_echo_n "checking for package OsiXpr... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this primary, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_osixpr" != skipping ; then
 
@@ -18331,17 +18124,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary package.
-
+  # Initialize variables for the primary package.
   coin_has_osixpr=noInfo
   osixpr_lflags=
   osixpr_cflags=
   osixpr_data=
   osixpr_pcfiles=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
+  # --with-prim is always present.
   withval="$with_osixpr"
   if test -n "$withval" ; then
     case "$withval" in
@@ -18356,16 +18146,13 @@ fi
         ;;
       * )
         coin_has_osixpr=yes
-        osixpr_lflags="$withval"
+                osixpr_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-libs and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for libs and cflags.
-
-  if test "$coin_has_osixpr" != skipping ; then
+  # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_osixpr" != skipping ; then
        withval="$with_osixpr_lflags"
        if test -n "$withval" ; then
          case "$withval" in
@@ -18393,21 +18180,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance),
+  # - or yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_osixpr" = noInfo ; then
     case $dflt_action in
       no )
@@ -18422,11 +18207,10 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, requested, or build. For
-# requested or build, try pkgconf, if it's available. If it's not available,
-# well, hope that the user knows their system and prim can be used with no
-# additional flags.
-
+  # Now coin_has_prim can be one of skipping, yes, requested, or build.
+  # For requested or build, try pkgconf, if it's available.
+  # If it's not available, well, hope that the user knows their system
+  # and prim can be used with no additional flags.
   case $coin_has_osixpr in
     requested | build )
       if test -n "$PKG_CONFIG" -a "osi-xpress" != skip ; then
@@ -18450,7 +18234,6 @@ fi
 
       else
         coin_has_osixpr=no
-        # AC_MSG_WARN([skipped check via pkgconf as no pkgconf available])
       fi
       ;;
     skipping | yes )
@@ -18461,13 +18244,13 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_osixpr\" in COIN_FIND_P
       ;;
   esac
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means
-# we looked (with pkgconfig) and didn't find anything. Skipping means the
-# user said `don't use.' Yes means we have something, from the user or
-# from pkgconfig. Note that we haven't run a useability test!
+  # The final value of coin_has_prim will be yes, no, or skipping.
+  # No means we looked (with pkgconfig) and didn't find anything.
+  # Skipping means the user said `don't use.'
+  # Yes means we have something, from the user or from pkgconfig.
+  # Note that we haven't run a useability test!
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+  # Define BUILDTOOLS_DEBUG to enable debugging output
   if test "$BUILDTOOLS_DEBUG" = 1 ; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_PKG result for osixpr: \"$coin_has_osixpr\"" >&5
 $as_echo "$as_me: FIND_PRIM_PKG result for osixpr: \"$coin_has_osixpr\"" >&6;}
@@ -18486,18 +18269,20 @@ $as_echo "$as_me: osixpr_pcfiles is \"$osixpr_pcfiles\"" >&6;}
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_osixpr" >&5
 $as_echo "$coin_has_osixpr" >&6; }
+
+      if test "$PKG_CONFIG$coin_has_osixpr" = no ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Check for OsiXpr via pkg-config was skipped as no pkg-config available. If OsiXpr was meant to be found, then consider installing pkg-config or provide appropriate --with-osixpr-lflags, --with-osixpr-cflags, etc." >&5
+$as_echo "$as_me: WARNING: Check for OsiXpr via pkg-config was skipped as no pkg-config available. If OsiXpr was meant to be found, then consider installing pkg-config or provide appropriate --with-osixpr-lflags, --with-osixpr-cflags, etc." >&2;}
+      fi
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_osixpr due to COIN_SKIP_PROJECTS" >&5
 $as_echo "$coin_has_osixpr due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_osixpr" != yes ; then
     coin_has_osixpr=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_osixpr = yes; then
   COIN_HAS_OSIXPR_TRUE=
@@ -18508,9 +18293,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM and
-# augment the necessary variables for the client packages.
-
+  # If we have located the package, define preprocessor symbol PKG_HAS_PRIM and
+  # augment the necessary variables for the client packages.
   if test $coin_has_osixpr = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_OSIXPR 1" >>confdefs.h
@@ -18519,8 +18303,6 @@ $as_echo "#define GAMSLINKS_HAS_OSIXPR 1" >>confdefs.h
        GAMSOSI_LFLAGS="$osixpr_lflags $GAMSOSI_LFLAGS"
        GAMSOSI_CFLAGS="$osixpr_cflags $GAMSOSI_CFLAGS"
 
-
-# Finally, set up PRIM_DATA, unless the user specified nodata.
 
 
   fi
@@ -18531,15 +18313,12 @@ $as_echo "#define GAMSLINKS_HAS_OSIXPR 1" >>confdefs.h
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Cbc" >&5
 $as_echo_n "checking for package Cbc... " >&6; }
 
-# Make sure the necessary variables exist for each client package.
 
 
 
 
 
-
-# Check to see if the user has set an override to skip this primary.
-
+  # Check to see if the user has set an override to skip this primary.
   coin_has_cbc=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -18548,10 +18327,6 @@ $as_echo_n "checking for package Cbc... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this primary, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_cbc" != skipping ; then
 
@@ -18585,17 +18360,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary package.
-
+  # Initialize variables for the primary package.
   coin_has_cbc=noInfo
   cbc_lflags=
   cbc_cflags=
   cbc_data=
   cbc_pcfiles=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
+  # --with-prim is always present.
   withval="$with_cbc"
   if test -n "$withval" ; then
     case "$withval" in
@@ -18610,16 +18382,13 @@ fi
         ;;
       * )
         coin_has_cbc=yes
-        cbc_lflags="$withval"
+                cbc_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-libs and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for libs and cflags.
-
-  if test "$coin_has_cbc" != skipping ; then
+  # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_cbc" != skipping ; then
        withval="$with_cbc_lflags"
        if test -n "$withval" ; then
          case "$withval" in
@@ -18647,21 +18416,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance),
+  # - or yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_cbc" = noInfo ; then
     case $dflt_action in
       no )
@@ -18676,11 +18443,10 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, requested, or build. For
-# requested or build, try pkgconf, if it's available. If it's not available,
-# well, hope that the user knows their system and prim can be used with no
-# additional flags.
-
+  # Now coin_has_prim can be one of skipping, yes, requested, or build.
+  # For requested or build, try pkgconf, if it's available.
+  # If it's not available, well, hope that the user knows their system
+  # and prim can be used with no additional flags.
   case $coin_has_cbc in
     requested | build )
       if test -n "$PKG_CONFIG" -a "cbc" != skip ; then
@@ -18704,7 +18470,6 @@ fi
 
       else
         coin_has_cbc=no
-        # AC_MSG_WARN([skipped check via pkgconf as no pkgconf available])
       fi
       ;;
     skipping | yes )
@@ -18715,13 +18480,13 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_cbc\" in COIN_FIND_PRIM
       ;;
   esac
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means
-# we looked (with pkgconfig) and didn't find anything. Skipping means the
-# user said `don't use.' Yes means we have something, from the user or
-# from pkgconfig. Note that we haven't run a useability test!
+  # The final value of coin_has_prim will be yes, no, or skipping.
+  # No means we looked (with pkgconfig) and didn't find anything.
+  # Skipping means the user said `don't use.'
+  # Yes means we have something, from the user or from pkgconfig.
+  # Note that we haven't run a useability test!
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+  # Define BUILDTOOLS_DEBUG to enable debugging output
   if test "$BUILDTOOLS_DEBUG" = 1 ; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_PKG result for cbc: \"$coin_has_cbc\"" >&5
 $as_echo "$as_me: FIND_PRIM_PKG result for cbc: \"$coin_has_cbc\"" >&6;}
@@ -18740,18 +18505,20 @@ $as_echo "$as_me: cbc_pcfiles is \"$cbc_pcfiles\"" >&6;}
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_cbc" >&5
 $as_echo "$coin_has_cbc" >&6; }
+
+      if test "$PKG_CONFIG$coin_has_cbc" = no ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Check for Cbc via pkg-config was skipped as no pkg-config available. If Cbc was meant to be found, then consider installing pkg-config or provide appropriate --with-cbc-lflags, --with-cbc-cflags, etc." >&5
+$as_echo "$as_me: WARNING: Check for Cbc via pkg-config was skipped as no pkg-config available. If Cbc was meant to be found, then consider installing pkg-config or provide appropriate --with-cbc-lflags, --with-cbc-cflags, etc." >&2;}
+      fi
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_cbc due to COIN_SKIP_PROJECTS" >&5
 $as_echo "$coin_has_cbc due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_cbc" != yes ; then
     coin_has_cbc=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_cbc = yes; then
   COIN_HAS_CBC_TRUE=
@@ -18762,9 +18529,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM and
-# augment the necessary variables for the client packages.
-
+  # If we have located the package, define preprocessor symbol PKG_HAS_PRIM and
+  # augment the necessary variables for the client packages.
   if test $coin_has_cbc = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_CBC 1" >>confdefs.h
@@ -18773,8 +18539,6 @@ $as_echo "#define GAMSLINKS_HAS_CBC 1" >>confdefs.h
        GAMSCBC_LFLAGS="$cbc_lflags $GAMSCBC_LFLAGS"
        GAMSCBC_CFLAGS="$cbc_cflags $GAMSCBC_CFLAGS"
 
-
-# Finally, set up PRIM_DATA, unless the user specified nodata.
 
 
   fi
@@ -18785,15 +18549,12 @@ $as_echo "#define GAMSLINKS_HAS_CBC 1" >>confdefs.h
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Ipopt" >&5
 $as_echo_n "checking for package Ipopt... " >&6; }
 
-# Make sure the necessary variables exist for each client package.
 
 
 
 
 
-
-# Check to see if the user has set an override to skip this primary.
-
+  # Check to see if the user has set an override to skip this primary.
   coin_has_ipopt=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -18802,10 +18563,6 @@ $as_echo_n "checking for package Ipopt... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this primary, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_ipopt" != skipping ; then
 
@@ -18839,17 +18596,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary package.
-
+  # Initialize variables for the primary package.
   coin_has_ipopt=noInfo
   ipopt_lflags=
   ipopt_cflags=
   ipopt_data=
   ipopt_pcfiles=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
+  # --with-prim is always present.
   withval="$with_ipopt"
   if test -n "$withval" ; then
     case "$withval" in
@@ -18864,16 +18618,13 @@ fi
         ;;
       * )
         coin_has_ipopt=yes
-        ipopt_lflags="$withval"
+                ipopt_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-libs and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for libs and cflags.
-
-  if test "$coin_has_ipopt" != skipping ; then
+  # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_ipopt" != skipping ; then
        withval="$with_ipopt_lflags"
        if test -n "$withval" ; then
          case "$withval" in
@@ -18901,21 +18652,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance),
+  # - or yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_ipopt" = noInfo ; then
     case $dflt_action in
       no )
@@ -18930,11 +18679,10 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, requested, or build. For
-# requested or build, try pkgconf, if it's available. If it's not available,
-# well, hope that the user knows their system and prim can be used with no
-# additional flags.
-
+  # Now coin_has_prim can be one of skipping, yes, requested, or build.
+  # For requested or build, try pkgconf, if it's available.
+  # If it's not available, well, hope that the user knows their system
+  # and prim can be used with no additional flags.
   case $coin_has_ipopt in
     requested | build )
       if test -n "$PKG_CONFIG" -a "ipopt" != skip ; then
@@ -18958,7 +18706,6 @@ fi
 
       else
         coin_has_ipopt=no
-        # AC_MSG_WARN([skipped check via pkgconf as no pkgconf available])
       fi
       ;;
     skipping | yes )
@@ -18969,13 +18716,13 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_ipopt\" in COIN_FIND_PR
       ;;
   esac
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means
-# we looked (with pkgconfig) and didn't find anything. Skipping means the
-# user said `don't use.' Yes means we have something, from the user or
-# from pkgconfig. Note that we haven't run a useability test!
+  # The final value of coin_has_prim will be yes, no, or skipping.
+  # No means we looked (with pkgconfig) and didn't find anything.
+  # Skipping means the user said `don't use.'
+  # Yes means we have something, from the user or from pkgconfig.
+  # Note that we haven't run a useability test!
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+  # Define BUILDTOOLS_DEBUG to enable debugging output
   if test "$BUILDTOOLS_DEBUG" = 1 ; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_PKG result for ipopt: \"$coin_has_ipopt\"" >&5
 $as_echo "$as_me: FIND_PRIM_PKG result for ipopt: \"$coin_has_ipopt\"" >&6;}
@@ -18994,18 +18741,20 @@ $as_echo "$as_me: ipopt_pcfiles is \"$ipopt_pcfiles\"" >&6;}
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_ipopt" >&5
 $as_echo "$coin_has_ipopt" >&6; }
+
+      if test "$PKG_CONFIG$coin_has_ipopt" = no ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Check for Ipopt via pkg-config was skipped as no pkg-config available. If Ipopt was meant to be found, then consider installing pkg-config or provide appropriate --with-ipopt-lflags, --with-ipopt-cflags, etc." >&5
+$as_echo "$as_me: WARNING: Check for Ipopt via pkg-config was skipped as no pkg-config available. If Ipopt was meant to be found, then consider installing pkg-config or provide appropriate --with-ipopt-lflags, --with-ipopt-cflags, etc." >&2;}
+      fi
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_ipopt due to COIN_SKIP_PROJECTS" >&5
 $as_echo "$coin_has_ipopt due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_ipopt" != yes ; then
     coin_has_ipopt=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_ipopt = yes; then
   COIN_HAS_IPOPT_TRUE=
@@ -19016,9 +18765,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM and
-# augment the necessary variables for the client packages.
-
+  # If we have located the package, define preprocessor symbol PKG_HAS_PRIM and
+  # augment the necessary variables for the client packages.
   if test $coin_has_ipopt = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_IPOPT 1" >>confdefs.h
@@ -19027,8 +18775,6 @@ $as_echo "#define GAMSLINKS_HAS_IPOPT 1" >>confdefs.h
        GAMSIPOPT_LFLAGS="$ipopt_lflags $GAMSIPOPT_LFLAGS"
        GAMSIPOPT_CFLAGS="$ipopt_cflags $GAMSIPOPT_CFLAGS"
 
-
-# Finally, set up PRIM_DATA, unless the user specified nodata.
 
 
   fi
@@ -19039,15 +18785,12 @@ $as_echo "#define GAMSLINKS_HAS_IPOPT 1" >>confdefs.h
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Bonmin" >&5
 $as_echo_n "checking for package Bonmin... " >&6; }
 
-# Make sure the necessary variables exist for each client package.
 
 
 
 
 
-
-# Check to see if the user has set an override to skip this primary.
-
+  # Check to see if the user has set an override to skip this primary.
   coin_has_bonmin=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -19056,10 +18799,6 @@ $as_echo_n "checking for package Bonmin... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this primary, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_bonmin" != skipping ; then
 
@@ -19093,17 +18832,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary package.
-
+  # Initialize variables for the primary package.
   coin_has_bonmin=noInfo
   bonmin_lflags=
   bonmin_cflags=
   bonmin_data=
   bonmin_pcfiles=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
+  # --with-prim is always present.
   withval="$with_bonmin"
   if test -n "$withval" ; then
     case "$withval" in
@@ -19118,16 +18854,13 @@ fi
         ;;
       * )
         coin_has_bonmin=yes
-        bonmin_lflags="$withval"
+                bonmin_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-libs and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for libs and cflags.
-
-  if test "$coin_has_bonmin" != skipping ; then
+  # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_bonmin" != skipping ; then
        withval="$with_bonmin_lflags"
        if test -n "$withval" ; then
          case "$withval" in
@@ -19155,21 +18888,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance),
+  # - or yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_bonmin" = noInfo ; then
     case $dflt_action in
       no )
@@ -19184,11 +18915,10 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, requested, or build. For
-# requested or build, try pkgconf, if it's available. If it's not available,
-# well, hope that the user knows their system and prim can be used with no
-# additional flags.
-
+  # Now coin_has_prim can be one of skipping, yes, requested, or build.
+  # For requested or build, try pkgconf, if it's available.
+  # If it's not available, well, hope that the user knows their system
+  # and prim can be used with no additional flags.
   case $coin_has_bonmin in
     requested | build )
       if test -n "$PKG_CONFIG" -a "bonmin" != skip ; then
@@ -19212,7 +18942,6 @@ fi
 
       else
         coin_has_bonmin=no
-        # AC_MSG_WARN([skipped check via pkgconf as no pkgconf available])
       fi
       ;;
     skipping | yes )
@@ -19223,13 +18952,13 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_bonmin\" in COIN_FIND_P
       ;;
   esac
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means
-# we looked (with pkgconfig) and didn't find anything. Skipping means the
-# user said `don't use.' Yes means we have something, from the user or
-# from pkgconfig. Note that we haven't run a useability test!
+  # The final value of coin_has_prim will be yes, no, or skipping.
+  # No means we looked (with pkgconfig) and didn't find anything.
+  # Skipping means the user said `don't use.'
+  # Yes means we have something, from the user or from pkgconfig.
+  # Note that we haven't run a useability test!
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+  # Define BUILDTOOLS_DEBUG to enable debugging output
   if test "$BUILDTOOLS_DEBUG" = 1 ; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_PKG result for bonmin: \"$coin_has_bonmin\"" >&5
 $as_echo "$as_me: FIND_PRIM_PKG result for bonmin: \"$coin_has_bonmin\"" >&6;}
@@ -19248,18 +18977,20 @@ $as_echo "$as_me: bonmin_pcfiles is \"$bonmin_pcfiles\"" >&6;}
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_bonmin" >&5
 $as_echo "$coin_has_bonmin" >&6; }
+
+      if test "$PKG_CONFIG$coin_has_bonmin" = no ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Check for Bonmin via pkg-config was skipped as no pkg-config available. If Bonmin was meant to be found, then consider installing pkg-config or provide appropriate --with-bonmin-lflags, --with-bonmin-cflags, etc." >&5
+$as_echo "$as_me: WARNING: Check for Bonmin via pkg-config was skipped as no pkg-config available. If Bonmin was meant to be found, then consider installing pkg-config or provide appropriate --with-bonmin-lflags, --with-bonmin-cflags, etc." >&2;}
+      fi
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_bonmin due to COIN_SKIP_PROJECTS" >&5
 $as_echo "$coin_has_bonmin due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_bonmin" != yes ; then
     coin_has_bonmin=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_bonmin = yes; then
   COIN_HAS_BONMIN_TRUE=
@@ -19270,9 +19001,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM and
-# augment the necessary variables for the client packages.
-
+  # If we have located the package, define preprocessor symbol PKG_HAS_PRIM and
+  # augment the necessary variables for the client packages.
   if test $coin_has_bonmin = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_BONMIN 1" >>confdefs.h
@@ -19281,8 +19011,6 @@ $as_echo "#define GAMSLINKS_HAS_BONMIN 1" >>confdefs.h
        GAMSBONMIN_LFLAGS="$bonmin_lflags $GAMSBONMIN_LFLAGS"
        GAMSBONMIN_CFLAGS="$bonmin_cflags $GAMSBONMIN_CFLAGS"
 
-
-# Finally, set up PRIM_DATA, unless the user specified nodata.
 
 
   fi
@@ -19293,15 +19021,12 @@ $as_echo "#define GAMSLINKS_HAS_BONMIN 1" >>confdefs.h
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Couenne" >&5
 $as_echo_n "checking for package Couenne... " >&6; }
 
-# Make sure the necessary variables exist for each client package.
 
 
 
 
 
-
-# Check to see if the user has set an override to skip this primary.
-
+  # Check to see if the user has set an override to skip this primary.
   coin_has_couenne=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -19310,10 +19035,6 @@ $as_echo_n "checking for package Couenne... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this primary, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_couenne" != skipping ; then
 
@@ -19347,17 +19068,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary package.
-
+  # Initialize variables for the primary package.
   coin_has_couenne=noInfo
   couenne_lflags=
   couenne_cflags=
   couenne_data=
   couenne_pcfiles=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
+  # --with-prim is always present.
   withval="$with_couenne"
   if test -n "$withval" ; then
     case "$withval" in
@@ -19372,16 +19090,13 @@ fi
         ;;
       * )
         coin_has_couenne=yes
-        couenne_lflags="$withval"
+                couenne_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-libs and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for libs and cflags.
-
-  if test "$coin_has_couenne" != skipping ; then
+  # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_couenne" != skipping ; then
        withval="$with_couenne_lflags"
        if test -n "$withval" ; then
          case "$withval" in
@@ -19409,21 +19124,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance),
+  # - or yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_couenne" = noInfo ; then
     case $dflt_action in
       no )
@@ -19438,11 +19151,10 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, requested, or build. For
-# requested or build, try pkgconf, if it's available. If it's not available,
-# well, hope that the user knows their system and prim can be used with no
-# additional flags.
-
+  # Now coin_has_prim can be one of skipping, yes, requested, or build.
+  # For requested or build, try pkgconf, if it's available.
+  # If it's not available, well, hope that the user knows their system
+  # and prim can be used with no additional flags.
   case $coin_has_couenne in
     requested | build )
       if test -n "$PKG_CONFIG" -a "couenne" != skip ; then
@@ -19466,7 +19178,6 @@ fi
 
       else
         coin_has_couenne=no
-        # AC_MSG_WARN([skipped check via pkgconf as no pkgconf available])
       fi
       ;;
     skipping | yes )
@@ -19477,13 +19188,13 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_couenne\" in COIN_FIND_
       ;;
   esac
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means
-# we looked (with pkgconfig) and didn't find anything. Skipping means the
-# user said `don't use.' Yes means we have something, from the user or
-# from pkgconfig. Note that we haven't run a useability test!
+  # The final value of coin_has_prim will be yes, no, or skipping.
+  # No means we looked (with pkgconfig) and didn't find anything.
+  # Skipping means the user said `don't use.'
+  # Yes means we have something, from the user or from pkgconfig.
+  # Note that we haven't run a useability test!
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+  # Define BUILDTOOLS_DEBUG to enable debugging output
   if test "$BUILDTOOLS_DEBUG" = 1 ; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_PKG result for couenne: \"$coin_has_couenne\"" >&5
 $as_echo "$as_me: FIND_PRIM_PKG result for couenne: \"$coin_has_couenne\"" >&6;}
@@ -19502,18 +19213,20 @@ $as_echo "$as_me: couenne_pcfiles is \"$couenne_pcfiles\"" >&6;}
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_couenne" >&5
 $as_echo "$coin_has_couenne" >&6; }
+
+      if test "$PKG_CONFIG$coin_has_couenne" = no ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Check for Couenne via pkg-config was skipped as no pkg-config available. If Couenne was meant to be found, then consider installing pkg-config or provide appropriate --with-couenne-lflags, --with-couenne-cflags, etc." >&5
+$as_echo "$as_me: WARNING: Check for Couenne via pkg-config was skipped as no pkg-config available. If Couenne was meant to be found, then consider installing pkg-config or provide appropriate --with-couenne-lflags, --with-couenne-cflags, etc." >&2;}
+      fi
   else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_couenne due to COIN_SKIP_PROJECTS" >&5
 $as_echo "$coin_has_couenne due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', 'no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_couenne" != yes ; then
     coin_has_couenne=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_couenne = yes; then
   COIN_HAS_COUENNE_TRUE=
@@ -19524,9 +19237,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM and
-# augment the necessary variables for the client packages.
-
+  # If we have located the package, define preprocessor symbol PKG_HAS_PRIM and
+  # augment the necessary variables for the client packages.
   if test $coin_has_couenne = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_COUENNE 1" >>confdefs.h
@@ -19536,8 +19248,6 @@ $as_echo "#define GAMSLINKS_HAS_COUENNE 1" >>confdefs.h
        GAMSCOUENNE_CFLAGS="$couenne_cflags $GAMSCOUENNE_CFLAGS"
 
 
-# Finally, set up PRIM_DATA, unless the user specified nodata.
-
 
   fi
 
@@ -19546,15 +19256,12 @@ $as_echo "#define GAMSLINKS_HAS_COUENNE 1" >>confdefs.h
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package SoPlex" >&5
 $as_echo_n "checking for package SoPlex... " >&6; }
 
-# Make sure the necessary variables exist for each client package.
 
 
 
 
-
-# Check to see if the user has overridden configure parameters from the
-# environment.
-
+  # Check to see if the user has overridden configure parameters from the
+  # environment.
   coin_has_soplex=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -19563,10 +19270,6 @@ $as_echo_n "checking for package SoPlex... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this project, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_soplex" != skipping ; then
 
@@ -19598,17 +19301,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary library.
-
+  # Initialize variables for the primary library.
   coin_has_soplex=noInfo
   soplex_lflags=
   soplex_cflags=
   soplex_data=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
-  withval=$with_soplex
+  # --with-prim is always present.
+  withval="$with_soplex"
   if test -n "$withval" ; then
     case "$withval" in
       no )
@@ -19622,17 +19322,15 @@ fi
         ;;
       * )
         coin_has_soplex=yes
-        soplex_lflags=$withval
+        soplex_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-lflags and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for lflags and cflags.
-
-  if test "$coin_has_soplex" != skipping ; then
-       withval=$with_soplex_lflags
+  # --with-prim-lflags and --with-prim-cflags are present
+     # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_soplex" != skipping ; then
+       withval="$with_soplex_lflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -19640,12 +19338,12 @@ fi
              ;;
            * )
              coin_has_soplex=yes
-             soplex_lflags=$withval
+             soplex_lflags="$withval"
              ;;
          esac
        fi
 
-       withval=$with_soplex_cflags
+       withval="$with_soplex_cflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -19659,21 +19357,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance), or
+  # - yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_soplex" = noInfo ; then
     case $dflt_action in
       no )
@@ -19688,9 +19384,8 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, build, or requested. For
-# build or requested, use the parameter values or invent some.
-
+  # Now coin_has_prim can be one of skipping, yes, build, or requested.
+  # For build or requested, use the parameter values or invent some.
   case $coin_has_soplex in
     build | requested)
       soplex_lflags="-lsoplex"
@@ -19708,35 +19403,28 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_soplex\" in COIN_FIND_P
       ;;
   esac
 
-# At this point, coin_has_prim is yes or skipping.  Time to run a link check,
-# if we have a function (). Use whatever we've collected for lflags, plus
-# other libraries () as the other libraries parameter to AC_SEARCH_LIBS,
-# leaving the library parameter blank.
+  # At this point, coin_has_prim is yes or skipping.
 
-  if test $coin_has_soplex != skipping ; then
-    :
-  fi
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means that
-# the link check failed. Yes means that we passed the link check, or no link
-# check was performed. Skipping means the user said `don't use.'
+  # The final value of coin_has_prim will be yes, no, or skipping. No means that
+  # the link check failed. Yes means that we passed the link check, or no link
+  # check was performed. Skipping means the user said `don't use.'
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
-    if test "$BUILDTOOLS_DEBUG" = 1 ; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for soplex: \"$coin_has_soplex\"" >&5
+  # Define BUILDTOOLS_DEBUG to enable debugging output
+  if test "$BUILDTOOLS_DEBUG" = 1 ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for soplex: \"$coin_has_soplex\"" >&5
 $as_echo "$as_me: FIND_PRIM_LIB result for soplex: \"$coin_has_soplex\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'soplex'" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'soplex'" >&5
 $as_echo "$as_me: Collected values for package 'soplex'" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: soplex_lflags is \"$soplex_lflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: soplex_lflags is \"$soplex_lflags\"" >&5
 $as_echo "$as_me: soplex_lflags is \"$soplex_lflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: soplex_cflags is \"$soplex_cflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: soplex_cflags is \"$soplex_cflags\"" >&5
 $as_echo "$as_me: soplex_cflags is \"$soplex_cflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: soplex_data is \"$soplex_data\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: soplex_data is \"$soplex_data\"" >&5
 $as_echo "$as_me: soplex_data is \"$soplex_data\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: soplex_pcfiles is \"$soplex_pcfiles\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: soplex_pcfiles is \"$soplex_pcfiles\"" >&5
 $as_echo "$as_me: soplex_pcfiles is \"$soplex_pcfiles\"" >&6;}
-    fi
+  fi
 
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_soplex" >&5
@@ -19746,13 +19434,10 @@ $as_echo "$coin_has_soplex" >&6; }
 $as_echo "$coin_has_soplex due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_soplex" != yes ; then
     coin_has_soplex=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_soplex = yes; then
   COIN_HAS_SOPLEX_TRUE=
@@ -19763,9 +19448,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM
-# and augment the necessary variables for the client packages.
-
+  # If we've located the package, define preprocessor symbol COIN_HAS_PRIM
+  # and augment the necessary variables for the client packages.
   if test $coin_has_soplex = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_SOPLEX 1" >>confdefs.h
@@ -19774,24 +19458,19 @@ $as_echo "#define GAMSLINKS_HAS_SOPLEX 1" >>confdefs.h
        GAMSSOPLEX_CFLAGS="$soplex_cflags $GAMSSOPLEX_CFLAGS"
 
 
-# Finally, set up PRIM_DATA, unless the user specified nodata.
-
 
   fi
 
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package SCIP" >&5
-$as_echo_n "checking for package SCIP... " >&6; }
-
-# Make sure the necessary variables exist for each client package.
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package SCIP with function SCIPcreate" >&5
+$as_echo_n "checking for package SCIP with function SCIPcreate... " >&6; }
 
 
 
 
 
-# Check to see if the user has overridden configure parameters from the
-# environment.
-
+  # Check to see if the user has overridden configure parameters from the
+  # environment.
   coin_has_scip=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -19800,10 +19479,6 @@ $as_echo_n "checking for package SCIP... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this project, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_scip" != skipping ; then
 
@@ -19835,17 +19510,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary library.
-
+  # Initialize variables for the primary library.
   coin_has_scip=noInfo
   scip_lflags=
   scip_cflags=
   scip_data=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
-  withval=$with_scip
+  # --with-prim is always present.
+  withval="$with_scip"
   if test -n "$withval" ; then
     case "$withval" in
       no )
@@ -19859,17 +19531,15 @@ fi
         ;;
       * )
         coin_has_scip=yes
-        scip_lflags=$withval
+        scip_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-lflags and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for lflags and cflags.
-
-  if test "$coin_has_scip" != skipping ; then
-       withval=$with_scip_lflags
+  # --with-prim-lflags and --with-prim-cflags are present
+     # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_scip" != skipping ; then
+       withval="$with_scip_lflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -19877,12 +19547,12 @@ fi
              ;;
            * )
              coin_has_scip=yes
-             scip_lflags=$withval
+             scip_lflags="$withval"
              ;;
          esac
        fi
 
-       withval=$with_scip_cflags
+       withval="$with_scip_cflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -19896,21 +19566,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance), or
+  # - yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_scip" = noInfo ; then
     case $dflt_action in
       no )
@@ -19925,9 +19593,8 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, build, or requested. For
-# build or requested, use the parameter values or invent some.
-
+  # Now coin_has_prim can be one of skipping, yes, build, or requested.
+  # For build or requested, use the parameter values or invent some.
   case $coin_has_scip in
     build | requested)
       scip_lflags="-lscipsolver"
@@ -19945,24 +19612,26 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_scip\" in COIN_FIND_PRI
       ;;
   esac
 
-# At this point, coin_has_prim is yes or skipping.  Time to run a link check,
-# if we have a function (SCIPcreate). Use whatever we've collected for lflags, plus
-# other libraries () as the other libraries parameter to AC_SEARCH_LIBS,
-# leaving the library parameter blank.
-
+  # At this point, coin_has_prim is yes or skipping.
   if test $coin_has_scip != skipping ; then
-    ac_save_LIBS=$LIBS
+       # Time to run a link check since we have a function name.
+       # Use whatever we've collected for lflags, plus other libraries ().
+       ac_save_LIBS=$LIBS
        LIBS="$scip_lflags "
        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
 #ifdef __cplusplus
-             extern "C"
-           #endif
-           void SCIPcreate();
+extern "C"
+#endif
+char SCIPcreate ();
 int
 main ()
 {
-SCIPcreate()
+return SCIPcreate ();
   ;
   return 0;
 }
@@ -19975,28 +19644,27 @@ fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
        LIBS=$ac_save_LIBS
-  fi
+     fi
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means that
-# the link check failed. Yes means that we passed the link check, or no link
-# check was performed. Skipping means the user said `don't use.'
+  # The final value of coin_has_prim will be yes, no, or skipping. No means that
+  # the link check failed. Yes means that we passed the link check, or no link
+  # check was performed. Skipping means the user said `don't use.'
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
-    if test "$BUILDTOOLS_DEBUG" = 1 ; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for scip: \"$coin_has_scip\"" >&5
+  # Define BUILDTOOLS_DEBUG to enable debugging output
+  if test "$BUILDTOOLS_DEBUG" = 1 ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for scip: \"$coin_has_scip\"" >&5
 $as_echo "$as_me: FIND_PRIM_LIB result for scip: \"$coin_has_scip\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'scip'" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'scip'" >&5
 $as_echo "$as_me: Collected values for package 'scip'" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: scip_lflags is \"$scip_lflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: scip_lflags is \"$scip_lflags\"" >&5
 $as_echo "$as_me: scip_lflags is \"$scip_lflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: scip_cflags is \"$scip_cflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: scip_cflags is \"$scip_cflags\"" >&5
 $as_echo "$as_me: scip_cflags is \"$scip_cflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: scip_data is \"$scip_data\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: scip_data is \"$scip_data\"" >&5
 $as_echo "$as_me: scip_data is \"$scip_data\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: scip_pcfiles is \"$scip_pcfiles\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: scip_pcfiles is \"$scip_pcfiles\"" >&5
 $as_echo "$as_me: scip_pcfiles is \"$scip_pcfiles\"" >&6;}
-    fi
+  fi
 
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_scip" >&5
@@ -20006,13 +19674,10 @@ $as_echo "$coin_has_scip" >&6; }
 $as_echo "$coin_has_scip due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_scip" != yes ; then
     coin_has_scip=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_scip = yes; then
   COIN_HAS_SCIP_TRUE=
@@ -20023,9 +19688,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM
-# and augment the necessary variables for the client packages.
-
+  # If we've located the package, define preprocessor symbol COIN_HAS_PRIM
+  # and augment the necessary variables for the client packages.
   if test $coin_has_scip = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_SCIP 1" >>confdefs.h
@@ -20034,24 +19698,19 @@ $as_echo "#define GAMSLINKS_HAS_SCIP 1" >>confdefs.h
        GAMSSCIP_CFLAGS="$scip_cflags $GAMSSCIP_CFLAGS"
 
 
-# Finally, set up PRIM_DATA, unless the user specified nodata.
-
 
   fi
 
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package GCG" >&5
-$as_echo_n "checking for package GCG... " >&6; }
-
-# Make sure the necessary variables exist for each client package.
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package GCG with function GCGisMaster" >&5
+$as_echo_n "checking for package GCG with function GCGisMaster... " >&6; }
 
 
 
 
 
-# Check to see if the user has overridden configure parameters from the
-# environment.
-
+  # Check to see if the user has overridden configure parameters from the
+  # environment.
   coin_has_gcg=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -20060,10 +19719,6 @@ $as_echo_n "checking for package GCG... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this project, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_gcg" != skipping ; then
 
@@ -20095,17 +19750,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary library.
-
+  # Initialize variables for the primary library.
   coin_has_gcg=noInfo
   gcg_lflags=
   gcg_cflags=
   gcg_data=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
-  withval=$with_gcg
+  # --with-prim is always present.
+  withval="$with_gcg"
   if test -n "$withval" ; then
     case "$withval" in
       no )
@@ -20119,17 +19771,15 @@ fi
         ;;
       * )
         coin_has_gcg=yes
-        gcg_lflags=$withval
+        gcg_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-lflags and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for lflags and cflags.
-
-  if test "$coin_has_gcg" != skipping ; then
-       withval=$with_gcg_lflags
+  # --with-prim-lflags and --with-prim-cflags are present
+     # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_gcg" != skipping ; then
+       withval="$with_gcg_lflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -20137,12 +19787,12 @@ fi
              ;;
            * )
              coin_has_gcg=yes
-             gcg_lflags=$withval
+             gcg_lflags="$withval"
              ;;
          esac
        fi
 
-       withval=$with_gcg_cflags
+       withval="$with_gcg_cflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -20156,21 +19806,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance), or
+  # - yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_gcg" = noInfo ; then
     case $dflt_action in
       no )
@@ -20185,9 +19833,8 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, build, or requested. For
-# build or requested, use the parameter values or invent some.
-
+  # Now coin_has_prim can be one of skipping, yes, build, or requested.
+  # For build or requested, use the parameter values or invent some.
   case $coin_has_gcg in
     build | requested)
       gcg_lflags="-lgcg"
@@ -20205,24 +19852,26 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_gcg\" in COIN_FIND_PRIM
       ;;
   esac
 
-# At this point, coin_has_prim is yes or skipping.  Time to run a link check,
-# if we have a function (GCGisMaster). Use whatever we've collected for lflags, plus
-# other libraries () as the other libraries parameter to AC_SEARCH_LIBS,
-# leaving the library parameter blank.
-
+  # At this point, coin_has_prim is yes or skipping.
   if test $coin_has_gcg != skipping ; then
-    ac_save_LIBS=$LIBS
+       # Time to run a link check since we have a function name.
+       # Use whatever we've collected for lflags, plus other libraries ().
+       ac_save_LIBS=$LIBS
        LIBS="$gcg_lflags "
        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
 #ifdef __cplusplus
-             extern "C"
-           #endif
-           void GCGisMaster();
+extern "C"
+#endif
+char GCGisMaster ();
 int
 main ()
 {
-GCGisMaster()
+return GCGisMaster ();
   ;
   return 0;
 }
@@ -20235,28 +19884,27 @@ fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
        LIBS=$ac_save_LIBS
-  fi
+     fi
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means that
-# the link check failed. Yes means that we passed the link check, or no link
-# check was performed. Skipping means the user said `don't use.'
+  # The final value of coin_has_prim will be yes, no, or skipping. No means that
+  # the link check failed. Yes means that we passed the link check, or no link
+  # check was performed. Skipping means the user said `don't use.'
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
-    if test "$BUILDTOOLS_DEBUG" = 1 ; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for gcg: \"$coin_has_gcg\"" >&5
+  # Define BUILDTOOLS_DEBUG to enable debugging output
+  if test "$BUILDTOOLS_DEBUG" = 1 ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for gcg: \"$coin_has_gcg\"" >&5
 $as_echo "$as_me: FIND_PRIM_LIB result for gcg: \"$coin_has_gcg\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'gcg'" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'gcg'" >&5
 $as_echo "$as_me: Collected values for package 'gcg'" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: gcg_lflags is \"$gcg_lflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: gcg_lflags is \"$gcg_lflags\"" >&5
 $as_echo "$as_me: gcg_lflags is \"$gcg_lflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: gcg_cflags is \"$gcg_cflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: gcg_cflags is \"$gcg_cflags\"" >&5
 $as_echo "$as_me: gcg_cflags is \"$gcg_cflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: gcg_data is \"$gcg_data\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: gcg_data is \"$gcg_data\"" >&5
 $as_echo "$as_me: gcg_data is \"$gcg_data\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: gcg_pcfiles is \"$gcg_pcfiles\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: gcg_pcfiles is \"$gcg_pcfiles\"" >&5
 $as_echo "$as_me: gcg_pcfiles is \"$gcg_pcfiles\"" >&6;}
-    fi
+  fi
 
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_gcg" >&5
@@ -20266,13 +19914,10 @@ $as_echo "$coin_has_gcg" >&6; }
 $as_echo "$coin_has_gcg due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_gcg" != yes ; then
     coin_has_gcg=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_gcg = yes; then
   COIN_HAS_GCG_TRUE=
@@ -20283,9 +19928,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM
-# and augment the necessary variables for the client packages.
-
+  # If we've located the package, define preprocessor symbol COIN_HAS_PRIM
+  # and augment the necessary variables for the client packages.
   if test $coin_has_gcg = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_GCG 1" >>confdefs.h
@@ -20294,16 +19938,12 @@ $as_echo "#define GAMSLINKS_HAS_GCG 1" >>confdefs.h
        GAMSSCIP_CFLAGS="$gcg_cflags $GAMSSCIP_CFLAGS"
 
 
-# Finally, set up PRIM_DATA, unless the user specified nodata.
-
 
   fi
 
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Cplex" >&5
-$as_echo_n "checking for package Cplex... " >&6; }
-
-# Make sure the necessary variables exist for each client package.
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Cplex with function CPXgetstat" >&5
+$as_echo_n "checking for package Cplex with function CPXgetstat... " >&6; }
 
 
 
@@ -20317,9 +19957,8 @@ $as_echo_n "checking for package Cplex... " >&6; }
 
 
 
-# Check to see if the user has overridden configure parameters from the
-# environment.
-
+  # Check to see if the user has overridden configure parameters from the
+  # environment.
   coin_has_cplex=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -20328,10 +19967,6 @@ $as_echo_n "checking for package Cplex... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this project, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_cplex" != skipping ; then
 
@@ -20363,17 +19998,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary library.
-
+  # Initialize variables for the primary library.
   coin_has_cplex=noInfo
   cplex_lflags=
   cplex_cflags=
   cplex_data=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
-  withval=$with_cplex
+  # --with-prim is always present.
+  withval="$with_cplex"
   if test -n "$withval" ; then
     case "$withval" in
       no )
@@ -20387,17 +20019,15 @@ fi
         ;;
       * )
         coin_has_cplex=yes
-        cplex_lflags=$withval
+        cplex_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-lflags and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for lflags and cflags.
-
-  if test "$coin_has_cplex" != skipping ; then
-       withval=$with_cplex_lflags
+  # --with-prim-lflags and --with-prim-cflags are present
+     # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_cplex" != skipping ; then
+       withval="$with_cplex_lflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -20405,12 +20035,12 @@ fi
              ;;
            * )
              coin_has_cplex=yes
-             cplex_lflags=$withval
+             cplex_lflags="$withval"
              ;;
          esac
        fi
 
-       withval=$with_cplex_cflags
+       withval="$with_cplex_cflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -20424,21 +20054,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance), or
+  # - yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_cplex" = noInfo ; then
     case $dflt_action in
       no )
@@ -20453,9 +20081,8 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, build, or requested. For
-# build or requested, use the parameter values or invent some.
-
+  # Now coin_has_prim can be one of skipping, yes, build, or requested.
+  # For build or requested, use the parameter values or invent some.
   case $coin_has_cplex in
     build | requested)
       cplex_lflags="-lcplex -lpthread -lm -ldl"
@@ -20473,24 +20100,26 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_cplex\" in COIN_FIND_PR
       ;;
   esac
 
-# At this point, coin_has_prim is yes or skipping.  Time to run a link check,
-# if we have a function (CPXgetstat). Use whatever we've collected for lflags, plus
-# other libraries () as the other libraries parameter to AC_SEARCH_LIBS,
-# leaving the library parameter blank.
-
+  # At this point, coin_has_prim is yes or skipping.
   if test $coin_has_cplex != skipping ; then
-    ac_save_LIBS=$LIBS
+       # Time to run a link check since we have a function name.
+       # Use whatever we've collected for lflags, plus other libraries ().
+       ac_save_LIBS=$LIBS
        LIBS="$cplex_lflags "
        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
 #ifdef __cplusplus
-             extern "C"
-           #endif
-           void CPXgetstat();
+extern "C"
+#endif
+char CPXgetstat ();
 int
 main ()
 {
-CPXgetstat()
+return CPXgetstat ();
   ;
   return 0;
 }
@@ -20503,28 +20132,27 @@ fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
        LIBS=$ac_save_LIBS
-  fi
+     fi
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means that
-# the link check failed. Yes means that we passed the link check, or no link
-# check was performed. Skipping means the user said `don't use.'
+  # The final value of coin_has_prim will be yes, no, or skipping. No means that
+  # the link check failed. Yes means that we passed the link check, or no link
+  # check was performed. Skipping means the user said `don't use.'
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
-    if test "$BUILDTOOLS_DEBUG" = 1 ; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for cplex: \"$coin_has_cplex\"" >&5
+  # Define BUILDTOOLS_DEBUG to enable debugging output
+  if test "$BUILDTOOLS_DEBUG" = 1 ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for cplex: \"$coin_has_cplex\"" >&5
 $as_echo "$as_me: FIND_PRIM_LIB result for cplex: \"$coin_has_cplex\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'cplex'" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'cplex'" >&5
 $as_echo "$as_me: Collected values for package 'cplex'" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: cplex_lflags is \"$cplex_lflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: cplex_lflags is \"$cplex_lflags\"" >&5
 $as_echo "$as_me: cplex_lflags is \"$cplex_lflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: cplex_cflags is \"$cplex_cflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: cplex_cflags is \"$cplex_cflags\"" >&5
 $as_echo "$as_me: cplex_cflags is \"$cplex_cflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: cplex_data is \"$cplex_data\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: cplex_data is \"$cplex_data\"" >&5
 $as_echo "$as_me: cplex_data is \"$cplex_data\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: cplex_pcfiles is \"$cplex_pcfiles\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: cplex_pcfiles is \"$cplex_pcfiles\"" >&5
 $as_echo "$as_me: cplex_pcfiles is \"$cplex_pcfiles\"" >&6;}
-    fi
+  fi
 
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_cplex" >&5
@@ -20534,13 +20162,10 @@ $as_echo "$coin_has_cplex" >&6; }
 $as_echo "$coin_has_cplex due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_cplex" != yes ; then
     coin_has_cplex=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_cplex = yes; then
   COIN_HAS_CPLEX_TRUE=
@@ -20551,9 +20176,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM
-# and augment the necessary variables for the client packages.
-
+  # If we've located the package, define preprocessor symbol COIN_HAS_PRIM
+  # and augment the necessary variables for the client packages.
   if test $coin_has_cplex = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_CPLEX 1" >>confdefs.h
@@ -20570,16 +20194,12 @@ $as_echo "#define GAMSLINKS_HAS_CPLEX 1" >>confdefs.h
        GAMSCBC_CFLAGS="$cplex_cflags $GAMSCBC_CFLAGS"
 
 
-# Finally, set up PRIM_DATA, unless the user specified nodata.
-
 
   fi
 
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Mosek" >&5
-$as_echo_n "checking for package Mosek... " >&6; }
-
-# Make sure the necessary variables exist for each client package.
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Mosek with function MSK_makeenv" >&5
+$as_echo_n "checking for package Mosek with function MSK_makeenv... " >&6; }
 
 
 
@@ -20587,9 +20207,8 @@ $as_echo_n "checking for package Mosek... " >&6; }
 
 
 
-# Check to see if the user has overridden configure parameters from the
-# environment.
-
+  # Check to see if the user has overridden configure parameters from the
+  # environment.
   coin_has_mosek=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -20598,10 +20217,6 @@ $as_echo_n "checking for package Mosek... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this project, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_mosek" != skipping ; then
 
@@ -20633,17 +20248,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary library.
-
+  # Initialize variables for the primary library.
   coin_has_mosek=noInfo
   mosek_lflags=
   mosek_cflags=
   mosek_data=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
-  withval=$with_mosek
+  # --with-prim is always present.
+  withval="$with_mosek"
   if test -n "$withval" ; then
     case "$withval" in
       no )
@@ -20657,17 +20269,15 @@ fi
         ;;
       * )
         coin_has_mosek=yes
-        mosek_lflags=$withval
+        mosek_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-lflags and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for lflags and cflags.
-
-  if test "$coin_has_mosek" != skipping ; then
-       withval=$with_mosek_lflags
+  # --with-prim-lflags and --with-prim-cflags are present
+     # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_mosek" != skipping ; then
+       withval="$with_mosek_lflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -20675,12 +20285,12 @@ fi
              ;;
            * )
              coin_has_mosek=yes
-             mosek_lflags=$withval
+             mosek_lflags="$withval"
              ;;
          esac
        fi
 
-       withval=$with_mosek_cflags
+       withval="$with_mosek_cflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -20694,21 +20304,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance), or
+  # - yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_mosek" = noInfo ; then
     case $dflt_action in
       no )
@@ -20723,9 +20331,8 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, build, or requested. For
-# build or requested, use the parameter values or invent some.
-
+  # Now coin_has_prim can be one of skipping, yes, build, or requested.
+  # For build or requested, use the parameter values or invent some.
   case $coin_has_mosek in
     build | requested)
       mosek_lflags="-lmosek64 -lpthread"
@@ -20743,24 +20350,26 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_mosek\" in COIN_FIND_PR
       ;;
   esac
 
-# At this point, coin_has_prim is yes or skipping.  Time to run a link check,
-# if we have a function (MSK_makeenv). Use whatever we've collected for lflags, plus
-# other libraries () as the other libraries parameter to AC_SEARCH_LIBS,
-# leaving the library parameter blank.
-
+  # At this point, coin_has_prim is yes or skipping.
   if test $coin_has_mosek != skipping ; then
-    ac_save_LIBS=$LIBS
+       # Time to run a link check since we have a function name.
+       # Use whatever we've collected for lflags, plus other libraries ().
+       ac_save_LIBS=$LIBS
        LIBS="$mosek_lflags "
        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
 #ifdef __cplusplus
-             extern "C"
-           #endif
-           void MSK_makeenv();
+extern "C"
+#endif
+char MSK_makeenv ();
 int
 main ()
 {
-MSK_makeenv()
+return MSK_makeenv ();
   ;
   return 0;
 }
@@ -20773,28 +20382,27 @@ fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
        LIBS=$ac_save_LIBS
-  fi
+     fi
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means that
-# the link check failed. Yes means that we passed the link check, or no link
-# check was performed. Skipping means the user said `don't use.'
+  # The final value of coin_has_prim will be yes, no, or skipping. No means that
+  # the link check failed. Yes means that we passed the link check, or no link
+  # check was performed. Skipping means the user said `don't use.'
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
-    if test "$BUILDTOOLS_DEBUG" = 1 ; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for mosek: \"$coin_has_mosek\"" >&5
+  # Define BUILDTOOLS_DEBUG to enable debugging output
+  if test "$BUILDTOOLS_DEBUG" = 1 ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for mosek: \"$coin_has_mosek\"" >&5
 $as_echo "$as_me: FIND_PRIM_LIB result for mosek: \"$coin_has_mosek\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'mosek'" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'mosek'" >&5
 $as_echo "$as_me: Collected values for package 'mosek'" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: mosek_lflags is \"$mosek_lflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: mosek_lflags is \"$mosek_lflags\"" >&5
 $as_echo "$as_me: mosek_lflags is \"$mosek_lflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: mosek_cflags is \"$mosek_cflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: mosek_cflags is \"$mosek_cflags\"" >&5
 $as_echo "$as_me: mosek_cflags is \"$mosek_cflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: mosek_data is \"$mosek_data\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: mosek_data is \"$mosek_data\"" >&5
 $as_echo "$as_me: mosek_data is \"$mosek_data\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: mosek_pcfiles is \"$mosek_pcfiles\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: mosek_pcfiles is \"$mosek_pcfiles\"" >&5
 $as_echo "$as_me: mosek_pcfiles is \"$mosek_pcfiles\"" >&6;}
-    fi
+  fi
 
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_mosek" >&5
@@ -20804,13 +20412,10 @@ $as_echo "$coin_has_mosek" >&6; }
 $as_echo "$coin_has_mosek due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_mosek" != yes ; then
     coin_has_mosek=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_mosek = yes; then
   COIN_HAS_MOSEK_TRUE=
@@ -20821,9 +20426,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM
-# and augment the necessary variables for the client packages.
-
+  # If we've located the package, define preprocessor symbol COIN_HAS_PRIM
+  # and augment the necessary variables for the client packages.
   if test $coin_has_mosek = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_MOSEK 1" >>confdefs.h
@@ -20834,24 +20438,19 @@ $as_echo "#define GAMSLINKS_HAS_MOSEK 1" >>confdefs.h
        GAMSSCIP_CFLAGS="$mosek_cflags $GAMSSCIP_CFLAGS"
 
 
-# Finally, set up PRIM_DATA, unless the user specified nodata.
-
 
   fi
 
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Xpress" >&5
-$as_echo_n "checking for package Xpress... " >&6; }
-
-# Make sure the necessary variables exist for each client package.
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Xpress with function XPRSinit" >&5
+$as_echo_n "checking for package Xpress with function XPRSinit... " >&6; }
 
 
 
 
 
-# Check to see if the user has overridden configure parameters from the
-# environment.
-
+  # Check to see if the user has overridden configure parameters from the
+  # environment.
   coin_has_xpress=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -20860,10 +20459,6 @@ $as_echo_n "checking for package Xpress... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this project, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_xpress" != skipping ; then
 
@@ -20895,17 +20490,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary library.
-
+  # Initialize variables for the primary library.
   coin_has_xpress=noInfo
   xpress_lflags=
   xpress_cflags=
   xpress_data=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
-  withval=$with_xpress
+  # --with-prim is always present.
+  withval="$with_xpress"
   if test -n "$withval" ; then
     case "$withval" in
       no )
@@ -20919,17 +20511,15 @@ fi
         ;;
       * )
         coin_has_xpress=yes
-        xpress_lflags=$withval
+        xpress_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-lflags and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for lflags and cflags.
-
-  if test "$coin_has_xpress" != skipping ; then
-       withval=$with_xpress_lflags
+  # --with-prim-lflags and --with-prim-cflags are present
+     # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_xpress" != skipping ; then
+       withval="$with_xpress_lflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -20937,12 +20527,12 @@ fi
              ;;
            * )
              coin_has_xpress=yes
-             xpress_lflags=$withval
+             xpress_lflags="$withval"
              ;;
          esac
        fi
 
-       withval=$with_xpress_cflags
+       withval="$with_xpress_cflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -20956,21 +20546,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance), or
+  # - yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_xpress" = noInfo ; then
     case $dflt_action in
       no )
@@ -20985,9 +20573,8 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, build, or requested. For
-# build or requested, use the parameter values or invent some.
-
+  # Now coin_has_prim can be one of skipping, yes, build, or requested.
+  # For build or requested, use the parameter values or invent some.
   case $coin_has_xpress in
     build | requested)
       xpress_lflags="-lxprs -lxprl"
@@ -21005,24 +20592,26 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_xpress\" in COIN_FIND_P
       ;;
   esac
 
-# At this point, coin_has_prim is yes or skipping.  Time to run a link check,
-# if we have a function (XPRSinit). Use whatever we've collected for lflags, plus
-# other libraries () as the other libraries parameter to AC_SEARCH_LIBS,
-# leaving the library parameter blank.
-
+  # At this point, coin_has_prim is yes or skipping.
   if test $coin_has_xpress != skipping ; then
-    ac_save_LIBS=$LIBS
+       # Time to run a link check since we have a function name.
+       # Use whatever we've collected for lflags, plus other libraries ().
+       ac_save_LIBS=$LIBS
        LIBS="$xpress_lflags "
        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
 #ifdef __cplusplus
-             extern "C"
-           #endif
-           void XPRSinit();
+extern "C"
+#endif
+char XPRSinit ();
 int
 main ()
 {
-XPRSinit()
+return XPRSinit ();
   ;
   return 0;
 }
@@ -21035,28 +20624,27 @@ fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
        LIBS=$ac_save_LIBS
-  fi
+     fi
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means that
-# the link check failed. Yes means that we passed the link check, or no link
-# check was performed. Skipping means the user said `don't use.'
+  # The final value of coin_has_prim will be yes, no, or skipping. No means that
+  # the link check failed. Yes means that we passed the link check, or no link
+  # check was performed. Skipping means the user said `don't use.'
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
-    if test "$BUILDTOOLS_DEBUG" = 1 ; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for xpress: \"$coin_has_xpress\"" >&5
+  # Define BUILDTOOLS_DEBUG to enable debugging output
+  if test "$BUILDTOOLS_DEBUG" = 1 ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for xpress: \"$coin_has_xpress\"" >&5
 $as_echo "$as_me: FIND_PRIM_LIB result for xpress: \"$coin_has_xpress\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'xpress'" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'xpress'" >&5
 $as_echo "$as_me: Collected values for package 'xpress'" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: xpress_lflags is \"$xpress_lflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: xpress_lflags is \"$xpress_lflags\"" >&5
 $as_echo "$as_me: xpress_lflags is \"$xpress_lflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: xpress_cflags is \"$xpress_cflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: xpress_cflags is \"$xpress_cflags\"" >&5
 $as_echo "$as_me: xpress_cflags is \"$xpress_cflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: xpress_data is \"$xpress_data\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: xpress_data is \"$xpress_data\"" >&5
 $as_echo "$as_me: xpress_data is \"$xpress_data\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: xpress_pcfiles is \"$xpress_pcfiles\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: xpress_pcfiles is \"$xpress_pcfiles\"" >&5
 $as_echo "$as_me: xpress_pcfiles is \"$xpress_pcfiles\"" >&6;}
-    fi
+  fi
 
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_xpress" >&5
@@ -21066,13 +20654,10 @@ $as_echo "$coin_has_xpress" >&6; }
 $as_echo "$coin_has_xpress due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_xpress" != yes ; then
     coin_has_xpress=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_xpress = yes; then
   COIN_HAS_XPRESS_TRUE=
@@ -21083,9 +20668,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM
-# and augment the necessary variables for the client packages.
-
+  # If we've located the package, define preprocessor symbol COIN_HAS_PRIM
+  # and augment the necessary variables for the client packages.
   if test $coin_has_xpress = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_XPRESS 1" >>confdefs.h
@@ -21094,24 +20678,19 @@ $as_echo "#define GAMSLINKS_HAS_XPRESS 1" >>confdefs.h
        GAMSOSI_CFLAGS="$xpress_cflags $GAMSOSI_CFLAGS"
 
 
-# Finally, set up PRIM_DATA, unless the user specified nodata.
-
 
   fi
 
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Gurobi" >&5
-$as_echo_n "checking for package Gurobi... " >&6; }
-
-# Make sure the necessary variables exist for each client package.
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for package Gurobi with function GRBloadenv" >&5
+$as_echo_n "checking for package Gurobi with function GRBloadenv... " >&6; }
 
 
 
 
 
-# Check to see if the user has overridden configure parameters from the
-# environment.
-
+  # Check to see if the user has overridden configure parameters from the
+  # environment.
   coin_has_gurobi=noInfo
   if test x"$COIN_SKIP_PROJECTS" != x ; then
     for pkg in $COIN_SKIP_PROJECTS ; do
@@ -21120,10 +20699,6 @@ $as_echo_n "checking for package Gurobi... " >&6; }
       fi
     done
   fi
-
-# If we're not skipping this project, define and process the command line
-# options according to the cmdopts parameter. Then invoke FIND_PRIM_PKG to do
-# the heavy lifting.
 
   if test "$coin_has_gurobi" != skipping ; then
 
@@ -21155,17 +20730,14 @@ fi
 
   dflt_action=yes
 
-# Initialize variables for the primary library.
-
+  # Initialize variables for the primary library.
   coin_has_gurobi=noInfo
   gurobi_lflags=
   gurobi_cflags=
   gurobi_data=
 
-# --with-prim is always present. If the client specified dataonly, its value
-# is assigned to prim_data.
-
-  withval=$with_gurobi
+  # --with-prim is always present.
+  withval="$with_gurobi"
   if test -n "$withval" ; then
     case "$withval" in
       no )
@@ -21179,17 +20751,15 @@ fi
         ;;
       * )
         coin_has_gurobi=yes
-        gurobi_lflags=$withval
+        gurobi_lflags="$withval"
         ;;
     esac
   fi
 
-# --with-prim-lflags and --with-prim-cflags are present unless the client
-# specified dataonly. Specifying --with-prim=no overrides the individual
-# options for lflags and cflags.
-
-  if test "$coin_has_gurobi" != skipping ; then
-       withval=$with_gurobi_lflags
+  # --with-prim-lflags and --with-prim-cflags are present
+     # Specifying --with-prim=no overrides the individual options for lflags and cflags.
+     if test "$coin_has_gurobi" != skipping ; then
+       withval="$with_gurobi_lflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -21197,12 +20767,12 @@ fi
              ;;
            * )
              coin_has_gurobi=yes
-             gurobi_lflags=$withval
+             gurobi_lflags="$withval"
              ;;
          esac
        fi
 
-       withval=$with_gurobi_cflags
+       withval="$with_gurobi_cflags"
        if test -n "$withval" ; then
          case "$withval" in
            build | no | yes )
@@ -21216,21 +20786,19 @@ fi
        fi
      fi
 
-# --with-prim-data will be present unless the client specified nodata.
-# Specifying --with-prim=no overrides the individual option for data.
 
 
+  # At this point, coin_has_prim can be one of
+  # - noInfo (no user options specified),
+  # - skipping (user said no),
+  # - requested,
+  # - build (user said yes or build and gave no further guidance), or
+  # - yes (user specified one or more --with-prim options).
+  # If we're already at yes or skipping, we're done looking.
 
-# At this point, coin_has_prim can be one of noInfo (no user options
-# specified), skipping (user said no), requested or build (user said yes
-# or build and gave no further guidance), or yes (user specified one or
-# more --with-prim options). If we're already at yes or skipping, we're
-# done looking.
-
-# If there are no user options (noInfo) and the default is no, we're skipping.
-# Otherwise, the default must be yes or build; consider the package requested.
-# A default action we don't recognise defaults to yes.
-
+  # If there are no user options (noInfo) and the default is no, we're skipping.
+  # Otherwise, the default must be yes or build; consider the package requested.
+  # A default action we don't recognise defaults to yes.
   if test "$coin_has_gurobi" = noInfo ; then
     case $dflt_action in
       no )
@@ -21245,9 +20813,8 @@ fi
     esac
   fi
 
-# Now coin_has_prim can be one of skipping, yes, build, or requested. For
-# build or requested, use the parameter values or invent some.
-
+  # Now coin_has_prim can be one of skipping, yes, build, or requested.
+  # For build or requested, use the parameter values or invent some.
   case $coin_has_gurobi in
     build | requested)
       gurobi_lflags="-lgurobi -lpthread -lm"
@@ -21265,24 +20832,26 @@ $as_echo "$as_me: WARNING: Unexpected status \"$coin_has_gurobi\" in COIN_FIND_P
       ;;
   esac
 
-# At this point, coin_has_prim is yes or skipping.  Time to run a link check,
-# if we have a function (GRBloadenv). Use whatever we've collected for lflags, plus
-# other libraries () as the other libraries parameter to AC_SEARCH_LIBS,
-# leaving the library parameter blank.
-
+  # At this point, coin_has_prim is yes or skipping.
   if test $coin_has_gurobi != skipping ; then
-    ac_save_LIBS=$LIBS
+       # Time to run a link check since we have a function name.
+       # Use whatever we've collected for lflags, plus other libraries ().
+       ac_save_LIBS=$LIBS
        LIBS="$gurobi_lflags "
        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
 #ifdef __cplusplus
-             extern "C"
-           #endif
-           void GRBloadenv();
+extern "C"
+#endif
+char GRBloadenv ();
 int
 main ()
 {
-GRBloadenv()
+return GRBloadenv ();
   ;
   return 0;
 }
@@ -21295,28 +20864,27 @@ fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
        LIBS=$ac_save_LIBS
-  fi
+     fi
 
-# The final value of coin_has_prim will be yes, no, or skipping. No means that
-# the link check failed. Yes means that we passed the link check, or no link
-# check was performed. Skipping means the user said `don't use.'
+  # The final value of coin_has_prim will be yes, no, or skipping. No means that
+  # the link check failed. Yes means that we passed the link check, or no link
+  # check was performed. Skipping means the user said `don't use.'
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
-    if test "$BUILDTOOLS_DEBUG" = 1 ; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for gurobi: \"$coin_has_gurobi\"" >&5
+  # Define BUILDTOOLS_DEBUG to enable debugging output
+  if test "$BUILDTOOLS_DEBUG" = 1 ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: FIND_PRIM_LIB result for gurobi: \"$coin_has_gurobi\"" >&5
 $as_echo "$as_me: FIND_PRIM_LIB result for gurobi: \"$coin_has_gurobi\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'gurobi'" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: Collected values for package 'gurobi'" >&5
 $as_echo "$as_me: Collected values for package 'gurobi'" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: gurobi_lflags is \"$gurobi_lflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: gurobi_lflags is \"$gurobi_lflags\"" >&5
 $as_echo "$as_me: gurobi_lflags is \"$gurobi_lflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: gurobi_cflags is \"$gurobi_cflags\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: gurobi_cflags is \"$gurobi_cflags\"" >&5
 $as_echo "$as_me: gurobi_cflags is \"$gurobi_cflags\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: gurobi_data is \"$gurobi_data\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: gurobi_data is \"$gurobi_data\"" >&5
 $as_echo "$as_me: gurobi_data is \"$gurobi_data\"" >&6;}
-      { $as_echo "$as_me:${as_lineno-$LINENO}: gurobi_pcfiles is \"$gurobi_pcfiles\"" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: gurobi_pcfiles is \"$gurobi_pcfiles\"" >&5
 $as_echo "$as_me: gurobi_pcfiles is \"$gurobi_pcfiles\"" >&6;}
-    fi
+  fi
 
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $coin_has_gurobi" >&5
@@ -21326,13 +20894,10 @@ $as_echo "$coin_has_gurobi" >&6; }
 $as_echo "$coin_has_gurobi due to COIN_SKIP_PROJECTS" >&6; }
   fi
 
-# Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
-
+  # Possibilities are `yes', `no', or `skipping'. Normalise to `yes' or `no'.
   if test "$coin_has_gurobi" != yes ; then
     coin_has_gurobi=no
   fi
-
-# Create an automake conditional COIN_HAS_PRIM.
 
    if test $coin_has_gurobi = yes; then
   COIN_HAS_GUROBI_TRUE=
@@ -21343,9 +20908,8 @@ else
 fi
 
 
-# If we've located the package, define preprocessor symbol COIN_HAS_PRIM
-# and augment the necessary variables for the client packages.
-
+  # If we've located the package, define preprocessor symbol COIN_HAS_PRIM
+  # and augment the necessary variables for the client packages.
   if test $coin_has_gurobi = yes ; then
 
 $as_echo "#define GAMSLINKS_HAS_GUROBI 1" >>confdefs.h
@@ -21353,8 +20917,6 @@ $as_echo "#define GAMSLINKS_HAS_GUROBI 1" >>confdefs.h
     GAMSOSI_LFLAGS="$gurobi_lflags $GAMSOSI_LFLAGS"
        GAMSOSI_CFLAGS="$gurobi_cflags $GAMSOSI_CFLAGS"
 
-
-# Finally, set up PRIM_DATA, unless the user specified nodata.
 
 
   fi
@@ -21435,23 +20997,19 @@ done
 # if we have Ipopt, check if we have GotoBlas or MKL Blas functions to set number of threads
 if test $coin_has_ipopt = yes ; then
 
-  # setup LIBS by adding $ipopt_lflags and those from $ipopt_pcfiles
   ac_save_LIBS="$LIBS"
   LIBS="$ipopt_lflags $LIBS"
   if test -n "$ipopt_pcfiles" ; then
 
-      temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs $ipopt_pcfiles`
+      temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs $pkg_static $ipopt_pcfiles`
       LIBS="$temp_LFLAGS $LIBS"
     fi
 
   goto_set_num_threads_namemangling=unknown
 
-  # FIXME we had "extra underscore" as additional option for ac_extra
-  #   but since there is no use for ac_extra below, was there any use for it?
   for ac_extra in "no extra underscore" ; do
     for ac_case in "lower case" "upper case" ; do
       for ac_trail in "underscore" "no underscore" ; do
-        #AC_MSG_NOTICE([Attempting link for ${ac_case}, ${ac_trail}, ${ac_extra}])
         case $ac_case in
           "lower case")
             ac_name=goto_set_num_threads
@@ -21467,14 +21025,18 @@ if test $coin_has_ipopt = yes ; then
 $as_echo_n "checking for function $ac_name in $LIBS... " >&6; }
         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
 #ifdef __cplusplus
-             extern "C"
-             #endif
-             void $ac_name();
+extern "C"
+#endif
+char $ac_name ();
 int
 main ()
 {
-$ac_name()
+return $ac_name ();
   ;
   return 0;
 }
@@ -21506,23 +21068,19 @@ $as_echo "#define HAVE_GOTO_SETNUMTHREADS 1" >>confdefs.h
   fi
 
 
-  # setup LIBS by adding $ipopt_lflags and those from $ipopt_pcfiles
   ac_save_LIBS="$LIBS"
   LIBS="$ipopt_lflags $LIBS"
   if test -n "$ipopt_pcfiles" ; then
 
-      temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs $ipopt_pcfiles`
+      temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs $pkg_static $ipopt_pcfiles`
       LIBS="$temp_LFLAGS $LIBS"
     fi
 
   omp_set_num_threads_namemangling=unknown
 
-  # FIXME we had "extra underscore" as additional option for ac_extra
-  #   but since there is no use for ac_extra below, was there any use for it?
   for ac_extra in "no extra underscore" ; do
     for ac_case in "lower case" "upper case" ; do
       for ac_trail in "underscore" "no underscore" ; do
-        #AC_MSG_NOTICE([Attempting link for ${ac_case}, ${ac_trail}, ${ac_extra}])
         case $ac_case in
           "lower case")
             ac_name=omp_set_num_threads
@@ -21538,14 +21096,18 @@ $as_echo "#define HAVE_GOTO_SETNUMTHREADS 1" >>confdefs.h
 $as_echo_n "checking for function $ac_name in $LIBS... " >&6; }
         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
 #ifdef __cplusplus
-             extern "C"
-             #endif
-             void $ac_name();
+extern "C"
+#endif
+char $ac_name ();
 int
 main ()
 {
-$ac_name()
+return $ac_name ();
   ;
   return 0;
 }
@@ -21735,7 +21297,7 @@ $as_echo "$as_me: FINALIZE_FLAGS for GamsOsi:" >&6;}
 
       if test -n "${GAMSOSI_PCFILES}" ; then
         temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSOSI_PCFILES}`
-        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSOSI_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs $pkg_static ${GAMSOSI_PCFILES}`
         GAMSOSI_CFLAGS="$temp_CFLAGS ${GAMSOSI_CFLAGS}"
         GAMSOSI_LFLAGS="$temp_LFLAGS ${GAMSOSI_LFLAGS}"
       fi
@@ -21761,8 +21323,7 @@ _ACEOF
       # add -DXYZ_BUILD to XYZ_CFLAGS
       GAMSOSI_CFLAGS="${GAMSOSI_CFLAGS} -DGAMSOSI_BUILD"
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+      # Define BUILDTOOLS_DEBUG to enable debugging output
       if test "$BUILDTOOLS_DEBUG" = 1 ; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSOSI_LFLAGS_NOPC: \"${GAMSOSI_LFLAGS_NOPC}\"" >&5
 $as_echo "$as_me: GAMSOSI_LFLAGS_NOPC: \"${GAMSOSI_LFLAGS_NOPC}\"" >&6;}
@@ -21785,7 +21346,7 @@ $as_echo "$as_me: FINALIZE_FLAGS for GamsCbc:" >&6;}
 
       if test -n "${GAMSCBC_PCFILES}" ; then
         temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSCBC_PCFILES}`
-        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSCBC_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs $pkg_static ${GAMSCBC_PCFILES}`
         GAMSCBC_CFLAGS="$temp_CFLAGS ${GAMSCBC_CFLAGS}"
         GAMSCBC_LFLAGS="$temp_LFLAGS ${GAMSCBC_LFLAGS}"
       fi
@@ -21811,8 +21372,7 @@ _ACEOF
       # add -DXYZ_BUILD to XYZ_CFLAGS
       GAMSCBC_CFLAGS="${GAMSCBC_CFLAGS} -DGAMSCBC_BUILD"
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+      # Define BUILDTOOLS_DEBUG to enable debugging output
       if test "$BUILDTOOLS_DEBUG" = 1 ; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSCBC_LFLAGS_NOPC: \"${GAMSCBC_LFLAGS_NOPC}\"" >&5
 $as_echo "$as_me: GAMSCBC_LFLAGS_NOPC: \"${GAMSCBC_LFLAGS_NOPC}\"" >&6;}
@@ -21835,7 +21395,7 @@ $as_echo "$as_me: FINALIZE_FLAGS for GamsIpopt:" >&6;}
 
       if test -n "${GAMSIPOPT_PCFILES}" ; then
         temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSIPOPT_PCFILES}`
-        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSIPOPT_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs $pkg_static ${GAMSIPOPT_PCFILES}`
         GAMSIPOPT_CFLAGS="$temp_CFLAGS ${GAMSIPOPT_CFLAGS}"
         GAMSIPOPT_LFLAGS="$temp_LFLAGS ${GAMSIPOPT_LFLAGS}"
       fi
@@ -21861,8 +21421,7 @@ _ACEOF
       # add -DXYZ_BUILD to XYZ_CFLAGS
       GAMSIPOPT_CFLAGS="${GAMSIPOPT_CFLAGS} -DGAMSIPOPT_BUILD"
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+      # Define BUILDTOOLS_DEBUG to enable debugging output
       if test "$BUILDTOOLS_DEBUG" = 1 ; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSIPOPT_LFLAGS_NOPC: \"${GAMSIPOPT_LFLAGS_NOPC}\"" >&5
 $as_echo "$as_me: GAMSIPOPT_LFLAGS_NOPC: \"${GAMSIPOPT_LFLAGS_NOPC}\"" >&6;}
@@ -21885,7 +21444,7 @@ $as_echo "$as_me: FINALIZE_FLAGS for GamsBonmin:" >&6;}
 
       if test -n "${GAMSBONMIN_PCFILES}" ; then
         temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSBONMIN_PCFILES}`
-        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSBONMIN_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs $pkg_static ${GAMSBONMIN_PCFILES}`
         GAMSBONMIN_CFLAGS="$temp_CFLAGS ${GAMSBONMIN_CFLAGS}"
         GAMSBONMIN_LFLAGS="$temp_LFLAGS ${GAMSBONMIN_LFLAGS}"
       fi
@@ -21911,8 +21470,7 @@ _ACEOF
       # add -DXYZ_BUILD to XYZ_CFLAGS
       GAMSBONMIN_CFLAGS="${GAMSBONMIN_CFLAGS} -DGAMSBONMIN_BUILD"
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+      # Define BUILDTOOLS_DEBUG to enable debugging output
       if test "$BUILDTOOLS_DEBUG" = 1 ; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSBONMIN_LFLAGS_NOPC: \"${GAMSBONMIN_LFLAGS_NOPC}\"" >&5
 $as_echo "$as_me: GAMSBONMIN_LFLAGS_NOPC: \"${GAMSBONMIN_LFLAGS_NOPC}\"" >&6;}
@@ -21935,7 +21493,7 @@ $as_echo "$as_me: FINALIZE_FLAGS for GamsCouenne:" >&6;}
 
       if test -n "${GAMSCOUENNE_PCFILES}" ; then
         temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSCOUENNE_PCFILES}`
-        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSCOUENNE_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs $pkg_static ${GAMSCOUENNE_PCFILES}`
         GAMSCOUENNE_CFLAGS="$temp_CFLAGS ${GAMSCOUENNE_CFLAGS}"
         GAMSCOUENNE_LFLAGS="$temp_LFLAGS ${GAMSCOUENNE_LFLAGS}"
       fi
@@ -21961,8 +21519,7 @@ _ACEOF
       # add -DXYZ_BUILD to XYZ_CFLAGS
       GAMSCOUENNE_CFLAGS="${GAMSCOUENNE_CFLAGS} -DGAMSCOUENNE_BUILD"
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+      # Define BUILDTOOLS_DEBUG to enable debugging output
       if test "$BUILDTOOLS_DEBUG" = 1 ; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSCOUENNE_LFLAGS_NOPC: \"${GAMSCOUENNE_LFLAGS_NOPC}\"" >&5
 $as_echo "$as_me: GAMSCOUENNE_LFLAGS_NOPC: \"${GAMSCOUENNE_LFLAGS_NOPC}\"" >&6;}
@@ -21985,7 +21542,7 @@ $as_echo "$as_me: FINALIZE_FLAGS for GamsSoplex:" >&6;}
 
       if test -n "${GAMSSOPLEX_PCFILES}" ; then
         temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSSOPLEX_PCFILES}`
-        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSSOPLEX_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs $pkg_static ${GAMSSOPLEX_PCFILES}`
         GAMSSOPLEX_CFLAGS="$temp_CFLAGS ${GAMSSOPLEX_CFLAGS}"
         GAMSSOPLEX_LFLAGS="$temp_LFLAGS ${GAMSSOPLEX_LFLAGS}"
       fi
@@ -22011,8 +21568,7 @@ _ACEOF
       # add -DXYZ_BUILD to XYZ_CFLAGS
       GAMSSOPLEX_CFLAGS="${GAMSSOPLEX_CFLAGS} -DGAMSSOPLEX_BUILD"
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+      # Define BUILDTOOLS_DEBUG to enable debugging output
       if test "$BUILDTOOLS_DEBUG" = 1 ; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSOPLEX_LFLAGS_NOPC: \"${GAMSSOPLEX_LFLAGS_NOPC}\"" >&5
 $as_echo "$as_me: GAMSSOPLEX_LFLAGS_NOPC: \"${GAMSSOPLEX_LFLAGS_NOPC}\"" >&6;}
@@ -22035,7 +21591,7 @@ $as_echo "$as_me: FINALIZE_FLAGS for GamsScip:" >&6;}
 
       if test -n "${GAMSSCIP_PCFILES}" ; then
         temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSSCIP_PCFILES}`
-        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs ${GAMSSCIP_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs $pkg_static ${GAMSSCIP_PCFILES}`
         GAMSSCIP_CFLAGS="$temp_CFLAGS ${GAMSSCIP_CFLAGS}"
         GAMSSCIP_LFLAGS="$temp_LFLAGS ${GAMSSCIP_LFLAGS}"
       fi
@@ -22061,8 +21617,7 @@ _ACEOF
       # add -DXYZ_BUILD to XYZ_CFLAGS
       GAMSSCIP_CFLAGS="${GAMSSCIP_CFLAGS} -DGAMSSCIP_BUILD"
 
-# Define BUILDTOOLS_DEBUG to enable debugging output
-
+      # Define BUILDTOOLS_DEBUG to enable debugging output
       if test "$BUILDTOOLS_DEBUG" = 1 ; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: GAMSSCIP_LFLAGS_NOPC: \"${GAMSSCIP_LFLAGS_NOPC}\"" >&5
 $as_echo "$as_me: GAMSSCIP_LFLAGS_NOPC: \"${GAMSSCIP_LFLAGS_NOPC}\"" >&6;}
@@ -22198,8 +21753,8 @@ LIBOBJS=$ac_libobjs
 LTLIBOBJS=$ac_ltlibobjs
 
 
-if test -z "${ALWAYS_FALSE_TRUE}" && test -z "${ALWAYS_FALSE_FALSE}"; then
-  as_fn_error $? "conditional \"ALWAYS_FALSE\" was never defined.
+if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then
+  as_fn_error $? "conditional \"MAINTAINER_MODE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking that generated files are newer than configure" >&5
@@ -22218,10 +21773,6 @@ else
   am__EXEEXT_FALSE=
 fi
 
-if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then
-  as_fn_error $? "conditional \"MAINTAINER_MODE\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
 if test -z "${COIN_RELOCATABLE_TRUE}" && test -z "${COIN_RELOCATABLE_FALSE}"; then
   as_fn_error $? "conditional \"COIN_RELOCATABLE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
@@ -22236,6 +21787,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${COIN_STATIC_BUILD_TRUE}" && test -z "${COIN_STATIC_BUILD_FALSE}"; then
+  as_fn_error $? "conditional \"COIN_STATIC_BUILD\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${COIN_HAS_DOXYGEN_TRUE}" && test -z "${COIN_HAS_DOXYGEN_FALSE}"; then
@@ -23984,7 +23539,9 @@ $as_echo X/"$am_mf" |
     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "Something went wrong bootstrapping makefile fragments
-    for automatic dependency tracking.  Try re-running configure with the
+    for automatic dependency tracking.  If GNU make was not used, consider
+    re-running the configure script with MAKE=\"gmake\" (or whatever is
+    necessary).  You can also try re-running configure with the
     '--disable-dependency-tracking' option to at least be able to build
     the package (albeit without support for automatic dependency tracking).
 See \`config.log' for more details" "$LINENO" 5; }
@@ -24760,7 +24317,6 @@ $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
 
-  #AC_MSG_NOTICE([In case of trouble, first consult the troubleshooting page at https://projects.coin-or.org/BuildTools/wiki/user-troubleshooting])
   { $as_echo "$as_me:${as_lineno-$LINENO}: Configuration of $PACKAGE_NAME successful" >&5
 $as_echo "$as_me: Configuration of $PACKAGE_NAME successful" >&6;}
 
