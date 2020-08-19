@@ -9,6 +9,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <climits>
 #include <list>
 #include <string>
 
@@ -736,7 +737,7 @@ bool GamsCbc::setupParameters()
    // overwrite Cbc defaults with values from GAMS options, if not set in options file
    if( !optGetDefinedStr(opt, "reslim") )
       optSetDblStr(opt, "reslim", gevGetDblOpt(gev, gevResLim));
-   if( !optGetDefinedStr(opt, "iterlim") && gevGetIntOpt(gev, gevIterLim) != ITERLIM_INFINITY )
+   if( !optGetDefinedStr(opt, "iterlim") && gevGetIntOpt(gev, gevIterLim) < INT_MAX )
       optSetIntStr(opt, "iterlim", gevGetIntOpt(gev, gevIterLim));
    if( !optGetDefinedStr(opt, "nodlim") && gevGetIntOpt(gev, gevNodeLim) > 0 )
       optSetIntStr(opt, "nodlim", gevGetIntOpt(gev, gevNodeLim));

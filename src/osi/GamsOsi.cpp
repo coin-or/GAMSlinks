@@ -337,7 +337,7 @@ int GamsOsi::readyAPI(
             int initRC;
 
             /* Xpress license initialization: calls XPRSinit() in a thread-safe way and passes in GAMS/Xpress license */
-            if( gevxpressliceInitTS(gev, pal, gmoM(gmo), gmoN(gmo), 0, &initType, &initRC, msg, sizeof(msg)) )
+            if( gevxpressliceInitTS(gev, pal, gmoM(gmo), gmoN(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType, &initRC, msg, sizeof(msg)) )
             {
                if( *msg != '\0' )
                   gevLogStat(gev, msg);
@@ -662,8 +662,7 @@ bool GamsOsi::setupParameters()
    double optcr   = gevGetDblOpt(gev, gevOptCR);
    double optca   = gevGetDblOpt(gev, gevOptCA);
 
-   if( iterlim != ITERLIM_INFINITY )
-      osi->setIntParam(OsiMaxNumIteration, iterlim);
+   osi->setIntParam(OsiMaxNumIteration, iterlim);
    
    /* default is to try doing dual in initial, but a user might want to
     * overwrite this setting with its solver specific options file;

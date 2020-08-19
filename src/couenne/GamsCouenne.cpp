@@ -15,6 +15,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <climits>
 #include <list>
 
 // dos compiler does not know PI
@@ -212,7 +213,7 @@ int GamsCouenne::callSolver()
    if( gevGetIntOpt(gev, gevNodeLim) > 0 )
       couenne_setup->options()->SetIntegerValue("bonmin.node_limit", gevGetIntOpt(gev, gevNodeLim), true, true);
    couenne_setup->options()->SetNumericValue("bonmin.time_limit", gevGetDblOpt(gev, gevResLim), true, true);
-   if( gevGetIntOpt(gev, gevIterLim) < ITERLIM_INFINITY )
+   if( gevGetIntOpt(gev, gevIterLim) < INT_MAX )
       couenne_setup->options()->SetIntegerValue("bonmin.iteration_limit", gevGetIntOpt(gev, gevIterLim), true, true);
    couenne_setup->options()->SetIntegerValue("bonmin.problem_print_level", J_STRONGWARNING, true, true); /* otherwise Couenne prints the problem to stdout */
    if( ipoptlicensed )

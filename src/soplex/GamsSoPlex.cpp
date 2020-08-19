@@ -15,6 +15,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <climits>
 #include <stdexcept>
 #include <algorithm>
 
@@ -182,8 +183,8 @@ void GamsSoPlex::setupParameters()
 {
    soplex->resetSettings(true, true);
 
-   // set iterlimit, if any
-   if( gevGetIntOpt(gev, gevIterLim) != ITERLIM_INFINITY )
+   // set iterlimit, if not at maximal value
+   if( gevGetIntOpt(gev, gevIterLim) < INT_MAX )
       soplex->setIntParam(SoPlex::ITERLIMIT, gevGetIntOpt(gev, gevIterLim), true);
 
    // set timelimit

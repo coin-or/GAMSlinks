@@ -6,6 +6,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <climits>
 
 #include "GamsBonmin.hpp"
 #include "GamsMINLP.hpp"
@@ -193,7 +194,7 @@ int GamsBonmin::callSolver()
    if( gevGetIntOpt(gev, gevNodeLim) > 0 )
       bonmin_setup->options()->SetIntegerValue("bonmin.node_limit", gevGetIntOpt(gev, gevNodeLim), true, true);
    bonmin_setup->options()->SetNumericValue("bonmin.time_limit", gevGetDblOpt(gev, gevResLim), true, true);
-   if( gevGetIntOpt(gev, gevIterLim) < ITERLIM_INFINITY )
+   if( gevGetIntOpt(gev, gevIterLim) < INT_MAX )
       bonmin_setup->options()->SetIntegerValue("bonmin.iteration_limit", gevGetIntOpt(gev, gevIterLim), true, true);
    bonmin_setup->options()->SetIntegerValue("number_cpx_threads", gevThreads(gev), true, true);
 

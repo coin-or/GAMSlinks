@@ -126,6 +126,7 @@ int GamsIpopt::callSolver()
    // change some option defaults
    ipopt->Options()->clear();
    ipopt->Options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
+   ipopt->Options()->SetIntegerValue("acceptable_iter", 0, true, true);  // GAMS does not have a proper status if Ipopt returns with this
    ipopt->Options()->SetIntegerValue("max_iter", gevGetIntOpt(gev, gevIterLim), true, true);
    ipopt->Options()->SetNumericValue("max_cpu_time", gevGetDblOpt(gev, gevResLim), true, true);
    ipopt->Options()->SetStringValue("mu_strategy", "adaptive", true, true);

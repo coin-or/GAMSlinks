@@ -3220,8 +3220,11 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
    {
       SCIP_CALL( SCIPsetLongintParam(scip, "limits/nodes", (long long)gevGetIntOpt(gev, gevNodeLim)) );
    }
-   SCIP_CALL( SCIPsetRealParam(scip, "limits/time",   gevGetDblOpt(gev, gevResLim)) );
-   SCIP_CALL( SCIPsetRealParam(scip, "limits/gap",    gevGetDblOpt(gev, gevOptCR)) );
+   if( !SCIPisInfinity(scip, gevGetDblOpt(gev, gevResLim)) )
+   {
+      SCIP_CALL( SCIPsetRealParam(scip, "limits/time", gevGetDblOpt(gev, gevResLim)) );
+   }
+   SCIP_CALL( SCIPsetRealParam(scip, "limits/gap", gevGetDblOpt(gev, gevOptCR)) );
    if( !SCIPisInfinity(scip, gevGetDblOpt(gev, gevOptCA)) )
    {
       SCIP_CALL( SCIPsetRealParam(scip, "limits/absgap", gevGetDblOpt(gev, gevOptCA)) );

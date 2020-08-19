@@ -171,6 +171,8 @@ int main(int argc, char** argv)
 
          if( (*it_opt)->Name() == "bound_relax_factor" )
             defaultval.realval = 1e-10;
+         else if( (*it_opt)->Name() == "acceptable_iter" )
+            defaultval.intval = 0;
          else if( (*it_opt)->Name() == "max_iter" )
          {
             defaultval.intval = INT_MAX;
