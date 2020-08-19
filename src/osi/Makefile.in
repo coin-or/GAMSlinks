@@ -137,7 +137,8 @@ am__DEPENDENCIES_1 =
 libGamsOsi_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libGamsOsi_la_OBJECTS = GamsOsiHelper.lo GamsOsi.lo \
-	GamsMessageHandler.lo ../utils/gmomcc.lo ../utils/gevmcc.lo
+	GamsMessageHandler.lo ../utils/gmomcc.lo ../utils/gevmcc.lo \
+	../utils/palmcc.lo
 libGamsOsi_la_OBJECTS = $(am_libGamsOsi_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -159,7 +160,7 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src/utils
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ../utils/$(DEPDIR)/gevmcc.Plo \
-	../utils/$(DEPDIR)/gmomcc.Plo \
+	../utils/$(DEPDIR)/gmomcc.Plo ../utils/$(DEPDIR)/palmcc.Plo \
 	./$(DEPDIR)/GamsMessageHandler.Plo ./$(DEPDIR)/GamsOsi.Plo \
 	./$(DEPDIR)/GamsOsiHelper.Plo
 am__mv = mv -f
@@ -399,7 +400,7 @@ AM_CPPFLAGS = -I$(srcdir)/../utils $(GAMSOSI_CFLAGS) \
 	-I"$(GAMS_PATH)/apifiles/C/api" $(GAMSLIBCFLAGS)
 lib_LTLIBRARIES = libGamsOsi.la
 libGamsOsi_la_SOURCES = GamsOsiHelper.cpp GamsOsi.cpp GamsMessageHandler.cpp \
-  ../utils/gmomcc.c ../utils/gevmcc.c
+  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 
 libGamsOsi_la_LIBADD = $(GAMSOSI_LFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
@@ -483,6 +484,8 @@ clean-libLTLIBRARIES:
 	../utils/$(DEPDIR)/$(am__dirstamp)
 ../utils/gevmcc.lo: ../utils/$(am__dirstamp) \
 	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/palmcc.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
 
 libGamsOsi.la: $(libGamsOsi_la_OBJECTS) $(libGamsOsi_la_DEPENDENCIES) $(EXTRA_libGamsOsi_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libGamsOsi_la_OBJECTS) $(libGamsOsi_la_LIBADD) $(LIBS)
@@ -497,6 +500,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gevmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gmomcc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/palmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMessageHandler.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsi.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsOsiHelper.Plo@am__quote@ # am--include-marker
@@ -661,6 +665,7 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 distclean: distclean-am
 		-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
+	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ./$(DEPDIR)/GamsOsi.Plo
 	-rm -f ./$(DEPDIR)/GamsOsiHelper.Plo
@@ -711,6 +716,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 		-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
+	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ./$(DEPDIR)/GamsOsi.Plo
 	-rm -f ./$(DEPDIR)/GamsOsiHelper.Plo

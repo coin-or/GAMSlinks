@@ -14,7 +14,7 @@ LDFLAGS += $(LT_LDFLAGS)
 
 lib_LTLIBRARIES = libGamsOsi.la
 libGamsOsi_la_SOURCES = GamsOsiHelper.cpp GamsOsi.cpp GamsMessageHandler.cpp \
-  ../utils/gmomcc.c ../utils/gevmcc.c
+  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 libGamsOsi_la_LIBADD  = $(GAMSOSI_LFLAGS)
 
 CLEANFILES =
