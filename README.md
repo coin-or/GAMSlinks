@@ -74,7 +74,6 @@ Alternatively, an option statement can be added to the GAMS code (before the sol
   Option NLP = MyIpopt;
 ```
 The prefix "`MY`" has been added to distinguish the solvers from those that are already included in the GAMS distribution.
-However, the prefix may prevent that a Ctrl+C signal will be processed correctly. If that is the case, rename the solver to remove the "`MY`" prefix.
 
 For more information we refer to the [GAMS documentation](http://www.gams.com/latest/docs).
 
