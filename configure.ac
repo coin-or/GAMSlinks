@@ -42,11 +42,15 @@ AC_COIN_DOXYGEN
 #############################################################################
 
 # check which solvers are available
-AC_COIN_CHK_PKG(Osi,     [GamsOsi],     [osi])
 AC_COIN_CHK_PKG(OsiCpx,  [GamsOsi],     [osi-cplex])
 AC_COIN_CHK_PKG(OsiGrb,  [GamsOsi],     [osi-gurobi])
 AC_COIN_CHK_PKG(OsiMsk,  [GamsOsi],     [osi-mosek])
 AC_COIN_CHK_PKG(OsiXpr,  [GamsOsi],     [osi-xpress])
+if test $coin_has_osicpx$coin_has_osigrb$coin_has_osimsk$coin_has_osixpr != "nononono" ; then
+  AC_COIN_CHK_PKG(Osi,   [GamsOsi],     [osi])
+else
+  AM_CONDITIONAL(COIN_HAS_OSI,false)
+fi
 AC_COIN_CHK_PKG(Cbc,     [GamsCbc],     [cbc])
 AC_COIN_CHK_PKG(Ipopt,   [GamsIpopt],   [ipopt])
 AC_COIN_CHK_PKG(Bonmin,  [GamsBonmin],  [bonmin])
