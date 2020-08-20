@@ -2,6 +2,7 @@
 
 import sys
 import os
+import subprocess
 import shutil
 
 def print_usage() :
@@ -60,6 +61,11 @@ if solverlib.endswith('.la') :
         print("Error: no libdir or dlname found in", solverlib, file=sys.stderr)
         print_usage()
         sys.exit(1)
+    if iswindows :
+       # convert msys-path to windows path
+       libdir = subprocess.check_output("cygpath -w " + libdir).decode("utf-8").strip()
+       # on Windows, DLLs are in bindir and not in libdir, assume bindir is libdir/../bin
+       libdir = os.path.join(libdir, '..', 'bin')
     solverlib = os.path.join(libdir, dlname)
     if not os.path.isfile(solverlib) :
         print("Error: %s does not exist or is not a file" % solverlib, file=sys.stderr)
