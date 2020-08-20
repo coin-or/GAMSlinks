@@ -95,7 +95,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = optscip$(EXEEXT)
+@OPTWRITER_TRUE@noinst_PROGRAMS = optscip$(EXEEXT)
+@OPTWRITER_TRUE@am__append_1 = optscip.gms branchrules.md conflicthdlrs.md conshdlrs.md disps.md heurs.md nodesels.md presols.md props.md sepas.md
 subdir = src/scip
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -149,10 +150,10 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-am_optscip_OBJECTS = optscip.$(OBJEXT) \
-	../utils/GamsOptionsSpecWriter.$(OBJEXT)
+@OPTWRITER_TRUE@am_optscip_OBJECTS = optscip.$(OBJEXT) \
+@OPTWRITER_TRUE@	../utils/GamsOptionsSpecWriter.$(OBJEXT)
 optscip_OBJECTS = $(am_optscip_OBJECTS)
-optscip_DEPENDENCIES = libGamsScip.la
+@OPTWRITER_TRUE@optscip_DEPENDENCIES = libGamsScip.la
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -420,10 +421,9 @@ libGamsScip_la_SOURCES = GamsScip.cpp reader_gmo.c event_solvetrace.c \
 libGamsScip_la_LIBADD = $(GAMSSCIP_LFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
-	optscip.gms branchrules.md conflicthdlrs.md conshdlrs.md \
-	disps.md heurs.md nodesels.md presols.md props.md sepas.md
-optscip_SOURCES = optscip.cpp ../utils/GamsOptionsSpecWriter.cpp
-optscip_LDADD = libGamsScip.la
+	$(am__append_1)
+@OPTWRITER_TRUE@optscip_SOURCES = optscip.cpp ../utils/GamsOptionsSpecWriter.cpp
+@OPTWRITER_TRUE@optscip_LDADD = libGamsScip.la
 all: all-am
 
 .SUFFIXES:

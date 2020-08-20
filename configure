@@ -657,6 +657,8 @@ GAMSOSI_CFLAGS_NOPC
 GAMSOSI_LFLAGS_NOPC
 GAMS_PATH
 gamspath
+OPTWRITER_FALSE
+OPTWRITER_TRUE
 GAMSLIBCFLAGS
 COIN_HAS_GUROBI_FALSE
 COIN_HAS_GUROBI_TRUE
@@ -921,6 +923,7 @@ with_xpress_cflags
 with_gurobi
 with_gurobi_lflags
 with_gurobi_cflags
+enable_optwriter
 with_gams
 '
       ac_precious_vars='build_alias
@@ -1579,6 +1582,8 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
+  --disable-optwriter     disable build of options specification writer (needs
+                          C99 and C++11)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -21196,6 +21201,22 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+# Check whether --enable-optwriter was given.
+if test "${enable_optwriter+set}" = set; then :
+  enableval=$enable_optwriter; optwriter="$enableval"
+else
+  optwriter=yes
+fi
+
+ if test "$optwriter" = yes; then
+  OPTWRITER_TRUE=
+  OPTWRITER_FALSE='#'
+else
+  OPTWRITER_TRUE='#'
+  OPTWRITER_FALSE=
+fi
+
+
 ###############
 # GAMS system #
 ###############
@@ -21867,6 +21888,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${COIN_HAS_GUROBI_TRUE}" && test -z "${COIN_HAS_GUROBI_FALSE}"; then
   as_fn_error $? "conditional \"COIN_HAS_GUROBI\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${OPTWRITER_TRUE}" && test -z "${OPTWRITER_FALSE}"; then
+  as_fn_error $? "conditional \"OPTWRITER\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 

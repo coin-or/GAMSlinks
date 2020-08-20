@@ -95,7 +95,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = optsoplex$(EXEEXT)
+@OPTWRITER_TRUE@noinst_PROGRAMS = optsoplex$(EXEEXT)
+@OPTWRITER_TRUE@am__append_1 = optsoplex.gms
 subdir = src/soplex
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -146,10 +147,10 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-am_optsoplex_OBJECTS = optsoplex.$(OBJEXT) \
-	../utils/GamsOptionsSpecWriter.$(OBJEXT)
+@OPTWRITER_TRUE@am_optsoplex_OBJECTS = optsoplex.$(OBJEXT) \
+@OPTWRITER_TRUE@	../utils/GamsOptionsSpecWriter.$(OBJEXT)
 optsoplex_OBJECTS = $(am_optsoplex_OBJECTS)
-optsoplex_DEPENDENCIES = $(am__DEPENDENCIES_1)
+@OPTWRITER_TRUE@optsoplex_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -413,9 +414,9 @@ libGamsSoplex_la_SOURCES = GamsSoPlex.cpp \
 libGamsSoplex_la_LIBADD = $(GAMSSOPLEX_LFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
-	optsoplex.gms
-optsoplex_SOURCES = optsoplex.cpp ../utils/GamsOptionsSpecWriter.cpp
-optsoplex_LDADD = $(GAMSSOPLEX_LFLAGS)
+	$(am__append_1)
+@OPTWRITER_TRUE@optsoplex_SOURCES = optsoplex.cpp ../utils/GamsOptionsSpecWriter.cpp
+@OPTWRITER_TRUE@optsoplex_LDADD = $(GAMSSOPLEX_LFLAGS)
 all: all-am
 
 .SUFFIXES:

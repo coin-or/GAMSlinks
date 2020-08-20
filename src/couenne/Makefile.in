@@ -95,7 +95,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = optcouenne$(EXEEXT)
+@OPTWRITER_TRUE@noinst_PROGRAMS = optcouenne$(EXEEXT)
+@OPTWRITER_TRUE@am__append_1 = optcouenne.gms optcouenne.txt
 subdir = src/couenne
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -149,10 +150,10 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-am_optcouenne_OBJECTS = optcouenne.$(OBJEXT) \
-	../utils/GamsOptionsSpecWriter.$(OBJEXT)
+@OPTWRITER_TRUE@am_optcouenne_OBJECTS = optcouenne.$(OBJEXT) \
+@OPTWRITER_TRUE@	../utils/GamsOptionsSpecWriter.$(OBJEXT)
 optcouenne_OBJECTS = $(am_optcouenne_OBJECTS)
-optcouenne_DEPENDENCIES = libGamsCouenne.la
+@OPTWRITER_TRUE@optcouenne_DEPENDENCIES = libGamsCouenne.la
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -427,9 +428,9 @@ libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
 libGamsCouenne_la_LIBADD = $(GAMSCOUENNE_LFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
-	optcouenne.gms optcouenne.txt
-optcouenne_SOURCES = optcouenne.cpp ../utils/GamsOptionsSpecWriter.cpp
-optcouenne_LDADD = libGamsCouenne.la
+	$(am__append_1)
+@OPTWRITER_TRUE@optcouenne_SOURCES = optcouenne.cpp ../utils/GamsOptionsSpecWriter.cpp
+@OPTWRITER_TRUE@optcouenne_LDADD = libGamsCouenne.la
 all: all-am
 
 .SUFFIXES:

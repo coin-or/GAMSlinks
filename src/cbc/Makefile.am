@@ -23,10 +23,12 @@ libGamsCbc_la_LIBADD  = $(GAMSCBC_LFLAGS)
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
 
+if OPTWRITER
 noinst_PROGRAMS = optcbc
 optcbc_SOURCES = optcbc.cpp ../utils/GamsOptionsSpecWriter.cpp
 optcbc_LDADD = libGamsCbc.la
 CLEANFILES += optcbc.txt optcbc.gms
+endif
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCbc.la MYCBC cbc "LP MIP RMIP" 5 @srcdir@/optmycbc.def

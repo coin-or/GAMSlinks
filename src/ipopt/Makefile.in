@@ -95,7 +95,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = optipopt$(EXEEXT)
+@OPTWRITER_TRUE@noinst_PROGRAMS = optipopt$(EXEEXT)
+@OPTWRITER_TRUE@am__append_1 = optipopt.gms optipopt.txt
 subdir = src/ipopt
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -147,10 +148,10 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-am_optipopt_OBJECTS = optipopt.$(OBJEXT) \
-	../utils/GamsOptionsSpecWriter.$(OBJEXT)
+@OPTWRITER_TRUE@am_optipopt_OBJECTS = optipopt.$(OBJEXT) \
+@OPTWRITER_TRUE@	../utils/GamsOptionsSpecWriter.$(OBJEXT)
 optipopt_OBJECTS = $(am_optipopt_OBJECTS)
-optipopt_DEPENDENCIES = libGamsIpopt.la
+@OPTWRITER_TRUE@optipopt_DEPENDENCIES = libGamsIpopt.la
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -415,9 +416,9 @@ libGamsIpopt_la_SOURCES = GamsIpopt.cpp GamsNLP.cpp GamsJournal.cpp \
 libGamsIpopt_la_LIBADD = $(GAMSIPOPT_LFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
-	optipopt.gms optipopt.txt
-optipopt_SOURCES = optipopt.cpp ../utils/GamsOptionsSpecWriter.cpp
-optipopt_LDADD = libGamsIpopt.la
+	$(am__append_1)
+@OPTWRITER_TRUE@optipopt_SOURCES = optipopt.cpp ../utils/GamsOptionsSpecWriter.cpp
+@OPTWRITER_TRUE@optipopt_LDADD = libGamsIpopt.la
 all: all-am
 
 .SUFFIXES:

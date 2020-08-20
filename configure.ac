@@ -8,8 +8,6 @@
 #                       Names and other basic things                        #
 #############################################################################
 
-AC_PREREQ(2.59)
-
 AC_INIT([GAMSlinks],[master],[https://github.com/coin-or/GAMSlinks])
 
 AC_COPYRIGHT([Copyright (C) 2006-2011 GAMS Development and others 
@@ -108,6 +106,12 @@ AC_CHECK_LIB(dl,[dlopen],[
 ],[])
 
 AC_LANG_POP(C)
+
+AC_ARG_ENABLE(optwriter,
+  AC_HELP_STRING([--disable-optwriter],[disable build of options specification writer (needs C99 and C++11)]),
+  [optwriter="$enableval"],
+  [optwriter=yes])
+AM_CONDITIONAL(OPTWRITER,[test "$optwriter" = yes])
 
 ###############
 # GAMS system #

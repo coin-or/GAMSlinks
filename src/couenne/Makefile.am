@@ -28,10 +28,12 @@ libGamsCouenne_la_LIBADD  = $(GAMSCOUENNE_LFLAGS)
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
 
+if OPTWRITER
 noinst_PROGRAMS = optcouenne
 optcouenne_SOURCES = optcouenne.cpp ../utils/GamsOptionsSpecWriter.cpp
 optcouenne_LDADD = libGamsCouenne.la
 CLEANFILES += optcouenne.gms optcouenne.txt
+endif
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCouenne.la MYCOUENNE cou "QCP RMIQCP NLP DNLP RMINLP CNS MIQCP MINLP" 0
