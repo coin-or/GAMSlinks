@@ -9,12 +9,12 @@ The COIN-OR project leader for GAMSlinks is [Stefan Vigerske](http://www.gams.co
 
 Currently the following links are available:
 
-  * [Bonmin](https://projects.coin-or.org/Bonmin): Basic Open-source Nonlinear Mixed-Integer Programming
-  * [Couenne](https://projects.coin-or.org/Couenne): Convex Over and Under Envelopes for Nonlinear Estimation
+  * [Bonmin](https://github.com/coin-or/Bonmin): Basic Open-source Nonlinear Mixed-Integer Programming
+  * [Couenne](https://github.com/coin-or/Couenne): Convex Over and Under Envelopes for Nonlinear Estimation
   * [Cbc](https://github.com/coin-or/Cbc): COIN-OR Branch and Cut code
   * [Ipopt](https://github.com/coin-or/Ipopt): Interior Point Optimizer
   * [Osi](https://github.com/coin-or/Osi): Interface to LP and MIP solvers with an Open Solver Interface, currently CPLEX, Gurobi, Mosek, and Xpress
-  * [SCIP](https://scip.zib.de): Solving Constraint Integer Programs
+  * [SCIP](https://www.scipopt.org): Solving Constraint Integer Programs
   * [SoPlex](https://soplex.zib.de): Sequential object-oriented simPlex
 
 Note, that these solver links are also distributed with any regular GAMS distribution.
@@ -23,18 +23,18 @@ Note, that one still requires a **licensed GAMS base system** to use the solvers
 
 ## Download / Installation
 
-The links should work under Linux and Mac OS X (both 64 bit), and maybe Windows.
-Especially the build under Windows is difficult and not suggested.
+The links should work under Linux, macOS, and Windows.
+The build under Windows can be difficult.
 
-The latest version is available in the master branch. The stable branches do not receive much updates.
-You can obtain GAMSlinks via git by typing
+The latest version is available in the master branch. The stable branches do no longer receive updates.
+One can obtain GAMSlinks via git by typing
 ```
 git clone https://github.com/coin-or/GAMSlinks.git
 ```
 
 The main installation steps are:
 
- 1. Install a GAMS system, if you do not have one.
+ 1. Install a GAMS system, if not yet present.
  2. Install solvers.
  3. Call configure, make, and make install.
 
@@ -42,19 +42,12 @@ The main installation steps are:
 
 A GAMS system is needed to build and use the GAMS solver interfaces.
 It can be downloaded from https://www.gams.com/latest.
-
-With GAMS >= 30, a license file will need to be present, too.
-The GAMS webpage will provide a mechanism to obtain a demo license.
+This page also provides a mechanism to obtain a GAMS demo license.
 
 ### 2. Install solvers
 
-To build the interface to a certain solver, this solver needs to be installed in your system.
+To build the interface to a certain solver, this solver needs to be installed in the system first.
 Check with the solvers instructions on how to build and install.
-
-For SoPlex and SCIP, GAMSlinks currently assumes that they have been installed via
-the autotools-based build system provided by COIN-OR, see
-[ThirdParty/SoPlex](https://github.com/coin-or-tools/ThirdParty-SoPlex) and
-[ThirdParty/SCIP](https://github.com/coin-or-tools/ThirdParty-SCIP).
 
 ### 3. Call configure, make, and make install
 
@@ -63,26 +56,25 @@ Call
  2. make
  3. make install
 
-This should setup the Makefiles, compile all COIN-OR packages and install binaries for the COIN-OR/GAMSlinks in the subdirectory bin.
+This should setup the Makefiles, compile all COIN-OR packages and install libraries for the COIN-OR/GAMSlinks in the subdirectory `lib` (`bin` on Windows).
 
 If a GAMS system is found in the search path, it will automatically be found by the GAMSlinks configure script.
-Alternatively you can provide a path with the `--with-gams` option of configure.
+Alternatively one has to provide a path with the `--with-gams` option of configure.
 
-The configure call also supports the VPATH feature, so you can compile the code in a different place than the one where the source code is located.
+The configure call also supports the VPATH feature, so one can compile the code in a different place than the one where the source code is located.
 
-The call to "make install" will also make the GAMS system is aware of the build solver interfaces.
+The call to "make install" will also make the GAMS system aware of the solver interfaces that have been build.g
 
-To use a solver under GAMS, use `SOLVER=MY<SolverName>`, e.g., use `SOLVER=MYCBC` to call your build of the GAMS/Cbc link.
-The prefix "`MY`" has been added to distinguish the solvers from those that are already included in the GAMS distribution.
 
 ## Usage / Documentation
 
-After installing the COIN-OR solvers in your GAMS system, you can use the COIN-OR solvers as every other GAMS solver.
-For example, to use Ipopt as an NLP solver, you can use the following statement (before the solve statement) inside your GAMS program to specify using Ipopt:
+After installation of the solvers in the GAMS system, they can be used in GAMS via the option `SOLVER=MY<SolverName>`, e.g., use `SOLVER=MYCBC` to call the installed GAMS/CBC link.
+Alternatively, an option statement can be added to the GAMS code (before the solve statement), e.g., to use Ipopt as an NLP solver, use
 ```
   Option NLP = MyIpopt;
 ```
-Another way is to give the argument `NLP=MyIpopt` to your gams call.
+The prefix "`MY`" has been added to distinguish the solvers from those that are already included in the GAMS distribution.
+However, the prefix may prevent that a Ctrl+C signal will be processed correctly. If that is the case, rename the solver to remove the "`MY`" prefix.
 
 For more information we refer to the [GAMS documentation](http://www.gams.com/latest/docs).
 
