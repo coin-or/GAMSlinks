@@ -7,7 +7,8 @@
 #ifndef GAMSMESSAGEHANDLER_HPP_
 #define GAMSMESSAGEHANDLER_HPP_
 
-#include <pthread.h>
+#include <mutex>
+#include <memory>
 
 #include "CoinMessageHandler.hpp"
 
@@ -18,20 +19,19 @@ class GamsMessageHandler : public CoinMessageHandler
 {
 protected:
    struct gevRec*        gev;                /**< GAMS environment */
-   pthread_mutex_t       mutex;              /**< Mutex to sync gevLog calls */
+   std::shared_ptr<std::mutex> mutex;        /**< Mutex to sync gevLog calls */
 
 public:
    GamsMessageHandler(
       struct gevRec*     gev_                /**< GAMS environment */
    )
-   : gev(gev_)
-   {
-      pthread_mutex_init(&mutex, NULL);
-   }
+   : gev(gev_),
+     mutex(new std::mutex())
+   { }
 
    GamsMessageHandler(
       struct gevRec*     gev_,               /**< GAMS environment */
-      pthread_mutex_t    mutex_              /**< Mutex to sync gevLog calls */
+      std::shared_ptr<std::mutex>  mutex_    /**< Mutex to sync gevLog calls */
    )
    : gev(gev_),
      mutex(mutex_)

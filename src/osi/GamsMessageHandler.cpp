@@ -8,6 +8,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <cassert>
 
 #include "gevmcc.h"
 
@@ -16,7 +17,8 @@ int GamsMessageHandler::print()
    const char* messageOut;
 
    /* ensure we are exclusively calling gevLog... */
-   (void) pthread_mutex_lock(&mutex);
+   assert(mutex);
+   mutex->lock();
 
    messageOut = messageBuffer();
    if( messageOut[strlen(messageOut)-1] == '\n' )
@@ -30,7 +32,7 @@ int GamsMessageHandler::print()
       else
          gevLog(gev, messageOut);
 
-   (void) pthread_mutex_unlock(&mutex);
+   mutex->unlock();
 
    return 0;
 }
