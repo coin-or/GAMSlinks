@@ -127,15 +127,14 @@ try :
         if line.startswith('DEFAULTS') :
             print('Adding section for solver', solvername, 'using lib', solverlib)
             # add config for solver before DEFAULTS section
-            # TODO 05 needs to be added to 0001020304 with GAMS 30?
-            print("%s 111 %s 0001020304 1 0 2 %s" % (solvername, dicttype, modeltypes), file = outfile)
+            print("%s 111 %s 000102030405 1 0 2 %s" % (solvername, dicttype, modeltypes), file = outfile)
             print('gmsgennt.cmd' if iswindows else 'gmsgenus.run', file = outfile, end = '')
             if optdef :
                 print('', os.path.basename(optdef), file = outfile)
             else :
                 print(file = outfile)
             print('gmsgennx.exe' if iswindows else 'gmsgenux.out', file = outfile)
-            print('%s %s 1 1' % (solverlib, solverid), file = outfile)  # the last '1' indicates thread-safety, which we just assume here...
+            print('%s %s 1 0' % (solverlib, solverid), file = outfile)  # the last '0' indicates no thread-safety, which already isn't the case because of the GAMS API files
             print(file=outfile)
     
         print(line, end = '', file = outfile)
