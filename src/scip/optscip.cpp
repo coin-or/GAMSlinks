@@ -113,7 +113,7 @@ int main(int argc, char** argv)
 
    GamsOption::Type opttype;
    GamsOption::OPTVAL defaultval, minval, maxval;
-   GamsOption::ENUMVAL enumval;
+   GamsOption::EnumVals enumval;
    std::string tmpstr;
    std::string descr;
    std::string longdescr;

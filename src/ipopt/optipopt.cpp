@@ -72,7 +72,7 @@ int main(int argc, char** argv)
    GamsOption::Type opttype;
    GamsOption::OPTVAL defaultval, minval, maxval;
    // bool minval_strict, maxval_strict;
-   GamsOption::ENUMVAL enumval;
+   GamsOption::EnumVals enumval;
    std::string tmpstr;
    std::string longdescr;
    std::string defaultdescr;
@@ -189,7 +189,7 @@ int main(int argc, char** argv)
             defaultval.stringval = "auto";
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
          {
-            for( GamsOption::ENUMVAL::iterator it(enumval.begin()); it != enumval.end(); ++it )
+            for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )
                if( strcmp(it->first.stringval, "user-scaling") == 0 )
                {
                   enumval.erase(it);
@@ -198,7 +198,7 @@ int main(int argc, char** argv)
          }
          else if( (*it_opt)->Name() == "dependency_detector" )
          {
-            for( GamsOption::ENUMVAL::iterator it(enumval.begin()); it != enumval.end(); ++it )
+            for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )
                if( strcmp(it->first.stringval, "wsmp") == 0 )
                {
                   enumval.erase(it);

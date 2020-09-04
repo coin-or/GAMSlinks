@@ -29,7 +29,7 @@ int main(int argc, char** argv)
    SoPlex soplex;
 
    GamsOption::OPTVAL defaultval, minval, maxval;
-   GamsOption::ENUMVAL enumval;
+   GamsOption::EnumVals enumval;
    std::string tmpstr;
    std::string descr;
    std::string defaultdescr;

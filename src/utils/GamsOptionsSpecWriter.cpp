@@ -21,7 +21,7 @@ void GamsOptions::collect(
    GamsOption::OPTVAL defaultval,
    GamsOption::OPTVAL minval,
    GamsOption::OPTVAL maxval,
-   const GamsOption::ENUMVAL& enumval,
+   const GamsOption::EnumVals& enumval,
    const std::string& defaultdescr,
    int                refval
 )
@@ -85,7 +85,7 @@ void GamsOptions::collect(
    /* collect enum values for values
     * update enum description
     */
-   for( GamsOption::ENUMVAL::iterator e(options.back().enumval.begin()); e != options.back().enumval.end(); ++e )
+   for( GamsOption::EnumVals::iterator e(options.back().enumval.begin()); e != options.back().enumval.end(); ++e )
    {
       switch( type )
       {
@@ -242,7 +242,7 @@ void GamsOptions::write(bool shortdoc)
    f << "set oe(o,e) /" << std::endl;
    for( std::list<GamsOption>::iterator d(options.begin()); d != options.end(); ++d )
    {
-      for( GamsOption::ENUMVAL::iterator e(d->enumval.begin()); e != d->enumval.end(); ++e )
+      for( GamsOption::EnumVals::iterator e(d->enumval.begin()); e != d->enumval.end(); ++e )
       {
          f << "  '" << d->name << "'.'";
          switch( d->type )

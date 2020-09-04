@@ -42,7 +42,7 @@ public:
       const char*           stringval;
    };
 
-   class GamsOptionEnum : public std::vector<std::pair<GamsOption::OPTVAL, std::string> >
+   class EnumVals : public std::vector<std::pair<GamsOption::OPTVAL, std::string> >
    {
    public:
       void append(
@@ -69,8 +69,6 @@ public:
 
    };
 
-   typedef GamsOptionEnum ENUMVAL;
-
    std::string        group;
    std::string        name;
    std::string        shortdescr;
@@ -80,7 +78,7 @@ public:
    OPTVAL             defaultval;
    OPTVAL             minval;
    OPTVAL             maxval;
-   ENUMVAL            enumval;
+   EnumVals            enumval;
    int                refval;
    std::set<std::string> synonyms;
 
@@ -94,7 +92,7 @@ public:
       OPTVAL             defaultval_,
       OPTVAL             minval_,
       OPTVAL             maxval_,
-      const ENUMVAL&     enumval_,
+      const EnumVals&     enumval_,
       int                refval_
    )
    : group(group_),
@@ -252,7 +250,7 @@ public:
       GamsOption::OPTVAL defaultval,
       GamsOption::OPTVAL minval,
       GamsOption::OPTVAL maxval,
-      const GamsOption::ENUMVAL& enumval,
+      const GamsOption::EnumVals& enumval,
       const std::string& defaultdescr = std::string(),
       int                refval = -2
    );
@@ -282,7 +280,7 @@ public:
          GamsOption::Type::REAL,
          defaultval_,
          minval_, maxval_,
-         GamsOption::ENUMVAL(),
+         GamsOption::EnumVals(),
          defaultdescr, refval);
    }
 
@@ -311,7 +309,7 @@ public:
          GamsOption::Type::INTEGER,
          defaultval_,
          minval_, maxval_,
-         GamsOption::ENUMVAL(),
+         GamsOption::EnumVals(),
          defaultdescr, refval);
    }
 
@@ -321,7 +319,7 @@ public:
       const std::string& shortdescr,
       const std::string& longdescr,
       int                defaultval,
-      const GamsOption::ENUMVAL& enumval,
+      const GamsOption::EnumVals& enumval,
       const std::string& defaultdescr = std::string(),
       int                refval = -2
    )
@@ -330,7 +328,7 @@ public:
       GamsOption::OPTVAL maxval;
       minval.intval =  INT_MAX;
       maxval.intval = -INT_MAX;
-      for( GamsOption::ENUMVAL::const_iterator e(enumval.begin()); e != enumval.end(); ++e )
+      for( GamsOption::EnumVals::const_iterator e(enumval.begin()); e != enumval.end(); ++e )
       {
          minval.intval = std::min(e->first.intval, minval.intval);
          maxval.intval = std::max(e->first.intval, maxval.intval);
@@ -363,7 +361,7 @@ public:
          GamsOption::Type::BOOL,
          defaultval_,
          GamsOption::OPTVAL(), GamsOption::OPTVAL(),
-         GamsOption::ENUMVAL(),
+         GamsOption::EnumVals(),
          defaultdescr, refval);
    }
 
@@ -383,7 +381,7 @@ public:
          GamsOption::Type::STRING,
          defaultval_,
          GamsOption::OPTVAL(), GamsOption::OPTVAL(),
-         GamsOption::ENUMVAL(),
+         GamsOption::EnumVals(),
          std::string(), refval);
    }
 
@@ -393,7 +391,7 @@ public:
       const std::string& shortdescr,
       const std::string& longdescr,
       const std::string& defaultval,
-      const GamsOption::ENUMVAL& enumval,
+      const GamsOption::EnumVals& enumval,
       const std::string& defaultdescr = std::string(),
       int                refval = -2
    )

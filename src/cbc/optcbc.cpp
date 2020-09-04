@@ -39,7 +39,7 @@ void collectCbcOption(
 
    GamsOption::Type opttype;
    GamsOption::OPTVAL defaultval, minval, maxval;
-   GamsOption::ENUMVAL enumval;
+   GamsOption::EnumVals enumval;
    std::string tmpstr;
    std::string longdescr;
 
@@ -117,7 +117,7 @@ void collectCbcOption(
 
 static
 void add01(
-   GamsOption::ENUMVAL& enumval)
+   GamsOption::EnumVals& enumval)
 {
    enumval.append("0", "Same as off. This is a deprecated setting.");
    enumval.append("1", "Same as on. This is a deprecated setting.");
@@ -149,7 +149,7 @@ int main(int argc, char** argv)
    gmsopt.back().defaultdescr = "GAMS reslim";
    gmsopt.back().longdescr.clear();
 
-   GamsOption::ENUMVAL clocktypes;
+   GamsOption::EnumVals clocktypes;
    clocktypes.append("cpu", "CPU clock");
    clocktypes.append("wall", "Wall clock");
    gmsopt.collect("clocktype", "type of clock for time measurement", "",
@@ -195,7 +195,7 @@ int main(int argc, char** argv)
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "crossover");
    // value "maybe" is only relevant for quadratic: remove value and mention in longdescr
-   for( GamsOption::ENUMVAL::iterator e(gmsopt.back().enumval.begin()); e != gmsopt.back().enumval.end(); ++e )
+   for( GamsOption::EnumVals::iterator e(gmsopt.back().enumval.begin()); e != gmsopt.back().enumval.end(); ++e )
       if( strcmp(e->first.stringval, "maybe") == 0 )
       {
          gmsopt.back().enumval.erase(e);
@@ -219,7 +219,7 @@ int main(int argc, char** argv)
    gmsopt.back().enumval.append("auto", "Same as automatic. This is a deprecated setting.");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "presolve");
-   for( GamsOption::ENUMVAL::iterator e(gmsopt.back().enumval.begin()); e != gmsopt.back().enumval.end(); ++e )
+   for( GamsOption::EnumVals::iterator e(gmsopt.back().enumval.begin()); e != gmsopt.back().enumval.end(); ++e )
       if( strcmp(e->first.stringval, "file") == 0 )
       {
          gmsopt.back().enumval.erase(e);
@@ -243,7 +243,7 @@ int main(int argc, char** argv)
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_presolve", "preTolerance");
 
-   GamsOption::ENUMVAL startalgs;
+   GamsOption::EnumVals startalgs;
    startalgs.append("primal", "Primal Simplex algorithm");
    startalgs.append("dual", "Dual Simplex algorithm");
    startalgs.append("barrier", "Primal-dual predictor-corrector algorithm");
@@ -276,7 +276,7 @@ int main(int argc, char** argv)
    gmsopt.back().minval.intval = 1;
    gmsopt.back().maxval.intval = 99;
 
-   GamsOption::ENUMVAL parallelmodes;
+   GamsOption::EnumVals parallelmodes;
    parallelmodes.append("opportunistic");
    parallelmodes.append("deterministic");
    gmsopt.collect("parallelmode", "whether to run opportunistic or deterministic",
