@@ -42,7 +42,34 @@ public:
       const char*           stringval;
    };
 
-   typedef std::vector<std::pair<OPTVAL, std::string> > ENUMVAL;
+   class GamsOptionEnum : public std::vector<std::pair<GamsOption::OPTVAL, std::string> >
+   {
+   public:
+      void append(
+         const std::string& key,
+         const std::string& descr = ""
+         )
+      {
+         GamsOption::OPTVAL key_;
+         key_.stringval = strdup(key.c_str());
+
+         emplace_back(key_, descr);
+      }
+
+      void append(
+         const char*        key,
+         const std::string& descr = ""
+         )
+      {
+         GamsOption::OPTVAL key_;
+         key_.stringval = strdup(key);
+
+         emplace_back(key_, descr);
+      }
+
+   };
+
+   typedef GamsOptionEnum ENUMVAL;
 
    std::string        group;
    std::string        name;

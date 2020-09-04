@@ -272,13 +272,13 @@ int main(int argc, char** argv)
                   opttype = GamsOption::OPTTYPE_STRING;
                   if( (*it_opt)->Name() == "linear_solver" )
                   {
-                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("ma27")}, "use the Harwell routine MA27"));
-                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("ma57")}, "use the Harwell routine MA57"));
-                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("ma77")}, "use the Harwell routine HSL_MA77"));
-                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("ma86")}, "use the Harwell routine HSL_MA86"));
-                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("ma97")}, "use the Harwell routine HSL_MA97"));
-                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("pardiso")}, "use the Pardiso package"));
-                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("mumps")}, "use MUMPS package"));
+                     enumval.append("ma27", "use the Harwell routine MA27");
+                     enumval.append("ma57", "use the Harwell routine MA57");
+                     enumval.append("ma77", "use the Harwell routine HSL_MA77");
+                     enumval.append("ma86", "use the Harwell routine HSL_MA86");
+                     enumval.append("ma97", "use the Harwell routine HSL_MA97");
+                     enumval.append("pardiso", "use the Pardiso package");
+                     enumval.append("mumps", "use MUMPS package");
 
                      longdescr = "Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). "
                         "Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
@@ -296,9 +296,9 @@ int main(int argc, char** argv)
                         defaultval.stringval = "mc19, if BonminH, otherwise none";
                      }
 
-                     enumval.resize(settings.size());
+                     enumval.reserve(settings.size());
                      for( size_t j = 0; j < settings.size(); ++j )
-                        enumval[j] = GamsOption::ENUMVAL::value_type({.stringval = strdup(settings[j].value_.c_str())}, settings[j].description_);
+                        enumval.append(settings[j].value_, settings[j].description_);
                   }
                }
 
