@@ -33,14 +33,14 @@ public:
       OPTTYPE_STRING
    } OPTTYPE;
 
-   typedef union
+   union OPTVAL
    {
       bool                  boolval;
       int                   intval;
       double                realval;
       char                  charval;
       const char*           stringval;
-   } OPTVAL;
+   };
 
    typedef std::vector<std::pair<OPTVAL, std::string> > ENUMVAL;
 
@@ -242,10 +242,19 @@ public:
       int                refval = -2
    )
    {
+      GamsOption::OPTVAL defaultval_;
+      defaultval_.realval = defaultval;
+
+      GamsOption::OPTVAL minval_;
+      minval_.realval = minval;
+
+      GamsOption::OPTVAL maxval_;
+      maxval_.realval = maxval;
+
       collect(name, shortdescr, longdescr,
          GamsOption::OPTTYPE_REAL,
-         GamsOption::OPTVAL({.realval = defaultval}),
-         GamsOption::OPTVAL({.realval = minval}), GamsOption::OPTVAL({.realval = maxval}),
+         defaultval_,
+         minval_, maxval_,
          GamsOption::ENUMVAL(),
          defaultdescr, refval);
    }
@@ -262,10 +271,19 @@ public:
       int                refval = -2
    )
    {
+      GamsOption::OPTVAL defaultval_;
+      defaultval_.intval = defaultval;
+
+      GamsOption::OPTVAL minval_;
+      minval_.intval = minval;
+
+      GamsOption::OPTVAL maxval_;
+      maxval_.intval = maxval;
+
       collect(name, shortdescr, longdescr,
          GamsOption::OPTTYPE_INTEGER,
-         GamsOption::OPTVAL({.intval = defaultval}),
-         GamsOption::OPTVAL({.intval = minval}), GamsOption::OPTVAL({.intval = maxval}),
+         defaultval_,
+         minval_, maxval_,
          GamsOption::ENUMVAL(),
          defaultdescr, refval);
    }
@@ -281,17 +299,23 @@ public:
       int                refval = -2
    )
    {
-      int minval =  INT_MAX;
-      int maxval = -INT_MAX;
+      GamsOption::OPTVAL minval;
+      GamsOption::OPTVAL maxval;
+      minval.intval =  INT_MAX;
+      maxval.intval = -INT_MAX;
       for( GamsOption::ENUMVAL::const_iterator e(enumval.begin()); e != enumval.end(); ++e )
       {
-         minval = std::min(e->first.intval, minval);
-         maxval = std::max(e->first.intval, maxval);
+         minval.intval = std::min(e->first.intval, minval.intval);
+         maxval.intval = std::max(e->first.intval, maxval.intval);
       }
+
+      GamsOption::OPTVAL defaultval_;
+      defaultval_.intval = defaultval;
+
       collect(name, shortdescr, longdescr,
          GamsOption::OPTTYPE_INTEGER,
-         GamsOption::OPTVAL({.intval = defaultval}),
-         GamsOption::OPTVAL({.intval = minval}), GamsOption::OPTVAL({.intval = maxval}),
+         defaultval_,
+         minval, maxval,
          enumval, defaultdescr, refval);
    }
 
@@ -305,9 +329,12 @@ public:
       int                refval = -2
    )
    {
+      GamsOption::OPTVAL defaultval_;
+      defaultval_.boolval = defaultval;
+
       collect(name, shortdescr, longdescr,
          GamsOption::OPTTYPE_BOOL,
-         GamsOption::OPTVAL({.boolval = defaultval}),
+         defaultval_,
          GamsOption::OPTVAL(), GamsOption::OPTVAL(),
          GamsOption::ENUMVAL(),
          defaultdescr, refval);
@@ -322,10 +349,12 @@ public:
       int                refval = -2
    )
    {
-      const char* def = strdup(defaultval.c_str());
+      GamsOption::OPTVAL defaultval_;
+      defaultval_.stringval = strdup(defaultval.c_str());
+
       collect(name, shortdescr, longdescr,
          GamsOption::OPTTYPE_STRING,
-         GamsOption::OPTVAL({.stringval = def}),
+         defaultval_,
          GamsOption::OPTVAL(), GamsOption::OPTVAL(),
          GamsOption::ENUMVAL(),
          std::string(), refval);
@@ -337,15 +366,17 @@ public:
       const std::string& shortdescr,
       const std::string& longdescr,
       const std::string& defaultval,
-      const GamsOption::ENUMVAL&     enumval,
+      const GamsOption::ENUMVAL& enumval,
       const std::string& defaultdescr = std::string(),
       int                refval = -2
    )
    {
-      const char* def = strdup(defaultval.c_str());
+      GamsOption::OPTVAL defaultval_;
+      defaultval_.stringval = strdup(defaultval.c_str());
+
       collect(name, shortdescr, longdescr,
          GamsOption::OPTTYPE_STRING,
-         GamsOption::OPTVAL({.stringval = def}),
+         defaultval_,
          GamsOption::OPTVAL(), GamsOption::OPTVAL(),
          enumval, defaultdescr, refval);
    }
