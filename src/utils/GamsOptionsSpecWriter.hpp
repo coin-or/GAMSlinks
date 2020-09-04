@@ -24,14 +24,14 @@
 class GamsOption
 {
 public:
-   typedef enum
+   enum Type
    {
-      OPTTYPE_BOOL,
-      OPTTYPE_INTEGER,
-      OPTTYPE_REAL,
-      OPTTYPE_CHAR,
-      OPTTYPE_STRING
-   } OPTTYPE;
+      BOOL,
+      INTEGER,
+      REAL,
+      CHAR,
+      STRING
+   };
 
    union OPTVAL
    {
@@ -76,7 +76,7 @@ public:
    std::string        shortdescr;
    std::string        longdescr;
    std::string        defaultdescr;
-   OPTTYPE            type;
+   Type               type;
    OPTVAL             defaultval;
    OPTVAL             minval;
    OPTVAL             maxval;
@@ -90,7 +90,7 @@ public:
       const std::string& shortdescr_,
       const std::string& longdescr_,
       const std::string& defaultdescr_,
-      OPTTYPE            type_,
+      Type               type_,
       OPTVAL             defaultval_,
       OPTVAL             minval_,
       OPTVAL             maxval_,
@@ -248,7 +248,7 @@ public:
       const std::string& name,
       std::string        shortdescr,
       std::string        longdescr,
-      GamsOption::OPTTYPE type,
+      GamsOption::Type   type,
       GamsOption::OPTVAL defaultval,
       GamsOption::OPTVAL minval,
       GamsOption::OPTVAL maxval,
@@ -279,7 +279,7 @@ public:
       maxval_.realval = maxval;
 
       collect(name, shortdescr, longdescr,
-         GamsOption::OPTTYPE_REAL,
+         GamsOption::Type::REAL,
          defaultval_,
          minval_, maxval_,
          GamsOption::ENUMVAL(),
@@ -308,7 +308,7 @@ public:
       maxval_.intval = maxval;
 
       collect(name, shortdescr, longdescr,
-         GamsOption::OPTTYPE_INTEGER,
+         GamsOption::Type::INTEGER,
          defaultval_,
          minval_, maxval_,
          GamsOption::ENUMVAL(),
@@ -340,7 +340,7 @@ public:
       defaultval_.intval = defaultval;
 
       collect(name, shortdescr, longdescr,
-         GamsOption::OPTTYPE_INTEGER,
+         GamsOption::Type::INTEGER,
          defaultval_,
          minval, maxval,
          enumval, defaultdescr, refval);
@@ -360,7 +360,7 @@ public:
       defaultval_.boolval = defaultval;
 
       collect(name, shortdescr, longdescr,
-         GamsOption::OPTTYPE_BOOL,
+         GamsOption::Type::BOOL,
          defaultval_,
          GamsOption::OPTVAL(), GamsOption::OPTVAL(),
          GamsOption::ENUMVAL(),
@@ -380,7 +380,7 @@ public:
       defaultval_.stringval = strdup(defaultval.c_str());
 
       collect(name, shortdescr, longdescr,
-         GamsOption::OPTTYPE_STRING,
+         GamsOption::Type::STRING,
          defaultval_,
          GamsOption::OPTVAL(), GamsOption::OPTVAL(),
          GamsOption::ENUMVAL(),
@@ -402,7 +402,7 @@ public:
       defaultval_.stringval = strdup(defaultval.c_str());
 
       collect(name, shortdescr, longdescr,
-         GamsOption::OPTTYPE_STRING,
+         GamsOption::Type::STRING,
          defaultval_,
          GamsOption::OPTVAL(), GamsOption::OPTVAL(),
          enumval, defaultdescr, refval);

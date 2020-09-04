@@ -17,7 +17,7 @@ void GamsOptions::collect(
    const std::string& name,
    std::string        shortdescr,
    std::string        longdescr,
-   GamsOption::OPTTYPE type,
+   GamsOption::Type   type,
    GamsOption::OPTVAL defaultval,
    GamsOption::OPTVAL minval,
    GamsOption::OPTVAL maxval,
@@ -61,12 +61,12 @@ void GamsOptions::collect(
 
    switch( type )
    {
-      case GamsOption::OPTTYPE_BOOL:
-      case GamsOption::OPTTYPE_INTEGER:
-      case GamsOption::OPTTYPE_REAL:
+      case GamsOption::Type::BOOL:
+      case GamsOption::Type::INTEGER:
+      case GamsOption::Type::REAL:
          break;
 
-      case GamsOption::OPTTYPE_CHAR:
+      case GamsOption::Type::CHAR:
       {
          std::string str;
          str.push_back(defaultval.charval);
@@ -74,7 +74,7 @@ void GamsOptions::collect(
          break;
       }
 
-      case GamsOption::OPTTYPE_STRING:
+      case GamsOption::Type::STRING:
       {
          if( defaultval.stringval[0] != '\0' )
             values.insert(tolower(defaultval.stringval));
@@ -89,23 +89,23 @@ void GamsOptions::collect(
    {
       switch( type )
       {
-         case GamsOption::OPTTYPE_BOOL:
+         case GamsOption::Type::BOOL:
             values.insert(std::to_string(e->first.boolval));
             break;
 
-         case GamsOption::OPTTYPE_INTEGER:
+         case GamsOption::Type::INTEGER:
             values.insert(std::to_string(e->first.intval));
             break;
 
-         case GamsOption::OPTTYPE_REAL:
+         case GamsOption::Type::REAL:
             values.insert(std::to_string(e->first.realval));
             break;
 
-         case GamsOption::OPTTYPE_CHAR:
+         case GamsOption::Type::CHAR:
             values.insert(tolower(std::to_string(e->first.charval)));
             break;
 
-         case GamsOption::OPTTYPE_STRING:
+         case GamsOption::Type::STRING:
             values.insert(tolower(e->first.stringval));
             break;
       }
@@ -188,11 +188,11 @@ void GamsOptions::write(bool shortdoc)
       f << "  gr_" << id << ".'" << d->name << "'.";
       switch( d->type )
       {
-         case GamsOption::OPTTYPE_BOOL:
+         case GamsOption::Type::BOOL:
             f << "B.(def " << d->defaultval.boolval;
             break;
 
-         case GamsOption::OPTTYPE_INTEGER:
+         case GamsOption::Type::INTEGER:
             f << "I.(def ";
             if( d->defaultval.intval == INT_MAX )
                f << "maxint";
@@ -208,7 +208,7 @@ void GamsOptions::write(bool shortdoc)
                f << ", up " << d->maxval.intval;
             break;
 
-         case GamsOption::OPTTYPE_REAL:
+         case GamsOption::Type::REAL:
             f << "R.(def ";
             if( d->defaultval.realval == DBL_MAX )
                f << "maxdouble";
@@ -224,12 +224,12 @@ void GamsOptions::write(bool shortdoc)
                f << ", up " << d->maxval.realval;
             break;
 
-         case GamsOption::OPTTYPE_CHAR:
+         case GamsOption::Type::CHAR:
             /* no character type in GAMS option files */
             f << "S.(def '" << d->defaultval.charval << '\'';
             break;
 
-         case GamsOption::OPTTYPE_STRING:
+         case GamsOption::Type::STRING:
             f << "S.(def '" << makeValidMarkdownString(d->defaultval.stringval) << '\'';
             break;
       }
@@ -247,19 +247,19 @@ void GamsOptions::write(bool shortdoc)
          f << "  '" << d->name << "'.'";
          switch( d->type )
          {
-            case GamsOption::OPTTYPE_BOOL :
+            case GamsOption::Type::BOOL :
                f << e->first.boolval;
                break;
-            case GamsOption::OPTTYPE_INTEGER :
+            case GamsOption::Type::INTEGER :
                f << e->first.intval;
                break;
-            case GamsOption::OPTTYPE_REAL :
+            case GamsOption::Type::REAL :
                f << e->first.realval;
                break;
-            case GamsOption::OPTTYPE_CHAR :
+            case GamsOption::Type::CHAR :
                f << e->first.charval;
                break;
-            case GamsOption::OPTTYPE_STRING :
+            case GamsOption::Type::STRING :
                f << e->first.stringval;
                break;
          }

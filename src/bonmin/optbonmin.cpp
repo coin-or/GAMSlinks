@@ -217,7 +217,7 @@ int main(int argc, char** argv)
    }
    tabfile.close();
 
-   GamsOption::OPTTYPE opttype;
+   GamsOption::Type opttype;
    GamsOption::OPTVAL defaultval, minval, maxval;
    // bool minval_strict, maxval_strict;
    GamsOption::ENUMVAL enumval;
@@ -238,7 +238,7 @@ int main(int argc, char** argv)
          {
             case Ipopt::OT_Number:
             {
-               opttype = GamsOption::OPTTYPE_REAL;
+               opttype = GamsOption::Type::REAL;
                minval.realval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
                maxval.realval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
                //TODO should ask Bonmin for value for infinity
@@ -254,7 +254,7 @@ int main(int argc, char** argv)
 
             case Ipopt::OT_Integer:
             {
-               opttype = GamsOption::OPTTYPE_INTEGER;
+               opttype = GamsOption::Type::INTEGER;
                minval.intval = (*it_opt)->HasLower() ? (*it_opt)->LowerInteger() : -INT_MAX;
                maxval.intval = (*it_opt)->HasUpper() ? (*it_opt)->UpperInteger() :  INT_MAX;
                defaultval.intval = (*it_opt)->DefaultInteger();
@@ -263,13 +263,13 @@ int main(int argc, char** argv)
 
             case Ipopt::OT_String:
             {
-               opttype = GamsOption::OPTTYPE_STRING;
+               opttype = GamsOption::Type::STRING;
                defaultval.stringval = strdup((*it_opt)->DefaultString().c_str());
 
                const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
                if( settings.size() > 1 || settings[0].value_ != "*")
                {
-                  opttype = GamsOption::OPTTYPE_STRING;
+                  opttype = GamsOption::Type::STRING;
                   if( (*it_opt)->Name() == "linear_solver" )
                   {
                      enumval.append("ma27", "use the Harwell routine MA27");

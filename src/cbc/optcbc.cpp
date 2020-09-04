@@ -37,7 +37,7 @@ void collectCbcOption(
 
    const CbcOrClpParam& cbcopt(cbcopts[idx]);
 
-   GamsOption::OPTTYPE opttype;
+   GamsOption::Type opttype;
    GamsOption::OPTVAL defaultval, minval, maxval;
    GamsOption::ENUMVAL enumval;
    std::string tmpstr;
@@ -53,14 +53,14 @@ void collectCbcOption(
    CbcOrClpParameterType cbcoptnum = cbcopt.type();
    if( cbcoptnum <= 100 )
    {
-      opttype = GamsOption::OPTTYPE_REAL;
+      opttype = GamsOption::Type::REAL;
       minval.realval = cbcopt.lowerDoubleValue();
       maxval.realval = cbcopt.upperDoubleValue();
       defaultval.realval = cbcopt.doubleParameter(cbcmodel);
    }
    else if( cbcoptnum <= 200 )
    {
-      opttype = GamsOption::OPTTYPE_INTEGER;
+      opttype = GamsOption::Type::INTEGER;
       minval.intval = cbcopt.lowerIntValue();
       maxval.intval = cbcopt.upperIntValue();
       defaultval.intval = cbcopt.intParameter(cbcmodel);
@@ -72,12 +72,12 @@ void collectCbcOption(
       if( kws.size() == 2 &&
          ((kws[0] == "on" && kws[1] == "off") || (kws[1] == "on" && kws[0] == "off")) )
       {
-         opttype = GamsOption::OPTTYPE_BOOL;
+         opttype = GamsOption::Type::BOOL;
          defaultval.boolval = cbcopt.currentOption() == "on";
       }
       else
       {
-         opttype = GamsOption::OPTTYPE_STRING;
+         opttype = GamsOption::Type::STRING;
 
          std::string def = cbcopt.currentOption();
          // remove '!' and '?' marker from default

@@ -114,7 +114,7 @@ int main(int argc, char** argv)
       opts[category].push_back(it->second);
    }
 
-   GamsOption::OPTTYPE opttype;
+   GamsOption::Type opttype;
    GamsOption::OPTVAL defaultval, minval, maxval;
    // bool minval_strict, maxval_strict;
    GamsOption::ENUMVAL enumval;
@@ -138,7 +138,7 @@ int main(int argc, char** argv)
          {
             case Ipopt::OT_Number:
             {
-               opttype = GamsOption::OPTTYPE_REAL;
+               opttype = GamsOption::Type::REAL;
                minval.realval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
                maxval.realval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
                //TODO should ask Couenne for value for infinity
@@ -154,7 +154,7 @@ int main(int argc, char** argv)
 
             case Ipopt::OT_Integer:
             {
-               opttype = GamsOption::OPTTYPE_INTEGER;
+               opttype = GamsOption::Type::INTEGER;
                minval.intval = (*it_opt)->HasLower() ? (*it_opt)->LowerInteger() : -INT_MAX;
                maxval.intval = (*it_opt)->HasUpper() ? (*it_opt)->UpperInteger() :  INT_MAX;
                defaultval.intval = (*it_opt)->DefaultInteger();
@@ -163,7 +163,7 @@ int main(int argc, char** argv)
 
             case Ipopt::OT_String:
             {
-               opttype = GamsOption::OPTTYPE_STRING;
+               opttype = GamsOption::Type::STRING;
                defaultval.stringval = strdup((*it_opt)->DefaultString().c_str());
 
                const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());

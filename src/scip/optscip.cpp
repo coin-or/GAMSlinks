@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 
    std::map<std::string, std::list<SCIP_PARAM*> > paramsort;
 
-   GamsOption::OPTTYPE opttype;
+   GamsOption::Type opttype;
    GamsOption::OPTVAL defaultval, minval, maxval;
    GamsOption::ENUMVAL enumval;
    std::string tmpstr;
@@ -193,7 +193,7 @@ int main(int argc, char** argv)
          {
             case SCIP_PARAMTYPE_BOOL:
             {
-               opttype = GamsOption::OPTTYPE_BOOL;
+               opttype = GamsOption::Type::BOOL;
                minval.boolval = 0;
                maxval.boolval = 1;
                defaultval.boolval = SCIPparamGetBoolDefault(param);
@@ -202,7 +202,7 @@ int main(int argc, char** argv)
 
             case SCIP_PARAMTYPE_INT:
             {
-               opttype = GamsOption::OPTTYPE_INTEGER;
+               opttype = GamsOption::Type::INTEGER;
                minval.intval = SCIPparamGetIntMin(param);
                maxval.intval = SCIPparamGetIntMax(param);
                defaultval.intval = SCIPparamGetIntDefault(param);
@@ -211,7 +211,7 @@ int main(int argc, char** argv)
 
             case SCIP_PARAMTYPE_LONGINT:
             {
-               opttype = GamsOption::OPTTYPE_INTEGER;
+               opttype = GamsOption::Type::INTEGER;
                minval.intval = ScipLongintToInt(SCIPparamGetLongintMin(param));
                maxval.intval = ScipLongintToInt(SCIPparamGetLongintMax(param));
                defaultval.intval = ScipLongintToInt(SCIPparamGetLongintDefault(param));
@@ -220,7 +220,7 @@ int main(int argc, char** argv)
 
             case SCIP_PARAMTYPE_REAL:
             {
-               opttype = GamsOption::OPTTYPE_REAL;
+               opttype = GamsOption::Type::REAL;
                minval.realval = SCIPparamGetRealMin(param);
                maxval.realval = SCIPparamGetRealMax(param);
                defaultval.realval = SCIPparamGetRealDefault(param);
@@ -234,12 +234,12 @@ int main(int argc, char** argv)
             }
 
             case SCIP_PARAMTYPE_CHAR:
-               opttype = GamsOption::OPTTYPE_CHAR;
+               opttype = GamsOption::Type::CHAR;
                defaultval.charval = SCIPparamGetCharDefault(param);
                break;
 
             case SCIP_PARAMTYPE_STRING:
-               opttype = GamsOption::OPTTYPE_STRING;
+               opttype = GamsOption::Type::STRING;
                defaultval.stringval = SCIPparamGetStringDefault(param);
                break;
 
