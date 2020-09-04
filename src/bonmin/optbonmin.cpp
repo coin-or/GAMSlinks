@@ -218,7 +218,7 @@ int main(int argc, char** argv)
    tabfile.close();
 
    GamsOption::Type opttype;
-   GamsOption::OPTVAL defaultval, minval, maxval;
+   GamsOption::Value defaultval, minval, maxval;
    // bool minval_strict, maxval_strict;
    GamsOption::EnumVals enumval;
    std::string tmpstr;

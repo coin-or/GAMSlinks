@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 {
    SoPlex soplex;
 
-   GamsOption::OPTVAL defaultval, minval, maxval;
+   GamsOption::Value defaultval, minval, maxval;
    GamsOption::EnumVals enumval;
    std::string tmpstr;
    std::string descr;

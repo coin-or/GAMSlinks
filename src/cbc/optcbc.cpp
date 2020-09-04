@@ -38,7 +38,7 @@ void collectCbcOption(
    const CbcOrClpParam& cbcopt(cbcopts[idx]);
 
    GamsOption::Type opttype;
-   GamsOption::OPTVAL defaultval, minval, maxval;
+   GamsOption::Value defaultval, minval, maxval;
    GamsOption::EnumVals enumval;
    std::string tmpstr;
    std::string longdescr;
