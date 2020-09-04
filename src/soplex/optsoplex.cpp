@@ -2,7 +2,7 @@
   * All Rights Reserved.
   * This code is published under the Eclipse Public License.
   *
-  * @file optbonmin.cpp
+  * @file optsoplex.cpp
   * @author Stefan Vigerske
  */
 
@@ -28,8 +28,8 @@ int main(int argc, char** argv)
 {
    SoPlex soplex;
 
-   GamsOptions::OPTVAL defaultval, minval, maxval;
-   GamsOptions::ENUMVAL enumval;
+   GamsOption::OPTVAL defaultval, minval, maxval;
+   GamsOption::ENUMVAL enumval;
    std::string tmpstr;
    std::string descr;
    std::string defaultdescr;
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
       gmsopt.collect(
          std::string("bool:") + SoPlex::Settings::boolParam.name[i],
          SoPlex::Settings::boolParam.description[i], std::string(),
-         GamsOptions::OPTTYPE_BOOL, defaultval, minval, maxval, enumval, defaultdescr);
+         GamsOption::OPTTYPE_BOOL, defaultval, minval, maxval, enumval, defaultdescr);
    }
 
    for( int i = 0; i < SoPlex::INTPARAM_COUNT; ++i )
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
       gmsopt.collect(
          std::string("int:") + SoPlex::Settings::intParam.name[i],
          SoPlex::Settings::intParam.description[i], std::string(),
-         GamsOptions::OPTTYPE_INTEGER, defaultval, minval, maxval, enumval, defaultdescr);
+         GamsOption::OPTTYPE_INTEGER, defaultval, minval, maxval, enumval, defaultdescr);
    }
 
    for( int i = 0; i < SoPlex::REALPARAM_COUNT; ++i )
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
       gmsopt.collect(
          std::string("real:") + SoPlex::Settings::realParam.name[i],
          SoPlex::Settings::realParam.description[i], std::string(),
-         GamsOptions::OPTTYPE_REAL, defaultval, minval, maxval, enumval, defaultdescr);
+         GamsOption::OPTTYPE_REAL, defaultval, minval, maxval, enumval, defaultdescr);
    }
 
    gmsopt.write(true);

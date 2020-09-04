@@ -17,11 +17,11 @@ void GamsOptions::collect(
    const std::string& name,
    std::string        shortdescr,
    std::string        longdescr,
-   OPTTYPE            type,
-   OPTVAL             defaultval,
-   OPTVAL             minval,
-   OPTVAL             maxval,
-   const ENUMVAL&     enumval,
+   GamsOption::OPTTYPE type,
+   GamsOption::OPTVAL defaultval,
+   GamsOption::OPTVAL minval,
+   GamsOption::OPTVAL maxval,
+   const GamsOption::ENUMVAL& enumval,
    const std::string& defaultdescr,
    int                refval
 )
@@ -54,19 +54,19 @@ void GamsOptions::collect(
       longdescr.clear();
    }
 
-   options.push_back(Option(curgroup, name, shortdescr, longdescr, defaultdescr, type, defaultval, minval, maxval, enumval, refval));
+   options.push_back(GamsOption(curgroup, name, shortdescr, longdescr, defaultdescr, type, defaultval, minval, maxval, enumval, refval));
 
    /* replace all double quotes by single quotes */
    std::replace(options.back().shortdescr.begin(), options.back().shortdescr.end(), '"', '\'');
 
    switch( type )
    {
-      case OPTTYPE_BOOL:
-      case OPTTYPE_INTEGER:
-      case OPTTYPE_REAL:
+      case GamsOption::OPTTYPE_BOOL:
+      case GamsOption::OPTTYPE_INTEGER:
+      case GamsOption::OPTTYPE_REAL:
          break;
 
-      case OPTTYPE_CHAR:
+      case GamsOption::OPTTYPE_CHAR:
       {
          std::string str;
          str.push_back(defaultval.charval);
@@ -74,7 +74,7 @@ void GamsOptions::collect(
          break;
       }
 
-      case OPTTYPE_STRING:
+      case GamsOption::OPTTYPE_STRING:
       {
          if( defaultval.stringval[0] != '\0' )
             values.insert(tolower(defaultval.stringval));
@@ -85,27 +85,27 @@ void GamsOptions::collect(
    /* collect enum values for values
     * update enum description
     */
-   for( ENUMVAL::iterator e(options.back().enumval.begin()); e != options.back().enumval.end(); ++e )
+   for( GamsOption::ENUMVAL::iterator e(options.back().enumval.begin()); e != options.back().enumval.end(); ++e )
    {
       switch( type )
       {
-         case OPTTYPE_BOOL:
+         case GamsOption::OPTTYPE_BOOL:
             values.insert(std::to_string(e->first.boolval));
             break;
 
-         case OPTTYPE_INTEGER:
+         case GamsOption::OPTTYPE_INTEGER:
             values.insert(std::to_string(e->first.intval));
             break;
 
-         case OPTTYPE_REAL:
+         case GamsOption::OPTTYPE_REAL:
             values.insert(std::to_string(e->first.realval));
             break;
 
-         case OPTTYPE_CHAR:
+         case GamsOption::OPTTYPE_CHAR:
             values.insert(tolower(std::to_string(e->first.charval)));
             break;
 
-         case OPTTYPE_STRING:
+         case GamsOption::OPTTYPE_STRING:
             values.insert(tolower(e->first.stringval));
             break;
       }
@@ -167,14 +167,14 @@ void GamsOptions::write(bool shortdoc)
    f << "/;" << std::endl;
 
    f << "set o Solver and Link Options with one-line description /" << std::endl;
-   for( std::list<Option>::iterator d(options.begin()); d != options.end(); ++d )
+   for( std::list<GamsOption>::iterator d(options.begin()); d != options.end(); ++d )
       f << "  '" << d->name << "'  \"" << makeValidMarkdownString(d->shortdescr) << '"' << std::endl;
    f << "/;" << std::endl;
 
    f << "$onembedded" << std::endl;
    f << "set optdata(g,o,t,f) /" << std::endl;
    bool havelongdescr = false;
-   for( std::list<Option>::iterator d(options.begin()); d != options.end(); ++d )
+   for( std::list<GamsOption>::iterator d(options.begin()); d != options.end(); ++d )
    {
       if( d->longdescr.length() > 0 )
          havelongdescr = true;
@@ -188,11 +188,11 @@ void GamsOptions::write(bool shortdoc)
       f << "  gr_" << id << ".'" << d->name << "'.";
       switch( d->type )
       {
-         case OPTTYPE_BOOL:
+         case GamsOption::OPTTYPE_BOOL:
             f << "B.(def " << d->defaultval.boolval;
             break;
 
-         case OPTTYPE_INTEGER:
+         case GamsOption::OPTTYPE_INTEGER:
             f << "I.(def ";
             if( d->defaultval.intval == INT_MAX )
                f << "maxint";
@@ -208,7 +208,7 @@ void GamsOptions::write(bool shortdoc)
                f << ", up " << d->maxval.intval;
             break;
 
-         case OPTTYPE_REAL:
+         case GamsOption::OPTTYPE_REAL:
             f << "R.(def ";
             if( d->defaultval.realval == DBL_MAX )
                f << "maxdouble";
@@ -224,12 +224,12 @@ void GamsOptions::write(bool shortdoc)
                f << ", up " << d->maxval.realval;
             break;
 
-         case OPTTYPE_CHAR:
+         case GamsOption::OPTTYPE_CHAR:
             /* no character type in GAMS option files */
             f << "S.(def '" << d->defaultval.charval << '\'';
             break;
 
-         case OPTTYPE_STRING:
+         case GamsOption::OPTTYPE_STRING:
             f << "S.(def '" << makeValidMarkdownString(d->defaultval.stringval) << '\'';
             break;
       }
@@ -240,26 +240,26 @@ void GamsOptions::write(bool shortdoc)
    f << "/;" << std::endl;
 
    f << "set oe(o,e) /" << std::endl;
-   for( std::list<Option>::iterator d(options.begin()); d != options.end(); ++d )
+   for( std::list<GamsOption>::iterator d(options.begin()); d != options.end(); ++d )
    {
-      for( ENUMVAL::iterator e(d->enumval.begin()); e != d->enumval.end(); ++e )
+      for( GamsOption::ENUMVAL::iterator e(d->enumval.begin()); e != d->enumval.end(); ++e )
       {
          f << "  '" << d->name << "'.'";
          switch( d->type )
          {
-            case OPTTYPE_BOOL :
+            case GamsOption::OPTTYPE_BOOL :
                f << e->first.boolval;
                break;
-            case OPTTYPE_INTEGER :
+            case GamsOption::OPTTYPE_INTEGER :
                f << e->first.intval;
                break;
-            case OPTTYPE_REAL :
+            case GamsOption::OPTTYPE_REAL :
                f << e->first.realval;
                break;
-            case OPTTYPE_CHAR :
+            case GamsOption::OPTTYPE_CHAR :
                f << e->first.charval;
                break;
-            case OPTTYPE_STRING :
+            case GamsOption::OPTTYPE_STRING :
                f << e->first.stringval;
                break;
          }
@@ -274,7 +274,7 @@ void GamsOptions::write(bool shortdoc)
    f << "$onempty" << std::endl;
 
    f << "set odefault(o) /" << std::endl;
-   for( std::list<Option>::iterator d(options.begin()); d != options.end(); ++d )
+   for( std::list<GamsOption>::iterator d(options.begin()); d != options.end(); ++d )
    {
       if( d->defaultdescr.length() == 0 )
          continue;
@@ -284,7 +284,7 @@ void GamsOptions::write(bool shortdoc)
    f << "/;" << std::endl;
 
    f << "set os(o,*) synonyms  /";
-   for( std::list<Option>::iterator d(options.begin()); d != options.end(); ++d )
+   for( std::list<GamsOption>::iterator d(options.begin()); d != options.end(); ++d )
       if( !d->synonyms.empty() )
          for( std::set<std::string>::const_iterator s(d->synonyms.begin()); s != d->synonyms.end(); ++s )
             f << std::endl << "  '" << d->name << "'.'" << *s << '\'';
@@ -310,7 +310,7 @@ void GamsOptions::write(bool shortdoc)
       filename = "opt" + solver + ".txt_";
       std::cout << "Writing " << filename << std::endl;
       f.open(filename.c_str());
-      for( std::list<Option>::iterator d(options.begin()); d != options.end(); ++d )
+      for( std::list<GamsOption>::iterator d(options.begin()); d != options.end(); ++d )
       {
          if( d->longdescr.length() == 0 )
             continue;

@@ -69,10 +69,10 @@ int main(int argc, char** argv)
       opts[category].push_back(it->second);
    }
 
-   GamsOptions::OPTTYPE opttype;
-   GamsOptions::OPTVAL defaultval, minval, maxval;
+   GamsOption::OPTTYPE opttype;
+   GamsOption::OPTVAL defaultval, minval, maxval;
    // bool minval_strict, maxval_strict;
-   GamsOptions::ENUMVAL enumval;
+   GamsOption::ENUMVAL enumval;
    std::string tmpstr;
    std::string longdescr;
    std::string defaultdescr;
@@ -95,7 +95,7 @@ int main(int argc, char** argv)
          {
             case Ipopt::OT_Number:
             {
-               opttype = GamsOptions::OPTTYPE_REAL;
+               opttype = GamsOption::OPTTYPE_REAL;
                minval.realval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
                maxval.realval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
                //TODO should ask Ipopt for value for infinity
@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 
             case Ipopt::OT_Integer:
             {
-               opttype = GamsOptions::OPTTYPE_INTEGER;
+               opttype = GamsOption::OPTTYPE_INTEGER;
                minval.intval = (*it_opt)->HasLower() ? (*it_opt)->LowerInteger() : -INT_MAX;
                maxval.intval = (*it_opt)->HasUpper() ? (*it_opt)->UpperInteger() :  INT_MAX;
                defaultval.intval = (*it_opt)->DefaultInteger();
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
 
             case Ipopt::OT_String:
             {
-               opttype = GamsOptions::OPTTYPE_STRING;
+               opttype = GamsOption::OPTTYPE_STRING;
                defaultval.stringval = strdup((*it_opt)->DefaultString().c_str());
 
                const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
@@ -128,13 +128,13 @@ int main(int argc, char** argv)
                {
                   if( (*it_opt)->Name() == "linear_solver" )
                   {
-                     enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("ma27")}, "use the Harwell routine MA27"));
-                     enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("ma57")}, "use the Harwell routine MA57"));
-                     enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("ma77")}, "use the Harwell routine HSL_MA77"));
-                     enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("ma86")}, "use the Harwell routine HSL_MA86"));
-                     enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("ma97")}, "use the Harwell routine HSL_MA97"));
-                     enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("pardiso")}, "use the Pardiso package"));
-                     enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("mumps")}, "use MUMPS package"));
+                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("ma27")}, "use the Harwell routine MA27"));
+                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("ma57")}, "use the Harwell routine MA57"));
+                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("ma77")}, "use the Harwell routine HSL_MA77"));
+                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("ma86")}, "use the Harwell routine HSL_MA86"));
+                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("ma97")}, "use the Harwell routine HSL_MA97"));
+                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("pardiso")}, "use the Pardiso package"));
+                     enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("mumps")}, "use MUMPS package"));
 
                      longdescr = "Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). "
                         "Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
@@ -154,7 +154,7 @@ int main(int argc, char** argv)
 
                      enumval.resize(settings.size());
                      for( size_t j = 0; j < settings.size(); ++j )
-                        enumval[j] = GamsOptions::ENUMVAL::value_type({.stringval = strdup(settings[j].value_.c_str())}, settings[j].description_);
+                        enumval[j] = GamsOption::ENUMVAL::value_type({.stringval = strdup(settings[j].value_.c_str())}, settings[j].description_);
                   }
                }
 
@@ -189,7 +189,7 @@ int main(int argc, char** argv)
             defaultval.stringval = "auto";
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
          {
-            for( GamsOptions::ENUMVAL::iterator it(enumval.begin()); it != enumval.end(); ++it )
+            for( GamsOption::ENUMVAL::iterator it(enumval.begin()); it != enumval.end(); ++it )
                if( strcmp(it->first.stringval, "user-scaling") == 0 )
                {
                   enumval.erase(it);
@@ -198,7 +198,7 @@ int main(int argc, char** argv)
          }
          else if( (*it_opt)->Name() == "dependency_detector" )
          {
-            for( GamsOptions::ENUMVAL::iterator it(enumval.begin()); it != enumval.end(); ++it )
+            for( GamsOption::ENUMVAL::iterator it(enumval.begin()); it != enumval.end(); ++it )
                if( strcmp(it->first.stringval, "wsmp") == 0 )
                {
                   enumval.erase(it);

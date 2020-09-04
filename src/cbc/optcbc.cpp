@@ -37,9 +37,9 @@ void collectCbcOption(
 
    const CbcOrClpParam& cbcopt(cbcopts[idx]);
 
-   GamsOptions::OPTTYPE opttype;
-   GamsOptions::OPTVAL defaultval, minval, maxval;
-   GamsOptions::ENUMVAL enumval;
+   GamsOption::OPTTYPE opttype;
+   GamsOption::OPTVAL defaultval, minval, maxval;
+   GamsOption::ENUMVAL enumval;
    std::string tmpstr;
    std::string longdescr;
 
@@ -53,14 +53,14 @@ void collectCbcOption(
    CbcOrClpParameterType cbcoptnum = cbcopt.type();
    if( cbcoptnum <= 100 )
    {
-      opttype = GamsOptions::OPTTYPE_REAL;
+      opttype = GamsOption::OPTTYPE_REAL;
       minval.realval = cbcopt.lowerDoubleValue();
       maxval.realval = cbcopt.upperDoubleValue();
       defaultval.realval = cbcopt.doubleParameter(cbcmodel);
    }
    else if( cbcoptnum <= 200 )
    {
-      opttype = GamsOptions::OPTTYPE_INTEGER;
+      opttype = GamsOption::OPTTYPE_INTEGER;
       minval.intval = cbcopt.lowerIntValue();
       maxval.intval = cbcopt.upperIntValue();
       defaultval.intval = cbcopt.intParameter(cbcmodel);
@@ -72,12 +72,12 @@ void collectCbcOption(
       if( kws.size() == 2 &&
          ((kws[0] == "on" && kws[1] == "off") || (kws[1] == "on" && kws[0] == "off")) )
       {
-         opttype = GamsOptions::OPTTYPE_BOOL;
+         opttype = GamsOption::OPTTYPE_BOOL;
          defaultval.boolval = cbcopt.currentOption() == "on";
       }
       else
       {
-         opttype = GamsOptions::OPTTYPE_STRING;
+         opttype = GamsOption::OPTTYPE_STRING;
 
          std::string def = cbcopt.currentOption();
          // remove '!' and '?' marker from default
@@ -92,12 +92,12 @@ void collectCbcOption(
             newend = std::remove(v.begin(), newend, '?');
             v = std::string(v.begin(), newend);
 
-            enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup(v.c_str())}, ""));
+            enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup(v.c_str())}, ""));
 
             if( v == "01first" )
-               enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("binaryfirst")}, "This is a deprecated setting. Please use 01first."));
+               enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("binaryfirst")}, "This is a deprecated setting. Please use 01first."));
             else if( v == "01last" )
-               enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("binarylast")}, "This is a deprecated setting. Please use 01last."));
+               enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("binarylast")}, "This is a deprecated setting. Please use 01last."));
          }
       }
    }
@@ -117,10 +117,10 @@ void collectCbcOption(
 
 static
 void add01(
-   GamsOptions::ENUMVAL& enumval)
+   GamsOption::ENUMVAL& enumval)
 {
-   enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("0")}, "Same as off. This is a deprecated setting."));
-   enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("1")}, "Same as on. This is a deprecated setting."));
+   enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("0")}, "Same as off. This is a deprecated setting."));
+   enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("1")}, "Same as on. This is a deprecated setting."));
 }
 
 int main(int argc, char** argv)
@@ -149,9 +149,9 @@ int main(int argc, char** argv)
    gmsopt.back().defaultdescr = "GAMS reslim";
    gmsopt.back().longdescr.clear();
 
-   GamsOptions::ENUMVAL clocktypes;
-   clocktypes.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("cpu")}, "CPU clock"));
-   clocktypes.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("wall")}, "Wall clock"));
+   GamsOption::ENUMVAL clocktypes;
+   clocktypes.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("cpu")}, "CPU clock"));
+   clocktypes.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("wall")}, "Wall clock"));
    gmsopt.collect("clocktype", "type of clock for time measurement", "",
       "wall", clocktypes, "", -1);
 
@@ -195,7 +195,7 @@ int main(int argc, char** argv)
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "crossover");
    // value "maybe" is only relevant for quadratic: remove value and mention in longdescr
-   for( GamsOptions::ENUMVAL::iterator e(gmsopt.back().enumval.begin()); e != gmsopt.back().enumval.end(); ++e )
+   for( GamsOption::ENUMVAL::iterator e(gmsopt.back().enumval.begin()); e != gmsopt.back().enumval.end(); ++e )
       if( strcmp(e->first.stringval, "maybe") == 0 )
       {
          gmsopt.back().enumval.erase(e);
@@ -206,20 +206,20 @@ int main(int argc, char** argv)
    add01(gmsopt.back().enumval);
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "dualPivot");
-   gmsopt.back().enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("auto")}, "Same as automatic. This is a deprecated setting."));
+   gmsopt.back().enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("auto")}, "Same as automatic. This is a deprecated setting."));
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "primalPivot");
-   gmsopt.back().enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("auto")}, "Same as automatic. This is a deprecated setting."));
+   gmsopt.back().enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("auto")}, "Same as automatic. This is a deprecated setting."));
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "psi");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "perturbation");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "scaling");
-   gmsopt.back().enumval.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("auto")}, "Same as automatic. This is a deprecated setting."));
+   gmsopt.back().enumval.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("auto")}, "Same as automatic. This is a deprecated setting."));
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "presolve");
-   for( GamsOptions::ENUMVAL::iterator e(gmsopt.back().enumval.begin()); e != gmsopt.back().enumval.end(); ++e )
+   for( GamsOption::ENUMVAL::iterator e(gmsopt.back().enumval.begin()); e != gmsopt.back().enumval.end(); ++e )
       if( strcmp(e->first.stringval, "file") == 0 )
       {
          gmsopt.back().enumval.erase(e);
@@ -243,10 +243,10 @@ int main(int argc, char** argv)
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_presolve", "preTolerance");
 
-   GamsOptions::ENUMVAL startalgs;
-   startalgs.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("primal")}, "Primal Simplex algorithm"));
-   startalgs.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("dual")}, "Dual Simplex algorithm"));
-   startalgs.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("barrier")}, "Primal-dual predictor-corrector algorithm"));
+   GamsOption::ENUMVAL startalgs;
+   startalgs.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("primal")}, "Primal Simplex algorithm"));
+   startalgs.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("dual")}, "Dual Simplex algorithm"));
+   startalgs.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("barrier")}, "Primal-dual predictor-corrector algorithm"));
    gmsopt.collect("startalg", "LP solver for root node",
       "Determines the algorithm to use for an LP or the initial LP relaxation if the problem is a MIP.",
       "dual", startalgs, "", -1);
@@ -276,9 +276,9 @@ int main(int argc, char** argv)
    gmsopt.back().minval.intval = 1;
    gmsopt.back().maxval.intval = 99;
 
-   GamsOptions::ENUMVAL parallelmodes;
-   parallelmodes.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("opportunistic")}, ""));
-   parallelmodes.push_back(GamsOptions::ENUMVAL::value_type({.stringval = strdup("deterministic")}, ""));
+   GamsOption::ENUMVAL parallelmodes;
+   parallelmodes.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("opportunistic")}, ""));
+   parallelmodes.push_back(GamsOption::ENUMVAL::value_type({.stringval = strdup("deterministic")}, ""));
    gmsopt.collect("parallelmode", "whether to run opportunistic or deterministic",
       "Determines whether a parallel MIP search (threads > 1) should be done in a deterministic (i.e., reproducible) way or in a possibly faster but not necessarily reproducible way",
       "deterministic", parallelmodes, "", -1);
