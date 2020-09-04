@@ -18,9 +18,9 @@ void GamsOptions::collect(
    std::string        shortdescr,
    std::string        longdescr,
    GamsOption::Type   type,
-   GamsOption::Value defaultval,
-   GamsOption::Value minval,
-   GamsOption::Value maxval,
+   GamsOption::Value  defaultval,
+   GamsOption::Value  minval,
+   GamsOption::Value  maxval,
    const GamsOption::EnumVals& enumval,
    const std::string& defaultdescr,
    int                refval
@@ -123,7 +123,9 @@ void GamsOptions::collect(
    }
 }
 
-void GamsOptions::write(bool shortdoc)
+void GamsOptions::write(
+   bool shortdoc
+   )
 {
    std::string filename;
 

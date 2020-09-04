@@ -75,10 +75,10 @@ public:
    std::string        longdescr;
    std::string        defaultdescr;
    Type               type;
-   Value             defaultval;
-   Value             minval;
-   Value             maxval;
-   EnumVals            enumval;
+   Value              defaultval;
+   Value              minval;
+   Value              maxval;
+   EnumVals           enumval;
    int                refval;
    std::set<std::string> synonyms;
 
@@ -89,10 +89,10 @@ public:
       const std::string& longdescr_,
       const std::string& defaultdescr_,
       Type               type_,
-      Value             defaultval_,
-      Value             minval_,
-      Value             maxval_,
-      const EnumVals&     enumval_,
+      Value              defaultval_,
+      Value              minval_,
+      Value              maxval_,
+      const EnumVals&    enumval_,
       int                refval_
    )
    : group(group_),
@@ -124,18 +124,26 @@ private:
    std::string           eolchars;
 
    static
-   std::string tolower(std::string s)
+   std::string tolower(
+      std::string s
+      )
    {
       std::transform(s.begin(), s.end(), s.begin(), ::tolower);
       return s;
    }
 
    static
-   void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+   void replaceAll(
+      std::string&       str,
+      const std::string& from,
+      const std::string& to
+   )
+   {
        if(from.empty())
            return;
        size_t start_pos = 0;
-       while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+       while((start_pos = str.find(from, start_pos)) != std::string::npos)
+       {
            str.replace(start_pos, from.length(), to);
            start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
        }
@@ -143,7 +151,9 @@ private:
 
 public:
    static
-   std::string makeValidMarkdownString(const std::string& s)
+   std::string makeValidMarkdownString(
+      const std::string& s
+   )
    {
       std::string r(s);
       replaceAll(r, "<=", "&le;");
@@ -247,9 +257,9 @@ public:
       std::string        shortdescr,
       std::string        longdescr,
       GamsOption::Type   type,
-      GamsOption::Value defaultval,
-      GamsOption::Value minval,
-      GamsOption::Value maxval,
+      GamsOption::Value  defaultval,
+      GamsOption::Value  minval,
+      GamsOption::Value  maxval,
       const GamsOption::EnumVals& enumval,
       const std::string& defaultdescr = std::string(),
       int                refval = -2
