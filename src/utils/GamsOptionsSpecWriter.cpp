@@ -13,7 +13,7 @@
 #include <iostream>
 #include <fstream>
 
-void GamsOptions::collect(
+GamsOption& GamsOptions::collect(
    const std::string& name,
    std::string        shortdescr,
    std::string        longdescr,
@@ -35,7 +35,8 @@ void GamsOptions::collect(
    if( name.length() > 63 )
    {
       std::cerr << "Skipping option " << name << " because its name is too long for stupid GAMS." << std::endl;
-      return;
+      // FIXME we have to return a GamsOption - let's hope noone tries to access it
+      return *new GamsOption(curgroup, name, shortdescr, longdescr, defaultdescr, type, defaultval, minval, maxval, enumval, refval);
    }
 
    if( shortdescr.length() >= 255 )
@@ -121,6 +122,8 @@ void GamsOptions::collect(
             std::cerr << "Could not cut down description of enum value of parameter " << name << ": " << e->second << std::endl;
       }
    }
+
+   return options.back();
 }
 
 void GamsOptions::write(

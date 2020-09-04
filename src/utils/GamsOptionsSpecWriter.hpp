@@ -252,7 +252,7 @@ public:
       eolchars = eolchs;
    }
 
-   void collect(
+   GamsOption& collect(
       const std::string& name,
       std::string        shortdescr,
       std::string        longdescr,
@@ -266,7 +266,7 @@ public:
    );
 
    /** add real-type option */
-   void collect(
+   GamsOption& collect(
       const std::string& name,
       const std::string& shortdescr,
       const std::string& longdescr,
@@ -286,7 +286,7 @@ public:
       GamsOption::Value maxval_;
       maxval_.realval = maxval;
 
-      collect(name, shortdescr, longdescr,
+      return collect(name, shortdescr, longdescr,
          GamsOption::Type::REAL,
          defaultval_,
          minval_, maxval_,
@@ -295,7 +295,7 @@ public:
    }
 
    /** add integer-type option */
-   void collect(
+   GamsOption& collect(
       const std::string& name,
       const std::string& shortdescr,
       const std::string& longdescr,
@@ -315,7 +315,7 @@ public:
       GamsOption::Value maxval_;
       maxval_.intval = maxval;
 
-      collect(name, shortdescr, longdescr,
+      return collect(name, shortdescr, longdescr,
          GamsOption::Type::INTEGER,
          defaultval_,
          minval_, maxval_,
@@ -324,7 +324,7 @@ public:
    }
 
    /** add enumerated integer-type option */
-   void collect(
+   GamsOption& collect(
       const std::string& name,
       const std::string& shortdescr,
       const std::string& longdescr,
@@ -347,7 +347,7 @@ public:
       GamsOption::Value defaultval_;
       defaultval_.intval = defaultval;
 
-      collect(name, shortdescr, longdescr,
+      return collect(name, shortdescr, longdescr,
          GamsOption::Type::INTEGER,
          defaultval_,
          minval, maxval,
@@ -355,7 +355,7 @@ public:
    }
 
    /** add bool-type option */
-   void collect(
+   GamsOption& collect(
       const std::string& name,
       const std::string& shortdescr,
       const std::string& longdescr,
@@ -367,7 +367,7 @@ public:
       GamsOption::Value defaultval_;
       defaultval_.boolval = defaultval;
 
-      collect(name, shortdescr, longdescr,
+      return collect(name, shortdescr, longdescr,
          GamsOption::Type::BOOL,
          defaultval_,
          GamsOption::Value(), GamsOption::Value(),
@@ -376,7 +376,7 @@ public:
    }
 
    /** add string-type option */
-   void collect(
+   GamsOption& collect(
       const std::string& name,
       const std::string& shortdescr,
       const std::string& longdescr,
@@ -387,7 +387,7 @@ public:
       GamsOption::Value defaultval_;
       defaultval_.stringval = strdup(defaultval.c_str());
 
-      collect(name, shortdescr, longdescr,
+      return collect(name, shortdescr, longdescr,
          GamsOption::Type::STRING,
          defaultval_,
          GamsOption::Value(), GamsOption::Value(),
@@ -396,7 +396,7 @@ public:
    }
 
    /** add enumerated string-type option */
-   void collect(
+   GamsOption& collect(
       const std::string& name,
       const std::string& shortdescr,
       const std::string& longdescr,
@@ -409,18 +409,11 @@ public:
       GamsOption::Value defaultval_;
       defaultval_.stringval = strdup(defaultval.c_str());
 
-      collect(name, shortdescr, longdescr,
+      return collect(name, shortdescr, longdescr,
          GamsOption::Type::STRING,
          defaultval_,
          GamsOption::Value(), GamsOption::Value(),
          enumval, defaultdescr, refval);
-   }
-
-   /// get last added option
-   GamsOption& back()
-   {
-      assert(!options.empty());
-      return options.back();
    }
 
    /// add element to "values" set - for hacks
