@@ -1428,7 +1428,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
       {
          case gmovar_SC:
             lb = 0.0;
-            /*lint -fallthrough*/
+            /* no break */
          case gmovar_X:
          case gmovar_S1:
          case gmovar_S2:
@@ -1439,7 +1439,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
             break;
          case gmovar_SI:
             lb = 0.0;
-            /*lint -fallthrough*/
+            /* no break */
          case gmovar_I:
             vartype = SCIP_VARTYPE_INTEGER;
             break;

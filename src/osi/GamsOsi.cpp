@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
+#include <cassert>
 
 #include "gclgms.h"
 #include "gmomcc.h"
