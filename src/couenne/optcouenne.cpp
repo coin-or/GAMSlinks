@@ -288,5 +288,6 @@ int main(int argc, char** argv)
       }
    }
 
+   gmsopt.writeMarkdown();
    gmsopt.writeGMS();
 }

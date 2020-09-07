@@ -417,6 +417,9 @@ public:
 
    /// write options in .gms + .txt for GAMS mkopt scripts
    void writeGMS(bool shortdoc = false);
+
+   /// write options in Markdown
+   void writeMarkdown(void);
 };
 
 #endif // GAMSOPTIONSSPECWRITER_HPP_

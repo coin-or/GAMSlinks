@@ -320,3 +320,158 @@ void GamsOptions::writeGMS(
       remove(filename.c_str());
    }
 }
+
+void GamsOptions::writeMarkdown()
+{
+   std::string filename = "opt" + solver + ".md";
+   std::cout << "Writing " << filename << std::endl;
+   std::ofstream f(filename.c_str());
+
+   f << "# " << solver << " options" << std::endl << std::endl;
+
+   for( auto& group : groups )
+   {
+      f << "## " << (group.second.empty() ? group.first : group.second) << std::endl << std::endl;
+
+      for( auto& opt : options )
+      {
+         if( opt.group != group.first )
+            continue;
+
+         f << "- **" << opt.name << "**: " << makeValidMarkdownString(opt.shortdescr) << std::endl;
+         if( !opt.longdescr.empty() )
+            f << std::endl << "    " << makeValidMarkdownString(opt.longdescr) << std::endl;
+         f << std::endl;
+         f << "    Type: ";
+         switch( opt.type )
+         {
+            case GamsOption::Type::BOOL :
+            {
+               f << "boolean";
+               break;
+            }
+            case GamsOption::Type::INTEGER :
+            {
+               f << "integer";
+               break;
+            }
+            case GamsOption::Type::REAL :
+            {
+               f << "real";
+               break;
+            }
+            case GamsOption::Type::CHAR :
+            {
+               f << "character";
+               break;
+            }
+            case GamsOption::Type::STRING :
+            {
+               f << "string";
+               break;
+            }
+         }
+         f << "  " << std::endl;
+         if( opt.enumval.empty() )
+         {
+            switch( opt.type )
+            {
+               case GamsOption::Type::BOOL :
+               {
+                  if( opt.defaultdescr.empty() )
+                     f << "    Default: " << opt.defaultval.boolval << "  " << std::endl;
+                  break;
+               }
+               case GamsOption::Type::INTEGER :
+               {
+                  // TODO handle INT_MAX
+                  f << "    Range: " << opt.minval.intval << "..." << opt.maxval.intval << "  " << std::endl;
+                  if( opt.defaultdescr.empty() )
+                     f << "    Default: " << opt.defaultval.intval << "  " << std::endl;
+                  break;
+               }
+               case GamsOption::Type::REAL :
+               {
+                  // TODO handle DOUBLE_MAX
+                  f << "    Range: " << opt.minval.realval << "..." << opt.maxval.realval << "  " << std::endl;
+                  if( opt.defaultdescr.empty() )
+                     f << "    Default: " << opt.defaultval.realval << "  " << std::endl;
+                  break;
+               }
+               case GamsOption::Type::CHAR :
+               {
+                  if( opt.defaultdescr.empty() )
+                     f << "    Default: " << opt.defaultval.charval << "  " << std::endl;
+                  break;
+               }
+               case GamsOption::Type::STRING :
+               {
+                  if( opt.defaultdescr.empty() )
+                  {
+                     f << "    Default: ";
+                     if( opt.defaultval.stringval[0] != '\0' )
+                        f << makeValidMarkdownString(opt.defaultval.stringval);
+                     else
+                        f << "_empty_";
+                     f << "  " << std::endl;
+                  }
+                  break;
+               }
+            }
+         }
+         else
+         {
+            f << "    Possible values:" << std::endl << std::endl;
+            for( auto& e : opt.enumval )
+            {
+               bool isdefault;
+               f << "    - ";
+               switch( opt.type )
+               {
+                  case GamsOption::Type::BOOL :
+                     f << e.first.boolval;
+                     isdefault = e.first.boolval == opt.defaultval.boolval;
+                     break;
+                  case GamsOption::Type::INTEGER :
+                     f << e.first.intval;
+                     isdefault = e.first.intval == opt.defaultval.intval;
+                     break;
+                  case GamsOption::Type::REAL :
+                     f << e.first.realval;
+                     isdefault = e.first.realval == opt.defaultval.realval;
+                     break;
+                  case GamsOption::Type::CHAR :
+                     f << e.first.charval;
+                     isdefault = e.first.charval == opt.defaultval.charval;
+                     break;
+                  case GamsOption::Type::STRING :
+                     f << makeValidMarkdownString(e.first.stringval);
+                     isdefault = strcmp(e.first.stringval, opt.defaultval.stringval) == 0;
+                     break;
+               }
+               if( isdefault && opt.defaultdescr.empty() )
+                  f << " (default)";
+               if( !e.second.empty() )
+                  f << ": " << makeValidMarkdownString(e.second);
+               f << std::endl;
+            }
+         }
+         if( !opt.defaultdescr.empty() )
+         {
+            f << "    Default: " << opt.defaultdescr << "  " << std::endl;
+         }
+         if( !opt.synonyms.empty() )
+         {
+            f << "    Synonyms:";
+            for( auto& syn : opt.synonyms )
+            {
+               f << ' ' << syn;
+            }
+            f << std::endl;
+         }
+         f << std::endl;
+      }
+   }
+
+   f.close();
+}
