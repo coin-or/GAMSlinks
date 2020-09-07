@@ -36,7 +36,7 @@ GamsOption& GamsOptions::collect(
    {
       std::cerr << "Skipping option " << name << " because its name is too long for stupid GAMS." << std::endl;
       // FIXME we have to return a GamsOption - let's hope noone tries to access it
-      return *new GamsOption(curgroup, name, shortdescr, longdescr, defaultdescr, type, defaultval, minval, maxval, enumval, refval);
+      return *new GamsOption(name, shortdescr, longdescr, type, defaultval, minval, maxval, enumval, defaultdescr, refval);
    }
 
    if( shortdescr.length() >= 255 )
@@ -55,7 +55,8 @@ GamsOption& GamsOptions::collect(
       longdescr.clear();
    }
 
-   options.push_back(GamsOption(curgroup, name, shortdescr, longdescr, defaultdescr, type, defaultval, minval, maxval, enumval, refval));
+   options.push_back(GamsOption(name, shortdescr, longdescr, type, defaultval, minval, maxval, enumval, defaultdescr, refval));
+   options.back().group = curgroup;
 
    /* replace all double quotes by single quotes */
    std::replace(options.back().shortdescr.begin(), options.back().shortdescr.end(), '"', '\'');

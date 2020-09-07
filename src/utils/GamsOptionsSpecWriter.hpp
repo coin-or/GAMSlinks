@@ -42,6 +42,66 @@ public:
       const char*           stringval;
    };
 
+   static
+   Value makeValue(
+      bool val
+      )
+   {
+      Value v;
+      v.boolval = val;
+      return v;
+   }
+
+   static
+   Value makeValue(
+      int val
+      )
+   {
+      Value v;
+      v.intval = val;
+      return v;
+   }
+
+   static
+   Value makeValue(
+      double val
+      )
+   {
+      Value v;
+      v.realval = val;
+      return v;
+   }
+
+   static
+   Value makeValue(
+      char val
+      )
+   {
+      Value v;
+      v.charval = val;
+      return v;
+   }
+
+   static
+   Value makeValue(
+      const char* val
+      )
+   {
+      Value v;
+      v.stringval = val;
+      return v;
+   }
+
+   static
+   Value makeValue(
+      const std::string& val
+      )
+   {
+      Value v;
+      v.stringval = strdup(val.c_str());
+      return v;
+   }
+
    class EnumVals : public std::vector<std::pair<GamsOption::Value, std::string> >
    {
    public:
@@ -82,21 +142,20 @@ public:
    int                refval;
    std::set<std::string> synonyms;
 
+   /** constructor for general option */
    GamsOption(
-      const std::string& group_,
       const std::string& name_,
       const std::string& shortdescr_,
       const std::string& longdescr_,
-      const std::string& defaultdescr_,
       Type               type_,
       Value              defaultval_,
       Value              minval_,
       Value              maxval_,
       const EnumVals&    enumval_,
-      int                refval_
+      const std::string& defaultdescr_ = std::string(),
+      int                refval_ = -2
    )
-   : group(group_),
-     name(name_),
+   : name(name_),
      shortdescr(shortdescr_),
      longdescr(longdescr_),
      defaultdescr(defaultdescr_),
@@ -107,6 +166,115 @@ public:
      enumval(enumval_),
      refval(refval_)
    { }
+
+   /** constructor for real-type option */
+   GamsOption(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      double             defaultval,
+      double             minval,
+      double             maxval,
+      const std::string& defaultdescr = std::string(),
+      int                refval = -2
+   )
+   : GamsOption(name, shortdescr, longdescr,
+      GamsOption::Type::REAL,
+      makeValue(defaultval),  makeValue(minval),  makeValue(maxval),
+      GamsOption::EnumVals(),
+      defaultdescr, refval)
+   { }
+
+   /** constructor for integer-type option */
+   GamsOption(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      int                defaultval,
+      int                minval,
+      int                maxval,
+      const std::string& defaultdescr = std::string(),
+      int                refval = -2
+   )
+   : GamsOption(name, shortdescr, longdescr,
+      GamsOption::Type::INTEGER,
+      makeValue(defaultval), makeValue(minval), makeValue(maxval),
+      GamsOption::EnumVals(),
+      defaultdescr, refval)
+   { }
+
+   /** constructor for enumerated integer-type option */
+   GamsOption(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      int                defaultval,
+      const GamsOption::EnumVals& enumval,
+      const std::string& defaultdescr = std::string(),
+      int                refval = -2
+   )
+   : GamsOption(name, shortdescr, longdescr,
+      GamsOption::Type::INTEGER,
+      makeValue(defaultval), makeValue(-INT_MAX), makeValue(INT_MAX),
+      enumval, defaultdescr, refval)
+   {
+      int min, max;
+      for( GamsOption::EnumVals::const_iterator e(enumval.begin()); e != enumval.end(); ++e )
+      {
+         min = std::min(e->first.intval, min);
+         max = std::max(e->first.intval, max);
+      }
+      minval.intval = min;
+      maxval.intval = max;
+   }
+
+   /** contructor for bool-type option */
+   GamsOption(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      bool               defaultval,
+      const std::string& defaultdescr = std::string(),
+      int                refval = -2
+   )
+   : GamsOption(name, shortdescr, longdescr,
+      GamsOption::Type::BOOL,
+      makeValue(defaultval), GamsOption::Value(), GamsOption::Value(),
+      GamsOption::EnumVals(),
+      defaultdescr, refval)
+   { }
+
+   /** constructor for string-type option */
+   GamsOption(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      const std::string& defaultval,
+      int                refval = -2
+   )
+   : GamsOption(name, shortdescr, longdescr,
+      GamsOption::Type::STRING,
+      makeValue(defaultval), GamsOption::Value(), GamsOption::Value(),
+      GamsOption::EnumVals(),
+      std::string(), refval)
+   { }
+
+   /** constructor for enumerated string-type option */
+   GamsOption(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      const std::string& defaultval,
+      const GamsOption::EnumVals& enumval,
+      const std::string& defaultdescr = std::string(),
+      int                refval = -2
+   )
+   : GamsOption(name, shortdescr, longdescr,
+         GamsOption::Type::STRING,
+         makeValue(defaultval), GamsOption::Value(), GamsOption::Value(),
+         enumval, defaultdescr, refval)
+   { }
+
 };
 
 
