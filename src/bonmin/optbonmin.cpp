@@ -398,5 +398,5 @@ int main(int argc, char** argv)
       }
    }
 
-   gmsopt.write();
+   gmsopt.writeGMS();
 }

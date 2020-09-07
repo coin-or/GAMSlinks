@@ -428,7 +428,8 @@ public:
       return options.back();
    }
 
-   void write(bool shortdoc = false);
+   /// write options in .gms + .txt for GAMS mkopt scripts
+   void writeGMS(bool shortdoc = false);
 };
 
 #endif // GAMSOPTIONSSPECWRITER_HPP_

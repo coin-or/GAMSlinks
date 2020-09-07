@@ -329,7 +329,7 @@ int main(int argc, char** argv)
       }
    }
 
-   gmsopt.write(true);
+   gmsopt.writeGMS(true);
 
    /* branching rules */
    {

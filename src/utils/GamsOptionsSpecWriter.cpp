@@ -13,7 +13,7 @@
 #include <iostream>
 #include <fstream>
 
-void GamsOptions::write(
+void GamsOptions::writeGMS(
    bool shortdoc
    )
 {

@@ -119,5 +119,5 @@ int main(int argc, char** argv)
          GamsOption::Type::REAL, defaultval, minval, maxval, enumval, defaultdescr);
    }
 
-   gmsopt.write(true);
+   gmsopt.writeGMS(true);
 }
