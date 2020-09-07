@@ -335,8 +335,9 @@ int main(int argc, char** argv)
    {
       std::ofstream outfile("branchrules.md");
       std::cout << "Writing branchrules.md" << std::endl;
+      outfile << std::endl;
       outfile << "| branching rule | priority | maxdepth | maxbounddist | description |" << std::endl;
-      outfile << "|:------------- -|---------:|---------:|-------------:|:------------|" << std::endl;
+      outfile << "|:---------------|---------:|---------:|-------------:|:------------|" << std::endl;
 
       int nbranchrules = SCIPgetNBranchrules(scip);
       SCIP_BRANCHRULE** sorted;
@@ -364,6 +365,7 @@ int main(int argc, char** argv)
 
       std::ofstream outfile("conflicthdlrs.md");
       std::cout << "Writing conflicthdlrs.md" << std::endl;
+      outfile << std::endl;
       outfile << "| conflict handler | priority | description |" << std::endl;
       outfile << "|:-----------------|---------:|:------------|" << std::endl;
 
@@ -381,6 +383,7 @@ int main(int argc, char** argv)
    {
       std::ofstream outfile("conshdlrs.md");
       std::cout << "Writing conshdlrs.md" << std::endl;
+      outfile << std::endl;
       outfile << "| constraint handler | checkprio | enfoprio | sepaprio | sepafreq | propfreq | eagerfreq | presolvetimings | description |" << std::endl;
       outfile << "|:-------------------|----------:|---------:|---------:|---------:|---------:|----------:|:---------------:|:------------|" << std::endl;
       SCIP_CONSHDLR** conshdlrs = SCIPgetConshdlrs(scip);
@@ -442,6 +445,7 @@ int main(int argc, char** argv)
 
       std::ofstream outfile("disps.md");
       std::cout << "Writing disps.md" << std::endl;
+      outfile << std::endl;
       outfile << "| display column | header | position | width | priority | status | description |" << std::endl;
       outfile << "|:---------------|:-------|---------:|------:|---------:|-------:|:------------|" << std::endl;
       for( int i = 0; i < ndisps; ++i )
@@ -491,6 +495,7 @@ int main(int argc, char** argv)
    {
       std::ofstream outfile("heurs.md");
       std::cout << "Writing heurs.md" << std::endl;
+      outfile << std::endl;
       outfile << "| primal heuristic | type | priority | freq | freqoffset | description |" << std::endl;
       outfile << "|:-----------------|:----:|---------:|-----:|-----------:|:------------|" << std::endl;
 
@@ -519,6 +524,7 @@ int main(int argc, char** argv)
 
       std::ofstream outfile("nodesels.md");
       std::cout << "Writing nodesels.md" << std::endl;
+      outfile << std::endl;
       outfile << "| node selector | standard priority | memsave priority | description |" << std::endl;
       outfile << "|:--------------|------------------:|-----------------:|:------------|" << std::endl;
       for( i = 0; i < nnodesels; ++i )
@@ -542,6 +548,7 @@ int main(int argc, char** argv)
 
       std::ofstream outfile("presols.md");
       std::cout << "Writing presols.md" << std::endl;
+      outfile << std::endl;
       outfile << "| presolver | priority | timing | maxrounds | description |" << std::endl;
       outfile << "|:----------|---------:|:------:|----------:|:------------|" << std::endl;
       for( i = 0; i < npresols; ++i )
@@ -577,6 +584,7 @@ int main(int argc, char** argv)
 
       std::ofstream outfile("props.md");
       std::cout << "Writing props.md" << std::endl;
+      outfile << std::endl;
       outfile << "| propagator | propprio | freq | presolveprio | presolvetiming | description |" << std::endl;
       outfile << "|:-----------|---------:|-----:|-------------:|:--------------:|:------------|" << std::endl;
       for( i = 0; i < nprops; ++i )
@@ -613,6 +621,7 @@ int main(int argc, char** argv)
 
       std::ofstream outfile("sepas.md");
       std::cout << "Writing sepas.md" << std::endl;
+      outfile << std::endl;
       outfile << "| separator | priority | freq | bounddist | description |" << std::endl;
       outfile << "|:----------|---------:|-----:|----------:|:------------|" << std::endl;
       for( i = 0; i < nsepas; ++i )
