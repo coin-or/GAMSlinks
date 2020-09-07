@@ -142,7 +142,7 @@ public:
    int                refval;
    std::set<std::string> synonyms;
 
-   /** constructor for general option */
+   /// constructor for general option
    GamsOption(
       const std::string& name_,
       const std::string& shortdescr_,
@@ -167,7 +167,7 @@ public:
      refval(refval_)
    { }
 
-   /** constructor for real-type option */
+   /// constructor for real-type option
    GamsOption(
       const std::string& name,
       const std::string& shortdescr,
@@ -185,7 +185,7 @@ public:
       defaultdescr, refval)
    { }
 
-   /** constructor for integer-type option */
+   /// constructor for integer-type option
    GamsOption(
       const std::string& name,
       const std::string& shortdescr,
@@ -203,7 +203,7 @@ public:
       defaultdescr, refval)
    { }
 
-   /** constructor for enumerated integer-type option */
+   /// constructor for enumerated integer-type option
    GamsOption(
       const std::string& name,
       const std::string& shortdescr,
@@ -228,7 +228,7 @@ public:
       maxval.intval = max;
    }
 
-   /** contructor for bool-type option */
+   /// constructor for bool-type option
    GamsOption(
       const std::string& name,
       const std::string& shortdescr,
@@ -244,7 +244,7 @@ public:
       defaultdescr, refval)
    { }
 
-   /** constructor for string-type option */
+   /// constructor for string-type option
    GamsOption(
       const std::string& name,
       const std::string& shortdescr,
@@ -259,7 +259,7 @@ public:
       std::string(), refval)
    { }
 
-   /** constructor for enumerated string-type option */
+   /// constructor for enumerated string-type option
    GamsOption(
       const std::string& name,
       const std::string& shortdescr,
@@ -418,168 +418,14 @@ public:
       eolchars = eolchs;
    }
 
+   /// append option to options list, assign it to current group
+   template<class... Args>
    GamsOption& collect(
-      const std::string& name,
-      std::string        shortdescr,
-      std::string        longdescr,
-      GamsOption::Type   type,
-      GamsOption::Value  defaultval,
-      GamsOption::Value  minval,
-      GamsOption::Value  maxval,
-      const GamsOption::EnumVals& enumval,
-      const std::string& defaultdescr = std::string(),
-      int                refval = -2
-   );
-
-   /** add real-type option */
-   GamsOption& collect(
-      const std::string& name,
-      const std::string& shortdescr,
-      const std::string& longdescr,
-      double             defaultval,
-      double             minval,
-      double             maxval,
-      const std::string& defaultdescr = std::string(),
-      int                refval = -2
-   )
+      Args&&... args)
    {
-      GamsOption::Value defaultval_;
-      defaultval_.realval = defaultval;
-
-      GamsOption::Value minval_;
-      minval_.realval = minval;
-
-      GamsOption::Value maxval_;
-      maxval_.realval = maxval;
-
-      return collect(name, shortdescr, longdescr,
-         GamsOption::Type::REAL,
-         defaultval_,
-         minval_, maxval_,
-         GamsOption::EnumVals(),
-         defaultdescr, refval);
-   }
-
-   /** add integer-type option */
-   GamsOption& collect(
-      const std::string& name,
-      const std::string& shortdescr,
-      const std::string& longdescr,
-      int                defaultval,
-      int                minval,
-      int                maxval,
-      const std::string& defaultdescr = std::string(),
-      int                refval = -2
-   )
-   {
-      GamsOption::Value defaultval_;
-      defaultval_.intval = defaultval;
-
-      GamsOption::Value minval_;
-      minval_.intval = minval;
-
-      GamsOption::Value maxval_;
-      maxval_.intval = maxval;
-
-      return collect(name, shortdescr, longdescr,
-         GamsOption::Type::INTEGER,
-         defaultval_,
-         minval_, maxval_,
-         GamsOption::EnumVals(),
-         defaultdescr, refval);
-   }
-
-   /** add enumerated integer-type option */
-   GamsOption& collect(
-      const std::string& name,
-      const std::string& shortdescr,
-      const std::string& longdescr,
-      int                defaultval,
-      const GamsOption::EnumVals& enumval,
-      const std::string& defaultdescr = std::string(),
-      int                refval = -2
-   )
-   {
-      GamsOption::Value minval;
-      GamsOption::Value maxval;
-      minval.intval =  INT_MAX;
-      maxval.intval = -INT_MAX;
-      for( GamsOption::EnumVals::const_iterator e(enumval.begin()); e != enumval.end(); ++e )
-      {
-         minval.intval = std::min(e->first.intval, minval.intval);
-         maxval.intval = std::max(e->first.intval, maxval.intval);
-      }
-
-      GamsOption::Value defaultval_;
-      defaultval_.intval = defaultval;
-
-      return collect(name, shortdescr, longdescr,
-         GamsOption::Type::INTEGER,
-         defaultval_,
-         minval, maxval,
-         enumval, defaultdescr, refval);
-   }
-
-   /** add bool-type option */
-   GamsOption& collect(
-      const std::string& name,
-      const std::string& shortdescr,
-      const std::string& longdescr,
-      bool               defaultval,
-      const std::string& defaultdescr = std::string(),
-      int                refval = -2
-   )
-   {
-      GamsOption::Value defaultval_;
-      defaultval_.boolval = defaultval;
-
-      return collect(name, shortdescr, longdescr,
-         GamsOption::Type::BOOL,
-         defaultval_,
-         GamsOption::Value(), GamsOption::Value(),
-         GamsOption::EnumVals(),
-         defaultdescr, refval);
-   }
-
-   /** add string-type option */
-   GamsOption& collect(
-      const std::string& name,
-      const std::string& shortdescr,
-      const std::string& longdescr,
-      const std::string& defaultval,
-      int                refval = -2
-   )
-   {
-      GamsOption::Value defaultval_;
-      defaultval_.stringval = strdup(defaultval.c_str());
-
-      return collect(name, shortdescr, longdescr,
-         GamsOption::Type::STRING,
-         defaultval_,
-         GamsOption::Value(), GamsOption::Value(),
-         GamsOption::EnumVals(),
-         std::string(), refval);
-   }
-
-   /** add enumerated string-type option */
-   GamsOption& collect(
-      const std::string& name,
-      const std::string& shortdescr,
-      const std::string& longdescr,
-      const std::string& defaultval,
-      const GamsOption::EnumVals& enumval,
-      const std::string& defaultdescr = std::string(),
-      int                refval = -2
-   )
-   {
-      GamsOption::Value defaultval_;
-      defaultval_.stringval = strdup(defaultval.c_str());
-
-      return collect(name, shortdescr, longdescr,
-         GamsOption::Type::STRING,
-         defaultval_,
-         GamsOption::Value(), GamsOption::Value(),
-         enumval, defaultdescr, refval);
+      options.emplace_back(std::forward<Args>(args)...);
+      options.back().group = curgroup;
+      return options.back();
    }
 
    void write(bool shortdoc = false);

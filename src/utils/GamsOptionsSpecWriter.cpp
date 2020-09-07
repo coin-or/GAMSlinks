@@ -13,25 +13,6 @@
 #include <iostream>
 #include <fstream>
 
-GamsOption& GamsOptions::collect(
-   const std::string& name,
-   std::string        shortdescr,
-   std::string        longdescr,
-   GamsOption::Type   type,
-   GamsOption::Value  defaultval,
-   GamsOption::Value  minval,
-   GamsOption::Value  maxval,
-   const GamsOption::EnumVals& enumval,
-   const std::string& defaultdescr,
-   int                refval
-)
-{
-   options.push_back(GamsOption(name, shortdescr, longdescr, type, defaultval, minval, maxval, enumval, defaultdescr, refval));
-   options.back().group = curgroup;
-
-   return options.back();
-}
-
 void GamsOptions::write(
    bool shortdoc
    )
