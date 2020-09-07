@@ -283,7 +283,6 @@ class GamsOptions
 private:
    std::list<GamsOption> options;
    std::map<std::string, std::string> groups;
-   std::set<std::string> values;
 
    std::string           solver;
    std::string           curgroup;
@@ -385,8 +384,7 @@ public:
    GamsOptions(
       const std::string& solver_
       )
-   : values(),
-     solver(solver_),
+   : solver(solver_),
      separator(" ")
    { }
 
@@ -582,14 +580,6 @@ public:
          defaultval_,
          GamsOption::Value(), GamsOption::Value(),
          enumval, defaultdescr, refval);
-   }
-
-   /// add element to "values" set - for hacks
-   void addvalue(
-      const std::string& v
-      )
-   {
-      values.insert(v);
    }
 
    void write(bool shortdoc = false);

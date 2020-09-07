@@ -26,103 +26,8 @@ GamsOption& GamsOptions::collect(
    int                refval
 )
 {
-   /* ignore options with number in beginning, because the GAMS options object cannot handle them so far */
-   //      if( isdigit(name[0]) )
-   //      {
-   //         std::cerr << "Warning: Ignoring " << solver << " option " << name << " for GAMS options file." << std::endl;
-   //         return;
-   //      }
-   if( name.length() > 63 )
-   {
-      std::cerr << "Skipping option " << name << " because its name is too long for stupid GAMS." << std::endl;
-      // FIXME we have to return a GamsOption - let's hope noone tries to access it
-      return *new GamsOption(name, shortdescr, longdescr, type, defaultval, minval, maxval, enumval, defaultdescr, refval);
-   }
-
-   if( shortdescr.length() >= 255 )
-   {
-      std::cerr << "Short description of option " << name << " too long for stupid GAMS. Moving to long description." << std::endl;
-      if( !longdescr.empty() )
-         longdescr = shortdescr + " " + longdescr;
-      else
-         longdescr = shortdescr;
-      shortdescr.clear();
-   }
-
-   if( name.find(".") != std::string::npos && !longdescr.empty() )
-   {
-      std::cerr << "Cannot have long description because option " << name << " has a dot in the name and GAMS is stupid. Skipping long description." << std::endl;
-      longdescr.clear();
-   }
-
    options.push_back(GamsOption(name, shortdescr, longdescr, type, defaultval, minval, maxval, enumval, defaultdescr, refval));
    options.back().group = curgroup;
-
-   /* replace all double quotes by single quotes */
-   std::replace(options.back().shortdescr.begin(), options.back().shortdescr.end(), '"', '\'');
-
-   switch( type )
-   {
-      case GamsOption::Type::BOOL:
-      case GamsOption::Type::INTEGER:
-      case GamsOption::Type::REAL:
-         break;
-
-      case GamsOption::Type::CHAR:
-      {
-         std::string str;
-         str.push_back(defaultval.charval);
-         values.insert(tolower(str));
-         break;
-      }
-
-      case GamsOption::Type::STRING:
-      {
-         if( defaultval.stringval[0] != '\0' )
-            values.insert(tolower(defaultval.stringval));
-         break;
-      }
-   }
-
-   /* collect enum values for values
-    * update enum description
-    */
-   for( GamsOption::EnumVals::iterator e(options.back().enumval.begin()); e != options.back().enumval.end(); ++e )
-   {
-      switch( type )
-      {
-         case GamsOption::Type::BOOL:
-            values.insert(std::to_string(e->first.boolval));
-            break;
-
-         case GamsOption::Type::INTEGER:
-            values.insert(std::to_string(e->first.intval));
-            break;
-
-         case GamsOption::Type::REAL:
-            values.insert(std::to_string(e->first.realval));
-            break;
-
-         case GamsOption::Type::CHAR:
-            values.insert(tolower(std::to_string(e->first.charval)));
-            break;
-
-         case GamsOption::Type::STRING:
-            values.insert(tolower(e->first.stringval));
-            break;
-      }
-
-      /* replace all double quotes by single quotes */
-      std::replace(e->second.begin(), e->second.end(), '"', '\'');
-      if( e->second.length() >= 255 )
-      {
-         size_t pos = e->second.rfind('.');
-         if( pos < std::string::npos )
-            e->second.erase(pos+1, e->second.length());
-         else
-            std::cerr << "Could not cut down description of enum value of parameter " << name << ": " << e->second << std::endl;
-      }
-   }
 
    return options.back();
 }
@@ -131,9 +36,110 @@ void GamsOptions::write(
    bool shortdoc
    )
 {
-   std::string filename;
+   // process or sort out options for GAMS (TODO do this on a copy of options?)
+   // collect values
+   std::set<std::string> values;
+   for( std::list<GamsOption>::iterator o(options.begin()); o != options.end(); )
+   {
+      /* ignore options with number in beginning, because the GAMS options object cannot handle them so far */
+      //      if( isdigit(name[0]) )
+      //      {
+      //         std::cerr << "Warning: Ignoring " << solver << " option " << name << " for GAMS options file." << std::endl;
+      //         return;
+      //      }
+      if( o->name.length() > 63 )
+      {
+         std::cerr << "Skip writing option " << o->name << " because its name is too long for stupid GAMS." << std::endl;
+         o = options.erase(o);
+         continue;
+      }
 
-   filename = "opt" + solver + ".gms";
+      if( o->shortdescr.length() >= 255 )
+      {
+         std::cerr << "Short description of option " << o->name << " too long for stupid GAMS. Moving to long description." << std::endl;
+         if( !o->longdescr.empty() )
+            o->longdescr = o->shortdescr + " " + o->longdescr;
+         else
+            o->longdescr = o->shortdescr;
+         o->shortdescr.clear();
+      }
+
+      if( o->name.find(".") != std::string::npos && !o->longdescr.empty() )
+      {
+         std::cerr << "Cannot have long description because option " << o->name << " has a dot in the name and GAMS is stupid. Skipping long description." << std::endl;
+         o->longdescr.clear();
+      }
+
+      /* replace all double quotes by single quotes */
+      std::replace(o->shortdescr.begin(), o->shortdescr.end(), '"', '\'');
+
+      switch( o->type )
+      {
+         case GamsOption::Type::BOOL:
+         case GamsOption::Type::INTEGER:
+         case GamsOption::Type::REAL:
+            break;
+
+         case GamsOption::Type::CHAR:
+         {
+            std::string str;
+            str.push_back(o->defaultval.charval);
+            values.insert(tolower(str));
+            break;
+         }
+
+         case GamsOption::Type::STRING:
+         {
+            if( o->defaultval.stringval[0] != '\0' )
+               values.insert(tolower(o->defaultval.stringval));
+            break;
+         }
+      }
+
+      /* collect enum values for values
+       * update enum description
+       */
+      for( auto& e : o->enumval )
+      {
+         switch( o->type )
+         {
+            case GamsOption::Type::BOOL:
+               values.insert(std::to_string(e.first.boolval));
+               break;
+
+            case GamsOption::Type::INTEGER:
+               values.insert(std::to_string(e.first.intval));
+               break;
+
+            case GamsOption::Type::REAL:
+               values.insert(std::to_string(e.first.realval));
+               break;
+
+            case GamsOption::Type::CHAR:
+               values.insert(tolower(std::to_string(e.first.charval)));
+               break;
+
+            case GamsOption::Type::STRING:
+               values.insert(tolower(e.first.stringval));
+               break;
+         }
+
+         /* replace all double quotes by single quotes */
+         std::replace(e.second.begin(), e.second.end(), '"', '\'');
+         if( e.second.length() >= 255 )
+         {
+            size_t pos = e.second.rfind('.');
+            if( pos < std::string::npos )
+               e.second.erase(pos+1, e.second.length());
+            else
+               std::cerr << "Could not cut down description of enum value of parameter " << o->name << ": " << e.second << std::endl;
+         }
+      }
+
+      ++o;
+   }
+
+   std::string filename = "opt" + solver + ".gms";
    std::cout << "Writing " << filename << std::endl;
    std::ofstream f(filename.c_str());
 

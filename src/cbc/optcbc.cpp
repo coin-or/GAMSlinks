@@ -139,11 +139,6 @@ int main(int argc, char** argv)
    // collection of GAMS/Cbc parameters
    GamsOptions gmsopt("cbc");
 
-   // some enum string we add unconventionally
-   gmsopt.addvalue("0");
-   gmsopt.addvalue("1");
-   gmsopt.addvalue("auto");
-
    // General parameters
    gmsopt.setGroup("General Options");
 
