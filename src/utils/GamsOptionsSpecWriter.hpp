@@ -105,26 +105,13 @@ public:
    class EnumVals : public std::vector<std::pair<GamsOption::Value, std::string> >
    {
    public:
+      template <typename T>
       void append(
-         const std::string& key,
+         const T&           key,
          const std::string& descr = ""
          )
       {
-         GamsOption::Value key_;
-         key_.stringval = strdup(key.c_str());
-
-         emplace_back(key_, descr);
-      }
-
-      void append(
-         const char*        key,
-         const std::string& descr = ""
-         )
-      {
-         GamsOption::Value key_;
-         key_.stringval = strdup(key);
-
-         emplace_back(key_, descr);
+         emplace_back(makeValue(key), descr);
       }
 
    };
@@ -218,7 +205,7 @@ public:
       makeValue(defaultval), makeValue(-INT_MAX), makeValue(INT_MAX),
       enumval, defaultdescr, refval)
    {
-      int min, max;
+      int min = INT_MAX, max = -INT_MAX;
       for( GamsOption::EnumVals::const_iterator e(enumval.begin()); e != enumval.end(); ++e )
       {
          min = std::min(e->first.intval, min);
