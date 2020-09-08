@@ -264,7 +264,7 @@ int main(int argc, char** argv)
             case Ipopt::OT_String:
             {
                opttype = GamsOption::Type::STRING;
-               defaultval.stringval = strdup((*it_opt)->DefaultString().c_str());
+               defaultval = GamsOption::makeValue((*it_opt)->DefaultString());
 
                const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
                if( settings.size() > 1 || settings[0].value_ != "*")
@@ -284,7 +284,7 @@ int main(int argc, char** argv)
                         "Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
                         "To use HSL_MA77, a HSL library needs to be provided.";
 
-                     defaultval.stringval = "ma27, if BonminH, otherwise mumps";
+                     defaultval = GamsOption::makeValue("ma27, if BonminH, otherwise mumps");
                   }
                   else
                   {
@@ -293,7 +293,7 @@ int main(int argc, char** argv)
                         longdescr = "Determines the method used to compute symmetric scaling factors for the augmented system (see also the \"linear_scaling_on_demand\" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. "
                            "Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately.";
 
-                        defaultval.stringval = "mc19, if BonminH, otherwise none";
+                        defaultval = GamsOption::makeValue("mc19, if BonminH, otherwise none");
                      }
 
                      enumval.reserve(settings.size());
@@ -355,9 +355,9 @@ int main(int argc, char** argv)
          else if( (*it_opt)->Name() == "bound_relax_factor" )
             defaultval.realval = 1e-10;
          else if( (*it_opt)->Name() == "mu_strategy" )
-            defaultval.stringval = "adaptive";
+            defaultval = GamsOption::makeValue("adaptive");
          else if( (*it_opt)->Name() == "mu_oracle" )
-            defaultval.stringval = "probing";
+            defaultval = GamsOption::makeValue("probing");
          else if( (*it_opt)->Name() == "gamma_phi" )
             defaultval.realval = 1e-8;
          else if( (*it_opt)->Name() == "gamma_theta" )
@@ -365,15 +365,15 @@ int main(int argc, char** argv)
          else if( (*it_opt)->Name() == "required_infeasibility_reduction" )
             defaultval.realval = 0.1;
          else if( (*it_opt)->Name() == "expect_infeasible_problem" )
-            defaultval.stringval = "yes";
+            defaultval = GamsOption::makeValue("yes");
          else if( (*it_opt)->Name() == "warm_start_init_point" )
-            defaultval.stringval = "yes";
+            defaultval = GamsOption::makeValue("yes");
          else if( (*it_opt)->Name() == "print_level" )
             defaultval.intval = 0;
          else if( (*it_opt)->Name() == "print_frequency_time" )
             defaultval.realval = 0.5;
          else if( (*it_opt)->Name() == "ma86_order" )
-            defaultval.stringval = "auto";
+            defaultval = GamsOption::makeValue("auto");
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
          {
             for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )

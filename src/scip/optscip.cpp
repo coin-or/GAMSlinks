@@ -240,7 +240,7 @@ int main(int argc, char** argv)
 
             case SCIP_PARAMTYPE_STRING:
                opttype = GamsOption::Type::STRING;
-               defaultval.stringval = SCIPparamGetStringDefault(param);
+               defaultval.stringval = strdup(SCIPparamGetStringDefault(param));
                break;
 
             default:

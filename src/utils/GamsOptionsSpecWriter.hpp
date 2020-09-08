@@ -39,7 +39,11 @@ public:
       int                   intval;
       double                realval;
       char                  charval;
-      const char*           stringval;
+      char*                 stringval;
+
+      Value()
+      :  stringval(NULL)
+      { }
    };
 
    static
@@ -88,7 +92,7 @@ public:
       )
    {
       Value v;
-      v.stringval = val;
+      v.stringval = strdup(val);
       return v;
    }
 
@@ -262,6 +266,18 @@ public:
          enumval, defaultdescr, refval)
    { }
 
+   ~GamsOption()
+   {
+      if( type == Type::STRING )
+      {
+         // free C-strings
+         free(defaultval.stringval);
+         for( auto& e : enumval )
+         {
+            free(e.first.stringval);
+         }
+      }
+   }
 };
 
 
