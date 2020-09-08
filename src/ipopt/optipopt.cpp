@@ -77,7 +77,7 @@ int main(int argc, char** argv)
    std::string longdescr;
    std::string defaultdescr;
 
-   GamsOptions gmsopt("ipopt");
+   GamsOptions gmsopt("Ipopt");
    gmsopt.setEolChars("#");
 
    for( std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ != opts.end(); ++it_categ )

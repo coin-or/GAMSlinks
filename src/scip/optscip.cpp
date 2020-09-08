@@ -120,7 +120,7 @@ int main(int argc, char** argv)
    std::string defaultdescr;
    std::string category;
 
-   GamsOptions gmsopt("scip");
+   GamsOptions gmsopt("SCIP");
    gmsopt.setSeparator("=");
    gmsopt.setStringQuote("\"");
    gmsopt.setEolChars("#");

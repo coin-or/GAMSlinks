@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
    // options sorted by category
    std::map<std::string, std::list<SmartPtr<RegisteredOption> > > opts;
-   GamsOptions gmsopt("bonmin");
+   GamsOptions gmsopt("Bonmin");
    gmsopt.setEolChars("#");
 
    for( Bonmin::RegisteredOptions::RegOptionsList::const_iterator it(optionlist.begin()); it != optionlist.end(); ++it )

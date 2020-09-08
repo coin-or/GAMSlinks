@@ -34,7 +34,7 @@ int main(int argc, char** argv)
    std::string descr;
    std::string defaultdescr;
 
-   GamsOptions gmsopt("soplex");
+   GamsOptions gmsopt("SoPlex");
    gmsopt.setSeparator("=");
    // gmsopt.setStringQuote("\"");
    gmsopt.setGroup("soplex");

@@ -137,7 +137,7 @@ int main(int argc, char** argv)
    GamsOption* opt;
 
    // collection of GAMS/Cbc parameters
-   GamsOptions gmsopt("cbc");
+   GamsOptions gmsopt("CBC");
 
    // General parameters
    gmsopt.setGroup("General Options");

@@ -120,7 +120,7 @@ void GamsOptions::writeGMS(
       ++o;
    }
 
-   std::string filename = "opt" + solver + ".gms";
+   std::string filename = "opt" + tolower(solver) + ".gms";
    std::cout << "Writing " << filename << std::endl;
    std::ofstream f(filename.c_str());
 
@@ -300,7 +300,7 @@ void GamsOptions::writeGMS(
 
    if( havelongdescr )
    {
-      filename = "opt" + solver + ".txt_";
+      filename = "opt" + tolower(solver) + ".txt_";
       std::cout << "Writing " << filename << std::endl;
       f.open(filename.c_str());
       for( std::list<GamsOption>::iterator d(options.begin()); d != options.end(); ++d )
@@ -314,8 +314,8 @@ void GamsOptions::writeGMS(
 
       f.close();
 
-      std::string foldcall = "fold -s "+filename+" > opt"+solver+".txt";
-      std::cout << "Folding " << filename << " to opt" << solver << ".txt" << std::endl;
+      std::string foldcall = "fold -s "+filename+" > opt" + tolower(solver) + ".txt";
+      std::cout << "Folding " << filename << " to opt" << tolower(solver) << ".txt" << std::endl;
       system(foldcall.c_str());
       remove(filename.c_str());
    }
