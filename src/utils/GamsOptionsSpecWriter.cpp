@@ -342,70 +342,83 @@ void GamsOptions::writeMarkdown()
          if( !opt.longdescr.empty() )
             f << std::endl << "    " << makeValidMarkdownString(opt.longdescr) << std::endl;
          f << std::endl;
-         f << "    Type: ";
-         switch( opt.type )
-         {
-            case GamsOption::Type::BOOL :
-            {
-               f << "boolean";
-               break;
-            }
-            case GamsOption::Type::INTEGER :
-            {
-               f << "integer";
-               break;
-            }
-            case GamsOption::Type::REAL :
-            {
-               f << "real";
-               break;
-            }
-            case GamsOption::Type::CHAR :
-            {
-               f << "character";
-               break;
-            }
-            case GamsOption::Type::STRING :
-            {
-               f << "string";
-               break;
-            }
-         }
-         f << "  " << std::endl;
          if( opt.enumval.empty() )
          {
             switch( opt.type )
             {
                case GamsOption::Type::BOOL :
                {
+                  f << "    Possible values: boolean  " << std::endl;
                   if( opt.defaultdescr.empty() )
                      f << "    Default: " << opt.defaultval.boolval << "  " << std::endl;
                   break;
                }
                case GamsOption::Type::INTEGER :
                {
-                  // TODO handle INT_MAX
-                  f << "    Range: " << opt.minval.intval << "..." << opt.maxval.intval << "  " << std::endl;
+                  if( opt.minval.intval == -INT_MAX )
+                  {
+                     if( opt.maxval.intval == INT_MAX )
+                        f << "    Possible values: integer  " << std::endl;
+                     else
+                        f << "    Possible values: integer <= " << opt.maxval.intval << "  " << std::endl;
+                  }
+                  else
+                  {
+                     if( opt.maxval.intval == INT_MAX )
+                        f << "    Possible values: integer >= " << opt.minval.intval << "  " << std::endl;
+                     else
+                        f << "    Possible values: " << opt.minval.intval << " <= integer <= " << opt.maxval.intval << "  " << std::endl;
+                  }
                   if( opt.defaultdescr.empty() )
-                     f << "    Default: " << opt.defaultval.intval << "  " << std::endl;
+                  {
+                     if( opt.defaultval.intval == -INT_MAX )
+                        f << "    Default: -infinity";
+                     else if( opt.defaultval.intval == INT_MAX )
+                        f << "    Default: infinity";
+                     else
+                        f << "    Default: " << opt.defaultval.intval;
+                     f << "  " << std::endl;
+                  }
                   break;
                }
                case GamsOption::Type::REAL :
                {
-                  // TODO handle DOUBLE_MAX
-                  f << "    Range: " << opt.minval.realval << "..." << opt.maxval.realval << "  " << std::endl;
+                  if( opt.minval.realval == -DBL_MAX )
+                  {
+                     if( opt.maxval.realval == DBL_MAX )
+                        f << "    Possible values: real  " << std::endl;
+                     else
+                        f << "    Possible values: real <= " << opt.maxval.realval << "  " << std::endl;
+                  }
+                  else
+                  {
+                     if( opt.maxval.realval == DBL_MAX )
+                        f << "    Possible values: real >= " << opt.minval.realval << "  " << std::endl;
+                     else
+                        f << "    Possible values: " << opt.minval.realval << " <= real <= " << opt.maxval.realval << "  " << std::endl;
+                  }
                   if( opt.defaultdescr.empty() )
-                     f << "    Default: " << opt.defaultval.realval << "  " << std::endl;
+                  {
+                     if( opt.defaultval.realval == -DBL_MAX )
+                        f << "    Default: -infinity";
+                     else if( opt.defaultval.realval == DBL_MAX )
+                        f << "    Default: infinity";
+                     else
+                        f << "    Default: " << opt.defaultval.realval;
+                     f << "  " << std::endl;
+                  }
                   break;
                }
                case GamsOption::Type::CHAR :
                {
+                  f << "    Possible values: character  " << std::endl;
                   if( opt.defaultdescr.empty() )
                      f << "    Default: " << opt.defaultval.charval << "  " << std::endl;
                   break;
                }
                case GamsOption::Type::STRING :
                {
+                  f << "    Possible values: string  " << std::endl;
                   if( opt.defaultdescr.empty() )
                   {
                      f << "    Default: ";
@@ -433,11 +446,21 @@ void GamsOptions::writeMarkdown()
                      isdefault = e.first.boolval == opt.defaultval.boolval;
                      break;
                   case GamsOption::Type::INTEGER :
-                     f << e.first.intval;
+                     if( e.first.intval == -INT_MAX )
+                        f << "-infinity";
+                     else if( e.first.intval == INT_MAX )
+                        f << "infinity";
+                     else
+                        f << e.first.intval;
                      isdefault = e.first.intval == opt.defaultval.intval;
                      break;
                   case GamsOption::Type::REAL :
-                     f << e.first.realval;
+                     if( e.first.realval == -DBL_MAX )
+                        f << "-infinity";
+                     else if( e.first.realval == DBL_MAX )
+                        f << "infinity";
+                     else
+                        f << e.first.realval;
                      isdefault = e.first.realval == opt.defaultval.realval;
                      break;
                   case GamsOption::Type::CHAR :
