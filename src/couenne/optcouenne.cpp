@@ -122,7 +122,7 @@ int main(int argc, char** argv)
    std::string longdescr;
    std::string defaultdescr;
 
-   GamsOptions gmsopt("couenne");
+   GamsOptions gmsopt("Couenne");
    gmsopt.setEolChars("#");
 
    for( std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ != opts.end(); ++it_categ )
@@ -288,6 +288,6 @@ int main(int argc, char** argv)
       }
    }
 
-   gmsopt.writeMarkdown();
-   gmsopt.writeGMS();
+   gmsopt.writeMarkdown("optcouenne.md");
+   //gmsopt.writeGMS();
 }

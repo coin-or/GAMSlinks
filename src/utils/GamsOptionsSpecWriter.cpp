@@ -321,11 +321,14 @@ void GamsOptions::writeGMS(
    }
 }
 
-void GamsOptions::writeMarkdown()
+void GamsOptions::writeMarkdown(
+   const char* filename
+   )
 {
-   std::string filename = "opt" + solver + ".md";
+   assert(filename != NULL);
+
    std::cout << "Writing " << filename << std::endl;
-   std::ofstream f(filename.c_str());
+   std::ofstream f(filename);
 
    f << "# " << solver << " options" << std::endl << std::endl;
 

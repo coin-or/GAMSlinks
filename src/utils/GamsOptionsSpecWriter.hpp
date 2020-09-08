@@ -419,7 +419,9 @@ public:
    void writeGMS(bool shortdoc = false);
 
    /// write options in Markdown
-   void writeMarkdown(void);
+   void writeMarkdown(
+      const char* filename
+      );
 };
 
 #endif // GAMSOPTIONSSPECWRITER_HPP_
