@@ -321,6 +321,223 @@ void GamsOptions::writeGMS(
    }
 }
 
+void GamsOptions::writeDef()
+{
+   std::string filename = "opt" + tolower(solver) + ".def";
+   std::cout << "Writing " << filename << std::endl;
+   std::ofstream f(filename.c_str());
+
+   // write options
+   bool havesynonym = false;
+   for( auto& opt : options )
+   {
+      f << opt.name << ' ';
+
+      // type
+      switch( opt.type )
+      {
+         case GamsOption::Type::BOOL:
+            f << "boolean";
+            break;
+
+         case GamsOption::Type::INTEGER:
+            if( opt.enumval.empty() )
+               f << "integer";
+            else
+               f << "enumint";
+            break;
+
+         case GamsOption::Type::REAL:
+            f << "double";
+            break;
+
+         case GamsOption::Type::CHAR:
+            if( opt.enumval.empty() )
+               f << "string";
+            else
+               f << "enumstr";
+            break;
+
+         case GamsOption::Type::STRING:
+            if( opt.enumval.empty() )
+               f << "string";
+            else
+               f << "enumstr";
+            break;
+      }
+      // ref
+      f << ' ' << (opt.refval >= -1 ? opt.refval : 0) << ' ';
+
+      // default, lower, upper
+      switch( opt.type )
+      {
+         case GamsOption::Type::BOOL:
+            f << opt.defaultval.boolval;
+            break;
+
+         case GamsOption::Type::INTEGER:
+            if( opt.defaultval.intval == -INT_MAX )
+               f << "minint";
+            else if( opt.defaultval.intval == INT_MAX )
+               f << "maxint";
+            else
+               f << opt.defaultval.intval;
+            f << ' ';
+            if( opt.minval.intval == -INT_MAX )
+               f << "minint";
+            else if( opt.minval.intval == INT_MAX )
+               f << "maxint";
+            else
+               f << opt.minval.intval;
+            f << ' ';
+            if( opt.maxval.intval == -INT_MAX )
+               f << "minint";
+            else if( opt.maxval.intval == INT_MAX )
+               f << "maxint";
+            else
+               f << opt.maxval.intval;
+            break;
+
+         case GamsOption::Type::REAL:
+            if( opt.defaultval.realval == -DBL_MAX )
+               f << "mindouble";
+            else if( opt.defaultval.realval == DBL_MAX )
+               f << "maxdouble";
+            else
+               f << opt.defaultval.realval;
+            f << ' ';
+            if( opt.minval.realval == -DBL_MAX )
+               f << "mindouble";
+            else if( opt.minval.realval == DBL_MAX )
+               f << "maxdouble";
+            else
+               f << opt.minval.realval;
+            f << ' ';
+            if( opt.maxval.realval == -DBL_MAX )
+               f << "mindouble";
+            else if( opt.maxval.realval == DBL_MAX )
+               f << "maxdouble";
+            else
+               f << opt.maxval.realval;
+            break;
+
+         case GamsOption::Type::CHAR:
+            f << '"' << opt.defaultval.charval << '"';
+            break;
+
+         case GamsOption::Type::STRING:
+            f << '"' << opt.defaultval.stringval << '"';
+            break;
+      }
+
+      // not hidden
+      f << " 1";
+
+      // group number
+      f << ' ';
+      size_t i = 1;
+      for( std::map<std::string, std::string>::iterator it(groups.begin()); it != groups.end(); ++it )
+      {
+         if( it->first == opt.group )
+         {
+            f << i;
+            break;
+         }
+         ++i;
+      }
+
+      // short description
+      f << ' ' << opt.shortdescr;  // TODO is this allowed to be longer than 255 chars?
+      f << std::endl;
+
+      // enum values
+      if( !opt.enumval.empty() && (opt.type != GamsOption::Type::BOOL && opt.type != GamsOption::Type::REAL) )
+      {
+         std::sort(opt.enumval.begin(), opt.enumval.end(), GamsOption::EnumValCompare(opt.type));  // TODO remove
+         for( auto& eval : opt.enumval )
+         {
+            f << ' ';
+            switch( opt.type )
+            {
+               case GamsOption::Type::INTEGER:
+                  if( eval.first.intval == -INT_MAX )
+                     f << "minint";
+                  else if( eval.first.intval == INT_MAX )
+                     f << "maxint";
+                  else
+                     f << eval.first.intval;
+                  break;
+
+               case GamsOption::Type::CHAR:
+                  f << '"' << eval.first.charval << '"';
+                  break;
+
+               case GamsOption::Type::STRING:
+                  f << '"' << tolower(eval.first.stringval) << '"';  // TODO remove tolower
+                  break;
+            }
+
+            // not hidden
+            f << " 1";
+
+            // short description
+            if( !eval.second.empty() )
+               f << ' ' << eval.second;   // TODO is this allowed to be longer than 255 chars?
+
+            f << std::endl;
+         }
+      }
+
+      if( !opt.synonyms.empty() )
+         havesynonym = true;
+   }
+
+   // write synonyms
+   if( havesynonym )
+   {
+      f << '*' << std::endl;
+      f << "* synonym section" << std::endl;
+      f << '*' << std::endl;
+      for( auto& opt : options )
+         for( auto& synonym : opt.synonyms )
+            f << synonym << " synonym " << opt.name << std::endl;
+   }
+
+   // write indicators
+   f << '*' << std::endl;
+   f << "* indicator section" << std::endl;
+   f << '*' << std::endl;
+   if( !eolchars.empty() )
+      f << "myeolchar EOLCOMM " << eolchars << std::endl;
+   if( !separator.empty() )
+      f << "indicator SEPARATOR " << '"' << separator << '"' << std::endl;
+   f << "indicator STRINGQUOTE " << stringquote << std::endl;
+
+   // write groups
+   f << '*' << std::endl;
+   f << "* Groups" << std::endl;
+   f << '*' << std::endl;
+   size_t i = 1;
+   for( auto& group : groups )
+   {
+      std::string id(group.first);
+      std::replace(id.begin(), id.end(), ' ', '_');
+      std::replace(id.begin(), id.end(), '(', '_');
+      std::replace(id.begin(), id.end(), ')', '_');
+      std::replace(id.begin(), id.end(), '-', '_');
+      std::replace(id.begin(), id.end(), '/', '_');
+      f << "gr_" << id;
+      f << " group ";
+      f << i++;
+      // not hidden
+      f << " 1";
+      f << ' ' << (group.second.empty() ? group.first : group.second);
+      f << std::endl;
+   }
+
+   f.close();
+}
+
 void GamsOptions::writeMarkdown(
    const char* filename
    )

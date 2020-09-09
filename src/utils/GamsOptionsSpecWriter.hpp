@@ -46,6 +46,39 @@ public:
       { }
    };
 
+   class ValueCompare
+   {
+   private:
+      GamsOption::Type type;
+   public:
+      ValueCompare(
+         GamsOption::Type type_
+         )
+      : type(type_)
+      { }
+
+      bool operator()(
+         const GamsOption::Value& a,
+         const GamsOption::Value& b
+         ) const
+      {
+         switch( type )
+         {
+            case GamsOption::Type::BOOL :
+               return a.boolval < b.boolval;
+            case GamsOption::Type::INTEGER :
+               return a.intval < b.intval;
+            case GamsOption::Type::REAL :
+               return a.realval < b.realval;
+            case GamsOption::Type::CHAR:
+               return a.charval < b.charval;
+            case GamsOption::Type::STRING:
+               return strcasecmp(a.stringval, b.stringval) < 0;
+         }
+         return 0;
+      }
+   };
+
    static
    Value makeValue(
       bool val
@@ -117,7 +150,26 @@ public:
       {
          emplace_back(makeValue(key), descr);
       }
+   };
 
+   class EnumValCompare
+   {
+   private:
+      ValueCompare valcmp;
+   public:
+      EnumValCompare(
+         GamsOption::Type type_
+         )
+      : valcmp(type_)
+      { }
+
+      bool operator()(
+         const EnumVals::value_type& a,
+         const EnumVals::value_type& b
+         ) const
+      {
+         return valcmp(a.first, b.first);
+      }
    };
 
    std::string        group;
@@ -433,6 +485,9 @@ public:
 
    /// write options in .gms + .txt for GAMS mkopt scripts
    void writeGMS(bool shortdoc = false);
+
+   /// write options .def file
+   void writeDef();
 
    /// write options in Markdown
    void writeMarkdown(

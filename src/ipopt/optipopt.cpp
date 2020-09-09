@@ -212,5 +212,6 @@ int main(int argc, char** argv)
       }
    }
 
+   gmsopt.writeDef();
    gmsopt.writeGMS();
 }

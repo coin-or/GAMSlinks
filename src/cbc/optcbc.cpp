@@ -491,6 +491,7 @@ int main(int argc, char** argv)
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "VndVariableNeighborhoodSearch");
 
+   gmsopt.writeDef();
    gmsopt.writeGMS();
 
    // print uncollected Cbc options
