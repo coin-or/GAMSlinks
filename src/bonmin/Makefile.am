@@ -26,12 +26,10 @@ libGamsBonmin_la_LIBADD  = $(GAMSBONMIN_LFLAGS)
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
 
-if OPTWRITER
 noinst_PROGRAMS = optbonmin
 optbonmin_SOURCES = optbonmin.cpp ../utils/GamsOptionsSpecWriter.cpp
 optbonmin_LDADD = libGamsBonmin.la
 CLEANFILES += optbonmin.gms optbonmin.txt optbonmin_t.md
-endif
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsBonmin.la MYBONMIN bon "MIQCP MINLP" 0

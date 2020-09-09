@@ -95,8 +95,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@OPTWRITER_TRUE@noinst_PROGRAMS = optbonmin$(EXEEXT)
-@OPTWRITER_TRUE@am__append_1 = optbonmin.gms optbonmin.txt optbonmin_t.md
+noinst_PROGRAMS = optbonmin$(EXEEXT)
 subdir = src/bonmin
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -150,10 +149,10 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-@OPTWRITER_TRUE@am_optbonmin_OBJECTS = optbonmin.$(OBJEXT) \
-@OPTWRITER_TRUE@	../utils/GamsOptionsSpecWriter.$(OBJEXT)
+am_optbonmin_OBJECTS = optbonmin.$(OBJEXT) \
+	../utils/GamsOptionsSpecWriter.$(OBJEXT)
 optbonmin_OBJECTS = $(am_optbonmin_OBJECTS)
-@OPTWRITER_TRUE@optbonmin_DEPENDENCIES = libGamsBonmin.la
+optbonmin_DEPENDENCIES = libGamsBonmin.la
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -425,9 +424,9 @@ libGamsBonmin_la_SOURCES = GamsBonmin.cpp GamsMINLP.cpp \
 libGamsBonmin_la_LIBADD = $(GAMSBONMIN_LFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
-	../utils/cfgmcc.c $(am__append_1)
-@OPTWRITER_TRUE@optbonmin_SOURCES = optbonmin.cpp ../utils/GamsOptionsSpecWriter.cpp
-@OPTWRITER_TRUE@optbonmin_LDADD = libGamsBonmin.la
+	../utils/cfgmcc.c optbonmin.gms optbonmin.txt optbonmin_t.md
+optbonmin_SOURCES = optbonmin.cpp ../utils/GamsOptionsSpecWriter.cpp
+optbonmin_LDADD = libGamsBonmin.la
 all: all-am
 
 .SUFFIXES:

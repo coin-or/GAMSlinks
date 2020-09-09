@@ -96,7 +96,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@OPTWRITER_TRUE@noinst_PROGRAMS = optcbc$(EXEEXT)
+noinst_PROGRAMS = optcbc$(EXEEXT)
 subdir = src/cbc
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -150,10 +150,10 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-@OPTWRITER_TRUE@am_optcbc_OBJECTS = optcbc.$(OBJEXT) \
-@OPTWRITER_TRUE@	../utils/GamsOptionsSpecWriter.$(OBJEXT)
+am_optcbc_OBJECTS = optcbc.$(OBJEXT) \
+	../utils/GamsOptionsSpecWriter.$(OBJEXT)
 optcbc_OBJECTS = $(am_optcbc_OBJECTS)
-@OPTWRITER_TRUE@optcbc_DEPENDENCIES = libGamsCbc.la
+optcbc_DEPENDENCIES = libGamsCbc.la
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -424,9 +424,9 @@ libGamsCbc_la_SOURCES = GamsCbc.cpp \
 libGamsCbc_la_LIBADD = $(GAMSCBC_LFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
-	../utils/cfgmcc.c
-@OPTWRITER_TRUE@optcbc_SOURCES = optcbc.cpp ../utils/GamsOptionsSpecWriter.cpp
-@OPTWRITER_TRUE@optcbc_LDADD = libGamsCbc.la
+	../utils/cfgmcc.c optcbc.txt optcbc.gms
+optcbc_SOURCES = optcbc.cpp ../utils/GamsOptionsSpecWriter.cpp
+optcbc_LDADD = libGamsCbc.la
 data_DATA = optcbc.def
 all: all-am
 

@@ -21,12 +21,10 @@ libGamsIpopt_la_LIBADD  = $(GAMSIPOPT_LFLAGS)
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
 
-if OPTWRITER
 noinst_PROGRAMS = optipopt
 optipopt_SOURCES = optipopt.cpp ../utils/GamsOptionsSpecWriter.cpp
 optipopt_LDADD = libGamsIpopt.la
 CLEANFILES += optipopt.gms optipopt.txt
-endif
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsIpopt.la MYIPOPT ipo "LP RMIP NLP DNLP RMINLP CNS QCP RMIQCP" 0

@@ -21,12 +21,10 @@ libGamsSoplex_la_LIBADD  = $(GAMSSOPLEX_LFLAGS)
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
 
-if OPTWRITER
 noinst_PROGRAMS = optsoplex
 optsoplex_SOURCES = optsoplex.cpp ../utils/GamsOptionsSpecWriter.cpp
 optsoplex_LDADD = $(GAMSSOPLEX_LFLAGS)
 CLEANFILES += optsoplex.gms
-endif
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsSoplex.la MYSOPLEX osp "LP RMIP" 5
