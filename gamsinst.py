@@ -130,7 +130,7 @@ try :
             print("%s 111 %s 000102030405 1 0 2 %s" % (solvername, dicttype, modeltypes), file = outfile)
             print('gmsgennt.cmd' if iswindows else 'gmsgenus.run', file = outfile, end = '')
             if optdef :
-                print('', os.path.basename(optdef), file = outfile)
+                print('', optdef, file = outfile)
             else :
                 print(file = outfile)
             print('gmsgennx.exe' if iswindows else 'gmsgenux.out', file = outfile)
@@ -145,7 +145,3 @@ except Exception as err:
     outfile.close()
     shutil.copy(gmscmp + '.bak', gmscmp)
     sys.exit(1)
-
-if optdef :
-    print('Installing', optdef)
-    shutil.copy(optdef, gamssysdir)

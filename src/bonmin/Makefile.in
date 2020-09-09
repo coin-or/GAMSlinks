@@ -425,7 +425,7 @@ libGamsBonmin_la_SOURCES = GamsBonmin.cpp GamsMINLP.cpp \
 libGamsBonmin_la_LIBADD = $(GAMSBONMIN_LFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
-	$(am__append_1)
+	../utils/cfgmcc.c $(am__append_1)
 @OPTWRITER_TRUE@optbonmin_SOURCES = optbonmin.cpp ../utils/GamsOptionsSpecWriter.cpp
 @OPTWRITER_TRUE@optbonmin_LDADD = libGamsBonmin.la
 all: all-am
@@ -867,6 +867,9 @@ uninstall-am: uninstall-libLTLIBRARIES uninstall-local
 	@cp $< $@
 
 ../utils/palmcc.c : $(GAMS_PATH)/apifiles/C/api/palmcc.c
+	@cp $< $@
+
+../utils/cfgmcc.c : $(GAMS_PATH)/apifiles/C/api/cfgmcc.c
 	@cp $< $@
 
 install-exec-local : install-libLTLIBRARIES

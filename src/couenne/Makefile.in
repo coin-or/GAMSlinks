@@ -428,7 +428,7 @@ libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
 libGamsCouenne_la_LIBADD = $(GAMSCOUENNE_LFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
-	$(am__append_1)
+	../utils/cfgmcc.c $(am__append_1)
 @OPTWRITER_TRUE@optcouenne_SOURCES = optcouenne.cpp ../utils/GamsOptionsSpecWriter.cpp
 @OPTWRITER_TRUE@optcouenne_LDADD = libGamsCouenne.la
 all: all-am
@@ -883,6 +883,9 @@ uninstall-am: uninstall-libLTLIBRARIES uninstall-local
 	@cp $< $@
 
 ../utils/palmcc.c : $(GAMS_PATH)/apifiles/C/api/palmcc.c
+	@cp $< $@
+
+../utils/cfgmcc.c : $(GAMS_PATH)/apifiles/C/api/cfgmcc.c
 	@cp $< $@
 
 install-exec-local : install-libLTLIBRARIES

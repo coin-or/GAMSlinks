@@ -8,7 +8,6 @@ def print_usage() :
     print('Usage: %s /path/to/gams-sysdir solvername [optxyz.def]' % sys.argv[0])
     print()
     print('   solvername - name of solver to uninstall')
-    print('   optxyz.def - name of options definition file to remove')
 
 if len(sys.argv) < 3 :
     print_usage()
@@ -16,7 +15,6 @@ if len(sys.argv) < 3 :
 
 gamssysdir = sys.argv[1]
 solvername = sys.argv[2].upper()
-optdef = os.path.join(gamssysdir, sys.argv[3]) if len(sys.argv) >= 4 else None
 
 iswindows = True if os.name == 'nt' else False
 
@@ -76,7 +74,3 @@ except Exception as err:
     outfile.close()
     shutil.copy(gmscmp + '.bak', gmscmp)
     sys.exit(1)
-
-if optdef and os.path.exists(optdef):
-    print('Deleting', optdef)
-    os.remove(optdef)

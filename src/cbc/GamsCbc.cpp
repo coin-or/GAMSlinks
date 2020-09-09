@@ -23,6 +23,7 @@
 #include "optcc.h"
 #include "gdxcc.h"
 #include "palmcc.h"
+#include "cfgmcc.h"
 
 #include "GamsMessageHandler.hpp"
 #include "GamsOsiHelper.hpp"
@@ -683,13 +684,21 @@ bool GamsCbc::setupParameters()
       }
       createdopt = true;
 
+      // get definition file name from cfg object
       char deffile[2*GMS_SSSIZE+20];
-      gevGetStrOpt(gev, gevNameSysDir, buffer);
-#ifdef GAMS_BUILD
-      sprintf(deffile, "%soptcbc.def", buffer);
-#else
-      sprintf(deffile, "%soptmycbc.def", buffer);
-#endif
+      cfgHandle_t cfg;
+      cfg = (cfgHandle_t)gevGetALGX(gev);
+      assert(cfg != NULL);
+      gevGetCurrentSolver(gev, gmo, buffer);
+      deffile[0] = '\0';
+      cfgDefFileName(cfg, buffer, deffile);
+      if( deffile[0] != '/' && deffile[1] != ':' )
+      {
+         // if deffile is not absolute path, then prefix with sysdir
+         gevGetStrOpt(gev, gevNameSysDir, buffer);
+         strcat(buffer, deffile);
+         strcpy(deffile, buffer);
+      }
       if( optReadDefinition(opt, deffile) )
       {
          int itype;
@@ -1452,6 +1461,9 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char*
    if( !optGetReady(msgBuf, msgBufLen) )
       return 0;
 
+   if( !cfgGetReady(msgBuf, msgBufLen) )
+      return 0;
+
    *Cptr = (void*) new GamsCbc();
    if( *Cptr == NULL )
    {
@@ -1477,6 +1489,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
    optLibraryUnload();
    if( gdxLibraryLoaded() )
       gdxLibraryUnload();
+   cfgLibraryUnload();
 
    return 1;
 }

@@ -414,7 +414,7 @@ libGamsSoplex_la_SOURCES = GamsSoPlex.cpp \
 libGamsSoplex_la_LIBADD = $(GAMSSOPLEX_LFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
-	$(am__append_1)
+	../utils/cfgmcc.c $(am__append_1)
 @OPTWRITER_TRUE@optsoplex_SOURCES = optsoplex.cpp ../utils/GamsOptionsSpecWriter.cpp
 @OPTWRITER_TRUE@optsoplex_LDADD = $(GAMSSOPLEX_LFLAGS)
 all: all-am
@@ -806,6 +806,9 @@ uninstall-am: uninstall-libLTLIBRARIES uninstall-local
 	@cp $< $@
 
 ../utils/palmcc.c : $(GAMS_PATH)/apifiles/C/api/palmcc.c
+	@cp $< $@
+
+../utils/cfgmcc.c : $(GAMS_PATH)/apifiles/C/api/cfgmcc.c
 	@cp $< $@
 
 install-exec-local : install-libLTLIBRARIES

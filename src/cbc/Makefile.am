@@ -17,21 +17,23 @@ lib_LTLIBRARIES = libGamsCbc.la
 libGamsCbc_la_SOURCES = GamsCbc.cpp \
   ../osi/GamsOsiHelper.cpp ../osi/GamsMessageHandler.cpp \
   ../utils/GamsSolveTrace.c ../utils/GamsHelper.c \
-  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/gdxcc.c ../utils/optcc.c ../utils/palmcc.c
+  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/gdxcc.c ../utils/optcc.c ../utils/palmcc.c ../utils/cfgmcc.c
 libGamsCbc_la_LIBADD  = $(GAMSCBC_LFLAGS)
 
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc
 
-if OPTWRITER
 noinst_PROGRAMS = optcbc
 optcbc_SOURCES = optcbc.cpp ../utils/GamsOptionsSpecWriter.cpp
 optcbc_LDADD = libGamsCbc.la
 CLEANFILES += optcbc.txt optcbc.gms
-endif
 
-install-exec-local : install-libLTLIBRARIES
-	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCbc.la MYCBC cbc "LP MIP RMIP" 5 @srcdir@/optmycbc.def
+data_DATA = optcbc.def
+optcbc.def : optcbc$(EXEEXT)
+	./optcbc$(EXEEXT)
+
+install-exec-local : install-libLTLIBRARIES install-dataDATA
+	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCbc.la MYCBC cbc "LP MIP RMIP" 5 @datadir@/optcbc.def
 
 uninstall-local :
-	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYCBC optmycbc.def
+	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYCBC @datadir@/optcbc.def

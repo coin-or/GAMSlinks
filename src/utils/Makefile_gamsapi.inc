@@ -16,6 +16,9 @@
 ../utils/palmcc.c : $(GAMS_PATH)/apifiles/C/api/palmcc.c
 	@cp $< $@
 
-CLEANFILES += ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c ../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c
+../utils/cfgmcc.c : $(GAMS_PATH)/apifiles/C/api/cfgmcc.c
+	@cp $< $@
+
+CLEANFILES += ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c ../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c ../utils/cfgmcc.c
 
 AM_CPPFLAGS += -I"$(GAMS_PATH)/apifiles/C/api" $(GAMSLIBCFLAGS)

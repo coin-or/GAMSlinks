@@ -21,6 +21,7 @@
 # Author: Stefan Vigerske
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -96,7 +97,6 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @OPTWRITER_TRUE@noinst_PROGRAMS = optcbc$(EXEEXT)
-@OPTWRITER_TRUE@am__append_1 = optcbc.txt optcbc.gms
 subdir = src/cbc
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -135,7 +135,7 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(libdir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(datadir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libGamsCbc_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -143,7 +143,8 @@ am__dirstamp = $(am__leading_dot)dirstamp
 am_libGamsCbc_la_OBJECTS = GamsCbc.lo ../osi/GamsOsiHelper.lo \
 	../osi/GamsMessageHandler.lo ../utils/GamsSolveTrace.lo \
 	../utils/GamsHelper.lo ../utils/gmomcc.lo ../utils/gevmcc.lo \
-	../utils/gdxcc.lo ../utils/optcc.lo ../utils/palmcc.lo
+	../utils/gdxcc.lo ../utils/optcc.lo ../utils/palmcc.lo \
+	../utils/cfgmcc.lo
 libGamsCbc_la_OBJECTS = $(am_libGamsCbc_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -173,10 +174,10 @@ am__depfiles_remade = ../osi/$(DEPDIR)/GamsMessageHandler.Plo \
 	../utils/$(DEPDIR)/GamsHelper.Plo \
 	../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po \
 	../utils/$(DEPDIR)/GamsSolveTrace.Plo \
-	../utils/$(DEPDIR)/gdxcc.Plo ../utils/$(DEPDIR)/gevmcc.Plo \
-	../utils/$(DEPDIR)/gmomcc.Plo ../utils/$(DEPDIR)/optcc.Plo \
-	../utils/$(DEPDIR)/palmcc.Plo ./$(DEPDIR)/GamsCbc.Plo \
-	./$(DEPDIR)/optcbc.Po
+	../utils/$(DEPDIR)/cfgmcc.Plo ../utils/$(DEPDIR)/gdxcc.Plo \
+	../utils/$(DEPDIR)/gevmcc.Plo ../utils/$(DEPDIR)/gmomcc.Plo \
+	../utils/$(DEPDIR)/optcc.Plo ../utils/$(DEPDIR)/palmcc.Plo \
+	./$(DEPDIR)/GamsCbc.Plo ./$(DEPDIR)/optcbc.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -220,6 +221,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+DATA = $(data_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -417,14 +419,15 @@ lib_LTLIBRARIES = libGamsCbc.la
 libGamsCbc_la_SOURCES = GamsCbc.cpp \
   ../osi/GamsOsiHelper.cpp ../osi/GamsMessageHandler.cpp \
   ../utils/GamsSolveTrace.c ../utils/GamsHelper.c \
-  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/gdxcc.c ../utils/optcc.c ../utils/palmcc.c
+  ../utils/gmomcc.c ../utils/gevmcc.c ../utils/gdxcc.c ../utils/optcc.c ../utils/palmcc.c ../utils/cfgmcc.c
 
 libGamsCbc_la_LIBADD = $(GAMSCBC_LFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
-	$(am__append_1)
+	../utils/cfgmcc.c
 @OPTWRITER_TRUE@optcbc_SOURCES = optcbc.cpp ../utils/GamsOptionsSpecWriter.cpp
 @OPTWRITER_TRUE@optcbc_LDADD = libGamsCbc.la
+data_DATA = optcbc.def
 all: all-am
 
 .SUFFIXES:
@@ -533,6 +536,8 @@ clean-libLTLIBRARIES:
 	../utils/$(DEPDIR)/$(am__dirstamp)
 ../utils/palmcc.lo: ../utils/$(am__dirstamp) \
 	../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/cfgmcc.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
 
 libGamsCbc.la: $(libGamsCbc_la_OBJECTS) $(libGamsCbc_la_DEPENDENCIES) $(EXTRA_libGamsCbc_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libGamsCbc_la_OBJECTS) $(libGamsCbc_la_LIBADD) $(LIBS)
@@ -558,6 +563,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsHelper.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsSolveTrace.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/cfgmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gdxcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gevmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gmomcc.Plo@am__quote@ # am--include-marker
@@ -627,6 +633,27 @@ clean-libtool:
 	-rm -rf .libs _libs
 	-rm -rf ../osi/.libs ../osi/_libs
 	-rm -rf ../utils/.libs ../utils/_libs
+install-dataDATA: $(data_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(data_DATA)'; test -n "$(datadir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(datadir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(datadir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(datadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(datadir)" || exit $$?; \
+	done
+
+uninstall-dataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(data_DATA)'; test -n "$(datadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(datadir)'; $(am__uninstall_files_from_dir)
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -681,9 +708,9 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(LTLIBRARIES)
+all-am: Makefile $(PROGRAMS) $(LTLIBRARIES) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(datadir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -732,6 +759,7 @@ distclean: distclean-am
 	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
 	-rm -f ../utils/$(DEPDIR)/GamsSolveTrace.Plo
+	-rm -f ../utils/$(DEPDIR)/cfgmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gdxcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
@@ -755,7 +783,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-dataDATA
 
 install-dvi: install-dvi-am
 
@@ -789,6 +817,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
 	-rm -f ../utils/$(DEPDIR)/GamsSolveTrace.Plo
+	-rm -f ../utils/$(DEPDIR)/cfgmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gdxcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
@@ -812,7 +841,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-libLTLIBRARIES uninstall-local
+uninstall-am: uninstall-dataDATA uninstall-libLTLIBRARIES \
+	uninstall-local
 
 .MAKE: install-am install-strip
 
@@ -821,16 +851,16 @@ uninstall-am: uninstall-libLTLIBRARIES uninstall-local
 	clean-noinstPROGRAMS cscopelist-am ctags ctags-am distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags dvi dvi-am html html-am info info-am install \
-	install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-exec-local \
-	install-html install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	install-am install-data install-data-am install-dataDATA \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-exec-local install-html install-html-am install-info \
+	install-info-am install-libLTLIBRARIES install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-libLTLIBRARIES \
-	uninstall-local
+	tags tags-am uninstall uninstall-am uninstall-dataDATA \
+	uninstall-libLTLIBRARIES uninstall-local
 
 .PRECIOUS: Makefile
 
@@ -852,11 +882,16 @@ uninstall-am: uninstall-libLTLIBRARIES uninstall-local
 ../utils/palmcc.c : $(GAMS_PATH)/apifiles/C/api/palmcc.c
 	@cp $< $@
 
-install-exec-local : install-libLTLIBRARIES
-	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCbc.la MYCBC cbc "LP MIP RMIP" 5 @srcdir@/optmycbc.def
+../utils/cfgmcc.c : $(GAMS_PATH)/apifiles/C/api/cfgmcc.c
+	@cp $< $@
+optcbc.def : optcbc$(EXEEXT)
+	./optcbc$(EXEEXT)
+
+install-exec-local : install-libLTLIBRARIES install-dataDATA
+	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCbc.la MYCBC cbc "LP MIP RMIP" 5 @datadir@/optcbc.def
 
 uninstall-local :
-	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYCBC optmycbc.def
+	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYCBC @datadir@/optcbc.def
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
