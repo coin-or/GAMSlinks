@@ -565,13 +565,13 @@ void GamsOptions::writeMarkdown(
          if( opt.group != group.first )
             continue;
 
-         f << "- **" << opt.name << "**: " << makeValidMarkdownString(opt.shortdescr) << std::endl;
+         f << "**" << opt.name << "**: " << makeValidMarkdownString(opt.shortdescr) << std::endl;
          if( !opt.longdescr.empty() )
-            f << std::endl << "    " << makeValidMarkdownString(opt.longdescr) << std::endl;
+            f << std::endl << "> " << makeValidMarkdownString(opt.longdescr) << std::endl;
          f << std::endl;
          if( opt.enumval.empty() )
          {
-            f << "    Range: ";
+            f << "> Range: ";
             switch( opt.type )
             {
                case GamsOption::Type::BOOL :
@@ -623,18 +623,18 @@ void GamsOptions::writeMarkdown(
             if( opt.defaultdescr.empty() )
             {
                if( opt.type == GamsOption::Type::STRING && opt.defaultval.stringval[0] == '\0' )
-                  f << "    Default: _empty_  " << std::endl;
+                  f << "> Default: _empty_  " << std::endl;
                else
-                  f << "    Default: " << opt.defaultval.toStringMarkdown(opt.type) << "  " << std::endl;
+                  f << "> Default: " << opt.defaultval.toStringMarkdown(opt.type) << "  " << std::endl;
             }
          }
          else
          {
-            f << "    Possible values:" << std::endl << std::endl;
+            f << "> Possible values:" << std::endl << std::endl;
             for( auto& e : opt.enumval )
             {
                bool isdefault;
-               f << "    - ";
+               f << "> - ";
                switch( opt.type )
                {
                   case GamsOption::Type::BOOL :
@@ -667,11 +667,11 @@ void GamsOptions::writeMarkdown(
          }
          if( !opt.defaultdescr.empty() )
          {
-            f << "    Default: " << opt.defaultdescr << "  " << std::endl;
+            f << "> Default: " << opt.defaultdescr << "  " << std::endl;
          }
          if( !opt.synonyms.empty() )
          {
-            f << "    Synonyms:";
+            f << "> Synonyms:";
             for( auto& syn : opt.synonyms )
             {
                f << ' ' << syn;
