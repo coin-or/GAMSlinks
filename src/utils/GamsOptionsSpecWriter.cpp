@@ -571,60 +571,55 @@ void GamsOptions::writeMarkdown(
          f << std::endl;
          if( opt.enumval.empty() )
          {
+            f << "    Range: ";
             switch( opt.type )
             {
                case GamsOption::Type::BOOL :
                {
-                  f << "    Possible values: boolean  " << std::endl;
+                  f << "boolean  " << std::endl;
                   break;
                }
                case GamsOption::Type::INTEGER :
                {
-                  if( opt.minval.intval == -INT_MAX )
+                  if( opt.minval.intval == -INT_MAX && opt.maxval.intval == INT_MAX )
                   {
-                     if( opt.maxval.intval == INT_MAX )
-                        f << "    Possible values: integer  " << std::endl;
-                     else
-                        f << "    Possible values: integer <= " << opt.maxval.intval << "  " << std::endl;
+                     f << "integer";
+                     break;
                   }
-                  else
-                  {
-                     if( opt.maxval.intval == INT_MAX )
-                        f << "    Possible values: integer >= " << opt.minval.intval << "  " << std::endl;
-                     else
-                        f << "    Possible values: " << opt.minval.intval << " <= integer <= " << opt.maxval.intval << "  " << std::endl;
-                  }
+                  f << "{ ";
+                  f << opt.minval.toStringMarkdown(opt.type);
+                  f << ", ..., ";
+                  f << opt.maxval.toStringMarkdown(opt.type);
+                  f << " }";
                   break;
                }
                case GamsOption::Type::REAL :
                {
-                  if( opt.minval.realval == -DBL_MAX )
+                  if( opt.minval.realval == -DBL_MAX && opt.maxval.realval == DBL_MAX )
                   {
-                     if( opt.maxval.realval == DBL_MAX )
-                        f << "    Possible values: real  " << std::endl;
-                     else
-                        f << "    Possible values: real <= " << opt.maxval.realval << "  " << std::endl;
+                     f << "real";
+                     break;
                   }
-                  else
-                  {
-                     if( opt.maxval.realval == DBL_MAX )
-                        f << "    Possible values: real >= " << opt.minval.realval << "  " << std::endl;
-                     else
-                        f << "    Possible values: " << opt.minval.realval << " <= real <= " << opt.maxval.realval << "  " << std::endl;
-                  }
+                  f << "[ ";
+                  f << opt.minval.toStringMarkdown(opt.type);
+                  f << ", ";
+                  f << opt.maxval.toStringMarkdown(opt.type);
+                  f << " ]";
                   break;
                }
                case GamsOption::Type::CHAR :
                {
-                  f << "    Possible values: character  " << std::endl;
+                  f << "character";
                   break;
                }
                case GamsOption::Type::STRING :
                {
-                  f << "    Possible values: string  " << std::endl;
+                  f << "string";
                   break;
                }
             }
+            f << "  " << std::endl;
+
             if( opt.defaultdescr.empty() )
             {
                if( opt.type == GamsOption::Type::STRING && opt.defaultval.stringval[0] == '\0' )
