@@ -12,6 +12,94 @@
 #include <cstdio>
 #include <iostream>
 #include <fstream>
+#include <sstream>
+
+std::string GamsOption::Value::toStringGams(
+   GamsOption::Type type,
+   bool             quotestr
+) const
+{
+   std::stringstream s;
+   switch( type )
+   {
+      case GamsOption::Type::BOOL:
+         s << boolval;
+         break;
+
+      case GamsOption::Type::INTEGER:
+         if( intval == -INT_MAX )
+            s << "minint";
+         else if( intval == INT_MAX )
+            s << "maxint";
+         else
+            s << intval;
+         break;
+
+      case GamsOption::Type::REAL:
+         if( realval == -DBL_MAX )
+            s << "mindouble";
+         else if( realval == DBL_MAX )
+            s << "maxdouble";
+         else
+            s << realval;
+         break;
+
+      case GamsOption::Type::CHAR:
+         if( quotestr )
+            s << '"' << charval << '"';
+         else
+            s << charval;
+         break;
+
+      case GamsOption::Type::STRING:
+         if( quotestr )
+            s << '"' << GamsOptions::makeValidMarkdownString(stringval) << '"';
+         else
+            s << GamsOptions::makeValidMarkdownString(stringval);
+         break;
+   }
+   return s.str();
+}
+
+std::string GamsOption::Value::toStringMarkdown(
+   GamsOption::Type type
+) const
+{
+   std::stringstream s;
+   switch( type )
+   {
+      case GamsOption::Type::BOOL:
+         s << boolval;
+         break;
+
+      case GamsOption::Type::INTEGER:
+         if( intval == -INT_MAX )
+            s << "-infinity";
+         else if( intval == INT_MAX )
+            s << "infinity";
+         else
+            s << intval;
+         break;
+
+      case GamsOption::Type::REAL:
+         if( realval == -DBL_MAX )
+            s << "-infinity";
+         else if( realval == DBL_MAX )
+            s << "infinity";
+         else
+            s << realval;
+         break;
+
+      case GamsOption::Type::CHAR:
+         s << charval;
+         break;
+
+      case GamsOption::Type::STRING:
+         s << stringval;
+         break;
+   }
+   return s.str();
+}
 
 void GamsOptions::writeGMS(
    bool shortdoc
@@ -187,12 +275,7 @@ void GamsOptions::writeGMS(
 
          case GamsOption::Type::INTEGER:
             f << "I.(def ";
-            if( d->defaultval.intval == INT_MAX )
-               f << "maxint";
-            else if( d->defaultval.intval == -INT_MAX )
-               f << "minint";
-            else
-               f << d->defaultval.intval;
+            f << d->defaultval.toStringGams(d->type);
             if( d->minval.intval == -INT_MAX )
                f << ", lo minint";
             else if( d->minval.intval != 0 )
@@ -203,12 +286,7 @@ void GamsOptions::writeGMS(
 
          case GamsOption::Type::REAL:
             f << "R.(def ";
-            if( d->defaultval.realval == DBL_MAX )
-               f << "maxdouble";
-            else if( d->defaultval.realval == -DBL_MAX )
-               f << "mindouble";
-            else
-               f << d->defaultval.realval;
+            f << d->defaultval.toStringGams(d->type);
             if( d->minval.realval == -DBL_MAX )
                f << ", lo mindouble";
             else if( d->minval.realval != 0 )
@@ -368,66 +446,14 @@ void GamsOptions::writeDef()
       // ref
       f << ' ' << (opt.refval >= -1 ? opt.refval : 0) << ' ';
 
-      // default, lower, upper
-      switch( opt.type )
+      // default
+      f << opt.defaultval.toStringGams(opt.type, true);
+
+      // lower, upper
+      if( opt.type == GamsOption::Type::INTEGER || opt.type == GamsOption::Type::REAL )
       {
-         case GamsOption::Type::BOOL:
-            f << opt.defaultval.boolval;
-            break;
-
-         case GamsOption::Type::INTEGER:
-            if( opt.defaultval.intval == -INT_MAX )
-               f << "minint";
-            else if( opt.defaultval.intval == INT_MAX )
-               f << "maxint";
-            else
-               f << opt.defaultval.intval;
-            f << ' ';
-            if( opt.minval.intval == -INT_MAX )
-               f << "minint";
-            else if( opt.minval.intval == INT_MAX )
-               f << "maxint";
-            else
-               f << opt.minval.intval;
-            f << ' ';
-            if( opt.maxval.intval == -INT_MAX )
-               f << "minint";
-            else if( opt.maxval.intval == INT_MAX )
-               f << "maxint";
-            else
-               f << opt.maxval.intval;
-            break;
-
-         case GamsOption::Type::REAL:
-            if( opt.defaultval.realval == -DBL_MAX )
-               f << "mindouble";
-            else if( opt.defaultval.realval == DBL_MAX )
-               f << "maxdouble";
-            else
-               f << opt.defaultval.realval;
-            f << ' ';
-            if( opt.minval.realval == -DBL_MAX )
-               f << "mindouble";
-            else if( opt.minval.realval == DBL_MAX )
-               f << "maxdouble";
-            else
-               f << opt.minval.realval;
-            f << ' ';
-            if( opt.maxval.realval == -DBL_MAX )
-               f << "mindouble";
-            else if( opt.maxval.realval == DBL_MAX )
-               f << "maxdouble";
-            else
-               f << opt.maxval.realval;
-            break;
-
-         case GamsOption::Type::CHAR:
-            f << '"' << opt.defaultval.charval << '"';
-            break;
-
-         case GamsOption::Type::STRING:
-            f << '"' << opt.defaultval.stringval << '"';
-            break;
+         f << ' ' << opt.minval.toStringGams(opt.type);
+         f << ' ' << opt.maxval.toStringGams(opt.type);
       }
 
       // not hidden
@@ -456,26 +482,7 @@ void GamsOptions::writeDef()
          std::sort(opt.enumval.begin(), opt.enumval.end(), GamsOption::EnumValCompare(opt.type));  // TODO remove
          for( auto& eval : opt.enumval )
          {
-            f << ' ';
-            switch( opt.type )
-            {
-               case GamsOption::Type::INTEGER:
-                  if( eval.first.intval == -INT_MAX )
-                     f << "minint";
-                  else if( eval.first.intval == INT_MAX )
-                     f << "maxint";
-                  else
-                     f << eval.first.intval;
-                  break;
-
-               case GamsOption::Type::CHAR:
-                  f << '"' << eval.first.charval << '"';
-                  break;
-
-               case GamsOption::Type::STRING:
-                  f << '"' << tolower(eval.first.stringval) << '"';  // TODO remove tolower
-                  break;
-            }
+            f << ' ' << eval.first.toStringGams(opt.type, true);
 
             // not hidden
             f << " 1";
@@ -569,8 +576,6 @@ void GamsOptions::writeMarkdown(
                case GamsOption::Type::BOOL :
                {
                   f << "    Possible values: boolean  " << std::endl;
-                  if( opt.defaultdescr.empty() )
-                     f << "    Default: " << opt.defaultval.boolval << "  " << std::endl;
                   break;
                }
                case GamsOption::Type::INTEGER :
@@ -588,16 +593,6 @@ void GamsOptions::writeMarkdown(
                         f << "    Possible values: integer >= " << opt.minval.intval << "  " << std::endl;
                      else
                         f << "    Possible values: " << opt.minval.intval << " <= integer <= " << opt.maxval.intval << "  " << std::endl;
-                  }
-                  if( opt.defaultdescr.empty() )
-                  {
-                     if( opt.defaultval.intval == -INT_MAX )
-                        f << "    Default: -infinity";
-                     else if( opt.defaultval.intval == INT_MAX )
-                        f << "    Default: infinity";
-                     else
-                        f << "    Default: " << opt.defaultval.intval;
-                     f << "  " << std::endl;
                   }
                   break;
                }
@@ -617,39 +612,25 @@ void GamsOptions::writeMarkdown(
                      else
                         f << "    Possible values: " << opt.minval.realval << " <= real <= " << opt.maxval.realval << "  " << std::endl;
                   }
-                  if( opt.defaultdescr.empty() )
-                  {
-                     if( opt.defaultval.realval == -DBL_MAX )
-                        f << "    Default: -infinity";
-                     else if( opt.defaultval.realval == DBL_MAX )
-                        f << "    Default: infinity";
-                     else
-                        f << "    Default: " << opt.defaultval.realval;
-                     f << "  " << std::endl;
-                  }
                   break;
                }
                case GamsOption::Type::CHAR :
                {
                   f << "    Possible values: character  " << std::endl;
-                  if( opt.defaultdescr.empty() )
-                     f << "    Default: " << opt.defaultval.charval << "  " << std::endl;
                   break;
                }
                case GamsOption::Type::STRING :
                {
                   f << "    Possible values: string  " << std::endl;
-                  if( opt.defaultdescr.empty() )
-                  {
-                     f << "    Default: ";
-                     if( opt.defaultval.stringval[0] != '\0' )
-                        f << makeValidMarkdownString(opt.defaultval.stringval);
-                     else
-                        f << "_empty_";
-                     f << "  " << std::endl;
-                  }
                   break;
                }
+            }
+            if( opt.defaultdescr.empty() )
+            {
+               if( opt.type == GamsOption::Type::STRING && opt.defaultval.stringval[0] == '\0' )
+                  f << "    Default: _empty_  " << std::endl;
+               else
+                  f << "    Default: " << opt.defaultval.toStringMarkdown(opt.type) << "  " << std::endl;
             }
          }
          else
@@ -666,21 +647,11 @@ void GamsOptions::writeMarkdown(
                      isdefault = e.first.boolval == opt.defaultval.boolval;
                      break;
                   case GamsOption::Type::INTEGER :
-                     if( e.first.intval == -INT_MAX )
-                        f << "-infinity";
-                     else if( e.first.intval == INT_MAX )
-                        f << "infinity";
-                     else
-                        f << e.first.intval;
+                     f << e.first.toStringMarkdown(opt.type);
                      isdefault = e.first.intval == opt.defaultval.intval;
                      break;
                   case GamsOption::Type::REAL :
-                     if( e.first.realval == -DBL_MAX )
-                        f << "-infinity";
-                     else if( e.first.realval == DBL_MAX )
-                        f << "infinity";
-                     else
-                        f << e.first.realval;
+                     f << e.first.toStringMarkdown(opt.type);
                      isdefault = e.first.realval == opt.defaultval.realval;
                      break;
                   case GamsOption::Type::CHAR :
@@ -688,7 +659,7 @@ void GamsOptions::writeMarkdown(
                      isdefault = e.first.charval == opt.defaultval.charval;
                      break;
                   case GamsOption::Type::STRING :
-                     f << makeValidMarkdownString(e.first.stringval);
+                     f << e.first.toStringMarkdown(opt.type);
                      isdefault = strcmp(e.first.stringval, opt.defaultval.stringval) == 0;
                      break;
                }

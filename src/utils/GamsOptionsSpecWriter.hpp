@@ -44,6 +44,15 @@ public:
       Value()
       :  stringval(NULL)
       { }
+
+      std::string toStringGams(
+         GamsOption::Type type,
+         bool             quotestr = false
+         ) const;
+
+      std::string toStringMarkdown(
+         GamsOption::Type type
+         ) const;
    };
 
    class ValueCompare
