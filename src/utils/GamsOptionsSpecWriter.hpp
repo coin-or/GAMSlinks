@@ -51,7 +51,8 @@ public:
          ) const;
 
       std::string toStringMarkdown(
-         GamsOption::Type type
+         GamsOption::Type type,
+         bool             doxygen = false
          ) const;
    };
 
@@ -339,6 +340,19 @@ public:
          }
       }
    }
+
+   /// get string describing range of option in markdown
+   std::string getRangeMarkdown(
+      bool doxygen = false
+      ) const;
+
+   // comparison for sorting options by name
+   bool operator<(
+      const GamsOption& other
+      ) const
+   {
+      return name < other.name;
+   }
 };
 
 
@@ -360,6 +374,15 @@ private:
       )
    {
       std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+      return s;
+   }
+
+   static
+   std::string toupper(
+      std::string s
+      )
+   {
+      std::transform(s.begin(), s.end(), s.begin(), ::toupper);
       return s;
    }
 
@@ -493,7 +516,9 @@ public:
    }
 
    /// write options in .gms + .txt for GAMS mkopt scripts
-   void writeGMS(bool shortdoc = false);
+   void writeGMS(
+      bool shortdoc = false
+      );
 
    /// write options .def file
    void writeDef();
@@ -501,6 +526,11 @@ public:
    /// write options in Markdown
    void writeMarkdown(
       const char* filename
+      );
+
+   /// write options in Doxygen-flavored Markdown as used for GAMS docu
+   void writeDoxygen(
+      bool shortdoc = false
       );
 };
 

@@ -62,7 +62,8 @@ std::string GamsOption::Value::toStringGams(
 }
 
 std::string GamsOption::Value::toStringMarkdown(
-   GamsOption::Type type
+   GamsOption::Type type,
+   bool             doxygen
 ) const
 {
    std::stringstream s;
@@ -74,18 +75,22 @@ std::string GamsOption::Value::toStringMarkdown(
 
       case GamsOption::Type::INTEGER:
          if( intval == -INT_MAX )
-            s << "-infinity";
+            s << (doxygen ? "-&infin;" : "-infinity");
          else if( intval == INT_MAX )
-            s << "infinity";
+            s << (doxygen ? "&infin;" : "infinity");
+         else if( doxygen )
+            s << '`' << intval << '`';
          else
             s << intval;
          break;
 
       case GamsOption::Type::REAL:
          if( realval == -DBL_MAX )
-            s << "-infinity";
+            s << (doxygen ? "-&infin;" : "-infinity");
          else if( realval == DBL_MAX )
-            s << "infinity";
+            s << (doxygen ? "&infin;" : "infinity");
+         else if( doxygen )
+            s << '`' << realval << '`';
          else
             s << realval;
          break;
@@ -95,10 +100,94 @@ std::string GamsOption::Value::toStringMarkdown(
          break;
 
       case GamsOption::Type::STRING:
-         s << stringval;
+         s << GamsOptions::makeValidMarkdownString(stringval);
          break;
    }
    return s.str();
+}
+
+/// get string describing range of option in markdown
+std::string GamsOption::getRangeMarkdown(
+   bool doxygen
+   ) const
+{
+   std::stringstream s;
+   switch( type )
+   {
+      case GamsOption::Type::BOOL :
+      {
+         s << "boolean";
+         break;
+      }
+      case GamsOption::Type::INTEGER :
+      {
+         if( minval.intval == -INT_MAX && maxval.intval == INT_MAX )
+         {
+            s << "integer";
+            break;
+         }
+         if( doxygen )
+            s << "{";
+         else
+            s << "{ ";
+         s << minval.toStringMarkdown(type, doxygen);
+         s << ", ..., ";
+         s << maxval.toStringMarkdown(type, doxygen);
+         if( doxygen )
+            s << "}";
+         else
+            s << " }";
+         break;
+      }
+      case GamsOption::Type::REAL :
+      {
+         if( minval.realval == -DBL_MAX && maxval.realval == DBL_MAX )
+         {
+            s << "real";
+            break;
+         }
+         if( doxygen )
+            s << "[";
+         else
+            s << "[ ";
+         s << minval.toStringMarkdown(type, doxygen);
+         s << ", ";
+         s << maxval.toStringMarkdown(type, doxygen);
+         if( doxygen )
+            s << "]";
+         else
+            s << " ]";
+         break;
+      }
+      case GamsOption::Type::CHAR :
+      {
+         s << "character";
+         break;
+      }
+      case GamsOption::Type::STRING :
+      {
+         s << "string";
+         break;
+      }
+   }
+
+   return s.str();
+}
+
+
+/// replace problematic characters in identifier by underscore
+static
+std::string formatID(
+   const std::string& origid
+   )
+{
+   std::string id(origid);
+   std::replace(id.begin(), id.end(), ' ', '_');
+   std::replace(id.begin(), id.end(), '(', '_');
+   std::replace(id.begin(), id.end(), ')', '_');
+   std::replace(id.begin(), id.end(), '-', '_');
+   std::replace(id.begin(), id.end(), '/', '_');
+   return id;
 }
 
 void GamsOptions::writeGMS(
@@ -236,15 +325,7 @@ void GamsOptions::writeGMS(
 
    f << "set g Option Groups /" << std::endl;
    for( std::map<std::string, std::string>::iterator g(groups.begin()); g != groups.end(); ++g )
-   {
-      std::string id(g->first);
-      std::replace(id.begin(), id.end(), ' ', '_');
-      std::replace(id.begin(), id.end(), '(', '_');
-      std::replace(id.begin(), id.end(), ')', '_');
-      std::replace(id.begin(), id.end(), '-', '_');
-      std::replace(id.begin(), id.end(), '/', '_');
-      f << "  gr_" << id << "   '" << (g->second.length() > 0 ? g->second : g->first) << "'" << std::endl;
-   }
+      f << "  gr_" << formatID(g->first) << "   '" << (g->second.length() > 0 ? g->second : g->first) << "'" << std::endl;
    f << "/;" << std::endl;
 
    f << "set o Solver and Link Options with one-line description /" << std::endl;
@@ -260,13 +341,7 @@ void GamsOptions::writeGMS(
       if( d->longdescr.length() > 0 )
          havelongdescr = true;
 
-      std::string id(d->group);
-      std::replace(id.begin(), id.end(), ' ', '_');
-      std::replace(id.begin(), id.end(), '(', '_');
-      std::replace(id.begin(), id.end(), ')', '_');
-      std::replace(id.begin(), id.end(), '-', '_');
-      std::replace(id.begin(), id.end(), '/', '_');
-      f << "  gr_" << id << ".'" << d->name << "'.";
+      f << "  gr_" << formatID(d->group) << ".'" << d->name << "'.";
       switch( d->type )
       {
          case GamsOption::Type::BOOL:
@@ -527,13 +602,7 @@ void GamsOptions::writeDef()
    size_t i = 1;
    for( auto& group : groups )
    {
-      std::string id(group.first);
-      std::replace(id.begin(), id.end(), ' ', '_');
-      std::replace(id.begin(), id.end(), '(', '_');
-      std::replace(id.begin(), id.end(), ')', '_');
-      std::replace(id.begin(), id.end(), '-', '_');
-      std::replace(id.begin(), id.end(), '/', '_');
-      f << "gr_" << id;
+      f << "gr_" << formatID(group.first);
       f << " group ";
       f << i++;
       // not hidden
@@ -571,54 +640,7 @@ void GamsOptions::writeMarkdown(
          f << std::endl;
          if( opt.enumval.empty() )
          {
-            f << "> Range: ";
-            switch( opt.type )
-            {
-               case GamsOption::Type::BOOL :
-               {
-                  f << "boolean  " << std::endl;
-                  break;
-               }
-               case GamsOption::Type::INTEGER :
-               {
-                  if( opt.minval.intval == -INT_MAX && opt.maxval.intval == INT_MAX )
-                  {
-                     f << "integer";
-                     break;
-                  }
-                  f << "{ ";
-                  f << opt.minval.toStringMarkdown(opt.type);
-                  f << ", ..., ";
-                  f << opt.maxval.toStringMarkdown(opt.type);
-                  f << " }";
-                  break;
-               }
-               case GamsOption::Type::REAL :
-               {
-                  if( opt.minval.realval == -DBL_MAX && opt.maxval.realval == DBL_MAX )
-                  {
-                     f << "real";
-                     break;
-                  }
-                  f << "[ ";
-                  f << opt.minval.toStringMarkdown(opt.type);
-                  f << ", ";
-                  f << opt.maxval.toStringMarkdown(opt.type);
-                  f << " ]";
-                  break;
-               }
-               case GamsOption::Type::CHAR :
-               {
-                  f << "character";
-                  break;
-               }
-               case GamsOption::Type::STRING :
-               {
-                  f << "string";
-                  break;
-               }
-            }
-            f << "  " << std::endl;
+            f << "> Range: " << opt.getRangeMarkdown() << "  " << std::endl;
 
             if( opt.defaultdescr.empty() )
             {
@@ -683,4 +705,89 @@ void GamsOptions::writeMarkdown(
    }
 
    f.close();
+}
+
+
+void GamsOptions::writeDoxygen(
+   bool shortdoc
+   )
+{
+   std::string filename = "opt" + tolower(solver) + "_s.md";
+   std::cout << "Writing " << filename << std::endl;
+   std::ofstream f(filename.c_str());
+
+   options.sort();  // TODO remove
+
+   for( auto& group : groups )
+   {
+      f << std::endl;
+      f << "\\subsection ";
+
+      f << toupper(solver) << "_gr_" << formatID(group.first);
+      f << ' ' << (group.second.empty() ? group.first : group.second) << std::endl;
+
+      f << "| Option | Description | Default |" << std::endl;
+      f << "|:-------|:------------| ------: |" << std::endl;
+
+      for( auto& opt : options )
+      {
+         if( opt.group != group.first )
+            continue;
+
+         f << "| ";
+         f << "\\anchor " << toupper(solver);
+         f << opt.name;   // TODO should become f << formatID(opt.name);
+         if( !shortdoc )
+            f << "SHORTDOC \\ref " << toupper(solver) << formatID(opt.name) << " \"" << opt.name << " \"";
+         else
+            f << ' ' << opt.name;
+
+         f << " | ";
+         f << makeValidMarkdownString(opt.shortdescr);
+
+         if( shortdoc )
+         {
+            if( !opt.longdescr.empty() )
+               f << "<br/>" << opt.longdescr;
+
+            if( opt.enumval.empty() )
+            {
+               if( (opt.type == GamsOption::Type::INTEGER && (opt.minval.intval != 0 || opt.maxval.intval != INT_MAX)) ||
+                   (opt.type == GamsOption::Type::REAL && (opt.minval.realval != 0.0 || opt.maxval.realval != DBL_MAX)) )   // TODO remove
+               f << "<br/>Range: " << opt.getRangeMarkdown(true);
+            }
+            for( auto& e : opt.enumval )
+            {
+               f << "<br/> `" << e.first.toStringMarkdown(opt.type, true) << '`';
+               if( !e.second.empty() )
+                  f << ": " << makeValidMarkdownString(e.second);
+            }
+            if( !opt.synonyms.empty() )
+            {
+               f << "<br/>Synonyms:";
+               for( auto& syn : opt.synonyms )
+               {
+                  f << ' ' << syn;
+               }
+            }
+         }
+
+         f << " | ";
+         if( opt.type != GamsOption::Type::STRING || opt.defaultval.stringval[0] != '\0' || !opt.defaultdescr.empty() )
+         {
+            f << "<tt>";
+            if( opt.defaultdescr.empty() )
+               f << opt.defaultval.toStringMarkdown(opt.type);  // TODO ", true"  and remove tt
+            else
+               f << opt.defaultdescr;
+            f << "</tt> ";
+         }
+         f << '|' << std::endl;
+      }
+   }
+
+   // TODO _a.md
+
+   f.close();
+
 }

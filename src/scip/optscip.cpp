@@ -329,6 +329,8 @@ int main(int argc, char** argv)
       }
    }
 
+   gmsopt.writeDoxygen(true);
+
    gmsopt.writeGMS(true);
 
    /* branching rules */
