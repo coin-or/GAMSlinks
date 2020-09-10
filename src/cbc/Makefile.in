@@ -78,8 +78,6 @@ am__make_running_with_option = \
   test $$has_opt = yes
 am__make_dryrun = (target_option=n; $(am__make_running_with_option))
 am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
-pkgdatadir = $(datadir)/@PACKAGE@
-pkgincludedir = $(includedir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkglibexecdir = $(libexecdir)/@PACKAGE@
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
@@ -135,7 +133,8 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(datadir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgdatadir)" \
+	"$(DESTDIR)$(pkgdocdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libGamsCbc_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -221,7 +220,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-DATA = $(data_DATA)
+DATA = $(pkgdata_DATA) $(pkgdoc_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -241,6 +240,8 @@ am__define_uniq_tagged_files = \
   done | $(am__uniquify_input)`
 ETAGS = etags
 CTAGS = ctags
+pkgdatadir = $(datadir)/$(PACKAGE_TARNAME)
+pkgincludedir = $(includedir)/coin-or
 ACLOCAL = @ACLOCAL@
 ADD_CFLAGS = @ADD_CFLAGS@
 ADD_CXXFLAGS = @ADD_CXXFLAGS@
@@ -316,7 +317,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
-LDFLAGS = @LDFLAGS@ $(LT_LDFLAGS)
+LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -411,10 +412,23 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = foreign subdir-objects
+pkgdocdir = $(docdir)
+pkgconfiglibdir = $(libdir)/pkgconfig
+
+# doxydocdir is the top-level directory for doxygen documentation. It holds
+# the tag file and possibly the PDF or Postscript version. doxyhtmldir is
+# typically a subdirectory containing all the files doxygen creates for
+# html documentation.
+doxydocdir = $(pkgdocdir)/doxydoc
+doxyhtmldir = $(doxydocdir)/html
+DocFiles = README README.md AUTHORS AUTHORS.md LICENSE LICENSE.md
+COIN_HAS_DOXYGEN = @COIN_HAS_DOXYGEN_TRUE@TRUE
+COIN_HAS_LATEX = @COIN_HAS_LATEX_TRUE@TRUE
+DOXYTAG_EDIT = sed -e 's|@baredocdir_nosub@|$(datarootdir)/doc|g'
 AM_CPPFLAGS = -I$(srcdir)/../osi -I$(srcdir)/../utils \
 	$(GAMSCBC_CFLAGS) -I"$(GAMS_PATH)/apifiles/C/api" \
 	$(GAMSLIBCFLAGS)
+AM_LDFLAGS = $(LT_LDFLAGS)
 lib_LTLIBRARIES = libGamsCbc.la
 libGamsCbc_la_SOURCES = GamsCbc.cpp \
   ../osi/GamsOsiHelper.cpp ../osi/GamsMessageHandler.cpp \
@@ -424,15 +438,16 @@ libGamsCbc_la_SOURCES = GamsCbc.cpp \
 libGamsCbc_la_LIBADD = $(GAMSCBC_LFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
-	../utils/cfgmcc.c optcbc.txt optcbc.gms
+	../utils/cfgmcc.c
 optcbc_SOURCES = optcbc.cpp ../utils/GamsOptionsSpecWriter.cpp
 optcbc_LDADD = libGamsCbc.la
-data_DATA = optcbc.def
+pkgdata_DATA = optcbc.def
+pkgdoc_DATA = optcbc.md
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .cpp .lo .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../utils/Makefile_gamsapi.inc $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../BuildTools/Makemain.inc $(srcdir)/../utils/Makefile_gamsapi.inc $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -452,7 +467,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
 	esac;
-$(srcdir)/../utils/Makefile_gamsapi.inc $(am__empty):
+$(srcdir)/../../BuildTools/Makemain.inc $(srcdir)/../utils/Makefile_gamsapi.inc $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -633,27 +648,48 @@ clean-libtool:
 	-rm -rf .libs _libs
 	-rm -rf ../osi/.libs ../osi/_libs
 	-rm -rf ../utils/.libs ../utils/_libs
-install-dataDATA: $(data_DATA)
+install-pkgdataDATA: $(pkgdata_DATA)
 	@$(NORMAL_INSTALL)
-	@list='$(data_DATA)'; test -n "$(datadir)" || list=; \
+	@list='$(pkgdata_DATA)'; test -n "$(pkgdatadir)" || list=; \
 	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(datadir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(datadir)" || exit 1; \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(pkgdatadir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(pkgdatadir)" || exit 1; \
 	fi; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(datadir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(datadir)" || exit $$?; \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(pkgdatadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(pkgdatadir)" || exit $$?; \
 	done
 
-uninstall-dataDATA:
+uninstall-pkgdataDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(data_DATA)'; test -n "$(datadir)" || list=; \
+	@list='$(pkgdata_DATA)'; test -n "$(pkgdatadir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(datadir)'; $(am__uninstall_files_from_dir)
+	dir='$(DESTDIR)$(pkgdatadir)'; $(am__uninstall_files_from_dir)
+install-pkgdocDATA: $(pkgdoc_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(pkgdoc_DATA)'; test -n "$(pkgdocdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(pkgdocdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(pkgdocdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(pkgdocdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(pkgdocdir)" || exit $$?; \
+	done
+
+uninstall-pkgdocDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(pkgdoc_DATA)'; test -n "$(pkgdocdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(pkgdocdir)'; $(am__uninstall_files_from_dir)
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -710,7 +746,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS) $(LTLIBRARIES) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(datadir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgdatadir)" "$(DESTDIR)$(pkgdocdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -783,7 +819,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-dataDATA
+install-data-am: install-pkgdataDATA install-pkgdocDATA
 
 install-dvi: install-dvi-am
 
@@ -841,8 +877,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-dataDATA uninstall-libLTLIBRARIES \
-	uninstall-local
+uninstall-am: uninstall-libLTLIBRARIES uninstall-local \
+	uninstall-pkgdataDATA uninstall-pkgdocDATA
 
 .MAKE: install-am install-strip
 
@@ -851,19 +887,100 @@ uninstall-am: uninstall-dataDATA uninstall-libLTLIBRARIES \
 	clean-noinstPROGRAMS cscopelist-am ctags ctags-am distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags dvi dvi-am html html-am info info-am install \
-	install-am install-data install-data-am install-dataDATA \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-exec-local install-html install-html-am install-info \
-	install-info-am install-libLTLIBRARIES install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-dataDATA \
-	uninstall-libLTLIBRARIES uninstall-local
+	install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-exec-local \
+	install-html install-html-am install-info install-info-am \
+	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
+	install-pkgdataDATA install-pkgdocDATA install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-libLTLIBRARIES uninstall-local \
+	uninstall-pkgdataDATA uninstall-pkgdocDATA
 
 .PRECIOUS: Makefile
 
+
+doxygen-docs: 
+	if test "$(COIN_HAS_DOXYGEN)" = TRUE; then \
+	  if test -d "doxydoc/"; then \
+	    if test -f doxydoc/doxygen.conf ; then \
+	      $(DOXYTAG_EDIT) \
+	        doxydoc/doxygen.conf > doxydoc/doxygen.conf.tmp ; \
+	      mv doxydoc/doxygen.conf.tmp doxydoc/doxygen.conf ; \
+	    fi ; \
+	    doxygen doxydoc/doxygen.conf;\
+	  fi;\
+	fi
+
+pdf-doxygen-docs: doxygen-docs
+	if test "$(COIN_HAS_DOXYGEN)" = TRUE; then \
+	  if test -d "doxydoc/latex"; then \
+       	    if test "$(COIN_HAS_LATEX)" = TRUE; then \
+	      cd doxydoc/latex;\
+	      $(MAKE) pdf;\
+	      cd -;\
+	    fi;\
+	  fi;\
+	fi
+
+clean-doxygen-docs:
+	if test -d "doxydoc"; then \
+	  cd doxydoc ;\
+	  rm -rf html latex *.log *.tag;\
+	fi
+
+install-doxygen-docs: doxygen-docs
+	if test "$(COIN_HAS_DOXYGEN)" = TRUE; then \
+	  if test -d "doxydoc"; then \
+	    test -d "$(DESTDIR)$(doxydocdir)" || \
+	         $(mkdir_p) "$(DESTDIR)$(doxydocdir)"; \
+	    $(INSTALL_DATA) doxydoc/@coin_doxy_tagname@ \
+	        "$(DESTDIR)$(doxydocdir)"; \
+	    if test -f "doxydoc/latex/refman.pdf"; then \
+	      $(INSTALL_DATA) doxydoc/latex/refman.pdf \
+	          "$(DESTDIR)$(doxydocdir)";\
+	    fi;\
+	    if test -d "doxydoc/html"; then \
+	      test -d "$(DESTDIR)$(doxyhtmldir)/search/" || \
+	           $(mkdir_p) "$(DESTDIR)$(doxyhtmldir)/search/"; \
+	      $(INSTALL_DATA) doxydoc/html/*.* \
+	          "$(DESTDIR)$(doxyhtmldir)";\
+	      $(INSTALL_DATA) doxydoc/html/search/*.* \
+	          "$(DESTDIR)$(doxyhtmldir)/search";\
+            fi;\
+          fi;\
+        fi
+
+# It's not clear that uninstall-doc should also remove doxygen doc'n. Write
+# the rules so that the last one will remove pkgdocdir (which should be empty
+# by then).
+
+uninstall-doxygen-docs:
+	if test -d "$(DESTDIR)$(doxydocdir)"; then \
+	  rm -rf "$(DESTDIR)$(doxydocdir)"; \
+	fi
+	rmdir $(DESTDIR)$(pkgdocdir) || true
+
+install-doc:
+	$(mkdir_p) "$(DESTDIR)$(pkgdocdir)"
+	for file in $(DocFiles); do \
+	  if test -f "$$file"; then dir=; else dir="$(srcdir)/"; fi; \
+	  if test -f "$$dir$$file"; then \
+	    $(INSTALL_DATA) "$$dir$$file" "$(DESTDIR)$(pkgdocdir)/$$file"; \
+	  fi; \
+	done
+
+uninstall-doc:
+	for file in $(DocFiles); do \
+	  rm -f "$(DESTDIR)$(pkgdocdir)/$$file"; \
+	done
+	rmdir $(DESTDIR)$(pkgdocdir) || true
+
+.PHONY: install-doc uninstall-doc \
+	doxygen-docs pdf-doxygen-docs clean-doxygen-docs \
+	install-doxygen-docs uninstall-doxygen-docs
 ../utils/optcc.c : $(GAMS_PATH)/apifiles/C/api/optcc.c
 	@cp $< $@
 
@@ -884,14 +1001,14 @@ uninstall-am: uninstall-dataDATA uninstall-libLTLIBRARIES \
 
 ../utils/cfgmcc.c : $(GAMS_PATH)/apifiles/C/api/cfgmcc.c
 	@cp $< $@
-optcbc.def : optcbc$(EXEEXT)
+optcbc.def optcbc.md : optcbc$(EXEEXT)
 	./optcbc$(EXEEXT)
 
-install-exec-local : install-libLTLIBRARIES install-dataDATA
-	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCbc.la MYCBC cbc "LP MIP RMIP" 5 @datadir@/optcbc.def
+install-exec-local : install-libLTLIBRARIES install-pkgdataDATA
+	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCbc.la MYCBC cbc "LP MIP RMIP" 5 $(pkgdatadir)/optcbc.def
 
 uninstall-local :
-	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYCBC @datadir@/optcbc.def
+	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYCBC $(pkgdatadir)/optcbc.def
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

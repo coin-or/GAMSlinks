@@ -4,14 +4,14 @@
 #
 # Author: Stefan Vigerske
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+include ../../BuildTools/Makemain.inc
 
 AM_CPPFLAGS = \
   -I$(srcdir)/../osi \
   -I$(srcdir)/../utils \
   $(GAMSCBC_CFLAGS)
 
-LDFLAGS += $(LT_LDFLAGS)
+AM_LDFLAGS = $(LT_LDFLAGS)
 
 lib_LTLIBRARIES = libGamsCbc.la
 libGamsCbc_la_SOURCES = GamsCbc.cpp \
@@ -26,14 +26,14 @@ include ../utils/Makefile_gamsapi.inc
 noinst_PROGRAMS = optcbc
 optcbc_SOURCES = optcbc.cpp ../utils/GamsOptionsSpecWriter.cpp
 optcbc_LDADD = libGamsCbc.la
-CLEANFILES += optcbc.txt optcbc.gms
 
-data_DATA = optcbc.def
-optcbc.def : optcbc$(EXEEXT)
+pkgdata_DATA = optcbc.def
+pkgdoc_DATA = optcbc.md
+optcbc.def optcbc.md : optcbc$(EXEEXT)
 	./optcbc$(EXEEXT)
 
-install-exec-local : install-libLTLIBRARIES install-dataDATA
-	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCbc.la MYCBC cbc "LP MIP RMIP" 5 @datadir@/optcbc.def
+install-exec-local : install-libLTLIBRARIES install-pkgdataDATA
+	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCbc.la MYCBC cbc "LP MIP RMIP" 5 $(pkgdatadir)/optcbc.def
 
 uninstall-local :
-	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYCBC @datadir@/optcbc.def
+	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYCBC $(pkgdatadir)/optcbc.def

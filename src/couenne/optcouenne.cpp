@@ -289,6 +289,6 @@ int main(int argc, char** argv)
    }
    gmsopt.finalize();
 
-   gmsopt.writeMarkdown("optcouenne.md");
+   gmsopt.writeMarkdown();
    gmsopt.writeDef();
 }

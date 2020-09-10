@@ -4,13 +4,13 @@
 #
 # Author: Stefan Vigerske
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+include ../../BuildTools/Makemain.inc
 
 AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSIPOPT_CFLAGS)
 
-LDFLAGS += $(LT_LDFLAGS)
+AM_LDFLAGS = $(LT_LDFLAGS)
 
 lib_LTLIBRARIES = libGamsIpopt.la
 libGamsIpopt_la_SOURCES = GamsIpopt.cpp GamsNLP.cpp GamsJournal.cpp \
@@ -24,7 +24,11 @@ include ../utils/Makefile_gamsapi.inc
 noinst_PROGRAMS = optipopt
 optipopt_SOURCES = optipopt.cpp ../utils/GamsOptionsSpecWriter.cpp
 optipopt_LDADD = libGamsIpopt.la
-CLEANFILES += optipopt.gms optipopt.txt
+
+pkgdata_DATA = optipopt.def
+pkgdoc_DATA = optipopt.md
+optipopt.def optipopt.md : optipopt$(EXEEXT)
+	./optipopt$(EXEEXT)
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsIpopt.la MYIPOPT ipo "LP RMIP NLP DNLP RMINLP CNS QCP RMIQCP" 0

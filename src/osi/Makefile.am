@@ -4,13 +4,13 @@
 #
 # Author: Stefan Vigerske
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+include ../../BuildTools/Makemain.inc
 
 AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSOSI_CFLAGS)
 
-LDFLAGS += $(LT_LDFLAGS)
+AM_LDFLAGS = $(LT_LDFLAGS)
 
 lib_LTLIBRARIES = libGamsOsi.la
 libGamsOsi_la_SOURCES = GamsOsiHelper.cpp GamsOsi.cpp GamsMessageHandler.cpp \

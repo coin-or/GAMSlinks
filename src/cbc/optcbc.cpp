@@ -494,7 +494,11 @@ int main(int argc, char** argv)
    gmsopt.finalize();
 
    gmsopt.writeDef();
+#ifdef GAMS_BUILD
    gmsopt.writeDoxygen();
+#else
+   gmsopt.writeMarkdown();
+#endif
 
    // print uncollected Cbc options
    //for( auto& cbcopt : cbcopts )

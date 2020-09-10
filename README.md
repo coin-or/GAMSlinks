@@ -63,7 +63,7 @@ Alternatively one has to provide a path with the `--with-gams` option of configu
 
 The configure call also supports the VPATH feature, so one can compile the code in a different place than the one where the source code is located.
 
-The call to "make install" will also make the GAMS system aware of the solver interfaces that have been build.g
+The call to "make install" will also make the GAMS system aware of the solver interfaces that have been build.
 
 
 ## Usage / Documentation
@@ -77,7 +77,8 @@ The prefix "`MY`" has been added to distinguish the solvers from those that are 
 
 For more information we refer to the [GAMS documentation](http://www.gams.com/latest/docs).
 
-For a documentation of the GAMS/COIN-OR links and their parameters please see the [GAMS solver manuals](http://www.gams.com/latest/docs/S_MAIN.html).
+A documentation of options available for GAMS solver option files is installed in the `<docdir>/gamslinks`.
+For solvers distributed with GAMS, see also the [GAMS solver manuals](http://www.gams.com/latest/docs/S_MAIN.html).
 
 ## Testing
 

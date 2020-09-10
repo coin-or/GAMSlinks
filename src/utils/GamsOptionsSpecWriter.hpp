@@ -536,9 +536,7 @@ public:
    void writeDef();
 
    /// write options in Markdown
-   void writeMarkdown(
-      const char* filename
-      );
+   void writeMarkdown();
 
    /// write options in Doxygen-flavored Markdown as used for GAMS docu
    void writeDoxygen(

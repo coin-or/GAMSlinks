@@ -4,13 +4,13 @@
 #
 # Author: Stefan Vigerske
 
-AUTOMAKE_OPTIONS = foreign subdir-objects
+include ../../BuildTools/Makemain.inc
 
 AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSSCIP_CFLAGS)
 
-LDFLAGS += $(LT_LDFLAGS)
+AM_LDFLAGS = $(LT_LDFLAGS)
 
 lib_LTLIBRARIES = libGamsScip.la
 libGamsScip_la_SOURCES = GamsScip.cpp reader_gmo.c event_solvetrace.c \
@@ -24,7 +24,10 @@ include ../utils/Makefile_gamsapi.inc
 noinst_PROGRAMS = optscip
 optscip_SOURCES = optscip.cpp ../utils/GamsOptionsSpecWriter.cpp
 optscip_LDADD = libGamsScip.la
-CLEANFILES += optscip.gms branchrules.md conflicthdlrs.md conshdlrs.md disps.md heurs.md nodesels.md presols.md props.md sepas.md
+
+pkgdoc_DATA = optscip.md
+optscip.md : optscip$(EXEEXT)
+	./optscip$(EXEEXT)
 
 install-exec-local : install-libLTLIBRARIES
 	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsScip.la MYSCIP scp "MIP QCP RMIQCP NLP DNLP RMINLP CNS MIQCP MINLP" 5
