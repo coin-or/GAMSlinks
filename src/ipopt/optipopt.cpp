@@ -140,7 +140,7 @@ int main(int argc, char** argv)
                         "Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
                         "To use HSL_MA77, a HSL library needs to be provided.";
 
-                     defaultval = GamsOption::makeValue("ma27, if IpoptH, otherwise mumps");
+                     defaultdescr = "ma27, if IpoptH, otherwise mumps";
                   }
                   else
                   {
@@ -149,7 +149,7 @@ int main(int argc, char** argv)
                         longdescr = "Determines the method used to compute symmetric scaling factors for the augmented system (see also the \"linear_scaling_on_demand\" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. "
                            "Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately.";
 
-                        defaultval = GamsOption::makeValue("mc19, if IpoptH, otherwise none");
+                        defaultdescr = "mc19, if IpoptH, otherwise none";
                      }
 
                      enumval.reserve(settings.size());

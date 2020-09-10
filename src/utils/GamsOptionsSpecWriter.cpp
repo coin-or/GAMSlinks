@@ -571,7 +571,7 @@ void GamsOptions::writeDef()
       f << opt.defaultval.toStringGams(opt.type, true);
 
       // lower, upper
-      if( opt.type == GamsOption::Type::INTEGER || opt.type == GamsOption::Type::REAL )
+      if( (opt.type == GamsOption::Type::INTEGER || opt.type == GamsOption::Type::REAL) && opt.enumval.empty() )
       {
          f << ' ' << opt.minval.toStringGams(opt.type);
          f << ' ' << opt.maxval.toStringGams(opt.type);
@@ -594,7 +594,7 @@ void GamsOptions::writeDef()
       }
 
       // short description
-      f << ' ' << opt.shortdescr;  // TODO is this allowed to be longer than 255 chars?
+      f << ' ' << opt.shortdescr;
       f << std::endl;
 
       // enum values
@@ -610,7 +610,7 @@ void GamsOptions::writeDef()
 
             // short description
             if( !eval.second.empty() )
-               f << ' ' << eval.second;   // TODO is this allowed to be longer than 255 chars?
+               f << ' ' << eval.second;
 
             f << std::endl;
          }
@@ -861,9 +861,8 @@ void GamsOptions::writeDoxygen(
          f << "|:----|:------|" << std::endl;
          for( auto& e : opt.enumval )
          {
-            bool isdefault;
             f << "| " << e.first.toStringMarkdown(opt.type, true);
-            f << " | " << makeValidMarkdownString(e.second) << "|" << std::endl;
+            f << " | " << makeValidMarkdownString(e.second) << " |" << std::endl;
          }
       }
 

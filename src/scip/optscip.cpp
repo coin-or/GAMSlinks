@@ -67,6 +67,7 @@ bool ScipParamCompare(SCIP_PARAM* a, SCIP_PARAM* b)
    return SCIPparamIsAdvanced(b);
 }
 
+static
 void printPluginTables(
    SCIP* scip
    )

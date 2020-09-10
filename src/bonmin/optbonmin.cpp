@@ -14,6 +14,7 @@
 
 using namespace Ipopt;
 
+static
 void write_t(
    std::map<std::string, std::list<SmartPtr<RegisteredOption> > >& opts,
    SmartPtr<Bonmin::RegisteredOptions> regoptions
@@ -240,6 +241,7 @@ int main(int argc, char** argv)
       for( std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt != it_categ->second.end(); ++it_opt )
       {
          enumval.clear();
+         defaultdescr.clear();
          // minval_strict = false;
          // maxval_strict = false;
          switch( (*it_opt)->Type() )
@@ -292,7 +294,7 @@ int main(int argc, char** argv)
                         "Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
                         "To use HSL_MA77, a HSL library needs to be provided.";
 
-                     defaultval = GamsOption::makeValue("ma27, if BonminH, otherwise mumps");
+                     defaultdescr = "ma27, if BonminH, otherwise mumps";
                   }
                   else
                   {
@@ -301,7 +303,7 @@ int main(int argc, char** argv)
                         longdescr = "Determines the method used to compute symmetric scaling factors for the augmented system (see also the \"linear_scaling_on_demand\" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. "
                            "Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately.";
 
-                        defaultval = GamsOption::makeValue("mc19, if BonminH, otherwise none");
+                        defaultdescr = "mc19, if BonminH, otherwise none";
                      }
 
                      enumval.reserve(settings.size());
@@ -322,7 +324,6 @@ int main(int argc, char** argv)
          }
 
          longdescr = (*it_opt)->LongDescription();
-         defaultdescr.clear();
 
          // GAMS overwrites of Bonmin option defaults
          if( (*it_opt)->Name() == "nlp_log_at_root" )
