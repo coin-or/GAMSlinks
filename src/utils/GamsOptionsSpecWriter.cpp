@@ -738,7 +738,7 @@ void GamsOptions::writeDoxygen(
          f << "\\anchor " << toupper(solver);
          f << opt.name;   // TODO should become f << formatID(opt.name);
          if( !shortdoc )
-            f << "SHORTDOC \\ref " << toupper(solver) << formatID(opt.name) << " \"" << opt.name << " \"";
+            f << "SHORTDOC \\ref " << toupper(solver) << formatID(opt.name) << " \"" << opt.name << "\"";
          else
             f << ' ' << opt.name;
 
@@ -786,8 +786,85 @@ void GamsOptions::writeDoxygen(
       }
    }
 
-   // TODO _a.md
-
    f.close();
 
+   if( shortdoc )
+      return;
+
+   filename = "opt" + tolower(solver) + "_a.md";
+   std::cout << "Writing " << filename << std::endl;
+   f.open(filename.c_str());
+
+   for( auto& opt : options )
+   {
+      f << "\\anchor " << toupper(solver) << formatID(opt.name) << std::endl;
+
+      f << "<strong>" << opt.name << "</strong>";
+      f << " <em>";
+      switch( opt.type )
+      {
+         case GamsOption::Type::BOOL :
+            f << "(boolean)";
+            break;
+         case GamsOption::Type::INTEGER :
+            f << "(integer)";
+            break;
+         case GamsOption::Type::REAL :
+            f << "(real)";
+            break;
+         case GamsOption::Type::CHAR :
+            f << "(char)";
+            break;
+         case GamsOption::Type::STRING :
+            f << "(string)";
+            break;
+      }
+      f << "</em>";
+      f << ": " << makeValidMarkdownString(opt.shortdescr) << std::endl;
+      f << " \\ref " << toupper(solver) << formatID(opt.name) << "SHORTDOC \"&crarr;\"" << std::endl;
+
+      f << "<blockquote>" << std::endl;
+
+      if( !opt.synonyms.empty() )
+      {
+         f << "Synonym" << (opt.synonyms.size() > 1 ? "s" : "") << ':';
+         for( auto& syn : opt.synonyms )
+            f << ' ' << syn;
+         f << std::endl;
+      }
+
+      if( !opt.longdescr.empty() )
+         f << makeValidMarkdownString(opt.longdescr) << std::endl << std::endl;
+
+      if( opt.enumval.empty() )
+      {
+         f << "Range: " << opt.getRangeMarkdown(true) << std::endl << std::endl;
+      }
+
+      if( opt.defaultdescr.empty() )
+      {
+         if( opt.type == GamsOption::Type::STRING && opt.defaultval.stringval[0] == '\0' )
+            f << "Default: _empty_" << std::endl;
+         else
+            f << "Default: `" << opt.defaultval.toStringMarkdown(opt.type) << '`' << std::endl;
+      }
+      else
+         f << "Default: " << opt.defaultdescr << std::endl;
+      f << std::endl;
+
+      if( !opt.enumval.empty() )
+      {
+         f << "|value|meaning|" << std::endl;
+         f << "|:----|:------|" << std::endl;
+         for( auto& e : opt.enumval )
+         {
+            bool isdefault;
+            f << "| `" << e.first.toStringMarkdown(opt.type) << "`";
+            f << " | " << makeValidMarkdownString(e.second) << "|" << std::endl;
+         }
+      }
+
+      f << "</blockquote>" << std::endl;
+      f << std::endl;
+   }
 }
