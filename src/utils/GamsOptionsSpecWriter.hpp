@@ -21,6 +21,12 @@
 #include <climits>
 #include <cfloat>
 
+#ifdef _MSC_VER
+#ifndef strcasecmp
+#define strcasecmp _stricmp
+#endif
+#endif
+
 class GamsOption
 {
 public:
