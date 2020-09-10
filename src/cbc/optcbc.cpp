@@ -262,19 +262,22 @@ int main(int argc, char** argv)
    // MIP parameters
    gmsopt.setGroup("MIP Options");
 
-   opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "threads");
-   opt->defaultdescr = "GAMS threads";
-   opt->longdescr.clear();
-   opt->defaultval.intval = 1; // somehow I got a -1 from Cbc
-   opt->minval.intval = 1;
-   opt->maxval.intval = 99;
+   if( CbcModel::haveMultiThreadSupport() )
+   {
+      opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "threads");
+      opt->defaultdescr = "GAMS threads";
+      opt->longdescr.clear();
+      opt->defaultval.intval = 1; // somehow I got a -1 from Cbc
+      opt->minval.intval = 1;
+      opt->maxval.intval = 99;
 
-   GamsOption::EnumVals parallelmodes;
-   parallelmodes.append("opportunistic");
-   parallelmodes.append("deterministic");
-   gmsopt.collect("parallelmode", "whether to run opportunistic or deterministic",
-      "Determines whether a parallel MIP search (threads > 1) should be done in a deterministic (i.e., reproducible) way or in a possibly faster but not necessarily reproducible way",
-      "deterministic", parallelmodes, "", -1);
+      GamsOption::EnumVals parallelmodes;
+      parallelmodes.append("opportunistic");
+      parallelmodes.append("deterministic");
+      gmsopt.collect("parallelmode", "whether to run opportunistic or deterministic",
+         "Determines whether a parallel MIP search (threads > 1) should be done in a deterministic (i.e., reproducible) way or in a possibly faster but not necessarily reproducible way",
+         "deterministic", parallelmodes, "", -1);
+   }
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "strategy");
 

@@ -764,7 +764,7 @@ bool GamsCbc::setupParameters()
       optSetDblStr(opt, "cutoff", -optGetDblStr(opt, "cutoff"));
    if( !optGetDefinedStr(opt, "increment") && gevGetIntOpt(gev, gevUseCheat) )
       optSetDblStr(opt, "increment", gevGetDblOpt(gev, gevCheat));
-   if( !optGetDefinedStr(opt, "threads") )
+   if( CbcModel::haveMultiThreadSupport() && !optGetDefinedStr(opt, "threads") )
       optSetIntStr(opt, "threads", gevThreads(gev));
 
    // MIP parameters
@@ -896,7 +896,7 @@ bool GamsCbc::setupParameters()
    if( optGetStrStr(opt, "clocktype", clocktype) == NULL || strcmp(clocktype, "wall") == 0 )
       model->setUseElapsedTime(true);
 
-   nthreads = optGetIntStr(opt, "threads");
+   nthreads = CbcModel::haveMultiThreadSupport() ? optGetIntStr(opt, "threads") : 1;
    if( nthreads > 1 && CbcModel::haveMultiThreadSupport() )
    {
       // Cbc runs deterministic when 100 is added to nthreads
