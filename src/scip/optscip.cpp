@@ -328,10 +328,10 @@ int main(int argc, char** argv)
             opttype, defaultval, minval, maxval, enumval, defaultdescr);
       }
    }
+   gmsopt.finalize();
 
+   // gmsopt.writeDef();
    gmsopt.writeDoxygen(true);
-
-   gmsopt.writeGMS(true);
 
    /* branching rules */
    {

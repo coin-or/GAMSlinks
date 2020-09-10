@@ -78,8 +78,6 @@ std::string GamsOption::Value::toStringMarkdown(
             s << (doxygen ? "-&infin;" : "-infinity");
          else if( intval == INT_MAX )
             s << (doxygen ? "&infin;" : "infinity");
-         else if( doxygen )
-            s << '`' << intval << '`';
          else
             s << intval;
          break;
@@ -89,8 +87,6 @@ std::string GamsOption::Value::toStringMarkdown(
             s << (doxygen ? "-&infin;" : "-infinity");
          else if( realval == DBL_MAX )
             s << (doxygen ? "&infin;" : "infinity");
-         else if( doxygen )
-            s << '`' << realval << '`';
          else
             s << realval;
          break;
@@ -112,6 +108,7 @@ std::string GamsOption::getRangeMarkdown(
    ) const
 {
    std::stringstream s;
+
    switch( type )
    {
       case GamsOption::Type::BOOL :
@@ -121,22 +118,25 @@ std::string GamsOption::getRangeMarkdown(
       }
       case GamsOption::Type::INTEGER :
       {
-         if( minval.intval == -INT_MAX && maxval.intval == INT_MAX )
+         s << "{";
+         if( enumval.empty() )
          {
-            s << "integer";
-            break;
+            s << minval.toStringMarkdown(type, doxygen);
+            s << ", ..., ";
+            s << maxval.toStringMarkdown(type, doxygen);
          }
-         if( doxygen )
-            s << "{";
          else
-            s << "{ ";
-         s << minval.toStringMarkdown(type, doxygen);
-         s << ", ..., ";
-         s << maxval.toStringMarkdown(type, doxygen);
-         if( doxygen )
-            s << "}";
-         else
-            s << " }";
+         {
+            bool first = true;
+            for( auto& e : enumval )
+            {
+               if( !first )
+                  s << ", ";
+               s << e.first.toStringMarkdown(type, doxygen);
+               first = false;
+            }
+         }
+         s << "}";
          break;
       }
       case GamsOption::Type::REAL :
@@ -146,27 +146,65 @@ std::string GamsOption::getRangeMarkdown(
             s << "real";
             break;
          }
-         if( doxygen )
+         if( enumval.empty() )
+         {
             s << "[";
-         else
-            s << "[ ";
-         s << minval.toStringMarkdown(type, doxygen);
-         s << ", ";
-         s << maxval.toStringMarkdown(type, doxygen);
-         if( doxygen )
+            s << minval.toStringMarkdown(type, doxygen);
+            s << ", ";
+            s << maxval.toStringMarkdown(type, doxygen);
             s << "]";
+         }
          else
-            s << " ]";
+         {
+            s << "{";
+            bool first = true;
+            for( auto& e : enumval )
+            {
+               if( !first )
+                  s << ", ";
+               s << e.first.toStringMarkdown(type, doxygen);
+               first = false;
+            }
+            s << "}";
+         }
          break;
       }
       case GamsOption::Type::CHAR :
       {
-         s << "character";
+         if( enumval.empty() )
+         {
+            s << "character";
+         }
+         else
+         {
+            bool first = true;
+            for( auto& e : enumval )
+            {
+               if( !first )
+                  s << ", ";
+               s << e.first.toStringMarkdown(type, doxygen);
+               first = false;
+            }
+         }
          break;
       }
       case GamsOption::Type::STRING :
       {
-         s << "string";
+         if( enumval.empty() )
+         {
+            s << "string";
+         }
+         else
+         {
+            bool first = true;
+            for( auto& e : enumval )
+            {
+               if( !first )
+                  s << ", ";
+               s << e.first.toStringMarkdown(type, doxygen);
+               first = false;
+            }
+         }
          break;
       }
    }
@@ -174,6 +212,12 @@ std::string GamsOption::getRangeMarkdown(
    return s.str();
 }
 
+/// sorts options
+void GamsOptions::finalize()
+{
+   options.sort();
+   // TODO sort enum values?
+}
 
 /// replace problematic characters in identifier by underscore
 static
@@ -554,7 +598,7 @@ void GamsOptions::writeDef()
       // enum values
       if( !opt.enumval.empty() && (opt.type != GamsOption::Type::BOOL && opt.type != GamsOption::Type::REAL) )
       {
-         std::sort(opt.enumval.begin(), opt.enumval.end(), GamsOption::EnumValCompare(opt.type));  // TODO remove
+         // std::sort(opt.enumval.begin(), opt.enumval.end(), GamsOption::EnumValCompare(opt.type));
          for( auto& eval : opt.enumval )
          {
             f << ' ' << eval.first.toStringGams(opt.type, true);
@@ -716,8 +760,6 @@ void GamsOptions::writeDoxygen(
    std::cout << "Writing " << filename << std::endl;
    std::ofstream f(filename.c_str());
 
-   options.sort();  // TODO remove
-
    for( auto& group : groups )
    {
       f << std::endl;
@@ -736,7 +778,7 @@ void GamsOptions::writeDoxygen(
 
          f << "| ";
          f << "\\anchor " << toupper(solver);
-         f << opt.name;   // TODO should become f << formatID(opt.name);
+         f << formatID(opt.name);
          if( !shortdoc )
             f << "SHORTDOC \\ref " << toupper(solver) << formatID(opt.name) << " \"" << opt.name << "\"";
          else
@@ -752,13 +794,13 @@ void GamsOptions::writeDoxygen(
 
             if( opt.enumval.empty() )
             {
-               if( (opt.type == GamsOption::Type::INTEGER && (opt.minval.intval != 0 || opt.maxval.intval != INT_MAX)) ||
-                   (opt.type == GamsOption::Type::REAL && (opt.minval.realval != 0.0 || opt.maxval.realval != DBL_MAX)) )   // TODO remove
+               // if( (opt.type == GamsOption::Type::INTEGER && (opt.minval.intval != 0 || opt.maxval.intval != INT_MAX)) ||
+               //     (opt.type == GamsOption::Type::REAL && (opt.minval.realval != 0.0 || opt.maxval.realval != DBL_MAX)) )
                f << "<br/>Range: " << opt.getRangeMarkdown(true);
             }
             for( auto& e : opt.enumval )
             {
-               f << "<br/> `" << e.first.toStringMarkdown(opt.type, true) << '`';
+               f << "<br/>" << e.first.toStringMarkdown(opt.type, true);
                if( !e.second.empty() )
                   f << ": " << makeValidMarkdownString(e.second);
             }
@@ -775,12 +817,10 @@ void GamsOptions::writeDoxygen(
          f << " | ";
          if( opt.type != GamsOption::Type::STRING || opt.defaultval.stringval[0] != '\0' || !opt.defaultdescr.empty() )
          {
-            f << "<tt>";
             if( opt.defaultdescr.empty() )
-               f << opt.defaultval.toStringMarkdown(opt.type);  // TODO ", true"  and remove tt
+               f << opt.defaultval.toStringMarkdown(opt.type, true);
             else
                f << opt.defaultdescr;
-            f << "</tt> ";
          }
          f << '|' << std::endl;
       }
@@ -800,45 +840,28 @@ void GamsOptions::writeDoxygen(
       f << "\\anchor " << toupper(solver) << formatID(opt.name) << std::endl;
 
       f << "<strong>" << opt.name << "</strong>";
-      f << " <em>";
-      switch( opt.type )
-      {
-         case GamsOption::Type::BOOL :
-            f << "(boolean)";
-            break;
-         case GamsOption::Type::INTEGER :
-            f << "(integer)";
-            break;
-         case GamsOption::Type::REAL :
-            f << "(real)";
-            break;
-         case GamsOption::Type::CHAR :
-            f << "(char)";
-            break;
-         case GamsOption::Type::STRING :
-            f << "(string)";
-            break;
-      }
-      f << "</em>";
       f << ": " << makeValidMarkdownString(opt.shortdescr) << std::endl;
       f << " \\ref " << toupper(solver) << formatID(opt.name) << "SHORTDOC \"&crarr;\"" << std::endl;
 
       f << "<blockquote>" << std::endl;
 
-      if( !opt.synonyms.empty() )
-      {
-         f << "Synonym" << (opt.synonyms.size() > 1 ? "s" : "") << ':';
-         for( auto& syn : opt.synonyms )
-            f << ' ' << syn;
-         f << std::endl;
-      }
-
       if( !opt.longdescr.empty() )
          f << makeValidMarkdownString(opt.longdescr) << std::endl << std::endl;
 
-      if( opt.enumval.empty() )
+      if( !opt.enumval.hasDescription() )
       {
          f << "Range: " << opt.getRangeMarkdown(true) << std::endl << std::endl;
+      }
+      else
+      {
+         f << "|value|meaning|" << std::endl;
+         f << "|:----|:------|" << std::endl;
+         for( auto& e : opt.enumval )
+         {
+            bool isdefault;
+            f << "| " << e.first.toStringMarkdown(opt.type, true);
+            f << " | " << makeValidMarkdownString(e.second) << "|" << std::endl;
+         }
       }
 
       if( opt.defaultdescr.empty() )
@@ -846,22 +869,17 @@ void GamsOptions::writeDoxygen(
          if( opt.type == GamsOption::Type::STRING && opt.defaultval.stringval[0] == '\0' )
             f << "Default: _empty_" << std::endl;
          else
-            f << "Default: `" << opt.defaultval.toStringMarkdown(opt.type) << '`' << std::endl;
+            f << "Default: " << opt.defaultval.toStringMarkdown(opt.type, true) << std::endl;
       }
       else
          f << "Default: " << opt.defaultdescr << std::endl;
-      f << std::endl;
 
-      if( !opt.enumval.empty() )
+      if( !opt.synonyms.empty() )
       {
-         f << "|value|meaning|" << std::endl;
-         f << "|:----|:------|" << std::endl;
-         for( auto& e : opt.enumval )
-         {
-            bool isdefault;
-            f << "| `" << e.first.toStringMarkdown(opt.type) << "`";
-            f << " | " << makeValidMarkdownString(e.second) << "|" << std::endl;
-         }
+         f << std::endl << "Synonym" << (opt.synonyms.size() > 1 ? "s" : "") << ':';
+         for( auto& syn : opt.synonyms )
+            f << ' ' << syn;
+         f << std::endl;
       }
 
       f << "</blockquote>" << std::endl;

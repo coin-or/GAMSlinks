@@ -160,6 +160,15 @@ public:
       {
          emplace_back(makeValue(key), descr);
       }
+
+      /// returns whether there exists an enum value with non-empty description
+      bool hasDescription()
+      {
+         for( auto& e : *this )
+            if( !e.second.empty() )
+               return true;
+         return false;
+      }
    };
 
    class EnumValCompare
@@ -351,7 +360,7 @@ public:
       const GamsOption& other
       ) const
    {
-      return name < other.name;
+      return strcasecmp(name.c_str(), other.name.c_str()) < 0;
    }
 };
 
@@ -514,6 +523,9 @@ public:
       options.back().group = curgroup;
       return options.back();
    }
+
+   /// sorts options and groups
+   void finalize();
 
    /// write options in .gms + .txt for GAMS mkopt scripts
    void writeGMS(

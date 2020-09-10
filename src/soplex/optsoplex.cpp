@@ -118,6 +118,7 @@ int main(int argc, char** argv)
          SoPlex::Settings::realParam.description[i], std::string(),
          GamsOption::Type::REAL, defaultval, minval, maxval, enumval, defaultdescr);
    }
+   gmsopt.finalize();
 
-   gmsopt.writeGMS(true);
+   gmsopt.writeDoxygen(true);
 }

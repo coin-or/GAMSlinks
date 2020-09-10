@@ -287,7 +287,8 @@ int main(int argc, char** argv)
             opttype, defaultval, minval, maxval, enumval, defaultdescr);
       }
    }
+   gmsopt.finalize();
 
    gmsopt.writeMarkdown("optcouenne.md");
-   //gmsopt.writeGMS();
+   gmsopt.writeDef();
 }

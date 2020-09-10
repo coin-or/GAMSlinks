@@ -211,6 +211,7 @@ int main(int argc, char** argv)
             opttype, defaultval, minval, maxval, enumval, defaultdescr);
       }
    }
+   gmsopt.finalize();
 
    gmsopt.writeDef();
    gmsopt.writeDoxygen();
