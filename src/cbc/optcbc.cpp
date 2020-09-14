@@ -155,7 +155,7 @@ int main(int argc, char** argv)
    gmsopt.setGroup("General Options");
 
    opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "reslim", "seconds");
-   //opt->defaultval.realval = 1000.0;
+   opt->defaultval.realval = 1e10;
    opt->defaultdescr = "GAMS reslim";
    opt->longdescr.clear();
 
@@ -204,12 +204,7 @@ int main(int argc, char** argv)
 
    opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "crossover");
    // value "maybe" is only relevant for quadratic: remove value and mention in longdescr
-   for( GamsOption::EnumVals::iterator e(opt->enumval.begin()); e != opt->enumval.end(); ++e )
-      if( e->first == "maybe" )
-      {
-         opt->enumval.erase(e);
-         break;
-      }
+   opt->enumval.drop("maybe");
    opt->longdescr = "Interior point algorithms do not obtain a basic solution. "
       "This option will crossover to a basic solution suitable for ranging or branch and cut.";
    add01(opt->enumval);
@@ -225,12 +220,7 @@ int main(int argc, char** argv)
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "scaling").enumval.append("auto", "Same as automatic. This is a deprecated setting.");
 
    opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "presolve");
-   for( GamsOption::EnumVals::iterator e(opt->enumval.begin()); e != opt->enumval.end(); ++e )
-      if( e->first == "file" )
-      {
-         opt->enumval.erase(e);
-         break;
-      }
+   opt->enumval.drop("file");
    add01(opt->enumval);
    opt->longdescr = "Presolve analyzes the model to find such things as redundant equations, "
       "equations which fix some variables, equations which can be transformed into bounds, etc. "
@@ -368,11 +358,11 @@ int main(int argc, char** argv)
    opt->synonyms.insert("nodelim");
 
    opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "optca", "allowableGap");
-   //opt->defaultval.realval = 0.0;
+   opt->defaultval.realval = 0.0;
    opt->defaultdescr = "GAMS optca";
 
    opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "optcr", "ratioGap");
-   //opt->defaultval.realval = 0.1;
+   opt->defaultval.realval = 1e-4;
    opt->defaultdescr = "GAMS optcr";
 
    opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutoff");
