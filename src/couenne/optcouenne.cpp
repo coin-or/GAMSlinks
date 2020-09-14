@@ -14,8 +14,6 @@
 
 using namespace Ipopt;
 
-// TODO specify Ipopt and Bonmin options of Couenne as hidden in optcouenne.gms, so they don't show up in docu?
-
 int main(int argc, char** argv)
 {
    SmartPtr<OptionsList> options = new OptionsList();
@@ -71,7 +69,7 @@ int main(int argc, char** argv)
       else
          category = " " + category;
 
-      /* Couenne skips */
+      // Couenne skips
       if( it->second->Name()=="couenne_check" ||
           it->second->Name()=="opt_window" ||
           it->second->Name()=="save_soltext" ||
@@ -80,14 +78,14 @@ int main(int argc, char** argv)
           it->second->Name()=="display_stats" )
          continue;
 
-      /* Bonmin skips */
+      // Bonmin skips
       if( it->second->Name() == "nlp_solver" ||
           it->second->Name() == "file_solution" ||
           it->second->Name() == "sos_constraints"
         )
          continue;
 
-      /* Ipopt skips */
+      // Ipopt skips
       if( category == "Ipopt Undocumented" ||
           category == "Ipopt Uncategorized" ||
           category == "Ipopt " ||
@@ -236,23 +234,9 @@ int main(int argc, char** argv)
          else if( (*it_opt)->Name() == "ma86_order" )
             defaultval = "auto";
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
-         {
-            for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )
-               if( it->first == "user-scaling" )
-               {
-                  enumval.erase(it);
-                  break;
-               }
-         }
-         else if( (*it_opt)->Name() == "dependency_detector" )
-         {
-            for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )
-               if( it->first == "wsmp" )
-               {
-                  enumval.erase(it);
-                  break;
-               }
-         }
+            enumval.drop("user-scaling");
+         else if( (*it_opt)->Name() == "linear_solver" )
+            enumval.drop("custom");
 
          gmsopt.collect((*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
             opttype, defaultval, minval, maxval, !minval_strict, !maxval_strict, enumval, defaultdescr);
