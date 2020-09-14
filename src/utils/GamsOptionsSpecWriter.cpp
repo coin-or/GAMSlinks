@@ -404,7 +404,6 @@ std::string GamsOption::getRangeMarkdown(
 void GamsOptions::finalize()
 {
    options.sort();
-   // TODO sort enum values?
 }
 
 void GamsOptions::writeGMS(

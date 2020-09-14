@@ -66,7 +66,7 @@ int main(int argc, char** argv)
       if( i == SoPlex::SOLUTION_POLISHING )
          continue;
 
-      // TODO recognize intenums
+      // TODO?? recognize intenums
       int defaultval = SoPlex::Settings::intParam.defaultValue[i];
       int minval = SoPlex::Settings::intParam.lower[i];
       int maxval = SoPlex::Settings::intParam.upper[i];
