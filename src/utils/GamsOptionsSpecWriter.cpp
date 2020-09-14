@@ -336,11 +336,11 @@ std::string GamsOption::getRangeMarkdown(
          }
          if( enumval.empty() )
          {
-            s << "[";
+            s << (minval_attainable ? "[" : "(");
             s << minval.toStringMarkdown(type, doxygen);
             s << ", ";
             s << maxval.toStringMarkdown(type, doxygen);
-            s << "]";
+            s << (maxval_attainable ? "]" : ")");
          }
          else
          {

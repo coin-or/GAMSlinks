@@ -289,7 +289,9 @@ public:
    Type               type;
    Value              defaultval;
    Value              minval;
+   bool               minval_attainable;
    Value              maxval;
+   bool               maxval_attainable;
    EnumVals           enumval;
    int                refval;
    std::set<std::string> synonyms;
@@ -303,7 +305,9 @@ public:
       Value              defaultval_,
       Value              minval_,
       Value              maxval_,
-      const EnumVals&    enumval_,
+      bool               minval_attainable_ = true,
+      bool               maxval_attainable_ = true,
+      const EnumVals&    enumval_ = EnumVals(),
       const std::string& defaultdescr_ = std::string(),
       int                refval_ = -2
    )
@@ -314,7 +318,9 @@ public:
      type(type_),
      defaultval(defaultval_),
      minval(minval_),
+     minval_attainable(minval_attainable_),
      maxval(maxval_),
+     maxval_attainable(maxval_attainable_),
      enumval(enumval_),
      refval(refval_)
    { }
@@ -327,12 +333,15 @@ public:
       double             defaultval,
       double             minval,
       double             maxval,
+      bool               minval_attainable_ = true,
+      bool               maxval_attainable_ = true,
       const std::string& defaultdescr = std::string(),
       int                refval = -2
    )
    : GamsOption(name, shortdescr, longdescr,
       GamsOption::Type::REAL,
       Value(defaultval), Value(minval), Value(maxval),
+      minval_attainable_, maxval_attainable_,
       GamsOption::EnumVals(),
       defaultdescr, refval)
    { }
@@ -351,6 +360,7 @@ public:
    : GamsOption(name, shortdescr, longdescr,
       GamsOption::Type::INTEGER,
       Value(defaultval), Value(minval), Value(maxval),
+      true, true,
       GamsOption::EnumVals(),
       defaultdescr, refval)
    { }
@@ -368,6 +378,7 @@ public:
    : GamsOption(name, shortdescr, longdescr,
       GamsOption::Type::INTEGER,
       Value(defaultval), Value(), Value(),
+      true, true,
       enumval, defaultdescr, refval)
    { }
 
@@ -383,6 +394,7 @@ public:
    : GamsOption(name, shortdescr, longdescr,
       GamsOption::Type::BOOL,
       Value(defaultval), Value(), Value(),
+      true, true,
       GamsOption::EnumVals(),
       defaultdescr, refval)
    { }
@@ -398,6 +410,7 @@ public:
    : GamsOption(name, shortdescr, longdescr,
       GamsOption::Type::STRING,
       Value(defaultval), Value(), Value(),
+      true, true,
       GamsOption::EnumVals(),
       std::string(), refval)
    { }
@@ -415,6 +428,7 @@ public:
    : GamsOption(name, shortdescr, longdescr,
          GamsOption::Type::STRING,
          Value(defaultval), Value(), Value(),
+         true, true,
          enumval, defaultdescr, refval)
    { }
 

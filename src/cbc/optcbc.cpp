@@ -107,7 +107,7 @@ GamsOption& collectCbcOption(
       exit(1);
    }
 
-   GamsOption& opt(gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, enumval, "", cbcoptnum));
+   GamsOption& opt(gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, true, true, enumval, "", cbcoptnum));
    if( namegams != namecbc )
       opt.synonyms.insert(namecbc);
 
@@ -327,12 +327,12 @@ int main(int argc, char** argv)
 
    gmsopt.collect("printfrequency", "frequency of status prints",
       "Controls the number of nodes that are evaluated between status prints.",
-      0, 0, INT_MAX, "", -1);
+      0, 0, INT_MAX, std::string(), -1);
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomSeedCbc", "randomCbcSeed");
 
    gmsopt.collect("loglevel", "amount of output printed by CBC", "",
-      1, 0, INT_MAX, "", -1);
+      1, 0, INT_MAX, std::string(), -1);
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "increment").defaultdescr = "GAMS cheat";
 
@@ -344,9 +344,9 @@ int main(int argc, char** argv)
       "Name of file for writing solving progress information during solve.",
       "", -1);
    gmsopt.collect("solvetracenodefreq", "frequency in number of nodes for writing to solve trace file", "",
-      100, 0, INT_MAX, "", -1);
+      100, 0, INT_MAX, std::string(), -1);
    gmsopt.collect("solvetracetimefreq", "frequency in seconds for writing to solve trace file", "",
-      5.0, 0.0, DBL_MAX, "", -1);
+      5.0, 0.0, DBL_MAX, true, true, std::string(), -1);
 
    opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "nodlim", "maxNodes");
    opt->shortdescr = "node limit";

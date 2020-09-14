@@ -49,15 +49,10 @@ int main(int argc, char** argv)
       if( i == SoPlex::RATREC )
          continue;
 
-      defaultval.boolval = SoPlex::Settings::boolParam.defaultValue[i];
-      minval.boolval = false;
-      maxval.boolval = true;
-      defaultdescr = std::string();
-
       gmsopt.collect(
          std::string("bool:") + SoPlex::Settings::boolParam.name[i],
          SoPlex::Settings::boolParam.description[i], std::string(),
-         GamsOption::Type::BOOL, defaultval, minval, maxval, enumval, defaultdescr);
+         SoPlex::Settings::boolParam.defaultValue[i]);
    }
 
    for( int i = 0; i < SoPlex::INTPARAM_COUNT; ++i )
@@ -91,7 +86,7 @@ int main(int argc, char** argv)
       gmsopt.collect(
          std::string("int:") + SoPlex::Settings::intParam.name[i],
          SoPlex::Settings::intParam.description[i], std::string(),
-         GamsOption::Type::INTEGER, defaultval, minval, maxval, enumval, defaultdescr);
+         GamsOption::Type::INTEGER, defaultval, minval, maxval, true, true, enumval, defaultdescr);
    }
 
    for( int i = 0; i < SoPlex::REALPARAM_COUNT; ++i )
@@ -116,7 +111,7 @@ int main(int argc, char** argv)
       gmsopt.collect(
          std::string("real:") + SoPlex::Settings::realParam.name[i],
          SoPlex::Settings::realParam.description[i], std::string(),
-         GamsOption::Type::REAL, defaultval, minval, maxval, enumval, defaultdescr);
+         GamsOption::Type::REAL, defaultval, minval, maxval, true, true, enumval, defaultdescr);
    }
    gmsopt.finalize();
 

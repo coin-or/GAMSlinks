@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
    GamsOption::Type opttype;
    GamsOption::Value defaultval, minval, maxval;
-   // bool minval_strict, maxval_strict;
+   bool minval_strict, maxval_strict;
    GamsOption::EnumVals enumval;
    std::string tmpstr;
    std::string longdescr;
@@ -89,8 +89,8 @@ int main(int argc, char** argv)
          enumval.clear();
          longdescr = (*it_opt)->LongDescription();
          defaultdescr.clear();
-         // minval_strict = false;
-         // maxval_strict = false;
+         minval_strict = false;
+         maxval_strict = false;
          switch( (*it_opt)->Type() )
          {
             case Ipopt::OT_Number:
@@ -104,8 +104,8 @@ int main(int argc, char** argv)
                if( maxval ==  1e+20 )
                   maxval =  DBL_MAX;
                defaultval = (*it_opt)->DefaultNumber();
-               // minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
-               // maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;
+               minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
+               maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;
                break;
             }
 
@@ -208,7 +208,7 @@ int main(int argc, char** argv)
 
 
          gmsopt.collect((*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
-            opttype, defaultval, minval, maxval, enumval, defaultdescr);
+            opttype, defaultval, minval, maxval, !minval_strict, !maxval_strict, enumval, defaultdescr);
       }
    }
    gmsopt.finalize();
