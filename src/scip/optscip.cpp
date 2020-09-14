@@ -499,6 +499,7 @@ int main(int argc, char** argv)
       for( std::list<SCIP_PARAM*>::iterator it_param(it_categ->second.begin()); it_param != it_categ->second.end(); ++it_param)
       {
          param = *it_param;
+         enumval.clear();
          switch( SCIPparamGetType(param) )
          {
             case SCIP_PARAMTYPE_BOOL:
@@ -546,7 +547,9 @@ int main(int argc, char** argv)
             case SCIP_PARAMTYPE_CHAR:
                opttype = GamsOption::Type::CHAR;
                defaultval = SCIPparamGetCharDefault(param);
-               //TODO allowed chars as enum
+               if( SCIPparamGetCharAllowedValues(param) != NULL )
+                  for( char* c = SCIPparamGetCharAllowedValues(param); *c != NULL; ++c )
+                     enumval.append(*c);
                break;
 
             case SCIP_PARAMTYPE_STRING:
@@ -557,10 +560,9 @@ int main(int argc, char** argv)
             default:
                std::cerr << "Skip option " << SCIPparamGetName(param) << " of unknown type." << std::endl;
                continue;
-
          }
          descr = SCIPparamGetDesc(param);
-         defaultdescr = std::string();
+         defaultdescr.clear();
 
          if( strcmp(SCIPparamGetName(param), "limits/time") == 0 )
          {
