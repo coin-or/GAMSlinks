@@ -564,32 +564,60 @@ int main(int argc, char** argv)
 
          if( strcmp(SCIPparamGetName(param), "limits/time") == 0 )
          {
-            defaultval = 1000.0;
+            defaultval = 1e10;
+#ifdef GAMS_BUILD
             defaultdescr = "\\ref GAMSAOreslim \"GAMS reslim\"";
+#else
+            defaultdescr = "GAMS reslim";
+#endif
          }
          else if( strcmp(SCIPparamGetName(param), "limits/gap") == 0 )
          {
-            defaultval = 0.1;
+            defaultval = 1e-4;
+#ifdef GAMS_BUILD
             defaultdescr = "\\ref GAMSAOoptcr \"GAMS optcr\"";
+#else
+            defaultdescr = "GAMS optcr";
+#endif
          }
          else if( strcmp(SCIPparamGetName(param), "limits/absgap") == 0 )
          {
             defaultval = 0.0;
+#ifdef GAMS_BUILD
             defaultdescr = "\\ref GAMSAOoptca \"GAMS optca\"";
+#else
+            defaultdescr = "GAMS optca";
+#endif
          }
          else if( strcmp(SCIPparamGetName(param), "limits/memory") == 0 )
+#ifdef GAMS_BUILD
             defaultdescr = "\\ref GAMSAOworkspace \"GAMS workspace\"";
+#else
+            defaultdescr = "GAMS workspace";
+#endif
          else if( strcmp(SCIPparamGetName(param), "limits/nodes") == 0 )
-            defaultdescr = "\\ref GAMSAOnodlim \"GAMS nodlim\", if set, otherwise -1";
+#ifdef GAMS_BUILD
+            defaultdescr = "\\ref GAMSAOnodlim \"GAMS nodlim\", if > 0, otherwise -1";
+#else
+            defaultdescr = "GAMS nodlim, if > 0, otherwise -1";
+#endif
          else if( strcmp(SCIPparamGetName(param), "lp/solver") == 0 )
          {
             defaultdescr = "cplex, if licensed, otherwise soplex";
             descr = "LP solver to use (clp, cplex, soplex)";
          }
          else if( strcmp(SCIPparamGetName(param), "lp/threads") == 0 )
+#ifdef GAMS_BUILD
             defaultdescr = "\\ref GAMSAOthreads \"GAMS threads\"";
+#else
+            defaultdescr = "GAMS threads";
+#endif
          else if( strcmp(SCIPparamGetName(param), "presolving/milp/threads") == 0 )
+#ifdef GAMS_BUILD
             defaultdescr = "\\ref GAMSAOthreads \"GAMS threads\"";
+#else
+            defaultdescr = "GAMS threads";
+#endif
          else if( strcmp(SCIPparamGetName(param), "misc/printreason") == 0 )
             defaultval = false;
          else if( strcmp(SCIPparamGetName(param), "display/lpavgiterations/active") == 0 )
@@ -604,8 +632,10 @@ int main(int argc, char** argv)
             defaultdescr = "1 (2 for Windows without IDE)";
          else if( strcmp(SCIPparamGetName(param), "display/width") == 0 )
             defaultdescr = "143 (80 for Windows without IDE)";
+#ifdef GAMS_BUILD
          else if( strcmp(SCIPparamGetName(param), "gams/mipstart") == 0 )
             descr += ", see also section \\ref SCIP_PARTIALSOL";
+#endif
          else if( strcmp(SCIPparamGetName(param), "misc/usesymmetry") == 0 )
             descr.erase(descr.find(", see type_symmetry.h"));
 
