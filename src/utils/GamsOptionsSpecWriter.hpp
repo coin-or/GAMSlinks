@@ -136,6 +136,44 @@ public:
          return *this;
       }
 
+      bool operator==(
+         bool val
+         )
+      {
+         return boolval == val;
+      }
+
+      bool operator==(
+         int val
+         )
+      {
+         return intval == val;
+      }
+
+      bool operator==(
+         double val
+         )
+      {
+         return realval == val;
+      }
+      bool operator==(
+         char val
+         )
+      {
+         return charval == val;
+      }
+
+      bool operator==(
+         const char* val
+         )
+      {
+         if( stringval == val )
+            return true;
+         if( stringval == NULL || val == NULL )
+            return false;
+         return strcmp(stringval, val) == 0;
+      }
+
       std::string toStringGams(
          GamsOption::Type type,
          bool             quotestr = false

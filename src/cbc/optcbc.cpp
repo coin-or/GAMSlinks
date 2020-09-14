@@ -193,7 +193,7 @@ int main(int argc, char** argv)
    opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "crossover");
    // value "maybe" is only relevant for quadratic: remove value and mention in longdescr
    for( GamsOption::EnumVals::iterator e(opt->enumval.begin()); e != opt->enumval.end(); ++e )
-      if( strcmp(e->first.stringval, "maybe") == 0 )
+      if( e->first == "maybe" )
       {
          opt->enumval.erase(e);
          break;
@@ -214,7 +214,7 @@ int main(int argc, char** argv)
 
    opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "presolve");
    for( GamsOption::EnumVals::iterator e(opt->enumval.begin()); e != opt->enumval.end(); ++e )
-      if( strcmp(e->first.stringval, "file") == 0 )
+      if( e->first == "file" )
       {
          opt->enumval.erase(e);
          break;

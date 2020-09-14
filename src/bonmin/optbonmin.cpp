@@ -252,9 +252,9 @@ int main(int argc, char** argv)
                minval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
                maxval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
                //TODO should ask Bonmin for value for infinity
-               if( minval.realval == -1e+20 )
+               if( minval == -1e+20 )
                   minval = -DBL_MAX;
-               if( maxval.realval ==  1e+20 )
+               if( maxval ==  1e+20 )
                   maxval =  DBL_MAX;
                defaultval = (*it_opt)->DefaultNumber();
                // minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
@@ -385,7 +385,7 @@ int main(int argc, char** argv)
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
          {
             for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )
-               if( strcmp(it->first.stringval, "user-scaling") == 0 )
+               if( it->first == "user-scaling" )
                {
                   enumval.erase(it);
                   break;
@@ -394,7 +394,7 @@ int main(int argc, char** argv)
          else if( (*it_opt)->Name() == "dependency_detector" )
          {
             for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )
-               if( strcmp(it->first.stringval, "wsmp") == 0 )
+               if( it->first == "wsmp" )
                {
                   enumval.erase(it);
                   break;
