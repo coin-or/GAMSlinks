@@ -231,13 +231,21 @@ public:
       }
 
       /// returns whether there exists an enum value with non-empty description
-      bool hasDescription()
+      bool hasDescription() const
       {
          for( auto& e : *this )
             if( !e.second.empty() )
                return true;
          return false;
       }
+
+      Value getMinKey(
+         GamsOption::Type type
+         ) const;
+
+      Value getMaxKey(
+         GamsOption::Type type
+         ) const;
    };
 
    class EnumValCompare
@@ -348,17 +356,7 @@ public:
       GamsOption::Type::INTEGER,
       Value(defaultval), Value(-INT_MAX), Value(INT_MAX),
       enumval, defaultdescr, refval)
-   {
-      // TODO remove here
-      int min = INT_MAX, max = -INT_MAX;
-      for( GamsOption::EnumVals::const_iterator e(enumval.begin()); e != enumval.end(); ++e )
-      {
-         min = std::min(e->first.intval, min);
-         max = std::max(e->first.intval, max);
-      }
-      minval.intval = min;
-      maxval.intval = max;
-   }
+   { }
 
    /// constructor for bool-type option
    GamsOption(

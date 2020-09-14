@@ -102,6 +102,73 @@ std::string GamsOption::Value::toStringMarkdown(
    return s.str();
 }
 
+GamsOption::Value GamsOption::EnumVals::getMinKey(
+   GamsOption::Type type
+   ) const
+{
+   switch (type)
+   {
+      case GamsOption::Type::INTEGER :
+      {
+         int minval = INT_MAX;
+         for( auto& e : *this )
+         {
+            if( e.first.intval < minval )
+               minval = e.first.intval;
+         }
+         return minval;
+      }
+
+      case GamsOption::Type::REAL :
+      {
+         double minval = DBL_MAX;
+         for( auto& e : *this )
+         {
+            if( e.first.realval < minval )
+               minval = e.first.realval;
+         }
+         return minval;
+      }
+   }
+
+   std::cerr << "getMinKey for this type not implemented" << std::endl;
+   exit(1);
+}
+
+GamsOption::Value GamsOption::EnumVals::getMaxKey(
+   GamsOption::Type type
+) const
+{
+   switch (type)
+   {
+      case GamsOption::Type::INTEGER :
+      {
+         int maxval = -INT_MAX;
+         for( auto& e : *this )
+         {
+            if( e.first.intval > maxval )
+               maxval = e.first.intval;
+         }
+         return maxval;
+      }
+
+      case GamsOption::Type::REAL :
+      {
+         double maxval = -DBL_MAX;
+         for( auto& e : *this )
+         {
+            if( e.first.realval > maxval )
+               maxval = e.first.realval;
+         }
+         return maxval;
+      }
+   }
+
+   std::cerr << "getMaxKey for this type not implemented" << std::endl;
+   exit(1);
+}
+
+
 /// get string describing range of option in markdown
 std::string GamsOption::getRangeMarkdown(
    bool doxygen
@@ -278,8 +345,15 @@ void GamsOptions::writeGMS(
       switch( o->type )
       {
          case GamsOption::Type::BOOL:
+            break;
          case GamsOption::Type::INTEGER:
          case GamsOption::Type::REAL:
+            // ensure minval and maxval are valid for enum option (not sure if someone uses these)
+            if( !o->enumval.empty() )
+            {
+               o->minval = o->enumval.getMinKey(o->type);
+               o->maxval = o->enumval.getMaxKey(o->type);
+            }
             break;
 
          case GamsOption::Type::CHAR:
