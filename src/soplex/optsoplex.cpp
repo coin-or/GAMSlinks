@@ -28,12 +28,6 @@ int main(int argc, char** argv)
 {
    SoPlex soplex;
 
-   GamsOption::Value defaultval, minval, maxval;
-   GamsOption::EnumVals enumval;
-   std::string tmpstr;
-   std::string descr;
-   std::string defaultdescr;
-
    GamsOptions gmsopt("SoPlex");
    gmsopt.setSeparator("=");
    // gmsopt.setStringQuote("\"");
@@ -73,10 +67,10 @@ int main(int argc, char** argv)
          continue;
 
       // TODO recognize intenums
-      defaultval = SoPlex::Settings::intParam.defaultValue[i];
-      minval = SoPlex::Settings::intParam.lower[i];
-      maxval = SoPlex::Settings::intParam.upper[i];
-      defaultdescr.clear();
+      int defaultval = SoPlex::Settings::intParam.defaultValue[i];
+      int minval = SoPlex::Settings::intParam.lower[i];
+      int maxval = SoPlex::Settings::intParam.upper[i];
+      std::string defaultdescr;
 
       if( i == SoPlex::ITERLIMIT )
          defaultdescr = "\\ref GAMSAOiterlim \"GAMS iterlim\"";
@@ -86,7 +80,7 @@ int main(int argc, char** argv)
       gmsopt.collect(
          std::string("int:") + SoPlex::Settings::intParam.name[i],
          SoPlex::Settings::intParam.description[i], std::string(),
-         GamsOption::Type::INTEGER, defaultval, minval, maxval, true, true, enumval, defaultdescr);
+         defaultval, minval, maxval, defaultdescr);
    }
 
    for( int i = 0; i < SoPlex::REALPARAM_COUNT; ++i )
@@ -96,10 +90,10 @@ int main(int argc, char** argv)
       if( i == SoPlex::OBJ_OFFSET )
          continue;
 
-      defaultval = translateSoplexInfinity(SoPlex::Settings::realParam.defaultValue[i]);
-      minval = translateSoplexInfinity(SoPlex::Settings::realParam.lower[i]);
-      maxval = translateSoplexInfinity(SoPlex::Settings::realParam.upper[i]);
-      defaultdescr.clear();
+      double defaultval = translateSoplexInfinity(SoPlex::Settings::realParam.defaultValue[i]);
+      double minval = translateSoplexInfinity(SoPlex::Settings::realParam.lower[i]);
+      double maxval = translateSoplexInfinity(SoPlex::Settings::realParam.upper[i]);
+      std::string defaultdescr;
 
       if( i == SoPlex::TIMELIMIT )
          defaultdescr = "\\ref GAMSAOreslim \"GAMS reslim\"";
@@ -111,7 +105,7 @@ int main(int argc, char** argv)
       gmsopt.collect(
          std::string("real:") + SoPlex::Settings::realParam.name[i],
          SoPlex::Settings::realParam.description[i], std::string(),
-         GamsOption::Type::REAL, defaultval, minval, maxval, true, true, enumval, defaultdescr);
+         defaultval, minval, maxval, true, true, defaultdescr);
    }
    gmsopt.finalize();
 
