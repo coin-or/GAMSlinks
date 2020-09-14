@@ -141,11 +141,6 @@ int main(int argc, char** argv)
                opttype = GamsOption::Type::REAL;
                minval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
                maxval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
-               //TODO should ask Couenne for value for infinity
-               if( minval == -1e+20 )
-                  minval = -DBL_MAX;
-               if( maxval ==  1e+20 )
-                  maxval =  DBL_MAX;
                defaultval = (*it_opt)->DefaultNumber();
                minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
                maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;

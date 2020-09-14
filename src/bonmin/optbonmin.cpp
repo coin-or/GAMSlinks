@@ -207,13 +207,14 @@ int main(int argc, char** argv)
       else
          category = " " + category;
 
+      // skipped Bonmin options
       if( it->second->Name() == "nlp_solver" ||
           it->second->Name() == "file_solution" ||
           it->second->Name() == "sos_constraints"
         )
          continue;
 
-
+      // skipped (Ipopt) categories
       if( category == "Ipopt Undocumented" ||
           category == "Ipopt Uncategorized" ||
           category == "Ipopt " ||
@@ -221,6 +222,7 @@ int main(int argc, char** argv)
         )
          continue;
 
+      // skipped Ipopt options
       if( it->second->Name() == "hessian_constant" ||
           it->second->Name() == "obj_scaling_factor" ||
           it->second->Name() == "file_print_level" ||
@@ -270,11 +272,6 @@ int main(int argc, char** argv)
                opttype = GamsOption::Type::REAL;
                minval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
                maxval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
-               //TODO should ask Bonmin for value for infinity
-               if( minval == -1e+20 )
-                  minval = -DBL_MAX;
-               if( maxval ==  1e+20 )
-                  maxval =  DBL_MAX;
                defaultval = (*it_opt)->DefaultNumber();
                minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
                maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;
