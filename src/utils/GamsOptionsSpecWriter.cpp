@@ -250,10 +250,11 @@ GamsOption::Value GamsOption::EnumVals::getMinKey(
          }
          return minval;
       }
-   }
 
-   std::cerr << "getMinKey for this type not implemented" << std::endl;
-   exit(1);
+      default:
+         std::cerr << "getMinKey for this type not implemented" << std::endl;
+         exit(1);
+   }
 }
 
 GamsOption::Value GamsOption::EnumVals::getMaxKey(
@@ -283,10 +284,11 @@ GamsOption::Value GamsOption::EnumVals::getMaxKey(
          }
          return maxval;
       }
-   }
 
-   std::cerr << "getMaxKey for this type not implemented" << std::endl;
-   exit(1);
+      default:
+         std::cerr << "getMaxKey for this type not implemented" << std::endl;
+         exit(1);
+   }
 }
 
 
@@ -819,7 +821,6 @@ void GamsOptions::writeDef()
    f << '*' << std::endl;
    f << "* Groups" << std::endl;
    f << '*' << std::endl;
-   size_t i = 1;
    for( auto& group : groups )
    {
       f << "gr_" << formatID(group.second.name);
@@ -974,11 +975,7 @@ void GamsOptions::writeDoxygen(
                f << "<br/>" << opt.longdescr;
 
             if( !opt.enumval.hasDescription() )
-            {
-               // if( (opt.type == GamsOption::Type::INTEGER && (opt.minval.intval != 0 || opt.maxval.intval != INT_MAX)) ||
-               //     (opt.type == GamsOption::Type::REAL && (opt.minval.realval != 0.0 || opt.maxval.realval != DBL_MAX)) )
                f << "<br/>Range: " << opt.getRangeMarkdown(true);
-            }
             else
                for( auto& e : opt.enumval )
                {

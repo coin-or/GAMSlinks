@@ -50,7 +50,7 @@ void write_t(
          {
             case Ipopt::OT_Integer:
             {
-               typestring = "\\f$\\mathbb{Z}\\f$";
+               typestring = "integer";
                defaultval = (*it_opt)->DefaultInteger();
                defaultvaltype = GamsOption::Type::INTEGER;
                break;
@@ -58,7 +58,7 @@ void write_t(
 
             case Ipopt::OT_Number:
             {
-               typestring = "\\f$\\mathbb{Q}\\f$";
+               typestring = "real";
                defaultval = (*it_opt)->DefaultNumber();
                defaultvaltype = GamsOption::Type::REAL;
                break;
