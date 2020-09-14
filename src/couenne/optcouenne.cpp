@@ -202,7 +202,7 @@ int main(int argc, char** argv)
          // GAMS overwrites of Bonmin option defaults
          else if( (*it_opt)->Name() == "allowable_fraction_gap" )
          {
-            defaultval = 0.1;
+            defaultval = 1e-4;
             defaultdescr = "GAMS optcr";
          }
          else if( (*it_opt)->Name() == "allowable_gap" )
@@ -212,7 +212,7 @@ int main(int argc, char** argv)
          }
          else if( (*it_opt)->Name() == "time_limit" )
          {
-            defaultval = 1000.0;
+            defaultval = 10000000000.0;
             defaultdescr = "GAMS reslim";
          }
          else if( (*it_opt)->Name() == "node_limit" )
@@ -226,13 +226,11 @@ int main(int argc, char** argv)
          else if( (*it_opt)->Name() == "milp_solver" )
             longdescr = "To use Cplex, a valid license is required.";
          else if( (*it_opt)->Name() == "resolve_on_small_infeasibility" )
-            longdescr = "";
+            longdescr.clear();
 
          // Ipopt options
          else if( (*it_opt)->Name() == "bound_relax_factor" )
             defaultval = 1e-10;
-         else if( (*it_opt)->Name() == "ma86_order" )
-            defaultval = "auto";
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
             enumval.drop("user-scaling");
          else if( (*it_opt)->Name() == "linear_solver" )

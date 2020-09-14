@@ -141,13 +141,15 @@ int main(int argc, char** argv)
          }
          else if( (*it_opt)->Name() == "max_cpu_time" )
          {
-            defaultval = 1000.0;
+            defaultval = 10000000000.0;
             defaultdescr = "GAMS reslim";
          }
          else if( (*it_opt)->Name() == "mu_strategy" )
             defaultval = "adaptive";
+#ifdef GAMS_BUILD
          else if( (*it_opt)->Name() == "ma86_order" )
             defaultval = "auto";
+#endif
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
             enumval.drop("user-scaling");
          else if( (*it_opt)->Name() == "linear_solver" )

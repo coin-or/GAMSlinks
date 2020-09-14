@@ -318,7 +318,7 @@ int main(int argc, char** argv)
             defaultval = Ipopt::J_ITERSUMMARY;
          else if( (*it_opt)->Name() == "allowable_fraction_gap" )
          {
-            defaultval = 0.1;
+            defaultval = 1e-4;
             defaultdescr = "GAMS optcr";
          }
          else if( (*it_opt)->Name() == "allowable_gap" )
@@ -328,7 +328,7 @@ int main(int argc, char** argv)
          }
          else if( (*it_opt)->Name() == "time_limit" )
          {
-            defaultval = 1000.0;
+            defaultval = 10000000000.0;
             defaultdescr = "GAMS reslim";
          }
          else if( (*it_opt)->Name() == "node_limit" )
@@ -369,8 +369,10 @@ int main(int argc, char** argv)
             defaultval = 0;
          else if( (*it_opt)->Name() == "print_frequency_time" )
             defaultval = 0.5;
+#ifdef GAMS_BUILD
          else if( (*it_opt)->Name() == "ma86_order" )
             defaultval = "auto";
+#endif
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
             enumval.drop("user-scaling");
          else if( (*it_opt)->Name() == "linear_solver" )
