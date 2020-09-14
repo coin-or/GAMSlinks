@@ -10,9 +10,129 @@
 #include "GamsOptionsSpecWriter.hpp"
 
 #include <cstdio>
+#include <cctype>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
+
+static
+std::string tolower(
+   std::string s
+)
+{
+   std::transform(s.begin(), s.end(), s.begin(),
+      [](unsigned char c){ return std::tolower(c); });
+   return s;
+}
+
+static
+std::string toupper(
+   std::string s
+)
+{
+   std::transform(s.begin(), s.end(), s.begin(),
+      [](unsigned char c){ return std::toupper(c); });
+   return s;
+}
+
+static
+void replaceAll(
+   std::string&       str,
+   const std::string& from,
+   const std::string& to
+)
+{
+   if(from.empty())
+      return;
+   size_t start_pos = 0;
+   while((start_pos = str.find(from, start_pos)) != std::string::npos)
+   {
+      str.replace(start_pos, from.length(), to);
+      start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+   }
+}
+
+static
+std::string makeValidMarkdownString(
+   const std::string& s
+)
+{
+   std::string r(s);
+   replaceAll(r, "<=", "&le;");
+   replaceAll(r, ">=", "&ge;");
+   replaceAll(r, "<", "&lt;");
+   replaceAll(r, ">", "&gt;");
+   replaceAll(r, "|", "\\|");
+   replaceAll(r, "$", "\\f$");
+   return r;
+}
+
+#if 0
+static
+std::string makeValidLatexNumber(
+   double                value
+)
+{
+   if( value ==  DBL_MAX )
+      return "\\infty";
+   if( value == -DBL_MAX )
+      return "-\\infty";
+
+   char buffer[256];
+   sprintf(buffer, "%g", value);
+   std::string str = buffer;
+
+   size_t epos = str.find("e");
+   if( epos != std::string::npos )
+   {
+      if( str[epos+1] == '+' )
+         str[epos+1] = ' ';
+      if( str[epos+2] == '0' )
+         str[epos+2] = ' ';
+      if( epos == 1 && str[0] == '1' ) // number is 1e...
+         str.replace(0, 2, "10^{");
+      else if( epos == 2 && str[0] == '-' && str[1] == '1' )  // number is -1e...
+         str.replace(1, 2, "10^{");
+      else // number is ...e...
+         str.replace(epos, 1, " \\cdot 10^{");
+      str.append("}");
+   }
+
+   return str;
+}
+
+static
+std::string makeValidLatexNumber(
+   int                   value
+)
+{
+   if( value ==  INT_MAX )
+      return "\\infty";
+   if( value == -INT_MAX )
+      return "-\\infty";
+
+   char buffer[256];
+   sprintf(buffer, "%d", value);
+
+   return buffer;
+}
+#endif
+
+/// replace problematic characters in identifier by underscore
+static
+std::string formatID(
+   const std::string& origid
+   )
+{
+   std::string id(origid);
+   std::replace(id.begin(), id.end(), ' ', '_');
+   std::replace(id.begin(), id.end(), '(', '_');
+   std::replace(id.begin(), id.end(), ')', '_');
+   std::replace(id.begin(), id.end(), '-', '_');
+   std::replace(id.begin(), id.end(), '/', '_');
+   return id;
+}
 
 std::string GamsOption::Value::toStringGams(
    GamsOption::Type type,
@@ -53,9 +173,9 @@ std::string GamsOption::Value::toStringGams(
 
       case GamsOption::Type::STRING:
          if( quotestr )
-            s << '"' << GamsOptions::makeValidMarkdownString(stringval) << '"';
+            s << '"' << makeValidMarkdownString(stringval) << '"';
          else
-            s << GamsOptions::makeValidMarkdownString(stringval);
+            s << makeValidMarkdownString(stringval);
          break;
    }
    return s.str();
@@ -96,7 +216,7 @@ std::string GamsOption::Value::toStringMarkdown(
          break;
 
       case GamsOption::Type::STRING:
-         s << GamsOptions::makeValidMarkdownString(stringval);
+         s << makeValidMarkdownString(stringval);
          break;
    }
    return s.str();
@@ -284,21 +404,6 @@ void GamsOptions::finalize()
 {
    options.sort();
    // TODO sort enum values?
-}
-
-/// replace problematic characters in identifier by underscore
-static
-std::string formatID(
-   const std::string& origid
-   )
-{
-   std::string id(origid);
-   std::replace(id.begin(), id.end(), ' ', '_');
-   std::replace(id.begin(), id.end(), '(', '_');
-   std::replace(id.begin(), id.end(), ')', '_');
-   std::replace(id.begin(), id.end(), '-', '_');
-   std::replace(id.begin(), id.end(), '/', '_');
-   return id;
 }
 
 void GamsOptions::writeGMS(

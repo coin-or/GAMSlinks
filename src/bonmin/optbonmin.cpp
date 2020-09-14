@@ -44,33 +44,31 @@ void write_t(
          tabfile << "\\ref BONMIN" << (*it_opt)->Name() << " \"" << (*it_opt)->Name() << "\" | ";
 
          std::string typestring;
-         std::string defaultval;
+         GamsOption::Value defaultval;
+         GamsOption::Type defaultvaltype;
          switch( (*it_opt)->Type() )
          {
             case Ipopt::OT_Integer:
             {
                typestring = "\\f$\\mathbb{Z}\\f$";
-               defaultval = "\\f$";
-               defaultval.append(GamsOptions::makeValidLatexNumber((*it_opt)->DefaultInteger()));
-               defaultval.append("\\f$");
+               defaultval = (*it_opt)->DefaultInteger();
+               defaultvaltype = GamsOption::Type::INTEGER;
                break;
             }
 
             case Ipopt::OT_Number:
             {
                typestring = "\\f$\\mathbb{Q}\\f$";
-               defaultval = "\\f$";
-               defaultval.append(GamsOptions::makeValidLatexNumber((*it_opt)->DefaultNumber()));
-               defaultval.append("\\f$");
+               defaultval = (*it_opt)->DefaultNumber();
+               defaultvaltype = GamsOption::Type::REAL;
                break;
             }
 
             case Ipopt::OT_String:
             {
                typestring = "string";
-               defaultval = "``";
-               defaultval.append((*it_opt)->DefaultString());
-               defaultval.append("``");
+               defaultval = (*it_opt)->DefaultString();
+               defaultvaltype = GamsOption::Type::STRING;
 
                if( (*it_opt)->Name() == "linear_solver" )
                   defaultval = "``ma27``, if BonminH, otherwise ``mumps``";
@@ -84,24 +82,45 @@ void write_t(
          }
 
          if( (*it_opt)->Name() == "nlp_log_at_root" )
-            defaultval = GamsOptions::makeValidLatexNumber(Ipopt::J_ITERSUMMARY);
+            defaultval = Ipopt::J_ITERSUMMARY;
          else if( (*it_opt)->Name() == "allowable_gap" )
+         {
             defaultval = "\\ref GAMSAOoptca \"GAMS optca\"";
+            defaultvaltype = GamsOption::Type::STRING;
+         }
          else if( (*it_opt)->Name() == "allowable_fraction_gap" )
+         {
             defaultval = "\\ref GAMSAOoptcr \"GAMS optcr\"";
+            defaultvaltype = GamsOption::Type::STRING;
+         }
          else if( (*it_opt)->Name() == "node_limit" )
+         {
             defaultval = "\\ref GAMSAOnodlim \"GAMS nodlim\"";
+            defaultvaltype = GamsOption::Type::STRING;
+         }
          else if( (*it_opt)->Name() == "time_limit" )
+         {
             defaultval = "\\ref GAMSAOreslim \"GAMS reslim\"";
+            defaultvaltype = GamsOption::Type::STRING;
+         }
          else if( (*it_opt)->Name() == "iteration_limit" )
+         {
             defaultval = "\\ref GAMSAOiterlim \"GAMS iterlim\"";
+            defaultvaltype = GamsOption::Type::STRING;
+         }
          else if( (*it_opt)->Name() == "cutoff" )
+         {
             defaultval = "\\ref GAMSAOcutoff \"GAMS cutoff\"";
+            defaultvaltype = GamsOption::Type::STRING;
+         }
          else if( (*it_opt)->Name() == "number_cpx_threads" )
+         {
             defaultval = "\\ref GAMSAOthreads \"GAMS threads\"";
+            defaultvaltype = GamsOption::Type::STRING;
+         }
 
          tabfile << typestring << " | ";
-         tabfile << defaultval;
+         tabfile << defaultval.toStringMarkdown(defaultvaltype, true);
          if( it_categ->first.find("Ipopt") != 0 )
             tabfile
              << " | " << ( (regoptions->isValidForBBB((*it_opt)->Name()))    ? "\\f$\\surd\\f$" : "--" )
