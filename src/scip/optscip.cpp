@@ -504,53 +504,54 @@ int main(int argc, char** argv)
             case SCIP_PARAMTYPE_BOOL:
             {
                opttype = GamsOption::Type::BOOL;
-               minval.boolval = 0;
-               maxval.boolval = 1;
-               defaultval.boolval = SCIPparamGetBoolDefault(param);
+               minval = false;
+               maxval = true;
+               defaultval = (bool)SCIPparamGetBoolDefault(param);
                break;
             }
 
             case SCIP_PARAMTYPE_INT:
             {
                opttype = GamsOption::Type::INTEGER;
-               minval.intval = SCIPparamGetIntMin(param);
-               maxval.intval = SCIPparamGetIntMax(param);
-               defaultval.intval = SCIPparamGetIntDefault(param);
+               minval = SCIPparamGetIntMin(param);
+               maxval = SCIPparamGetIntMax(param);
+               defaultval = SCIPparamGetIntDefault(param);
                break;
             }
 
             case SCIP_PARAMTYPE_LONGINT:
             {
                opttype = GamsOption::Type::INTEGER;
-               minval.intval = ScipLongintToInt(SCIPparamGetLongintMin(param));
-               maxval.intval = ScipLongintToInt(SCIPparamGetLongintMax(param));
-               defaultval.intval = ScipLongintToInt(SCIPparamGetLongintDefault(param));
+               minval = ScipLongintToInt(SCIPparamGetLongintMin(param));
+               maxval = ScipLongintToInt(SCIPparamGetLongintMax(param));
+               defaultval = ScipLongintToInt(SCIPparamGetLongintDefault(param));
                break;
             }
 
             case SCIP_PARAMTYPE_REAL:
             {
                opttype = GamsOption::Type::REAL;
-               minval.realval = SCIPparamGetRealMin(param);
-               maxval.realval = SCIPparamGetRealMax(param);
-               defaultval.realval = SCIPparamGetRealDefault(param);
+               minval = SCIPparamGetRealMin(param);
+               maxval = SCIPparamGetRealMax(param);
+               defaultval = SCIPparamGetRealDefault(param);
                if( SCIPisInfinity(scip, -minval.realval) )
-                  minval.realval = -DBL_MAX;
+                  minval = -DBL_MAX;
                if( SCIPisInfinity(scip,  maxval.realval) )
-                  maxval.realval =  DBL_MAX;
+                  maxval =  DBL_MAX;
                if( SCIPisInfinity(scip, ABS(defaultval.realval)) )
-                  defaultval.realval = (defaultval.realval < 0 ? -1.0 : 1.0) * DBL_MAX;
+                  defaultval = (defaultval.realval < 0 ? -1.0 : 1.0) * DBL_MAX;
                break;
             }
 
             case SCIP_PARAMTYPE_CHAR:
                opttype = GamsOption::Type::CHAR;
-               defaultval.charval = SCIPparamGetCharDefault(param);
+               defaultval = SCIPparamGetCharDefault(param);
+               //TODO allowed chars as enum
                break;
 
             case SCIP_PARAMTYPE_STRING:
                opttype = GamsOption::Type::STRING;
-               defaultval.stringval = strdup(SCIPparamGetStringDefault(param));
+               defaultval = SCIPparamGetStringDefault(param);
                break;
 
             default:
@@ -563,17 +564,17 @@ int main(int argc, char** argv)
 
          if( strcmp(SCIPparamGetName(param), "limits/time") == 0 )
          {
-            defaultval.realval = 1000.0;
+            defaultval = 1000.0;
             defaultdescr = "\\ref GAMSAOreslim \"GAMS reslim\"";
          }
          else if( strcmp(SCIPparamGetName(param), "limits/gap") == 0 )
          {
-            defaultval.realval = 0.1;
+            defaultval = 0.1;
             defaultdescr = "\\ref GAMSAOoptcr \"GAMS optcr\"";
          }
          else if( strcmp(SCIPparamGetName(param), "limits/absgap") == 0 )
          {
-            defaultval.realval = 0.0;
+            defaultval = 0.0;
             defaultdescr = "\\ref GAMSAOoptca \"GAMS optca\"";
          }
          else if( strcmp(SCIPparamGetName(param), "limits/memory") == 0 )
@@ -590,7 +591,7 @@ int main(int argc, char** argv)
          else if( strcmp(SCIPparamGetName(param), "presolving/milp/threads") == 0 )
             defaultdescr = "\\ref GAMSAOthreads \"GAMS threads\"";
          else if( strcmp(SCIPparamGetName(param), "misc/printreason") == 0 )
-            defaultval.boolval = false;
+            defaultval = false;
          else if( strcmp(SCIPparamGetName(param), "display/lpavgiterations/active") == 0 )
             defaultdescr = "1 (0 for Windows without IDE)";
          else if( strcmp(SCIPparamGetName(param), "display/maxdepth/active") == 0 )

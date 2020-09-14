@@ -96,14 +96,14 @@ int main(int argc, char** argv)
             case Ipopt::OT_Number:
             {
                opttype = GamsOption::Type::REAL;
-               minval.realval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
-               maxval.realval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
+               minval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
+               maxval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
                //TODO should ask Ipopt for value for infinity
                if( minval.realval == -1e+20 )
-                  minval.realval = -DBL_MAX;
+                  minval = -DBL_MAX;
                if( maxval.realval ==  1e+20 )
-                  maxval.realval =  DBL_MAX;
-               defaultval.realval = (*it_opt)->DefaultNumber();
+                  maxval =  DBL_MAX;
+               defaultval = (*it_opt)->DefaultNumber();
                // minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
                // maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;
                break;
@@ -112,16 +112,16 @@ int main(int argc, char** argv)
             case Ipopt::OT_Integer:
             {
                opttype = GamsOption::Type::INTEGER;
-               minval.intval = (*it_opt)->HasLower() ? (*it_opt)->LowerInteger() : -INT_MAX;
-               maxval.intval = (*it_opt)->HasUpper() ? (*it_opt)->UpperInteger() :  INT_MAX;
-               defaultval.intval = (*it_opt)->DefaultInteger();
+               minval = (*it_opt)->HasLower() ? (*it_opt)->LowerInteger() : -INT_MAX;
+               maxval = (*it_opt)->HasUpper() ? (*it_opt)->UpperInteger() :  INT_MAX;
+               defaultval = (*it_opt)->DefaultInteger();
                break;
             }
 
             case Ipopt::OT_String:
             {
                opttype = GamsOption::Type::STRING;
-               defaultval.stringval = strdup((*it_opt)->DefaultString().c_str());
+               defaultval = (*it_opt)->DefaultString();
 
                const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
                if( settings.size() > 1 || settings[0].value_ != "*" )
@@ -170,23 +170,23 @@ int main(int argc, char** argv)
          }
 
          if( (*it_opt)->Name() == "bound_relax_factor" )
-            defaultval.realval = 1e-10;
+            defaultval = 1e-10;
          else if( (*it_opt)->Name() == "acceptable_iter" )
-            defaultval.intval = 0;
+            defaultval = 0;
          else if( (*it_opt)->Name() == "max_iter" )
          {
-            defaultval.intval = INT_MAX;
+            defaultval = INT_MAX;
             defaultdescr = "GAMS iterlim";
          }
          else if( (*it_opt)->Name() == "max_cpu_time" )
          {
-            defaultval.realval = 1000;
+            defaultval = 1000.0;
             defaultdescr = "GAMS reslim";
          }
          else if( (*it_opt)->Name() == "mu_strategy" )
-            defaultval = GamsOption::Value("adaptive");
+            defaultval = "adaptive";
          else if( (*it_opt)->Name() == "ma86_order" )
-            defaultval = GamsOption::Value("auto");
+            defaultval = "auto";
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
          {
             for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )

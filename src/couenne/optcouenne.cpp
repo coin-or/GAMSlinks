@@ -139,14 +139,14 @@ int main(int argc, char** argv)
             case Ipopt::OT_Number:
             {
                opttype = GamsOption::Type::REAL;
-               minval.realval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
-               maxval.realval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
+               minval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
+               maxval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
                //TODO should ask Couenne for value for infinity
                if( minval.realval == -1e+20 )
-                  minval.realval = -DBL_MAX;
+                  minval = -DBL_MAX;
                if( maxval.realval ==  1e+20 )
-                  maxval.realval =  DBL_MAX;
-               defaultval.realval = (*it_opt)->DefaultNumber();
+                  maxval =  DBL_MAX;
+               defaultval = (*it_opt)->DefaultNumber();
                // minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
                // maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;
                break;
@@ -155,52 +155,28 @@ int main(int argc, char** argv)
             case Ipopt::OT_Integer:
             {
                opttype = GamsOption::Type::INTEGER;
-               minval.intval = (*it_opt)->HasLower() ? (*it_opt)->LowerInteger() : -INT_MAX;
-               maxval.intval = (*it_opt)->HasUpper() ? (*it_opt)->UpperInteger() :  INT_MAX;
-               defaultval.intval = (*it_opt)->DefaultInteger();
+               minval = (*it_opt)->HasLower() ? (*it_opt)->LowerInteger() : -INT_MAX;
+               maxval = (*it_opt)->HasUpper() ? (*it_opt)->UpperInteger() :  INT_MAX;
+               defaultval = (*it_opt)->DefaultInteger();
                break;
             }
 
             case Ipopt::OT_String:
             {
                opttype = GamsOption::Type::STRING;
-               defaultval.stringval = strdup((*it_opt)->DefaultString().c_str());
+               defaultval = (*it_opt)->DefaultString();
 
                const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
                if( settings.size() > 1 || settings[0].value_ != "*")
                {
+                  enumval.reserve(settings.size());
                   if( (*it_opt)->Name().find("branch_pt_select_") == 0 )
                   {
                      for( size_t j = 0; j < settings.size(); ++j )
                         enumval.append(settings[j].value_);
                   }
-                  else if( (*it_opt)->Name() == "linear_solver" )
-                  {
-                     enumval.append("ma27", "use the Harwell routine MA27");
-                     enumval.append("ma57", "use the Harwell routine MA57");
-                     enumval.append("ma77", "use the Harwell routine HSL_MA77");
-                     enumval.append("ma86", "use the Harwell routine HSL_MA86");
-                     enumval.append("ma97", "use the Harwell routine HSL_MA97");
-                     enumval.append("pardiso", "use the Pardiso package");
-                     enumval.append("mumps", "use MUMPS package");
-
-                     longdescr = "Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). "
-                        "Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
-                        "To use HSL_MA77, a HSL library needs to be provided.";
-
-                     defaultval = GamsOption::Value("ma27, if IpoptH licensed, otherwise mumps");
-                  }
                   else
                   {
-                     if( (*it_opt)->Name() == "linear_system_scaling" )
-                     {
-                        longdescr = "Determines the method used to compute symmetric scaling factors for the augmented system (see also the \"linear_scaling_on_demand\" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. "
-                           "Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately.";
-
-                        defaultval = GamsOption::Value("mc19, if IpoptH licensed, otherwise none");
-                     }
-
-                     enumval.reserve(settings.size());
                      for( size_t j = 0; j < settings.size(); ++j )
                         enumval.append(settings[j].value_, settings[j].description_);
                   }
@@ -228,22 +204,22 @@ int main(int argc, char** argv)
          else if( (*it_opt)->Name() == "feas_pump_usescip" )
             longdescr = "Note, that SCIP is only available for GAMS users with a SCIP or academic GAMS license.";
          else if( (*it_opt)->Name() == "problem_print_level" )
-            defaultval.intval = Ipopt::J_STRONGWARNING;
+            defaultval = Ipopt::J_STRONGWARNING;
 
          // GAMS overwrites of Bonmin option defaults
          else if( (*it_opt)->Name() == "allowable_fraction_gap" )
          {
-            defaultval.realval = 0.1;
+            defaultval = 0.1;
             defaultdescr = "GAMS optcr";
          }
          else if( (*it_opt)->Name() == "allowable_gap" )
          {
-            defaultval.realval = 0.0;
+            defaultval = 0.0;
             defaultdescr = "GAMS optca";
          }
          else if( (*it_opt)->Name() == "time_limit" )
          {
-            defaultval.realval = 1000;
+            defaultval = 1000.0;
             defaultdescr = "GAMS reslim";
          }
          else if( (*it_opt)->Name() == "node_limit" )
@@ -261,9 +237,9 @@ int main(int argc, char** argv)
 
          // Ipopt options
          else if( (*it_opt)->Name() == "bound_relax_factor" )
-            defaultval.realval = 1e-10;
+            defaultval = 1e-10;
          else if( (*it_opt)->Name() == "ma86_order" )
-            defaultval = GamsOption::Value("auto");
+            defaultval = "auto";
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
          {
             for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )

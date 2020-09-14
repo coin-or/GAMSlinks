@@ -249,14 +249,14 @@ int main(int argc, char** argv)
             case Ipopt::OT_Number:
             {
                opttype = GamsOption::Type::REAL;
-               minval.realval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
-               maxval.realval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
+               minval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
+               maxval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
                //TODO should ask Bonmin for value for infinity
                if( minval.realval == -1e+20 )
-                  minval.realval = -DBL_MAX;
+                  minval = -DBL_MAX;
                if( maxval.realval ==  1e+20 )
-                  maxval.realval =  DBL_MAX;
-               defaultval.realval = (*it_opt)->DefaultNumber();
+                  maxval =  DBL_MAX;
+               defaultval = (*it_opt)->DefaultNumber();
                // minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
                // maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;
                break;
@@ -265,21 +265,20 @@ int main(int argc, char** argv)
             case Ipopt::OT_Integer:
             {
                opttype = GamsOption::Type::INTEGER;
-               minval.intval = (*it_opt)->HasLower() ? (*it_opt)->LowerInteger() : -INT_MAX;
-               maxval.intval = (*it_opt)->HasUpper() ? (*it_opt)->UpperInteger() :  INT_MAX;
-               defaultval.intval = (*it_opt)->DefaultInteger();
+               minval = (*it_opt)->HasLower() ? (*it_opt)->LowerInteger() : -INT_MAX;
+               maxval = (*it_opt)->HasUpper() ? (*it_opt)->UpperInteger() :  INT_MAX;
+               defaultval = (*it_opt)->DefaultInteger();
                break;
             }
 
             case Ipopt::OT_String:
             {
                opttype = GamsOption::Type::STRING;
-               defaultval = GamsOption::Value((*it_opt)->DefaultString());
+               defaultval = (*it_opt)->DefaultString();
 
                const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
                if( settings.size() > 1 || settings[0].value_ != "*")
                {
-                  opttype = GamsOption::Type::STRING;
                   if( (*it_opt)->Name() == "linear_solver" )
                   {
                      enumval.append("ma27", "use the Harwell routine MA27");
@@ -327,20 +326,20 @@ int main(int argc, char** argv)
 
          // GAMS overwrites of Bonmin option defaults
          if( (*it_opt)->Name() == "nlp_log_at_root" )
-            defaultval.intval = Ipopt::J_ITERSUMMARY;
+            defaultval = Ipopt::J_ITERSUMMARY;
          else if( (*it_opt)->Name() == "allowable_fraction_gap" )
          {
-            defaultval.realval = 0.1;
+            defaultval = 0.1;
             defaultdescr = "GAMS optcr";
          }
          else if( (*it_opt)->Name() == "allowable_gap" )
          {
-            defaultval.realval = 0.0;
+            defaultval = 0.0;
             defaultdescr = "GAMS optca";
          }
          else if( (*it_opt)->Name() == "time_limit" )
          {
-            defaultval.realval = 1000;
+            defaultval = 1000.0;
             defaultdescr = "GAMS reslim";
          }
          else if( (*it_opt)->Name() == "node_limit" )
@@ -357,32 +356,32 @@ int main(int argc, char** argv)
             longdescr = "";
          else if( (*it_opt)->Name() == "number_cpx_threads" )
          {
-            defaultval.intval = 1;
+            defaultval = 1;
             defaultdescr = "GAMS threads";
          }
          // Ipopt options
          else if( (*it_opt)->Name() == "bound_relax_factor" )
-            defaultval.realval = 1e-10;
+            defaultval = 1e-10;
          else if( (*it_opt)->Name() == "mu_strategy" )
-            defaultval = GamsOption::Value("adaptive");
+            defaultval = "adaptive";
          else if( (*it_opt)->Name() == "mu_oracle" )
-            defaultval = GamsOption::Value("probing");
+            defaultval = "probing";
          else if( (*it_opt)->Name() == "gamma_phi" )
-            defaultval.realval = 1e-8;
+            defaultval = 1e-8;
          else if( (*it_opt)->Name() == "gamma_theta" )
-            defaultval.realval = 1e-4;
+            defaultval = 1e-4;
          else if( (*it_opt)->Name() == "required_infeasibility_reduction" )
-            defaultval.realval = 0.1;
+            defaultval = 0.1;
          else if( (*it_opt)->Name() == "expect_infeasible_problem" )
-            defaultval = GamsOption::Value("yes");
+            defaultval = "yes";
          else if( (*it_opt)->Name() == "warm_start_init_point" )
-            defaultval = GamsOption::Value("yes");
+            defaultval = "yes";
          else if( (*it_opt)->Name() == "print_level" )
-            defaultval.intval = 0;
+            defaultval = 0;
          else if( (*it_opt)->Name() == "print_frequency_time" )
-            defaultval.realval = 0.5;
+            defaultval = 0.5;
          else if( (*it_opt)->Name() == "ma86_order" )
-            defaultval = GamsOption::Value("auto");
+            defaultval = "auto";
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
          {
             for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )

@@ -88,6 +88,54 @@ public:
       : stringval(strdup(val.c_str()))
       { }
 
+      Value& operator=(
+         bool val
+         )
+      {
+         boolval = val;
+         return *this;
+      }
+
+      Value& operator=(
+         int val
+         )
+      {
+         intval = val;
+         return *this;
+      }
+
+      Value& operator=(
+         double val
+         )
+      {
+         realval = val;
+         return *this;
+      }
+
+      Value& operator=(
+         char val
+         )
+      {
+         charval = val;
+         return *this;
+      }
+
+      Value& operator=(
+         const char* val
+         )
+      {
+         stringval = val != NULL ? strdup(val) : NULL;
+         return *this;
+      }
+
+      Value& operator=(
+         const std::string& val
+         )
+      {
+         stringval = strdup(val.c_str());
+         return *this;
+      }
+
       std::string toStringGams(
          GamsOption::Type type,
          bool             quotestr = false
@@ -263,6 +311,7 @@ public:
       Value(defaultval), Value(-INT_MAX), Value(INT_MAX),
       enumval, defaultdescr, refval)
    {
+      // TODO remove here
       int min = INT_MAX, max = -INT_MAX;
       for( GamsOption::EnumVals::const_iterator e(enumval.begin()); e != enumval.end(); ++e )
       {

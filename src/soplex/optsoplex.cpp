@@ -50,8 +50,8 @@ int main(int argc, char** argv)
          continue;
 
       defaultval.boolval = SoPlex::Settings::boolParam.defaultValue[i];
-      minval.boolval = 0;
-      maxval.boolval = 1;
+      minval.boolval = false;
+      maxval.boolval = true;
       defaultdescr = std::string();
 
       gmsopt.collect(
@@ -78,15 +78,15 @@ int main(int argc, char** argv)
          continue;
 
       // TODO recognize intenums
-      defaultval.intval = SoPlex::Settings::intParam.defaultValue[i];
-      minval.intval = SoPlex::Settings::intParam.lower[i];
-      maxval.intval = SoPlex::Settings::intParam.upper[i];
-      defaultdescr = std::string();
+      defaultval = SoPlex::Settings::intParam.defaultValue[i];
+      minval = SoPlex::Settings::intParam.lower[i];
+      maxval = SoPlex::Settings::intParam.upper[i];
+      defaultdescr.clear();
 
       if( i == SoPlex::ITERLIMIT )
          defaultdescr = "\\ref GAMSAOiterlim \"GAMS iterlim\"";
       if( i == SoPlex::TIMER )
-         defaultval.intval = SoPlex::TIMER_WALLCLOCK;
+         defaultval = SoPlex::TIMER_WALLCLOCK;
 
       gmsopt.collect(
          std::string("int:") + SoPlex::Settings::intParam.name[i],
@@ -101,10 +101,10 @@ int main(int argc, char** argv)
       if( i == SoPlex::OBJ_OFFSET )
          continue;
 
-      defaultval.realval = translateSoplexInfinity(SoPlex::Settings::realParam.defaultValue[i]);
-      minval.realval = translateSoplexInfinity(SoPlex::Settings::realParam.lower[i]);
-      maxval.realval = translateSoplexInfinity(SoPlex::Settings::realParam.upper[i]);
-      defaultdescr = std::string();
+      defaultval = translateSoplexInfinity(SoPlex::Settings::realParam.defaultValue[i]);
+      minval = translateSoplexInfinity(SoPlex::Settings::realParam.lower[i]);
+      maxval = translateSoplexInfinity(SoPlex::Settings::realParam.upper[i]);
+      defaultdescr.clear();
 
       if( i == SoPlex::TIMELIMIT )
          defaultdescr = "\\ref GAMSAOreslim \"GAMS reslim\"";

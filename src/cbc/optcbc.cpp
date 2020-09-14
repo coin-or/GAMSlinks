@@ -54,16 +54,16 @@ GamsOption& collectCbcOption(
    if( cbcoptnum <= 100 )
    {
       opttype = GamsOption::Type::REAL;
-      minval.realval = cbcopt.lowerDoubleValue();
-      maxval.realval = cbcopt.upperDoubleValue();
-      defaultval.realval = cbcopt.doubleParameter(cbcmodel);
+      minval = cbcopt.lowerDoubleValue();
+      maxval = cbcopt.upperDoubleValue();
+      defaultval = cbcopt.doubleParameter(cbcmodel);
    }
    else if( cbcoptnum <= 200 )
    {
       opttype = GamsOption::Type::INTEGER;
-      minval.intval = cbcopt.lowerIntValue();
-      maxval.intval = cbcopt.upperIntValue();
-      defaultval.intval = cbcopt.intParameter(cbcmodel);
+      minval = cbcopt.lowerIntValue();
+      maxval = cbcopt.upperIntValue();
+      defaultval = cbcopt.intParameter(cbcmodel);
    }
    else if( cbcoptnum <= 400 )
    {
@@ -73,7 +73,7 @@ GamsOption& collectCbcOption(
          ((kws[0] == "on" && kws[1] == "off") || (kws[1] == "on" && kws[0] == "off")) )
       {
          opttype = GamsOption::Type::BOOL;
-         defaultval.boolval = cbcopt.currentOption() == "on";
+         defaultval = cbcopt.currentOption() == "on";
       }
       else
       {
@@ -83,7 +83,7 @@ GamsOption& collectCbcOption(
          // remove '!' and '?' marker from default
          auto newend = std::remove(def.begin(), def.end(), '!');
          newend = std::remove(def.begin(), newend, '?');
-         defaultval.stringval = strdup(std::string(def.begin(), newend).c_str());
+         defaultval = std::string(def.begin(), newend);
 
          for( auto v : cbcopt.definedKeywords() )
          {
@@ -267,9 +267,9 @@ int main(int argc, char** argv)
       opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "threads");
       opt->defaultdescr = "GAMS threads";
       opt->longdescr.clear();
-      opt->defaultval.intval = 1; // somehow I got a -1 from Cbc
-      opt->minval.intval = 1;
-      opt->maxval.intval = 99;
+      opt->defaultval = 1; // somehow I got a -1 from Cbc
+      opt->minval = 1;
+      opt->maxval = 99;
 
       GamsOption::EnumVals parallelmodes;
       parallelmodes.append("opportunistic");
@@ -298,7 +298,7 @@ int main(int argc, char** argv)
       "", -1);
 
    opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "maxsol", "maxSavedSolutions");
-   opt->defaultval.intval = 100;
+   opt->defaultval = 100;
    opt->longdescr = "Maximal number of solutions to store during search and to dump into gdx files if dumpsolutions options is set.";
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "strongBranching");
