@@ -14,9 +14,7 @@
 #include <set>
 #include <map>
 #include <list>
-
 #include <cstring>
-#include <cassert>
 #include <climits>
 #include <cfloat>
 
@@ -369,7 +367,7 @@ public:
    )
    : GamsOption(name, shortdescr, longdescr,
       GamsOption::Type::INTEGER,
-      Value(defaultval), Value(-INT_MAX), Value(INT_MAX),
+      Value(defaultval), Value(), Value(),
       enumval, defaultdescr, refval)
    { }
 

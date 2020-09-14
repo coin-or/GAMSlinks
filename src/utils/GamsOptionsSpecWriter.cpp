@@ -11,6 +11,7 @@
 
 #include <cstdio>
 #include <cctype>
+#include <cassert>
 #include <iostream>
 #include <fstream>
 #include <sstream>
