@@ -295,36 +295,9 @@ int main(int argc, char** argv)
                const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
                if( settings.size() > 1 || settings[0].value_ != "*")
                {
-                  if( (*it_opt)->Name() == "linear_solver" )
-                  {
-                     enumval.append("ma27", "use the Harwell routine MA27");
-                     enumval.append("ma57", "use the Harwell routine MA57");
-                     enumval.append("ma77", "use the Harwell routine HSL_MA77");
-                     enumval.append("ma86", "use the Harwell routine HSL_MA86");
-                     enumval.append("ma97", "use the Harwell routine HSL_MA97");
-                     enumval.append("pardiso", "use the Pardiso package");
-                     enumval.append("mumps", "use MUMPS package");
-
-                     longdescr = "Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). "
-                        "Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
-                        "To use HSL_MA77, a HSL library needs to be provided.";
-
-                     defaultdescr = "ma27, if BonminH, otherwise mumps";
-                  }
-                  else
-                  {
-                     if( (*it_opt)->Name() == "linear_system_scaling" )
-                     {
-                        longdescr = "Determines the method used to compute symmetric scaling factors for the augmented system (see also the \"linear_scaling_on_demand\" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. "
-                           "Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately.";
-
-                        defaultdescr = "mc19, if BonminH, otherwise none";
-                     }
-
-                     enumval.reserve(settings.size());
-                     for( size_t j = 0; j < settings.size(); ++j )
-                        enumval.append(settings[j].value_, settings[j].description_);
-                  }
+                  enumval.reserve(settings.size());
+                  for( size_t j = 0; j < settings.size(); ++j )
+                     enumval.append(settings[j].value_, settings[j].description_);
                }
 
                break;
@@ -399,23 +372,31 @@ int main(int argc, char** argv)
          else if( (*it_opt)->Name() == "ma86_order" )
             defaultval = "auto";
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
+            enumval.drop("user-scaling");
+         else if( (*it_opt)->Name() == "linear_solver" )
          {
-            for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )
-               if( it->first == "user-scaling" )
-               {
-                  enumval.erase(it);
-                  break;
-               }
+#ifdef GAMS_BUILD
+            longdescr = "Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). "
+               "Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
+               "To use HSL_MA77, a HSL library needs to be provided.";
+
+            defaultdescr = "ma27, if BonminH, otherwise mumps";
+
+            enumval.drop("wsmp");
+#endif
+            enumval.drop("custom");
          }
+#ifdef GAMS_BUILD
          else if( (*it_opt)->Name() == "dependency_detector" )
+            enumval.drop("wsmp");
+         else if( (*it_opt)->Name() == "linear_system_scaling" )
          {
-            for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )
-               if( it->first == "wsmp" )
-               {
-                  enumval.erase(it);
-                  break;
-               }
+            longdescr = "Determines the method used to compute symmetric scaling factors for the augmented system (see also the \"linear_scaling_on_demand\" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. "
+               "Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately.";
+
+            defaultdescr = "mc19, if BonminH, otherwise none";
          }
+#endif
 
          gmsopt.collect((*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
             opttype, defaultval, minval, maxval, !minval_strict, !maxval_strict, enumval, defaultdescr);

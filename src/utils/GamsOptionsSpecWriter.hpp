@@ -243,6 +243,20 @@ public:
          emplace_back(key, descr);
       }
 
+      template <typename T>
+      bool drop(
+         const T& key
+         )
+      {
+         for( GamsOption::EnumVals::iterator it(begin()); it != end(); ++it )
+            if( it->first == key )
+            {
+               this->erase(it);
+               return true;
+            }
+         return false;
+      }
+
       /// returns whether there exists an enum value with non-empty description
       bool hasDescription() const
       {
