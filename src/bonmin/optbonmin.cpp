@@ -274,7 +274,7 @@ int main(int argc, char** argv)
             case Ipopt::OT_String:
             {
                opttype = GamsOption::Type::STRING;
-               defaultval = GamsOption::makeValue((*it_opt)->DefaultString());
+               defaultval = GamsOption::Value((*it_opt)->DefaultString());
 
                const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
                if( settings.size() > 1 || settings[0].value_ != "*")
@@ -364,9 +364,9 @@ int main(int argc, char** argv)
          else if( (*it_opt)->Name() == "bound_relax_factor" )
             defaultval.realval = 1e-10;
          else if( (*it_opt)->Name() == "mu_strategy" )
-            defaultval = GamsOption::makeValue("adaptive");
+            defaultval = GamsOption::Value("adaptive");
          else if( (*it_opt)->Name() == "mu_oracle" )
-            defaultval = GamsOption::makeValue("probing");
+            defaultval = GamsOption::Value("probing");
          else if( (*it_opt)->Name() == "gamma_phi" )
             defaultval.realval = 1e-8;
          else if( (*it_opt)->Name() == "gamma_theta" )
@@ -374,15 +374,15 @@ int main(int argc, char** argv)
          else if( (*it_opt)->Name() == "required_infeasibility_reduction" )
             defaultval.realval = 0.1;
          else if( (*it_opt)->Name() == "expect_infeasible_problem" )
-            defaultval = GamsOption::makeValue("yes");
+            defaultval = GamsOption::Value("yes");
          else if( (*it_opt)->Name() == "warm_start_init_point" )
-            defaultval = GamsOption::makeValue("yes");
+            defaultval = GamsOption::Value("yes");
          else if( (*it_opt)->Name() == "print_level" )
             defaultval.intval = 0;
          else if( (*it_opt)->Name() == "print_frequency_time" )
             defaultval.realval = 0.5;
          else if( (*it_opt)->Name() == "ma86_order" )
-            defaultval = GamsOption::makeValue("auto");
+            defaultval = GamsOption::Value("auto");
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
          {
             for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )

@@ -41,14 +41,51 @@ public:
 
    union Value
    {
-      bool                  boolval;
-      int                   intval;
-      double                realval;
-      char                  charval;
-      char*                 stringval;
+      bool    boolval;
+      int     intval;
+      double  realval;
+      char    charval;
+      char*   stringval;
 
       Value()
-      :  stringval(NULL)
+      {
+         memset(this, 0, sizeof(Value));
+      }
+
+      Value(
+         bool val
+         )
+      : boolval(val)
+      { }
+
+      Value(
+         int val
+         )
+      : intval(val)
+      { }
+
+      Value(
+         double val
+         )
+      : realval(val)
+      { }
+
+      Value(
+         char val
+         )
+      : charval(val)
+      { }
+
+      Value(
+         const char* val
+         )
+      : stringval(val != NULL ? strdup(val) : NULL)
+      { }
+
+      Value(
+         const std::string& val
+         )
+      : stringval(strdup(val.c_str()))
       { }
 
       std::string toStringGams(
@@ -95,66 +132,6 @@ public:
       }
    };
 
-   static
-   Value makeValue(
-      bool val
-      )
-   {
-      Value v;
-      v.boolval = val;
-      return v;
-   }
-
-   static
-   Value makeValue(
-      int val
-      )
-   {
-      Value v;
-      v.intval = val;
-      return v;
-   }
-
-   static
-   Value makeValue(
-      double val
-      )
-   {
-      Value v;
-      v.realval = val;
-      return v;
-   }
-
-   static
-   Value makeValue(
-      char val
-      )
-   {
-      Value v;
-      v.charval = val;
-      return v;
-   }
-
-   static
-   Value makeValue(
-      const char* val
-      )
-   {
-      Value v;
-      v.stringval = strdup(val);
-      return v;
-   }
-
-   static
-   Value makeValue(
-      const std::string& val
-      )
-   {
-      Value v;
-      v.stringval = strdup(val.c_str());
-      return v;
-   }
-
    class EnumVals : public std::vector<std::pair<GamsOption::Value, std::string> >
    {
    public:
@@ -164,7 +141,7 @@ public:
          const std::string& descr = ""
          )
       {
-         emplace_back(makeValue(key), descr);
+         emplace_back(key, descr);
       }
 
       /// returns whether there exists an enum value with non-empty description
@@ -248,7 +225,7 @@ public:
    )
    : GamsOption(name, shortdescr, longdescr,
       GamsOption::Type::REAL,
-      makeValue(defaultval),  makeValue(minval),  makeValue(maxval),
+      Value(defaultval), Value(minval), Value(maxval),
       GamsOption::EnumVals(),
       defaultdescr, refval)
    { }
@@ -266,7 +243,7 @@ public:
    )
    : GamsOption(name, shortdescr, longdescr,
       GamsOption::Type::INTEGER,
-      makeValue(defaultval), makeValue(minval), makeValue(maxval),
+      Value(defaultval), Value(minval), Value(maxval),
       GamsOption::EnumVals(),
       defaultdescr, refval)
    { }
@@ -283,7 +260,7 @@ public:
    )
    : GamsOption(name, shortdescr, longdescr,
       GamsOption::Type::INTEGER,
-      makeValue(defaultval), makeValue(-INT_MAX), makeValue(INT_MAX),
+      Value(defaultval), Value(-INT_MAX), Value(INT_MAX),
       enumval, defaultdescr, refval)
    {
       int min = INT_MAX, max = -INT_MAX;
@@ -307,7 +284,7 @@ public:
    )
    : GamsOption(name, shortdescr, longdescr,
       GamsOption::Type::BOOL,
-      makeValue(defaultval), GamsOption::Value(), GamsOption::Value(),
+      Value(defaultval), Value(), Value(),
       GamsOption::EnumVals(),
       defaultdescr, refval)
    { }
@@ -322,7 +299,7 @@ public:
    )
    : GamsOption(name, shortdescr, longdescr,
       GamsOption::Type::STRING,
-      makeValue(defaultval), GamsOption::Value(), GamsOption::Value(),
+      Value(defaultval), Value(), Value(),
       GamsOption::EnumVals(),
       std::string(), refval)
    { }
@@ -339,7 +316,7 @@ public:
    )
    : GamsOption(name, shortdescr, longdescr,
          GamsOption::Type::STRING,
-         makeValue(defaultval), GamsOption::Value(), GamsOption::Value(),
+         Value(defaultval), Value(), Value(),
          enumval, defaultdescr, refval)
    { }
 

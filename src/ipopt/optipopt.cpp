@@ -184,9 +184,9 @@ int main(int argc, char** argv)
             defaultdescr = "GAMS reslim";
          }
          else if( (*it_opt)->Name() == "mu_strategy" )
-            defaultval = GamsOption::makeValue("adaptive");
+            defaultval = GamsOption::Value("adaptive");
          else if( (*it_opt)->Name() == "ma86_order" )
-            defaultval = GamsOption::makeValue("auto");
+            defaultval = GamsOption::Value("auto");
          else if( (*it_opt)->Name() == "nlp_scaling_method" )
          {
             for( GamsOption::EnumVals::iterator it(enumval.begin()); it != enumval.end(); ++it )
