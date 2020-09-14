@@ -15,6 +15,18 @@
 #include "CbcSolver.hpp"
 
 static
+bool hasCbcOption(
+   std::vector<CbcOrClpParam>& cbcopts,
+   const std::string&          namecbc
+   )
+{
+   for( auto& o : cbcopts )
+      if( o.name() == namecbc )
+         return true;
+   return false;
+}
+
+static
 GamsOption& collectCbcOption(
    GamsOptions&                gmsopt,
    std::vector<CbcOrClpParam>& cbcopts,
@@ -307,7 +319,8 @@ int main(int argc, char** argv)
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "expensiveStrong");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "OrbitalBranching");
+   if( hasCbcOption(cbcopts, "OrbitalBranching") )  // only available if cbc build with numpy
+      collectCbcOption(gmsopt, cbcopts, cbcmodel, "OrbitalBranching");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "costStrategy");
 
