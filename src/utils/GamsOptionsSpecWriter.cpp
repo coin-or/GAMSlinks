@@ -861,7 +861,7 @@ void GamsOptions::writeMarkdown()
          if( !opt.longdescr.empty() )
             f << std::endl << "> " << makeValidMarkdownString(opt.longdescr) << std::endl;
          f << std::endl;
-         if( opt.enumval.empty() )
+         if( !opt.enumval.hasDescription() )
          {
             f << "> Range: " << opt.getRangeMarkdown() << "  " << std::endl;
 
@@ -973,18 +973,19 @@ void GamsOptions::writeDoxygen(
             if( !opt.longdescr.empty() )
                f << "<br/>" << opt.longdescr;
 
-            if( opt.enumval.empty() )
+            if( !opt.enumval.hasDescription() )
             {
                // if( (opt.type == GamsOption::Type::INTEGER && (opt.minval.intval != 0 || opt.maxval.intval != INT_MAX)) ||
                //     (opt.type == GamsOption::Type::REAL && (opt.minval.realval != 0.0 || opt.maxval.realval != DBL_MAX)) )
                f << "<br/>Range: " << opt.getRangeMarkdown(true);
             }
-            for( auto& e : opt.enumval )
-            {
-               f << "<br/>" << e.first.toStringMarkdown(opt.type, true);
-               if( !e.second.empty() )
-                  f << ": " << makeValidMarkdownString(e.second);
-            }
+            else
+               for( auto& e : opt.enumval )
+               {
+                  f << "<br/>" << e.first.toStringMarkdown(opt.type, true);
+                  if( !e.second.empty() )
+                     f << ": " << makeValidMarkdownString(e.second);
+               }
             if( !opt.synonyms.empty() )
             {
                f << "<br/>Synonyms:";
