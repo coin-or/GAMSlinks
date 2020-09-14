@@ -208,7 +208,7 @@ std::string GamsOption::getRangeMarkdown(
       }
       case GamsOption::Type::REAL :
       {
-         if( minval.realval == -DBL_MAX && maxval.realval == DBL_MAX )
+         if( minval == -DBL_MAX && maxval == DBL_MAX )
          {
             s << "real";
             break;
@@ -469,22 +469,22 @@ void GamsOptions::writeGMS(
          case GamsOption::Type::INTEGER:
             f << "I.(def ";
             f << d->defaultval.toStringGams(d->type);
-            if( d->minval.intval == -INT_MAX )
+            if( d->minval == -INT_MAX )
                f << ", lo minint";
-            else if( d->minval.intval != 0 )
+            else if( d->minval != 0 )
                f << ", lo " << d->minval.intval;
-            if( d->maxval.intval !=  INT_MAX )
+            if( d->maxval !=  INT_MAX )
                f << ", up " << d->maxval.intval;
             break;
 
          case GamsOption::Type::REAL:
             f << "R.(def ";
             f << d->defaultval.toStringGams(d->type);
-            if( d->minval.realval == -DBL_MAX )
+            if( d->minval == -DBL_MAX )
                f << ", lo mindouble";
-            else if( d->minval.realval != 0 )
+            else if( d->minval != 0.0 )
                f << ", lo " << d->minval.realval;
-            if( d->maxval.realval !=  DBL_MAX )
+            if( d->maxval !=  DBL_MAX )
                f << ", up " << d->maxval.realval;
             break;
 
@@ -778,23 +778,23 @@ void GamsOptions::writeMarkdown()
                {
                   case GamsOption::Type::BOOL :
                      f << e.first.boolval;
-                     isdefault = e.first.boolval == opt.defaultval.boolval;
+                     isdefault = e.first == opt.defaultval.boolval;
                      break;
                   case GamsOption::Type::INTEGER :
                      f << e.first.toStringMarkdown(opt.type);
-                     isdefault = e.first.intval == opt.defaultval.intval;
+                     isdefault = e.first == opt.defaultval.intval;
                      break;
                   case GamsOption::Type::REAL :
                      f << e.first.toStringMarkdown(opt.type);
-                     isdefault = e.first.realval == opt.defaultval.realval;
+                     isdefault = e.first == opt.defaultval.realval;
                      break;
                   case GamsOption::Type::CHAR :
                      f << e.first.charval;
-                     isdefault = e.first.charval == opt.defaultval.charval;
+                     isdefault = e.first == opt.defaultval.charval;
                      break;
                   case GamsOption::Type::STRING :
                      f << e.first.toStringMarkdown(opt.type);
-                     isdefault = strcmp(e.first.stringval, opt.defaultval.stringval) == 0;
+                     isdefault = e.first == opt.defaultval.stringval;
                      break;
                }
                if( isdefault && opt.defaultdescr.empty() )

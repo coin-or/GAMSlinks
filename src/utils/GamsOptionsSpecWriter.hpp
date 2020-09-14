@@ -138,40 +138,56 @@ public:
 
       bool operator==(
          bool val
-         )
+         ) const
       {
          return boolval == val;
       }
 
       bool operator==(
          int val
-         )
+         ) const
       {
          return intval == val;
       }
 
       bool operator==(
          double val
-         )
+         ) const
       {
          return realval == val;
       }
+
       bool operator==(
          char val
-         )
+         ) const
       {
          return charval == val;
       }
 
       bool operator==(
          const char* val
-         )
+         ) const
       {
          if( stringval == val )
             return true;
          if( stringval == NULL || val == NULL )
             return false;
          return strcmp(stringval, val) == 0;
+      }
+
+      bool operator==(
+         const std::string& val
+         ) const
+      {
+         return operator==(val.c_str());
+      }
+
+      template <typename T>
+      bool operator!=(
+         T val
+         ) const
+      {
+         return !operator==(val);
       }
 
       std::string toStringGams(
