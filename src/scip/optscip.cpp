@@ -548,7 +548,7 @@ int main(int argc, char** argv)
                opttype = GamsOption::Type::CHAR;
                defaultval = SCIPparamGetCharDefault(param);
                if( SCIPparamGetCharAllowedValues(param) != NULL )
-                  for( char* c = SCIPparamGetCharAllowedValues(param); *c != NULL; ++c )
+                  for( char* c = SCIPparamGetCharAllowedValues(param); *c != '\0'; ++c )
                      enumval.append(*c);
                break;
 

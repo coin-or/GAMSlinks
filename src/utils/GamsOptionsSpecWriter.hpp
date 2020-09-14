@@ -473,12 +473,33 @@ public:
    }
 };
 
+class GamsOptionGroup
+{
+public:
+   std::string name;
+   std::string shortdescr;
+   std::string longdescr;
+
+   // index set in GamsOptions::finalize()
+   int index;
+
+   GamsOptionGroup(
+      const std::string& name_,
+      const std::string& shortdescr_ = "",
+      const std::string& longdescr_ = ""
+   )
+   : name(name_),
+     shortdescr(shortdescr_.empty() ? name_ : shortdescr_),
+     longdescr(longdescr_),
+     index(-1)
+   { }
+};
 
 class GamsOptions
 {
 private:
    std::list<GamsOption> options;
-   std::map<std::string, std::string> groups;
+   std::map<std::string, GamsOptionGroup> groups;
 
    std::string           solver;
    std::string           curgroup;
@@ -494,13 +515,16 @@ public:
      separator(" ")
    { }
 
+   /// adds group and sets current group
+   /// descriptions are ignored if group already exists
    void setGroup(
       const std::string& group,
-      const std::string& description = ""
+      const std::string& description = "",
+      const std::string& longdescription = ""
       )
    {
       curgroup = group;
-      groups[group] = description;
+      groups.emplace(group, GamsOptionGroup(group, description, longdescription));
    }
 
    void setSeparator(

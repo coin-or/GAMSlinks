@@ -404,6 +404,11 @@ std::string GamsOption::getRangeMarkdown(
 void GamsOptions::finalize()
 {
    options.sort();
+
+   // give each group an index
+   int index = 1;
+   for( auto& g : groups )
+      g.second.index = index++;
 }
 
 void GamsOptions::writeGMS(
@@ -547,8 +552,8 @@ void GamsOptions::writeGMS(
    //f << "set m / %system.gamsopt% /;" << std::endl;
 
    f << "set g Option Groups /" << std::endl;
-   for( std::map<std::string, std::string>::iterator g(groups.begin()); g != groups.end(); ++g )
-      f << "  gr_" << formatID(g->first) << "   '" << (g->second.length() > 0 ? g->second : g->first) << "'" << std::endl;
+   for( auto& g : groups )
+      f << "  gr_" << formatID(g.second.name) << "   '" << g.second.shortdescr << "'" << std::endl;
    f << "/;" << std::endl;
 
    f << "set o Solver and Link Options with one-line description /" << std::endl;
@@ -760,17 +765,7 @@ void GamsOptions::writeDef()
       f << " 1";
 
       // group number
-      f << ' ';
-      size_t i = 1;
-      for( std::map<std::string, std::string>::iterator it(groups.begin()); it != groups.end(); ++it )
-      {
-         if( it->first == opt.group )
-         {
-            f << i;
-            break;
-         }
-         ++i;
-      }
+      f << ' ' << groups.find(opt.group)->second.index;
 
       // short description
       f << ' ' << opt.shortdescr;
@@ -827,12 +822,12 @@ void GamsOptions::writeDef()
    size_t i = 1;
    for( auto& group : groups )
    {
-      f << "gr_" << formatID(group.first);
+      f << "gr_" << formatID(group.second.name);
       f << " group ";
-      f << i++;
+      f << group.second.index;
       // not hidden
       f << " 1";
-      f << ' ' << (group.second.empty() ? group.first : group.second);
+      f << ' ' << group.second.shortdescr;
       f << std::endl;
    }
 
@@ -849,11 +844,14 @@ void GamsOptions::writeMarkdown()
 
    for( auto& group : groups )
    {
-      f << "## " << (group.second.empty() ? group.first : group.second) << std::endl << std::endl;
+      f << "## " << group.second.shortdescr << std::endl << std::endl;
+
+      if( !group.second.longdescr.empty() )
+         f << makeValidMarkdownString(group.second.longdescr) << std::endl << std::endl;
 
       for( auto& opt : options )
       {
-         if( opt.group != group.first )
+         if( opt.group != group.second.name )
             continue;
 
          f << "**" << opt.name << "**: " << makeValidMarkdownString(opt.shortdescr) << std::endl;
@@ -945,15 +943,18 @@ void GamsOptions::writeDoxygen(
       f << std::endl;
       f << "\\subsection ";
 
-      f << toupper(solver) << "_gr_" << formatID(group.first);
-      f << ' ' << (group.second.empty() ? group.first : group.second) << std::endl;
+      f << toupper(solver) << "_gr_" << formatID(group.second.name);
+      f << ' ' << group.second.shortdescr << std::endl << std::endl;
+
+      if( !group.second.longdescr.empty() )
+         f << makeValidMarkdownString(group.second.longdescr) << std::endl << std::endl;
 
       f << "| Option | Description | Default |" << std::endl;
       f << "|:-------|:------------| ------: |" << std::endl;
 
       for( auto& opt : options )
       {
-         if( opt.group != group.first )
+         if( opt.group != group.second.name )
             continue;
 
          f << "| ";
