@@ -4,15 +4,11 @@
 #
 # Author: Stefan Vigerske
 
-AUTOMAKE_OPTIONS = foreign
-
 test:
 	sh -c ./run_quality
-	sh -c ./run_gmstest
-
-unitTest: test
+#	sh -c ./run_gmstest
 
 clean-local:
 	rm -rf gmstest quality
 
-.PHONY: test unitTest
+.PHONY: test

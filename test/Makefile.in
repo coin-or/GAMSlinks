@@ -294,7 +294,6 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = foreign
 all: all-am
 
 .SUFFIXES:
@@ -462,14 +461,12 @@ uninstall-am:
 
 test:
 	sh -c ./run_quality
-	sh -c ./run_gmstest
-
-unitTest: test
+#	sh -c ./run_gmstest
 
 clean-local:
 	rm -rf gmstest quality
 
-.PHONY: test unitTest
+.PHONY: test
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

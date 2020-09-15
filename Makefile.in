@@ -686,8 +686,6 @@ uninstall-am: uninstall-docDATA
 test: all
 	cd test; $(MAKE) test
 
-unitTest: test
-
 doc:
 	cd doc && doxygen
 

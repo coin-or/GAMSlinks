@@ -30,62 +30,26 @@ if test ! -e gmstest.gms ; then
   exit 1
 fi
 
-if test -e "$gamspath/gamslice.txt" ; then
-  echo "Found GAMS licence file. We will run all tests."
-  demoparam="not big(s)"
-else
-  echo "Did not found GAMS licence file. We will run only tests that can be run in demomode."
-  demoparam="not big(s)" 
-fi
+demoparam=1
+# remove this line to run also tests that require more than a GAMS demo license
+demoparam="not big(s)"
 
 
 solvers="'dummy'"
 SMP=
 skiplist=
 
-@COIN_HAS_IPOPT_TRUE@solvers="$solvers , 'MyIpopt'"
-@COIN_HAS_IPOPT_TRUE@SMP="$SMP SMP('MyIpopt', 'LP') = yes;"
-@COIN_HAS_IPOPT_TRUE@SMP="$SMP SMP('MyIpopt', 'QCP') = yes;"
-@COIN_HAS_IPOPT_TRUE@SMP="$SMP SMP('MyIpopt', 'NLP') = yes;"
-@COIN_HAS_IPOPT_TRUE@SMP="$SMP SMP('MyIpopt', 'RMIP') = yes;"
-@COIN_HAS_IPOPT_TRUE@SMP="$SMP SMP('MyIpopt', 'RMIQCP') = yes;"
-@COIN_HAS_IPOPT_TRUE@SMP="$SMP SMP('MyIpopt', 'RMINLP') = yes;"
-
-@COIN_HAS_CBC_TRUE@solvers="$solvers , 'MyCbc'"
-@COIN_HAS_CBC_TRUE@SMP="$SMP SMP('MyCbc', 'LP') = yes;"
-@COIN_HAS_CBC_TRUE@SMP="$SMP SMP('MyCbc', 'MIP') = yes;"
-@COIN_HAS_CBC_TRUE@SMP="$SMP SMP('MyCbc', 'RMIP') = yes;"
-
-@COIN_HAS_BONMIN_TRUE@solvers="$solvers , 'MyBonmin'"
-@COIN_HAS_BONMIN_TRUE@SMP="$SMP SMP('MyBonmin', 'MIP') = yes;"
-@COIN_HAS_BONMIN_TRUE@SMP="$SMP SMP('MyBonmin', 'MIQCP') = yes;"
-@COIN_HAS_BONMIN_TRUE@SMP="$SMP SMP('MyBonmin', 'MINLP') = yes;"
-
-@COIN_HAS_COUENNE_TRUE@solvers="$solvers , 'MyCouenne'"
-@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('MyCouenne', 'QCP') = yes;"
-@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('MyCouenne', 'MIQCP') = yes;"
-@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('MyCouenne', 'RMIQCP') = yes;"
-@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('MyCouenne', 'NLP') = yes;"
-@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('MyCouenne', 'DNLP') = yes;"
-@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('MyCouenne', 'RMINLP') = yes;"
-@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('MyCouenne', 'MINLP') = yes;"
-
-@COIN_HAS_SCIP_TRUE@solvers="$solvers , 'MyScip'"
-@COIN_HAS_SCIP_TRUE@SMP="$SMP SMP('MyScip', 'MIP') = yes;"
-@COIN_HAS_SCIP_TRUE@SMP="$SMP SMP('MyScip', 'QCP') = yes;"
-@COIN_HAS_SCIP_TRUE@SMP="$SMP SMP('MyScip', 'MIQCP') = yes;"
-@COIN_HAS_SCIP_TRUE@SMP="$SMP SMP('MyScip', 'RMIQCP') = yes;"
-@COIN_HAS_SCIP_TRUE@SMP="$SMP SMP('MyScip', 'NLP') = yes;"
-@COIN_HAS_SCIP_TRUE@SMP="$SMP SMP('MyScip', 'DNLP') = yes;"
-@COIN_HAS_SCIP_TRUE@SMP="$SMP SMP('MyScip', 'RMINLP') = yes;"
-@COIN_HAS_SCIP_TRUE@SMP="$SMP SMP('MyScip', 'MINLP') = yes;"
-
-@COIN_HAS_SOPLEX_TRUE@solvers="$solvers , 'MySoplex'"
-@COIN_HAS_SOPLEX_TRUE@SMP="$SMP SMP('MySoplex', 'LP') = yes;"
-@COIN_HAS_SOPLEX_TRUE@SMP="$SMP SMP('MySoplex', 'RMIP') = yes;"
+@COIN_HAS_COUENNE_TRUE@solvers="$solvers , 'Couenne'"
+@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('Couenne', 'QCP') = yes;"
+@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('Couenne', 'MIQCP') = yes;"
+@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('Couenne', 'RMIQCP') = yes;"
+@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('Couenne', 'NLP') = yes;"
+@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('Couenne', 'DNLP') = yes;"
+@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('Couenne', 'RMINLP') = yes;"
+@COIN_HAS_COUENNE_TRUE@SMP="$SMP SMP('Couenne', 'MINLP') = yes;"
 
 # create driver generator
-tee > coin_gmstest.set <<EOF 
+tee > coin_gmstest.set <<EOF
 \$include gamsmod.inc
 Sets SolverNames   / $solvers /
      SMP(SolverNames,t);
@@ -145,7 +109,7 @@ echo "Generating test report"
 numerror=`sed -n -e 's/.*Error Records = \([0-9]*\),.*/\1/p' coin_gmstest.sum`
 echo "Number of errors: $numerror"
 
-if test "x$numerror" != x0 ; 
+if test "x$numerror" != x0 ;
 then
   echo "There were failed gmstest tests. Test Summary:"
   cat coin_gmstest.sum 1>&2

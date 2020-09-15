@@ -15,8 +15,6 @@ doc_DATA = README.md LICENSE AUTHORS
 test: all
 	cd test; $(MAKE) test
 
-unitTest: test
-
 doc:
 	cd doc && doxygen
 
