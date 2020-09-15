@@ -132,6 +132,8 @@ std::string formatID(
    std::replace(id.begin(), id.end(), ')', '_');
    std::replace(id.begin(), id.end(), '-', '_');
    std::replace(id.begin(), id.end(), '/', '_');
+   std::replace(id.begin(), id.end(), ':', '_');
+   std::replace(id.begin(), id.end(), '.', '_');
    return id;
 }
 
