@@ -4,8 +4,6 @@
 #
 # Author: Stefan Vigerske
 
-include ../../BuildTools/Makemain.inc
-
 AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSIPOPT_CFLAGS)
@@ -26,6 +24,6 @@ optipopt_SOURCES = optipopt.cpp ../utils/GamsOptionsSpecWriter.cpp
 optipopt_LDADD = libGamsIpopt.la
 
 pkgdata_DATA = optipopt.def
-pkgdoc_DATA = optipopt.md
+doc_DATA = optipopt.md
 optipopt.def optipopt.md : optipopt$(EXEEXT)
 	./optipopt$(EXEEXT)

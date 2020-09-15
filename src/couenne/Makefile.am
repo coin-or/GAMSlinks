@@ -4,8 +4,6 @@
 #
 # Author: Stefan Vigerske
 
-include ../../BuildTools/Makemain.inc
-
 AM_CPPFLAGS = \
   -I$(srcdir)/../bonmin \
   -I$(srcdir)/../cbc \
@@ -33,6 +31,6 @@ optcouenne_SOURCES = optcouenne.cpp ../utils/GamsOptionsSpecWriter.cpp
 optcouenne_LDADD = libGamsCouenne.la
 
 pkgdata_DATA = optcouenne.def
-pkgdoc_DATA = optcouenne.md
+doc_DATA = optcouenne.md
 optcouenne.def optcouenne.md : optcouenne$(EXEEXT)
 	./optcouenne$(EXEEXT)

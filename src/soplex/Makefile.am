@@ -4,8 +4,6 @@
 #
 # Author: Stefan Vigerske
 
-include ../../BuildTools/Makemain.inc
-
 AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSSOPLEX_CFLAGS)
@@ -25,6 +23,6 @@ noinst_PROGRAMS = optsoplex
 optsoplex_SOURCES = optsoplex.cpp ../utils/GamsOptionsSpecWriter.cpp
 optsoplex_LDADD = $(GAMSSOPLEX_LFLAGS)
 
-pkgdoc_DATA = optsoplex.md
+doc_DATA = optsoplex.md
 optsoplex.md : optsoplex$(EXEEXT)
 	./optsoplex$(EXEEXT)

@@ -4,8 +4,6 @@
 #
 # Author: Stefan Vigerske
 
-include ../../BuildTools/Makemain.inc
-
 AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSOSI_CFLAGS)

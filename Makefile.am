@@ -4,8 +4,6 @@
 #
 # Author: Stefan Vigerske
 
-AUTOMAKE_OPTIONS = foreign
-
 SUBDIRS = src
 
 if ALWAYS_FALSE

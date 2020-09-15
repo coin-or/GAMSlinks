@@ -4,8 +4,6 @@
 #
 # Author: Stefan Vigerske
 
-include ../BuildTools/Makemain.inc
-
 SUBDIRS =
 
 if COIN_HAS_BONMIN

@@ -4,8 +4,6 @@
 #
 # Author: Stefan Vigerske
 
-include ../../BuildTools/Makemain.inc
-
 AM_CPPFLAGS = \
   -I$(srcdir)/../utils \
   $(GAMSSCIP_CFLAGS)
@@ -25,6 +23,6 @@ noinst_PROGRAMS = optscip
 optscip_SOURCES = optscip.cpp ../utils/GamsOptionsSpecWriter.cpp
 optscip_LDADD = libGamsScip.la
 
-pkgdoc_DATA = optscip.md
+doc_DATA = optscip.md
 optscip.md : optscip$(EXEEXT)
 	./optscip$(EXEEXT)

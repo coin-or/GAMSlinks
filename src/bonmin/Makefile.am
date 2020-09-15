@@ -4,8 +4,6 @@
 #
 # Author: Stefan Vigerske
 
-include ../../BuildTools/Makemain.inc
-
 AM_CPPFLAGS = \
   -I$(srcdir)/../cbc \
   -I$(srcdir)/../osi \
@@ -31,6 +29,6 @@ optbonmin_SOURCES = optbonmin.cpp ../utils/GamsOptionsSpecWriter.cpp
 optbonmin_LDADD = libGamsBonmin.la
 
 pkgdata_DATA = optbonmin.def
-pkgdoc_DATA = optbonmin.md
+doc_DATA = optbonmin.md
 optbonmin.def optbonmin.md : optbonmin$(EXEEXT)
 	./optbonmin$(EXEEXT)

@@ -4,8 +4,6 @@
 #
 # Author: Stefan Vigerske
 
-include ../../BuildTools/Makemain.inc
-
 AM_CPPFLAGS = \
   -I$(srcdir)/../osi \
   -I$(srcdir)/../utils \
@@ -28,6 +26,6 @@ optcbc_SOURCES = optcbc.cpp ../utils/GamsOptionsSpecWriter.cpp
 optcbc_LDADD = libGamsCbc.la
 
 pkgdata_DATA = optcbc.def
-pkgdoc_DATA = optcbc.md
+doc_DATA = optcbc.md
 optcbc.def optcbc.md : optcbc$(EXEEXT)
 	./optcbc$(EXEEXT)
