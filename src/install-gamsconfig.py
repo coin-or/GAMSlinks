@@ -62,6 +62,15 @@ for line in open(gamsconfig, 'r') :
              sys.exit(1)
          #print(solverlib, '->', solverlib_installed)
          line = line.replace(solverlib, solverlib_installed)
+   if os.name == 'nt' and not line.startswith('#') and line.find('defName') >= 0 :
+      deffile = line.split()[-1]
+      # convert msys-path to windows path
+      deffile_win = subprocess.check_output("cygpath -w " + deffile).decode("utf-8").strip()
+      if not os.path.isfile(deffile_win) :
+          print("Error: %s does not exist or is not a file" % deffile_win, file=sys.stderr)
+          print_usage()
+          sys.exit(1)
+      line = line.replace(deffile, deffile_win)
    print(line, file=out, end='')
 
 if len(libdirs) > 0 :
