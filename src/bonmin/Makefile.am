@@ -34,9 +34,3 @@ pkgdata_DATA = optbonmin.def
 pkgdoc_DATA = optbonmin.md
 optbonmin.def optbonmin.md : optbonmin$(EXEEXT)
 	./optbonmin$(EXEEXT)
-
-install-exec-local : install-libLTLIBRARIES
-	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsBonmin.la MYBONMIN bon "MIQCP MINLP" 0
-
-uninstall-local :
-	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYBONMIN

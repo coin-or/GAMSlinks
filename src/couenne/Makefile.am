@@ -36,9 +36,3 @@ pkgdata_DATA = optcouenne.def
 pkgdoc_DATA = optcouenne.md
 optcouenne.def optcouenne.md : optcouenne$(EXEEXT)
 	./optcouenne$(EXEEXT)
-
-install-exec-local : install-libLTLIBRARIES
-	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCouenne.la MYCOUENNE cou "QCP RMIQCP NLP DNLP RMINLP CNS MIQCP MINLP" 0
-
-uninstall-local :
-	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYCOUENNE

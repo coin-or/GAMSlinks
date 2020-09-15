@@ -31,9 +31,3 @@ pkgdata_DATA = optcbc.def
 pkgdoc_DATA = optcbc.md
 optcbc.def optcbc.md : optcbc$(EXEEXT)
 	./optcbc$(EXEEXT)
-
-install-exec-local : install-libLTLIBRARIES install-pkgdataDATA
-	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsCbc.la MYCBC cbc "LP MIP RMIP" 5 $(pkgdatadir)/optcbc.def
-
-uninstall-local :
-	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYCBC $(pkgdatadir)/optcbc.def

@@ -305,6 +305,8 @@ GAMSSOPLEX_CFLAGS_NOPC = @GAMSSOPLEX_CFLAGS_NOPC@
 GAMSSOPLEX_LFLAGS = @GAMSSOPLEX_LFLAGS@
 GAMSSOPLEX_LFLAGS_NOPC = @GAMSSOPLEX_LFLAGS_NOPC@
 GAMS_PATH = @GAMS_PATH@
+GMSGENEXE = @GMSGENEXE@
+GMSGENSCRIPT = @GMSGENSCRIPT@
 GREP = @GREP@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -787,7 +789,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-exec-local install-libLTLIBRARIES
+install-exec-am: install-libLTLIBRARIES
 
 install-html: install-html-am
 
@@ -835,8 +837,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-libLTLIBRARIES uninstall-local \
-	uninstall-pkgdataDATA uninstall-pkgdocDATA
+uninstall-am: uninstall-libLTLIBRARIES uninstall-pkgdataDATA \
+	uninstall-pkgdocDATA
 
 .MAKE: install-am install-strip
 
@@ -846,16 +848,16 @@ uninstall-am: uninstall-libLTLIBRARIES uninstall-local \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags dvi dvi-am html html-am info info-am install \
 	install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-exec-local \
-	install-html install-html-am install-info install-info-am \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
 	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
 	install-pkgdataDATA install-pkgdocDATA install-ps \
 	install-ps-am install-strip installcheck installcheck-am \
 	installdirs maintainer-clean maintainer-clean-generic \
 	mostlyclean mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-libLTLIBRARIES uninstall-local \
-	uninstall-pkgdataDATA uninstall-pkgdocDATA
+	uninstall-am uninstall-libLTLIBRARIES uninstall-pkgdataDATA \
+	uninstall-pkgdocDATA
 
 .PRECIOUS: Makefile
 
@@ -961,12 +963,6 @@ uninstall-doc:
 	@cp $< $@
 optipopt.def optipopt.md : optipopt$(EXEEXT)
 	./optipopt$(EXEEXT)
-
-install-exec-local : install-libLTLIBRARIES
-	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsIpopt.la MYIPOPT ipo "LP RMIP NLP DNLP RMINLP CNS QCP RMIQCP" 0
-
-uninstall-local :
-	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYIPOPT
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -56,29 +56,32 @@ Call
  2. make
  3. make install
 
-This should setup the Makefiles, compile all COIN-OR packages and install libraries for the COIN-OR/GAMSlinks in the subdirectory `lib` (`bin` on Windows).
+This should setup the Makefiles, compile all solver interfaces and install
+- libraries of the solver links in `<prefix>/lib` (`<prefix>/bin` on Windows),
+- a `gamsconfig.yaml` file in `<prefix>/share/gamslinks`,
+- solver options definition files in `<prefix>/share/gamslinks`, and
+- solver options documentation in `<prefix>/share/doc/gamslinks`.
 
 If a GAMS system is found in the search path, it will automatically be found by the GAMSlinks configure script.
 Alternatively one has to provide a path with the `--with-gams` option of configure.
 
 The configure call also supports the VPATH feature, so one can compile the code in a different place than the one where the source code is located.
 
-The call to "make install" will also make the GAMS system aware of the solver interfaces that have been build.
-
-
 ## Usage / Documentation
 
-After installation of the solvers in the GAMS system, they can be used in GAMS via the option `SOLVER=MY<SolverName>`, e.g., use `SOLVER=MYCBC` to call the installed GAMS/CBC link.
+After installation of the solvers, they need to be known to GAMS.
+For that, copy the prepared GAMS configuration file `<prefix>/share/gamslinks/gamsconfig.yaml` into the GAMS system directory or another
+[location where GAMS is looking for this file](https://www.gams.com/latest/docs/UG_STANDARD_LOCATIONS.html).
+If you already have a gamsconfig.yaml, then append the content of `<prefix>/share/gamslinks/gamsconfig.yaml`.
+
+Afterwards, the build solvers should be usable in GAMS via the option `SOLVER=<SolverName>`, e.g., use `SOLVER=CBC` to call the installed GAMS/CBC link.
 Alternatively, an option statement can be added to the GAMS code (before the solve statement), e.g., to use Ipopt as an NLP solver, use
 ```
-  Option NLP = MyIpopt;
+  Option NLP = Ipopt;
 ```
-The prefix "`MY`" has been added to distinguish the solvers from those that are already included in the GAMS distribution.
+Note, that entries in gamsconfig.yaml overwrite solvers with the same name that come with the GAMS system.
 
 For more information we refer to the [GAMS documentation](http://www.gams.com/latest/docs).
-
-A documentation of options available for GAMS solver option files is installed in the `<docdir>/gamslinks`.
-For solvers distributed with GAMS, see also the [GAMS solver manuals](http://www.gams.com/latest/docs/S_MAIN.html).
 
 ## Testing
 

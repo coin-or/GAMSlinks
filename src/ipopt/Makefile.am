@@ -29,9 +29,3 @@ pkgdata_DATA = optipopt.def
 pkgdoc_DATA = optipopt.md
 optipopt.def optipopt.md : optipopt$(EXEEXT)
 	./optipopt$(EXEEXT)
-
-install-exec-local : install-libLTLIBRARIES
-	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsIpopt.la MYIPOPT ipo "LP RMIP NLP DNLP RMINLP CNS QCP RMIQCP" 0
-
-uninstall-local :
-	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYIPOPT

@@ -111,6 +111,20 @@ AC_CHECK_LIB(dl,[dlopen],[
 
 AC_LANG_POP(C)
 
+# name of gensolver script and exe
+case $build in
+  *-mingw* | *-cygwin* | *-msys* )
+    GMSGENSCRIPT=gmsgennt.cmd
+    GMSGENEXE=gmsgennx.exe
+    ;;
+  *)
+    GMSGENSCRIPT=gmsgenus.run
+    GMSGENEXE=gmsgenux.out
+    ;;
+esac
+AC_SUBST(GMSGENSCRIPT)
+AC_SUBST(GMSGENEXE)
+
 ###############
 # GAMS system #
 ###############
@@ -147,6 +161,7 @@ AC_CONFIG_FILES([Makefile
                  src/scip/Makefile
                  src/soplex/Makefile
                  test/Makefile
+                 src/gamsconfig.yaml
                  doc/Doxyfile
                 ])
 AC_CONFIG_FILES([test/run_quality], [chmod +x test/run_quality])

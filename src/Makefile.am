@@ -4,7 +4,7 @@
 #
 # Author: Stefan Vigerske
 
-AUTOMAKE_OPTIONS = foreign
+include ../BuildTools/Makemain.inc
 
 SUBDIRS =
 
@@ -35,3 +35,9 @@ endif
 if COIN_HAS_SOPLEX
   SUBDIRS += soplex
 endif
+
+install-exec-local : gamsconfig.yaml
+	$(srcdir)/install-gamsconfig.py gamsconfig.yaml $(pkgdatadir)
+
+uninstall-local :
+	rm -rf $(pkgdatadir)/gamsconfig.yaml

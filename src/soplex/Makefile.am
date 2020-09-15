@@ -28,9 +28,3 @@ optsoplex_LDADD = $(GAMSSOPLEX_LFLAGS)
 pkgdoc_DATA = optsoplex.md
 optsoplex.md : optsoplex$(EXEEXT)
 	./optsoplex$(EXEEXT)
-
-install-exec-local : install-libLTLIBRARIES
-	$(top_srcdir)/gamsinst.py "@GAMS_PATH@" libGamsSoplex.la MYSOPLEX osp "LP RMIP" 5
-
-uninstall-local :
-	$(top_srcdir)/gamsuninst.py "@GAMS_PATH@" MYSOPLEX

@@ -1,0 +1,214 @@
+solverConfig:
+@COIN_HAS_BONMIN_TRUE@- bonmin:
+@COIN_HAS_BONMIN_TRUE@    fileType: 111
+@COIN_HAS_BONMIN_TRUE@    dictType: 0
+@COIN_HAS_BONMIN_TRUE@    licCodes: 000102030405
+@COIN_HAS_BONMIN_TRUE@    defaultOkFlag: True
+@COIN_HAS_BONMIN_TRUE@    hiddenFlag: False
+@COIN_HAS_BONMIN_TRUE@    scriptName: @GMSGENSCRIPT@
+@COIN_HAS_BONMIN_TRUE@    executableName: @GMSGENEXE@
+@COIN_HAS_BONMIN_TRUE@    defName: @prefix@/share/gamslinks/optbonmin.def
+@COIN_HAS_BONMIN_TRUE@    library:
+@COIN_HAS_BONMIN_TRUE@      libName: bonmin/libGamsBonmin.la
+@COIN_HAS_BONMIN_TRUE@      auditCode: bon
+@COIN_HAS_BONMIN_TRUE@      solverInterfaceType: 1
+@COIN_HAS_BONMIN_TRUE@      threadSafeIndic: False
+@COIN_HAS_BONMIN_TRUE@    modelTypes:
+@COIN_HAS_BONMIN_TRUE@    - MIQCP
+@COIN_HAS_BONMIN_TRUE@    - MINLP
+
+@COIN_HAS_CBC_TRUE@- cbc:
+@COIN_HAS_CBC_TRUE@    fileType: 111
+@COIN_HAS_CBC_TRUE@    dictType: 5
+@COIN_HAS_CBC_TRUE@    licCodes: 000102030405
+@COIN_HAS_CBC_TRUE@    defaultOkFlag: True
+@COIN_HAS_CBC_TRUE@    hiddenFlag: False
+@COIN_HAS_CBC_TRUE@    scriptName: @GMSGENSCRIPT@
+@COIN_HAS_CBC_TRUE@    executableName: @GMSGENEXE@
+@COIN_HAS_CBC_TRUE@    defName: @prefix@/share/gamslinks/optcbc.def
+@COIN_HAS_CBC_TRUE@    library:
+@COIN_HAS_CBC_TRUE@      libName: cbc/libGamsCbc.la
+@COIN_HAS_CBC_TRUE@      auditCode: cbc
+@COIN_HAS_CBC_TRUE@      solverInterfaceType: 1
+@COIN_HAS_CBC_TRUE@      threadSafeIndic: False
+@COIN_HAS_CBC_TRUE@    modelTypes:
+@COIN_HAS_CBC_TRUE@    - LP
+@COIN_HAS_CBC_TRUE@    - MIP
+@COIN_HAS_CBC_TRUE@    - RMIP
+
+@COIN_HAS_COUENNE_TRUE@- couenne:
+@COIN_HAS_COUENNE_TRUE@    fileType: 111
+@COIN_HAS_COUENNE_TRUE@    dictType: 0
+@COIN_HAS_COUENNE_TRUE@    licCodes: 000102030405
+@COIN_HAS_COUENNE_TRUE@    defaultOkFlag: True
+@COIN_HAS_COUENNE_TRUE@    hiddenFlag: False
+@COIN_HAS_COUENNE_TRUE@    scriptName: @GMSGENSCRIPT@
+@COIN_HAS_COUENNE_TRUE@    executableName: @GMSGENEXE@
+@COIN_HAS_COUENNE_TRUE@    defName: @prefix@/share/gamslinks/optcouenne.def
+@COIN_HAS_COUENNE_TRUE@    library:
+@COIN_HAS_COUENNE_TRUE@      libName: couenne/libGamsCouenne.la
+@COIN_HAS_COUENNE_TRUE@      auditCode: cou
+@COIN_HAS_COUENNE_TRUE@      solverInterfaceType: 1
+@COIN_HAS_COUENNE_TRUE@      threadSafeIndic: False
+@COIN_HAS_COUENNE_TRUE@    modelTypes:
+@COIN_HAS_COUENNE_TRUE@    - QCP
+@COIN_HAS_COUENNE_TRUE@    - RMIQCP
+@COIN_HAS_COUENNE_TRUE@    - NLP
+@COIN_HAS_COUENNE_TRUE@    - DNLP
+@COIN_HAS_COUENNE_TRUE@    - RMINLP
+@COIN_HAS_COUENNE_TRUE@    - CNS
+@COIN_HAS_COUENNE_TRUE@    - MIQCP
+@COIN_HAS_COUENNE_TRUE@    - MINLP
+
+@COIN_HAS_IPOPT_TRUE@- ipopt:
+@COIN_HAS_IPOPT_TRUE@    fileType: 111
+@COIN_HAS_IPOPT_TRUE@    dictType: 0
+@COIN_HAS_IPOPT_TRUE@    licCodes: 000102030405
+@COIN_HAS_IPOPT_TRUE@    defaultOkFlag: True
+@COIN_HAS_IPOPT_TRUE@    hiddenFlag: False
+@COIN_HAS_IPOPT_TRUE@    scriptName: @GMSGENSCRIPT@
+@COIN_HAS_IPOPT_TRUE@    executableName: @GMSGENEXE@
+@COIN_HAS_IPOPT_TRUE@    defName: @prefix@/share/gamslinks/optipopt.def
+@COIN_HAS_IPOPT_TRUE@    library:
+@COIN_HAS_IPOPT_TRUE@      libName: ipopt/libGamsIpopt.la
+@COIN_HAS_IPOPT_TRUE@      auditCode: ipo
+@COIN_HAS_IPOPT_TRUE@      solverInterfaceType: 1
+@COIN_HAS_IPOPT_TRUE@      threadSafeIndic: False
+@COIN_HAS_IPOPT_TRUE@    modelTypes:
+@COIN_HAS_IPOPT_TRUE@    - LP
+@COIN_HAS_IPOPT_TRUE@    - RMIP
+@COIN_HAS_IPOPT_TRUE@    - QCP
+@COIN_HAS_IPOPT_TRUE@    - RMIQCP
+@COIN_HAS_IPOPT_TRUE@    - NLP
+@COIN_HAS_IPOPT_TRUE@    - DNLP
+@COIN_HAS_IPOPT_TRUE@    - RMINLP
+@COIN_HAS_IPOPT_TRUE@    - CNS
+
+@COIN_HAS_OSICPX_TRUE@- osicplex:
+@COIN_HAS_OSICPX_TRUE@    fileType: 111
+@COIN_HAS_OSICPX_TRUE@    dictType: 5
+@COIN_HAS_OSICPX_TRUE@    licCodes: 000102030405
+@COIN_HAS_OSICPX_TRUE@    defaultOkFlag: True
+@COIN_HAS_OSICPX_TRUE@    hiddenFlag: False
+@COIN_HAS_OSICPX_TRUE@    scriptName: @GMSGENSCRIPT@
+@COIN_HAS_OSICPX_TRUE@    executableName: @GMSGENEXE@
+@COIN_HAS_OSICPX_TRUE@    library:
+@COIN_HAS_OSICPX_TRUE@      libName: osi/libGamsOsi.la
+@COIN_HAS_OSICPX_TRUE@      auditCode: ocp
+@COIN_HAS_OSICPX_TRUE@      solverInterfaceType: 1
+@COIN_HAS_OSICPX_TRUE@      threadSafeIndic: False
+@COIN_HAS_OSICPX_TRUE@    modelTypes:
+@COIN_HAS_OSICPX_TRUE@    - LP
+@COIN_HAS_OSICPX_TRUE@    - RMIP
+@COIN_HAS_OSICPX_TRUE@    - MIP
+
+@COIN_HAS_OSIGRB_TRUE@- osigurobi:
+@COIN_HAS_OSIGRB_TRUE@    fileType: 111
+@COIN_HAS_OSIGRB_TRUE@    dictType: 5
+@COIN_HAS_OSIGRB_TRUE@    licCodes: 000102030405
+@COIN_HAS_OSIGRB_TRUE@    defaultOkFlag: True
+@COIN_HAS_OSIGRB_TRUE@    hiddenFlag: False
+@COIN_HAS_OSIGRB_TRUE@    scriptName: @GMSGENSCRIPT@
+@COIN_HAS_OSIGRB_TRUE@    executableName: @GMSGENEXE@
+@COIN_HAS_OSIGRB_TRUE@    library:
+@COIN_HAS_OSIGRB_TRUE@      libName: osi/libGamsOsi.la
+@COIN_HAS_OSIGRB_TRUE@      auditCode: ogu
+@COIN_HAS_OSIGRB_TRUE@      solverInterfaceType: 1
+@COIN_HAS_OSIGRB_TRUE@      threadSafeIndic: False
+@COIN_HAS_OSIGRB_TRUE@    modelTypes:
+@COIN_HAS_OSIGRB_TRUE@    - LP
+@COIN_HAS_OSIGRB_TRUE@    - RMIP
+@COIN_HAS_OSIGRB_TRUE@    - MIP
+
+@COIN_HAS_OSIMSK_TRUE@- osimosek:
+@COIN_HAS_OSIMSK_TRUE@    fileType: 111
+@COIN_HAS_OSIMSK_TRUE@    dictType: 5
+@COIN_HAS_OSIMSK_TRUE@    licCodes: 000102030405
+@COIN_HAS_OSIMSK_TRUE@    defaultOkFlag: True
+@COIN_HAS_OSIMSK_TRUE@    hiddenFlag: False
+@COIN_HAS_OSIMSK_TRUE@    scriptName: @GMSGENSCRIPT@
+@COIN_HAS_OSIMSK_TRUE@    executableName: @GMSGENEXE@
+@COIN_HAS_OSIMSK_TRUE@    library:
+@COIN_HAS_OSIMSK_TRUE@      libName: osi/libGamsOsi.la
+@COIN_HAS_OSIMSK_TRUE@      auditCode: omk
+@COIN_HAS_OSIMSK_TRUE@      solverInterfaceType: 1
+@COIN_HAS_OSIMSK_TRUE@      threadSafeIndic: False
+@COIN_HAS_OSIMSK_TRUE@    modelTypes:
+@COIN_HAS_OSIMSK_TRUE@    - LP
+@COIN_HAS_OSIMSK_TRUE@    - RMIP
+@COIN_HAS_OSIMSK_TRUE@    - MIP
+
+@COIN_HAS_OSIXPR_TRUE@- osixpress:
+@COIN_HAS_OSIXPR_TRUE@    fileType: 111
+@COIN_HAS_OSIXPR_TRUE@    dictType: 5
+@COIN_HAS_OSIXPR_TRUE@    licCodes: 000102030405
+@COIN_HAS_OSIXPR_TRUE@    defaultOkFlag: True
+@COIN_HAS_OSIXPR_TRUE@    hiddenFlag: False
+@COIN_HAS_OSIXPR_TRUE@    scriptName: @GMSGENSCRIPT@
+@COIN_HAS_OSIXPR_TRUE@    executableName: @GMSGENEXE@
+@COIN_HAS_OSIXPR_TRUE@    library:
+@COIN_HAS_OSIXPR_TRUE@      libName: osi/libGamsOsi.la
+@COIN_HAS_OSIXPR_TRUE@      auditCode: oxp
+@COIN_HAS_OSIXPR_TRUE@      solverInterfaceType: 1
+@COIN_HAS_OSIXPR_TRUE@      threadSafeIndic: False
+@COIN_HAS_OSIXPR_TRUE@    modelTypes:
+@COIN_HAS_OSIXPR_TRUE@    - LP
+@COIN_HAS_OSIXPR_TRUE@    - RMIP
+@COIN_HAS_OSIXPR_TRUE@    - MIP
+
+@COIN_HAS_SCIP_TRUE@- scip:
+@COIN_HAS_SCIP_TRUE@    fileType: 111
+@COIN_HAS_SCIP_TRUE@    dictType: 5
+@COIN_HAS_SCIP_TRUE@    licCodes: 000102030405
+@COIN_HAS_SCIP_TRUE@    defaultOkFlag: True
+@COIN_HAS_SCIP_TRUE@    hiddenFlag: False
+@COIN_HAS_SCIP_TRUE@    scriptName: @GMSGENSCRIPT@
+@COIN_HAS_SCIP_TRUE@    executableName: @GMSGENEXE@
+@COIN_HAS_SCIP_TRUE@    library:
+@COIN_HAS_SCIP_TRUE@      libName: scip/libGamsScip.la
+@COIN_HAS_SCIP_TRUE@      auditCode: scp
+@COIN_HAS_SCIP_TRUE@      solverInterfaceType: 1
+@COIN_HAS_SCIP_TRUE@      threadSafeIndic: False
+@COIN_HAS_SCIP_TRUE@    modelTypes:
+@COIN_HAS_SCIP_TRUE@    - QCP
+@COIN_HAS_SCIP_TRUE@    - RMIQCP
+@COIN_HAS_SCIP_TRUE@    - NLP
+@COIN_HAS_SCIP_TRUE@    - DNLP
+@COIN_HAS_SCIP_TRUE@    - RMINLP
+@COIN_HAS_SCIP_TRUE@    - CNS
+@COIN_HAS_SCIP_TRUE@    - MIP
+@COIN_HAS_SCIP_TRUE@    - MIQCP
+@COIN_HAS_SCIP_TRUE@    - MINLP
+
+@COIN_HAS_GCG_TRUE@- gcg:
+@COIN_HAS_GCG_TRUE@    fileType: 111
+@COIN_HAS_GCG_TRUE@    dictType: 5
+@COIN_HAS_GCG_TRUE@    licCodes: 000102030405
+@COIN_HAS_GCG_TRUE@    defaultOkFlag: True
+@COIN_HAS_GCG_TRUE@    hiddenFlag: False
+@COIN_HAS_GCG_TRUE@    scriptName: @GMSGENSCRIPT@
+@COIN_HAS_GCG_TRUE@    executableName: @GMSGENEXE@
+@COIN_HAS_GCG_TRUE@    library:
+@COIN_HAS_GCG_TRUE@      libName: scip/libGamsScip.la
+@COIN_HAS_GCG_TRUE@      auditCode: gcg
+@COIN_HAS_GCG_TRUE@      solverInterfaceType: 1
+@COIN_HAS_GCG_TRUE@      threadSafeIndic: False
+@COIN_HAS_GCG_TRUE@    modelTypes:
+@COIN_HAS_GCG_TRUE@    - MIP
+
+@COIN_HAS_SOPLEX_TRUE@- soplex:
+@COIN_HAS_SOPLEX_TRUE@    fileType: 111
+@COIN_HAS_SOPLEX_TRUE@    dictType: 5
+@COIN_HAS_SOPLEX_TRUE@    licCodes: 000102030405
+@COIN_HAS_SOPLEX_TRUE@    defaultOkFlag: True
+@COIN_HAS_SOPLEX_TRUE@    hiddenFlag: False
+@COIN_HAS_SOPLEX_TRUE@    scriptName: @GMSGENSCRIPT@
+@COIN_HAS_SOPLEX_TRUE@    executableName: @GMSGENEXE@
+@COIN_HAS_SOPLEX_TRUE@    library:
+@COIN_HAS_SOPLEX_TRUE@      libName: soplex/libGamsSoplex.la
+@COIN_HAS_SOPLEX_TRUE@      auditCode: osp
+@COIN_HAS_SOPLEX_TRUE@      solverInterfaceType: 1
+@COIN_HAS_SOPLEX_TRUE@      threadSafeIndic: False
+@COIN_HAS_SOPLEX_TRUE@    modelTypes:
+@COIN_HAS_SOPLEX_TRUE@    - LP
+@COIN_HAS_SOPLEX_TRUE@    - RMIP

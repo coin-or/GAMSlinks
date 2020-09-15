@@ -75,8 +75,6 @@ am__make_running_with_option = \
   test $$has_opt = yes
 am__make_dryrun = (target_option=n; $(am__make_running_with_option))
 am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
-pkgdatadir = $(datadir)/@PACKAGE@
-pkgincludedir = $(includedir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkglibexecdir = $(libexecdir)/@PACKAGE@
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
@@ -108,7 +106,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/utils/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = gamsconfig.yaml
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -163,6 +161,8 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = bonmin cbc couenne ipopt osi scip soplex
+pkgdatadir = $(datadir)/$(PACKAGE_TARNAME)
+pkgincludedir = $(includedir)/coin-or
 ACLOCAL = @ACLOCAL@
 ADD_CFLAGS = @ADD_CFLAGS@
 ADD_CXXFLAGS = @ADD_CXXFLAGS@
@@ -231,6 +231,8 @@ GAMSSOPLEX_CFLAGS_NOPC = @GAMSSOPLEX_CFLAGS_NOPC@
 GAMSSOPLEX_LFLAGS = @GAMSSOPLEX_LFLAGS@
 GAMSSOPLEX_LFLAGS_NOPC = @GAMSSOPLEX_LFLAGS_NOPC@
 GAMS_PATH = @GAMS_PATH@
+GMSGENEXE = @GMSGENEXE@
+GMSGENSCRIPT = @GMSGENSCRIPT@
 GREP = @GREP@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -333,14 +335,26 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = foreign
+pkgdocdir = $(docdir)
+pkgconfiglibdir = $(libdir)/pkgconfig
+
+# doxydocdir is the top-level directory for doxygen documentation. It holds
+# the tag file and possibly the PDF or Postscript version. doxyhtmldir is
+# typically a subdirectory containing all the files doxygen creates for
+# html documentation.
+doxydocdir = $(pkgdocdir)/doxydoc
+doxyhtmldir = $(doxydocdir)/html
+DocFiles = README README.md AUTHORS AUTHORS.md LICENSE LICENSE.md
+COIN_HAS_DOXYGEN = @COIN_HAS_DOXYGEN_TRUE@TRUE
+COIN_HAS_LATEX = @COIN_HAS_LATEX_TRUE@TRUE
+DOXYTAG_EDIT = sed -e 's|@baredocdir_nosub@|$(datarootdir)/doc|g'
 SUBDIRS = $(am__append_1) $(am__append_2) $(am__append_3) \
 	$(am__append_4) $(am__append_5) $(am__append_6) \
 	$(am__append_7)
 all: all-recursive
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../BuildTools/Makemain.inc $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -360,6 +374,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
 	esac;
+$(srcdir)/../BuildTools/Makemain.inc $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -369,6 +384,8 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+gamsconfig.yaml: $(top_builddir)/config.status $(srcdir)/gamsconfig.yaml.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -535,7 +552,7 @@ install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am:
+install-exec-am: install-exec-local
 
 install-html: install-html-recursive
 
@@ -573,7 +590,7 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-local
 
 .MAKE: $(am__recursive_targets) install-am install-strip
 
@@ -582,16 +599,103 @@ uninstall-am:
 	ctags-am distclean distclean-generic distclean-libtool \
 	distclean-tags dvi dvi-am html html-am info info-am install \
 	install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am
+	install-dvi-am install-exec install-exec-am install-exec-local \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-local
 
 .PRECIOUS: Makefile
 
+
+doxygen-docs: 
+	if test "$(COIN_HAS_DOXYGEN)" = TRUE; then \
+	  if test -d "doxydoc/"; then \
+	    if test -f doxydoc/doxygen.conf ; then \
+	      $(DOXYTAG_EDIT) \
+	        doxydoc/doxygen.conf > doxydoc/doxygen.conf.tmp ; \
+	      mv doxydoc/doxygen.conf.tmp doxydoc/doxygen.conf ; \
+	    fi ; \
+	    doxygen doxydoc/doxygen.conf;\
+	  fi;\
+	fi
+
+pdf-doxygen-docs: doxygen-docs
+	if test "$(COIN_HAS_DOXYGEN)" = TRUE; then \
+	  if test -d "doxydoc/latex"; then \
+       	    if test "$(COIN_HAS_LATEX)" = TRUE; then \
+	      cd doxydoc/latex;\
+	      $(MAKE) pdf;\
+	      cd -;\
+	    fi;\
+	  fi;\
+	fi
+
+clean-doxygen-docs:
+	if test -d "doxydoc"; then \
+	  cd doxydoc ;\
+	  rm -rf html latex *.log *.tag;\
+	fi
+
+install-doxygen-docs: doxygen-docs
+	if test "$(COIN_HAS_DOXYGEN)" = TRUE; then \
+	  if test -d "doxydoc"; then \
+	    test -d "$(DESTDIR)$(doxydocdir)" || \
+	         $(mkdir_p) "$(DESTDIR)$(doxydocdir)"; \
+	    $(INSTALL_DATA) doxydoc/@coin_doxy_tagname@ \
+	        "$(DESTDIR)$(doxydocdir)"; \
+	    if test -f "doxydoc/latex/refman.pdf"; then \
+	      $(INSTALL_DATA) doxydoc/latex/refman.pdf \
+	          "$(DESTDIR)$(doxydocdir)";\
+	    fi;\
+	    if test -d "doxydoc/html"; then \
+	      test -d "$(DESTDIR)$(doxyhtmldir)/search/" || \
+	           $(mkdir_p) "$(DESTDIR)$(doxyhtmldir)/search/"; \
+	      $(INSTALL_DATA) doxydoc/html/*.* \
+	          "$(DESTDIR)$(doxyhtmldir)";\
+	      $(INSTALL_DATA) doxydoc/html/search/*.* \
+	          "$(DESTDIR)$(doxyhtmldir)/search";\
+            fi;\
+          fi;\
+        fi
+
+# It's not clear that uninstall-doc should also remove doxygen doc'n. Write
+# the rules so that the last one will remove pkgdocdir (which should be empty
+# by then).
+
+uninstall-doxygen-docs:
+	if test -d "$(DESTDIR)$(doxydocdir)"; then \
+	  rm -rf "$(DESTDIR)$(doxydocdir)"; \
+	fi
+	rmdir $(DESTDIR)$(pkgdocdir) || true
+
+install-doc:
+	$(mkdir_p) "$(DESTDIR)$(pkgdocdir)"
+	for file in $(DocFiles); do \
+	  if test -f "$$file"; then dir=; else dir="$(srcdir)/"; fi; \
+	  if test -f "$$dir$$file"; then \
+	    $(INSTALL_DATA) "$$dir$$file" "$(DESTDIR)$(pkgdocdir)/$$file"; \
+	  fi; \
+	done
+
+uninstall-doc:
+	for file in $(DocFiles); do \
+	  rm -f "$(DESTDIR)$(pkgdocdir)/$$file"; \
+	done
+	rmdir $(DESTDIR)$(pkgdocdir) || true
+
+.PHONY: install-doc uninstall-doc \
+	doxygen-docs pdf-doxygen-docs clean-doxygen-docs \
+	install-doxygen-docs uninstall-doxygen-docs
+
+install-exec-local : gamsconfig.yaml
+	$(srcdir)/install-gamsconfig.py gamsconfig.yaml $(pkgdatadir)
+
+uninstall-local :
+	rm -rf $(pkgdatadir)/gamsconfig.yaml
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

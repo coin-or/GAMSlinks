@@ -657,6 +657,8 @@ GAMSOSI_CFLAGS_NOPC
 GAMSOSI_LFLAGS_NOPC
 GAMS_PATH
 gamspath
+GMSGENEXE
+GMSGENSCRIPT
 GAMSLIBCFLAGS
 COIN_HAS_GUROBI_FALSE
 COIN_HAS_GUROBI_TRUE
@@ -21207,6 +21209,20 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+# name of gensolver script and exe
+case $build in
+  *-mingw* | *-cygwin* | *-msys* )
+    GMSGENSCRIPT=gmsgennt.cmd
+    GMSGENEXE=gmsgennx.exe
+    ;;
+  *)
+    GMSGENSCRIPT=gmsgenus.run
+    GMSGENEXE=gmsgenux.out
+    ;;
+esac
+
+
+
 ###############
 # GAMS system #
 ###############
@@ -21644,7 +21660,7 @@ $as_echo "$as_me: GAMSSCIP_CFLAGS: \"${GAMSSCIP_CFLAGS}\"" >&6;}
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/bonmin/Makefile src/cbc/Makefile src/couenne/Makefile src/ipopt/Makefile src/osi/Makefile src/scip/Makefile src/soplex/Makefile test/Makefile doc/Doxyfile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/bonmin/Makefile src/cbc/Makefile src/couenne/Makefile src/ipopt/Makefile src/osi/Makefile src/scip/Makefile src/soplex/Makefile test/Makefile src/gamsconfig.yaml doc/Doxyfile"
 
 ac_config_files="$ac_config_files test/run_quality"
 
@@ -22873,6 +22889,7 @@ do
     "src/scip/Makefile") CONFIG_FILES="$CONFIG_FILES src/scip/Makefile" ;;
     "src/soplex/Makefile") CONFIG_FILES="$CONFIG_FILES src/soplex/Makefile" ;;
     "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
+    "src/gamsconfig.yaml") CONFIG_FILES="$CONFIG_FILES src/gamsconfig.yaml" ;;
     "doc/Doxyfile") CONFIG_FILES="$CONFIG_FILES doc/Doxyfile" ;;
     "test/run_quality") CONFIG_FILES="$CONFIG_FILES test/run_quality" ;;
     "test/run_gmstest") CONFIG_FILES="$CONFIG_FILES test/run_gmstest" ;;
