@@ -419,7 +419,7 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(srcdir)/../bonmin -I$(srcdir)/../cbc \
 	-I$(srcdir)/../osi -I$(srcdir)/../ipopt -I$(srcdir)/../utils \
 	$(GAMSCOUENNE_CFLAGS) -I"$(GAMS_PATH)/apifiles/C/api" \
-	$(GAMSLIBCFLAGS)
+	$(GAMSLIBCFLAGS) -DGC_NO_MUTEX
 AM_LDFLAGS = $(LT_LDFLAGS)
 lib_LTLIBRARIES = libGamsCouenne.la
 libGamsCouenne_la_SOURCES = GamsCouenne.cpp \

@@ -416,7 +416,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(srcdir)/../osi -I$(srcdir)/../utils \
 	$(GAMSCBC_CFLAGS) -I"$(GAMS_PATH)/apifiles/C/api" \
-	$(GAMSLIBCFLAGS)
+	$(GAMSLIBCFLAGS) -DGC_NO_MUTEX
 AM_LDFLAGS = $(LT_LDFLAGS)
 lib_LTLIBRARIES = libGamsCbc.la
 libGamsCbc_la_SOURCES = GamsCbc.cpp \
