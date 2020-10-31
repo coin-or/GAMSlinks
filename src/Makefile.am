@@ -35,6 +35,7 @@ if COIN_HAS_SOPLEX
 endif
 
 install-exec-local : gamsconfig.yaml
+	@mkdir_p@ $(pkgdatadir)
 	$(srcdir)/install-gamsconfig.py gamsconfig.yaml $(pkgdatadir)
 
 uninstall-local :
