@@ -56,7 +56,13 @@ AC_COIN_CHK_PKG(Ipopt,   [GamsIpopt],   [ipopt])
 AC_COIN_CHK_PKG(Bonmin,  [GamsBonmin],  [bonmin])
 AC_COIN_CHK_PKG(Couenne, [GamsCouenne], [couenne])
 
-AC_COIN_CHK_LIB(SoPlex,[GamsSoplex],[-lsoplex],[],[],[])
+AC_LANG_PUSH(C++)
+AC_COIN_CHK_LIBHDR(SoPlex,[GamsSoplex],[],[],[],
+  [SoPlex* soplex; spx_alloc(soplex); new (soplex) SoPlex();],
+  [#include "soplex.h"
+   using namespace soplex;],
+  [default_skip])
+AC_LANG_POP(C++)
 AC_COIN_CHK_LIB(SCIP,[GamsScip],[-lscipsolver],[],[],[SCIPcreate])
 AC_COIN_CHK_LIB(GCG,[GamsScip],[-lgcg],[],[],[GCGisMaster])
 AC_COIN_CHK_LIB(Cplex,[GamsOsi GamsBonmin GamsCouenne GamsScip GamsCbc],[-lcplex -lpthread -lm -ldl],[],[],[CPXgetstat])
