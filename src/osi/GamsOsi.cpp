@@ -269,7 +269,7 @@ int GamsOsi::readyAPI(
             GUlicenseInit_t initType;
 
             /* Gurobi license setup */
-            if( (status=gevgurobilice(gev, pal, NULL, NULL, (void**)&grbenv, NULL, 1, &initType)) )
+            if( (status=gevgurobilice(gev, pal, NULL, NULL, (void**)&grbenv, NULL, 1, &initType, 0)) )
             {
                if( GRB_ERROR_NO_LICENSE == status )
                   sprintf(buffer, "Failed to create Gurobi environment. Missing license.");
@@ -279,8 +279,8 @@ int GamsOsi::readyAPI(
                gmoSolveStatSet(gmo, gmoSolveStat_License);
                gmoModelStatSet(gmo, gmoModelStat_LicenseError);
                return 1;
-            } 
-            
+            }
+
             // disable Gurobi output here, so we don't get messages from model setup to stdout
             if( grbenv != NULL )
                GRBsetintparam(grbenv, GRB_INT_PAR_OUTPUTFLAG, 0);
@@ -338,7 +338,7 @@ int GamsOsi::readyAPI(
             int initRC;
 
             /* Xpress license initialization: calls XPRSinit() in a thread-safe way and passes in GAMS/Xpress license */
-            if( gevxpressliceInitTS(gev, pal, gmoM(gmo), gmoN(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, &initType, &initRC, msg, sizeof(msg)) )
+            if( gevxpressliceInitTS(gev, pal, gmoM(gmo), gmoN(gmo), gmoNLNZ(gmo), gmoNDisc(gmo), 0, 0, &initType, &initRC, msg, sizeof(msg)) )
             {
                if( *msg != '\0' )
                   gevLogStat(gev, msg);
@@ -664,7 +664,7 @@ bool GamsOsi::setupParameters()
    double optca   = gevGetDblOpt(gev, gevOptCA);
 
    osi->setIntParam(OsiMaxNumIteration, iterlim);
-   
+
    /* default is to try doing dual in initial, but a user might want to
     * overwrite this setting with its solver specific options file;
     * so we change the OsiDoDualInInitial hint from OsiHintTry to OsiHintIgnore,
@@ -1297,6 +1297,11 @@ bool GamsOsi::writeSolution(
                MSK_getdouinf(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), MSK_DINF_MIO_OBJ_BOUND, &objest);
                objest += gmoObjConst(gmo);
             }
+            else
+            {
+               /* in case MOSEK stopped without solving a relaxation, e.g., in presolve */
+               objest = gmoSense(gmo) == gmoObj_Max ? GMS_SV_PINF : GMS_SV_MINF;
+            }
          }
 
          MSK_getsolution(osimsk->getLpPtr(OsiMskSolverInterface::KEEPCACHED_ALL), solution, &probstatus, &solstatus,
@@ -1316,7 +1321,7 @@ bool GamsOsi::writeSolution(
                break;
 
             case MSK_SOL_STA_INTEGER_OPTIMAL:
-               objest = osimsk->getObjValue(); /* in case instance was solved in presolve, i.e., without solving a relaxation */
+               /* might not be global optimal due to gap tolerances, though; this will be corrected later on */
             case MSK_SOL_STA_OPTIMAL:
                solwritten = true;
                gmoSolveStatSet(gmo, gmoSolveStat_Normal);
@@ -1735,11 +1740,15 @@ bool GamsOsi::writeSolution(
             gevLogStat(gev, buffer);
          }
       }
-      
+
       /* Mosek may report only primal feasible for a MIP solve even when solved to completion with 0 gap tolerance due to numerical differences in computing the gap */
       if( solverid == MOSEK && gmoModelStat(gmo) == gmoModelStat_Integer && gmoGetRelativeGap(gmo) <= 1e-9 )
          gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
+      /* Mosek reports global optimal for a MIP solve even when stopped due to reaching the gap limit */
+      else if( solverid == MOSEK && gmoModelStat(gmo) == gmoModelStat_OptimalGlobal && gmoGetRelativeGap(gmo) > 1e-9 )
+         gmoModelStatSet(gmo, gmoModelStat_Integer);
    }
+
 
    return true;
 }
@@ -1850,13 +1859,13 @@ int oxycreate(void** Cptr, char* msgBuf, int msgBufLen, GamsOsi::OSISOLVER osiso
    *Cptr = NULL;
 
    if( !gmoGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    if( !gevGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    if( !palGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    *Cptr = (void*) new GamsOsi(osisolver);
    if( *Cptr == NULL )
@@ -1864,14 +1873,14 @@ int oxycreate(void** Cptr, char* msgBuf, int msgBufLen, GamsOsi::OSISOLVER osiso
       snprintf(msgBuf, msgBufLen, "Out of memory when creating GamsOsi object.\n");
       if( msgBufLen > 0 )
          msgBuf[msgBufLen] = '\0';
-      return 0;
+      return 1;
    }
 
-   return 1;
+   return 0;
 }
 
 static
-int oxyfree(void** Cptr)
+void oxyfree(void** Cptr)
 {
    assert(Cptr != NULL);
 
@@ -1881,8 +1890,6 @@ int oxyfree(void** Cptr)
    gmoLibraryUnload();
    gevLibraryUnload();
    palLibraryUnload();
-
-   return 1;
 }
 
 static
@@ -1923,14 +1930,14 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
    oxyFinalize();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
    return oxycreate(Cptr, msgBuf, msgBufLen, GamsOsi::CPLEX);
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
+DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
 {
-   return oxyfree(Cptr);
+   oxyfree(Cptr);
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
@@ -1939,7 +1946,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
    return ((GamsOsi*)Cptr)->callSolver();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr)
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);
@@ -1964,12 +1971,12 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
    oxyFinalize();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
    return oxycreate(Cptr, msgBuf, msgBufLen, GamsOsi::GUROBI);
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
+DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
 {
    return oxyfree(Cptr);
 }
@@ -1980,7 +1987,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
    return ((GamsOsi*)Cptr)->callSolver();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr)
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);
@@ -2009,14 +2016,14 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 #endif
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
    return oxycreate(Cptr, msgBuf, msgBufLen, GamsOsi::MOSEK);
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
+DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
 {
-   return oxyfree(Cptr);
+   oxyfree(Cptr);
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
@@ -2025,7 +2032,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
    return ((GamsOsi*)Cptr)->callSolver();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr)
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);
@@ -2050,14 +2057,14 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
    oxyFinalize();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
    return oxycreate(Cptr, msgBuf, msgBufLen, GamsOsi::XPRESS);
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
+DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
 {
-   return oxyfree(Cptr);
+   oxyfree(Cptr);
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
@@ -2066,7 +2073,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
    return ((GamsOsi*)Cptr)->callSolver();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr)
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);

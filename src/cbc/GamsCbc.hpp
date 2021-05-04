@@ -80,8 +80,7 @@ public:
    ~GamsCbc();
 
    int readyAPI(
-      struct gmoRec*     gmo_,               /**< GAMS modeling object */
-      struct optRec*     opt_                /**< GAMS options object */
+      struct gmoRec*     gmo_               /**< GAMS modeling object */
    );
 
    int callSolver();

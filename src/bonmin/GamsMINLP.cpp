@@ -114,15 +114,15 @@ void GamsMINLP::setupPrioritiesSOS()
 
       for( int j = sosinfo.starts[i]; j < sosinfo.starts[i+1]; ++j )
       {
-         if( gmoGetVarLowerOne(gmo, j) < 0.0 )
+         if( gmoGetVarLowerOne(gmo, sosinfo.indices[j]) < 0.0 )
          {
             char buffer[GMS_SSSIZE+100];
             char varname[GMS_SSSIZE];
             if( gmoDict(gmo) )
-               gmoGetVarNameOne(gmo, j, varname);
+               gmoGetVarNameOne(gmo, sosinfo.indices[j], varname);
             else
-               sprintf(varname, "x%d", j);
-            sprintf(buffer, "Variable %s in SOS has negative lower bound %g\n", varname, gmoGetVarLowerOne(gmo, j));
+               sprintf(varname, "x%d", sosinfo.indices[j]);
+            sprintf(buffer, "Variable %s in SOS has negative lower bound %g\n", varname, gmoGetVarLowerOne(gmo, sosinfo.indices[j]));
             gevLogPChar(gev, buffer);
             negativesos = true;
          }

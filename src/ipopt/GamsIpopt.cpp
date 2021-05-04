@@ -140,6 +140,7 @@ int GamsIpopt::callSolver()
    {
       ipopt->Options()->SetStringValue("linear_solver", "mumps", true, true);
    }
+   //TODO if GAMS scaleopt is set, then set nlp_scaling_method=user-scaling
 
    // if we have linear rows and a quadratic objective, then the hessian of the Lag.func. is constant, and Ipopt can make use of this
    if( gmoNLM(gmo) == 0 && (gmoModelType(gmo) == gmoProc_qcp || gmoModelType(gmo) == gmoProc_rmiqcp) )
@@ -291,7 +292,7 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
    palFiniMutexes();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
    assert(Cptr != NULL);
    assert(msgBuf != NULL);
@@ -299,13 +300,13 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char*
    *Cptr = NULL;
 
    if( !gmoGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    if( !gevGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    if( !palGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    *Cptr = (void*) new GamsIpopt();
    if( *Cptr == NULL )
@@ -313,13 +314,13 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char*
       snprintf(msgBuf, msgBufLen, "Out of memory when creating GamsIpopt object.\n");
       if( msgBufLen > 0 )
          msgBuf[msgBufLen] = '\0';
-      return 0;
+      return 1;
    }
 
-   return 1;
+   return 0;
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
+DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
 {
    assert(Cptr != NULL);
 
@@ -329,8 +330,6 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
    gmoLibraryUnload();
    gevLibraryUnload();
    palLibraryUnload();
-
-   return 1;
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
@@ -339,7 +338,7 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
    return ((GamsIpopt*)Cptr)->callSolver();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr)
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);

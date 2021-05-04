@@ -729,7 +729,7 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
    palFiniMutexes();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
    assert(Cptr != NULL);
    assert(msgBuf != NULL);
@@ -737,13 +737,13 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char*
    *Cptr = NULL;
 
    if( !gmoGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    if( !gevGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    if( !palGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    *Cptr = (void*) new GamsSoPlex();
    if( *Cptr == NULL )
@@ -751,13 +751,13 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char*
       snprintf(msgBuf, msgBufLen, "Out of memory when creating GamsSoPlex object.\n");
       if( msgBufLen > 0 )
          msgBuf[msgBufLen] = '\0';
-      return 0;
+      return 1;
    }
 
-   return 1;
+   return 0;
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
+DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
 {
    assert(Cptr != NULL);
 
@@ -767,8 +767,6 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
    gmoLibraryUnload();
    gevLibraryUnload();
    palLibraryUnload();
-
-   return 1;
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
@@ -777,18 +775,13 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
    return ((GamsSoPlex*)Cptr)->callSolver();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr)
-{
-   return 0;
-}
-
 DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ModifyProblem)(void* Cptr)
 {
    assert(Cptr != NULL);
    return ((GamsSoPlex*)Cptr)->modifyProblem();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr)
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);

@@ -183,8 +183,7 @@ GamsCbc::~GamsCbc()
 }
 
 int GamsCbc::readyAPI(
-   struct gmoRec*     gmo_,               /**< GAMS modeling object */
-   struct optRec*     opt_                /**< GAMS options object */
+   struct gmoRec*     gmo_               /**< GAMS modeling object */
 )
 {
    struct palRec* pal;
@@ -192,7 +191,7 @@ int GamsCbc::readyAPI(
 
    gmo = gmo_;
    assert(gmo != NULL);
-   opt = opt_;
+   opt = NULL;
 
    delete model;
 
@@ -1274,6 +1273,9 @@ bool GamsCbc::writeSolution(
          gevLogStat(gev, buffer);
          return false;
       }
+#if GDXAPIVERSION >= 8
+      gdxStoreDomainSetsSet(gdx, 0);
+#endif
 
       snprintf(buffer, 255, "\nDumping %d alternate solutions:\n", model->numberSavedSolutions()-1);
       gevLogPChar(gev, buffer);
@@ -1442,7 +1444,7 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
 #endif
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
 {
    assert(Cptr != NULL);
    assert(msgBuf != NULL);
@@ -1450,19 +1452,19 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char*
    *Cptr = NULL;
 
    if( !gmoGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    if( !gevGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    if( !palGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    if( !optGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    if( !cfgGetReady(msgBuf, msgBufLen) )
-      return 0;
+      return 1;
 
    *Cptr = (void*) new GamsCbc();
    if( *Cptr == NULL )
@@ -1470,13 +1472,13 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char*
       snprintf(msgBuf, msgBufLen, "Out of memory when creating GamsCbc object.\n");
       if( msgBufLen > 0 )
          msgBuf[msgBufLen] = '\0';
-      return 0;
+      return 1;
    }
 
-   return 1;
+   return 0;
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
+DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
 {
    assert(Cptr != NULL);
 
@@ -1487,11 +1489,9 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr)
    gevLibraryUnload();
    palLibraryUnload();
    optLibraryUnload();
+   cfgLibraryUnload();
    if( gdxLibraryLoaded() )
       gdxLibraryUnload();
-   cfgLibraryUnload();
-
-   return 1;
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
@@ -1500,10 +1500,10 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
    return ((GamsCbc*)Cptr)->callSolver();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr, optHandle_t Optr)
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr)
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);
 
-   return ((GamsCbc*)Cptr)->readyAPI(Gptr, Optr);
+   return ((GamsCbc*)Cptr)->readyAPI(Gptr);
 }

@@ -1740,7 +1740,11 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
                consvars[j] = vars[indices[j]];
             
             qnz = gmoGetRowQNZOne(gmo,i);
+#if GMOAPIVERSION <= 19
             (void) gmoGetRowQ(gmo, i, qcol, qrow, quadcoefs);
+#else
+            (void) gmoGetRowQMat(gmo, i, qcol, qrow, quadcoefs);
+#endif
             for( j = 0; j < qnz; ++j )
             {
                assert(qcol[j] >= 0);
@@ -1843,8 +1847,13 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
          coefs[nz] = -1.0;
          ++nz;
 
+#if GMOAPIVERSION <= 19
          qnz = gmoObjQNZ(gmo);
          (void) gmoGetObjQ(gmo, qcol, qrow, quadcoefs);
+#else
+         qnz = gmoObjQMatNZ(gmo);
+         (void) gmoGetObjQMat(gmo, qcol, qrow, quadcoefs);
+#endif
          for( j = 0; j < qnz; ++j )
          {
             assert(qcol[j] >= 0);
@@ -2345,6 +2354,9 @@ SCIP_RETCODE writeGmoSolution(
 
          SCIPinfoMessage(scip, NULL, "\nDumping %d alternate solutions:\n", nrsol-1);
          /* create index GDX file */
+#if GDXAPIVERSION >= 8
+         gdxStoreDomainSetsSet(gdx, 0);
+#endif
          if( gdxOpenWrite(gdx, indexfilename, "SCIP DumpSolutions Index File", &rc) == 0 )
          {
             rc = gdxGetLastError(gdx);

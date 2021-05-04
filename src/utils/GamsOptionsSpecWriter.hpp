@@ -33,7 +33,8 @@ public:
       INTEGER,
       REAL,
       CHAR,
-      STRING
+      STRING,
+      NOVALUE
    };
 
    union Value
@@ -226,6 +227,8 @@ public:
                return a.charval < b.charval;
             case GamsOption::Type::STRING:
                return strcasecmp(a.stringval, b.stringval) < 0;
+            case GamsOption::Type::NOVALUE:
+               return true;
          }
          return 0;
       }
@@ -308,7 +311,8 @@ public:
    bool               maxval_attainable;
    EnumVals           enumval;
    int                refval;
-   std::set<std::string> synonyms;
+   bool               hidden ;
+   std::map<std::string, bool> synonyms;
 
    /// constructor for general option
    GamsOption(
@@ -336,7 +340,8 @@ public:
      maxval(maxval_),
      maxval_attainable(maxval_attainable_),
      enumval(enumval_),
-     refval(refval_)
+     refval(refval_),
+     hidden(false)
    { }
 
    /// constructor for real-type option
@@ -444,6 +449,21 @@ public:
          Value(defaultval), Value(), Value(),
          true, true,
          enumval, defaultdescr, refval)
+   { }
+
+   /// constructor for novalue-type option
+   GamsOption(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      int                refval = -2
+   )
+   : GamsOption(name, shortdescr, longdescr,
+      GamsOption::Type::NOVALUE,
+      Value(std::string()), Value(), Value(),
+      true, true,
+      GamsOption::EnumVals(),
+      std::string(), refval)
    { }
 
    ~GamsOption()

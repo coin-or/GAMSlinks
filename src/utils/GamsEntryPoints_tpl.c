@@ -43,25 +43,23 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void);
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void);
 
 /* Needs to be implemented by solver interface */
-DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(void** Cptr, char* msgBuf, int msgBufLen);
+DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen);
 
 /* Needs to be implemented by solver interface */
-DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(void** Cptr);
+DllExport void  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr);
 
 /* Needs to be implemented by solver interface */
-DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, struct gmoRec* Gptr, struct optRec* Optr);
+DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, struct gmoRec* Gptr);
 
 /* Needs to be implemented by solver interface */
 DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr);
 
 #ifdef GAMSSOLVER_HAVEMODIFYPROBLEM
 /* Needs to be implemented by solver interface if GAMSSOLVER_HAVEMODIFYPROBLEM is defined */
-DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr);
-
-/* Needs to be implemented by solver interface if GAMSSOLVER_HAVEMODIFYPROBLEM is defined */
 DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ModifyProblem)(void* Cptr);
 #endif
 
+/* Compatibility entry points so the solver link library can work with a GAMS version prior to GAMS 36 */
 
 /* Implemented below */
 DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Initialize)(void);
@@ -75,6 +73,9 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,XCreate)(void** Cptr);
 /* Implemented below */
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,XFree)(void** Cptr);
 
+/* Implemented below */
+DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,XCheck)(const char* funcn, int ClNrArg, int Clsign[], char* Msg);
+
 /* Needs to be implemented by solver interface */
 DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr, struct gmoRec* Gptr, struct optRec* Optr);
 
@@ -82,6 +83,9 @@ DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr
 DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,CallSolver)(void* Cptr);
 
 #ifdef GAMSSOLVER_HAVEMODIFYPROBLEM
+/* Needs to be implemented by solver interface if GAMSSOLVER_HAVEMODIFYPROBLEM is defined */
+DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr);
+
 /* Needs to be implemented by solver interface if modify-problem is supported */
 DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr);
 
@@ -101,11 +105,6 @@ DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,XCheck)(const char* 
 /* Implemented below */
 DllExport int  STDCALL GAMSSOLVER_CONCAT3(D__,GAMSSOLVER_ID,XCheck)(const char* funcn, int ClNrArg, int Clsign[], char* Msg);
 
-
-#if defined(__cplusplus)
-}
-#endif
-
 DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Initialize)(void)
 {
    GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)();
@@ -119,17 +118,17 @@ DllExport void STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,Finalize)(void)
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,XCreate)(void** Cptr)
 {
    char msg[255];
-   GAMSSOLVER_CONCAT(GAMSSOLVER_ID,create)(Cptr, msg, sizeof(msg));
+   GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(Cptr, msg, sizeof(msg));
 }
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,XFree)(void** Cptr)
 {
-   GAMSSOLVER_CONCAT(GAMSSOLVER_ID,free)(Cptr);
+   GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(Cptr);
 }
 
 DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ReadyAPI)(void* Cptr, struct gmoRec* Gptr, struct optRec* Optr)
 {
-   return GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(Cptr, Gptr, Optr);
+   return GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(Cptr, Gptr);
 }
 
 DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,CallSolver)(void* Cptr)
@@ -141,6 +140,11 @@ DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,CallSolver)(void* Cp
 DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr)
 {
    return GAMSSOLVER_CONCAT(GAMSSOLVER_ID,HaveModifyProblem)(Cptr);
+}
+
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,HaveModifyProblem)(void* Cptr)
+{
+   return 0;
 }
 
 DllExport int  STDCALL GAMSSOLVER_CONCAT3(C__,GAMSSOLVER_ID,ModifyProblem)(void* Cptr)
@@ -177,3 +181,8 @@ DllExport int STDCALL GAMSSOLVER_CONCAT3(D__,GAMSSOLVER_ID,XCheck)(const char* f
 {
    return 1;
 }
+
+#if defined(__cplusplus)
+}
+#endif
+

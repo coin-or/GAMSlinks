@@ -179,6 +179,10 @@ std::string GamsOption::Value::toStringGams(
          else
             s << makeValidMarkdownString(stringval);
          break;
+
+      case GamsOption::Type::NOVALUE:
+         break;
+
    }
    return s.str();
 }
@@ -220,6 +224,11 @@ std::string GamsOption::Value::toStringMarkdown(
       case GamsOption::Type::STRING:
          s << makeValidMarkdownString(stringval);
          break;
+
+      case GamsOption::Type::NOVALUE:
+         s << '"' << '"';
+         break;
+
    }
    return s.str();
 }
@@ -398,6 +407,10 @@ std::string GamsOption::getRangeMarkdown(
          }
          break;
       }
+
+      case GamsOption::Type::NOVALUE:
+         break;
+
    }
 
    return s.str();
@@ -483,6 +496,9 @@ void GamsOptions::writeGMS(
                values.insert(tolower(o->defaultval.stringval));
             break;
          }
+
+         case GamsOption::Type::NOVALUE:
+            break;
       }
 
       /* collect enum values for values
@@ -510,6 +526,9 @@ void GamsOptions::writeGMS(
 
             case GamsOption::Type::STRING:
                values.insert(tolower(e.first.stringval));
+               break;
+
+            case GamsOption::Type::NOVALUE:
                break;
          }
 
@@ -609,6 +628,10 @@ void GamsOptions::writeGMS(
          case GamsOption::Type::STRING:
             f << "S.(def '" << makeValidMarkdownString(d->defaultval.stringval) << '\'';
             break;
+
+         case GamsOption::Type::NOVALUE:
+            break;
+
       }
       if( d->refval >= -1 )
          f << ", ref " << d->refval;
@@ -639,6 +662,8 @@ void GamsOptions::writeGMS(
             case GamsOption::Type::STRING :
                f << e->first.stringval;
                break;
+            case GamsOption::Type::NOVALUE:
+               break;
          }
          f << '\'';
          if( !e->second.empty() )
@@ -663,8 +688,9 @@ void GamsOptions::writeGMS(
    f << "set os(o,*) synonyms  /";
    for( std::list<GamsOption>::iterator d(options.begin()); d != options.end(); ++d )
       if( !d->synonyms.empty() )
-         for( std::set<std::string>::const_iterator s(d->synonyms.begin()); s != d->synonyms.end(); ++s )
-            f << std::endl << "  '" << d->name << "'.'" << *s << '\'';
+         for (std::map<std::string, bool>::iterator s = d->synonyms.begin(); s != d->synonyms.end(); ++s )
+            f << std::endl << "  '" << d->name << "'.'" << s->first << '\'';
+
    f << " /;" << std::endl
       << "set im immediates recognized  / EolFlag , Message /;" << std::endl   /* ???? */
       << "set strlist(o)        / /;" << std::endl
@@ -715,6 +741,7 @@ void GamsOptions::writeDef()
 
    // write options
    bool havesynonym = false;
+   bool havedeprecatedsynonym = false;
    for( auto& opt : options )
    {
       f << opt.name << ' ';
@@ -750,6 +777,10 @@ void GamsOptions::writeDef()
             else
                f << "enumstr";
             break;
+
+         case GamsOption::Type::NOVALUE:
+            f << "string.nv";
+            break;
       }
       // ref
       f << ' ' << (opt.refval >= -1 ? opt.refval : 0) << ' ';
@@ -764,8 +795,8 @@ void GamsOptions::writeDef()
          f << ' ' << opt.maxval.toStringGams(opt.type);
       }
 
-      // not hidden
-      f << " 1";
+      // hidden
+      f  << (opt.hidden ? " 0" : " 1");
 
       // group number
       f << ' ' << groups.find(opt.group)->second.index;
@@ -782,8 +813,8 @@ void GamsOptions::writeDef()
          {
             f << ' ' << eval.first.toStringGams(opt.type, true);
 
-            // not hidden
-            f << " 1";
+            // hidden
+            f << (opt.hidden ? " 0" : " 1");
 
             // short description
             if( !eval.second.empty() )
@@ -795,6 +826,14 @@ void GamsOptions::writeDef()
 
       if( !opt.synonyms.empty() )
          havesynonym = true;
+      for( std::pair<std::string, bool> s : opt.synonyms )
+      {
+         if( s.second )
+         {
+            havedeprecatedsynonym = true;
+            break;
+         }
+      }
    }
 
    // write synonyms
@@ -805,7 +844,20 @@ void GamsOptions::writeDef()
       f << '*' << std::endl;
       for( auto& opt : options )
          for( auto& synonym : opt.synonyms )
-            f << synonym << " synonym " << opt.name << std::endl;
+            f << synonym.first << " synonym " << opt.name << std::endl;
+   }
+
+   // write deprecation
+   if( havedeprecatedsynonym )
+   {
+      f << '*' << std::endl;
+      f << "* deprecated section" << std::endl;
+      f << '*' << std::endl;
+      f << "synon deprecated" << std::endl;
+      for( auto& opt : options )
+         for( const std::pair<std::string, bool>& element : opt.synonyms )
+            if( element.second )
+               f << ' ' << element.first << std::endl;
    }
 
    // write indicators
@@ -901,6 +953,10 @@ void GamsOptions::writeMarkdown()
                      f << e.first.toStringMarkdown(opt.type);
                      isdefault = e.first == opt.defaultval.stringval;
                      break;
+                  case GamsOption::Type::NOVALUE :
+                     std::cerr << "novalue-type options cannot be enumerated" << std::endl;
+                     abort();
+                     break;
                }
                if( isdefault && opt.defaultdescr.empty() )
                   f << " (default)";
@@ -918,7 +974,7 @@ void GamsOptions::writeMarkdown()
             f << "> Synonyms:";
             for( auto& syn : opt.synonyms )
             {
-               f << ' ' << syn;
+               f << ' ' << syn.first;
             }
             f << std::endl;
          }
@@ -989,7 +1045,7 @@ void GamsOptions::writeDoxygen(
                f << "<br/>Synonyms:";
                for( auto& syn : opt.synonyms )
                {
-                  f << ' ' << syn;
+                  f << ' ' << syn.first;
                }
             }
          }
@@ -1059,7 +1115,7 @@ void GamsOptions::writeDoxygen(
       {
          f << std::endl << "Synonym" << (opt.synonyms.size() > 1 ? "s" : "") << ':';
          for( auto& syn : opt.synonyms )
-            f << ' ' << syn;
+            f << ' ' << syn.first;
          f << std::endl;
       }
 

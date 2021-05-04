@@ -121,7 +121,7 @@ GamsOption& collectCbcOption(
 
    GamsOption& opt(gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, true, true, enumval, "", cbcoptnum));
    if( namegams != namecbc )
-      opt.synonyms.insert(namecbc);
+      opt.synonyms[namecbc];
 
    // remove parameter from array, so we can later easily check which options we haven't taken
    cbcopts[idx] = CbcOrClpParam();
@@ -186,7 +186,7 @@ int main(int argc, char** argv)
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "idiotCrash");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sprintCrash").synonyms.insert("sifting");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sprintCrash").synonyms["sifting"];
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "crash");
 
@@ -355,7 +355,7 @@ int main(int argc, char** argv)
    opt->shortdescr = "node limit";
    opt->longdescr = "Maximum number of nodes that are enumerated in the Branch and Bound tree search.";
    opt->defaultdescr = "GAMS nodlim";
-   opt->synonyms.insert("nodelim");
+   opt->synonyms["nodelim"];
 
    opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "optca", "allowableGap");
    opt->defaultval.realval = 0.0;
