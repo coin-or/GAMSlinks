@@ -6,7 +6,6 @@
   * @author Stefan Vigerske
   */
 
-#include "GamsLinksConfig.h"
 #include "GamsOptionsSpecWriter.hpp"
 
 #include <cstdio>
