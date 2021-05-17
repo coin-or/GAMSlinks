@@ -77,7 +77,9 @@ GamsOption& collectCbcOption(
          break;
       }
 
-      case CoinParam::paramStr:
+      // TODO case CoinParam::paramStr:
+
+      case CoinParam::paramKwd:
       {
          // check whether this might be a bool option
          const std::map<std::string, int>& kws(cbcopt.definedKwds());
