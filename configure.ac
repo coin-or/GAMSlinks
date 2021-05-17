@@ -137,7 +137,7 @@ AC_SUBST(GMSGENEXE)
 
 GAMS_PATH=UNAVAILABLE
 AC_ARG_WITH([gams],
-  AC_HELP_STRING([--with-gams],[specify directory of GAMS distribution]),
+  AS_HELP_STRING([--with-gams],[specify directory of GAMS distribution]),
   [if test "$withval" != no ; then
      AC_CHECK_FILE([$withval/gams],[GAMS_PATH=$withval],[GAMS_PATH=UNAVAILABLE])
    fi
@@ -173,6 +173,6 @@ AC_CONFIG_FILES([Makefile
 AC_CONFIG_FILES([test/run_quality], [chmod +x test/run_quality])
 AC_CONFIG_FILES([test/run_gmstest], [chmod +x test/run_gmstest])
 
-AC_CONFIG_HEADER([src/utils/config.h])
+AC_CONFIG_HEADERS([src/utils/config.h])
 
 AC_COIN_FINALIZE
