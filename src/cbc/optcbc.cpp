@@ -16,12 +16,12 @@
 
 static
 bool hasCbcOption(
-   std::vector<CbcOrClpParam>& cbcopts,
-   const std::string&          namecbc
+   CoinParamVec&        cbcopts,
+   const std::string&   namecbc
    )
 {
    for( auto& o : cbcopts )
-      if( o.name() == namecbc )
+      if( o->name() == namecbc )
          return true;
    return false;
 }
@@ -29,7 +29,7 @@ bool hasCbcOption(
 static
 GamsOption& collectCbcOption(
    GamsOptions&                gmsopt,
-   std::vector<CbcOrClpParam>& cbcopts,
+   CoinParamVec&               cbcopts,
    CbcModel&                   cbcmodel,
    const std::string&          namegams,
    const std::string&          namecbc_ = ""
@@ -39,15 +39,17 @@ GamsOption& collectCbcOption(
 
    unsigned int idx;
    for( idx = 0; idx < cbcopts.size(); ++idx )
-      if( cbcopts[idx].name() == namecbc )
+      if( cbcopts[idx]->name() == namecbc )
          break;
    if( idx >= cbcopts.size() )
    {
       std::cerr << "Error: Option " << namecbc << " not known to Cbc." << std::endl;
-      exit(1);
+      // FIXME
+      // exit(1);
+      return *new GamsOption(namecbc_, "MISSING", "MISSING", false);
    }
 
-   const CbcOrClpParam& cbcopt(cbcopts[idx]);
+   const CoinParam& cbcopt(*cbcopts[idx]);
 
    GamsOption::Type opttype;
    GamsOption::Value defaultval, minval, maxval;
@@ -55,76 +57,82 @@ GamsOption& collectCbcOption(
    std::string tmpstr;
    std::string longdescr;
 
-   /*   1 -- 100  double parameters
-    * 101 -- 200  integer parameters
-    * 201 -- 300  Clp string parameters
-    * 301 -- 400  Cbc string parameters
-    * 401 -- 500  Clp actions
-    * 501 -- 600  Cbc actions
-   */
-   CbcOrClpParameterType cbcoptnum = cbcopt.type();
-   if( cbcoptnum <= 100 )
+   switch( cbcopt.type() )
    {
-      opttype = GamsOption::Type::REAL;
-      minval = cbcopt.lowerDoubleValue();
-      maxval = cbcopt.upperDoubleValue();
-      defaultval = cbcopt.doubleParameter(cbcmodel);
-   }
-   else if( cbcoptnum <= 200 )
-   {
-      opttype = GamsOption::Type::INTEGER;
-      minval = cbcopt.lowerIntValue();
-      maxval = cbcopt.upperIntValue();
-      defaultval = cbcopt.intParameter(cbcmodel);
-   }
-   else if( cbcoptnum <= 400 )
-   {
-      // check whether this might be a bool option
-      const std::vector<std::string>& kws(cbcopt.definedKeywords());
-      if( kws.size() == 2 &&
-         ((kws[0] == "on" && kws[1] == "off") || (kws[1] == "on" && kws[0] == "off")) )
+      case CoinParam::paramDbl:
       {
-         opttype = GamsOption::Type::BOOL;
-         defaultval = cbcopt.currentOption() == "on";
+         opttype = GamsOption::Type::REAL;
+         minval = cbcopt.lowerDblVal();
+         maxval = cbcopt.upperDblVal();
+         defaultval = cbcopt.dblVal();
+         break;
       }
-      else
+
+      case CoinParam::paramInt:
       {
-         opttype = GamsOption::Type::STRING;
+         opttype = GamsOption::Type::INTEGER;
+         minval = cbcopt.lowerIntVal();
+         maxval = cbcopt.upperIntVal();
+         defaultval = cbcopt.intVal();
+         break;
+      }
 
-         std::string def = cbcopt.currentOption();
-         // remove '!' and '?' marker from default
-         auto newend = std::remove(def.begin(), def.end(), '!');
-         newend = std::remove(def.begin(), newend, '?');
-         defaultval = std::string(def.begin(), newend);
-
-         for( auto v : cbcopt.definedKeywords() )
+      case CoinParam::paramStr:
+      {
+         // check whether this might be a bool option
+         const std::map<std::string, int>& kws(cbcopt.definedKwds());
+         if( kws.size() == 2 && kws.count("on") == 1 && kws.count("off") == 1 )
          {
-            // remove '!' and '?' marker from keyword
-            newend = std::remove(v.begin(), v.end(), '!');
-            newend = std::remove(v.begin(), newend, '?');
-            v = std::string(v.begin(), newend);
-
-            enumval.append(v);
-
-            if( v == "01first" )
-               enumval.append("binaryfirst", "This is a deprecated setting. Please use 01first.");
-            else if( v == "01last" )
-               enumval.append("binarylast", "This is a deprecated setting. Please use 01last.");
+            opttype = GamsOption::Type::BOOL;
+            cbcopt.getVal(tmpstr);
+            defaultval = tmpstr == "on";
          }
+         else
+         {
+            opttype = GamsOption::Type::STRING;
+
+            std::string def;
+            cbcopt.getVal(def);
+            // remove '!' and '?' marker from default
+            auto newend = std::remove(def.begin(), def.end(), '!');
+            newend = std::remove(def.begin(), newend, '?');
+            defaultval = std::string(def.begin(), newend);
+
+            for( const auto& kwd : cbcopt.definedKwds() )
+            {
+               // remove '!' and '?' marker from keyword
+               std::string v = kwd.first;
+               newend = std::remove(v.begin(), v.end(), '!');
+               newend = std::remove(v.begin(), newend, '?');
+               v = std::string(v.begin(), newend);
+
+               enumval.append(v);
+
+               if( v == "01first" )
+                  enumval.append("binaryfirst", "This is a deprecated setting. Please use 01first.");
+               else if( v == "01last" )
+                  enumval.append("binarylast", "This is a deprecated setting. Please use 01last.");
+            }
+         }
+         break;
+      }
+      default:
+      {
+         std::cerr << "ERROR: 'action'-option encountered: " << namegams << std::endl;
+         //FIXME
+         //exit(1);
+         return *new GamsOption(namecbc_, "ACTIONOPT", "ACTIONOPT not expected", false);
       }
    }
-   else
-   {
-      std::cerr << "ERROR: 'action'-option encountered: " << namegams << std::endl;
-      exit(1);
-   }
 
+   int cbcoptnum = 0; // FIXME
    GamsOption& opt(gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, true, true, enumval, "", cbcoptnum));
    if( namegams != namecbc )
       opt.synonyms[namecbc];
 
    // remove parameter from array, so we can later easily check which options we haven't taken
-   cbcopts[idx] = CbcOrClpParam();
+// FIXME
+//   cbcopts[idx] = CbcOrClpParam();
 
    return opt;
 }
@@ -143,9 +151,9 @@ int main(int argc, char** argv)
    // calling CbcMain0 with a CbcSolverUsefulData seems to make Cbc store its defaults in the parameters in there
    OsiClpSolverInterface solver;
    CbcModel cbcmodel(solver);
-   CbcSolverUsefulData cbcusefuldata;
+   CbcParameters cbcusefuldata;
    CbcMain0(cbcmodel, cbcusefuldata);
-   std::vector<CbcOrClpParam>& cbcopts = cbcusefuldata.parameters_;
+   CoinParamVec& cbcopts = cbcusefuldata.paramVec();
    GamsOption* opt;
 
    // collection of GAMS/Cbc parameters
