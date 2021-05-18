@@ -82,8 +82,8 @@ GamsOption& collectCbcOption(
       case CoinParam::paramKwd:
       {
          // check whether this might be a bool option
-         const std::map<std::string, int>& kws(cbcopt.definedKwds());
-         if( kws.size() == 2 && kws.count("on") == 1 && kws.count("off") == 1 )
+         std::vector<std::string> kws(cbcopt.definedKwdsSorted());
+         if( kws.size() == 2 && ((kws[0] == "on" && kws[1] == "off") || (kws[0] == "off" && kws[1] == "on")) )
          {
             opttype = GamsOption::Type::BOOL;
             cbcopt.getVal(tmpstr);
@@ -100,10 +100,10 @@ GamsOption& collectCbcOption(
             newend = std::remove(def.begin(), newend, '?');
             defaultval = std::string(def.begin(), newend);
 
-            for( const auto& kwd : cbcopt.definedKwds() )
+            for( const auto& kwd : kws )
             {
                // remove '!' and '?' marker from keyword
-               std::string v = kwd.first;
+               std::string v = kwd;
                newend = std::remove(v.begin(), v.end(), '!');
                newend = std::remove(v.begin(), newend, '?');
                v = std::string(v.begin(), newend);
