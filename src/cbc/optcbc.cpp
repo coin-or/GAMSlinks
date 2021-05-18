@@ -156,6 +156,7 @@ int main(int argc, char** argv)
    CbcParameters cbcusefuldata;
    CbcMain0(cbcmodel, cbcusefuldata);
    CoinParamVec& cbcopts = cbcusefuldata.paramVec();
+   CoinParamVec& clpopts = cbcusefuldata.clpParamVec();
    GamsOption* opt;
 
    // collection of GAMS/Cbc parameters
@@ -164,7 +165,7 @@ int main(int argc, char** argv)
    // General parameters
    gmsopt.setGroup("General Options");
 
-   opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "reslim", "seconds");
+   opt = &collectCbcOption(gmsopt, clpopts, cbcmodel, "reslim", "seconds");
    opt->defaultval.realval = 1e10;
    opt->defaultdescr = "GAMS reslim";
    opt->longdescr.clear();
@@ -189,47 +190,47 @@ int main(int argc, char** argv)
    // LP parameters
    gmsopt.setGroup("LP Options");
 
-   opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "iterlim", "maxIterations");
+   opt = &collectCbcOption(gmsopt, clpopts, cbcmodel, "iterlim", "maxIterations");
    opt->longdescr = "For an LP, this is the maximum number of iterations to solve the LP. For a MIP, this option is ignored.";
    opt->defaultval.intval = INT_MAX;
    opt->defaultdescr = "GAMS iterlim";
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "idiotCrash");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "idiotCrash");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sprintCrash").synonyms["sifting"];
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "sprintCrash").synonyms["sifting"];
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "crash");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "crash");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "factorization");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "factorization");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "denseThreshold");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "denseThreshold");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "smallFactorization");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "smallFactorization");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sparseFactor");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "sparseFactor");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "biasLU");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "biasLU");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "maxFactor");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "maxFactor");
 
-   opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "crossover");
+   opt = &collectCbcOption(gmsopt, clpopts, cbcmodel, "crossover");
    // value "maybe" is only relevant for quadratic: remove value and mention in longdescr
    opt->enumval.drop("maybe");
    opt->longdescr = "Interior point algorithms do not obtain a basic solution. "
       "This option will crossover to a basic solution suitable for ranging or branch and cut.";
    add01(opt->enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "dualPivot").enumval.append("auto", "Same as automatic. This is a deprecated setting.");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "dualPivot").enumval.append("auto", "Same as automatic. This is a deprecated setting.");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "primalPivot").enumval.append("auto", "Same as automatic. This is a deprecated setting.");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "primalPivot").enumval.append("auto", "Same as automatic. This is a deprecated setting.");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "psi");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "psi");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "perturbation");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "perturbation");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "scaling").enumval.append("auto", "Same as automatic. This is a deprecated setting.");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "scaling").enumval.append("auto", "Same as automatic. This is a deprecated setting.");
 
-   opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "presolve");
+   opt = &collectCbcOption(gmsopt, clpopts, cbcmodel, "presolve");
    opt->enumval.drop("file");
    add01(opt->enumval);
    opt->longdescr = "Presolve analyzes the model to find such things as redundant equations, "
@@ -237,17 +238,17 @@ int main(int argc, char** argv)
       "For the initial solve of any problem this is worth doing unless one knows that it will have no effect. "
       "Option 'on' will normally do 5 passes, while using 'more' will do 10.";
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "passPresolve");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "passPresolve");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "substitution");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "substitution");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomSeedClp", "randomSeed");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "randomSeedClp", "randomSeed");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_primal", "primalTolerance");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "tol_primal", "primalTolerance");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_dual", "dualTolerance");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "tol_dual", "dualTolerance");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_presolve", "preTolerance");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "tol_presolve", "preTolerance");
 
    GamsOption::EnumVals startalgs;
    startalgs.append("primal", "Primal Simplex algorithm");
@@ -257,19 +258,19 @@ int main(int argc, char** argv)
       "Determines the algorithm to use for an LP or the initial LP relaxation if the problem is a MIP.",
       "dual", startalgs, "", -1);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "primalWeight");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "primalWeight");
 
-   opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "autoScale");
+   opt = &collectCbcOption(gmsopt, clpopts, cbcmodel, "autoScale");
    opt->shortdescr += " (experimental)";
    opt->longdescr.clear();
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "bscale");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "bscale");
 
-   //TODO collectCbcOption(gmsopt, cbcopts, cbcmodel, "cholesky");
+   //TODO collectCbcOption(gmsopt, clpopts, cbcmodel, "cholesky");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "gamma", "gamma(Delta)").synonyms.clear();  // GAMS options object doesn't like parenthesis in synonym
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "gamma", "gamma(Delta)").synonyms.clear();  // GAMS options object doesn't like parenthesis in synonym
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "KKT");
+   collectCbcOption(gmsopt, clpopts, cbcmodel, "KKT");
 
    // MIP parameters
    gmsopt.setGroup("MIP Options");
