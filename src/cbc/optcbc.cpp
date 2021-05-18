@@ -457,7 +457,7 @@ int main(int argc, char** argv)
 
    add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingLineSearch").enumval);
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingPseudoCost").enumval);
+   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingPseudocost").enumval);
 
    add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingVectorLength").enumval);
 
