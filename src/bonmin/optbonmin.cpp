@@ -196,7 +196,7 @@ int main(int argc, char** argv)
 
    for( Bonmin::RegisteredOptions::RegOptionsList::const_iterator it(optionlist.begin()); it != optionlist.end(); ++it )
    {
-      std::string category(it->second->RegisteringCategory());
+      std::string category(it->second->RegisteringCategory().Name());
 
       if( category.empty() )
          continue;

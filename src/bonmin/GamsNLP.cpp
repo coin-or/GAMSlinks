@@ -716,7 +716,7 @@ bool GamsNLP::intermediate_callback(
          memset(mininfeasdualubs, 0, gmoN(gmo)*sizeof(double));
          assert(IsValid(ip_data->curr()->z_L()));
          assert(IsValid(ip_data->curr()->z_U()));
-         tnlp_adapter->ResortBnds(*ip_data->curr()->z_L(), mininfeasduallbs, *ip_data->curr()->z_U(), mininfeasdualubs);
+         tnlp_adapter->ResortBounds(*ip_data->curr()->z_L(), mininfeasduallbs, *ip_data->curr()->z_U(), mininfeasdualubs);
 
          tnlp_adapter->ResortG(*ip_cq->curr_c(), *ip_cq->curr_d_minus_s(), mininfeasscaledviol);
 
@@ -730,7 +730,7 @@ bool GamsNLP::intermediate_callback(
          memset(mininfeascomplgub, 0, gmoM(gmo)*sizeof(double));
 
          if( ip_cq->curr_compl_x_L()->Dim() > 0 && ip_cq->curr_compl_x_U()->Dim() > 0 )
-            tnlp_adapter->ResortBnds(*ip_cq->curr_compl_x_L(), mininfeascomplxlb, *ip_cq->curr_compl_x_U(), mininfeascomplxub);
+            tnlp_adapter->ResortBounds(*ip_cq->curr_compl_x_L(), mininfeascomplxlb, *ip_cq->curr_compl_x_U(), mininfeascomplxub);
          if( ip_cq->curr_compl_s_L()->Dim() > 0 )
             tnlp_adapter->ResortG(*dummy, *ip_cq->curr_compl_s_L(), mininfeascomplglb);
          if( ip_cq->curr_compl_s_U()->Dim() > 0 )
@@ -944,7 +944,7 @@ void GamsNLP::finalize_solution(
             memset(compl_xL, 0, n*sizeof(double));
             memset(compl_xU, 0, n*sizeof(double));
             if( cq->curr_compl_x_L()->Dim() && cq->curr_compl_x_U()->Dim() )
-               tnlp_adapter->ResortBnds(*cq->curr_compl_x_L(), compl_xL, *cq->curr_compl_x_U(), compl_xU);
+               tnlp_adapter->ResortBounds(*cq->curr_compl_x_L(), compl_xL, *cq->curr_compl_x_U(), compl_xU);
 
 /* dummy->Set(0.0) crashes with current Intel compiler on WEI (icl 18.0.1.156 and 18.0.3.210 and 19.1.0.166) */
 #if !(defined __ICL)
