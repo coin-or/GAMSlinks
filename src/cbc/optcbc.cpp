@@ -30,7 +30,6 @@ static
 GamsOption& collectCbcOption(
    GamsOptions&                gmsopt,
    CoinParamVec&               cbcopts,
-   CbcModel&                   cbcmodel,
    const std::string&          namegams,
    const std::string&          namecbc_ = ""
    )
@@ -138,6 +137,19 @@ GamsOption& collectCbcOption(
 
    return opt;
 }
+
+static
+GamsOption& collectCbcOption(
+   GamsOptions&                gmsopt,
+   CoinParamVec&               cbcopts,
+   CbcModel&                   cbcmodel,
+   const std::string&          namegams,
+   const std::string&          namecbc_ = ""
+   )
+{
+   return collectCbcOption(gmsopt, cbcopts, namegams, namecbc_);
+}
+
 
 static
 void add01(
