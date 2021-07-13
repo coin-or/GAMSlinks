@@ -143,9 +143,9 @@ libGamsCouenne_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libGamsCouenne_la_OBJECTS = GamsCouenne.lo ../bonmin/GamsMINLP.lo \
 	../osi/GamsMessageHandler.lo ../ipopt/GamsJournal.lo \
-	../bonmin/GamsNLP.lo ../utils/GamsSolveTrace.lo \
-	../utils/GamsHelper.lo ../utils/GamsLicensing.lo \
-	../utils/gmomcc.lo ../utils/gevmcc.lo ../utils/palmcc.lo
+	../utils/GamsSolveTrace.lo ../utils/GamsHelper.lo \
+	../utils/GamsLicensing.lo ../utils/gmomcc.lo \
+	../utils/gevmcc.lo ../utils/palmcc.lo
 libGamsCouenne_la_OBJECTS = $(am_libGamsCouenne_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -171,7 +171,6 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src/utils
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ../bonmin/$(DEPDIR)/GamsMINLP.Plo \
-	../bonmin/$(DEPDIR)/GamsNLP.Plo \
 	../ipopt/$(DEPDIR)/GamsJournal.Plo \
 	../osi/$(DEPDIR)/GamsMessageHandler.Plo \
 	../utils/$(DEPDIR)/GamsHelper.Plo \
@@ -425,7 +424,7 @@ lib_LTLIBRARIES = libGamsCouenne.la
 libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
   ../bonmin/GamsMINLP.cpp \
   ../osi/GamsMessageHandler.cpp \
-  ../ipopt/GamsJournal.cpp ../bonmin/GamsNLP.cpp \
+  ../ipopt/GamsJournal.cpp \
   ../utils/GamsSolveTrace.c ../utils/GamsHelper.c ../utils/GamsLicensing.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 
@@ -539,8 +538,6 @@ clean-libLTLIBRARIES:
 	@: > ../ipopt/$(DEPDIR)/$(am__dirstamp)
 ../ipopt/GamsJournal.lo: ../ipopt/$(am__dirstamp) \
 	../ipopt/$(DEPDIR)/$(am__dirstamp)
-../bonmin/GamsNLP.lo: ../bonmin/$(am__dirstamp) \
-	../bonmin/$(DEPDIR)/$(am__dirstamp)
 ../utils/$(am__dirstamp):
 	@$(MKDIR_P) ../utils
 	@: > ../utils/$(am__dirstamp)
@@ -584,7 +581,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@../bonmin/$(DEPDIR)/GamsMINLP.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@../bonmin/$(DEPDIR)/GamsNLP.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../ipopt/$(DEPDIR)/GamsJournal.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../osi/$(DEPDIR)/GamsMessageHandler.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsHelper.Plo@am__quote@ # am--include-marker
@@ -807,7 +803,6 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 
 distclean: distclean-am
 		-rm -f ../bonmin/$(DEPDIR)/GamsMINLP.Plo
-	-rm -f ../bonmin/$(DEPDIR)/GamsNLP.Plo
 	-rm -f ../ipopt/$(DEPDIR)/GamsJournal.Plo
 	-rm -f ../osi/$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo
@@ -865,7 +860,6 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 		-rm -f ../bonmin/$(DEPDIR)/GamsMINLP.Plo
-	-rm -f ../bonmin/$(DEPDIR)/GamsNLP.Plo
 	-rm -f ../ipopt/$(DEPDIR)/GamsJournal.Plo
 	-rm -f ../osi/$(DEPDIR)/GamsMessageHandler.Plo
 	-rm -f ../utils/$(DEPDIR)/GamsHelper.Plo

@@ -16,7 +16,7 @@ AM_LDFLAGS = $(LT_LDFLAGS)
 lib_LTLIBRARIES = libGamsBonmin.la
 libGamsBonmin_la_SOURCES = GamsBonmin.cpp GamsMINLP.cpp \
   ../osi/GamsMessageHandler.cpp \
-  ../ipopt/GamsJournal.cpp GamsNLP.cpp \
+  ../ipopt/GamsJournal.cpp \
   ../utils/GamsSolveTrace.c ../utils/GamsHelper.c ../utils/GamsLicensing.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 libGamsBonmin_la_LIBADD  = $(GAMSBONMIN_LFLAGS)

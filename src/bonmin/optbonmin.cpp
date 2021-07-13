@@ -156,10 +156,6 @@ int main(int argc, char** argv)
       "no", "", "yes", "");
 
    bonmin_setup.roptions()->SetRegisteringCategory("Output and Loglevel", Bonmin::RegisteredOptions::BonminCategory);
-   bonmin_setup.roptions()->AddStringOption2("print_funceval_statistics",
-      "Switch to enable printing statistics on number of evaluations of GAMS functions/gradients/Hessian.",
-      "no",
-      "no", "", "yes", "");
 
    bonmin_setup.roptions()->AddStringOption1("solvetrace",
       "Name of file for writing solving progress information.",

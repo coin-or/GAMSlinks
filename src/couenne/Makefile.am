@@ -18,7 +18,7 @@ lib_LTLIBRARIES = libGamsCouenne.la
 libGamsCouenne_la_SOURCES = GamsCouenne.cpp \
   ../bonmin/GamsMINLP.cpp \
   ../osi/GamsMessageHandler.cpp \
-  ../ipopt/GamsJournal.cpp ../bonmin/GamsNLP.cpp \
+  ../ipopt/GamsJournal.cpp \
   ../utils/GamsSolveTrace.c ../utils/GamsHelper.c ../utils/GamsLicensing.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 libGamsCouenne_la_LIBADD  = $(GAMSCOUENNE_LFLAGS)

@@ -116,11 +116,6 @@ int GamsBonmin::readyAPI(
    bonmin_setup->registerOptions();
 
    bonmin_setup->roptions()->SetRegisteringCategory("Output and Loglevel", Bonmin::RegisteredOptions::BonminCategory);
-   bonmin_setup->roptions()->AddStringOption2("print_funceval_statistics",
-      "Switch to enable printing statistics on number of evaluations of GAMS functions/gradients/Hessian.",
-      "no",
-      "no", "", "yes", "");
-
    bonmin_setup->roptions()->AddStringOption1("solvetrace",
       "Name of file for writing solving progress information.",
       "", "*", "");
@@ -271,7 +266,7 @@ int GamsBonmin::callSolver()
 
    // setup MINLP
    SmartPtr<GamsMINLP> minlp = new GamsMINLP(gmo);
-   bonmin_setup->options()->GetNumericValue("diverging_iterates_tol", minlp->nlp->div_iter_tol, "");
+   bonmin_setup->options()->GetNumericValue("diverging_iterates_tol", minlp->div_iter_tol, "");
 
    if( minlp->have_negative_sos() )
    {
@@ -375,7 +370,7 @@ int GamsBonmin::callSolver()
       // try solving
       Bab bb;
 
-      minlp->nlp->clockStart = gevTimeDiffStart(gev);
+      minlp->clockStart = gevTimeDiffStart(gev);
       if( solvetrace_ != NULL )
          GAMSsolvetraceResetStarttime(solvetrace_);
 
@@ -388,10 +383,10 @@ int GamsBonmin::callSolver()
       bb(*bonmin_setup);
 
       /* store solve statistics */
-      gmoSetHeadnTail(gmo, gmoHresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+      gmoSetHeadnTail(gmo, gmoHresused,  gevTimeDiffStart(gev) - minlp->clockStart);
       gmoSetHeadnTail(gmo, gmoTmipnod,   bb.numNodes());
       gmoSetHeadnTail(gmo, gmoHiterused, bb.iterationCount());
-      gmoSetHeadnTail(gmo, gmoHdomused,  static_cast<double>(minlp->nlp->domviolations));
+      gmoSetHeadnTail(gmo, gmoHdomused,  static_cast<double>(minlp->domviolations));
       double best_bound = minlp->isMin * bb.model().getBestPossibleObjValue(); //bestBound();
       if( best_bound > -1e200 && best_bound < 1e200 )
          gmoSetHeadnTail(gmo, gmoTmipbest, best_bound);
@@ -425,24 +420,6 @@ int GamsBonmin::callSolver()
       else
       {
          gevLogStat(gev, "\nBonmin finished. No feasible solution found.");
-      }
-
-      // print eval statistics, if requested
-      bool printnevals;
-      bonmin_setup->options()->GetBoolValue("print_funceval_statistics", printnevals, "bonmin.");
-      if( printnevals )
-      {
-         char buffer[100];
-         gevLog(gev, "");
-         sprintf(buffer, "Number of evaluations at new points              = %ld", minlp->get_numeval_newpoint());       gevLog(gev, buffer);
-         sprintf(buffer, "Number of objective function evaluations         = %ld", minlp->get_numeval_obj());            gevLog(gev, buffer);
-         sprintf(buffer, "Number of objective gradient evaluations         = %ld", minlp->get_numeval_objgrad());        gevLog(gev, buffer);
-         sprintf(buffer, "Number of all constraint functions evaluations   = %ld", minlp->get_numeval_cons());           gevLog(gev, buffer);
-         sprintf(buffer, "Number of constraint jacobian evaluations        = %ld", minlp->get_numeval_consjac());        gevLog(gev, buffer);
-         sprintf(buffer, "Number of single constraint function evaluations = %ld", minlp->get_numeval_singlecons());     gevLog(gev, buffer);
-         sprintf(buffer, "Number of single constraint gradient evaluations = %ld", minlp->get_numeval_singleconsgrad()); gevLog(gev, buffer);
-         sprintf(buffer, "Number of Lagrangian hessian evaluations         = %ld", minlp->get_numeval_laghess());        gevLog(gev, buffer);
-         gevLog(gev, "");
       }
 
       // resolve MINLP with discrete variables fixed

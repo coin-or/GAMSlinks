@@ -354,7 +354,7 @@ int GamsCouenne::callSolver()
    // setup MINLP
    SmartPtr<GamsMINLP> minlp = new GamsMINLP(gmo);
    minlp->in_couenne = true;
-   couenne_setup->options()->GetNumericValue("diverging_iterates_tol", minlp->nlp->div_iter_tol, "");
+   couenne_setup->options()->GetNumericValue("diverging_iterates_tol", minlp->div_iter_tol, "");
 
    // set number of threads in linear algebra in ipopt
    GAMSsetNumThreads(gev, gevThreads(gev));
@@ -407,7 +407,7 @@ int GamsCouenne::callSolver()
 
       // not sufficient to support SOS/SemiCon/SemiInt: passSOSSemiCon(ci, &bb.model());
 
-      minlp->nlp->clockStart = gevTimeDiffStart(gev);
+      minlp->clockStart = gevTimeDiffStart(gev);
       if( solvetrace_ != NULL )
          GAMSsolvetraceResetStarttime(solvetrace_);
 
@@ -422,10 +422,10 @@ int GamsCouenne::callSolver()
       if( !couenne_setup->InitializeCouenne(NULL, problem, GetRawPtr(minlp), ci, &bb) )
       {
          gevLogStat(gev, "Reformulation finds model infeasible.\n");
-         gmoSetHeadnTail(gmo, gmoHresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+         gmoSetHeadnTail(gmo, gmoHresused,  gevTimeDiffStart(gev) - minlp->clockStart);
          gmoSetHeadnTail(gmo, gmoTmipnod,   0);
          gmoSetHeadnTail(gmo, gmoHiterused, 0);
-         gmoSetHeadnTail(gmo, gmoHdomused,  static_cast<double>(minlp->nlp->domviolations));
+         gmoSetHeadnTail(gmo, gmoHdomused,  static_cast<double>(minlp->domviolations));
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
          gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
          delete problem;
@@ -433,7 +433,7 @@ int GamsCouenne::callSolver()
       }
 
       // check time usage and reduce timelimit for B&B accordingly
-      double preprocessTime = gevTimeDiffStart(gev) - minlp->nlp->clockStart;
+      double preprocessTime = gevTimeDiffStart(gev) - minlp->clockStart;
 
       snprintf(buffer, 1024, "Couenne initialized (%g seconds).\n\n", preprocessTime);
       gevLogStatPChar(gev, buffer);
@@ -445,7 +445,7 @@ int GamsCouenne::callSolver()
          gmoSetHeadnTail(gmo, gmoHresused,  preprocessTime);
          gmoSetHeadnTail(gmo, gmoTmipnod,   0);
          gmoSetHeadnTail(gmo, gmoHiterused, 0);
-         gmoSetHeadnTail(gmo, gmoHdomused,  static_cast<double>(minlp->nlp->domviolations));
+         gmoSetHeadnTail(gmo, gmoHdomused,  static_cast<double>(minlp->domviolations));
          gmoSetHeadnTail(gmo, gmoTmipbest,  gmoValNA(gmo));
          gmoSolveStatSet(gmo, gmoSolveStat_Resource);
          gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
@@ -558,10 +558,10 @@ int GamsCouenne::callSolver()
       if( minlp->isMin * best_bound > minlp->isMin * best_val )
          best_bound = best_val;
 
-      gmoSetHeadnTail(gmo, gmoHresused,  gevTimeDiffStart(gev) - minlp->nlp->clockStart);
+      gmoSetHeadnTail(gmo, gmoHresused,  gevTimeDiffStart(gev) - minlp->clockStart);
       gmoSetHeadnTail(gmo, gmoTmipnod,   bb.numNodes());
       gmoSetHeadnTail(gmo, gmoHiterused, bb.iterationCount());
-      gmoSetHeadnTail(gmo, gmoHdomused,  static_cast<double>(minlp->nlp->domviolations));
+      gmoSetHeadnTail(gmo, gmoHdomused,  static_cast<double>(minlp->domviolations));
       if( best_bound > -1e200 && best_bound < 1e200 )
          gmoSetHeadnTail(gmo, gmoTmipbest, best_bound);
       gmoModelStatSet(gmo, minlp->model_status);

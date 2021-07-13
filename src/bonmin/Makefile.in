@@ -143,7 +143,7 @@ libGamsBonmin_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libGamsBonmin_la_OBJECTS = GamsBonmin.lo GamsMINLP.lo \
 	../osi/GamsMessageHandler.lo ../ipopt/GamsJournal.lo \
-	GamsNLP.lo ../utils/GamsSolveTrace.lo ../utils/GamsHelper.lo \
+	../utils/GamsSolveTrace.lo ../utils/GamsHelper.lo \
 	../utils/GamsLicensing.lo ../utils/gmomcc.lo \
 	../utils/gevmcc.lo ../utils/palmcc.lo
 libGamsBonmin_la_OBJECTS = $(am_libGamsBonmin_la_OBJECTS)
@@ -178,8 +178,7 @@ am__depfiles_remade = ../ipopt/$(DEPDIR)/GamsJournal.Plo \
 	../utils/$(DEPDIR)/GamsSolveTrace.Plo \
 	../utils/$(DEPDIR)/gevmcc.Plo ../utils/$(DEPDIR)/gmomcc.Plo \
 	../utils/$(DEPDIR)/palmcc.Plo ./$(DEPDIR)/GamsBonmin.Plo \
-	./$(DEPDIR)/GamsMINLP.Plo ./$(DEPDIR)/GamsNLP.Plo \
-	./$(DEPDIR)/optbonmin.Po
+	./$(DEPDIR)/GamsMINLP.Plo ./$(DEPDIR)/optbonmin.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -422,7 +421,7 @@ AM_LDFLAGS = $(LT_LDFLAGS)
 lib_LTLIBRARIES = libGamsBonmin.la
 libGamsBonmin_la_SOURCES = GamsBonmin.cpp GamsMINLP.cpp \
   ../osi/GamsMessageHandler.cpp \
-  ../ipopt/GamsJournal.cpp GamsNLP.cpp \
+  ../ipopt/GamsJournal.cpp \
   ../utils/GamsSolveTrace.c ../utils/GamsHelper.c ../utils/GamsLicensing.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 
@@ -579,7 +578,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/palmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsBonmin.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsMINLP.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GamsNLP.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optbonmin.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -799,7 +797,6 @@ distclean: distclean-am
 	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsBonmin.Plo
 	-rm -f ./$(DEPDIR)/GamsMINLP.Plo
-	-rm -f ./$(DEPDIR)/GamsNLP.Plo
 	-rm -f ./$(DEPDIR)/optbonmin.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -857,7 +854,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ../utils/$(DEPDIR)/palmcc.Plo
 	-rm -f ./$(DEPDIR)/GamsBonmin.Plo
 	-rm -f ./$(DEPDIR)/GamsMINLP.Plo
-	-rm -f ./$(DEPDIR)/GamsNLP.Plo
 	-rm -f ./$(DEPDIR)/optbonmin.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
