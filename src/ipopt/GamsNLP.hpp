@@ -11,79 +11,44 @@
 
 struct gmoRec;
 struct gevRec;
-class GamsMINLP;
 
 /** a TNLP for Ipopt that uses GMO to interface the problem formulation */
-class GamsNLP : public Ipopt::TNLP
+class DllExport GamsNLP : public Ipopt::TNLP
 {
-   friend class GamsMINLP;
-
 private:
    struct gmoRec*        gmo;                /**< GAMS modeling object */
    struct gevRec*        gev;                /**< GAMS environment */
 
    long int              domviollimit;       /**< domain violations limit */
+   long int              domviolations;      /**< number of domain violations */
 
-   int*                  iRowStart;          /**< row starts in jacobian */
-   int*                  jCol;               /**< column indicies in jacobian */
+   int*                  iRowStart;          /**< row starts in Jacobian */
+   int*                  jCol;               /**< column indices in Jacobian */
    double*               grad;               /**< working memory for storing gradient values */
 
-   long int              nevalobj;           /**< number of objective function evaluations */
-   long int              nevalobjgrad;       /**< number of objective gradient evaluations */
-   long int              nevalcons;          /**< number of constraint functions evaluations */
-   long int              nevalconsjac;       /**< number of jacobian evaluations */
-   long int              nevallaghess;       /**< number of lagrangian hessian evaluations */
-   long int              nevalnewpoint;      /**< number of evaluations at new points */
-
-   double                mininfeasconviolsc; /**< scaled constraint violation in minimal infeasible solution */
-   double                mininfeasconviolunsc;/**< unscaled constraint violation in minimal infeasible solution */
+   int                   mininfeasiter;      /**< iteration number of minimal infeasible solution */
+   double                mininfeasconviol;   /**< constraint violation in minimal infeasible solution */
    double*               mininfeasprimals;   /**< primal values in minimal infeasible solution */
+   double*               mininfeasactivity;  /**< constraint activity (level values) in minimal infeasible solution */
+   double*               mininfeasviol;      /**< constraint violation in minimal infeasible solution */
    double*               mininfeasdualeqs;   /**< dual values for equations in minimal infeasible solution */
    double*               mininfeasduallbs;   /**< dual values for variable lower bounds in minimal infeasible solution */
    double*               mininfeasdualubs;   /**< dual values for variable lower bounds in minimal infeasible solution */
-   double*               mininfeasscaledviol;/**< scaled constraint violation in in minimal infeasible solution */
    double*               mininfeascomplxlb;  /**< complementarity in variable lower bounds in minimal infeasible solution */
    double*               mininfeascomplxub;  /**< complementarity in variable upper bounds in minimal infeasible solution */
-   double*               mininfeascomplglb;  /**< complementarity in constraint lower bounds in minimal infeasible solution */
-   double*               mininfeascomplgub;  /**< complementarity in constraint upper bounds in minimal infeasible solution */
-   int                   mininfeasiter;      /**< iteration number of minimal infeasible solution */
+   double*               mininfeascomplg;    /**< complementarity in constraints in minimal infeasible solution */
 
 public:
    double                div_iter_tol;       /**< value above which divergence is claimed */
-   double                scaled_conviol_tol; /**< scaled constraint violation tolerance */
-   double                unscaled_conviol_tol; /**< unscaled constraint violation tolerance */
-   double                scaled_conviol_acctol; /**< acceptable scaled constraint violation tolerance */
-   double                unscaled_conviol_acctol; /**< acceptable unscaled constraint violation tolerance */
+   double                conviol_tol;        /**< constraint violation tolerance */
+   double                compl_tol;          /**< complementarity tolerance */
    bool                  reportmininfeas;    /**< should an intermediate solution with minimal primal infeasibility be reported if final solution is not feasible? */
-   double                clockStart;         /**< time when optimization started */
-   long int              domviolations;      /**< number of domain violations */
 
    GamsNLP(
       struct gmoRec*     gmo_                /**< GAMS modeling object */
    );
 
    ~GamsNLP();
-
-   /** resets counter on function/gradient/hessian evaluations */
-   void reset_eval_counter();
-
-   /** gives number of objective function evaluations */
-   long get_numeval_obj()      const { return nevalobj; }
-
-   /** gives number of objective gradient evaluations */
-   long get_numeval_objgrad()  const { return nevalobjgrad; }
-
-   /* gives number of constraint evaluations */
-   long get_numeval_cons()     const { return nevalcons; }
-
-   /* gives number of jacobian evaluations */
-   long get_numeval_consjac()  const { return nevalconsjac; }
-
-   /* gives number of lagrangian hessian evaluations */
-   long get_numeval_laghess()  const { return nevallaghess; }
-
-   /* gives number of evaluations at new points */
-   long get_numeval_newpoint() const { return nevalnewpoint; }
 
    bool get_nlp_info(
       Ipopt::Index&      n,
@@ -112,16 +77,6 @@ public:
       Ipopt::Index       m,
       bool               init_lambda,
       Ipopt::Number*     lambda
-   );
-
-   bool get_variables_linearity(
-      Ipopt::Index       n,
-      LinearityType*     var_types
-   );
-
-   bool get_constraints_linearity(
-      Ipopt::Index       m,
-      LinearityType*     const_types
    );
 
    bool get_var_con_metadata(

@@ -9,11 +9,8 @@
 
 #include "IpIpoptCalculatedQuantities.hpp"
 #include "IpIpoptData.hpp"
-#include "IpTNLPAdapter.hpp"
-#include "IpOrigIpoptNLP.hpp"
 
 #include <cstring> // for memset
-#include <cmath>   // for fabs
 #include <cstdio>  // for sprintf
 #include <cassert>
 
@@ -25,27 +22,25 @@ using namespace Ipopt;
 GamsNLP::GamsNLP(
    struct gmoRec*     gmo_                /**< GAMS modeling object */
 )
-: iRowStart(NULL),
+: domviolations(0),
+  iRowStart(NULL),
   jCol(NULL),
   grad(NULL),
-  mininfeasconviolsc(1E+20),
-  mininfeasconviolunsc(1E+20),
+  mininfeasiter(-1),
+  mininfeasconviol(1E+20),
   mininfeasprimals(NULL),
+  mininfeasactivity(NULL),
+  mininfeasviol(NULL),
   mininfeasdualeqs(NULL),
   mininfeasduallbs(NULL),
   mininfeasdualubs(NULL),
-  mininfeasscaledviol(NULL),
   mininfeascomplxlb(NULL),
   mininfeascomplxub(NULL),
-  mininfeascomplglb(NULL),
-  mininfeascomplgub(NULL),
+  mininfeascomplg(NULL),
   div_iter_tol(1E+20),
-  scaled_conviol_tol(1E-8),
-  unscaled_conviol_tol(1E-4),
-  scaled_conviol_acctol(1E-2),
-  unscaled_conviol_acctol(1E-2),
-  reportmininfeas(false),
-  domviolations(0)
+  conviol_tol(1E-6),
+  compl_tol(1E-4),
+  reportmininfeas(false)
 {
    gmo = gmo_;
    assert(gmo != NULL);
@@ -56,8 +51,6 @@ GamsNLP::GamsNLP(
 
    /* stop fast in case of eval errors, since we do not look into values anyway */
    gmoEvalErrorMethodSet(gmo, gmoEVALERRORMETHOD_FASTSTOP);
-
-   reset_eval_counter();
 }
 
 GamsNLP::~GamsNLP()
@@ -66,24 +59,14 @@ GamsNLP::~GamsNLP()
    delete[] jCol;
    delete[] grad;
    delete[] mininfeasprimals;
+   delete[] mininfeasviol;
+   delete[] mininfeasactivity;
    delete[] mininfeasdualeqs;
    delete[] mininfeasduallbs;
    delete[] mininfeasdualubs;
-   delete[] mininfeasscaledviol;
    delete[] mininfeascomplxlb;
    delete[] mininfeascomplxub;
-   delete[] mininfeascomplglb;
-   delete[] mininfeascomplgub;
-}
-
-void GamsNLP::reset_eval_counter()
-{
-   nevalobj      = 0;
-   nevalobjgrad  = 0;
-   nevalcons     = 0;
-   nevalconsjac  = 0;
-   nevallaghess  = 0;
-   nevalnewpoint = 0;
+   delete[] mininfeascomplg;
 }
 
 bool GamsNLP::get_nlp_info(
@@ -218,61 +201,6 @@ bool GamsNLP::get_starting_point(
    return true;
 }
 
-bool GamsNLP::get_variables_linearity(
-   Ipopt::Index       n,
-   LinearityType*     var_types
-)
-{
-   assert(n == gmoN(gmo));
-
-   if( gmoNLNZ(gmo) == 0 && gmoObjNLNZ(gmo) == 0 )
-   {
-      // problem is linear
-      if( LINEAR == 0 )
-         memset(var_types, LINEAR, n*sizeof(LinearityType));
-      else
-         for( Index i = 0; i < n; ++i )
-            var_types[i] = LINEAR;
-      return true;
-   }
-
-   int jnz, jqnz, jnlnz, jobjnz;
-   for( int i = 0; i < n; ++i )
-   {
-      gmoGetColStat(gmo, i, &jnz, &jqnz, &jnlnz, &jobjnz);
-      if( jnlnz > 0 || (jobjnz == 1)) // jobjnz is -1 if linear in obj, +1 if nonlinear in obj, and 0 if not there
-         var_types[i] = NON_LINEAR;
-      else
-         var_types[i] = LINEAR;
-   }
-
-   return true;
-}
-
-bool GamsNLP::get_constraints_linearity(
-   Ipopt::Index       m,
-   LinearityType*     const_types
-)
-{
-   assert(m == gmoM(gmo));
-
-   if( gmoNLNZ(gmo) == 0 )
-   {
-      // all constraints are linear
-      if( LINEAR == 0 )
-         memset(const_types, LINEAR, m*sizeof(LinearityType));
-      else
-         for( Index i = 0; i < m; ++i )
-            const_types[i] = LINEAR;
-      return true;
-   }
-
-   for( Index i = 0; i < m; ++i )
-      const_types[i] = gmoGetEquOrderOne(gmo, i) > gmoorder_L ? NON_LINEAR : LINEAR;
-
-   return true;
-}
-
 bool GamsNLP::get_var_con_metadata(
    Ipopt::Index       n,
    StringMetaDataMapType&  var_string_md,
@@ -369,28 +297,23 @@ bool GamsNLP::eval_f(
    if( new_x )
    {
       gmoEvalNewPoint(gmo, x);
-      ++nevalnewpoint;
    }
 
    int nerror;
-   int rc;
-   rc = gmoEvalFuncObj(gmo, x, &obj_value, &nerror);
+   int rc = gmoEvalFuncObj(gmo, x, &obj_value, &nerror);
 
    if( rc != 0 )
    {
       char buffer[255];
-      sprintf(buffer, "Critical error %d detected in evaluation of objective function!\n"
-         "Exiting from subroutine - eval_f\n", rc);
-      gevLogStatPChar(gev, buffer);
-      throw -1;
+      sprintf(buffer, "Critical error %d detected in evaluation of objective function!\n", rc);
+      throw std::runtime_error(buffer);
    }
+
    if( nerror > 0 )
    {
       ++domviolations;
       return false;
    }
-
-   ++nevalobj;
 
    return true;
 }
@@ -407,31 +330,26 @@ bool GamsNLP::eval_grad_f(
    if( new_x )
    {
       gmoEvalNewPoint(gmo, x);
-      ++nevalnewpoint;
    }
 
    memset(grad_f, 0, n*sizeof(double));
    double val;
    double gx;
    int nerror;
-   int rc;
-   rc = gmoEvalGradObj(gmo, x, &val, grad_f, &gx, &nerror);
+   int rc = gmoEvalGradObj(gmo, x, &val, grad_f, &gx, &nerror);
 
    if( rc != 0 )
    {
       char buffer[255];
-      sprintf(buffer, "Critical error %d detected in evaluation of objective gradient!\n"
-         "Exiting from subroutine - eval_grad_f\n", rc);
-      gevLogStatPChar(gev, buffer);
-      throw -1;
+      sprintf(buffer, "Critical error %d detected in evaluation of objective gradient!\n", rc);
+      throw std::runtime_error(buffer);
    }
+
    if( nerror > 0 )
    {
       ++domviolations;
       return false;
    }
-
-   ++nevalobjgrad;
 
    return true;
 }
@@ -450,7 +368,6 @@ bool GamsNLP::eval_g(
    if( new_x )
    {
       gmoEvalNewPoint(gmo, x);
-      ++nevalnewpoint;
    }
 
    int nerror, rc;
@@ -460,10 +377,8 @@ bool GamsNLP::eval_g(
       if( rc != 0 )
       {
          char buffer[255];
-         sprintf(buffer, "Critical error %d detected in evaluation of constraint %d!\n"
-            "Exiting from subroutine - eval_g\n", rc, i);
-         gevLogStatPChar(gev, buffer);
-         throw -1;
+         sprintf(buffer, "Critical error %d detected in evaluation of constraint %d!\n", rc, i);
+         throw std::runtime_error(buffer);
       }
       if( nerror > 0 )
       {
@@ -471,8 +386,6 @@ bool GamsNLP::eval_g(
          return false;
       }
    }
-
-   ++nevalcons;
 
    return true;
 }
@@ -494,7 +407,7 @@ bool GamsNLP::eval_jac_g(
 
    if( values == NULL )
    {
-      // assemble structure of jacobian
+      // assemble structure of Jacobian
       assert(NULL != iRow);
       assert(NULL != jCol);
 
@@ -519,7 +432,7 @@ bool GamsNLP::eval_jac_g(
    }
    else
    {
-      // compute values of jacobian
+      // compute values of Jacobian
       assert(NULL != x);
       assert(NULL == iRow);
       assert(NULL == jCol);
@@ -529,7 +442,6 @@ bool GamsNLP::eval_jac_g(
 
       if( new_x )
       {
-         ++nevalnewpoint;
          gmoEvalNewPoint(gmo, x);
       }
 
@@ -546,10 +458,8 @@ bool GamsNLP::eval_jac_g(
          if( rc != 0 )
          {
             char buffer[255];
-            sprintf(buffer, "Critical error %d detected in evaluation of gradient for constraint %d!\n"
-               "Exiting from subroutine - eval_jac_g\n", rc, rownr);
-            gevLogStatPChar(gev, buffer);
-            throw -1;
+            sprintf(buffer, "Critical error %d detected in evaluation of gradient for constraint %d!\n", rc, rownr);
+            throw std::runtime_error(buffer);
          }
          if( nerror > 0 )
          {
@@ -562,8 +472,6 @@ bool GamsNLP::eval_jac_g(
             values[k] = grad[this->jCol[k]];
       }
       assert(k == nele_jac);
-
-      ++nevalconsjac;
    }
 
    return true;
@@ -609,7 +517,6 @@ bool GamsNLP::eval_h(
 
       if( new_x )
       {
-         ++nevalnewpoint;
          gmoEvalNewPoint(gmo, x);
       }
 
@@ -620,18 +527,14 @@ bool GamsNLP::eval_h(
       if( rc != 0 )
       {
          char buffer[256];
-         sprintf(buffer, "Critical error detected %d in evaluation of Hessian!\n"
-            "Exiting from subroutine - eval_h\n", rc);
-         gevLogStatPChar(gev, buffer);
-         throw -1;
+         sprintf(buffer, "Critical error detected %d in evaluation of Hessian!\n", rc);
+         throw std::runtime_error(buffer);
       }
       if( nerror > 0 )
       {
          ++domviolations;
          return false;
       }
-
-      ++nevallaghess;
    }
 
    return true;
@@ -659,82 +562,38 @@ bool GamsNLP::intermediate_callback(
    if( gevTerminateGet(gev) )
       return false;
 
-   /* store current solution for later use, if we should report solution with minimal infeasibility and current point has smaller scaled constraint violation than previously seen
-    * @TODO the quantities in ip_data correspond to the scaled problem, we should apply unscaling to get to the user problem, see also OrigIpoptNLP::FinalizeSolution()
-    */
-   if( reportmininfeas && mode == RegularMode && ip_cq->curr_nlp_constraint_violation(NORM_MAX) < mininfeasconviolsc )
+   // store current solution for later use, if we should report solution with minimal infeasibility and current point has smaller constraint violation than previously seen
+   if( reportmininfeas && mode == RegularMode && ip_cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) < mininfeasconviol )
    {
-      Ipopt::TNLPAdapter* tnlp_adapter;
-
-      tnlp_adapter = NULL;
-      if( ip_cq != NULL )
+      if( mininfeasprimals == NULL )
       {
-         Ipopt::OrigIpoptNLP* orignlp;
+         assert(mininfeasactivity == NULL);
+         assert(mininfeasviol == NULL);
+         assert(mininfeasdualeqs == NULL);
+         assert(mininfeasduallbs == NULL);
+         assert(mininfeasdualubs == NULL);
+         assert(mininfeascomplxlb == NULL);
+         assert(mininfeascomplxub == NULL);
+         assert(mininfeascomplg == NULL);
 
-         orignlp = dynamic_cast<OrigIpoptNLP*>(GetRawPtr(ip_cq->GetIpoptNLP()));
-         if( orignlp != NULL )
-            tnlp_adapter = dynamic_cast<TNLPAdapter*>(GetRawPtr(orignlp->nlp()));
+         mininfeasprimals = new double[gmoN(gmo)];
+         mininfeasactivity = new double[gmoM(gmo)];
+         mininfeasviol = new double[gmoM(gmo)];
+         mininfeasdualeqs = new double[gmoM(gmo)];
+         mininfeasduallbs = new double[gmoN(gmo)];
+         mininfeasdualubs = new double[gmoN(gmo)];
+         mininfeascomplxlb = new double[gmoN(gmo)];
+         mininfeascomplxub = new double[gmoN(gmo)];
+         mininfeascomplg = new double[gmoM(gmo)];
       }
 
-      if( tnlp_adapter != NULL && ip_data != NULL && IsValid(ip_data->curr()) )
+      mininfeasiter = iter;
+      mininfeasconviol = ip_cq->unscaled_curr_nlp_constraint_violation(NORM_MAX);
+      if( !get_curr_iterate(ip_data, ip_cq, false, gmoN(gmo), mininfeasprimals, mininfeasduallbs, mininfeasdualubs, gmoM(gmo), mininfeasactivity, mininfeasdualeqs) ||
+          !get_curr_violations(ip_data, ip_cq, false, gmoN(gmo), NULL, NULL, mininfeascomplxlb, mininfeascomplxub, NULL, gmoM(gmo), mininfeasviol, mininfeascomplg) )
       {
-         if( mininfeasprimals == NULL )
-         {
-            assert(mininfeasdualeqs == NULL);
-            assert(mininfeasduallbs == NULL);
-            assert(mininfeasdualubs == NULL);
-            assert(mininfeasscaledviol == NULL);
-            assert(mininfeascomplxlb == NULL);
-            assert(mininfeascomplxub == NULL);
-            assert(mininfeascomplglb == NULL);
-            assert(mininfeascomplgub == NULL);
-
-            mininfeasprimals = new double[gmoN(gmo)];
-            mininfeasdualeqs = new double[gmoM(gmo)];
-            mininfeasduallbs = new double[gmoN(gmo)];
-            mininfeasdualubs = new double[gmoN(gmo)];
-            mininfeasscaledviol = new double[gmoM(gmo)];
-            mininfeascomplxlb = new double[gmoN(gmo)];
-            mininfeascomplxub = new double[gmoN(gmo)];
-            mininfeascomplglb = new double[gmoM(gmo)];
-            mininfeascomplgub = new double[gmoM(gmo)];
-         }
-
-         mininfeasiter = iter;
-         mininfeasconviolsc = ip_cq->curr_nlp_constraint_violation(NORM_MAX);
-         mininfeasconviolunsc = ip_cq->unscaled_curr_nlp_constraint_violation(NORM_MAX);
-
-         assert(IsValid(ip_data->curr()->x()));
-         tnlp_adapter->ResortX(*ip_data->curr()->x(), mininfeasprimals);
-
-         assert(IsValid(ip_data->curr()->y_c()));
-         assert(IsValid(ip_data->curr()->y_d()));
-         tnlp_adapter->ResortG(*ip_data->curr()->y_c(), *ip_data->curr()->y_d(), mininfeasdualeqs);
-
-         // need to clear arrays first because ResortBnds only sets values for non-fixed variables
-         memset(mininfeasduallbs, 0, gmoN(gmo)*sizeof(double));
-         memset(mininfeasdualubs, 0, gmoN(gmo)*sizeof(double));
-         assert(IsValid(ip_data->curr()->z_L()));
-         assert(IsValid(ip_data->curr()->z_U()));
-         tnlp_adapter->ResortBnds(*ip_data->curr()->z_L(), mininfeasduallbs, *ip_data->curr()->z_U(), mininfeasdualubs);
-
-         tnlp_adapter->ResortG(*ip_cq->curr_c(), *ip_cq->curr_d_minus_s(), mininfeasscaledviol);
-
-         SmartPtr<Vector> dummy = ip_cq->curr_c()->MakeNew();
-         dummy->Set(0.0);
-
-         // need to clear arrays first because ResortBnds only sets values for non-fixed variables
-         memset(mininfeascomplxlb, 0, gmoN(gmo)*sizeof(double));
-         memset(mininfeascomplxub, 0, gmoN(gmo)*sizeof(double));
-         memset(mininfeascomplglb, 0, gmoM(gmo)*sizeof(double));
-         memset(mininfeascomplgub, 0, gmoM(gmo)*sizeof(double));
-
-         if( ip_cq->curr_compl_x_L()->Dim() > 0 && ip_cq->curr_compl_x_U()->Dim() > 0 )
-            tnlp_adapter->ResortBnds(*ip_cq->curr_compl_x_L(), mininfeascomplxlb, *ip_cq->curr_compl_x_U(), mininfeascomplxub);
-         if( ip_cq->curr_compl_s_L()->Dim() > 0 )
-            tnlp_adapter->ResortG(*dummy, *ip_cq->curr_compl_s_L(), mininfeascomplglb);
-         if( ip_cq->curr_compl_s_U()->Dim() > 0 )
-            tnlp_adapter->ResortG(*dummy, *ip_cq->curr_compl_s_U(), mininfeascomplgub);
+         mininfeasiter = -1;  // forget given point if there was a problem; however, this should not happen in our setup
+         mininfeasconviol = 1E+20;
       }
    }
 
@@ -755,12 +614,10 @@ void GamsNLP::finalize_solution(
    Ipopt::IpoptCalculatedQuantities* cq
 )
 {
-   char buffer[300];
-   bool write_solution = false;
-
    assert(n == gmoN(gmo));
    assert(m == gmoM(gmo));
 
+   bool write_solution = false;
    switch( status )
    {
       case SUCCESS:
@@ -783,7 +640,7 @@ void GamsNLP::finalize_solution(
 
       case FEASIBLE_POINT_FOUND:
          gmoModelStatSet(gmo, gmoModelStat_Feasible);
-         gmoSolveStatSet(gmo, gmoSolveStat_Solver); // terminated by solver
+         gmoSolveStatSet(gmo, gmoSolveStat_Solver); // terminated by solver (the point is feasible for constr_viol_tol, but not w.r.t. tol)
          write_solution = true;
          break;
 
@@ -793,6 +650,8 @@ void GamsNLP::finalize_solution(
       case RESTORATION_FAILURE:
       case MAXITER_EXCEEDED:
       case CPUTIME_EXCEEDED:
+      case WALLTIME_EXCEEDED:
+      case ERROR_IN_STEP_COMPUTATION:
          /* decide on solver status */
          switch( status )
          {
@@ -810,39 +669,27 @@ void GamsNLP::finalize_solution(
             case STOP_AT_ACCEPTABLE_POINT:
             case STOP_AT_TINY_STEP:
             case RESTORATION_FAILURE:
+            case ERROR_IN_STEP_COMPUTATION:
                gmoSolveStatSet(gmo, gmoSolveStat_Solver); // terminated by solver (normal completion not allowed by GAMS philosophy here: its not normal when it stops with an intermediate point)
                break;
             case MAXITER_EXCEEDED:
                gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
                break;
             case CPUTIME_EXCEEDED:
+            case WALLTIME_EXCEEDED:
                gmoSolveStatSet(gmo, gmoSolveStat_Resource);
                break;
             default: ;
          }
          /* decide on model status: check if current point is feasible */
-         if( cq->curr_nlp_constraint_violation(NORM_MAX) > scaled_conviol_tol )
-         {
-            snprintf(buffer, sizeof(buffer), "Final point is not feasible: scaled constraint violation (%g) is larger than tol (%g).", cq->curr_nlp_constraint_violation(NORM_MAX), scaled_conviol_tol);
+         if( cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) > conviol_tol )
             gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
-         }
-         else if( cq->unscaled_curr_nlp_constraint_violation(NORM_MAX) > unscaled_conviol_tol )
-         {
-            snprintf(buffer, sizeof(buffer), "Final point is not feasible: unscaled constraint violation (%g) is larger than constr_viol_tol (%g).", cq->unscaled_curr_nlp_constraint_violation(NORM_MAX), unscaled_conviol_tol);
-            gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
-         }
          else
-         {
-            snprintf(buffer, sizeof(buffer), "Final point is feasible: scaled constraint violation (%g) is below tol (%g) and unscaled constraint violation (%g) is below constr_viol_tol (%g).",
-               cq->curr_nlp_constraint_violation(NORM_MAX), scaled_conviol_tol, cq->unscaled_curr_nlp_constraint_violation(NORM_MAX), unscaled_conviol_tol);
             gmoModelStatSet(gmo, gmoModelStat_Feasible);
-         }
-         gevLog(gev, buffer);
          /* in any case, we write the current point (or an intermediate one) */
          write_solution = true;
          break;
 
-      case ERROR_IN_STEP_COMPUTATION:
       case TOO_FEW_DEGREES_OF_FREEDOM:
          gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
          gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
@@ -864,185 +711,136 @@ void GamsNLP::finalize_solution(
          break;
 
       default:
-         sprintf(buffer, "OUCH: unhandled SolverReturn of %d\n", status);
-         gevLogStatPChar(gev, buffer);
          gmoModelStatSet(gmo, gmoModelStat_ErrorUnknown);
          gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
    }
 
-   if( data != NULL )
-      gmoSetHeadnTail(gmo, gmoHiterused, data->iter_count());
-   gmoSetHeadnTail(gmo, gmoHresused, gevTimeDiffStart(gev) - clockStart);
    gmoSetHeadnTail(gmo, gmoHdomused, (double)domviolations);
+   domviolations = 0;
 
-   if( write_solution )
+   if( !write_solution )
+      return;
+
+   double* viol = NULL;
+   double* compl_xL = NULL;
+   double* compl_xU = NULL;
+   double* compl_g = NULL;
+
+   if( mininfeasprimals != NULL && (gmoModelStat(gmo) == gmoModelStat_InfeasibleIntermed || gmoModelStat(gmo) == gmoModelStat_InfeasibleLocal) && mininfeasiter >= 0 && mininfeasiter < data->iter_count() )
    {
-      double* scaled_viol = NULL;
-      double* compl_xL = NULL;
-      double* compl_xU = NULL;
-      double* compl_gL = NULL;
-      double* compl_gU = NULL;
-      int ninfeas = 0;
-      int nnopt = 0;
+      char buffer[300];
+      sprintf(buffer, "\nReturning intermediate solution from iteration %d. ", mininfeasiter);
+      gevLogPChar(gev, buffer);
 
-      if( mininfeasprimals != NULL && (gmoModelStat(gmo) == gmoModelStat_InfeasibleIntermed || gmoModelStat(gmo) == gmoModelStat_InfeasibleLocal) && mininfeasiter < data->iter_count() )
+      /* decide on changing model status: check if current point is feasible */
+      if( mininfeasconviol > conviol_tol )
       {
-         snprintf(buffer, sizeof(buffer), "\nReporting intermediate solution from iteration %d instead (scaled constraint violation = %g, unscaled constraint violation = %g).", mininfeasiter, mininfeasconviolsc, mininfeasconviolunsc);
-         gevLog(gev, buffer);
-
-         x = mininfeasprimals;
-         z_L = mininfeasduallbs;
-         z_U = mininfeasdualubs;
-         lambda = mininfeasdualeqs;
-         scaled_viol = mininfeasscaledviol;
-         compl_xL = mininfeascomplxlb;
-         compl_xU = mininfeascomplxub;
-         compl_gL = mininfeascomplglb;
-         compl_gU = mininfeascomplgub;
-         /* recompute constraint activities, a bit dirty */
-         eval_g(n, x, true, m, const_cast<double*>(g));
-
-         /* decide on changing model status: check if current point is feasible */
-         if( mininfeasconviolsc > scaled_conviol_tol )
-         {
-            snprintf(buffer, sizeof(buffer), "Intermediate solution is not feasible: scaled constraint violation (%g) is larger than tol (%g).", mininfeasconviolsc, scaled_conviol_tol);
-            gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
-         }
-         else if( mininfeasconviolunsc > unscaled_conviol_tol )
-         {
-            snprintf(buffer, sizeof(buffer), "Intermediate solution is not feasible: unscaled constraint violation (%g) is larger than constr_viol_tol (%g).", mininfeasconviolunsc, unscaled_conviol_tol);
-            gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
-         }
-         else
-         {
-            snprintf(buffer, sizeof(buffer), "Intermediate solution is feasible: scaled constraint violation (%g) is below tol (%g) and unscaled constraint violation (%g) is below constr_viol_tol (%g).",
-               mininfeasconviolsc, scaled_conviol_tol, mininfeasconviolunsc, unscaled_conviol_tol);
-            gmoModelStatSet(gmo, gmoModelStat_Feasible);
-         }
-         gevLog(gev, buffer);
+         sprintf(buffer, "Solution is not feasible: constraint violation (%g) > constr_viol_tol (%g)\n.", mininfeasconviol, conviol_tol);
+         gmoModelStatSet(gmo, gmoModelStat_InfeasibleIntermed);
       }
       else
       {
-         //    1. Use IpoptCalculatedQuantities::GetIpoptNLP() to get a pointer to an Ipopt::IpoptNLP.
-         //    2. Cast this Ipopt::IpoptNLP to an Ipopt::OrigIpoptNLP
-         //    3. Use Ipopt::OrigIpoptNLP::nlp() to get the Ipopt::NLP
-         //    4. This Ipopt::NLP is actually the TNLPAdapter
-         TNLPAdapter* tnlp_adapter = NULL;
-         OrigIpoptNLP* orignlp = NULL;
-         if( cq != NULL )
-            orignlp = dynamic_cast<OrigIpoptNLP*>(GetRawPtr(cq->GetIpoptNLP()));
-         if( orignlp != NULL )
-            tnlp_adapter = dynamic_cast<TNLPAdapter*>(GetRawPtr(orignlp->nlp()));
-
-         if( tnlp_adapter != NULL )
-         {
-            scaled_viol = new double[m];
-            tnlp_adapter->ResortG(*cq->curr_c(), *cq->curr_d_minus_s(), scaled_viol);
-
-            compl_xL = new double[n];
-            compl_xU = new double[n];
-            memset(compl_xL, 0, n*sizeof(double));
-            memset(compl_xU, 0, n*sizeof(double));
-            if( cq->curr_compl_x_L()->Dim() && cq->curr_compl_x_U()->Dim() )
-               tnlp_adapter->ResortBnds(*cq->curr_compl_x_L(), compl_xL, *cq->curr_compl_x_U(), compl_xU);
-
-/* dummy->Set(0.0) crashes with current Intel compiler on WEI (icl 18.0.1.156 and 18.0.3.210 and 19.1.0.166) */
-#if !(defined __ICL)
-            SmartPtr<Vector> dummy = cq->curr_c()->MakeNew();
-            dummy->Set(0.0);
-            compl_gL = new double[m];
-            compl_gU = new double[m];
-
-            memset(compl_gL, 0, m*sizeof(double));
-            memset(compl_gU, 0, m*sizeof(double));
-
-            if( cq->curr_compl_s_L()->Dim() )
-               tnlp_adapter->ResortG(*dummy, *cq->curr_compl_s_L(), compl_gL);
-            if( cq->curr_compl_s_U()->Dim() )
-               tnlp_adapter->ResortG(*dummy, *cq->curr_compl_s_U(), compl_gU);
-#endif
-         }
+         sprintf(buffer, "Solution is feasible: constraint violation (%g) <= constr_viol_tol (%g)\n.", mininfeasconviol, conviol_tol);
+         gmoModelStatSet(gmo, gmoModelStat_Feasible);
       }
+      gevLogPChar(gev, buffer);
 
-      int*    colBasStat = new int[n];
-      int*    colIndic   = new int[n];
-      double* colMarg    = new double[n];
-      for( Index i = 0; i < n; ++i )
-      {
-         colBasStat[i] = gmoBstat_Super;
-         if( gmoGetVarLowerOne(gmo, i) != gmoGetVarUpperOne(gmo, i) && compl_xL != NULL && (fabs(compl_xL[i]) > scaled_conviol_tol || fabs(compl_xU[i]) > scaled_conviol_tol) )
-         {
-            colIndic[i] = gmoCstat_NonOpt;
-            ++nnopt;
-         }
-         else
-            colIndic[i] = gmoCstat_OK;
-         // if, e.g., x_i has no lower bound, then the dual z_L[i] is -infinity
-         colMarg[i] = 0.0;
-         if( z_L[i] > gmoMinf(gmo) )
-            colMarg[i] += z_L[i];
-         if( z_U[i] < gmoPinf(gmo) )
-            colMarg[i] -= z_U[i];
-      }
+      x = mininfeasprimals;
+      g = mininfeasactivity;
+      viol = mininfeasviol;
+      z_L = mininfeasduallbs;
+      z_U = mininfeasdualubs;
+      lambda = mininfeasdualeqs;
+      compl_xL = mininfeascomplxlb;
+      compl_xU = mininfeascomplxub;
+      compl_g = mininfeascomplg;
 
-      int* rowBasStat   = new int[m];
-      int* rowIndic     = new int[m];
-      double* negLambda = new double[m];
-      for( Index i = 0;  i < m;  i++ )
-      {
-         double viol;
-
-         switch( gmoGetEquTypeOne(gmo, i) )
-         {
-            case gmoequ_E :
-               viol = fabs(g[i] - gmoGetRhsOne(gmo, i));
-               break;
-            case gmoequ_L :
-               viol = g[i] - gmoGetRhsOne(gmo, i);
-               break;
-            case gmoequ_G :
-               viol = gmoGetRhsOne(gmo, i) - g[i];
-               break;
-            default: /* this should never happen */
-               viol = scaled_viol != NULL ? scaled_viol[i] : 0.0;
-               break;
-         }
-         if( viol > unscaled_conviol_tol )
-         {
-            rowIndic[i] = gmoCstat_Infeas;
-            ++ninfeas;
-         }
-         else if( compl_gL != NULL && (fabs(compl_gL[i]) > scaled_conviol_tol || fabs(compl_gU[i]) > scaled_conviol_tol) )
-         {
-            rowIndic[i] = gmoCstat_NonOpt;
-            ++nnopt;
-         }
-         else
-            rowIndic[i] = gmoCstat_OK;
-
-         rowBasStat[i] = gmoBstat_Super;
-         negLambda[i] = -lambda[i];
-      }
-
-      /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
-      gmoSetSolution8(gmo, x, colMarg, negLambda, g, colBasStat, colIndic, rowBasStat, rowIndic);
-
-      gmoSetHeadnTail(gmo, gmoTninf, ninfeas);
-      gmoSetHeadnTail(gmo, gmoTnopt, nnopt);
-
-      if( scaled_viol != mininfeasscaledviol )
-      {
-         delete[] scaled_viol;
-         delete[] compl_xL;
-         delete[] compl_xU;
-         delete[] compl_gL;
-         delete[] compl_gU;
-      }
-      delete[] colBasStat;
-      delete[] colIndic;
-      delete[] colMarg;
-      delete[] rowBasStat;
-      delete[] rowIndic;
-      delete[] negLambda;
+      // do not use current point anymore (in case of warmstart)
+      mininfeasiter = -1;
+      mininfeasconviol = 1E+20;
    }
+   else
+   {
+      viol = new double[m];
+      compl_xL = new double[n];
+      compl_xU = new double[n];
+      compl_g = new double[m];
+
+      // get detailed violations for column and row status
+      if( !get_curr_violations(data, cq, false, n, NULL, NULL, compl_xL, compl_xU, NULL, m, viol, compl_g) )
+      {
+         // this should never happen
+         memset(viol, 0, m*sizeof(double));
+         memset(compl_xL, 0, m*sizeof(double));
+         memset(compl_xU, 0, m*sizeof(double));
+         memset(compl_g, 0, m*sizeof(double));
+      }
+   }
+
+   int*    colBasStat = new int[n];
+   int*    colIndic   = new int[n];
+   double* colMarg    = new double[n];
+   int ninfeas = 0;
+   int nnopt = 0;
+   for( Index i = 0; i < n; ++i )
+   {
+      colBasStat[i] = gmoBstat_Super;
+      if( gmoGetVarLowerOne(gmo, i) != gmoGetVarUpperOne(gmo, i) && std::max(std::abs(compl_xL[i]), std::abs(compl_xU[i])) > compl_tol )
+      {
+         colIndic[i] = gmoCstat_NonOpt;
+         ++nnopt;
+      }
+      else
+         colIndic[i] = gmoCstat_OK;
+
+      // if, e.g., x_i has no lower bound, then the dual z_L[i] is -infinity
+      colMarg[i] = 0.0;
+      if( z_L[i] > gmoMinf(gmo) )
+         colMarg[i] += z_L[i];
+      if( z_U[i] < gmoPinf(gmo) )
+         colMarg[i] -= z_U[i];
+   }
+
+   int* rowBasStat   = new int[m];
+   int* rowIndic     = new int[m];
+   double* negLambda = new double[m];
+   for( Index i = 0;  i < m;  i++ )
+   {
+      if( viol != NULL && viol[i] > conviol_tol )
+      {
+         rowIndic[i] = gmoCstat_Infeas;
+         ++ninfeas;
+      }
+      else if( std::abs(compl_g[i]) > compl_tol )
+      {
+         rowIndic[i] = gmoCstat_NonOpt;
+         ++nnopt;
+      }
+      else
+         rowIndic[i] = gmoCstat_OK;
+
+      rowBasStat[i] = gmoBstat_Super;
+      negLambda[i] = -lambda[i];
+   }
+
+   /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
+   gmoSetSolution8(gmo, x, colMarg, negLambda, g, colBasStat, colIndic, rowBasStat, rowIndic);
+
+   gmoSetHeadnTail(gmo, gmoHobjval, obj_value);
+   gmoSetHeadnTail(gmo, gmoTninf, ninfeas);
+   gmoSetHeadnTail(gmo, gmoTnopt, nnopt);
+
+   if( viol != mininfeasviol )
+   {
+      delete[] viol;
+      delete[] compl_xL;
+      delete[] compl_xU;
+      delete[] compl_g;
+   }
+   delete[] colBasStat;
+   delete[] colIndic;
+   delete[] colMarg;
+   delete[] rowBasStat;
+   delete[] rowIndic;
+   delete[] negLambda;
 }

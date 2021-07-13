@@ -8,59 +8,29 @@
 
 #include "GamsLinksConfig.h"
 #include "GamsOptionsSpecWriter.hpp"
+#include "GamsIpopt.hpp"
+
+#include "gclgms.h"
 
 #include "IpIpoptApplication.hpp"
 using namespace Ipopt;
 
 int main(int argc, char** argv)
 {
-   Ipopt::SmartPtr<Ipopt::IpoptApplication> ipopt = new Ipopt::IpoptApplication();
-
-   ipopt->RegOptions()->SetRegisteringCategory("Output");
-   ipopt->RegOptions()->AddStringOption2("print_eval_error",
-      "Switch to enable printing information about function evaluation errors into the GAMS listing file.",
-      "yes",
-      "no", "", "yes", "");
-   ipopt->RegOptions()->AddStringOption2("report_mininfeas_solution",
-      "Switch to report intermediate solution with minimal constraint violation to GAMS if the final solution is not feasible.",
-      "no",
-      "no", "", "yes", "",
-      "This option allows to obtain the most feasible solution found by Ipopt during the iteration process, if it stops at a (locally) infeasible solution, due to a limit (time, iterations, ...), or with a failure in the restoration phase.");
-
-   const Ipopt::RegisteredOptions::RegOptionsList& optionlist(ipopt->RegOptions()->RegisteredOptionsList());
-
-   // options sorted by category
-   std::map<std::string, std::list<SmartPtr<RegisteredOption> > > opts;
-
-   for( Ipopt::RegisteredOptions::RegOptionsList::const_iterator it(optionlist.begin()); it != optionlist.end(); ++it )
+   GamsIpopt gamsipopt;
+   try
    {
-      std::string category(it->second->RegisteringCategory());
-
-      if( category == "Undocumented" ||
-          category == "Uncategorized" ||
-          category == "" ||
-          category == "Derivative Checker"
-        )
-         continue;
-
-      if( it->second->Name() == "hessian_constant" ||
-          it->second->Name() == "obj_scaling_factor" ||
-          it->second->Name() == "file_print_level" ||
-          it->second->Name() == "option_file_name" ||
-          it->second->Name() == "output_file" ||
-          it->second->Name() == "print_options_documentation" ||
-          it->second->Name() == "print_user_options" ||
-          it->second->Name() == "nlp_lower_bound_inf" ||
-          it->second->Name() == "nlp_upper_bound_inf" ||
-          it->second->Name() == "num_linear_variables" ||
-          it->second->Name() == "skip_finalize_solution_call" ||
-          it->second->Name() == "warm_start_entire_iterate" ||
-          it->second->Name() == "warm_start_same_structure"
-        )
-         continue;
-
-      opts[category].push_back(it->second);
+      gamsipopt.setupIpopt();
    }
+   catch( const std::exception& e )
+   {
+      std::cerr << e.what() << std::endl;
+      return EXIT_FAILURE;
+   }
+   SmartPtr<IpoptApplication> ipopt = gamsipopt.ipopt;
+
+   ipopt->Options()->SetIntegerValue("max_iter", ITERLIM_INFINITY, true, true);
+   ipopt->Options()->SetNumericValue("max_wall_time", RESLIM_INFINITY, true, true);
 
    GamsOption::Type opttype;
    GamsOption::Value defaultval, minval, maxval;
@@ -73,45 +43,77 @@ int main(int argc, char** argv)
    GamsOptions gmsopt("Ipopt");
    gmsopt.setEolChars("#");
 
-   for( std::map<std::string, std::list<SmartPtr<RegisteredOption> > >::iterator it_categ(opts.begin()); it_categ != opts.end(); ++it_categ )
-   {
-      gmsopt.setGroup(it_categ->first);
+   // get option categories
+   Ipopt::RegisteredOptions::RegCategoriesByPriority categs;
+   ipopt->RegOptions()->RegisteredCategoriesByPriority(categs);
 
-      for( std::list<SmartPtr<RegisteredOption> >::iterator it_opt(it_categ->second.begin()); it_opt != it_categ->second.end(); ++it_opt )
+   for( auto& categ : categs )
+   {
+      // skip categories of undocumented options
+      if( categ->Priority() < 0 )
+         continue;
+
+      if( categ->Name() == "Derivative Checker" )
+         continue;
+
+      if( categ->RegisteredOptions().empty() )
+         continue;
+
+      // passing in negative priority to get groups with high priority first in output
+      gmsopt.setGroup(categ->Name(), "", "", -categ->Priority());
+
+      for( auto& opt : categ->RegisteredOptions() )
       {
+         if( opt->Name() == "hessian_constant" ||
+            opt->Name() == "obj_scaling_factor" ||
+            opt->Name() == "file_print_level" ||
+            opt->Name() == "option_file_name" ||
+            opt->Name() == "output_file" ||
+            opt->Name() == "print_options_documentation" ||
+            opt->Name() == "print_user_options" ||
+            opt->Name() == "nlp_lower_bound_inf" ||
+            opt->Name() == "nlp_upper_bound_inf" ||
+            opt->Name() == "num_linear_variables" ||
+            opt->Name() == "skip_finalize_solution_call" ||
+            opt->Name() == "warm_start_entire_iterate" ||
+            opt->Name() == "warm_start_same_structure"
+         )
+            continue;
+
          enumval.clear();
-         longdescr = (*it_opt)->LongDescription();
+         longdescr = opt->LongDescription();
          defaultdescr.clear();
          minval_strict = false;
          maxval_strict = false;
-         switch( (*it_opt)->Type() )
+         switch( opt->Type() )
          {
             case Ipopt::OT_Number:
             {
                opttype = GamsOption::Type::REAL;
-               minval = (*it_opt)->HasLower() ? (*it_opt)->LowerNumber() : -DBL_MAX;
-               maxval = (*it_opt)->HasUpper() ? (*it_opt)->UpperNumber() :  DBL_MAX;
-               defaultval = (*it_opt)->DefaultNumber();
-               minval_strict = (*it_opt)->HasLower() ? (*it_opt)->LowerStrict() : false;
-               maxval_strict = (*it_opt)->HasUpper() ? (*it_opt)->UpperStrict() : false;
+               minval = opt->HasLower() ? opt->LowerNumber() : -DBL_MAX;
+               maxval = opt->HasUpper() ? opt->UpperNumber() :  DBL_MAX;
+               ipopt->Options()->GetNumericValue(opt->Name(), defaultval.realval, "");
+               minval_strict = opt->HasLower() ? opt->LowerStrict() : false;
+               maxval_strict = opt->HasUpper() ? opt->UpperStrict() : false;
                break;
             }
 
             case Ipopt::OT_Integer:
             {
                opttype = GamsOption::Type::INTEGER;
-               minval = (*it_opt)->HasLower() ? (*it_opt)->LowerInteger() : -INT_MAX;
-               maxval = (*it_opt)->HasUpper() ? (*it_opt)->UpperInteger() :  INT_MAX;
-               defaultval = (*it_opt)->DefaultInteger();
+               minval = opt->HasLower() ? opt->LowerInteger() : -INT_MAX;
+               maxval = opt->HasUpper() ? opt->UpperInteger() :  INT_MAX;
+               ipopt->Options()->GetIntegerValue(opt->Name(), defaultval.intval, "");
                break;
             }
 
             case Ipopt::OT_String:
             {
                opttype = GamsOption::Type::STRING;
-               defaultval = (*it_opt)->DefaultString();
+               ipopt->Options()->GetStringValue(opt->Name(), tmpstr, "");
+               defaultval = tmpstr;
 
-               const std::vector<Ipopt::RegisteredOption::string_entry>& settings((*it_opt)->GetValidStrings());
+               const std::vector<Ipopt::RegisteredOption::string_entry>& settings(opt->GetValidStrings());
                if( settings.size() > 1 || settings[0].value_ != "*" )
                {
                   enumval.reserve(settings.size());
@@ -125,60 +127,84 @@ int main(int argc, char** argv)
             default:
             case Ipopt::OT_Unknown:
             {
-               std::cerr << "Skip option " << (*it_opt)->Name() << " of unknown type." << std::endl;
+               std::cerr << "Skip option " << opt->Name() << " of unknown type." << std::endl;
                continue;
             }
          }
 
-         if( (*it_opt)->Name() == "bound_relax_factor" )
-            defaultval = 1e-10;
-         else if( (*it_opt)->Name() == "acceptable_iter" )
-            defaultval = 0;
-         else if( (*it_opt)->Name() == "max_iter" )
-         {
-            defaultval = INT_MAX;
+         if( opt->Name() == "max_iter" )
             defaultdescr = "GAMS iterlim";
-         }
-         else if( (*it_opt)->Name() == "max_cpu_time" )
-         {
-            defaultval = 10000000000.0;
+         else if( opt->Name() == "max_wall_time" )
             defaultdescr = "GAMS reslim";
-         }
-         else if( (*it_opt)->Name() == "mu_strategy" )
-            defaultval = "adaptive";
-#ifdef GAMS_BUILD
-         else if( (*it_opt)->Name() == "ma86_order" )
-            defaultval = "auto";
-#endif
-         else if( (*it_opt)->Name() == "nlp_scaling_method" )
-            enumval.drop("user-scaling");
-         else if( (*it_opt)->Name() == "linear_solver" )
+         else if( opt->Name() == "nlp_scaling_method" )
          {
 #ifdef GAMS_BUILD
-            longdescr = "Determines which linear algebra package is to be used for the solution of the augmented linear system (for obtaining the search directions). "
-               "Note, that MA27, MA57, MA86, and MA97 are only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately. "
-               "To use HSL_MA77, a HSL library needs to be provided.";
+            for( auto& e : enumval )
+               if( e.first == "equilibration-based" )
+                  e.second = "scale the problem so that first derivatives are of order 1 at random points (GAMS/Ipopt: requires user-provided library with HSL routine MC19)";
+
+#endif
+            enumval.drop("user-scaling");
+            defaultdescr = std::string(defaultval.stringval) + " if GAMS scaleopt is not set, otherwise none";
+         }
+         else if( opt->Name() == "linear_solver" )
+         {
+#ifdef GAMS_BUILD
+            longdescr += " "
+               "Note, that MA27, MA57, MA86, and MA97 are included with a commercially supported GAMS/IpoptH license only. "
+               "To use MA27, MA57, MA86, or MA97 with GAMS/Ipopt, or to use HSL_MA77, a HSL library needs to be provided by the user. "
+               "To use Pardiso from pardiso-project.org, a Pardiso library needs to be provided by the user. "
+               "**ATTENTION**: Before Ipopt 3.14 (GAMS 36), value ***pardiso*** specified to use Pardiso from Intel MKL. "
+               "With GAMS 36, this value has been renamed to ***pardisomkl***.";
 
             defaultdescr = "ma27, if IpoptH, otherwise mumps";
 
-            enumval.drop("wsmp");
+            for( auto& e : enumval )
+            {
+               if( e.first == "ma27" )
+                  e.second = "IpoptH: use the Harwell routine MA27; Ipopt: load the Harwell routine MA27 from user-provided library";
+               else if( e.first == "ma57" )
+                  e.second = "IpoptH: use the Harwell routine MA57; Ipopt: load the Harwell routine MA57 from user-provided library";
+               else if( e.first == "ma77" )
+                  e.second = "load the Harwell routine HSL_MA77 from user-provided library";
+               else if( e.first == "ma86" )
+                  e.second = "IpoptH: use the Harwell routine HSL_MA86; Ipopt: load the Harwell routine HSL_MA86 from user-provided library";
+               else if( e.first == "ma97" )
+                  e.second = "IpoptH: use the Harwell routine HSL_MA97; Ipopt: load the Harwell routine HSL_MA97 from user-provided library";
+            }
 #endif
             enumval.drop("custom");
          }
 #ifdef GAMS_BUILD
-         else if( (*it_opt)->Name() == "dependency_detector" )
-            enumval.drop("wsmp");
-         else if( (*it_opt)->Name() == "linear_system_scaling" )
+         else if( opt->Name() == "linear_system_scaling" )
          {
-            longdescr = "Determines the method used to compute symmetric scaling factors for the augmented system (see also the \"linear_scaling_on_demand\" option).  This scaling is independent of the NLP problem scaling.  By default, MC19 is only used if MA27 or MA57 are selected as linear solvers. "
-               "Note, that MC19 is only available with a commercially supported GAMS/IpoptH license, or when the user provides a library with HSL code separately.";
+            longdescr += " "
+               "Note, that MC19 is included with a commercially supported GAMS/IpoptH license only. "
+               "To use MC19 with GAMS/Ipopt, a HSL library needs to be provided by the user.";
+
+            for( auto& e : enumval )
+               if( e.first == "mc19" )
+                  e.second = "IpoptH: use the Harwell routine MC19; Ipopt: load the Harwell routine MC19 from user-provided library";
 
             defaultdescr = "mc19, if IpoptH, otherwise none";
          }
 #endif
+         else if( opt->Name() == "hsllib" )
+         {
+            defaultdescr = "libhsl.so (Linux), libhsl.dylib (macOS), libhsl.dll (Windows)";
+         }
+         else if( opt->Name() == "pardisolib" )
+         {
+            defaultdescr = "libpardiso.so (Linux), libpardiso.dylib (macOS), libpardiso.dll (Windows)";
+         }
+         else if( opt->Name() == "warm_start_init_point" )
+         {
+            defaultdescr = "yes, if run on modified model instance (e.g., from GUSS), otherwise no";
+         }
 
-         gmsopt.collect((*it_opt)->Name(), (*it_opt)->ShortDescription(), longdescr,
+         GamsOption& gopt = gmsopt.collect(opt->Name(), opt->ShortDescription(), longdescr,
             opttype, defaultval, minval, maxval, !minval_strict, !maxval_strict, enumval, defaultdescr);
+         gopt.advanced = opt->Advanced();
       }
    }
    gmsopt.finalize();

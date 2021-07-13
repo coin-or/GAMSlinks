@@ -29,6 +29,51 @@
 
 using namespace Ipopt;
 
+void GamsIpopt::setupIpopt()
+{
+   ipopt = new IpoptApplication(false);
+
+   // setup own journal
+   if( gev != NULL )
+   {
+      SmartPtr<Journal> jrnl = new GamsJournal(gev, "console", J_ITERSUMMARY);
+      jrnl->SetPrintLevel(J_DBG, J_NONE);
+      if( !ipopt->Jnlst()->AddJournal(jrnl) )
+         gevLogStat(gev, "Failed to register GamsJournal for IPOPT output.");
+   }
+
+   // add options
+   ipopt->RegOptions()->SetRegisteringCategory("Output");
+   ipopt->RegOptions()->AddStringOption2("print_eval_error",
+      "Switch to enable printing information about function evaluation errors into the GAMS listing file.",
+      "yes",
+      "no", "", "yes", "");
+   ipopt->RegOptions()->AddStringOption2("report_mininfeas_solution",
+      "Switch to report intermediate solution with minimal constraint violation to GAMS if the final solution is not feasible.",
+      "no",
+      "no", "", "yes", "",
+      "This option allows to obtain the most feasible solution found by Ipopt during the iteration process, if it stops at a (locally) infeasible solution, due to a limit (time, iterations, ...), or with a failure in the restoration phase.");
+
+   // change some option defaults
+   ipopt->Options()->clear();
+   ipopt->Options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
+   ipopt->Options()->SetIntegerValue("acceptable_iter", 0, true, true);  // GAMS does not have a proper status if Ipopt returns with this
+   ipopt->Options()->SetNumericValue("constr_viol_tol", 1e-6, true, true);  // as with many other GAMS solvers
+   ipopt->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
+   ipopt->Options()->SetStringValue("ma86_order", "auto", true, true);
+   if( ipoptlicensed )
+   {
+      ipopt->Options()->SetStringValue("linear_solver", "ma27", true, true);
+      ipopt->Options()->SetStringValue("linear_system_scaling", "mc19", true, true);
+   }
+   else
+   {
+      ipopt->Options()->SetStringValue("linear_solver", "mumps", true, true);
+   }
+
+   warmstart = false;
+}
+
 int GamsIpopt::readyAPI(
    struct gmoRec*     gmo_
 )
@@ -90,57 +135,20 @@ int GamsIpopt::readyAPI(
 
    palFree(&pal);
 
-   ipopt = new IpoptApplication(false);
-
-   SmartPtr<Journal> jrnl = new GamsJournal(gev, "console", J_ITERSUMMARY);
-   jrnl->SetPrintLevel(J_DBG, J_NONE);
-   if( !ipopt->Jnlst()->AddJournal(jrnl) )
-      gevLogStat(gev, "Failed to register GamsJournal for IPOPT output.");
-
-   ipopt->RegOptions()->SetRegisteringCategory("Output");
-   ipopt->RegOptions()->AddStringOption2("print_eval_error",
-      "Switch to enable printing information about function evaluation errors into the GAMS listing file.",
-      "yes",
-      "no", "", "yes", "");
-   ipopt->RegOptions()->AddStringOption2("report_mininfeas_solution",
-      "Switch to report intermediate solution with minimal constraint violation to GAMS if the final solution is not feasible.",
-      "no",
-      "no", "", "yes", "",
-      "This option allows to obtain the most feasible solution found by Ipopt during the iteration process, if it stops at a (locally) infeasible solution, due to a limit (time, iterations, ...), or with a failure in the restoration phase.");
+   try
+   {
+      setupIpopt();
+   }
+   catch( const std::exception& e )
+   {
+      gevLogStat(gev, e.what());
+      return 1;
+   }
 
    gevTerminateInstall(gev);
 
-   return 0;
-}
-
-int GamsIpopt::callSolver()
-{
-   assert(gmo != NULL);
-   assert(gev != NULL);
-   assert(IsValid(ipopt));
-
-   gmoObjStyleSet(gmo, gmoObjType_Fun);
-   gmoObjReformSet(gmo, 1);
-   gmoIndexBaseSet(gmo, 0);
-
-   // change some option defaults
-   ipopt->Options()->clear();
-   ipopt->Options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
-   ipopt->Options()->SetIntegerValue("acceptable_iter", 0, true, true);  // GAMS does not have a proper status if Ipopt returns with this
-   ipopt->Options()->SetIntegerValue("max_iter", gevGetIntOpt(gev, gevIterLim), true, true);
-   ipopt->Options()->SetNumericValue("max_cpu_time", gevGetDblOpt(gev, gevResLim), true, true);
-   ipopt->Options()->SetStringValue("mu_strategy", "adaptive", true, true);
-   ipopt->Options()->SetStringValue("ma86_order", "auto", true, true);
-   if( ipoptlicensed )
-   {
-      ipopt->Options()->SetStringValue("linear_solver", "ma27", true, true);
-      ipopt->Options()->SetStringValue("linear_system_scaling", "mc19", true, true);
-   }
-   else
-   {
-      ipopt->Options()->SetStringValue("linear_solver", "mumps", true, true);
-   }
-   //TODO if GAMS scaleopt is set, then set nlp_scaling_method=user-scaling
+   if( gmoScaleOpt(gmo) )
+      ipopt->Options()->SetStringValue("nlp_scaling_method", "none", true, true);
 
    // if we have linear rows and a quadratic objective, then the hessian of the Lag.func. is constant, and Ipopt can make use of this
    if( gmoNLM(gmo) == 0 && (gmoModelType(gmo) == gmoProc_qcp || gmoModelType(gmo) == gmoProc_rmiqcp) )
@@ -159,21 +167,15 @@ int GamsIpopt::callSolver()
    else
       ipopt->Initialize("", false);
 
-   // process options and setup NLP
-   double ipoptinf;
-   ipopt->Options()->GetNumericValue("nlp_lower_bound_inf", ipoptinf, "");
-   gmoMinfSet(gmo, ipoptinf);
-   ipopt->Options()->GetNumericValue("nlp_upper_bound_inf", ipoptinf, "");
-   gmoPinfSet(gmo, ipoptinf);
+   nlp = new GamsNLP(gmo);
 
-   SmartPtr<GamsNLP> nlp = new GamsNLP(gmo);
+   delete[] boundtype;
+   boundtype = NULL;
+
+   // get tolerances
    ipopt->Options()->GetNumericValue("diverging_iterates_tol", nlp->div_iter_tol, "");
-
-   // get scaled and unscaled constraint violation tolerances
-   ipopt->Options()->GetNumericValue("tol", nlp->scaled_conviol_tol, "");
-   ipopt->Options()->GetNumericValue("acceptable_tol", nlp->scaled_conviol_acctol, "");
-   ipopt->Options()->GetNumericValue("constr_viol_tol", nlp->unscaled_conviol_tol, "");
-   ipopt->Options()->GetNumericValue("acceptable_constr_viol_tol", nlp->unscaled_conviol_acctol, "");
+   ipopt->Options()->GetNumericValue("constr_viol_tol", nlp->conviol_tol, "");
+   ipopt->Options()->GetNumericValue("compl_inf_tol", nlp->compl_tol, "");
 
    // initialize GMO hessian, if required
    // TODO if hessian is only approximated by GMO (extr. func without 2nd deriv info), then could suggest user to enable Ipopts hessian approx via log
@@ -191,26 +193,74 @@ int GamsIpopt::callSolver()
       }
    }
 
+   ipopt->Options()->GetBoolValue("report_mininfeas_solution", nlp->reportmininfeas, "");
+
+   return 0;
+}
+
+int GamsIpopt::callSolver()
+{
+   assert(gmo != NULL);
+   assert(gev != NULL);
+   assert(IsValid(ipopt));
+   assert(IsValid(nlp));
+
+   gmoObjStyleSet(gmo, gmoObjType_Fun);
+   gmoObjReformSet(gmo, 1);
+   gmoIndexBaseSet(gmo, 0);
+
+   // process options and setup NLP
+   ipopt->Options()->SetIntegerValue("max_iter", gevGetIntOpt(gev, gevIterLim), true, true);
+   ipopt->Options()->SetNumericValue("max_wall_time", gevGetDblOpt(gev, gevResLim), true, true);
+
+   double ipoptinf;
+   ipopt->Options()->GetNumericValue("nlp_lower_bound_inf", ipoptinf, "");
+   gmoMinfSet(gmo, ipoptinf);
+   ipopt->Options()->GetNumericValue("nlp_upper_bound_inf", ipoptinf, "");
+   gmoPinfSet(gmo, ipoptinf);
+
    bool printevalerror;
    ipopt->Options()->GetBoolValue("print_eval_error", printevalerror, "");
    gmoEvalErrorMsg(gmo, printevalerror);
 
-   ipopt->Options()->GetBoolValue("report_mininfeas_solution", nlp->reportmininfeas, "");
+   if( boundtype == NULL )
+   {
+      // remember for which variable a lower or upper bound is given
+      // we need this in modifyProblem (though we have no way to know whether that will be called, it seems)
+      boundtype = new uint8_t[gmoN(gmo)];
+      for( int i = 0; i < gmoN(gmo); ++i )
+      {
+         boundtype[i] = 0;
+         if( gmoGetVarLowerOne(gmo, i) != gmoMinf(gmo) )
+            boundtype[i] |= 1u;
+         if( gmoGetVarUpperOne(gmo, i) != gmoPinf(gmo) )
+            boundtype[i] |= 2u;
+      }
+   }
 
    // set number of threads in linear algebra
    GAMSsetNumThreads(gev, gevThreads(gev));
 
    // solve NLP
-   nlp->clockStart = gevTimeDiffStart(gev);
    ApplicationReturnStatus status;
    try
    {
-      status = ipopt->OptimizeTNLP(GetRawPtr(nlp));
+      if( !warmstart )
+         status = ipopt->OptimizeTNLP(GetRawPtr(nlp));
+      else
+         status = ipopt->ReOptimizeTNLP(GetRawPtr(nlp));
    }
    catch( IpoptException& e )
    {
       status = Unrecoverable_Exception;
       gevLogStat(gev, e.Message().c_str());
+   }
+
+   SmartPtr<SolveStatistics> solvestat = ipopt->Statistics();
+   if( IsValid(solvestat) )
+   {
+      gmoSetHeadnTail(gmo, gmoHresused, solvestat->TotalWallclockTime());
+      gmoSetHeadnTail(gmo, gmoHiterused, solvestat->IterationCount());
    }
 
    // process solution status
@@ -224,8 +274,10 @@ int GamsIpopt::callSolver()
       case User_Requested_Stop:
       case Maximum_Iterations_Exceeded:
       case Maximum_CpuTime_Exceeded:
+      case Maximum_WallTime_Exceeded:
       case Restoration_Failed:
       case Error_In_Step_Computation:
+      case Feasible_Point_Found:
          break; // these should have been handled by FinalizeSolution already
 
       case Not_Enough_Degrees_Of_Freedom:
@@ -234,10 +286,23 @@ int GamsIpopt::callSolver()
          break;
 
       case Invalid_Problem_Definition:
-      case Invalid_Option:
          gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
          gmoSolveStatSet(gmo, gmoSolveStat_SetupErr);
          break;
+
+      case Invalid_Option:
+      {
+         gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+         gmoSolveStatSet(gmo, gmoSolveStat_SetupErr);
+         std::string linsolver;
+         ipopt->Options()->GetStringValue("linear_solver", linsolver, "");
+         if( linsolver == "pardiso" )
+         {
+            gevLogStat(gev, "NOTE: With Ipopt 3.14 (GAMS 36), value pardiso of option linear_solver has been renamed to pardisomkl.");
+            gevLogStat(gev, "      If using Pardiso from MKL was intended, the Ipopt options file needs to be changed to \"linear_solver pardisomkl\".");
+         }
+         break;
+      }
 
       case Invalid_Number_Detected:
          gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
@@ -275,7 +340,52 @@ int GamsIpopt::callSolver()
    return 0;
 }
 
+int GamsIpopt::modifyProblem()
+{
+   assert(IsValid(ipopt));
+   assert(IsValid(nlp));
+
+   gmoObjStyleSet(gmo, gmoObjType_Fun);
+   gmoObjReformSet(gmo, 1);
+   gmoIndexBaseSet(gmo, 0);
+
+   if( !warmstart )
+   {
+      ipopt->Options()->SetStringValue("warm_start_init_point", "yes");
+      // these could make sense, but lets let the user set these (they usually don't affect the first solve)
+      // ipopt->Options()->SetNumericValue("warm_start_bound_frac", 1e-16, true, false);
+      // ipopt->Options()->SetNumericValue("warm_start_bound_push", 1e-16, true, false);
+      // ipopt->Options()->SetNumericValue("warm_start_mult_bound_push", 1e-16, true, false);
+      // ipopt->Options()->SetNumericValue("warm_start_slack_bound_frac", 1e-16, true, false);
+      // ipopt->Options()->SetNumericValue("warm_start_slack_bound_push", 1e-16, true, false);
+      // ipopt->Options()->SetNumericValue("mu_init", 1e-8, true, false);
+      warmstart = true;
+   }
+
+   // check whether structure of NLP did not change
+   // we can assume that nonzero-structure and equation sense (=L=, ...) didn't change
+   // but for Ipopt it is a structural change if a variable bound appeared or disappeared
+   bool structurechanged = false;
+   for( int i = 0; i < gmoN(gmo); ++i )
+   {
+      uint8_t newboundtype = 0;
+      if( gmoGetVarLowerOne(gmo, i) != gmoMinf(gmo) )
+         newboundtype |= 1u;
+      if( gmoGetVarUpperOne(gmo, i) != gmoPinf(gmo) )
+         newboundtype |= 2u;
+
+      if( boundtype[i] != newboundtype )
+         structurechanged = true;
+      boundtype[i] = newboundtype;
+   }
+   ipopt->Options()->SetStringValue("warm_start_same_structure", structurechanged ? "no" : "yes");
+
+   return 0;
+}
+
+
 #define GAMSSOLVER_ID ipo
+#define GAMSSOLVER_HAVEMODIFYPROBLEM
 #include "GamsEntryPoints_tpl.c"
 
 DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
@@ -344,4 +454,11 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoH
    assert(Gptr != NULL);
 
    return ((GamsIpopt*)Cptr)->readyAPI(Gptr);
+}
+
+DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ModifyProblem)(void* Cptr)
+{
+   assert(Cptr != NULL);
+
+   return ((GamsIpopt*)Cptr)->modifyProblem();
 }

@@ -5,6 +5,6 @@ Osi               https://github.com/coin-or/Osi master
 Clp               https://github.com/coin-or/Clp master
 Cgl               https://github.com/coin-or/Cgl master
 Cbc               https://github.com/coin-or/Cbc master
-Ipopt             https://github.com/coin-or/Ipopt stable/3.13
+Ipopt             https://github.com/coin-or/Ipopt stable/3.14
 Bonmin            https://github.com/coin-or/Bonmin master
 Couenne           https://github.com/coin-or/Couenne master
