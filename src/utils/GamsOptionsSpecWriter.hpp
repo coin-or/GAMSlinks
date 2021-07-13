@@ -312,6 +312,7 @@ public:
    EnumVals           enumval;
    int                refval;
    bool               hidden ;
+   bool               advanced;
    std::map<std::string, bool> synonyms;
 
    /// constructor for general option
@@ -341,7 +342,8 @@ public:
      maxval_attainable(maxval_attainable_),
      enumval(enumval_),
      refval(refval_),
-     hidden(false)
+     hidden(false),
+     advanced(false)
    { }
 
    /// constructor for real-type option
@@ -499,6 +501,7 @@ public:
    std::string name;
    std::string shortdescr;
    std::string longdescr;
+   int printpos;
 
    // index set in GamsOptions::finalize()
    int index;
@@ -506,11 +509,13 @@ public:
    GamsOptionGroup(
       const std::string& name_,
       const std::string& shortdescr_ = "",
-      const std::string& longdescr_ = ""
+      const std::string& longdescr_ = "",
+      int printpos_ = 0
    )
    : name(name_),
      shortdescr(shortdescr_.empty() ? name_ : shortdescr_),
      longdescr(longdescr_),
+     printpos(printpos_),
      index(-1)
    { }
 };
@@ -520,6 +525,7 @@ class GamsOptions
 private:
    std::list<GamsOption> options;
    std::map<std::string, GamsOptionGroup> groups;
+   std::multimap<int, GamsOptionGroup&> groups_by_printpos;
 
    std::string           solver;
    std::string           curgroup;
@@ -536,15 +542,17 @@ public:
    { }
 
    /// adds group and sets current group
-   /// descriptions are ignored if group already exists
+   /// descriptions and printpos are ignored if group already exists
    void setGroup(
       const std::string& group,
       const std::string& description = "",
-      const std::string& longdescription = ""
+      const std::string& longdescription = "",
+      const int printpos = 0
       )
    {
       curgroup = group;
-      groups.emplace(group, GamsOptionGroup(group, description, longdescription));
+      groups.emplace(group, GamsOptionGroup(group, description, longdescription, printpos));
+      groups_by_printpos.emplace(printpos, groups.at(group));
    }
 
    void setSeparator(

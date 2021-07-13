@@ -667,8 +667,9 @@ int main(int argc, char** argv)
          }
          gmsopt.setGroup(category);
 
-         gmsopt.collect(SCIPparamGetName(param), descr, longdescr,
+         GamsOption& gopt = gmsopt.collect(SCIPparamGetName(param), descr, longdescr,
             opttype, defaultval, minval, maxval, true, true, enumval, defaultdescr);
+         gopt.advanced = SCIPparamIsAdvanced(param);
       }
    }
    gmsopt.finalize();
