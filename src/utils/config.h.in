@@ -36,6 +36,9 @@
 /* Define to 1 if Ipopt is available. */
 #undef GAMSLINKS_HAS_IPOPT
 
+/* Define to 1 if the LAPACK package is available */
+#undef GAMSLINKS_HAS_LAPACK
+
 /* Define to 1 if the Mosek package is available */
 #undef GAMSLINKS_HAS_MOSEK
 
@@ -63,6 +66,13 @@
 /* Define to 1 if the Xpress package is available */
 #undef GAMSLINKS_HAS_XPRESS
 
+/* Define to a macro mangling the given C identifier (in lower and upper
+   case). */
+#undef GAMSLINKS_LAPACK_FUNC
+
+/* As GAMSLINKS_LAPACK_FUNC, but for C identifiers containing underscores. */
+#undef GAMSLINKS_LAPACK_FUNC_
+
 /* Version number of project */
 #undef GAMSLINKS_VERSION
 
@@ -87,13 +97,13 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
-/* Define to 1 if Ipopt has goto_set_num_threads */
+/* Define to 1 if Lapack has goto_set_num_threads */
 #undef HAVE_GOTO_SETNUMTHREADS
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if Ipopt has omp_set_num_threads */
+/* Define to 1 if Lapack has omp_set_num_threads */
 #undef HAVE_OMP_SETNUMTHREADS
 
 /* Define to 1 if you have the `snprintf' function. */

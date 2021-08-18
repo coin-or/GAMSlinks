@@ -95,13 +95,14 @@ AC_CHECK_FUNCS([vsnprintf _vsnprintf],[break])
 # check for strtok variants
 AC_CHECK_FUNCS([strtok_r strtok_s strtok],[break])
 
-# if we have Ipopt, check if we have GotoBlas or MKL Blas functions to set number of threads
-if test $coin_has_ipopt = yes ; then
-  AC_COIN_TRY_LINK([goto_set_num_threads],[$ipopt_lflags],[$ipopt_pcfiles],
-    AC_DEFINE([HAVE_GOTO_SETNUMTHREADS],[1],[Define to 1 if Ipopt has goto_set_num_threads])
+# if we have Lapack, check if we have GotoBlas or MKL Blas functions to set number of threads
+AC_COIN_CHK_LAPACK
+if test $coin_has_lapack = yes; then
+  AC_COIN_TRY_LINK([goto_set_num_threads],[$lapack_lflags],[$lapack_pcfiles],
+    AC_DEFINE([HAVE_GOTO_SETNUMTHREADS],[1],[Define to 1 if Lapack has goto_set_num_threads])
   )
-  AC_COIN_TRY_LINK([omp_set_num_threads],[$ipopt_lflags],[$ipopt_pcfiles],
-    AC_DEFINE([HAVE_OMP_SETNUMTHREADS],[1],[Define to 1 if Ipopt has omp_set_num_threads])
+  AC_COIN_TRY_LINK([omp_set_num_threads],[$lapack_lflags],[$lapack_pcfiles],
+    AC_DEFINE([HAVE_OMP_SETNUMTHREADS],[1],[Define to 1 if Lapack has omp_set_num_threads])
   )
 fi
 
