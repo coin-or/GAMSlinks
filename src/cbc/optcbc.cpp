@@ -367,9 +367,8 @@ int main(int argc, char** argv)
 
    opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutoff");
    opt->defaultdescr = "GAMS cutoff";
-   opt->longdescr = "A valid solution must be at least this much better than last integer solution. "
-      "If this option is not set then it CBC will try and work one out. "
-      "E.g., if all objective coefficients are multiples of 0.01 and only integer variables have entries in objective then this can be set to 0.01.";
+   opt->longdescr = "All solutions must have a better objective value than the value of this option. "
+      "CBC also updates this value whenever it obtains a solution to the value of the objective function of the solution minus the cutoff increment.";
 
    add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutoffConstraint", "constraintfromCutoff").enumval);
 
