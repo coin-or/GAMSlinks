@@ -327,7 +327,7 @@ int main(int argc, char** argv)
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "strongBranching");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "trustPseudoCosts");
+   collectCbcOption(gmsopt, cbcopts, cbcmodel, "trustPseudocosts");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "expensiveStrong");
 
