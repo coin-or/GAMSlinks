@@ -528,9 +528,6 @@ int main(int argc, char** argv)
 
    collectCbcOption(gmsopt, cbcparams, "dwHeuristic");
 
-   // FIXME option seems to have vanished
-   // collectCbcOption(gmsopt, paramvec, "pivotAndComplement");
-
    collectCbcOption(gmsopt, cbcparams, "VndVariableNeighborhoodSearch");
 
    gmsopt.finalize();
