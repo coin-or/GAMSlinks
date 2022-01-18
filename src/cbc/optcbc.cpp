@@ -545,9 +545,13 @@ int main(int argc, char** argv)
 #endif
 
    // print uncollected Cbc options
-   // printf("Uncollected Cbc options:\n");
-   // for( auto& cbcopt : paramvec )
-   //    if( cbcopt != NULL && cbcopt->type() != CoinParam::paramAct && cbcopt->type() != CoinParam::paramInvalid )
-   //       printf("%-30s %3d %s\n", cbcopt->name().c_str(), cbcopt->type(), cbcopt->shortHelp().c_str());
-   // TODO uncollected Clp options
+//   printf("Uncollected Cbc options:\n");
+//   for( auto& cbcopt : cbcparams.paramVec() )
+//      if( cbcopt != NULL && cbcopt->type() != CoinParam::paramAct && cbcopt->type() != CoinParam::paramInvalid )
+//         printf("%-30s %3d %s\n", cbcopt->name().c_str(), cbcopt->type(), cbcopt->shortHelp().c_str());
+   // print uncollected Clp options
+//    printf("Uncollected Clp options:\n");
+//    for( auto& cbcopt : cbcparams.clpParamVec() )
+//       if( cbcopt != NULL && cbcopt->type() != CoinParam::paramAct && cbcopt->type() != CoinParam::paramInvalid )
+//          printf("%-30s %3d %s\n", cbcopt->name().c_str(), cbcopt->type(), cbcopt->shortHelp().c_str());
 }
