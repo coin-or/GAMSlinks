@@ -12,7 +12,7 @@ AM_CPPFLAGS = \
 AM_LDFLAGS = $(LT_LDFLAGS)
 
 lib_LTLIBRARIES = libGamsCbc.la
-libGamsCbc_la_SOURCES = \
+libGamsCbc_la_SOURCES = GamsCbc.cpp \
   ../osi/GamsOsiHelper.cpp ../osi/GamsMessageHandler.cpp \
   ../utils/GamsSolveTrace.c ../utils/GamsHelper.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/gdxcc.c ../utils/optcc.c ../utils/palmcc.c ../utils/cfgmcc.c

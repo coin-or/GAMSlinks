@@ -26,6 +26,9 @@ bool hasCbcOption(
    return false;
 }
 
+// FIXME
+static bool doingclp = true;
+
 static
 GamsOption& collectCbcOption(
    GamsOptions&                gmsopt,
@@ -124,7 +127,7 @@ GamsOption& collectCbcOption(
       }
    }
 
-   int cbcoptnum = idx;
+   int cbcoptnum = doingclp ? 1000000 + idx : idx;
    GamsOption& opt(gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, true, true, enumval, "", cbcoptnum));
    if( namegams != namecbc )
       opt.synonyms[namecbc];
@@ -198,6 +201,7 @@ int main(int argc, char** argv)
 
    // LP parameters
    gmsopt.setGroup("LP Options");
+   doingclp = true;
 
    opt = &collectCbcOption(gmsopt, clpopts, cbcmodel, "iterlim", "maxIterations");
    opt->longdescr = "For an LP, this is the maximum number of iterations to solve the LP. For a MIP, this option is ignored.";
@@ -218,7 +222,8 @@ int main(int argc, char** argv)
 
    collectCbcOption(gmsopt, clpopts, cbcmodel, "sparseFactor");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "biasLU");
+   // TODO info in parameter object misses default - clp option?
+   //collectCbcOption(gmsopt, clpopts, cbcmodel, "biasLU");
 
    collectCbcOption(gmsopt, clpopts, cbcmodel, "maxFactor");
 
@@ -277,12 +282,14 @@ int main(int argc, char** argv)
 
    //TODO collectCbcOption(gmsopt, clpopts, cbcmodel, "cholesky");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "gamma", "gamma(Delta)").synonyms.clear();  // GAMS options object doesn't like parenthesis in synonym
+   // TODO info in cbcparam object misses default - clp option?
+   // collectCbcOption(gmsopt, clpopts, cbcmodel, "gamma", "gamma(Delta)").synonyms.clear();  // GAMS options object doesn't like parenthesis in synonym
 
    collectCbcOption(gmsopt, clpopts, cbcmodel, "KKT");
 
    // MIP parameters
    gmsopt.setGroup("MIP Options");
+   doingclp = false;
 
    if( CbcModel::haveMultiThreadSupport() )
    {
@@ -528,8 +535,9 @@ int main(int argc, char** argv)
 #endif
 
    // print uncollected Cbc options
-   printf("Uncollected Cbc options:\n");
-   for( auto& cbcopt : cbcopts )
-      if( cbcopt != NULL && cbcopt->type() != CoinParam::paramAct && cbcopt->type() != CoinParam::paramInvalid )
-         printf("%-30s %3d %s\n", cbcopt->name().c_str(), cbcopt->type(), cbcopt->shortHelp().c_str());
+   // printf("Uncollected Cbc options:\n");
+   // for( auto& cbcopt : cbcopts )
+   //    if( cbcopt != NULL && cbcopt->type() != CoinParam::paramAct && cbcopt->type() != CoinParam::paramInvalid )
+   //       printf("%-30s %3d %s\n", cbcopt->name().c_str(), cbcopt->type(), cbcopt->shortHelp().c_str());
+   // TODO uncollected Clp options
 }

@@ -172,9 +172,6 @@ GamsCbc::~GamsCbc()
 {
    delete model;
    delete msghandler;
-   for( int i = 0; i < cbc_argc; ++i )
-      free(cbc_args[i]);
-   delete[] cbc_args;
 
    free(writemps);
    free(solvetrace);
@@ -253,16 +250,15 @@ int GamsCbc::callSolver()
    }
 
    /* initialize Cbc */
-   CbcSolverUsefulData cbcData;
+   CbcParameters cbcData;
    CbcMain0(*model, cbcData);
 
-   if( !setupParameters() )
+   if( !setupParameters(cbcData) )
    {
       gevLogStat(gev, "Error setting up CBC parameters. Aborting...");
       return -1;
    }
-   assert(cbc_args != NULL);
-   assert(cbc_argc > 0);
+   assert(!cbc_args.empty());
 
    if( !setupStartingPoint() )
    {
@@ -305,7 +301,7 @@ int GamsCbc::callSolver()
    double start_cputime  = CoinCpuTime();
    double start_walltime = CoinWallclockTime();
 
-   CbcMain1(cbc_argc, const_cast<const char**>(cbc_args), *model, cbcCallBack, cbcData);
+   CbcMain1(cbc_args, *model, cbcData, cbcCallBack);
 
    double end_cputime  = CoinCpuTime();
    double end_walltime = CoinWallclockTime();
@@ -674,7 +670,9 @@ bool GamsCbc::setupStartingPoint()
    return retcode;
 }
 
-bool GamsCbc::setupParameters()
+bool GamsCbc::setupParameters(
+   CbcParameters&     cbcParam
+)
 {
    assert(gmo != NULL);
    assert(gev != NULL);
@@ -781,10 +779,6 @@ bool GamsCbc::setupParameters()
    optcr = optGetDblStr(opt, "optcr");
    model->setPrintFrequency(optGetIntStr(opt, "printfrequency"));
 
-   std::vector<CbcOrClpParam> cbcparams;
-   if( optCount(opt) > 0 )
-      establishParams(cbcparams);
-
    std::list<std::string> par_list;
 
    if( optGetIntStr(opt, "conflictcuts") )
@@ -813,9 +807,16 @@ bool GamsCbc::setupParameters()
 
       optGetValuesNr(opt, i, sname, &ival, &dval, sval);
 
-      /* first 3 "parameters" are ?, ???, and - */
-      pos = whichParam(CbcOrClpParameterType(irefnr), cbcparams);
-      if( pos > (int)cbcparams.size() )
+      // skip threads here, will handle this below
+      if( strcmp(sname, "threads") == 0 )
+         continue;
+
+      CoinParam* param = NULL;
+      if( irefnr < 1000000 )
+         param = cbcParam[irefnr];
+      else
+         param = cbcParam.clpParamVec()[irefnr - 1000000];
+      if( param == NULL )
       {
          sprintf(buffer, "ERROR: Option %s not found in CBC (invalid reference number %d?)\n", sname, irefnr);
          gevLogStatPChar(gev, buffer);
@@ -823,13 +824,10 @@ bool GamsCbc::setupParameters()
             optFree(&opt);
          return false;
       }
-      assert(cbcparams.at(pos).type() == irefnr);
 
-      // skip threads here, will handle this below
-      if( irefnr == CBC_PARAM_INT_THREADS )
-         continue;
+      // std::cout << sname << " ref " << irefnr << " -> " << param->name() << std::endl;
 
-      sprintf(buffer, "-%s", cbcparams.at(pos).name().c_str());
+      sprintf(buffer, "-%s", param->name().c_str());
       par_list.push_back(buffer);
 
       switch( iotype )
@@ -996,21 +994,13 @@ bool GamsCbc::setupParameters()
       par_list.push_back("-solve");
 
    size_t par_list_length = par_list.size();
-   if( cbc_args != NULL ) {
-      for( int i = 0; i < cbc_argc; ++i )
-         free(cbc_args[i]);
-      delete[] cbc_args;
-   }
-   cbc_argc = (int)par_list_length+2;
-   cbc_args = new char*[cbc_argc];
-   cbc_args[0] = strdup("GAMS/CBC");
-   int i = 1;
-   for( std::list<std::string>::iterator it(par_list.begin()); it != par_list.end(); ++it, ++i )
+   cbc_args.clear();
+   for( std::list<std::string>::iterator it(par_list.begin()); it != par_list.end(); ++it )
    {
-      cbc_args[i] = strdup(it->c_str());
-      //std::cout << cbc_args[i] << std::endl;
+      cbc_args.push_back(*it);
+      //std::cout << cbc_args.back() << std::endl;
    }
-   cbc_args[i++] = strdup("-quit");
+   cbc_args.push_back("-quit");
 
    mipstart = optGetIntStr(opt, "mipstart") != 0;
    solvefinal = optGetIntStr(opt, "solvefinal") != 0;

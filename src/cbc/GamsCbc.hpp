@@ -8,12 +8,15 @@
 #define GAMSCBC_HPP_
 
 #include <cstdlib>
+#include <deque>
+#include <string>
 
 typedef struct gmoRec* gmoHandle_t;
 typedef struct gevRec* gevHandle_t;
 typedef struct optRec* optHandle_t;
 
 class CbcModel;
+class CbcParameters;
 class GamsCbcMessageHandler;
 class OsiSolverInterface;
 
@@ -27,8 +30,7 @@ private:
 
    GamsCbcMessageHandler* msghandler;        /**< message handler */
    CbcModel*             model;              /**< CBC model object */
-   int                   cbc_argc;           /**< number of parameters to pass to CBC */
-   char**                cbc_args;           /**< parameters to pass to CBC */
+   std::deque<std::string> cbc_args;         /**< parameters to pass to CBC */
 
    double                optcr;              /**< relative optimality tolerance */
    double                optca;              /**< absolute optimality tolerance */
@@ -46,7 +48,9 @@ private:
 
    bool setupStartingPoint();
 
-   bool setupParameters();
+   bool setupParameters(
+      CbcParameters&     cbcParam
+   );
 
    bool writeSolution(
       double             cputime,            /**< CPU time spend by solver */
@@ -62,8 +66,6 @@ public:
      opt(NULL),
      msghandler(NULL),
      model(NULL),
-     cbc_argc(0),
-     cbc_args(NULL),
      optcr(0.0),
      optca(0.0),
      mipstart(false),
