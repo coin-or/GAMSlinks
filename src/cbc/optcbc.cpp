@@ -233,8 +233,7 @@ int main(int argc, char** argv)
 
    collectClpOption(gmsopt, cbcparams, "sparseFactor");
 
-   // FIXME default value not set on Clp/Cbc side
-   // collectClpOption(gmsopt, cbcparams, "biasLU");
+   collectClpOption(gmsopt, cbcparams, "biasLU");
 
    collectClpOption(gmsopt, cbcparams, "maxFactor");
 
@@ -293,8 +292,7 @@ int main(int argc, char** argv)
 
    //TODO collectClpOption(gmsopt, cbcparams, "cholesky");
 
-   // FIXME default value not set on Clp/Cbc side
-   // collectClpOption(gmsopt, cbcparams, "gamma", "gamma(Delta)").synonyms.clear();  // GAMS options object doesn't like parenthesis in synonym
+   collectClpOption(gmsopt, cbcparams, "gamma", "gamma(Delta)").synonyms.clear();  // GAMS options object doesn't like parenthesis in synonym
 
    collectClpOption(gmsopt, cbcparams, "KKT");
 
