@@ -334,7 +334,8 @@ int main(int argc, char** argv)
    if( hasCbcOption(cbcopts, "OrbitalBranching") )  // only available if cbc build with numpy
       collectCbcOption(gmsopt, cbcopts, cbcmodel, "OrbitalBranching");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "costStrategy");
+   // FIXME option seems to have vanished
+   //collectCbcOption(gmsopt, cbcopts, cbcmodel, "costStrategy");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "extraVariables");
 
@@ -514,7 +515,8 @@ int main(int argc, char** argv)
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "dwHeuristic");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "pivotAndComplement");
+   // FIXME option seems to have vanished
+   // collectCbcOption(gmsopt, cbcopts, cbcmodel, "pivotAndComplement");
 
    collectCbcOption(gmsopt, cbcopts, cbcmodel, "VndVariableNeighborhoodSearch");
 
