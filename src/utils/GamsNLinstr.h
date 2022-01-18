@@ -129,6 +129,11 @@ typedef enum
    fnarcsin,fnarctan2,fnsleep,fnheapf,
    fncohandle,fngamsrel,fnpoly,
    fnlicensestatus,fnlicenselevel,fnheaplimit,
+   fnlinear,fntriangle,fnforceerror,
+   fnforceerrorcount,fnrandbinomial,fnjobhandle,
+   fnjobstatus,fnjobkill,fnjobterminate,
+   fnnumcores,fnEmbeddedHandle,fnPlatformCode,
+   fnLogit,
    fndummy
 } GamsFuncCode;
 
@@ -169,6 +174,11 @@ static const char* GamsFuncCodeName[fndummy+1] =
    "arcsin","arctan2","sleep","heapf",
    "cohandle","gamsrel","poly",
    "licensestatus","licenselevel","heaplimit",
+   "randlinear","randtriangle","forceerror",
+   "forceerrorcnt","randbinomial","jobhandle",
+   "jobstatus", "jobkill", "jobterminate",
+   "numcores", "embeddedhandle", "platformcode",
+   "logit",
    "dummy"
 };
 
