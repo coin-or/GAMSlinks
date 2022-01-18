@@ -825,26 +825,21 @@ bool GamsCbc::setupParameters(
 
       // std::cout << sname << " ref " << irefnr << " -> " << param->name() << std::endl;
 
-      sprintf(buffer, "-%s", param->name().c_str());
-      cbc_args.push_back(buffer);
-
       switch( iotype )
       {
          case optTypeBoolean:
             assert(itype == optDataInteger);
-            cbc_args.push_back(ival == 0 ? "off" : "on");
+            param->setStrVal(ival == 0 ? "off" : "on");
             break;
 
          case optTypeInteger:
             assert(itype == optDataInteger);
-            sprintf(buffer, "%d", ival);
-            cbc_args.push_back(buffer);
+            param->setIntVal(ival);
             break;
 
          case optTypeDouble:
             assert(itype == optDataDouble);
-            sprintf(buffer, "%g", dval);
-            cbc_args.push_back(buffer);
+            param->setDblVal(dval);
             break;
 
          case optTypeEnumStr:
@@ -855,34 +850,36 @@ bool GamsCbc::setupParameters(
             {
                sprintf(buffer, "WARNING: Value 'binaryfirst' for option %s is deprecated. Use '01first' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               cbc_args.push_back("01first");
+               param->setStrVal("01first");
             }
             else if( strcmp(sval, "binarylast") == 0 )
             {
                sprintf(buffer, "WARNING: Value 'binarylast' for option %s is deprecated. Use '01first' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               cbc_args.push_back("01last");
+               param->setStrVal("01first");
             }
             else if( strcmp(sval, "1") == 0 )
             {
                sprintf(buffer, "WARNING: Option %s is no longer of boolean type. Use value 'on' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               cbc_args.push_back("on");
+               param->setStrVal("on");
             }
             else if( strcmp(sval, "0") == 0 )
             {
                sprintf(buffer, "WARNING: Option %s is no longer of boolean type. Use value 'off' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               cbc_args.push_back("off");
+               param->setStrVal("off");
             }
             else if( strcmp(sval, "auto") == 0 )
             {
                sprintf(buffer, "WARNING: Value 'auto' for option %s is deprecated. Use value 'automatic' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               cbc_args.push_back("off");
+               param->setStrVal("automatic");
             }
             else
-               cbc_args.push_back(sval);
+            {
+               param->setStrVal(sval);
+            }
             break;
 
          default:
@@ -919,9 +916,7 @@ bool GamsCbc::setupParameters(
       }
       gevLogStatPChar(gev, buffer);
 
-      cbc_args.push_back("-threads");
-      sprintf(buffer, "%d", nthreads);
-      cbc_args.push_back(buffer);
+      cbcParam.setThreads(nthreads);
 
       // no linear algebra multithreading if Cbc is doing multithreading
       GAMSsetNumThreads(gev, 1);
