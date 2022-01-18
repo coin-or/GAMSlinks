@@ -16,23 +16,20 @@
 
 static
 bool hasCbcOption(
-   CoinParamVec&        cbcopts,
+   CoinParamVec&        paramvec,
    const std::string&   namecbc
    )
 {
-   for( auto& o : cbcopts )
+   for( auto& o : paramvec )
       if( o->name() == namecbc )
          return true;
    return false;
 }
 
-// FIXME
-static bool doingclp = true;
-
 static
-GamsOption& collectCbcOption(
+GamsOption& collectOption(
    GamsOptions&                gmsopt,
-   CoinParamVec&               cbcopts,
+   CoinParamVec&               paramvec,
    const std::string&          namegams,
    const std::string&          namecbc_ = ""
    )
@@ -40,17 +37,17 @@ GamsOption& collectCbcOption(
    std::string namecbc(namecbc_.empty() ? namegams : namecbc_);
 
    unsigned int idx;
-   for( idx = 0; idx < cbcopts.size(); ++idx )
-      if( cbcopts[idx] != NULL && cbcopts[idx]->name() == namecbc )
+   for( idx = 0; idx < paramvec.size(); ++idx )
+      if( paramvec[idx] != NULL && paramvec[idx]->name() == namecbc )
          break;
-   if( idx >= cbcopts.size() )
+   if( idx >= paramvec.size() )
    {
       std::cerr << "Error: Option " << namecbc << " not known to Cbc." << std::endl;
       exit(1);
       //return *new GamsOption(namecbc_, "MISSING", "MISSING", false);
    }
 
-   const CoinParam& cbcopt(*cbcopts[idx]);
+   const CoinParam& cbcopt(*paramvec[idx]);
 
    GamsOption::Type opttype;
    GamsOption::Value defaultval, minval, maxval;
@@ -127,13 +124,12 @@ GamsOption& collectCbcOption(
       }
    }
 
-   int cbcoptnum = doingclp ? 1000000 + idx : idx;
-   GamsOption& opt(gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, true, true, enumval, "", cbcoptnum));
+   GamsOption& opt(gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, true, true, enumval, "", idx));
    if( namegams != namecbc )
       opt.synonyms[namecbc];
 
    // remove parameter from array, so we can later easily check which options we haven't taken
-   cbcopts[idx] = NULL;
+   paramvec[idx] = NULL;
 
    return opt;
 }
@@ -141,15 +137,33 @@ GamsOption& collectCbcOption(
 static
 GamsOption& collectCbcOption(
    GamsOptions&                gmsopt,
-   CoinParamVec&               cbcopts,
-   CbcModel&                   cbcmodel,
+   CbcParameters&              cbcparams,
    const std::string&          namegams,
-   const std::string&          namecbc_ = ""
+   const std::string&          namecbc = ""
    )
 {
-   return collectCbcOption(gmsopt, cbcopts, namegams, namecbc_);
+   GamsOption& o = collectOption(gmsopt, cbcparams.paramVec(), namegams, namecbc);
+   // to be able to distinguish between Clp and Cbc options in the Cbc link, we add 1000000 to the refval for Clp options
+   // so Cbc options must get a refval below 1000000
+   assert(o.refval < 1000000);
+
+   return o;
 }
 
+static
+GamsOption& collectClpOption(
+   GamsOptions&                gmsopt,
+   CbcParameters&              cbcparams,
+   const std::string&          namegams,
+   const std::string&          namecbc = ""
+   )
+{
+   GamsOption& o = collectOption(gmsopt, cbcparams.clpParamVec(), namegams, namecbc);
+   // to be able to distinguish between Clp and Cbc options in the Cbc link, we add 1000000 to the refval for Clp options
+   o.refval += 1000000;
+
+   return o;
+}
 
 static
 void add01(
@@ -165,10 +179,8 @@ int main(int argc, char** argv)
    // calling CbcMain0 with a CbcSolverUsefulData seems to make Cbc store its defaults in the parameters in there
    OsiClpSolverInterface solver;
    CbcModel cbcmodel(solver);
-   CbcParameters cbcusefuldata;
-   CbcMain0(cbcmodel, cbcusefuldata);
-   CoinParamVec& cbcopts = cbcusefuldata.paramVec();
-   CoinParamVec& clpopts = cbcusefuldata.clpParamVec();
+   CbcParameters cbcparams;
+   CbcMain0(cbcmodel, cbcparams);
    GamsOption* opt;
 
    // collection of GAMS/Cbc parameters
@@ -177,7 +189,7 @@ int main(int argc, char** argv)
    // General parameters
    gmsopt.setGroup("General Options");
 
-   opt = &collectCbcOption(gmsopt, clpopts, cbcmodel, "reslim", "seconds");
+   opt = &collectClpOption(gmsopt, cbcparams, "reslim", "seconds");
    opt->defaultval.realval = 1e10;
    opt->defaultdescr = "GAMS reslim";
    opt->longdescr.clear();
@@ -201,50 +213,49 @@ int main(int argc, char** argv)
 
    // LP parameters
    gmsopt.setGroup("LP Options");
-   doingclp = true;
 
-   opt = &collectCbcOption(gmsopt, clpopts, cbcmodel, "iterlim", "maxIterations");
+   opt = &collectClpOption(gmsopt, cbcparams, "iterlim", "maxIterations");
    opt->longdescr = "For an LP, this is the maximum number of iterations to solve the LP. For a MIP, this option is ignored.";
    opt->defaultval.intval = INT_MAX;
    opt->defaultdescr = "GAMS iterlim";
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "idiotCrash");
+   collectClpOption(gmsopt, cbcparams, "idiotCrash");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "sprintCrash").synonyms["sifting"];
+   collectClpOption(gmsopt, cbcparams, "sprintCrash").synonyms["sifting"];
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "crash");
+   collectClpOption(gmsopt, cbcparams, "crash");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "factorization");
+   collectClpOption(gmsopt, cbcparams, "factorization");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "denseThreshold");
+   collectClpOption(gmsopt, cbcparams, "denseThreshold");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "smallFactorization");
+   collectClpOption(gmsopt, cbcparams, "smallFactorization");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "sparseFactor");
+   collectClpOption(gmsopt, cbcparams, "sparseFactor");
 
    // TODO info in parameter object misses default - clp option?
-   //collectCbcOption(gmsopt, clpopts, cbcmodel, "biasLU");
+   //collectClpOption(gmsopt, cbcparams, "biasLU");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "maxFactor");
+   collectClpOption(gmsopt, cbcparams, "maxFactor");
 
-   opt = &collectCbcOption(gmsopt, clpopts, cbcmodel, "crossover");
+   opt = &collectClpOption(gmsopt, cbcparams, "crossover");
    // value "maybe" is only relevant for quadratic: remove value and mention in longdescr
    opt->enumval.drop("maybe");
    opt->longdescr = "Interior point algorithms do not obtain a basic solution. "
       "This option will crossover to a basic solution suitable for ranging or branch and cut.";
    add01(opt->enumval);
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "dualPivot").enumval.append("auto", "Same as automatic. This is a deprecated setting.");
+   collectClpOption(gmsopt, cbcparams, "dualPivot").enumval.append("auto", "Same as automatic. This is a deprecated setting.");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "primalPivot").enumval.append("auto", "Same as automatic. This is a deprecated setting.");
+   collectClpOption(gmsopt, cbcparams, "primalPivot").enumval.append("auto", "Same as automatic. This is a deprecated setting.");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "psi");
+   collectClpOption(gmsopt, cbcparams, "psi");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "perturbation");
+   collectClpOption(gmsopt, cbcparams, "perturbation");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "scaling").enumval.append("auto", "Same as automatic. This is a deprecated setting.");
+   collectClpOption(gmsopt, cbcparams, "scaling").enumval.append("auto", "Same as automatic. This is a deprecated setting.");
 
-   opt = &collectCbcOption(gmsopt, clpopts, cbcmodel, "presolve");
+   opt = &collectClpOption(gmsopt, cbcparams, "presolve");
    opt->enumval.drop("file");
    add01(opt->enumval);
    opt->longdescr = "Presolve analyzes the model to find such things as redundant equations, "
@@ -252,17 +263,17 @@ int main(int argc, char** argv)
       "For the initial solve of any problem this is worth doing unless one knows that it will have no effect. "
       "Option 'on' will normally do 5 passes, while using 'more' will do 10.";
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "passPresolve");
+   collectClpOption(gmsopt, cbcparams, "passPresolve");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "substitution");
+   collectClpOption(gmsopt, cbcparams, "substitution");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "randomSeedClp", "randomSeed");
+   collectClpOption(gmsopt, cbcparams, "randomSeedClp", "randomSeed");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "tol_primal", "primalTolerance");
+   collectClpOption(gmsopt, cbcparams, "tol_primal", "primalTolerance");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "tol_dual", "dualTolerance");
+   collectClpOption(gmsopt, cbcparams, "tol_dual", "dualTolerance");
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "tol_presolve", "preTolerance");
+   collectClpOption(gmsopt, cbcparams, "tol_presolve", "preTolerance");
 
    GamsOption::EnumVals startalgs;
    startalgs.append("primal", "Primal Simplex algorithm");
@@ -272,28 +283,27 @@ int main(int argc, char** argv)
       "Determines the algorithm to use for an LP or the initial LP relaxation if the problem is a MIP.",
       "dual", startalgs, "", -1);
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "primalWeight");
+   collectClpOption(gmsopt, cbcparams, "primalWeight");
 
-   opt = &collectCbcOption(gmsopt, clpopts, cbcmodel, "autoScale");
+   opt = &collectClpOption(gmsopt, cbcparams, "autoScale");
    opt->shortdescr += " (experimental)";
    opt->longdescr.clear();
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "bscale");
+   collectClpOption(gmsopt, cbcparams, "bscale");
 
-   //TODO collectCbcOption(gmsopt, clpopts, cbcmodel, "cholesky");
+   //TODO collectClpOption(gmsopt, cbcparams, "cholesky");
 
    // TODO info in cbcparam object misses default - clp option?
-   // collectCbcOption(gmsopt, clpopts, cbcmodel, "gamma", "gamma(Delta)").synonyms.clear();  // GAMS options object doesn't like parenthesis in synonym
+   // collectClpOption(gmsopt, cbcparams, "gamma", "gamma(Delta)").synonyms.clear();  // GAMS options object doesn't like parenthesis in synonym
 
-   collectCbcOption(gmsopt, clpopts, cbcmodel, "KKT");
+   collectClpOption(gmsopt, cbcparams, "KKT");
 
    // MIP parameters
    gmsopt.setGroup("MIP Options");
-   doingclp = false;
 
    if( CbcModel::haveMultiThreadSupport() )
    {
-      opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "threads");
+      opt = &collectCbcOption(gmsopt, cbcparams, "threads");
       opt->defaultdescr = "GAMS threads";
       opt->longdescr.clear();
       opt->defaultval = 1; // somehow I got a -1 from Cbc
@@ -308,16 +318,16 @@ int main(int argc, char** argv)
          "deterministic", parallelmodes, "", -1);
    }
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "strategy");
+   collectCbcOption(gmsopt, cbcparams, "strategy");
 
    gmsopt.collect("mipstart", "whether it should be tried to use the initial variable levels as initial MIP solution",
       "This option controls the use of advanced starting values for mixed integer programs. "
       "A setting of 1 indicates that the variable level values should be checked to see if they provide an integer feasible solution before starting optimization.",
       false, "", -1);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "tol_integer", "integerTolerance");
+   collectCbcOption(gmsopt, cbcparams, "tol_integer", "integerTolerance");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sollim", "maxSolutions").longdescr.clear();
+   collectCbcOption(gmsopt, cbcparams, "sollim", "maxSolutions").longdescr.clear();
 
    gmsopt.collect("dumpsolutions", "name of solutions index gdx file for writing alternate solutions",
       "The name of a solutions index gdx file for writing alternate solutions found by CBC. "
@@ -326,46 +336,46 @@ int main(int argc, char** argv)
    gmsopt.collect("dumpsolutionsmerged", "name of gdx file for writing all alternate solutions", "",
       "", -1);
 
-   opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "maxsol", "maxSavedSolutions");
+   opt = &collectCbcOption(gmsopt, cbcparams, "maxsol", "maxSavedSolutions");
    opt->defaultval = 100;
    opt->longdescr = "Maximal number of solutions to store during search and to dump into gdx files if dumpsolutions options is set.";
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "strongBranching");
+   collectCbcOption(gmsopt, cbcparams, "strongBranching");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "trustPseudocosts");
+   collectCbcOption(gmsopt, cbcparams, "trustPseudocosts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "expensiveStrong");
+   collectCbcOption(gmsopt, cbcparams, "expensiveStrong");
 
-   if( hasCbcOption(cbcopts, "OrbitalBranching") )  // only available if cbc build with numpy
-      collectCbcOption(gmsopt, cbcopts, cbcmodel, "OrbitalBranching");
+   if( hasCbcOption(cbcparams.paramVec(), "OrbitalBranching") )  // only available if cbc build with numpy
+      collectCbcOption(gmsopt, cbcparams, "OrbitalBranching");
 
    // FIXME option seems to have vanished
-   //collectCbcOption(gmsopt, cbcopts, cbcmodel, "costStrategy");
+   //collectCbcOption(gmsopt, paramvec, "costStrategy");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "extraVariables");
+   collectCbcOption(gmsopt, cbcparams, "extraVariables");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "multipleRootPasses");
+   collectCbcOption(gmsopt, cbcparams, "multipleRootPasses");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "nodeStrategy");
+   collectCbcOption(gmsopt, cbcparams, "nodeStrategy");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "infeasibilityWeight");
+   collectCbcOption(gmsopt, cbcparams, "infeasibilityWeight");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "preprocess");
+   collectCbcOption(gmsopt, cbcparams, "preprocess");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "fixOnDj");
+   collectCbcOption(gmsopt, cbcparams, "fixOnDj");
 
-   // overwritten by Cbc? collectCbcOption(gmsopt, cbcopts, cbcmodel, "tunePreProcess");
+   // overwritten by Cbc? collectCbcOption(gmsopt, paramvec, "tunePreProcess");
 
    gmsopt.collect("printfrequency", "frequency of status prints",
       "Controls the number of nodes that are evaluated between status prints.",
       0, 0, INT_MAX, std::string(), -1);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomSeedCbc", "randomCbcSeed");
+   collectCbcOption(gmsopt, cbcparams, "randomSeedCbc", "randomCbcSeed");
 
    gmsopt.collect("loglevel", "amount of output printed by CBC", "",
       1, 0, INT_MAX, std::string(), -1);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "increment").defaultdescr = "GAMS cheat";
+   collectCbcOption(gmsopt, cbcparams, "increment").defaultdescr = "GAMS cheat";
 
    gmsopt.collect("solvefinal", "final solve of MIP with fixed discrete variables",
       "Whether the MIP with discrete variables fixed to solution values should be solved after CBC finished.",
@@ -379,151 +389,151 @@ int main(int argc, char** argv)
    gmsopt.collect("solvetracetimefreq", "frequency in seconds for writing to solve trace file", "",
       5.0, 0.0, DBL_MAX, true, true, std::string(), -1);
 
-   opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "nodlim", "maxNodes");
+   opt = &collectCbcOption(gmsopt, cbcparams, "nodlim", "maxNodes");
    opt->shortdescr = "node limit";
    opt->longdescr = "Maximum number of nodes that are enumerated in the Branch and Bound tree search.";
    opt->defaultdescr = "GAMS nodlim";
    opt->synonyms["nodelim"];
 
-   opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "optca", "allowableGap");
+   opt = &collectCbcOption(gmsopt, cbcparams, "optca", "allowableGap");
    opt->defaultval.realval = 0.0;
    opt->defaultdescr = "GAMS optca";
 
-   opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "optcr", "ratioGap");
+   opt = &collectCbcOption(gmsopt, cbcparams, "optcr", "ratioGap");
    opt->defaultval.realval = 1e-4;
    opt->defaultdescr = "GAMS optcr";
 
-   opt = &collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutoff");
+   opt = &collectCbcOption(gmsopt, cbcparams, "cutoff");
    opt->defaultdescr = "GAMS cutoff";
    opt->longdescr = "All solutions must have a better objective value than the value of this option. "
       "CBC also updates this value whenever it obtains a solution to the value of the objective function of the solution minus the cutoff increment.";
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutoffConstraint", "constraintfromCutoff").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "cutoffConstraint", "constraintfromCutoff").enumval);
 
    // allows to turn on CPLEX (licensing...)
-   // collectCbcOption(gmsopt, cbcopts, cbcmodel, "depthMiniBab");
+   // collectCbcOption(gmsopt, paramvec, "depthMiniBab");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "sosPrioritize");
+   collectCbcOption(gmsopt, cbcparams, "sosPrioritize");
 
 
    gmsopt.setGroup("MIP Options for Cutting Plane Generators");
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutDepth");
+   collectCbcOption(gmsopt, cbcparams, "cutDepth");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_root", "passCuts").defaultdescr = "20 or 100";
+   collectCbcOption(gmsopt, cbcparams, "cut_passes_root", "passCuts").defaultdescr = "20 or 100";
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_tree", "passTreeCuts");
+   collectCbcOption(gmsopt, cbcparams, "cut_passes_tree", "passTreeCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cut_passes_slow", "slowcutpasses");
+   collectCbcOption(gmsopt, cbcparams, "cut_passes_slow", "slowcutpasses");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cutLength");
+   collectCbcOption(gmsopt, cbcparams, "cutLength");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cuts", "cutsOnOff");
+   collectCbcOption(gmsopt, cbcparams, "cuts", "cutsOnOff");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "cliqueCuts");
+   collectCbcOption(gmsopt, cbcparams, "cliqueCuts");
 
    // another cut option that actually does the same as -constraint conflict
    gmsopt.collect("conflictcuts", "Conflict Cuts", "Equivalent to setting cutoffconstraint=conflict", false, "", -1);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "flowCoverCuts");
+   collectCbcOption(gmsopt, cbcparams, "flowCoverCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "gomoryCuts");
+   collectCbcOption(gmsopt, cbcparams, "gomoryCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "gomorycuts2", "GMICuts");
+   collectCbcOption(gmsopt, cbcparams, "gomorycuts2", "GMICuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "knapsackCuts");
+   collectCbcOption(gmsopt, cbcparams, "knapsackCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "liftAndProjectCuts");
+   collectCbcOption(gmsopt, cbcparams, "liftAndProjectCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "mirCuts", "mixedIntegerRoundingCuts");
+   collectCbcOption(gmsopt, cbcparams, "mirCuts", "mixedIntegerRoundingCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "twoMirCuts");
+   collectCbcOption(gmsopt, cbcparams, "twoMirCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "probingCuts");
+   collectCbcOption(gmsopt, cbcparams, "probingCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "reduceAndSplitCuts");
+   collectCbcOption(gmsopt, cbcparams, "reduceAndSplitCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "reduceAndSplitCuts2", "reduce2AndSplitCuts");
+   collectCbcOption(gmsopt, cbcparams, "reduceAndSplitCuts2", "reduce2AndSplitCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "residualCapacityCuts");
+   collectCbcOption(gmsopt, cbcparams, "residualCapacityCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "zeroHalfCuts");
+   collectCbcOption(gmsopt, cbcparams, "zeroHalfCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "lagomoryCuts");
+   collectCbcOption(gmsopt, cbcparams, "lagomoryCuts");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "latwomirCuts");
+   collectCbcOption(gmsopt, cbcparams, "latwomirCuts");
 
    gmsopt.setGroup("MIP Options for Primal Heuristics");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "heuristics", "heuristicsOnOff");
+   collectCbcOption(gmsopt, cbcparams, "heuristics", "heuristicsOnOff");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "hOptions");
+   collectCbcOption(gmsopt, cbcparams, "hOptions");
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "combineSolutions").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "combineSolutions").enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "combine2Solutions");
+   collectCbcOption(gmsopt, cbcparams, "combine2Solutions");
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "Dins").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "Dins").enumval);
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingRandom", "DivingSome").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "DivingRandom", "DivingSome").enumval);
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingCoefficient").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "DivingCoefficient").enumval);
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingFractional").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "DivingFractional").enumval);
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingGuided").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "DivingGuided").enumval);
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingLineSearch").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "DivingLineSearch").enumval);
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingPseudocost").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "DivingPseudocost").enumval);
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "DivingVectorLength").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "DivingVectorLength").enumval);
 
-   // overwritten by Cbc? collectCbcOption(gmsopt, cbcopts, cbcmodel, "diveOpt");
+   // overwritten by Cbc? collectCbcOption(gmsopt, cbcparams, "diveOpt");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "diveSolves");
+   collectCbcOption(gmsopt, cbcparams, "diveSolves");
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump", "feasibilityPump").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "feaspump", "feasibilityPump").enumval);
 
    // overwritten by Cbc?
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_passes", "passFeasibilityPump");
+   collectCbcOption(gmsopt, cbcparams, "feaspump_passes", "passFeasibilityPump");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_artcost", "artificialCost");
+   collectCbcOption(gmsopt, cbcparams, "feaspump_artcost", "artificialCost");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_fracbab", "fractionforBAB");
+   collectCbcOption(gmsopt, cbcparams, "feaspump_fracbab", "fractionforBAB");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_cutoff", "pumpCutoff");
+   collectCbcOption(gmsopt, cbcparams, "feaspump_cutoff", "pumpCutoff");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_increment", "pumpIncrement");
+   collectCbcOption(gmsopt, cbcparams, "feaspump_increment", "pumpIncrement");
 
-   // overwritten by Cbc? collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_tune", "pumpTune");
-   // collectCbcOption(gmsopt, cbcopts, cbcmodel, "feaspump_moretune", "moreTune");
+   // overwritten by Cbc? collectCbcOption(gmsopt, paramvec, "feaspump_tune", "pumpTune");
+   // collectCbcOption(gmsopt, paramvec, "feaspump_moretune", "moreTune");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "greedyHeuristic");
+   collectCbcOption(gmsopt, cbcparams, "greedyHeuristic");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "localTreeSearch");
+   collectCbcOption(gmsopt, cbcparams, "localTreeSearch");
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "naiveHeuristics").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "naiveHeuristics").enumval);
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "pivotAndFix").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "pivotAndFix").enumval);
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "randomizedRounding").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "randomizedRounding").enumval);
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "Rens").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "Rens").enumval);
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "Rins").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "Rins").enumval);
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "roundingHeuristic").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "roundingHeuristic").enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "vubheuristic");
+   collectCbcOption(gmsopt, cbcparams, "vubheuristic");
 
-   add01(collectCbcOption(gmsopt, cbcopts, cbcmodel, "proximitySearch").enumval);
+   add01(collectCbcOption(gmsopt, cbcparams, "proximitySearch").enumval);
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "dwHeuristic");
+   collectCbcOption(gmsopt, cbcparams, "dwHeuristic");
 
    // FIXME option seems to have vanished
-   // collectCbcOption(gmsopt, cbcopts, cbcmodel, "pivotAndComplement");
+   // collectCbcOption(gmsopt, paramvec, "pivotAndComplement");
 
-   collectCbcOption(gmsopt, cbcopts, cbcmodel, "VndVariableNeighborhoodSearch");
+   collectCbcOption(gmsopt, cbcparams, "VndVariableNeighborhoodSearch");
 
    gmsopt.finalize();
 
@@ -536,7 +546,7 @@ int main(int argc, char** argv)
 
    // print uncollected Cbc options
    // printf("Uncollected Cbc options:\n");
-   // for( auto& cbcopt : cbcopts )
+   // for( auto& cbcopt : paramvec )
    //    if( cbcopt != NULL && cbcopt->type() != CoinParam::paramAct && cbcopt->type() != CoinParam::paramInvalid )
    //       printf("%-30s %3d %s\n", cbcopt->name().c_str(), cbcopt->type(), cbcopt->shortHelp().c_str());
    // TODO uncollected Clp options
