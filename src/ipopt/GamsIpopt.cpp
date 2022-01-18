@@ -15,6 +15,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cassert>
+#include <climits>
 
 // GAMS
 #include "gmomcc.h"
@@ -208,6 +209,16 @@ int GamsIpopt::callSolver()
    gmoObjStyleSet(gmo, gmoObjType_Fun);
    gmoObjReformSet(gmo, 1);
    gmoIndexBaseSet(gmo, 0);
+
+#if GMOAPIVERSION >= 22
+   if( gmoNZ64(gmo) > INT_MAX )
+   {
+      gevLogStat(gev, "ERROR: Problems with more than 2^31 nonzeros not supported.");
+      gmoSolveStatSet(gmo, gmoSolveStat_Capability);
+      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+      return 0;
+   }
+#endif
 
    // process options and setup NLP
    ipopt->Options()->SetIntegerValue("max_iter", gevGetIntOpt(gev, gevIterLim), true, true);

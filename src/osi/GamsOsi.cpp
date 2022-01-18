@@ -527,6 +527,16 @@ bool GamsOsi::setupProblem()
    if( gmoGetEquTypeCnt(gmo, gmoequ_N) )
       gmoSetNRowPerm(gmo);
 
+#if GMOAPIVERSION >= 22
+   if( gmoNZ64(gmo) > INT_MAX )
+   {
+      gevLogStat(gev, "ERROR: Problems with more than 2^31 nonzeros not supported.");
+      gmoSolveStatSet(gmo, gmoSolveStat_Capability);
+      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+      return false;
+   }
+#endif
+
    if( !gamsOsiLoadProblem(gmo, *osi, gevGetIntOpt(gev, gevInteger2)) )
       return false;
 

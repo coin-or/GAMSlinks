@@ -354,6 +354,16 @@ int GamsSoPlex::readyAPI(
    gmoMinfSet(gmo, -infinity);
    gmoSetNRowPerm(gmo);
 
+#if GMOAPIVERSION >= 22
+   if( gmoNZ64(gmo) > INT_MAX )
+   {
+      gevLogStat(gev, "ERROR: Problems with more than 2^31 nonzeros not supported by SoPlex.");
+      gmoSolveStatSet(gmo, gmoSolveStat_Capability);
+      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+      return 1;
+   }
+#endif
+
    if( logstreambuf != NULL )
    {
       // delete logstream(buf) from previous readyAPI call: gev may have changed

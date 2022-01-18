@@ -229,6 +229,15 @@ int GamsScip::callSolver()
       return 1;
    }
 
+#if GMOAPIVERSION >= 22
+   if( gmoNZ64(gmo) > INT_MAX )
+   {
+      gevLogStat(gev, "ERROR: Problems with more than 2^31 nonzeros not supported by SCIP.");
+      gmoSolveStatSet(gmo, gmoSolveStat_Capability);
+      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+      return 1;
+   }
+#endif
    // set number of threads for linear algebra routines used in Ipopt
    GAMSsetNumThreads(gev, gevThreads(gev));
 

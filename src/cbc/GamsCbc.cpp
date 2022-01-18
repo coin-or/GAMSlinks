@@ -235,6 +235,16 @@ int GamsCbc::callSolver()
    gmoSolveStatSet(gmo, gmoSolveStat_Solver);
    gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
 
+#if GMOAPIVERSION >= 22
+   if( gmoNZ64(gmo) > INT_MAX )
+   {
+      gevLogStat(gev, "ERROR: Problems with more than 2^31 nonzeros not supported.");
+      gmoSolveStatSet(gmo, gmoSolveStat_Capability);
+      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+      return 1;
+   }
+#endif
+
    /* set MIP */
    if( !setupProblem() )
    {

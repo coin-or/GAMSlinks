@@ -176,6 +176,16 @@ int GamsBonmin::callSolver()
       return 0;
    }
 
+#if GMOAPIVERSION >= 22
+   if( gmoNZ64(gmo) > INT_MAX )
+   {
+      gevLogStat(gev, "ERROR: Problems with more than 2^31 nonzeros not supported by Bonmin.");
+      gmoSolveStatSet(gmo, gmoSolveStat_Capability);
+      gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+      return 0;
+   }
+#endif
+
    // Change some options
    bonmin_setup->options()->clear();
    bonmin_setup->options()->SetNumericValue("bound_relax_factor", 1e-10, true, true);
