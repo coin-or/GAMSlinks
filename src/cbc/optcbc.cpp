@@ -347,8 +347,8 @@ int main(int argc, char** argv)
    if( hasCbcOption(cbcparams.paramVec(), "OrbitalBranching") )  // only available if cbc build with numpy
       collectCbcOption(gmsopt, cbcparams, "OrbitalBranching");
 
-   // FIXME option seems to have vanished
-   //collectCbcOption(gmsopt, paramvec, "costStrategy");
+   // costStrategy renamed to branchPriorities
+   collectCbcOption(gmsopt, cbcparams, "branchPriorities").synonyms["costStrategy"];
 
    collectCbcOption(gmsopt, cbcparams, "extraVariables");
 
