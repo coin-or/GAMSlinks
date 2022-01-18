@@ -237,6 +237,13 @@ public:
    class EnumVals : public std::vector<std::pair<GamsOption::Value, std::string> >
    {
    public:
+      EnumVals()
+      { }
+
+      EnumVals(std::initializer_list<std::pair<GamsOption::Value, std::string> > init)
+      : std::vector<std::pair<GamsOption::Value, std::string> >(init)
+      { }
+
       template <typename T>
       void append(
          const T&           key,
@@ -532,6 +539,7 @@ private:
    std::string           separator;
    std::string           stringquote;
    std::string           eolchars;
+   std::string           indicname;
 
 public:
    GamsOptions(
@@ -551,6 +559,8 @@ public:
       )
    {
       curgroup = group;
+      if( groups.count(group) > 0 )
+         return;
       groups.emplace(group, GamsOptionGroup(group, description, longdescription, printpos));
       groups_by_printpos.emplace(printpos, groups.at(group));
    }
@@ -584,6 +594,15 @@ public:
       options.emplace_back(std::forward<Args>(args)...);
       options.back().group = curgroup;
       return options.back();
+   }
+
+   /// set name for `indic <name>` line in def file
+   /// set to empty string to disable indic line (default)
+   void setIndic(
+      std::string indicname_
+      )
+   {
+      indicname = indicname_;
    }
 
    /// sorts options and groups

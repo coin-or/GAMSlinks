@@ -879,6 +879,10 @@ void GamsOptions::writeDef()
       f << "indicator SEPARATOR " << '"' << separator << '"' << std::endl;
    f << "indicator STRINGQUOTE " << stringquote << std::endl;
 
+   // write other kind of indicator
+   if( !indicname.empty() )
+      f << "indic " << indicname << std::endl;
+
    // write groups
    f << '*' << std::endl;
    f << "* Groups" << std::endl;
@@ -941,7 +945,7 @@ void GamsOptions::writeMarkdown()
             f << "> Possible values:" << std::endl << std::endl;
             for( auto& e : opt.enumval )
             {
-               bool isdefault;
+               bool isdefault = false;
                f << "> - ";
                switch( opt.type )
                {
@@ -1064,6 +1068,19 @@ void GamsOptions::writeDoxygen(
 
    for( auto& group : groups_by_printpos )
    {
+      // skip groups that have no unhidden option
+      bool hasopt = false;
+      for( auto& opt : options )
+      {
+         if( opt.group == group.second.name && !opt.hidden )
+         {
+            hasopt = true;
+            break;
+         }
+      }
+      if( !hasopt )
+         continue;
+
       f << std::endl;
       f << "\\subsection ";
 
@@ -1082,6 +1099,9 @@ void GamsOptions::writeDoxygen(
          if( opt.group != group.second.name )
             continue;
 
+         if( opt.hidden )
+            continue;
+
          if( opt.advanced )
          {
             hasadvanced = true;
@@ -1098,6 +1118,9 @@ void GamsOptions::writeDoxygen(
          for( auto& opt : options )
          {
             if( opt.group != group.second.name )
+               continue;
+
+            if( opt.hidden )
                continue;
 
             if( !opt.advanced )
@@ -1121,6 +1144,9 @@ void GamsOptions::writeDoxygen(
 
    for( auto& opt : options )
    {
+      if( opt.hidden )
+         continue;
+
       f << "\\anchor " << toupper(solver) << formatID(opt.name) << std::endl;
 
       f << "<strong>" << opt.name << "</strong>";
