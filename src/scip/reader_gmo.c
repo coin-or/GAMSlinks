@@ -13,14 +13,11 @@
 
 /*---+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2*/
 
+#define _USE_MATH_DEFINES   /* to get M_PI on Windows */
+
 #include <assert.h>
 #include <math.h>
 #include <string.h>
-
-/* dos compiler does not know PI */
-#ifndef M_PI
-#define M_PI           3.141592653589793238462643
-#endif
 
 #include "reader_gmo.h"
 
@@ -32,14 +29,21 @@
 
 #include "scip/cons_linear.h"
 #include "scip/cons_bounddisjunction.h"
-#include "scip/cons_quadratic.h"
 #include "scip/cons_nonlinear.h"
 #include "scip/cons_indicator.h"
 #include "scip/cons_sos1.h"
 #include "scip/cons_sos2.h"
-#include "scip/heur_subnlp.h"
+#include "scip/expr_abs.h"
+#include "scip/expr_entropy.h"
+#include "scip/expr_exp.h"
+#include "scip/expr_log.h"
+#include "scip/expr_pow.h"
+#include "scip/expr_product.h"
+#include "scip/expr_sum.h"
+#include "scip/expr_trig.h"
+#include "scip/expr_value.h"
+#include "scip/expr_var.h"
 #include "scip/dialog_default.h"
-#include "nlpi/struct_expr.h"
 
 #define READER_NAME             "gmoreader"
 #define READER_DESC             "Gams Control file reader (using GMO API)"
@@ -57,6 +61,7 @@ struct SCIP_ReaderData
    gevHandle_t           gev;                /**< GAMS environment */
    int                   mipstart;           /**< how to handle initial variable levels */
    char*                 indicatorfile;      /**< name of GAMS options file that contains definitions on indicators */
+   SCIP_Bool             ipoptlicensed;      /**< whether GAMS/IpoptH is licensed */
 };
 
 /** problem data */
@@ -102,163 +107,16 @@ SCIP_DECL_PROBDELORIG(probdataDelOrigGmo)
    return SCIP_OKAY;
 }
 
-/** creates user data of transformed problem by transforming the original user problem data
- *  (called after problem was transformed)
- */
-#if 0
-static
-SCIP_DECL_PROBTRANS(probdataTransGmo)
-{
-
-}
-#else
-#define probdataTransGmo NULL
-#endif
-
-/** frees user data of transformed problem (called when the transformed problem is freed)
- */
-#if 0
-static
-SCIP_DECL_PROBDELTRANS(probdataDelTransGmo)
-{
-   return SCIP_OKAY;
-}
-#else
-#define probdataDelTransGmo NULL
-#endif
-
-
-/** solving process initialization method of transformed data (called before the branch and bound process begins)
- */
-#if 0
-static
-SCIP_DECL_PROBINITSOL(probdataInitSolGmo)
-{
-
-}
-#else
-#define probdataInitSolGmo NULL
-#endif
-
-/** solving process deinitialization method of transformed data (called before the branch and bound data is freed)
- */
-#if 0
-static
-SCIP_DECL_PROBEXITSOL(probdataExitSolGmo)
-{
-   return SCIP_OKAY;
-}
-#else
-#define probdataExitSolGmo NULL
-#endif
-
-/** copies user data of source SCIP for the target SCIP
- */
-#if 0
-static
-SCIP_DECL_PROBCOPY(probdataCopyGmo)
-{
-
-}
-#else
-#define probdataCopyGmo NULL
-#endif
-
 /*
  * Local methods of reader
  */
 
-
-/** ensures that an array of variables has at least a given length */
-static
-SCIP_RETCODE ensureVarsSize(
-   SCIP*                 scip,               /**< SCIP data structure */
-   SCIP_VAR***           vars,               /**< pointer to variables array */
-   int*                  varssize,           /**< pointer to length of variables array */
-   int                   nvars               /**< desired minimal length of array */
-   )
-{
-   assert(scip != NULL);
-   assert(vars != NULL);
-   assert(varssize != NULL);
-
-   if( nvars < *varssize )
-      return SCIP_OKAY;
-
-   *varssize = SCIPcalcMemGrowSize(scip, nvars);
-   SCIP_CALL( SCIPreallocBufferArray(scip, vars, *varssize) );
-   assert(nvars <= *varssize);
-
-   return SCIP_OKAY;
-}
-
-/** adds new children to a linear expression */
-static
-SCIP_RETCODE exprLinearAdd(
-   BMS_BLKMEM*           blkmem,             /**< block memory */
-   SCIP_EXPR*            expr,               /**< pointer to store resulting expression */
-   int                   nchildren,          /**< number of children to add */
-   SCIP_Real*            coefs,              /**< coefficients of additional children */
-   SCIP_EXPR**           children,           /**< additional children expressions */
-   SCIP_Real             constant            /**< constant to add */
-)
-{
-   SCIP_Real* data;
-
-   assert(blkmem != NULL);
-   assert(expr != NULL);
-   assert(SCIPexprGetOperator(expr) == SCIP_EXPR_LINEAR);
-   assert(nchildren >= 0);
-   assert(coefs != NULL || nchildren == 0);
-   assert(children != NULL || nchildren == 0);
-
-   data = (SCIP_Real*)SCIPexprGetOpData(expr);
-   assert(data != NULL);
-
-   /* handle simple case of adding a constant */
-   if( nchildren == 0 )
-   {
-      data[SCIPexprGetNChildren(expr)] += constant;
-
-      return SCIP_OKAY;
-   }
-
-   /* add new children to expr's children array */
-   SCIP_ALLOC( BMSreallocBlockMemoryArray(blkmem, &expr->children, expr->nchildren, expr->nchildren + nchildren) );
-   BMScopyMemoryArray(&expr->children[expr->nchildren], children, nchildren);  /*lint !e866*/
-
-   /* add constant and new coefs to expr's data array */
-   SCIP_ALLOC( BMSreallocBlockMemoryArray(blkmem, &data, expr->nchildren + 1, expr->nchildren + nchildren + 1) );
-   data[expr->nchildren + nchildren] = data[expr->nchildren] + constant;
-   BMScopyMemoryArray(&data[expr->nchildren], coefs, nchildren); /*lint !e866*/
-   expr->data.data = (void*)data;
-
-   expr->nchildren += nchildren;
-
-   return SCIP_OKAY;
-}
-
-/** frees a linear expression, but not its children */
-static
-void exprLinearFree(
-   BMS_BLKMEM*           blkmem,             /**< block memory */
-   SCIP_EXPR**           expr                /**< linear expression to free */
-   )
-{
-   assert(blkmem != NULL);
-   assert(expr != NULL);
-   assert(SCIPexprGetOperator(*expr) == SCIP_EXPR_LINEAR);
-
-   BMSfreeBlockMemoryArray(blkmem, (SCIP_Real**)&(*expr)->data.data, (*expr)->nchildren + 1); /*lint !e866*/
-   BMSfreeBlockMemoryArray(blkmem, &(*expr)->children, (*expr)->nchildren);
-
-   BMSfreeBlockMemory(blkmem, expr);
-}
-
-/** creates an expression from the addition of two given expression, with coefficients, and a constant */
+/** creates an expression from the addition of two given expression, with coefficients, and a constant
+ * argument expressions are released
+ */
 static
 SCIP_RETCODE exprAdd(
-   BMS_BLKMEM*           blkmem,             /**< block memory */
+   SCIP*                 scip,               /**< SCIP data structure */
    SCIP_EXPR**           expr,               /**< pointer to store resulting expression */
    SCIP_Real             coef1,              /**< coefficient of first term */
    SCIP_EXPR*            term1,              /**< expression of first term */
@@ -267,57 +125,39 @@ SCIP_RETCODE exprAdd(
    SCIP_Real             constant            /**< constant term to add */
 )
 {
-   assert(blkmem != NULL);
+   assert(scip != NULL);
    assert(expr != NULL);
 
-   if( term1 != NULL && SCIPexprGetOperator(term1) == SCIP_EXPR_CONST )
+   if( term1 != NULL && SCIPisExprValue(scip, term1) )
    {
-      constant += coef1 * SCIPexprGetOpReal(term1);
-      SCIPexprFreeDeep(blkmem, &term1);
+      constant += coef1 * SCIPgetValueExprValue(term1);
+      SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
    }
 
-   if( term2 != NULL && SCIPexprGetOperator(term2) == SCIP_EXPR_CONST )
+   if( term2 != NULL && SCIPisExprValue(scip, term2) )
    {
-      constant += coef2 * SCIPexprGetOpReal(term2);
-      SCIPexprFreeDeep(blkmem, &term2);
+      constant += coef2 * SCIPgetValueExprValue(term2);
+      SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
    }
 
    if( term1 == NULL && term2 == NULL )
    {
-      SCIP_CALL( SCIPexprCreate(blkmem, expr, SCIP_EXPR_CONST, constant) );
+      SCIP_CALL( SCIPcreateExprValue(scip, expr, constant, NULL, NULL) );
       return SCIP_OKAY;
    }
 
-   if( term1 != NULL && SCIPexprGetOperator(term1) == SCIP_EXPR_LINEAR && coef1 != 1.0 )
+   if( term1 != NULL && SCIPisExprSum(scip, term1) && coef1 != 1.0 )
    {
       /* multiply coefficients and constant of linear expression term1 by coef1 */
-      SCIP_Real* coefs;
-      int i;
-
-      coefs = SCIPexprGetLinearCoefs(term1);
-      assert(coefs != NULL);
-
-      for( i = 0; i < SCIPexprGetNChildren(term1); ++i )
-         coefs[i] *= coef1;
-
-      SCIP_CALL( exprLinearAdd(blkmem, term1, 0, NULL, NULL, (coef1-1.0) * SCIPexprGetLinearConstant(term1)) );
+      SCIPmultiplyByConstantExprSum(term1, coef1);
 
       coef1 = 1.0;
    }
 
-   if( term2 != NULL && SCIPexprGetOperator(term2) == SCIP_EXPR_LINEAR && coef2 != 1.0 )
+   if( term2 != NULL && SCIPisExprSum(scip, term2) && coef2 != 1.0 )
    {
       /* multiply coefficients and constant of linear expression term2 by coef2 */
-      SCIP_Real* coefs;
-      int i;
-
-      coefs = SCIPexprGetLinearCoefs(term2);
-      assert(coefs != NULL);
-
-      for( i = 0; i < SCIPexprGetNChildren(term2); ++i )
-         coefs[i] *= coef2;
-
-      SCIP_CALL( exprLinearAdd(blkmem, term2, 0, NULL, NULL, (coef2-1.0) * SCIPexprGetLinearConstant(term2)) );
+      SCIPmultiplyByConstantExprSum(term2, coef2);
 
       coef2 = 1.0;
    }
@@ -332,18 +172,19 @@ SCIP_RETCODE exprAdd(
       }
       if( constant != 0.0 || coef1 != 1.0 )
       {
-         if( SCIPexprGetOperator(term1) == SCIP_EXPR_LINEAR )
+         if( SCIPisExprSum(scip, term1) )
          {
             assert(coef1 == 1.0);
 
             /* add constant to existing linear expression */
-            SCIP_CALL( exprLinearAdd(blkmem, term1, 0, NULL, NULL, constant) );
+            SCIPsetConstantExprSum(term1, SCIPgetConstantExprSum(term1) + constant);
             *expr = term1;
          }
          else
          {
             /* create new linear expression for coef1 * term1 + constant */
-            SCIP_CALL( SCIPexprCreateLinear(blkmem, expr, 1, &term1, &coef1, constant) );
+            SCIP_CALL( SCIPcreateExprSum(scip, expr, 1, &term1, &coef1, constant, NULL, NULL) );
+            SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
          }
       }
       else
@@ -356,6 +197,7 @@ SCIP_RETCODE exprAdd(
       return SCIP_OKAY;
    }
 
+#if 0
    if( SCIPexprGetOperator(term1) == SCIP_EXPR_LINEAR && SCIPexprGetOperator(term2) == SCIP_EXPR_LINEAR )
    {
       assert(coef1 == 1.0);
@@ -368,28 +210,28 @@ SCIP_RETCODE exprAdd(
 
       return SCIP_OKAY;
    }
+#endif
 
-   if( SCIPexprGetOperator(term2) == SCIP_EXPR_LINEAR )
+   if( !SCIPisExprSum(scip, term1) && SCIPisExprSum(scip, term2) )
    {
       /* if only term2 is linear, then swap */
-      SCIP_EXPR* tmp;
-
-      tmp = term2;
       assert(coef2 == 1.0);
 
-      term2 = term1;
+      SCIPswapPointers((void**)&term1, (void**)&term2);
       coef2 = coef1;
-      term1 = tmp;
       coef1 = 1.0;
    }
 
-   if( SCIPexprGetOperator(term1) == SCIP_EXPR_LINEAR )
+   if( SCIPisExprSum(scip, term1) )
    {
       /* add coef2*term2 as extra child to linear expression term1 */
       assert(coef1 == 1.0);
 
-      SCIP_CALL( exprLinearAdd(blkmem, term1, 1, &coef2, &term2, constant) );
+      SCIP_CALL( SCIPappendExprSumExpr(scip, term1, term2, coef2) );
+      SCIPsetConstantExprSum(term1, SCIPgetConstantExprSum(term1) + constant);
       *expr = term1;
+
+      SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
 
       return SCIP_OKAY;
    }
@@ -404,40 +246,37 @@ SCIP_RETCODE exprAdd(
       children[0] = term1;
       children[1] = term2;
 
-      SCIP_CALL( SCIPexprCreateLinear(blkmem, expr, 2, children, coefs, constant) );
+      SCIP_CALL( SCIPcreateExprSum(scip, expr, 2, children, coefs, constant, NULL, NULL) );
+
+      SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+      SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
    }
 
    return SCIP_OKAY;
 }
 
-/** creates an expression tree from given GAMS nonlinear instructions */
+/** creates an expression from given GAMS nonlinear instructions */
 static
-SCIP_RETCODE makeExprtree(
+SCIP_RETCODE makeExpr(
    SCIP*                 scip,               /**< SCIP data structure */
    gmoHandle_t           gmo,                /**< GAMS Model Object */
    int                   codelen,
    int*                  opcodes,
    int*                  fields,
    SCIP_Real*            constants,
-   SCIP_EXPRTREE**       exprtree            /**< buffer where to store expression tree */
+   SCIP_EXPR**           expr                /**< buffer where to store expression tree */
 )
 {
    SCIP_PROBDATA* probdata;
-   BMS_BLKMEM*   blkmem;
-   SCIP_HASHMAP* var2idx;
    SCIP_EXPR**   stack;
    int           stackpos;
    int           stacksize;
-   SCIP_VAR**    vars;
-   int           nvars;
-   int           varssize;
    int           pos;
    SCIP_EXPR*    e;
    SCIP_EXPR*    term1;
    SCIP_EXPR*    term2;
    GamsOpCode    opcode;
    int           address;
-   int           varidx;
    int           nargs;
    SCIP_RETCODE  rc;
 
@@ -445,22 +284,15 @@ SCIP_RETCODE makeExprtree(
    assert(opcodes != NULL);
    assert(fields != NULL);
    assert(constants != NULL);
-   assert(exprtree != NULL);
+   assert(expr != NULL);
 
    probdata = SCIPgetProbData(scip);
    assert(probdata != NULL);
    assert(probdata->vars != NULL);
 
-   blkmem = SCIPblkmem(scip);
-
    stackpos = 0;
    stacksize = 20;
    SCIP_CALL( SCIPallocBufferArray(scip, &stack, stacksize) );
-
-   nvars = 0;
-   varssize = 10;
-   SCIP_CALL( SCIPallocBufferArray(scip, &vars, varssize) );
-   SCIP_CALL( SCIPhashmapCreate(&var2idx, blkmem, SCIPgetNVars(scip)) );
 
    nargs = -1;
    rc = SCIP_OKAY;
@@ -489,31 +321,15 @@ SCIP_RETCODE makeExprtree(
             address = gmoGetjSolver(gmo, address);
             SCIPdebugPrintf("push variable %d = <%s>\n", address, SCIPvarGetName(probdata->vars[address]));
 
-            if( !SCIPhashmapExists(var2idx, probdata->vars[address]) )
-            {
-               /* add variable to list of variables */
-               SCIP_CALL( ensureVarsSize(scip, &vars, &varssize, nvars+1) );
-               assert(nvars < varssize);
-               vars[nvars] = probdata->vars[address];
-               varidx = nvars;
-               ++nvars;
-               SCIP_CALL( SCIPhashmapInsert(var2idx, (void*)vars[varidx], (void*)(size_t)varidx) );
-            }
-            else
-            {
-               varidx = (int)(size_t)SCIPhashmapGetImage(var2idx, (void*)probdata->vars[address]);
-               assert(varidx >= 0);
-               assert(varidx < nvars);
-               assert(vars[varidx] == probdata->vars[address]);
-            }
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_VARIDX, varidx) );
+            SCIP_CALL( SCIPcreateExprVar(scip, &e, probdata->vars[address], NULL, NULL) );
+
             break;
          }
 
          case nlPushI: /* push constant */
          {
             SCIPdebugPrintf("push constant %g\n", constants[address]);
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_CONST, constants[address]) );
+            SCIP_CALL( SCIPcreateExprValue(scip, &e, constants[address], NULL, NULL) );
             break;
          }
 
@@ -521,7 +337,7 @@ SCIP_RETCODE makeExprtree(
          {
             SCIPdebugPrintf("push constant zero\n");
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_CONST, 0.0) );
+            SCIP_CALL( SCIPcreateExprValue(scip, &e, 0.0, NULL, NULL) );
             break;
          }
 
@@ -534,7 +350,7 @@ SCIP_RETCODE makeExprtree(
             term2 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( exprAdd(blkmem, &e, 1.0, term1, 1.0, term2, 0.0) );
+            SCIP_CALL( exprAdd(scip, &e, 1.0, term1, 1.0, term2, 0.0) );
 
             break;
          }
@@ -548,26 +364,8 @@ SCIP_RETCODE makeExprtree(
             term1 = stack[stackpos-1];
             --stackpos;
 
-            if( !SCIPhashmapExists(var2idx, probdata->vars[address]) )
-            {
-               /* add variable to list of variables */
-               SCIP_CALL( ensureVarsSize(scip, &vars, &varssize, nvars+1) );
-               assert(nvars < varssize);
-               vars[nvars] = probdata->vars[address];
-               varidx = nvars;
-               ++nvars;
-               SCIP_CALL( SCIPhashmapInsert(var2idx, (void*)vars[varidx], (void*)(size_t)varidx) );
-            }
-            else
-            {
-               varidx = (int)(size_t)SCIPhashmapGetImage(var2idx, (void*)probdata->vars[address]);
-               assert(varidx >= 0);
-               assert(varidx < nvars);
-               assert(vars[varidx] == probdata->vars[address]);
-            }
-
-            SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_VARIDX, varidx) );
-            SCIP_CALL( exprAdd(blkmem, &e, 1.0, term1, 1.0, term2, 0.0) );
+            SCIP_CALL( SCIPcreateExprVar(scip, &term2, probdata->vars[address], NULL, NULL) );
+            SCIP_CALL( exprAdd(scip, &e, 1.0, term1, 1.0, term2, 0.0) );
 
             break;
          }
@@ -580,7 +378,7 @@ SCIP_RETCODE makeExprtree(
             term1 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( exprAdd(blkmem, &e, 1.0, term1, 1.0, NULL, constants[address]) );
+            SCIP_CALL( exprAdd(scip, &e, 1.0, term1, 1.0, NULL, constants[address]) );
 
             break;
          }
@@ -595,7 +393,7 @@ SCIP_RETCODE makeExprtree(
             term2 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( exprAdd(blkmem, &e, 1.0, term2, -1.0, term1, 0.0) );
+            SCIP_CALL( exprAdd(scip, &e, 1.0, term2, -1.0, term1, 0.0) );
 
             break;
          }
@@ -609,26 +407,8 @@ SCIP_RETCODE makeExprtree(
             term1 = stack[stackpos-1];
             --stackpos;
 
-            if( !SCIPhashmapExists(var2idx, probdata->vars[address]) )
-            {
-               /* add variable to list of variables */
-               SCIP_CALL( ensureVarsSize(scip, &vars, &varssize, nvars+1) );
-               assert(nvars < varssize);
-               vars[nvars] = probdata->vars[address];
-               varidx = nvars;
-               ++nvars;
-               SCIP_CALL( SCIPhashmapInsert(var2idx, (void*)vars[varidx], (void*)(size_t)varidx) );
-            }
-            else
-            {
-               varidx = (int)(size_t)SCIPhashmapGetImage(var2idx, (void*)probdata->vars[address]);
-               assert(varidx >= 0);
-               assert(varidx < nvars);
-               assert(vars[varidx] == probdata->vars[address]);
-            }
-
-            SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_VARIDX, varidx) );
-            SCIP_CALL( exprAdd(blkmem, &e, 1.0, term1, -1.0, term2, 0.0) );
+            SCIP_CALL( SCIPcreateExprVar(scip, &term2, probdata->vars[address], NULL, NULL) );
+            SCIP_CALL( exprAdd(scip, &e, 1.0, term1, -1.0, term2, 0.0) );
 
             break;
          }
@@ -641,54 +421,47 @@ SCIP_RETCODE makeExprtree(
             term1 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( exprAdd(blkmem, &e, 1.0, term1, 1.0, NULL, -constants[address]) );
+            SCIP_CALL( exprAdd(scip, &e, 1.0, term1, 1.0, NULL, -constants[address]) );
 
             break;
          }
 
          case nlMul: /* multiply */
          {
+            SCIP_EXPR* terms[2];
             SCIPdebugPrintf("multiply\n");
 
             assert(stackpos >= 2);
-            term1 = stack[stackpos-1];
+            terms[1] = stack[stackpos-1];
             --stackpos;
-            term2 = stack[stackpos-1];
+            terms[0] = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MUL, term2, term1) );
+            SCIP_CALL( SCIPcreateExprProduct(scip, &e, 2, terms, 1.0, NULL, NULL) );
+
+            SCIP_CALL( SCIPreleaseExpr(scip, &terms[0]) );
+            SCIP_CALL( SCIPreleaseExpr(scip, &terms[1]) );
+
             break;
          }
 
          case nlMulV: /* multiply variable */
          {
+            SCIP_EXPR* terms[2];
             address = gmoGetjSolver(gmo, address);
             SCIPdebugPrintf("multiply variable %d = <%s>\n", address, SCIPvarGetName(probdata->vars[address]));
 
             assert(stackpos >= 1);
-            term1 = stack[stackpos-1];
+            terms[0] = stack[stackpos-1];
             --stackpos;
 
-            if( !SCIPhashmapExists(var2idx, probdata->vars[address]) )
-            {
-               /* add variable to list of variables */
-               SCIP_CALL( ensureVarsSize(scip, &vars, &varssize, nvars+1) );
-               assert(nvars < varssize);
-               vars[nvars] = probdata->vars[address];
-               varidx = nvars;
-               ++nvars;
-               SCIP_CALL( SCIPhashmapInsert(var2idx, (void*)vars[varidx], (void*)(size_t)varidx) );
-            }
-            else
-            {
-               varidx = (int)(size_t)SCIPhashmapGetImage(var2idx, (void*)probdata->vars[address]);
-               assert(varidx >= 0);
-               assert(varidx < nvars);
-               assert(vars[varidx] == probdata->vars[address]);
-            }
+            SCIP_CALL( SCIPcreateExprVar(scip, &terms[1], probdata->vars[address], NULL, NULL) );
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_VARIDX, varidx) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MUL, term1, term2) );
+            SCIP_CALL( SCIPcreateExprProduct(scip, &e, 2, terms, 1.0, NULL, NULL) );
+
+            SCIP_CALL( SCIPreleaseExpr(scip, &terms[0]) );
+            SCIP_CALL( SCIPreleaseExpr(scip, &terms[1]) );
+
             break;
          }
 
@@ -700,7 +473,7 @@ SCIP_RETCODE makeExprtree(
             term1 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( exprAdd(blkmem, &e, constants[address], term1, 1.0, NULL, 0.0) );
+            SCIP_CALL( exprAdd(scip, &e, constants[address], term1, 1.0, NULL, 0.0) );
 
             break;
          }
@@ -715,13 +488,15 @@ SCIP_RETCODE makeExprtree(
             term2 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( exprAdd(blkmem, &e, constants[address], term1, 1.0, term2, 0.0) );
+            SCIP_CALL( exprAdd(scip, &e, constants[address], term1, 1.0, term2, 0.0) );
 
             break;
          }
 
          case nlDiv: /* divide */
          {
+            SCIP_EXPR* terms[2];
+
             SCIPdebugPrintf("divide\n");
 
             assert(stackpos >= 2);
@@ -730,39 +505,36 @@ SCIP_RETCODE makeExprtree(
             term2 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_DIV, term2, term1) );
+            terms[0] = term2;
+            SCIP_CALL( SCIPcreateExprPow(scip, &terms[1], term1, -1.0, NULL, NULL) );
+            SCIP_CALL( SCIPcreateExprProduct(scip, &e, 2, terms, 1.0, NULL, NULL) );
+
+            SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+            SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+            SCIP_CALL( SCIPreleaseExpr(scip, &terms[1]) );
+
             break;
          }
 
          case nlDivV: /* divide variable */
          {
+            SCIP_EXPR* terms[2];
+
             address = gmoGetjSolver(gmo, address);
             SCIPdebugPrintf("divide variable %d = <%s>\n", address, SCIPvarGetName(probdata->vars[address]));
 
             assert(stackpos >= 1);
-            term1 = stack[stackpos-1];
+            terms[0] = stack[stackpos-1];
             --stackpos;
 
-            if( !SCIPhashmapExists(var2idx, probdata->vars[address]) )
-            {
-               /* add variable to list of variables */
-               SCIP_CALL( ensureVarsSize(scip, &vars, &varssize, nvars+1) );
-               assert(nvars < varssize);
-               vars[nvars] = probdata->vars[address];
-               varidx = nvars;
-               ++nvars;
-               SCIP_CALL( SCIPhashmapInsert(var2idx, (void*)vars[varidx], (void*)(size_t)varidx) );
-            }
-            else
-            {
-               varidx = (int)(size_t)SCIPhashmapGetImage(var2idx, (void*)probdata->vars[address]);
-               assert(varidx >= 0);
-               assert(varidx < nvars);
-               assert(vars[varidx] == probdata->vars[address]);
-            }
+            SCIP_CALL( SCIPcreateExprVar(scip, &term2, probdata->vars[address], NULL, NULL) );
+            SCIP_CALL( SCIPcreateExprPow(scip, &terms[1], term2, -1.0, NULL, NULL) );
+            SCIP_CALL( SCIPcreateExprProduct(scip, &e, 2, terms, 1.0, NULL, NULL) );
 
-            SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_VARIDX, varidx) );
-            SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_DIV, term1, term2) );
+            SCIP_CALL( SCIPreleaseExpr(scip, &terms[0]) );
+            SCIP_CALL( SCIPreleaseExpr(scip, &terms[1]) );
+            SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+
             break;
          }
 
@@ -775,7 +547,7 @@ SCIP_RETCODE makeExprtree(
             term1 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( exprAdd(blkmem, &e, 1.0/constants[address], term1, 1.0, NULL, 0.0) );
+            SCIP_CALL( exprAdd(scip, &e, 1.0/constants[address], term1, 1.0, NULL, 0.0) );
 
             break;
          }
@@ -788,7 +560,7 @@ SCIP_RETCODE makeExprtree(
             term1 = stack[stackpos-1];
             --stackpos;
 
-            SCIP_CALL( exprAdd(blkmem, &e, -1.0, term1, 1.0, NULL, 0.0) );
+            SCIP_CALL( exprAdd(scip, &e, -1.0, term1, 1.0, NULL, 0.0) );
 
             break;
          }
@@ -800,27 +572,12 @@ SCIP_RETCODE makeExprtree(
             address = gmoGetjSolver(gmo, address);
             SCIPdebugPrintf("push negated variable %d = <%s>\n", address, SCIPvarGetName(probdata->vars[address]));
 
-            if( !SCIPhashmapExists(var2idx, probdata->vars[address]) )
-            {
-               /* add variable to list of variables */
-               SCIP_CALL( ensureVarsSize(scip, &vars, &varssize, nvars+1) );
-               assert(nvars < varssize);
-               vars[nvars] = probdata->vars[address];
-               varidx = nvars;
-               ++nvars;
-               SCIP_CALL( SCIPhashmapInsert(var2idx, (void*)vars[varidx], (void*)(size_t)varidx) );
-            }
-            else
-            {
-               varidx = (int)(size_t)SCIPhashmapGetImage(var2idx, (void*)probdata->vars[address]);
-               assert(varidx >= 0);
-               assert(varidx < nvars);
-               assert(vars[varidx] == probdata->vars[address]);
-            }
+            SCIP_CALL( SCIPcreateExprVar(scip, &term1, probdata->vars[address], NULL, NULL) );
 
             minusone = -1.0;
-            SCIP_CALL( SCIPexprCreate(blkmem, &term1, SCIP_EXPR_VARIDX, varidx) );
-            SCIP_CALL( SCIPexprCreateLinear(blkmem, &e, 1, &term1, &minusone, 0.0) );
+            SCIP_CALL( SCIPcreateExprSum(scip, &e, 1, &term1, &minusone, 0.0, NULL, NULL) );
+
+            SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
 
             break;
          }
@@ -851,6 +608,10 @@ SCIP_RETCODE makeExprtree(
             {
                case fnmin:
                {
+                  SCIP_EXPR* diff;
+                  SCIP_EXPR* terms[3];
+                  SCIP_Real coefs[3];
+
                   SCIPdebugPrintf("min\n");
 
                   assert(stackpos >= 2);
@@ -859,12 +620,36 @@ SCIP_RETCODE makeExprtree(
                   term2 = stack[stackpos-1];
                   --stackpos;
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MIN, term1, term2) );
+                  /* min(term1, term2) = 0.5 (term1+term2) - 0.5 abs(term1-term2) */
+
+                  /* abs(term1-term2) */
+                  terms[0] = term1;
+                  terms[1] = term2;
+                  coefs[0] = 1.0;
+                  coefs[1] = -1.0;
+                  SCIP_CALL( SCIPcreateExprSum(scip, &diff, 2, terms, coefs, 0.0, NULL, NULL) );
+
+                  SCIP_CALL( SCIPcreateExprAbs(scip, &terms[2], diff, NULL, NULL) );  /* |term1-term2| */
+
+                  coefs[0] = 0.5;
+                  coefs[1] = 0.5;
+                  coefs[2] = -0.5;
+                  SCIP_CALL( SCIPcreateExprSum(scip, &e, 3, terms, coefs, 0.0, NULL, NULL) );
+
+                  SCIP_CALL( SCIPreleaseExpr(scip, &terms[0]) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &terms[1]) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &terms[2]) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &diff) );
+
                   break;
                }
 
                case fnmax:
                {
+                  SCIP_EXPR* diff;
+                  SCIP_EXPR* terms[3];
+                  SCIP_Real coefs[3];
+
                   SCIPdebugPrintf("max\n");
 
                   assert(stackpos >= 2);
@@ -873,7 +658,27 @@ SCIP_RETCODE makeExprtree(
                   term2 = stack[stackpos-1];
                   --stackpos;
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MAX, term1, term2) );
+                  /* max(term1, term2) = 0.5 (term1+term2) + 0.5 abs(term1-term2) */
+
+                  /* abs(term1-term2) */
+                  terms[0] = term1;
+                  terms[1] = term2;
+                  coefs[0] = 1.0;
+                  coefs[1] = -1.0;
+                  SCIP_CALL( SCIPcreateExprSum(scip, &diff, 2, terms, coefs, 0.0, NULL, NULL) );
+
+                  SCIP_CALL( SCIPcreateExprAbs(scip, &terms[2], diff, NULL, NULL) );  /* |term1-term2| */
+
+                  coefs[0] = 0.5;
+                  coefs[1] = 0.5;
+                  coefs[2] = 0.5;
+                  SCIP_CALL( SCIPcreateExprSum(scip, &e, 3, terms, coefs, 0.0, NULL, NULL) );
+
+                  SCIP_CALL( SCIPreleaseExpr(scip, &terms[0]) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &terms[1]) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &terms[2]) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &diff) );
+
                   break;
                }
 
@@ -885,7 +690,8 @@ SCIP_RETCODE makeExprtree(
                   term1 = stack[stackpos-1];
                   --stackpos;
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_SQUARE, term1) );
+                  SCIP_CALL( SCIPcreateExprPow(scip, &e, term1, 2.0, NULL, NULL) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
                   break;
                }
 
@@ -897,7 +703,8 @@ SCIP_RETCODE makeExprtree(
                   term1 = stack[stackpos-1];
                   --stackpos;
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_EXP, term1) );
+                  SCIP_CALL( SCIPcreateExprExp(scip, &e, term1, NULL, NULL) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
                   break;
                }
 
@@ -909,35 +716,48 @@ SCIP_RETCODE makeExprtree(
                   term1 = stack[stackpos-1];
                   --stackpos;
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_LOG, term1) );
+                  SCIP_CALL( SCIPcreateExprLog(scip, &e, term1, NULL, NULL) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
                   break;
                }
 
                case fnlog10:
                {
+                  SCIP_Real coef;
+
                   SCIPdebugPrintf("log10 = ln * 1/ln(10)\n");
 
                   assert(stackpos >= 1);
                   term1 = stack[stackpos-1];
                   --stackpos;
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_LOG, term1) );
-                  SCIP_CALL( SCIPexprCreate(blkmem, &term1, SCIP_EXPR_CONST, 1.0/log(10.0)) );
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MUL, term2, term1) );
+                  SCIP_CALL( SCIPcreateExprLog(scip, &term2, term1, NULL, NULL) );
+                  coef = 1.0/log(10.0);
+                  SCIP_CALL( SCIPcreateExprSum(scip, &e, 1, &term2, &coef, 0.0, NULL, NULL) );
+
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+
                   break;
                }
 
                case fnlog2:
                {
+                  SCIP_Real coef;
+
                   SCIPdebugPrintf("log2 = ln * 1/ln(2)\n");
 
                   assert(stackpos >= 1);
                   term1 = stack[stackpos-1];
                   --stackpos;
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &term2, SCIP_EXPR_LOG, term1) );
-                  SCIP_CALL( SCIPexprCreate(blkmem, &term1, SCIP_EXPR_CONST, 1.0/log(2.0)) );
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MUL, term2, term1) );
+                  SCIP_CALL( SCIPcreateExprLog(scip, &term2, term1, NULL, NULL) );
+                  coef = 1.0/log(2.0);
+                  SCIP_CALL( SCIPcreateExprSum(scip, &e, 1, &term2, &coef, 0.0, NULL, NULL) );
+
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+
                   break;
                }
 
@@ -949,10 +769,11 @@ SCIP_RETCODE makeExprtree(
                   term1 = stack[stackpos-1];
                   --stackpos;
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_SQRT, term1) );
+                  SCIP_CALL( SCIPcreateExprPow(scip, &e, term1, 0.5, NULL, NULL) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
                   break;
                }
-#if 0
+
                case fncos:
                {
                   SCIPdebugPrintf("cos\n");
@@ -961,7 +782,8 @@ SCIP_RETCODE makeExprtree(
                   term1 = stack[stackpos-1];
                   --stackpos;
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_COS, term1) );
+                  SCIP_CALL( SCIPcreateExprCos(scip, &e, term1, NULL, NULL) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
                   break;
                }
 
@@ -973,22 +795,11 @@ SCIP_RETCODE makeExprtree(
                   term1 = stack[stackpos-1];
                   --stackpos;
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_SIN, term1) );
+                  SCIP_CALL( SCIPcreateExprSin(scip, &e, term1, NULL, NULL) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
                   break;
                }
 
-               case fntan:
-               {
-                  SCIPdebugPrintf("tan\n");
-
-                  assert(stackpos >= 1);
-                  term1 = stack[stackpos-1];
-                  --stackpos;
-
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_TAN, term1) );
-                  break;
-               }
-#endif
                case fnpower: /* x ^ y */
                case fnrpower: /* x ^ y */
                case fncvpower: /* constant ^ x */
@@ -1002,30 +813,30 @@ SCIP_RETCODE makeExprtree(
                   term2 = stack[stackpos-1];
                   --stackpos;
 
-                  assert(func != fncvpower || SCIPexprGetOperator(term2) == SCIP_EXPR_CONST);
-                  assert(func != fnvcpower || SCIPexprGetOperator(term1) == SCIP_EXPR_CONST);
+                  assert(func != fncvpower || SCIPisExprValue(scip, term2));
+                  assert(func != fnvcpower || SCIPisExprValue(scip, term1));
 
-                  if( SCIPexprGetOperator(term1) == SCIP_EXPR_CONST )
+                  if( SCIPisExprValue(scip, term1) )
                   {
-                     /* use intpower if exponent is an integer constant, otherwise use realpower */
-                     if( SCIPisIntegral(scip, SCIPexprGetOpReal(term1)) )
-                     {
-                        SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_INTPOWER, term2, (int)SCIPexprGetOpReal(term1)) );
-                        SCIPexprFreeDeep(blkmem, &term1);
-                     }
-                     else
-                     {
-                        SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_REALPOWER, term2, SCIPexprGetOpReal(term1)) );
-                        SCIPexprFreeDeep(blkmem, &term1);
-                     }
+                     SCIP_CALL( SCIPcreateExprPow(scip, &e, term2, SCIPgetValueExprValue(term1), NULL, NULL) );
                   }
                   else
                   {
                      /* term2^term1 = exp(log(term2)*term1) */
-                     SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_LOG, term2) );
-                     SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_MUL, e, term1) );
-                     SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_EXP, e) );
+                     SCIP_EXPR* terms[2];
+                     SCIP_EXPR* prod;
+
+                     SCIP_CALL( SCIPcreateExprLog(scip, &terms[0], term2, NULL, NULL) );
+                     terms[1] = term1;
+                     SCIP_CALL( SCIPcreateExprProduct(scip, &prod, 2, terms, 1.0, NULL, NULL) );
+                     SCIP_CALL( SCIPcreateExprExp(scip, &e, prod, NULL, NULL) );
+
+                     SCIP_CALL( SCIPreleaseExpr(scip, &terms[0]) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &prod) );
                   }
+
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
 
                   break;
                }
@@ -1040,10 +851,9 @@ SCIP_RETCODE makeExprtree(
                   term2 = stack[stackpos-1];
                   --stackpos;
 
-                  if( SCIPexprGetOperator(term1) == SCIP_EXPR_CONST )
+                  if( SCIPisExprValue(scip, term1) )
                   {
-                     SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_SIGNPOWER, term2, SCIPexprGetOpReal(term1)) );
-                     SCIPexprFreeDeep(blkmem, &term1);
+                     SCIP_CALL( SCIPcreateExprSignpower(scip, &e, term2, SCIPgetValueExprValue(term1), NULL, NULL) );
                   }
                   else
                   {
@@ -1052,6 +862,9 @@ SCIP_RETCODE makeExprtree(
                      goto TERMINATE;
                   }
 
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+
                   break;
                }
 
@@ -1059,12 +872,14 @@ SCIP_RETCODE makeExprtree(
                {
                   SCIPdebugPrintf("pi\n");
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_CONST, M_PI) );
+                  SCIP_CALL( SCIPcreateExprValue(scip, &e, M_PI, NULL, NULL) );
                   break;
                }
 
                case fndiv:
                {
+                  SCIP_EXPR* terms[2];
+
                   SCIPdebugPrintf("divide\n");
 
                   assert(stackpos >= 2);
@@ -1073,7 +888,14 @@ SCIP_RETCODE makeExprtree(
                   term2 = stack[stackpos-1];
                   --stackpos;
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_DIV, term2, term1) );
+                  terms[0] = term2;
+                  SCIP_CALL( SCIPcreateExprPow(scip, &terms[1], term1, -1.0, NULL, NULL) );
+                  SCIP_CALL( SCIPcreateExprProduct(scip, &e, 2, terms, 1.0, NULL, NULL) );
+
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &terms[1]) );
+
                   break;
                }
 
@@ -1085,7 +907,8 @@ SCIP_RETCODE makeExprtree(
                   term1 = stack[stackpos-1];
                   --stackpos;
 
-                  SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_ABS, term1) );
+                  SCIP_CALL( SCIPcreateExprAbs(scip, &e, term1, NULL, NULL) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
                   break;
                }
 
@@ -1100,8 +923,8 @@ SCIP_RETCODE makeExprtree(
                         term1 = stack[stackpos-1];
                         --stackpos;
 
-                        SCIPexprFreeDeep(blkmem, &term1);
-                        SCIP_CALL( SCIPexprCreate(blkmem, &e, SCIP_EXPR_CONST, 0.0) );
+                        SCIP_CALL( SCIPcreateExprValue(scip, &e, 0.0, NULL, NULL) );
+                        SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
                         break;
                      }
 
@@ -1111,53 +934,80 @@ SCIP_RETCODE makeExprtree(
                         --stackpos;
 
                         /* delete variable of polynomial */
-                        SCIPexprFreeDeep(blkmem, &stack[stackpos-1]);
+                        SCIP_CALL( SCIPreleaseExpr(scip, &stack[stackpos-1]) );
                         --stackpos;
 
                         break;
                      }
 
-                     default: /* polynomial is at least linear */
+                     default: /* univariate polynomial is at least linear */
                      {
-                        SCIP_EXPRDATA_MONOMIAL** monomials;
+                        SCIP_EXPR** monomials;
+                        SCIP_Real* coefs;
                         SCIP_Real exponent;
                         SCIP_Real constant;
                         int nmonomials;
-                        int zero;
 
                         nmonomials = nargs-2;
                         SCIP_CALL( SCIPallocBufferArray(scip, &monomials, nargs-2) );
+                        SCIP_CALL( SCIPallocBufferArray(scip, &coefs, nargs-2) );
 
-                        zero = 0;
+                        /* the argument (like a variable) of the polynomial */
+                        term2 = stack[stackpos - nargs];
+
                         constant = 0.0;
                         for( ; nargs > 1; --nargs )
                         {
                            assert(stackpos > 0);
 
                            term1 = stack[stackpos-1];
-                           assert(SCIPexprGetOperator(term1) == SCIP_EXPR_CONST);
+                           assert(SCIPisExprValue(scip, term1));
 
                            if( nargs > 2 )
                            {
                               exponent = (SCIP_Real)(nargs-2);
-                              SCIP_CALL( SCIPexprCreateMonomial(blkmem, &monomials[nargs-3], SCIPexprGetOpReal(term1), 1, &zero, &exponent) );
+                              SCIP_CALL( SCIPcreateExprPow(scip, &monomials[nargs-3], term2, exponent, NULL, NULL) );
+                              coefs[nargs-3] = SCIPgetValueExprValue(term1);
                            }
                            else
-                              constant = SCIPexprGetOpReal(term1);
+                           {
+                              constant = SCIPgetValueExprValue(term1);
+                           }
 
-                           SCIPexprFreeDeep(blkmem, &term1);
+                           SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
                            --stackpos;
                         }
 
                         assert(stackpos > 0);
-                        term1 = stack[stackpos-1];
+                        assert(stack[stackpos-1] == term2);
                         --stackpos;
 
-                        SCIP_CALL( SCIPexprCreatePolynomial(blkmem, &e, 1, &term1, nmonomials, monomials, constant, FALSE) );
+                        SCIP_CALL( SCIPcreateExprSum(scip, &e, nmonomials, monomials, coefs, constant, NULL, NULL) );
+
+                        SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                        for( nargs = 0; nargs < nmonomials; ++nargs )
+                        {
+                           SCIP_CALL( SCIPreleaseExpr(scip, &monomials[nargs]) );
+                        }
+
+                        SCIPfreeBufferArray(scip, &coefs);
                         SCIPfreeBufferArray(scip, &monomials);
                      }
                   }
                   nargs = -1;
+                  break;
+               }
+
+               case fnentropy:
+               {
+                  SCIPdebugPrintf("entropy\n");
+
+                  assert(stackpos >= 1);
+                  term1 = stack[stackpos-1];
+                  --stackpos;
+
+                  SCIP_CALL( SCIPcreateExprEntropy(scip, &e, term1, NULL, NULL) );
+                  SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
                   break;
                }
 
@@ -1171,7 +1021,7 @@ SCIP_RETCODE makeExprtree(
                case fnunfmi /* uniform random number */:
                case fnncpf /* fischer: sqrt(x1^2+x2^2+2*x3) */:
                case fnncpcm /* chen-mangasarian: x1-x3*ln(1+exp((x1-x2)/x3))*/:
-               case fnentropy /* x*ln(x) */: case fnsigmoid /* 1/(1+exp(-x)) */:
+               case fnsigmoid /* 1/(1+exp(-x)) */:
                case fnboolnot: case fnbooland:
                case fnboolor: case fnboolxor: case fnboolimp:
                case fnbooleqv: case fnrelopeq: case fnrelopgt:
@@ -1181,6 +1031,7 @@ SCIP_RETCODE makeExprtree(
                case fncentropy /* x*ln((x+d)/(y+d))*/:
                case fngamma: case fnloggamma: case fnbeta:
                case fnlogbeta: case fngammareg: case fnbetareg:
+               case fntan:
                case fnsinh: case fncosh: case fntanh:
                case fnncpvusin /* veelken-ulbrich */:
                case fnncpvupow /* veelken-ulbrich */:
@@ -1222,14 +1073,10 @@ SCIP_RETCODE makeExprtree(
 
    /* there should be exactly one element on the stack, which will be the root of our expression tree */
    assert(stackpos == 1);
-
-   SCIP_CALL( SCIPexprtreeCreate(blkmem, exprtree, stack[0], nvars, 0, NULL) );
-   SCIP_CALL( SCIPexprtreeSetVars(*exprtree, nvars, vars) );
+   *expr = stack[0];
 
 TERMINATE:
-   SCIPfreeBufferArray(scip, &vars);
    SCIPfreeBufferArray(scip, &stack);
-   SCIPhashmapFree(&var2idx);
 
    return rc;
 }
@@ -1253,11 +1100,6 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
    int* indices = NULL;
    int* nlflag;
    SCIP_VAR** consvars = NULL;
-   SCIP_VAR** quadvars1;
-   SCIP_VAR** quadvars2;
-   SCIP_Real* quadcoefs;
-   int* qrow;
-   int* qcol;
    SCIP_CONS* con;
    int numSos1, numSos2, nzSos;
    SCIP_PROBDATA* probdata;
@@ -1304,13 +1146,8 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
 
    (void) gmoNameInput(gmo, buffer);
    SCIP_CALL( SCIPcreateProb(scip, buffer,
-      probdataDelOrigGmo, probdataTransGmo, probdataDelTransGmo,
-      probdataInitSolGmo, probdataExitSolGmo, probdataCopyGmo,
+      probdataDelOrigGmo, NULL, NULL, NULL, NULL, NULL,
       probdata) );
-
-   /* initialize QMaker, if nonlinear */
-   if( gmoNLNZ(gmo) > 0 || objnonlinear )
-      gmoUseQSet(gmo, 1);
 
    /* get data on indicator constraints from options object */
    nindics = 0;
@@ -1328,13 +1165,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
          return SCIP_ERROR;
       }
 
-#if GMOAPIVERSION < 13
-      (void) gevGetStrOpt(gev, gevNameSysDir, buffer);
-      strcat(buffer, "optscip.def");
-      if( optReadDefinition(opt, buffer) )
-#else
       if( optReadDefinitionFromPChar(opt, (char*)"indic indicator\ngeneral group 1 1 Dot options and indicators") )
-#endif
       {
          for( i = 1; i <= optMessageCount(opt); ++i )
          {
@@ -1571,12 +1402,6 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
    {
       SCIP_CALL( SCIPallocBufferArray(scip, &nlflag, gmoN(gmo)) );
 
-      SCIP_CALL( SCIPallocBufferArray(scip, &quadvars1, gmoMaxQNZ(gmo)) );
-      SCIP_CALL( SCIPallocBufferArray(scip, &quadvars2, gmoMaxQNZ(gmo)) );
-      SCIP_CALL( SCIPallocBufferArray(scip, &quadcoefs, gmoMaxQNZ(gmo)) );
-      SCIP_CALL( SCIPallocBufferArray(scip, &qrow, gmoMaxQNZ(gmo)) );
-      SCIP_CALL( SCIPallocBufferArray(scip, &qcol, gmoMaxQNZ(gmo)) );
-
       SCIP_CALL( SCIPallocBufferArray(scip, &opcodes, gmoNLCodeSizeMaxRow(gmo)+1) );
       SCIP_CALL( SCIPallocBufferArray(scip, &fields, gmoNLCodeSizeMaxRow(gmo)+1) );
       SCIP_CALL( SCIPduplicateBufferArray(scip, &constants, (double*)gmoPPool(gmo), gmoNLConst(gmo)) );
@@ -1604,12 +1429,6 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
    else
    {
       nlflag = NULL;
-
-      quadvars1 = NULL;
-      quadvars2 = NULL;
-      quadcoefs = NULL;
-      qrow = NULL;
-      qcol = NULL;
 
       opcodes = NULL;
       fields = NULL;
@@ -1641,7 +1460,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
             SCIPerrorMessage("External functions not supported by SCIP.\n");
             return SCIP_INVALIDDATA;
          case gmoequ_C:
-            SCIPerrorMessage("Conic constraints not supported by SCIP interface yet.\n");
+            SCIPerrorMessage("Conic constraints not supported by SCIP interface.\n");
             return SCIP_INVALIDDATA;
          case gmoequ_B:
             SCIPerrorMessage("Logic constraints not supported by SCIP interface yet.\n");
@@ -1724,67 +1543,16 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
             break;
          }
          
-         case gmoorder_Q:
-         {
-            /* quadratic constraint */
-            int j, nz, nlnz, qnz;
-            
-            assert(qcol != NULL);
-            assert(qrow != NULL);
-            assert(quadcoefs != NULL);
-            assert(quadvars1 != NULL);
-            assert(quadvars2 != NULL);
-
-            (void) gmoGetRowSparse(gmo, i, indices, coefs, NULL, &nz, &nlnz);
-            for( j = 0; j < nz; ++j )
-               consvars[j] = vars[indices[j]];
-            
-            qnz = gmoGetRowQNZOne(gmo,i);
-#if GMOAPIVERSION <= 19
-            (void) gmoGetRowQ(gmo, i, qcol, qrow, quadcoefs);
-#else
-            (void) gmoGetRowQMat(gmo, i, qcol, qrow, quadcoefs);
-#endif
-            for( j = 0; j < qnz; ++j )
-            {
-               assert(qcol[j] >= 0);
-               assert(qrow[j] >= 0);
-               assert(qcol[j] < gmoN(gmo));
-               assert(qrow[j] < gmoN(gmo));
-               quadvars1[j] = vars[qcol[j]];
-               quadvars2[j] = vars[qrow[j]];
-               if( qcol[j] == qrow[j] )
-                  quadcoefs[j] /= 2.0; /* for some strange reason, the coefficients on the diagonal are multiplied by 2 in GMO. */
-            }
-
-            SCIP_CALL( SCIPcreateConsQuadratic(scip, &con, buffer, nz, consvars, coefs, qnz, quadvars1, quadvars2, quadcoefs, lhs, rhs,
-                  TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
-            break;
-         }
-
          case gmoorder_NL:
          {
             /* nonlinear constraint */
-            int j, nz, nlnz, linnz;
+            int j, nz, nlnz;
             int codelen;
-            SCIP_EXPRTREE* exprtree;
+            SCIP_EXPR* expr;
 
-            assert(nlflag != NULL);
-
-            (void) gmoGetRowSparse(gmo, i, indices, coefs, nlflag, &nz, &nlnz);
-            linnz = 0;
-            for( j = 0; j < nz; ++j )
-            {
-               if( !nlflag[j] )
-               {
-                  consvars[linnz] = vars[indices[j]];
-                  coefs[linnz] = coefs[j];
-                  ++linnz;
-               }
-            }
-
+            /* create expression and nonlinear constraint */
             (void) gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields);
-            rc = makeExprtree(scip, gmo, codelen, opcodes, fields, constants, &exprtree);
+            rc = makeExpr(scip, gmo, codelen, opcodes, fields, constants, &expr);
             if( rc == SCIP_READERROR )
             {
                SCIPinfoMessage(scip, NULL, "Error processing nonlinear instructions of equation %s.\n", buffer);
@@ -1792,10 +1560,20 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
             }
             SCIP_CALL( rc );
 
-            SCIP_CALL( SCIPcreateConsNonlinear(scip, &con, buffer, linnz, consvars, coefs, 1, &exprtree, NULL, lhs, rhs,
-                  TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
+            SCIP_CALL( SCIPcreateConsBasicNonlinear(scip, &con, buffer, expr, lhs, rhs) );
+            SCIP_CALL( SCIPreleaseExpr(scip, &expr) );
 
-            SCIP_CALL( SCIPexprtreeFree(&exprtree) );
+            /* add linear part */
+            assert(nlflag != NULL);
+            (void) gmoGetRowSparse(gmo, i, indices, coefs, nlflag, &nz, &nlnz);
+            for( j = 0; j < nz; ++j )
+            {
+               if( !nlflag[j] )
+               {
+                  SCIP_CALL( SCIPaddLinearVarNonlinear(scip, con, vars[indices[j]], coefs[j]) );
+               }
+            }
+
             break;
          }
 
@@ -1821,117 +1599,65 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
    if( objnonlinear )
    {
       /* make constraint out of nonlinear objective function */
-      int j, nz, nlnz, qnz;
+      int j, nz, nlnz;
       double lhs, rhs;
+      SCIP_Real objfactor;
+      int codelen;
+      SCIP_EXPR* expr;
       
-      assert(gmoGetObjOrder(gmo) == (int) gmoorder_L || gmoGetObjOrder(gmo) == (int) gmoorder_Q || gmoGetObjOrder(gmo) == (int) gmoorder_NL);
+      assert(gmoGetObjOrder(gmo) == (int) gmoorder_NL);
 
       SCIP_CALL( SCIPcreateVar(scip, &probdata->objvar, "xobj", -SCIPinfinity(scip), SCIPinfinity(scip), 1.0, SCIP_VARTYPE_CONTINUOUS, TRUE, FALSE, NULL, NULL, NULL, NULL, NULL) );
       SCIP_CALL( SCIPaddVar(scip, probdata->objvar) );
       SCIPdebugMessage("added objective variable ");
       SCIPdebug( SCIPprintVar(scip, probdata->objvar, NULL) );
 
-      if( gmoGetObjOrder(gmo) != (int) gmoorder_NL )
+      assert(nlflag != NULL);
+
+      objfactor = -1.0 / gmoObjJacVal(gmo);
+
+      (void) gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
+      rc = makeExpr(scip, gmo, codelen, opcodes, fields, constants, &expr);
+      if( rc == SCIP_READERROR )
       {
-         assert(qcol != NULL);
-         assert(qrow != NULL);
-         assert(quadcoefs != NULL);
-         assert(quadvars1 != NULL);
-         assert(quadvars2 != NULL);
+         SCIPinfoMessage(scip, NULL, "Error processing nonlinear instructions of objective %s.\n", gmoGetObjName(gmo, buffer));
+         goto TERMINATE;
+      }
+      SCIP_CALL( rc );
 
-         (void) gmoGetObjSparse(gmo, indices, coefs, NULL, &nz, &nlnz);
-         for( j = 0; j < nz; ++j )
-            consvars[j] = vars[indices[j]];
-
-         consvars[nz] = probdata->objvar;
-         coefs[nz] = -1.0;
-         ++nz;
-
-#if GMOAPIVERSION <= 19
-         qnz = gmoObjQNZ(gmo);
-         (void) gmoGetObjQ(gmo, qcol, qrow, quadcoefs);
-#else
-         qnz = gmoObjQMatNZ(gmo);
-         (void) gmoGetObjQMat(gmo, qcol, qrow, quadcoefs);
-#endif
-         for( j = 0; j < qnz; ++j )
-         {
-            assert(qcol[j] >= 0);
-            assert(qrow[j] >= 0);
-            assert(qcol[j] < gmoN(gmo));
-            assert(qrow[j] < gmoN(gmo));
-            quadvars1[j] = vars[qcol[j]];
-            quadvars2[j] = vars[qrow[j]];
-            if( qcol[j] == qrow[j] )
-               quadcoefs[j] /= 2.0; /* for some strange reason, the coefficients on the diagonal are multiplied by 2 in GMO */
-         }
-
-         if( gmoSense(gmo) == (int) gmoObj_Min )
-         {
-            lhs = -SCIPinfinity(scip);
-            rhs = -gmoObjConst(gmo);
-         }
-         else
-         {
-            lhs = -gmoObjConst(gmo);
-            rhs = SCIPinfinity(scip);
-         }
-
-         SCIP_CALL( SCIPcreateConsQuadratic(scip, &con, "objective", nz, consvars, coefs, qnz, quadvars1, quadvars2, quadcoefs, lhs, rhs,
-            TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE) );
+      if( gmoSense(gmo) == (int) gmoObj_Min )
+      {
+         lhs = -SCIPinfinity(scip);
+         rhs = -gmoObjConst(gmo);
       }
       else
       {
-         SCIP_Real objfactor;
-         int linnz;
-         int codelen;
-         SCIP_EXPRTREE* exprtree;
-
-         assert(nlflag != NULL);
-
-         (void) gmoGetObjSparse(gmo, indices, coefs, nlflag, &nz, &nlnz);
-         linnz = 0;
-         for( j = 0; j < nz; ++j )
-         {
-            if( !nlflag[j] )
-            {
-               coefs[linnz] = coefs[j];
-               consvars[linnz] = vars[indices[j]];
-               ++linnz;
-            }
-         }
-
-         consvars[linnz] = probdata->objvar;
-         coefs[linnz] = -1.0;
-         ++linnz;
-
-         objfactor = -1.0 / gmoObjJacVal(gmo);
-
-         (void) gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
-         rc = makeExprtree(scip, gmo, codelen, opcodes, fields, constants, &exprtree);
-         if( rc == SCIP_READERROR )
-         {
-            SCIPinfoMessage(scip, NULL, "Error processing nonlinear instructions of objective %s.\n", gmoGetObjName(gmo, buffer));
-            goto TERMINATE;
-         }
-         SCIP_CALL( rc );
-
-         if( gmoSense(gmo) == (int) gmoObj_Min )
-         {
-            lhs = -SCIPinfinity(scip);
-            rhs = -gmoObjConst(gmo);
-         }
-         else
-         {
-            lhs = -gmoObjConst(gmo);
-            rhs = SCIPinfinity(scip);
-         }
-
-         SCIP_CALL( SCIPcreateConsNonlinear(scip, &con, "objective", linnz, consvars, coefs, 1, &exprtree, &objfactor, lhs, rhs,
-               TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
-
-         SCIP_CALL( SCIPexprtreeFree(&exprtree) );
+         lhs = -gmoObjConst(gmo);
+         rhs = SCIPinfinity(scip);
       }
+
+      if( objfactor != 1.0 )
+      {
+         SCIP_EXPR* tmp;
+
+         SCIP_CALL( exprAdd(scip, &tmp, objfactor, expr, 1.0, NULL, 0.0) );
+         expr = tmp;
+      }
+
+      SCIP_CALL( SCIPcreateConsBasicNonlinear(scip, &con, "objective", expr, lhs, rhs) );
+      SCIP_CALL( SCIPreleaseExpr(scip, &expr) );
+
+      /* add linear part */
+      (void) gmoGetObjSparse(gmo, indices, coefs, nlflag, &nz, &nlnz);
+      for( j = 0; j < nz; ++j )
+      {
+         if( !nlflag[j] )
+         {
+            SCIP_CALL( SCIPaddLinearVarNonlinear(scip, con, vars[indices[j]], coefs[j]) );
+         }
+      }
+
+      SCIP_CALL( SCIPaddLinearVarNonlinear(scip, con, probdata->objvar, -1.0) );
 
       SCIP_CALL( SCIPaddCons(scip, con) );
       SCIPdebugMessage("added objective constraint ");
@@ -2140,11 +1866,6 @@ TERMINATE:
    SCIPfreeBufferArrayNull(scip, &indices);
    SCIPfreeBufferArrayNull(scip, &consvars);
    SCIPfreeBufferArrayNull(scip, &nlflag);
-   SCIPfreeBufferArrayNull(scip, &quadvars1);
-   SCIPfreeBufferArrayNull(scip, &quadvars2);
-   SCIPfreeBufferArrayNull(scip, &quadcoefs);
-   SCIPfreeBufferArrayNull(scip, &qrow);
-   SCIPfreeBufferArrayNull(scip, &qcol);
    SCIPfreeBufferArrayNull(scip, &opcodes);
    SCIPfreeBufferArrayNull(scip, &fields);
    SCIPfreeBufferArrayNull(scip, &constants);
@@ -2152,107 +1873,7 @@ TERMINATE:
    SCIPfreeBufferArrayNull(scip, &indiccols);
    SCIPfreeBufferArrayNull(scip, &indiconvals);
 
-   /* deinitialize QMaker, if nonlinear */
-   if( gmoNLNZ(gmo) > 0 || objnonlinear )
-      gmoUseQSet(gmo, 0);
-
    return rc;
-}
-
-/** check solution for feasibility and resolves by NLP solver, if necessary and possible */
-static
-SCIP_RETCODE checkAndRepairSol(
-   SCIP*                 scip,               /**< SCIP data structure */
-   SCIP_Real*            solvals,            /**< solution to check */
-   SCIP_Real*            objval,             /**< objective value corresponding to solvals */
-   SCIP_Bool             resolvenlp,         /**< whether NLP resolving is allowed */
-   SCIP_Bool*            success             /**< to store whether solution is feasible or could be made feasible */
-   )
-{
-   SCIP_PROBDATA* probdata;
-   SCIP_HEUR* heursubnlp;
-   SCIP_SOL* sol;
-
-   assert(scip    != NULL);
-   assert(solvals != NULL);
-   assert(success != NULL);
-   assert(objval  != NULL);
-
-   if( SCIPisTransformed(scip) )
-   {
-      /* cannot create solutions in SOLVED stage */
-      SCIP_CALL( SCIPfreeTransform(scip) );
-   }
-
-   probdata = SCIPgetProbData(scip);
-   assert(probdata != NULL);
-
-   SCIP_CALL( SCIPcreateSol(scip, &sol, NULL) );
-   SCIP_CALL( SCIPsetSolVals(scip, sol, probdata->nvars, probdata->vars, solvals) );
-   if( probdata->objvar != NULL )
-   {
-      SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objvar, *objval) );
-   }
-   if( probdata->objconst != NULL )
-   {
-      SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objconst, 1.0) );
-   }
-
-   SCIP_CALL( SCIPcheckSolOrig(scip, sol, success, FALSE, FALSE) );
-
-   SCIP_CALL( SCIPfreeSol(scip, &sol) );
-
-   if( *success || !resolvenlp )
-      return SCIP_OKAY;
-
-   /* assert that we checked already that resolving is possible and makes sense */
-   assert(SCIPgetNContVars(scip) > 0);
-   assert(SCIPgetNNlpis(scip) > 0);
-
-   heursubnlp = SCIPfindHeur(scip, "subnlp");
-   assert(heursubnlp != NULL);
-
-   SCIPverbMessage(scip, SCIP_VERBLEVEL_FULL, NULL, "Attempt solving NLP from original problem with fixed discrete variables.\n");
-
-   /* create transformed problem and recreate sol in transformed problem, so subnlp heuristic can return result in it */
-   SCIP_CALL( SCIPtransformProb(scip) );
-   SCIP_CALL( SCIPcreateSol(scip, &sol, NULL) );
-   SCIP_CALL( SCIPsetSolVals(scip, sol, probdata->nvars, probdata->vars, solvals) );
-   if( probdata->objvar != NULL )
-   {
-      SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objvar, *objval) );
-   }
-   if( probdata->objconst != NULL )
-   {
-      SCIP_CALL( SCIPsetSolVal(scip, sol, probdata->objconst, 1.0) );
-   }
-
-   SCIP_CALL( SCIPresolveSolHeurSubNlp(scip, heursubnlp, sol, success, 100LL, 10.0) );
-
-   if( *success )
-   {
-      SCIP_CALL( SCIPcheckSolOrig(scip, sol, success, SCIPgetVerbLevel(scip) >= SCIP_VERBLEVEL_FULL, FALSE) );
-
-      if( *success )
-      {
-         SCIP_CALL( SCIPgetSolVals(scip, sol, probdata->nvars, probdata->vars, solvals) );
-         *objval = SCIPgetSolOrigObj(scip, sol);
-
-         SCIPverbMessage(scip, SCIP_VERBLEVEL_FULL, NULL, "NLP solution is feasible, objective value = %.15e.\n", *objval);
-      }
-      else
-      {
-         SCIPverbMessage(scip, SCIP_VERBLEVEL_FULL, NULL, "NLP solution still not feasible, objective value = %.15e.\n", SCIPgetSolOrigObj(scip, sol));
-      }
-   }
-   else
-   {
-      SCIPverbMessage(scip, SCIP_VERBLEVEL_FULL, NULL, "Failed to resolve NLP.\n");
-   }
-
-   SCIP_CALL( SCIPfreeSol(scip, &sol) );
-
-   return SCIP_OKAY;
 }
 
 /** stores solve information (solution, statistics) in a GMO */
@@ -2463,7 +2084,6 @@ SCIP_RETCODE writeGmoSolution(
    {
       SCIP_SOL* sol;
       SCIP_Real* collev;
-      SCIP_Real primalbound;
 
       sol = SCIPgetBestSol(scip);
       assert(sol != NULL);
@@ -2471,217 +2091,9 @@ SCIP_RETCODE writeGmoSolution(
       SCIP_CALL( SCIPallocBufferArray(scip, &collev, gmoN(gmo)) );
       SCIP_CALL( SCIPgetSolVals(scip, sol, probdata->nvars, probdata->vars, collev) );
 
-#if GMOAPIVERSION < 12
-      {
-         SCIP_Real* lambda;
-         int i;
-
-         SCIP_CALL( SCIPallocBufferArray(scip, &lambda, gmoM(gmo)) );
-         for( i = 0; i < gmoM(gmo); ++i )
-            lambda[i] = gmoValNA(gmo);
-
-         /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
-         gmoSetSolution2(gmo, collev, lambda);
-
-         SCIPfreeBufferArray(scip, &lambda);
-      }
-#else
       (void) gmoSetSolutionPrimal(gmo, collev);
-#endif
-      primalbound = SCIPgetPrimalbound(scip);
 
       SCIPfreeBufferArray(scip, &collev);
-
-      /* if we have an MINLP, check if best solution is really feasible and try to repair and check other solutions otherwise */
-      if( gmoObjNLNZ(gmo) != 0 || gmoNLNZ(gmo) != 0 )
-      {
-         SCIP_Bool success;
-
-         /* check whether best solution is feasible in original problem */
-         SCIP_CALL( SCIPcheckSolOrig(scip, sol, &success, FALSE, FALSE) );
-
-         /* look at all solutions, try to repair if not feasible, and keep a feasible one with best objective value */
-         if( !success )
-         {
-            SCIP_Real mainsoltime;
-            SCIP_CLOCK* resolveclock;
-            int origmaxorigsol;
-            int orignlpverblevel;
-            int origmaxpresolrounds;
-            char origsolvetracefile[SCIP_MAXSTRLEN];
-            /* SCIP_Real origfeastol; */
-            SCIP_Bool resolvenlp;
-            SCIP_Real** solvals;
-            SCIP_Real* objvals;
-            int nsols;
-            int s;
-
-            /* check whether we can run an NLP solver */
-            SCIP_CALL( SCIPgetBoolParam(scip, "gams/resolvenlp", &resolvenlp) );
-            if( resolvenlp && SCIPgetStage(scip) == SCIP_STAGE_SOLVING && !SCIPisNLPEnabled(scip) )
-            {
-               SCIPdebugMessage("NLP is disabled: cannot do resolves\n");
-               resolvenlp = FALSE;
-            }
-            if( resolvenlp && SCIPgetNContVars(scip) == 0 )
-            {
-               SCIPdebugMessage("transformed SCIP problem has no continuous variables: cannot do resolves\n");
-               resolvenlp = FALSE;
-            }
-            if( resolvenlp && SCIPgetNNlpis(scip) == 0 )
-            {
-               SCIPdebugMessage("no NLP solver: cannot do resolves\n");
-               resolvenlp = FALSE;
-            }
-            if( resolvenlp && SCIPfindHeur(scip, "subnlp") == NULL )
-            {
-               SCIPdebugMessage("no NLP heuristic available: cannot do resolves\n");
-               resolvenlp = FALSE;
-            }
-
-            /* try SCIP solutions (limited by limits/maxsol or limits/maxorigsol) */
-            nsols = SCIPgetNSols(scip);
-            SCIP_CALL( SCIPallocBufferArray(scip, &solvals, nsols) );
-            SCIP_CALL( SCIPallocBufferArray(scip, &objvals, nsols) );
-            for( s = 0; s < nsols; ++s )
-            {
-               SCIP_CALL( SCIPallocBufferArray(scip, &solvals[s], gmoN(gmo)) ); /*lint !e866*/
-               SCIP_CALL( SCIPgetSolVals(scip, SCIPgetSols(scip)[s], probdata->nvars, probdata->vars, solvals[s]) );
-               objvals[s] = SCIPgetSolOrigObj(scip, SCIPgetSols(scip)[s]);
-            }
-
-            /* adapt some parameter values for possible resolve's */
-            if( resolvenlp )
-            {
-               char* tmp;
-
-               /* don't store solutions in original problem, so they don't get in a way when transforming for resolve */
-               SCIP_CALL( SCIPgetIntParam(scip, "limits/maxorigsol", &origmaxorigsol) );
-               SCIP_CALL( SCIPsetIntParam(scip, "limits/maxorigsol", 0) );
-
-               SCIP_CALL( SCIPgetIntParam(scip, "heuristics/subnlp/nlpverblevel", &orignlpverblevel) );
-               SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/nlpverblevel", 1) );
-
-               /* origfeastol = SCIPfeastol(scip); */
-               /* SCIP_CALL( SCIPsetRealParam(scip, "numerics/feastol", origfeastol / 100.0) ); */
-
-               SCIP_CALL( SCIPgetIntParam(scip, "heuristics/subnlp/maxpresolverounds", &origmaxpresolrounds) );
-               SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/maxpresolverounds", 0) );
-
-               SCIP_CALL( SCIPgetStringParam(scip, "gams/solvetrace/file", &tmp) );
-               strcpy(origsolvetracefile, tmp);
-               SCIP_CALL( SCIPsetStringParam(scip, "gams/solvetrace/file", "") );
-            }
-
-            SCIP_CALL( SCIPcreateClock(scip, &resolveclock) );
-            SCIP_CALL( SCIPstartClock(scip, resolveclock) );
-
-            for( s = 0; s < nsols; ++s )
-            {
-               SCIPinfoMessage(scip, NULL, "Checking feasibility of solution #%.2d with reported objective value %.15e.\n", s, objvals[s]);
-
-               SCIP_CALL( checkAndRepairSol(scip, solvals[s], &objvals[s], resolvenlp, &success) );
-
-               if( success )
-                  break;
-            }
-
-            SCIP_CALL( SCIPstopClock(scip, resolveclock) );
-
-            /* add time for checks and NLP resolves to reported solving time */
-            mainsoltime = gmoGetHeadnTail(gmo, (int) gmoHresused);
-            gmoSetHeadnTail(gmo, (int) gmoHresused, mainsoltime + SCIPgetClockTime(scip, resolveclock));
-
-            SCIP_CALL( SCIPfreeClock(scip, &resolveclock) );
-
-            if( success )
-            {
-               /* store updated solution in GMO */
-#if GMOAPIVERSION < 12
-               {
-                  SCIP_Real* lambda;
-                  int i;
-
-                  SCIP_CALL( SCIPallocBufferArray(scip, &lambda, gmoM(gmo)) );
-                  for( i = 0; i < gmoM(gmo); ++i )
-                     lambda[i] = gmoValNA(gmo);
-
-                  /* this also sets the gmoHobjval attribute to the level value of GAMS' objective variable */
-                  gmoSetSolution2(gmo, solvals[s], lambda);
-
-                  SCIPfreeBufferArray(scip, &lambda);
-               }
-#else
-               (void) gmoSetSolutionPrimal(gmo, solvals[s]);
-#endif
-               /* update reevaluated objective value */
-               objvals[s] = gmoGetHeadnTail(gmo, (int) gmoHobjval);
-               primalbound = objvals[s];
-
-               SCIPinfoMessage(scip, NULL, "Solution #%.2d feasible. Reevaluated objective value = %.15e.\n", s, objvals[s]);
-
-               SCIPinfoMessage(scip, NULL, "\nStatus update:\n");
-               SCIPinfoMessage(scip, NULL, "Solving Time (sec) : %.2f\n", gmoGetHeadnTail(gmo, (int) gmoHresused));
-               SCIPinfoMessage(scip, NULL, "Primal Bound       : %+.14e\n", objvals[s]);
-               if( gmoGetHeadnTail(gmo, (int) gmoTmipbest) != gmoValNA(gmo) ) /*lint !e777*/
-               {
-                  SCIPinfoMessage(scip, NULL, "Dual Bound         : %+.14e\n", dualbound);
-                  SCIPinfoMessage(scip, NULL, "Gap                : ");
-
-                  if( SCIPisEQ(scip, objvals[s], dualbound) )
-                     SCIPinfoMessage(scip, NULL, "%.2f %%\n", 0.0);
-                  else if( SCIPisZero(scip, dualbound)
-                     || SCIPisZero(scip, objvals[s])
-                     || (dualbound == gmoValNA(gmo))  /*lint !e777*/
-                     || SCIPisInfinity(scip, REALABS(objvals[s]))
-                     || SCIPisInfinity(scip, REALABS(dualbound))
-                     || objvals[s] * dualbound < 0.0 )
-                     SCIPinfoMessage(scip, NULL, "infinite\n");
-                  else
-                     SCIPinfoMessage(scip, NULL, "%.2f %%\n", REALABS((objvals[s] - dualbound)/MIN(REALABS(dualbound),REALABS(objvals[s])))); /*lint !e666*/
-               }
-            }
-            else
-            {
-               SCIPinfoMessage(scip, NULL, "None of %d SCIP solutions could be made feasible.\n", nsols);
-            }
-
-            /* restore original parameter values */
-            if( resolvenlp )
-            {
-               SCIP_CALL( SCIPsetIntParam(scip, "limits/maxorigsol", origmaxorigsol) ); /*lint !e644*/
-               SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/nlpverblevel", orignlpverblevel) ); /*lint !e644*/
-               /* SCIP_CALL( SCIPsetRealParam(scip, "numerics/feastol", origfeastol) ); */
-               SCIP_CALL( SCIPsetIntParam(scip, "heuristics/subnlp/maxpresolverounds", origmaxpresolrounds) ); /*lint !e644*/
-               SCIP_CALL( SCIPsetStringParam(scip, "gams/solvetrace/file", origsolvetracefile) );
-            }
-
-            for( s = 0; s < nsols; ++s )
-            {
-               SCIPfreeBufferArray(scip, &solvals[s]);
-            }
-            SCIPfreeBufferArray(scip, &solvals);
-            SCIPfreeBufferArray(scip, &objvals);
-         }
-
-         /* update model status */
-         if( !success )
-         {
-            /* couldn't get a feasible solution, report intermediate infeasible */
-            gmoModelStatSet(gmo, (int) gmoModelStat_InfeasibleIntermed);
-         }
-         else if( !SCIPisEQ(scip, primalbound, dualbound) )
-         {
-            /* feasible, but gap not closed, so only local optimum */
-            gmoModelStatSet(gmo, gmoNDisc(gmo) ? (int) gmoModelStat_Integer : (int) gmoModelStat_Feasible);
-         }
-         else
-         {
-            /* feasible and gap closed, so solved globally */
-            gmoModelStatSet(gmo, (int) gmoModelStat_OptimalGlobal);
-         }
-
-      }
    }
 
    if( gmoModelType(gmo) == (int) gmoProc_cns )
@@ -2702,23 +2114,7 @@ SCIP_RETCODE writeGmoSolution(
  * Callback methods of reader
  */
 
-
-/** copy method for reader plugins (called when SCIP copies plugins) */
-#if 0
-static
-SCIP_DECL_READERCOPY(readerCopyGmo)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of gmo reader not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
- 
-   return SCIP_OKAY;
-}
-#else
-#define readerCopyGmo NULL
-#endif
-
 /** destructor of reader to free user data (called when SCIP is exiting) */
-#if 1
 static
 SCIP_DECL_READERFREE(readerFreeGmo)
 {
@@ -2745,13 +2141,9 @@ SCIP_DECL_READERFREE(readerFreeGmo)
 
    return SCIP_OKAY;
 }
-#else
-#define readerFreeGmo NULL
-#endif
 
 
 /** problem reading method of reader */
-#if 1
 static
 SCIP_DECL_READERREAD(readerReadGmo)
 {
@@ -2809,24 +2201,6 @@ SCIP_DECL_READERREAD(readerReadGmo)
 
    return SCIP_OKAY;
 }
-#else
-#define readerReadGmo NULL
-#endif
-
-
-#if 0
-/** problem writing method of reader */
-static
-SCIP_DECL_READERWRITE(readerWriteGmo)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of gmo reader not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
-
-   return SCIP_OKAY;
-}
-#else
-#define readerWriteGmo NULL
-#endif
 
 /*
  * Constructs SCIP problem from the one in GMO.
@@ -2835,49 +2209,6 @@ SCIP_DECL_READERWRITE(readerWriteGmo)
 #define DIALOG_READGAMS_NAME                 "readgams"
 #define DIALOG_READGAMS_DESC                 "initializes SCIP problem to the one stored in a GAMS modeling object"
 #define DIALOG_READGAMS_ISSUBMENU            FALSE
-
-/** copy method for dialog plugins (called when SCIP copies plugins) */
-#if 0
-static
-SCIP_DECL_DIALOGCOPY(dialogCopyReadGams)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of ReadGams dialog not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
-
-   return SCIP_OKAY;
-}
-#else
-#define dialogCopyReadGams NULL
-#endif
-
-/** destructor of dialog to free user data (called when the dialog is not captured anymore) */
-#if 0
-static
-SCIP_DECL_DIALOGFREE(dialogFreeReadGams)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of ReadGams dialog not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
-
-   return SCIP_OKAY;
-}
-#else
-#define dialogFreeReadGams NULL
-#endif
-
-/** description output method of dialog */
-#if 0
-static
-SCIP_DECL_DIALOGDESC(dialogDescReadGams)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of ReadGams dialog not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
-
-   return SCIP_OKAY;
-}
-#else
-#define dialogDescReadGams NULL
-#endif
-
 
 /** execution method of dialog */
 static
@@ -2925,49 +2256,6 @@ SCIP_DECL_DIALOGEXEC(dialogExecReadGams)
 #define DIALOG_WRITEGAMSSOL_DESC             "writes solution information into GAMS Modeling Object"
 #define DIALOG_WRITEGAMSSOL_ISSUBMENU        FALSE
 
-/** copy method for dialog plugins (called when SCIP copies plugins) */
-#if 0
-static
-SCIP_DECL_DIALOGCOPY(dialogCopyWriteGamsSol)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of WriteGamsSol dialog not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
-
-   return SCIP_OKAY;
-}
-#else
-#define dialogCopyWriteGamsSol NULL
-#endif
-
-/** destructor of dialog to free user data (called when the dialog is not captured anymore) */
-#if 0
-static
-SCIP_DECL_DIALOGFREE(dialogFreeWriteGamsSol)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of WriteGamsSol dialog not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
-
-   return SCIP_OKAY;
-}
-#else
-#define dialogFreeWriteGamsSol NULL
-#endif
-
-/** description output method of dialog */
-#if 0
-static
-SCIP_DECL_DIALOGDESC(dialogDescWriteGamsSol)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of WriteGamsSol dialog not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
-
-   return SCIP_OKAY;
-}
-#else
-#define dialogDescWriteGamsSol NULL
-#endif
-
-
 /** execution method of dialog */
 static
 SCIP_DECL_DIALOGEXEC(dialogExecWriteGamsSol)
@@ -2995,49 +2283,6 @@ SCIP_DECL_DIALOGEXEC(dialogExecWriteGamsSol)
 #define DIALOG_SETTINGSLOADGAMS_DESC         "loads GAMS settings and SCIP option file specified in GAMS model"
 #define DIALOG_SETTINGSLOADGAMS_ISSUBMENU    FALSE
 
-/** copy method for dialog plugins (called when SCIP copies plugins) */
-#if 0
-static
-SCIP_DECL_DIALOGCOPY(dialogCopySettingsLoadGams)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of SettingsLoadGams dialog not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
-
-   return SCIP_OKAY;
-}
-#else
-#define dialogCopySettingsLoadGams NULL
-#endif
-
-/** destructor of dialog to free user data (called when the dialog is not captured anymore) */
-#if 0
-static
-SCIP_DECL_DIALOGFREE(dialogFreeSettingsLoadGams)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of SettingsLoadGams dialog not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
-
-   return SCIP_OKAY;
-}
-#else
-#define dialogFreeSettingsLoadGams NULL
-#endif
-
-/** description output method of dialog */
-#if 0
-static
-SCIP_DECL_DIALOGDESC(dialogDescSettingsLoadGams)
-{  /*lint --e{715}*/
-   SCIPerrorMessage("method of SettingsLoadGams dialog not implemented yet\n");
-   SCIPABORT(); /*lint --e{527}*/
-
-   return SCIP_OKAY;
-}
-#else
-#define dialogDescSettingsLoadGams NULL
-#endif
-
-
 /** execution method of dialog */
 static
 SCIP_DECL_DIALOGEXEC(dialogExecSettingsLoadGams)
@@ -3061,7 +2306,8 @@ SCIP_DECL_DIALOGEXEC(dialogExecSettingsLoadGams)
 
 /** includes the gmo file reader in SCIP */
 SCIP_RETCODE SCIPincludeReaderGmo(
-   SCIP*                 scip                /**< SCIP data structure */
+   SCIP*                 scip,               /**< SCIP data structure */
+   SCIP_Bool             ipoptlicensed       /**< whether GAMS/IpoptH is licensed */
    )
 {
    SCIP_READERDATA* readerdata;
@@ -3071,12 +2317,11 @@ SCIP_RETCODE SCIPincludeReaderGmo(
    /* create gmo reader data */
    SCIP_CALL( SCIPallocMemory(scip, &readerdata) );
    BMSclearMemory(readerdata);
+   readerdata->ipoptlicensed = ipoptlicensed;
    
    /* include gmo reader */
    SCIP_CALL( SCIPincludeReader(scip, READER_NAME, READER_DESC, READER_EXTENSION,
-         readerCopyGmo,
-         readerFreeGmo, readerReadGmo, readerWriteGmo,
-         readerdata) );
+         NULL, readerFreeGmo, readerReadGmo, NULL, readerdata) );
 
    SCIP_CALL( SCIPaddStringParam(scip, "gams/dumpsolutions",
       "name of solutions index gdx file for writing all alternate solutions",
@@ -3085,10 +2330,6 @@ SCIP_RETCODE SCIPincludeReaderGmo(
    SCIP_CALL( SCIPaddStringParam(scip, "gams/dumpsolutionsmerged",
       "name of gdx file for writing all alternate solutions into a single file",
       NULL, FALSE, "", NULL, NULL) );
-
-   SCIP_CALL( SCIPaddBoolParam(scip, "gams/resolvenlp",
-      "whether to resolve MINLP with fixed discrete variables if best solution violates some constraints",
-      NULL, FALSE, TRUE, NULL, NULL) );
 
    SCIP_CALL( SCIPaddIntParam(scip, "gams/mipstart",
       "how to handle initial variable levels",
@@ -3110,7 +2351,7 @@ SCIP_RETCODE SCIPincludeReaderGmo(
    if( !SCIPdialogHasEntry(SCIPgetRootDialog(scip), DIALOG_READGAMS_NAME) )
    {
       SCIP_CALL( SCIPincludeDialog(scip, &dialog,
-            dialogCopyReadGams, dialogExecReadGams, dialogDescReadGams, dialogFreeReadGams,
+            NULL, dialogExecReadGams, NULL, NULL,
             DIALOG_READGAMS_NAME, DIALOG_READGAMS_DESC, DIALOG_READGAMS_ISSUBMENU, (SCIP_DIALOGDATA*)readerdata) );
       SCIP_CALL( SCIPaddDialogEntry(scip, SCIPgetRootDialog(scip), dialog) );
       SCIP_CALL( SCIPreleaseDialog(scip, &dialog) );
@@ -3121,14 +2362,14 @@ SCIP_RETCODE SCIPincludeReaderGmo(
    if( !SCIPdialogHasEntry(parentdialog, DIALOG_WRITEGAMSSOL_NAME) )
    {
       SCIP_CALL( SCIPincludeDialog(scip, &dialog,
-            dialogCopyWriteGamsSol, dialogExecWriteGamsSol, dialogDescWriteGamsSol, dialogFreeWriteGamsSol,
+            NULL, dialogExecWriteGamsSol, NULL, NULL,
             DIALOG_WRITEGAMSSOL_NAME, DIALOG_WRITEGAMSSOL_DESC, DIALOG_WRITEGAMSSOL_ISSUBMENU, (SCIP_DIALOGDATA*)readerdata) );
       SCIP_CALL( SCIPaddDialogEntry(scip, parentdialog, dialog) );
       SCIP_CALL( SCIPreleaseDialog(scip, &dialog) );
    }
 
-
    /* get parent dialog "set" */
+   SCIP_CALL( SCIPincludeDialogDefaultSet(scip) );
    if( SCIPdialogFindEntry(SCIPgetRootDialog(scip), "set", &parentdialog) != 1 )
    {
       SCIPerrorMessage("sub menu \"set\" not found\n");
@@ -3140,7 +2381,7 @@ SCIP_RETCODE SCIPincludeReaderGmo(
    if( !SCIPdialogHasEntry(parentdialog, DIALOG_SETTINGSLOADGAMS_NAME) )
    {
       SCIP_CALL( SCIPincludeDialog(scip, &dialog,
-            dialogCopySettingsLoadGams, dialogExecSettingsLoadGams, dialogDescSettingsLoadGams, dialogFreeSettingsLoadGams,
+            NULL, dialogExecSettingsLoadGams, NULL, NULL,
             DIALOG_SETTINGSLOADGAMS_NAME, DIALOG_SETTINGSLOADGAMS_DESC, DIALOG_SETTINGSLOADGAMS_ISSUBMENU, NULL) );
       SCIP_CALL( SCIPaddDialogEntry(scip, parentdialog, dialog) );
       SCIP_CALL( SCIPreleaseDialog(scip, &dialog) );
@@ -3250,20 +2491,30 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
    }
 #endif
 
-   /* enable column on number of branching on nonlinear variables, if any */
-   if( gmoNLNZ(gmo) > 0 || (gmoObjStyle(gmo) == (int) gmoObjType_Fun && gmoObjNLNZ(gmo) > 0) )
+   if( gmoNDisc(gmo) == 0 && (gmoNLNZ(gmo) > 0 || (gmoObjStyle(gmo) == (int) gmoObjType_Fun && gmoObjNLNZ(gmo) > 0)) )
    {
-      /* enable column on number of branching on continuous variables */
-      SCIP_CALL( SCIPsetIntParam(scip, "display/nexternbranchcands/active", 2) );
-   }
-   /* make sure column on number of branching on fractional variables is shown, if any */
-   if( gmoNDisc(gmo) > 0 )
-   {
-      SCIP_CALL( SCIPsetIntParam(scip, "display/nfrac/active", 2) );
+      /* add linearizations in new solutions if solving NLP
+       * makes testlib qcp02 solve fast
+       * should also be good in general (any minlp), but experiments during SCIP dev were not conclusive
+       */
+      SCIP_CALL( SCIPsetCharParam(scip, "constraints/nonlinear/linearizeheursol", 'i') );
    }
 
    /* don't print reason why start solution is infeasible, per default */
    SCIP_CALL( SCIPsetBoolParam(scip, "misc/printreason", FALSE) );
+
+   if( SCIPfindNlpi(scip, "ipopt") != NULL )
+   {
+      if( readerdata->ipoptlicensed )
+      {
+         SCIP_CALL( SCIPsetStringParam(scip, "nlpi/ipopt/linear_solver", "ma27") );
+         SCIP_CALL( SCIPsetStringParam(scip, "nlpi/ipopt/linear_system_scaling", "mc19") );
+      }
+      else
+      {
+         SCIP_CALL( SCIPsetStringParam(scip, "nlpi/ipopt/linear_solver", "mumps") );
+      }
+   }
 
    if( gmoOptFile(gmo) > 0 )
    {

@@ -72,6 +72,8 @@ void printPluginTables(
    SCIP* scip
    )
 {
+   /* benders skipped so far as only default */
+
    /* branching rules */
    {
       std::ofstream outfile("branchrules.md");
@@ -95,6 +97,8 @@ void printPluginTables(
       }
       SCIPfreeBufferArray(scip, &sorted);
    }
+
+   /* compression methods skipped so far as reopt not available */
 
    /* conflict handler */
    {
@@ -179,6 +183,8 @@ void printPluginTables(
       }
    }
 
+   /* cut selectors skipped so far as only one available */
+
    /* display columns */
    {
       SCIP_DISP** disps = SCIPgetDisps(scip);
@@ -232,6 +238,8 @@ void printPluginTables(
       }
    }
 
+   /* expression handler skipped so far as no interesting info and not all come with parameters */
+
    /* primal heuristics */
    {
       std::ofstream outfile("heurs.md");
@@ -253,6 +261,37 @@ void printPluginTables(
          outfile << " |" << std::endl;
       }
    }
+
+   /* nonlinear handler */
+   {
+      SCIP_CONSHDLR* conshdlr;
+      SCIP_NLHDLR** nlhdlrs;
+      int nnlhdlrs;
+      int i;
+
+      conshdlr = SCIPfindConshdlr(scip, "nonlinear");
+      assert(conshdlr != NULL);
+
+      nlhdlrs = SCIPgetNlhdlrsNonlinear(conshdlr);
+      nnlhdlrs = SCIPgetNNlhdlrsNonlinear(conshdlr);
+
+      std::ofstream outfile("nlhdlrs.md");
+      std::cout << "Writing nlhdlrs.md" << std::endl;
+      outfile << std::endl;
+      outfile << "| nonlinear handler | enabled | detect priority | enforce priority | description |" << std::endl;
+      outfile << "|:------------------|:-------:|----------------:|-----------------:|:------------|" << std::endl;
+      for( i = 0; i < nnlhdlrs; ++i )
+      {
+         outfile << "| \\ref SCIP_gr_nlhdlr_" << SCIPnlhdlrGetName(nlhdlrs[i]) << " \"" << SCIPnlhdlrGetName(nlhdlrs[i]) << '"';
+         outfile << " | " << SCIPnlhdlrIsEnabled(nlhdlrs[i]);
+         outfile << " | " << SCIPnlhdlrGetDetectPriority(nlhdlrs[i]);
+         outfile << " | " << SCIPnlhdlrGetEnfoPriority(nlhdlrs[i]);
+         outfile << " | " << SCIPnlhdlrGetDesc(nlhdlrs[i]);
+         outfile << " |" << std::endl;
+      }
+   }
+
+   /* nlpis skipped so far, as only one with GAMS */
 
    /* node selectors */
    {
@@ -314,6 +353,8 @@ void printPluginTables(
       }
    }
 
+   /* pricers skipped as none */
+
    /* propagators */
    {
       SCIP_PROP** props;
@@ -350,6 +391,10 @@ void printPluginTables(
          outfile << " |" << std::endl;
       }
    }
+
+   /* readers skipped as not so relevant in GAMS */
+
+   /* relaxators skipped as none */
 
    /* separators */
    {
@@ -392,17 +437,20 @@ int main(int argc, char** argv)
    static std::map<std::string, std::string> categname;
    categname[" gams"] = "GAMS interface specific options";
    categname["branching"] = "Branching";
+   categname["cutselection"] = "Cut Selection";
    categname["conflict"] = "Conflict analysis";
    categname["constraints"] = "Constraints";
    categname["decomposition"] = "Decomposition";
    categname["display"] = "Output";
    categname["estimation"] = "Restarts and Tree Size Estimation";
+   categname["expr"] = "Arithemtic Expressions";
    categname["heuristics"] = "Heuristics";
    categname["history"] = "History";
    categname["limits"] = "Limits";
    categname["lp"] = "LP";
    categname["memory"] = "Memory";
    categname["misc"] = "Miscellaneous";
+   categname["nlhdlr"] = "Nonlinear Handler";
    categname["nlp"] = "Nonlinear Programming Relaxation";
    categname["nlpi"] = "Nonlinear Programming Solver interfaces";
    categname["nodeselection"] = "Node Selection";
@@ -456,7 +504,8 @@ int main(int argc, char** argv)
           strstr(paramname, "constraints/xor")           == paramname ||
           strstr(paramname, "table/benders")             == paramname ||
           strstr(paramname, "decomposition/applybenders") == paramname ||
-          strstr(paramname, "decomposition/benderslabels") == paramname
+          strstr(paramname, "decomposition/benderslabels") == paramname ||
+          strstr(paramname, "nlp/solver") == paramname
          )
          continue;
 
@@ -473,8 +522,6 @@ int main(int argc, char** argv)
           category == "reoptimization" ||
           category == "parallel" ||
           category == "pricing" ||
-          category == "nlp" ||
-          category == "nlpi" ||
           category == "visual" ||
           category == "write"
         )
@@ -626,10 +673,6 @@ int main(int argc, char** argv)
             defaultdescr = "1 (0 for Windows without IDE)";
          else if( strcmp(SCIPparamGetName(param), "display/maxdepth/active") == 0 )
             defaultdescr = "1 (0 for Windows without IDE)";
-         else if( strcmp(SCIPparamGetName(param), "display/nexternbranchcands/active") == 0 )
-            defaultdescr = "1 (2 for nonlinear instances)";
-         else if( strcmp(SCIPparamGetName(param), "display/nfrac/active") == 0 )
-            defaultdescr = "1 (2 if discrete variables)";
          else if( strcmp(SCIPparamGetName(param), "display/time/active") == 0 )
             defaultdescr = "1 (2 for Windows without IDE)";
          else if( strcmp(SCIPparamGetName(param), "display/width") == 0 )
@@ -640,6 +683,12 @@ int main(int argc, char** argv)
 #endif
          else if( strcmp(SCIPparamGetName(param), "misc/usesymmetry") == 0 )
             descr.erase(descr.find(", see type_symmetry.h"));
+         else if( strcmp(SCIPparamGetName(param), "constraints/nonlinear/linearizeheursol") == 0 )
+            defaultdescr = "i if QCP or NLP, o otherwise";
+         else if( strcmp(SCIPparamGetName(param), "nlpi/ipopt/linear_solver") == 0 )
+            defaultdescr = "ma27, if IpoptH licensed, mumps otherwise";
+         else if( strcmp(SCIPparamGetName(param), "nlpi/ipopt/linear_system_scaling") == 0 )
+            defaultdescr = "mc19, if IpoptH licensed, empty otherwise";
 
          if( !hadadvanced && SCIPparamIsAdvanced(param) )
             hadadvanced = true;

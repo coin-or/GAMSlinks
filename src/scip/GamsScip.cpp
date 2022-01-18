@@ -27,7 +27,7 @@
 #include "scip/scip.h"
 #include "scip/scipdefplugins.h"
 #include "scip/githash.c"
-#include "nlpi/nlpi_ipopt.h"
+#include "scip/nlpi_ipopt.h"
 #include "reader_gmo.h"
 #include "event_solvetrace.h"
 
@@ -238,6 +238,7 @@ int GamsScip::callSolver()
       return 1;
    }
 #endif
+
    // set number of threads for linear algebra routines used in Ipopt
    GAMSsetNumThreads(gev, gevThreads(gev));
 
@@ -372,7 +373,6 @@ SCIP_RETCODE GamsScip::setupSCIP()
    {
       // if called first time, create a new SCIP instance and include all plugins that we need and setup interface parameters
       SCIP_MESSAGEHDLR* messagehdlr;
-      SCIP_NLPI* nlpiipopt;
 
       SCIP_CALL( SCIPcreate(&scip) );
 
@@ -394,33 +394,7 @@ SCIP_RETCODE GamsScip::setupSCIP()
          SCIP_CALL( SCIPincludeDefaultPlugins(scip) );
          SCIP_CALL( SCIPincludeEventHdlrSolveTrace(scip, gmo) );
       }
-      SCIP_CALL( SCIPincludeReaderGmo(scip) );
-
-      if( ipoptlicensed )
-      {
-         nlpiipopt = SCIPfindNlpi(scip, "ipopt");
-         if( nlpiipopt != NULL )
-         {
-#if SCIP_VERSION >= 700
-            SCIPsetModifiedDefaultSettingsIpopt(nlpiipopt, "linear_solver ma27\nlinear_system_scaling mc19\n", FALSE);
-#else
-            SCIPsetModifiedDefaultSettingsIpopt(nlpiipopt, "linear_solver ma27\nlinear_system_scaling mc19\n");
-#endif
-            SCIP_CALL( SCIPincludeExternalCodeInformation(scip, "HSL MA27 and MC19", "Harwell Subroutine Libraries (www.hsl.rl.ac.uk) from commercially supported Ipopt") );
-         }
-      }
-      else
-      {
-         nlpiipopt = SCIPfindNlpi(scip, "ipopt");
-         if( nlpiipopt != NULL )
-         {
-#if SCIP_VERSION >= 700
-            SCIPsetModifiedDefaultSettingsIpopt(nlpiipopt, "linear_solver mumps\n", FALSE);
-#else
-            SCIPsetModifiedDefaultSettingsIpopt(nlpiipopt, "linear_solver mumps\n");
-#endif
-         }
-      }
+      SCIP_CALL( SCIPincludeReaderGmo(scip, ipoptlicensed) );
 
       /* SCIP_CALL( SCIPaddBoolParam(scip, "gams/solvefinal",
        * "whether the problem should be solved with fixed discrete variables to get dual values",

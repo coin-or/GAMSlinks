@@ -27,7 +27,8 @@ typedef struct gmoRec gmoRec_t;
 /** includes the gmo file reader into SCIP */
 extern
 SCIP_RETCODE SCIPincludeReaderGmo(
-   SCIP*                 scip                /**< SCIP data structure */
+   SCIP*                 scip,               /**< SCIP data structure */
+   SCIP_Bool             ipoptlicensed       /**< whether GAMS/IPOPT is licensed */
    );
 
 /** sets the GMO object to use in reader
