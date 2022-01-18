@@ -5,7 +5,6 @@
 // Author: Stefan Vigerske
 //
 // TODO:
-// - Ctrl^C
 // - make use of high-precision / exact arithmetic solver (?)
 
 #include "GamsLinksConfig.h"
@@ -95,6 +94,13 @@ const SPxSolver::VarStatus mapBasisStatus(
       default:
          return SPxSolver::UNDEFINED;
    }
+}
+
+static bool interrupt_soplex = false;
+static
+void interruptSoPlex(void)
+{
+   interrupt_soplex = true;
 }
 
 void GamsSoPlex::setupLP()
@@ -320,7 +326,7 @@ int GamsSoPlex::readyAPI(
    }
 
 #if PALAPIVERSION >= 3
-   palSetSystemName(pal, "Soplex");
+   palSetSystemName(pal, "SoPlex");
    palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
@@ -390,6 +396,8 @@ int GamsSoPlex::readyAPI(
    soplex->spxout.setStream(soplex::SPxOut::INFO3, *logstream);
    soplex->spxout.setStream(soplex::SPxOut::DEBUG, *logstream);
 
+   gevTerminateSet(gev, NULL, (void*)&interruptSoPlex);
+
    // setup LP
    setupLP();
 
@@ -427,7 +435,16 @@ int GamsSoPlex::callSolver()
 
    // print version info and copyright
    char buffer[50];
-   sprintf(buffer, "\nSoPlex version %d.%d (%s)\n", SOPLEX_VERSION/100, (SOPLEX_VERSION % 100)/10, getGitHash());
+#ifdef PAPILO_GITHASH
+   sprintf(buffer, "\nSoPlex version %d.%d (%s) [PaPILO %d.%d (" PAPILO_GITHASH ")]\n",
+      SOPLEX_VERSION/100, (SOPLEX_VERSION % 100)/10, getGitHash(),
+      PAPILO_VERSION_MAJOR, PAPILO_VERSION_MINOR
+   );
+#else
+   sprintf(buffer, "\nSoPlex version %d.%d (%s)\n",
+      SOPLEX_VERSION/100, (SOPLEX_VERSION % 100)/10, getGitHash()
+   );
+#endif
    gevLogStatPChar(gev, buffer);
    gevLogStatPChar(gev, SOPLEX_COPYRIGHT "\n\n");
 
@@ -441,7 +458,8 @@ int GamsSoPlex::callSolver()
    try
    {
       // run SoPlex
-      stat = soplex->solve();
+      interrupt_soplex = false;
+      stat = soplex->optimize(&interrupt_soplex);
    }
    catch( const soplex::SPxStatusException& )
    {
@@ -453,7 +471,7 @@ int GamsSoPlex::callSolver()
    {
       gevLog(gev, "Retry without initial basis.\n");
       soplex->clearBasis();
-      stat = soplex->solve();
+      stat = soplex->optimize(&interrupt_soplex);
    }
 
    // evaluate SoPlex return code
@@ -506,6 +524,13 @@ int GamsSoPlex::callSolver()
       default:
          gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
          gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
+   }
+
+   if( interrupt_soplex )
+   {
+      // SoPlex returns the wrong status when interrupted because it doesn't have a status for being interrupted...
+      gmoSolveStatSet(gmo, gmoSolveStat_User);
+      gevLog(gev, "SoPlex corrected status: solving aborted [user interrupt]");
    }
 
    if( gevGetIntOpt(gev, gevInteger1) )
