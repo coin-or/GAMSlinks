@@ -1634,154 +1634,171 @@ Optional Packages:
                           compiler's sysroot if not specified).
   --with-dot              use dot (from graphviz) when creating documentation
                           with doxygen if available; --without-dot to disable
-  --with-osicpx           Use OsiCpx. If an argument is given, 'yes' is
-                          equivalent to --with-osicpx, 'no' is
-                          equivalent to --without-osicpx. Any other argument
-                          is applied as for --with-osicpx-lflags
+  --without-osicpx        Do not use OsiCpx. If an argument is given to
+                          --with-osicpx, then 'yes' is equivalent
+                          to --with-osicpx, 'no' is equivalent to
+                          --without-osicpx and any other argument is applied
+                          as for --with-osicpx-lflags.
   --with-osicpx-lflags    Linker flags for OsiCpx appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-osicpx-cflags    Compiler flags for OsiCpx appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-osigrb           Use OsiGrb. If an argument is given, 'yes' is
-                          equivalent to --with-osigrb, 'no' is
-                          equivalent to --without-osigrb. Any other argument
-                          is applied as for --with-osigrb-lflags
+  --without-osigrb        Do not use OsiGrb. If an argument is given to
+                          --with-osigrb, then 'yes' is equivalent
+                          to --with-osigrb, 'no' is equivalent to
+                          --without-osigrb and any other argument is applied
+                          as for --with-osigrb-lflags.
   --with-osigrb-lflags    Linker flags for OsiGrb appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-osigrb-cflags    Compiler flags for OsiGrb appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-osimsk           Use OsiMsk. If an argument is given, 'yes' is
-                          equivalent to --with-osimsk, 'no' is
-                          equivalent to --without-osimsk. Any other argument
-                          is applied as for --with-osimsk-lflags
+  --without-osimsk        Do not use OsiMsk. If an argument is given to
+                          --with-osimsk, then 'yes' is equivalent
+                          to --with-osimsk, 'no' is equivalent to
+                          --without-osimsk and any other argument is applied
+                          as for --with-osimsk-lflags.
   --with-osimsk-lflags    Linker flags for OsiMsk appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-osimsk-cflags    Compiler flags for OsiMsk appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-osixpr           Use OsiXpr. If an argument is given, 'yes' is
-                          equivalent to --with-osixpr, 'no' is
-                          equivalent to --without-osixpr. Any other argument
-                          is applied as for --with-osixpr-lflags
+  --without-osixpr        Do not use OsiXpr. If an argument is given to
+                          --with-osixpr, then 'yes' is equivalent
+                          to --with-osixpr, 'no' is equivalent to
+                          --without-osixpr and any other argument is applied
+                          as for --with-osixpr-lflags.
   --with-osixpr-lflags    Linker flags for OsiXpr appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-osixpr-cflags    Compiler flags for OsiXpr appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-osi              Use Osi. If an argument is given, 'yes' is
-                          equivalent to --with-osi, 'no' is
-                          equivalent to --without-osi. Any other argument is
-                          applied as for --with-osi-lflags
+  --without-osi           Do not use Osi. If an argument is given to
+                          --with-osi, then 'yes' is equivalent to
+                          --with-osi, 'no' is equivalent to
+                          --without-osi and any other argument is applied as
+                          for --with-osi-lflags.
   --with-osi-lflags       Linker flags for Osi appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-osi-cflags       Compiler flags for Osi appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-cbc              Use Cbc. If an argument is given, 'yes' is
-                          equivalent to --with-cbc, 'no' is
-                          equivalent to --without-cbc. Any other argument is
-                          applied as for --with-cbc-lflags
+  --without-cbc           Do not use Cbc. If an argument is given to
+                          --with-cbc, then 'yes' is equivalent to
+                          --with-cbc, 'no' is equivalent to
+                          --without-cbc and any other argument is applied as
+                          for --with-cbc-lflags.
   --with-cbc-lflags       Linker flags for Cbc appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-cbc-cflags       Compiler flags for Cbc appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-ipopt            Use Ipopt. If an argument is given, 'yes' is
-                          equivalent to --with-ipopt, 'no' is
-                          equivalent to --without-ipopt. Any other argument is
-                          applied as for --with-ipopt-lflags
+  --without-ipopt         Do not use Ipopt. If an argument is given to
+                          --with-ipopt, then 'yes' is equivalent
+                          to --with-ipopt, 'no' is equivalent to
+                          --without-ipopt and any other argument is applied as
+                          for --with-ipopt-lflags.
   --with-ipopt-lflags     Linker flags for Ipopt appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-ipopt-cflags     Compiler flags for Ipopt appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-bonmin           Use Bonmin. If an argument is given, 'yes' is
-                          equivalent to --with-bonmin, 'no' is
-                          equivalent to --without-bonmin. Any other argument
-                          is applied as for --with-bonmin-lflags
+  --without-bonmin        Do not use Bonmin. If an argument is given to
+                          --with-bonmin, then 'yes' is equivalent
+                          to --with-bonmin, 'no' is equivalent to
+                          --without-bonmin and any other argument is applied
+                          as for --with-bonmin-lflags.
   --with-bonmin-lflags    Linker flags for Bonmin appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-bonmin-cflags    Compiler flags for Bonmin appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-couenne          Use Couenne. If an argument is given, 'yes' is
-                          equivalent to --with-couenne, 'no' is
-                          equivalent to --without-couenne. Any other argument
-                          is applied as for --with-couenne-lflags
+  --without-couenne       Do not use Couenne. If an argument is given to
+                          --with-couenne, then 'yes' is equivalent
+                          to --with-couenne, 'no' is equivalent to
+                          --without-couenne and any other argument is applied
+                          as for --with-couenne-lflags.
   --with-couenne-lflags   Linker flags for Couenne appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-couenne-cflags   Compiler flags for Couenne appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-soplex           Use SoPlex. If an argument is given, 'yes' is
-                          equivalent to --with-soplex, 'no' is
-                          equivalent to --without-soplex. Any other argument
-                          is applied as for --with-soplex-lflags
+  --without-soplex        Do not use SoPlex. If an argument is given to
+                          --with-soplex, then 'yes' is equivalent
+                          to --with-soplex, 'no' is equivalent to
+                          --without-soplex and any other argument is applied
+                          as for --with-soplex-lflags.
   --with-soplex-lflags    Linker flags for SoPlex appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-soplex-cflags    Compiler flags for SoPlex appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-scip             Use SCIP. If an argument is given, 'yes' is
-                          equivalent to --with-scip, 'no' is
-                          equivalent to --without-scip. Any other argument is
-                          applied as for --with-scip-lflags
+  --without-scip          Do not use SCIP. If an argument is given to
+                          --with-scip, then 'yes' is equivalent to
+                          --with-scip, 'no' is equivalent to
+                          --without-scip and any other argument is applied as
+                          for --with-scip-lflags.
   --with-scip-lflags      Linker flags for SCIP appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-scip-cflags      Compiler flags for SCIP appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-gcg              Use GCG. If an argument is given, 'yes' is
-                          equivalent to --with-gcg, 'no' is
-                          equivalent to --without-gcg. Any other argument is
-                          applied as for --with-gcg-lflags
+  --without-gcg           Do not use GCG. If an argument is given to
+                          --with-gcg, then 'yes' is equivalent to
+                          --with-gcg, 'no' is equivalent to
+                          --without-gcg and any other argument is applied as
+                          for --with-gcg-lflags.
   --with-gcg-lflags       Linker flags for GCG appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-gcg-cflags       Compiler flags for GCG appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-cplex            Use Cplex. If an argument is given, 'yes' is
-                          equivalent to --with-cplex, 'no' is
-                          equivalent to --without-cplex. Any other argument is
-                          applied as for --with-cplex-lflags
+  --without-cplex         Do not use Cplex. If an argument is given to
+                          --with-cplex, then 'yes' is equivalent
+                          to --with-cplex, 'no' is equivalent to
+                          --without-cplex and any other argument is applied as
+                          for --with-cplex-lflags.
   --with-cplex-lflags     Linker flags for Cplex appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-cplex-cflags     Compiler flags for Cplex appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-mosek            Use Mosek. If an argument is given, 'yes' is
-                          equivalent to --with-mosek, 'no' is
-                          equivalent to --without-mosek. Any other argument is
-                          applied as for --with-mosek-lflags
+  --without-mosek         Do not use Mosek. If an argument is given to
+                          --with-mosek, then 'yes' is equivalent
+                          to --with-mosek, 'no' is equivalent to
+                          --without-mosek and any other argument is applied as
+                          for --with-mosek-lflags.
   --with-mosek-lflags     Linker flags for Mosek appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-mosek-cflags     Compiler flags for Mosek appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-xpress           Use Xpress. If an argument is given, 'yes' is
-                          equivalent to --with-xpress, 'no' is
-                          equivalent to --without-xpress. Any other argument
-                          is applied as for --with-xpress-lflags
+  --without-xpress        Do not use Xpress. If an argument is given to
+                          --with-xpress, then 'yes' is equivalent
+                          to --with-xpress, 'no' is equivalent to
+                          --without-xpress and any other argument is applied
+                          as for --with-xpress-lflags.
   --with-xpress-lflags    Linker flags for Xpress appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-xpress-cflags    Compiler flags for Xpress appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-gurobi           Use Gurobi. If an argument is given, 'yes' is
-                          equivalent to --with-gurobi, 'no' is
-                          equivalent to --without-gurobi. Any other argument
-                          is applied as for --with-gurobi-lflags
+  --without-gurobi        Do not use Gurobi. If an argument is given to
+                          --with-gurobi, then 'yes' is equivalent
+                          to --with-gurobi, 'no' is equivalent to
+                          --without-gurobi and any other argument is applied
+                          as for --with-gurobi-lflags.
   --with-gurobi-lflags    Linker flags for Gurobi appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-gurobi-cflags    Compiler flags for Gurobi appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
-  --with-lapack           Use lapack. If an argument is given, 'yes' is
-                          equivalent to --with-lapack, 'no' is
-                          equivalent to --without-lapack. Any other argument
-                          is applied as for --with-lapack-lflags
+  --without-lapack        Do not use lapack. If an argument is given to
+                          --with-lapack, then 'yes' is equivalent
+                          to --with-lapack, 'no' is equivalent to
+                          --without-lapack and any other argument is applied
+                          as for --with-lapack-lflags.
   --with-lapack-lflags    Linker flags for lapack appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-gams             specify directory of GAMS distribution
@@ -22091,7 +22108,7 @@ fi
   lapack_keep_looking=yes
 
   if test "$with_lapack" != "no" ; then
-    if test "$with_lapack" != "yes" ; then
+    if test "$with_lapack" != "yes" && test -z "$with_lapack_lflags" ; then
       with_lapack_lflags="$with_lapack"
     fi
     if test -n "$with_lapack_lflags" ; then
