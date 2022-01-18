@@ -26,7 +26,6 @@ class GamsCbc
 private:
    struct gmoRec*        gmo;                /**< GAMS modeling object */
    struct gevRec*        gev;                /**< GAMS environment */
-   struct optRec*        opt;                /**< GAMS options object */
 
    GamsCbcMessageHandler* msghandler;        /**< message handler */
    CbcModel*             model;              /**< CBC model object */
@@ -63,7 +62,6 @@ public:
    GamsCbc()
    : gmo(NULL),
      gev(NULL),
-     opt(NULL),
      msghandler(NULL),
      model(NULL),
      optcr(0.0),

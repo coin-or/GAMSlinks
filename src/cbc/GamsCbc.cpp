@@ -186,7 +186,6 @@ int GamsCbc::readyAPI(
 
    gmo = gmo_;
    assert(gmo != NULL);
-   opt = NULL;
 
    delete model;
 
@@ -674,39 +673,60 @@ bool GamsCbc::setupParameters(
    CbcParameters&           cbcParam
 )
 {
+   optHandle_t opt;
+   char buffer[2*GMS_SSSIZE];
+
    assert(gmo != NULL);
    assert(gev != NULL);
 
-   char buffer[2*GMS_SSSIZE];
-   bool createdopt = false;
-
-   if( opt == NULL )
+   /* get the Option File Handling set up */
+   if( !optCreate(&opt, buffer, sizeof(buffer)) )
    {
-      /* get the Option File Handling set up */
-      if( !optCreate(&opt, buffer, sizeof(buffer)) )
-      {
-         gevLogStatPChar(gev, "\n*** Could not create optionfile handle: ");
-         gevLogStat(gev, buffer);
-         return false;
-      }
-      createdopt = true;
+      gevLogStatPChar(gev, "\n*** Could not create optionfile handle: ");
+      gevLogStat(gev, buffer);
+      return false;
+   }
 
-      // get definition file name from cfg object
-      char deffile[2*GMS_SSSIZE+20];
-      cfgHandle_t cfg;
-      cfg = (cfgHandle_t)gevGetALGX(gev);
-      assert(cfg != NULL);
-      gevGetCurrentSolver(gev, gmo, buffer);
-      deffile[0] = '\0';
-      cfgDefFileName(cfg, buffer, deffile);
-      if( deffile[0] != '/' && deffile[1] != ':' )
+   // get definition file name from cfg object
+   char deffile[2*GMS_SSSIZE+20];
+   cfgHandle_t cfg;
+   cfg = (cfgHandle_t)gevGetALGX(gev);
+   assert(cfg != NULL);
+   gevGetCurrentSolver(gev, gmo, buffer);
+   deffile[0] = '\0';
+   cfgDefFileName(cfg, buffer, deffile);
+   if( deffile[0] != '/' && deffile[1] != ':' )
+   {
+      // if deffile is not absolute path, then prefix with sysdir
+      gevGetStrOpt(gev, gevNameSysDir, buffer);
+      strcat(buffer, deffile);
+      strcpy(deffile, buffer);
+   }
+   if( optReadDefinition(opt, deffile) )
+   {
+      int itype;
+      for( int i = 1; i <= optMessageCount(opt); ++i )
       {
-         // if deffile is not absolute path, then prefix with sysdir
-         gevGetStrOpt(gev, gevNameSysDir, buffer);
-         strcat(buffer, deffile);
-         strcpy(deffile, buffer);
+         optGetMessage(opt, i, buffer, &itype);
+         if( itype <= optMsgFileLeave || itype == optMsgUserError )
+            gevLogStat(gev, buffer);
       }
-      if( optReadDefinition(opt, deffile) )
+      optClearMessages(opt);
+      optEchoSet(opt, 0);
+      optFree(&opt);
+      return false;
+   }
+   optEOLOnlySet(opt, 1);
+
+   // read user options file
+   if( gmoOptFile(gmo) > 0 )
+   {
+      gmoNameOptFile(gmo, buffer);
+
+      /* read option file */
+      optEchoSet(opt, 1);
+      optReadParameterFile(opt, buffer);
+      if( optMessageCount(opt) )
       {
          int itype;
          for( int i = 1; i <= optMessageCount(opt); ++i )
@@ -717,36 +737,10 @@ bool GamsCbc::setupParameters(
          }
          optClearMessages(opt);
          optEchoSet(opt, 0);
-         if( createdopt )
-            optFree(&opt);
-         return false;
       }
-      optEOLOnlySet(opt, 1);
-
-      // read user options file
-      if( gmoOptFile(gmo) > 0 )
+      else
       {
-         gmoNameOptFile(gmo, buffer);
-
-         /* read option file */
-         optEchoSet(opt, 1);
-         optReadParameterFile(opt, buffer);
-         if( optMessageCount(opt) )
-         {
-            int itype;
-            for( int i = 1; i <= optMessageCount(opt); ++i )
-            {
-               optGetMessage(opt, i, buffer, &itype);
-               if( itype <= optMsgFileLeave || itype == optMsgUserError )
-                  gevLogStat(gev, buffer);
-            }
-            optClearMessages(opt);
-            optEchoSet(opt, 0);
-         }
-         else
-         {
-            optEchoSet(opt, 0);
-         }
+         optEchoSet(opt, 0);
       }
    }
 
@@ -818,8 +812,7 @@ bool GamsCbc::setupParameters(
       {
          sprintf(buffer, "ERROR: Option %s not found in CBC (invalid reference number %d?)\n", sname, irefnr);
          gevLogStatPChar(gev, buffer);
-         if( createdopt )
-            optFree(&opt);
+         optFree(&opt);
          return false;
       }
 
@@ -850,35 +843,35 @@ bool GamsCbc::setupParameters(
             {
                sprintf(buffer, "WARNING: Value 'binaryfirst' for option %s is deprecated. Use '01first' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               param->setStrVal("01first");
+               param->setKwdVal("01first");
             }
             else if( strcmp(sval, "binarylast") == 0 )
             {
                sprintf(buffer, "WARNING: Value 'binarylast' for option %s is deprecated. Use '01first' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               param->setStrVal("01first");
+               param->setKwdVal("01first");
             }
             else if( strcmp(sval, "1") == 0 )
             {
                sprintf(buffer, "WARNING: Option %s is no longer of boolean type. Use value 'on' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               param->setStrVal("on");
+               param->setKwdVal("on");
             }
             else if( strcmp(sval, "0") == 0 )
             {
                sprintf(buffer, "WARNING: Option %s is no longer of boolean type. Use value 'off' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               param->setStrVal("off");
+               param->setKwdVal("off");
             }
             else if( strcmp(sval, "auto") == 0 )
             {
                sprintf(buffer, "WARNING: Value 'auto' for option %s is deprecated. Use value 'automatic' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               param->setStrVal("automatic");
+               param->setKwdVal("automatic");
             }
             else
             {
-               param->setStrVal(sval);
+               param->setKwdVal(sval);
             }
             break;
 
@@ -886,8 +879,7 @@ bool GamsCbc::setupParameters(
          {
             sprintf(buffer, "ERROR: Option %s is of unknown type %d\n", sname, iotype);
             gevLogStatPChar(gev, buffer);
-            if( createdopt )
-               optFree(&opt);
+            optFree(&opt);
             return false;
          }
       }
@@ -1035,8 +1027,9 @@ bool GamsCbc::setupParameters(
       dumpsolutionsmerged = strdup(buffer);
    }
 
-   if( createdopt )
-      optFree(&opt);
+   optFree(&opt);
+
+   // TODO print all non-default options
 
    return true;
 }
