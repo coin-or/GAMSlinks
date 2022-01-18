@@ -43,9 +43,8 @@ GamsOption& collectCbcOption(
    if( idx >= cbcopts.size() )
    {
       std::cerr << "Error: Option " << namecbc << " not known to Cbc." << std::endl;
-      // FIXME
-      // exit(1);
-      return *new GamsOption(namecbc_, "MISSING", "MISSING", false);
+      exit(1);
+      //return *new GamsOption(namecbc_, "MISSING", "MISSING", false);
    }
 
    const CoinParam& cbcopt(*cbcopts[idx]);
@@ -120,9 +119,8 @@ GamsOption& collectCbcOption(
       default:
       {
          std::cerr << "ERROR: 'action'-option encountered: " << namegams << std::endl;
-         //FIXME
-         //exit(1);
-         return *new GamsOption(namecbc_, "ACTIONOPT", "ACTIONOPT not expected", false);
+         exit(1);
+         //return *new GamsOption(namecbc_, "ACTIONOPT", "ACTIONOPT not expected", false);
       }
    }
 
