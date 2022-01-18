@@ -269,7 +269,7 @@ int GamsOsi::readyAPI(
             GUlicenseInit_t initType;
 
             /* Gurobi license setup */
-            if( (status=gevgurobilice(gev, pal, NULL, NULL, (void**)&grbenv, NULL, 1, &initType, 0)) )
+            if( (status=gevgurobilice(gev, pal, NULL, NULL, (void**)&grbenv, NULL, 1, &initType, 0, -1)) )
             {
                if( GRB_ERROR_NO_LICENSE == status )
                   sprintf(buffer, "Failed to create Gurobi environment. Missing license.");
@@ -871,9 +871,15 @@ bool GamsOsi::setupCallbacks()
       {
          OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
          assert(osixpr != NULL);
+#if XPVERSION <= 38
          XPRSsetcbgloballog(osixpr->getLpPtr(), xprcallback, (void*)gev);
          XPRSsetcbcutlog(osixpr->getLpPtr(), xprcallback, (void*)gev);
          XPRSsetcblplog(osixpr->getLpPtr(), xprcallback, (void*)gev);
+#else
+         XPRSaddcbgloballog(osixpr->getLpPtr(), xprcallback, (void*)gev, 0);
+         XPRSaddcbcutlog(osixpr->getLpPtr(), xprcallback, (void*)gev, 0);
+         XPRSaddcblplog(osixpr->getLpPtr(), xprcallback, (void*)gev, 0);
+#endif
          gevTerminateInstall(gev);
          break;
       }
@@ -887,13 +893,22 @@ bool GamsOsi::setupCallbacks()
 
 bool GamsOsi::clearCallbacks()
 {
-#if 0
    switch( solverid )
    {
+#if defined(GAMSLINKS_HAS_OSIXPR) && XPVERSION >= 39
+      case XPRESS:
+      {
+         OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
+         assert(osixpr != NULL);
+         XPRSremovecbgloballog(osixpr->getLpPtr(), xprcallback, (void*)gev);
+         XPRSremovecbcutlog(osixpr->getLpPtr(), xprcallback, (void*)gev);
+         XPRSremovecblplog(osixpr->getLpPtr(), xprcallback, (void*)gev);
+         break;
+      }
+#endif
 
       default: ;
    }
-#endif
 
    return true;
 }
