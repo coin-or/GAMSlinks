@@ -30,7 +30,6 @@ private:
 
    GamsCbcMessageHandler* msghandler;        /**< message handler */
    CbcModel*             model;              /**< CBC model object */
-   std::deque<std::string> cbc_args;         /**< parameters to pass to CBC */
 
    double                optcr;              /**< relative optimality tolerance */
    double                optca;              /**< absolute optimality tolerance */
@@ -49,7 +48,8 @@ private:
    bool setupStartingPoint();
 
    bool setupParameters(
-      CbcParameters&     cbcParam
+      std::deque<std::string>& cbc_args,
+      CbcParameters&           cbcParam
    );
 
    bool writeSolution(

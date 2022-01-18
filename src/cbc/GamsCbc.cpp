@@ -10,8 +10,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <climits>
-#include <list>
-#include <string>
 
 #ifdef _MSC_VER
 #define strdup _strdup
@@ -250,10 +248,11 @@ int GamsCbc::callSolver()
    }
 
    /* initialize Cbc */
-   CbcParameters cbcData;
-   CbcMain0(*model, cbcData);
+   CbcParameters cbcparams;
+   CbcMain0(*model, cbcparams);
 
-   if( !setupParameters(cbcData) )
+   std::deque<std::string> cbc_args;
+   if( !setupParameters(cbc_args, cbcparams) )
    {
       gevLogStat(gev, "Error setting up CBC parameters. Aborting...");
       return -1;
@@ -301,7 +300,7 @@ int GamsCbc::callSolver()
    double start_cputime  = CoinCpuTime();
    double start_walltime = CoinWallclockTime();
 
-   CbcMain1(cbc_args, *model, cbcData, cbcCallBack);
+   CbcMain1(cbc_args, *model, cbcparams, cbcCallBack);
 
    double end_cputime  = CoinCpuTime();
    double end_walltime = CoinWallclockTime();
@@ -671,7 +670,8 @@ bool GamsCbc::setupStartingPoint()
 }
 
 bool GamsCbc::setupParameters(
-   CbcParameters&     cbcParam
+   std::deque<std::string>& cbc_args,
+   CbcParameters&           cbcParam
 )
 {
    assert(gmo != NULL);
@@ -779,12 +779,10 @@ bool GamsCbc::setupParameters(
    optcr = optGetDblStr(opt, "optcr");
    model->setPrintFrequency(optGetIntStr(opt, "printfrequency"));
 
-   std::list<std::string> par_list;
-
    if( optGetIntStr(opt, "conflictcuts") )
    {
-      par_list.push_back("-constraint");
-      par_list.push_back("conflict");
+      cbc_args.push_back("-constraint");
+      cbc_args.push_back("conflict");
    }
 
    /* Apply Cbc options */
@@ -828,25 +826,25 @@ bool GamsCbc::setupParameters(
       // std::cout << sname << " ref " << irefnr << " -> " << param->name() << std::endl;
 
       sprintf(buffer, "-%s", param->name().c_str());
-      par_list.push_back(buffer);
+      cbc_args.push_back(buffer);
 
       switch( iotype )
       {
          case optTypeBoolean:
             assert(itype == optDataInteger);
-            par_list.push_back(ival == 0 ? "off" : "on");
+            cbc_args.push_back(ival == 0 ? "off" : "on");
             break;
 
          case optTypeInteger:
             assert(itype == optDataInteger);
             sprintf(buffer, "%d", ival);
-            par_list.push_back(buffer);
+            cbc_args.push_back(buffer);
             break;
 
          case optTypeDouble:
             assert(itype == optDataDouble);
             sprintf(buffer, "%g", dval);
-            par_list.push_back(buffer);
+            cbc_args.push_back(buffer);
             break;
 
          case optTypeEnumStr:
@@ -857,34 +855,34 @@ bool GamsCbc::setupParameters(
             {
                sprintf(buffer, "WARNING: Value 'binaryfirst' for option %s is deprecated. Use '01first' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               par_list.push_back("01first");
+               cbc_args.push_back("01first");
             }
             else if( strcmp(sval, "binarylast") == 0 )
             {
                sprintf(buffer, "WARNING: Value 'binarylast' for option %s is deprecated. Use '01first' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               par_list.push_back("01last");
+               cbc_args.push_back("01last");
             }
             else if( strcmp(sval, "1") == 0 )
             {
                sprintf(buffer, "WARNING: Option %s is no longer of boolean type. Use value 'on' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               par_list.push_back("on");
+               cbc_args.push_back("on");
             }
             else if( strcmp(sval, "0") == 0 )
             {
                sprintf(buffer, "WARNING: Option %s is no longer of boolean type. Use value 'off' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               par_list.push_back("off");
+               cbc_args.push_back("off");
             }
             else if( strcmp(sval, "auto") == 0 )
             {
                sprintf(buffer, "WARNING: Value 'auto' for option %s is deprecated. Use value 'automatic' instead.\n", sname);
                gevLogStatPChar(gev, buffer);
-               par_list.push_back("off");
+               cbc_args.push_back("off");
             }
             else
-               par_list.push_back(sval);
+               cbc_args.push_back(sval);
             break;
 
          default:
@@ -921,9 +919,9 @@ bool GamsCbc::setupParameters(
       }
       gevLogStatPChar(gev, buffer);
 
-      par_list.push_back("-threads");
+      cbc_args.push_back("-threads");
       sprintf(buffer, "%d", nthreads);
-      par_list.push_back(buffer);
+      cbc_args.push_back(buffer);
 
       // no linear algebra multithreading if Cbc is doing multithreading
       GAMSsetNumThreads(gev, 1);
@@ -957,7 +955,7 @@ bool GamsCbc::setupParameters(
          char* tok = strtok_r(value, " ", &value);
          while( tok != NULL )
          {
-            par_list.push_back(tok);
+            cbc_args.push_back(tok);
             tok = strtok_r(NULL, " ", &value);
          }
       }
@@ -973,33 +971,26 @@ bool GamsCbc::setupParameters(
       }
       else if( strcmp(value, "primal") == 0 )
       {
-         par_list.push_back("-primalSimplex");
+         cbc_args.push_back("-primalSimplex");
       }
       else if( strcmp(value, "dual") == 0 )
       {
-         par_list.push_back("-dualSimplex");
+         cbc_args.push_back("-dualSimplex");
       }
       else if( strcmp(value, "barrier") == 0 )
       {
-         par_list.push_back("-barrier");
+         cbc_args.push_back("-barrier");
       }
       else
       {
          gevLogStat(gev, "Unsupported value for option 'startalg'. Ignoring this option");
       }
       if( !isLP() )
-         par_list.push_back("-solve");
+         cbc_args.push_back("-solve");
    }
    else
-      par_list.push_back("-solve");
+      cbc_args.push_back("-solve");
 
-   size_t par_list_length = par_list.size();
-   cbc_args.clear();
-   for( std::list<std::string>::iterator it(par_list.begin()); it != par_list.end(); ++it )
-   {
-      cbc_args.push_back(*it);
-      //std::cout << cbc_args.back() << std::endl;
-   }
    cbc_args.push_back("-quit");
 
    mipstart = optGetIntStr(opt, "mipstart") != 0;
