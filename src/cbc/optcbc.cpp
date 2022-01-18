@@ -38,7 +38,7 @@ GamsOption& collectCbcOption(
 
    unsigned int idx;
    for( idx = 0; idx < cbcopts.size(); ++idx )
-      if( cbcopts[idx]->name() == namecbc )
+      if( cbcopts[idx] != NULL && cbcopts[idx]->name() == namecbc )
          break;
    if( idx >= cbcopts.size() )
    {
@@ -126,14 +126,13 @@ GamsOption& collectCbcOption(
       }
    }
 
-   int cbcoptnum = 0; // FIXME
+   int cbcoptnum = idx;
    GamsOption& opt(gmsopt.collect(namegams, cbcopt.shortHelp(), cbcopt.longHelp(), opttype, defaultval, minval, maxval, true, true, enumval, "", cbcoptnum));
    if( namegams != namecbc )
       opt.synonyms[namecbc];
 
    // remove parameter from array, so we can later easily check which options we haven't taken
-// FIXME
-//   cbcopts[idx] = CbcOrClpParam();
+   cbcopts[idx] = NULL;
 
    return opt;
 }
@@ -529,7 +528,8 @@ int main(int argc, char** argv)
 #endif
 
    // print uncollected Cbc options
-   //for( auto& cbcopt : cbcopts )
-   //   if( cbcopt.type() < CLP_PARAM_ACTION_DIRECTORY )
-   //      printf("%-30s %3d %s\n", cbcopt.name().c_str(), cbcopt.type(), cbcopt.shortHelp().c_str());
+   printf("Uncollected Cbc options:\n");
+   for( auto& cbcopt : cbcopts )
+      if( cbcopt != NULL && cbcopt->type() != CoinParam::paramAct && cbcopt->type() != CoinParam::paramInvalid )
+         printf("%-30s %3d %s\n", cbcopt->name().c_str(), cbcopt->type(), cbcopt->shortHelp().c_str());
 }
