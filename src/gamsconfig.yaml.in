@@ -72,7 +72,7 @@ solverConfig:
 @COIN_HAS_HIGHS_TRUE@      libName: highs/libGamsHighs.la
 @COIN_HAS_HIGHS_TRUE@      auditCode: his
 @COIN_HAS_HIGHS_TRUE@      solverInterfaceType: 1
-@COIN_HAS_HIGHS_TRUE@      threadSafeIndic: True
+@COIN_HAS_HIGHS_TRUE@      threadSafeIndic: False
 @COIN_HAS_HIGHS_TRUE@    modelTypes:
 @COIN_HAS_HIGHS_TRUE@    - LP
 @COIN_HAS_HIGHS_TRUE@    - RMIP

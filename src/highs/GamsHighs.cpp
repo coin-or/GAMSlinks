@@ -27,7 +27,6 @@ typedef struct
 
    Highs*        highs;
    HighsLp*      lp;
-   HighsOptions* options;
 } gamshighs_t;
 
 static
@@ -97,41 +96,6 @@ HighsBasisStatus translateBasisStatus(
 }
 
 static
-int setupOptions(
-   gamshighs_t* gh
-)
-{
-   assert(gh != NULL);
-   assert(gh->highs != NULL);
-
-   delete gh->options;
-   gh->options = new HighsOptions;
-
-   gh->options->time_limit = gevGetDblOpt(gh->gev, gevResLim);
-   gh->options->simplex_iteration_limit = gevGetIntOpt(gh->gev, gevIterLim);
-
-   if( gevGetIntOpt(gh->gev, gevUseCutOff) )
-      gh->options->objective_bound = gevGetDblOpt(gh->gev, gevCutOff);
-
-   if( gmoOptFile(gh->gmo) > 0 )
-   {
-      char optfilename[GMS_SSSIZE];
-      gmoNameOptFile(gh->gmo, optfilename);
-      if( !loadOptionsFromFile(gh->options->log_options, *gh->options, optfilename) )
-         return 1;
-   }
-
-   gh->options->printmsgcb = gevprint;
-   gh->options->logmsgcb = gevlog;
-   gh->options->msgcb_data = (void*) gh->gev;
-   highsSetLogCallback(*gh->options);
-
-   gh->highs->passOptions(*gh->options);
-
-   return 0;
-}
-
-static
 int setupProblem(
    gamshighs_t* gh
 )
@@ -148,6 +112,14 @@ int setupProblem(
    assert(gh->lp == NULL);
 
    gh->highs = new Highs();
+
+   // need to set log callbacks in options struct, since HiGHS::run() calls highsSetLogCallback(options)
+   // TODO we should not need to uncast const-ness, but there is no method in HiGHS class to set log callbacks
+   HighsOptions& options = const_cast<HighsOptions&>(gh->highs->getOptions());
+   options.printmsgcb = gevprint;
+   options.logmsgcb = gevlog;
+   options.msgcb_data = (void*) gh->gev;
+   highsSetLogCallback(options);
 
    numCol = gmoN(gh->gmo);
    numRow = gmoM(gh->gmo);
@@ -259,6 +231,32 @@ int setupProblem(
    TERMINATE:
 
    return rc;
+}
+
+static
+int setupOptions(
+   gamshighs_t* gh
+)
+{
+   assert(gh != NULL);
+   assert(gh->highs != NULL);
+
+   gh->highs->resetOptions();
+
+   gh->highs->setOptionValue("time_limit", gevGetDblOpt(gh->gev, gevResLim));
+   gh->highs->setOptionValue("simplex_iteration_limit", gevGetIntOpt(gh->gev, gevIterLim));
+
+   if( gevGetIntOpt(gh->gev, gevUseCutOff) )
+      gh->highs->setOptionValue("objective_bound", gevGetDblOpt(gh->gev, gevCutOff));
+
+   if( gmoOptFile(gh->gmo) > 0 )
+   {
+      char optfilename[GMS_SSSIZE];
+      gmoNameOptFile(gh->gmo, optfilename);
+      gh->highs->readOptions(optfilename);
+   }
+
+   return 0;
 }
 
 static
@@ -552,9 +550,6 @@ DllExport int STDCALL hisCallSolver(
 
    delete gh->lp;
    gh->lp = NULL;
-
-   delete gh->options;
-   gh->options = NULL;
 
    return rc;
 }
