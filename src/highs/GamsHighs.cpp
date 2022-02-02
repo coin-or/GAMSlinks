@@ -20,31 +20,33 @@
 #include "io/FilereaderMps.h"
 #include "io/LoadOptions.h" /* for loadOptionsFromFile */
 
-struct gamshighs_s
+typedef struct
 {
-   gmoHandle_t gmo;
-   gevHandle_t gev;
-   HighsInt debug;
+   gmoHandle_t   gmo;
+   gevHandle_t   gev;
 
-   Highs *highs;
-   HighsLp *lp;
-   HighsOptions *options;
-};
-typedef struct gamshighs_s gamshighs_t;
+   Highs*        highs;
+   HighsLp*      lp;
+   HighsOptions* options;
+} gamshighs_t;
 
-static void gevprint(
-   HighsInt level,
-   const char *msg,
-   void *msgcb_data)
+static
+void gevprint(
+   HighsInt    level,
+   const char* msg,
+   void*       msgcb_data
+)
 {
    gevHandle_t gev = (gevHandle_t) msgcb_data;
    gevLogPChar(gev, msg);
 }
 
-static void gevlog(
+static
+void gevlog(
    HighsLogType type,
-   const char *msg,
-   void *msgcb_data)
+   const char*  msg,
+   void*        msgcb_data
+)
 {
    gevHandle_t gev = (gevHandle_t) msgcb_data;
    if( type == HighsLogType::kInfo )
@@ -53,8 +55,10 @@ static void gevlog(
       gevLogStatPChar(gev, msg);
 }
 
-static enum gmoVarEquBasisStatus translateBasisStatus(
-   HighsBasisStatus status)
+static
+enum gmoVarEquBasisStatus translateBasisStatus(
+   HighsBasisStatus status
+)
 {
    switch( status )
    {
@@ -72,8 +76,10 @@ static enum gmoVarEquBasisStatus translateBasisStatus(
    return gmoBstat_Super;
 }
 
-static HighsBasisStatus translateBasisStatus(
-   enum gmoVarEquBasisStatus status)
+static
+HighsBasisStatus translateBasisStatus(
+   enum gmoVarEquBasisStatus status
+)
 {
    switch( status )
    {
@@ -90,8 +96,10 @@ static HighsBasisStatus translateBasisStatus(
    return HighsBasisStatus::kNonbasic;
 }
 
-static HighsInt setupOptions(
-   gamshighs_t *gh)
+static
+int setupOptions(
+   gamshighs_t* gh
+)
 {
    assert(gh != NULL);
    assert(gh->options == NULL);
@@ -99,8 +107,7 @@ static HighsInt setupOptions(
    gh->options = new HighsOptions;
 
    gh->options->time_limit = gevGetDblOpt(gh->gev, gevResLim);
-   if( gevGetIntOpt(gh->gev, gevIterLim) != ITERLIM_INFINITY )
-      gh->options->simplex_iteration_limit = gevGetIntOpt(gh->gev, gevIterLim);
+   gh->options->simplex_iteration_limit = gevGetIntOpt(gh->gev, gevIterLim);
 
    if( gevGetIntOpt(gh->gev, gevUseCutOff) )
       gh->options->objective_bound = gevGetDblOpt(gh->gev, gevCutOff);
@@ -121,8 +128,10 @@ static HighsInt setupOptions(
    return 0;
 }
 
-static HighsInt setupProblem(
-   gamshighs_t *gh)
+static
+int setupProblem(
+   gamshighs_t* gh
+)
 {
    HighsInt numCol;
    HighsInt numRow;
@@ -251,15 +260,17 @@ static HighsInt setupProblem(
    return rc;
 }
 
-static HighsInt processSolve(
-   gamshighs_t *gh)
+static
+int processSolve(
+   gamshighs_t* gh
+)
 {
    assert(gh != NULL);
    assert(gh->highs != NULL);
    assert(gh->lp != NULL);
 
    gmoHandle_t gmo = gh->gmo;
-   Highs *highs = gh->highs;
+   Highs* highs = gh->highs;
 
    gmoSetHeadnTail(gmo, gmoHresused, gevTimeDiffStart(gh->gev));
    gmoSetHeadnTail(gmo, gmoHiterused, highs->getInfo().simplex_iteration_count);
@@ -492,7 +503,7 @@ DllExport int STDCALL hisCallSolver(
    assert(gh->gev != NULL);
 
    gevLogStatPChar(gh->gev, "HiGHS " XQUOTE(HIGHS_VERSION_MAJOR) "." XQUOTE(HIGHS_VERSION_MINOR) "." XQUOTE(HIGHS_VERSION_PATCH) " [date: " HIGHS_COMPILATION_DATE ", git hash: " HIGHS_GITHASH "]\n");
-   gevLogStatPChar(gh->gev, "Copyright (c) 2020 ERGO-Code under MIT license terms.\n");
+   gevLogStatPChar(gh->gev, "Copyright (c) 2022 ERGO-Code under MIT license terms.\n");
 
    gmoModelStatSet(gh->gmo, gmoModelStat_NoSolutionReturned);
    gmoSolveStatSet(gh->gmo, gmoSolveStat_SystemErr);
