@@ -102,8 +102,9 @@ int setupOptions(
 )
 {
    assert(gh != NULL);
-   assert(gh->options == NULL);
+   assert(gh->highs != NULL);
 
+   delete gh->options;
    gh->options = new HighsOptions;
 
    gh->options->time_limit = gevGetDblOpt(gh->gev, gevResLim);
@@ -125,6 +126,8 @@ int setupOptions(
    gh->options->msgcb_data = (void*) gh->gev;
    highsSetLogCallback(*gh->options);
 
+   gh->highs->passOptions(*gh->options);
+
    return 0;
 }
 
@@ -141,12 +144,10 @@ int setupProblem(
    HighsSolution sol;
 
    assert(gh != NULL);
-   assert(gh->options != NULL);
    assert(gh->highs == NULL);
    assert(gh->lp == NULL);
 
    gh->highs = new Highs();
-   gh->highs->passOptions(*gh->options);
 
    numCol = gmoN(gh->gmo);
    numRow = gmoM(gh->gmo);
@@ -456,10 +457,16 @@ DllExport void STDCALL hisFree(
    void** Cptr
 )
 {
+   gamshighs_t* gh;
+
    assert(Cptr != NULL);
    assert(*Cptr != NULL);
 
-   free(*Cptr);
+   gh = (gamshighs_t*) *Cptr;
+
+   delete gh->highs;
+   free(gh);
+
    *Cptr = NULL;
 
    gmoLibraryUnload();
@@ -487,6 +494,17 @@ DllExport int STDCALL hisReadyAPI(
    gh->gmo = Gptr;
    gh->gev = (gevHandle_t) gmoEnvironment(gh->gmo);
 
+   /* get the problem into a normal form */
+   gmoObjStyleSet(gh->gmo, gmoObjType_Fun);
+   gmoObjReformSet(gh->gmo, 1);
+   gmoIndexBaseSet(gh->gmo, 0);
+   gmoSetNRowPerm(gh->gmo); /* hide =N= rows */
+   gmoMinfSet(gh->gmo, -kHighsInf);
+   gmoPinfSet(gh->gmo, kHighsInf);
+
+   if( setupProblem(gh) )
+      return 1;
+
    return 0;
 }
 
@@ -502,8 +520,7 @@ DllExport int STDCALL hisCallSolver(
    assert(gh->gmo != NULL);
    assert(gh->gev != NULL);
 
-   gevLogStatPChar(gh->gev, "HiGHS " XQUOTE(HIGHS_VERSION_MAJOR) "." XQUOTE(HIGHS_VERSION_MINOR) "." XQUOTE(HIGHS_VERSION_PATCH) " [date: " HIGHS_COMPILATION_DATE ", git hash: " HIGHS_GITHASH "]\n");
-   gevLogStatPChar(gh->gev, "Copyright (c) 2022 ERGO-Code under MIT license terms.\n");
+   gevLogStatPChar(gh->gev, "HiGHS " XQUOTE(HIGHS_VERSION_MAJOR) "." XQUOTE(HIGHS_VERSION_MINOR) "." XQUOTE(HIGHS_VERSION_PATCH) " [" HIGHS_GITHASH "]\n");
 
    gmoModelStatSet(gh->gmo, gmoModelStat_NoSolutionReturned);
    gmoSolveStatSet(gh->gmo, gmoSolveStat_SystemErr);
@@ -517,9 +534,6 @@ DllExport int STDCALL hisCallSolver(
    gmoPinfSet(gh->gmo, kHighsInf);
 
    if( setupOptions(gh) )
-      goto TERMINATE;
-
-   if( setupProblem(gh) )
       goto TERMINATE;
 
    gevTimeSetStart(gh->gev);
@@ -538,9 +552,6 @@ DllExport int STDCALL hisCallSolver(
 
    delete gh->lp;
    gh->lp = NULL;
-
-   delete gh->highs;
-   gh->highs = NULL;
 
    delete gh->options;
    gh->options = NULL;
