@@ -69,6 +69,7 @@ AC_COIN_CHK_LIB(Cplex,[GamsOsi GamsBonmin GamsCouenne GamsScip GamsCbc],[-lcplex
 AC_COIN_CHK_LIB(Mosek,[GamsOsi GamsScip],[-lmosek64 -lpthread],[],[],[MSK_makeenv])
 AC_COIN_CHK_LIB(Xpress,[GamsOsi],[-lxprs -lxprl],[],[],[XPRSinit])
 AC_COIN_CHK_LIB(Gurobi,[GamsOsi],[-lgurobi -lpthread -lm],[],[],[GRBloadenv])
+AC_COIN_CHK_PKG(HiGHS,[GamsHighs],[highs])
 
 ############################################################################
 #                          Check for system specifics                      #
@@ -114,6 +115,7 @@ AC_CHECK_LIB(dl,[dlopen],[
   GAMSOSI_LFLAGS="$GAMSOSI_LFLAGS -ldl"
   GAMSSCIP_LFLAGS="$GAMSSCIP_LFLAGS -ldl"
   GAMSSOPLEX_LFLAGS="$GAMSSOPLEX_LFLAGS -ldl"
+  GAMSHIGHS_LFLAGS="$GAMSHIGHS_LFLAGS -ldl"
 ],[])
 
 AC_LANG_POP(C)

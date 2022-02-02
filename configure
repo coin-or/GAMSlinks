@@ -689,6 +689,11 @@ GMSGENSCRIPT
 COIN_HAS_LAPACK_FALSE
 COIN_HAS_LAPACK_TRUE
 GAMSLIBCFLAGS
+COIN_HAS_HIGHS_FALSE
+COIN_HAS_HIGHS_TRUE
+GAMSHIGHS_PCFILES
+GAMSHIGHS_CFLAGS
+GAMSHIGHS_LFLAGS
 COIN_HAS_GUROBI_FALSE
 COIN_HAS_GUROBI_TRUE
 COIN_HAS_XPRESS_FALSE
@@ -952,6 +957,9 @@ with_xpress_cflags
 with_gurobi
 with_gurobi_lflags
 with_gurobi_cflags
+with_highs
+with_highs_lflags
+with_highs_cflags
 with_lapack
 with_lapack_lflags
 with_gams
@@ -1792,6 +1800,16 @@ Optional Packages:
   --with-gurobi-lflags    Linker flags for Gurobi appropriate for your
                           environment. (Most often, -l specs for libraries.)
   --with-gurobi-cflags    Compiler flags for Gurobi appropriate for your
+                          environment. (Most often, -I specs for header file
+                          directories.)
+  --without-highs         Do not use HiGHS. If an argument is given to
+                          --with-highs, then 'yes' is equivalent
+                          to --with-highs, 'no' is equivalent to
+                          --without-highs and any other argument is applied as
+                          for --with-highs-lflags.
+  --with-highs-lflags     Linker flags for HiGHS appropriate for your
+                          environment. (Most often, -l specs for libraries.)
+  --with-highs-cflags     Compiler flags for HiGHS appropriate for your
                           environment. (Most often, -I specs for header file
                           directories.)
   --without-lapack        Do not use lapack. If an argument is given to
@@ -21914,6 +21932,248 @@ printf "%s\n" "#define GAMSLINKS_HAS_GUROBI 1" >>confdefs.h
 
 
 
+
+
+
+
+
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for package HiGHS" >&5
+printf %s "checking for package HiGHS... " >&6; }
+
+
+
+
+
+
+
+
+  coin_has_highs=noInfo
+  if test x"$COIN_SKIP_PROJECTS" != x ; then
+    for pkg in `echo $COIN_SKIP_PROJECTS | tr '[:upper:]' '[:lower:]'` ; do
+      if test "$pkg" = "highs" ; then
+        coin_has_highs=skipping
+      fi
+    done
+  fi
+
+
+  if test "$coin_has_highs" != skipping ; then
+
+
+
+
+# Check whether --with-highs was given.
+if test ${with_highs+y}
+then :
+  withval=$with_highs;
+fi
+
+
+
+# Check whether --with-highs-lflags was given.
+if test ${with_highs_lflags+y}
+then :
+  withval=$with_highs_lflags;
+fi
+
+
+
+# Check whether --with-highs-cflags was given.
+if test ${with_highs_cflags+y}
+then :
+  withval=$with_highs_cflags;
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+  coin_has_highs=requested
+
+  highs_lflags=
+  highs_cflags=
+  highs_data=
+  highs_pcfiles="highs"
+
+
+  withval="$with_highs"
+  if test -n "$withval" ; then
+    case "$withval" in
+      no )
+        coin_has_highs=skipping
+        highs_failmode='command line'
+        ;;
+      yes )
+        coin_has_highs=requested
+        highs_failmode=''
+        ;;
+      build )
+        coin_has_highs=requested
+        highs_build=yes
+        highs_failmode=''
+        ;;
+      * )
+        coin_has_highs=requested
+        highs_failmode=''
+        highs_lflags="$withval"
+        highs_pcfiles=''
+        ;;
+    esac
+  else
+    if test -n "$with_highs_lflags" ||
+       test -n "$with_highs_cflags" ||
+       test -n "$with_highs_data" ; then
+      coin_has_highs=requested
+      highs_failmode=''
+      highs_pcfiles=''
+    fi
+  fi
+
+
+  if test "$coin_has_highs" != skipping ; then
+       withval="$with_highs_lflags"
+       if test -n "$withval" ; then
+         case "$withval" in
+           build | no | yes )
+             as_fn_error $? "\"$withval\" is not useful here; please specify link flags appropriate for your environment." "$LINENO" 5
+             ;;
+           * )
+             coin_has_highs=yes
+             highs_lflags="$withval"
+             highs_pcfiles=''
+             ;;
+         esac
+       fi
+
+       withval="$with_highs_cflags"
+       if test -n "$withval" ; then
+         case "$withval" in
+           build | no | yes )
+             as_fn_error $? "\"$withval\" is not useful here; please specify compile flags appropriate for your environment." "$LINENO" 5
+             ;;
+           * )
+             coin_has_highs=yes
+             highs_cflags="$withval"
+             highs_pcfiles=''
+             ;;
+         esac
+       fi
+     fi
+
+
+
+
+
+  if test $coin_has_highs = requested ; then
+    if test -n "$PKG_CONFIG" ; then
+      if test x"$highs_build" = xyes ; then
+        pcfile="coin$highs_pcfiles"
+
+
+
+  if test -n "$PKG_CONFIG" ; then
+    if PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --exists "$pcfile" ; then
+      HIGHS_VERSIONS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --modversion "$pcfile" 2>/dev/null | tr '\n' ' '`
+      coin_has_highs=yes
+    else
+      HIGHS_PKG_ERRORS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG $pkg_short_errors --errors-to-stdout --print-errors "$pcfile"`
+      coin_has_highs=no
+    fi
+  else
+    as_fn_error $? "\"Cannot check for existence of module highs without pkgconf\"" "$LINENO" 5
+  fi
+
+      fi
+      if ! test $coin_has_highs = yes ; then
+        pcfile="$highs_pcfiles"
+
+
+
+  if test -n "$PKG_CONFIG" ; then
+    if PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --exists "$pcfile" ; then
+      HIGHS_VERSIONS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --modversion "$pcfile" 2>/dev/null | tr '\n' ' '`
+      coin_has_highs=yes
+    else
+      HIGHS_PKG_ERRORS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG $pkg_short_errors --errors-to-stdout --print-errors "$pcfile"`
+      coin_has_highs=no
+    fi
+  else
+    as_fn_error $? "\"Cannot check for existence of module highs without pkgconf\"" "$LINENO" 5
+  fi
+
+      fi
+      if test $coin_has_highs = yes ; then
+        highs_data=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --variable=datadir "$pcfile" 2>/dev/null`
+        highs_pcfiles="$pcfile"
+      fi
+    else
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Check for highs via pkg-config could not be performed as there is no pkg-config available. Consider installing pkg-config or provide appropriate values for --with-highs-lflags and --with-highs-cflags." >&5
+printf "%s\n" "$as_me: WARNING: Check for highs via pkg-config could not be performed as there is no pkg-config available. Consider installing pkg-config or provide appropriate values for --with-highs-lflags and --with-highs-cflags." >&2;}
+      coin_has_highs=no
+    fi
+  fi
+
+
+  if test "$BUILDTOOLS_DEBUG" = 1 ; then
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: FIND_PRIM_PKG result for highs: \"$coin_has_highs\"" >&5
+printf "%s\n" "$as_me: FIND_PRIM_PKG result for highs: \"$coin_has_highs\"" >&6;}
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Collected values for package 'highs'" >&5
+printf "%s\n" "$as_me: Collected values for package 'highs'" >&6;}
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: highs_lflags is \"$highs_lflags\"" >&5
+printf "%s\n" "$as_me: highs_lflags is \"$highs_lflags\"" >&6;}
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: highs_cflags is \"$highs_cflags\"" >&5
+printf "%s\n" "$as_me: highs_cflags is \"$highs_cflags\"" >&6;}
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: highs_data is \"$highs_data\"" >&5
+printf "%s\n" "$as_me: highs_data is \"$highs_data\"" >&6;}
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: highs_pcfiles is \"$highs_pcfiles\"" >&5
+printf "%s\n" "$as_me: highs_pcfiles is \"$highs_pcfiles\"" >&6;}
+  fi
+
+
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $coin_has_highs" >&5
+printf "%s\n" "$coin_has_highs" >&6; }
+  else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $coin_has_highs (COIN_SKIP_PROJECTS)" >&5
+printf "%s\n" "$coin_has_highs (COIN_SKIP_PROJECTS)" >&6; }
+  fi
+
+
+  if test "$coin_has_highs" != yes ; then
+    coin_has_highs=no
+  fi
+
+
+   if test $coin_has_highs = yes; then
+  COIN_HAS_HIGHS_TRUE=
+  COIN_HAS_HIGHS_FALSE='#'
+else
+  COIN_HAS_HIGHS_TRUE='#'
+  COIN_HAS_HIGHS_FALSE=
+fi
+
+
+
+  if test $coin_has_highs = yes ; then
+
+printf "%s\n" "#define GAMSLINKS_HAS_HIGHS 1" >>confdefs.h
+
+    GAMSHIGHS_PCFILES="$highs_pcfiles $GAMSHIGHS_PCFILES"
+       GAMSHIGHS_LFLAGS="$highs_lflags $GAMSHIGHS_LFLAGS"
+       GAMSHIGHS_CFLAGS="$highs_cflags $GAMSHIGHS_CFLAGS"
+
+
+
+  fi
+
+
 ############################################################################
 #                          Check for system specifics                      #
 ############################################################################
@@ -23026,6 +23286,7 @@ then :
   GAMSOSI_LFLAGS="$GAMSOSI_LFLAGS -ldl"
   GAMSSCIP_LFLAGS="$GAMSSCIP_LFLAGS -ldl"
   GAMSSOPLEX_LFLAGS="$GAMSSOPLEX_LFLAGS -ldl"
+  GAMSHIGHS_LFLAGS="$GAMSHIGHS_LFLAGS -ldl"
 
 fi
 
@@ -23720,6 +23981,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${COIN_HAS_GUROBI_TRUE}" && test -z "${COIN_HAS_GUROBI_FALSE}"; then
   as_fn_error $? "conditional \"COIN_HAS_GUROBI\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${COIN_HAS_HIGHS_TRUE}" && test -z "${COIN_HAS_HIGHS_FALSE}"; then
+  as_fn_error $? "conditional \"COIN_HAS_HIGHS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${COIN_HAS_LAPACK_TRUE}" && test -z "${COIN_HAS_LAPACK_FALSE}"; then

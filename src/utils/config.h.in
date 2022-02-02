@@ -33,6 +33,9 @@
 /* Define to 1 if the Gurobi package is available */
 #undef GAMSLINKS_HAS_GUROBI
 
+/* Define to 1 if HiGHS is available. */
+#undef GAMSLINKS_HAS_HIGHS
+
 /* Define to 1 if Ipopt is available. */
 #undef GAMSLINKS_HAS_IPOPT
 
