@@ -158,13 +158,14 @@ fi
 # END PART #
 ############
 
-AC_COIN_FINALIZE_FLAGS([GamsOsi GamsCbc GamsIpopt GamsBonmin GamsCouenne GamsSoplex GamsScip])
+AC_COIN_FINALIZE_FLAGS([GamsOsi GamsCbc GamsHighs GamsIpopt GamsBonmin GamsCouenne GamsSoplex GamsScip])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/bonmin/Makefile
                  src/cbc/Makefile
                  src/couenne/Makefile
+                 src/highs/Makefile
                  src/ipopt/Makefile
                  src/osi/Makefile
                  src/scip/Makefile

@@ -34,6 +34,10 @@ if COIN_HAS_SOPLEX
   SUBDIRS += soplex
 endif
 
+if COIN_HAS_HIGHS
+  SUBDIRS += highs
+endif
+
 install-exec-local : gamsconfig.yaml
 	@mkdir_p@ $(pkgdatadir)
 	$(srcdir)/install-gamsconfig.py gamsconfig.yaml $(pkgdatadir)

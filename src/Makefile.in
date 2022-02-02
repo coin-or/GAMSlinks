@@ -100,6 +100,7 @@ host_triplet = @host@
 @COIN_HAS_OSI_TRUE@am__append_5 = osi
 @COIN_HAS_SCIP_TRUE@am__append_6 = scip
 @COIN_HAS_SOPLEX_TRUE@am__append_7 = soplex
+@COIN_HAS_HIGHS_TRUE@am__append_8 = highs
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -162,7 +163,7 @@ am__define_uniq_tagged_files = \
   done | $(am__uniquify_input)`
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = bonmin cbc couenne ipopt osi scip soplex
+DIST_SUBDIRS = bonmin cbc couenne ipopt osi scip soplex highs
 ACLOCAL = @ACLOCAL@
 ADD_CFLAGS = @ADD_CFLAGS@
 ADD_CXXFLAGS = @ADD_CXXFLAGS@
@@ -211,7 +212,9 @@ GAMSCOUENNE_LFLAGS = @GAMSCOUENNE_LFLAGS@
 GAMSCOUENNE_LFLAGS_NOPC = @GAMSCOUENNE_LFLAGS_NOPC@
 GAMSCOUENNE_PCFILES = @GAMSCOUENNE_PCFILES@
 GAMSHIGHS_CFLAGS = @GAMSHIGHS_CFLAGS@
+GAMSHIGHS_CFLAGS_NOPC = @GAMSHIGHS_CFLAGS_NOPC@
 GAMSHIGHS_LFLAGS = @GAMSHIGHS_LFLAGS@
+GAMSHIGHS_LFLAGS_NOPC = @GAMSHIGHS_LFLAGS_NOPC@
 GAMSHIGHS_PCFILES = @GAMSHIGHS_PCFILES@
 GAMSIPOPT_CFLAGS = @GAMSIPOPT_CFLAGS@
 GAMSIPOPT_CFLAGS_NOPC = @GAMSIPOPT_CFLAGS_NOPC@
@@ -340,7 +343,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = $(am__append_1) $(am__append_2) $(am__append_3) \
 	$(am__append_4) $(am__append_5) $(am__append_6) \
-	$(am__append_7)
+	$(am__append_7) $(am__append_8)
 all: all-recursive
 
 .SUFFIXES:

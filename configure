@@ -678,6 +678,8 @@ GAMSBONMIN_CFLAGS_NOPC
 GAMSBONMIN_LFLAGS_NOPC
 GAMSIPOPT_CFLAGS_NOPC
 GAMSIPOPT_LFLAGS_NOPC
+GAMSHIGHS_CFLAGS_NOPC
+GAMSHIGHS_LFLAGS_NOPC
 GAMSCBC_CFLAGS_NOPC
 GAMSCBC_LFLAGS_NOPC
 GAMSOSI_CFLAGS_NOPC
@@ -23506,6 +23508,53 @@ printf "%s\n" "$as_me: GAMSCBC_LFLAGS: \"${GAMSCBC_LFLAGS}\"" >&6;}
 printf "%s\n" "$as_me: GAMSCBC_CFLAGS: \"${GAMSCBC_CFLAGS}\"" >&6;}
       fi
      if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: FINALIZE_FLAGS for GamsHighs:" >&5
+printf "%s\n" "$as_me: FINALIZE_FLAGS for GamsHighs:" >&6;}
+      fi
+      GAMSHIGHS_LFLAGS_NOPC=$GAMSHIGHS_LFLAGS
+
+      GAMSHIGHS_CFLAGS_NOPC=$GAMSHIGHS_CFLAGS
+
+      if test -n "${GAMSHIGHS_PCFILES}" ; then
+        temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSHIGHS_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs $pkg_static ${GAMSHIGHS_PCFILES}`
+        GAMSHIGHS_CFLAGS="$temp_CFLAGS ${GAMSHIGHS_CFLAGS}"
+        GAMSHIGHS_LFLAGS="$temp_LFLAGS ${GAMSHIGHS_LFLAGS}"
+      fi
+
+      # setup XYZ_EXPORT symbol for library users
+      libexport_attribute=
+      if test "$enable_shared" = yes ; then
+        case $build_os in
+          cygwin* | mingw* | msys* | cegcc* )
+            libexport_attribute="__declspec(dllimport)"
+            if test "$enable_static" = yes ; then
+              as_fn_error $? "Cannot do DLL and static LIB builds simultaneously. Do not add --enable-static without --disable-shared." "$LINENO" 5
+            fi
+          ;;
+        esac
+      fi
+
+printf "%s\n" "#define GAMSHIGHS_EXPORT $libexport_attribute" >>confdefs.h
+
+
+      # add -DXYZ_BUILD to XYZ_CFLAGS
+      GAMSHIGHS_CFLAGS="${GAMSHIGHS_CFLAGS} -DGAMSHIGHS_BUILD"
+
+      # Define BUILDTOOLS_DEBUG to enable debugging output
+      if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: GAMSHIGHS_LFLAGS_NOPC: \"${GAMSHIGHS_LFLAGS_NOPC}\"" >&5
+printf "%s\n" "$as_me: GAMSHIGHS_LFLAGS_NOPC: \"${GAMSHIGHS_LFLAGS_NOPC}\"" >&6;}
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: GAMSHIGHS_CFLAGS_NOPC: \"${GAMSHIGHS_CFLAGS_NOPC}\"" >&5
+printf "%s\n" "$as_me: GAMSHIGHS_CFLAGS_NOPC: \"${GAMSHIGHS_CFLAGS_NOPC}\"" >&6;}
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: adding \"${GAMSHIGHS_PCFILES}\"" >&5
+printf "%s\n" "$as_me: adding \"${GAMSHIGHS_PCFILES}\"" >&6;}
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: GAMSHIGHS_LFLAGS: \"${GAMSHIGHS_LFLAGS}\"" >&5
+printf "%s\n" "$as_me: GAMSHIGHS_LFLAGS: \"${GAMSHIGHS_LFLAGS}\"" >&6;}
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: GAMSHIGHS_CFLAGS: \"${GAMSHIGHS_CFLAGS}\"" >&5
+printf "%s\n" "$as_me: GAMSHIGHS_CFLAGS: \"${GAMSHIGHS_CFLAGS}\"" >&6;}
+      fi
+     if test "$BUILDTOOLS_DEBUG" = 1 ; then
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: FINALIZE_FLAGS for GamsIpopt:" >&5
 printf "%s\n" "$as_me: FINALIZE_FLAGS for GamsIpopt:" >&6;}
       fi
@@ -23743,7 +23792,7 @@ printf "%s\n" "$as_me: GAMSSCIP_CFLAGS: \"${GAMSSCIP_CFLAGS}\"" >&6;}
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/bonmin/Makefile src/cbc/Makefile src/couenne/Makefile src/ipopt/Makefile src/osi/Makefile src/scip/Makefile src/soplex/Makefile test/Makefile src/gamsconfig.yaml doc/Doxyfile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/bonmin/Makefile src/cbc/Makefile src/couenne/Makefile src/highs/Makefile src/ipopt/Makefile src/osi/Makefile src/scip/Makefile src/soplex/Makefile test/Makefile src/gamsconfig.yaml doc/Doxyfile"
 
 ac_config_files="$ac_config_files test/run_quality"
 
@@ -24970,6 +25019,7 @@ do
     "src/bonmin/Makefile") CONFIG_FILES="$CONFIG_FILES src/bonmin/Makefile" ;;
     "src/cbc/Makefile") CONFIG_FILES="$CONFIG_FILES src/cbc/Makefile" ;;
     "src/couenne/Makefile") CONFIG_FILES="$CONFIG_FILES src/couenne/Makefile" ;;
+    "src/highs/Makefile") CONFIG_FILES="$CONFIG_FILES src/highs/Makefile" ;;
     "src/ipopt/Makefile") CONFIG_FILES="$CONFIG_FILES src/ipopt/Makefile" ;;
     "src/osi/Makefile") CONFIG_FILES="$CONFIG_FILES src/osi/Makefile" ;;
     "src/scip/Makefile") CONFIG_FILES="$CONFIG_FILES src/scip/Makefile" ;;

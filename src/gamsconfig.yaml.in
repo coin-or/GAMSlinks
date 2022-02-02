@@ -60,6 +60,23 @@ solverConfig:
 @COIN_HAS_COUENNE_TRUE@    - MIQCP
 @COIN_HAS_COUENNE_TRUE@    - MINLP
 
+@COIN_HAS_HIGHS_TRUE@- highs:
+@COIN_HAS_HIGHS_TRUE@    fileType: 111
+@COIN_HAS_HIGHS_TRUE@    dictType: 0
+@COIN_HAS_HIGHS_TRUE@    licCodes: 000102030405
+@COIN_HAS_HIGHS_TRUE@    defaultOkFlag: True
+@COIN_HAS_HIGHS_TRUE@    hiddenFlag: False
+@COIN_HAS_HIGHS_TRUE@    scriptName: @GMSGENSCRIPT@
+@COIN_HAS_HIGHS_TRUE@    executableName: @GMSGENEXE@
+@COIN_HAS_HIGHS_TRUE@    library:
+@COIN_HAS_HIGHS_TRUE@      libName: highs/libGamsHighs.la
+@COIN_HAS_HIGHS_TRUE@      auditCode: his
+@COIN_HAS_HIGHS_TRUE@      solverInterfaceType: 1
+@COIN_HAS_HIGHS_TRUE@      threadSafeIndic: True
+@COIN_HAS_HIGHS_TRUE@    modelTypes:
+@COIN_HAS_HIGHS_TRUE@    - LP
+@COIN_HAS_HIGHS_TRUE@    - RMIP
+
 @COIN_HAS_IPOPT_TRUE@- ipopt:
 @COIN_HAS_IPOPT_TRUE@    fileType: 111
 @COIN_HAS_IPOPT_TRUE@    dictType: 0

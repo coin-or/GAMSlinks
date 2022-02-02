@@ -13,6 +13,9 @@
 #undef GAMSCOUENNE_EXPORT
 
 /* Library Visibility Attribute */
+#undef GAMSHIGHS_EXPORT
+
+/* Library Visibility Attribute */
 #undef GAMSIPOPT_EXPORT
 
 /* Define to 1 if Bonmin is available. */
