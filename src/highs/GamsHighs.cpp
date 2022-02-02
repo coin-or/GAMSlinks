@@ -13,30 +13,12 @@
 #include "gevmcc.h"
 #include "gmomcc.h"
 
-typedef struct optRec *optHandle_t;
-
 /* HiGHS API */
 #include "Highs.h"
 #include "io/HighsIO.h"
 #include "io/FilereaderLp.h"
 #include "io/FilereaderMps.h"
 #include "io/LoadOptions.h" /* for loadOptionsFromFile */
-
-#if defined(_WIN32)
-#if !defined(STDCALL)
-#define STDCALL __stdcall
-#endif
-#if !defined(DllExport)
-#define DllExport __declspec(dllexport)
-#endif
-#else
-#if !defined(STDCALL)
-#define STDCALL
-#endif
-#if !defined(DllExport)
-#define DllExport
-#endif
-#endif
 
 struct gamshighs_s
 {
@@ -423,34 +405,30 @@ static HighsInt processSolve(
    return 0;
 }
 
-extern "C" {
+#define GAMSSOLVER_ID his
+#define GAMSSOLVER_HAVEMODIFYPROBLEM
+#include "GamsEntryPoints_tpl.c"
 
-void his_Initialize(
-   void)
+#define XQUOTE(x) QUOTE(x)
+#define QUOTE(x) #x
+
+void hisInitialize(void)
 {
    gmoInitMutexes();
    gevInitMutexes();
 }
 
-void his_Finalize(
-   void)
+void hisFinalize(void)
 {
    gmoFiniMutexes();
    gevFiniMutexes();
 }
 
-DllExport void STDCALL hisXCreate(
-   void **Cptr)
-{
-   assert(Cptr != NULL);
-
-   *Cptr = calloc(1, sizeof(gamshighs_t));
-}
-
-DllExport HighsInt STDCALL hiscreate(
-   void **Cptr,
-   char *msgBuf,
-   HighsInt msgBufLen)
+DllExport int STDCALL hisCreate(
+   void**   Cptr,
+   char*    msgBuf,
+   int      msgBufLen
+)
 {
    assert(Cptr != NULL);
    assert(msgBufLen > 0);
@@ -463,8 +441,9 @@ DllExport HighsInt STDCALL hiscreate(
    return 1;
 }
 
-DllExport void STDCALL hisXFree(
-   void **Cptr)
+DllExport void STDCALL hisFree(
+   void** Cptr
+)
 {
    assert(Cptr != NULL);
    assert(*Cptr != NULL);
@@ -476,67 +455,16 @@ DllExport void STDCALL hisXFree(
    gevLibraryUnload();
 }
 
-DllExport HighsInt STDCALL hisfree(
-   void **Cptr)
-{
-   hisXFree(Cptr);
 
-   return 1;
-}
-
-/* comp returns the compatibility mode:
- 0: client is too old for the DLL, no compatibility
- 1: client version and DLL version are the same, full compatibility
- 2: client is older than DLL, but defined as compatible, backward
- compatibility 3: client is newer than DLL, forward compatibility
- FIXME: for now, we just claim full compatibility
- */
-DllExport HighsInt STDCALL C__hisXAPIVersion(
-   HighsInt api,
-   char *Msg,
-   HighsInt *comp)
+DllExport int STDCALL hisReadyAPI(
+   void*       Cptr,
+   gmoHandle_t Gptr
+)
 {
-   *comp = 1;
-   return 1;
-}
-
-DllExport HighsInt STDCALL D__hisXAPIVersion(
-   HighsInt api,
-   char *Msg,
-   HighsInt *comp)
-{
-   *comp = 1;
-   return 1;
-}
-
-DllExport HighsInt STDCALL C__hisXCheck(
-   const char *funcn,
-   HighsInt ClNrArg,
-   HighsInt Clsign[],
-   char *Msg)
-{
-   return 1;
-}
-
-DllExport HighsInt STDCALL D__hisXCheck(
-   const char *funcn,
-   HighsInt ClNrArg,
-   HighsInt Clsign[],
-   char *Msg)
-{
-   return 1;
-}
-
-DllExport HighsInt STDCALL C__hisReadyAPI(
-   void *Cptr,
-   gmoHandle_t Gptr,
-   optHandle_t Optr)
-{
-   gamshighs_t *gh;
+   gamshighs_t* gh;
 
    assert(Cptr != NULL);
    assert(Gptr != NULL);
-   assert(Optr == NULL);
 
    char msg[256];
    if( !gmoGetReady(msg, sizeof(msg)) )
@@ -551,13 +479,11 @@ DllExport HighsInt STDCALL C__hisReadyAPI(
    return 0;
 }
 
-#define XQUOTE(x) QUOTE(x)
-#define QUOTE(x) #x
-
-DllExport HighsInt STDCALL C__hisCallSolver(
-   void *Cptr)
+DllExport int STDCALL hisCallSolver(
+   void* Cptr
+)
 {
-   HighsInt rc = 1;
+   int rc = 1;
    gamshighs_t *gh;
    HighsStatus status;
 
@@ -611,14 +537,9 @@ DllExport HighsInt STDCALL C__hisCallSolver(
    return rc;
 }
 
-DllExport HighsInt STDCALL C__hisHaveModifyProblem(
-   void *Cptr)
-{
-   return 1;
-}
-
-DllExport HighsInt STDCALL C__hisModifyProblem(
-   void *Cptr)
+DllExport int STDCALL hisModifyProblem(
+   void* Cptr
+)
 {
    gamshighs_t *gh = (gamshighs_t*) Cptr;
    assert(gh != NULL);
@@ -705,10 +626,3 @@ DllExport HighsInt STDCALL C__hisModifyProblem(
 
    return 0;
 }
-
-void his_Initialize(
-   void);
-void his_Finalize(
-   void);
-
-}  // extern "C"
