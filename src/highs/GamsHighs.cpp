@@ -275,9 +275,13 @@ int setupOptions(
 
    gh->highs->setOptionValue("time_limit", gevGetDblOpt(gh->gev, gevResLim));
    gh->highs->setOptionValue("simplex_iteration_limit", gevGetIntOpt(gh->gev, gevIterLim));
-
    if( gevGetIntOpt(gh->gev, gevUseCutOff) )
       gh->highs->setOptionValue("objective_bound", gevGetDblOpt(gh->gev, gevCutOff));
+   if( gevGetIntOpt(gh->gev, gevNodeLim) > 0 )
+      gh->highs->setOptionValue("mip_max_nodes", gevGetIntOpt(gh->gev, gevNodeLim));
+   gh->highs->setOptionValue("mip_rel_gap", gevGetDblOpt(gh->gev, gevOptCR));
+   gh->highs->setOptionValue("mip_abs_gap", gevGetDblOpt(gh->gev, gevOptCA));
+   gh->highs->setOptionValue("threads", gevThreads(gh->gev));
 
    if( gmoOptFile(gh->gmo) > 0 )
    {
@@ -302,6 +306,8 @@ int processSolve(
 
    gmoSetHeadnTail(gmo, gmoHresused, gevTimeDiffStart(gh->gev));
    gmoSetHeadnTail(gmo, gmoHiterused, highs->getInfo().simplex_iteration_count);
+   gmoSetHeadnTail(gmo, gmoTmipbest, highs->getInfo().mip_dual_bound);
+   gmoSetHeadnTail(gmo, gmoTmipnod, highs->getInfo().mip_node_count);
 
    // figure out model and solution status and whether we should have a solution
    // to be written
@@ -324,6 +330,7 @@ int processSolve(
          break;
 
       case HighsModelStatus::kOptimal:
+         // TODO change to integer if MIP and gap
          gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
          writesol = true;
@@ -378,6 +385,7 @@ int processSolve(
          break;
 
       case HighsModelStatus::kIterationLimit:
+         // TODO may also mean node limit
          // TODO is there an (feasible) solution to write?
          // gmoModelStatSet(gmo, havesol ? gmoModelStat_InfeasibleIntermed :
          // gmoModelStat_NoSolutionReturned);
@@ -570,7 +578,7 @@ DllExport int STDCALL hisCallSolver(
 
    /* solve the problem */
    status = gh->highs->run();
-   if( status != HighsStatus::kOk )
+   if( status == HighsStatus::kError )
       return 1;
 
    /* pass solution, status, etc back to GMO */
