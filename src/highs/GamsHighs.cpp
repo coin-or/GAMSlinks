@@ -309,9 +309,9 @@ int processSolve(
    gmoSetHeadnTail(gmo, gmoTmipbest, highs->getInfo().mip_dual_bound);
    gmoSetHeadnTail(gmo, gmoTmipnod, highs->getInfo().mip_node_count);
 
-   // figure out model and solution status and whether we should have a solution
-   // to be written
-   bool writesol = false;
+   const HighsSolution &sol = highs->getSolution();
+
+   // figure out model and solution status
    switch( highs->getModelStatus() )
    {
       case HighsModelStatus::kNotset:
@@ -333,82 +333,54 @@ int processSolve(
          // TODO change to integer if MIP and gap
          gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-         writesol = true;
          break;
 
       case HighsModelStatus::kInfeasible:
-         // TODO is there an infeasible solution to write?
-         // gmoModelStatSet(gmo, havesol ? gmoModelStat_InfeasibleGlobal :
-         // gmoModelStat_InfeasibleNoSolution);
          gmoModelStatSet(gmo, gmoModelStat_InfeasibleNoSolution);
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
          break;
 
       case HighsModelStatus::kUnboundedOrInfeasible:
-         // TODO is there a (feasible) solution to write?
-         // gmoModelStatSet(gmo, havesol ? gmoModelStat_Unbounded :
-         // gmoModelStat_UnboundedNoSolution);
-         gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
-         gmoSolveStatSet(gmo, gmoSolveStat_Normal);
-         break;
-
       case HighsModelStatus::kUnbounded:
-         // TODO is there a (feasible) solution to write?
-         // gmoModelStatSet(gmo, havesol ? gmoModelStat_Unbounded :
-         // gmoModelStat_UnboundedNoSolution);
-         gmoModelStatSet(gmo, gmoModelStat_UnboundedNoSolution);
+         gmoModelStatSet(gmo, sol.value_valid ? gmoModelStat_Unbounded : gmoModelStat_UnboundedNoSolution);
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
          break;
 
       case HighsModelStatus::kObjectiveBound:
-         // TODO is there a solution to write and is it feasible?
-         // gmoModelStatSet(gmo, havesol ? gmoModelStat_InfeasibleIntermed :
-         // gmoModelStat_NoSolutionReturned);
-         gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
-         gmoSolveStatSet(gmo, gmoSolveStat_Solver);
-         break;
-
       case HighsModelStatus::kObjectiveTarget:
-         // TODO is there a solution to write and is it feasible?
-         // gmoModelStatSet(gmo, havesol ? gmoModelStat_InfeasibleIntermed :
-         // gmoModelStat_NoSolutionReturned);
-         gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, sol.value_valid ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
          gmoSolveStatSet(gmo, gmoSolveStat_Solver);
          break;
 
       case HighsModelStatus::kTimeLimit:
-         // TODO is there an (feasible) solution to write?
-         // gmoModelStatSet(gmo, havesol ? gmoModelStat_InfeasibleIntermed :
-         // gmoModelStat_NoSolutionReturned);
-         gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, sol.value_valid ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
          gmoSolveStatSet(gmo, gmoSolveStat_Resource);
          break;
 
       case HighsModelStatus::kIterationLimit:
          // TODO may also mean node limit
-         // TODO is there an (feasible) solution to write?
-         // gmoModelStatSet(gmo, havesol ? gmoModelStat_InfeasibleIntermed :
-         // gmoModelStat_NoSolutionReturned);
-         gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, sol.value_valid ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
          gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
          break;
 
       case HighsModelStatus::kUnknown:
-         // TODO is there an (feasible) solution to write?
-         // gmoModelStatSet(gmo, havesol ? gmoModelStat_InfeasibleIntermed :
-         // gmoModelStat_NoSolutionReturned);
-         gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
-         gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
+         gmoModelStatSet(gmo, sol.value_valid ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
+         gmoSolveStatSet(gmo, gmoSolveStat_Solver);
          break;
    }
 
-   if( writesol )
+   if( sol.value_valid && !sol.dual_valid )
    {
-      const HighsSolution &sol = highs->getSolution();
-      assert((HighsInt )sol.col_value.size() == gmoN(gmo));
-      assert((HighsInt )sol.col_dual.size() == gmoN(gmo));
-      assert((HighsInt )sol.row_value.size() == gmoM(gmo));
-      assert((HighsInt )sol.row_dual.size() == gmoM(gmo));
+      assert((HighsInt)sol.col_value.size() == gmoN(gmo));
+      gmoSetSolutionPrimal(gmo, sol.col_value.data());
+      gmoCompleteSolution(gmo);
+   }
+   else if( sol.value_valid && sol.dual_valid )
+   {
+      assert((HighsInt)sol.col_value.size() == gmoN(gmo));
+      assert((HighsInt)sol.col_dual.size() == gmoN(gmo));
+      assert((HighsInt)sol.row_value.size() == gmoM(gmo));
+      assert((HighsInt)sol.row_dual.size() == gmoM(gmo));
 
       const HighsBasis &basis = highs->getBasis();
       assert(!basis.valid || (HighsInt )basis.col_status.size() == gmoN(gmo));
@@ -422,7 +394,6 @@ int processSolve(
          else
             basisstat = gmoBstat_Super;
 
-         // TODO change when we can process infeasible or unbounded solutions
          gmoVarEquStatus stat = gmoCstat_OK;
 
          gmoSetSolutionVarRec(gmo, i, sol.col_value[i], sol.col_dual[i], basisstat, stat);
@@ -436,16 +407,13 @@ int processSolve(
          else
             basisstat = gmoBstat_Super;
 
-         // TODO change when we can process infeasible or unbounded solutions
          gmoVarEquStatus stat = gmoCstat_OK;
 
          gmoSetSolutionEquRec(gmo, i, sol.row_value[i], sol.row_dual[i], basisstat, stat);
       }
 
-      // if there were =N= rows (lp08), then gmoCompleteObjective wouldn't get
-      // their activity right
-      // gmoCompleteObjective(gmo,
-      // highs->getInfo().objective_function_value);
+      // if there were =N= rows (lp08), then gmoCompleteObjective wouldn't get their activity right
+      // gmoCompleteObjective(gmo, highs->getInfo().objective_function_value);
       gmoCompleteSolution(gmo);
    }
 
