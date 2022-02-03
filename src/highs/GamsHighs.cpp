@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development and others 2022
+// Copyright (C) GAMS Development and others 2019-2022
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
@@ -15,10 +15,6 @@
 
 /* HiGHS API */
 #include "Highs.h"
-#include "io/HighsIO.h"
-#include "io/FilereaderLp.h"
-#include "io/FilereaderMps.h"
-#include "io/LoadOptions.h" /* for loadOptionsFromFile */
 
 typedef struct
 {
@@ -26,7 +22,6 @@ typedef struct
    gevHandle_t   gev;
 
    Highs*        highs;
-   HighsLp*      lp;
 } gamshighs_t;
 
 static
@@ -103,13 +98,18 @@ int setupProblem(
    HighsInt numCol;
    HighsInt numRow;
    HighsInt numNz;
+   std::vector<double> col_costs;
+   std::vector<double> col_lower;
+   std::vector<double> col_upper;
+   std::vector<double> row_lower;
+   std::vector<double> row_upper;
+   std::vector<int> astart;
+   std::vector<int> aindex;
+   std::vector<double> avalue;
    HighsInt i;
-   HighsInt rc = 1;
-   HighsSolution sol;
 
    assert(gh != NULL);
    assert(gh->highs == NULL);
-   assert(gh->lp == NULL);
 
    gh->highs = new Highs();
 
@@ -125,46 +125,35 @@ int setupProblem(
    numRow = gmoM(gh->gmo);
    numNz = gmoNZ(gh->gmo);
 
-   gh->lp = new HighsLp();
-
-   gh->lp->num_row_ = numRow;
-   gh->lp->num_col_ = numCol;
-   //  gh->lp->nnz_ = numNz;
-
    /* columns */
-   gh->lp->col_upper_.resize(numCol);
-   gh->lp->col_lower_.resize(numCol);
-   gmoGetVarLower(gh->gmo, &gh->lp->col_lower_[0]);
-   gmoGetVarUpper(gh->gmo, &gh->lp->col_upper_[0]);
+   col_lower.resize(numCol);
+   col_upper.resize(numCol);
+   gmoGetVarLower(gh->gmo, col_lower.data());
+   gmoGetVarUpper(gh->gmo, col_upper.data());
 
    /* objective */
-   gh->lp->col_cost_.resize(numCol);
-   gmoGetObjVector(gh->gmo, &gh->lp->col_cost_[0], NULL);
-   if( gmoSense(gh->gmo) == gmoObj_Min )
-      gh->lp->sense_ = ObjSense::kMinimize;
-   else
-      gh->lp->sense_ = ObjSense::kMaximize;
-   gh->lp->offset_ = gmoObjConst(gh->gmo);
+   col_costs.resize(numCol);
+   gmoGetObjVector(gh->gmo, col_costs.data(), NULL);
 
    /* row left- and right-hand-side */
-   gh->lp->row_lower_.resize(numRow);
-   gh->lp->row_upper_.resize(numRow);
+   row_lower.resize(numRow);
+   row_upper.resize(numRow);
    for( i = 0; i < numRow; ++i )
    {
       switch( gmoGetEquTypeOne(gh->gmo, i) )
       {
          case gmoequ_E:
-            gh->lp->row_lower_[i] = gh->lp->row_upper_[i] = gmoGetRhsOne(gh->gmo, i);
+            row_lower[i] = row_upper[i] = gmoGetRhsOne(gh->gmo, i);
             break;
 
          case gmoequ_G:
-            gh->lp->row_lower_[i] = gmoGetRhsOne(gh->gmo, i);
-            gh->lp->row_upper_[i] = kHighsInf;
+            row_lower[i] = gmoGetRhsOne(gh->gmo, i);
+            row_upper[i] = kHighsInf;
             break;
 
          case gmoequ_L:
-            gh->lp->row_lower_[i] = -kHighsInf;
-            gh->lp->row_upper_[i] = gmoGetRhsOne(gh->gmo, i);
+            row_lower[i] = -kHighsInf;
+            row_upper[i] = gmoGetRhsOne(gh->gmo, i);
             break;
 
          case gmoequ_N:
@@ -172,23 +161,29 @@ int setupProblem(
          case gmoequ_C:
          case gmoequ_B:
             /* these should not occur */
-            goto TERMINATE;
+            return 1;
       }
    }
 
    /* coefficients matrix */
-   gh->lp->a_matrix_.start_.resize(numCol + 1);
-   gh->lp->a_matrix_.index_.resize(numNz);
-   gh->lp->a_matrix_.value_.resize(numNz);
-   gmoGetMatrixCol(gh->gmo, &gh->lp->a_matrix_.start_[0], &gh->lp->a_matrix_.index_[0], &gh->lp->a_matrix_.value_[0],
-      NULL);
+   astart.resize(numCol + 1);
+   aindex.resize(numNz);
+   avalue.resize(numNz);
+   gmoGetMatrixCol(gh->gmo, astart.data(), aindex.data(), avalue.data(), NULL);
 
-   gh->highs->passModel(*gh->lp);
+   gh->highs->passModel(numCol, numRow, numNz,
+      (HighsInt)MatrixFormat::kColwise,
+      (HighsInt)(gmoSense(gh->gmo) == gmoObj_Min ? ObjSense::kMinimize : ObjSense::kMaximize),
+      gmoObjConst(gh->gmo),
+      col_costs.data(), col_lower.data(), col_upper.data(),
+      row_lower.data(), row_upper.data(),
+      astart.data(), aindex.data(), avalue.data());
 
-   // FilereaderLp().writeModelToFile("highs.lp", *gh->lp);
-   // FilereaderMps().writeModelToFile("highs.mps", *gh->lp);
+   // gh->highs->writeModel("highs.lp");
+   // gh->highs->writeModel("highs.mps");
 
    // pass initial solution
+   HighsSolution sol;
    sol.col_value.resize(numCol);
    sol.col_dual.resize(numCol);
    sol.row_value.resize(numRow);
@@ -227,10 +222,7 @@ int setupProblem(
          gh->highs->setBasis(basis);
    }
 
-   rc = 0;
-   TERMINATE:
-
-   return rc;
+   return 0;
 }
 
 static
@@ -266,7 +258,6 @@ int processSolve(
 {
    assert(gh != NULL);
    assert(gh->highs != NULL);
-   assert(gh->lp != NULL);
 
    gmoHandle_t gmo = gh->gmo;
    Highs* highs = gh->highs;
@@ -546,11 +537,8 @@ DllExport int STDCALL hisCallSolver(
       goto TERMINATE;
 
    rc = 0;
-   TERMINATE:
 
-   delete gh->lp;
-   gh->lp = NULL;
-
+TERMINATE:
    return rc;
 }
 
@@ -591,7 +579,8 @@ DllExport int STDCALL hisModifyProblem(
    assert(nlnz == gmoObjNZ(gh->gmo));
    highs->changeColsCost(nz, colidx, array1);
 
-   // TODO update objective offset
+   // update objective offset
+   highs->changeObjectiveOffset(gmoObjConst(gh->gmo));
 
    // update variable bounds
    gmoGetVarLower(gh->gmo, array1);
