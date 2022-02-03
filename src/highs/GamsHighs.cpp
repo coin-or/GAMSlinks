@@ -106,6 +106,7 @@ int setupProblem(
    std::vector<int> astart;
    std::vector<int> aindex;
    std::vector<double> avalue;
+   std::vector<HighsInt> integrality;
    HighsInt i;
 
    assert(gh != NULL);
@@ -130,6 +131,42 @@ int setupProblem(
    col_upper.resize(numCol);
    gmoGetVarLower(gh->gmo, col_lower.data());
    gmoGetVarUpper(gh->gmo, col_upper.data());
+
+   /* integrality */
+   if( gmoNDisc(gh->gmo) > 0 )
+   {
+      integrality.resize(numCol);
+      for( i = 0; i < numCol; ++i )
+      {
+         switch( gmoGetVarTypeOne(gh->gmo, i) )
+         {
+            case gmovar_X:
+               integrality[i] = (HighsInt)HighsVarType::kContinuous;
+               break;
+            case gmovar_B:
+            case gmovar_I:
+               integrality[i] = (HighsInt)HighsVarType::kInteger;
+               break;
+            case gmovar_SC:
+               integrality[i] = (HighsInt)HighsVarType::kSemiContinuous;
+               break;
+            case gmovar_SI:
+               integrality[i] = (HighsInt)HighsVarType::kSemiInteger;
+               break;
+            case gmovar_S1:
+            case gmovar_S2:
+               gevLogStatPChar(gh->gev, "Special ordered sets not supported.\n");
+               gmoModelStatSet(gh->gmo, gmoModelStat_NoSolutionReturned);
+               gmoSolveStatSet(gh->gmo, gmoSolveStat_Capability);
+               return 0;
+            default:
+               /* should not occur */
+               gevLogStatPChar(gh->gev, "Unsupported variable type.\n");
+               return 1;
+
+         }
+      }
+   }
 
    /* objective */
    col_costs.resize(numCol);
@@ -177,7 +214,8 @@ int setupProblem(
       gmoObjConst(gh->gmo),
       col_costs.data(), col_lower.data(), col_upper.data(),
       row_lower.data(), row_upper.data(),
-      astart.data(), aindex.data(), avalue.data());
+      astart.data(), aindex.data(), avalue.data(),
+      integrality.empty() ? NULL : integrality.data());
 
    // gh->highs->writeModel("highs.lp");
    // gh->highs->writeModel("highs.mps");
@@ -491,6 +529,9 @@ DllExport int STDCALL hisReadyAPI(
    gmoMinfSet(gh->gmo, -kHighsInf);
    gmoPinfSet(gh->gmo, kHighsInf);
 
+   gmoModelStatSet(gh->gmo, gmoModelStat_NoSolutionReturned);
+   gmoSolveStatSet(gh->gmo, gmoSolveStat_SystemErr);
+
    if( setupProblem(gh) )
       return 1;
 
@@ -508,10 +549,11 @@ DllExport int STDCALL hisCallSolver(
    assert(gh->gmo != NULL);
    assert(gh->gev != NULL);
 
-   gevLogStatPChar(gh->gev, "HiGHS " XQUOTE(HIGHS_VERSION_MAJOR) "." XQUOTE(HIGHS_VERSION_MINOR) "." XQUOTE(HIGHS_VERSION_PATCH) " [" HIGHS_GITHASH "]\n");
+   // if we detected in readyAPI that HiGHS cannot handle the problem, then do nothing */
+   if( gmoSolveStat(gh->gmo) == gmoSolveStat_Capability )
+      return 0;
 
-   gmoModelStatSet(gh->gmo, gmoModelStat_NoSolutionReturned);
-   gmoSolveStatSet(gh->gmo, gmoSolveStat_SystemErr);
+   gevLogStatPChar(gh->gev, "HiGHS " XQUOTE(HIGHS_VERSION_MAJOR) "." XQUOTE(HIGHS_VERSION_MINOR) "." XQUOTE(HIGHS_VERSION_PATCH) " [" HIGHS_GITHASH "]\n");
 
    /* get the problem into a normal form */
    gmoObjStyleSet(gh->gmo, gmoObjType_Fun);

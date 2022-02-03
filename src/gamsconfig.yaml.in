@@ -76,6 +76,7 @@ solverConfig:
 @COIN_HAS_HIGHS_TRUE@    modelTypes:
 @COIN_HAS_HIGHS_TRUE@    - LP
 @COIN_HAS_HIGHS_TRUE@    - RMIP
+@COIN_HAS_HIGHS_TRUE@    - MIP
 
 @COIN_HAS_IPOPT_TRUE@- ipopt:
 @COIN_HAS_IPOPT_TRUE@    fileType: 111
