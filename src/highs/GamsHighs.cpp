@@ -501,8 +501,7 @@ DllExport int STDCALL hisCallSolver(
    void* Cptr
 )
 {
-   int rc = 1;
-   gamshighs_t *gh;
+   gamshighs_t* gh;
    HighsStatus status;
 
    gh = (gamshighs_t*) Cptr;
@@ -523,23 +522,20 @@ DllExport int STDCALL hisCallSolver(
    gmoPinfSet(gh->gmo, kHighsInf);
 
    if( setupOptions(gh) )
-      goto TERMINATE;
+      return 1;
 
    gevTimeSetStart(gh->gev);
 
    /* solve the problem */
    status = gh->highs->run();
    if( status != HighsStatus::kOk )
-      goto TERMINATE;
+      return 1;
 
    /* pass solution, status, etc back to GMO */
    if( processSolve(gh) )
-      goto TERMINATE;
+      return 1;
 
-   rc = 0;
-
-TERMINATE:
-   return rc;
+   return 0;
 }
 
 DllExport int STDCALL hisModifyProblem(
