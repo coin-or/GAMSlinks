@@ -4,6 +4,7 @@
 //
 // Author: Stefan Vigerske
 
+
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
@@ -535,7 +536,7 @@ DllExport int STDCALL hisCallSolver(
    gmoObjStyleSet(gh->gmo, gmoObjType_Fun);
    gmoObjReformSet(gh->gmo, 1);
    gmoIndexBaseSet(gh->gmo, 0);
-   gmoSetNRowPerm(gh->gmo); /* hide =N= rows */
+   // gmoSetNRowPerm(gh->gmo); /* hide =N= rows */
    gmoMinfSet(gh->gmo, -kHighsInf);
    gmoPinfSet(gh->gmo, kHighsInf);
 
