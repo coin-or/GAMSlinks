@@ -26,17 +26,6 @@ typedef struct
 } gamshighs_t;
 
 static
-void gevprint(
-   HighsInt    level,
-   const char* msg,
-   void*       msgcb_data
-)
-{
-   gevHandle_t gev = (gevHandle_t) msgcb_data;
-   gevLogPChar(gev, msg);
-}
-
-static
 void gevlog(
    HighsLogType type,
    const char*  msg,
@@ -114,14 +103,7 @@ int setupProblem(
    assert(gh->highs == NULL);
 
    gh->highs = new Highs();
-
-   // need to set log callbacks in options struct, since HiGHS::run() calls highsSetLogCallback(options)
-   // TODO we should not need to uncast const-ness, but there is no method in HiGHS class to set log callbacks
-   HighsOptions& options = const_cast<HighsOptions&>(gh->highs->getOptions());
-   options.printmsgcb = gevprint;
-   options.logmsgcb = gevlog;
-   options.msgcb_data = (void*) gh->gev;
-   highsSetLogCallback(options);
+   gh->highs->setLogCallback(gevlog, gh->gev);
 
    numCol = gmoN(gh->gmo);
    numRow = gmoM(gh->gmo);
