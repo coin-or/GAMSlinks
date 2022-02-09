@@ -8,3 +8,4 @@ Cbc               https://github.com/coin-or/Cbc master
 Ipopt             https://github.com/coin-or/Ipopt stable/3.14
 Bonmin            https://github.com/coin-or/Bonmin master
 Couenne           https://github.com/coin-or/Couenne master
+HiGHS             https://github.com/coin-or/HiGHS v1.2

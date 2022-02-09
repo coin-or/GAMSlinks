@@ -30,6 +30,9 @@
          <coinProject>
             <repoName>Couenne</repoName>
          </coinProject>
+         <coinProject>
+            <repoName>HiGHS</repoName>
+         </coinProject>
       </coinLinkedProjects>
       <otherLinkedPackages>
          <otherPackage>
