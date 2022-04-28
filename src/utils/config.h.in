@@ -4,6 +4,9 @@
 #undef CXX_NO_MINUS_C_MINUS_O
 
 /* Library Visibility Attribute */
+#undef GAMSAMPLSOLVER_EXPORT
+
+/* Library Visibility Attribute */
 #undef GAMSBONMIN_EXPORT
 
 /* Library Visibility Attribute */

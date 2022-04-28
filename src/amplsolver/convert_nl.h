@@ -7,6 +7,8 @@
 #ifndef CONVERT_NL_H_
 #define CONVERT_NL_H_
 
+#include <stdio.h>
+
 #include "def.h"
 
 typedef struct
@@ -18,7 +20,7 @@ typedef struct
    int         shortfloat;  /**< whether to print float as short as possible or like AMPL (text only) */
 
    /* private */
-   FILE* f;                 /**< nl file stream */
+   FILE*       f;           /**< nl file stream */
 } convertWriteNLopts;
 
 /** prints a double precision floating point number to a string without loosing precision

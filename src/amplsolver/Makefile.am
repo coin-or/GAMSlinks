@@ -12,7 +12,7 @@ AM_LDFLAGS = $(LT_LDFLAGS)
 lib_LTLIBRARIES = libGamsAmplSolver.la
 libGamsAmplSolver_la_SOURCES = amplsolver.c convert_nl.c gamsnl.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
-#libGamsAmplSolver_la_LIBADD =
+libGamsAmplSolver_la_LIBADD = $(GAMSAMPLSOLVER_LFLAGS)
 
 CLEANFILES =
 include ../utils/Makefile_gamsapi.inc

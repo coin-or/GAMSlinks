@@ -133,7 +133,7 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libGamsAmplSolver_la_LIBADD =
+libGamsAmplSolver_la_DEPENDENCIES =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libGamsAmplSolver_la_OBJECTS = amplsolver.lo convert_nl.lo \
 	gamsnl.lo ../utils/gmomcc.lo ../utils/gevmcc.lo \
@@ -238,6 +238,8 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
+GAMSAMPLSOLVER_CFLAGS_NOPC = @GAMSAMPLSOLVER_CFLAGS_NOPC@
+GAMSAMPLSOLVER_LFLAGS_NOPC = @GAMSAMPLSOLVER_LFLAGS_NOPC@
 GAMSBONMIN_CFLAGS = @GAMSBONMIN_CFLAGS@
 GAMSBONMIN_CFLAGS_NOPC = @GAMSBONMIN_CFLAGS_NOPC@
 GAMSBONMIN_LFLAGS = @GAMSBONMIN_LFLAGS@
@@ -390,7 +392,7 @@ lib_LTLIBRARIES = libGamsAmplSolver.la
 libGamsAmplSolver_la_SOURCES = amplsolver.c convert_nl.c gamsnl.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/palmcc.c
 
-#libGamsAmplSolver_la_LIBADD =
+libGamsAmplSolver_la_LIBADD = $(GAMSAMPLSOLVER_LFLAGS)
 CLEANFILES = ../utils/optcc.c ../utils/gmomcc.c ../utils/gevmcc.c \
 	../utils/gclgms.c ../utils/gdxcc.c ../utils/palmcc.c \
 	../utils/cfgmcc.c

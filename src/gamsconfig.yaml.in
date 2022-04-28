@@ -1,4 +1,31 @@
 solverConfig:
+- amplsolver:
+    fileType: 111
+    dictType: 5
+    licCodes: 000102030405
+    defaultOkFlag: True
+    hiddenFlag: False
+    scriptName: @GMSGENSCRIPT@
+    executableName: @GMSGENEXE@
+    defName: @prefix@/share/gamslinks/optamplsolver.def
+    library:
+      libName: amplsolver/libGamsAmplSolver.la
+      auditCode: amp
+      solverInterfaceType: 1
+      threadSafeIndic: True
+    modelTypes:
+    - LP
+    - MIP
+    - RMIP
+    - QCP
+    - MIQCP
+    - RMIQCP
+    - NLP
+    - DNLP
+    - MINLP
+    - RMINLP
+    - CNS
+
 @COIN_HAS_BONMIN_TRUE@- bonmin:
 @COIN_HAS_BONMIN_TRUE@    fileType: 111
 @COIN_HAS_BONMIN_TRUE@    dictType: 0

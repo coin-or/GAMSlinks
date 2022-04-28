@@ -5,7 +5,10 @@
 // Author: Stefan Vigerske
 
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
+
+#include "convert_nl.h"
 
 #include "gmomcc.h"
 #include "gevmcc.h"
@@ -17,7 +20,33 @@ typedef struct
    gmoHandle_t gmo;
    gevHandle_t gev;
 
+   char nlfilename[GMS_SSSIZE + 30];
+
 } amplsolver;
+
+RETURN writeNL(
+   amplsolver* as
+   )
+{
+   convertWriteNLopts writeopts;
+
+   gevGetStrOpt(as->gev, gevNameScrDir, as->nlfilename);
+   strcat(as->nlfilename, "prob.nl");
+
+   writeopts.filename = as->nlfilename;
+   writeopts.binary = 1;
+
+   if( convertWriteNL(as->gmo, writeopts) == RETURN_ERROR )
+   {
+      gmoSolveStatSet(as->gmo, gmoSolveStat_Capability);
+      gmoModelStatSet(as->gmo, gmoModelStat_ErrorNoSolution);
+      return RETURN_OK;
+   }
+
+   return RETURN_OK;
+}
+
+
 
 #define GAMSSOLVER_ID amp
 #include "GamsEntryPoints_tpl.c"
@@ -121,12 +150,31 @@ DllExport int STDCALL ampCallSolver(
    gmoMinfSet(as->gmo, -AMPLINFTY);
    gmoPinfSet(as->gmo, AMPLINFTY);
 
+   writeNL(as);
+
    if( gmoSolveStat(as->gmo) == gmoSolveStat_Capability )
       return 0;
 
    gevTimeSetStart(as->gev);
 
    gmoSetHeadnTail(as->gmo, gmoHresused, gevTimeDiffStart(as->gev));
+
+   if( !gevGetIntOpt(as->gev, gevKeep) )
+   {
+      int stublen;
+
+      stublen = strlen(as->nlfilename)-2;
+      if( remove(as->nlfilename) != 0 )
+         fprintf(stderr, "Could not remove temporary file %s\n", as->nlfilename);
+
+      strcpy(as->nlfilename + stublen, "col");
+      if( remove(as->nlfilename) != 0 )
+         fprintf(stderr, "Could not remove temporary file %s\n", as->nlfilename);
+
+      strcpy(as->nlfilename + stublen, "row");
+      if( remove(as->nlfilename) != 0 )
+         fprintf(stderr, "Could not remove temporary file %s\n", as->nlfilename);
+   }
 
    return 0;
 }

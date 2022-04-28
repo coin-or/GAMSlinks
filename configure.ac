@@ -108,6 +108,7 @@ if test $coin_has_lapack = yes; then
 fi
 
 AC_CHECK_LIB(dl,[dlopen],[
+  GAMSAMPLSOLVER_LFLAGS="$GAMSAMPLSOLVER_LFLAGS -ldl"
   GAMSBONMIN_LFLAGS="$GAMSBONMIN_LFLAGS -ldl"
   GAMSCBC_LFLAGS="$GAMSCBC_LFLAGS -ldl"
   GAMSCOUENNE_LFLAGS="$GAMSCOUENNE_LFLAGS -ldl"
@@ -158,7 +159,7 @@ fi
 # END PART #
 ############
 
-AC_COIN_FINALIZE_FLAGS([GamsOsi GamsCbc GamsHighs GamsIpopt GamsBonmin GamsCouenne GamsSoplex GamsScip])
+AC_COIN_FINALIZE_FLAGS([GamsAmplSolver GamsOsi GamsCbc GamsHighs GamsIpopt GamsBonmin GamsCouenne GamsSoplex GamsScip])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile

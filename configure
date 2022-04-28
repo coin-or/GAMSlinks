@@ -684,6 +684,8 @@ GAMSCBC_CFLAGS_NOPC
 GAMSCBC_LFLAGS_NOPC
 GAMSOSI_CFLAGS_NOPC
 GAMSOSI_LFLAGS_NOPC
+GAMSAMPLSOLVER_CFLAGS_NOPC
+GAMSAMPLSOLVER_LFLAGS_NOPC
 GAMS_PATH
 gamspath
 GMSGENEXE
@@ -23281,6 +23283,7 @@ printf "%s\n" "$ac_cv_lib_dl_dlopen" >&6; }
 if test "x$ac_cv_lib_dl_dlopen" = xyes
 then :
 
+  GAMSAMPLSOLVER_LFLAGS="$GAMSAMPLSOLVER_LFLAGS -ldl"
   GAMSBONMIN_LFLAGS="$GAMSBONMIN_LFLAGS -ldl"
   GAMSCBC_LFLAGS="$GAMSCBC_LFLAGS -ldl"
   GAMSCOUENNE_LFLAGS="$GAMSCOUENNE_LFLAGS -ldl"
@@ -23414,6 +23417,53 @@ fi
 
 
    if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: FINALIZE_FLAGS for GamsAmplSolver:" >&5
+printf "%s\n" "$as_me: FINALIZE_FLAGS for GamsAmplSolver:" >&6;}
+      fi
+      GAMSAMPLSOLVER_LFLAGS_NOPC=$GAMSAMPLSOLVER_LFLAGS
+
+      GAMSAMPLSOLVER_CFLAGS_NOPC=$GAMSAMPLSOLVER_CFLAGS
+
+      if test -n "${GAMSAMPLSOLVER_PCFILES}" ; then
+        temp_CFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --cflags ${GAMSAMPLSOLVER_PCFILES}`
+        temp_LFLAGS=`PKG_CONFIG_PATH="$COIN_PKG_CONFIG_PATH" $PKG_CONFIG --libs $pkg_static ${GAMSAMPLSOLVER_PCFILES}`
+        GAMSAMPLSOLVER_CFLAGS="$temp_CFLAGS ${GAMSAMPLSOLVER_CFLAGS}"
+        GAMSAMPLSOLVER_LFLAGS="$temp_LFLAGS ${GAMSAMPLSOLVER_LFLAGS}"
+      fi
+
+      # setup XYZ_EXPORT symbol for library users
+      libexport_attribute=
+      if test "$enable_shared" = yes ; then
+        case $build_os in
+          cygwin* | mingw* | msys* | cegcc* )
+            libexport_attribute="__declspec(dllimport)"
+            if test "$enable_static" = yes ; then
+              as_fn_error $? "Cannot do DLL and static LIB builds simultaneously. Do not add --enable-static without --disable-shared." "$LINENO" 5
+            fi
+          ;;
+        esac
+      fi
+
+printf "%s\n" "#define GAMSAMPLSOLVER_EXPORT $libexport_attribute" >>confdefs.h
+
+
+      # add -DXYZ_BUILD to XYZ_CFLAGS
+      GAMSAMPLSOLVER_CFLAGS="${GAMSAMPLSOLVER_CFLAGS} -DGAMSAMPLSOLVER_BUILD"
+
+      # Define BUILDTOOLS_DEBUG to enable debugging output
+      if test "$BUILDTOOLS_DEBUG" = 1 ; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: GAMSAMPLSOLVER_LFLAGS_NOPC: \"${GAMSAMPLSOLVER_LFLAGS_NOPC}\"" >&5
+printf "%s\n" "$as_me: GAMSAMPLSOLVER_LFLAGS_NOPC: \"${GAMSAMPLSOLVER_LFLAGS_NOPC}\"" >&6;}
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: GAMSAMPLSOLVER_CFLAGS_NOPC: \"${GAMSAMPLSOLVER_CFLAGS_NOPC}\"" >&5
+printf "%s\n" "$as_me: GAMSAMPLSOLVER_CFLAGS_NOPC: \"${GAMSAMPLSOLVER_CFLAGS_NOPC}\"" >&6;}
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: adding \"${GAMSAMPLSOLVER_PCFILES}\"" >&5
+printf "%s\n" "$as_me: adding \"${GAMSAMPLSOLVER_PCFILES}\"" >&6;}
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: GAMSAMPLSOLVER_LFLAGS: \"${GAMSAMPLSOLVER_LFLAGS}\"" >&5
+printf "%s\n" "$as_me: GAMSAMPLSOLVER_LFLAGS: \"${GAMSAMPLSOLVER_LFLAGS}\"" >&6;}
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: GAMSAMPLSOLVER_CFLAGS: \"${GAMSAMPLSOLVER_CFLAGS}\"" >&5
+printf "%s\n" "$as_me: GAMSAMPLSOLVER_CFLAGS: \"${GAMSAMPLSOLVER_CFLAGS}\"" >&6;}
+      fi
+     if test "$BUILDTOOLS_DEBUG" = 1 ; then
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: FINALIZE_FLAGS for GamsOsi:" >&5
 printf "%s\n" "$as_me: FINALIZE_FLAGS for GamsOsi:" >&6;}
       fi
