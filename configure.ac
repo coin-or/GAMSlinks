@@ -162,6 +162,7 @@ AC_COIN_FINALIZE_FLAGS([GamsOsi GamsCbc GamsHighs GamsIpopt GamsBonmin GamsCouen
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
+                 src/amplsolver/Makefile
                  src/bonmin/Makefile
                  src/cbc/Makefile
                  src/couenne/Makefile

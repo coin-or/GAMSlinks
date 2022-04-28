@@ -4,7 +4,7 @@
 #
 # Author: Stefan Vigerske
 
-SUBDIRS =
+SUBDIRS = amplsolver
 
 if COIN_HAS_BONMIN
   SUBDIRS += bonmin
