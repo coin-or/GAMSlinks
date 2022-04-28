@@ -12,8 +12,8 @@
 
 #include "gmomcc.h"
 #include "gevmcc.h"
-
-#define AMPLINFTY    1.0e50
+#include "cfgmcc.h"
+#include "optcc.h"
 
 typedef struct
 {
@@ -21,14 +21,116 @@ typedef struct
    gevHandle_t gev;
 
    char nlfilename[GMS_SSSIZE + 30];
+   char solver[GMS_SSSIZE];
 
 } amplsolver;
 
-RETURN writeNL(
+static
+int processOptions(
+   amplsolver* as
+   )
+{
+   optHandle_t opt;
+   cfgHandle_t cfg;
+   char deffile[2*GMS_SSSIZE+20];
+   char buffer[1000];
+   int rc = 1;
+
+   /* get the Option File Handling set up */
+   if( !optCreate(&opt, buffer, sizeof(buffer)) )
+   {
+      gevLogStatPChar(as->gev, "\n*** Could not create optionfile handle: ");
+      gevLogStat(as->gev, buffer);
+      return 1;
+   }
+
+   // get definition file name from cfg object
+   cfg = (cfgHandle_t)gevGetALGX(as->gev);
+   assert(cfg != NULL);
+   gevGetCurrentSolver(as->gev, as->gmo, buffer);
+   deffile[0] = '\0';
+   cfgDefFileName(cfg, buffer, deffile);
+   if( deffile[0] != '/' && deffile[1] != ':' )
+   {
+      // if deffile is not absolute path, then prefix with sysdir
+      gevGetStrOpt(as->gev, gevNameSysDir, buffer);
+      strcat(buffer, deffile);
+      strcpy(deffile, buffer);
+   }
+   if( optReadDefinition(opt, deffile) )
+   {
+      int itype;
+      for( int i = 1; i <= optMessageCount(opt); ++i )
+      {
+         optGetMessage(opt, i, buffer, &itype);
+         if( itype <= optMsgFileLeave || itype == optMsgUserError )
+            gevLogStat(as->gev, buffer);
+      }
+      optClearMessages(opt);
+      optEchoSet(opt, 0);
+      optFree(&opt);
+      goto TERMINATE;
+   }
+   optEOLOnlySet(opt, 1);
+
+   // read user options file
+   if( gmoOptFile(as->gmo) == 0 )
+   {
+      gevLogStatPChar(as->gev, "No amplsolver options file given. Don't know which solver to run.\n");
+      goto TERMINATE;
+   }
+
+   gmoNameOptFile(as->gmo, buffer);
+
+   /* read option file */
+   optEchoSet(opt, 1);
+   optReadParameterFile(opt, buffer);
+   if( optMessageCount(opt) )
+   {
+      int itype;
+      for( int i = 1; i <= optMessageCount(opt); ++i )
+      {
+         optGetMessage(opt, i, buffer, &itype);
+         if( itype <= optMsgFileLeave || itype == optMsgUserError )
+            gevLogStat(as->gev, buffer);
+      }
+      optClearMessages(opt);
+      optEchoSet(opt, 0);
+   }
+   else
+   {
+      optEchoSet(opt, 0);
+   }
+
+   if( !optGetDefinedStr(opt, "solver") )
+   {
+      gevLogStatPChar(as->gev, "Option solver not specified in options file. Don't know which solver to run.\n");
+      goto TERMINATE;
+   }
+
+   optGetStrStr(opt, "solver", as->solver);
+
+   rc = 0;
+
+ TERMINATE:
+   optFree(&opt);
+
+   return rc;
+}
+
+
+static
+void writeNL(
    amplsolver* as
    )
 {
    convertWriteNLopts writeopts;
+
+   /* get the problem into a normal form */
+   gmoObjStyleSet(as->gmo, gmoObjType_Fun);
+   gmoObjReformSet(as->gmo, 1);
+   gmoIndexBaseSet(as->gmo, 0);
+   gmoSetNRowPerm(as->gmo); /* hide =N= rows */
 
    gevGetStrOpt(as->gev, gevNameScrDir, as->nlfilename);
    strcat(as->nlfilename, "prob.nl");
@@ -40,13 +142,8 @@ RETURN writeNL(
    {
       gmoSolveStatSet(as->gmo, gmoSolveStat_Capability);
       gmoModelStatSet(as->gmo, gmoModelStat_ErrorNoSolution);
-      return RETURN_OK;
    }
-
-   return RETURN_OK;
 }
-
-
 
 #define GAMSSOLVER_ID amp
 #include "GamsEntryPoints_tpl.c"
@@ -55,12 +152,16 @@ void ampInitialize(void)
 {
    gmoInitMutexes();
    gevInitMutexes();
+   optInitMutexes();
+   cfgInitMutexes();
 }
 
 void ampFinalize(void)
 {
    gmoFiniMutexes();
    gevFiniMutexes();
+   optFiniMutexes();
+   cfgFiniMutexes();
 }
 
 DllExport int STDCALL ampCreate(
@@ -76,6 +177,18 @@ DllExport int STDCALL ampCreate(
    *Cptr = calloc(1, sizeof(amplsolver));
 
    msgBuf[0] = 0;
+
+   if( !gmoGetReady(msgBuf, msgBufLen) )
+      return 1;
+
+   if( !gevGetReady(msgBuf, msgBufLen) )
+      return 1;
+
+   if( !optGetReady(msgBuf, msgBufLen) )
+      return 1;
+
+   if( !cfgGetReady(msgBuf, msgBufLen) )
+      return 1;
 
    return 1;
 }
@@ -96,6 +209,8 @@ DllExport void STDCALL ampFree(
 
    gmoLibraryUnload();
    gevLibraryUnload();
+   cfgLibraryUnload();
+   optLibraryUnload();
 }
 
 DllExport int STDCALL ampReadyAPI(
@@ -118,17 +233,6 @@ DllExport int STDCALL ampReadyAPI(
    as->gmo = Gptr;
    as->gev = (gevHandle_t) gmoEnvironment(as->gmo);
 
-   /* get the problem into a normal form */
-   gmoObjStyleSet(as->gmo, gmoObjType_Fun);
-   gmoObjReformSet(as->gmo, 1);
-   gmoIndexBaseSet(as->gmo, 0);
-   gmoSetNRowPerm(as->gmo); /* hide =N= rows */
-   gmoMinfSet(as->gmo, -AMPLINFTY);
-   gmoPinfSet(as->gmo, AMPLINFTY);
-
-   gmoModelStatSet(as->gmo, gmoModelStat_NoSolutionReturned);
-   gmoSolveStatSet(as->gmo, gmoSolveStat_SystemErr);
-
    return 0;
 }
 
@@ -142,13 +246,11 @@ DllExport int STDCALL ampCallSolver(
    assert(as->gmo != NULL);
    assert(as->gev != NULL);
 
-   /* get the problem into a normal form */
-   gmoObjStyleSet(as->gmo, gmoObjType_Fun);
-   gmoObjReformSet(as->gmo, 1);
-   gmoIndexBaseSet(as->gmo, 0);
-   // gmoSetNRowPerm(as->gmo); /* hide =N= rows */
-   gmoMinfSet(as->gmo, -AMPLINFTY);
-   gmoPinfSet(as->gmo, AMPLINFTY);
+   gmoModelStatSet(as->gmo, gmoModelStat_NoSolutionReturned);
+   gmoSolveStatSet(as->gmo, gmoSolveStat_SystemErr);
+
+   if( !processOptions(as) )
+      return 0;
 
    writeNL(as);
 
