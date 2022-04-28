@@ -33,6 +33,9 @@
 #include "scip/cons_indicator.h"
 #include "scip/cons_sos1.h"
 #include "scip/cons_sos2.h"
+#include "scip/cons_and.h"
+#include "scip/cons_or.h"
+#include "scip/cons_xor.h"
 #include "scip/expr_abs.h"
 #include "scip/expr_entropy.h"
 #include "scip/expr_exp.h"
@@ -264,6 +267,7 @@ SCIP_RETCODE makeExpr(
    int*                  opcodes,
    int*                  fields,
    SCIP_Real*            constants,
+   int*                  logiccount,         /**< counter on number of variables/constraints introduced for logical functions */
    SCIP_EXPR**           expr                /**< buffer where to store expression tree */
 )
 {
@@ -284,6 +288,7 @@ SCIP_RETCODE makeExpr(
    assert(opcodes != NULL);
    assert(fields != NULL);
    assert(constants != NULL);
+   assert(logiccount != NULL);
    assert(expr != NULL);
 
    probdata = SCIPgetProbData(scip);
@@ -383,9 +388,9 @@ SCIP_RETCODE makeExpr(
             break;
          }
 
-         case nlSub: /* substract */
+         case nlSub: /* subtract */
          {
-            SCIPdebugPrintf("substract\n");
+            SCIPdebugPrintf("subtract\n");
 
             assert(stackpos >= 2);
             term1 = stack[stackpos-1];
@@ -1011,6 +1016,411 @@ SCIP_RETCODE makeExpr(
                   break;
                }
 
+               case fnboolnot:
+               {
+                  SCIPdebugPrintf("bool_not\n");
+
+                  assert(stackpos >= 1);
+                  term1 = stack[stackpos-1];
+                  --stackpos;
+
+                  if( SCIPisExprValue(scip, term1) )
+                  {
+                     SCIP_CALL( SCIPcreateExprValue(scip, &e, SCIPgetValueExprValue(term1) == 0.0 ? 1.0 : 0.0, NULL, NULL) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     break;
+                  }
+
+                  if( SCIPisExprVar(scip, term1) && SCIPvarIsBinary(SCIPgetVarExprVar(term1)) )
+                  {
+                     SCIP_VAR* negvar;
+                     SCIP_CALL( SCIPgetNegatedVar(scip, SCIPgetVarExprVar(term1), &negvar) );
+                     SCIP_CALL( SCIPcreateExprVar(scip, &e, negvar, NULL, NULL) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     break;
+                  }
+
+                  SCIPerrorMessage("Binary variable or constant required as argument to bool_not.\n");
+                  rc = SCIP_READERROR;
+                  goto TERMINATE;
+               }
+
+               case fnbooland:
+               {
+                  SCIPdebugPrintf("bool_and\n");
+
+                  assert(stackpos >= 2);
+                  term1 = stack[stackpos-1];
+                  --stackpos;
+                  term2 = stack[stackpos-1];
+                  --stackpos;
+
+                  if( SCIPisExprValue(scip, term1) && SCIPisExprValue(scip, term2) )
+                  {
+                     SCIP_CALL( SCIPcreateExprValue(scip, &e, SCIPgetValueExprValue(term1) != 0.0 && SCIPgetValueExprValue(term2) != 0.0 ? 1.0 : 0.0, NULL, NULL) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     break;
+                  }
+
+                  if( (SCIPisExprValue(scip, term1) && SCIPgetValueExprValue(term1) == 0.0) ||
+                      (SCIPisExprValue(scip, term2) && SCIPgetValueExprValue(term2) == 0.0) )
+                  {
+                     /* 0 and y == 0, x and 0 == 0 */
+                     SCIP_CALL( SCIPcreateExprValue(scip, &e, 0.0, NULL, NULL) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     break;
+                  }
+
+                  if( SCIPisExprValue(scip, term1) )
+                  {
+                     /* nonzero and y == y */
+                     e = term2;
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     break;
+                  }
+
+                  if( SCIPisExprValue(scip, term2) )
+                  {
+                     /* x and nonzero == x */
+                     e = term1;
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     break;
+                  }
+
+                  if( SCIPisExprVar(scip, term1) && SCIPvarIsBinary(SCIPgetVarExprVar(term1)) &&
+                      SCIPisExprVar(scip, term2) && SCIPvarIsBinary(SCIPgetVarExprVar(term2)) )
+                  {
+                     SCIP_VAR* vars[2];
+                     SCIP_VAR* resvar;
+                     SCIP_CONS* cons;
+                     char name[30];
+
+                     sprintf(name, "_logic%d", (*logiccount)++);
+                     SCIP_CALL( SCIPcreateVarBasic(scip, &resvar, name, 0.0, 1.0, 0.0, SCIP_VARTYPE_BINARY) );
+                     SCIP_CALL( SCIPaddVar(scip, resvar) );
+                     SCIP_CALL( SCIPcreateExprVar(scip, &e, resvar, NULL, NULL) );
+
+                     vars[0] = SCIPgetVarExprVar(term1);
+                     vars[1] = SCIPgetVarExprVar(term2);
+                     strcat(name, "def");
+                     SCIP_CALL( SCIPcreateConsBasicAnd(scip, &cons, name, resvar, 2, vars) );
+                     SCIP_CALL( SCIPaddCons(scip, cons) );
+
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     SCIP_CALL( SCIPreleaseVar(scip, &resvar) );
+                     SCIP_CALL( SCIPreleaseCons(scip, &cons) );
+                     break;
+                  }
+
+                  SCIPerrorMessage("Binary variable or constant required as arguments to bool_and.\n");
+                  rc = SCIP_READERROR;
+                  goto TERMINATE;
+               }
+
+               case fnboolor:
+               {
+                  SCIPdebugPrintf("bool_or\n");
+
+                  assert(stackpos >= 2);
+                  term1 = stack[stackpos-1];
+                  --stackpos;
+                  term2 = stack[stackpos-1];
+                  --stackpos;
+
+                  if( SCIPisExprValue(scip, term1) && SCIPisExprValue(scip, term2) )
+                  {
+                     SCIP_CALL( SCIPcreateExprValue(scip, &e, SCIPgetValueExprValue(term1) != 0.0 || SCIPgetValueExprValue(term2) != 0.0 ? 1.0 : 0.0, NULL, NULL) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     break;
+                  }
+
+                  if( (SCIPisExprValue(scip, term1) && SCIPgetValueExprValue(term1) != 0.0) ||
+                      (SCIPisExprValue(scip, term2) && SCIPgetValueExprValue(term2) != 0.0) )
+                  {
+                     /* nonzero or y == 1, x or nonzero == 1 */
+                     SCIP_CALL( SCIPcreateExprValue(scip, &e, 1.0, NULL, NULL) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     break;
+                  }
+
+                  if( SCIPisExprValue(scip, term1) )
+                  {
+                     /* zero or y == y */
+                     e = term2;
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     break;
+                  }
+
+                  if( SCIPisExprValue(scip, term2) )
+                  {
+                     /* zero or x == x */
+                     e = term1;
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     break;
+                  }
+
+                  if( SCIPisExprVar(scip, term1) && SCIPvarIsBinary(SCIPgetVarExprVar(term1)) &&
+                      SCIPisExprVar(scip, term2) && SCIPvarIsBinary(SCIPgetVarExprVar(term2)) )
+                  {
+                     SCIP_VAR* vars[2];
+                     SCIP_VAR* resvar;
+                     SCIP_CONS* cons;
+                     char name[30];
+
+                     sprintf(name, "_logic%d", (*logiccount)++);
+                     SCIP_CALL( SCIPcreateVarBasic(scip, &resvar, name, 0.0, 1.0, 0.0, SCIP_VARTYPE_BINARY) );
+                     SCIP_CALL( SCIPaddVar(scip, resvar) );
+                     SCIP_CALL( SCIPcreateExprVar(scip, &e, resvar, NULL, NULL) );
+
+                     vars[0] = SCIPgetVarExprVar(term1);
+                     vars[1] = SCIPgetVarExprVar(term2);
+                     strcat(name, "def");
+                     SCIP_CALL( SCIPcreateConsBasicOr(scip, &cons, name, resvar, 2, vars) );
+                     SCIP_CALL( SCIPaddCons(scip, cons) );
+
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     SCIP_CALL( SCIPreleaseVar(scip, &resvar) );
+                     SCIP_CALL( SCIPreleaseCons(scip, &cons) );
+                     break;
+                  }
+
+                  SCIPerrorMessage("Binary variable or constant required as arguments to bool_or.\n");
+                  rc = SCIP_READERROR;
+                  goto TERMINATE;
+               }
+
+               case fnboolxor:
+               {
+                  SCIPdebugPrintf("bool_xor\n");
+
+                  assert(stackpos >= 2);
+                  term1 = stack[stackpos-1];
+                  --stackpos;
+                  term2 = stack[stackpos-1];
+                  --stackpos;
+
+                  if( SCIPisExprValue(scip, term1) && SCIPisExprValue(scip, term2) )
+                  {
+                     SCIP_CALL( SCIPcreateExprValue(scip, &e, (SCIPgetValueExprValue(term1) != 0.0) ^ (SCIPgetValueExprValue(term2) != 0.0) ? 1.0 : 0.0, NULL, NULL) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     break;
+                  }
+
+                  if( SCIPisExprValue(scip, term2) )
+                     SCIPswapPointers((void**)&term1, (void**)&term2);
+
+                  if( SCIPisExprValue(scip, term1) )
+                  {
+                     /* zero xor y == y
+                      * nonzero xor y == ~y
+                      */
+                     if( SCIPgetValueExprValue(term1) == 0.0 )
+                     {
+                        e = term2;
+                        SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                        break;
+                     }
+                     else if( SCIPisExprVar(scip, term2) && SCIPvarIsBinary(SCIPgetVarExprVar(term2)) )
+                     {
+                        SCIP_VAR* negvar;
+                        SCIP_CALL( SCIPgetNegatedVar(scip, SCIPgetVarExprVar(term2), &negvar) );
+                        SCIP_CALL( SCIPcreateExprVar(scip, &e, negvar, NULL, NULL) );
+                        SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                        SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                        break;
+                     }
+                  }
+
+                  if( SCIPisExprVar(scip, term1) && SCIPvarIsBinary(SCIPgetVarExprVar(term1)) &&
+                      SCIPisExprVar(scip, term2) && SCIPvarIsBinary(SCIPgetVarExprVar(term2)) )
+                  {
+                     SCIP_VAR* vars[3];
+                     SCIP_CONS* cons;
+                     char name[30];
+
+                     sprintf(name, "_logic%d", (*logiccount)++);
+                     SCIP_CALL( SCIPcreateVarBasic(scip, &vars[0], name, 0.0, 1.0, 0.0, SCIP_VARTYPE_BINARY) );
+                     SCIP_CALL( SCIPaddVar(scip, vars[0]) );
+                     SCIP_CALL( SCIPcreateExprVar(scip, &e, vars[0], NULL, NULL) );
+
+                     vars[1] = SCIPgetVarExprVar(term1);
+                     vars[2] = SCIPgetVarExprVar(term2);
+                     strcat(name, "def");
+                     SCIP_CALL( SCIPcreateConsBasicXor(scip, &cons, name, FALSE, 3, vars) );
+                     SCIP_CALL( SCIPaddCons(scip, cons) );
+
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     SCIP_CALL( SCIPreleaseVar(scip, &vars[0]) );
+                     SCIP_CALL( SCIPreleaseCons(scip, &cons) );
+                     break;
+                  }
+
+                  SCIPerrorMessage("Binary variable or constant required as arguments to bool_xor.\n");
+                  rc = SCIP_READERROR;
+                  goto TERMINATE;
+               }
+
+               case fnboolimp:
+               {
+                  SCIPdebugPrintf("bool_imp\n");
+                  /* term2 -> term1, i.e., term1 || !term2 */
+
+                  assert(stackpos >= 2);
+                  term1 = stack[stackpos-1];
+                  --stackpos;
+                  term2 = stack[stackpos-1];
+                  --stackpos;
+
+                  if( SCIPisExprValue(scip, term1) && SCIPisExprValue(scip, term2) )
+                  {
+                     SCIP_CALL( SCIPcreateExprValue(scip, &e, SCIPgetValueExprValue(term1) != 0.0 || SCIPgetValueExprValue(term2) == 0.0 ? 1.0 : 0.0, NULL, NULL) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     break;
+                  }
+
+                  if( (SCIPisExprValue(scip, term1) && SCIPgetValueExprValue(term1) != 0.0) ||
+                      (SCIPisExprValue(scip, term2) && SCIPgetValueExprValue(term2) == 0.0) )
+                  {
+                     /* nonzero or !y == 1, x or !zero == 1 */
+                     SCIP_CALL( SCIPcreateExprValue(scip, &e, 1.0, NULL, NULL) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     break;
+                  }
+
+                  if( SCIPisExprValue(scip, term1) && SCIPisExprVar(scip, term2) && SCIPvarIsBinary(SCIPgetVarExprVar(term2)) )
+                  {
+                     /* zero || !y == !y */
+                     SCIP_VAR* negvar;
+                     SCIP_CALL( SCIPgetNegatedVar(scip, SCIPgetVarExprVar(term2), &negvar) );
+                     SCIP_CALL( SCIPcreateExprVar(scip, &e, negvar, NULL, NULL) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     break;
+                  }
+
+                  if( SCIPisExprValue(scip, term2) )
+                  {
+                     /* x or !nonzero == x */
+                     e = term1;
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     break;
+                  }
+
+                  if( SCIPisExprVar(scip, term1) && SCIPvarIsBinary(SCIPgetVarExprVar(term1)) &&
+                      SCIPisExprVar(scip, term2) && SCIPvarIsBinary(SCIPgetVarExprVar(term2)) )
+                  {
+                     SCIP_VAR* vars[2];
+                     SCIP_VAR* resvar;
+                     SCIP_CONS* cons;
+                     char name[30];
+
+                     sprintf(name, "_logic%d", (*logiccount)++);
+                     SCIP_CALL( SCIPcreateVarBasic(scip, &resvar, name, 0.0, 1.0, 0.0, SCIP_VARTYPE_BINARY) );
+                     SCIP_CALL( SCIPaddVar(scip, resvar) );
+                     SCIP_CALL( SCIPcreateExprVar(scip, &e, resvar, NULL, NULL) );
+
+                     vars[0] = SCIPgetVarExprVar(term1);
+                     SCIP_CALL( SCIPgetNegatedVar(scip, SCIPgetVarExprVar(term2), &vars[1]) );
+                     strcat(name, "def");
+                     SCIP_CALL( SCIPcreateConsBasicOr(scip, &cons, name, resvar, 2, vars) );
+                     SCIP_CALL( SCIPaddCons(scip, cons) );
+
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     SCIP_CALL( SCIPreleaseVar(scip, &resvar) );
+                     SCIP_CALL( SCIPreleaseCons(scip, &cons) );
+                     break;
+                  }
+
+                  SCIPerrorMessage("Binary variable or constant required as arguments to bool_imp.\n");
+                  rc = SCIP_READERROR;
+                  goto TERMINATE;
+               }
+
+               case fnbooleqv:
+               {
+                  SCIPdebugPrintf("bool_eqv\n");
+                  /* !(term1 ^ term2) */
+
+                  assert(stackpos >= 2);
+                  term1 = stack[stackpos-1];
+                  --stackpos;
+                  term2 = stack[stackpos-1];
+                  --stackpos;
+
+                  if( SCIPisExprValue(scip, term1) && SCIPisExprValue(scip, term2) )
+                  {
+                     SCIP_CALL( SCIPcreateExprValue(scip, &e, (SCIPgetValueExprValue(term1) != 0.0) == (SCIPgetValueExprValue(term2) != 0.0) ? 1.0 : 0.0, NULL, NULL) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     break;
+                  }
+
+                  if( SCIPisExprValue(scip, term2) )
+                     SCIPswapPointers((void**)&term1, (void**)&term2);
+
+                  if( SCIPisExprValue(scip, term1) )
+                  {
+                     /* nonzero eqv y == y
+                      * zero eqv y == ~y
+                      */
+                     if( SCIPgetValueExprValue(term1) != 0.0 )
+                     {
+                        e = term2;
+                        SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                        break;
+                     }
+                     else if( SCIPisExprVar(scip, term2) && SCIPvarIsBinary(SCIPgetVarExprVar(term2)) )
+                     {
+                        SCIP_VAR* negvar;
+                        SCIP_CALL( SCIPgetNegatedVar(scip, SCIPgetVarExprVar(term2), &negvar) );
+                        SCIP_CALL( SCIPcreateExprVar(scip, &e, negvar, NULL, NULL) );
+                        SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                        SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                        break;
+                     }
+                  }
+
+                  if( SCIPisExprVar(scip, term1) && SCIPvarIsBinary(SCIPgetVarExprVar(term1)) &&
+                      SCIPisExprVar(scip, term2) && SCIPvarIsBinary(SCIPgetVarExprVar(term2)) )
+                  {
+                     SCIP_VAR* vars[3];
+                     SCIP_CONS* cons;
+                     char name[30];
+
+                     sprintf(name, "_logic%d", (*logiccount)++);
+                     SCIP_CALL( SCIPcreateVarBasic(scip, &vars[0], name, 0.0, 1.0, 0.0, SCIP_VARTYPE_BINARY) );
+                     SCIP_CALL( SCIPaddVar(scip, vars[0]) );
+                     SCIP_CALL( SCIPcreateExprVar(scip, &e, vars[0], NULL, NULL) );
+
+                     vars[1] = SCIPgetVarExprVar(term1);
+                     vars[2] = SCIPgetVarExprVar(term2);
+                     strcat(name, "def");
+                     SCIP_CALL( SCIPcreateConsBasicXor(scip, &cons, name, TRUE, 3, vars) );
+                     SCIP_CALL( SCIPaddCons(scip, cons) );
+
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term1) );
+                     SCIP_CALL( SCIPreleaseExpr(scip, &term2) );
+                     SCIP_CALL( SCIPreleaseVar(scip, &vars[0]) );
+                     SCIP_CALL( SCIPreleaseCons(scip, &cons) );
+                     break;
+                  }
+
+                  SCIPerrorMessage("Binary variable or constant required as arguments to bool_eqv.\n");
+                  rc = SCIP_READERROR;
+                  goto TERMINATE;
+               }
+
                /* @todo some of these we could also support */
                case fnerrf:
                case fnceil: case fnfloor: case fnround:
@@ -1022,9 +1432,7 @@ SCIP_RETCODE makeExpr(
                case fnncpf /* fischer: sqrt(x1^2+x2^2+2*x3) */:
                case fnncpcm /* chen-mangasarian: x1-x3*ln(1+exp((x1-x2)/x3))*/:
                case fnsigmoid /* 1/(1+exp(-x)) */:
-               case fnboolnot: case fnbooland:
-               case fnboolor: case fnboolxor: case fnboolimp:
-               case fnbooleqv: case fnrelopeq: case fnrelopgt:
+               case fnrelopeq: case fnrelopgt:
                case fnrelopge: case fnreloplt: case fnrelople:
                case fnrelopne: case fnifthen:
                case fnedist /* euclidian distance */:
@@ -1115,6 +1523,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
    SCIP_RETCODE rc = SCIP_OKAY;
    int maxstage;
    SCIP_Bool havedecomp;
+   int logiccount = 0;
    
    assert(scip != NULL);
    assert(gmo != NULL);
@@ -1552,7 +1961,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
 
             /* create expression and nonlinear constraint */
             (void) gmoDirtyGetRowFNLInstr(gmo, i, &codelen, opcodes, fields);
-            rc = makeExpr(scip, gmo, codelen, opcodes, fields, constants, &expr);
+            rc = makeExpr(scip, gmo, codelen, opcodes, fields, constants, &logiccount, &expr);
             if( rc == SCIP_READERROR )
             {
                SCIPinfoMessage(scip, NULL, "Error processing nonlinear instructions of equation %s.\n", buffer);
@@ -1617,7 +2026,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
       objfactor = -1.0 / gmoObjJacVal(gmo);
 
       (void) gmoDirtyGetObjFNLInstr(gmo, &codelen, opcodes, fields);
-      rc = makeExpr(scip, gmo, codelen, opcodes, fields, constants, &expr);
+      rc = makeExpr(scip, gmo, codelen, opcodes, fields, constants, &logiccount, &expr);
       if( rc == SCIP_READERROR )
       {
          SCIPinfoMessage(scip, NULL, "Error processing nonlinear instructions of objective %s.\n", gmoGetObjName(gmo, buffer));

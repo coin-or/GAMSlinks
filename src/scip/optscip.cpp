@@ -150,13 +150,9 @@ void printPluginTables(
             continue;
          if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "linking") == 0 )
             continue;
-         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "or") == 0 )
-            continue;
          if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "pseudoboolean") == 0 )
             continue;
          if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "superindicator") == 0 )
-            continue;
-         if( strcmp(SCIPconshdlrGetName(conshdlrs[i]), "xor") == 0 )
             continue;
 
          outfile << "| \\ref SCIP_gr_constraints_" << SCIPconshdlrGetName(conshdlrs[i]) << " \"" << SCIPconshdlrGetName(conshdlrs[i]) << '"';
@@ -498,10 +494,8 @@ int main(int argc, char** argv)
           strstr(paramname, "constraints/cumulative")    == paramname ||
           strstr(paramname, "constraints/disjunction")   == paramname ||
           strstr(paramname, "constraints/linking")       == paramname ||
-          strstr(paramname, "constraints/or/")           == paramname ||
           strstr(paramname, "constraints/pseudoboolean") == paramname ||
           strstr(paramname, "constraints/superindicator")== paramname ||
-          strstr(paramname, "constraints/xor")           == paramname ||
           strstr(paramname, "table/benders")             == paramname ||
           strstr(paramname, "decomposition/applybenders") == paramname ||
           strstr(paramname, "decomposition/benderslabels") == paramname ||
