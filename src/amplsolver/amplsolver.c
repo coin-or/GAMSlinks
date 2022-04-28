@@ -8,6 +8,9 @@
 #include <string.h>
 #include <assert.h>
 
+#include <unistd.h>
+#include <sys/wait.h>
+
 #include "convert_nl.h"
 
 #include "gmomcc.h"
@@ -118,7 +121,6 @@ int processOptions(
    return rc;
 }
 
-
 static
 void writeNL(
    amplsolver* as
@@ -143,6 +145,51 @@ void writeNL(
       gmoSolveStatSet(as->gmo, gmoSolveStat_Capability);
       gmoModelStatSet(as->gmo, gmoModelStat_ErrorNoSolution);
    }
+}
+
+static
+int runSolver(
+   amplsolver* as
+   )
+{
+   pid_t pid;
+   pid_t pid2;
+   int wstatus;
+
+   pid = fork();
+   if( pid < 0 )
+   {
+      gevLogStat(as->gev, "Could not fork().\n");
+      return 1;
+   }
+
+   if( pid == 0 )
+   {
+      /* child process */
+      int rc;
+      char nlstub[GMS_SSSIZE+30];
+      strcpy(nlstub, as->nlfilename);
+      nlstub[strlen(nlstub)-3] = '\0';
+      printf("Exec %s %s %s -AMPL\n", as->solver, as->solver, nlstub);
+      fflush(stdout);
+      rc = execlp(as->solver, as->solver, nlstub, "-AMPL");
+      printf("execlp failed with rc: %d\n", rc);
+      _exit(255);
+   }
+
+   while( 1 )
+   {
+      pid2 = waitpid(pid, &wstatus, 0);
+      if( pid2 == -1 )
+         continue;
+      if( pid != pid2 )
+         return 1;
+      break;
+   }
+
+   printf("solver returned with %d\n", WEXITSTATUS(wstatus));
+
+   return 0;
 }
 
 #define GAMSSOLVER_ID amp
@@ -249,7 +296,7 @@ DllExport int STDCALL ampCallSolver(
    gmoModelStatSet(as->gmo, gmoModelStat_NoSolutionReturned);
    gmoSolveStatSet(as->gmo, gmoSolveStat_SystemErr);
 
-   if( !processOptions(as) )
+   if( processOptions(as) )
       return 0;
 
    writeNL(as);
@@ -258,6 +305,9 @@ DllExport int STDCALL ampCallSolver(
       return 0;
 
    gevTimeSetStart(as->gev);
+
+   if( runSolver(as) )
+      return 0;
 
    gmoSetHeadnTail(as->gmo, gmoHresused, gevTimeDiffStart(as->gev));
 
