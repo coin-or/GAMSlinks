@@ -5,6 +5,7 @@
 // Author: Stefan Vigerske
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <assert.h>
 
@@ -15,6 +16,8 @@
 #include <io.h>
 #define F_OK 0
 #define access _access
+#define popen _popen
+#define pclose _pclose
 #endif
 
 #include "convert_nl.h"
