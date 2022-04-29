@@ -290,6 +290,15 @@ void processSol(
       return;
    }
 
+   buf[10] = '\0';
+   if( fgets(buf, sizeof(buf), sol) != NULL )
+      if( strncmp(buf+sizeof(int), "binary", 6) == 0 )
+      {
+         gevLogStatPChar(as->gev, "Error: Cannot handle solution files in binary (non-text) format.\n");
+         gmoSolveStatSet(as->gmo, gmoSolveStat_SystemErr);
+         goto TERMINATE;
+      }
+
    /* look for line saying "Options" and the following number of options */
    while( fgets(buf, sizeof(buf), sol) != NULL )
       if( strncmp(buf, "Options", 7) == 0 )
