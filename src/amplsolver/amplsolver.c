@@ -179,17 +179,30 @@ int runSolver(
       _exit(127);
    }
 
-   while( 1 )
+   pid2 = waitpid(pid, &wstatus, 0);
+   if( pid2 == -1 )
    {
-      pid2 = waitpid(pid, &wstatus, 0);
-      if( pid2 == -1 )
-         continue;
-      if( pid != pid2 )
-         return 1;
-      break;
+      gevLogStatPChar(as->gev, "Failure in waitpid().\n");
+      return 1;
+   }
+   if( pid != pid2 )
+   {
+      gevLogStatPChar(as->gev, "Unexpected PID returned by waitpid().\n");
+      return 1;
    }
 
-   printf("solver returned with %d\n", WEXITSTATUS(wstatus));
+   if( !WIFEXITED(wstatus) )
+   {
+      gevLogStatPChar(as->gev, "Abnormal termination of AMPL solver process.\n");
+      return 1;
+   }
+
+   if( WEXITSTATUS(wstatus) != 0 )
+   {
+      char buf[200];
+      sprintf(buf, "Warning: AMPL solver process terminated with exit code %d\n", WEXITSTATUS(wstatus));
+      gevLogStatPChar(as->gev, buf);
+   }
 
    return 0;
 }
