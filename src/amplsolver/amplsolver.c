@@ -8,8 +8,14 @@
 #include <string.h>
 #include <assert.h>
 
+#ifndef _WIN32
 #include <unistd.h>
 #include <sys/wait.h>
+#else
+#include <io.h>
+#define F_OK 0
+#define access _access
+#endif
 
 #include "convert_nl.h"
 
@@ -330,6 +336,10 @@ DllExport int STDCALL ampCallSolver(
    {
       strcpy(as->filename + as->stublen, ".nl");
       if( remove(as->filename) != 0 )
+         fprintf(stderr, "Could not remove temporary file %s\n", as->filename);
+
+      strcpy(as->filename + as->stublen, ".sol");
+      if( access(as->filename, F_OK) == 0 && remove(as->filename) != 0 )
          fprintf(stderr, "Could not remove temporary file %s\n", as->filename);
 
       if( gmoDict(as->gmo) != NULL )
