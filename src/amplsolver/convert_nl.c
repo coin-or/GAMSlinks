@@ -492,9 +492,12 @@ RETURN writeNLHeader(
             vartype[i] = LinearVars;
       }
 
-      namelen = strlen(gmoGetVarNameOne(gmo, i, buf));
-      if( namelen > maxnamelen_vars )
-         maxnamelen_vars = namelen;
+      if( gmoDict(gmo) != NULL )
+      {
+         namelen = strlen(gmoGetVarNameOne(gmo, i, buf));
+         if( namelen > maxnamelen_vars )
+            maxnamelen_vars = namelen;
+      }
    }
 
    /* setup var permutation */
@@ -518,14 +521,17 @@ RETURN writeNLHeader(
    if( gmoModelType(gmo) != gmoProc_cns )
       maxnamelen_cons = 3;  /* objective name "obj" */
 
-   /* collect statistics on constraints */
-   for( i = 0; i < gmoM(gmo); ++i )
+   /* collect statistics on constraint names */
+   if( gmoDict(gmo) != NULL )
    {
-      int namelen;
+      for( i = 0; i < gmoM(gmo); ++i )
+      {
+         int namelen;
 
-      namelen = strlen(gmoGetEquNameOne(gmo, i, buf));
-      if( namelen > maxnamelen_cons )
-         maxnamelen_cons = namelen;
+         namelen = strlen(gmoGetEquNameOne(gmo, i, buf));
+         if( namelen > maxnamelen_cons )
+            maxnamelen_cons = namelen;
+      }
    }
 
    /* setup equ permutation: nonlinear before linear */
@@ -831,7 +837,7 @@ RETURN writeNLnlnodeEnter(
             CHECK( writeNLPrintf(writeopts, "o%d   #prod\n", 2) );  /* prod constant var*/
             CHECK( writeNLPrintf(writeopts, "n%g\n", n->coef) );
          }
-         CHECK( writeNLPrintf(writeopts, "v%d  #%s\n", n->varidx, gmoGetVarNameOne(gmo, n->varidx, buf)) );
+         CHECK( writeNLPrintf(writeopts, "v%d  #%s\n", n->varidx, gmoDict(gmo) != NULL ? gmoGetVarNameOne(gmo, n->varidx, buf) : "") );
          break;
 
       case gamsnl_opconst :
@@ -1433,7 +1439,7 @@ RETURN writeNLExprs(
 
    for( i = 0; i < gmoM(gmo); ++i )
    {
-      CHECK( writeNLPrintf(writeopts, "C%d   #%s\n", i, gmoGetEquNameOne(gmo, i, buf)) );
+      CHECK( writeNLPrintf(writeopts, "C%d   #%s\n", i, gmoDict(gmo) != NULL ? gmoGetEquNameOne(gmo, i, buf) : NULL) );
       if( gmoGetEquOrderOne(gmo, i) == gmoorder_L )
       {
          /* AMPL writes n0 for linear constraints */
@@ -1517,7 +1523,7 @@ RETURN writeNLLinearCoefs(
       int nlflag;
 
       gmoGetRowStat(gmo, i, &nz, &qnz, &nlnz);
-      CHECK( writeNLPrintf(writeopts, "J%d %d  #%s\n", i, nz, gmoGetEquNameOne(gmo, i, buf)) );
+      CHECK( writeNLPrintf(writeopts, "J%d %d  #%s\n", i, nz, gmoDict(gmo) != NULL ? gmoGetEquNameOne(gmo, i, buf) : NULL) );
       if( nz == 0 )
          continue;
 
@@ -1529,7 +1535,7 @@ RETURN writeNLLinearCoefs(
          /* entries from nonlinear terms are printed as 0 */
          if( nlflag )
             jacval = 0.0;
-         CHECK( writeNLPrintf(writeopts, "%d %g  #%s\n", colidx, jacval, gmoGetVarNameOne(gmo, colidx, buf)) );
+         CHECK( writeNLPrintf(writeopts, "%d %g  #%s\n", colidx, jacval, gmoDict(gmo) != NULL ? gmoGetVarNameOne(gmo, colidx, buf) : "") );
       }
       while( jacptr != NULL );
    }
@@ -1554,7 +1560,7 @@ RETURN writeNLLinearCoefs(
          /* entries from nonlinear terms are printed as 0 */
          if( nlflag[i] )
             jacval[i] = 0.0;
-         CHECK( writeNLPrintf(writeopts, "%d %g  #%s\n", colidx[i], jacval[i], gmoGetVarNameOne(gmo, colidx[i], buf)) );
+         CHECK( writeNLPrintf(writeopts, "%d %g  #%s\n", colidx[i], jacval[i], gmoDict(gmo) != NULL ? gmoGetVarNameOne(gmo, colidx[i], buf) : "") );
       }
 
       free(jacval);
@@ -1565,7 +1571,7 @@ RETURN writeNLLinearCoefs(
    return RETURN_OK;
 }
 
-/** write .row and .col files */
+/** write .row and .col files, if dictionary is available */
 static
 RETURN writeNLNames(
    struct gmoRec* gmo,
@@ -1577,6 +1583,9 @@ RETURN writeNLNames(
    char* filename;
    int stublen;
    int i;
+
+   if( gmoDict(gmo) == NULL )
+      return RETURN_OK;
 
    /* length of .nl filename with 'nl' */
    stublen = strlen(nlfilename)-2;

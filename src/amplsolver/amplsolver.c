@@ -315,19 +315,20 @@ DllExport int STDCALL ampCallSolver(
 
    if( !gevGetIntOpt(as->gev, gevKeep) )
    {
-      int stublen;
-
       strcpy(as->filename + as->stublen, ".nl");
       if( remove(as->filename) != 0 )
          fprintf(stderr, "Could not remove temporary file %s\n", as->filename);
 
-      strcpy(as->filename + as->stublen, ".col");
-      if( remove(as->filename) != 0 )
-         fprintf(stderr, "Could not remove temporary file %s\n", as->filename);
+      if( gmoDict(as->gmo) != NULL )
+      {
+         strcpy(as->filename + as->stublen, ".col");
+         if( remove(as->filename) != 0 )
+            fprintf(stderr, "Could not remove temporary file %s\n", as->filename);
 
-      strcpy(as->filename + as->stublen, ".row");
-      if( remove(as->filename) != 0 )
-         fprintf(stderr, "Could not remove temporary file %s\n", as->filename);
+         strcpy(as->filename + as->stublen, ".row");
+         if( remove(as->filename) != 0 )
+            fprintf(stderr, "Could not remove temporary file %s\n", as->filename);
+      }
    }
 
    return 0;
