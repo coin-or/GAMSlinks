@@ -157,6 +157,7 @@ void writeNL(
    }
 }
 
+#if 0
 static
 int runSolver(
    amplsolver* as
@@ -212,6 +213,41 @@ int runSolver(
 
    return 0;
 }
+#endif
+
+static
+int runSolver(
+   amplsolver* as
+   )
+{
+   char command[2*GMS_SSSIZE + 100];
+   char buf[GMS_SSSIZE];
+   FILE* stream;
+
+   as->filename[as->stublen] = '\0';  /* pass filename without .nl extension */
+
+   if( snprintf(command, sizeof(command), "\"%s\" \"%s\" -AMPL 2>&1", as->solver, as->filename) >= sizeof(command) )
+   {
+      /* with GAMS' limit on GMS_SSSIZE for option values and scratch dirname, this shouldn't happen */
+      gevLogStatPChar(as->gev, "Solver name or nl filename too long.\n");
+      return 1;
+   }
+
+   stream = popen(command, "r");
+   if( stream == NULL )
+   {
+      gevLogStatPChar(as->gev, "Failed to start AMPL solver (popen() failed)).\n");
+      return 1;
+   }
+
+   while( fgets(buf, GMS_SSSIZE, stream) != NULL )
+      gevLogPChar(as->gev, buf);
+
+   pclose(stream);
+
+   return 0;
+}
+
 
 #define GAMSSOLVER_ID amp
 #include "GamsEntryPoints_tpl.c"
