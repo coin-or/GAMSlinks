@@ -248,6 +248,213 @@ int runSolver(
    return 0;
 }
 
+static
+void processSol(
+   amplsolver* as
+   )
+{
+   FILE* sol;
+   char buf[100];
+   char* endptr;
+   int noptions = 0;
+   int nconss = -1;
+   int ndual = -1;
+   int nvars = -1;
+   int nprimal = -1;
+   int status = -1;
+   double* x = NULL;
+   double* pi = NULL;
+   int i;
+
+   assert(as != NULL);
+
+   gmoSolveStatSet(as->gmo, gmoSolveStat_SolverErr);
+   gmoModelStatSet(as->gmo, gmoModelStat_ErrorNoSolution);
+
+   strcpy(as->filename + as->stublen, ".sol");
+   sol = fopen(as->filename, "r");
+
+   if( sol == NULL )
+   {
+      gevLogStatPChar(as->gev, "No AMPL solution file found.\n");
+      return;
+   }
+
+   /* look for line saying "Options" and the following number of options */
+   while( fgets(buf, sizeof(buf), sol) != NULL )
+      if( strncmp(buf, "Options", 7) == 0 )
+      {
+         if( fgets(buf, sizeof(buf), sol) != NULL )
+            sscanf(buf, "%d", &noptions);
+         break;
+      }
+
+   /* read over option lines */
+   while( noptions-- > 0 )
+      fgets(buf, sizeof(buf), sol);
+
+   /* next lines should be
+    * - number of constraints
+    * - number of constraint dual values returned
+    * - number of variables
+    * - number of variable primal values returned
+    */
+   if( fgets(buf, sizeof(buf), sol) != NULL )
+      sscanf(buf, "%d", &nconss);
+   if( fgets(buf, sizeof(buf), sol) != NULL )
+      sscanf(buf, "%d", &ndual);
+   if( fgets(buf, sizeof(buf), sol) != NULL )
+      sscanf(buf, "%d", &nvars);
+   if( fgets(buf, sizeof(buf), sol) != NULL )
+      sscanf(buf, "%d", &nprimal);
+
+   if( nconss != gmoM(as->gmo) )
+   {
+      gevLogStatPChar(as->gev, "Error: Incorrect number of constraints reported in AMPL solver solution file.\n");
+      goto TERMINATE;
+   }
+   if( ndual > 0 && ndual < nconss )
+      gevLogStatPChar(as->gev, "Warning: Incomplete dual solution in AMPL solver solution file. Ignoring.\n");
+
+   if( nvars != gmoN(as->gmo) )
+   {
+      gevLogStatPChar(as->gev, "Error: Incorrect number of variables reported in AMPL solver solution file.\n");
+      goto TERMINATE;
+   }
+   if( nprimal > 0 && nprimal < nvars )
+      gevLogStatPChar(as->gev, "Warning: Incomplete primal solution in AMPL solver solution file. Ignoring.\n");
+
+   if( ndual >= nconss )
+   {
+      pi = (double*)malloc(nconss * sizeof(double));
+      if( pi == NULL )
+         goto TERMINATE;
+      for( i = 0; i < nconss; ++i, --ndual )
+         if( fgets(buf, sizeof(buf), sol) != NULL )
+         {
+            pi[i] = strtod(buf, &endptr);
+            if( endptr == buf )
+            {
+               gevLogStatPChar(as->gev, "Error: Could not parse equation marginal value.\n");
+               goto TERMINATE;
+            }
+         }
+   }
+   /* skip remaining equation duals */
+   while( ndual-- > 0 )
+      fgets(buf, sizeof(buf), sol);
+
+   if( nprimal >= nvars )
+   {
+      x = (double*)malloc(nvars * sizeof(double));
+      if( x == NULL )
+         goto TERMINATE;
+      for( i = 0; i < nvars; ++i, --nprimal )
+         if( fgets(buf, sizeof(buf), sol) != NULL )
+         {
+            x[i] = strtod(buf, &endptr);
+            if( endptr == buf )
+            {
+               gevLogStatPChar(as->gev, "Error: Could not parse equation marginal value.\n");
+               goto TERMINATE;
+            }
+         }
+   }
+   /* skip remaining variable values */
+   while( nprimal-- > 0 )
+      fgets(buf, sizeof(buf), sol);
+
+   if( x != NULL && pi != NULL )
+      gmoSetSolution2(as->gmo, x, pi);
+   else if( x != NULL )
+      gmoSetSolutionPrimal(as->gmo, x);
+
+   /* the last line gives the solve status
+    * AMPL solve status codes are at http://www.ampl.com/NEW/statuses.html
+    *     number   string       interpretation
+    *    0 -  99   solved       optimal solution found
+    *  100 - 199   solved?      optimal solution indicated, but error likely
+    *  200 - 299   infeasible   constraints cannot be satisfied
+    *  300 - 399   unbounded    objective can be improved without limit
+    *  400 - 499   limit        stopped by a limit that you set (such as on iterations)
+    *  500 - 599   failure      stopped by an error condition in the solver routines
+    */
+   if( fgets(buf, sizeof(buf), sol) != NULL )
+      sscanf(buf, "objno 0 %d", &status);
+
+   sprintf(buf, "AMPL solver status: %d\n", status);
+   gevLogStatPChar(as->gev, buf);
+
+   if( status < 0 || status >= 600 )
+   {
+      gevLogStatPChar(as->gev, "Warning: Do not know meaning of this status code.\n");
+      if( x != NULL )
+         gmoModelStatSet(as->gmo, gmoModelStat_ErrorUnknown);
+   }
+   else if( status < 100 )
+   {
+      /* solve: optimal solution found */
+      gmoSolveStatSet(as->gmo, gmoSolveStat_Normal);
+      if( x == NULL )
+         gmoModelStatSet(as->gmo, gmoModelStat_NoSolutionReturned);
+      else
+         gmoModelStatSet(as->gmo, gmoModelStat_OptimalGlobal);
+   }
+   else if( status < 200 )
+   {
+      /* solved?: optimal solution indicated, but error likely */
+      gmoSolveStatSet(as->gmo, gmoSolveStat_Solver);
+      if( x == NULL )
+         gmoModelStatSet(as->gmo, gmoModelStat_NoSolutionReturned);
+      else
+         gmoModelStatSet(as->gmo, gmoModelStat_OptimalGlobal);
+   }
+   else if( status < 300 )
+   {
+      /* infeasible: constraints cannot be satisfied */
+      gmoSolveStatSet(as->gmo, gmoSolveStat_Normal);
+      if( x == NULL )
+         gmoModelStatSet(as->gmo, gmoModelStat_InfeasibleNoSolution);
+      else
+         gmoModelStatSet(as->gmo, gmoModelStat_InfeasibleGlobal);
+   }
+   else if( status < 400 )
+   {
+      /* unbounded: objective can be improved without limit */
+      gmoSolveStatSet(as->gmo, gmoSolveStat_Normal);
+      if( x == NULL )
+         gmoModelStatSet(as->gmo, gmoModelStat_UnboundedNoSolution);
+      else
+         gmoModelStatSet(as->gmo, gmoModelStat_Unbounded);
+   }
+   else if( status < 500 )
+   {
+      /* stopped by a limit that you set (such as on iterations) */
+      gmoSolveStatSet(as->gmo, gmoSolveStat_Iteration);
+      if( x == NULL )
+         gmoModelStatSet(as->gmo, gmoModelStat_NoSolutionReturned);
+      else
+         gmoModelStatSet(as->gmo, gmoModelStat_InfeasibleIntermed);
+   }
+   else
+   {
+      /* failure: stopped by an error condition in the solver routines */
+      gmoSolveStatSet(as->gmo, gmoSolveStat_Solver);
+      if( x == NULL )
+         gmoModelStatSet(as->gmo, gmoModelStat_NoSolutionReturned);
+      else
+         gmoModelStatSet(as->gmo, gmoModelStat_InfeasibleIntermed);
+   }
+
+   if( gmoModelType(as->gmo) == gmoProc_cns && gmoModelStat(as->gmo) == gmoModelStat_OptimalGlobal )
+      gmoModelStatSet(as->gmo, gmoModelStat_Solved);
+
+ TERMINATE:
+   fclose(sol);
+   free(x);
+   free(pi);
+}
+
 
 #define GAMSSOLVER_ID amp
 #include "GamsEntryPoints_tpl.c"
@@ -368,6 +575,9 @@ DllExport int STDCALL ampCallSolver(
 
    gmoSetHeadnTail(as->gmo, gmoHresused, gevTimeDiffStart(as->gev));
 
+   processSol(as);
+
+   /* remove temporary files */
    if( !gevGetIntOpt(as->gev, gevKeep) )
    {
       strcpy(as->filename + as->stublen, ".nl");
