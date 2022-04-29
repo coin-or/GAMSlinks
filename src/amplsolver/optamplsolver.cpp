@@ -15,7 +15,7 @@ int main(int argc, char** argv)
    // General parameters
    gmsopt.setGroup("General Options");
 
-   gmsopt.collect("solver", "full path to AMPL solver executable", "", "", -2);
+   gmsopt.collect("solver", "AMPL solver executable (name or full path)", "", "", -2);
 
    gmsopt.finalize();
 

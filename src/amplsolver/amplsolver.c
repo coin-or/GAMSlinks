@@ -23,7 +23,10 @@ typedef struct
    gmoHandle_t gmo;
    gevHandle_t gev;
 
-   char nlfilename[GMS_SSSIZE + 30];
+   /* name of nl file with arbitrary extension */
+   char filename[GMS_SSSIZE + 30];
+   /* length of nl filename without extension */
+   int  stublen;
    char solver[GMS_SSSIZE];
 
 } amplsolver;
@@ -134,10 +137,11 @@ void writeNL(
    gmoIndexBaseSet(as->gmo, 0);
    gmoSetNRowPerm(as->gmo); /* hide =N= rows */
 
-   gevGetStrOpt(as->gev, gevNameScrDir, as->nlfilename);
-   strcat(as->nlfilename, "prob.nl");
+   gevGetStrOpt(as->gev, gevNameScrDir, as->filename);
+   strcat(as->filename, "prob.nl");
+   as->stublen = strlen(as->filename) - 3;
 
-   writeopts.filename = as->nlfilename;
+   writeopts.filename = as->filename;
    writeopts.binary = 1;
 
    if( convertWriteNL(as->gmo, writeopts) == RETURN_ERROR )
@@ -167,14 +171,12 @@ int runSolver(
    {
       /* child process */
       int rc;
-      char nlstub[GMS_SSSIZE+30];
-      strcpy(nlstub, as->nlfilename);
-      nlstub[strlen(nlstub)-3] = '\0';
-      printf("Exec %s %s %s -AMPL\n", as->solver, as->solver, nlstub);
-      fflush(stdout);
-      rc = execlp(as->solver, as->solver, nlstub, "-AMPL");
-      printf("execlp failed with rc: %d\n", rc);
-      _exit(255);
+
+      as->filename[as->stublen] = '\0';  /* pass filename without .nl extension */
+      /* printf("Exec %s %s %s -AMPL\n", as->solver, as->solver, as->filename); */
+      rc = execlp(as->solver, as->solver, as->filename, "-AMPL");
+      fprintf(stderr, "Failed to execute %s %s %s -AMPL, rc=%d\n", as->solver, as->solver, as->filename, rc);
+      _exit(127);
    }
 
    while( 1 )
@@ -315,17 +317,17 @@ DllExport int STDCALL ampCallSolver(
    {
       int stublen;
 
-      stublen = strlen(as->nlfilename)-2;
-      if( remove(as->nlfilename) != 0 )
-         fprintf(stderr, "Could not remove temporary file %s\n", as->nlfilename);
+      strcpy(as->filename + as->stublen, ".nl");
+      if( remove(as->filename) != 0 )
+         fprintf(stderr, "Could not remove temporary file %s\n", as->filename);
 
-      strcpy(as->nlfilename + stublen, "col");
-      if( remove(as->nlfilename) != 0 )
-         fprintf(stderr, "Could not remove temporary file %s\n", as->nlfilename);
+      strcpy(as->filename + as->stublen, ".col");
+      if( remove(as->filename) != 0 )
+         fprintf(stderr, "Could not remove temporary file %s\n", as->filename);
 
-      strcpy(as->nlfilename + stublen, "row");
-      if( remove(as->nlfilename) != 0 )
-         fprintf(stderr, "Could not remove temporary file %s\n", as->nlfilename);
+      strcpy(as->filename + as->stublen, ".row");
+      if( remove(as->filename) != 0 )
+         fprintf(stderr, "Could not remove temporary file %s\n", as->filename);
    }
 
    return 0;
