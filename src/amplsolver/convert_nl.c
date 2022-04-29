@@ -4,6 +4,8 @@
 //
 // Author: Stefan Vigerske
 
+#define _USE_MATH_DEFINES   /* to get M_PI on Windows */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -1190,7 +1192,6 @@ RETURN writeNLnlnodeEnter(
 
 static
 RETURN writeNLnlnodeLeave(
-   gmoHandle_t    /* gmo */,
    convertWriteNLopts writeopts,
    gamsnl_node*       n
    )
@@ -1400,7 +1401,7 @@ RETURN writeNLExpr(
 
          case LEAVE:
          {
-            CHECK( writeNLnlnodeLeave(gmo, writeopts, n) );
+            CHECK( writeNLnlnodeLeave(writeopts, n) );
 
             /* remove current node from stack (or forget that it is there) */
             stage = VISITED;
