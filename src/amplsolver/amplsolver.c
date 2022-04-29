@@ -229,7 +229,12 @@ int runSolver(
 
    as->filename[as->stublen] = '\0';  /* pass filename without .nl extension */
 
+#ifndef _WIN32
    if( snprintf(command, sizeof(command), "\"%s\" \"%s\" -AMPL 2>&1", as->solver, as->filename) >= sizeof(command) )
+#else
+   /* windows doesn't seem to like quotes around the executable name */
+   if( snprintf(command, sizeof(command), "%s \"%s\" -AMPL 2>&1", as->solver, as->filename) >= sizeof(command) )
+#endif
    {
       /* with GAMS' limit on GMS_SSSIZE for option values and scratch dirname, this shouldn't happen */
       gevLogStatPChar(as->gev, "Solver name or nl filename too long.\n");
@@ -247,6 +252,8 @@ int runSolver(
       gevLogPChar(as->gev, buf);
 
    pclose(stream);
+
+   gevLogPChar(as->gev, "\n");
 
    return 0;
 }
