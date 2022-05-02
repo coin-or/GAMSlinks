@@ -151,7 +151,7 @@ void writeNL(
    as->stublen = strlen(as->filename) - 3;
 
    writeopts.filename = as->filename;
-   writeopts.binary = 1;
+   /* writeopts.binary = 1; */
 
    if( convertWriteNL(as->gmo, writeopts) == RETURN_ERROR )
    {
