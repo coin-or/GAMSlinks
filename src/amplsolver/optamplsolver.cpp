@@ -17,6 +17,13 @@ int main(int argc, char** argv)
 
    gmsopt.collect("solver", "AMPL solver executable (name or full path)", "", "", -2);
 
+   gmsopt.collect("solvername", "AMPL solver name",
+      "The name of the solver as used when specifying solver options in AMPL script. "
+      "If not given, then name of executable (with path removed) is used. "
+      "On Windows, also the extension of the executable name is removed.",
+      "", -2);
+   gmsopt.collect("options", "Options string to pass to solver", "", "", -2);
+
    gmsopt.finalize();
 
    gmsopt.writeDef();

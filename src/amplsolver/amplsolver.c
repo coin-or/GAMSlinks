@@ -10,8 +10,9 @@
 #include <assert.h>
 
 #ifndef _WIN32
+#include <libgen.h>
 #include <unistd.h>
-#include <sys/wait.h>
+/*#include <sys/wait.h>*/
 #else
 #include <io.h>
 #define F_OK 0
@@ -124,6 +125,41 @@ int processOptions(
    }
 
    optGetStrStr(opt, "solver", as->solver);
+
+   if( optGetDefinedStr(opt, "options") )
+   {
+      char options[GMS_SSSIZE];
+      char solvername[GMS_SSSIZE];
+      char envname[GMS_SSSIZE+10];
+
+      optGetStrStr(opt, "solvername", solvername);
+      if( *solvername == '\0' )
+      {
+#ifndef _WIN32
+         char* bname;
+         bname = basename(as->solver);
+         sprintf(envname, "%s_options", bname);
+#else
+         char fname[GMS_SSSIZE];
+         _splitpath(as->solver, NULL, NULL, fname, NULL);
+         sprintf(envname, "%s_options", fname);
+#endif
+      }
+      else
+      {
+         sprintf(envname, "%s_options", solvername);
+      }
+
+      optGetStrStr(opt, "options", options);
+
+      /* printf("Setting %s\n", envstr); */
+#ifndef _WIN32
+      if( setenv(envname, options, 1) != 0 )
+#else
+      if( _putenv_s(envname, options) != 0 )
+#endif
+         gevLogStatPChar(as->gev, "Warning: Failed to pass solver options.\n");
+   }
 
    rc = 0;
 
