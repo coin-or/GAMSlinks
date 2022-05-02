@@ -143,7 +143,6 @@ RETURN writeNLPrintf(
 
    if( !writeopts.binary )
    {
-#ifdef CONVERTNL_WITH_ASL
       /* vfprintf(writeopts.f, fmt, ap); */
       /* the following code is adapted from ASL's fg_write.c:aprintf() */
       for( ;; )
@@ -212,6 +211,7 @@ RETURN writeNLPrintf(
                double v;
 
                v = va_arg(ap, double);
+#ifdef CONVERTNL_WITH_ASL
                if( writeopts.shortfloat )
                {
                   /* use dtoa to get a good string that is short, too */
@@ -240,6 +240,9 @@ RETURN writeNLPrintf(
                   g_fmt(buf, v);
                   fputs(buf, writeopts.f);
                }
+#else
+               fprintf(writeopts.f, "%.15g", v);
+#endif
                continue;
             }
 
@@ -254,10 +257,6 @@ RETURN writeNLPrintf(
                return RETURN_ERROR;
          }
       }
-#else
-      fprintf(stderr, "writeNLPrintf: text output not available without ASL\n");
-      return RETURN_ERROR;
-#endif
    }
    else
    {
