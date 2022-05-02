@@ -12,7 +12,8 @@ solverConfig:
       libName: amplsolver/libGamsAmplSolver.la
       auditCode: amp
       solverInterfaceType: 1
-      threadSafeIndic: True
+      # passing options to solver via environment variable doesn't seem threadsafe
+      threadSafeIndic: False
     modelTypes:
     - LP
     - MIP
