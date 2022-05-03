@@ -187,7 +187,7 @@ void writeNL(
    as->stublen = strlen(as->filename) - 3;
 
    writeopts.filename = as->filename;
-   /* writeopts.binary = 1; */
+   writeopts.binary = 1;
 
    if( convertWriteNL(as->gmo, writeopts) == RETURN_ERROR )
    {
@@ -414,6 +414,7 @@ DllExport int STDCALL ampCallSolver(
 
    gmoSetHeadnTail(as->gmo, gmoHresused, gevTimeDiffStart(as->gev));
 
+   strcpy(as->filename + as->stublen, ".sol");
    convertReadAmplSol(as->gmo, as->filename);
 
    /* remove temporary files */

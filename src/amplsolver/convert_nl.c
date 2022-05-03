@@ -1696,6 +1696,8 @@ RETURN convertReadAmplSol(
    FILE* sol;
    char buf[100];
    char* endptr;
+   int len;
+   int binary;
    int noptions = 0;
    int nconss = -1;
    int ndual = -1;
@@ -1711,52 +1713,133 @@ RETURN convertReadAmplSol(
 
    gev = gmoEnvironment(gmo);
 
-   gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
+   gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
    gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
 
-   sol = fopen(filename, "r");
+   sol = fopen(filename, "rb");
    if( sol == NULL )
    {
+      fprintf(stderr, "%s\n", filename);
       gevLogStatPChar(gev, "No AMPL solution file found.\n");
       return RETURN_ERROR;
    }
 
-   buf[10] = '\0';
-   if( fgets(buf, sizeof(buf), sol) != NULL )
-      if( strncmp(buf+sizeof(int), "binary", 6) == 0 )
+   /* check whether sol file is in binary format */
+   if( fread(&len, sizeof(int), 1, sol) > 0 && len == 6 )
+   {
+      if( fread(buf, 1, 6, sol) != 6 || strncmp(buf, "binary", 6) != 0 )
       {
-         gevLogStatPChar(gev, "Error: Cannot handle solution files in binary (non-text) format.\n");
-         gmoSolveStatSet(gmo, gmoSolveStat_SystemErr);
+         gevLogStatPChar(gev, "Error: Binary file without 'binary' header\n");
+         goto TERMINATE;
+      }
+      /* another 6 seems to be expected */
+      if( fread(&len, sizeof(int), 1, sol) == 0 || len != 6 )
+      {
+         gevLogStatPChar(gev, "Error: Incomplete 'binary' header\n");
          goto TERMINATE;
       }
 
+      binary = 1;
+   }
+   else
+   {
+      rewind(sol);
+      binary = 0;
+   }
+
    /* look for line saying "Options" and the following number of options */
-   while( fgets(buf, sizeof(buf), sol) != NULL )
-      if( strncmp(buf, "Options", 7) == 0 )
+   if( !binary )
+   {
+      while( fgets(buf, sizeof(buf), sol) != NULL )
+         if( strncmp(buf, "Options", 7) == 0 )
+         {
+            if( fgets(buf, sizeof(buf), sol) != NULL )
+               sscanf(buf, "%d", &noptions);
+            break;
+         }
+
+      /* read over option lines */
+      while( noptions-- > 0 )
+         fgets(buf, sizeof(buf), sol);
+
+      /* next lines should be
+       * - number of constraints
+       * - number of constraint dual values returned
+       * - number of variables
+       * - number of variable primal values returned
+       */
+      if( fgets(buf, sizeof(buf), sol) != NULL )
+         sscanf(buf, "%d", &nconss);
+      if( fgets(buf, sizeof(buf), sol) != NULL )
+         sscanf(buf, "%d", &ndual);
+      if( fgets(buf, sizeof(buf), sol) != NULL )
+         sscanf(buf, "%d", &nvars);
+      if( fgets(buf, sizeof(buf), sol) != NULL )
+         sscanf(buf, "%d", &nprimal);
+   }
+   else
+   {
+      /* skip over solver status strings
+       * each string starts and ends with its length as int
+       * if the length is 0, then stop
+       */
+      do
       {
-         if( fgets(buf, sizeof(buf), sol) != NULL )
-            sscanf(buf, "%d", &noptions);
-         break;
+         if( fread(&len, sizeof(int), 1, sol) == 0 )
+         {
+            gevLogStatPChar(gev, "Error: Solver status missing\n");
+            goto TERMINATE;
+         }
+         fseek(sol, len, SEEK_CUR);
+         fread(&len, sizeof(int), 1, sol);
+      }
+      while( len > 0 );
+
+      if( fread(&len, sizeof(int), 1, sol) == 0 )
+      {
+         gevLogStatPChar(gev, "Error: End of file when options section was expected\n");
+         goto TERMINATE;
       }
 
-   /* read over option lines */
-   while( noptions-- > 0 )
-      fgets(buf, sizeof(buf), sol);
+      /* now there should be an Options section (we assume here that there always is one)
+       * the length (len) here includes the integers for the number of options, options, and
+       * constraint/variable numbers; there are between 3 and 9 options
+       */
+      if( len < 7 + 4*sizeof(int) + 4*sizeof(int) || len > 7 + 10*sizeof(int) + 4*sizeof(int) )
+      {
+         gevLogStatPChar(gev, "Error: Options section too short or long\n");
+         goto TERMINATE;
+      }
 
-   /* next lines should be
-    * - number of constraints
-    * - number of constraint dual values returned
-    * - number of variables
-    * - number of variable primal values returned
-    */
-   if( fgets(buf, sizeof(buf), sol) != NULL )
-      sscanf(buf, "%d", &nconss);
-   if( fgets(buf, sizeof(buf), sol) != NULL )
-      sscanf(buf, "%d", &ndual);
-   if( fgets(buf, sizeof(buf), sol) != NULL )
-      sscanf(buf, "%d", &nvars);
-   if( fgets(buf, sizeof(buf), sol) != NULL )
-      sscanf(buf, "%d", &nprimal);
+      if( fread(buf, 1, 7, sol) != 7 || strncmp(buf, "Options", 7) != 0 )
+      {
+         gevLogStatPChar(gev, "Error: Options keyword not where expected\n");
+         goto TERMINATE;
+      }
+
+      if( fread(&len, sizeof(int), 1, sol) == 0 || len < 3 || len > 9 )
+      {
+         gevLogStatPChar(gev, "Error: Number of options too small or large\n");
+         goto TERMINATE;
+      }
+      fseek(sol, len * sizeof(int), SEEK_CUR);  /* skip over options */
+
+      /* next items should be
+       * - number of constraints
+       * - number of constraint dual values returned
+       * - number of variables
+       * - number of variable primal values returned
+       */
+      fread(&nconss, sizeof(int), 1, sol);
+      fread(&ndual, sizeof(int), 1, sol);
+      fread(&nvars, sizeof(int), 1, sol);
+      fread(&nprimal, sizeof(int), 1, sol);
+
+      /* and finally the length of the options section is repeated */
+      fseek(sol, sizeof(int), SEEK_CUR);
+   }
+
+   gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
 
    if( nconss != gmoM(gmo) )
    {
@@ -1774,52 +1857,104 @@ RETURN convertReadAmplSol(
    if( nprimal > 0 && nprimal < nvars )
       gevLogStatPChar(gev, "Warning: Incomplete primal solution in AMPL solver solution file. Ignoring.\n");
 
+   /* the length of the duals array seems to be given next (also if no duals are provided) */
+   if( binary && (fread(&len, sizeof(int), 1, sol) == 0 || len != ndual*sizeof(double)) )
+   {
+      gevLogStatPChar(gev, "Error: Length of marginals array different than advertised.\n");
+      goto TERMINATE;
+   }
+
    if( ndual >= nconss )
    {
       pi = (double*)malloc(nconss * sizeof(double));
       if( pi == NULL )
          goto TERMINATE;
-      for( i = 0; i < nconss; ++i, --ndual )
-         if( fgets(buf, sizeof(buf), sol) != NULL )
-         {
-            pi[i] = strtod(buf, &endptr);
-            if( endptr == buf )
+      if( !binary )
+      {
+         for( i = 0; i < nconss; ++i, --ndual )
+            if( fgets(buf, sizeof(buf), sol) != NULL )
             {
-               gevLogStatPChar(gev, "Error: Could not parse equation marginal value.\n");
-               goto TERMINATE;
+               pi[i] = strtod(buf, &endptr);
+               if( endptr == buf )
+               {
+                  gevLogStatPChar(gev, "Error: Could not parse equation marginal value.\n");
+                  goto TERMINATE;
+               }
             }
+      }
+      else
+      {
+         if( fread(pi, sizeof(double), nconss, sol) < ndual )
+         {
+            gevLogStatPChar(gev, "Error: Less marginal values than advertised.\n");
+            goto TERMINATE;
          }
+         ndual -= nconss;
+      }
    }
    /* skip remaining equation duals */
-   while( ndual-- > 0 )
-      fgets(buf, sizeof(buf), sol);
+   if( !binary )
+      while( ndual-- > 0 )
+         fgets(buf, sizeof(buf), sol);
+   else
+   {
+      fseek(sol, ndual*sizeof(double), SEEK_CUR);
+      /* the array length is repeated */
+      fseek(sol, sizeof(int), SEEK_CUR);
+   }
+
+   /* the length of the primals array seems to be given next (also if no primals are provided) */
+   if( binary && (fread(&len, sizeof(int), 1, sol) == 0 || len != nprimal*sizeof(double)) )
+   {
+      gevLogStatPChar(gev, "Error: Length of primals array different than advertised.\n");
+      goto TERMINATE;
+   }
 
    if( nprimal >= nvars )
    {
       x = (double*)malloc(nvars * sizeof(double));
       if( x == NULL )
          goto TERMINATE;
-      for( i = 0; i < nvars; ++i, --nprimal )
-         if( fgets(buf, sizeof(buf), sol) != NULL )
-         {
-            x[i] = strtod(buf, &endptr);
-            if( endptr == buf )
+      if( !binary )
+      {
+         for( i = 0; i < nvars; ++i, --nprimal )
+            if( fgets(buf, sizeof(buf), sol) != NULL )
             {
-               gevLogStatPChar(gev, "Error: Could not parse equation marginal value.\n");
-               goto TERMINATE;
+               x[i] = strtod(buf, &endptr);
+               if( endptr == buf )
+               {
+                  gevLogStatPChar(gev, "Error: Could not parse primal variable value.\n");
+                  goto TERMINATE;
+               }
             }
+      }
+      else
+      {
+         if( fread(x, sizeof(double), nvars, sol) < nvars )
+         {
+            gevLogStatPChar(gev, "Error: Less primal values than advertised.\n");
+            goto TERMINATE;
          }
+         nprimal -= nvars;
+      }
    }
    /* skip remaining variable values */
-   while( nprimal-- > 0 )
-      fgets(buf, sizeof(buf), sol);
+   if( !binary )
+      while( nprimal-- > 0 )
+         fgets(buf, sizeof(buf), sol);
+   else
+   {
+      fseek(sol, nprimal*sizeof(double), SEEK_CUR);
+      /* the array length is repeated */
+      fseek(sol, sizeof(int), SEEK_CUR);
+   }
 
    if( x != NULL && pi != NULL )
       gmoSetSolution2(gmo, x, pi);
    else if( x != NULL )
       gmoSetSolutionPrimal(gmo, x);
 
-   /* the last line gives the solve status
+   /* the next line gives the solve status
     * AMPL solve status codes are at http://www.ampl.com/NEW/statuses.html
     *     number   string       interpretation
     *    0 -  99   solved       optimal solution found
@@ -1829,8 +1964,29 @@ RETURN convertReadAmplSol(
     *  400 - 499   limit        stopped by a limit that you set (such as on iterations)
     *  500 - 599   failure      stopped by an error condition in the solver routines
     */
-   if( fgets(buf, sizeof(buf), sol) != NULL )
-      sscanf(buf, "objno 0 %d", &status);
+   if( !binary )
+   {
+      if( fgets(buf, sizeof(buf), sol) != NULL )
+         sscanf(buf, "objno 0 %d", &status);
+   }
+   else
+   {
+      /* now should be an array of 2 integers with objective number and solve status coming
+       * so it is first the array length, then the 2 ints, then the array length again
+       */
+      if( fread(&len, sizeof(int), 1, sol) == 0 || len != 2*sizeof(int) )
+      {
+         gevLogStatPChar(gev, "Error: Objective status array not present or of length 2.\n");
+         goto TERMINATE;
+      }
+      fseek(sol, sizeof(int), SEEK_CUR);
+      if( fread(&status, sizeof(int), 1, sol) == 0 )
+      {
+         gevLogStatPChar(gev, "Error: Could not read solve status code.\n");
+         goto TERMINATE;
+      }
+      /* fseek(sol, sizeof(int), SEEK_CUR); */
+   }
 
    sprintf(buf, "AMPL solver status: %d\n", status);
    gevLogStatPChar(gev, buf);
