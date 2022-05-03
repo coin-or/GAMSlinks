@@ -4,11 +4,12 @@
 
 This project is dedicated to the development of links between [GAMS](http://www.gams.com) (**G**eneral **A**lgebraic **M**odeling **S**ystem) and some solvers,
 including some of the [COIN-OR](https://www.coin-or.org) open source solvers.
-The links are written in C++ and are released as open source code under the Eclipse Public Licence (EPL) 2.0.
+The links are written in C/C++ and are released as open source code under the Eclipse Public Licence (EPL) 2.0.
 The COIN-OR project leader for GAMSlinks is [Stefan Vigerske](http://www.gams.com/~svigerske) (GAMS Software GmbH).
 
 Currently the following links are available:
 
+  * [AmplSolver]: Call a solver with AMPL interface (AMPL `.nl` and `.sol` files)
   * [Bonmin](https://github.com/coin-or/Bonmin): Basic Open-source Nonlinear Mixed-Integer Programming
   * [Couenne](https://github.com/coin-or/Couenne): Convex Over and Under Envelopes for Nonlinear Estimation
   * [Cbc](https://github.com/coin-or/Cbc): COIN-OR Branch and Cut code
@@ -87,6 +88,9 @@ Alternatively, an option statement can be added to the GAMS code (before the sol
 Note, that entries in gamsconfig.yaml overwrite solvers with the same name that come with the GAMS system.
 
 For more information we refer to the [GAMS documentation](http://www.gams.com/latest/docs).
+
+For solver `AMPLSOLVER`, the solver binary needs to be specified in a solver options file (e.g., `amplsolver.opt`).
+See the installed `<prefix>/share/doc/gamslinks/optamplsolver.md` for a list of all available options.
 
 ## Testing
 
