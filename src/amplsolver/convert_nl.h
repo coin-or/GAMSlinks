@@ -43,10 +43,11 @@ RETURN convertWriteNL(
    convertWriteNLopts writeopts
 );
 
+/** reads an AMPL solution file and stores solution in GMO */
 extern
-RETURN convertNLtoGMS(
-   const char* nlfilename,
-   const char* gmsfilename
-   );
+RETURN convertReadAmplSol(
+   struct gmoRec*     gmo,
+   const char*        filename
+);
 
 #endif /* CONVERT_NL_H_ */
