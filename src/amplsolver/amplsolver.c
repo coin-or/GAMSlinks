@@ -38,6 +38,7 @@ typedef struct
    /* length of nl filename without extension */
    int  stublen;
    char solver[GMS_SSSIZE];
+   int  nlbinary;
 
 } amplsolver;
 
@@ -161,6 +162,8 @@ int processOptions(
          gevLogStatPChar(as->gev, "Warning: Failed to pass solver options.\n");
    }
 
+   as->nlbinary = optGetIntStr(opt, "nlbinary");
+
    rc = 0;
 
  TERMINATE:
@@ -187,7 +190,7 @@ void writeNL(
    as->stublen = strlen(as->filename) - 3;
 
    writeopts.filename = as->filename;
-   writeopts.binary = 1;
+   writeopts.binary = as->nlbinary;
 
    if( convertWriteNL(as->gmo, writeopts) == RETURN_ERROR )
    {

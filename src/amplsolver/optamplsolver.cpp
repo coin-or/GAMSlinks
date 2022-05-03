@@ -24,6 +24,8 @@ int main(int argc, char** argv)
       "", -2);
    gmsopt.collect("options", "Options string to pass to solver", "", "", -2);
 
+   gmsopt.collect("nlbinary", "Whether .nl file should be written in binary form", "", true);
+
    gmsopt.finalize();
 
    gmsopt.writeDef();
