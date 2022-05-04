@@ -9,7 +9,7 @@ The COIN-OR project leader for GAMSlinks is [Stefan Vigerske](http://www.gams.co
 
 Currently the following links are available:
 
-  * [AmplSolver]: Call a solver with AMPL interface (AMPL `.nl` and `.sol` files)
+  * AmplSolver: Call a solver with AMPL interface (AMPL `.nl` and `.sol` files)
   * [Bonmin](https://github.com/coin-or/Bonmin): Basic Open-source Nonlinear Mixed-Integer Programming
   * [Couenne](https://github.com/coin-or/Couenne): Convex Over and Under Envelopes for Nonlinear Estimation
   * [Cbc](https://github.com/coin-or/Cbc): COIN-OR Branch and Cut code
