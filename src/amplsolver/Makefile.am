@@ -10,7 +10,7 @@ AM_CPPFLAGS = \
 AM_LDFLAGS = $(LT_LDFLAGS)
 
 lib_LTLIBRARIES = libGamsAmplSolver.la
-libGamsAmplSolver_la_SOURCES = amplsolver.c convert_nl.c gamsnl.c \
+libGamsAmplSolver_la_SOURCES = amplsolver.c convert_nl.c ../utils/gamsnl.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/cfgmcc.c ../utils/optcc.c
 libGamsAmplSolver_la_LIBADD = $(GAMSAMPLSOLVER_LFLAGS)
 

@@ -141,7 +141,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libGamsAmplSolver_la_DEPENDENCIES =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libGamsAmplSolver_la_OBJECTS = amplsolver.lo convert_nl.lo \
-	gamsnl.lo ../utils/gmomcc.lo ../utils/gevmcc.lo \
+	../utils/gamsnl.lo ../utils/gmomcc.lo ../utils/gevmcc.lo \
 	../utils/cfgmcc.lo ../utils/optcc.lo
 libGamsAmplSolver_la_OBJECTS = $(am_libGamsAmplSolver_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -168,10 +168,10 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src/utils
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po \
-	../utils/$(DEPDIR)/cfgmcc.Plo ../utils/$(DEPDIR)/gevmcc.Plo \
-	../utils/$(DEPDIR)/gmomcc.Plo ../utils/$(DEPDIR)/optcc.Plo \
-	./$(DEPDIR)/amplsolver.Plo ./$(DEPDIR)/convert_nl.Plo \
-	./$(DEPDIR)/gamsnl.Plo ./$(DEPDIR)/optamplsolver.Po
+	../utils/$(DEPDIR)/cfgmcc.Plo ../utils/$(DEPDIR)/gamsnl.Plo \
+	../utils/$(DEPDIR)/gevmcc.Plo ../utils/$(DEPDIR)/gmomcc.Plo \
+	../utils/$(DEPDIR)/optcc.Plo ./$(DEPDIR)/amplsolver.Plo \
+	./$(DEPDIR)/convert_nl.Plo ./$(DEPDIR)/optamplsolver.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -418,7 +418,7 @@ AM_CPPFLAGS = -I$(srcdir)/../utils -I"$(GAMS_PATH)/apifiles/C/api" \
 	$(GAMSLIBCFLAGS) -DGC_NO_MUTEX
 AM_LDFLAGS = $(LT_LDFLAGS)
 lib_LTLIBRARIES = libGamsAmplSolver.la
-libGamsAmplSolver_la_SOURCES = amplsolver.c convert_nl.c gamsnl.c \
+libGamsAmplSolver_la_SOURCES = amplsolver.c convert_nl.c ../utils/gamsnl.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/cfgmcc.c ../utils/optcc.c
 
 libGamsAmplSolver_la_LIBADD = $(GAMSAMPLSOLVER_LFLAGS)
@@ -512,6 +512,8 @@ clean-libLTLIBRARIES:
 ../utils/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) ../utils/$(DEPDIR)
 	@: > ../utils/$(DEPDIR)/$(am__dirstamp)
+../utils/gamsnl.lo: ../utils/$(am__dirstamp) \
+	../utils/$(DEPDIR)/$(am__dirstamp)
 ../utils/gmomcc.lo: ../utils/$(am__dirstamp) \
 	../utils/$(DEPDIR)/$(am__dirstamp)
 ../utils/gevmcc.lo: ../utils/$(am__dirstamp) \
@@ -540,12 +542,12 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/cfgmcc.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gamsnl.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gevmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gmomcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/optcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/amplsolver.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/convert_nl.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamsnl.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optamplsolver.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -750,12 +752,12 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 distclean: distclean-am
 		-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
 	-rm -f ../utils/$(DEPDIR)/cfgmcc.Plo
+	-rm -f ../utils/$(DEPDIR)/gamsnl.Plo
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
 	-rm -f ../utils/$(DEPDIR)/optcc.Plo
 	-rm -f ./$(DEPDIR)/amplsolver.Plo
 	-rm -f ./$(DEPDIR)/convert_nl.Plo
-	-rm -f ./$(DEPDIR)/gamsnl.Plo
 	-rm -f ./$(DEPDIR)/optamplsolver.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -804,12 +806,12 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 		-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
 	-rm -f ../utils/$(DEPDIR)/cfgmcc.Plo
+	-rm -f ../utils/$(DEPDIR)/gamsnl.Plo
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
 	-rm -f ../utils/$(DEPDIR)/optcc.Plo
 	-rm -f ./$(DEPDIR)/amplsolver.Plo
 	-rm -f ./$(DEPDIR)/convert_nl.Plo
-	-rm -f ./$(DEPDIR)/gamsnl.Plo
 	-rm -f ./$(DEPDIR)/optamplsolver.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
