@@ -1,8 +1,9 @@
-// Copyright (C) GAMS Development and others 2022
-// All Rights Reserved.
-// This code is published under the Eclipse Public License.
-//
-// Author: Stefan Vigerske
+/* Copyright (C) GAMS Development and others 2022
+ * All Rights Reserved.
+ * This code is published under the Eclipse Public License.
+ *
+ * Author: Stefan Vigerske
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -61,7 +62,7 @@ int processOptions(
       return 1;
    }
 
-   // get definition file name from cfg object
+   /* get definition file name from cfg object */
    cfg = (cfgHandle_t)gevGetALGX(as->gev);
    assert(cfg != NULL);
    gevGetCurrentSolver(as->gev, as->gmo, buffer);
@@ -69,7 +70,7 @@ int processOptions(
    cfgDefFileName(cfg, buffer, deffile);
    if( deffile[0] != '/' && deffile[1] != ':' )
    {
-      // if deffile is not absolute path, then prefix with sysdir
+      /* if deffile is not absolute path, then prefix with sysdir */
       gevGetStrOpt(as->gev, gevNameSysDir, buffer);
       strcat(buffer, deffile);
       strcpy(deffile, buffer);
@@ -90,7 +91,7 @@ int processOptions(
    }
    optEOLOnlySet(opt, 1);
 
-   // read user options file
+   /* read user options file */
    if( gmoOptFile(as->gmo) == 0 )
    {
       gevLogStatPChar(as->gev, "No amplsolver options file given. Don't know which solver to run.\n");
