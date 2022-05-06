@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <math.h>
 
-#include "gamsnl.h"
+#include "GamsNL.h"
 
 #include "gmomcc.h"
 

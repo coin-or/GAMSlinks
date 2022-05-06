@@ -14,7 +14,7 @@
 #include <math.h>
 
 #include "convert_nl.h"
-#include "gamsnl.h"
+#include "GamsNL.h"
 
 #include "gmomcc.h"
 #include "gevmcc.h"
@@ -208,7 +208,9 @@ RETURN writeNLPrintf(
                /* no break */
             case 'g':
             {
+#ifdef CONVERTNL_WITH_ASL
                char buf[100];
+#endif
                double v;
 
                v = va_arg(ap, double);

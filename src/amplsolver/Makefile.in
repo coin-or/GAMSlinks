@@ -141,7 +141,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libGamsAmplSolver_la_DEPENDENCIES =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libGamsAmplSolver_la_OBJECTS = amplsolver.lo convert_nl.lo \
-	../utils/gamsnl.lo ../utils/gmomcc.lo ../utils/gevmcc.lo \
+	../utils/GamsNL.lo ../utils/gmomcc.lo ../utils/gevmcc.lo \
 	../utils/cfgmcc.lo ../utils/optcc.lo
 libGamsAmplSolver_la_OBJECTS = $(am_libGamsAmplSolver_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -167,11 +167,12 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src/utils
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po \
-	../utils/$(DEPDIR)/cfgmcc.Plo ../utils/$(DEPDIR)/gamsnl.Plo \
-	../utils/$(DEPDIR)/gevmcc.Plo ../utils/$(DEPDIR)/gmomcc.Plo \
-	../utils/$(DEPDIR)/optcc.Plo ./$(DEPDIR)/amplsolver.Plo \
-	./$(DEPDIR)/convert_nl.Plo ./$(DEPDIR)/optamplsolver.Po
+am__depfiles_remade = ../utils/$(DEPDIR)/GamsNL.Plo \
+	../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po \
+	../utils/$(DEPDIR)/cfgmcc.Plo ../utils/$(DEPDIR)/gevmcc.Plo \
+	../utils/$(DEPDIR)/gmomcc.Plo ../utils/$(DEPDIR)/optcc.Plo \
+	./$(DEPDIR)/amplsolver.Plo ./$(DEPDIR)/convert_nl.Plo \
+	./$(DEPDIR)/optamplsolver.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -418,7 +419,7 @@ AM_CPPFLAGS = -I$(srcdir)/../utils -I"$(GAMS_PATH)/apifiles/C/api" \
 	$(GAMSLIBCFLAGS) -DGC_NO_MUTEX
 AM_LDFLAGS = $(LT_LDFLAGS)
 lib_LTLIBRARIES = libGamsAmplSolver.la
-libGamsAmplSolver_la_SOURCES = amplsolver.c convert_nl.c ../utils/gamsnl.c \
+libGamsAmplSolver_la_SOURCES = amplsolver.c convert_nl.c ../utils/GamsNL.c \
   ../utils/gmomcc.c ../utils/gevmcc.c ../utils/cfgmcc.c ../utils/optcc.c
 
 libGamsAmplSolver_la_LIBADD = $(GAMSAMPLSOLVER_LFLAGS)
@@ -512,7 +513,7 @@ clean-libLTLIBRARIES:
 ../utils/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) ../utils/$(DEPDIR)
 	@: > ../utils/$(DEPDIR)/$(am__dirstamp)
-../utils/gamsnl.lo: ../utils/$(am__dirstamp) \
+../utils/GamsNL.lo: ../utils/$(am__dirstamp) \
 	../utils/$(DEPDIR)/$(am__dirstamp)
 ../utils/gmomcc.lo: ../utils/$(am__dirstamp) \
 	../utils/$(DEPDIR)/$(am__dirstamp)
@@ -540,9 +541,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsNL.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/cfgmcc.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gamsnl.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gevmcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/gmomcc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@../utils/$(DEPDIR)/optcc.Plo@am__quote@ # am--include-marker
@@ -750,9 +751,9 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 	clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
+		-rm -f ../utils/$(DEPDIR)/GamsNL.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
 	-rm -f ../utils/$(DEPDIR)/cfgmcc.Plo
-	-rm -f ../utils/$(DEPDIR)/gamsnl.Plo
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
 	-rm -f ../utils/$(DEPDIR)/optcc.Plo
@@ -804,9 +805,9 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
+		-rm -f ../utils/$(DEPDIR)/GamsNL.Plo
+	-rm -f ../utils/$(DEPDIR)/GamsOptionsSpecWriter.Po
 	-rm -f ../utils/$(DEPDIR)/cfgmcc.Plo
-	-rm -f ../utils/$(DEPDIR)/gamsnl.Plo
 	-rm -f ../utils/$(DEPDIR)/gevmcc.Plo
 	-rm -f ../utils/$(DEPDIR)/gmomcc.Plo
 	-rm -f ../utils/$(DEPDIR)/optcc.Plo

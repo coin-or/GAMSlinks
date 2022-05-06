@@ -23,6 +23,10 @@ typedef struct
    FILE*       f;           /**< nl file stream */
 } convertWriteNLopts;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** prints a double precision floating point number to a string without loosing precision
  *
  * uses DTOA from ASL;  see also https://ampl.com/REFS/rounding.pdf
@@ -49,5 +53,9 @@ RETURN convertReadAmplSol(
    struct gmoRec*     gmo,
    const char*        filename
 );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CONVERT_NL_H_ */
