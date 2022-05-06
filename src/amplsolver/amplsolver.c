@@ -377,12 +377,6 @@ DllExport int STDCALL ampReadyAPI(
    assert(Cptr != NULL);
    assert(Gptr != NULL);
 
-   char msg[256];
-   if( !gmoGetReady(msg, sizeof(msg)) )
-      return 1;
-   if( !gevGetReady(msg, sizeof(msg)) )
-      return 1;
-
    as = (amplsolver*) Cptr;
    as->gmo = Gptr;
    as->gev = (gevHandle_t) gmoEnvironment(as->gmo);
