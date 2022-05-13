@@ -251,7 +251,8 @@ RETURN writeNLPrintf(
 
             case 's':
             {
-               fputs(va_arg(ap, char*), writeopts.f);
+               char* arg = va_arg(ap, char*);
+               fputs(arg != NULL ? arg : "(nil)", writeopts.f);
                continue;
             }
 
@@ -796,8 +797,12 @@ RETURN writeNLConsSides(
          case gmoequ_B:
          case gmoequ_C:
          case gmoequ_X:
-            fprintf(stderr, "Unsupported equation type %d in equ %d\n", gmoGetEquTypeOne(gmo, i), i);
+         {
+            char buffer[100];
+            sprintf(buffer, "Unsupported equation type %d in equ %d\n", gmoGetEquTypeOne(gmo, i), i);
+            gevLogStatPChar(gmoEnvironment(gmo), buffer);
             return RETURN_ERROR;
+         }
 
          case gmoequ_E:
             CHECK( writeNLPrintf(writeopts, "4 %g\n", side) );
@@ -868,7 +873,9 @@ RETURN writeNLnlnodeEnter(
          }
          else
          {
-            fprintf(stderr, "opprod with %d args not supported\n", n->nargs);
+            /* GamsNL took care that this should not happen (see nlnodeApplyBinaryOperation()) */
+            sprintf(buf, "Error: opprod with %d args not supported\n", n->nargs);
+            gevLogStatPChar(gmoEnvironment(gmo), buf);
             return RETURN_ERROR;
          }
          break;
@@ -1174,7 +1181,8 @@ RETURN writeNLnlnodeEnter(
             case fnncpvupow /* veelken-ulbrich smoothing */:
             default:
             {
-               fprintf(stderr, "Error: Unsupported GAMS function %s.\n", GamsFuncCodeName[n->func]);
+               sprintf(buf, "Error: Unsupported GAMS function %s.\n", GamsFuncCodeName[n->func]);
+               gevLogStatPChar(gmoEnvironment(gmo), buf);
                return RETURN_ERROR;
             }
 
@@ -1183,7 +1191,8 @@ RETURN writeNLnlnodeEnter(
             case fnedist:
             case fnpoly :
             {
-               fprintf(stderr, "Error: GAMS function %s should have been reformulated.\n", GamsFuncCodeName[n->func]);
+               sprintf(buf, "Error: GAMS function %s should have been reformulated.\n", GamsFuncCodeName[n->func]);
+               gevLogStatPChar(gmoEnvironment(gmo), buf);
                return RETURN_ERROR;
             }
          }
@@ -1636,7 +1645,7 @@ RETURN convertWriteNL(
 
    if( gmoGetEquTypeCnt(gmo, gmoequ_C) )
    {
-      fputs("Instance has conic equations, cannot write in .nl format so far.\n", stderr);
+      gevLogStatPChar(gmoEnvironment(gmo), "Error: Instance has conic equations, cannot write in .nl format.\n");
       return RETURN_ERROR;
    }
 
@@ -1646,14 +1655,16 @@ RETURN convertWriteNL(
        * but AMPL reformulates this with a new binary var and constraints
        * lets not do this in the nl writer
        */
-      fputs("Instance has semi-continuous or semi-integer variables, cannot write in .nl format.\n", stderr);
+      gevLogStatPChar(gmoEnvironment(gmo), "Error: Instance has semi-continuous or semi-integer variables, cannot write in .nl format.\n");
       return RETURN_ERROR;
    }
 
    writeopts.f = fopen(writeopts.filename, "wb");
    if( writeopts.f == NULL )
    {
-      fprintf(stderr, "Could not open file %s for writing.\n", writeopts.filename);
+      char buf[100];
+      sprintf(buf, "Could not open file %s for writing.\n", writeopts.filename);
+      gevLogStatPChar(gmoEnvironment(gmo), buf);
       return RETURN_ERROR;
    }
 
@@ -1721,7 +1732,6 @@ RETURN convertReadAmplSol(
    sol = fopen(filename, "rb");
    if( sol == NULL )
    {
-      fprintf(stderr, "%s\n", filename);
       gevLogStatPChar(gev, "No AMPL solution file found.\n");
       return RETURN_ERROR;
    }
