@@ -14,6 +14,7 @@
 #include <libgen.h>
 #include <unistd.h>
 /*#include <sys/wait.h>*/
+#include <signal.h>
 #else
 #include <io.h>
 #define F_OK 0
@@ -196,7 +197,7 @@ void writeNL(
    if( convertWriteNL(as->gmo, writeopts) == RETURN_ERROR )
    {
       gmoSolveStatSet(as->gmo, gmoSolveStat_Capability);
-      gmoModelStatSet(as->gmo, gmoModelStat_ErrorNoSolution);
+      gmoModelStatSet(as->gmo, gmoModelStat_NoSolutionReturned);
    }
 }
 
@@ -266,6 +267,9 @@ int runSolver(
    char command[2*GMS_SSSIZE + 100];
    char buf[GMS_SSSIZE];
    FILE* stream;
+#ifndef _WIN32
+   void (*origsigint)(int);
+#endif
 
    as->filename[as->stublen] = '\0';  /* pass filename without .nl extension */
 
@@ -281,6 +285,13 @@ int runSolver(
       return 1;
    }
 
+#ifndef _WIN32
+   /* ignore Ctrl+C handling
+    * the solver hopefully installs its own handler for SIGINT and the child process stops gracefully
+    */
+   origsigint = signal(SIGINT, SIG_IGN);
+#endif
+
    stream = popen(command, "r");
    if( stream == NULL )
    {
@@ -294,6 +305,12 @@ int runSolver(
    pclose(stream);
 
    gevLogPChar(as->gev, "\n");
+
+#ifndef _WIN32
+   /* restore original handler for SIGINT */
+   if( origsigint != SIG_ERR )
+      signal(SIGINT, origsigint);
+#endif
 
    return 0;
 }
@@ -398,28 +415,28 @@ DllExport int STDCALL ampCallSolver(
    gmoSolveStatSet(as->gmo, gmoSolveStat_SystemErr);
 
    if( processOptions(as) )
-      return 0;
+      goto TERMINATE;
 
    writeNL(as);
-
    if( gmoSolveStat(as->gmo) == gmoSolveStat_Capability )
-      return 0;
+      goto TERMINATE;
 
    gevTimeSetStart(as->gev);
 
    if( runSolver(as) )
-      return 0;
+      goto TERMINATE;
 
    gmoSetHeadnTail(as->gmo, gmoHresused, gevTimeDiffStart(as->gev));
 
    strcpy(as->filename + as->stublen, ".sol");
    convertReadAmplSol(as->gmo, as->filename);
 
+ TERMINATE:
    /* remove temporary files */
    if( !gevGetIntOpt(as->gev, gevKeep) )
    {
       strcpy(as->filename + as->stublen, ".nl");
-      if( remove(as->filename) != 0 )
+      if( access(as->filename, F_OK) == 0 && remove(as->filename) != 0 )
          fprintf(stderr, "Could not remove temporary file %s\n", as->filename);
 
       strcpy(as->filename + as->stublen, ".sol");
