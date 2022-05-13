@@ -1817,7 +1817,7 @@ RETURN convertReadAmplSol(
        * the length (len) here includes the integers for the number of options, options, and
        * constraint/variable numbers; there are between 3 and 9 options
        */
-      if( len < 7 + 4*sizeof(int) + 4*sizeof(int) || len > 7 + 10*sizeof(int) + 4*sizeof(int) )
+      if( len < 7 + 4*(int)sizeof(int) + 4*(int)sizeof(int) || len > 7 + 10*(int)sizeof(int) + 4*(int)sizeof(int) )
       {
          gevLogStatPChar(gev, "Error: Options section too short or long\n");
          goto TERMINATE;
@@ -1870,7 +1870,7 @@ RETURN convertReadAmplSol(
       gevLogStatPChar(gev, "Warning: Incomplete primal solution in AMPL solver solution file. Ignoring.\n");
 
    /* the length of the duals array seems to be given next (also if no duals are provided) */
-   if( binary && (fread(&len, sizeof(int), 1, sol) == 0 || len != ndual*sizeof(double)) )
+   if( binary && (fread(&len, sizeof(int), 1, sol) == 0 || len != ndual*(int)sizeof(double)) )
    {
       gevLogStatPChar(gev, "Error: Length of marginals array different than advertised.\n");
       goto TERMINATE;
@@ -1896,7 +1896,7 @@ RETURN convertReadAmplSol(
       }
       else
       {
-         if( fread(pi, sizeof(double), nconss, sol) < ndual )
+         if( (int)fread(pi, sizeof(double), nconss, sol) < ndual )
          {
             gevLogStatPChar(gev, "Error: Less marginal values than advertised.\n");
             goto TERMINATE;
@@ -1916,7 +1916,7 @@ RETURN convertReadAmplSol(
    }
 
    /* the length of the primals array seems to be given next (also if no primals are provided) */
-   if( binary && (fread(&len, sizeof(int), 1, sol) == 0 || len != nprimal*sizeof(double)) )
+   if( binary && (fread(&len, sizeof(int), 1, sol) == 0 || len != nprimal*(int)sizeof(double)) )
    {
       gevLogStatPChar(gev, "Error: Length of primals array different than advertised.\n");
       goto TERMINATE;
@@ -1942,7 +1942,7 @@ RETURN convertReadAmplSol(
       }
       else
       {
-         if( fread(x, sizeof(double), nvars, sol) < nvars )
+         if( (int)fread(x, sizeof(double), nvars, sol) < nvars )
          {
             gevLogStatPChar(gev, "Error: Less primal values than advertised.\n");
             goto TERMINATE;
