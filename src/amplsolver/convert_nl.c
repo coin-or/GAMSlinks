@@ -1635,6 +1635,7 @@ RETURN convertWriteNL(
    convertWriteNLopts writeopts
 )
 {
+   int rc = RETURN_ERROR;
    int* varperm = NULL;
    int* equperm = NULL;
 
@@ -1668,33 +1669,45 @@ RETURN convertWriteNL(
       return RETURN_ERROR;
    }
 
-   CHECK( writeNLHeader(gmo, writeopts, &varperm, &equperm) );
+   if( writeNLHeader(gmo, writeopts, &varperm, &equperm) != RETURN_OK )
+      goto TERMINATE;
 
    gmoSetRvVarPermutation(gmo, varperm, gmoN(gmo));
    gmoSetRvEquPermutation(gmo, equperm, gmoM(gmo));
 
-   CHECK( writeNLSOS(gmo, writeopts) );  /* S segment */
+   if( writeNLSOS(gmo, writeopts) != RETURN_OK )  /* S segment */
+      goto TERMINATE;
 
-   CHECK( writeNLVarBounds(gmo, writeopts) );  /* b segment */
+   if( writeNLVarBounds(gmo, writeopts) != RETURN_OK )  /* b segment */
+      goto TERMINATE;
 
-   CHECK( writeNLInitialPoint(gmo, writeopts) );  /* x segment*/
+   if( writeNLInitialPoint(gmo, writeopts) != RETURN_OK )  /* x segment*/
+      goto TERMINATE;
 
-   CHECK( writeNLConsSides(gmo, writeopts) );  /* r segment */
+   if( writeNLConsSides(gmo, writeopts) != RETURN_OK )  /* r segment */
+      goto TERMINATE;
 
-   CHECK( writeNLExprs(gmo, writeopts) );  /* C and O segments */
+   if( writeNLExprs(gmo, writeopts) != RETURN_OK )  /* C and O segments */
+      goto TERMINATE;
 
-   CHECK( writeNLJacobianSparsity(gmo, writeopts) );  /* k segment */
+   if( writeNLJacobianSparsity(gmo, writeopts) != RETURN_OK )  /* k segment */
+      goto TERMINATE;
 
-   CHECK( writeNLLinearCoefs(gmo, writeopts) );  /* J and G segments */
+   if( writeNLLinearCoefs(gmo, writeopts) != RETURN_OK )  /* J and G segments */
+      goto TERMINATE;
 
+   if( writeNLNames(gmo, writeopts.filename) != RETURN_OK )  /* .row and .col files */
+      goto TERMINATE;
+
+   rc = RETURN_OK;
+
+ TERMINATE:
    fclose(writeopts.f);
-
-   CHECK( writeNLNames(gmo, writeopts.filename) );  /* .row and .col files */
 
    free(varperm);
    free(equperm);
 
-   return RETURN_OK;
+   return rc;
 }
 
 /** reads an AMPL solution file and stores solution in GMO */
