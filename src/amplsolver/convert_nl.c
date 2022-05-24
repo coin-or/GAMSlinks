@@ -1512,6 +1512,20 @@ RETURN writeNLJacobianSparsity(
    return RETURN_OK;
 }
 
+typedef struct {
+   int    idx;
+   double val;
+} linentry_t;
+
+static
+int linentriescompare(
+   const void* a,
+   const void* b
+   )
+{
+   return ((linentry_t*)a)->idx - ((linentry_t*)b)->idx;
+}
+
 /** write the J and G segments */
 static
 RETURN writeNLLinearCoefs(
@@ -1520,65 +1534,58 @@ RETURN writeNLLinearCoefs(
 )
 {
    char buf[GMS_SSSIZE];
+   int* colidx;
+   int* nlflag;
+   double* jacval;
    int nz;
-   int qnz;
    int nlnz;
    int i;
+   int j;
 
-   /* note that we do not write (varindex,coef) in increasing order here, due to variable permutations */
+   colidx = (int*)malloc(gmoN(gmo) * sizeof(int));
+   nlflag = (int*)malloc(gmoN(gmo) * sizeof(int));
+   jacval = (double*)malloc(gmoN(gmo) * sizeof(double));
+   linentry_t* linentries = malloc(gmoN(gmo) * sizeof(linentry_t));
 
-   for( i = 0; i < gmoM(gmo); ++i )
+   for( i = 0; i <= gmoM(gmo); ++i )
    {
-      void* jacptr;
-      double jacval;
-      int colidx;
-      int nlflag;
+      if( i < gmoM(gmo) )
+      {
+         gmoGetRowSparse(gmo, i, colidx, jacval, nlflag, &nz, &nlnz);
 
-      gmoGetRowStat(gmo, i, &nz, &qnz, &nlnz);
-      CHECK( writeNLPrintf(writeopts, "J%d %d  #%s\n", i, nz, gmoDict(gmo) != NULL ? gmoGetEquNameOne(gmo, i, buf) : NULL) );
+         CHECK( writeNLPrintf(writeopts, "J%d %d  #%s\n", i, nz, gmoDict(gmo) != NULL ? gmoGetEquNameOne(gmo, i, buf) : NULL) );
+      }
+      else if( gmoModelType(gmo) != gmoProc_cns && gmoObjNZ(gmo) > 0 )
+      {
+         gmoGetObjSparse(gmo, colidx, jacval, nlflag, &nz, &nlnz);
+         assert(nz == gmoObjNZ(gmo));
+
+         CHECK( writeNLPrintf(writeopts, "G%d %d\n", 0, nz) );
+      }
+      else
+         continue;
+
       if( nz == 0 )
          continue;
 
-      jacptr = NULL;
-      do
+      /* ASL based solvers needs sorted entries */
+      for( j = 0; j < nz; ++j )
       {
-         gmoGetRowJacInfoOne(gmo, i, &jacptr, &jacval, &colidx, &nlflag);
-
-         /* entries from nonlinear terms are printed as 0 */
-         if( nlflag )
-            jacval = 0.0;
-         CHECK( writeNLPrintf(writeopts, "%d %g  #%s\n", colidx, jacval, gmoDict(gmo) != NULL ? gmoGetVarNameOne(gmo, colidx, buf) : "") );
+         linentries[j].idx = colidx[j];
+         linentries[j].val = nlflag[j] ? 0.0 : jacval[j];
       }
-      while( jacptr != NULL );
+      qsort(linentries, nz, sizeof(typeof(*linentries)), linentriescompare);
+
+      for( j = 0; j < nz; ++j )
+      {
+         CHECK( writeNLPrintf(writeopts, "%d %g  #%s\n", linentries[j].idx, linentries[j].val, gmoDict(gmo) != NULL ? gmoGetVarNameOne(gmo, linentries[j].idx, buf) : "") );
+      }
    }
 
-   if( gmoModelType(gmo) != gmoProc_cns && gmoObjNZ(gmo) > 0 )
-   {
-      int* colidx;
-      int* nlflag;
-      double* jacval;
-
-      CHECK( writeNLPrintf(writeopts, "G%d %d\n", 0, gmoObjNZ(gmo)) );
-
-      colidx = (int*) malloc(gmoObjNZ(gmo) * sizeof(int));
-      nlflag = (int*) malloc(gmoObjNZ(gmo) * sizeof(int));
-      jacval = (double*) malloc(gmoObjNZ(gmo) * sizeof(double));
-
-      gmoGetObjSparse(gmo, colidx, jacval, nlflag, &nz, &nlnz);
-      assert(nz == gmoObjNZ(gmo));
-
-      for( i = 0; i < nz; ++i )
-      {
-         /* entries from nonlinear terms are printed as 0 */
-         if( nlflag[i] )
-            jacval[i] = 0.0;
-         CHECK( writeNLPrintf(writeopts, "%d %g  #%s\n", colidx[i], jacval[i], gmoDict(gmo) != NULL ? gmoGetVarNameOne(gmo, colidx[i], buf) : "") );
-      }
-
-      free(jacval);
-      free(nlflag);
-      free(colidx);
-   }
+   free(linentries);
+   free(jacval);
+   free(nlflag);
+   free(colidx);
 
    return RETURN_OK;
 }
