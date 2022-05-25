@@ -1574,7 +1574,7 @@ RETURN writeNLLinearCoefs(
          linentries[j].idx = colidx[j];
          linentries[j].val = nlflag[j] ? 0.0 : jacval[j];
       }
-      qsort(linentries, nz, sizeof(typeof(*linentries)), linentriescompare);
+      qsort(linentries, nz, sizeof(linentry_t), linentriescompare);
 
       for( j = 0; j < nz; ++j )
       {
