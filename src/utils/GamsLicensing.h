@@ -61,6 +61,18 @@ bool GAMScheckSCIPLicense(
    bool               strict              /**< whether an SCIP license code or GAMS academic license needs to be available */
 );
 
+/** checks for GAMS/HIGHS license (academic GAMS license or commercial GAMS/HIGHS license)
+ *
+ * If strict is false, then also returns true if the problem specifications passed on to the GAMS licensing library
+ * fit into the demo limit.
+ *
+ * @return True if GAMS/HIGHS license was found, false otherwise
+ */
+bool GAMScheckHiGHSLicense(
+   struct palRec*     pal,                /**< GAMS audit and license object */
+   bool               strict              /**< whether an HIGHS license code or GAMS academic license needs to be available */
+);
+
 #ifdef __cplusplus
 }
 #endif

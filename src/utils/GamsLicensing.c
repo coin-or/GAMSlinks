@@ -85,3 +85,19 @@ bool GAMScheckSCIPLicense(
 
    return false;
 }
+
+bool GAMScheckHiGHSLicense(
+   struct palRec*     pal,                /**< GAMS audit and license object */
+   bool               strict              /**< whether a HiGHS license code or GAMS academic license needs to be available */
+)
+{
+   assert(pal != NULL);
+
+   if( !strict && !palLicenseSolverCheck(pal, (char*)"HI") )
+      return true;
+
+   if( palLicenseIsAcademic(pal) || !palLicenseCheckSubSys(pal, (char*)"HI") )
+      return true;
+
+   return false;
+}

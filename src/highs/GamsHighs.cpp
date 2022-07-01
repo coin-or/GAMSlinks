@@ -4,15 +4,24 @@
 //
 // Author: Stefan Vigerske
 
+/* TODO
+ * - cannot interrupt HiGHS, https://github.com/ERGO-Code/HiGHS/issues/903
+ * - ranging (HiGHS::getRanging())
+ */
 
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <climits>
 
 /* GAMS API */
 #include "gevmcc.h"
 #include "gmomcc.h"
+#include "palmcc.h"
+#ifdef GAMS_BUILD
+#include "GamsLicensing.h"
+#endif
 
 /* HiGHS API */
 #include "Highs.h"
@@ -101,6 +110,16 @@ int setupProblem(
 
    assert(gh != NULL);
    assert(gh->highs == NULL);
+
+#if GMOAPIVERSION >= 22
+   if( gmoNZ64(gh->gmo) > INT_MAX )
+   {
+      gevLogStat(gh->gev, "ERROR: Problems with more than 2^31 nonzeros not supported by HiGHS link.");
+      gmoSolveStatSet(gh->gmo, gmoSolveStat_Capability);
+      gmoModelStatSet(gh->gmo, gmoModelStat_NoSolutionReturned);
+      return 0;
+   }
+#endif
 
    gh->highs = new Highs();
    gh->highs->setLogCallback(gevlog, gh->gev);
@@ -200,20 +219,25 @@ int setupProblem(
       astart.data(), aindex.data(), avalue.data(),
       integrality.empty() ? NULL : integrality.data());
 
-   // gh->highs->writeModel("highs.lp");
-   // gh->highs->writeModel("highs.mps");
-
-   // pass initial solution
-   HighsSolution sol;
-   sol.col_value.resize(numCol);
-   sol.col_dual.resize(numCol);
-   sol.row_value.resize(numRow);
-   sol.row_dual.resize(numRow);
-   gmoGetVarL(gh->gmo, &sol.col_value[0]);
-   gmoGetVarM(gh->gmo, &sol.col_dual[0]);
-   gmoGetEquL(gh->gmo, &sol.row_value[0]);
-   gmoGetEquM(gh->gmo, &sol.row_dual[0]);
-   gh->highs->setSolution(sol);
+   //// pass initial solution, if no semicontinuous/integer variables present (the feascheck doesn't seem to handle these correctly)
+   //if( gmoGetVarTypeCnt(gh->gmo, gmovar_SC) == 0 && gmoGetVarTypeCnt(gh->gmo, gmovar_SI) == 0 )
+   // pass initial solution if LP; for MIP, HiGHS may report an infeas MIP as optimal if given a MIP start (https://github.com/ERGO-Code/HiGHS/issues/902)
+   if( gmoNDisc(gh->gmo) == 0 )
+   {
+      HighsSolution sol;
+      sol.col_value.resize(numCol);
+      sol.col_dual.resize(numCol);
+      sol.row_value.resize(numRow);
+      sol.row_dual.resize(numRow);
+      gmoGetVarL(gh->gmo, &sol.col_value[0]);
+      gmoGetVarM(gh->gmo, &sol.col_dual[0]);
+      if( gmoM(gh->gmo) )
+      {
+         gmoGetEquL(gh->gmo, &sol.row_value[0]);
+         gmoGetEquM(gh->gmo, &sol.row_dual[0]);
+      }
+      gh->highs->setSolution(sol);
+   }
 
    if( gmoHaveBasis(gh->gmo) )
    {
@@ -251,6 +275,8 @@ int setupOptions(
    gamshighs_t* gh
 )
 {
+   char buf[GMS_SSSIZE+50];
+
    assert(gh != NULL);
    assert(gh->highs != NULL);
 
@@ -258,6 +284,7 @@ int setupOptions(
 
    gh->highs->setOptionValue("time_limit", gevGetDblOpt(gh->gev, gevResLim));
    gh->highs->setOptionValue("simplex_iteration_limit", gevGetIntOpt(gh->gev, gevIterLim));
+   gh->highs->setOptionValue("ipm_iteration_limit", gevGetIntOpt(gh->gev, gevIterLim));
    if( gevGetIntOpt(gh->gev, gevUseCutOff) )
       gh->highs->setOptionValue("objective_bound", gevGetDblOpt(gh->gev, gevCutOff));
    if( gevGetIntOpt(gh->gev, gevNodeLim) > 0 )
@@ -265,12 +292,91 @@ int setupOptions(
    gh->highs->setOptionValue("mip_rel_gap", gevGetDblOpt(gh->gev, gevOptCR));
    gh->highs->setOptionValue("mip_abs_gap", gevGetDblOpt(gh->gev, gevOptCA));
    gh->highs->setOptionValue("threads", gevThreads(gh->gev));
+   if( gevGetIntOpt(gh->gev, gevLogOption) == 0 )
+      gh->highs->setOptionValue("output_flag", false);
 
    if( gmoOptFile(gh->gmo) > 0 )
    {
       char optfilename[GMS_SSSIZE];
       gmoNameOptFile(gh->gmo, optfilename);
       gh->highs->readOptions(optfilename);
+   }
+
+   // setting option "solver" on a MIP means that only the LP relax is solved (https://github.com/ERGO-Code/HiGHS/issues/904)
+   // that's not what we want
+   if( gmoNDisc(gh->gmo) > 0 )
+      gh->highs->setOptionValue("solver", "choose");
+
+   gevLogPChar(gh->gev, "Options set:\n");
+   for( OptionRecord* hopt : gh->highs->getOptions().records )
+   {
+      switch( hopt->type )
+      {
+         case HighsOptionType::kBool :
+         {
+            OptionRecordBool* opt = static_cast<OptionRecordBool*>(hopt);
+            assert(opt->value != NULL);
+            if( opt->default_value == *opt->value )
+               continue;
+            sprintf(buf, "  %-20s = %s\n", opt->name.c_str(), *opt->value ? "true" : "false");
+            gevLogPChar(gh->gev, buf);
+            break;
+         }
+
+         case HighsOptionType::kInt :
+         {
+            OptionRecordInt* opt = static_cast<OptionRecordInt*>(hopt);
+            assert(opt->value != NULL);
+            if( opt->default_value == *opt->value )
+               continue;
+            sprintf(buf, "  %-20s = %d\n", opt->name.c_str(), *opt->value);
+            gevLogPChar(gh->gev, buf);
+            break;
+         }
+
+         case HighsOptionType::kDouble :
+         {
+            OptionRecordDouble* opt = static_cast<OptionRecordDouble*>(hopt);
+            assert(opt->value != NULL);
+            if( opt->default_value == *opt->value )
+               continue;
+            sprintf(buf, "  %-20s = %g\n", opt->name.c_str(), *opt->value);
+            gevLogPChar(gh->gev, buf);
+            break;
+         }
+
+         case HighsOptionType::kString :
+         {
+            OptionRecordString* opt = static_cast<OptionRecordString*>(hopt);
+            assert(opt->value != NULL);
+            if( opt->default_value == *opt->value )
+               continue;
+            sprintf(buf, "  %-20s = %s\n", opt->name.c_str(), opt->value->c_str());
+            gevLogPChar(gh->gev, buf);
+            break;
+         }
+      }
+   }
+
+   // write problem to file, if requested
+   bool writemodel;
+   gh->highs->getOptionValue("write_model_to_file", writemodel);
+   if( writemodel )
+   {
+      std::string modelfile;
+
+      gh->highs->getOptionValue("write_model_file", modelfile);
+      if( modelfile.empty() )
+      {
+         // if no filename specified, make up one from inputname
+         gmoNameInput(gh->gmo, buf);
+         modelfile = buf;
+         modelfile += ".lp";
+      }
+      sprintf(buf, "Writing model instance to %s.\n", modelfile.c_str());
+      gevLogPChar(gh->gev, buf);
+
+      gh->highs->writeModel(modelfile);
    }
 
    return 0;
@@ -313,8 +419,11 @@ int processSolve(
          break;
 
       case HighsModelStatus::kOptimal:
-         // TODO change to integer if MIP and gap
-         gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
+         gmoSetHeadnTail(gmo, gmoHobjval, highs->getInfo().objective_function_value);  // so we can get a gap next
+         if( gmoNDisc(gmo) == 0 || (gmoGetRelativeGap(gmo) <= 2e-9 || gmoGetAbsoluteGap(gmo) <= 1.1e-9) )
+            gmoModelStatSet(gmo, gmoModelStat_OptimalGlobal);
+         else
+            gmoModelStatSet(gmo, gmoModelStat_Integer);
          gmoSolveStatSet(gmo, gmoSolveStat_Normal);
          break;
 
@@ -341,7 +450,7 @@ int processSolve(
          break;
 
       case HighsModelStatus::kIterationLimit:
-         // TODO may also mean node limit
+         // may also mean node limit
          gmoModelStatSet(gmo, sol.value_valid ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
          gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
          break;
@@ -400,6 +509,35 @@ int processSolve(
       gmoCompleteSolution(gmo);
    }
 
+   // write solution to extra file, if requested
+   if( sol.value_valid )
+   {
+      bool writesol;
+      gh->highs->getOptionValue("write_solution_to_file", writesol);
+      if( writesol )
+      {
+         char buf[GMS_SSSIZE+50];
+         std::string solfile;
+         HighsInt solstyle;
+
+         gh->highs->getOptionValue("solution_file", solfile);
+         if( solfile.empty() )
+         {
+            // if no filename specified, make up one from inputname
+            gmoNameInput(gh->gmo, buf);
+            solfile = buf;
+            solfile += ".sol";
+         }
+
+         gh->highs->getOptionValue("write_solution_style", solstyle);
+
+         sprintf(buf, "Writing solution to %s using style %d.\n", solfile.c_str(), solstyle);
+         gevLogPChar(gh->gev, buf);
+
+         gh->highs->writeSolution(solfile, solstyle);
+      }
+   }
+
    return 0;
 }
 
@@ -414,12 +552,14 @@ void hisInitialize(void)
 {
    gmoInitMutexes();
    gevInitMutexes();
+   palInitMutexes();
 }
 
 void hisFinalize(void)
 {
    gmoFiniMutexes();
    gevFiniMutexes();
+   palFiniMutexes();
 }
 
 DllExport int STDCALL hisCreate(
@@ -435,6 +575,15 @@ DllExport int STDCALL hisCreate(
    *Cptr = calloc(1, sizeof(gamshighs_t));
 
    msgBuf[0] = 0;
+
+   if( !gmoGetReady(msgBuf, msgBufLen) )
+      return 1;
+
+   if( !gevGetReady(msgBuf, msgBufLen) )
+      return 1;
+
+   if( !palGetReady(msgBuf, msgBufLen) )
+      return 1;
 
    return 1;
 }
@@ -457,8 +606,8 @@ DllExport void STDCALL hisFree(
 
    gmoLibraryUnload();
    gevLibraryUnload();
+   palLibraryUnload();
 }
-
 
 DllExport int STDCALL hisReadyAPI(
    void*       Cptr,
@@ -466,19 +615,44 @@ DllExport int STDCALL hisReadyAPI(
 )
 {
    gamshighs_t* gh;
+   char buffer[GMS_SSSIZE];
+   char auditLine[GMS_SSSIZE];
+   int rc = 1;
 
    assert(Cptr != NULL);
    assert(Gptr != NULL);
 
-   char msg[256];
-   if( !gmoGetReady(msg, sizeof(msg)) )
-      return 1;
-   if( !gevGetReady(msg, sizeof(msg)) )
-      return 1;
-
    gh = (gamshighs_t*) Cptr;
    gh->gmo = Gptr;
    gh->gev = (gevHandle_t) gmoEnvironment(gh->gmo);
+
+   palHandle_t pal = NULL;
+   /* initialize auditing/licensing library */
+   if( !palCreate(&pal, buffer, sizeof(buffer)) )
+   {
+      gevLogStatPChar(gh->gev, "*** Could not create licensing object: ");
+      gevLogStat(gh->gev, buffer);
+      goto TERMINATE;
+   }
+
+   /* print GAMS audit line */
+   palSetSystemName(pal, "HIGHS");
+   sprintf(buffer, "\n%s\n", palGetAuditLine(pal, auditLine));
+   gevLog(gh->gev, buffer);
+   gevStatAudit(gh->gev, palGetAuditLine(pal,auditLine));
+
+#ifdef GAMS_BUILD
+   /* do some license check */
+   GAMSinitLicensing(gh->gmo, pal);
+   if( !GAMScheckHiGHSLicense(pal, false) )
+   {
+      gevLogStat(gh->gev, "*** No GAMS/HiGHS license available.");
+      gevLogStat(gh->gev, "*** Please contact sales@gams.com to activate HiGHS in your license file.");
+      gmoSolveStatSet(gh->gmo, gmoSolveStat_License);
+      gmoModelStatSet(gh->gmo, gmoModelStat_LicenseError);
+      return 1;
+   }
+#endif
 
    /* get the problem into a normal form */
    gmoObjStyleSet(gh->gmo, gmoObjType_Fun);
@@ -492,9 +666,15 @@ DllExport int STDCALL hisReadyAPI(
    gmoSolveStatSet(gh->gmo, gmoSolveStat_SystemErr);
 
    if( setupProblem(gh) )
-      return 1;
+      goto TERMINATE;
 
-   return 0;
+   rc = 0;
+
+TERMINATE:
+   if( pal != NULL )
+      palFree(&pal);
+
+   return rc;
 }
 
 DllExport int STDCALL hisCallSolver(
@@ -513,10 +693,11 @@ DllExport int STDCALL hisCallSolver(
       return 0;
 
    gevLogStatPChar(gh->gev, "HiGHS " XQUOTE(HIGHS_VERSION_MAJOR) "." XQUOTE(HIGHS_VERSION_MINOR) "." XQUOTE(HIGHS_VERSION_PATCH) " [" HIGHS_GITHASH "]\n");
+   gevLogStatPChar(gh->gev, "Copyright (c) ERGO-Code under MIT licence terms\n");
 
    /* get the problem into a normal form */
    gmoObjStyleSet(gh->gmo, gmoObjType_Fun);
-   gmoObjReformSet(gh->gmo, 1);
+   /* gmoObjReformSet(gh->gmo, 1); */
    gmoIndexBaseSet(gh->gmo, 0);
    // gmoSetNRowPerm(gh->gmo); /* hide =N= rows */
    gmoMinfSet(gh->gmo, -kHighsInf);
@@ -528,6 +709,7 @@ DllExport int STDCALL hisCallSolver(
    gevTimeSetStart(gh->gev);
 
    /* solve the problem */
+   gevLogPChar(gh->gev, "\n");
    status = gh->highs->run();
    if( status == HighsStatus::kError )
       return 1;
@@ -573,7 +755,7 @@ DllExport int STDCALL hisModifyProblem(
    HighsInt nz;
    HighsInt nlnz;
    gmoGetObjSparse(gh->gmo, colidx, array1, NULL, &nz, &nlnz);
-   assert(nlnz == gmoObjNZ(gh->gmo));
+   assert(nz == gmoObjNZ(gh->gmo));
    highs->changeColsCost(nz, colidx, array1);
 
    // update objective offset
@@ -582,7 +764,7 @@ DllExport int STDCALL hisModifyProblem(
    // update variable bounds
    gmoGetVarLower(gh->gmo, array1);
    gmoGetVarUpper(gh->gmo, array2);
-   highs->changeColsBounds(0, gmoN(gh->gmo), array1, array2);
+   highs->changeColsBounds(0, gmoN(gh->gmo)-1, array1, array2);
 
    // update constraint sides
    for( HighsInt i = 0; i < gmoM(gh->gmo); ++i )
@@ -619,7 +801,7 @@ DllExport int STDCALL hisModifyProblem(
 
    // update constraint matrix
    gmoGetJacUpdate(gh->gmo, rowidx, colidx, array1, &jacnz);
-   for( HighsInt i = 0; i < nz; ++i )
+   for( HighsInt i = 0; i < jacnz; ++i )
       highs->changeCoeff(rowidx[i], colidx[i], array1[i]);
 
    delete[] array2;
