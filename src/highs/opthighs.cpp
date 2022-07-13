@@ -38,6 +38,12 @@ int translateHighsInfinity(
 int main(int argc, char** argv)
 {
    HighsOptions highsopt;
+   bool dummy;
+
+   highsopt.records.push_back(
+      new OptionRecordBool("sensitivity",
+         "Whether to run sensitivity analysis after solving an LP with a simplex method",
+         false, &dummy, false) );
 
    GamsOptions gmsopt("HiGHS");
    gmsopt.setSeparator("=");

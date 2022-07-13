@@ -443,6 +443,23 @@ public:
       std::string(), refval)
    { }
 
+   /// constructor for string-type option with defaultdescr
+   GamsOption(
+      const std::string& name,
+      const std::string& shortdescr,
+      const std::string& longdescr,
+      const std::string& defaultval,
+      const std::string& defaultdescr,
+      int                refval = -2
+   )
+   : GamsOption(name, shortdescr, longdescr,
+      GamsOption::Type::STRING,
+      Value(defaultval), Value(), Value(),
+      true, true,
+      GamsOption::EnumVals(),
+      defaultdescr, refval)
+   { }
+
    /// constructor for enumerated string-type option
    GamsOption(
       const std::string& name,

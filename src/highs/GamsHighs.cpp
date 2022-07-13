@@ -4,16 +4,12 @@
 //
 // Author: Stefan Vigerske
 
-/* TODO
- * - cannot interrupt HiGHS, https://github.com/ERGO-Code/HiGHS/issues/903
- * - ranging (HiGHS::getRanging())
- */
-
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <climits>
+#include <cfloat>
 
 /* GAMS API */
 #include "gevmcc.h"
@@ -32,6 +28,9 @@ typedef struct
    gevHandle_t   gev;
 
    Highs*        highs;
+   bool          ranging;
+
+   bool          interrupted;
 } gamshighs_t;
 
 static
@@ -41,11 +40,21 @@ void gevlog(
    void*        msgcb_data
 )
 {
-   gevHandle_t gev = (gevHandle_t) msgcb_data;
+   gamshighs_t* gh = (gamshighs_t*) msgcb_data;
+   assert(gh != NULL);
+
+   if( gh->interrupted )
+   {
+      // replace "Time limit reached" in status string by "User interrupt"
+      char* timelim = strstr((char*)msg, "Time limit reached");
+      if( timelim != NULL )
+         memcpy(timelim, "User interrupt    ", sizeof("Time limit reached")-1);  // -1 to skip trailing \0
+   }
+
    if( type == HighsLogType::kInfo )
-      gevLogPChar(gev, msg);
+      gevLogPChar(gh->gev, msg);
    else
-      gevLogStatPChar(gev, msg);
+      gevLogStatPChar(gh->gev, msg);
 }
 
 static
@@ -122,7 +131,12 @@ int setupProblem(
 #endif
 
    gh->highs = new Highs();
-   gh->highs->setLogCallback(gevlog, gh->gev);
+   gh->highs->setLogCallback(gevlog, gh);
+
+   const_cast<HighsOptions&>(gh->highs->getOptions()).records.push_back(
+      new OptionRecordBool("sensitivity",
+         "Whether to run sensitivity analysis after solving an LP with a simplex method",
+         false, &gh->ranging, false) );
 
    numCol = gmoN(gh->gmo);
    numRow = gmoM(gh->gmo);
@@ -446,7 +460,10 @@ int processSolve(
 
       case HighsModelStatus::kTimeLimit:
          gmoModelStatSet(gmo, sol.value_valid ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
-         gmoSolveStatSet(gmo, gmoSolveStat_Resource);
+         if( gh->interrupted )
+            gmoSolveStatSet(gmo, gmoSolveStat_User);
+         else
+            gmoSolveStatSet(gmo, gmoSolveStat_Resource);
          break;
 
       case HighsModelStatus::kIterationLimit:
@@ -539,6 +556,252 @@ int processSolve(
    }
 
    return 0;
+}
+
+#if 0  // in this one, output closely follows writeRangingFile() in HighsRanging.cpp
+static
+void doRanging(
+   gamshighs_t* gh
+)
+{
+   char buffer[2*GMS_SSSIZE];
+   char name[GMS_SSSIZE] = "n/a";
+
+   if( !gh->ranging )
+      return;
+
+   if( !gh->highs->getBasis().valid )
+   {
+      gevLogStat(gh->gev, "No basis available. Cannot do sensitivity analysis.\n");
+      return;
+   }
+
+   HighsRanging ranging;
+   if( gh->highs->getRanging(ranging) != HighsStatus::kOk )
+      return;
+
+   if( !ranging.valid )
+      return;
+
+   double* objcoefs = new double[gmoN(gh->gmo)];
+   gmoGetObjVector(gh->gmo, objcoefs, NULL);
+
+   gevStatCon(gh->gev);
+   gevStatPChar(gh->gev, "\nSensitivity analysis results:\n");
+
+   gevStatPChar(gh->gev, "\n                                 Objective coefficients ranging\n");
+   gevStatPChar(gh->gev, "Column Status  DownObj    Down                  Value                 Up         UpObj      Name\n");
+   for( HighsInt iCol = 0; iCol < gmoN(gh->gmo); ++iCol )
+   {
+      if( gmoDict(gh->gmo) != NULL )
+         gmoGetVarNameOne(gh->gmo, iCol, name);
+      std::string statstr = statusToString(translateBasisStatus((enum gmoVarEquBasisStatus) gmoGetVarStatOne(gh->gmo, iCol)), gmoGetVarLowerOne(gh->gmo, iCol), gmoGetVarUpperOne(gh->gmo, iCol));
+      sprintf(buffer, "%6d   %4s  %-10.4g %-10.4g            %-10.4g            %-10.4g %-10.4g %-s\n", (int)iCol,
+         statstr.c_str(),
+         ranging.col_cost_dn.objective_[iCol],
+         ranging.col_cost_dn.value_[iCol],
+         objcoefs[iCol],
+         ranging.col_cost_up.value_[iCol],
+         ranging.col_cost_up.objective_[iCol], name);
+      gevStatPChar(gh->gev, buffer);
+   }
+   delete[] objcoefs;
+
+   gevStatPChar(gh->gev, "\n                                      Variable bounds ranging\n");
+   gevStatPChar(gh->gev, "Column Status  DownObj    Down       Lower      Value      Upper      Up         UpObj      Name\n");
+   for( HighsInt iCol = 0; iCol < gmoN(gh->gmo); ++iCol )
+   {
+      if( gmoDict(gh->gmo) != NULL )
+         gmoGetVarNameOne(gh->gmo, iCol, name);
+      std::string statstr = statusToString(translateBasisStatus((enum gmoVarEquBasisStatus) gmoGetVarStatOne(gh->gmo, iCol)), gmoGetVarLowerOne(gh->gmo, iCol), gmoGetVarUpperOne(gh->gmo, iCol));
+      sprintf(buffer, "%6d   %4s  %-10.4g %-10.4g %-10.4g %-10.4g %-10.4g %-10.4g %-10.4g %-s\n", (int)iCol,
+         statstr.c_str(),
+         ranging.col_bound_dn.objective_[iCol],
+         ranging.col_bound_dn.value_[iCol],
+         gmoGetVarLowerOne(gh->gmo, iCol), gmoGetVarLOne(gh->gmo, iCol), gmoGetVarUpperOne(gh->gmo, iCol),
+         ranging.col_bound_up.value_[iCol],
+         ranging.col_bound_up.objective_[iCol], name);
+      gevStatPChar(gh->gev, buffer);
+   }
+
+   gevStatPChar(gh->gev, "\n                                      Equation sides ranging\n");
+   gevStatPChar(gh->gev, "   Row Status  DownObj    Down       Lower      Value      Upper      Up         UpObj      Name\n");
+   for( HighsInt iRow = 0; iRow < gmoM(gh->gmo); ++iRow )
+   {
+      if( gmoDict(gh->gmo) != NULL )
+         gmoGetEquNameOne(gh->gmo, iRow, name);
+
+      double lhs, rhs;
+      switch( gmoGetEquTypeOne(gh->gmo, iRow) )
+      {
+         case gmoequ_E:
+            lhs = rhs = gmoGetRhsOne(gh->gmo, iRow);
+            break;
+
+         case gmoequ_G:
+            lhs = gmoGetRhsOne(gh->gmo, iRow);
+            rhs = kHighsInf;
+            break;
+
+         case gmoequ_L:
+            lhs = -kHighsInf;
+            rhs = gmoGetRhsOne(gh->gmo, iRow);
+            break;
+
+         default:
+            return;
+      }
+      std::string statstr = statusToString(translateBasisStatus((enum gmoVarEquBasisStatus) gmoGetEquStatOne(gh->gmo, iRow)), 0.0, gmoGetEquTypeOne(gh->gmo, iRow) == gmoequ_E ? 0.0 : 1.0);
+
+      sprintf(buffer, "%6d   %4s  %-10.4g %-10.4g %-10.4g %-10.4g %-10.4g %-10.4g %-10.4g %-s\n", (int)iRow,
+         statstr.c_str(),
+         ranging.row_bound_dn.objective_[iRow],
+         ranging.row_bound_dn.value_[iRow],
+         lhs, gmoGetEquLOne(gh->gmo, iRow), rhs,
+         ranging.row_bound_up.value_[iRow],
+         ranging.row_bound_up.objective_[iRow], name);
+      gevStatPChar(gh->gev, buffer);
+   }
+
+   gevStatCoff(gh->gev);
+   gevLogPChar(gh->gev, "Sensitivity analysis printed to listing file.\n");
+}
+#endif
+
+// printing closely follows GAMS/CPLEX output to listing file
+static
+void doRanging(
+   gamshighs_t* gh
+)
+{
+   char buffer[2*GMS_SSSIZE];
+   char name[GMS_SSSIZE];
+
+   if( !gh->ranging )
+      return;
+
+   if( !gh->highs->getBasis().valid )
+   {
+      gevLogStat(gh->gev, "No basis available. Cannot do sensitivity analysis.\n");
+      return;
+   }
+
+   HighsRanging ranging;
+   if( gh->highs->getRanging(ranging) != HighsStatus::kOk )
+   {
+      gevLogStat(gh->gev, "Sensitivity analysis failed.\n");
+      return;
+   }
+
+   if( !ranging.valid )
+   {
+      gevLogStat(gh->gev, "Sensitivity analysis did not return valid results.\n");
+      return;
+   }
+
+   gevStatCon(gh->gev);
+   gevStatPChar(gh->gev, "\nSensitivity analysis results:\n");
+
+   gevStatPChar(gh->gev, "\nRight-hand-side ranging:\n");
+   gevStatPChar(gh->gev, "EQUATION NAME                            LOWER           CURRENT             UPPER\n");
+   gevStatPChar(gh->gev, "-------------                            -----           -------             -----\n");
+   for( HighsInt iRow = 0; iRow < gmoM(gh->gmo); ++iRow )
+   {
+      if( gmoDict(gh->gmo) != NULL )
+         gmoGetEquNameOne(gh->gmo, iRow, name);
+      else
+         sprintf(name, "n/a (index: %d)", iRow);
+
+      sprintf(buffer, "%-28s %17g %17g %17g\n", name,
+         ranging.row_bound_dn.value_[iRow],
+         gmoGetRhsOne(gh->gmo, iRow),
+         ranging.row_bound_up.value_[iRow]);
+      gevStatPChar(gh->gev, buffer);
+   }
+
+   gevStatPChar(gh->gev, "\nLower bound ranging:\n");
+   gevStatPChar(gh->gev, "VARIABLE NAME                            LOWER           CURRENT             UPPER\n");
+   gevStatPChar(gh->gev, "-------------                            -----           -------             -----\n");
+   for( HighsInt iCol = 0; iCol < gmoN(gh->gmo); ++iCol )
+   {
+      if( gmoDict(gh->gmo) != NULL )
+         gmoGetVarNameOne(gh->gmo, iCol, name);
+      else
+         sprintf(name, "n/a (index: %d)", iCol);
+
+      if( (enum gmoVarEquBasisStatus) gmoGetVarStatOne(gh->gmo, iCol) == gmoBstat_Lower )
+      {
+         // if variable is at lower bound, then we have ranging info for the lower bound
+         sprintf(buffer, "%-28s %17g %17g %17g\n", name,
+            ranging.col_bound_dn.value_[iCol],
+            gmoGetVarLowerOne(gh->gmo, iCol),
+            ranging.col_bound_up.value_[iCol]);
+      }
+      else
+      {
+         // if variable is not at lower bound, then the lower bound can be decreased until -inf
+         // and it can be increased until its current value (maybe more, but I don't think that we get this value from HiGHS)
+         sprintf(buffer, "%-28s %17g %17g %17g\n", name,
+            -std::numeric_limits<double>::infinity(),
+            gmoGetVarLowerOne(gh->gmo, iCol),
+            gmoGetVarLOne(gh->gmo, iCol));
+      }
+      gevStatPChar(gh->gev, buffer);
+   }
+
+   gevStatPChar(gh->gev, "\nUpper bound ranging:\n");
+   gevStatPChar(gh->gev, "VARIABLE NAME                            LOWER           CURRENT             UPPER\n");
+   gevStatPChar(gh->gev, "-------------                            -----           -------             -----\n");
+   for( HighsInt iCol = 0; iCol < gmoN(gh->gmo); ++iCol )
+   {
+      if( gmoDict(gh->gmo) != NULL )
+         gmoGetVarNameOne(gh->gmo, iCol, name);
+      else
+         sprintf(name, "n/a (index: %d)", iCol);
+
+      if( (enum gmoVarEquBasisStatus) gmoGetVarStatOne(gh->gmo, iCol) == gmoBstat_Upper )
+      {
+         // if variable is at upper bound, then we have ranging info for the upper bound
+         sprintf(buffer, "%-28s %17g %17g %17g\n", name,
+            ranging.col_bound_dn.value_[iCol],
+            gmoGetVarUpperOne(gh->gmo, iCol),
+            ranging.col_bound_up.value_[iCol]);
+      }
+      else
+      {
+         // if variable is not at upper bound, then the upper bound can be increased until +inf
+         // and it can be decreased until its current value (maybe more, but I don't think that we get this value from HiGHS)
+         sprintf(buffer, "%-28s %17g %17g %17g\n", name,
+            gmoGetVarLOne(gh->gmo, iCol),
+            gmoGetVarUpperOne(gh->gmo, iCol),
+            std::numeric_limits<double>::infinity());
+      }
+      gevStatPChar(gh->gev, buffer);
+   }
+
+   double* objcoefs = new double[gmoN(gh->gmo)];
+   gmoGetObjVector(gh->gmo, objcoefs, NULL);
+
+   gevStatPChar(gh->gev, "\nObjective ranging:\n");
+   gevStatPChar(gh->gev, "VARIABLE NAME                            LOWER           CURRENT             UPPER\n");
+   gevStatPChar(gh->gev, "-------------                            -----           -------             -----\n");
+   for( HighsInt iCol = 0; iCol < gmoN(gh->gmo); ++iCol )
+   {
+      if( gmoDict(gh->gmo) != NULL )
+         gmoGetVarNameOne(gh->gmo, iCol, name);
+      else
+         sprintf(name, "n/a (index: %d)", iCol);
+
+      sprintf(buffer, "%-28s %17g %17g %17g\n", name,
+         ranging.col_cost_dn.value_[iCol],
+         objcoefs[iCol],
+         ranging.col_cost_up.value_[iCol]);
+      gevStatPChar(gh->gev, buffer);
+   }
+   delete[] objcoefs;
+
+   gevStatCoff(gh->gev);
+   gevLogPChar(gh->gev, "Sensitivity analysis printed to listing file.\n");
 }
 
 #define GAMSSOLVER_ID his
@@ -677,6 +940,22 @@ TERMINATE:
    return rc;
 }
 
+static thread_local gamshighs_t* gh_terminate = NULL;
+static
+void interruptHighs(void)
+{
+   assert(gh_terminate != NULL);
+
+   // there is no proper functionality to interrupt HiGHS and it isn't coming soon (https://github.com/ERGO-Code/HiGHS/issues/903)
+   // so we reset the timelimit instead
+
+   if( gh_terminate->interrupted ) // somehow we are called twice
+      return;
+
+   gh_terminate->highs->setOptionValue("time_limit", DBL_MIN);
+   gh_terminate->interrupted = true;
+}
+
 DllExport int STDCALL hisCallSolver(
    void* Cptr
 )
@@ -706,6 +985,10 @@ DllExport int STDCALL hisCallSolver(
    if( setupOptions(gh) )
       return 1;
 
+   gh_terminate = gh;
+   gh->interrupted = false;
+   gevTerminateSet(gh->gev, NULL, (void*)interruptHighs);
+
    gevTimeSetStart(gh->gev);
 
    /* solve the problem */
@@ -717,6 +1000,8 @@ DllExport int STDCALL hisCallSolver(
    /* pass solution, status, etc back to GMO */
    if( processSolve(gh) )
       return 1;
+
+   doRanging(gh);
 
    return 0;
 }

@@ -1082,10 +1082,14 @@ void GamsOptions::writeDoxygen(
          continue;
 
       f << std::endl;
-      f << "\\subsection ";
 
-      f << toupper(solver) << "_gr_" << formatID(group.second.name);
-      f << ' ' << group.second.shortdescr << std::endl << std::endl;
+      if( groups_by_printpos.size() > 1 )
+      {
+         f << "\\subsection ";
+
+         f << toupper(solver) << "_gr_" << formatID(group.second.name);
+         f << ' ' << group.second.shortdescr << std::endl << std::endl;
+      }
 
       if( !group.second.longdescr.empty() )
          f << makeValidMarkdownString(group.second.longdescr) << std::endl << std::endl;
