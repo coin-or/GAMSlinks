@@ -1446,10 +1446,16 @@ SCIP_RETCODE makeExpr(
                case fnbinomial:
                case fnarccos:
                case fnarcsin: case fnarctan2 /* arctan(x2/x1) */:
-               default :
                {
                   SCIPdebugPrintf("nr. %d - unsupported. Error.\n", (int)func);
                   SCIPinfoMessage(scip, NULL, "Error: GAMS function %s not supported.\n", GamsFuncCodeName[func]);
+                  rc = SCIP_READERROR;
+                  goto TERMINATE;
+               }
+               default :
+               {
+                  SCIPdebugPrintf("nr. %d - unsupported. Error.\n", (int)func);
+                  SCIPinfoMessage(scip, NULL, "Error: new GAMS function %d not supported.\n", (int)func);
                   rc = SCIP_READERROR;
                   goto TERMINATE;
                }
@@ -1524,6 +1530,9 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
    int maxstage;
    SCIP_Bool havedecomp;
    int logiccount = 0;
+   SCIP_Real infbound;
+   SCIP_Bool haveinfbound;
+   int nboundschanged = 0;
    
    assert(scip != NULL);
    assert(gmo != NULL);
@@ -1548,6 +1557,9 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
    /* we want GMO to use SCIP's value for infinity */
    gmoPinfSet(gmo,  SCIPinfinity(scip));
    gmoMinfSet(gmo, -SCIPinfinity(scip));
+
+   SCIP_CALL( SCIPgetRealParam(scip, "gams/infbound", &infbound) );
+   haveinfbound = !SCIPisInfinity(scip, infbound);
 
    /* create SCIP problem */
    SCIP_CALL( SCIPallocMemory(scip, &probdata) );
@@ -1661,7 +1673,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
       switch( gmoGetVarTypeOne(gmo, i) )
       {
          case gmovar_SC:
-            lb = 0.0;
+            lb = 0.0;  /* TODO treat lb < 0 (but GAMS forbids this currently) */
             /* no break */
          case gmovar_X:
          case gmovar_S1:
@@ -1672,7 +1684,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
             vartype = SCIP_VARTYPE_BINARY;
             break;
          case gmovar_SI:
-            lb = 0.0;
+            lb = 0.0;  /* TODO treat lb < 0 (but GAMS forbids this currently) */
             /* no break */
          case gmovar_I:
             vartype = SCIP_VARTYPE_INTEGER;
@@ -1689,6 +1701,22 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
       }
       else
          sprintf(buffer, "x%d", i);
+
+      if( haveinfbound )
+      {
+         /* bound unbounded variable */
+         if( SCIPisInfinity(scip, -lb) )
+         {
+            lb = -infbound;
+            ++nboundschanged;
+         }
+         if( SCIPisInfinity(scip, ub) )
+         {
+            ub = infbound;
+            ++nboundschanged;
+         }
+      }
+
       SCIP_CALL( SCIPcreateVar(scip, &vars[i], buffer, lb, ub, coefs[i], vartype, TRUE, FALSE, NULL, NULL, NULL, NULL, NULL) );
       SCIP_CALL( SCIPaddVar(scip, vars[i]) );
       SCIPdebugMessage("added variable ");
@@ -1750,6 +1778,11 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
       }
    }
    
+   if( haveinfbound )
+   {
+      SCIPinfoMessage(scip, NULL, "\nChanged %d missing variable bounds to +/-%g\n", nboundschanged, infbound);
+   }
+
    SCIP_CALL( SCIPallocBufferArray(scip, &consvars, gmoN(gmo)+1) ); /* +1 if we have to transform the objective into a constraint */
 
    /* setup SOS constraints */
@@ -2747,6 +2780,10 @@ SCIP_RETCODE SCIPincludeReaderGmo(
    SCIP_CALL( SCIPaddStringParam(scip, "gams/indicatorfile",
       "name of GAMS options file that contains definitions on indicators",
       &readerdata->indicatorfile, FALSE, "", NULL, NULL) );
+
+   SCIP_CALL( SCIPaddRealParam(scip, "gams/infbound",
+      "value to use for variable bounds that are missing or exceed numerics/infinity",
+      NULL, FALSE, SCIP_REAL_MAX, 0.0, SCIP_REAL_MAX, NULL, NULL) );
 
    /* get parent dialog "write" */
    if( SCIPdialogFindEntry(SCIPgetRootDialog(scip), "write", &parentdialog) != 1 )
