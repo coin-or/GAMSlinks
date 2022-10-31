@@ -65,6 +65,9 @@ int main(int argc, char** argv)
       for( auto& opt : categ->RegisteredOptions() )
       {
          if( opt->Name() == "hessian_constant" ||
+            opt->Name() == "grad_f_constant" ||
+            opt->Name() == "jac_c_constant" ||
+            opt->Name() == "jac_d_constant" ||
             opt->Name() == "obj_scaling_factor" ||
             opt->Name() == "file_print_level" ||
             opt->Name() == "option_file_name" ||
@@ -76,7 +79,10 @@ int main(int argc, char** argv)
             opt->Name() == "num_linear_variables" ||
             opt->Name() == "skip_finalize_solution_call" ||
             opt->Name() == "warm_start_entire_iterate" ||
-            opt->Name() == "warm_start_same_structure"
+            opt->Name() == "warm_start_same_structure" ||
+            opt->Name() == "findiff_perturbation" ||
+            opt->Name() == "gradient_approximation" ||
+            opt->Name() == "jacobian_approximation"
          )
             continue;
 

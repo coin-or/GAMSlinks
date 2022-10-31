@@ -136,6 +136,10 @@ int GamsIpopt::readyAPI(
 
    palFree(&pal);
 
+   gmoObjStyleSet(gmo, gmoObjType_Fun);
+   gmoObjReformSet(gmo, 1);
+   gmoIndexBaseSet(gmo, 0);
+
    try
    {
       setupIpopt();
@@ -151,9 +155,39 @@ int GamsIpopt::readyAPI(
    if( gmoScaleOpt(gmo) )
       ipopt->Options()->SetStringValue("nlp_scaling_method", "none", true, true);
 
-   // if we have linear rows and a quadratic objective, then the hessian of the Lag.func. is constant, and Ipopt can make use of this
-   if( gmoNLM(gmo) == 0 && (gmoModelType(gmo) == gmoProc_qcp || gmoModelType(gmo) == gmoProc_rmiqcp) )
-      ipopt->Options()->SetStringValue("hessian_constant", "yes", true, true);
+   // if linear objective, then Ipopt can skip reevaluating the objective gradient
+   if( gmoObjNLNZ(gmo) == 0 )
+      ipopt->Options()->SetStringValue("grad_f_constant", "yes", true, true);
+   if( gmoNLM(gmo) == 0 )
+   {
+      // if linear constraints, then Ipopt can skip reevaluating the Jacobian
+      ipopt->Options()->SetStringValue("jac_c_constant", "yes", true, true);
+      ipopt->Options()->SetStringValue("jac_d_constant", "yes", true, true);
+      // if also quadratic objective, then Ipopt can skip reevaluating the Hessian, too
+      if( gmoModelType(gmo) == gmoProc_qcp || gmoModelType(gmo) == gmoProc_rmiqcp )
+         ipopt->Options()->SetStringValue("hessian_constant", "yes", true, true);
+   }
+   else
+   {
+      // there are nonlinear constraints, but lets see if maybe all equalities are linear or all inequalities are linear
+      bool jac_c_constant = true;
+      bool jac_d_constant = true;
+      int nz, qnz, nlnz;
+      for( int i = 0; i < gmoM(gmo) && (jac_c_constant || jac_d_constant); ++i )
+      {
+         gmoGetRowStat(gmo, i, &nz, &qnz, &nlnz);
+         if( nlnz == 0 )
+            continue;
+         if( gmoGetEquTypeOne(gmo, i) == gmoequ_E ) // nonlinear equality
+            jac_c_constant = false;
+         else
+            jac_d_constant = false;  // nonlinear inequality or free
+      }
+      if( jac_c_constant )
+         ipopt->Options()->SetStringValue("jac_c_constant", "yes", true, true);
+      if( jac_d_constant )
+         ipopt->Options()->SetStringValue("jac_d_constant", "yes", true, true);
+   }
    if( gmoSense(gmo) == gmoObj_Max )
       ipopt->Options()->SetNumericValue("obj_scaling_factor", -1.0, true, true);
 
