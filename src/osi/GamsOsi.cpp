@@ -783,8 +783,12 @@ bool GamsOsi::setupParameters()
          OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
          assert(osixpr != NULL);
 
+#if XPVERSION <= 40
          /* need to set XPRS_MAXTIME to a negative number to have it working also for LP solves and before the first solution is found in MIP solves */
          XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXTIME, -(int)reslim);
+#else
+         XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_TIMELIMIT, reslim);
+#endif
          if( !isLP() && nodelim > 0 )
             XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXNODE, nodelim);
          XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_MIPRELSTOP, optcr);
@@ -876,7 +880,11 @@ bool GamsOsi::setupCallbacks()
          XPRSsetcbcutlog(osixpr->getLpPtr(), xprcallback, (void*)gev);
          XPRSsetcblplog(osixpr->getLpPtr(), xprcallback, (void*)gev);
 #else
+#if XPVERSION <= 40
          XPRSaddcbgloballog(osixpr->getLpPtr(), xprcallback, (void*)gev, 0);
+#else
+         XPRSaddcbmiplog(osixpr->getLpPtr(), xprcallback, (void*)gev, 0);
+#endif
          XPRSaddcbcutlog(osixpr->getLpPtr(), xprcallback, (void*)gev, 0);
          XPRSaddcblplog(osixpr->getLpPtr(), xprcallback, (void*)gev, 0);
 #endif
@@ -900,7 +908,11 @@ bool GamsOsi::clearCallbacks()
       {
          OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
          assert(osixpr != NULL);
+#if XPVERSION <= 40
          XPRSremovecbgloballog(osixpr->getLpPtr(), xprcallback, (void*)gev);
+#else
+         XPRSremovecbmiplog(osixpr->getLpPtr(), xprcallback, (void*)gev);
+#endif
          XPRSremovecbcutlog(osixpr->getLpPtr(), xprcallback, (void*)gev);
          XPRSremovecblplog(osixpr->getLpPtr(), xprcallback, (void*)gev);
          break;
@@ -1831,7 +1843,11 @@ bool GamsOsi::solveFixed()
          {
             OsiXprSolverInterface* osixpr = dynamic_cast<OsiXprSolverInterface*>(osi);
             assert(osixpr != NULL);
+#if XPVERSION <= 40
             XPRSsetintcontrol(osixpr->getLpPtr(), XPRS_MAXTIME, -(int)gevGetDblOpt(gev, gevReal1));
+#else
+            XPRSsetdblcontrol(osixpr->getLpPtr(), XPRS_TIMELIMIT, gevGetDblOpt(gev, gevReal1));
+#endif
             break;
          }
 #endif
