@@ -134,6 +134,7 @@ typedef enum
    fnjobstatus,fnjobkill,fnjobterminate,
    fnnumcores,fnEmbeddedHandle,fnPlatformCode,
    fnLogit,
+   fnlsemax, fnlsemaxsc, fnlsemin, fnlseminsc,
    fndummy
 } GamsFuncCode;
 
@@ -179,6 +180,7 @@ static const char* GamsFuncCodeName[fndummy+1] =
    "jobstatus", "jobkill", "jobterminate",
    "numcores", "embeddedhandle", "platformcode",
    "logit",
+   "lsemax", "lsemaxsc", "lsemin", "lseminsc",
    "dummy"
 };
 
