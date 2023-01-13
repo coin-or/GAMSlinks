@@ -1179,7 +1179,6 @@ RETURN writeNLnlnodeEnter(
             case fnncpcm /* chen-mangasarian smoothing: x1-x3*ln(1+exp((x1-x2)/x3))*/:
             case fnncpvusin /* veelken-ulbrich smoothing */:
             case fnncpvupow /* veelken-ulbrich smoothing */:
-            default:
             {
                sprintf(buf, "Error: Unsupported GAMS function %s.\n", GamsFuncCodeName[n->func]);
                gevLogStatPChar(gmoEnvironment(gmo), buf);
@@ -1192,6 +1191,13 @@ RETURN writeNLnlnodeEnter(
             case fnpoly :
             {
                sprintf(buf, "Error: GAMS function %s should have been reformulated.\n", GamsFuncCodeName[n->func]);
+               gevLogStatPChar(gmoEnvironment(gmo), buf);
+               return RETURN_ERROR;
+            }
+
+            default:
+            {
+               sprintf(buf, "Error: Unsupported new GAMS function %d.\n", n->func);
                gevLogStatPChar(gmoEnvironment(gmo), buf);
                return RETURN_ERROR;
             }
