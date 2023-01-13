@@ -1663,6 +1663,12 @@ RETURN convertWriteNL(
       return RETURN_ERROR;
    }
 
+   if( gmoNRowMatch(gmo) > 0 )
+   {
+      gevLogStatPChar(gmoEnvironment(gmo), "Error: Instance has complementarity constraints, cannot write in .nl format so far.\n");
+      return RETURN_ERROR;
+   }
+
    if( gmoGetVarTypeCnt(gmo, gmovar_SC) || gmoGetVarTypeCnt(gmo, gmovar_SI) )
    {
       /* GAMS/Convert writes these into .mod files as {0} union interval[lb,ub]
