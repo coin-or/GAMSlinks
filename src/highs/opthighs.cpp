@@ -45,6 +45,11 @@ int main(int argc, char** argv)
          "Whether to run sensitivity analysis after solving an LP with a simplex method",
          false, &dummy, false) );
 
+   highsopt.records.push_back(
+      new OptionRecordBool("mipstart",
+         "Whether to pass initial level values as starting point to MIP solver",
+         false, &dummy, false) );
+
    GamsOptions gmsopt("HiGHS");
    gmsopt.setSeparator("=");
    gmsopt.setGroup("highs");
@@ -65,10 +70,16 @@ int main(int argc, char** argv)
          continue;
       if( hopt->name == "mps_parser_type_free" )
          continue;
+      if( hopt->name == "glpsol_cost_row_location" )
+         continue;
+      if( hopt->name == "solve_relaxation" )  // user could just change MIP to RMIP
+         continue;
 
       switch( hopt->type )
       {
          case HighsOptionType::kBool :
+         {
+            std::string longdescr;
             if( hopt->name == "allow_unbounded_or_infeasible" )
                hopt->description = "whether to spend extra effort to distinguish unboundedness and infeasibility if necessary";
             else if( hopt->name == "output_flag" )
@@ -77,11 +88,14 @@ int main(int argc, char** argv)
 #else
                defaultdescr = "0, if GAMS logoption = 0, otherwise 1";
 #endif
+            else if( hopt->name == "mipstart" )
+               longdescr = "If the solution is not feasible, HiGHS will solve the LP obtained from fixing all discrete variables to their initial level values.";
 
-            gmsopt.collect(hopt->name, hopt->description, std::string(),
+            gmsopt.collect(hopt->name, hopt->description, longdescr,
                static_cast<OptionRecordBool*>(hopt)->default_value,
                defaultdescr).advanced = hopt->advanced;
             break;
+         }
 
          case HighsOptionType::kInt :
          {
@@ -178,8 +192,8 @@ int main(int argc, char** argv)
                defaultdescr = "&lt;inputname&gt;.lp";
             else if( hopt->name == "solution_file" )
                defaultdescr = "&lt;inputname&gt;.sol";
-            else if( hopt->name == "solver" )
-               hopt->description += ", ignored for MIP";
+            else if( hopt->name == "solver" ) // for ignore option solver for MIP, since it switches to solving the LP relaxation
+               hopt->description = "LP algorithm to run: \"simplex\", \"choose\", or \"ipm\"; ignored for MIP";
 
             gmsopt.collect(hopt->name, hopt->description, std::string(),
                static_cast<OptionRecordString*>(hopt)->default_value,

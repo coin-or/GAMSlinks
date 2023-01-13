@@ -29,6 +29,7 @@ typedef struct
 
    Highs*        highs;
    bool          ranging;
+   bool          mipstart;
 
    bool          interrupted;
 } gamshighs_t;
@@ -138,6 +139,11 @@ int setupProblem(
          "Whether to run sensitivity analysis after solving an LP with a simplex method",
          false, &gh->ranging, false) );
 
+   const_cast<HighsOptions&>(gh->highs->getOptions()).records.push_back(
+      new OptionRecordBool("mipstart",
+         "Whether to pass initial level values as starting point to MIP solver",
+         false, &gh->mipstart, false) );
+
    numCol = gmoN(gh->gmo);
    numRow = gmoM(gh->gmo);
    numNz = gmoNZ(gh->gmo);
@@ -233,10 +239,11 @@ int setupProblem(
       astart.data(), aindex.data(), avalue.data(),
       integrality.empty() ? NULL : integrality.data());
 
-   //// pass initial solution, if no semicontinuous/integer variables present (the feascheck doesn't seem to handle these correctly)
-   //if( gmoGetVarTypeCnt(gh->gmo, gmovar_SC) == 0 && gmoGetVarTypeCnt(gh->gmo, gmovar_SI) == 0 )
-   // pass initial solution if LP; for MIP, HiGHS may report an infeas MIP as optimal if given a MIP start (https://github.com/ERGO-Code/HiGHS/issues/902)
-   if( gmoNDisc(gh->gmo) == 0 )
+   // pass initial solution, if LP and rows are present (work around segfault on lp11, https://github.com/ERGO-Code/HiGHS/issues/1072)
+   // for a MIP, we consider setting a starting point in setupOptions()
+   // so for an LP, the users starting point is set only once and not for every solve after a problem modification
+   // for a MIP, we pass the users starting point to each solve
+   if( gmoNDisc(gh->gmo) == 0 && numRow > 0 )
    {
       HighsSolution sol;
       sol.col_value.resize(numCol);
@@ -391,6 +398,24 @@ int setupOptions(
       gevLogPChar(gh->gev, buf);
 
       gh->highs->writeModel(modelfile);
+   }
+
+   // pass initial solution if mipstart set and MIP without semicontinuous/integer variables (workaround bug https://github.com/ERGO-Code/HiGHS/issues/1074)
+   if( gh->mipstart && gmoNDisc(gh->gmo) > 0 && gmoGetVarTypeCnt(gh->gmo, gmovar_SC) == 0 && gmoGetVarTypeCnt(gh->gmo, gmovar_SI) == 0 )
+   {
+      HighsSolution sol;
+      sol.col_value.resize(gmoN(gh->gmo));
+      sol.col_dual.resize(gmoN(gh->gmo));
+      sol.row_value.resize(gmoM(gh->gmo));
+      sol.row_dual.resize(gmoM(gh->gmo));
+      gmoGetVarL(gh->gmo, &sol.col_value[0]);
+      gmoGetVarM(gh->gmo, &sol.col_dual[0]);
+      if( gmoM(gh->gmo) )
+      {
+         gmoGetEquL(gh->gmo, &sol.row_value[0]);
+         gmoGetEquM(gh->gmo, &sol.row_dual[0]);
+      }
+      gh->highs->setSolution(sol);
    }
 
    return 0;
@@ -970,9 +995,6 @@ DllExport int STDCALL hisCallSolver(
    // if we detected in readyAPI that HiGHS cannot handle the problem, then do nothing */
    if( gmoSolveStat(gh->gmo) == gmoSolveStat_Capability )
       return 0;
-
-   gevLogStatPChar(gh->gev, "HiGHS " XQUOTE(HIGHS_VERSION_MAJOR) "." XQUOTE(HIGHS_VERSION_MINOR) "." XQUOTE(HIGHS_VERSION_PATCH) " [" HIGHS_GITHASH "]\n");
-   gevLogStatPChar(gh->gev, "Copyright (c) ERGO-Code under MIT licence terms\n");
 
    /* get the problem into a normal form */
    gmoObjStyleSet(gh->gmo, gmoObjType_Fun);
