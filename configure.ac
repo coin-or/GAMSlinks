@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2011 GAMS Development and others
+# Copyright (C) GAMS Development and others
 # All Rights Reserved.
 # This file is distributed under the Eclipse Public License.
 #
@@ -10,7 +10,7 @@
 
 AC_INIT([GAMSlinks],[master],[https://github.com/coin-or/GAMSlinks])
 
-AC_COPYRIGHT([Copyright (C) 2006-2011 GAMS Development and others 
+AC_COPYRIGHT([Copyright (C) GAMS Development and others 
 All Rights Reserved.
 This file is part of the open source package GAMSlinks which is distributed
 under the Eclipse Public License.])

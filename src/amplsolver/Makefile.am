@@ -1,4 +1,4 @@
-# Copyright (C) GAMS Development and others 2022
+# Copyright (C) GAMS Development and others
 # All Rights Reserved.
 # This file is distributed under the Eclipse Public License.
 #

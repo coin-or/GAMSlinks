@@ -1,4 +1,4 @@
-// Copyright (C) GAMS Development and others 2009-2012
+// Copyright (C) GAMS Development and others
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //

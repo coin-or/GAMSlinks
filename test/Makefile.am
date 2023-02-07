@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2011 GAMS Development and others
+# Copyright (C) GAMS Development and others
 # All Rights Reserved.
 # This file is distributed under the Eclipse Public License.
 #
