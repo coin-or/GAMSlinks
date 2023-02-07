@@ -28,6 +28,23 @@ int main(int argc, char** argv)
 
    gmsopt.collect("nlbinary", "Whether .nl file should be written in binary form", "", true);
 
+   GamsOption::EnumVals initvals;
+   initvals.append("none", "pass no values");
+   initvals.append("nondefault", "pass only values that are not at GAMS default");
+   initvals.append("all", "pass on all values");
+
+   gmsopt.collect("initprimal", "Which initial variable level values to pass to AMPL solver", "",
+      "all", initvals);
+
+   // reusing initvals would give a double-free at the end; should fix that someday...
+   GamsOption::EnumVals initvals2;
+   initvals2.append("none", "pass no values");
+   initvals2.append("nondefault", "pass only values that are not at GAMS default");
+   initvals2.append("all", "pass on all values");
+
+   gmsopt.collect("initdual", "Which initial equation marginal values to pass to AMPL solver", "",
+      "all", initvals2);
+
    gmsopt.finalize();
 
    gmsopt.writeDef();

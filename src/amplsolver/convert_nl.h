@@ -11,6 +11,13 @@
 
 #include "def.h"
 
+/** which initial values to write to .nl file */
+typedef enum {
+   convert_initnone       = 0,  /**< don't write any initial values */
+   convert_initnondefault = 1,  /**< write only values that are not at default */
+   convert_initall        = 2   /**< write all values */
+} convert_initvalues;
+
 typedef struct
 {
    /* parameters */
@@ -18,6 +25,8 @@ typedef struct
    int         binary;      /**< whether to print binary .nl */
    int         comments;    /**< whether to print many comments to .nl (text only) */
    int         shortfloat;  /**< whether to print float as short as possible or like AMPL (text only) */
+   convert_initvalues primalstart;  /**< which of the variable level values to write into x-section */
+   convert_initvalues dualstart;    /**< which of the equation marginal values to write into d-section */
 
    /* private */
    FILE*       f;           /**< nl file stream */

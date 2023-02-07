@@ -41,6 +41,8 @@ typedef struct
    int  stublen;
    char solver[GMS_SSSIZE];
    int  nlbinary;
+   char initprimal[GMS_SSSIZE];
+   char initdual[GMS_SSSIZE];
 
 } amplsolver;
 
@@ -166,6 +168,9 @@ int processOptions(
 
    as->nlbinary = optGetIntStr(opt, "nlbinary");
 
+   optGetStrStr(opt, "initprimal", as->initprimal);
+   optGetStrStr(opt, "initdual", as->initdual);
+
    rc = 0;
 
  TERMINATE:
@@ -193,6 +198,18 @@ void writeNL(
 
    writeopts.filename = as->filename;
    writeopts.binary = as->nlbinary;
+
+   writeopts.primalstart = convert_initall;
+   if( strcmp(as->initprimal, "none") == 0 )
+      writeopts.primalstart = convert_initnone;
+   else if( strcmp(as->initprimal, "nondefault") == 0 )
+      writeopts.primalstart = convert_initnondefault;
+
+   writeopts.dualstart = convert_initall;
+   if( strcmp(as->initdual, "none") == 0 )
+      writeopts.dualstart = convert_initnone;
+   else if( strcmp(as->initdual, "nondefault") == 0 )
+      writeopts.dualstart = convert_initnondefault;
 
    if( convertWriteNL(as->gmo, writeopts) == RETURN_ERROR )
    {

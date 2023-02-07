@@ -738,32 +738,110 @@ RETURN writeNLVarBounds(
    return RETURN_OK;
 }
 
-/** write the x segment */
+/** write the x and d segments */
 static
 RETURN writeNLInitialPoint(
    struct gmoRec*     gmo,
    convertWriteNLopts writeopts
 )
 {
-   int nnz = 0;
+   int nnz;
    int i;
 
    assert(gmo != NULL);
 
-   /* count nonzeros */
-   for( i = 0; i < gmoN(gmo); ++i )
-      if( gmoGetVarLOne(gmo, i) != 0.0 )
-         ++nnz;
+   if( writeopts.dualstart != convert_initnone )
+   {
+      /* count marginal values to be printed */
+      if( writeopts.dualstart == convert_initall )
+      {
+         nnz = gmoM(gmo);
+      }
+      else
+      {
+         nnz = 0;
+         for( i = 0; i < gmoM(gmo); ++i )
+            if( gmoGetEquMOne(gmo, i) != 0.0 )
+               ++nnz;
+      }
 
-   if( nnz == 0 )
-      return RETURN_OK;
+      CHECK( writeNLPrintf(writeopts, "d%d\n", nnz) );
 
-   CHECK( writeNLPrintf(writeopts, "x%d\n", nnz) );
+      /* write marginal values */
+      for( i = 0; i < gmoM(gmo); ++i )
+         if( writeopts.dualstart == convert_initall || gmoGetEquMOne(gmo, i) != 0.0 )
+         {
+            CHECK( writeNLPrintf(writeopts, "%d %g\n", i, gmoGetEquMOne(gmo, i)) );
+         }
+   }
 
-   /* write nonzero level values */
-   for( i = 0; i < gmoN(gmo); ++i )
-      if( gmoGetVarLOne(gmo, i) != 0.0 )
+   if( writeopts.primalstart != convert_initnone )
+   {
+      /* count level values to be printed */
+      if( writeopts.primalstart == convert_initall )
+      {
+         nnz = gmoN(gmo);
+      }
+      else
+      {
+         nnz = 0;
+         for( i = 0; i < gmoN(gmo); ++i )
+         {
+            double val = gmoGetVarLOne(gmo, i);
+
+            /* check whether variable level is at default (0 projected onto bounds) */
+            double lb = gmoGetVarLowerOne(gmo, i);
+            double ub = gmoGetVarUpperOne(gmo, i);
+            if( gmoGetVarTypeOne(gmo, i) == gmovar_SC || gmoGetVarTypeOne(gmo, i) == gmovar_SI )
+            {
+               /* correct to actual bounds if semi-cont/integral */
+               if( lb != gmoMinf(gmo) && lb > 0.0 )
+                  lb = 0.0;
+               if( ub != gmoPinf(gmo) && ub < 0.0 )
+                  ub = 0.0;
+            }
+            if( lb > 0.0 && val == lb )
+               continue;
+            if( ub < 0.0 && val == ub )
+               continue;
+            if( val == 0.0 )
+               continue;
+
+            ++nnz;
+         }
+      }
+
+      CHECK( writeNLPrintf(writeopts, "x%d\n", nnz) );
+
+      /* write level values */
+      for( i = 0; i < gmoN(gmo); ++i )
+      {
+         double val = gmoGetVarLOne(gmo, i);
+
+         if( writeopts.primalstart == convert_initnondefault )
+         {
+            /* check whether variable level is at default (0 projected onto bounds) */
+            double lb = gmoGetVarLowerOne(gmo, i);
+            double ub = gmoGetVarUpperOne(gmo, i);
+            if( gmoGetVarTypeOne(gmo, i) == gmovar_SC || gmoGetVarTypeOne(gmo, i) == gmovar_SI )
+            {
+               /* correct to actual bounds if semi-cont/integral */
+               if( lb != gmoMinf(gmo) && lb > 0.0 )
+                  lb = 0.0;
+               if( ub != gmoPinf(gmo) && ub < 0.0 )
+                  ub = 0.0;
+            }
+            if( lb > 0.0 && val == lb )
+               continue;
+            if( ub < 0.0 && val == ub )
+               continue;
+            if( val == 0.0 )
+               continue;
+         }
+
          CHECK( writeNLPrintf(writeopts, "%d %g\n", i, gmoGetVarLOne(gmo, i)) );
+      }
+   }
 
    return RETURN_OK;
 }
