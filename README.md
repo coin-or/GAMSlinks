@@ -13,7 +13,7 @@ Currently the following links are available:
   * [Bonmin](https://github.com/coin-or/Bonmin): Basic Open-source Nonlinear Mixed-Integer Programming
   * [Couenne](https://github.com/coin-or/Couenne): Convex Over and Under Envelopes for Nonlinear Estimation
   * [Cbc](https://github.com/coin-or/Cbc): COIN-OR Branch and Cut code
-  * [HiGHS](https://github.com/ERGO_Code/HiGHS): LP solver
+  * [HiGHS](https://github.com/ERGO-Code/HiGHS): LP solver
   * [Ipopt](https://github.com/coin-or/Ipopt): Interior Point Optimizer
   * [Osi](https://github.com/coin-or/Osi): Interface to LP and MIP solvers with an Open Solver Interface, currently CPLEX, Gurobi, Mosek, and Xpress
   * [SCIP](https://www.scipopt.org): Solving Constraint Integer Programs
