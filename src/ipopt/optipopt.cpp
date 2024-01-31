@@ -69,6 +69,7 @@ int main(int argc, char** argv)
             opt->Name() == "jac_c_constant" ||
             opt->Name() == "jac_d_constant" ||
             opt->Name() == "obj_scaling_factor" ||
+            opt->Name() == "file_append" ||
             opt->Name() == "file_print_level" ||
             opt->Name() == "option_file_name" ||
             opt->Name() == "output_file" ||
@@ -161,7 +162,8 @@ int main(int argc, char** argv)
                "To use MA27, MA57, MA86, or MA97 with GAMS/Ipopt, or to use HSL_MA77, a HSL library needs to be provided by the user. "
                "To use Pardiso from pardiso-project.org, a Pardiso library needs to be provided by the user. "
                "**ATTENTION**: Before Ipopt 3.14 (GAMS 36), value ***pardiso*** specified to use Pardiso from Intel MKL. "
-               "With GAMS 36, this value has been renamed to ***pardisomkl***.";
+               "With GAMS 36, this value has been renamed to ***pardisomkl***. "
+               "On GAMS systems for ARM64 CPUs, option value `pardisomkl` is not available.";
 
             defaultdescr = "ma27, if IpoptH, otherwise mumps";
 

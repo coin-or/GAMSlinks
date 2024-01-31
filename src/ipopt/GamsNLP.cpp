@@ -707,7 +707,7 @@ void GamsNLP::finalize_solution(
 
       case OUT_OF_MEMORY:
          gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
-         gmoSolveStatSet(gmo, gmoSolveStat_InternalErr);
+         gmoSolveStatSet(gmo, gmoSolveStat_SolverErr);
          break;
 
       default:

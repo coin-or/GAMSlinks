@@ -284,7 +284,10 @@ int GamsIpopt::callSolver()
    }
 
    // set number of threads in linear algebra
-   GAMSsetNumThreads(gev, gevThreads(gev));
+   if( gevGetIntOpt(gev, gevThreadsRaw) != 0 )
+      GAMSsetNumThreads(gev, gevThreads(gev));
+   else
+      GAMSsetNumThreads(gev, 1);
 
    // solve NLP
    ApplicationReturnStatus status;
