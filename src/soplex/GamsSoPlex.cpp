@@ -119,6 +119,9 @@ void GamsSoPlex::setupLP()
    gmoGetObjVector(gmo, objcoefs, NULL);
 
    // setup variables: objective coefficients, bounds, and row coefficients
+
+   LPColSet cols(gmoN(gmo), gmoNZ(gmo));
+   DSVector col(gmoN(gmo));
    for( int i = 0; i < gmoN(gmo); ++i )
    {
       gmoGetColSparse(gmo, i, rowidx, rowcoefs, NULL, &nz, &nlnz);
@@ -127,12 +130,14 @@ void GamsSoPlex::setupLP()
       // nlnz should be 0, but within GUSS, this doesn't seem to work correctly (GMO bug?)
       //assert(nlnz == 0);
 
-      DSVector col(nz);
+      col.clear();
       for( int j = 0; j < nz; ++j )
          if( rowcoefs[j] != 0.0 )
             col.add(rowidx[j], rowcoefs[j]);
-      soplex->addColReal(LPCol(objcoefs[i], col, gmoGetVarUpperOne(gmo, i), gmoGetVarLowerOne(gmo, i)));
+      cols.add(objcoefs[i], gmoGetVarLowerOne(gmo, i), col, gmoGetVarUpperOne(gmo, i));
    }
+   soplex->addColsReal(cols);
+   cols.clear();
 
    // if there were empty rows at the end of the instance, they were not created when adding columns
    for( int j = soplex->numRowsReal(); j < gmoM(gmo); ++j )
@@ -434,7 +439,7 @@ int GamsSoPlex::callSolver()
    assert(soplex != NULL);
 
    // print version info and copyright
-   char buffer[50];
+   char buffer[100];
 #ifdef PAPILO_GITHASH
    sprintf(buffer, "\nSoPlex version %d.%d (%s) [PaPILO %d.%d (" PAPILO_GITHASH ")]\n",
       SOPLEX_VERSION/100, (SOPLEX_VERSION % 100)/10, getGitHash(),
