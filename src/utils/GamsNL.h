@@ -13,7 +13,8 @@
 typedef enum
 {
    gamsnl_osil,
-   gamsnl_ampl
+   gamsnl_ampl,
+   gamsnl_gurobi
 } gamsnl_mode;
 
 typedef enum
@@ -24,6 +25,8 @@ typedef enum
    gamsnl_opprod,
    gamsnl_opmin,
    gamsnl_opmax,
+   gamsnl_opand,
+   gamsnl_opor,
    gamsnl_opsub,
    gamsnl_opdiv,
    gamsnl_opnegate,

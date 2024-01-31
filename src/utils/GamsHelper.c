@@ -28,22 +28,22 @@ void GAMSsetNumThreads(
 )
 {
 #ifdef HAVE_GOTO_SETNUMTHREADS
-   if( gev != NULL && nthreads > 1 )
-   {
-      char msg[100];
-      sprintf(msg, "Number of GotoBlas threads: %d.\n", nthreads);
-      gevLogPChar(gev, msg);
-   }
+   //if( gev != NULL && nthreads > 1 )
+   //{
+   //   char msg[100];
+   //   sprintf(msg, "Number of GotoBlas threads: %d.\n", nthreads);
+   //   gevLogPChar(gev, msg);
+   //}
    goto_set_num_threads(nthreads);
 #endif
 
 #ifdef _OPENMP
-   if( gev != NULL && nthreads > 1 )
-   {
-      char msg[100];
-      sprintf(msg, "Number of OpenMP threads: %d.\n", nthreads);
-      gevLogPChar(gev, msg);
-   }
+   //if( gev != NULL && nthreads > 1 )
+   //{
+   //   char msg[100];
+   //   sprintf(msg, "Number of OpenMP threads: %d.\n", nthreads);
+   //   gevLogPChar(gev, msg);
+   //}
    omp_set_num_threads(nthreads);
 #endif
 

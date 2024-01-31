@@ -36,6 +36,8 @@ RETURN gamsnlCreate(
       case gamsnl_opprod :
       case gamsnl_opmin :
       case gamsnl_opmax :
+      case gamsnl_opand :
+      case gamsnl_opor :
          (*n)->argssize = 5;
          break;
       case gamsnl_opsub:
@@ -115,7 +117,7 @@ RETURN gamsnlAddArg(
    )
 {
    assert(n != NULL);
-   assert(n->op == gamsnl_opsum || n->op == gamsnl_opprod || n->op == gamsnl_opmin || n->op == gamsnl_opmax);
+   assert(n->op == gamsnl_opsum || n->op == gamsnl_opprod || n->op == gamsnl_opmin || n->op == gamsnl_opmax || n->op == gamsnl_opand || n->op == gamsnl_opor);
    assert(arg != NULL);
 
    if( n->argssize <= n->nargs + 1 )
@@ -139,7 +141,7 @@ RETURN gamsnlAddArgFront(
    int i;
 
    assert(n != NULL);
-   assert(n->op == gamsnl_opsum || n->op == gamsnl_opprod || n->op == gamsnl_opmin || n->op == gamsnl_opmax);
+   assert(n->op == gamsnl_opsum || n->op == gamsnl_opprod || n->op == gamsnl_opmin || n->op == gamsnl_opmax || n->op == gamsnl_opand || n->op == gamsnl_opor);
    assert(arg != NULL);
 
    if( n->argssize <= n->nargs + 1 )
@@ -188,6 +190,14 @@ void gamsnlPrint(
          printf("max");
          break;
 
+      case gamsnl_opand :
+         printf("and");
+         break;
+
+      case gamsnl_opor :
+         printf("or");
+         break;
+
       case gamsnl_opsub :
          printf("sub");
          break;
@@ -201,7 +211,7 @@ void gamsnlPrint(
          break;
 
       case gamsnl_opfunc :
-         printf(GamsFuncCodeName[n->func]);
+         printf("%s", GamsFuncCodeName[n->func]);
          break;
    }
 
@@ -247,7 +257,7 @@ RETURN nlnodeApplyUnaryOperation(
          n->coef *= -1.0;
          return RETURN_OK;
       }
-      if( n->op == gamsnl_opvar && mode == gamsnl_osil )
+      if( n->op == gamsnl_opvar && mode != gamsnl_ampl )
       {
          n->coef *= -1.0;
          return RETURN_OK;
@@ -264,7 +274,7 @@ RETURN nlnodeApplyUnaryOperation(
                n->args[i]->coef *= -1.0;
                return RETURN_OK;
             }
-            if( n->args[i]->op == gamsnl_opvar && mode == gamsnl_osil )
+            if( n->args[i]->op == gamsnl_opvar && mode != gamsnl_ampl )
             {
                if( n->args[i]->coef != 1.0 )
                {
@@ -309,7 +319,7 @@ RETURN nlnodeApplyBinaryOperation(
       return RETURN_OK;
    }
 
-   if( mode == gamsnl_osil )
+   if( mode == gamsnl_osil || mode == gamsnl_gurobi )
    {
       if( op == gamsnl_opprod && stack[*stackpos]->op == gamsnl_opconst && stack[*stackpos-1]->op == gamsnl_opvar )
       {
@@ -335,8 +345,14 @@ RETURN nlnodeApplyBinaryOperation(
    /* if operator can take arbitrarily many operands, then merge children of children of same operator into new one
     * e.g., (a+b) + c = a + b + c
     * if ampl, then prod can take only two operands
+    * if ampl, then and/or can take only two operands (todo: what about osil? for now leave them as binary operation)
     */
-   if( op == gamsnl_opsum || (op == gamsnl_opprod && mode != gamsnl_ampl) || op == gamsnl_opmin || op == gamsnl_opmax )
+   if( op == gamsnl_opsum ||
+      (op == gamsnl_opprod && mode != gamsnl_ampl) ||
+      op == gamsnl_opmin ||
+      op == gamsnl_opmax ||
+      (op == gamsnl_opand && mode != gamsnl_ampl) ||
+      (op == gamsnl_opor && mode != gamsnl_ampl) )
    {
       if( stack[*stackpos-1]->op == op )
       {
@@ -582,6 +598,20 @@ RETURN gamsnlParseGamsInstructions(
                   break;
                }
 
+               case fnbooland:
+               {
+                  assert(opcode == nlCallArg2);
+                  CHECK( nlnodeApplyBinaryOperation(stack, &stackpos, gamsnl_opand, mode) );
+                  break;
+               }
+
+               case fnboolor:
+               {
+                  assert(opcode == nlCallArg2);
+                  CHECK( nlnodeApplyBinaryOperation(stack, &stackpos, gamsnl_opor, mode) );
+                  break;
+               }
+
                case fnlog2:
                {
                   if( mode == gamsnl_osil )
@@ -665,6 +695,10 @@ RETURN gamsnlParseGamsInstructions(
 
                case fnedist: /* euclidian distance */
                {
+                  /* Gurobi has support for edist, so use default; for all others, reform with sqrt/sum/sqr */
+                  if( mode == gamsnl_gurobi )
+                     goto funccode_default;
+
                   gamsnl_node* edist;
                   gamsnl_node* m;
                   int j;
@@ -704,9 +738,15 @@ RETURN gamsnlParseGamsInstructions(
                   break;
                }
 
+               case fndiv: /* divide */
+               {
+                  CHECK( nlnodeApplyBinaryOperation(stack, &stackpos, gamsnl_opdiv, mode) );
+                  break;
+               }
+
                case fnarctan2: /* arctan(x1/x2) */
                {
-                  if( mode == gamsnl_osil )
+                  if( mode == gamsnl_osil || mode == gamsnl_gurobi )
                   {
                      CHECK( nlnodeApplyBinaryOperation(stack, &stackpos, gamsnl_opdiv, mode) );
                      CHECK( nlnodeApplyUnaryOperation(stack, &stackpos, gamsnl_opfunc, mode) );
@@ -723,6 +763,10 @@ RETURN gamsnlParseGamsInstructions(
 
                case fnpoly :
                {
+                  /* Gurobi has support for poly, so use default; for all others, reform as sum of powers */
+                  if( mode == gamsnl_gurobi )
+                     goto funccode_default;
+
                   gamsnl_node* x;
                   gamsnl_node* poly;
                   gamsnl_node* term;
@@ -785,6 +829,7 @@ RETURN gamsnlParseGamsInstructions(
                }
 
                default:
+               funccode_default:
                {
                   gamsnl_node* n;
                   int j;

@@ -111,10 +111,12 @@ void GAMSsolvetraceFree(
 {
    assert(solvetrace != NULL);
    assert(*solvetrace != NULL);
-   assert((*solvetrace)->tracefile != NULL);
 
-   fprintf((*solvetrace)->tracefile, "* solvetrace file closed\n");
-   fclose((*solvetrace)->tracefile);
+   if( (*solvetrace)->tracefile != NULL )
+   {
+      fprintf((*solvetrace)->tracefile, "* solvetrace file closed\n");
+      fclose((*solvetrace)->tracefile);
+   }
 
    free(*solvetrace);
    *solvetrace = NULL;
