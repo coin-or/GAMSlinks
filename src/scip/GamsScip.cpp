@@ -174,7 +174,7 @@ GamsScip::~GamsScip()
    if( pal != NULL )
       palFree(&pal);
 
-#ifdef GAMS_BUILD
+#if defined(GAMS_BUILD) && !defined(DAC)
    if( calledxprslicense )
       gevxpressliceFreeTS();
 #endif
@@ -210,7 +210,7 @@ int GamsScip::readyAPI(
 
    GAMSinitLicensing(gmo, pal);
 
-#if defined(GAMSLINKS_HAS_XPRESS) && defined(GAMS_BUILD)
+#if defined(GAMSLINKS_HAS_XPRESS) && defined(GAMS_BUILD) && !defined(DAC)
    /* Xpress license setup - don't say anything if failing, since Xpress is not used by default */
    if( !calledxprslicense )
    {
@@ -295,7 +295,10 @@ int GamsScip::callSolver()
 #endif
 
    // set number of threads for linear algebra routines used in Ipopt
-   GAMSsetNumThreads(gev, gevThreads(gev));
+   if( gevGetIntOpt(gev, gevThreadsRaw) != 0 )
+      GAMSsetNumThreads(gev, gevThreads(gev));
+   else
+      GAMSsetNumThreads(gev, 1);
 
    // update error printing callback in SCIP to use current gev
    SCIPmessageSetErrorPrinting(printErrorGev, (void*)gev);

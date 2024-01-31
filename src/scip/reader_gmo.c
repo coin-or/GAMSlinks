@@ -2067,7 +2067,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
       }
       SCIP_CALL( rc );
 
-      if( gmoSense(gmo) == (int) gmoObj_Min )
+      if( gmoSense(gmo) != (int) gmoObj_Max )
       {
          lhs = -SCIPinfinity(scip);
          rhs = -gmoObjConst(gmo);
@@ -2116,7 +2116,9 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
    }
 
    if( gmoSense(gmo) == (int) gmoObj_Max )
+   {
       SCIP_CALL( SCIPsetObjsense(scip, SCIP_OBJSENSE_MAXIMIZE) );
+   }
    
    /* set objective limit, if enabled */
    if( gevGetIntOpt(gev, gevUseCutOff) )
@@ -2294,7 +2296,7 @@ SCIP_RETCODE SCIPcreateProblemReaderGmo(
       {
          char decompstats[SCIP_MAXSTRLEN];
          SCIP_CALL( SCIPcomputeDecompStats(scip, decomp, TRUE) );
-         SCIPinfoMessage(scip, NULL, SCIPdecompPrintStats(decomp, decompstats) );
+         SCIPinfoMessage(scip, NULL, "%s", SCIPdecompPrintStats(decomp, decompstats) );
       }
 
       SCIP_CALL( SCIPaddDecomp(scip, decomp) );
@@ -2604,7 +2606,7 @@ SCIP_DECL_READERREAD(readerReadGmo)
       /* initialize GMO and GEV libraries */
       if( !gmoCreate(&readerdata->gmo, buffer, sizeof(buffer)) || !gevCreate(&readerdata->gev, buffer, sizeof(buffer)) )
       {
-         SCIPerrorMessage(buffer);
+         SCIPerrorMessage("%s", buffer);
          return SCIP_ERROR;
       }
 
@@ -2915,10 +2917,21 @@ SCIP_RETCODE SCIPreadParamsReaderGmo(
    {
       SCIP_CALL( SCIPsetRealParam(scip, "limits/memory", gevGetDblOpt(gev, gevWorkSpace)) );
    }
-   SCIP_CALL( SCIPsetIntParam(scip, "lp/threads", gevThreads(gev)) );
-   if( SCIPgetParam(scip, "presolving/milp/threads") != NULL )
+   if( gevGetIntOpt(gev, gevThreadsRaw) != 0 )
    {
-      SCIP_CALL( SCIPsetIntParam(scip, "presolving/milp/threads", gevThreads(gev)) );
+      SCIP_CALL( SCIPsetIntParam(scip, "lp/threads", gevThreads(gev)) );
+      if( SCIPgetParam(scip, "presolving/milp/threads") != NULL )
+      {
+         SCIP_CALL( SCIPsetIntParam(scip, "presolving/milp/threads", gevThreads(gev)) );
+      }
+   }
+   else
+   {
+      /* change presolving/milp/threads to 0, which means automatic choice (the default is 1 thread) */
+      if( SCIPgetParam(scip, "presolving/milp/threads") != NULL )
+      {
+         SCIP_CALL( SCIPsetIntParam(scip, "presolving/milp/threads", 0) );
+      }
    }
 
    /* if log is not kept, then can also set SCIP verblevel to 0 */
