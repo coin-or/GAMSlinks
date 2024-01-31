@@ -18,6 +18,7 @@
 #ifdef GAMS_BUILD
 #include "GamsLicensing.h"
 #endif
+#include "GamsSolveTrace.h"
 
 /* HiGHS API */
 #include "Highs.h"
@@ -30,32 +31,44 @@ typedef struct
    Highs*        highs;
    bool          ranging;
    bool          mipstart;
+   std::string*  solvetracefile;          /* Name of solvetrace file to write */
+   int           solvetracenodefreq;      /* Solvetrace node frequency */
+   double        solvetracetimefreq;      /* Solvetrace time frequency */
 
-   bool          interrupted;
+   GAMS_solvetrace* solvetrace;
 } gamshighs_t;
 
 static
-void gevlog(
-   HighsLogType type,
-   const char*  msg,
-   void*        msgcb_data
+void gamshighs_callback(
+   const int                   callback_type,
+   const char*                 message,
+   const HighsCallbackDataOut* data_out,
+   HighsCallbackDataIn*        data_in,
+   void*                       user_callback_data
 )
 {
-   gamshighs_t* gh = (gamshighs_t*) msgcb_data;
+   gamshighs_t* gh = (gamshighs_t*) user_callback_data;
    assert(gh != NULL);
 
-   if( gh->interrupted )
+   if( callback_type == HighsCallbackType::kCallbackLogging )
    {
-      // replace "Time limit reached" in status string by "User interrupt"
-      char* timelim = strstr((char*)msg, "Time limit reached");
-      if( timelim != NULL )
-         memcpy(timelim, "User interrupt    ", sizeof("Time limit reached")-1);  // -1 to skip trailing \0
+      if( data_out->log_type == (int)HighsLogType::kInfo )
+         gevLogPChar(gh->gev, message);
+      else
+         gevLogStatPChar(gh->gev, message);
+
+      return;
    }
 
-   if( type == HighsLogType::kInfo )
-      gevLogPChar(gh->gev, msg);
-   else
-      gevLogStatPChar(gh->gev, msg);
+   if( gevTerminateGet(gh->gev) )
+   {
+      data_in->user_interrupt = 1;
+   }
+
+   if( gh->solvetrace != NULL && callback_type == HighsCallbackType::kCallbackMipInterrupt )
+   {
+      GAMSsolvetraceAddLine(gh->solvetrace, (int)data_out->mip_node_count, data_out->mip_dual_bound, data_out->mip_primal_bound);
+   }
 }
 
 static
@@ -132,17 +145,38 @@ int setupProblem(
 #endif
 
    gh->highs = new Highs();
-   gh->highs->setLogCallback(gevlog, gh);
+   gh->highs->setCallback(gamshighs_callback, gh);
+   gh->highs->startCallback(HighsCallbackType::kCallbackLogging);
+   gh->highs->startCallback(HighsCallbackType::kCallbackSimplexInterrupt);
+   gh->highs->startCallback(HighsCallbackType::kCallbackIpmInterrupt);
+   gh->highs->startCallback(HighsCallbackType::kCallbackMipInterrupt);
 
-   const_cast<HighsOptions&>(gh->highs->getOptions()).records.push_back(
+   HighsOptions& highsopt(const_cast<HighsOptions&>(gh->highs->getOptions()));
+
+   highsopt.records.push_back(
       new OptionRecordBool("sensitivity",
          "Whether to run sensitivity analysis after solving an LP with a simplex method",
          false, &gh->ranging, false) );
 
-   const_cast<HighsOptions&>(gh->highs->getOptions()).records.push_back(
+   highsopt.records.push_back(
       new OptionRecordBool("mipstart",
          "Whether to pass initial level values as starting point to MIP solver",
          false, &gh->mipstart, false) );
+
+   highsopt.records.push_back(
+      new OptionRecordString("solvetrace",
+         "Name of file for writing solving progress information during MIP solve",
+         false, gh->solvetracefile, "") );
+
+   highsopt.records.push_back(
+      new OptionRecordInt("solvetracenodefreq",
+         "Frequency in number of nodes for writing to solve trace file",
+         false, &gh->solvetracenodefreq, 0, 100, INT_MAX) );
+
+   highsopt.records.push_back(
+      new OptionRecordDouble("solvetracetimefreq",
+         "Frequency in seconds for writing to solve trace file",
+         false, &gh->solvetracetimefreq, 0.0, 5.0, DBL_MAX) );
 
    numCol = gmoN(gh->gmo);
    numRow = gmoM(gh->gmo);
@@ -239,11 +273,11 @@ int setupProblem(
       astart.data(), aindex.data(), avalue.data(),
       integrality.empty() ? NULL : integrality.data());
 
-   // pass initial solution, if LP and rows are present (work around segfault on lp11, https://github.com/ERGO-Code/HiGHS/issues/1072)
+   // pass initial solution, if LP and rows are present
    // for a MIP, we consider setting a starting point in setupOptions()
    // so for an LP, the users starting point is set only once and not for every solve after a problem modification
    // for a MIP, we pass the users starting point to each solve
-   if( gmoNDisc(gh->gmo) == 0 && numRow > 0 )
+   if( gmoNDisc(gh->gmo) == 0 )
    {
       HighsSolution sol;
       sol.col_value.resize(numCol);
@@ -312,7 +346,8 @@ int setupOptions(
       gh->highs->setOptionValue("mip_max_nodes", gevGetIntOpt(gh->gev, gevNodeLim));
    gh->highs->setOptionValue("mip_rel_gap", gevGetDblOpt(gh->gev, gevOptCR));
    gh->highs->setOptionValue("mip_abs_gap", gevGetDblOpt(gh->gev, gevOptCA));
-   gh->highs->setOptionValue("threads", gevThreads(gh->gev));
+   if( gevGetIntOpt(gh->gev, gevThreadsRaw) != 0 )
+      gh->highs->setOptionValue("threads", gevThreads(gh->gev));
    if( gevGetIntOpt(gh->gev, gevLogOption) == 0 )
       gh->highs->setOptionValue("output_flag", false);
 
@@ -400,8 +435,8 @@ int setupOptions(
       gh->highs->writeModel(modelfile);
    }
 
-   // pass initial solution if mipstart set and MIP without semicontinuous/integer variables (workaround bug https://github.com/ERGO-Code/HiGHS/issues/1074)
-   if( gh->mipstart && gmoNDisc(gh->gmo) > 0 && gmoGetVarTypeCnt(gh->gmo, gmovar_SC) == 0 && gmoGetVarTypeCnt(gh->gmo, gmovar_SI) == 0 )
+   // pass initial solution if mipstart set and MIP
+   if( gh->mipstart && gmoNDisc(gh->gmo) > 0 )
    {
       HighsSolution sol;
       sol.col_value.resize(gmoN(gh->gmo));
@@ -431,6 +466,9 @@ int processSolve(
 
    gmoHandle_t gmo = gh->gmo;
    Highs* highs = gh->highs;
+
+   if( gh->solvetrace != NULL )
+      GAMSsolvetraceAddEndLine(gh->solvetrace, (int)highs->getInfo().mip_node_count, highs->getInfo().mip_dual_bound, highs->getInfo().objective_function_value);
 
    gmoSetHeadnTail(gmo, gmoHresused, gevTimeDiffStart(gh->gev));
    gmoSetHeadnTail(gmo, gmoHiterused, highs->getInfo().simplex_iteration_count);
@@ -479,22 +517,30 @@ int processSolve(
 
       case HighsModelStatus::kObjectiveBound:
       case HighsModelStatus::kObjectiveTarget:
-         gmoModelStatSet(gmo, sol.value_valid ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
          gmoSolveStatSet(gmo, gmoSolveStat_Solver);
          break;
 
       case HighsModelStatus::kTimeLimit:
-         gmoModelStatSet(gmo, sol.value_valid ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
-         if( gh->interrupted )
-            gmoSolveStatSet(gmo, gmoSolveStat_User);
-         else
-            gmoSolveStatSet(gmo, gmoSolveStat_Resource);
+         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
+         gmoSolveStatSet(gmo, gmoSolveStat_Resource);
          break;
 
       case HighsModelStatus::kIterationLimit:
          // may also mean node limit
-         gmoModelStatSet(gmo, sol.value_valid ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
          gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
+         break;
+
+      case HighsModelStatus::kSolutionLimit:
+         // may also mean node limit
+         gmoModelStatSet(gmo, sol.value_valid ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
+         gmoSolveStatSet(gmo, gmoSolveStat_Resource);
+         break;
+
+      case HighsModelStatus::kInterrupt:
+         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
+         gmoSolveStatSet(gmo, gmoSolveStat_User);
          break;
 
       case HighsModelStatus::kUnknown:
@@ -861,6 +907,7 @@ DllExport int STDCALL hisCreate(
    assert(msgBuf != NULL);
 
    *Cptr = calloc(1, sizeof(gamshighs_t));
+   ((gamshighs_t*)*Cptr)->solvetracefile = new std::string;
 
    msgBuf[0] = 0;
 
@@ -886,9 +933,14 @@ DllExport void STDCALL hisFree(
    assert(*Cptr != NULL);
 
    gh = (gamshighs_t*) *Cptr;
+   assert(gh->solvetrace == NULL);
 
    delete gh->highs;
+   delete gh->solvetracefile;
    free(gh);
+
+   /* free some thread-local global data */
+   Highs::resetGlobalScheduler();
 
    *Cptr = NULL;
 
@@ -965,34 +1017,20 @@ TERMINATE:
    return rc;
 }
 
-static thread_local gamshighs_t* gh_terminate = NULL;
-static
-void interruptHighs(void)
-{
-   assert(gh_terminate != NULL);
-
-   // there is no proper functionality to interrupt HiGHS and it isn't coming soon (https://github.com/ERGO-Code/HiGHS/issues/903)
-   // so we reset the timelimit instead
-
-   if( gh_terminate->interrupted ) // somehow we are called twice
-      return;
-
-   gh_terminate->highs->setOptionValue("time_limit", DBL_MIN);
-   gh_terminate->interrupted = true;
-}
-
 DllExport int STDCALL hisCallSolver(
    void* Cptr
 )
 {
    gamshighs_t* gh;
    HighsStatus status;
+   int rc = 1;
 
    gh = (gamshighs_t*) Cptr;
    assert(gh->gmo != NULL);
    assert(gh->gev != NULL);
+   assert(gh->solvetrace == NULL);
 
-   // if we detected in readyAPI that HiGHS cannot handle the problem, then do nothing */
+   /* if we detected in readyAPI that HiGHS cannot handle the problem, then do nothing */
    if( gmoSolveStat(gh->gmo) == gmoSolveStat_Capability )
       return 0;
 
@@ -1007,9 +1045,15 @@ DllExport int STDCALL hisCallSolver(
    if( setupOptions(gh) )
       return 1;
 
-   gh_terminate = gh;
-   gh->interrupted = false;
-   gevTerminateSet(gh->gev, NULL, (void*)interruptHighs);
+   if( !gh->solvetracefile->empty() && gmoNDisc(gh->gmo) > 0 )
+   {
+      char buffer[GMS_SSSIZE];
+      if( GAMSsolvetraceCreate(&gh->solvetrace, gh->solvetracefile->c_str(), "HiGHS", gmoOptFile(gh->gmo), gmoNameInput(gh->gmo, buffer), kHighsInf, gh->solvetracenodefreq, gh->solvetracetimefreq) != 0 )
+      {
+         gevLogStat(gh->gev, "Error: Could not create solvetrace file for writing.\n");
+         goto TERMINATE;
+      }
+   }
 
    gevTimeSetStart(gh->gev);
 
@@ -1017,15 +1061,21 @@ DllExport int STDCALL hisCallSolver(
    gevLogPChar(gh->gev, "\n");
    status = gh->highs->run();
    if( status == HighsStatus::kError )
-      return 1;
+      goto TERMINATE;
 
    /* pass solution, status, etc back to GMO */
    if( processSolve(gh) )
-      return 1;
+      goto TERMINATE;
 
    doRanging(gh);
 
-   return 0;
+   rc = 0;
+
+ TERMINATE:
+   if( gh->solvetrace != NULL )
+      GAMSsolvetraceFree(&gh->solvetrace);
+
+   return rc;
 }
 
 DllExport int STDCALL hisModifyProblem(
@@ -1045,7 +1095,7 @@ DllExport int STDCALL hisModifyProblem(
 
    HighsInt maxsize = std::max(gmoN(gh->gmo), gmoM(gh->gmo));
 
-   HighsInt jacnz;
+   HighsInt jacnz = -1;
    gmoGetJacUpdate(gh->gmo, NULL, NULL, NULL, &jacnz);
    if( jacnz + 1 > maxsize )
       maxsize = jacnz + 1;

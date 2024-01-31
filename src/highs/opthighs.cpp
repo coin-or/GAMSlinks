@@ -39,6 +39,9 @@ int main(int argc, char** argv)
 {
    HighsOptions highsopt;
    bool dummy;
+   std::string dummys;
+   int dummyi;
+   double dummyd;
 
    highsopt.records.push_back(
       new OptionRecordBool("sensitivity",
@@ -49,6 +52,21 @@ int main(int argc, char** argv)
       new OptionRecordBool("mipstart",
          "Whether to pass initial level values as starting point to MIP solver",
          false, &dummy, false) );
+
+   highsopt.records.push_back(
+      new OptionRecordString("solvetrace",
+         "Name of file for writing solving progress information during MIP solve",
+         false, &dummys, "") );
+
+   highsopt.records.push_back(
+      new OptionRecordInt("solvetracenodefreq",
+         "Frequency in number of nodes for writing to solve trace file",
+         false, &dummyi, 0, 100, INT_MAX) );
+
+   highsopt.records.push_back(
+      new OptionRecordDouble("solvetracetimefreq",
+         "Frequency in seconds for writing to solve trace file",
+         false, &dummyd, 0.0, 5.0, DBL_MAX) );
 
    GamsOptions gmsopt("HiGHS");
    gmsopt.setSeparator("=");
@@ -73,6 +91,8 @@ int main(int argc, char** argv)
       if( hopt->name == "glpsol_cost_row_location" )
          continue;
       if( hopt->name == "solve_relaxation" )  // user could just change MIP to RMIP
+         continue;
+      if( hopt->name.find("mip_improving_solution") == 0 )
          continue;
 
       switch( hopt->type )
@@ -121,7 +141,7 @@ int main(int argc, char** argv)
 #endif
             else if( hopt->name == "threads" )
             {
-               defaultval = 1;
+               defaultval = 0;
 #ifdef GAMS_BUILD
                defaultdescr = "\\ref GAMSAOthreads \"GAMS threads\"";
 #else
