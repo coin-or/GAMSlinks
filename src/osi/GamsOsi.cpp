@@ -66,8 +66,8 @@ static int __stdcall grbcallback(GRBmodel* model, void* qcbdata, int where, void
 #endif
 
 #ifdef GAMSLINKS_HAS_OSIMSK
-#include "OsiMskSolverInterface.hpp"
 #include "mosek.h"
+#include "OsiMskSolverInterface.hpp"
 
 static int MSKAPI mskcallback(MSKtask_t task, MSKuserhandle_t handle, MSKcallbackcodee caller,
    const MSKrealt * douinf,
