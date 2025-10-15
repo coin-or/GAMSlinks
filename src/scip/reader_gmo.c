@@ -2366,6 +2366,8 @@ SCIP_RETCODE writeGmoSolution(
          break;
       case SCIP_STATUS_SOLLIMIT: /* the solving process was interrupted because the solution limit was reached */
       case SCIP_STATUS_BESTSOLLIMIT: /* the solving process was interrupted because the solution improvement limit was reached */
+      case SCIP_STATUS_PRIMALLIMIT: /* primal bound limit reached */
+      case SCIP_STATUS_DUALLIMIT: /* dual bound limit reached */
          gmoSolveStatSet(gmo, (int) gmoSolveStat_Resource);
          gmoModelStatSet(gmo, nrsol > 0 ? (gmoNDisc(gmo) ? (int) gmoModelStat_Integer : (int) gmoModelStat_Feasible) : (int) gmoModelStat_NoSolutionReturned);
          break;

@@ -179,7 +179,22 @@ void printPluginTables(
       }
    }
 
-   /* cut selectors skipped so far as only one available */
+   /* cut selectors */
+   {
+      std::ofstream outfile("cutsels.md");
+      std::cout << "Writing cutsels.md" << std::endl;
+      outfile << std::endl;
+      outfile << "| cut selector | priority| description |" << std::endl;
+      outfile << "|:-------------|--------:|:------------|" << std::endl;
+      SCIP_CUTSEL** cutsels = SCIPgetCutsels(scip);
+      for( int i = 0; i < SCIPgetNCutsels(scip); ++i )
+      {
+         outfile << "| \\ref SCIP_gr_cutselection_" << SCIPcutselGetName(cutsels[i]) << " \"" << SCIPcutselGetName(cutsels[i]) << '"';
+         outfile << " | " << SCIPcutselGetPriority(cutsels[i]);
+         outfile << " | " << SCIPcutselGetDesc(cutsels[i]);
+         outfile << " |" << std::endl;
+      }
+   }
 
    /* display columns */
    {
@@ -487,6 +502,12 @@ int main(int argc, char** argv)
       if( strcmp(paramname, "numerics/infinity") == 0 )
          continue;
 
+      // options have no effect
+      if( strcmp(paramname, "propagating/symmetry/symfixnonbinaryvars") == 0 ||
+          strcmp(paramname, "propagating/symmetry/addconsstiming") == 0 ||
+          strcmp(paramname, "propagating/symmetry/ofsymcomptiming") == 0 )
+         continue;
+
       if( strstr(paramname, "constraints/benders")       == paramname ||
           strstr(paramname, "constraints/cardinality")   == paramname ||
           strstr(paramname, "constraints/conjunction")   == paramname ||
@@ -647,7 +668,7 @@ int main(int argc, char** argv)
          else if( strcmp(SCIPparamGetName(param), "lp/solver") == 0 )
          {
             defaultdescr = "cplex, if licensed, otherwise soplex";
-            descr = "LP solver to use (clp, cplex, soplex)";
+            descr = "LP solver to use (clp, cplex, highs, soplex)";
          }
          else if( strcmp(SCIPparamGetName(param), "lp/threads") == 0 )
 #ifdef GAMS_BUILD
@@ -676,7 +697,7 @@ int main(int argc, char** argv)
             descr += ", see also section \\ref SCIP_PARTIALSOL";
 #endif
          else if( strcmp(SCIPparamGetName(param), "misc/usesymmetry") == 0 )
-            descr.erase(descr.find(", see type_symmetry.h"));
+            descr.erase(descr.find("See type_symmetry.h."));
          else if( strcmp(SCIPparamGetName(param), "constraints/nonlinear/linearizeheursol") == 0 )
             defaultdescr = "i if QCP or NLP, o otherwise";
          else if( strcmp(SCIPparamGetName(param), "nlpi/ipopt/linear_solver") == 0 )

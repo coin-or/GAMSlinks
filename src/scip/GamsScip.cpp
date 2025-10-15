@@ -28,7 +28,6 @@
 #include "scip/scipdefplugins.h"
 #include "scip/githash.c"
 #include "scip/nlpi_ipopt.h"
-#include "scip/prop_symmetry.h"
 #include "reader_gmo.h"
 #include "event_solvetrace.h"
 
@@ -39,6 +38,7 @@
 
 #ifdef GAMS_BUILD
 #include "lpiswitch.h"
+#include "tbbfinal.h"
 #endif
 
 static
@@ -112,61 +112,6 @@ SCIP_DECL_PARAMCHGD(GamsScipParamChgdLpSolver)
 }
 #endif
 
-/** execution method of dialog */
-static
-SCIP_DECL_DIALOGEXEC(dialogExecDisplaySymmetry)
-{  /*lint --e{715}*/
-   int        npermvars;
-   SCIP_VAR** permvars;
-   int        nperms;
-   int**      perms;
-   SCIP_Bool* covered;
-   int* perm;
-   int i;
-   int j;
-   int p;
-
-   /* add your dialog to history of dialogs that have been executed */
-   SCIP_CALL( SCIPdialoghdlrAddHistory(dialoghdlr, dialog, NULL, FALSE) );
-
-   SCIP_CALL( SCIPgetSymmetry(scip, &npermvars, &permvars, NULL, &nperms, &perms, NULL, NULL, NULL, NULL, NULL, NULL, NULL) );
-
-   SCIP_CALL( SCIPallocClearBufferArray(scip, &covered, npermvars) );
-
-   for( p = 0; p < nperms; ++p )
-   {
-      SCIPinfoMessage(scip, NULL, "Permutation %d:\n", p);
-      perm = perms[p];
-
-      for( i = 0; i < npermvars; ++i )
-      {
-         if( perm[i] == i || covered[i] )
-            continue;
-
-         SCIPinfoMessage(scip, NULL, "  (<%s>", SCIPvarGetName(permvars[i]));
-         j = perm[i];
-         covered[i] = TRUE;
-         while( j != i )
-         {
-            covered[j] = TRUE;
-            SCIPinfoMessage(scip, NULL, ",<%s>", SCIPvarGetName(permvars[j]));
-            j = perm[j];
-         }
-         SCIPinfoMessage(scip, NULL, ")\n");
-      }
-
-      for( i = 0; i < npermvars; ++i )
-         covered[i] = FALSE;
-   }
-
-   SCIPfreeBufferArray(scip, &covered);
-
-   /* next dialog will be root dialog again */
-   *nextdialog = SCIPdialoghdlrGetRoot(dialoghdlr);
-
-   return SCIP_OKAY;
-}
-
 GamsScip::~GamsScip()
 {
    SCIP_CALL_ABORT( freeSCIP() );
@@ -174,7 +119,7 @@ GamsScip::~GamsScip()
    if( pal != NULL )
       palFree(&pal);
 
-#if defined(GAMS_BUILD) && !defined(DAC)
+#if defined(GAMS_BUILD)
    if( calledxprslicense )
       gevxpressliceFreeTS();
 #endif
@@ -210,7 +155,7 @@ int GamsScip::readyAPI(
 
    GAMSinitLicensing(gmo, pal);
 
-#if defined(GAMSLINKS_HAS_XPRESS) && defined(GAMS_BUILD) && !defined(DAC)
+#if defined(GAMSLINKS_HAS_XPRESS) && defined(GAMS_BUILD)
    /* Xpress license setup - don't say anything if failing, since Xpress is not used by default */
    if( !calledxprslicense )
    {
@@ -239,7 +184,7 @@ int GamsScip::readyAPI(
 #endif
 
    // print version info and copyright
-   sprintf(buffer, "SCIP version %d.%d (" SCIP_GITHASH ")\n", SCIPmajorVersion(), SCIPminorVersion());
+   sprintf(buffer, "SCIP version %d.%d.%d (" SCIP_GITHASH ")\n", SCIPmajorVersion(), SCIPminorVersion(), SCIPtechVersion());
    gevLogStatPChar(gev, buffer);
    gevLogStatPChar(gev, SCIP_COPYRIGHT"\n\n");
 
@@ -454,17 +399,6 @@ SCIP_RETCODE GamsScip::setupSCIP()
       }
       SCIP_CALL( SCIPincludeReaderGmo(scip, ipoptlicensed) );
 
-      /* include "display symmetries" dialog */
-      SCIP_DIALOG* parentdialog;
-      SCIP_DIALOG* dialog;
-      SCIPdialogFindEntry(SCIPgetRootDialog(scip), "display", &parentdialog);
-      assert(parentdialog != NULL);
-      SCIP_CALL( SCIPincludeDialog(scip, &dialog,
-         NULL, dialogExecDisplaySymmetry, NULL, NULL,
-         "symmetry", "display symmetries found", FALSE, NULL) );
-      SCIP_CALL( SCIPaddDialogEntry(scip, parentdialog, dialog) );
-      SCIP_CALL( SCIPreleaseDialog(scip, &dialog) );
-
       /* SCIP_CALL( SCIPaddBoolParam(scip, "gams/solvefinal",
        * "whether the problem should be solved with fixed discrete variables to get dual values",
        * NULL, FALSE, TRUE,  NULL, NULL) );
@@ -543,6 +477,9 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
    gmoFiniMutexes();
    gevFiniMutexes();
    palFiniMutexes();
+#ifdef GAMS_BUILD
+   tbbfinal();
+#endif
 }
 
 DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
