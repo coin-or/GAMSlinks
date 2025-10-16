@@ -52,6 +52,8 @@ This page also provides a mechanism to obtain a GAMS demo license.
 To build the interface to a certain solver, this solver needs to be installed in the system first.
 Check with the solvers instructions on how to build and install.
 
+NOTE: SCIP needs to be build without readline support at the moment, otherwise there can be a conflict with symbols of the same name in the readline and GAMS' options library at runtime.
+
 ### 3. Call configure, make, and make install
 
 Call
