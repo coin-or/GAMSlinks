@@ -155,7 +155,8 @@ int GamsScip::readyAPI(
 
    GAMSinitLicensing(gmo, pal);
 
-#if defined(GAMSLINKS_HAS_XPRESS) && defined(GAMS_BUILD)
+#ifdef GAMS_BUILD
+#ifdef GAMSLINKS_HAS_XPRESS
    /* Xpress license setup - don't say anything if failing, since Xpress is not used by default */
    if( !calledxprslicense )
    {
@@ -177,7 +178,6 @@ int GamsScip::readyAPI(
       return 1;
    }
 
-#ifdef GAMS_BUILD
    ipoptlicensed = GAMScheckIpoptLicense(pal, false);
    if( ipoptlicensed )
       GamsHSLInit();
