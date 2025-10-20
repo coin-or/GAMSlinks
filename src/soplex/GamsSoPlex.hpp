@@ -11,6 +11,7 @@
 
 #include <cstdlib>
 #include <ostream>
+#include "GamsLinksConfig.h"
 
 typedef struct gmoRec* gmoHandle_t;
 typedef struct gevRec* gevHandle_t;
@@ -56,5 +57,42 @@ public:
    /** notifies solver that the GMO object has been modified and changes should be passed forward to the solver */
    int modifyProblem();
 };
+
+extern "C" {
+
+DllExport
+int ospCreate(
+   void** Cptr,
+   char*  msgBuf,
+   int    msgBufLen
+   );
+
+DllExport
+void ospFree(
+   void** Cptr
+   );
+
+DllExport
+int ospCallSolver(
+   void* Cptr
+   );
+
+DllExport
+int ospHaveModifyProblem(
+   void* Cptr
+);
+
+DllExport
+int ospModifyProblem(
+   void* Cptr
+   );
+
+DllExport
+int ospReadyAPI(
+   void*       Cptr,
+   gmoHandle_t Gptr
+   );
+
+} // extern "C"
 
 #endif /*GAMSSOPLEX_HPP_*/

@@ -56,4 +56,59 @@ public:
    int callSolver();
 };
 
+extern "C"
+{
+
+DllExport
+int scpCreate(
+   void** Cptr,
+   char*  msgBuf,
+   int    msgBufLen
+   );
+
+DllExport
+void scpFree(
+   void** Cptr
+   );
+
+DllExport
+int scpCallSolver(
+   void* Cptr
+   );
+
+DllExport
+int scpReadyAPI(
+   void*       Cptr,
+   gmoHandle_t Gptr
+   );
+
+#ifdef GAMSLINKS_HAS_GCG
+
+DllExport
+int gcgCreate(
+   void** Cptr,
+   char*  msgBuf,
+   int    msgBufLen
+   );
+
+DllExport
+int gcgFree(
+   void** Cptr
+   );
+
+DllExport
+int gcgCallSolver(
+   void* Cptr
+   );
+
+DllExport
+int gcgReadyAPI(
+   void*       Cptr,
+   gmoHandle_t Gptr
+   );
+
+#endif // GAMSLINKS_HAS_GCG
+
+} // extern "C"
+
 #endif /*GAMSSCIP_HPP_*/

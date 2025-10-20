@@ -15,6 +15,7 @@
 #include "gevmcc.h"
 #include "gmomcc.h"
 #include "palmcc.h"
+#include "GamsLinksConfig.h"
 #ifdef GAMS_BUILD
 #include "GamsLicensing.h"
 #include "libloader.h"
@@ -1203,28 +1204,8 @@ HighsStatus doIIS(
    return HighsStatus::kOk;
 }
 
-#define GAMSSOLVER_ID his
-#define GAMSSOLVER_HAVEMODIFYPROBLEM
-#include "GamsEntryPoints_tpl.c"
-
-#define XQUOTE(x) QUOTE(x)
-#define QUOTE(x) #x
-
-void hisInitialize(void)
-{
-   gmoInitMutexes();
-   gevInitMutexes();
-   palInitMutexes();
-}
-
-void hisFinalize(void)
-{
-   gmoFiniMutexes();
-   gevFiniMutexes();
-   palFiniMutexes();
-}
-
-DllExport int STDCALL hisCreate(
+extern "C" DllExport int hisCreate(void** Cptr, char* msgBuf, int msgBufLen);
+int hisCreate(
    void**   Cptr,
    char*    msgBuf,
    int      msgBufLen
@@ -1251,7 +1232,8 @@ DllExport int STDCALL hisCreate(
    return 1;
 }
 
-DllExport void STDCALL hisFree(
+extern "C" DllExport void hisFree(void** Cptr);
+void hisFree(
    void** Cptr
 )
 {
@@ -1289,7 +1271,8 @@ DllExport void STDCALL hisFree(
    palLibraryUnload();
 }
 
-DllExport int STDCALL hisReadyAPI(
+extern "C" DllExport int hisReadyAPI(void* Cptr, gmoHandle_t Gptr);
+int hisReadyAPI(
    void*       Cptr,
    gmoHandle_t Gptr
 )
@@ -1357,7 +1340,8 @@ TERMINATE:
    return rc;
 }
 
-DllExport int STDCALL hisCallSolver(
+extern "C" DllExport int hisCallSolver(void* Cptr);
+int hisCallSolver(
    void* Cptr
 )
 {
@@ -1431,7 +1415,16 @@ DllExport int STDCALL hisCallSolver(
    return rc;
 }
 
-DllExport int STDCALL hisModifyProblem(
+extern "C" DllExport int hisHaveModifyProblem(void* Cptr);
+int hisHaveModifyProblem(
+   void* Cptr
+)
+{
+   return 0;
+}
+
+extern "C" DllExport int hisModifyProblem(void* Cptr);
+int hisModifyProblem(
    void* Cptr
 )
 {
@@ -1521,3 +1514,48 @@ DllExport int STDCALL hisModifyProblem(
 
    return 0;
 }
+
+#ifdef __GNUC__
+__attribute__((constructor))
+#endif
+static void hisinit(void)
+{
+   gmoInitMutexes();
+   gevInitMutexes();
+   palInitMutexes();
+}
+
+#ifdef __GNUC__
+__attribute__((destructor))
+#endif
+static void hisfini(void)
+{
+   gmoFiniMutexes();
+   gevFiniMutexes();
+   palFiniMutexes();
+}
+
+#ifdef _WIN32
+#include <windows.h>  /* to make sure that BOOL is defined */
+
+BOOL WINAPI DllMain(
+   HINSTANCE hInst,
+   DWORD     reason,
+   LPVOID    reserved
+)
+{
+   switch( reason )
+   {
+      case DLL_PROCESS_ATTACH:
+         hisinit();
+         break;
+      case DLL_PROCESS_DETACH:
+         hisfini();
+         break;
+      case DLL_THREAD_ATTACH:
+      case DLL_THREAD_DETACH:
+         break;
+   }
+   return TRUE;
+}
+#endif

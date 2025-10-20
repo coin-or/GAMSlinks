@@ -35,7 +35,6 @@
 #include "gcgplugins.h"
 #endif
 
-
 #ifdef GAMS_BUILD
 #include "lpiswitch.h"
 #include "tbbfinal.h"
@@ -462,27 +461,11 @@ SCIP_RETCODE GamsScip::freeSCIP()
    return SCIP_OKAY;
 }
 
-#define GAMSSOLVER_ID scp
-#include "GamsEntryPoints_tpl.c"
-
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
-{
-   gmoInitMutexes();
-   gevInitMutexes();
-   palInitMutexes();
-}
-
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
-{
-   gmoFiniMutexes();
-   gevFiniMutexes();
-   palFiniMutexes();
-#ifdef GAMS_BUILD
-   tbbfinal();
-#endif
-}
-
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
+int scpCreate(
+   void** Cptr,
+   char*  msgBuf,
+   int    msgBufLen
+   )
 {
    assert(Cptr != NULL);
    assert(msgBuf != NULL);
@@ -510,7 +493,9 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char*
    return 0;
 }
 
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
+void scpFree(
+   void** Cptr
+   )
 {
    assert(Cptr != NULL);
 
@@ -522,13 +507,18 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
    palLibraryUnload();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
+int scpCallSolver(
+   void* Cptr
+   )
 {
    assert(Cptr != NULL);
    return ((GamsScip*)Cptr)->callSolver();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr)
+int scpReadyAPI(
+   void*       Cptr,
+   gmoHandle_t Gptr
+   )
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);
@@ -538,25 +528,11 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoH
 
 #ifdef GAMSLINKS_HAS_GCG
 
-#undef GAMSSOLVER_ID
-#define GAMSSOLVER_ID gcg
-#include "GamsEntryPoints_tpl.c"
-
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
-{
-   gmoInitMutexes();
-   gevInitMutexes();
-   palInitMutexes();
-}
-
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
-{
-   gmoFiniMutexes();
-   gevFiniMutexes();
-   palFiniMutexes();
-}
-
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
+int gcgCreate(
+   void** Cptr,
+   char*  msgBuf,
+   int    msgBufLen
+   )
 {
    assert(Cptr != NULL);
    assert(msgBuf != NULL);
@@ -584,7 +560,9 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char*
    return 0;
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
+int gcgFree(
+   void** Cptr
+   )
 {
    assert(Cptr != NULL);
 
@@ -596,13 +574,18 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
    palLibraryUnload();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
+int gcgCallSolver(
+   void* Cptr
+   )
 {
    assert(Cptr != NULL);
    return ((GamsScip*)Cptr)->callSolver();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr)
+int gcgReadyAPI(
+   void*       Cptr,
+   gmoHandle_t Gptr
+   )
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);
@@ -611,3 +594,51 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoH
 }
 
 #endif // GAMSLINKS_HAS_GCG
+
+#ifdef __GNUC__
+__attribute__((constructor))
+#endif
+static void scpinit(void)
+{
+   gmoInitMutexes();
+   gevInitMutexes();
+   palInitMutexes();
+}
+
+#ifdef __GNUC__
+__attribute__((destructor))
+#endif
+static void scpfini(void)
+{
+   gmoFiniMutexes();
+   gevFiniMutexes();
+   palFiniMutexes();
+#ifdef GAMS_BUILD
+   tbbfinal();
+#endif
+}
+
+#ifdef _WIN32
+#include <windows.h>  /* to make sure that BOOL is defined */
+
+BOOL WINAPI DllMain(
+   HINSTANCE hInst,
+   DWORD     reason,
+   LPVOID    reserved
+)
+{
+   switch( reason )
+   {
+      case DLL_PROCESS_ATTACH:
+         scpinit();
+         break;
+      case DLL_PROCESS_DETACH:
+         scpfini();
+         break;
+      case DLL_THREAD_ATTACH:
+      case DLL_THREAD_DETACH:
+         break;
+   }
+   return TRUE;
+}
+#endif

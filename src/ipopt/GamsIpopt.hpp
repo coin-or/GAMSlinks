@@ -12,6 +12,7 @@ typedef struct gevRec* gevHandle_t;
 
 #include "IpTNLP.hpp"
 #include "IpIpoptApplication.hpp"
+#include "GamsLinksConfig.h"
 #include "GamsNLP.hpp"
 
 #include <cstdint>
@@ -61,5 +62,42 @@ public:
 
    int modifyProblem();
 };
+
+extern "C" {
+
+DllExport
+int ipoCreate(
+   void** Cptr,
+   char*  msgBuf,
+   int    msgBufLen
+   );
+
+DllExport
+void ipoFree(
+   void** Cptr
+   );
+
+DllExport
+int ipoCallSolver(
+   void* Cptr
+   );
+
+DllExport
+int ipoReadyAPI(
+   void*       Cptr,
+   gmoHandle_t Gptr
+   );
+
+DllExport
+int ipoHaveModifyProblem(
+   void* Cptr
+   );
+
+DllExport
+int ipoModifyProblem(
+   void* Cptr
+   );
+
+} // extern "C"
 
 #endif

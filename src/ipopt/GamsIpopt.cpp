@@ -4,7 +4,6 @@
 //
 // Author: Stefan Vigerske
 
-#include "GamsLinksConfig.h"
 #include "GamsIpopt.hpp"
 #include "GamsNLP.hpp"
 #include "GamsJournal.hpp"
@@ -431,26 +430,11 @@ int GamsIpopt::modifyProblem()
    return 0;
 }
 
-
-#define GAMSSOLVER_ID ipo
-#define GAMSSOLVER_HAVEMODIFYPROBLEM
-#include "GamsEntryPoints_tpl.c"
-
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
-{
-   gmoInitMutexes();
-   gevInitMutexes();
-   palInitMutexes();
-}
-
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
-{
-   gmoFiniMutexes();
-   gevFiniMutexes();
-   palFiniMutexes();
-}
-
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
+int ipoCreate(
+   void** Cptr,
+   char*  msgBuf,
+   int    msgBufLen
+   )
 {
    assert(Cptr != NULL);
    assert(msgBuf != NULL);
@@ -478,7 +462,9 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char*
    return 0;
 }
 
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
+void ipoFree(
+   void** Cptr
+   )
 {
    assert(Cptr != NULL);
 
@@ -490,13 +476,18 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
    palLibraryUnload();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
+int ipoCallSolver(
+   void* Cptr
+   )
 {
    assert(Cptr != NULL);
    return ((GamsIpopt*)Cptr)->callSolver();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr)
+int ipoReadyAPI(
+   void*       Cptr,
+   gmoHandle_t Gptr
+   )
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);
@@ -504,9 +495,63 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoH
    return ((GamsIpopt*)Cptr)->readyAPI(Gptr);
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ModifyProblem)(void* Cptr)
+int ipoHaveModifyProblem(
+   void* Cptr
+)
+{
+   return 0;
+}
+
+int ipoModifyProblem(
+   void* Cptr
+   )
 {
    assert(Cptr != NULL);
 
    return ((GamsIpopt*)Cptr)->modifyProblem();
 }
+
+#ifdef __GNUC__
+__attribute__((constructor))
+#endif
+static void ipoinit(void)
+{
+   gmoInitMutexes();
+   gevInitMutexes();
+   palInitMutexes();
+}
+
+#ifdef __GNUC__
+__attribute__((destructor))
+#endif
+static void ipofini(void)
+{
+   gmoFiniMutexes();
+   gevFiniMutexes();
+   palFiniMutexes();
+}
+
+#ifdef _WIN32
+#include <windows.h>  /* to make sure that BOOL is defined */
+
+BOOL WINAPI DllMain(
+   HINSTANCE hInst,
+   DWORD     reason,
+   LPVOID    reserved
+)
+{
+   switch( reason )
+   {
+      case DLL_PROCESS_ATTACH:
+         ipoinit();
+         break;
+      case DLL_PROCESS_DETACH:
+         ipofini();
+         break;
+      case DLL_THREAD_ATTACH:
+      case DLL_THREAD_DETACH:
+         break;
+   }
+   return TRUE;
+}
+#endif

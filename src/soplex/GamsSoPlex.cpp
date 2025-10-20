@@ -7,7 +7,6 @@
 // TODO:
 // - make use of high-precision / exact arithmetic solver (?)
 
-#include "GamsLinksConfig.h"
 #include "GamsSoPlex.hpp"
 #include "GamsLicensing.h"
 
@@ -751,25 +750,11 @@ int GamsSoPlex::modifyProblem()
    return 0;
 }
 
-#define GAMSSOLVER_ID osp
-#define GAMSSOLVER_HAVEMODIFYPROBLEM
-#include "GamsEntryPoints_tpl.c"
-
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
-{
-   gmoInitMutexes();
-   gevInitMutexes();
-   palInitMutexes();
-}
-
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
-{
-   gmoFiniMutexes();
-   gevFiniMutexes();
-   palFiniMutexes();
-}
-
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
+int ospCreate(
+   void** Cptr,
+   char*  msgBuf,
+   int    msgBufLen
+   )
 {
    assert(Cptr != NULL);
    assert(msgBuf != NULL);
@@ -797,7 +782,9 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char*
    return 0;
 }
 
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
+void ospFree(
+   void** Cptr
+   )
 {
    assert(Cptr != NULL);
 
@@ -809,22 +796,81 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
    palLibraryUnload();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
+int ospCallSolver(
+   void* Cptr
+   )
 {
    assert(Cptr != NULL);
    return ((GamsSoPlex*)Cptr)->callSolver();
 }
 
-DllExport int  STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ModifyProblem)(void* Cptr)
+int ospHaveModifyProblem(
+   void* Cptr
+)
+{
+   return 0;
+}
+
+int ospModifyProblem(
+   void* Cptr
+   )
 {
    assert(Cptr != NULL);
    return ((GamsSoPlex*)Cptr)->modifyProblem();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr)
+int ospReadyAPI(
+   void*       Cptr,
+   gmoHandle_t Gptr
+   )
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);
 
    return ((GamsSoPlex*)Cptr)->readyAPI(Gptr);
 }
+
+#ifdef __GNUC__
+__attribute__((constructor))
+#endif
+static void ospinit(void)
+{
+   gmoInitMutexes();
+   gevInitMutexes();
+   palInitMutexes();
+}
+
+#ifdef __GNUC__
+__attribute__((destructor))
+#endif
+static void ospfini(void)
+{
+   gmoFiniMutexes();
+   gevFiniMutexes();
+   palFiniMutexes();
+}
+
+#ifdef _WIN32
+#include <windows.h>  /* to make sure that BOOL is defined */
+
+BOOL WINAPI DllMain(
+   HINSTANCE hInst,
+   DWORD     reason,
+   LPVOID    reserved
+)
+{
+   switch( reason )
+   {
+      case DLL_PROCESS_ATTACH:
+         ospinit();
+         break;
+      case DLL_PROCESS_DETACH:
+         ospfini();
+         break;
+      case DLL_THREAD_ATTACH:
+      case DLL_THREAD_DETACH:
+         break;
+   }
+   return TRUE;
+}
+#endif

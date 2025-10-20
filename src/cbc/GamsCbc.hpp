@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <deque>
 #include <string>
+#include "GamsLinksConfig.h"
 
 typedef struct gmoRec* gmoHandle_t;
 typedef struct gevRec* gevHandle_t;
@@ -86,5 +87,32 @@ public:
 
    int callSolver();
 };
+
+extern "C" {
+
+DllExport
+int cbcCreate(
+   void** Cptr,
+   char*  msgBuf,
+   int    msgBufLen
+   );
+
+DllExport
+void cbcFree(
+   void** Cptr
+   );
+
+DllExport
+int cbcCallSolver(
+   void* Cptr
+   );
+
+DllExport
+int cbcReadyAPI(
+   void*       Cptr,
+   gmoHandle_t Gptr
+   );
+
+} // extern "C"
 
 #endif /*GAMSCBC_HPP_*/

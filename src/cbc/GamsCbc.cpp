@@ -4,7 +4,6 @@
 //
 // Author: Stefan Vigerske
 
-#include "GamsLinksConfig.h"
 #include "GamsCbc.hpp"
 
 #include <cstdlib>
@@ -1381,44 +1380,11 @@ bool GamsCbc::isLP()
    return true;
 }
 
-#define GAMSSOLVER_ID         cbc
-#include "GamsEntryPoints_tpl.c"
-
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Initialize)(void)
-{
-// assuming that CBC was build without CPLEX (or the CPLEX feature not enabled)
-//#if defined(__linux) && defined(GAMSLINKS_HAS_CPLEX)
-//   CPXinitialize();
-//#endif
-
-   gmoInitMutexes();
-   gevInitMutexes();
-   optInitMutexes();
-   gdxInitMutexes();
-   palInitMutexes();
-}
-
-#ifdef GAMS_BUILD
-extern "C" void mkl_finalize(void);
-#endif
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Finalize)(void)
-{
-//#if defined(__linux) && defined(GAMSLINKS_HAS_CPLEX)
-//   CPXfinalize();
-//#endif
-
-   gmoFiniMutexes();
-   gevFiniMutexes();
-   optFiniMutexes();
-   gdxFiniMutexes();
-   palFiniMutexes();
-
-#ifdef GAMS_BUILD
-   mkl_finalize();
-#endif
-}
-
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char* msgBuf, int msgBufLen)
+int cbcCreate(
+   void** Cptr,
+   char*  msgBuf,
+   int    msgBufLen
+   )
 {
    assert(Cptr != NULL);
    assert(msgBuf != NULL);
@@ -1452,7 +1418,9 @@ DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Create)(void** Cptr, char*
    return 0;
 }
 
-DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
+void cbcFree(
+   void** Cptr
+   )
 {
    assert(Cptr != NULL);
 
@@ -1468,16 +1436,77 @@ DllExport void STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,Free)(void** Cptr)
       gdxLibraryUnload();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,CallSolver)(void* Cptr)
+int cbcCallSolver(
+   void* Cptr
+   )
 {
    assert(Cptr != NULL);
    return ((GamsCbc*)Cptr)->callSolver();
 }
 
-DllExport int STDCALL GAMSSOLVER_CONCAT(GAMSSOLVER_ID,ReadyAPI)(void* Cptr, gmoHandle_t Gptr)
+int cbcReadyAPI(
+   void*       Cptr,
+   gmoHandle_t Gptr
+   )
 {
    assert(Cptr != NULL);
    assert(Gptr != NULL);
 
    return ((GamsCbc*)Cptr)->readyAPI(Gptr);
 }
+
+#ifdef __GNUC__
+__attribute__((constructor))
+#endif
+static void cbcinit(void)
+{
+   gmoInitMutexes();
+   gevInitMutexes();
+   optInitMutexes();
+   gdxInitMutexes();
+   palInitMutexes();
+}
+
+#ifdef GAMS_BUILD
+extern "C" void mkl_thread_free_buffers(void);
+#endif
+#ifdef __GNUC__
+__attribute__((destructor))
+#endif
+static void cbcfini(void)
+{
+   gmoFiniMutexes();
+   gevFiniMutexes();
+   optFiniMutexes();
+   gdxFiniMutexes();
+   palFiniMutexes();
+
+#if defined(GAMS_BUILD) && !defined(__aarch64__)
+   mkl_thread_free_buffers();
+#endif
+}
+
+#ifdef _WIN32
+#include <windows.h>  /* to make sure that BOOL is defined */
+
+BOOL WINAPI DllMain(
+   HINSTANCE hInst,
+   DWORD     reason,
+   LPVOID    reserved
+)
+{
+   switch( reason )
+   {
+      case DLL_PROCESS_ATTACH:
+         cbcinit();
+         break;
+      case DLL_PROCESS_DETACH:
+         cbcfini();
+         break;
+      case DLL_THREAD_ATTACH:
+      case DLL_THREAD_DETACH:
+         break;
+   }
+   return TRUE;
+}
+#endif
