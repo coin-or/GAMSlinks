@@ -133,7 +133,7 @@ void addLine(
    double                primalbnd           /**< current primal bound */
 )
 {
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32)
    fprintf(solvetrace->tracefile, "%I64d, %c, %I64d, %g", solvetrace->linecount, seriesid, nnodes, seconds);
 #else
    fprintf(solvetrace->tracefile, "%lld, %c, %lld, %g", solvetrace->linecount, seriesid, nnodes, seconds);
