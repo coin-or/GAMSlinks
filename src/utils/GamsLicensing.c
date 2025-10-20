@@ -33,6 +33,8 @@ void GAMSinitLicensing(
    palLicenseRegisterGAMS(pal, 4, gevGetStrOpt(gev, "License4", ll));
    palLicenseRegisterGAMS(pal, 5, gevGetStrOpt(gev, "License5", ll));
    palLicenseRegisterGAMS(pal, 6, gevGetStrOpt(gev, "License6", ll));
+   palLicenseRegisterGAMS(pal, 7, gevGetStrOpt(gev, "License7", ll));
+   palLicenseRegisterGAMS(pal, 8, gevGetStrOpt(gev, "License8", ll));
    palLicenseRegisterGAMSDone(pal);
 
    palLicenseCheck(pal, gmoM(gmo), gmoN(gmo), gmoNZ(gmo), gmoNLNZ(gmo), gmoNDisc(gmo));
