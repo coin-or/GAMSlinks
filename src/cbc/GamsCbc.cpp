@@ -889,8 +889,8 @@ bool GamsCbc::setupParameters(
 
    // switch to wallclock-time in Cbc, if not requested otherwise
    char clocktype[GMS_SSSIZE];
-   if( optGetStrStr(opt, "clocktype", clocktype) == NULL || strcmp(clocktype, "wall") == 0 )
-      model->setUseElapsedTime(true);
+   usewallclock = optGetStrStr(opt, "clocktype", clocktype) == NULL || strcmp(clocktype, "wall") == 0;
+   model->setUseElapsedTime(usewallclock);
 
    nthreads = CbcModel::haveMultiThreadSupport() ? optGetIntStr(opt, "threads") : 1;
    if( nthreads > 1 && CbcModel::haveMultiThreadSupport() )
@@ -1044,7 +1044,7 @@ bool GamsCbc::writeSolution(
    bool write_solution = false;
 
    gmoSetHeadnTail(gmo, gmoHiterused, model->getIterationCount());
-   gmoSetHeadnTail(gmo, gmoHresused,  nthreads > 1 ? walltime : cputime);
+   gmoSetHeadnTail(gmo, gmoHresused,  usewallclock ? walltime : cputime);
    gmoSetHeadnTail(gmo, gmoTmipbest,  model->getBestPossibleObjValue());
    gmoSetHeadnTail(gmo, gmoTmipnod,   model->getNodeCount());
 
@@ -1225,10 +1225,7 @@ bool GamsCbc::writeSolution(
       char buffer[255];
       if( model->bestSolution() )
       {
-         if( nthreads > 1 )
-            snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %.2f CPU seconds, %.2f wall clock seconds)\n", model->getObjValue(), model->getNodeCount(), cputime, walltime);
-         else
-            snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %g seconds)\n", model->getObjValue(), model->getNodeCount(), cputime);
+         snprintf(buffer, 255, "MIP solution: %15.6e   (%d nodes, %.2f CPU seconds, %.2f wall clock seconds)\n", model->getObjValue(), model->getNodeCount(), cputime, walltime);
          gevLogStat(gev, buffer);
       }
       snprintf(buffer, 255, "Best possible: %14.6e", model->getBestPossibleObjValue());

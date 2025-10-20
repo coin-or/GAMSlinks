@@ -32,6 +32,7 @@ private:
 
    double                optcr;              /**< relative optimality tolerance */
    double                optca;              /**< absolute optimality tolerance */
+   bool                  usewallclock;       /**< whether the clock type is wallclock time */
    bool                  mipstart;           /**< whether to pass primal solution to MIP solve */
    int                   nthreads;           /**< number of threads to use */
    char*                 writemps;           /**< name of mps file to write instance to */
