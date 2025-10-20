@@ -89,7 +89,7 @@ public:
 };
 
 /** CbcEventHandler that reports bounds to a GAMS solve trace object */
-class GamsSolveTraceEventHandler : public CbcEventHandler
+class GamsCbcEventHandler : public CbcEventHandler
 {
    friend int cbcCallBack(
       CbcModel*          model,              /**< CBC model that calls this function */
@@ -97,16 +97,19 @@ class GamsSolveTraceEventHandler : public CbcEventHandler
    );
 
 private:
+   gevHandle_t           gev;
    GAMS_SOLVETRACE*      solvetrace;         /**< GAMS solve trace data structure */
    double                objfactor;          /**< multiplier for objective function values */
    CbcModel*             mainmodel;          /**< the CbcModel for which we want to trace the solving process */
 
 public:
-   GamsSolveTraceEventHandler(
-      GAMS_SOLVETRACE*   solvetrace_,        /**< GAMS solve trace data structure */
+   GamsCbcEventHandler(
+      gevHandle_t        gev_,               /**< GAMS Environment */
+      GAMS_SOLVETRACE*   solvetrace_ = NULL, /**< GAMS solve trace data structure */
       double             objfactor_ = 1.0    /**< multiplier for objective function values */
    )
-   : solvetrace(solvetrace_),
+   : gev(gev_),
+     solvetrace(solvetrace_),
      objfactor(objfactor_),
      mainmodel(NULL)
    { }
@@ -114,19 +117,22 @@ public:
    CbcEventHandler* clone() const
    {
       // TODO clone only if model_ != mainmodel, so we don't clone ourself into sub-cbc?
-      return new GamsSolveTraceEventHandler(solvetrace, objfactor);
+      return new GamsCbcEventHandler(gev, solvetrace, objfactor);
    }
 
    CbcAction event(
       CbcEvent           whichEvent
    )
    {
-      if( model_ == mainmodel && (whichEvent == node || whichEvent == solution || whichEvent == heuristicSolution) )
+      if( solvetrace != NULL && model_ == mainmodel && (whichEvent == node || whichEvent == solution || whichEvent == heuristicSolution) )
       {
          GAMSsolvetraceAddLine(solvetrace, model_->getNodeCount(),
             objfactor * model_->getBestPossibleObjValue(),
             model_->getSolutionCount() > 0 ? objfactor * model_->getObjValue() : (objfactor > 0.0 ? 1.0 : -1.0) * model_->getObjSense() * model_->getInfinity());
       }
+
+      if( gevTerminateGet(gev) && whichEvent != endSearch )
+         return stop;
 
       return noAction;
    }
@@ -138,27 +144,26 @@ int cbcCallBack(
    int                whereFrom           /**< indicator at which time in the CBC algorithm it is called */
 )
 {
+   assert(dynamic_cast<GamsCbcMessageHandler*>(model->messageHandler()) != NULL);
+   GamsCbcMessageHandler* msghandler = static_cast<GamsCbcMessageHandler*>(model->messageHandler());
+
    if( whereFrom == 3 ) /* just before B&B */
    {
       /* reset model in message handler  */
-      GamsCbcMessageHandler* msghandler = dynamic_cast<GamsCbcMessageHandler*>(model->messageHandler());
-      assert(msghandler != NULL);
       msghandler->model = model;
 
       /* update mainmodel in event handler */
-      GamsSolveTraceEventHandler* eventhandler = dynamic_cast<GamsSolveTraceEventHandler*>(model->getEventHandler());
+      GamsCbcEventHandler* eventhandler = dynamic_cast<GamsCbcEventHandler*>(model->getEventHandler());
       if( eventhandler != NULL )
          eventhandler->mainmodel = model;
    }
    else if( whereFrom == 4 ) /* just after B&B */
    {
       /* clear model in message handler */
-      GamsCbcMessageHandler* handler = dynamic_cast<GamsCbcMessageHandler*>(model->messageHandler());
-      assert(handler != NULL);
-      handler->model = NULL;
+      msghandler->model = NULL;
 
       /* clear mainmodel in event handler */
-      GamsSolveTraceEventHandler* eventhandler = dynamic_cast<GamsSolveTraceEventHandler*>(model->getEventHandler());
+      GamsCbcEventHandler* eventhandler = dynamic_cast<GamsCbcEventHandler*>(model->getEventHandler());
       if( eventhandler != NULL )
          eventhandler->mainmodel = NULL;
    }
@@ -287,12 +292,9 @@ int GamsCbc::callSolver()
          gevLogStat(gev, "Initializing solvetrace failed.");
          GAMSsolvetraceFree(&solvetrace_);
       }
-      else
-      {
-         GamsSolveTraceEventHandler traceeventhdlr(solvetrace_);
-         model->passInEventHandler(&traceeventhdlr);
-      }
    }
+   GamsCbcEventHandler cbceventhdlr(gev, solvetrace_);
+   model->passInEventHandler(&cbceventhdlr);
 
    gevLogStat(gev, "\nCalling CBC main solution routine...");
 
