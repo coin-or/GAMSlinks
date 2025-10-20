@@ -36,11 +36,25 @@ int main(int argc, char** argv)
 
    for( int i = 0; i < SoPlex::BOOLPARAM_COUNT; ++i )
    {
+      // skip rational solve parameters
       if( i == SoPlex::EQTRANS )
          continue;
       if( i == SoPlex::RATFAC )
          continue;
+      if( i == SoPlex::RATFACJUMP )
+         continue;
       if( i == SoPlex::RATREC )
+         continue;
+      // precision boosting not available as not build with MPFR
+      if( i == SoPlex::ADAPT_TOLS_TO_MULTIPRECISION )
+         continue;
+      if( i == SoPlex::PRECISION_BOOSTING )
+         continue;
+      if( i == SoPlex::BOOSTED_WARM_START )
+         continue;
+      if( i == SoPlex::ITERATIVE_REFINEMENT )
+         continue;
+      if( i == SoPlex::RECOVERY_MECHANISM )
          continue;
 
       gmsopt.collect(
@@ -53,6 +67,7 @@ int main(int argc, char** argv)
    {
       if( i == SoPlex::OBJSENSE )
          continue;
+      // skip rational solve options
       if( i == SoPlex::SYNCMODE )
          continue;
       if( i == SoPlex::READMODE )
@@ -63,6 +78,12 @@ int main(int argc, char** argv)
          continue;
       if( i == SoPlex::RATFAC_MINSTALLS )
          continue;
+      // precision boosting not available as not build with MPFR
+      if( i == SoPlex::MULTIPRECISION_LIMIT )
+         continue;
+      if( i == SoPlex::STORE_BASIS_SIMPLEX_FREQ )
+         continue;
+      // no solution polishing for pure LP solver
       if( i == SoPlex::SOLUTION_POLISHING )
          continue;
 
@@ -92,6 +113,9 @@ int main(int argc, char** argv)
       if( i == SoPlex::RATREC_FREQ )
          continue;
       if( i == SoPlex::OBJ_OFFSET )
+         continue;
+      // precision boosting not available as not build with MPFR
+      if( i == SoPlex::PRECISION_BOOSTING_FACTOR )
          continue;
 
       double defaultval = translateSoplexInfinity(SoPlex::Settings::realParam.defaultValue[i]);
