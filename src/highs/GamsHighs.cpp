@@ -17,11 +17,22 @@
 #include "palmcc.h"
 #ifdef GAMS_BUILD
 #include "GamsLicensing.h"
+#include "libloader.h"
 #endif
 #include "GamsSolveTrace.h"
 
 /* HiGHS API */
 #include "Highs.h"
+
+#ifdef _WIN32
+#define LIBCUPDLP_CPU "cupdlp_cpu.dll"
+#define LIBCUPDLP_CUDA "cupdlp_cuda.dll"
+#elif defined(__APPLE__)
+#define LIBCUPDLP_CPU "libcupdlp_cpu.dylib"
+#else
+#define LIBCUPDLP_CPU "libcupdlp_cpu.so"
+#define LIBCUPDLP_CUDA "libcupdlp_cuda.so"
+#endif
 
 typedef struct
 {
@@ -30,20 +41,31 @@ typedef struct
 
    Highs*        highs;
    bool          ranging;
-   bool          mipstart;
+   int           mipstart;
+   bool          illconditioning;
+   bool          illconditioning_constraint;
+   int           illconditioning_method;
+   double        illconditioning_bound;
    std::string*  solvetracefile;          /* Name of solvetrace file to write */
    int           solvetracenodefreq;      /* Solvetrace node frequency */
    double        solvetracetimefreq;      /* Solvetrace time frequency */
+   int           iis;
+#ifdef GAMS_BUILD
+   bool          pdlp_gpu;
+#endif
 
    GAMS_solvetrace* solvetrace;
+#ifdef GAMS_BUILD
+   void*         cupdlplib_handle;
+#endif
 } gamshighs_t;
 
 static
 void gamshighs_callback(
    const int                   callback_type,
-   const char*                 message,
-   const HighsCallbackDataOut* data_out,
-   HighsCallbackDataIn*        data_in,
+   const std::string&          message,
+   const HighsCallbackOutput*  data_out,
+   HighsCallbackInput*         data_in,
    void*                       user_callback_data
 )
 {
@@ -52,10 +74,10 @@ void gamshighs_callback(
 
    if( callback_type == HighsCallbackType::kCallbackLogging )
    {
-      if( data_out->log_type == (int)HighsLogType::kInfo )
-         gevLogPChar(gh->gev, message);
+      if( data_out->log_type == HighsLogType::kInfo )
+         gevLogPChar(gh->gev, message.c_str());
       else
-         gevLogStatPChar(gh->gev, message);
+         gevLogStatPChar(gh->gev, message.c_str());
 
       return;
    }
@@ -159,9 +181,29 @@ int setupProblem(
          false, &gh->ranging, false) );
 
    highsopt.records.push_back(
-      new OptionRecordBool("mipstart",
-         "Whether to pass initial level values as starting point to MIP solver",
-         false, &gh->mipstart, false) );
+      new OptionRecordBool("illconditioning",
+         "Whether to run ill conditioning analysis after solving an LP with a simplex method",
+         false, &gh->illconditioning, false) );
+
+   highsopt.records.push_back(
+      new OptionRecordBool("illconditioning_constraint",
+         "Whether to run ill conditioning on constraint view (alternative is variable view)",
+         false, &gh->illconditioning_constraint, false) );
+
+   highsopt.records.push_back(
+      new OptionRecordInt("illconditioning_method",
+         "Method to use for ill conditioning analysis, i.e., auxiliary problem to be solved",
+         false, &gh->illconditioning_method, 0, 0, 1) );
+
+   highsopt.records.push_back(
+      new OptionRecordDouble("illconditioning_bound",
+         "Bound on ill conditioning when using ill conditioning analysis method 1",
+         false, &gh->illconditioning_bound, 0.0, 1e-4, DBL_MAX) );
+
+   highsopt.records.push_back(
+      new OptionRecordInt("mipstart",
+         "Whether and how to pass initial level values as starting point to MIP solver",
+         false, &gh->mipstart, 0, 2, 4) );
 
    highsopt.records.push_back(
       new OptionRecordString("solvetrace",
@@ -177,6 +219,18 @@ int setupProblem(
       new OptionRecordDouble("solvetracetimefreq",
          "Frequency in seconds for writing to solve trace file",
          false, &gh->solvetracetimefreq, 0.0, 5.0, DBL_MAX) );
+
+   highsopt.records.push_back(
+      new OptionRecordInt("iis",
+         "whether to compute an irreducible infeasible subset of an LP",
+         false, &gh->iis, 0, 0, 2) );
+
+#ifdef GAMS_BUILD
+   highsopt.records.push_back(
+      new OptionRecordBool("pdlp_gpu",
+         "Whether to attempt using an NVIDIA GPU when solver=pdlp.",
+         false, &gh->pdlp_gpu, false) );
+#endif
 
    numCol = gmoN(gh->gmo);
    numRow = gmoM(gh->gmo);
@@ -273,6 +327,8 @@ int setupProblem(
       astart.data(), aindex.data(), avalue.data(),
       integrality.empty() ? NULL : integrality.data());
 
+   // passing an initial solution for an LP turns off presolve, since HiGHS constructs a basis from it (unless we specify a basis below)
+#if 0
    // pass initial solution, if LP and rows are present
    // for a MIP, we consider setting a starting point in setupOptions()
    // so for an LP, the users starting point is set only once and not for every solve after a problem modification
@@ -293,6 +349,7 @@ int setupProblem(
       }
       gh->highs->setSolution(sol);
    }
+#endif
 
    if( gmoHaveBasis(gh->gmo) )
    {
@@ -340,6 +397,7 @@ int setupOptions(
    gh->highs->setOptionValue("time_limit", gevGetDblOpt(gh->gev, gevResLim));
    gh->highs->setOptionValue("simplex_iteration_limit", gevGetIntOpt(gh->gev, gevIterLim));
    gh->highs->setOptionValue("ipm_iteration_limit", gevGetIntOpt(gh->gev, gevIterLim));
+   gh->highs->setOptionValue("pdlp_iteration_limit", gevGetIntOpt(gh->gev, gevIterLim));
    if( gevGetIntOpt(gh->gev, gevUseCutOff) )
       gh->highs->setOptionValue("objective_bound", gevGetDblOpt(gh->gev, gevCutOff));
    if( gevGetIntOpt(gh->gev, gevNodeLim) > 0 )
@@ -350,6 +408,10 @@ int setupOptions(
       gh->highs->setOptionValue("threads", gevThreads(gh->gev));
    if( gevGetIntOpt(gh->gev, gevLogOption) == 0 )
       gh->highs->setOptionValue("output_flag", false);
+
+   // we want the default of pdlp_e_restart_method be 0 or 1, depending on the value of option pdlp_gpu
+   // to find out whether the user set the option, we set it to 2 first (this is a valid but undocumented value)
+   gh->highs->setOptionValue("pdlp_e_restart_method", 2);
 
    if( gmoOptFile(gh->gmo) > 0 )
    {
@@ -362,6 +424,25 @@ int setupOptions(
    // that's not what we want
    if( gmoNDisc(gh->gmo) > 0 )
       gh->highs->setOptionValue("solver", "choose");
+
+#ifdef GAMS_BUILD
+   // disable GPU variant of PDLP if we have no cupdlp_cuda library
+#ifndef LIBCUPDLP_CUDA
+   if( gh->pdlp_gpu )
+   {
+      gevLogPChar(gh->gev, "Reset pdlp_gpu to false. CUDA-enabled cuPDLP-C not available on this platform.\n");
+      gh->highs->setOptionValue("pdlp_gpu", false);
+   }
+#endif
+#endif
+
+#ifdef GAMS_BUILD
+   // if pdlp_e_restart_method is still at 2, we assume user did not set this, and set to 0 or 1 depending on pdlp_gpu
+   int pdlp_e_restart_method;
+   gh->highs->getOptionValue("pdlp_e_restart_method", pdlp_e_restart_method);
+   if( pdlp_e_restart_method == 2 )
+      gh->highs->setOptionValue("pdlp_e_restart_method", gh->pdlp_gpu ? 1 : 0);
+#endif
 
    gevLogPChar(gh->gev, "Options set:\n");
    for( OptionRecord* hopt : gh->highs->getOptions().records )
@@ -414,43 +495,138 @@ int setupOptions(
       }
    }
 
-   // write problem to file, if requested
-   bool writemodel;
-   gh->highs->getOptionValue("write_model_to_file", writemodel);
-   if( writemodel )
-   {
-      std::string modelfile;
-
-      gh->highs->getOptionValue("write_model_file", modelfile);
-      if( modelfile.empty() )
-      {
-         // if no filename specified, make up one from inputname
-         gmoNameInput(gh->gmo, buf);
-         modelfile = buf;
-         modelfile += ".lp";
-      }
-      sprintf(buf, "Writing model instance to %s.\n", modelfile.c_str());
-      gevLogPChar(gh->gev, buf);
-
-      gh->highs->writeModel(modelfile);
-   }
-
-   // pass initial solution if mipstart set and MIP
-   if( gh->mipstart && gmoNDisc(gh->gmo) > 0 )
+   // pass initial solution if mipstart set and MIP and we do not do IIS only
+   if( gh->mipstart > 0 && gmoNDisc(gh->gmo) > 0 && gh->iis != 2 )
    {
       HighsSolution sol;
-      sol.col_value.resize(gmoN(gh->gmo));
-      sol.col_dual.resize(gmoN(gh->gmo));
-      sol.row_value.resize(gmoM(gh->gmo));
-      sol.row_dual.resize(gmoM(gh->gmo));
-      gmoGetVarL(gh->gmo, &sol.col_value[0]);
-      gmoGetVarM(gh->gmo, &sol.col_dual[0]);
-      if( gmoM(gh->gmo) )
+      switch( gh->mipstart )
       {
-         gmoGetEquL(gh->gmo, &sol.row_value[0]);
-         gmoGetEquM(gh->gmo, &sol.row_dual[0]);
+         /* pass all values and only check feasibility - default*/
+         case 2:
+         {
+            /* HiGHS does not have an option where one can pass it a solution and
+             * it would just discard if when it is not feasible.
+             * The closest would be setting mip_max_start_nodes=0, but it would still
+             * go through some presolve and LP solve.
+             * Thus, we first check whether the initial values are feasible by using HiGHS' assessLpPrimalSolution().
+             * However, HiGHS accepts a solution there only if row values are correct, so we calculate them first (so GAMS user doesn't have to set valid equation levels).
+             * If the solution is found feasible, we pass it to HiGHS, which will call assessLpPrimalSolution() again...
+             */
+            sol.col_value.resize(gmoN(gh->gmo));
+            gmoGetVarL(gh->gmo, sol.col_value.data());
+            calculateRowValuesQuad(gh->highs->getLp(), sol.col_value, sol.row_value);
+            sol.value_valid = true;
+
+            bool valid;
+            bool integral;
+            bool feasible;
+            assessLpPrimalSolution("", gh->highs->getOptions(),
+               gh->highs->getLp(), sol, valid, integral, feasible);
+
+            if( feasible )
+            {
+               gh->highs->setSolution(sol);
+               snprintf(buf, sizeof(buf), "Initial variable level values are feasible. Passing to HiGHS.");
+            }
+            else
+            {
+               snprintf(buf, sizeof(buf), "Initial variable level values are not feasible.");
+            }
+            gevLogPChar(gh->gev, buf);
+
+            break;
+         }
+
+         /* pass all values and let HiGHS try to repair
+          * if all integer vars have integer values, it will solve a LP
+          * if some integer vars have fractional values, it will solve a MIP
+          */
+         case 3:
+         {
+            sol.col_value.resize(gmoN(gh->gmo));
+            gmoGetVarL(gh->gmo, sol.col_value.data());
+
+            gh->highs->setSolution(sol);
+
+            snprintf(buf, sizeof(buf), "Passed solution with values for all variables to HiGHS.");
+            gevLogPChar(gh->gev, buf);
+
+            break;
+         }
+
+         /* pass values for all discrete variables (1) or only those with fractionality below tryint (4)
+          * HiGHS will solve a LP or MIP to find remaining variable values
+          */
+         case 1:
+         case 4:
+         {
+            sol.col_value.assign(gmoN(gh->gmo), kHighsUndefined);
+
+            double tryint = gevGetDblOpt(gh->gev, gevTryInt);
+            int ndefined = 0;
+            for( int i = 0; i < gmoN(gh->gmo); ++i )
+            {
+               if( gmoGetVarTypeOne(gh->gmo, i) == gmovar_B || gmoGetVarTypeOne(gh->gmo, i) == gmovar_I || gmoGetVarTypeOne(gh->gmo, i) == gmovar_SI )
+               {
+                  double val = gmoGetVarLOne(gh->gmo, i);
+                  if( gh->mipstart == 1 )
+                  {
+                     sol.col_value[i] = val;
+                     ++ndefined;
+                  }
+                  else if( fabs(round(val)-val) <= tryint )
+                  {
+                     // HiGHS would treat fractional value for integer as unspecified, so better round to integer
+                     sol.col_value[i] = round(val);
+                     ++ndefined;
+                  }
+               }
+            }
+
+            gh->highs->setSolution(sol);
+
+            snprintf(buf, sizeof(buf), "Passed solution with values for %d variables (%.1f%%) to HiGHS.", ndefined, 100.0*(double)ndefined/gmoN(gh->gmo));
+            gevLogPChar(gh->gev, buf);
+
+            break;
+         }
+
+         default:
+         {
+            snprintf(buf, sizeof(buf), "Setting mipstart = %d not supported. Ignored.\n", gh->mipstart);
+            gevLogStatPChar(gh->gev, buf);
+            break;
+         }
       }
-      gh->highs->setSolution(sol);
+   }
+
+   std::string solver_choice;
+   gh->highs->getOptionValue("solver", solver_choice);
+   if( solver_choice == "pdlp" )
+   {
+#ifdef GAMS_BUILD
+#ifdef LIBCUPDLP_CUDA
+      if( gh->pdlp_gpu )
+         gh->cupdlplib_handle = loadLibrary(LIBCUPDLP_CUDA, buf, sizeof(buf));
+      else
+#endif
+         gh->cupdlplib_handle = loadLibrary(LIBCUPDLP_CPU, buf, sizeof(buf));
+      if( gh->cupdlplib_handle == NULL )
+      {
+         gevLogStat(gh->gev, "Error: PDLP solver library not available:");
+         gevLogStat(gh->gev, buf);
+         return 1;
+      }
+      void* solveLpCupdlp_C_sym;
+      solveLpCupdlp_C_sym = loadSymbol(gh->cupdlplib_handle, "solveLpCupdlp_C", buf, sizeof(buf));
+      if( solveLpCupdlp_C_sym == NULL )
+      {
+         gevLogStat(gh->gev, "Error: PDLP solver library not available:");
+         gevLogStat(gh->gev, buf);
+         return 1;
+      }
+      gh->highs->getOptions().solveLpCupdlp_C = (HighsStatus (*)(HighsLpSolverObject*))solveLpCupdlp_C_sym;
+#endif
    }
 
    return 0;
@@ -517,34 +693,39 @@ int processSolve(
 
       case HighsModelStatus::kObjectiveBound:
       case HighsModelStatus::kObjectiveTarget:
-         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Integer : gmoModelStat_NoSolutionReturned);
          gmoSolveStatSet(gmo, gmoSolveStat_Solver);
          break;
 
       case HighsModelStatus::kTimeLimit:
-         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Integer : gmoModelStat_NoSolutionReturned);
          gmoSolveStatSet(gmo, gmoSolveStat_Resource);
          break;
 
       case HighsModelStatus::kIterationLimit:
          // may also mean node limit
-         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Integer : gmoModelStat_NoSolutionReturned);
          gmoSolveStatSet(gmo, gmoSolveStat_Iteration);
          break;
 
       case HighsModelStatus::kSolutionLimit:
          // may also mean node limit
-         gmoModelStatSet(gmo, sol.value_valid ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Integer : gmoModelStat_NoSolutionReturned);
+         gmoSolveStatSet(gmo, gmoSolveStat_Resource);
+         break;
+
+      case HighsModelStatus::kMemoryLimit:
+         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Integer : gmoModelStat_NoSolutionReturned);
          gmoSolveStatSet(gmo, gmoSolveStat_Resource);
          break;
 
       case HighsModelStatus::kInterrupt:
-         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Integer : gmoModelStat_NoSolutionReturned);
          gmoSolveStatSet(gmo, gmoSolveStat_User);
          break;
 
       case HighsModelStatus::kUnknown:
-         gmoModelStatSet(gmo, sol.value_valid ? gmoModelStat_Feasible : gmoModelStat_NoSolutionReturned);
+         gmoModelStatSet(gmo, sol.value_valid && gmoNDisc(gh->gmo) > 0 ? gmoModelStat_Integer : gmoModelStat_NoSolutionReturned);
          gmoSolveStatSet(gmo, gmoSolveStat_Solver);
          break;
    }
@@ -595,35 +776,6 @@ int processSolve(
       // if there were =N= rows (lp08), then gmoCompleteObjective wouldn't get their activity right
       // gmoCompleteObjective(gmo, highs->getInfo().objective_function_value);
       gmoCompleteSolution(gmo);
-   }
-
-   // write solution to extra file, if requested
-   if( sol.value_valid )
-   {
-      bool writesol;
-      gh->highs->getOptionValue("write_solution_to_file", writesol);
-      if( writesol )
-      {
-         char buf[GMS_SSSIZE+50];
-         std::string solfile;
-         HighsInt solstyle;
-
-         gh->highs->getOptionValue("solution_file", solfile);
-         if( solfile.empty() )
-         {
-            // if no filename specified, make up one from inputname
-            gmoNameInput(gh->gmo, buf);
-            solfile = buf;
-            solfile += ".sol";
-         }
-
-         gh->highs->getOptionValue("write_solution_style", solstyle);
-
-         sprintf(buf, "Writing solution to %s using style %d.\n", solfile.c_str(), solstyle);
-         gevLogPChar(gh->gev, buf);
-
-         gh->highs->writeSolution(solfile, solstyle);
-      }
    }
 
    return 0;
@@ -875,6 +1027,182 @@ void doRanging(
    gevLogPChar(gh->gev, "Sensitivity analysis printed to listing file.\n");
 }
 
+// https://gurobi-optimization-gurobi-modelanalyzer.readthedocs-hosted.com/en/latest/quickstart_illcond.html
+static
+void doIllConditioningAnalysis(
+   gamshighs_t* gh
+)
+{
+   if( !gh->illconditioning )
+      return;
+
+   // the result looks more useful when column/rownames are available
+   if( gmoDict(gh->gmo) != NULL )
+   {
+      char name[GMS_SSSIZE];
+      for( int i = 0; i < gmoN(gh->gmo); ++i )
+      {
+         gmoGetVarNameOne(gh->gmo, i, name);
+         gh->highs->passColName(i, name);
+      }
+      for( int i = 0; i < gmoM(gh->gmo); ++i )
+      {
+         gmoGetEquNameOne(gh->gmo, i, name);
+         gh->highs->passRowName(i, name);
+      }
+   }
+
+   // for now we just let HiGHS print result to log
+   HighsIllConditioning illness;
+   gh->highs->getIllConditioning(illness, gh->illconditioning_constraint, gh->illconditioning_method, gh->illconditioning_bound);
+}
+
+static
+HighsStatus doIIS(
+   gamshighs_t* gh,
+   int          setsolveattribs
+)
+{
+   HighsStatus status;
+   HighsIis iis;
+   char msgbuf[2*GMS_SSSIZE + 100];
+   char name[GMS_SSSIZE];
+
+   if( setsolveattribs )
+   {
+      gmoModelStatSet(gh->gmo, gmoModelStat_ErrorNoSolution);
+      gmoSolveStatSet(gh->gmo, gmoSolveStat_SolverErr);
+   }
+
+   if( gmoNDisc(gh->gmo) > 0 )
+   {
+      /* I think IIS is only available for LP at the moment */
+      gevLogPChar(gh->gev, "\nIrreducible Inconsistent Subsystem (IIS) only available for LP so far.\n");
+
+      if( setsolveattribs )
+         gmoSolveStatSet(gh->gmo, gmoSolveStat_Capability);
+      return HighsStatus::kOk;
+   }
+
+   gevLogPChar(gh->gev, "\nStarting Irreducible Inconsistent Subsystem (IIS) computation...\n");
+
+   status = gh->highs->getIis(iis);
+   if( status == HighsStatus::kError )
+      return HighsStatus::kError;
+
+   if( setsolveattribs )
+   {
+      /* store time and iterations of IIS */
+      double iistime = 0.0;
+      int iisiter = 0;
+      for( size_t i = 0; i < iis.info_.size(); ++i )
+      {
+         iistime += iis.info_[i].simplex_time;
+         iisiter += iis.info_[i].simplex_iterations;
+      }
+      gmoSetHeadnTail(gh->gmo, gmoHresused, iistime);
+      gmoSetHeadnTail(gh->gmo, gmoHiterused, iisiter);
+   }
+
+   if( !iis.valid_ )
+   {
+      gevLogStatPChar(gh->gev, "\nNo IIS found.\n");
+      if( setsolveattribs )
+      {
+         gmoModelStatSet(gh->gmo, gmoModelStat_NoSolutionReturned);  /* we have no feasible-nosolution status :( */
+         gmoSolveStatSet(gh->gmo, gmoSolveStat_Normal);
+      }
+      return HighsStatus::kOk;
+   }
+
+   assert(iis.col_index_.size() == iis.col_bound_.size());
+   assert(iis.row_index_.size() == iis.row_bound_.size());
+
+   gevStatCon(gh->gev); /* without this, IIS doesn't show up in listing file, which we need for some test */
+
+   gevLogStatPChar(gh->gev, "\nIIS found.\n");
+   if( setsolveattribs )
+   {
+      gmoModelStatSet(gh->gmo, gmoModelStat_InfeasibleNoSolution);
+      gmoSolveStatSet(gh->gmo, gmoSolveStat_Normal);
+   }
+
+   /* print equations in IIS */
+   snprintf(msgbuf, sizeof(msgbuf), "Number of equations in IIS: %d\n", (int)iis.row_index_.size());
+   gevLogStatPChar(gh->gev, msgbuf);
+
+   for( size_t i = 0; i < iis.row_index_.size(); ++i )
+   {
+      int rowidx = iis.row_index_[i];
+      if( gmoDict(gh->gmo) != NULL )
+         gmoGetEquNameOne(gh->gmo, rowidx, name);
+      else
+         sprintf(name, "row%d", rowidx);
+
+      switch( (enum IisBoundStatus)iis.row_bound_[i] )
+      {
+         case kIisBoundStatusDropped:
+         case kIisBoundStatusNull:
+         case kIisBoundStatusFree:
+            // these should not happen in a final IIS
+            break;
+         case kIisBoundStatusLower:
+            snprintf(msgbuf, sizeof(msgbuf), "  Lower: %s >= %g\n", name, gmoGetRhsOne(gh->gmo, rowidx));
+            gevLogStatPChar(gh->gev, msgbuf);
+            break;
+         case kIisBoundStatusUpper:
+            snprintf(msgbuf, sizeof(msgbuf), "  Upper: %s <= %g\n", name, gmoGetRhsOne(gh->gmo, rowidx));
+            gevLogStatPChar(gh->gev, msgbuf);
+            break;
+         case kIisBoundStatusBoxed:
+            snprintf(msgbuf, sizeof(msgbuf), "  Both:  %s  = %g\n", name, gmoGetRhsOne(gh->gmo, rowidx));
+            gevLogStatPChar(gh->gev, msgbuf);
+            break;
+      }
+   }
+
+   /* print variable bounds in IIS */
+   snprintf(msgbuf, sizeof(msgbuf), "Number of variables in IIS: %d\n", (int)iis.col_index_.size());
+   gevLogStatPChar(gh->gev, msgbuf);
+
+   for( size_t i = 0; i < iis.col_index_.size(); ++i )
+   {
+      int colidx = iis.col_index_[i];
+      if( gmoDict(gh->gmo) != NULL )
+         gmoGetVarNameOne(gh->gmo, colidx, name);
+      else
+         sprintf(name, "col%d", colidx);
+
+      switch( (enum IisBoundStatus)iis.col_bound_[i] )
+      {
+         case kIisBoundStatusDropped:
+         case kIisBoundStatusNull:
+         case kIisBoundStatusFree:
+            // these should not happen in a final IIS
+            break;
+         case kIisBoundStatusLower:
+            snprintf(msgbuf, sizeof(msgbuf), "  Lower: %s >= %g\n", name, gmoGetVarLowerOne(gh->gmo, colidx));
+            gevLogStatPChar(gh->gev, msgbuf);
+            break;
+         case kIisBoundStatusUpper:
+            snprintf(msgbuf, sizeof(msgbuf), "  Upper: %s <= %g\n", name, gmoGetVarUpperOne(gh->gmo, colidx));
+            gevLogStatPChar(gh->gev, msgbuf);
+            break;
+         case kIisBoundStatusBoxed:
+            if( gmoGetVarLowerOne(gh->gmo, colidx) == gmoGetVarUpperOne(gh->gmo, colidx) )
+               snprintf(msgbuf, sizeof(msgbuf), "  Both:  %s  = %g\n", name, gmoGetVarLowerOne(gh->gmo, colidx));
+            else
+               snprintf(msgbuf, sizeof(msgbuf), "  Lower: %s >= %g\n  Upper: %s <= %g\n", name, gmoGetVarLowerOne(gh->gmo, colidx), name, gmoGetVarUpperOne(gh->gmo, colidx));
+            gevLogStatPChar(gh->gev, msgbuf);
+            break;
+      }
+   }
+
+   gevStatCoff(gh->gev);
+
+   return HighsStatus::kOk;
+}
+
 #define GAMSSOLVER_ID his
 #define GAMSSOLVER_HAVEMODIFYPROBLEM
 #include "GamsEntryPoints_tpl.c"
@@ -937,6 +1265,18 @@ DllExport void STDCALL hisFree(
 
    delete gh->highs;
    delete gh->solvetracefile;
+
+#ifdef GAMS_BUILD
+   if( gh->cupdlplib_handle != NULL )
+   {
+      char buf[GMS_SSSIZE];
+      buf[0] = '\0';
+      unloadLibrary(gh->cupdlplib_handle, buf, GMS_SSSIZE);
+      if( buf[0] != '\0' )
+         gevLogStat(gh->gev, buf);
+   }
+#endif
+
    free(gh);
 
    /* free some thread-local global data */
@@ -1057,6 +1397,13 @@ DllExport int STDCALL hisCallSolver(
 
    gevTimeSetStart(gh->gev);
 
+   if( gh->iis == 2 )
+   {
+      if( doIIS(gh, 1) == HighsStatus::kOk )
+         rc = 0;
+      goto TERMINATE;
+   }
+
    /* solve the problem */
    gevLogPChar(gh->gev, "\n");
    status = gh->highs->run();
@@ -1067,7 +1414,13 @@ DllExport int STDCALL hisCallSolver(
    if( processSolve(gh) )
       goto TERMINATE;
 
+   if( gh->iis == 1 && (gmoModelStat(gh->gmo) == gmoModelStat_InfeasibleGlobal || gmoModelStat(gh->gmo) == gmoModelStat_InfeasibleNoSolution) )
+      if( doIIS(gh, 0) == HighsStatus::kError )
+         goto TERMINATE;
+
    doRanging(gh);
+
+   doIllConditioningAnalysis(gh);
 
    rc = 0;
 
