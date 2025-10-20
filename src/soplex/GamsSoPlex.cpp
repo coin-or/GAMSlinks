@@ -329,13 +329,11 @@ int GamsSoPlex::readyAPI(
       return 1;
    }
 
-#if PALAPIVERSION >= 3
    palSetSystemName(pal, "SoPlex");
    palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
-#endif
 
    GAMSinitLicensing(gmo, pal);
 
@@ -364,7 +362,6 @@ int GamsSoPlex::readyAPI(
    gmoMinfSet(gmo, -infinity);
    gmoSetNRowPerm(gmo);
 
-#if GMOAPIVERSION >= 22
    if( gmoNZ64(gmo) > INT_MAX )
    {
       gevLogStat(gev, "ERROR: Problems with more than 2^31 nonzeros not supported by SoPlex.");
@@ -372,7 +369,6 @@ int GamsSoPlex::readyAPI(
       gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
       return 1;
    }
-#endif
 
    if( logstreambuf != NULL )
    {

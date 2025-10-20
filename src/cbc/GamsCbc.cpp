@@ -198,13 +198,11 @@ int GamsCbc::readyAPI(
       return 1;
    }
 
-#if PALAPIVERSION >= 3
    palSetSystemName(pal, "COIN-OR CBC");
    palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
-#endif
 
    palFree(&pal);
 
@@ -229,7 +227,6 @@ int GamsCbc::callSolver()
    gmoSolveStatSet(gmo, gmoSolveStat_Solver);
    gmoModelStatSet(gmo, gmoModelStat_ErrorNoSolution);
 
-#if GMOAPIVERSION >= 22
    if( gmoNZ64(gmo) > INT_MAX )
    {
       gevLogStat(gev, "ERROR: Problems with more than 2^31 nonzeros not supported.");
@@ -237,7 +234,6 @@ int GamsCbc::callSolver()
       gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
       return 1;
    }
-#endif
 
    /* set MIP */
    if( !setupProblem() )
@@ -1246,9 +1242,7 @@ bool GamsCbc::writeSolution(
          gevLogStat(gev, buffer);
          return false;
       }
-#if GDXAPIVERSION >= 8
       gdxStoreDomainSetsSet(gdx, 0);
-#endif
 
       snprintf(buffer, 255, "\nDumping %d alternate solutions:\n", model->numberSavedSolutions()-1);
       gevLogPChar(gev, buffer);

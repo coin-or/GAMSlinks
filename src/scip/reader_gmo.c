@@ -2420,10 +2420,9 @@ SCIP_RETCODE writeGmoSolution(
          }
 
          SCIPinfoMessage(scip, NULL, "\nDumping %d alternate solutions:\n", nrsol-1);
+
          /* create index GDX file */
-#if GDXAPIVERSION >= 8
          gdxStoreDomainSetsSet(gdx, 0);
-#endif
          if( gdxOpenWrite(gdx, indexfilename, "SCIP DumpSolutions Index File", &rc) == 0 )
          {
             rc = gdxGetLastError(gdx);

@@ -157,7 +157,6 @@ int setupProblem(
    assert(gh != NULL);
    assert(gh->highs == NULL);
 
-#if GMOAPIVERSION >= 22
    if( gmoNZ64(gh->gmo) > INT_MAX )
    {
       gevLogStat(gh->gev, "ERROR: Problems with more than 2^31 nonzeros not supported by HiGHS link.");
@@ -165,7 +164,6 @@ int setupProblem(
       gmoModelStatSet(gh->gmo, gmoModelStat_NoSolutionReturned);
       return 0;
    }
-#endif
 
    gh->highs = new Highs();
    gh->highs->setCallback(gamshighs_callback, gh);

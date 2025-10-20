@@ -144,13 +144,11 @@ int GamsScip::readyAPI(
       return 1;
    }
 
-#if PALAPIVERSION >= 3
    palSetSystemName(pal, "SCIP");
    palGetAuditLine(pal, buffer);
    gevLogStat(gev, "");
    gevLogStat(gev, buffer);
    gevStatAudit(gev, buffer);
-#endif
 
    GAMSinitLicensing(gmo, pal);
 
@@ -228,7 +226,6 @@ int GamsScip::callSolver()
       return 1;
    }
 
-#if GMOAPIVERSION >= 22
    if( gmoNZ64(gmo) > INT_MAX )
    {
       gevLogStat(gev, "ERROR: Problems with more than 2^31 nonzeros not supported by SCIP.");
@@ -236,7 +233,6 @@ int GamsScip::callSolver()
       gmoModelStatSet(gmo, gmoModelStat_NoSolutionReturned);
       return 1;
    }
-#endif
 
    // set number of threads for linear algebra routines used in Ipopt
    if( gevGetIntOpt(gev, gevThreadsRaw) != 0 )
