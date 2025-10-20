@@ -15,7 +15,8 @@
 #include "gevmcc.h"
 
 #if defined _OPENMP
-#include <omp.h>
+extern
+void omp_set_num_threads(int);
 #endif
 
 #ifdef HAVE_GOTO_SETNUMTHREADS
