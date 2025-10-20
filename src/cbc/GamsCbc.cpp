@@ -767,7 +767,7 @@ bool GamsCbc::setupParameters(
       optSetDblStr(opt, "cutoff", -optGetDblStr(opt, "cutoff"));
    if( !optGetDefinedStr(opt, "increment") && gevGetIntOpt(gev, gevUseCheat) )
       optSetDblStr(opt, "increment", gevGetDblOpt(gev, gevCheat));
-   if( CbcModel::haveMultiThreadSupport() && !optGetDefinedStr(opt, "threads") )
+   if( CbcModel::haveMultiThreadSupport() && !optGetDefinedStr(opt, "threads") && gevGetIntOpt(gev, gevThreadsRaw) != 0 )
       optSetIntStr(opt, "threads", gevThreads(gev));
 
    // MIP parameters
