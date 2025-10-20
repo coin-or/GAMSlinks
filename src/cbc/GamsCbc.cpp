@@ -40,10 +40,6 @@
 #include "CoinHelperFunctions.hpp"
 #include "CoinTime.hpp"
 
-//#if defined(__linux) && defined(GAMSLINKS_HAS_CPLEX)
-//#include "cplex.h"
-//#endif
-
 /** CBC callback, used for updating model pointer
  * forward declaration, so we can define a static function as friend of special message handler
  */
