@@ -115,7 +115,7 @@
 /* Define to 1 if Lapack has omp_set_num_threads */
 #undef HAVE_OMP_SETNUMTHREADS
 
-/* Define to 1 if you have the `snprintf' function. */
+/* Define to 1 if you have the 'snprintf' function. */
 #undef HAVE_SNPRINTF
 
 /* Define to 1 if you have the <stdint.h> header file. */
@@ -133,13 +133,13 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
-/* Define to 1 if you have the `strtok' function. */
+/* Define to 1 if you have the 'strtok' function. */
 #undef HAVE_STRTOK
 
-/* Define to 1 if you have the `strtok_r' function. */
+/* Define to 1 if you have the 'strtok_r' function. */
 #undef HAVE_STRTOK_R
 
-/* Define to 1 if you have the `strtok_s' function. */
+/* Define to 1 if you have the 'strtok_s' function. */
 #undef HAVE_STRTOK_S
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
@@ -154,13 +154,13 @@
 /* Define to 1 if va_copy is available */
 #undef HAVE_VA_COPY
 
-/* Define to 1 if you have the `vsnprintf' function. */
+/* Define to 1 if you have the 'vsnprintf' function. */
 #undef HAVE_VSNPRINTF
 
-/* Define to 1 if you have the `_snprintf' function. */
+/* Define to 1 if you have the '_snprintf' function. */
 #undef HAVE__SNPRINTF
 
-/* Define to 1 if you have the `_vsnprintf' function. */
+/* Define to 1 if you have the '_vsnprintf' function. */
 #undef HAVE__VSNPRINTF
 
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
@@ -184,7 +184,7 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* Define to 1 if all of the C90 standard headers exist (not just the ones
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
