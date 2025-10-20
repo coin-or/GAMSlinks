@@ -44,6 +44,7 @@ declare -a testlist
 
 @COIN_HAS_CBC_TRUE@testlist[${#testlist[@]}]="--solver cbc"
 
+@COIN_HAS_BONMIN_TRUE@solvers="$solvers , Bonmin"
 @COIN_HAS_BONMIN_TRUE@testlist[${#testlist[@]}]="--solver bonmin"
 
 @COIN_HAS_COUENNE_TRUE@solvers="$solvers , Couenne"
