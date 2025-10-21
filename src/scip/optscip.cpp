@@ -553,7 +553,11 @@ int main(int argc, char** argv)
       if( !categname.count(it_categ->first) )
       {
          std::cerr << "Error: Do not have name for SCIP option category " << it_categ->first << std::endl;
+#ifdef GAMS_BUILD
          return -1;
+#else
+         continue;
+#endif
       }
 
       it_categ->second.sort(ScipParamCompare);
