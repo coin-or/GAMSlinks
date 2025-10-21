@@ -1227,7 +1227,7 @@ int hisCreate(
    if( !palGetReady(msgBuf, msgBufLen) )
       return 1;
 
-   return 1;
+   return 0;
 }
 
 extern "C" DllExport void hisFree(void** Cptr);
